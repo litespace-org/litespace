@@ -9,6 +9,7 @@
     "build": "tsc"
   },
   "devDependencies": {
+    "@types/express": "^4.17.21",
     "@types/lodash": "^4.17.1",
     "@types/node": "^20.12.12",
     "@types/pg": "^8.11.6",
@@ -20,6 +21,7 @@
   },
   "dependencies": {
     "colors": "^1.4.0",
+    "express": "^4.19.2",
     "lodash": "^4.17.21",
     "pg": "^8.11.5",
     "zod": "^3.23.8"

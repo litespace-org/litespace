@@ -1,6 +1,6 @@
 import { Pool, QueryConfigValues, QueryResult, QueryResultRow } from "pg";
 
-import { databaseConnection } from "../config";
+import { databaseConnection } from "../constants";
 
 const pool = new Pool({ ...databaseConnection });
 

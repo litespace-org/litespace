@@ -2,7 +2,7 @@ import { query } from "@/database/query";
 import { isEmpty, first } from "lodash";
 
 export class User {
-  async create(user: User.Self): Promise<void> {
+  async create(user: Omit<User.Self, "id">): Promise<void> {
     await query(
       "INSERT INTO users (email, password, name, avatar, type) values ($1, $2, $3, $4, $5);",
       [user.email, user.password, user.name, user.avatar, user.type]

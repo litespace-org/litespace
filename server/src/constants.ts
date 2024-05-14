@@ -18,3 +18,12 @@ export const databaseConnection = {
   port: isDev ? 5432 : schema.number.parse(process.env.PG_PORT),
   database: isDev ? "space" : schema.string.parse(process.env.PG_DATABASE),
 } as const;
+
+const SERVER_PORT = process.env.SERVER_PORT;
+
+export const serverConfig = {
+  port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
+};
+
+export const passwordRegex =
+  /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/;

@@ -1,3 +1,7 @@
-export { query } from "@/database/query";
+import { User } from "@/database/user";
 
-console.log("here");
+// services
+export const user = new User();
+
+// types
+export { User } from "@/database/user";
