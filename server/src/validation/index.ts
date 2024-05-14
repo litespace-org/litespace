@@ -1,5 +1,5 @@
-import user from "@/validation/user";
+import http from "@/validation/http";
 
 export const schema = {
-  user,
+  http,
 };

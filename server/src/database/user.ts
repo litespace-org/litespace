@@ -55,6 +55,17 @@ export class User {
 
     return rows;
   }
+
+  async findAll(): Promise<User.Self[]> {
+    const { rows } = await query<User.Self, []>(
+      `
+        SELECT id, email, password, name, avatar, type
+        FROM users;
+      `
+    );
+
+    return rows;
+  }
 }
 
 export namespace User {
