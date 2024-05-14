@@ -4,20 +4,23 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "yarn build && node dist/index.ts",
+    "start": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc"
   },
   "devDependencies": {
+    "@types/lodash": "^4.17.1",
     "@types/node": "^20.12.12",
     "@types/pg": "^8.11.6",
     "env-cmd": "^10.1.0",
     "nodemon": "^3.1.0",
     "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5"
   },
   "dependencies": {
     "colors": "^1.4.0",
+    "lodash": "^4.17.21",
     "pg": "^8.11.5",
     "zod": "^3.23.8"
   }
