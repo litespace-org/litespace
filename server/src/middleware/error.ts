@@ -2,6 +2,14 @@ import { isProduction } from "@/constants";
 import ResponseError from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { NextFunction } from "express";
+import { first } from "lodash";
+import { ZodError } from "zod";
+
+function getZodMessage(error: ZodError) {
+  const issue = first(error.errors);
+  if (!issue) return error.message;
+  return issue.message;
+}
 
 export function errorHandler(
   error: Error | ResponseError,
@@ -17,6 +25,8 @@ export function errorHandler(
   if (error instanceof ResponseError) {
     statusCode = error.statusCode;
     message = error.message;
+  } else if (error instanceof ZodError) {
+    message = getZodMessage(error);
   } else if (error instanceof Error) {
     message = error.message;
   }
