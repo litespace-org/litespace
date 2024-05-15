@@ -30,7 +30,7 @@ async function update(
 }
 
 async function delete_(req: Request.Query<{ id: string }>, res: Response) {
-  const id = schema.http.user.delete.params.parse(req.params).id;
+  const id = schema.http.user.delete.query.parse(req.query).id;
   await user.delete(id);
   res.status(200).send();
 }
@@ -40,7 +40,7 @@ async function get(
   res: Response,
   next: NextFunction
 ) {
-  const id = schema.http.user.get.query.parse(req.params).id;
+  const id = schema.http.user.get.query.parse(req.query).id;
 
   if (id) {
     const info = await user.findOne(id);

@@ -26,4 +26,9 @@ export const serverConfig = {
 };
 
 export const passwordRegex =
-  /^(?=.*[A-Za-z])(?=.*d)(?=.*[@$!%*#?&])[A-Za-zd@$!%*#?&]{8,}$/;
+  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
+
+export const authorizationSecret = zod
+  .string({ message: "Missing JWT Scret" })
+  .parse(process.env.JWT_SECRET)
+  .trim();

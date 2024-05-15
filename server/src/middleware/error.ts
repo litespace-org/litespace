@@ -26,6 +26,7 @@ export function errorHandler(
     statusCode = error.statusCode;
     message = error.message;
   } else if (error instanceof ZodError) {
+    statusCode = 400;
     message = getZodMessage(error);
   } else if (error instanceof Error) {
     message = error.message;

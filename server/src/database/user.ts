@@ -15,7 +15,7 @@ export class User {
         UPDATE users
         SET
             email = COALESCE($1, email),
-            password = COALESCE($2, pasword),
+            password = COALESCE($2, password),
             name = COALESCE($3, name),
             avatar = COALESCE($4, avatar),
             type = COALESCE($5, type)
@@ -35,7 +35,7 @@ export class User {
       `
         SELECT id, email, password, name, avatar, type
         FROM users
-        WHERE id = 1;
+        WHERE id = $1;
       `,
       [id]
     );

@@ -5,3 +5,15 @@ export default class ResponseError extends Error {
     this.statusCode = statusCode;
   }
 }
+
+export class UserNotFound extends ResponseError {
+  constructor() {
+    super("User not found", 404);
+  }
+}
+
+export class Forbidden extends ResponseError {
+  constructor(message?: string) {
+    super(message || "Unauthorized access", 403);
+  }
+}

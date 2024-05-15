@@ -1,11 +1,14 @@
 import handlers from "@/handlers";
 import { Router } from "express";
+import auth from "@/middleware/auth";
 
 const router = Router();
 
-router.post("/", handlers.user.create);
-router.put("/", handlers.user.update);
-router.delete("/", handlers.user.delete);
-router.get("/", handlers.user.get);
+router
+  .route("/")
+  .post(handlers.user.create)
+  .put(auth(), handlers.user.update)
+  .delete(auth(), handlers.user.delete)
+  .get(auth(), handlers.user.get);
 
 export default router;

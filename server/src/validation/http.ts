@@ -2,10 +2,22 @@ import { passwordRegex } from "@/constants";
 import { User } from "@/database";
 import zod from "zod";
 
-const id = zod.coerce.number().positive();
-const password = zod.string().regex(passwordRegex, "Invalid password");
-const email = zod.string().trim().email("Invalid email");
-const name = zod.string().trim().min(3, "Invalid name");
+const id = zod.coerce.number({ message: "Invalid user id" }).positive();
+
+const password = zod
+  .string({ message: "Invalid password" })
+  .regex(passwordRegex, "Invalid password");
+
+const email = zod
+  .string({ message: "Invalid email" })
+  .trim()
+  .email("Invalid email");
+
+const name = zod
+  .string({ message: "invalid email" })
+  .trim()
+  .min(3, "Invalid name");
+
 const avatar = zod.union([zod.null(), zod.string().trim()], {
   message: "Invalid avatar",
 });
@@ -35,13 +47,22 @@ const user = {
     }),
   },
   delete: {
-    params: zod.object({ id }),
+    query: zod.object({ id }),
   },
   get: {
     query: zod.object({ id: zod.optional(id) }),
   },
 };
 
+const auth = {
+  header: zod.object({
+    authorization: zod
+      .string({ message: "Invalid authorization header" })
+      .trim(),
+  }),
+};
+
 export default {
   user,
+  auth,
 };
