@@ -5,8 +5,8 @@ import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
 import { User, user } from "@/database";
-import ResponseError, { Forbidden, UserNotFound } from "@/lib/error";
-import { isEmpty } from "lodash";
+import { Forbidden, UserNotFound } from "@/lib/error";
+import { first, isEmpty } from "lodash";
 
 declare global {
   namespace Express {
@@ -14,6 +14,11 @@ declare global {
       user: User.Self;
     }
   }
+}
+
+function extractToken(header: string): string {
+  const [_, token] = header.split(" ");
+  return token.trim() || "";
 }
 
 /**
@@ -26,7 +31,10 @@ declare global {
 function authHandler(roles?: User.Type[]) {
   return async (req: Request.Default, _res: Response, next: NextFunction) => {
     const { authorization } = schema.http.auth.header.parse(req.headers);
-    const { id } = jwt.verify(authorizationSecret, authorization) as {
+    const { id } = jwt.verify(
+      extractToken(authorization),
+      authorizationSecret
+    ) as {
       id: number;
     };
     const info = await user.findOne(id);

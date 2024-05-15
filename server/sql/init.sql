@@ -1,3 +1,5 @@
+-- Active: 1715685752059@@127.0.0.1@5432@space@public
+
 DROP TABLE IF EXISTS users;
 
 DROP TYPE IF EXISTS user_type;
@@ -28,7 +30,7 @@ INSERT INTO
     )
 VALUES (
         'ahmed@litespace.com',
-        'pass_0',
+        'LiteSpace123@#$',
         'Ahmed',
         'my_avatar',
         'super_admin'
@@ -67,3 +69,9 @@ SET
     avatar = COALESCE('null', avatar)
 where
     id = 1;
+
+SELECT id, email, password, name, avatar, type
+FROM users
+WHERE
+    email = 'ahmed@litespace.com'
+    AND password = 'pass_0';

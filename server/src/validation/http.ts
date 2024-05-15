@@ -46,11 +46,10 @@ const user = {
       avatar: zod.optional(avatar),
     }),
   },
-  delete: {
-    query: zod.object({ id }),
-  },
-  get: {
-    query: zod.object({ id: zod.optional(id) }),
+  delete: { query: zod.object({ id }) },
+  get: { query: zod.object({ id }) },
+  login: {
+    body: zod.object({ email, password }),
   },
 };
 
@@ -58,6 +57,7 @@ const auth = {
   header: zod.object({
     authorization: zod
       .string({ message: "Invalid authorization header" })
+      .startsWith("Bearer", "Invalid bearer token")
       .trim(),
   }),
 };

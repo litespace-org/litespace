@@ -66,6 +66,24 @@ export class User {
 
     return rows;
   }
+
+  async findByCredentials(
+    email: string,
+    password: string
+  ): Promise<User.Self | null> {
+    const { rows } = await query<User.Self, [string, string]>(
+      `
+        SELECT id, email, password, name, avatar, type
+        FROM users
+        WHERE
+            email = $1
+            AND password = $2;
+      `,
+      [email, password]
+    );
+
+    return first(rows) || null;
+  }
 }
 
 export namespace User {

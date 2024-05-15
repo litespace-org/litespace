@@ -1,9 +1,12 @@
+import { authorizationSecret } from "@/constants";
 import { User, user } from "@/database";
-import ResponseError from "@/lib/error";
+import { isAdmin } from "@/lib/common";
+import ResponseError, { Forbidden, UserNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
+import jwt from "jsonwebtoken";
 
 async function create(
   req: Request.Body<Exclude<User.Self, "id">>,
@@ -35,28 +38,51 @@ async function delete_(req: Request.Query<{ id: string }>, res: Response) {
   res.status(200).send();
 }
 
-async function get(
+async function getOne(
   req: Request.Query<{ id: string }>,
   res: Response,
   next: NextFunction
 ) {
   const id = schema.http.user.get.query.parse(req.query).id;
+  const info = await user.findOne(id);
+  if (!info) return next(new UserNotFound());
 
-  if (id) {
-    const info = await user.findOne(id);
-    // todo: throw error
-    if (!info) return next(new ResponseError("User not found", 404));
-    res.status(200).json(info);
-    return;
-  }
+  const owner = info.id === req.user.id;
+  const admin = isAdmin(req.user.type);
+  const eligible = owner || admin;
+  if (!eligible) return next(new Forbidden());
+  res.status(200).json(info);
+}
 
+async function getMany(
+  req: Request.Query<{ id: string }>,
+  res: Response,
+  next: NextFunction
+) {
   const users = await user.findAll();
   res.status(200).json(users);
+}
+
+async function login(req: Request.Default, res: Response, next: NextFunction) {
+  const { email, password } = schema.http.user.login.body.parse(req.body);
+  const info = await user.findByCredentials(email, password);
+  if (!info) return next(new UserNotFound());
+
+  const token = jwt.sign({ id: info.id }, authorizationSecret, {
+    expiresIn: "7d",
+  });
+
+  res.status(200).json({
+    user: info,
+    token,
+  });
 }
 
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
-  get: asyncHandler(get),
+  getOne: asyncHandler(getOne),
+  getMany: asyncHandler(getMany),
+  login: asyncHandler(login),
 };
