@@ -1,5 +1,9 @@
 -- Active: 1715685752059@@127.0.0.1@5432@space@public
 
+DROP TABLE IF EXISTS tutors;
+
+DROP TABLE IF EXISTS slots;
+
 DROP TABLE IF EXISTS users;
 
 DROP TYPE IF EXISTS user_type;

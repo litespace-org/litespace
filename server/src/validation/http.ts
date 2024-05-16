@@ -24,18 +24,8 @@ const avatar = zod.union([zod.null(), zod.string().trim()], {
 
 const user = {
   create: zod.object(
-    {
-      email,
-      password,
-      name,
-      avatar,
-      type: zod.enum([User.Type.Tutor, User.Type.Student], {
-        message: "Invalid user type",
-      }),
-    },
-    {
-      message: "Empty request body",
-    }
+    { email, password, name, avatar },
+    { message: "Empty request body" }
   ),
   update: {
     body: zod.object({
@@ -93,16 +83,32 @@ const slot = {
       zod.object({ start: zod.optional(date), end: zod.optional(date) })
     ),
   }),
-  get: {
-    query: zod.object({ id }),
+  get: { query: zod.object({ id }) },
+  delete: { query: zod.object({ id }) },
+} as const;
+
+const tutor = {
+  create: {
+    body: user.create,
   },
-  delete: {
-    query: zod.object({ id }),
+  update: {
+    body: zod.object({
+      email: zod.optional(email),
+      password: zod.optional(password),
+      name: zod.optional(name),
+      avatar: zod.optional(avatar),
+      bio: zod.optional(zod.string().trim()),
+      about: zod.optional(zod.string().trim()),
+      video: zod.optional(zod.string().url().trim()),
+    }),
   },
+  get: { query: zod.object({ id }) },
+  delete: { query: zod.object({ id }) },
 } as const;
 
 export default {
   user,
   auth,
   slot,
+  tutor,
 };

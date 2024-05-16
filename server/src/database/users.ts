@@ -2,11 +2,24 @@ import { query } from "@/database/query";
 import { first } from "lodash";
 
 export class Users {
-  async create(user: Omit<User.Self, "id">): Promise<void> {
-    await query(
-      "INSERT INTO users (email, password, name, avatar, type) values ($1, $2, $3, $4, $5);",
+  async create(user: Omit<User.Self, "id">): Promise<number> {
+    const { rows } = await query<
+      { id: number },
+      [
+        User.Self["email"],
+        User.Self["password"],
+        User.Self["name"],
+        User.Self["avatar"],
+        User.Self["type"]
+      ]
+    >(
+      "INSERT INTO users (email, password, name, avatar, type) values ($1, $2, $3, $4, $5) RETURNING id;",
       [user.email, user.password, user.name, user.avatar, user.type]
     );
+
+    const id = first(rows)?.id;
+    if (!id) throw new Error("Missing row id");
+    return id;
   }
 
   async update(user: Partial<User.Self> & { id: number }): Promise<void> {
@@ -83,6 +96,20 @@ export class Users {
     );
 
     return first(rows) || null;
+  }
+
+  async getTutors(): Promise<User.Self[]> {
+    const { rows } = await query<User.Self, [User.Type.Tutor]>(
+      `
+        SELECT id, email, password, name, avatar, type
+        FROM users
+        WHERE
+            type = $1;
+      `,
+      [User.Type.Tutor]
+    );
+
+    return rows;
   }
 }
 

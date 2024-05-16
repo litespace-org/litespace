@@ -51,4 +51,17 @@ function auth(roles?: User.Type[]) {
   return asyncHandler(authHandler(roles));
 }
 
+export const authorized = auth();
+export const tutorOnly = auth([User.Type.Tutor]);
+export const adminOnly = auth([User.Type.SuperAdmin, User.Type.RegularAdmin]);
+export const tutorOrAdmin = auth([
+  User.Type.Tutor,
+  User.Type.SuperAdmin,
+  User.Type.RegularAdmin,
+]);
+export const studentOrAdmin = auth([
+  User.Type.Tutor,
+  User.Type.SuperAdmin,
+  User.Type.RegularAdmin,
+]);
 export default auth;

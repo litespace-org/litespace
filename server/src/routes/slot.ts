@@ -1,16 +1,9 @@
 import { User } from "@/database";
 import handlers from "@/handlers";
-import auth from "@/middleware/auth";
+import { tutorOnly, tutorOrAdmin } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
-
-const tutorOnly = auth([User.Type.Tutor]);
-const tutorOrAdmin = auth([
-  User.Type.Tutor,
-  User.Type.SuperAdmin,
-  User.Type.RegularAdmin,
-]);
 
 router
   .route("/")

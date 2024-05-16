@@ -13,7 +13,7 @@ async function create(
   res: Response
 ) {
   const body = schema.http.user.create.parse(req.body);
-  await users.create(body);
+  await users.create({ ...body, type: User.Type.Student });
   res.status(200).send();
 }
 
