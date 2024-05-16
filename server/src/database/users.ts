@@ -90,7 +90,7 @@ export namespace User {
   export enum Type {
     SuperAdmin = "super_admin",
     RegularAdmin = "reg_admin",
-    Teacher = "teacher",
+    Tutor = "tutor",
     Student = "student",
   }
 

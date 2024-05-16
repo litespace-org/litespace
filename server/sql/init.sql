@@ -7,7 +7,7 @@ DROP TYPE IF EXISTS user_type;
 CREATE TYPE user_type as ENUM(
     'super_admin',
     'reg_admin',
-    'teacher',
+    'tutor',
     'student'
 )
 
@@ -54,7 +54,7 @@ VALUES (
         'pass_4',
         'Ali',
         'my_avatar',
-        'teacher'
+        'tutor'
     );
 
 SELECT * FrOM users;

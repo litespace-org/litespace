@@ -29,7 +29,7 @@ const user = {
       password,
       name,
       avatar,
-      type: zod.enum([User.Type.Teacher, User.Type.Student], {
+      type: zod.enum([User.Type.Tutor, User.Type.Student], {
         message: "Invalid user type",
       }),
     },

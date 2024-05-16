@@ -12,7 +12,7 @@ async function create(req: Request.Default, res: Response) {
 
   await slots.create({
     ...slot,
-    teacherId: req.user.id,
+    tutorId: req.user.id,
     createdAt: now.toUTCString(),
     updatedAt: now.toUTCString(),
   });
@@ -25,7 +25,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   const slot = await slots.findById(fields.id);
 
   if (!slot) return next(new NotFound());
-  if (slot.teacherId !== req.user.id) return next(new Forbidden());
+  if (slot.tutorId !== req.user.id) return next(new Forbidden());
 
   await slots.update(fields);
   res.status(200).send();
@@ -36,7 +36,7 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const slot = await slots.findById(id);
   if (!slot) return next(new NotFound());
 
-  const owner = req.user.id === slot.teacherId;
+  const owner = req.user.id === slot.tutorId;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(new Forbidden());
@@ -48,7 +48,7 @@ async function getMany(
   res: Response,
   next: NextFunction
 ) {
-  const list = await slots.findByTeacher(req.user.id);
+  const list = await slots.findByTutor(req.user.id);
   res.status(200).json(list);
 }
 
@@ -60,7 +60,7 @@ async function delete_(
   const id = schema.http.slot.get.query.parse(req.query).id;
   const slot = await slots.findById(id);
   if (!slot) return next(new NotFound());
-  if (slot.teacherId !== req.user.id) return next(new Forbidden());
+  if (slot.tutorId !== req.user.id) return next(new Forbidden());
   await slots.delete(slot.id);
   res.status(200).send();
 }

@@ -8,7 +8,7 @@ export class Slots {
       `
         INSERT INTO
             slots (
-                teacher_id,
+                tutor_id,
                 title,
                 description,
                 weekday,
@@ -23,7 +23,7 @@ export class Slots {
         VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
       `,
       [
-        slot.teacherId,
+        slot.tutorId,
         slot.title,
         slot.description,
         slot.weekday,
@@ -39,7 +39,7 @@ export class Slots {
   }
 
   async update(
-    slot: DeepPartial<Omit<Slot.Self, "teacherId" | "createdAt">> & {
+    slot: DeepPartial<Omit<Slot.Self, "tutorId" | "createdAt">> & {
       id: number;
     }
   ): Promise<void> {
@@ -83,7 +83,7 @@ export class Slots {
       `
         SELECT
             id,
-            teacher_id,
+            tutor_id,
             title,
             description,
             weekday,
@@ -107,12 +107,12 @@ export class Slots {
     return this.as(slot);
   }
 
-  async findByTeacher(id: number): Promise<Slot.Self[]> {
+  async findByTutor(id: number): Promise<Slot.Self[]> {
     const { rows } = await query<Slot.Row, [number]>(
       `
         SELECT
             id,
-            teacher_id,
+            tutor_id,
             title,
             description,
             weekday,
@@ -125,7 +125,7 @@ export class Slots {
             updated_at
         FROM slots
         WHERE
-            teacher_id = $1;
+            tutor_id = $1;
             
      `,
       [id]
@@ -137,7 +137,7 @@ export class Slots {
   private as(slot: Slot.Row): Slot.Self {
     return {
       id: slot.id,
-      teacherId: slot.teacher_id,
+      tutorId: slot.tutor_id,
       title: slot.title,
       description: slot.description,
       weekday: slot.weekday,
@@ -160,7 +160,7 @@ export namespace Slot {
 
   export type Self = {
     id: number;
-    teacherId: number;
+    tutorId: number;
     title: string;
     description: string;
     weekday: number;
@@ -173,7 +173,7 @@ export namespace Slot {
 
   export type Row = {
     id: number;
-    teacher_id: number;
+    tutor_id: number;
     title: string;
     description: string;
     weekday: number;

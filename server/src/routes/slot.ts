@@ -5,20 +5,20 @@ import { Router } from "express";
 
 const router = Router();
 
-const teacherOnly = auth([User.Type.Teacher]);
-const teacherOrAdmin = auth([
-  User.Type.Teacher,
+const tutorOnly = auth([User.Type.Tutor]);
+const tutorOrAdmin = auth([
+  User.Type.Tutor,
   User.Type.SuperAdmin,
   User.Type.RegularAdmin,
 ]);
 
 router
   .route("/")
-  .post(teacherOnly, handlers.slot.create)
-  .put(teacherOnly, handlers.slot.update)
-  .get(teacherOrAdmin, handlers.slot.get)
-  .delete(teacherOnly, handlers.slot.delete);
+  .post(tutorOnly, handlers.slot.create)
+  .put(tutorOnly, handlers.slot.update)
+  .get(tutorOrAdmin, handlers.slot.get)
+  .delete(tutorOnly, handlers.slot.delete);
 
-router.get("/list", teacherOrAdmin, handlers.slot.list);
+router.get("/list", tutorOrAdmin, handlers.slot.list);
 
 export default router;

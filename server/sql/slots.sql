@@ -13,7 +13,7 @@ CREATE TYPE repeat_type as ENUM(
 
 CREATE TABLE slots (
     id SERIAL NOT NULL PRIMARY KEY,
-    teacher_id SERIAL NOT NULL REFERENCES users (id),
+    tutor_id SERIAL NOT NULL REFERENCES users (id),
     title TEXT NOT NULL,
     description TEXT DEFAULT NULL,
     weekday SMALLINT NOT NULL,
@@ -28,7 +28,7 @@ CREATE TABLE slots (
 
 INSERT INTO
     slots (
-        teacher_id,
+        tutor_id,
         title,
         description,
         weekday,
@@ -74,7 +74,7 @@ SELECT * FROM slots;
 
 SELECT
     id,
-    teacher_id,
+    tutor_id,
     title,
     description,
     weekday,
