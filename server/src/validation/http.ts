@@ -1,8 +1,8 @@
 import { passwordRegex } from "@/constants";
-import { User } from "@/database";
+import { User, Slot } from "@/database";
 import zod from "zod";
 
-const id = zod.coerce.number({ message: "Invalid user id" }).positive();
+const id = zod.coerce.number({ message: "Invalid id" }).positive();
 
 const password = zod
   .string({ message: "Invalid password" })
@@ -51,7 +51,7 @@ const user = {
   login: {
     body: zod.object({ email, password }),
   },
-};
+} as const;
 
 const auth = {
   header: zod.object({
@@ -60,9 +60,49 @@ const auth = {
       .startsWith("Bearer", "Invalid bearer token")
       .trim(),
   }),
-};
+} as const;
+
+const weekday = zod.coerce.number().min(-1).max(6);
+const time = zod.string().time();
+const date = zod.coerce.string().date();
+const repeat = zod.enum([
+  Slot.Repeat.NoRepeat,
+  Slot.Repeat.Daily,
+  Slot.Repeat.EveryWeek,
+  Slot.Repeat.EveryMonth,
+]);
+
+const slot = {
+  create: zod.object({
+    title: zod.string().trim(),
+    description: zod.string().trim(),
+    weekday: weekday,
+    time: zod.object({ start: time, end: time }),
+    date: zod.object({ start: date, end: date }),
+    repeat,
+  }),
+  update: zod.object({
+    id,
+    title: zod.optional(zod.string().trim()),
+    description: zod.optional(zod.string().trim()),
+    weekday: zod.optional(weekday),
+    time: zod.optional(
+      zod.object({ start: zod.optional(time), end: zod.optional(time) })
+    ),
+    date: zod.optional(
+      zod.object({ start: zod.optional(date), end: zod.optional(date) })
+    ),
+  }),
+  get: {
+    query: zod.object({ id }),
+  },
+  delete: {
+    query: zod.object({ id }),
+  },
+} as const;
 
 export default {
   user,
   auth,
+  slot,
 };

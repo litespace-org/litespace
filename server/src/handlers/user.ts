@@ -1,7 +1,7 @@
 import { authorizationSecret } from "@/constants";
 import { User, users } from "@/database";
 import { isAdmin } from "@/lib/common";
-import { Forbidden, UserNotFound } from "@/lib/error";
+import { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -45,7 +45,7 @@ async function getOne(
 ) {
   const id = schema.http.user.get.query.parse(req.query).id;
   const user = await users.findOne(id);
-  if (!user) return next(new UserNotFound());
+  if (!user) return next(new NotFound());
 
   const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.type);
@@ -66,7 +66,7 @@ async function getMany(
 async function login(req: Request.Default, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
   const user = await users.findByCredentials(email, password);
-  if (!user) return next(new UserNotFound());
+  if (!user) return next(new NotFound());
 
   const token = jwt.sign({ id: user.id }, authorizationSecret, {
     expiresIn: "7d",

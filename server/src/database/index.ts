@@ -7,3 +7,4 @@ export const slots = new Slots();
 
 // types
 export { User } from "@/database/users";
+export { Slot } from "@/database/slots";

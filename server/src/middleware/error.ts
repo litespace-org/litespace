@@ -8,7 +8,7 @@ import { ZodError } from "zod";
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
   if (!issue) return error.message;
-  return issue.message;
+  return issue.message + ` (${issue.path.join(".")})`;
 }
 
 export function errorHandler(

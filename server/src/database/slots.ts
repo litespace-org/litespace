@@ -1,4 +1,5 @@
 import { query } from "@/database/query";
+import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
 
 export class Slots {
@@ -38,7 +39,9 @@ export class Slots {
   }
 
   async update(
-    slot: Partial<Omit<Slot.Self, "teacher_id" | "created_at">> & { id: number }
+    slot: DeepPartial<Omit<Slot.Self, "teacherId" | "createdAt">> & {
+      id: number;
+    }
   ): Promise<void> {
     await query(
       `
@@ -101,6 +104,37 @@ export class Slots {
 
     const slot = first(rows);
     if (!slot) return null;
+    return this.as(slot);
+  }
+
+  async findByTeacher(id: number): Promise<Slot.Self[]> {
+    const { rows } = await query<Slot.Row, [number]>(
+      `
+        SELECT
+            id,
+            teacher_id,
+            title,
+            description,
+            weekday,
+            start_time,
+            end_time,
+            repeat,
+            start_date,
+            end_date,
+            created_at,
+            updated_at
+        FROM slots
+        WHERE
+            teacher_id = $1;
+            
+     `,
+      [id]
+    );
+
+    return rows.map((slot) => this.as(slot));
+  }
+
+  private as(slot: Slot.Row): Slot.Self {
     return {
       id: slot.id,
       teacherId: slot.teacher_id,
@@ -133,8 +167,8 @@ export namespace Slot {
     time: { start: string; end: string };
     date: { start: string; end: string };
     repeat: Repeat;
-    createdAt: number;
-    updatedAt: number;
+    createdAt: string;
+    updatedAt: string;
   };
 
   export type Row = {
@@ -148,7 +182,7 @@ export namespace Slot {
     start_date: string;
     end_date: string;
     repeat: Repeat;
-    created_at: number;
-    updated_at: number;
+    created_at: string;
+    updated_at: string;
   };
 }

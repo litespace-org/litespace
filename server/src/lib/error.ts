@@ -6,9 +6,9 @@ export default class ResponseError extends Error {
   }
 }
 
-export class UserNotFound extends ResponseError {
+export class NotFound extends ResponseError {
   constructor() {
-    super("User not found", 404);
+    super("Not found", 404);
   }
 }
 

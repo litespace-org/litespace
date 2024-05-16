@@ -4,9 +4,9 @@ import { NextFunction } from "express";
 import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
-import { User, user } from "@/database";
-import { Forbidden, UserNotFound } from "@/lib/error";
-import { first, isEmpty } from "lodash";
+import { User, users } from "@/database";
+import { Forbidden, NotFound } from "@/lib/error";
+import { isEmpty } from "lodash";
 
 declare global {
   namespace Express {
@@ -37,12 +37,12 @@ function authHandler(roles?: User.Type[]) {
     ) as {
       id: number;
     };
-    const info = await user.findOne(id);
-    if (!info) return next(new UserNotFound());
-    if (!isEmpty(roles) && !roles?.includes(info.type))
+    const user = await users.findOne(id);
+    if (!user) return next(new NotFound());
+    if (!isEmpty(roles) && !roles?.includes(user.type))
       return next(new Forbidden());
 
-    req.user = info;
+    req.user = user;
     next();
   };
 }
