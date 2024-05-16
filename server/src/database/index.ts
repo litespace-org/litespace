@@ -1,7 +1,9 @@
-import { User } from "@/database/user";
+import { Users } from "@/database/users";
+import { Slots } from "@/database/slots";
 
 // services
-export const user = new User();
+export const users = new Users();
+export const slots = new Slots();
 
 // types
-export { User } from "@/database/user";
+export { User } from "@/database/users";

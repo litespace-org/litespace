@@ -1,7 +1,7 @@
 import { authorizationSecret } from "@/constants";
-import { User, user } from "@/database";
+import { User, users } from "@/database";
 import { isAdmin } from "@/lib/common";
-import ResponseError, { Forbidden, UserNotFound } from "@/lib/error";
+import { Forbidden, UserNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -13,7 +13,7 @@ async function create(
   res: Response
 ) {
   const body = schema.http.user.create.parse(req.body);
-  await user.create(body);
+  await users.create(body);
   res.status(200).send();
 }
 
@@ -28,13 +28,13 @@ async function update(
   res: Response
 ) {
   const body = schema.http.user.update.body.parse(req.body);
-  await user.update(body);
+  await users.update(body);
   res.status(200).send();
 }
 
 async function delete_(req: Request.Query<{ id: string }>, res: Response) {
   const id = schema.http.user.delete.query.parse(req.query).id;
-  await user.delete(id);
+  await users.delete(id);
   res.status(200).send();
 }
 
@@ -44,38 +44,35 @@ async function getOne(
   next: NextFunction
 ) {
   const id = schema.http.user.get.query.parse(req.query).id;
-  const info = await user.findOne(id);
-  if (!info) return next(new UserNotFound());
+  const user = await users.findOne(id);
+  if (!user) return next(new UserNotFound());
 
-  const owner = info.id === req.user.id;
+  const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(new Forbidden());
-  res.status(200).json(info);
+  res.status(200).json(user);
 }
 
 async function getMany(
-  req: Request.Query<{ id: string }>,
+  req: Request.Default,
   res: Response,
   next: NextFunction
 ) {
-  const users = await user.findAll();
-  res.status(200).json(users);
+  const list = await users.findAll();
+  res.status(200).json(list);
 }
 
 async function login(req: Request.Default, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
-  const info = await user.findByCredentials(email, password);
-  if (!info) return next(new UserNotFound());
+  const user = await users.findByCredentials(email, password);
+  if (!user) return next(new UserNotFound());
 
-  const token = jwt.sign({ id: info.id }, authorizationSecret, {
+  const token = jwt.sign({ id: user.id }, authorizationSecret, {
     expiresIn: "7d",
   });
 
-  res.status(200).json({
-    user: info,
-    token,
-  });
+  res.status(200).json({ user, token });
 }
 
 export default {

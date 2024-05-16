@@ -1,7 +1,7 @@
 import { query } from "@/database/query";
-import { isEmpty, first } from "lodash";
+import { first } from "lodash";
 
-export class User {
+export class Users {
   async create(user: Omit<User.Self, "id">): Promise<void> {
     await query(
       "INSERT INTO users (email, password, name, avatar, type) values ($1, $2, $3, $4, $5);",
