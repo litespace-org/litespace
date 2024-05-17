@@ -23,7 +23,21 @@ const SERVER_PORT = process.env.SERVER_PORT;
 
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
-};
+} as const;
+
+export const zoomConfig = {
+  accountId: zod
+    .string({ message: "Missing zoom account id" })
+    .parse(process.env.ZOOM_ACCOUNT_ID),
+  clientId: zod
+    .string({ message: "Missing zoom client id" })
+    .parse(process.env.ZOOM_CLIENT_ID),
+  clientSecret: zod
+    .string({ message: "Missing zoom client secret" })
+    .parse(process.env.ZOOM_CLIENT_SECRET),
+  tokenApi: "https://zoom.us/oauth/token",
+  zoomApi: "https://api.zoom.us/v2/",
+} as const;
 
 export const passwordRegex =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;

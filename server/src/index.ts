@@ -2,6 +2,7 @@ import express, { json } from "express";
 import routes from "@/routes";
 import { serverConfig } from "@/constants";
 import "colors";
+import "@/meetings/zoom/index";
 import { errorHandler } from "@/middleware/error";
 
 const app = express();

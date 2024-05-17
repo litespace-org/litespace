@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@types/jsonwebtoken": "^9.0.6",
+    "axios": "^1.6.8",
     "colors": "^1.4.0",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
