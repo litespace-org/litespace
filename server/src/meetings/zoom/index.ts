@@ -1,9 +1,21 @@
 import { zoomConfig } from "@/constants";
 import axios from "axios";
+import { map, merge } from "lodash";
+import {
+  generateUserBasedAccessToken,
+  getZoomServerApps,
+  getZoomUserApp,
+} from "./authorization";
 
 const auth = Buffer.from(
   [zoomConfig.clientId, zoomConfig.clientSecret].join(":")
 ).toString("base64");
+
+function constractAuthorizationHeader(token: string): {
+  Authorization: `Bearer ${string}`;
+} {
+  return { Authorization: `Bearer ${token}` };
+}
 
 const zoomClient = axios.create({ baseURL: zoomConfig.zoomApi });
 
@@ -43,11 +55,14 @@ async function createZoomMeeting() {
    * 7. Getting meeting by id.
    * 8. Save the meeting to the `meetings` table with its id from zoom.
    * 9. Find a way to increase the rate limit.
+   *    - try to release the app.
+   *    - download it in another account.
+   *    - create the meeting on his behalf.
    */
   const { data } = await zoomClient.post(
-    "/users/me/meetings",
+    "/users/ib153507@gmail.com/meetings",
     JSON.stringify({
-      agenda: "My Meeting",
+      agenda: "My Meeting 3",
       default_password: false,
       duration: 30,
       password: "LiteSpace",
@@ -62,7 +77,8 @@ async function createZoomMeeting() {
       //   type: 1,
       //   weekly_days: "1",
       // },
-      schedule_for: "ahmedibarhim556@gmail.com",
+      // schedule_for: "ahmedibarhim556@gmail.com",
+      schedule_for: "ib153407@gmail.com",
       settings: {
         //   additional_data_center_regions: ["TY"],
         allow_multiple_devices: true,
@@ -78,16 +94,16 @@ async function createZoomMeeting() {
         audio: "both",
         //   audio_conference_info: "test",
         //   authentication_domains: "example.com",
-        authentication_exception: [
-          {
-            email: "ahmeibrahim556@gmail.com",
-            name: "Ahmed Ibrahim - Old",
-          },
-          {
-            email: "me@ahmedibrahim.dev",
-            name: "Ahmed Ibrahim - New",
-          },
-        ],
+        // authentication_exception: [
+        //   {
+        //     email: "ahmeibrahim556@gmail.com",
+        //     name: "Ahmed Ibrahim - Old",
+        //   },
+        //   {
+        //     email: "me@ahmedibrahim.dev",
+        //     name: "Ahmed Ibrahim - New",
+        //   },
+        // ],
         //   authentication_option: "signIn_D8cJuqWVQ623CI4Q8yQK0Q",
         auto_recording: "cloud",
         //   breakout_room: {
@@ -163,9 +179,9 @@ async function createZoomMeeting() {
         auto_start_meeting_summary: false,
         auto_start_ai_companion_questions: false,
       },
-      start_time: "2024-05-19T01:32:55Z",
-      template_id: "Dv4YdINdTk+Z5RToadh5ug==",
-      timezone: "America/Los_Angeles",
+      start_time: "2024-05-18T03:30:00Z",
+      // template_id: "Dv4YdINdTk+Z5RToadh5ug==",
+      timezone: "Africa/Cairo",
       topic: "My Meeting",
       // tracking_fields: [
       //   {
@@ -176,11 +192,13 @@ async function createZoomMeeting() {
       type: 2,
     }),
     {
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: merge(
+        {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        constractAuthorizationHeader(token)
+      ),
     }
   );
 
@@ -191,14 +209,138 @@ async function getUserInfo() {
   const token = await generateAccessToken();
 
   const { data } = await zoomClient.get("/users/me", {
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Authorization: `Bearer ${token}`,
-    },
+    headers: constractAuthorizationHeader(token),
   });
 
   console.log(data);
 }
 
-createZoomMeeting();
+async function cancelZoomMeeting(id: number): Promise<void> {
+  const token = await generateAccessToken();
+  await zoomClient.delete(`/meetings/${id}`, {
+    headers: constractAuthorizationHeader(token),
+  });
+}
+
+// ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meeting
+async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
+  const token = await generateAccessToken();
+  const { data } = await zoomClient.get<ZoomMeeting.ApiResponse>(
+    `/meetings/${id}`,
+    { headers: constractAuthorizationHeader(token) }
+  );
+
+  return {
+    id: data.id,
+    host: { email: data.host_email, id: data.host_id },
+    invitees: map(data.settings.meeting_invitees, "email"),
+    status: data.status,
+    agenda: data.agenda,
+    createdAt: data.created_at,
+    startTime: data.start_time,
+    timezone: data.timezone,
+    joinUrl: data.join_url,
+    passwords: {
+      password: data.password,
+      encrypted: data.encrypted_password,
+      pstn: data.pstn_password,
+      h323: data.h323_password,
+    },
+  };
+}
+
+// ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetings
+async function getZoomMeetings() {
+  const token = await generateAccessToken();
+  const { data } = await zoomClient.get<ZoomMeeting.GetMeetingsApiResponse>(
+    `/users/me/meetings`,
+    { headers: constractAuthorizationHeader(token) }
+  );
+  return data;
+}
+
+export namespace ZoomMeeting {
+  export enum Status {
+    Waiting = "waiting",
+    Started = "started",
+  }
+
+  export type ApiResponse = {
+    assistant_id: string;
+    host_email: string;
+    host_id: string;
+    id: number;
+    uuid: string;
+    agenda: string;
+    created_at: string;
+    duration: number;
+    encrypted_password: string;
+    pstn_password: string;
+    h323_password: string;
+    join_url: string;
+    chat_join_url: string;
+    occurrences: {
+      duration: number;
+      occurrence_id: string;
+      start_time: string;
+      status: "available" | "deleted ";
+    };
+    password: string;
+    pmi: string;
+    pre_schedule: boolean;
+    start_time: string;
+    timezone: string;
+    settings: { meeting_invitees: Array<{ email: string }> };
+    status: Status;
+  };
+
+  export type Self = {
+    id: number;
+    host: { email: string; id: string };
+    invitees: string[];
+    status: Status;
+    agenda: string;
+    createdAt: string;
+    startTime: string;
+    timezone: string;
+    joinUrl: string;
+    passwords: {
+      password: string;
+      encrypted: string;
+      pstn: string;
+      h323: string;
+    };
+  };
+
+  export type GetMeetingsApiResponse = {
+    next_page_token?: string;
+    page_count: number;
+    page_number: number;
+    page_size: number;
+    total_records: number;
+    meetings: Array<{
+      agenda: string;
+      created_at: string;
+      duration: string;
+      host_id: string;
+      id: string;
+      uuid: string;
+      join_url: string;
+      pmi: string;
+      start_time: string;
+      timezone: string;
+      topic: string;
+      type: number;
+    }>;
+  };
+}
+
+// createZoomMeeting();
 // getUserInfo();
+// getZoomMeeting(821_5372_0503).then(console.log);
+// getZoomMeeting(835_5246_4754).then(console.log);
+// getZoomMeetings().then(console.log);
+
+// generateUserBasedAccessToken("");
+
+console.log(getZoomUserApp());

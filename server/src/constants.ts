@@ -19,11 +19,18 @@ export const databaseConnection = {
   database: isDev ? "space" : schema.string.parse(process.env.PG_DATABASE),
 } as const;
 
+// Server
 const SERVER_PORT = process.env.SERVER_PORT;
 
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
 } as const;
+
+// Zoom
+export enum ZoomAppType {
+  ServerBased = "server-to-server",
+  UserBased = "user-app",
+}
 
 export const zoomConfig = {
   accountId: zod
@@ -37,6 +44,15 @@ export const zoomConfig = {
     .parse(process.env.ZOOM_CLIENT_SECRET),
   tokenApi: "https://zoom.us/oauth/token",
   zoomApi: "https://api.zoom.us/v2/",
+  appType: zod
+    .enum([ZoomAppType.ServerBased, ZoomAppType.UserBased], {
+      message: "Invalid zoom app type",
+    })
+    .parse(process.env.ZOOM_APP_TYPE),
+  appsCount: zod.coerce
+    .number({ message: "Invalid zoom apps count" })
+    .positive({ message: "Invalid zoom apps count" })
+    .parse(process.env.ZOOM_APPS_COUNT),
 } as const;
 
 export const passwordRegex =
