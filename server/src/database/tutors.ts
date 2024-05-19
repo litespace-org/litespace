@@ -98,30 +98,40 @@ export class Tutors {
     return row.token;
   }
 
-  async setTutorZoomRefreshToken(id: number, token: string): Promise<void> {
-    await query<{}, [token: string, id: number]>(
+  async setTutorZoomRefreshToken(
+    id: number,
+    token: string,
+    date: string
+  ): Promise<void> {
+    await query<{}, [token: string, date: string, id: number]>(
       `
       UPDATE tutors
       SET
-          zoom_refresh_token = $1
+          zoom_refresh_token = $1,
+          aquired_refresh_token_at = $2 
       WHERE
-          id = $2;
+          id = $3;
     `,
-      [token, id]
+      [token, date, id]
     );
   }
 
-  async markTutorWithAuthorizedZoomApp(id: number, token: string) {
-    await query<{}, [token: string, id: number]>(
+  async markTutorWithAuthorizedZoomApp(
+    id: number,
+    token: string,
+    date: string
+  ) {
+    await query<{}, [token: string, date: string, id: number]>(
       `
       UPDATE tutors
       SET
           authorized_zoom_app = true,
-          zoom_refresh_token = $1
+          zoom_refresh_token = $1,
+          aquired_refresh_token_at = $2 
       WHERE
-          id = $2;
+          id = $3;
     `,
-      [token, id]
+      [token, date, id]
     );
   }
 }

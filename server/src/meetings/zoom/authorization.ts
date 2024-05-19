@@ -122,7 +122,6 @@ export async function generateUserBasedAccessToken(
   code: string,
   app: UserApp
 ): Promise<UserAppTokens> {
-  console.log({ code, app });
   const params = new URLSearchParams();
   params.append("grant_type", "authorization_code");
   params.append("code", code);
@@ -188,7 +187,11 @@ export async function withAuthorization<T>(
     const tokens = await refreshAccessToken(getZoomUserApp(), refresh);
     const client = createAuthorizedClient(tokens.access);
     const response = await handler(client);
-    await tutors.setTutorZoomRefreshToken(tutorId, tokens.refresh);
+    await tutors.setTutorZoomRefreshToken(
+      tutorId,
+      tokens.refresh,
+      new Date().toUTCString() // now
+    );
     return response;
   }
 

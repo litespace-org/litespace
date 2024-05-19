@@ -20,7 +20,9 @@ async function setZoomRefreshToken(
     return next(new ResponseError("Invalid user type", 400));
 
   const tokens = await generateUserBasedAccessToken(code, getZoomUserApp());
-  await tutors.markTutorWithAuthorizedZoomApp(req.user.id, tokens.refresh);
+  const now = new Date().toUTCString();
+  console.log({ now });
+  await tutors.markTutorWithAuthorizedZoomApp(req.user.id, tokens.refresh, now);
   res.status(200).send();
 }
 

@@ -1,6 +1,7 @@
 import { isProduction } from "@/constants";
 import ResponseError from "@/lib/error";
 import { Request, Response } from "@/types/http";
+import { AxiosError } from "axios";
 import { NextFunction } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
@@ -12,7 +13,7 @@ function getZodMessage(error: ZodError) {
 }
 
 export function errorHandler(
-  error: Error | ResponseError,
+  error: Error | ResponseError | ZodError | AxiosError,
   req: Request.Default,
   res: Response,
   next: NextFunction
@@ -28,6 +29,9 @@ export function errorHandler(
   } else if (error instanceof ZodError) {
     statusCode = 400;
     message = getZodMessage(error);
+  } else if (error instanceof AxiosError) {
+    message = error.response?.data ? error.response.data : error.message;
+    statusCode = error.response?.status || 400;
   } else if (error instanceof Error) {
     message = error.message;
   }

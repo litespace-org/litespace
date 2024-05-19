@@ -9,6 +9,7 @@ CREATE TABLE tutors (
     video VARCHAR,
     authorized_zoom_app BOOLEAN NOT NULL DEFAULT FALSE,
     zoom_refresh_token TEXT, -- nullable
+    aquired_refresh_token_at TIMESTAMP, -- nullable
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL
 );
