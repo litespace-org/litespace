@@ -3,7 +3,7 @@ import ResponseError from "@/lib/error";
 import {
   generateUserBasedAccessToken,
   getZoomUserApp,
-} from "@/meetings/zoom/authorization";
+} from "@/integrations/zoom/authorization";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -21,7 +21,6 @@ async function setZoomRefreshToken(
 
   const tokens = await generateUserBasedAccessToken(code, getZoomUserApp());
   const now = new Date().toUTCString();
-  console.log({ now });
   await tutors.markTutorWithAuthorizedZoomApp(req.user.id, tokens.refresh, now);
   res.status(200).send();
 }

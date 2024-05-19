@@ -5,7 +5,7 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { map, omit } from "lodash";
+import { map, merge, omit } from "lodash";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -54,7 +54,7 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const eligible = owner || admin;
   if (!eligible) return next(new Forbidden());
 
-  const fullData = omit({ ...user, ...tutor }, "password");
+  const fullData = omit(merge(user, tutor), "password");
   res.status(200).json(fullData);
 }
 

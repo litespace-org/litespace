@@ -8,7 +8,7 @@ import {
   getZoomUserApp,
   refreshAccessToken,
   withAuthorization,
-} from "@/meetings/zoom/authorization";
+} from "@/integrations/zoom/authorization";
 
 function constractAuthorizationHeader(token: string): {
   Authorization: `Bearer ${string}`;
