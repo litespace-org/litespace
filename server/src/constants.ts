@@ -33,15 +33,6 @@ export enum ZoomAppType {
 }
 
 export const zoomConfig = {
-  accountId: zod
-    .string({ message: "Missing zoom account id" })
-    .parse(process.env.ZOOM_ACCOUNT_ID),
-  clientId: zod
-    .string({ message: "Missing zoom client id" })
-    .parse(process.env.ZOOM_CLIENT_ID),
-  clientSecret: zod
-    .string({ message: "Missing zoom client secret" })
-    .parse(process.env.ZOOM_CLIENT_SECRET),
   tokenApi: "https://zoom.us/oauth/token",
   zoomApi: "https://api.zoom.us/v2/",
   appType: zod

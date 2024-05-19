@@ -1,10 +1,12 @@
 import { ZoomAppType, zoomConfig } from "@/constants";
-import axios from "axios";
+import axios, { Axios } from "axios";
 import zod from "zod";
 
-const auth = Buffer.from(
-  [zoomConfig.clientId, zoomConfig.clientSecret].join(":")
-).toString("base64");
+function asBase64<T extends UserApp | ServerApp>(app: T): string {
+  return Buffer.from([app.clientId, app.clientSecret].join(":")).toString(
+    "base64"
+  );
+}
 
 function constractAuthorizationHeader(token: string): {
   Authorization: `Bearer ${string}`;
@@ -26,6 +28,10 @@ type ServerApp = {
 
 type UserApp = Omit<ServerApp, "accountId">;
 
+type UserAppTokens = { access: string; refersh: string };
+
+type UserAppTokensApiResponse = { access_token: string; refresh_token: string };
+
 function withAppIndex(
   prefix: ZoomAppConfig,
   index: number
@@ -45,12 +51,10 @@ export function getZoomServerApps(): ServerApp[] {
     const zoomClientSecret = withAppIndex(ZoomAppConfig.clientSecret, appIndex);
     const accountId = zod
       .string({ message: `Missing zoom account id (${zoomAccountId})` })
-      .length(22, `Invalid zoom account id length (${zoomAccountId})`)
       .parse(process.env[zoomAccountId]);
 
     const clientId = zod
       .string({ message: `Missing zoom client id (${zoomClientId})` })
-      .length(22, `Invalid zoom client id length (${zoomClientId})`)
       .parse(process.env[zoomClientId]);
 
     const clientSecret = zod
@@ -77,7 +81,6 @@ export function getZoomUserApp(): UserApp {
 
   const clientId = zod
     .string({ message: `Missing zoom client id (${zoomClientId})` })
-    .length(22, `Invalid zoom client id length (${zoomClientId})`)
     .parse(process.env[zoomClientId]);
 
   const clientSecret = zod
@@ -92,10 +95,12 @@ export function getZoomUserApp(): UserApp {
 }
 
 // ref: https://developers.zoom.us/docs/internal-apps/s2s-oauth/
-async function generateServerBasedAccessToken(): Promise<string> {
+export async function generateServerBasedAccessToken(
+  app: ServerApp
+): Promise<string> {
   const params = new URLSearchParams();
   params.append("grant_type", "account_credentials");
-  params.append("account_id", zoomConfig.accountId);
+  params.append("account_id", app.accountId);
 
   const { data } = await axios.post<{ access_token: string }>(
     zoomConfig.tokenApi,
@@ -103,7 +108,7 @@ async function generateServerBasedAccessToken(): Promise<string> {
     {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Basic ${auth}`,
+        Authorization: `Basic ${asBase64(app)}`,
       },
     }
   );
@@ -112,21 +117,80 @@ async function generateServerBasedAccessToken(): Promise<string> {
 }
 
 // ref: https://developers.zoom.us/docs/integrations/oauth/#getting-an-access-token
-export async function generateUserBasedAccessToken(code: string): Promise<{
-  access: string;
-  refersh: string;
-}> {
-  const { data } = await axios.post<{
-    access_token: string;
-    refresh_token: string;
-  }>(zoomConfig.tokenApi, {
-    code,
-    grant_type: "authorization_code",
-    redirect_uri: "https://example.com",
-  });
+export async function generateUserBasedAccessToken(
+  code: string,
+  app: UserApp
+): Promise<UserAppTokens> {
+  console.log({ code, app });
+  const params = new URLSearchParams();
+  params.append("grant_type", "authorization_code");
+  params.append("code", code);
+  params.append("redirect_uri", "https://example.com");
+
+  const { data } = await axios.post<UserAppTokensApiResponse>(
+    zoomConfig.tokenApi,
+    params,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${asBase64(app)}`,
+      },
+    }
+  );
 
   return {
     access: data.access_token,
     refersh: data.refresh_token,
   };
+}
+
+// ref: https://developers.zoom.us/docs/integrations/oauth/#refreshing-an-access-token
+export async function refershAccessToken(
+  app: UserApp,
+  refershToken: string
+): Promise<UserAppTokens> {
+  const params = new URLSearchParams();
+  params.append("grant_type", "refresh_token");
+  params.append("refresh_token", refershToken);
+
+  const { data } = await axios.post<UserAppTokensApiResponse>(
+    zoomConfig.tokenApi,
+    params,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Basic ${asBase64(app)}`,
+      },
+    }
+  );
+
+  return {
+    access: data.access_token,
+    refersh: data.refresh_token,
+  };
+}
+
+async function generateAccessToken() {
+  const refersh = "_";
+  if (zoomConfig.appType === ZoomAppType.UserBased) {
+    const tokens = refershAccessToken(getZoomUserApp(), refersh);
+  }
+}
+
+export async function withAuthorization<T>(
+  handler: (client: Axios) => Promise<T>
+): Promise<T> {
+  if (zoomConfig.appType === ZoomAppType.UserBased) {
+    const refersh = process.env.ZOOM_REFERSH_TOKEN!; // get refersh token from db by tutor id
+    const tokens = await refershAccessToken(getZoomUserApp(), refersh);
+    const client = axios.create({
+      baseURL: zoomConfig.zoomApi,
+      headers: constractAuthorizationHeader(tokens.access),
+    });
+    const response = await handler(client);
+    // update refersh token in db with tokens.refresh
+    return response;
+  }
+
+  throw new Error("no supported");
 }
