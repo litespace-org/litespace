@@ -1,4 +1,5 @@
 import { ZoomAppType, zoomConfig } from "@/constants";
+import { tutors } from "@/database";
 import axios, { Axios } from "axios";
 import zod from "zod";
 
@@ -28,7 +29,7 @@ type ServerApp = {
 
 type UserApp = Omit<ServerApp, "accountId">;
 
-type UserAppTokens = { access: string; refersh: string };
+type UserAppTokens = { access: string; refresh: string };
 
 type UserAppTokensApiResponse = { access_token: string; refresh_token: string };
 
@@ -140,18 +141,18 @@ export async function generateUserBasedAccessToken(
 
   return {
     access: data.access_token,
-    refersh: data.refresh_token,
+    refresh: data.refresh_token,
   };
 }
 
 // ref: https://developers.zoom.us/docs/integrations/oauth/#refreshing-an-access-token
-export async function refershAccessToken(
+export async function refreshAccessToken(
   app: UserApp,
-  refershToken: string
+  refreshToken: string
 ): Promise<UserAppTokens> {
   const params = new URLSearchParams();
   params.append("grant_type", "refresh_token");
-  params.append("refresh_token", refershToken);
+  params.append("refresh_token", refreshToken);
 
   const { data } = await axios.post<UserAppTokensApiResponse>(
     zoomConfig.tokenApi,
@@ -166,31 +167,38 @@ export async function refershAccessToken(
 
   return {
     access: data.access_token,
-    refersh: data.refresh_token,
+    refresh: data.refresh_token,
   };
 }
 
-async function generateAccessToken() {
-  const refersh = "_";
-  if (zoomConfig.appType === ZoomAppType.UserBased) {
-    const tokens = refershAccessToken(getZoomUserApp(), refersh);
-  }
+function createAuthorizedClient(token: string) {
+  return axios.create({
+    baseURL: zoomConfig.zoomApi,
+    headers: constractAuthorizationHeader(token),
+  });
 }
 
 export async function withAuthorization<T>(
+  tutorId: number,
   handler: (client: Axios) => Promise<T>
 ): Promise<T> {
   if (zoomConfig.appType === ZoomAppType.UserBased) {
-    const refersh = process.env.ZOOM_REFERSH_TOKEN!; // get refersh token from db by tutor id
-    const tokens = await refershAccessToken(getZoomUserApp(), refersh);
-    const client = axios.create({
-      baseURL: zoomConfig.zoomApi,
-      headers: constractAuthorizationHeader(tokens.access),
-    });
+    const refresh = await tutors.findTutorZoomRefreshToken(tutorId);
+    if (!refresh) throw new Error("Tutor didn't activated the zoom app");
+    const tokens = await refreshAccessToken(getZoomUserApp(), refresh);
+    const client = createAuthorizedClient(tokens.access);
     const response = await handler(client);
-    // update refersh token in db with tokens.refresh
+    await tutors.setTutorZoomRefreshToken(tutorId, tokens.refresh);
     return response;
   }
 
-  throw new Error("no supported");
+  const apps = getZoomServerApps();
+  for (const app of apps) {
+    const token = await generateServerBasedAccessToken(app);
+    const client = createAuthorizedClient(token);
+    const response = await handler(client);
+    return response;
+  }
+
+  throw new Error("Exhausted all zoom apps");
 }

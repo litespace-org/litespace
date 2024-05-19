@@ -106,9 +106,20 @@ const tutor = {
   delete: { query: zod.object({ id }) },
 } as const;
 
+const zoom = {
+  setRefreshToken: {
+    body: zod.object({
+      code: zod.string({
+        message: "Invalid zoom code",
+      }),
+    }),
+  },
+};
+
 export default {
   user,
   auth,
   slot,
   tutor,
+  zoom,
 };

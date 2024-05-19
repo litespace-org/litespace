@@ -3,7 +3,9 @@ import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
 
 export class Tutors {
-  async create(tutor: Tutor.Self): Promise<void> {
+  async create(
+    tutor: Omit<Tutor.Self, "zoomRefreshToken" | "authorizedZoomApp">
+  ): Promise<void> {
     await query(
       `
         INSERT INTO
@@ -23,7 +25,7 @@ export class Tutors {
 
   async update(
     tutor: DeepPartial<Omit<Tutor.Self, "createdAt">> & { id: number }
-  ) {
+  ): Promise<void> {
     await query(
       `
         UPDATE tutors
@@ -43,14 +45,15 @@ export class Tutors {
     await query(`DELETE FROM tutors WHERE id = $1;`, [id]);
   }
 
-  async findById(id: number): Promise<Tutor.Self | null> {
-    const { rows } = await query<Tutor.Self, [number]>(
+  async findById(id: number): Promise<Tutor.Shareable | null> {
+    const { rows } = await query<Tutor.Shareable, [number]>(
       `
         SELECT
             id,
-            bio
-            about
-            video
+            bio,
+            about,
+            video,
+            authorized_zoom_app,
             created_at,
             updated_at
         FROM tutors
@@ -83,6 +86,44 @@ export class Tutors {
 
     return rows;
   }
+
+  async findTutorZoomRefreshToken(id: number): Promise<string | null> {
+    const { rows } = await query<{ token: string | null }, [id: number]>(
+      `SELECT zoom_refresh_token as token FROM tutors WHERE id = $1;`,
+      [id]
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return row.token;
+  }
+
+  async setTutorZoomRefreshToken(id: number, token: string): Promise<void> {
+    await query<{}, [token: string, id: number]>(
+      `
+      UPDATE tutors
+      SET
+          zoom_refresh_token = $1
+      WHERE
+          id = $2;
+    `,
+      [token, id]
+    );
+  }
+
+  async markTutorWithAuthorizedZoomApp(id: number, token: string) {
+    await query<{}, [token: string, id: number]>(
+      `
+      UPDATE tutors
+      SET
+          authorized_zoom_app = true,
+          zoom_refresh_token = $1
+      WHERE
+          id = $2;
+    `,
+      [token, id]
+    );
+  }
 }
 
 export namespace Tutor {
@@ -91,7 +132,22 @@ export namespace Tutor {
     bio: string | null;
     about: string | null;
     video: string | null;
+    zoomRefreshToken: string | null;
+    authorizedZoomApp: boolean;
     createdAt: string;
     updatedAt: string;
   };
+
+  export type Row = {
+    id: number;
+    bio: string | null;
+    about: string | null;
+    video: string | null;
+    authorized_zoom_app: string | null;
+    zoom_refresh_token: boolean;
+    created_at: string;
+    updated_at: string;
+  };
+
+  export type Shareable = Omit<Self, "zoomRefreshToken">;
 }

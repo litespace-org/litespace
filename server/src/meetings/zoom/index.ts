@@ -6,7 +6,7 @@ import {
   generateUserBasedAccessToken,
   getZoomServerApps,
   getZoomUserApp,
-  refershAccessToken,
+  refreshAccessToken,
   withAuthorization,
 } from "@/meetings/zoom/authorization";
 
@@ -35,103 +35,34 @@ async function createZoomMeeting() {
    *    - download it in another account.
    *    - create the meeting on his behalf.
    */
-  return await withAuthorization(async (client: Axios) => {
+  return await withAuthorization(2, async (client: Axios) => {
     const { data } = await client.post(
-      "/users/ib153507@gmail.com/meetings",
+      "/users/me/meetings",
       JSON.stringify({
         agenda: "My Meeting 3",
         default_password: false,
         duration: 30,
         password: "LiteSpace",
         pre_schedule: false,
-        // recurrence: {
-        //   end_date_time: "2022-04-02T15:59:00Z",
-        //   end_times: 7,
-        //   monthly_day: 1,
-        //   monthly_week: 1,
-        //   monthly_week_day: 1,
-        //   repeat_interval: 1,
-        //   type: 1,
-        //   weekly_days: "1",
-        // },
-        // schedule_for: "ahmedibarhim556@gmail.com",
-        schedule_for: "ib153407@gmail.com",
+        schedule_for: "ahmedibarhim556@gmail.com",
         settings: {
-          //   additional_data_center_regions: ["TY"],
           allow_multiple_devices: true,
-          //   alternative_hosts: "jchill@example.com;thill@example.com",
           alternative_hosts_email_notification: true,
           approval_type: 2, // No registration required
-          //   approved_or_denied_countries_or_regions: {
-          //     approved_list: ["CX"],
-          //     denied_list: ["CA"],
-          //     enable: true,
-          //     method: "approve",
-          //   },
           audio: "both",
-          //   audio_conference_info: "test",
-          //   authentication_domains: "example.com",
-          // authentication_exception: [
-          //   {
-          //     email: "ahmeibrahim556@gmail.com",
-          //     name: "Ahmed Ibrahim - Old",
-          //   },
-          //   {
-          //     email: "me@ahmedibrahim.dev",
-          //     name: "Ahmed Ibrahim - New",
-          //   },
-          // ],
-          //   authentication_option: "signIn_D8cJuqWVQ623CI4Q8yQK0Q",
           auto_recording: "cloud",
-          //   breakout_room: {
-          //     enable: true,
-          //     rooms: [
-          //       {
-          //         name: "room1",
-          //         participants: ["jchill@example.com"],
-          //       },
-          //     ],
-          //   },
           calendar_type: 1, //  Zoom Outlook add-in
           close_registration: false,
-          //   contact_email: "jchill@example.com",
-          //   contact_name: "Jill Chill",
           email_notification: false,
           encryption_type: "enhanced_encryption",
           focus_mode: true,
-          //   global_dial_in_countries: ["US"],
           host_video: true,
           jbh_time: 0, // Allow the participant to join the meeting at anytime.
           join_before_host: true,
-          //   language_interpretation: {
-          //     enable: true,
-          //     interpreters: [
-          //       {
-          //         email: "interpreter@example.com",
-          //         languages: "US,FR",
-          //       },
-          //     ],
-          //   },
-          //   sign_language_interpretation: {
-          //     enable: true,
-          //     interpreters: [
-          //       {
-          //         email: "interpreter@example.com",
-          //         sign_language: "American",
-          //       },
-          //     ],
-          //   },
           meeting_authentication: false,
-          meeting_invitees: [
-            { email: "ahmedibarhim556@gmail.com" },
-            { email: "me@ahmedibrahim.dev" },
-            { email: "ib153507@gmail.com" },
-          ],
           mute_upon_entry: false,
           participant_video: true,
           private_meeting: false,
-          //   registrants_confirmation_email: true,
-          //   registrants_email_notification: true,
           registration_type: 1,
           show_share_button: true,
           use_pmi: false,
@@ -146,26 +77,12 @@ async function createZoomMeeting() {
           },
           participant_focused_meeting: false,
           push_change_to_calendar: false,
-          //   resources: [
-          //     {
-          //       resource_type: "whiteboard",
-          //       resource_id: "X4Hy02w3QUOdskKofgb9Jg",
-          //       permission_level: "editor",
-          //     },
-          //   ],
           auto_start_meeting_summary: false,
           auto_start_ai_companion_questions: false,
         },
-        start_time: "2024-05-18T03:30:00Z",
-        // template_id: "Dv4YdINdTk+Z5RToadh5ug==",
+        start_time: "2024-05-19T09:00:00Z",
         timezone: "Africa/Cairo",
         topic: "My Meeting",
-        // tracking_fields: [
-        //   {
-        //     field: "field1",
-        //     value: "value1",
-        //   },
-        // ],
         type: 2,
       }),
       {
@@ -181,7 +98,7 @@ async function createZoomMeeting() {
 }
 
 async function getUserInfo() {
-  return withAuthorization(async (client: Axios) => {
+  return withAuthorization(2, async (client: Axios) => {
     const { data } = await client.get("/users/me");
     return data;
   });
@@ -189,13 +106,14 @@ async function getUserInfo() {
 
 async function cancelZoomMeeting(id: number): Promise<void> {
   return await withAuthorization(
+    2,
     async (client) => await client.delete(`/meetings/${id}`)
   );
 }
 
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meeting
 async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
-  return await withAuthorization(async (client) => {
+  return await withAuthorization(2, async (client) => {
     const { data } = await client.get<ZoomMeeting.ApiResponse>(
       `/meetings/${id}`
     );
@@ -222,7 +140,7 @@ async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
 
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetings
 async function getZoomMeetings(): Promise<ZoomMeeting.GetMeetingsApiResponse> {
-  return await withAuthorization(async (client: Axios) => {
+  return await withAuthorization(2, async (client: Axios) => {
     const { data } = await client.get<ZoomMeeting.GetMeetingsApiResponse>(
       `/users/me/meetings`
     );
@@ -308,7 +226,7 @@ export namespace ZoomMeeting {
 
 // createZoomMeeting();
 // getUserInfo();
-// getZoomMeeting(821_5372_0503).then(console.log);
+// getZoomMeeting(834_6610_1027).then(console.log);
 // getZoomMeeting(835_5246_4754).then(console.log);
 // getZoomMeetings().then(console.log);
 
@@ -316,14 +234,14 @@ export namespace ZoomMeeting {
 
 // console.log(getZoomUserApp());
 // generateUserBasedAccessToken(
-//   "6hKu2rzG5cIhY8_Vlq4TqGZLcJ6zsJyrw",
+//   "A6iDj5Jb9JOIDBym9agTAafNvb5W4ehtA",
 //   getZoomUserApp()
 // ).then(console.log);
 
 // const app = getZoomServerApps()[0];
 // generateServerBasedAccessToken(app).then(console.log);
 
-refershAccessToken(
-  getZoomUserApp(),
-  "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjZlZTczMzIwLWJkZDMtNDY2MC1hZTQ2LWQ2ZDBiNjc3NzQ3ZSJ9.eyJ2ZXIiOjksImF1aWQiOiIzZGRiYWZlYzlhNmExZDhlZWYyZDk3ODdkNDQ4NjQ2YiIsImNvZGUiOiI2aEt1MnJ6RzVjSWhZOF9WbHE0VHFHWkxjSjZ6c0p5cnciLCJpc3MiOiJ6bTpjaWQ6cnVCVlVBM3hRNkNqMmpQYWFvQU5BIiwiZ25vIjowLCJ0eXBlIjoxLCJ0aWQiOjAsImF1ZCI6Imh0dHBzOi8vb2F1dGguem9vbS51cyIsInVpZCI6InJndm1MUllCUXMtWXRRdDFUMTN4YnciLCJuYmYiOjE3MTYwOTU0NzAsImV4cCI6MTcyMzg3MTQ3MCwiaWF0IjoxNzE2MDk1NDcwLCJhaWQiOiJGSEgzNExTelNlYUMtWkV4bEhpTl9BIn0.NPZSsHv01Wr7hv-ZoD_y1V-vWS-DnsNW5BT9U3nrsXrgdQHt0p6JdzO-RlSIoXYxe-qab3xk7FIo51YrNn3OjQ"
-).then(console.log);
+// refreshAccessToken(
+//   getZoomUserApp(),
+//   "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjZlZTczMzIwLWJkZDMtNDY2MC1hZTQ2LWQ2ZDBiNjc3NzQ3ZSJ9.eyJ2ZXIiOjksImF1aWQiOiIzZGRiYWZlYzlhNmExZDhlZWYyZDk3ODdkNDQ4NjQ2YiIsImNvZGUiOiI2aEt1MnJ6RzVjSWhZOF9WbHE0VHFHWkxjSjZ6c0p5cnciLCJpc3MiOiJ6bTpjaWQ6cnVCVlVBM3hRNkNqMmpQYWFvQU5BIiwiZ25vIjowLCJ0eXBlIjoxLCJ0aWQiOjAsImF1ZCI6Imh0dHBzOi8vb2F1dGguem9vbS51cyIsInVpZCI6InJndm1MUllCUXMtWXRRdDFUMTN4YnciLCJuYmYiOjE3MTYwOTU0NzAsImV4cCI6MTcyMzg3MTQ3MCwiaWF0IjoxNzE2MDk1NDcwLCJhaWQiOiJGSEgzNExTelNlYUMtWkV4bEhpTl9BIn0.NPZSsHv01Wr7hv-ZoD_y1V-vWS-DnsNW5BT9U3nrsXrgdQHt0p6JdzO-RlSIoXYxe-qab3xk7FIo51YrNn3OjQ"
+// ).then(console.log);

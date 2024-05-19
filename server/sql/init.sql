@@ -34,31 +34,10 @@ INSERT INTO
     )
 VALUES (
         'ahmed@litespace.com',
-        'LiteSpace123@#$',
+        'LiteSpace1###',
         'Ahmed',
         'my_avatar',
         'super_admin'
-    ),
-    (
-        'ibrahim@litespace.com',
-        'pass_1',
-        'Ibrahim',
-        'my_avatar',
-        'reg_admin'
-    ),
-    (
-        'mahmoud@litespace.com',
-        'pass_3',
-        'Mahmoud',
-        'my_avatar',
-        'student'
-    ),
-    (
-        'ali@litespace.com',
-        'pass_4',
-        'Ali',
-        'my_avatar',
-        'tutor'
     );
 
 SELECT * FrOM users;

@@ -11,6 +11,7 @@ app.use(json());
 app.use("/api/v1/user", routes.user);
 app.use("/api/v1/slot", routes.slot);
 app.use("/api/v1/tutor", routes.tutor);
+app.use("/api/v1/zoom", routes.zoom);
 app.use(errorHandler);
 
 app.listen(serverConfig.port, () =>
