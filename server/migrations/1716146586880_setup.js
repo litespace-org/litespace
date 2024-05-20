@@ -66,7 +66,7 @@ exports.up = (pgm) => {
     slot_id: { type: "serial", notNull: true, references: "slots(id)" },
     zoom_meeting_id: { type: "bigint", notNull: true, unique: true },
     start: { type: "timestamp", notNull: true },
-    end: { type: "timestamp", notNull: true },
+    duration: { type: "smallint", notNull: true },
     meeting_url: { type: "varchar(255)", notNull: true },
     created_at: { type: "timestamp", notNull: true },
     updated_at: { type: "timestamp", notNull: true },

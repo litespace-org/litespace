@@ -10,14 +10,18 @@ import {
   withAuthorization,
 } from "@/integrations/zoom/authorization";
 
-function constractAuthorizationHeader(token: string): {
-  Authorization: `Bearer ${string}`;
-} {
-  return { Authorization: `Bearer ${token}` };
-}
-
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate
-async function createZoomMeeting() {
+export async function createZoomMeeting({
+  tutorId,
+  tutorEmail,
+  start,
+  duration,
+}: {
+  tutorId: number;
+  tutorEmail: string;
+  start: string;
+  duration: number;
+}): Promise<ZoomMeeting.Self> {
   /**
    * Requirements:
    * 1. Title should be the concatenation to the platform name, the user, and
@@ -35,66 +39,85 @@ async function createZoomMeeting() {
    *    - download it in another account.
    *    - create the meeting on his behalf.
    */
-  return await withAuthorization(2, async (client: Axios) => {
-    const { data } = await client.post(
-      "/users/me/meetings",
-      JSON.stringify({
-        agenda: "My Meeting 3",
-        default_password: false,
-        duration: 30,
-        password: "LiteSpace",
-        pre_schedule: false,
-        schedule_for: "ahmedibarhim556@gmail.com",
-        settings: {
-          allow_multiple_devices: true,
-          alternative_hosts_email_notification: true,
-          approval_type: 2, // No registration required
-          audio: "both",
-          auto_recording: "cloud",
-          calendar_type: 1, //  Zoom Outlook add-in
-          close_registration: false,
-          email_notification: false,
-          encryption_type: "enhanced_encryption",
-          focus_mode: true,
-          host_video: true,
-          jbh_time: 0, // Allow the participant to join the meeting at anytime.
-          join_before_host: true,
-          meeting_authentication: false,
-          mute_upon_entry: false,
-          participant_video: true,
-          private_meeting: false,
-          registration_type: 1,
-          show_share_button: true,
-          use_pmi: false,
-          waiting_room: false,
-          watermark: false,
-          host_save_video_order: true,
-          alternative_host_update_polls: true,
-          internal_meeting: false,
-          continuous_meeting_chat: {
-            enable: true,
-            auto_add_invited_external_users: true,
+  return await withAuthorization(
+    tutorId,
+    async (client: Axios): Promise<ZoomMeeting.Self> => {
+      const { data } = await client.post<ZoomMeeting.CreateMeetingApiResponse>(
+        "/users/me/meetings",
+        JSON.stringify({
+          agenda: "LiteSpace Private English Lesson",
+          default_password: false,
+          duration,
+          password: "LiteSpace",
+          pre_schedule: false,
+          schedule_for: tutorEmail,
+          settings: {
+            allow_multiple_devices: true,
+            alternative_hosts_email_notification: true,
+            approval_type: 2, // No registration required
+            audio: "both",
+            auto_recording: "cloud",
+            calendar_type: 1, //  Zoom Outlook add-in
+            close_registration: false,
+            email_notification: true,
+            encryption_type: "enhanced_encryption",
+            focus_mode: true,
+            host_video: true,
+            jbh_time: 0, // Allow the participant to join the meeting at anytime.
+            join_before_host: true,
+            meeting_authentication: false,
+            mute_upon_entry: false,
+            participant_video: true,
+            private_meeting: false,
+            registration_type: 1,
+            show_share_button: true,
+            use_pmi: false,
+            waiting_room: false,
+            watermark: false,
+            host_save_video_order: true,
+            alternative_host_update_polls: true,
+            internal_meeting: false,
+            continuous_meeting_chat: {
+              enable: true,
+              auto_add_invited_external_users: true,
+            },
+            participant_focused_meeting: false,
+            push_change_to_calendar: false,
+            auto_start_meeting_summary: false,
+            auto_start_ai_companion_questions: false,
           },
-          participant_focused_meeting: false,
-          push_change_to_calendar: false,
-          auto_start_meeting_summary: false,
-          auto_start_ai_companion_questions: false,
-        },
-        start_time: "2024-05-19T09:00:00Z",
-        timezone: "Africa/Cairo",
-        topic: "My Meeting",
-        type: 2,
-      }),
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      }
-    );
+          start_time: start,
+          timezone: "Africa/Cairo",
+          topic: "Private English Lesson",
+          type: 2,
+        }),
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        }
+      );
 
-    console.log({ data });
-  });
+      return {
+        id: data.id,
+        host: { email: data.host_email, id: data.host_id },
+        invitees: map(data.settings.meeting_invitees, "email"),
+        status: data.status,
+        agenda: data.agenda,
+        createdAt: data.created_at,
+        startTime: data.start_time,
+        timezone: data.timezone,
+        joinUrl: data.join_url,
+        passwords: {
+          password: data.password,
+          encrypted: data.encrypted_password,
+          pstn: data.pstn_password,
+          h323: data.h323_password,
+        },
+      };
+    }
+  );
 }
 
 async function getUserInfo() {
@@ -114,7 +137,7 @@ async function cancelZoomMeeting(id: number): Promise<void> {
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meeting
 async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
   return await withAuthorization(2, async (client) => {
-    const { data } = await client.get<ZoomMeeting.ApiResponse>(
+    const { data } = await client.get<ZoomMeeting.GetMeeingApiResponse>(
       `/meetings/${id}`
     );
 
@@ -154,7 +177,9 @@ export namespace ZoomMeeting {
     Started = "started",
   }
 
-  export type ApiResponse = {
+  export type CreateMeetingApiResponse = Omit<GetMeeingApiResponse, "uuid">;
+
+  export type GetMeeingApiResponse = {
     assistant_id: string;
     host_email: string;
     host_id: string;
@@ -164,6 +189,7 @@ export namespace ZoomMeeting {
     created_at: string;
     duration: number;
     encrypted_password: string;
+    password: string;
     pstn_password: string;
     h323_password: string;
     join_url: string;
@@ -172,9 +198,8 @@ export namespace ZoomMeeting {
       duration: number;
       occurrence_id: string;
       start_time: string;
-      status: "available" | "deleted ";
+      status: "available" | "deleted";
     };
-    password: string;
     pmi: string;
     pre_schedule: boolean;
     start_time: string;

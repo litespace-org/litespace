@@ -12,7 +12,7 @@ export class Lessons {
                 slot_id,
                 zoom_meeting_id,
                 start,
-                end,
+                duration,
                 meeting_url,
                 created_at,
                 updated_at
@@ -20,12 +20,12 @@ export class Lessons {
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
       `,
       [
-        lesson.tutuorId,
+        lesson.tutorId,
         lesson.studentId,
         lesson.slotId,
         lesson.zoomMeetingId,
         lesson.start,
-        lesson.end,
+        lesson.duration,
         lesson.meetingUrl,
         lesson.createdAt,
         lesson.updatedAt,
@@ -45,7 +45,7 @@ export class Lessons {
             "slot_id",
             "zoom_meeting_id",
             "start",
-            "end",
+            "duration",
             "meeting_url",
             "created_at",
             "updated_at"
@@ -71,7 +71,7 @@ export class Lessons {
             "slot_id",
             "zoom_meeting_id",
             "start",
-            "end",
+            "duration",
             "meeting_url",
             "created_at",
             "updated_at"
@@ -95,7 +95,7 @@ export class Lessons {
             "slot_id",
             "zoom_meeting_id",
             "start",
-            "end",
+            "duration",
             "meeting_url",
             "created_at",
             "updated_at"
@@ -112,12 +112,12 @@ export class Lessons {
   as(row: Lesson.Row): Lesson.Self {
     return {
       id: row.id,
-      tutuorId: row.tutor_id,
+      tutorId: row.tutor_id,
       studentId: row.student_id,
       slotId: row.slot_id,
       zoomMeetingId: row.zoom_meeting_id,
       start: row.start,
-      end: row.end,
+      duration: row.duration,
       meetingUrl: row.meeting_url,
       createdAt: row.created_at,
       updatedAt: row.updated_at,
@@ -133,7 +133,7 @@ export namespace Lesson {
     slot_id: number;
     zoom_meeting_id: number;
     start: string;
-    end: string;
+    duration: number;
     meeting_url: string;
     created_at: string;
     updated_at: string;
@@ -141,12 +141,12 @@ export namespace Lesson {
 
   export type Self = {
     id: number;
-    tutuorId: number;
+    tutorId: number;
     studentId: number;
     slotId: number;
     zoomMeetingId: number;
     start: string;
-    end: string;
+    duration: number;
     meetingUrl: string;
     createdAt: string;
     updatedAt: string;

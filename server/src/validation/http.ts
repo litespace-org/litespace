@@ -116,10 +116,23 @@ const zoom = {
   },
 };
 
+const lessons = {
+  create: {
+    body: zod.object({
+      tutorId: zod.coerce.number().positive(),
+      studentId: zod.coerce.number().positive(),
+      slotId: zod.coerce.number().positive(),
+      start: zod.coerce.string().date(),
+      duration: zod.coerce.number().positive(),
+    }),
+  },
+};
+
 export default {
   user,
   auth,
   slot,
   tutor,
   zoom,
+  lessons,
 };
