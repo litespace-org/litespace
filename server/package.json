@@ -7,7 +7,8 @@
     "start": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc",
-    "migrate": "env-cmd node-pg-migrate"
+    "migrate": "env-cmd node-pg-migrate",
+    "reg:admins": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/admins.js"
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.6",

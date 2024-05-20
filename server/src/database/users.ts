@@ -6,11 +6,11 @@ export class Users {
     const { rows } = await query<
       { id: number },
       [
-        User.Self["email"],
-        User.Self["password"],
-        User.Self["name"],
-        User.Self["avatar"],
-        User.Self["type"]
+        email: string,
+        password: string,
+        name: string,
+        avatar: string | null,
+        type: User.Type
       ]
     >(
       "INSERT INTO users (email, password, name, avatar, type) values ($1, $2, $3, $4, $5) RETURNING id;",
