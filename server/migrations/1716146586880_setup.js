@@ -44,4 +44,10 @@ exports.up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-exports.down = (pgm) => {};
+exports.down = (pgm) => {
+  pgm.dropIndex("tutors", "id", { ifExists: true });
+  pgm.dropIndex("users", "id", { ifExists: true });
+  pgm.dropTable("tutors", { ifExists: true });
+  pgm.dropTable("users", { ifExists: true });
+  pgm.dropType("user_type", { ifExists: true });
+};
