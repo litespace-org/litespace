@@ -20,7 +20,7 @@ export class Slots {
                 created_at,
                 updated_at
             )
-        VALUES ( $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11);
       `,
       [
         slot.tutorId,
@@ -165,7 +165,7 @@ export namespace Slot {
     description: string;
     weekday: number;
     time: { start: string; end: string };
-    date: { start: string; end: string };
+    date: { start: string; end?: string };
     repeat: Repeat;
     createdAt: string;
     updatedAt: string;

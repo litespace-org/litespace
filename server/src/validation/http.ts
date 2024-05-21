@@ -68,7 +68,7 @@ const slot = {
     description: zod.string().trim(),
     weekday: weekday,
     time: zod.object({ start: time, end: time }),
-    date: zod.object({ start: date, end: date }),
+    date: zod.object({ start: date, end: zod.optional(date) }),
     repeat,
   }),
   update: zod.object({
@@ -120,9 +120,8 @@ const lessons = {
   create: {
     body: zod.object({
       tutorId: zod.coerce.number().positive(),
-      studentId: zod.coerce.number().positive(),
       slotId: zod.coerce.number().positive(),
-      start: zod.coerce.string().date(),
+      start: zod.coerce.string().datetime(),
       duration: zod.coerce.number().positive(),
     }),
   },

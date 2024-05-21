@@ -2,8 +2,21 @@ import { query } from "@/database/query";
 import { first } from "lodash";
 
 export class Lessons {
-  async create(lesson: Omit<Lesson.Self, "id">): Promise<void> {
-    await query(
+  async create(lesson: Omit<Lesson.Self, "id">): Promise<number> {
+    const { rows } = await query<
+      { id: number },
+      [
+        tutorId: number,
+        studentId: number,
+        slotId: number,
+        zoomMeetingId: number,
+        start: string,
+        duration: number,
+        meatingUrl: string,
+        createdAt: string,
+        updatedAt: string
+      ]
+    >(
       `
         INSERT INTO
             "lessons" (
@@ -17,7 +30,7 @@ export class Lessons {
                 created_at,
                 updated_at
             )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9);
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;
       `,
       [
         lesson.tutorId,
@@ -31,10 +44,16 @@ export class Lessons {
         lesson.updatedAt,
       ]
     );
+
+    const row = first(rows);
+    if (!row) throw new Error("Lesson not found, should never happen");
+    return row.id;
   }
+
   async delete(id: number): Promise<void> {
     await query(` DELETE FROM slots WHERE id = $1;`, [id]);
   }
+
   async findById(id: number): Promise<Lesson.Self | null> {
     const { rows } = await query<Lesson.Row, [number]>(
       `
@@ -104,6 +123,27 @@ export class Lessons {
                 student_id = $1;
       `,
       [studentId]
+    );
+
+    return rows.map((row) => this.as(row));
+  }
+
+  async findAll(): Promise<Lesson.Self[]> {
+    const { rows } = await query<Lesson.Row, []>(
+      `
+        SELECT
+            "id",
+            "tutor_id",
+            "student_id",
+            "slot_id",
+            "zoom_meeting_id",
+            "start",
+            "duration",
+            "meeting_url",
+            "created_at",
+            "updated_at"
+        FROM "lessons";
+      `
     );
 
     return rows.map((row) => this.as(row));

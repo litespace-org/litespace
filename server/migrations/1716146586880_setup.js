@@ -54,7 +54,7 @@ exports.up = (pgm) => {
     end_time: { type: "time", notNull: true },
     start_date: { type: "date", notNull: true },
     end_date: { type: "date", default: null },
-    repeat_type: { type: "repeat_type", notNull: true, default: "no_repeat" },
+    repeat: { type: "repeat_type", notNull: true, default: "no_repeat" },
     created_at: { type: "timestamp", notNull: true },
     updated_at: { type: "timestamp", notNull: true },
   });

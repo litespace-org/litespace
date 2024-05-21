@@ -64,4 +64,5 @@ export const studentOrAdmin = auth([
   User.Type.SuperAdmin,
   User.Type.RegularAdmin,
 ]);
+export const studentOnly = auth([User.Type.Student]);
 export default auth;
