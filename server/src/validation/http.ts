@@ -125,6 +125,8 @@ const lessons = {
       duration: zod.coerce.number().positive(),
     }),
   },
+  get: { query: zod.object({ id }) },
+  delete: { query: zod.object({ id }) },
 };
 
 export default {

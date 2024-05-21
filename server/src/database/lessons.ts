@@ -51,7 +51,7 @@ export class Lessons {
   }
 
   async delete(id: number): Promise<void> {
-    await query(` DELETE FROM slots WHERE id = $1;`, [id]);
+    await query(` DELETE FROM lessons WHERE id = $1;`, [id]);
   }
 
   async findById(id: number): Promise<Lesson.Self | null> {
@@ -104,7 +104,7 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
-  async findByStudentId(studentId: number) {
+  async findByStudentId(studentId: number): Promise<Lesson.Self[]> {
     const { rows } = await query<Lesson.Row, [number]>(
       `
         SELECT

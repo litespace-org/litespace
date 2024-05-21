@@ -1,7 +1,7 @@
-import { User, complex, lessons, tutors } from "@/database";
+import { Lesson, User, complex, lessons, tutors } from "@/database";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
-import ResponseError, { NotFound } from "@/lib/error";
+import ResponseError, { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -46,9 +46,26 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).json({ id });
 }
 
-async function delete_() {}
+async function delete_(
+  req: Request.Default,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = schema.http.lessons.get.query.parse(req.query);
 
-async function getLessons(user: User.Self) {
+  const lesson = await lessons.findById(id);
+  if (!lesson) return next(new NotFound());
+
+  const userId = req.user.id;
+  const owner = userId === lesson.studentId || userId === lesson.tutorId;
+  const eligible = owner || isAdmin(req.user.type);
+  if (!eligible) return next(new Forbidden());
+
+  await lessons.delete(id);
+  res.status(200).send();
+}
+
+async function getLessons(user: User.Self): Promise<Lesson.Self[]> {
   const id = user.id;
   const type = user.type;
   const studnet = type === User.Type.Student;
@@ -68,8 +85,16 @@ async function getMany(
   res.status(200).json(lessons);
 }
 
+async function getOne(req: Request.Default, res: Response, next: NextFunction) {
+  const { id } = schema.http.lessons.get.query.parse(req.query);
+  const lesson = await lessons.findById(id);
+  if (!lesson) return next(new NotFound());
+  res.status(200).json(lesson);
+}
+
 export default {
   create: asyncHandler(create),
   delete: asyncHandler(delete_),
+  get: asyncHandler(getOne),
   list: asyncHandler(getMany),
 };
