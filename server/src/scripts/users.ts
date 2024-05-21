@@ -1,12 +1,16 @@
 import { User, tutors, users } from "@/database";
 
 async function main(): Promise<void> {
+  const now = new Date().toISOString();
+
   await users.create({
     email: "admin@litespace.com",
     password: "LiteSpace1###",
     name: "Root Admin",
     avatar: null,
     type: User.Type.SuperAdmin,
+    createdAt: now,
+    updatedAt: now,
   });
 
   const id = await users.create({
@@ -15,9 +19,9 @@ async function main(): Promise<void> {
     name: "My Teacher",
     avatar: null,
     type: User.Type.Tutor,
+    createdAt: now,
+    updatedAt: now,
   });
-
-  const now = new Date().toISOString();
 
   await tutors.create({
     id,
@@ -34,6 +38,8 @@ async function main(): Promise<void> {
     name: "A Student",
     avatar: null,
     type: User.Type.Student,
+    createdAt: now,
+    updatedAt: now,
   });
 }
 

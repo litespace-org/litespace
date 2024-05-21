@@ -1,6 +1,6 @@
 import { User } from "@/database";
 import handlers from "@/handlers";
-import { tutorOnly, tutorOrAdmin } from "@/middleware/auth";
+import { studentOrAdmin, tutorOnly, tutorOrAdmin } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
@@ -13,5 +13,11 @@ router
   .delete(tutorOnly, handlers.slot.delete);
 
 router.get("/list", tutorOrAdmin, handlers.slot.list);
+
+router.get(
+  "/list/discrete",
+  studentOrAdmin,
+  handlers.slot.getDiscreteTimeSlots
+);
 
 export default router;

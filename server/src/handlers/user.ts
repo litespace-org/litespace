@@ -13,8 +13,14 @@ async function create(
   res: Response
 ) {
   const body = schema.http.user.create.parse(req.body);
-  await users.create({ ...body, type: User.Type.Student });
-  res.status(200).send();
+  const now = new Date().toISOString();
+  const id = await users.create({
+    ...body,
+    type: User.Type.Student,
+    createdAt: now,
+    updatedAt: now,
+  });
+  res.status(200).json({ id });
 }
 
 async function update(

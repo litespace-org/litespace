@@ -4,6 +4,7 @@ import { Tutor } from "@/database/tutors";
 import { first } from "lodash";
 
 export class Complex {
+  // todo: handle dates and types
   async getTutors(): Promise<Complex.Tutor[]> {
     const { rows } = await query<Complex.Tutor, []>(`
         SELECT *

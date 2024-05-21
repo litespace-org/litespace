@@ -25,6 +25,8 @@ exports.up = (pgm) => {
     name: { type: "varchar(100)", notNull: true },
     avatar: { type: "varchar(255)", default: null },
     type: { type: "user_type", notNull: true },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
   });
 
   pgm.createTable("tutors", {
@@ -39,9 +41,9 @@ exports.up = (pgm) => {
     video: { type: "varchar(255)", default: null },
     authorized_zoom_app: { type: "boolean", notNull: true, default: false },
     zoom_refresh_token: { type: "varchar(1000)", default: null },
-    aquired_refresh_token_at: { type: "timestamp", default: null },
-    created_at: { type: "timestamp", notNull: true },
-    updated_at: { type: "timestamp", notNull: true },
+    aquired_refresh_token_at: { type: "timestamptz", default: null },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
   });
 
   pgm.createTable("slots", {
@@ -55,8 +57,8 @@ exports.up = (pgm) => {
     start_date: { type: "date", notNull: true },
     end_date: { type: "date", default: null },
     repeat: { type: "repeat_type", notNull: true, default: "no_repeat" },
-    created_at: { type: "timestamp", notNull: true },
-    updated_at: { type: "timestamp", notNull: true },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
   });
 
   pgm.createTable("lessons", {
@@ -65,11 +67,11 @@ exports.up = (pgm) => {
     student_id: { type: "serial", notNull: true, references: "users(id)" },
     slot_id: { type: "serial", notNull: true, references: "slots(id)" },
     zoom_meeting_id: { type: "bigint", notNull: true, unique: true },
-    start: { type: "timestamp", notNull: true },
+    start: { type: "timestamptz", notNull: true },
     duration: { type: "smallint", notNull: true },
     meeting_url: { type: "varchar(255)", notNull: true },
-    created_at: { type: "timestamp", notNull: true },
-    updated_at: { type: "timestamp", notNull: true },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
   });
 
   pgm.createIndex("lessons", "id");

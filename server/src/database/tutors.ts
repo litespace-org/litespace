@@ -4,13 +4,27 @@ import { first } from "lodash";
 
 export class Tutors {
   async create(
-    tutor: Omit<Tutor.Self, "zoomRefreshToken" | "authorizedZoomApp">
-  ): Promise<void> {
-    await query(
+    tutor: Omit<
+      Tutor.Self,
+      "zoomRefreshToken" | "authorizedZoomApp" | "aquiredRefreshTokenAt"
+    >
+  ): Promise<number> {
+    const { rows } = await query<
+      { id: number },
+      [
+        id: number,
+        bio: string | null,
+        about: string | null,
+        video: string | null,
+        createdAt: string,
+        updatedAt: string
+      ]
+    >(
       `
         INSERT INTO
             tutors (id, bio, about, video, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6);
+        VALUES ($1, $2, $3, $4, $5, $6)
+        RETURNING id;
       `,
       [
         tutor.id,
@@ -21,6 +35,10 @@ export class Tutors {
         tutor.updatedAt,
       ]
     );
+
+    const row = first(rows);
+    if (!row) throw new Error("Tutor not found, should never happen");
+    return row.id;
   }
 
   async update(
@@ -46,7 +64,7 @@ export class Tutors {
   }
 
   async findById(id: number): Promise<Tutor.Shareable | null> {
-    const { rows } = await query<Tutor.Shareable, [number]>(
+    const { rows } = await query<Tutor.Row, [number]>(
       `
         SELECT
             id,
@@ -54,6 +72,7 @@ export class Tutors {
             about,
             video,
             authorized_zoom_app,
+            aquired_refresh_token_at,
             created_at,
             updated_at
         FROM tutors
@@ -64,17 +83,21 @@ export class Tutors {
       [id]
     );
 
-    return first(rows) || null;
+    const row = first(rows);
+    if (!row) return null;
+    return this.asSherable(row);
   }
 
-  async findMany(ids: number[]) {
-    const { rows } = await query<Tutor.Self, [number[]]>(
+  async findMany(ids: number[]): Promise<Tutor.Shareable[]> {
+    const { rows } = await query<Tutor.Row, [number[]]>(
       `
         SELECT
             id,
             bio
             about
             video
+            authorized_zoom_app,
+            aquired_refresh_token_at,
             created_at,
             updated_at
         FROM tutors
@@ -84,7 +107,7 @@ export class Tutors {
       [ids]
     );
 
-    return rows;
+    return rows.map((row) => this.asSherable(row));
   }
 
   async findTutorZoomRefreshToken(id: number): Promise<string | null> {
@@ -134,6 +157,20 @@ export class Tutors {
       [token, date, id]
     );
   }
+
+  asSherable(row: Tutor.Row): Tutor.Shareable {
+    return {
+      id: row.id,
+      bio: row.bio,
+      about: row.about,
+      video: row.video,
+      aquiredRefreshTokenAt:
+        row.aquired_refresh_token_at?.toISOString() || null,
+      authorizedZoomApp: row.authorized_zoom_app,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    };
+  }
 }
 
 export namespace Tutor {
@@ -143,6 +180,7 @@ export namespace Tutor {
     about: string | null;
     video: string | null;
     zoomRefreshToken: string | null;
+    aquiredRefreshTokenAt: string | null;
     authorizedZoomApp: boolean;
     createdAt: string;
     updatedAt: string;
@@ -153,10 +191,11 @@ export namespace Tutor {
     bio: string | null;
     about: string | null;
     video: string | null;
-    authorized_zoom_app: string | null;
+    authorized_zoom_app: boolean;
     zoom_refresh_token: boolean;
-    created_at: string;
-    updated_at: string;
+    aquired_refresh_token_at: Date | null;
+    created_at: Date;
+    updated_at: Date;
   };
 
   export type Shareable = Omit<Self, "zoomRefreshToken">;

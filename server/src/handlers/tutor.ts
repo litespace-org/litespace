@@ -9,13 +9,14 @@ import { map, merge, omit } from "lodash";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
+  const now = new Date().toISOString();
 
   const id = await users.create({
     ...body,
     type: User.Type.Tutor,
+    createdAt: now,
+    updatedAt: now,
   });
-
-  const now = new Date().toUTCString();
 
   await tutors.create({
     id,
@@ -26,7 +27,7 @@ async function create(req: Request.Default, res: Response) {
     updatedAt: now,
   });
 
-  res.status(200).send();
+  res.status(200).json({ id });
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {

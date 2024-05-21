@@ -144,8 +144,8 @@ export class Slots {
       time: { start: slot.start_time, end: slot.end_time },
       date: { start: slot.start_date, end: slot.end_date },
       repeat: slot.repeat,
-      createdAt: slot.created_at,
-      updatedAt: slot.updated_at,
+      createdAt: slot.created_at.toISOString(),
+      updatedAt: slot.updated_at.toISOString(),
     };
   }
 }
@@ -182,7 +182,7 @@ export namespace Slot {
     start_date: string;
     end_date: string;
     repeat: Repeat;
-    created_at: string;
-    updated_at: string;
+    created_at: Date;
+    updated_at: Date;
   };
 }

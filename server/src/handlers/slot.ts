@@ -1,4 +1,4 @@
-import { slots } from "@/database";
+import { lessons, slots } from "@/database";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
@@ -8,13 +8,13 @@ import asyncHandler from "express-async-handler";
 
 async function create(req: Request.Default, res: Response) {
   const slot = schema.http.slot.create.parse(req.body);
-  const now = new Date();
+  const now = new Date().toISOString();
 
   await slots.create({
     ...slot,
     tutorId: req.user.id,
-    createdAt: now.toUTCString(),
-    updatedAt: now.toUTCString(),
+    createdAt: now,
+    updatedAt: now,
   });
 
   res.status(200).send();
@@ -65,10 +65,22 @@ async function delete_(
   res.status(200).send();
 }
 
+async function getDiscreteTimeSlots(req: Request.Default, res: Response) {
+  const { tutorId } = schema.http.slot.getDiscreteTimeSlots.query.parse(
+    req.query
+  );
+
+  const slotsList = await slots.findByTutor(tutorId);
+  const lessonsList = await lessons.findByTutuorId(tutorId);
+
+  res.status(200).json({ slotsList, lessonsList });
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
   get: asyncHandler(getOne),
   list: asyncHandler(getMany),
   delete: asyncHandler(delete_),
+  getDiscreteTimeSlots: asyncHandler(getDiscreteTimeSlots),
 };

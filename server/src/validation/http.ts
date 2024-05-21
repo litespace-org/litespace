@@ -85,6 +85,7 @@ const slot = {
   }),
   get: { query: zod.object({ id }) },
   delete: { query: zod.object({ id }) },
+  getDiscreteTimeSlots: { query: zod.object({ tutorId: id }) },
 } as const;
 
 const tutor = {
@@ -108,11 +109,7 @@ const tutor = {
 
 const zoom = {
   setRefreshToken: {
-    body: zod.object({
-      code: zod.string({
-        message: "Invalid zoom code",
-      }),
-    }),
+    body: zod.object({ code: zod.string({ message: "Invalid zoom code" }) }),
   },
 };
 

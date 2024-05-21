@@ -23,12 +23,12 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   if (req.user.type !== User.Type.Student)
     return next(new ResponseError("Only students can register lessons", 401));
 
-  const meetting = await createZoomMeeting({
-    tutorId,
-    tutorEmail: tutor.email,
-    start,
-    duration,
-  });
+  // const meetting = await createZoomMeeting({
+  //   tutorId,
+  //   tutorEmail: tutor.email,
+  //   start,
+  //   duration,
+  // });
 
   const now = new Date().toISOString();
   const id = await lessons.create({
@@ -37,8 +37,10 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     slotId,
     start,
     duration,
-    meetingUrl: meetting.joinUrl,
-    zoomMeetingId: meetting.id,
+    // meetingUrl: meetting.joinUrl,
+    // zoomMeetingId: meetting.id,
+    meetingUrl: "some url",
+    zoomMeetingId: 0,
     createdAt: now,
     updatedAt: now,
   });
@@ -60,6 +62,8 @@ async function delete_(
   const owner = userId === lesson.studentId || userId === lesson.tutorId;
   const eligible = owner || isAdmin(req.user.type);
   if (!eligible) return next(new Forbidden());
+
+  // todo: delete zoom meeting
 
   await lessons.delete(id);
   res.status(200).send();

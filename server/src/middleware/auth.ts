@@ -60,7 +60,7 @@ export const tutorOrAdmin = auth([
   User.Type.RegularAdmin,
 ]);
 export const studentOrAdmin = auth([
-  User.Type.Tutor,
+  User.Type.Student,
   User.Type.SuperAdmin,
   User.Type.RegularAdmin,
 ]);

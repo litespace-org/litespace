@@ -156,11 +156,11 @@ export class Lessons {
       studentId: row.student_id,
       slotId: row.slot_id,
       zoomMeetingId: row.zoom_meeting_id,
-      start: row.start,
+      start: row.start.toISOString(),
       duration: row.duration,
       meetingUrl: row.meeting_url,
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
     };
   }
 }
@@ -172,11 +172,11 @@ export namespace Lesson {
     student_id: number;
     slot_id: number;
     zoom_meeting_id: number;
-    start: string;
+    start: Date;
     duration: number;
     meeting_url: string;
-    created_at: string;
-    updated_at: string;
+    created_at: Date;
+    updated_at: Date;
   };
 
   export type Self = {
