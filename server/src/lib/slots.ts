@@ -41,7 +41,7 @@ function isSelectableWeeklySlot(slot: Slot.Self, date: Dayjs) {
   return between && date.day() === slot.weekday;
 }
 
-function selectSlots(slots: Slot.Self[], date: Dayjs) {
+function selectSlots(slots: Slot.Self[], date: Dayjs): Slot.Self[] {
   return slots.filter((slot) => {
     // Handle specific slots (no repeat)
     const noRepeat = slot.repeat === Slot.Repeat.NoRepeat;
@@ -59,7 +59,11 @@ function selectSlots(slots: Slot.Self[], date: Dayjs) {
   });
 }
 
-function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
+export function isAvailableSlot(slot: Slot.Self, date: Dayjs): boolean {
+  return !isEmpty(selectSlots([slot], date));
+}
+
+export function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
   const start = asTimeValues(slot.time.start);
   const end = asTimeValues(slot.time.end);
   const exactStartTime = setDayTime(date, start);
@@ -101,7 +105,7 @@ function sortSlotLessons(lessons: Lesson.Self[]): Lesson.Self[] {
   });
 }
 
-function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
+export function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
   const sorted = sortSlotLessons(lessons);
   let masked: Slot.Discrete[] = [];
   let prevSlot = slot;
@@ -128,10 +132,7 @@ function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
     );
 
     const emptyFirstSlot = firstSlotStart.isSame(firstSlotEnd);
-    // const emptySecondSlot = secondSlotStart.isSame(secondSlotEnd);
-
     if (!emptyFirstSlot) masked.push(firstSlot);
-    // if (!emptySecondSlot) masked.push(secondSlot);
 
     prevSlot = secondSlot;
   }
@@ -141,7 +142,14 @@ function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
   return masked;
 }
 
-export function setDayTime(date: Dayjs, time: Time): Dayjs {
+export function setDayTime(
+  date: Dayjs,
+  time: Time = {
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
+  }
+): Dayjs {
   return date
     .set("hours", time.hours)
     .set("minutes", time.minutes)
@@ -153,7 +161,7 @@ export function unpackSlots(
   slots: Slot.Self[],
   lessons: Lesson.Self[]
 ): Array<{ day: string; slots: Slot.Discrete[] }> {
-  const today = setDayTime(dayjs().utc(), { hours: 0, minutes: 0, seconds: 0 });
+  const today = setDayTime(dayjs().utc());
   const availableSlots: Array<{ day: string; slots: Slot.Discrete[] }> = [];
 
   for (let dayIndex = 0; dayIndex < 14; dayIndex++) {

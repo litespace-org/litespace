@@ -1,15 +1,17 @@
-import { Lesson, User, complex, lessons, tutors } from "@/database";
+import { Lesson, User, complex, lessons, slots, tutors } from "@/database";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import ResponseError, { Forbidden, NotFound } from "@/lib/error";
+import { hasEnoughTime } from "@/lib/lessons";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
-  const { tutorId, slotId, start, duration } =
-    schema.http.lessons.create.body.parse(req.body);
+  const { slotId, start, duration } = schema.http.lessons.create.body.parse(
+    req.body
+  );
   // validation
   // - validate empty slot
   // - validate start and duration
@@ -17,11 +19,27 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   // - update user remaining minutes
   // - no lessons at this time.
 
-  const tutor = await complex.getTutorById(tutorId);
-  if (!tutor) return next(new NotFound());
-
   if (req.user.type !== User.Type.Student)
     return next(new ResponseError("Only students can register lessons", 401));
+
+  const slot = await slots.findById(slotId);
+  if (!slot) return next(new NotFound("Slot"));
+
+  const tutor = await complex.getTutorById(slot.tutorId);
+  if (!tutor) return next(new NotFound("Tutor"));
+
+  const bookedLessons = await lessons.findBySlotId(slotId);
+
+  const enough = hasEnoughTime({
+    lesson: { start, duration },
+    lessons: bookedLessons,
+    slot,
+  });
+
+  if (!enough)
+    return next(
+      new ResponseError("Tutor doesn't have the time for this lesson", 400)
+    );
 
   // const meetting = await createZoomMeeting({
   //   tutorId,

@@ -7,8 +7,8 @@ export default class ResponseError extends Error {
 }
 
 export class NotFound extends ResponseError {
-  constructor() {
-    super("Not found", 404);
+  constructor(value?: string) {
+    super(value ? `${value} not found` : "Not found", 404);
   }
 }
 

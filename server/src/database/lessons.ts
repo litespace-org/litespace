@@ -128,6 +128,30 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
+  async findBySlotId(slotId: number): Promise<Lesson.Self[]> {
+    const { rows } = await query<Lesson.Row, [number]>(
+      `
+        SELECT
+            "id",
+            "tutor_id",
+            "student_id",
+            "slot_id",
+            "zoom_meeting_id",
+            "start",
+            "duration",
+            "meeting_url",
+            "created_at",
+            "updated_at"
+        FROM "lessons"
+        WHERE
+                slot_id = $1;
+      `,
+      [slotId]
+    );
+
+    return rows.map((row) => this.as(row));
+  }
+
   async findAll(): Promise<Lesson.Self[]> {
     const { rows } = await query<Lesson.Row, []>(
       `

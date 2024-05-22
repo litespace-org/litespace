@@ -116,7 +116,6 @@ const zoom = {
 const lessons = {
   create: {
     body: zod.object({
-      tutorId: zod.coerce.number().positive(),
       slotId: zod.coerce.number().positive(),
       start: zod.coerce.string().datetime(),
       duration: zod.coerce.number().positive(),
