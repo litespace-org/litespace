@@ -142,7 +142,7 @@ export class Slots {
       description: slot.description,
       weekday: slot.weekday,
       time: { start: slot.start_time, end: slot.end_time },
-      date: { start: slot.start_date, end: slot.end_date },
+      date: { start: slot.start_date, end: slot.end_date || undefined },
       repeat: slot.repeat,
       createdAt: slot.created_at.toISOString(),
       updatedAt: slot.updated_at.toISOString(),
@@ -180,7 +180,7 @@ export namespace Slot {
     start_time: string;
     end_time: string;
     start_date: string;
-    end_date: string;
+    end_date: string | null;
     repeat: Repeat;
     created_at: Date;
     updated_at: Date;

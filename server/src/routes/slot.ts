@@ -16,7 +16,7 @@ router.get("/list", tutorOrAdmin, handlers.slot.list);
 
 router.get(
   "/list/discrete",
-  studentOrAdmin,
+  // studentOrAdmin,
   handlers.slot.getDiscreteTimeSlots
 );
 

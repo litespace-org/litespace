@@ -5,10 +5,12 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
+import dayjs from "@/lib/dayjs";
+import { asTimeValues, setDayTime, unpackSlots } from "@/lib/slots";
 
 async function create(req: Request.Default, res: Response) {
   const slot = schema.http.slot.create.parse(req.body);
-  const now = new Date().toISOString();
+  const now = dayjs().toISOString();
 
   await slots.create({
     ...slot,
@@ -71,6 +73,26 @@ async function getDiscreteTimeSlots(req: Request.Default, res: Response) {
   );
 
   const slotsList = await slots.findByTutor(tutorId);
+
+  // unpack slots to represent tutor schedule in the next two weeks
+  // todo: move extend dayjs to a shared file
+  unpackSlots(slotsList);
+  // const today = setDayTime(dayjs().utc(), { hours: 0, minutes: 0, seconds: 0 });
+
+  // for (let dayIndex = 0; dayIndex < 14; dayIndex++) {
+  //   const slot = slotsList[0];
+  //   const start = asTimeValues(slot.time.start);
+  //   const end = asTimeValues(slot.time.end);
+  //   const day = today.add(dayIndex, "day");
+  //   const exactStartTime = setDayTime(day, start);
+  //   const exactEndTime = setDayTime(day, end);
+
+  //   console.log({
+  //     start: exactStartTime.toISOString(),
+  //     end: exactEndTime.toISOString(),
+  //   });
+  // }
+
   const lessonsList = await lessons.findByTutuorId(tutorId);
 
   res.status(200).json({ slotsList, lessonsList });
