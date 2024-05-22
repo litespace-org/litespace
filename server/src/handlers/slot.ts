@@ -74,27 +74,8 @@ async function getDiscreteTimeSlots(req: Request.Default, res: Response) {
 
   const slotsList = await slots.findByTutor(tutorId);
   const lessonsList = await lessons.findByTutuorId(tutorId);
-
-  // unpack slots to represent tutor schedule in the next two weeks
-  // todo: move extend dayjs to a shared file
-  unpackSlots(slotsList, lessonsList);
-  // const today = setDayTime(dayjs().utc(), { hours: 0, minutes: 0, seconds: 0 });
-
-  // for (let dayIndex = 0; dayIndex < 14; dayIndex++) {
-  //   const slot = slotsList[0];
-  //   const start = asTimeValues(slot.time.start);
-  //   const end = asTimeValues(slot.time.end);
-  //   const day = today.add(dayIndex, "day");
-  //   const exactStartTime = setDayTime(day, start);
-  //   const exactEndTime = setDayTime(day, end);
-
-  //   console.log({
-  //     start: exactStartTime.toISOString(),
-  //     end: exactEndTime.toISOString(),
-  //   });
-  // }
-
-  res.status(200).json({ slotsList, lessonsList });
+  const unpacked = unpackSlots(slotsList, lessonsList);
+  res.status(200).json(unpacked);
 }
 
 export default {

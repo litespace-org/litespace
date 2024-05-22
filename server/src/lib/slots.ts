@@ -77,6 +77,18 @@ function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
   };
 }
 
+function asMaskedDiscrateSlot(
+  slot: Slot.Discrete,
+  start: Dayjs,
+  end: Dayjs
+): Slot.Discrete {
+  return {
+    ...slot,
+    start: start.toISOString(),
+    end: end.toISOString(),
+  };
+}
+
 function sortSlotLessons(lessons: Lesson.Self[]): Lesson.Self[] {
   return cloneDeep(lessons).sort((current: Lesson.Self, next: Lesson.Self) => {
     if (dayjs(current.start).isSame(next.start))
@@ -91,8 +103,8 @@ function sortSlotLessons(lessons: Lesson.Self[]): Lesson.Self[] {
 
 function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
   const sorted = sortSlotLessons(lessons);
-  const masked: Slot.Discrete[] = [];
-  const prevSlot = slot;
+  let masked: Slot.Discrete[] = [];
+  let prevSlot = slot;
 
   for (const lesson of sorted) {
     //  [ first slot  [ lesson ]  second slot    ]
@@ -102,9 +114,31 @@ function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
 
     const secondSlotStart = dayjs(lesson.start).add(lesson.duration, "minutes");
     const secondSlotEnd = dayjs(prevSlot.end);
+
+    const firstSlot = asMaskedDiscrateSlot(
+      prevSlot,
+      firstSlotStart,
+      firstSlotEnd
+    );
+
+    const secondSlot = asMaskedDiscrateSlot(
+      prevSlot,
+      secondSlotStart,
+      secondSlotEnd
+    );
+
+    const emptyFirstSlot = firstSlotStart.isSame(firstSlotEnd);
+    // const emptySecondSlot = secondSlotStart.isSame(secondSlotEnd);
+
+    if (!emptyFirstSlot) masked.push(firstSlot);
+    // if (!emptySecondSlot) masked.push(secondSlot);
+
+    prevSlot = secondSlot;
   }
 
-  if (isEmpty(masked)) return [slot];
+  const emptyPrevSlot = dayjs(prevSlot.start).isSame(prevSlot.end);
+  if (!emptyPrevSlot) masked.push(prevSlot);
+  return masked;
 }
 
 export function setDayTime(date: Dayjs, time: Time): Dayjs {
@@ -115,19 +149,30 @@ export function setDayTime(date: Dayjs, time: Time): Dayjs {
     .set("milliseconds", 0);
 }
 
-export function unpackSlots(slots: Slot.Self[], lessons: Lesson.Self[]) {
+export function unpackSlots(
+  slots: Slot.Self[],
+  lessons: Lesson.Self[]
+): Array<{ day: string; slots: Slot.Discrete[] }> {
   const today = setDayTime(dayjs().utc(), { hours: 0, minutes: 0, seconds: 0 });
+  const availableSlots: Array<{ day: string; slots: Slot.Discrete[] }> = [];
 
   for (let dayIndex = 0; dayIndex < 14; dayIndex++) {
     const day = today.add(dayIndex, "day");
     const selected = selectSlots(slots, day);
 
+    const available: Slot.Discrete[] = [];
+
     for (const slot of selected) {
-      const start = asTimeValues(slot.time.start);
-      const end = asTimeValues(slot.time.end);
       const slotLessons = lessons.filter((lesson) => lesson.slotId === slot.id);
       const discreteSlot = asDiscrateSlot(slot, day);
-      console.log(discreteSlot);
+      available.push(...maskLessons(discreteSlot, slotLessons));
     }
+
+    availableSlots.push({
+      day: day.toISOString(),
+      slots: available,
+    });
   }
+
+  return availableSlots;
 }

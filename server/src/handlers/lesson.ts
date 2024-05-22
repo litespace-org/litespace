@@ -40,7 +40,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     // meetingUrl: meetting.joinUrl,
     // zoomMeetingId: meetting.id,
     meetingUrl: "some url",
-    zoomMeetingId: 0,
+    zoomMeetingId: Math.ceil(Math.random() * 1e10),
     createdAt: now,
     updatedAt: now,
   });
