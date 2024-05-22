@@ -154,8 +154,8 @@ export namespace Slot {
   export enum Repeat {
     NoRepeat = "no_repeat",
     Daily = "daily",
-    EveryWeek = "every_week",
-    EveryMonth = "every_month",
+    EveryWeek = "every_week", // todo: change it to "weekly"
+    EveryMonth = "every_month", // todo: change it to "monthly"
   }
 
   export type Self = {
@@ -184,5 +184,16 @@ export namespace Slot {
     repeat: Repeat;
     created_at: Date;
     updated_at: Date;
+  };
+
+  export type Discrete = {
+    id: number;
+    tutorId: number;
+    title: string;
+    description: string;
+    start: string;
+    end: string;
+    createdAt: string;
+    updatedAt: string;
   };
 }
