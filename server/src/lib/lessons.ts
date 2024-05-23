@@ -25,8 +25,6 @@ export function hasEnoughTime({
   const start = dayjs(lesson.start);
   const end = dayjs(lesson.start).add(lesson.duration, "minutes");
 
-  console.log({ subslots });
-
   for (const subslot of subslots) {
     const outOfBoundaries =
       start.isBefore(subslot.start) || end.isAfter(subslot.end);

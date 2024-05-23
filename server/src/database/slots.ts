@@ -56,7 +56,7 @@ export class Slots {
                 start_date = COALESCE($7, start_date),
                 end_date = COALESCE($8, end_date),
                 updated_at = COALESCE($9, updated_at)
-            where
+            WHERE
                 id = $10;
         `,
       [
@@ -152,10 +152,10 @@ export class Slots {
 
 export namespace Slot {
   export enum Repeat {
-    NoRepeat = "no_repeat",
+    No = "no",
     Daily = "daily",
-    EveryWeek = "every_week", // todo: change it to "weekly"
-    EveryMonth = "every_month", // todo: change it to "monthly"
+    Weekly = "weekly",
+    Monthly = "monthly",
   }
 
   export type Self = {

@@ -9,15 +9,11 @@ exports.shorthands = undefined;
  * @returns {Promise<void> | void}
  */
 exports.up = (pgm) => {
+  // types
   pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
+  pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
 
-  pgm.createType("repeat_type", [
-    "no_repeat",
-    "daily",
-    "every_week",
-    "every_month",
-  ]);
-
+  // tables
   pgm.createTable("users", {
     id: { type: "serial", primaryKey: true, notNull: true },
     email: { type: "varchar(1000)", notNull: true, unique: true },
@@ -56,7 +52,7 @@ exports.up = (pgm) => {
     end_time: { type: "time", notNull: true },
     start_date: { type: "timestamptz", notNull: true },
     end_date: { type: "timestamptz", default: null },
-    repeat: { type: "repeat_type", notNull: true, default: "no_repeat" },
+    repeat: { type: "repeat_type", notNull: true, default: "no" },
     created_at: { type: "timestamptz", notNull: true },
     updated_at: { type: "timestamptz", notNull: true },
   });
@@ -74,10 +70,27 @@ exports.up = (pgm) => {
     updated_at: { type: "timestamptz", notNull: true },
   });
 
+  pgm.createTable("ratings", {
+    id: { type: "serial", primaryKey: true, unique: true, notNull: true },
+    tutor_id: { type: "serial", notNull: true, references: "users(id)" },
+    student_id: { type: "serial", notNull: true, references: "users(id)" },
+    value: { type: "smallint", notNull: true },
+    note: { type: "text" },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
+  });
+
+  // indexes
   pgm.createIndex("lessons", "id");
   pgm.createIndex("slots", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
+  pgm.createIndex("ratings", "id");
+
+  // constraints
+  pgm.createConstraint("ratings", "student-tutor", {
+    unique: [["student_id", "tutor_id"]],
+  });
 };
 
 /**
@@ -86,17 +99,23 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
+  // constraints
+  pgm.dropConstraint("ratings", "student-tutor", { ifExists: true });
+
   // indexes
+  pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
+
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });

@@ -44,7 +44,7 @@ function isSelectableWeeklySlot(slot: Slot.Self, date: Dayjs) {
 function selectSlots(slots: Slot.Self[], date: Dayjs): Slot.Self[] {
   return slots.filter((slot) => {
     // Handle specific slots (no repeat)
-    const noRepeat = slot.repeat === Slot.Repeat.NoRepeat;
+    const noRepeat = slot.repeat === Slot.Repeat.No;
     if (noRepeat) return dayjs(slot.date.start).isSame(date);
 
     // Handle daily slots (bounded & unbounded)
@@ -52,7 +52,7 @@ function selectSlots(slots: Slot.Self[], date: Dayjs): Slot.Self[] {
     if (daily) return isSelectableDailySlot(slot, date);
 
     // Handle weekly slots (bounded & unbounded)
-    const weekly = slot.repeat === Slot.Repeat.EveryWeek;
+    const weekly = slot.repeat === Slot.Repeat.Weekly;
     if (weekly) return isSelectableWeeklySlot(slot, date);
 
     return false;

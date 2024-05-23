@@ -56,10 +56,10 @@ const weekday = zod.coerce.number().min(-1).max(6);
 const time = zod.string().time();
 const date = zod.coerce.string().date();
 const repeat = zod.enum([
-  Slot.Repeat.NoRepeat,
+  Slot.Repeat.No,
   Slot.Repeat.Daily,
-  Slot.Repeat.EveryWeek,
-  Slot.Repeat.EveryMonth,
+  Slot.Repeat.Weekly,
+  Slot.Repeat.Monthly,
 ]);
 
 const slot = {
