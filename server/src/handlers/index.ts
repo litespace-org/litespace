@@ -3,6 +3,7 @@ import slot from "@/handlers/slot";
 import tutor from "@/handlers/tutor";
 import zoom from "@/handlers/zoom";
 import lesson from "@/handlers/lesson";
+import ratings from "@/handlers/ratings";
 
 export default {
   user,
@@ -10,4 +11,5 @@ export default {
   tutor,
   zoom,
   lesson,
+  ratings,
 };

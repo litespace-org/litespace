@@ -1,4 +1,4 @@
-import { first } from "lodash";
+import { first, isEmpty } from "lodash";
 import { query } from "./query";
 
 export class Ratings {
@@ -68,7 +68,7 @@ export class Ratings {
     await query(`DELETE FROM "ratings" WHERE id = $1;`, [id]);
   }
 
-  async getTutorRatings(tutorId: number): Promise<Rating.Self[]> {
+  async findTutorRatings(tutorId: number): Promise<Rating.Self[]> {
     const { rows } = await query<Rating.Row, [tutorId: number]>(
       `
         SELECT
@@ -82,11 +82,79 @@ export class Ratings {
         FROM ratings
         WHERE
             tutor_id = $1;
-            `,
+      `,
       [tutorId]
     );
 
     return rows.map((row) => this.fromRow(row));
+  }
+
+  async findByEntities({
+    tutorId,
+    studentId,
+  }: {
+    tutorId: number;
+    studentId: number;
+  }): Promise<Rating.Self | null> {
+    const { rows } = await query<
+      Rating.Row,
+      [tutorId: number, studnetId: number]
+    >(
+      `
+        SELECT
+            "id",
+            "tutor_id",
+            "student_id",
+            "value",
+            "note",
+            "created_at",
+            "updated_at"
+        FROM ratings
+        WHERE
+            tutor_id = $1 AND student_id = $2;
+      `,
+      [tutorId, studentId]
+    );
+
+    if (rows.length > 1)
+      throw new Error(
+        "Unexpected result; expected on recored; should never happen"
+      );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.fromRow(row);
+  }
+
+  async findById(id: number): Promise<Rating.Self | null> {
+    const { rows } = await query<Rating.Row, [id: number]>(
+      `
+        SELECT
+            "id",
+            "tutor_id",
+            "student_id",
+            "value",
+            "note",
+            "created_at",
+            "updated_at"
+        FROM ratings
+        WHERE
+            id = $1;
+      `,
+      [id]
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.fromRow(row);
+  }
+
+  async exists(id: number): Promise<boolean> {
+    const { rows } = await query<{ id: number }, [id: number]>(
+      `SELECT id FROM "ratings" WHERE id = $1`,
+      [id]
+    );
+    return !isEmpty(rows);
   }
 
   fromRow(row: Rating.Row): Rating.Self {

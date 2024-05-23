@@ -1,22 +1,19 @@
-import { passwordRegex } from "@/constants";
-import { User, Slot } from "@/database";
 import zod from "zod";
-
-const id = zod.coerce.number({ message: "Invalid id" }).positive();
-
-const password = zod
-  .string({ message: "Invalid password" })
-  .regex(passwordRegex, "Invalid password");
-
-const email = zod
-  .string({ message: "Invalid email" })
-  .trim()
-  .email("Invalid email");
-
-const name = zod
-  .string({ message: "invalid email" })
-  .trim()
-  .min(3, "Invalid name");
+import {
+  optionalString,
+  rating,
+  id,
+  password,
+  email,
+  name,
+  weekday,
+  time,
+  date,
+  repeat,
+  url,
+  datetime,
+  string,
+} from "@/validation/utils";
 
 const avatar = zod.union([zod.null(), zod.string().trim()], {
   message: "Invalid avatar",
@@ -38,9 +35,7 @@ const user = {
   },
   delete: { query: zod.object({ id }) },
   get: { query: zod.object({ id }) },
-  login: {
-    body: zod.object({ email, password }),
-  },
+  login: { body: zod.object({ email, password }) },
 } as const;
 
 const auth = {
@@ -51,16 +46,6 @@ const auth = {
       .trim(),
   }),
 } as const;
-
-const weekday = zod.coerce.number().min(-1).max(6);
-const time = zod.string().time();
-const date = zod.coerce.string().date();
-const repeat = zod.enum([
-  Slot.Repeat.No,
-  Slot.Repeat.Daily,
-  Slot.Repeat.Weekly,
-  Slot.Repeat.Monthly,
-]);
 
 const slot = {
   create: zod.object({
@@ -73,8 +58,8 @@ const slot = {
   }),
   update: zod.object({
     id,
-    title: zod.optional(zod.string().trim()),
-    description: zod.optional(zod.string().trim()),
+    title: optionalString,
+    description: optionalString,
     weekday: zod.optional(weekday),
     time: zod.optional(
       zod.object({ start: zod.optional(time), end: zod.optional(time) })
@@ -98,9 +83,9 @@ const tutor = {
       password: zod.optional(password),
       name: zod.optional(name),
       avatar: zod.optional(avatar),
-      bio: zod.optional(zod.string().trim()),
-      about: zod.optional(zod.string().trim()),
-      video: zod.optional(zod.string().url().trim()),
+      bio: optionalString,
+      about: optionalString,
+      video: zod.optional(url),
     }),
   },
   get: { query: zod.object({ id }) },
@@ -116,12 +101,30 @@ const zoom = {
 const lessons = {
   create: {
     body: zod.object({
-      slotId: zod.coerce.number().positive(),
-      start: zod.coerce.string().datetime(),
+      slotId: id,
+      start: datetime,
       duration: zod.coerce.number().positive(),
     }),
   },
   get: { query: zod.object({ id }) },
+  delete: { query: zod.object({ id }) },
+};
+
+const ratings = {
+  create: {
+    body: zod.object({
+      tutorId: id,
+      value: rating,
+      note: zod.optional(string),
+    }),
+  },
+  update: {
+    body: zod.object({
+      id,
+      value: zod.optional(rating),
+      note: zod.optional(string),
+    }),
+  },
   delete: { query: zod.object({ id }) },
 };
 
@@ -132,4 +135,5 @@ export default {
   tutor,
   zoom,
   lessons,
+  ratings,
 };
