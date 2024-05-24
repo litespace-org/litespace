@@ -56,7 +56,7 @@ export class Ratings {
             UPDATE "ratings"
             SET
                 value = COALESCE($1, value),
-                note = COALESCE($2, note),
+                note = COALESCE($2, note)
             WHERE
                 id = $3;
           `,

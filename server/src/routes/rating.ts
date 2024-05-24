@@ -8,6 +8,7 @@ router
   .route("/")
   .post(studentOnly, handlers.rating.create)
   .put(studentOnly, handlers.rating.update)
+  .get(handlers.rating.get)
   .delete(studentOrAdmin, handlers.rating.delete);
 
 export default router;

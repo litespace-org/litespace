@@ -125,6 +125,7 @@ const ratings = {
       note: zod.optional(string),
     }),
   },
+  get: { query: zod.object({ tutorId: id }) },
   delete: { query: zod.object({ id }) },
 };
 

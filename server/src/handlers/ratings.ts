@@ -61,7 +61,7 @@ async function delete_(
   const rating = await ratings.findById(id);
   if (!rating) return next(new NotFound("Rating"));
 
-  const owner = rating.studentId !== req.user.id;
+  const owner = rating.studentId === req.user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(new Forbidden());
@@ -70,8 +70,15 @@ async function delete_(
   res.status(200).send();
 }
 
+async function get(req: Request.Default, res: Response, next: NextFunction) {
+  const { tutorId } = schema.http.ratings.get.query.parse(req.query);
+  const list = await ratings.findTutorRatings(tutorId);
+  res.status(200).json(list);
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
+  get: asyncHandler(get),
   delete: asyncHandler(delete_),
 };

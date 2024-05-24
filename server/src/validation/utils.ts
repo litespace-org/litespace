@@ -12,7 +12,7 @@ export const email = zod.string().trim().email("Invalid email");
 
 export const name = zod.string().trim().min(3, "Invalid username");
 
-export const rating = zod.coerce.number().positive().min(1).max(5);
+export const rating = zod.coerce.number().positive().int().min(1).max(5);
 
 export const string = zod.string().trim();
 
