@@ -6,8 +6,8 @@ const router = Router();
 
 router
   .route("/")
-  .post(studentOnly, handlers.ratings.create)
-  .put(studentOnly, handlers.ratings.update)
-  .delete(studentOrAdmin, handlers.ratings.delete);
+  .post(studentOnly, handlers.rating.create)
+  .put(studentOnly, handlers.rating.update)
+  .delete(studentOrAdmin, handlers.rating.delete);
 
 export default router;
