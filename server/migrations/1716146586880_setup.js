@@ -12,12 +12,6 @@ exports.up = (pgm) => {
   // types
   pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
-  pgm.createType("renewal_interval_type", [
-    "no",
-    "montly",
-    "quarterly",
-    "yearly",
-  ]);
 
   // tables
   pgm.createTable("users", {
@@ -96,7 +90,7 @@ exports.up = (pgm) => {
     },
     monthly_minutes: { type: "smallint", notNull: true },
     remaining_minutes: { type: "smallint", notNull: true },
-    renewal_interval: { type: "renewal_interval_type", notNull: true },
+    auto_renewal: { type: "boolean", notNull: true, default: false },
     start: { type: "timestamptz", notNull: true },
     end: { type: "timestamptz", notNull: true },
     created_at: { type: "timestamptz", notNull: true },
@@ -145,5 +139,4 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
-  pgm.dropType("renewal_interval_type", { ifExists: true });
 };

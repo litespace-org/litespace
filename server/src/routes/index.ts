@@ -4,6 +4,7 @@ import tutor from "@/routes/tutor";
 import zoom from "@/routes/zoom";
 import lesson from "@/routes/lesson";
 import rating from "@/routes/rating";
+import subscription from "@/routes/subscription";
 
 export default {
   user,
@@ -12,4 +13,5 @@ export default {
   zoom,
   lesson,
   rating,
+  subscription,
 };

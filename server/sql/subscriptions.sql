@@ -12,7 +12,7 @@ CREATE TABLE "subscriptions" (
     "student_id" serial UNIQUE NOT NULL REFERENCES users (id),
     "monthly_minutes" smallint NOT NULL,
     "remaining_minutes" smallint NOT NULL,
-    "renewal_interval" renewal_interval_type NOT NULL,
+    "auto_renewal" boolean NOT NULL,
     "start" timestamptz NOT NULL,
     "end" timestamptz NOT NULL,
     "created_at" timestamptz NOT NULL,
@@ -22,9 +22,9 @@ CREATE TABLE "subscriptions" (
 INSERT INTO
     "subscriptions" (
         "student_id",
-        "montly_minutes",
+        "monthly_minutes",
         "remaining_minutes",
-        "renewal_interval",
+        "auto_renewal",
         "start",
         "end",
         "created_at",
@@ -34,28 +34,28 @@ VALUES (
         1,
         1,
         1,
-        'no',
+        true,
         '1999-01-08 04:05:06',
         '1999-01-08 04:05:06'
     );
 
-UPDATE "subscriptions"
+UPDATE "subscriptions" as s
 SET
-    montly_minutes = COALESCE($1, montly_minutes),
-    remaining_minutes = COALESCE($1, remaining_minutes),
-    renewal_interval = COALESCE($1, renewal_interval),
-    start = COALESCE($1, start),
-    end = COALESCE($1, end),
-    updated_at = NOW()
+    "monthly_minutes" = COALESCE(100, s.monthly_minutes),
+    "remaining_minutes" = COALESCE(null, s.remaining_minutes),
+    "auto_renewal" = COALESCE(null, s.auto_renewal),
+    "start" = COALESCE(null, s.start),
+    "end" = COALESCE(null, s.end),
+    "updated_at" = NOW()
 WHERE
     id = 1;
 
 SELECT
     "id",
     "student_id",
-    "montly_minutes",
+    "monthly_minutes",
     "remaining_minutes",
-    "renewal_interval",
+    "auto_renewal",
     "start",
     "end",
     "created_at",

@@ -9,7 +9,7 @@ import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
-  const { slotId, start, duration } = schema.http.lessons.create.body.parse(
+  const { slotId, start, duration } = schema.http.lesson.create.body.parse(
     req.body
   );
   // validation
@@ -71,7 +71,7 @@ async function delete_(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = schema.http.lessons.get.query.parse(req.query);
+  const { id } = schema.http.lesson.get.query.parse(req.query);
 
   const lesson = await lessons.findById(id);
   if (!lesson) return next(new NotFound());
@@ -108,7 +108,7 @@ async function getMany(
 }
 
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
-  const { id } = schema.http.lessons.get.query.parse(req.query);
+  const { id } = schema.http.lesson.get.query.parse(req.query);
   const lesson = await lessons.findById(id);
   if (!lesson) return next(new NotFound());
   res.status(200).json(lesson);

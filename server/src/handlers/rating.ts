@@ -9,7 +9,7 @@ import { isAdmin } from "@/lib/common";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
   const studentId = req.user.id;
-  const { tutorId, value, note } = schema.http.ratings.create.body.parse(
+  const { tutorId, value, note } = schema.http.rating.create.body.parse(
     req.body
   );
 
@@ -41,7 +41,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {
-  const data = schema.http.ratings.update.body.parse(req.body);
+  const data = schema.http.rating.update.body.parse(req.body);
 
   const rating = await ratings.findById(data.id);
   if (!rating) return next(new NotFound("Rating"));
@@ -56,7 +56,7 @@ async function delete_(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = schema.http.ratings.delete.query.parse(req.query);
+  const { id } = schema.http.rating.delete.query.parse(req.query);
 
   const rating = await ratings.findById(id);
   if (!rating) return next(new NotFound("Rating"));
@@ -71,7 +71,7 @@ async function delete_(
 }
 
 async function get(req: Request.Default, res: Response, next: NextFunction) {
-  const { tutorId } = schema.http.ratings.get.query.parse(req.query);
+  const { tutorId } = schema.http.rating.get.query.parse(req.query);
   const list = await ratings.findTutorRatings(tutorId);
   res.status(200).json(list);
 }

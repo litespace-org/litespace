@@ -13,6 +13,7 @@ import {
   url,
   datetime,
   string,
+  subscriptionPeriod,
 } from "@/validation/utils";
 
 const avatar = zod.union([zod.null(), zod.string().trim()], {
@@ -98,7 +99,7 @@ const zoom = {
   },
 };
 
-const lessons = {
+const lesson = {
   create: {
     body: zod.object({
       slotId: id,
@@ -127,6 +128,22 @@ const ratings = {
   },
   get: { query: zod.object({ tutorId: id }) },
   delete: { query: zod.object({ id }) },
+} as const;
+
+const subscription = {
+  create: {
+    body: zod.object({
+      monthlyMinutes: zod.coerce.number().positive().int(),
+      period: subscriptionPeriod,
+      autoRenewal: zod.boolean(),
+    }),
+  },
+  update: {
+    body: zod.object({
+      period: zod.optional(subscriptionPeriod),
+      autoRenewal: zod.optional(zod.boolean()),
+    }),
+  },
 };
 
 export default {
@@ -135,6 +152,7 @@ export default {
   slot,
   tutor,
   zoom,
-  lessons,
-  ratings,
+  lesson,
+  rating: ratings,
+  subscription,
 };

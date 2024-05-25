@@ -2,44 +2,42 @@ import { query } from "@/database/query";
 import { first } from "lodash";
 
 export class Subscriptions {
-  async create(subscription: Omit<Subscription.Self, "id">): Promise<number> {
+  async create(
+    subscription: Omit<Subscription.Self, "id" | "createdAt" | "updatedAt">
+  ): Promise<number> {
     const { rows } = await query<
       { id: number },
       [
         studentId: number,
         montlyMinutes: number,
         remainingMinutes: number,
-        renewalInterval: Subscription.RenewalInterval,
+        autoRenewal: boolean,
         start: string,
-        end: string,
-        createdAt: string,
-        updatedAt: string
+        end: string
       ]
     >(
       `
         INSERT INTO
             "subscriptions" (
                 "student_id",
-                "montly_minutes",
+                "monthly_minutes",
                 "remaining_minutes",
-                "renewal_interval",
+                "auto_renewal",
                 "start",
                 "end",
                 "created_at",
                 "updated_at"
             )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+        VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
         RETURNING id;
       `,
       [
         subscription.studentId,
         subscription.monthlyMinutes,
         subscription.remainingMinutes,
-        subscription.renewalInterval,
+        subscription.autoRenewal,
         subscription.start,
         subscription.end,
-        subscription.createdAt,
-        subscription.updatedAt,
       ]
     );
 
@@ -49,39 +47,40 @@ export class Subscriptions {
   }
 
   async update(
-    subscription: Omit<
-      Subscription.Self,
-      "id" | "student_id" | "updated_at" | "created_at"
-    >
+    subscription: Partial<
+      Omit<Subscription.Self, "student_id" | "updated_at" | "created_at">
+    > & { id: number }
   ): Promise<void> {
     await query<
       {},
       [
-        montlyMinutes: number,
-        remainingMinutes: number,
-        renewalInterval: Subscription.RenewalInterval,
-        start: string,
-        end: string
+        montlyMinutes: number | undefined,
+        remainingMinutes: number | undefined,
+        autoRenewal: boolean | undefined,
+        start: string | undefined,
+        end: string | undefined,
+        id: number
       ]
     >(
       `
-        UPDATE "subscriptions"
+        UPDATE "subscriptions" as s
         SET
-            montly_minutes = COALESCE($1, montly_minutes),
-            remaining_minutes = COALESCE($2, remaining_minutes),
-            renewal_interval = COALESCE($3, renewal_interval),
-            start = COALESCE($4, start),
-            end = COALESCE($5, end),
-            updated_at = NOW()
+            "monthly_minutes" = COALESCE($1, s.monthly_minutes),
+            "remaining_minutes" = COALESCE($2, s.remaining_minutes),
+            "auto_renewal" = COALESCE($3, s.auto_renewal),
+            "start" = COALESCE($4, s.start),
+            "end" = COALESCE($5, s.end),
+            "updated_at" = NOW()
         WHERE
             id = $6;
       `,
       [
         subscription.monthlyMinutes,
         subscription.remainingMinutes,
-        subscription.renewalInterval,
+        subscription.autoRenewal,
         subscription.start,
         subscription.end,
+        subscription.id,
       ]
     );
   }
@@ -99,9 +98,9 @@ export class Subscriptions {
         SELECT
             "id",
             "student_id",
-            "montly_minutes",
+            "monthly_minutes",
             "remaining_minutes",
-            "renewal_interval",
+            "auto_renewal",
             "start",
             "end",
             "created_at",
@@ -118,13 +117,38 @@ export class Subscriptions {
     return this.from(row);
   }
 
+  async findByStudentId(studentId: number): Promise<Subscription.Self | null> {
+    const { rows } = await query<Subscription.Row, [studentId: number]>(
+      `
+        SELECT
+            "id",
+            "student_id",
+            "monthly_minutes",
+            "remaining_minutes",
+            "auto_renewal",
+            "start",
+            "end",
+            "created_at",
+            "updated_at"
+        FROM "subscriptions"
+        WHERE
+            student_id = $1;
+      `,
+      [studentId]
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
+
   from(row: Subscription.Row): Subscription.Self {
     return {
       id: row.id,
       studentId: row.student_id,
       monthlyMinutes: row.monthly_minutes,
       remainingMinutes: row.remaining_minutes,
-      renewalInterval: row.renewal_interval,
+      autoRenewal: row.auto_renewal,
       start: row.start.toISOString(),
       end: row.end.toISOString(),
       createdAt: row.created_at.toISOString(),
@@ -134,11 +158,10 @@ export class Subscriptions {
 }
 
 export namespace Subscription {
-  export enum RenewalInterval {
-    No = "no",
-    Montly = "montly",
-    Quarterly = "quarterly",
-    Yearly = "yearly",
+  export enum Period {
+    Month = "month",
+    Quarter = "quarter",
+    Year = "year",
   }
 
   export type Self = {
@@ -146,7 +169,7 @@ export namespace Subscription {
     studentId: number;
     monthlyMinutes: number;
     remainingMinutes: number;
-    renewalInterval: RenewalInterval;
+    autoRenewal: boolean;
     start: string;
     end: string;
     createdAt: string;
@@ -158,7 +181,7 @@ export namespace Subscription {
     student_id: number;
     monthly_minutes: number;
     remaining_minutes: number;
-    renewal_interval: RenewalInterval;
+    auto_renewal: boolean;
     start: Date;
     end: Date;
     created_at: Date;

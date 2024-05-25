@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/constants";
-import { Slot } from "@/database";
+import { Slot, Subscription } from "@/database";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -34,3 +34,9 @@ export const repeat = zod.enum([
 ]);
 
 export const url = zod.string().url().trim();
+
+export const subscriptionPeriod = zod.enum([
+  Subscription.Period.Month,
+  Subscription.Period.Quarter,
+  Subscription.Period.Year,
+]);

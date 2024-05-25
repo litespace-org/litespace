@@ -17,3 +17,9 @@ export class Forbidden extends ResponseError {
     super(message || "Unauthorized access", 403);
   }
 }
+
+export class BadRequest extends ResponseError {
+  constructor(message?: string) {
+    super(message || "Bad Request", 400);
+  }
+}

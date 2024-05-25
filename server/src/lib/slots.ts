@@ -157,6 +157,10 @@ export function setDayTime(
     .set("milliseconds", 0);
 }
 
+export function asDayStart(date: Dayjs): Dayjs {
+  return dayjs(date.format("YYYY-MM-DD"));
+}
+
 export function unpackSlots(
   slots: Slot.Self[],
   lessons: Lesson.Self[]
