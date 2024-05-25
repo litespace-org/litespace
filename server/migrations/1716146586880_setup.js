@@ -21,6 +21,7 @@ exports.up = (pgm) => {
     name: { type: "VARCHAR(50)", notNull: true },
     avatar: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", notNull: true },
+    active: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });

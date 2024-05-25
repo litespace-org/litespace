@@ -1,12 +1,13 @@
 import { createServer } from "node:http";
-import { Server, Socket } from "socket.io";
+import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { isDev, serverConfig } from "@/constants";
+import { serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import cors from "cors";
 import "colors";
 import { authorizedSocket } from "@/middleware/auth";
+import { wssHandler } from "@/wss/handler";
 
 const app = express();
 const server = createServer(app);
@@ -15,17 +16,9 @@ const io = new Server(server, {
   cors: { origin: "*" },
 });
 
+// todo: use dedicated auth middleware for socket.io
 io.engine.use(authorizedSocket);
-
-io.on("connection", (socket: Socket) => {
-  const user = socket.request.user;
-
-  if (isDev) console.log(`${user.name} is connected`.yellow);
-
-  socket.on("disconnect", () => {
-    if (isDev) console.log(`${user.name} is disconnected`.yellow);
-  });
-});
+io.on("connection", wssHandler);
 
 app.use(cors());
 app.use(json());

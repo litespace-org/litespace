@@ -3,7 +3,7 @@ import { first } from "lodash";
 
 export class Users {
   async create(
-    user: Omit<User.Self, "id" | "createdAt" | "updatedAt"> & {
+    user: Omit<User.Self, "id" | "createdAt" | "updatedAt" | "active"> & {
       password: string;
     }
   ): Promise<number> {
@@ -52,11 +52,20 @@ export class Users {
             name = COALESCE($3, name),
             avatar = COALESCE($4, avatar),
             type = COALESCE($5, type),
+            active = COALESCE($6, active),
             updated_at = NOW()
         where
-            id = $6;
+            id = $7;
       `,
-      [user.email, user.password, user.name, user.avatar, user.type, user.id]
+      [
+        user.email,
+        user.password,
+        user.name,
+        user.avatar,
+        user.type,
+        user.active,
+        user.id,
+      ]
     );
   }
 
@@ -67,7 +76,7 @@ export class Users {
   async findOne(id: number): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [number]>(
       `
-        SELECT id, email, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE id = $1;
       `,
@@ -82,7 +91,7 @@ export class Users {
   async findMany(ids: number[]): Promise<User.Self[]> {
     const { rows } = await query<User.Row, [number[]]>(
       `
-        SELECT id, email, password, name, avatar, type, created_at, updated_at
+        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE id in $1;
       `,
@@ -95,7 +104,7 @@ export class Users {
   async findAll(): Promise<User.Self[]> {
     const { rows } = await query<User.Row, []>(
       `
-        SELECT id, email, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, active, created_at, updated_at
         FROM users;
       `
     );
@@ -109,7 +118,7 @@ export class Users {
   ): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [string, string]>(
       `
-        SELECT id, email, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE
             email = $1
@@ -126,7 +135,7 @@ export class Users {
   async getTutors(): Promise<User.Self[]> {
     const { rows } = await query<User.Row, [User.Type.Tutor]>(
       `
-        SELECT id, email, name, avatar, type
+        SELECT id, email, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE type = $1;
       `,
@@ -143,6 +152,7 @@ export class Users {
       name: row.name,
       avatar: row.avatar,
       type: row.type,
+      active: row.active,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
@@ -163,6 +173,7 @@ export namespace User {
     name: string;
     avatar: string | null;
     type: Type;
+    active: boolean;
     createdAt: string;
     updatedAt: string;
   };
