@@ -6,6 +6,7 @@ import { isDev, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import cors from "cors";
 import "colors";
+import { authorizedSocket } from "@/middleware/auth";
 
 const app = express();
 const server = createServer(app);
@@ -14,11 +15,15 @@ const io = new Server(server, {
   cors: { origin: "*" },
 });
 
+io.engine.use(authorizedSocket);
+
 io.on("connection", (socket: Socket) => {
-  if (isDev) console.log("A connection is made.".yellow);
+  const user = socket.request.user;
+
+  if (isDev) console.log(`${user.name} is connected`.yellow);
 
   socket.on("disconnect", () => {
-    if (isDev) console.log("Client disconnected".yellow);
+    if (isDev) console.log(`${user.name} is disconnected`.yellow);
   });
 });
 

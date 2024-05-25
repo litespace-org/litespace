@@ -12,7 +12,15 @@ declare global {
   namespace Express {
     interface Request {
       user: User.Self;
+      _query: { sid: string | undefined };
     }
+  }
+}
+
+// used for socket.io
+declare module "http" {
+  interface IncomingMessage {
+    user: User.Self;
   }
 }
 
@@ -45,6 +53,17 @@ function authHandler(roles?: User.Type[]) {
     req.user = user;
     next();
   };
+}
+
+export function authorizedSocket(
+  req: Request.Default,
+  res: Response,
+  next: NextFunction
+) {
+  // apply to the first HTTP request of the session.
+  const isHandshake = req._query.sid === undefined;
+  if (!isHandshake) return next();
+  return authHandler([])(req, res, next);
 }
 
 function auth(roles?: User.Type[]) {
