@@ -142,6 +142,27 @@ export class Subscriptions {
     return this.from(row);
   }
 
+  async findAll(): Promise<Subscription.Self[]> {
+    const { rows } = await query<Subscription.Row, []>(
+      `
+        SELECT
+            "id",
+            "student_id",
+            "monthly_minutes",
+            "remaining_minutes",
+            "auto_renewal",
+            "start",
+            "end",
+            "created_at",
+            "updated_at"
+        FROM "subscriptions";
+      `,
+      []
+    );
+
+    return rows.map((row) => this.from(row));
+  }
+
   from(row: Subscription.Row): Subscription.Self {
     return {
       id: row.id,

@@ -106,7 +106,10 @@ async function getList(
   req: Request.Default,
   res: Response,
   next: NextFunction
-) {}
+) {
+  const list = await subscriptions.findAll();
+  res.status(200).json(list);
+}
 
 export default {
   create: asyncHandler(create),
