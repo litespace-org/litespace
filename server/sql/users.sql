@@ -40,6 +40,28 @@ VALUES (
         'super_admin'
     );
 
+INSERT INTO
+    users (
+        email,
+        password,
+        name,
+        avatar,
+        type,
+        created_at,
+        updated_at
+    )
+values (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5,
+        NOW(),
+        NOW()
+    )
+RETURNING
+    id;
+
 SELECT * FrOM users;
 
 SELECT id, email, password, name, avatar, type

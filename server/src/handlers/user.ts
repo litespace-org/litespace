@@ -2,6 +2,7 @@ import { authorizationSecret } from "@/constants";
 import { User, users } from "@/database";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
+import { hashPassword } from "@/lib/user";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -12,14 +13,18 @@ async function create(
   req: Request.Body<Exclude<User.Self, "id">>,
   res: Response
 ) {
-  const body = schema.http.user.create.parse(req.body);
-  const now = new Date().toISOString();
+  const { email, password, name, avatar } = schema.http.user.create.parse(
+    req.body
+  );
+
   const id = await users.create({
-    ...body,
     type: User.Type.Student,
-    createdAt: now,
-    updatedAt: now,
+    email,
+    password: hashPassword(password),
+    avatar,
+    name,
   });
+
   res.status(200).json({ id });
 }
 
@@ -34,12 +39,17 @@ async function update(
   res: Response
 ) {
   const body = schema.http.user.update.body.parse(req.body);
-  await users.update(body);
+
+  await users.update({
+    ...body,
+    password: body.password ? hashPassword(body.password) : undefined,
+  });
+
   res.status(200).send();
 }
 
 async function delete_(req: Request.Query<{ id: string }>, res: Response) {
-  const id = schema.http.user.delete.query.parse(req.query).id;
+  const { id } = schema.http.user.delete.query.parse(req.query);
   await users.delete(id);
   res.status(200).send();
 }
@@ -71,7 +81,7 @@ async function getMany(
 
 async function login(req: Request.Default, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
-  const user = await users.findByCredentials(email, password);
+  const user = await users.findByCredentials(email, hashPassword(password));
   if (!user) return next(new NotFound());
 
   const token = jwt.sign({ id: user.id }, authorizationSecret, {

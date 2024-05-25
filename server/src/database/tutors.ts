@@ -6,7 +6,11 @@ export class Tutors {
   async create(
     tutor: Omit<
       Tutor.Self,
-      "zoomRefreshToken" | "authorizedZoomApp" | "aquiredRefreshTokenAt"
+      | "zoomRefreshToken"
+      | "authorizedZoomApp"
+      | "aquiredRefreshTokenAt"
+      | "createdAt"
+      | "updatedAt"
     >
   ): Promise<number> {
     const { rows } = await query<
@@ -15,25 +19,16 @@ export class Tutors {
         id: number,
         bio: string | null,
         about: string | null,
-        video: string | null,
-        createdAt: string,
-        updatedAt: string
+        video: string | null
       ]
     >(
       `
         INSERT INTO
-            tutors (id, bio, about, video, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, $5, $6)
+            tutors (id, bio, about, video)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
         RETURNING id;
       `,
-      [
-        tutor.id,
-        tutor.bio,
-        tutor.about,
-        tutor.video,
-        tutor.createdAt,
-        tutor.updatedAt,
-      ]
+      [tutor.id, tutor.bio, tutor.about, tutor.video]
     );
 
     const row = first(rows);
@@ -42,7 +37,9 @@ export class Tutors {
   }
 
   async update(
-    tutor: DeepPartial<Omit<Tutor.Self, "createdAt">> & { id: number }
+    tutor: DeepPartial<Omit<Tutor.Self, "createdAt" | "updatedAt">> & {
+      id: number;
+    }
   ): Promise<void> {
     await query(
       `
@@ -51,11 +48,11 @@ export class Tutors {
             bio = COALESCE($1, bio),
             about = COALESCE($2, about),
             video = COALESCE($3, video),
-            updated_at = COALESCE($4, updated_at),
+            updated_at = NOW()
         where
-            id = $5;
+            id = $4;
         `,
-      [tutor.bio, tutor.about, tutor.video, tutor.updatedAt, tutor.id]
+      [tutor.bio, tutor.about, tutor.video, tutor.id]
     );
   }
 

@@ -2,7 +2,11 @@ import { query } from "@/database/query";
 import { first } from "lodash";
 
 export class Users {
-  async create(user: Omit<User.Self, "id">): Promise<number> {
+  async create(
+    user: Omit<User.Self, "id" | "createdAt" | "updatedAt"> & {
+      password: string;
+    }
+  ): Promise<number> {
     const { rows } = await query<
       { id: number },
       [
@@ -10,21 +14,25 @@ export class Users {
         password: string,
         name: string,
         avatar: string | null,
-        type: User.Type,
-        createdAt: string,
-        updatedAt: string
+        type: User.Type
       ]
     >(
-      "INSERT INTO users (email, password, name, avatar, type, created_at, updated_at) values ($1, $2, $3, $4, $5, $6, $7) RETURNING id;",
-      [
-        user.email,
-        user.password,
-        user.name,
-        user.avatar,
-        user.type,
-        user.createdAt,
-        user.updatedAt,
-      ]
+      `
+        INSERT INTO
+            users (
+                email,
+                password,
+                name,
+                avatar,
+                type,
+                created_at,
+                updated_at
+            )
+        values ( $1, $2, $3, $4, $5, NOW(), NOW())
+        RETURNING
+            id;
+      `,
+      [user.email, user.password, user.name, user.avatar, user.type]
     );
 
     const id = first(rows)?.id;
@@ -32,7 +40,9 @@ export class Users {
     return id;
   }
 
-  async update(user: Partial<User.Self> & { id: number }): Promise<void> {
+  async update(
+    user: Partial<User.Self> & { id: number; password?: string }
+  ): Promise<void> {
     await query(
       `
         UPDATE users
@@ -57,7 +67,7 @@ export class Users {
   async findOne(id: number): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [number]>(
       `
-        SELECT id, email, password, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, created_at, updated_at
         FROM users
         WHERE id = $1;
       `,
@@ -66,7 +76,7 @@ export class Users {
 
     const row = first(rows);
     if (!row) return null;
-    return this.as(row);
+    return this.from(row);
   }
 
   async findMany(ids: number[]): Promise<User.Self[]> {
@@ -79,18 +89,18 @@ export class Users {
       [ids]
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
   async findAll(): Promise<User.Self[]> {
     const { rows } = await query<User.Row, []>(
       `
-        SELECT id, email, password, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, created_at, updated_at
         FROM users;
       `
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
   async findByCredentials(
@@ -99,7 +109,7 @@ export class Users {
   ): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [string, string]>(
       `
-        SELECT id, email, password, name, avatar, type, created_at, updated_at
+        SELECT id, email, name, avatar, type, created_at, updated_at
         FROM users
         WHERE
             email = $1
@@ -110,28 +120,26 @@ export class Users {
 
     const row = first(rows);
     if (!row) return null;
-    return this.as(row);
+    return this.from(row);
   }
 
   async getTutors(): Promise<User.Self[]> {
     const { rows } = await query<User.Row, [User.Type.Tutor]>(
       `
-        SELECT id, email, password, name, avatar, type
+        SELECT id, email, name, avatar, type
         FROM users
-        WHERE
-            type = $1;
+        WHERE type = $1;
       `,
       [User.Type.Tutor]
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
-  as(row: User.Row): User.Self {
+  from(row: User.Row): User.Self {
     return {
       id: row.id,
       email: row.email,
-      password: row.password,
       name: row.name,
       avatar: row.avatar,
       type: row.type,
@@ -152,7 +160,6 @@ export namespace User {
   export type Self = {
     id: number;
     email: string;
-    password: string;
     name: string;
     avatar: string | null;
     type: Type;
