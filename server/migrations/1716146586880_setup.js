@@ -12,6 +12,7 @@ exports.up = (pgm) => {
   // types
   pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
+  pgm.createType("room_type", ["dm", "group"]);
 
   // tables
   pgm.createTable("users", {
@@ -97,6 +98,26 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
+  pgm.createTable("rooms", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    type: { type: "room_type", default: "dm", notNull: true },
+  });
+
+  pgm.createTable("room_members", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    student_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
+  });
+
+  pgm.createTable("messages", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
+    reply_id: { type: "SERIAL", references: "messages(id)", default: null },
+    body: { type: "TEXT(1000)", notNull: true },
+    is_read: { type: "BOOLEAN", notNull: true, default: false },
+  });
+
   // indexes
   pgm.createIndex("lessons", "id");
   pgm.createIndex("slots", "id");
@@ -104,6 +125,9 @@ exports.up = (pgm) => {
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("subscriptions", "id");
+  pgm.createIndex("rooms", "id");
+  pgm.createIndex("room_members", "id");
+  pgm.createIndex("messages", "id");
 
   // constraints
   pgm.createConstraint("ratings", "student-tutor", {
@@ -121,6 +145,9 @@ exports.down = (pgm) => {
   pgm.dropConstraint("ratings", "student-tutor", { ifExists: true });
 
   // indexes
+  pgm.dropIndex("rooms", "id", { ifExists: true });
+  pgm.dropIndex("room_members", "id", { ifExists: true });
+  pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("subscriptions", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
@@ -139,4 +166,5 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
+  pgm.dropType("room_type", { ifExists: true });
 };

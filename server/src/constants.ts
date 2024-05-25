@@ -21,9 +21,11 @@ export const databaseConnection = {
 
 // Server
 const SERVER_PORT = process.env.SERVER_PORT;
+const SERVER_HOST = process.env.SERVER_HOST;
 
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
+  host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "localhost",
 } as const;
 
 // Zoom
