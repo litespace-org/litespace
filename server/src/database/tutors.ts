@@ -24,7 +24,7 @@ export class Tutors {
     >(
       `
         INSERT INTO
-            tutors (id, bio, about, video)
+            tutors (id, bio, about, video, created_at, updated_at)
         VALUES ($1, $2, $3, $4, NOW(), NOW())
         RETURNING id;
       `,

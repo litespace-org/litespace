@@ -17,7 +17,7 @@ exports.up = (pgm) => {
   pgm.createTable("users", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
-    password: { type: "CHAR(32)", notNull: true },
+    password: { type: "CHAR(64)", notNull: true },
     name: { type: "VARCHAR(50)", notNull: true },
     avatar: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", notNull: true },

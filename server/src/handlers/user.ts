@@ -1,5 +1,5 @@
 import { authorizationSecret } from "@/constants";
-import { User, users } from "@/database";
+import { users } from "@/database";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
@@ -8,25 +8,6 @@ import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
-
-async function create(
-  req: Request.Body<Exclude<User.Self, "id">>,
-  res: Response
-) {
-  const { email, password, name, avatar } = schema.http.user.create.parse(
-    req.body
-  );
-
-  const id = await users.create({
-    type: User.Type.Student,
-    email,
-    password: hashPassword(password),
-    avatar,
-    name,
-  });
-
-  res.status(200).json({ id });
-}
 
 async function update(
   req: Request.Body<{
@@ -92,7 +73,6 @@ async function login(req: Request.Default, res: Response, next: NextFunction) {
 }
 
 export default {
-  create: asyncHandler(create),
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
   getOne: asyncHandler(getOne),

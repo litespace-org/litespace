@@ -1,9 +1,12 @@
 import { User, tutors, users } from "@/database";
+import { hashPassword } from "@/lib/user";
 
 async function main(): Promise<void> {
+  const password = hashPassword("LiteSpace1###");
+
   await users.create({
     email: "admin@litespace.com",
-    password: "LiteSpace1###",
+    password,
     name: "Root Admin",
     avatar: null,
     type: User.Type.SuperAdmin,
@@ -11,7 +14,7 @@ async function main(): Promise<void> {
 
   const id = await users.create({
     email: "teacher@litespace.com",
-    password: "LiteSpace1###",
+    password,
     name: "My Teacher",
     avatar: null,
     type: User.Type.Tutor,
@@ -26,7 +29,7 @@ async function main(): Promise<void> {
 
   await users.create({
     email: "student@litespace.com",
-    password: "LiteSpace1###",
+    password,
     name: "A Student",
     avatar: null,
     type: User.Type.Student,

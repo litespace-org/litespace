@@ -7,7 +7,6 @@ const router = Router();
 
 router
   .route("/")
-  .post(handlers.user.create)
   .put(authorized, handlers.user.update)
   .delete(authorized, handlers.user.delete)
   .get(authorized, handlers.user.getOne);

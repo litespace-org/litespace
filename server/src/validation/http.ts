@@ -21,10 +21,6 @@ const avatar = zod.union([zod.null(), zod.string().trim()], {
 });
 
 const user = {
-  create: zod.object(
-    { email, password, name, avatar },
-    { message: "Empty request body" }
-  ),
   update: {
     body: zod.object({
       id,
@@ -74,10 +70,15 @@ const slot = {
   getDiscreteTimeSlots: { query: zod.object({ tutorId: id }) },
 } as const;
 
+const student = {
+  create: zod.object(
+    { email, password, name, avatar },
+    { message: "Empty request body" }
+  ),
+} as const;
+
 const tutor = {
-  create: {
-    body: user.create,
-  },
+  create: { body: student.create },
   update: {
     body: zod.object({
       email: zod.optional(email),
@@ -150,6 +151,7 @@ export default {
   user,
   auth,
   slot,
+  student,
   tutor,
   zoom,
   lesson,

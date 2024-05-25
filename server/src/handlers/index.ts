@@ -1,6 +1,7 @@
 import user from "@/handlers/user";
 import slot from "@/handlers/slot";
 import tutor from "@/handlers/tutor";
+import student from "@/handlers/student";
 import zoom from "@/handlers/zoom";
 import lesson from "@/handlers/lesson";
 import rating from "@/handlers/rating";
@@ -10,6 +11,7 @@ export default {
   user,
   slot,
   tutor,
+  student,
   zoom,
   lesson,
   rating,
