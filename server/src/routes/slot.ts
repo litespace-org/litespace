@@ -1,4 +1,3 @@
-import { User } from "@/database";
 import handlers from "@/handlers";
 import { studentOrAdmin, tutorOnly, tutorOrAdmin } from "@/middleware/auth";
 import { Router } from "express";
@@ -16,7 +15,7 @@ router.get("/list", tutorOrAdmin, handlers.slot.list);
 
 router.get(
   "/list/discrete",
-  // studentOrAdmin,
+  studentOrAdmin,
   handlers.slot.getDiscreteTimeSlots
 );
 

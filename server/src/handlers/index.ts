@@ -6,6 +6,7 @@ import zoom from "@/handlers/zoom";
 import lesson from "@/handlers/lesson";
 import rating from "@/handlers/rating";
 import subscription from "@/handlers/subscription";
+import chat from "@/handlers/chat";
 
 export default {
   user,
@@ -16,4 +17,5 @@ export default {
   lesson,
   rating,
   subscription,
+  chat,
 };

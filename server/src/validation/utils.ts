@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/constants";
-import { Slot, Subscription } from "@/database";
+import { Slot, Subscription } from "@/models";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();

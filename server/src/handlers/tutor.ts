@@ -1,4 +1,4 @@
-import { User, complex, tutors, users } from "@/database";
+import { User, complex, tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";

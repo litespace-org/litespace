@@ -1,7 +1,6 @@
 import handlers from "@/handlers";
 import { Router } from "express";
 import { adminOnly, authorized } from "@/middleware/auth";
-import { User } from "@/database";
 
 const router = Router();
 

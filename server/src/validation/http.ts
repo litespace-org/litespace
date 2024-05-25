@@ -145,7 +145,13 @@ const subscription = {
       autoRenewal: zod.optional(zod.boolean()),
     }),
   },
-};
+} as const;
+
+const chat = {
+  create: {
+    body: zod.object({ tutorId: id }),
+  },
+} as const;
 
 export default {
   user,
@@ -157,4 +163,5 @@ export default {
   lesson,
   rating: ratings,
   subscription,
+  chat,
 };

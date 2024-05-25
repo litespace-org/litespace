@@ -12,7 +12,6 @@ exports.up = (pgm) => {
   // types
   pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
-  pgm.createType("room_type", ["dm", "group"]);
 
   // tables
   pgm.createTable("users", {
@@ -100,22 +99,21 @@ exports.up = (pgm) => {
 
   pgm.createTable("rooms", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    type: { type: "room_type", default: "dm", notNull: true },
-  });
-
-  pgm.createTable("room_members", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     student_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("messages", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
-    reply_id: { type: "SERIAL", references: "messages(id)", default: null },
-    body: { type: "TEXT(1000)", notNull: true },
+    reply_id: { type: "INTEGER", references: "messages(id)", default: null },
+    body: { type: "VARCHAR(1000)", notNull: true },
     is_read: { type: "BOOLEAN", notNull: true, default: false },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   // indexes
@@ -126,11 +124,14 @@ exports.up = (pgm) => {
   pgm.createIndex("ratings", "id");
   pgm.createIndex("subscriptions", "id");
   pgm.createIndex("rooms", "id");
-  pgm.createIndex("room_members", "id");
   pgm.createIndex("messages", "id");
 
   // constraints
-  pgm.createConstraint("ratings", "student-tutor", {
+  pgm.createConstraint("ratings", "ratings-student-tutor", {
+    unique: [["student_id", "tutor_id"]],
+  });
+
+  pgm.createConstraint("rooms", "rooms-student-tutor", {
     unique: [["student_id", "tutor_id"]],
   });
 };
@@ -142,12 +143,12 @@ exports.up = (pgm) => {
  */
 exports.down = (pgm) => {
   // constraints
-  pgm.dropConstraint("ratings", "student-tutor", { ifExists: true });
+  pgm.dropConstraint("ratings", "ratings-student-tutor", { ifExists: true });
+  pgm.dropConstraint("rooms", "rooms-student-tutor", { ifExists: true });
 
   // indexes
-  pgm.dropIndex("rooms", "id", { ifExists: true });
-  pgm.dropIndex("room_members", "id", { ifExists: true });
   pgm.dropIndex("messages", "id", { ifExists: true });
+  pgm.dropIndex("rooms", "id", { ifExists: true });
   pgm.dropIndex("subscriptions", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
@@ -156,6 +157,8 @@ exports.down = (pgm) => {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("messages", { ifExists: true });
+  pgm.dropTable("rooms", { ifExists: true });
   pgm.dropTable("subscriptions", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
@@ -166,5 +169,4 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
-  pgm.dropType("room_type", { ifExists: true });
 };

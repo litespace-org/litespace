@@ -1,4 +1,4 @@
-import { query } from "@/database/query";
+import { query } from "@/models/query";
 import { first } from "lodash";
 
 export class Users {

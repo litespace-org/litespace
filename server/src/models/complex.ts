@@ -1,6 +1,5 @@
-import { query } from "@/database/query";
-import { User } from "@/database/users";
-import { Tutor } from "@/database/tutors";
+import { query } from "@/models/query";
+import { User, Tutor } from "@/models";
 import { first } from "lodash";
 
 export class Complex {

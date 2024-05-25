@@ -1,4 +1,4 @@
-import { User, tutors, users } from "@/database";
+import { User, tutors, users } from "@/models";
 import { hashPassword } from "@/lib/user";
 
 async function main(): Promise<void> {

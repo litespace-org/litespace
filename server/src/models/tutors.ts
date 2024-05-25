@@ -1,4 +1,4 @@
-import { query } from "@/database/query";
+import { query } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
 

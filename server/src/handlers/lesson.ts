@@ -1,4 +1,4 @@
-import { Lesson, User, complex, lessons, slots, tutors } from "@/database";
+import { Lesson, User, complex, lessons, slots, tutors } from "@/models";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import ResponseError, { Forbidden, NotFound } from "@/lib/error";

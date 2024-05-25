@@ -32,6 +32,7 @@ app.use("/api/v1/zoom", routes.zoom);
 app.use("/api/v1/lesson", routes.lesson);
 app.use("/api/v1/rating", routes.rating);
 app.use("/api/v1/subscription", routes.subscription);
+app.use("/api/v1/chat", routes.chat);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>

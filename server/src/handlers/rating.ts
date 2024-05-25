@@ -1,4 +1,4 @@
-import { User, ratings, tutors } from "@/database";
+import { User, ratings, tutors } from "@/models";
 import ResponseError, { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";

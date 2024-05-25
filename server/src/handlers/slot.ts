@@ -1,4 +1,4 @@
-import { lessons, slots } from "@/database";
+import { lessons, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";

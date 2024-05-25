@@ -1,4 +1,4 @@
-import { User, users } from "@/database";
+import { User, users } from "@/models";
 import { hashPassword } from "@/lib/user";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";

@@ -1,4 +1,4 @@
-import { User } from "@/database";
+import { User } from "@/models";
 import type { Request } from "express";
 
 export namespace Request {

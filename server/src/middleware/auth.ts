@@ -4,7 +4,7 @@ import { NextFunction } from "express";
 import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
-import { User, users } from "@/database";
+import { User, users } from "@/models";
 import { Forbidden, NotFound } from "@/lib/error";
 import { isEmpty } from "lodash";
 
@@ -64,5 +64,6 @@ export const studentOrAdmin = auth([
   User.Type.SuperAdmin,
   User.Type.RegularAdmin,
 ]);
+export const studentOrTutor = auth([User.Type.Student, User.Type.Tutor]);
 export const studentOnly = auth([User.Type.Student]);
 export default auth;

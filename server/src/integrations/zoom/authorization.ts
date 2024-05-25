@@ -1,5 +1,5 @@
 import { ZoomAppType, zoomConfig } from "@/constants";
-import { tutors } from "@/database";
+import { tutors } from "@/models";
 import axios, { Axios } from "axios";
 import zod from "zod";
 

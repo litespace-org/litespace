@@ -1,4 +1,4 @@
-import { User, tutors } from "@/database";
+import { User, tutors } from "@/models";
 import ResponseError from "@/lib/error";
 import {
   generateUserBasedAccessToken,

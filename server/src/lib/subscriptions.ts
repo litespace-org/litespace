@@ -1,4 +1,4 @@
-import { Subscription } from "@/database";
+import { Subscription } from "@/models";
 import { Dayjs } from "dayjs";
 
 export function calculateSubscriptionEndDate(

@@ -1,5 +1,5 @@
 import { authorizationSecret } from "@/constants";
-import { users } from "@/database";
+import { users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { hashPassword } from "@/lib/user";

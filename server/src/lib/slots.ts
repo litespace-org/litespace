@@ -1,8 +1,8 @@
 import { Dayjs } from "dayjs";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
-import { Slot } from "@/database";
-import { Lesson } from "@/database";
+import { Slot } from "@/models";
+import { Lesson } from "@/models";
 import { cloneDeep, isEmpty } from "lodash";
 
 type Time = {

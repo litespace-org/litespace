@@ -1,4 +1,4 @@
-import { Lesson, Slot } from "@/database";
+import { Lesson, Slot } from "@/models";
 import {
   asDiscrateSlot,
   isAvailableSlot,

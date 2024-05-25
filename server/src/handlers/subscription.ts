@@ -1,4 +1,4 @@
-import { User, subscriptions } from "@/database";
+import { User, subscriptions } from "@/models";
 import ResponseError, { BadRequest, Forbidden, NotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
