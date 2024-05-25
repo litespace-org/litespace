@@ -12,6 +12,12 @@ exports.up = (pgm) => {
   // types
   pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
+  pgm.createType("renewal_interval_type", [
+    "no",
+    "montly",
+    "quarterly",
+    "yearly",
+  ]);
 
   // tables
   pgm.createTable("users", {
@@ -80,12 +86,30 @@ exports.up = (pgm) => {
     updated_at: { type: "timestamptz", notNull: true },
   });
 
+  pgm.createTable("subscriptions", {
+    id: { type: "serial", primaryKey: true, unique: true, notNull: true },
+    student_id: {
+      type: "serial",
+      notNull: true,
+      references: "users(id)",
+      unique: true,
+    },
+    monthly_minutes: { type: "smallint", notNull: true },
+    remaining_minutes: { type: "smallint", notNull: true },
+    renewal_interval: { type: "renewal_interval_type", notNull: true },
+    start: { type: "timestamptz", notNull: true },
+    end: { type: "timestamptz", notNull: true },
+    created_at: { type: "timestamptz", notNull: true },
+    updated_at: { type: "timestamptz", notNull: true },
+  });
+
   // indexes
   pgm.createIndex("lessons", "id");
   pgm.createIndex("slots", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
+  pgm.createIndex("subscriptions", "id");
 
   // constraints
   pgm.createConstraint("ratings", "student-tutor", {
@@ -103,6 +127,7 @@ exports.down = (pgm) => {
   pgm.dropConstraint("ratings", "student-tutor", { ifExists: true });
 
   // indexes
+  pgm.dropIndex("subscriptions", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
@@ -110,6 +135,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("subscriptions", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
@@ -119,4 +145,5 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
+  pgm.dropType("renewal_interval_type", { ifExists: true });
 };
