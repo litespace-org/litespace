@@ -4,10 +4,10 @@ import express, { json } from "express";
 import routes from "@/routes";
 import { serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
+import { authorizedSocket } from "@/middleware/auth";
+import { Events, wssHandler } from "@/wss";
 import cors from "cors";
 import "colors";
-import { authorizedSocket } from "@/middleware/auth";
-import { wssHandler } from "@/wss/handler";
 
 const app = express();
 const server = createServer(app);
@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 // todo: use dedicated auth middleware for socket.io
 io.engine.use(authorizedSocket);
-io.on("connection", wssHandler);
+io.on(Events.Client.Connection, wssHandler);
 
 app.use(cors());
 app.use(json());

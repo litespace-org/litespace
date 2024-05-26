@@ -1,5 +1,6 @@
-import { query, withClient, withTransaction } from "@/models/query";
-import { first, isEmpty } from "lodash";
+import { query } from "@/models/query";
+import { first } from "lodash";
+import { User } from "./users";
 
 export class Rooms {
   async create({
@@ -62,11 +63,15 @@ export class Rooms {
     return this.from(row);
   }
 
-  async findMemberRooms(
-    params: { tutorId: number } | { studentId: number }
-  ): Promise<Room.Self[]> {
-    const tutorId = "tutorId" in params ? params.tutorId : 0;
-    const studentId = "studentId" in params ? params.studentId : 0;
+  async findMemberRooms({
+    userId,
+    type,
+  }: {
+    userId: number;
+    type: User.Type;
+  }): Promise<Room.Self[]> {
+    const tutorId = type === User.Type.Tutor ? userId : 0;
+    const studentId = type === User.Type.Student ? userId : 0;
 
     const { rows } = await query<
       Room.Row,

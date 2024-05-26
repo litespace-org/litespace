@@ -1,7 +1,8 @@
 import { isDev } from "@/constants";
-import { User, users } from "@/models";
+import { User, rooms, users } from "@/models";
 import { Socket } from "socket.io";
 import "colors";
+import { Events } from "@/wss/events";
 
 export class WssHandler {
   socket: Socket;
@@ -14,12 +15,30 @@ export class WssHandler {
   }
 
   async initialize() {
-    await users.update({ id: this.user.id, active: true });
+    await this.markUserAsActive();
+    await this.joinRooms();
 
-    this.socket.on("disconnect", async () => {
+    this.socket.on(Events.Client.Disconnect, async () => {
       if (isDev) console.log(`${this.user.name} is disconnected`.yellow);
-      await users.update({ id: this.user.id, active: false });
+      await this.markUserAsInActive();
     });
+  }
+
+  async joinRooms() {
+    const list = await rooms.findMemberRooms({
+      userId: this.user.id,
+      type: this.user.type,
+    });
+
+    this.socket.join(list.map((room) => room.id.toString()));
+  }
+
+  async markUserAsActive() {
+    await users.update({ id: this.user.id, active: true });
+  }
+
+  async markUserAsInActive() {
+    await users.update({ id: this.user.id, active: false });
   }
 }
 

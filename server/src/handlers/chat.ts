@@ -27,9 +27,10 @@ async function findByUserId(
   if (![User.Type.Student, User.Type.Tutor].includes(userType))
     return next(new Forbidden());
 
-  const list = await rooms.findMemberRooms(
-    userType === User.Type.Tutor ? { tutorId: userId } : { studentId: userId }
-  );
+  const list = await rooms.findMemberRooms({
+    userId: userId,
+    type: userType,
+  });
 
   res.status(200).json(list);
 }
