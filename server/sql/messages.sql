@@ -27,9 +27,7 @@ VALUES (
         false,
         '1999-01-08 04:05:06',
         '1999-01-08 04:05:06',
-    )
-RETURNING
-    "id",
+    ) RETURNING "id",
     "user_id",
     "room_id",
     "reply_id",
@@ -44,9 +42,7 @@ SET
     messages.is_read = COALESCE(1, messages.is_read),
     messages.updated_at = NOW()
 WHERE
-    messages.id = 1
-RETURNING
-    "id",
+    messages.id = 1 RETURNING "id",
     "user_id",
     "room_id",
     "reply_id",
@@ -54,3 +50,8 @@ RETURNING
     "is_read",
     'created_at',
     'updated_at';
+
+SELECT "id", "user_id", "room_id", "reply_id", "body", "is_read", "created_at", "updated_at"
+FROM "messages"
+WHERE
+    messages.id = 1;

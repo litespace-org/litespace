@@ -77,10 +77,10 @@ export class Messages {
       `
         UPDATE "messages"
         SET
-            messages.is_read = $1 
-            messages.updated_at = NOW()
+            "is_read" = true,
+            "updated_at" = NOW()
         WHERE
-            messages.id = $2
+            messages.id = $1
         RETURNING
             "id",
             "user_id",
@@ -90,6 +90,22 @@ export class Messages {
             "is_read",
             "created_at",
             "updated_at";
+      `,
+      [id]
+    );
+
+    const row = first(rows);
+    if (!row) throw new Error("Message not found; should never happen");
+    return this.from(row);
+  }
+
+  async findById(id: number): Promise<Message.Self | null> {
+    const { rows } = await query<Message.Row, [id: number]>(
+      `
+        SELECT "id", "user_id", "room_id", "reply_id", "body", "is_read", "created_at", "updated_at"
+        FROM "messages"
+        WHERE
+            messages.id = $1;
       `,
       [id]
     );

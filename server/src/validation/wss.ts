@@ -7,6 +7,7 @@ const message = {
     replyId: zod.optional(id),
     body: zod.string(),
   }),
+  markMessageAsRead: zod.object({ id }),
 } as const;
 
 export default {
