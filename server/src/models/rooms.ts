@@ -32,6 +32,26 @@ export class Rooms {
     return row.id;
   }
 
+  async findById(id: number): Promise<Room.Self | null> {
+    const { rows } = await query<Room.Row, [id: number]>(
+      `
+      SELECT
+          "id",
+          "tutor_id",
+          "student_id",
+          "created_at",
+          "updated_at"
+      FROM "rooms"
+      WHERE id = $1
+      `,
+      [id]
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
+
   async findByMembers({
     tutorId,
     studentId,

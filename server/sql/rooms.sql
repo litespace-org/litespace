@@ -8,17 +8,6 @@ CREATE TABLE "rooms" (
     "updated_at" TIMESTAMPTZ NOT NULL
 );
 
-CREATE TABLE "messages" (
-    "id" SERIAL UNIQUE PRIMARY KEY NOT NULL,
-    "user_id" SERIAL NOT NULL REFERENCES users (id),
-    "room_id" SERIAL NOT NULL REFERENCES rooms (id),
-    "reply_id" INTEGER DEFAULT NULL REFERENCES messages (id),
-    "body" VARCHAR(1000) NOT NULL,
-    "is_read" BOOLEAN DEFAULT false NOT NULL,
-    "created_at" TIMESTAMPTZ NOT NULL,
-    "updated_at" TIMESTAMPTZ NOT NULL
-);
-
 INSERT INTO
     "rooms" (
         "tutor_id",
