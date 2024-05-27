@@ -1,7 +1,7 @@
 import React from "react";
 
-const Root = () => {
-  return <div>Root</div>;
+const Root: React.FC = () => {
+  return <div>LiteSpace home page</div>;
 };
 
 export default Root;
