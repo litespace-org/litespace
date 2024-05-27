@@ -5,7 +5,7 @@ import routes from "@/routes";
 import { serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { authorizedSocket } from "@/middleware/auth";
-import { Events, wssHandler } from "@/wss";
+import { wssHandler } from "@/wss";
 import cors from "cors";
 import "colors";
 
@@ -18,7 +18,7 @@ const io = new Server(server, {
 
 // todo: use dedicated auth middleware for socket.io
 io.engine.use(authorizedSocket);
-io.on(Events.Client.Connection, wssHandler);
+io.on("connection", wssHandler);
 
 app.use(cors());
 app.use(json());

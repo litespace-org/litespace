@@ -1,7 +1,10 @@
 export namespace Events {
   export enum Client {
-    Disconnect = "disconnect",
-    Connection = "connection",
     JoinRooms = "JoinRooms",
+    SendMessage = "SendMessage",
+  }
+  export enum Server {
+    RoomMessage = "RoomMessage",
+    JoinedRooms = "JoinedRooms",
   }
 }

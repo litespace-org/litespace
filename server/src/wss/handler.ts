@@ -18,7 +18,9 @@ export class WssHandler {
     await this.markUserAsActive();
     await this.joinRooms();
 
-    this.socket.on(Events.Client.Disconnect, async () => {
+    this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
+
+    this.socket.on("disconnect", async () => {
       if (isDev) console.log(`${this.user.name} is disconnected`.yellow);
       await this.markUserAsInActive();
     });
@@ -30,7 +32,15 @@ export class WssHandler {
       type: this.user.type,
     });
 
-    this.socket.join(list.map((room) => room.id.toString()));
+    const ids = list.map((room) => room.id.toString());
+    this.socket.join(ids);
+    this.socket.emit(Events.Server.JoinedRooms, ids);
+  }
+
+  async sendMessage({ roomId, text }: { roomId: number; text: string }) {
+    this.socket.broadcast
+      .to(roomId.toString())
+      .emit(Events.Server.RoomMessage, text);
   }
 
   async markUserAsActive() {
