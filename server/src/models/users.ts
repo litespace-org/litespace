@@ -6,9 +6,9 @@ export class Users {
     user: Omit<User.Self, "id" | "createdAt" | "updatedAt" | "active"> & {
       password: string;
     }
-  ): Promise<number> {
+  ): Promise<User.Self> {
     const { rows } = await query<
-      { id: number },
+      User.Row,
       [
         email: string,
         password: string,
@@ -30,14 +30,14 @@ export class Users {
             )
         values ( $1, $2, $3, $4, $5, NOW(), NOW())
         RETURNING
-            id;
+            id, email, name, avatar, type, active, createdAt, updatedAt;
       `,
       [user.email, user.password, user.name, user.avatar, user.type]
     );
 
-    const id = first(rows)?.id;
-    if (!id) throw new Error("Missing row id");
-    return id;
+    const row = first(rows);
+    if (!row) throw new Error("Missing row id");
+    return this.from(row);
   }
 
   async update(
@@ -158,6 +158,8 @@ export class Users {
     };
   }
 }
+
+export const users = new Users();
 
 export namespace User {
   export enum Type {

@@ -5,24 +5,25 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { map, merge, omit } from "lodash";
+import { merge, omit } from "lodash";
+import { generateAuthorizationToken } from "@/lib/auth";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
 
-  const id = await users.create({
+  const user = await users.create({
     ...body,
     type: User.Type.Tutor,
   });
 
   await tutors.create({
-    id,
+    id: user.id,
     bio: null,
     about: null,
     video: null,
   });
 
-  res.status(200).json({ id });
+  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {

@@ -10,7 +10,13 @@ exports.shorthands = undefined;
  */
 exports.up = (pgm) => {
   // types
-  pgm.createType("user_type", ["super_admin", "reg_admin", "tutor", "student"]);
+  pgm.createType("user_type", [
+    "super_admin",
+    "reg_admin",
+    "examiner",
+    "tutor",
+    "student",
+  ]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
 
   // tables
@@ -22,6 +28,20 @@ exports.up = (pgm) => {
     avatar: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", notNull: true },
     active: { type: "BOOLEAN", notNull: true, default: false },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+  });
+
+  pgm.createTable("examiners", {
+    id: {
+      type: "SERIAL",
+      notNull: true,
+      primaryKey: true,
+      references: "users(id)",
+    },
+    authorized_zoom_app: { type: "boolean", notNull: true, default: false },
+    zoom_refresh_token: { type: "VARCHAR(1000)", default: null },
+    aquired_refresh_token_at: { type: "TIMESTAMPTZ", default: null },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
@@ -38,9 +58,9 @@ exports.up = (pgm) => {
     video: { type: "VARCHAR(255)", default: null },
     authorized_zoom_app: { type: "boolean", notNull: true, default: false },
     zoom_refresh_token: { type: "VARCHAR(1000)", default: null },
-    aquired_refresh_token_at: { type: "timestamptz", default: null },
-    created_at: { type: "timestamptz", notNull: true },
-    updated_at: { type: "timestamptz", notNull: true },
+    aquired_refresh_token_at: { type: "TIMESTAMPTZ", default: null },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("slots", {
@@ -121,6 +141,7 @@ exports.up = (pgm) => {
   pgm.createIndex("lessons", "id");
   pgm.createIndex("slots", "id");
   pgm.createIndex("tutors", "id");
+  pgm.createIndex("examiners", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("subscriptions", "id");
@@ -154,6 +175,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
+  pgm.dropIndex("examiners", "id", { ifExists });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
@@ -164,6 +186,7 @@ exports.down = (pgm) => {
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
+  pgm.dropTable("examiners", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
 

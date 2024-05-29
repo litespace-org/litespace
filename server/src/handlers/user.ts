@@ -8,6 +8,7 @@ import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import jwt from "jsonwebtoken";
+import { generateAuthorizationToken } from "@/lib/auth";
 
 async function update(
   req: Request.Body<{
@@ -63,13 +64,8 @@ async function getMany(
 async function login(req: Request.Default, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
   const user = await users.findByCredentials(email, hashPassword(password));
-  if (!user) return next(new NotFound());
-
-  const token = jwt.sign({ id: user.id }, authorizationSecret, {
-    expiresIn: "7d",
-  });
-
-  res.status(200).json({ user, token });
+  if (!user) return next(new NotFound("User"));
+  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
 }
 
 export default {

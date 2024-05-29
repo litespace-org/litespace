@@ -3,13 +3,14 @@ import { hashPassword } from "@/lib/user";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import asyncHandler from "express-async-handler";
+import { generateAuthorizationToken } from "@/lib/auth";
 
 export async function create(req: Request.Default, res: Response) {
   const { email, password, name, avatar } = schema.http.student.create.parse(
     req.body
   );
 
-  const id = await users.create({
+  const user = await users.create({
     type: User.Type.Student,
     email,
     password: hashPassword(password),
@@ -17,7 +18,7 @@ export async function create(req: Request.Default, res: Response) {
     name,
   });
 
-  res.status(200).json({ id });
+  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
 }
 
 export default {
