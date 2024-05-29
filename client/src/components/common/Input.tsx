@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useFormContext } from "react-hook-form";
+import { FieldValues, RegisterOptions, useFormContext } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 
 export const Input: React.FC<{
@@ -7,16 +7,14 @@ export const Input: React.FC<{
   type: string;
   id: string;
   placeholder: string;
-}> = ({ label, type, id, placeholder }) => {
-  // https://react-hook-form.com/docs/useform/register
+  validation?: RegisterOptions<FieldValues>;
+}> = ({ label, type, id, placeholder, validation }) => {
   const {
     register,
     formState: { errors },
   } = useFormContext();
 
-  const error = useMemo(() => errors[id], [errors, id]);
-
-  console.log({ error, id });
+  const error = errors[id];
 
   return (
     <div className="flex flex-col w-full gap-2">
@@ -25,7 +23,16 @@ export const Input: React.FC<{
           {label}
         </label>
         <AnimatePresence mode="wait" initial={false}>
-          {error && <InputError message={"Invalid"} key={label} />}
+          {error ? (
+            <InputError
+              message={
+                typeof error.message === "string" && error.message
+                  ? error.message
+                  : "Invalid"
+              }
+              key={label}
+            />
+          ) : null}
         </AnimatePresence>
       </div>
       <input
@@ -33,12 +40,7 @@ export const Input: React.FC<{
         type={type}
         className="w-full p-5 font-medium border rounded-md border-slate-300 placeholder:opacity-60"
         placeholder={placeholder}
-        {...register(id, {
-          required: {
-            value: true,
-            message: "required",
-          },
-        })}
+        {...register(id, validation)}
       />
     </div>
   );
