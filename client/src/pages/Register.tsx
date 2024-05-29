@@ -1,8 +1,19 @@
+import { Input } from "@/components/common/Input";
 import { useRegister } from "@/hooks/register";
-import React from "react";
+import React, { useMemo } from "react";
+import { useForm, FormProvider } from "react-hook-form";
 
 const Register: React.FC = () => {
   const { name, email, password, register } = useRegister();
+  const methods = useForm();
+
+  const onSubmit = useMemo(
+    () =>
+      methods.handleSubmit((data) => {
+        console.log(data);
+      }),
+    [methods]
+  );
 
   return (
     <div>
@@ -10,53 +21,39 @@ const Register: React.FC = () => {
         <h1 className="text-4xl">Register</h1>
       </div>
 
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-        }}
-      >
-        <div className="flex flex-row gap-2">
-          <label htmlFor="name" className="inline-block">
-            Name
-          </label>
-          <input
+      <FormProvider {...methods}>
+        <form
+          className="max-w-screen-md mx-auto flex flex-col gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <Input
             type="text"
-            name="name"
-            className="border"
-            value={name.value}
-            onChange={(e) => name.set(e.target.value)}
+            label="Name"
+            id="name"
+            placeholder="Enter your name"
           />
-        </div>
-        <div className="flex flex-row gap-2">
-          <label htmlFor="email">Email</label>
-          <input
+          <Input
             type="text"
-            name="email"
-            autoComplete="username"
-            className="border"
-            value={email.value}
-            onChange={(e) => email.set(e.target.value)}
+            label="Email"
+            id="email"
+            placeholder="Enter your email"
           />
-        </div>
-        <div className="flex flex-row gap-2">
-          <label htmlFor="password">Password</label>
-          <input
+          <Input
             type="password"
-            name="password"
-            className="border"
-            autoComplete="current-password"
-            value={password.value}
-            onChange={(e) => password.set(e.target.value)}
+            label="Password"
+            id="passowrd"
+            placeholder="Enter your password"
           />
-        </div>
-
-        <div>
-          <button onClick={() => register.call()}>
-            {register.loading ? "loading..." : "Register"}
-          </button>
-          <p>{register.error}</p>
-        </div>
-      </form>
+          <div>
+            <button onClick={onSubmit}>
+              {register.loading ? "loading..." : "Register"}
+            </button>
+            <p>{register.error}</p>
+          </div>
+        </form>
+      </FormProvider>
     </div>
   );
 };
