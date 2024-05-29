@@ -72,7 +72,7 @@ const slot = {
 
 const student = {
   create: zod.object(
-    { email, password, name, avatar },
+    { email, password, name },
     { message: "Empty request body" }
   ),
 } as const;

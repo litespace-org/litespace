@@ -2,37 +2,31 @@ import { query } from "@/models/query";
 import { first } from "lodash";
 
 export class Users {
-  async create(
-    user: Omit<User.Self, "id" | "createdAt" | "updatedAt" | "active"> & {
-      password: string;
-    }
-  ): Promise<User.Self> {
+  async create(user: {
+    email: string;
+    password: string;
+    name: string;
+    type: User.Type;
+  }): Promise<User.Self> {
     const { rows } = await query<
       User.Row,
-      [
-        email: string,
-        password: string,
-        name: string,
-        avatar: string | null,
-        type: User.Type
-      ]
+      [email: string, password: string, name: string, type: User.Type]
     >(
       `
         INSERT INTO
-            users (
-                email,
-                password,
-                name,
-                avatar,
-                type,
-                created_at,
-                updated_at
+            "users" (
+                "email",
+                "password",
+                "name",
+                "type",
+                "created_at",
+                "updated_at"
             )
-        values ( $1, $2, $3, $4, $5, NOW(), NOW())
+        values ( $1, $2, $3, $4, NOW(), NOW())
         RETURNING
-            id, email, name, avatar, type, active, createdAt, updatedAt;
+            id, email, name, avatar, type, active, created_at, updated_at;
       `,
-      [user.email, user.password, user.name, user.avatar, user.type]
+      [user.email, user.password, user.name, user.type]
     );
 
     const row = first(rows);
@@ -183,5 +177,10 @@ export namespace User {
   export type Row = Omit<Self, "createdAt" | "updatedAt"> & {
     created_at: Date;
     updated_at: Date;
+  };
+
+  export type Credentials = {
+    email: string;
+    password: string;
   };
 }

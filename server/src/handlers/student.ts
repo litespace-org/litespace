@@ -6,15 +6,12 @@ import asyncHandler from "express-async-handler";
 import { generateAuthorizationToken } from "@/lib/auth";
 
 export async function create(req: Request.Default, res: Response) {
-  const { email, password, name, avatar } = schema.http.student.create.parse(
-    req.body
-  );
+  const { email, password, name } = schema.http.student.create.parse(req.body);
 
   const user = await users.create({
+    password: hashPassword(password),
     type: User.Type.Student,
     email,
-    password: hashPassword(password),
-    avatar,
     name,
   });
 

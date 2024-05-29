@@ -175,7 +175,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
-  pgm.dropIndex("examiners", "id", { ifExists });
+  pgm.dropIndex("examiners", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 

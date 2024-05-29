@@ -1,38 +1,35 @@
-import { User, tutors, users } from "@/models";
+import { User, examiners, tutors, users } from "@/models";
 import { hashPassword } from "@/lib/user";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace1###");
+  const superAdmin = User.Type.SuperAdmin;
+  const student = User.Type.Student;
 
   await users.create({
     email: "admin@litespace.com",
+    name: "LiteSpace Admin",
+    type: superAdmin,
     password,
-    name: "Root Admin",
-    avatar: null,
-    type: User.Type.SuperAdmin,
-  });
-
-  const id = await users.create({
-    email: "teacher@litespace.com",
-    password,
-    name: "My Teacher",
-    avatar: null,
-    type: User.Type.Tutor,
-  });
-
-  await tutors.create({
-    id,
-    bio: null,
-    about: null,
-    video: null,
   });
 
   await users.create({
     email: "student@litespace.com",
+    name: "LiteSpace Student",
     password,
-    name: "A Student",
-    avatar: null,
     type: User.Type.Student,
+  });
+
+  await tutors.create({
+    email: "tutor@litespace.com",
+    name: "LiteSpace Tutor",
+    password,
+  });
+
+  await examiners.create({
+    email: "examiner@litespace.com",
+    name: "LiteSpace Examiner",
+    password,
   });
 }
 

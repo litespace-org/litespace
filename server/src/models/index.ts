@@ -18,11 +18,13 @@ export const subscriptions = new Subscriptions();
 export const rooms = new Rooms();
 export const messages = new Messages();
 export const complex = new Complex();
+export { examiners } from "@/models/examiners";
 
 // types
 export { User } from "@/models/users";
 export { Slot } from "@/models/slots";
 export { Tutor } from "@/models/tutors";
+export { Examiner } from "@/models/examiners";
 export { Lesson } from "@/models/lessons";
 export { Rating } from "@/models/ratings";
 export { Subscription } from "@/models/subscriptions";

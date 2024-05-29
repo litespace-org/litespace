@@ -24,7 +24,6 @@ export async function withClient<T>(
   try {
     return await handler(client);
   } finally {
-    console.log("Client released!!");
     client.release();
   }
 }
@@ -43,7 +42,6 @@ export async function withTransaction<T>(
     await client.query("ROLLBACK");
     throw error;
   } finally {
-    console.log("Client released (tx)!!");
     client.release();
   }
 }

@@ -1,39 +1,54 @@
-import { query } from "@/models/query";
+import { query, withTransaction } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
+import { User, users } from "./users";
 
 export class Tutors {
   async create(
-    tutor: Omit<
-      Tutor.Self,
-      | "zoomRefreshToken"
-      | "authorizedZoomApp"
-      | "aquiredRefreshTokenAt"
-      | "createdAt"
-      | "updatedAt"
-    >
-  ): Promise<number> {
-    const { rows } = await query<
-      { id: number },
-      [
-        id: number,
-        bio: string | null,
-        about: string | null,
-        video: string | null
-      ]
-    >(
-      `
+    user: User.Credentials & { name: string }
+  ): Promise<Tutor.FullTutor> {
+    return withTransaction(async (client) => {
+      const { rows } = await client.query<User.Row>(
+        `
+        INSERT INTO
+            "users" (
+                "email",
+                "password",
+                "name",
+                "type",
+                "created_at",
+                "updated_at"
+            )
+        values ($1, $2, $3, 'tutor', NOW(), NOW())
+        RETURNING
+            id, email, name, avatar, type, active, created_at, updated_at;
+      `,
+        [user.email, user.password, user.name]
+      );
+
+      const row = first(rows);
+      if (!row) throw new Error("User not found; should never happen");
+      const mapped = users.from(row);
+
+      await client.query(
+        `
         INSERT INTO
             tutors (id, bio, about, video, created_at, updated_at)
-        VALUES ($1, $2, $3, $4, NOW(), NOW())
-        RETURNING id;
-      `,
-      [tutor.id, tutor.bio, tutor.about, tutor.video]
-    );
+        VALUES ($1, null, null, null, NOW(), NOW());
+        `,
+        [mapped.id]
+      );
 
-    const row = first(rows);
-    if (!row) throw new Error("Tutor not found, should never happen");
-    return row.id;
+      return {
+        ...mapped,
+        zoomRefreshToken: null,
+        aquiredRefreshTokenAt: null,
+        authorizedZoomApp: false,
+        bio: null,
+        about: null,
+        video: null,
+      };
+    });
   }
 
   async update(
@@ -181,6 +196,15 @@ export namespace Tutor {
     authorizedZoomApp: boolean;
     createdAt: string;
     updatedAt: string;
+  };
+
+  export type FullTutor = User.Self & {
+    bio: string | null;
+    about: string | null;
+    video: string | null;
+    zoomRefreshToken: string | null;
+    aquiredRefreshTokenAt: string | null;
+    authorizedZoomApp: boolean;
   };
 
   export type Row = {
