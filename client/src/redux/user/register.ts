@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { user } from "@/api";
 
 type State = {
   loading: boolean;
@@ -12,16 +13,8 @@ const initialState: State = {
 
 export const register = createAsyncThunk(
   "user/register",
-  async ({
-    name,
-    email,
-    password,
-  }: {
-    name: string;
-    email: string;
-    password: string;
-  }) => {
-    console.log({ name, email, password });
+  async (payload: { name: string; email: string; password: string }) => {
+    await user.register(payload);
   }
 );
 
