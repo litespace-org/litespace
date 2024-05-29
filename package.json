@@ -1,5 +1,5 @@
 {
-  "name": "space",
+  "name": "litespace",
   "version": "1.0.0",
   "description": "Online English classes",
   "main": "index.js",
@@ -8,7 +8,8 @@
   "workspaces": {
     "packages": [
       "server",
-      "client"
+      "client",
+      "components"
     ]
   }
 }
