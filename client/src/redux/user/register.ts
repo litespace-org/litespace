@@ -14,6 +14,7 @@ const initialState: State = {
 export const register = createAsyncThunk(
   "user/register",
   async (payload: { name: string; email: string; password: string }) => {
+    console.log({ payload });
     await user.register(payload);
   }
 );

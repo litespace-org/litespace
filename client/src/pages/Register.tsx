@@ -1,6 +1,7 @@
 import { Input } from "@/components/common/Input";
-import { useRegister } from "@/hooks/register";
-import React, { useCallback, useMemo } from "react";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { register } from "@/redux/user/register";
+import React, { useCallback } from "react";
 import {
   useForm,
   FormProvider,
@@ -47,22 +48,27 @@ const valiedation: Record<
 } as const;
 
 const Register: React.FC = () => {
-  const { name, email, password, register } = useRegister();
   const methods = useForm<IFormInput>();
+  const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<IFormInput> = useCallback((data) => {
-    console.log(data);
-  }, []);
+  const { loading, error } = useAppSelector((state) => state.user.register);
+
+  const onSubmit: SubmitHandler<IFormInput> = useCallback(
+    async (data) => {
+      await dispatch(register(data));
+    },
+    [dispatch]
+  );
 
   return (
-    <div>
+    <div className="max-w-screen-md mx-auto my-10">
       <div className="mb-4">
-        <h1 className="text-4xl">Register</h1>
+        <h1 className="text-4xl text-center">Register</h1>
       </div>
 
       <FormProvider {...methods}>
         <form
-          className="max-w-screen-md mx-auto flex flex-col gap-2"
+          className="flex flex-col gap-2"
           onSubmit={methods.handleSubmit(onSubmit)}
         >
           <Input
@@ -82,11 +88,13 @@ const Register: React.FC = () => {
           <Input
             type="password"
             label="Password"
-            id="passowrd"
+            id="password"
             placeholder="Enter your password"
             validation={valiedation.password}
           />
-          <button type="submit">Click</button>
+          <button type="submit">{loading ? "Loading..." : "Register"}</button>
+
+          {error && <p>{error}</p>}
         </form>
       </FormProvider>
     </div>

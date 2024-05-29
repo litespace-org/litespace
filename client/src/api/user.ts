@@ -9,11 +9,15 @@ export async function register({
   email: string;
   password: string;
 }): Promise<number> {
-  const { data } = await client.post<{ id: number }>("/api/v1/user", {
-    name,
-    email,
-    password,
-  });
+  const { data } = await client.post<{ id: number }>(
+    "/api/v1/student",
+    JSON.stringify({
+      name,
+      email,
+      password,
+      avatar: null,
+    })
+  );
 
   return data.id;
 }
