@@ -7,12 +7,13 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "@/redux/store";
+import { Route } from "@/types/routes";
 import "@/index.css";
 
 const router = createBrowserRouter([
-  { path: "/", element: <Root />, errorElement: <ErrorPage /> },
-  { path: "/login", element: <Login /> },
-  { path: "/register", element: <Register /> },
+  { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
+  { path: Route.Login, element: <Login /> },
+  { path: Route.Register, element: <Register /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
