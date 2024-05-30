@@ -60,3 +60,8 @@ export const googleConfig = {
   clientId: zod.string().trim().parse(process.env.GOOGLE_CLIENT_ID),
   clientSecret: zod.string().trim().parse(process.env.GOOGLE_CLIENT_SECRET),
 } as const;
+
+export const facebookConfig = {
+  appId: zod.string().trim().parse(process.env.FACEBOOK_APP_ID),
+  appSecret: zod.string().trim().parse(process.env.FACEBOOK_APP_SECRET),
+} as const;
