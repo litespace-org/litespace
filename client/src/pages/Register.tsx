@@ -1,4 +1,4 @@
-import { Input } from "@/components/common/Input";
+import { Input, Form } from "@litespace/components";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { register } from "@/redux/user/register";
 import React, { useCallback } from "react";
@@ -48,7 +48,7 @@ const valiedation: Record<
 } as const;
 
 const Register: React.FC = () => {
-  const methods = useForm<IFormInput>();
+  // const methods = useForm<IFormInput>();
   const dispatch = useAppDispatch();
 
   const { loading, error } = useAppSelector((state) => state.user.register);
@@ -66,37 +66,32 @@ const Register: React.FC = () => {
         <h1 className="text-4xl text-center">Register</h1>
       </div>
 
-      <FormProvider {...methods}>
-        <form
-          className="flex flex-col gap-2"
-          onSubmit={methods.handleSubmit(onSubmit)}
-        >
-          <Input
-            type="text"
-            label="Name"
-            id="name"
-            placeholder="Enter your name"
-            validation={valiedation.name}
-          />
-          <Input
-            type="text"
-            label="Email"
-            id="email"
-            placeholder="Enter your email"
-            validation={valiedation.email}
-          />
-          <Input
-            type="password"
-            label="Password"
-            id="password"
-            placeholder="Enter your password"
-            validation={valiedation.password}
-          />
-          <button type="submit">{loading ? "Loading..." : "Register"}</button>
+      <Form<IFormInput> onSubmit={onSubmit}>
+        <Input
+          type="text"
+          label="Name"
+          id="name"
+          placeholder="Enter your name"
+          validation={valiedation.name}
+        />
+        <Input
+          type="text"
+          label="Email"
+          id="email"
+          placeholder="Enter your email"
+          validation={valiedation.email}
+        />
+        <Input
+          type="password"
+          label="Password"
+          id="password"
+          placeholder="Enter your password"
+          validation={valiedation.password}
+        />
+        <button type="submit">{loading ? "Loading..." : "Register"}</button>
 
-          {error && <p>{error}</p>}
-        </form>
-      </FormProvider>
+        {error && <p>{error}</p>}
+      </Form>
     </div>
   );
 };

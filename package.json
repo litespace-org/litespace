@@ -5,6 +5,9 @@
   "main": "index.js",
   "license": "MIT",
   "private": true,
+  "scripts": {
+    "install:clean": "yarn workspaces run rimraf node_modules && yarn rimraf node_modules && yarn install"
+  },
   "workspaces": {
     "packages": [
       "server",
