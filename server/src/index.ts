@@ -2,11 +2,15 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { serverConfig } from "@/constants";
+import { googleConfig, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { authorizedSocket } from "@/middleware/auth";
 import { wssHandler } from "@/wss";
+import { Strategy } from "passport-google-oauth20";
+import passport from "passport";
+import session from "express-session";
 import cors from "cors";
+import logger from "morgan";
 import "colors";
 
 const app = express();
@@ -20,6 +24,48 @@ const io = new Server(server, {
 io.engine.use(authorizedSocket);
 io.on("connection", wssHandler);
 
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser<number>((id, done) => done(null, { id }));
+
+passport.use(
+  new Strategy(
+    {
+      clientID: googleConfig.clientId,
+      clientSecret: googleConfig.clientSecret,
+      callbackURL: "/auth/google/callback",
+    },
+    (accessToken, refershToken, profile, callback) => {
+      console.log({ accessToken, refershToken, profile, callback });
+      callback(null, { id: 1 });
+    }
+  )
+);
+
+// https://youtu.be/SBvmnHTQIPY?t=2517
+app.use(
+  session({
+    secret: "keyboard cat",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.get(
+  "/auth/google",
+  passport.authenticate("google", { scope: ["profile"] })
+);
+
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/login" }),
+  function (req, res) {
+    res.redirect("/dashboard");
+  }
+);
+
+app.use(logger("dev"));
 app.use(cors());
 app.use(json());
 app.use("/api/v1/user", routes.user);

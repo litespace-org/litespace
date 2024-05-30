@@ -55,3 +55,8 @@ export const authorizationSecret = zod
   .string({ message: "Missing JWT Scret" })
   .parse(process.env.JWT_SECRET)
   .trim();
+
+export const googleConfig = {
+  clientId: zod.string().trim().parse(process.env.GOOGLE_CLIENT_ID),
+  clientSecret: zod.string().trim().parse(process.env.GOOGLE_CLIENT_SECRET),
+} as const;

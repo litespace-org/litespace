@@ -14,8 +14,8 @@ import "@/index.css";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
-  { path: Route.Login, element: <Login /> },
-  { path: Route.Register, element: <Register /> },
+  { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
+  { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(

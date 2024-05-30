@@ -10,9 +10,9 @@
   },
   "workspaces": {
     "packages": [
+      "components",
       "server",
-      "client",
-      "components"
+      "web"
     ]
   }
 }

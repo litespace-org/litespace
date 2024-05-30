@@ -26,7 +26,7 @@ export default [
       commonjs(),
       typescript({ tsconfig: "./tsconfig.json" }),
     ],
-    external: ["react", "react-dom"],
+    external: ["react", "react-dom", "framer-motion", "react-hook-form"],
   },
   {
     input: "dist/esm/types/index.d.ts",

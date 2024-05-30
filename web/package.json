@@ -12,6 +12,10 @@
   "dependencies": {
     "@litespace/components": "1.0.0",
     "@reduxjs/toolkit": "^2.2.5",
+    "@supabase/auth-helpers-react": "^0.5.0",
+    "@supabase/auth-ui-react": "^0.4.7",
+    "@supabase/auth-ui-shared": "^0.1.8",
+    "@supabase/supabase-js": "^2.43.4",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.6",
     "react": "^18.2.0",

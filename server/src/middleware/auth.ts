@@ -11,8 +11,13 @@ import { isEmpty } from "lodash";
 declare global {
   namespace Express {
     interface Request {
-      user: User.Self;
+      // todo: enable back
+      // user: User.Self;
       _query: { sid: string | undefined };
+    }
+
+    interface User {
+      id: number;
     }
   }
 }
