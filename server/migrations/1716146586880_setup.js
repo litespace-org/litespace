@@ -18,18 +18,21 @@ exports.up = (pgm) => {
     "student",
   ]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
+  pgm.createType("user_gender_type", ["male", "female"]);
 
   // tables
   pgm.createTable("users", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
-    password: { type: "CHAR(64)", notNull: true },
-    name: { type: "VARCHAR(50)", notNull: true },
+    password: { type: "CHAR(64)", default: null },
+    name: { type: "VARCHAR(50)", default: null },
     avatar: { type: "VARCHAR(255)", default: null },
-    type: { type: "user_type", notNull: true },
+    type: { type: "user_type", default: null },
+    birthday: { type: "DATE", default: null },
+    gender: { type: "user_gender_type", default: null },
     active: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
   });
 
   pgm.createTable("examiners", {
@@ -193,4 +196,5 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
+  pgm.dropType("user_gender_type", { ifExists: true });
 };

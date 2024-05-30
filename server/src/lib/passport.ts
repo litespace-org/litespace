@@ -3,6 +3,7 @@ import { Strategy as Google, VerifyCallback } from "passport-google-oauth20";
 import { Strategy as Facebook } from "passport-facebook";
 import { facebookConfig, googleConfig } from "@/constants";
 import { users } from "@/models";
+import { first } from "lodash";
 
 passport.serializeUser(async (user, done) => done(null, user.id));
 passport.deserializeUser<number>(async (id, done) => {
@@ -14,17 +15,23 @@ passport.deserializeUser<number>(async (id, done) => {
   }
 });
 
+// todo: find or create
 async function verify(
-  accessToken: string,
-  refershToken: string,
+  _accessToken: string,
+  _refershToken: string,
   profile: Profile,
   callback: VerifyCallback
 ) {
   try {
-    console.log({ accessToken, refershToken, profile });
-    const user = await users.findById(1);
-    if (!user) throw new Error("User not found");
-    callback(null, user);
+    const email = first(profile.emails);
+    if (!email)
+      throw new Error("User email is not provided; should never happen");
+
+    const user = await users.findByEmail(email.value);
+    if (user) return callback(null, user);
+
+    const info = await users.createWithEmailOnly(email.value);
+    return callback(null, info);
   } catch (error) {
     callback(error);
   }
@@ -47,14 +54,7 @@ passport.use(
       clientID: facebookConfig.appId,
       clientSecret: facebookConfig.appSecret,
       callbackURL: "/api/v1/auth/facebook/callback",
-      profileFields: [
-        "id",
-        "email",
-        "first_name",
-        "last_name",
-        "picture.type(large)",
-        "gender",
-      ],
+      profileFields: ["id", "email"],
     },
     verify
   )

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import passport from "@/lib/passport";
 import redirect from "@/handlers/redirect";
+import { oauthHandler } from "@/handlers/oauth";
 
 const router = Router();
 
@@ -17,7 +18,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", { failureRedirect: "/login" }),
-  redirect("/dashboard/google")
+  oauthHandler
 );
 
 // facebook
@@ -30,7 +31,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", { failureRedirect: "/login" }),
-  redirect("/dashboard/facebook")
+  oauthHandler
 );
 
 export default router;

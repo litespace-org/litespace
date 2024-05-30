@@ -9,7 +9,6 @@ import { Messages } from "@/models/messages";
 import { Complex } from "@/models/complex";
 
 // services
-export const users = new Users();
 export const slots = new Slots();
 export const tutors = new Tutors();
 export const lessons = new Lessons();
@@ -19,6 +18,7 @@ export const rooms = new Rooms();
 export const messages = new Messages();
 export const complex = new Complex();
 export { examiners } from "@/models/examiners";
+export { users } from "@/models/users";
 
 // types
 export { User } from "@/models/users";

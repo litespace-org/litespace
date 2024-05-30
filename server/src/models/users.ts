@@ -22,7 +22,7 @@ export class Users {
                 "created_at",
                 "updated_at"
             )
-        values ( $1, $2, $3, $4, NOW(), NOW())
+        values ($1, $2, $3, $4, NOW(), NOW())
         RETURNING
             id, email, name, avatar, type, active, created_at, updated_at;
       `,
@@ -31,6 +31,30 @@ export class Users {
 
     const row = first(rows);
     if (!row) throw new Error("Missing row id");
+    return this.from(row);
+  }
+
+  async createWithEmailOnly(email: string): Promise<User.Self> {
+    const { rows } = await query<User.Row, [email: string]>(
+      `
+      INSERT INTO
+          "users" ("email")
+      values ($1) RETURNING "id",
+          "email",
+          "name",
+          "avatar",
+          "type",
+          "birthday",
+          "gender",
+          "active",
+          "created_at",
+          "updated_at";
+      `,
+      [email]
+    );
+
+    const row = first(rows);
+    if (!row) throw new Error("User not found; should never happen");
     return this.from(row);
   }
 
@@ -85,9 +109,19 @@ export class Users {
   async findByEmail(email: string): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [email: string]>(
       `
-        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        SELECT 
+          "id",
+          "email",
+          "name",
+          "avatar",
+          "type",
+          "birthday",
+          "gender",
+          "active",
+          "created_at",
+          "updated_at"
         FROM users
-        WHERE id = $1;
+        WHERE email = $1;
       `,
       [email]
     );
@@ -160,6 +194,8 @@ export class Users {
       email: row.email,
       name: row.name,
       avatar: row.avatar,
+      birthday: row.birthday,
+      gender: row.gender,
       type: row.type,
       active: row.active,
       createdAt: row.created_at.toISOString(),
@@ -178,11 +214,18 @@ export namespace User {
     Student = "student",
   }
 
+  export enum Gender {
+    Male = "male",
+    Female = "female",
+  }
+
   export type Self = {
     id: number;
     email: string;
-    name: string;
+    name: string | null;
     avatar: string | null;
+    birthday: string | null;
+    gender: Gender | null;
     type: Type;
     active: boolean;
     createdAt: string;

@@ -42,7 +42,7 @@ async function getOne(
   next: NextFunction
 ) {
   const id = schema.http.user.get.query.parse(req.query).id;
-  const user = await users.findOne(id);
+  const user = await users.findById(id);
   if (!user) return next(new NotFound());
 
   const owner = user.id === req.user.id;

@@ -48,7 +48,7 @@ function authHandler(roles?: User.Type[]) {
     ) as {
       id: number;
     };
-    const user = await users.findOne(id);
+    const user = await users.findById(id);
     if (!user) return next(new NotFound());
     if (!isEmpty(roles) && !roles?.includes(user.type))
       return next(new Forbidden());

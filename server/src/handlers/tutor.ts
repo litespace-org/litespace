@@ -18,7 +18,7 @@ async function create(req: Request.Default, res: Response) {
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {
   const body = schema.http.tutor.update.body.parse(req.body);
-  const user = await users.findOne(req.user.id);
+  const user = await users.findById(req.user.id);
   if (!user) return next(new NotFound());
 
   const fields = { ...body, id: req.user.id };
@@ -31,7 +31,7 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const id = schema.http.tutor.get.query.parse(req.query).id;
 
   const [user, tutor] = await Promise.all([
-    users.findOne(id),
+    users.findById(id),
     tutors.findById(id),
   ]);
   if (!user || !tutor) return next(new NotFound());
@@ -56,7 +56,7 @@ async function delete_(
   next: NextFunction
 ) {
   const id = schema.http.tutor.get.query.parse(req.query).id;
-  const user = await users.findOne(id);
+  const user = await users.findById(id);
   if (!user) return next(new NotFound());
 
   const owner = req.user.id === user.id;

@@ -58,13 +58,17 @@ values (
         $5,
         NOW(),
         NOW()
-    )
-RETURNING
-    id;
+    ) RETURNING id;
 
 SELECT * FrOM users;
 
-SELECT id, email, password, name, avatar, type
+SELECT
+    id,
+    email,
+    password,
+    name,
+    avatar,
+    type
 FROM users
 WHERE
     id in (1, 2);
@@ -75,8 +79,25 @@ SET
 where
     id = 1;
 
-SELECT id, email, password, name, avatar, type
+SELECT
+    id,
+    email,
+    password,
+    name,
+    avatar,
+    type
 FROM users
 WHERE
     email = 'ahmed@litespace.com'
     AND password = 'pass_0';
+
+INSERT INTO
+    "users" ("email", "type")
+values ($1, $2) RETURNING "id",
+    "email",
+    "name",
+    "avatar",
+    "type",
+    "active",
+    "created_at",
+    "updated_at";
