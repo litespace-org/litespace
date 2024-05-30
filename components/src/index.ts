@@ -1,2 +1,1 @@
-// todo: add path alias
-export { Button } from "./components/Button";
+export { Button } from "@/components/Button";

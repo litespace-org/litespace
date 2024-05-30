@@ -1,8 +1,10 @@
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
+import alias from "@rollup/plugin-alias";
 import { dts } from "rollup-plugin-dts";
 import pkg from "./package.json" assert { type: "json" };
+import path from "node:path";
 
 export default [
   {
@@ -28,6 +30,16 @@ export default [
   {
     input: "dist/esm/types/index.d.ts",
     output: [{ file: "dist/index.d.ts", format: "esm" }],
-    plugins: [dts()],
+    plugins: [
+      alias({
+        entries: [
+          {
+            find: "@",
+            replacement: path.resolve("./dist/esm/types"),
+          },
+        ],
+      }),
+      dts(),
+    ],
   },
 ];
