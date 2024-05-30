@@ -6,6 +6,7 @@ import zoom from "@/routes/zoom";
 import lesson from "@/routes/lesson";
 import rating from "@/routes/rating";
 import subscription from "@/routes/subscription";
+import authorization from "@/routes/authorization";
 import chat from "@/routes/chat";
 
 export default {
@@ -17,5 +18,6 @@ export default {
   lesson,
   rating,
   subscription,
+  authorization,
   chat,
 };

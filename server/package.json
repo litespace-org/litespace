@@ -17,6 +17,7 @@
     "@types/lodash": "^4.17.1",
     "@types/morgan": "^1.9.9",
     "@types/node": "^20.12.12",
+    "@types/passport-apple": "^2.0.3",
     "@types/passport-facebook": "^3.0.3",
     "@types/passport-google-oauth20": "^2.0.16",
     "@types/pg": "^8.11.6",
@@ -30,6 +31,7 @@
   },
   "dependencies": {
     "axios": "^1.6.8",
+    "body-parser": "^1.20.2",
     "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dayjs": "^1.11.11",
@@ -40,6 +42,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.10.0",
     "passport": "^0.7.0",
+    "passport-apple": "^2.0.2",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.11.5",
