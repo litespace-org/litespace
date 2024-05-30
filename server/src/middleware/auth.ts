@@ -16,9 +16,7 @@ declare global {
       _query: { sid: string | undefined };
     }
 
-    interface User {
-      id: number;
-    }
+    interface User extends User.Self {}
   }
 }
 

@@ -1,10 +1,34 @@
-import passport from "passport";
-import { Strategy as Google } from "passport-google-oauth20";
+import passport, { Profile } from "passport";
+import { Strategy as Google, VerifyCallback } from "passport-google-oauth20";
 import { Strategy as Facebook } from "passport-facebook";
 import { facebookConfig, googleConfig } from "@/constants";
+import { users } from "@/models";
 
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser<number>((id, done) => done(null, { id }));
+passport.serializeUser(async (user, done) => done(null, user.id));
+passport.deserializeUser<number>(async (id, done) => {
+  try {
+    const info = await users.findById(id);
+    done(null, info);
+  } catch (error) {
+    done(error);
+  }
+});
+
+async function verify(
+  accessToken: string,
+  refershToken: string,
+  profile: Profile,
+  callback: VerifyCallback
+) {
+  try {
+    console.log({ accessToken, refershToken, profile });
+    const user = await users.findById(1);
+    if (!user) throw new Error("User not found");
+    callback(null, user);
+  } catch (error) {
+    callback(error);
+  }
+}
 
 passport.use(
   new Google(
@@ -13,10 +37,7 @@ passport.use(
       clientSecret: googleConfig.clientSecret,
       callbackURL: "/api/v1/auth/google/callback",
     },
-    (accessToken, refershToken, profile, callback) => {
-      console.log({ accessToken, refershToken, profile, callback });
-      callback(null, { id: 1 });
-    }
+    verify
   )
 );
 
@@ -35,10 +56,7 @@ passport.use(
         "gender",
       ],
     },
-    (accessToken, refershToken, profile, callback) => {
-      console.log({ accessToken, refershToken, profile, callback });
-      callback(null, { id: 1 });
-    }
+    verify
   )
 );
 

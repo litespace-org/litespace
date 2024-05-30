@@ -67,7 +67,7 @@ export class Users {
     await query("DELETE FROM users WHERE id = $1", [id]);
   }
 
-  async findOne(id: number): Promise<User.Self | null> {
+  async findById(id: number): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [number]>(
       `
         SELECT id, email, name, avatar, type, active, created_at, updated_at
@@ -75,6 +75,21 @@ export class Users {
         WHERE id = $1;
       `,
       [id]
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
+
+  async findByEmail(email: string): Promise<User.Self | null> {
+    const { rows } = await query<User.Row, [email: string]>(
+      `
+        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        FROM users
+        WHERE id = $1;
+      `,
+      [email]
     );
 
     const row = first(rows);
