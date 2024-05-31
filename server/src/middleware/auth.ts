@@ -1,6 +1,5 @@
-import { Request, Response } from "@/types/http";
 import asyncHandler from "express-async-handler";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
@@ -40,7 +39,7 @@ function extractToken(header: string): string {
  * types.
  */
 function authHandler(roles?: User.Type[]) {
-  return async (req: Request.Default, _res: Response, next: NextFunction) => {
+  return async (req: Request, _res: Response, next: NextFunction) => {
     const { authorization } = schema.http.auth.header.parse(req.headers);
     const { id } = jwt.verify(
       extractToken(authorization),
@@ -58,8 +57,13 @@ function authHandler(roles?: User.Type[]) {
   };
 }
 
+export function ensureAuth(req: Request, res: Response, next: NextFunction) {
+  if (req.isAuthenticated()) return next();
+  return next(new Forbidden());
+}
+
 export function authorizedSocket(
-  req: Request.Default,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {

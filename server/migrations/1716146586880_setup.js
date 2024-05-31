@@ -21,6 +21,12 @@ exports.up = (pgm) => {
   pgm.createType("user_gender_type", ["male", "female"]);
 
   // tables
+  pgm.createTable("sessons", {
+    sid: { type: "CHARACTER VARYING", primaryKey: true, notNull: true },
+    sess: { type: "JSON", notNull: true },
+    expire: { type: "TIMESTAMP(6) WITHOUT TIME ZONE", notNull: true },
+  });
+
   pgm.createTable("users", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
@@ -192,6 +198,7 @@ exports.down = (pgm) => {
   pgm.dropTable("examiners", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
+  pgm.dropTable("sessons", { ifExists: true });
 
   // types
   pgm.dropType("user_type", { ifExists: true });

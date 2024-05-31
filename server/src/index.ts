@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { serverConfig } from "@/constants";
+import { isProduction, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { authorizedSocket } from "@/middleware/auth";
 import { wssHandler } from "@/wss";
@@ -11,11 +11,13 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import cors from "cors";
 import logger from "morgan";
+import connectPostgres from "connect-pg-simple";
+import { pool } from "@/models/query";
 import "colors";
 
+const SessionStore = connectPostgres(session);
 const app = express();
 const server = createServer(app);
-
 const io = new Server(server, {
   cors: { origin: "*" },
 });
@@ -29,13 +31,22 @@ app.use(cors());
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // https://youtu.be/SBvmnHTQIPY?t=2517
+// todos:
+// 1. session vs jwt
+// 2. use passport for
+// 3. add endpoint /api/v1/user/me ==> to get user info (done)
+// 4. add apple and discord
+// 5. save session (done)
 app.use(
   session({
     secret: "keyboard cat", // todo: define constants
     resave: false,
     saveUninitialized: false,
+    store: new SessionStore({ pool, tableName: "sessons" }),
+    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: isProduction }, // 30 days
   })
 );
+
 app.use(passport.initialize());
 app.use(passport.session());
 

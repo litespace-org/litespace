@@ -1,4 +1,4 @@
--- Active: 1715685752059@@127.0.0.1@5432@space@public
+-- Active: 1717007169769@@127.0.0.1@5432@litespace
 
 DROP TABLE IF EXISTS tutors;
 
@@ -58,17 +58,13 @@ values (
         $5,
         NOW(),
         NOW()
-    ) RETURNING id;
+    )
+RETURNING
+    id;
 
 SELECT * FrOM users;
 
-SELECT
-    id,
-    email,
-    password,
-    name,
-    avatar,
-    type
+SELECT id, email, password, name, avatar, type
 FROM users
 WHERE
     id in (1, 2);
@@ -79,13 +75,7 @@ SET
 where
     id = 1;
 
-SELECT
-    id,
-    email,
-    password,
-    name,
-    avatar,
-    type
+SELECT id, email, password, name, avatar, type
 FROM users
 WHERE
     email = 'ahmed@litespace.com'
@@ -93,7 +83,9 @@ WHERE
 
 INSERT INTO
     "users" ("email", "type")
-values ($1, $2) RETURNING "id",
+values ($1, $2)
+RETURNING
+    "id",
     "email",
     "name",
     "avatar",
@@ -101,3 +93,5 @@ values ($1, $2) RETURNING "id",
     "active",
     "created_at",
     "updated_at";
+
+SELECT * FROM "sessons";

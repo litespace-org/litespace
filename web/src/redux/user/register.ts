@@ -14,7 +14,6 @@ const initialState: State = {
 export const register = createAsyncThunk(
   "user/register",
   async (payload: { name: string; email: string; password: string }) => {
-    console.log({ payload });
     await user.register(payload);
   }
 );
@@ -34,7 +33,6 @@ export const registerSlice = createSlice({
         state.loading = false;
       })
       .addCase(register.rejected, (state, action) => {
-        console.log({ action });
         state.loading = false;
         state.error = action.error.message || "Unexpected error, occured";
       });

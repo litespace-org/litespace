@@ -24,7 +24,7 @@ export class Users {
             )
         values ($1, $2, $3, $4, NOW(), NOW())
         RETURNING
-            id, email, name, avatar, type, active, created_at, updated_at;
+            id, email, password, name, avatar, type, active, created_at, updated_at;
       `,
       [user.email, user.password, user.name, user.type]
     );
@@ -41,6 +41,7 @@ export class Users {
           "users" ("email")
       values ($1) RETURNING "id",
           "email",
+          "password"
           "name",
           "avatar",
           "type",
@@ -94,7 +95,18 @@ export class Users {
   async findById(id: number): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [number]>(
       `
-        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        SELECT 
+          "id",
+          "email",
+          "password",
+          "name",
+          "avatar",
+          "type",
+          "birthday",
+          "gender",
+          "active",
+          "created_at",
+          "updated_at"
         FROM users
         WHERE id = $1;
       `,
@@ -112,6 +124,7 @@ export class Users {
         SELECT 
           "id",
           "email",
+          "password",
           "name",
           "avatar",
           "type",
@@ -134,7 +147,7 @@ export class Users {
   async findMany(ids: number[]): Promise<User.Self[]> {
     const { rows } = await query<User.Row, [number[]]>(
       `
-        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, password, password, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE id in $1;
       `,
@@ -147,7 +160,7 @@ export class Users {
   async findAll(): Promise<User.Self[]> {
     const { rows } = await query<User.Row, []>(
       `
-        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
         FROM users;
       `
     );
@@ -161,7 +174,7 @@ export class Users {
   ): Promise<User.Self | null> {
     const { rows } = await query<User.Row, [string, string]>(
       `
-        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE
             email = $1
@@ -192,6 +205,7 @@ export class Users {
     return {
       id: row.id,
       email: row.email,
+      hasPassword: row.password !== null,
       name: row.name,
       avatar: row.avatar,
       birthday: row.birthday,
@@ -222,6 +236,7 @@ export namespace User {
   export type Self = {
     id: number;
     email: string;
+    hasPassword: boolean;
     name: string | null;
     avatar: string | null;
     birthday: string | null;
@@ -232,7 +247,8 @@ export namespace User {
     updatedAt: string;
   };
 
-  export type Row = Omit<Self, "createdAt" | "updatedAt"> & {
+  export type Row = Omit<Self, "createdAt" | "updatedAt" | "hasPassword"> & {
+    password: string | null;
     created_at: Date;
     updated_at: Date;
   };

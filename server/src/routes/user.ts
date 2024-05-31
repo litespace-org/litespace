@@ -1,6 +1,6 @@
 import handlers from "@/handlers";
 import { Router } from "express";
-import { adminOnly, authorized } from "@/middleware/auth";
+import { adminOnly, authorized, ensureAuth } from "@/middleware/auth";
 
 const router = Router();
 
@@ -9,6 +9,8 @@ router
   .put(authorized, handlers.user.update)
   .delete(authorized, handlers.user.delete)
   .get(authorized, handlers.user.getOne);
+
+router.get("/me", ensureAuth, handlers.user.findMe);
 
 router.get("/list", adminOnly, handlers.user.getMany);
 

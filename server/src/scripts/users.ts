@@ -17,7 +17,7 @@ async function main(): Promise<void> {
     email: "student@litespace.com",
     name: "LiteSpace Student",
     password,
-    type: User.Type.Student,
+    type: student,
   });
 
   await tutors.create({

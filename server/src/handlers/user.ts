@@ -1,25 +1,13 @@
-import { authorizationSecret } from "@/constants";
 import { users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { Forbidden, NotFound } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import jwt from "jsonwebtoken";
 import { generateAuthorizationToken } from "@/lib/auth";
 
-async function update(
-  req: Request.Body<{
-    id: number;
-    email?: string;
-    password?: string;
-    name?: string;
-    avatar?: string;
-  }>,
-  res: Response
-) {
+async function update(req: Request, res: Response) {
   const body = schema.http.user.update.body.parse(req.body);
 
   await users.update({
@@ -30,17 +18,13 @@ async function update(
   res.status(200).send();
 }
 
-async function delete_(req: Request.Query<{ id: string }>, res: Response) {
+async function delete_(req: Request, res: Response) {
   const { id } = schema.http.user.delete.query.parse(req.query);
   await users.delete(id);
   res.status(200).send();
 }
 
-async function getOne(
-  req: Request.Query<{ id: string }>,
-  res: Response,
-  next: NextFunction
-) {
+async function getOne(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.user.get.query.parse(req.query).id;
   const user = await users.findById(id);
   if (!user) return next(new NotFound());
@@ -52,20 +36,20 @@ async function getOne(
   res.status(200).json(user);
 }
 
-async function getMany(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function getMany(req: Request, res: Response, next: NextFunction) {
   const list = await users.findAll();
   res.status(200).json(list);
 }
 
-async function login(req: Request.Default, res: Response, next: NextFunction) {
+async function login(req: Request, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
   const user = await users.findByCredentials(email, hashPassword(password));
   if (!user) return next(new NotFound("User"));
   res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
+}
+
+async function findMe(req: Request, res: Response) {
+  res.status(200).json(req.user);
 }
 
 export default {
@@ -74,4 +58,5 @@ export default {
   getOne: asyncHandler(getOne),
   getMany: asyncHandler(getMany),
   login: asyncHandler(login),
+  findMe: asyncHandler(findMe),
 };

@@ -8,7 +8,7 @@ import {
 
 import { databaseConnection } from "../constants";
 
-const pool = new Pool({ ...databaseConnection });
+export const pool = new Pool({ ...databaseConnection });
 
 export async function query<T extends QueryResultRow, V extends unknown[]>(
   query: string,
