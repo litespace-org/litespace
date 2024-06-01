@@ -51,8 +51,8 @@ const valiedation: Record<
 } as const;
 
 // todos:
-// 1. add storybook for the components lib - 1
-// 2. move icons/locals to the components lib - 2
+// 1. add storybook for the components lib - 1 (done)
+// 2. move icons/locals to the components lib - 2 (done)
 // 3. add login page - 5
 // 4. login & logout - 6
 // 5. arabic errors (form) - 3

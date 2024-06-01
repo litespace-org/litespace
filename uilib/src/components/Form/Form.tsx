@@ -10,13 +10,15 @@ export const Form = <T extends FieldValues>({
   children,
   onSubmit,
 }: {
-  children: React.ReactNode;
-  onSubmit: SubmitHandler<T>;
+  children?: React.ReactNode;
+  onSubmit?: SubmitHandler<T>;
 }) => {
   const methods = useForm<T>();
   return (
     <FormProvider {...methods}>
-      <form onSubmit={methods.handleSubmit(onSubmit)}>{children}</form>
+      <form onSubmit={onSubmit ? methods.handleSubmit(onSubmit) : undefined}>
+        {children}
+      </form>
     </FormProvider>
   );
 };
