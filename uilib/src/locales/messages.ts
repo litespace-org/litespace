@@ -7,16 +7,16 @@ export const messages = {
           label: "page.register.form.name.label",
           placeholder: "page.register.form.name.placeholder",
         },
-        email: {
-          label: "page.register.form.email.label",
-          placeholder: "page.register.form.email.placeholder",
-        },
-        password: {
-          label: "page.register.form.password.label",
-          placeholder: "page.register.form.password.placeholder",
-        },
         button: {
-          label: "page.register.form.button.label",
+          label: "page.register.form.button.submit.label",
+        },
+      },
+    },
+    login: {
+      form: {
+        title: "page.login.form.title",
+        button: {
+          label: "page.login.form.button.submit.label",
         },
       },
     },
@@ -32,5 +32,17 @@ export const messages = {
     },
     email: { invalid: "errors.email.invlaid" },
     password: { invalid: "errors.password.invlaid" },
+  },
+  global: {
+    form: {
+      email: {
+        label: "global.form.email.label",
+        placeholder: "global.form.email.placeholder",
+      },
+      password: {
+        label: "global.form.password.label",
+      },
+    },
+    logout: "global.logout",
   },
 } as const;

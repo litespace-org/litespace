@@ -1,6 +1,6 @@
 import { client } from "@/api/axios";
 
-export async function register({
+async function register({
   name,
   email,
   password,

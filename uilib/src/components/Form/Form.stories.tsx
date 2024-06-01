@@ -23,7 +23,7 @@ const Wrapper: React.FC<ComponentProps<typeof Input>> = (props) => {
         <Form<IFormInputs> onSubmit={onSubmit}>
           <Input {...props} />
           <div className="ui-mt-4">
-            <Button>{ar["page.register.form.button.label"]}</Button>
+            <Button>{ar["page.register.form.button.submit.label"]}</Button>
           </div>
         </Form>
       </div>
@@ -40,8 +40,8 @@ const meta: Meta<typeof Input> = {
 export const Text: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["page.register.form.email.label"],
-    placeholder: ar["page.register.form.email.placeholder"],
+    label: ar["global.form.email.label"],
+    placeholder: ar["global.form.email.placeholder"],
     validation: {
       required: { value: true, message: ar["errors.required"] },
       pattern: {
@@ -56,7 +56,7 @@ export const WithPassword: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
     type: "password",
-    label: ar["page.register.form.password.label"],
+    label: ar["global.form.password.label"],
     validation: {
       required: { value: true, message: ar["errors.required"] },
       pattern: {

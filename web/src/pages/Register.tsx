@@ -6,9 +6,10 @@ import {
   Google,
   Discord,
   Facebook,
+  useValidation,
 } from "@litespace/uilib";
-import React, { useCallback, useMemo } from "react";
-import { FieldValues, RegisterOptions, SubmitHandler } from "react-hook-form";
+import React, { useCallback } from "react";
+import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { user } from "@/api";
@@ -42,56 +43,7 @@ const Register: React.FC = () => {
     async (data) => mutation.mutate(data),
     [mutation]
   );
-  const valiedation: Record<
-    "name" | "email" | "password",
-    RegisterOptions<FieldValues>
-  > = useMemo(
-    () =>
-      ({
-        name: {
-          required: {
-            value: true,
-            message: intl.formatMessage({ id: messages.errors.required }),
-          },
-          minLength: {
-            value: 3,
-            message: intl.formatMessage({
-              id: messages.errors.name.length.short,
-            }),
-          },
-          maxLength: {
-            value: 50,
-            message: intl.formatMessage({
-              id: messages.errors.name.length.long,
-            }),
-          },
-        },
-        email: {
-          required: {
-            value: true,
-            message: intl.formatMessage({ id: messages.errors.required }),
-          },
-          pattern: {
-            value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-            message: intl.formatMessage({ id: messages.errors.email.invalid }),
-          },
-        },
-        password: {
-          required: {
-            value: true,
-            message: intl.formatMessage({ id: messages.errors.required }),
-          },
-          pattern: {
-            value:
-              /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-            message: intl.formatMessage({
-              id: messages.errors.password.invalid,
-            }),
-          },
-        },
-      }) as const,
-    []
-  );
+  const valiedation = useValidation();
 
   return (
     <div className="max-w-screen-sm mx-auto my-10">
@@ -118,11 +70,11 @@ const Register: React.FC = () => {
           <Input
             type="text"
             label={intl.formatMessage({
-              id: messages.pages.register.form.email.label,
+              id: messages.global.form.email.label,
             })}
             id="email"
             placeholder={intl.formatMessage({
-              id: messages.pages.register.form.email.placeholder,
+              id: messages.global.form.email.placeholder,
             })}
             autoComplete="username"
             validation={valiedation.email}
@@ -130,7 +82,7 @@ const Register: React.FC = () => {
           <Input
             type="password"
             label={intl.formatMessage({
-              id: messages.pages.register.form.password.label,
+              id: messages.global.form.password.label,
             })}
             id="password"
             autoComplete="current-password"

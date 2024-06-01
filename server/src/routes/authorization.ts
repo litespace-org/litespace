@@ -2,9 +2,10 @@ import { Router } from "express";
 import passport from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
 import redirect from "@/handlers/redirect";
+import utils from "@/handlers/utils";
+import { serverConfig } from "@/constants";
 
 const router = Router();
-
 const options = { failureRedirect: "/login" } as const;
 
 // google
@@ -20,7 +21,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", options),
-  redirect("/")
+  redirect(serverConfig.client)
 );
 
 // facebook
@@ -30,11 +31,10 @@ router.get(
     scope: ["email", "public_profile"],
   })
 );
-
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", options),
-  redirect("/")
+  redirect(serverConfig.client)
 );
 
 // discord
@@ -42,11 +42,11 @@ router.get("/discord", passport.authenticate("discord"));
 router.get(
   "/discord/callback",
   passport.authenticate("discord", options),
-  redirect("/")
+  redirect(serverConfig.client)
 );
 
 // others
-router.get("/password", passport.authenticate("local", {}), redirect("/"));
+router.get("/password", passport.authenticate("local", {}), utils.end);
 router.get("/logout", logout);
 
 export default router;

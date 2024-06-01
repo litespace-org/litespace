@@ -26,6 +26,7 @@ const SERVER_HOST = process.env.SERVER_HOST;
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "localhost",
+  client: zod.string().url().parse(process.env.CLIENT_URL),
 } as const;
 
 // Zoom

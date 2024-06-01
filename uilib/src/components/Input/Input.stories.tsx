@@ -29,8 +29,8 @@ const meta: Meta<typeof Input> = {
 export const Primary: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["page.register.form.email.label"],
-    placeholder: ar["page.register.form.email.placeholder"],
+    label: ar["global.form.email.label"],
+    placeholder: ar["global.form.email.placeholder"],
   },
 };
 

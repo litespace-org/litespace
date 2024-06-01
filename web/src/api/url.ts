@@ -1,6 +1,6 @@
 import zod from "zod";
 
-const api = zod
+export const api = zod
   .string({ message: "Missing backend url" })
   .url({ message: "Invalid backend url" })
   .parse(import.meta.env.VITE_BACKEND_API);

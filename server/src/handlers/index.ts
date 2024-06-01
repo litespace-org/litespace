@@ -7,6 +7,7 @@ import lesson from "@/handlers/lesson";
 import rating from "@/handlers/rating";
 import subscription from "@/handlers/subscription";
 import chat from "@/handlers/chat";
+import utils from "@/handlers/utils";
 
 export default {
   user,
@@ -18,4 +19,5 @@ export default {
   rating,
   subscription,
   chat,
+  utils,
 };

@@ -2055,6 +2055,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.4.6"
     eslint-plugin-storybook: "npm:^0.8.0"
+    react-intl: "npm:^6.6.8"
     storybook: "npm:^8.1.5"
     tailwindcss: "npm:^3.4.3"
     typescript: "npm:^5.2.2"

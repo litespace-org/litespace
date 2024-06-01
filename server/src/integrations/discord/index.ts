@@ -77,7 +77,7 @@ function constrcutUrls(req: Request): { redirect: string; oauth: string } {
       client_id: discordConfig.clientId,
       response_type: "code",
       redirect_uri: redirect,
-      scope: ["email", "identify"],
+      scope: ["email", "identify"].join(" "),
     },
   });
 
@@ -98,6 +98,7 @@ async function handleCodeExchange({
   return await verify(tokens.access, tokens.refersh, profile, done);
 }
 
+// todo: handle access denided error
 export async function verifyCallback(req: Request, done: DoneCallback) {
   const code = req.query.code;
   const urls = constrcutUrls(req);

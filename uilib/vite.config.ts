@@ -32,6 +32,7 @@ export default defineConfig({
           "react-dom": "ReactDOM",
           "react-hook-form": "reactHookForm",
           "framer-motion": "framerMotion",
+          "react-intl": "reactIntl",
         },
       },
     },

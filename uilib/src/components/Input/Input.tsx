@@ -48,7 +48,7 @@ export const Input: React.FC<{
         type={type}
         autoComplete={autoComplete}
         className={cn(
-          "ui-w-full ui-p-2 ui-font-medium ui-border ui-rounded-md ui-placeholder:opacity-60 focus:ui-outline-none focus:ui-ring-2 focus:ui-border-none",
+          "ui-w-full ui-p-2 ui-font-medium ui-border ui-rounded-md ui-placeholder:opacity-60 focus:ui-outline-none focus:ui-ring-1",
           {
             "ui-border-red-400 ui-placeholder-red-400 ui-ring-red-400": !!error,
             "ui-border-slate-300 ui-ring-slate-600": !error,
