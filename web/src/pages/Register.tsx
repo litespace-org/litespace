@@ -1,4 +1,4 @@
-import { Input, Form, Button } from "@litespace/components";
+import { Input, Form, Button } from "@litespace/uilib";
 import React, { useCallback } from "react";
 import { FieldValues, RegisterOptions, SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";

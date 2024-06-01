@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import dts from "vite-plugin-dts";
 import pkg from "./package.json" assert { type: "json" };
+import path from "node:path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,6 +12,11 @@ export default defineConfig({
       exclude: ["**/*.stories.tsx"],
     }),
   ],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
+  },
   build: {
     lib: {
       entry: "./src/index.ts",
@@ -21,7 +27,12 @@ export default defineConfig({
     rollupOptions: {
       external: Object.keys(pkg.peerDependencies),
       output: {
-        globals: { react: "React", "react-dom": "ReactDOM" },
+        globals: {
+          react: "React",
+          "react-dom": "ReactDOM",
+          "react-hook-form": "reactHookForm",
+          "framer-motion": "framerMotion",
+        },
       },
     },
   },
