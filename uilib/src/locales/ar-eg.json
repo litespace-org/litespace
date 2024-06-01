@@ -5,6 +5,11 @@
   "page.register.form.email.label": "الايميــــــل/البريد الإلكـــــــتروني",
   "page.register.form.email.placeholder": "مثل: mohamed@google.com",
   "page.register.form.password.label": "كلــــــمة الســـــــر",
-  "page.register.form.password.placeholder": "***",
-  "page.register.form.button.label": "ابـــــــــــــداء"
+  "page.register.form.button.label": "ابـــــــــــــداء",
+  "errors.invalid": "خطـــــــــــأ",
+  "errors.required": "مطـــــــــلوب",
+  "errors.name.length.short": "يجب الا يقـــــل الاسم عن ثلاثة حروف",
+  "errors.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
+  "errors.email.invlaid": "عنوان البريد الإليكتروني غير صـــــــالح",
+  "errors.password.invlaid": "كلمة سر غير صــــــالحة"
 }
