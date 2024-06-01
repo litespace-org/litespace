@@ -1,10 +1,15 @@
-import { Input, Form, Button, messages } from "@litespace/uilib";
+import {
+  Input,
+  Form,
+  Button,
+  messages,
+  Google,
+  Discord,
+  Facebook,
+} from "@litespace/uilib";
 import React, { useCallback } from "react";
 import { FieldValues, RegisterOptions, SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import Google from "@/assets/icons/Google";
-import Discord from "@/assets/icons/Discord";
-import Facebook from "@/assets/icons/Facebook";
 import { useMutation } from "react-query";
 import { user } from "@/api";
 
