@@ -7,7 +7,7 @@ import {
   Discord,
   Facebook,
 } from "@litespace/uilib";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { FieldValues, RegisterOptions, SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
@@ -19,43 +19,12 @@ interface IFormInput {
   password: string;
 }
 
-const valiedation: Record<
-  "name" | "email" | "password",
-  RegisterOptions<FieldValues>
-> = {
-  name: {
-    required: { value: true, message: "Requried" },
-    minLength: {
-      value: 3,
-      message: "Three characters are the minimum length for a name.",
-    },
-    maxLength: {
-      value: 50,
-      message: "50 characters are the maximum length for a name.",
-    },
-  },
-  email: {
-    required: { value: true, message: "Requried" },
-    pattern: {
-      value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-      message: "Invalid email",
-    },
-  },
-  password: {
-    required: { value: true, message: "Requried" },
-    pattern: {
-      value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-      message: "Invlaid password",
-    },
-  },
-} as const;
-
 // todos:
 // 1. add storybook for the components lib - 1 (done)
 // 2. move icons/locals to the components lib - 2 (done)
 // 3. add login page - 5
 // 4. login & logout - 6
-// 5. arabic errors (form) - 3
+// 5. arabic errors (form) - 3 (done)
 // 6. arabic backend errors (error parsing) - 4
 
 const Register: React.FC = () => {
@@ -72,6 +41,56 @@ const Register: React.FC = () => {
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
     async (data) => mutation.mutate(data),
     [mutation]
+  );
+  const valiedation: Record<
+    "name" | "email" | "password",
+    RegisterOptions<FieldValues>
+  > = useMemo(
+    () =>
+      ({
+        name: {
+          required: {
+            value: true,
+            message: intl.formatMessage({ id: messages.errors.required }),
+          },
+          minLength: {
+            value: 3,
+            message: intl.formatMessage({
+              id: messages.errors.name.length.short,
+            }),
+          },
+          maxLength: {
+            value: 50,
+            message: intl.formatMessage({
+              id: messages.errors.name.length.long,
+            }),
+          },
+        },
+        email: {
+          required: {
+            value: true,
+            message: intl.formatMessage({ id: messages.errors.required }),
+          },
+          pattern: {
+            value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
+            message: intl.formatMessage({ id: messages.errors.email.invalid }),
+          },
+        },
+        password: {
+          required: {
+            value: true,
+            message: intl.formatMessage({ id: messages.errors.required }),
+          },
+          pattern: {
+            value:
+              /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+            message: intl.formatMessage({
+              id: messages.errors.password.invalid,
+            }),
+          },
+        },
+      }) as const,
+    []
   );
 
   return (

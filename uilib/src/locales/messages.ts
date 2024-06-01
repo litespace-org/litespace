@@ -21,4 +21,16 @@ export const messages = {
       },
     },
   },
+  errors: {
+    invalid: "errors.invalid",
+    required: "errors.required",
+    name: {
+      length: {
+        short: "errors.name.length.short",
+        long: "errors.name.length.long",
+      },
+    },
+    email: { invalid: "errors.email.invlaid" },
+    password: { invalid: "errors.password.invlaid" },
+  },
 } as const;
