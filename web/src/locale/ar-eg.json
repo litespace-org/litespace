@@ -1,3 +1,10 @@
 {
-  "hello": "احب التعامل مع احمد!! "
+  "page.register.form.title": "إنشــــــاء حساب جديد",
+  "page.register.form.name.label": "الاســـــــم",
+  "page.register.form.name.placeholder": "مثل: محمد",
+  "page.register.form.email.label": "الايميــــــل/البريد الإلكـــــــتروني",
+  "page.register.form.email.placeholder": "مثل: mohamed@google.com",
+  "page.register.form.password.label": "كلــــــمة الســـــــر",
+  "page.register.form.password.placeholder": "***",
+  "page.register.form.button.label": "ابـــــــــــــداء"
 }

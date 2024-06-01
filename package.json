@@ -12,7 +12,9 @@
     "packages": [
       "components",
       "server",
+      "uilib",
       "web"
     ]
-  }
+  },
+  "packageManager": "yarn@4.2.2"
 }

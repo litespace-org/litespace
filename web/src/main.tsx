@@ -10,6 +10,7 @@ import ar from "@/locale/ar-eg.json" assert { type: "json" };
 import { IntlProvider } from "react-intl";
 import { store } from "@/redux/store";
 import { Route } from "@/types/routes";
+import { QueryClient, QueryClientProvider } from "react-query";
 import "@/index.css";
 
 const router = createBrowserRouter([
@@ -18,12 +19,16 @@ const router = createBrowserRouter([
   { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
 ]);
 
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <IntlProvider messages={ar} locale="ar-EG" defaultLocale="ar-EG">
-      <ReduxProvider store={store}>
-        <RouterProvider router={router} />
-      </ReduxProvider>
+      <QueryClientProvider client={queryClient}>
+        <ReduxProvider store={store}>
+          <RouterProvider router={router} />
+        </ReduxProvider>
+      </QueryClientProvider>
     </IntlProvider>
   </React.StrictMode>
 );
