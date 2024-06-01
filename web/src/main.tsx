@@ -11,6 +11,8 @@ import { IntlProvider } from "react-intl";
 import { store } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { QueryClient, QueryClientProvider } from "react-query";
+
+import "@litespace/uilib/style.css";
 import "@/index.css";
 
 const router = createBrowserRouter([

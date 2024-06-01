@@ -6,16 +6,27 @@
   "types": "dist/index.d.ts",
   "main": "dist/ui.umd.js",
   "module": "dist/ui.es.js",
+  "exports": {
+    "./style.css": {
+      "require": "./dist/style.css",
+      "default": "./dist/style.css"
+    }
+  },
   "files": [
     "dist"
   ],
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && yarn build:css",
+    "build:css": "tailwindcss -m -i ./src/tailwind.css -o ./dist/style.css",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "storybook": "concurrently 'yarn storybook:css' 'yarn storybook:dev'",
+    "storybook:dev": "storybook dev -p 6006",
+    "storybook:css": "tailwindcss -w -i ./src/tailwind.css -o ./src/index.css",
+    "storybook:build:all": "concurrently 'yarn storybook:build:css' 'yarn storybook:build'",
+    "storybook:build": "storybook build",
+    "storybook:build:css": "tailwindcss -m -i ./src/tailwind.css -o ./src/index.css"
   },
   "peerDependencies": {
     "framer-motion": "^11.2.6",
@@ -38,11 +49,13 @@
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
+    "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "eslint-plugin-storybook": "^0.8.0",
     "storybook": "^8.1.5",
+    "tailwindcss": "^3.4.3",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
     "vite-plugin-dts": "^3.9.1"

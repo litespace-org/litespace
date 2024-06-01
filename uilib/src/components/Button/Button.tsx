@@ -10,7 +10,7 @@ export const Button: React.FC<{
   return (
     <button
       type={type}
-      className="bg-indigo-50 hover:bg-indigo-100 text-indigo-500 font-bold px-4 py-1 rounded-md text-lg transition-colors duration-150"
+      className="ui-bg-indigo-50 ui-hover:bg-indigo-100 ui-text-indigo-500 ui-font-bold ui-px-4 ui-py-1 ui-rounded-md ui-text-lg ui-transition-colors ui-duration-150"
       onClick={onClick}
     >
       {children}

@@ -4,3 +4,6 @@ dist/
 .vscode/
 .yarn/
 *storybook.log
+
+# uilib 
+uilib/src/index.css
