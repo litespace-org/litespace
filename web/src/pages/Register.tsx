@@ -1,8 +1,7 @@
-import { Input, Form, Button } from "@litespace/uilib";
+import { Input, Form, Button, messages } from "@litespace/uilib";
 import React, { useCallback } from "react";
 import { FieldValues, RegisterOptions, SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { messages } from "@/locale/messages";
 import Google from "@/assets/icons/Google";
 import Discord from "@/assets/icons/Discord";
 import Facebook from "@/assets/icons/Facebook";
@@ -48,7 +47,7 @@ const valiedation: Record<
 
 // todos:
 // 1. add storybook for the components lib - 1
-// 2. move icons to the components lib - 2
+// 2. move icons/locals to the components lib - 2
 // 3. add login page - 5
 // 4. login & logout - 6
 // 5. arabic errors (form) - 3

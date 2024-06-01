@@ -18,9 +18,9 @@ export const Input: React.FC<{
   const error = errors[id];
 
   return (
-    <div className="flex flex-col w-full gap-2">
-      <div className="flex justify-between">
-        <label htmlFor={id} className="font-semibold">
+    <div className="ui-flex ui-flex-col ui-w-full ui-gap-2">
+      <div className="ui-flex ui-justify-between">
+        <label htmlFor={id} className="ui-font-semibold">
           {label}
         </label>
         <AnimatePresence mode="wait" initial={false}>
@@ -40,7 +40,7 @@ export const Input: React.FC<{
         id={id}
         type={type}
         autoComplete={autoComplete}
-        className="w-full p-2 font-medium border rounded-md border-slate-300 placeholder:opacity-60"
+        className="ui-w-full ui-p-2 ui-font-medium ui-border ui-rounded-md ui-border-slate-300 ui-placeholder:opacity-60"
         placeholder={placeholder}
         {...register(id, validation)}
       />
@@ -51,7 +51,7 @@ export const Input: React.FC<{
 const InputError: React.FC<{ message: string }> = ({ message }) => {
   return (
     <motion.p
-      className="flex items-center gap-1 px-2 font-semibold text-red-500 bg-red-100 rounded-md"
+      className="ui-flex ui-items-center ui-gap-1 ui-px-2 ui-font-semibold ui-text-red-500 ui-bg-red-100 ui-rounded-md"
       {...framerError}
     >
       {message}

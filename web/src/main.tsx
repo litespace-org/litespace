@@ -6,7 +6,7 @@ import ErrorPage from "@/pages/Error";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import { Provider as ReduxProvider } from "react-redux";
-import ar from "@/locale/ar-eg.json" assert { type: "json" };
+import { locales } from "@litespace/uilib";
 import { IntlProvider } from "react-intl";
 import { store } from "@/redux/store";
 import { Route } from "@/types/routes";
@@ -25,7 +25,11 @@ const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <IntlProvider messages={ar} locale="ar-EG" defaultLocale="ar-EG">
+    <IntlProvider
+      messages={locales["ar-EG"]}
+      locale="ar-EG"
+      defaultLocale="ar-EG"
+    >
       <QueryClientProvider client={queryClient}>
         <ReduxProvider store={store}>
           <RouterProvider router={router} />
