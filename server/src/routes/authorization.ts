@@ -1,6 +1,6 @@
 import { Router } from "express";
 import passport from "@/lib/passport";
-import { logout, oauthHandler } from "@/handlers/oauth";
+import { logout } from "@/handlers/oauth";
 import redirect from "@/handlers/redirect";
 
 const router = Router();
@@ -20,7 +20,7 @@ router.get(
 router.get(
   "/google/callback",
   passport.authenticate("google", options),
-  oauthHandler
+  redirect("/")
 );
 
 // facebook
@@ -34,7 +34,7 @@ router.get(
 router.get(
   "/facebook/callback",
   passport.authenticate("facebook", options),
-  oauthHandler
+  redirect("/")
 );
 
 // discord
