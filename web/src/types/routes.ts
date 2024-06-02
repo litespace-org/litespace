@@ -1,5 +1,5 @@
 export enum Route {
   Root = "/",
-  Register = "/register",
+  Register = "/:type/register",
   Login = "/login",
 }

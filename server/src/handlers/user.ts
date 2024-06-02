@@ -7,6 +7,21 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { generateAuthorizationToken } from "@/lib/auth";
 
+export async function create(req: Request, res: Response) {
+  const { email, password, name, type } = schema.http.user.create.parse(
+    req.body
+  );
+
+  const user = await users.create({
+    password: hashPassword(password),
+    type,
+    email,
+    name,
+  });
+
+  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
+}
+
 async function update(req: Request, res: Response) {
   const body = schema.http.user.update.body.parse(req.body);
 
@@ -53,6 +68,7 @@ async function findMe(req: Request, res: Response) {
 }
 
 export default {
+  create: asyncHandler(create),
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
   getOne: asyncHandler(getOne),

@@ -47,6 +47,7 @@ router.get(
 
 // others
 router.get("/password", passport.authenticate("local", {}), utils.end);
+router.get("/token", passport.authenticate("jwt"), utils.end);
 router.get("/logout", logout);
 
 export default router;

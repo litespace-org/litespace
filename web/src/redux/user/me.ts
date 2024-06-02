@@ -34,8 +34,8 @@ export const findMeSlice = createSlice({
         state.loading = true;
       })
       .addCase(findMe.fulfilled, (state, { payload }) => {
-        console.log({ payload });
         state.loading = false;
+        state.profile = payload;
       })
       .addCase(findMe.rejected, (state) => {
         state.loading = false;

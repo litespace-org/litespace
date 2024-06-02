@@ -15,12 +15,22 @@ import {
   string,
   subscriptionPeriod,
 } from "@/validation/utils";
+import { User } from "@/models";
 
 const avatar = zod.union([zod.null(), zod.string().trim()], {
   message: "Invalid avatar",
 });
 
 const user = {
+  create: zod.object(
+    {
+      email,
+      password,
+      name,
+      type: zod.enum([User.Type.Student, User.Type.Tutor]),
+    },
+    { message: "Empty request body" }
+  ),
   update: {
     body: zod.object({
       id,

@@ -6,6 +6,8 @@ import { authorizationSecret } from "@/constants";
 import { User, users } from "@/models";
 import { Forbidden, NotFound } from "@/lib/error";
 import { isEmpty } from "lodash";
+import { DoneCallback } from "passport";
+import { decodeAuthorizationToken } from "@/lib/auth";
 
 declare global {
   namespace Express {
@@ -58,9 +60,24 @@ function authHandler(roles?: User.Type[]) {
 }
 
 export function ensureAuth(req: Request, res: Response, next: NextFunction) {
-  console.log({ cookies: req.cookies });
   if (req.isAuthenticated()) return next();
   return next(new Forbidden());
+}
+
+export async function jwtAuthorization(req: Request, done: DoneCallback) {
+  try {
+    const token = req.query.token;
+    if (!token || typeof token !== "string")
+      throw new Error("Missing jwt authorization token");
+
+    const id = decodeAuthorizationToken(token);
+    const user = await users.findById(id);
+
+    if (!user) throw new Error("User not found");
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
 }
 
 export function authorizedSocket(

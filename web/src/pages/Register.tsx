@@ -12,7 +12,12 @@ import React, { useCallback } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
-import { user } from "@/api";
+import { auth, user } from "@/api";
+import { Link, useParams } from "react-router-dom";
+import { endpoints } from "@/api/url";
+import { User } from "@/types";
+import { useAppDispatch } from "@/redux/store";
+import { findMe } from "@/redux/user/me";
 
 interface IFormInput {
   name: string;
@@ -30,18 +35,27 @@ interface IFormInput {
 
 const Register: React.FC = () => {
   const intl = useIntl();
+  const dispatch = useAppDispatch();
+  const { type } = useParams<{ type: User.Type.Student | User.Type.Tutor }>();
+
   const mutation = useMutation(user.register, {
-    onError(error, variables, context) {
-      console.log({ error, variables, context });
-    },
-    onSuccess(data, variables, context) {
-      console.log({ data, variables, context });
+    async onSuccess({ token }) {
+      await auth.token(token);
+      await dispatch(findMe());
     },
   });
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
-    async (data) => mutation.mutate(data),
-    [mutation]
+    async (data) => {
+      if (!type) return;
+      if (![User.Type.Student, User.Type.Tutor].includes(type)) return;
+
+      await mutation.mutate({
+        ...data,
+        type,
+      });
+    },
+    [mutation, type]
   );
   const valiedation = useValidation();
 
@@ -97,23 +111,27 @@ const Register: React.FC = () => {
             </Button>
           </div>
         </div>
-
-        <div className="w-full h-0.5 bg-gray-100 rounded-full" />
-
-        <div className="flex flex-row items-center justify-center gap-5 my-5">
+      </Form>
+      <div className="w-full h-0.5 bg-gray-100 rounded-full" />
+      <div className="flex flex-row items-center justify-center gap-5 my-5">
+        <Link to={endpoints.authorization.google}>
           <Button>
             <Google width={40} height={40} className="fill-indigo-500" />
           </Button>
+        </Link>
 
+        <Link to={endpoints.authorization.facebook}>
           <Button>
             <Facebook width={40} height={40} className="fill-indigo-500" />
           </Button>
+        </Link>
 
+        <Link to={endpoints.authorization.discord}>
           <Button>
             <Discord width={40} height={40} className="fill-indigo-500" />
           </Button>
-        </div>
-      </Form>
+        </Link>
+      </div>
     </div>
   );
 };

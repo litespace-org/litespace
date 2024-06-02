@@ -10,6 +10,6 @@ export function allowCrossDomains(
   res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
   res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
-  if ("OPTIONS" == req.method) return res.send(200);
+  if ("OPTIONS" === req.method) return res.status(200).send();
   return next();
 }

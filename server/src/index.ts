@@ -28,7 +28,8 @@ io.engine.use(authorizedSocket);
 io.on("connection", wssHandler);
 
 app.use(logger("dev"));
-app.use(cors());
+// todo: enable back with correct config
+// app.use(cors());
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(allowCrossDomains);

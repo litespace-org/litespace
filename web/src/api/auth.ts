@@ -15,6 +15,12 @@ async function password({
   });
 }
 
+async function token(token: string) {
+  await client.get("/api/v1/auth/token", {
+    params: { token },
+  });
+}
+
 async function logout() {
   await client.get("/api/v1/auth/logout");
 }
@@ -22,4 +28,5 @@ async function logout() {
 export default {
   password,
   logout,
+  token,
 };

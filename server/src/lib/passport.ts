@@ -16,6 +16,7 @@ import axios from "axios";
 import url from "node:url";
 import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
+import { jwtAuthorization } from "@/middleware/auth";
 
 passport.serializeUser(async (user, done) => done(null, user.id));
 passport.deserializeUser<number>(async (id, done) => {
@@ -51,6 +52,8 @@ passport.use(
 );
 
 passport.use("discord", new Custom(discord));
+
+passport.use("jwt", new Custom(jwtAuthorization));
 
 passport.use(
   new Local(

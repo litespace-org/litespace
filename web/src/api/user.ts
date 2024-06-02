@@ -6,22 +6,25 @@ async function register({
   name,
   email,
   password,
+  type,
 }: {
   name: string;
   email: string;
   password: string;
-}): Promise<number> {
-  const { data } = await client.post<{ id: number }>(
-    "/api/v1/student",
+  type: User.Type.Student | User.Type.Tutor;
+}): Promise<{ user: User.Self; token: string }> {
+  const { data } = await client.post<{ user: User.Self; token: string }>(
+    "/api/v1/user",
     JSON.stringify({
       name,
+      type,
       email,
       password,
       avatar: null,
     })
   );
 
-  return data.id;
+  return data;
 }
 
 async function findMe(): Promise<PossibleError<User.Self>> {

@@ -1,5 +1,5 @@
 import { auth } from "@/api";
-import { useAppDispatch } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
 import { Route } from "@/types/routes";
 import { Button, messages } from "@litespace/uilib";
@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 
 const Root: React.FC = () => {
   const dispatch = useAppDispatch();
+  const profile = useAppSelector((state) => state.user.me.profile);
   const mutation = useMutation(auth.logout, {
     onSuccess() {
       dispatch(findMe());
@@ -26,9 +27,17 @@ const Root: React.FC = () => {
           </Link>
         </li>
         <li>
-          <Link to={Route.Register}>
+          <Link to={Route.Register.replace(":type", "tutor")}>
             <Button>
-              <FormattedMessage id={messages.pages.register.form.title} />
+              <FormattedMessage id={messages.pages.register.form.title} /> Tutor
+            </Button>
+          </Link>
+        </li>
+        <li>
+          <Link to={Route.Register.replace(":type", "student")}>
+            <Button>
+              <FormattedMessage id={messages.pages.register.form.title} />{" "}
+              Student
             </Button>
           </Link>
         </li>
@@ -38,6 +47,15 @@ const Root: React.FC = () => {
           </Button>
         </li>
       </ul>
+
+      <div className="mt-10">
+        <pre
+          className="bg-gray-50 p-3 rounded-md text-gray-700 font-mono"
+          dir="ltr"
+        >
+          {JSON.stringify(profile, null, 2)}
+        </pre>
+      </div>
     </div>
   );
 };
