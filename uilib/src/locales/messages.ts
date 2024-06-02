@@ -41,6 +41,7 @@ export const messages = {
         short: "errors.name.length.short",
         long: "errors.name.length.long",
       },
+      arabic: "errors.name.arabic",
     },
     email: { invalid: "errors.email.invlaid" },
     password: { invalid: "errors.password.invlaid" },

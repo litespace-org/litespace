@@ -19,17 +19,23 @@ export function useValidation(): Fields {
             value: true,
             message: intl.formatMessage({ id: messages.errors.required }),
           },
-          minLength: {
-            value: 3,
-            message: intl.formatMessage({
-              id: messages.errors.name.length.short,
-            }),
-          },
-          maxLength: {
-            value: 50,
-            message: intl.formatMessage({
-              id: messages.errors.name.length.long,
-            }),
+          validate(value: string) {
+            const regex = new RegExp(/^[\u0600-\u06FF\s]+$/);
+            const match = regex.test(value);
+            if (!match)
+              return intl.formatMessage({ id: messages.errors.name.arabic });
+
+            if (value.length < 3)
+              return intl.formatMessage({
+                id: messages.errors.name.length.short,
+              });
+
+            if (value.length > 50)
+              return intl.formatMessage({
+                id: messages.errors.name.length.long,
+              });
+
+            return true;
           },
         },
         email: {
