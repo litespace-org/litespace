@@ -104,3 +104,21 @@ where
     id = 1;
 
 SELECT * FROM users;
+
+SELECT
+    users.id as id,
+    users.email as email,
+    users.name as name,
+    users.avatar as avatar,
+    users.gender as gender,
+    users.active as active,
+    users.created_at as created_at,
+    users.updated_at as updated_at,
+    tutors.bio as bio,
+    tutors.about as about,
+    tutors.video as video,
+    tutors.updated_at as meta_updated_at
+FROM users
+    JOIN tutors on users.id = tutors.id
+WHERE
+    users.id = tutors.id;

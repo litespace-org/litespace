@@ -45,8 +45,8 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).json(fullData);
 }
 
-async function getMany(req: Request.Default, res: Response) {
-  const list = await complex.getTutors();
+async function getTutors(req: Request.Default, res: Response) {
+  const list = await complex.findActivatedTutors();
   res.status(200).json(list);
 }
 
@@ -74,6 +74,6 @@ export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
   get: asyncHandler(getOne),
-  list: asyncHandler(getMany),
+  list: asyncHandler(getTutors),
   delete: asyncHandler(delete_),
 };

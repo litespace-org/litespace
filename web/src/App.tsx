@@ -10,6 +10,7 @@ import { findMe } from "@/redux/user/me";
 import SelectUserType from "@/pages/SelectUserType";
 import SelectUserGender from "@/pages/SelectUserGender";
 import SetUserName from "@/pages/SetUserName";
+import Tutors from "@/pages/Tutors";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
@@ -28,6 +29,11 @@ const router = createBrowserRouter([
   {
     path: Route.SetUserName,
     element: <SetUserName />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: Route.Tutors,
+    element: <Tutors />,
     errorElement: <ErrorPage />,
   },
 ]);

@@ -5,4 +5,5 @@ export enum Route {
   SelectUserType = "/select",
   SelectUserGender = "/gender",
   SetUserName = "/name",
+  Tutors = "/tutors",
 }
