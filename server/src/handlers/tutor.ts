@@ -22,7 +22,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   if (!user) return next(new NotFound());
 
   const fields = { ...body, id: req.user.id };
-  await users.update(fields);
+  await users.update(req.user.id, {});
   await tutors.update(fields);
   res.status(200).send();
 }

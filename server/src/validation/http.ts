@@ -14,6 +14,7 @@ import {
   datetime,
   string,
   subscriptionPeriod,
+  gender,
 } from "@/validation/utils";
 import { User } from "@/models";
 
@@ -33,11 +34,13 @@ const user = {
   ),
   update: {
     body: zod.object({
-      id,
       email: zod.optional(email),
       password: zod.optional(password),
       name: zod.optional(name),
       avatar: zod.optional(avatar),
+      gender: zod.optional(gender),
+      birthday: zod.optional(date),
+      type: zod.optional(zod.enum([User.Type.Tutor, User.Type.Student])),
     }),
   },
   delete: { query: zod.object({ id }) },

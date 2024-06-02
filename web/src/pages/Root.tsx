@@ -1,21 +1,29 @@
 import { auth } from "@/api";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findMe } from "@/redux/user/me";
+import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
 import { Button, messages } from "@litespace/uilib";
-import React from "react";
+import React, { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-query";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Root: React.FC = () => {
   const dispatch = useAppDispatch();
-  const profile = useAppSelector((state) => state.user.me.profile);
+  const navigate = useNavigate();
+  const profile = useAppSelector(profileSelector);
+
   const mutation = useMutation(auth.logout, {
     onSuccess() {
       dispatch(findMe());
     },
   });
+
+  // todo: should be move into the shared layout
+  useEffect(() => {
+    if (profile && profile.type === null) return navigate(Route.SelectUserType);
+  }, [navigate, profile]);
+
   return (
     <div className="mx-auto max-w-screen-md my-10">
       <ul className="flex flex-col gap-4">

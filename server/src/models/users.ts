@@ -60,8 +60,19 @@ export class Users {
   }
 
   async update(
-    user: Partial<User.Self> & { id: number; password?: string }
+    id: number,
+    user: Partial<{
+      email: string;
+      password: string;
+      name: string;
+      avatar: string;
+      birthday: string;
+      gender: User.Gender;
+      active: boolean;
+      type: User.Type;
+    }>
   ): Promise<void> {
+    console.log({ user });
     await query(
       `
         UPDATE users
@@ -71,10 +82,12 @@ export class Users {
             name = COALESCE($3, name),
             avatar = COALESCE($4, avatar),
             type = COALESCE($5, type),
-            active = COALESCE($6, active),
+            birthday = COALESCE($6, birthday),
+            gender = COALESCE($7, gender),
+            active = COALESCE($8, active),
             updated_at = NOW()
         where
-            id = $7;
+            id = $9;
       `,
       [
         user.email,
@@ -82,8 +95,10 @@ export class Users {
         user.name,
         user.avatar,
         user.type,
+        user.birthday,
+        user.gender,
         user.active,
-        user.id,
+        id,
       ]
     );
   }

@@ -20,6 +20,18 @@ export const messages = {
         },
       },
     },
+    select: {
+      type: {
+        title: "page.select.type.title",
+        options: {
+          tutor: "page.select.type.options.tutor",
+          student: "page.select.type.options.student",
+        },
+      },
+      gender: {
+        title: "page.select.gender.title",
+      },
+    },
   },
   errors: {
     invalid: "errors.invalid",

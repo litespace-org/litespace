@@ -13,11 +13,12 @@ import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { auth, user } from "@/api";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { endpoints } from "@/api/url";
 import { User } from "@/types";
 import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
+import { Route } from "@/types/routes";
 
 interface IFormInput {
   name: string;
@@ -36,12 +37,14 @@ interface IFormInput {
 const Register: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const { type } = useParams<{ type: User.Type.Student | User.Type.Tutor }>();
 
   const mutation = useMutation(user.register, {
     async onSuccess({ token }) {
       await auth.token(token);
       await dispatch(findMe());
+      navigate(Route.Root);
     },
   });
 

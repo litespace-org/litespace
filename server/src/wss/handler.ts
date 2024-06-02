@@ -88,11 +88,11 @@ export class WssHandler {
   }
 
   async markUserAsActive() {
-    await users.update({ id: this.user.id, active: true });
+    await users.update(this.user.id, { active: true });
   }
 
   async markUserAsInActive() {
-    await users.update({ id: this.user.id, active: false });
+    await users.update(this.user.id, { active: false });
   }
 
   safe() {}

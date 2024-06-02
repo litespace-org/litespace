@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { user } from "@/api";
 import { User } from "@/types";
 import { MultiError } from "@/lib/error";
+import { RootState } from "@/redux/store";
 
 type State = {
   loading: boolean;
@@ -42,5 +43,7 @@ export const findMeSlice = createSlice({
       });
   },
 });
+
+export const profileSelector = (state: RootState) => state.user.me.profile;
 
 export default findMeSlice.reducer;

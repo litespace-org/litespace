@@ -1,6 +1,6 @@
 import { users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { Forbidden, NotFound } from "@/lib/error";
+import ResponseError, { Forbidden, NotFound } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
@@ -23,11 +23,16 @@ export async function create(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response) {
-  const body = schema.http.user.update.body.parse(req.body);
+  const { email, name, password, gender, birthday, type } =
+    schema.http.user.update.body.parse(req.body);
 
-  await users.update({
-    ...body,
-    password: body.password ? hashPassword(body.password) : undefined,
+  await users.update(req.user.id, {
+    email,
+    name,
+    gender,
+    birthday,
+    password: password ? hashPassword(password) : undefined,
+    type,
   });
 
   res.status(200).send();

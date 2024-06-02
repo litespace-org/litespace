@@ -95,3 +95,12 @@ RETURNING
     "updated_at";
 
 SELECT * FROM "sessons";
+
+UPDATE users
+SET
+    type = COALESCE(null, type),
+    updated_at = NOW()
+where
+    id = 1;
+
+SELECT * FROM users;

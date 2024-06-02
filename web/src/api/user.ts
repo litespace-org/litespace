@@ -34,7 +34,23 @@ async function findMe(): Promise<PossibleError<User.Self>> {
   });
 }
 
+async function update(
+  user: Partial<{
+    email: string;
+    password: string;
+    name: string;
+    avatar: string;
+    birthday: string;
+    gender: User.Gender;
+    active: boolean;
+    type: User.Type.Tutor | User.Type.Student;
+  }>
+) {
+  await client.put("/api/v1/user/", JSON.stringify(user));
+}
+
 export default {
   register,
   findMe,
+  update,
 };
