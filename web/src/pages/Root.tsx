@@ -21,6 +21,7 @@ const Root: React.FC = () => {
 
   // todo: should be move into the shared layout
   useEffect(() => {
+    if (profile && profile.name === null) return navigate(Route.SetUserName);
     if (profile && profile.type === null) return navigate(Route.SelectUserType);
   }, [navigate, profile]);
 

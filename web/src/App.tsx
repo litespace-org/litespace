@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
 import SelectUserType from "@/pages/SelectUserType";
 import SelectUserGender from "@/pages/SelectUserGender";
+import SetUserName from "@/pages/SetUserName";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
   {
     path: Route.SelectUserGender,
     element: <SelectUserGender />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: Route.SetUserName,
+    element: <SetUserName />,
     errorElement: <ErrorPage />,
   },
 ]);
