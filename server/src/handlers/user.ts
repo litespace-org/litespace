@@ -1,4 +1,4 @@
-import { users } from "@/models";
+import { User, tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import {
   forbidden,
@@ -19,6 +19,12 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists);
+
+  if (type === User.Type.Tutor) {
+    const tutor = await tutors.create({ email, password, name });
+    res.status(200).json({ token: generateAuthorizationToken(tutor.id) });
+    return;
+  }
 
   const user = await users.create({
     password: hashPassword(password),

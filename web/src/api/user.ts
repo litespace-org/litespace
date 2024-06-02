@@ -12,16 +12,13 @@ async function register({
   email: string;
   password: string;
   type: User.Type.Student | User.Type.Tutor;
-}): Promise<{ user: User.Self; token: string }> {
-  const { data } = await client.post<{ user: User.Self; token: string }>(
-    "/api/v1/user",
-    JSON.stringify({
-      name,
-      type,
-      email,
-      password,
-      avatar: null,
-    })
+}): Promise<{ token: string }> {
+  const endpoint =
+    type === User.Type.Student ? "/api/v1/student" : "/api/v1/tutor";
+
+  const { data } = await client.post<{ token: string }>(
+    endpoint,
+    JSON.stringify({ name, email, password })
   );
 
   return data;

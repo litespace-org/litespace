@@ -11,9 +11,7 @@ import { generateAuthorizationToken } from "@/lib/auth";
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
   const tutor = await tutors.create(body);
-  res
-    .status(200)
-    .json({ user: tutor, token: generateAuthorizationToken(tutor.id) });
+  res.status(200).json({ token: generateAuthorizationToken(tutor.id) });
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {

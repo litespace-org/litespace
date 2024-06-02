@@ -15,7 +15,7 @@ export async function create(req: Request.Default, res: Response) {
     name,
   });
 
-  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
+  res.status(200).json({ token: generateAuthorizationToken(user.id) });
 }
 
 export default {

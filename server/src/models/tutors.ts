@@ -19,7 +19,7 @@ export class Tutors {
                 "created_at",
                 "updated_at"
             )
-        values ($1, $2, $3, 'tutor', NOW(), NOW())
+        VALUES ($1, $2, $3, 'tutor', NOW(), NOW())
         RETURNING
             id, email, name, avatar, type, active, created_at, updated_at;
       `,

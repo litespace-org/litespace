@@ -6,7 +6,7 @@ const router = Router();
 
 router
   .route("/")
-  .post(adminOnly, handlers.tutor.create) // todo: delete this handler
+  .post(handlers.tutor.create)
   .put(tutorOrAdmin, handlers.tutor.update)
   .delete(adminOnly, handlers.tutor.delete)
   .get(tutorOrAdmin, handlers.tutor.get);
