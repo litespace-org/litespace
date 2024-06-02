@@ -7,7 +7,7 @@ enum ErrorCode {
 /**
  * Error message with error code
  */
-type CategorizedError = {
+type CodedError = {
   message: string;
   code: ErrorCode;
 };
@@ -36,7 +36,7 @@ export async function safe<T>(
   }
 }
 
-function parseErrorMessage(error: unknown): CategorizedError | null {
+function parseErrorMessage(error: unknown): CodedError | null {
   if (isAxiosError(error)) return parseAxiosError(error);
   if (error instanceof Error)
     return { message: error.message, code: ErrorCode.Unkown };
@@ -45,7 +45,7 @@ function parseErrorMessage(error: unknown): CategorizedError | null {
 
 function parseAxiosError(
   error: AxiosError<{ message: string; code: ErrorCode }>
-): CategorizedError | null {
+): CodedError | null {
   const data = error.response?.data;
   if (!data) return null;
   return { message: data.message, code: data.code };

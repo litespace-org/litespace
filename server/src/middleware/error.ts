@@ -1,5 +1,5 @@
 import { isProduction } from "@/constants";
-import ResponseError from "@/lib/error";
+import ResponseError, { ErrorCode } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { AxiosError } from "axios";
 import { NextFunction } from "express";
@@ -22,10 +22,12 @@ export function errorHandler(
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
+  let errorCode = ErrorCode.Unexpected;
 
   if (error instanceof ResponseError) {
     statusCode = error.statusCode;
     message = error.message;
+    errorCode = error.errorCode;
   } else if (error instanceof ZodError) {
     statusCode = 400;
     message = getZodMessage(error);
@@ -36,5 +38,5 @@ export function errorHandler(
     message = error.message;
   }
 
-  return res.status(statusCode).json({ error: message });
+  return res.status(statusCode).json({ message, code: errorCode });
 }

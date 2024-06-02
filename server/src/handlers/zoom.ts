@@ -1,5 +1,5 @@
 import { User, tutors } from "@/models";
-import ResponseError from "@/lib/error";
+import ResponseError, { forbidden } from "@/lib/error";
 import {
   generateUserBasedAccessToken,
   getZoomUserApp,
@@ -16,9 +16,7 @@ async function setZoomRefreshToken(
 ) {
   const { code } = schema.http.zoom.setRefreshToken.body.parse(req.body);
 
-  if (req.user.type !== User.Type.Tutor)
-    return next(new ResponseError("Invalid user type", 400));
-
+  if (req.user.type !== User.Type.Tutor) return next(forbidden);
   const tokens = await generateUserBasedAccessToken(code, getZoomUserApp());
   const now = new Date().toUTCString();
   await tutors.markTutorWithAuthorizedZoomApp(req.user.id, tokens.refresh, now);

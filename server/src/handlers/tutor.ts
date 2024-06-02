@@ -1,6 +1,6 @@
-import { User, complex, tutors, users } from "@/models";
+import { complex, tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { Forbidden, NotFound } from "@/lib/error";
+import { forbidden, userNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -19,7 +19,7 @@ async function create(req: Request.Default, res: Response) {
 async function update(req: Request.Default, res: Response, next: NextFunction) {
   const body = schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
-  if (!user) return next(new NotFound());
+  if (!user) return next(userNotFound);
 
   const fields = { ...body, id: req.user.id };
   await users.update(req.user.id, {});
@@ -34,12 +34,12 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
     users.findById(id),
     tutors.findById(id),
   ]);
-  if (!user || !tutor) return next(new NotFound());
+  if (!user || !tutor) return next(userNotFound);
 
   const owner = req.user.id === user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
 
   const fullData = omit(merge(user, tutor), "password");
   res.status(200).json(fullData);
@@ -57,12 +57,12 @@ async function delete_(
 ) {
   const id = schema.http.tutor.get.query.parse(req.query).id;
   const user = await users.findById(id);
-  if (!user) return next(new NotFound());
+  if (!user) return next(userNotFound);
 
   const owner = req.user.id === user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
 
   await tutors.delete(id);
   await users.delete(id);

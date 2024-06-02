@@ -1,16 +1,24 @@
 import { users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import ResponseError, { Forbidden, NotFound } from "@/lib/error";
+import {
+  forbidden,
+  userAlreadyTyped,
+  userExists,
+  userNotFound,
+} from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { generateAuthorizationToken } from "@/lib/auth";
 
-export async function create(req: Request, res: Response) {
+export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
     req.body
   );
+
+  const exists = await users.findByEmail(email);
+  if (exists) return next(userExists);
 
   const user = await users.create({
     password: hashPassword(password),
@@ -22,9 +30,11 @@ export async function create(req: Request, res: Response) {
   res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
 }
 
-async function update(req: Request, res: Response) {
+async function update(req: Request, res: Response, next: NextFunction) {
   const { email, name, password, gender, birthday, type } =
     schema.http.user.update.body.parse(req.body);
+
+  if (type && req.user.type) return next(userAlreadyTyped);
 
   await users.update(req.user.id, {
     email,
@@ -47,12 +57,12 @@ async function delete_(req: Request, res: Response) {
 async function getOne(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.user.get.query.parse(req.query).id;
   const user = await users.findById(id);
-  if (!user) return next(new NotFound());
+  if (!user) return next(userNotFound);
 
   const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
   res.status(200).json(user);
 }
 
@@ -64,7 +74,7 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
 async function login(req: Request, res: Response, next: NextFunction) {
   const { email, password } = schema.http.user.login.body.parse(req.body);
   const user = await users.findByCredentials(email, hashPassword(password));
-  if (!user) return next(new NotFound("User"));
+  if (!user) return next(userNotFound);
   res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
 }
 

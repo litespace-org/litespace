@@ -1,7 +1,13 @@
 import { Lesson, User, complex, lessons, slots, tutors } from "@/models";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
-import ResponseError, { Forbidden, NotFound } from "@/lib/error";
+import {
+  forbidden,
+  lessonNotFound,
+  slotNotFound,
+  tutorHasNoTime,
+  tutorNotFound,
+} from "@/lib/error";
 import { hasEnoughTime } from "@/lib/lessons";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
@@ -19,14 +25,13 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   // - update user remaining minutes
   // - no lessons at this time.
 
-  if (req.user.type !== User.Type.Student)
-    return next(new ResponseError("Only students can register lessons", 401));
+  if (req.user.type !== User.Type.Student) return next(forbidden);
 
   const slot = await slots.findById(slotId);
-  if (!slot) return next(new NotFound("Slot"));
+  if (!slot) return next(slotNotFound);
 
   const tutor = await complex.getTutorById(slot.tutorId);
-  if (!tutor) return next(new NotFound("Tutor"));
+  if (!tutor) return next(tutorNotFound);
 
   const bookedLessons = await lessons.findBySlotId(slotId);
 
@@ -36,10 +41,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     slot,
   });
 
-  if (!enough)
-    return next(
-      new ResponseError("Tutor doesn't have the time for this lesson", 400)
-    );
+  if (!enough) return next(tutorHasNoTime);
 
   // const meetting = await createZoomMeeting({
   //   tutorId,
@@ -74,12 +76,12 @@ async function delete_(
   const { id } = schema.http.lesson.get.query.parse(req.query);
 
   const lesson = await lessons.findById(id);
-  if (!lesson) return next(new NotFound());
+  if (!lesson) return next(lessonNotFound);
 
   const userId = req.user.id;
   const owner = userId === lesson.studentId || userId === lesson.tutorId;
   const eligible = owner || isAdmin(req.user.type);
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
 
   // todo: delete zoom meeting
 
@@ -110,7 +112,7 @@ async function getMany(
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const { id } = schema.http.lesson.get.query.parse(req.query);
   const lesson = await lessons.findById(id);
-  if (!lesson) return next(new NotFound());
+  if (!lesson) return next(lessonNotFound);
   res.status(200).json(lesson);
 }
 

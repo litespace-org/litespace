@@ -4,7 +4,7 @@ import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
 import { User, users } from "@/models";
-import { Forbidden, NotFound } from "@/lib/error";
+import { forbidden, userNotFound } from "@/lib/error";
 import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
@@ -50,9 +50,8 @@ function authHandler(roles?: User.Type[]) {
       id: number;
     };
     const user = await users.findById(id);
-    if (!user) return next(new NotFound());
-    if (!isEmpty(roles) && !roles?.includes(user.type))
-      return next(new Forbidden());
+    if (!user) return next(userNotFound);
+    if (!isEmpty(roles) && !roles?.includes(user.type)) return next(forbidden);
 
     req.user = user;
     next();
@@ -61,7 +60,7 @@ function authHandler(roles?: User.Type[]) {
 
 export function ensureAuth(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) return next();
-  return next(new Forbidden());
+  return next(forbidden);
 }
 
 export async function jwtAuthorization(req: Request, done: DoneCallback) {

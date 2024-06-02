@@ -1,5 +1,10 @@
 import { User, subscriptions } from "@/models";
-import ResponseError, { BadRequest, Forbidden, NotFound } from "@/lib/error";
+import ResponseError, {
+  alreadySubscribed,
+  badRequest,
+  forbidden,
+  subscriptionNotFound,
+} from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -14,12 +19,10 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   const { monthlyMinutes, period, autoRenewal } =
     schema.http.subscription.create.body.parse(req.body);
 
-  if (req.user.type !== User.Type.Student)
-    return next(new ResponseError("Only student can subscribe", 400));
+  if (req.user.type !== User.Type.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
-  if (subscription)
-    return next(new ResponseError("Student already subscribed", 400));
+  if (subscription) return next(alreadySubscribed);
 
   const start = asDayStart(dayjs().utc());
   const end = calculateSubscriptionEndDate(start, period);
@@ -42,18 +45,13 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
     req.body
   );
 
-  if (isEmpty(req.body))
-    return next(
-      new BadRequest(
-        "body.period or body.autoRenewal is required to perform the request"
-      )
-    );
+  if (isEmpty(req.body)) return next(badRequest);
 
   const subscription = await subscriptions.findByStudentId(studentId);
-  if (!subscription) return next(new NotFound("Subscription"));
+  if (!subscription) return next(subscriptionNotFound);
 
   const owner = studentId === subscription.studentId;
-  if (!owner) return next(new Forbidden());
+  if (!owner) return next(forbidden);
 
   const today = asDayStart(dayjs().utc());
   const end = period
@@ -77,10 +75,10 @@ async function delete_(
   const studentId = req.user.id;
 
   const subscription = await subscriptions.findByStudentId(studentId);
-  if (!subscription) return next(new NotFound("Subscription"));
+  if (!subscription) return next(subscriptionNotFound);
 
   const owner = subscription.studentId === studentId;
-  if (!owner) return next(new Forbidden());
+  if (!owner) return next(forbidden);
 
   await subscriptions.delete(subscription.id);
   res.status(204).send();
@@ -91,13 +89,13 @@ async function getStudentSubscription(
   res: Response,
   next: NextFunction
 ) {
-  if (req.user.type !== User.Type.Student) return next(new Forbidden());
+  if (req.user.type !== User.Type.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
-  if (!subscription) return next(new NotFound("Subscription"));
+  if (!subscription) return next(subscriptionNotFound);
 
   const owner = req.user.id === subscription.studentId;
-  if (!owner) return next(new Forbidden());
+  if (!owner) return next(forbidden);
 
   res.status(200).json(subscription);
 }

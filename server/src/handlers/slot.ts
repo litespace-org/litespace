@@ -1,6 +1,6 @@
 import { lessons, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { Forbidden, NotFound } from "@/lib/error";
+import { forbidden, slotNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -26,8 +26,8 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   const fields = schema.http.slot.update.parse(req.body);
   const slot = await slots.findById(fields.id);
 
-  if (!slot) return next(new NotFound());
-  if (slot.tutorId !== req.user.id) return next(new Forbidden());
+  if (!slot) return next(slotNotFound);
+  if (slot.tutorId !== req.user.id) return next(forbidden);
 
   await slots.update(fields);
   res.status(200).send();
@@ -36,12 +36,12 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const id = schema.http.slot.get.query.parse(req.query).id;
   const slot = await slots.findById(id);
-  if (!slot) return next(new NotFound());
+  if (!slot) return next(slotNotFound);
 
   const owner = req.user.id === slot.tutorId;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
   res.status(200).json(slot);
 }
 
@@ -61,8 +61,8 @@ async function delete_(
 ) {
   const id = schema.http.slot.get.query.parse(req.query).id;
   const slot = await slots.findById(id);
-  if (!slot) return next(new NotFound());
-  if (slot.tutorId !== req.user.id) return next(new Forbidden());
+  if (!slot) return next(slotNotFound);
+  if (slot.tutorId !== req.user.id) return next(forbidden);
   await slots.delete(slot.id);
   res.status(200).send();
 }

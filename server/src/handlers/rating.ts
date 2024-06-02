@@ -1,5 +1,10 @@
 import { User, ratings, tutors } from "@/models";
-import ResponseError, { Forbidden, NotFound } from "@/lib/error";
+import {
+  alreadyRated,
+  forbidden,
+  ratingNotFound,
+  tutorNotFound,
+} from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -13,19 +18,17 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     req.body
   );
 
-  if (req.user.type !== User.Type.Student)
-    return next(new ResponseError("Only students can rate tutors", 400));
+  if (req.user.type !== User.Type.Student) return next(forbidden);
 
   const tutor = await tutors.findById(tutorId);
-  if (!tutor) return next(new NotFound("Tutor"));
+  if (!tutor) return next(tutorNotFound);
 
   const rating = await ratings.findByEntities({
     tutorId,
     studentId,
   });
 
-  if (rating)
-    return next(new ResponseError("Student already rated this tutor", 400));
+  if (rating) return next(alreadyRated);
 
   const now = dayjs().utc().toISOString();
   const id = await ratings.create({
@@ -44,8 +47,8 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   const data = schema.http.rating.update.body.parse(req.body);
 
   const rating = await ratings.findById(data.id);
-  if (!rating) return next(new NotFound("Rating"));
-  if (rating.studentId !== req.user.id) return next(new Forbidden());
+  if (!rating) return next(ratingNotFound);
+  if (rating.studentId !== req.user.id) return next(forbidden);
 
   await ratings.update(data);
   res.status(200).send();
@@ -59,12 +62,12 @@ async function delete_(
   const { id } = schema.http.rating.delete.query.parse(req.query);
 
   const rating = await ratings.findById(id);
-  if (!rating) return next(new NotFound("Rating"));
+  if (!rating) return next(ratingNotFound);
 
   const owner = rating.studentId === req.user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(new Forbidden());
+  if (!eligible) return next(forbidden);
 
   await ratings.delete(id);
   res.status(200).send();
