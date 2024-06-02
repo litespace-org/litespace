@@ -10,7 +10,7 @@ export function oauthHandler(req: Request, res: Response) {
 export function logout(req: Request, res: Response, next: NextFunction) {
   req.logout((error) => {
     if (error) return next(error);
-    res.redirect(serverConfig.client);
+    res.status(200).send();
   });
 }
 

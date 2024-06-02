@@ -1,6 +1,6 @@
-import register from "@/redux/user/register";
+import me from "@/redux/user/me";
 import { combineReducers } from "@reduxjs/toolkit";
 
 export default combineReducers({
-  register,
+  me,
 });

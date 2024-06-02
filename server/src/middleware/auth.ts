@@ -58,6 +58,7 @@ function authHandler(roles?: User.Type[]) {
 }
 
 export function ensureAuth(req: Request, res: Response, next: NextFunction) {
+  console.log({ cookies: req.cookies });
   if (req.isAuthenticated()) return next();
   return next(new Forbidden());
 }

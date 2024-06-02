@@ -1,4 +1,6 @@
 import { auth } from "@/api";
+import { useAppDispatch } from "@/redux/store";
+import { findMe } from "@/redux/user/me";
 import { Route } from "@/types/routes";
 import { Button, messages } from "@litespace/uilib";
 import React from "react";
@@ -7,9 +9,10 @@ import { useMutation } from "react-query";
 import { Link } from "react-router-dom";
 
 const Root: React.FC = () => {
+  const dispatch = useAppDispatch();
   const mutation = useMutation(auth.logout, {
     onSuccess() {
-      alert("you are logged out!!");
+      dispatch(findMe());
     },
   });
   return (

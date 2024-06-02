@@ -14,6 +14,7 @@ import logger from "morgan";
 import connectPostgres from "connect-pg-simple";
 import { pool } from "@/models/query";
 import "colors";
+import { allowCrossDomains } from "@/middleware/domains";
 
 const SessionStore = connectPostgres(session);
 const app = express();
@@ -30,6 +31,7 @@ app.use(logger("dev"));
 app.use(cors());
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(allowCrossDomains);
 // https://youtu.be/SBvmnHTQIPY?t=2517
 // todos:
 // 1. session vs jwt
