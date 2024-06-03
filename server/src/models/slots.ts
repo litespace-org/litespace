@@ -1,6 +1,7 @@
 import { query } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
+import format from "pg-format";
 
 export class Slots {
   async create(slot: Omit<Slot.Self, "id">): Promise<void> {
@@ -97,7 +98,6 @@ export class Slots {
         FROM slots
         WHERE
             id = $1;
-            
      `,
       [id]
     );
@@ -126,9 +126,36 @@ export class Slots {
         FROM slots
         WHERE
             tutor_id = $1;
-            
      `,
       [id]
+    );
+
+    return rows.map((slot) => this.as(slot));
+  }
+
+  async findByTutors(ids: number[]): Promise<Slot.Self[]> {
+    const { rows } = await query<Slot.Row, []>(
+      format(
+        `
+        SELECT
+            id,
+            tutor_id,
+            title,
+            description,
+            weekday,
+            start_time,
+            end_time,
+            repeat,
+            start_date,
+            end_date,
+            created_at,
+            updated_at
+        FROM slots
+        WHERE
+            tutor_id in (%L);
+     `,
+        ids
+      )
     );
 
     return rows.map((slot) => this.as(slot));

@@ -6,7 +6,7 @@ import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import dayjs from "@/lib/dayjs";
-import { asTimeValues, setDayTime, unpackSlots } from "@/lib/slots";
+import { unpackSlots } from "@/lib/slots";
 
 async function create(req: Request.Default, res: Response) {
   const slot = schema.http.slot.create.parse(req.body);

@@ -1,11 +1,11 @@
-import { complex, tutors, users } from "@/models";
+import { complex, slots, tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { forbidden, userNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { merge, omit } from "lodash";
+import { map, merge, omit } from "lodash";
 import { generateAuthorizationToken } from "@/lib/auth";
 
 async function create(req: Request.Default, res: Response) {
@@ -45,6 +45,10 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
 
 async function getTutors(req: Request.Default, res: Response) {
   const list = await complex.findActivatedTutors();
+  const tutorsSlots = await slots.findByTutors(map(list, "id"));
+
+  console.log({ tutorsSlots });
+
   res.status(200).json(list);
 }
 
