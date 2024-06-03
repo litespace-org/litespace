@@ -35,7 +35,7 @@ import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
 import { Login } from "./pages/login";
 import { ForgotPassword } from "./pages/forgotPassword";
-import { authProvider } from "./authProvider";
+import { authProvider } from "./providers/auth";
 
 function App() {
   return (

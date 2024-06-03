@@ -1,13 +1,12 @@
 import { AuthPage } from "@refinedev/antd";
 import { OAuthProvider } from "@refinedev/core";
 import {
-  GoogleOutlined,
   GoogleSquareFilled,
   FacebookFilled,
   DiscordFilled,
 } from "@ant-design/icons";
 
-export const providers: OAuthProvider[] = [
+const providers: OAuthProvider[] = [
   {
     name: "google",
     icon: <GoogleSquareFilled />,
