@@ -12,6 +12,7 @@
     "packages": [
       "server",
       "uilib",
+      "orbit",
       "web"
     ]
   },
