@@ -1,36 +1,21 @@
-import { Box, TextField } from "@mui/material";
-import { Create } from "@refinedev/mui";
-import { useForm } from "@refinedev/react-hook-form";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
+import React from "react";
 
 export const CategoryCreate = () => {
-  const {
-    saveButtonProps,
-    refineCore: { formLoading },
-    register,
-    formState: { errors },
-  } = useForm({});
+  const { formProps, saveButtonProps } = useForm({});
 
   return (
-    <Create isLoading={formLoading} saveButtonProps={saveButtonProps}>
-      <Box
-        component="form"
-        sx={{ display: "flex", flexDirection: "column" }}
-        autoComplete="off"
-      >
-        <TextField
-          {...register("title", {
-            required: "This field is required",
-          })}
-          error={!!(errors as any)?.title}
-          helperText={(errors as any)?.title?.message}
-          margin="normal"
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-          type="text"
+    <Create saveButtonProps={saveButtonProps}>
+      <Form {...formProps} layout="vertical">
+        <Form.Item
           label={"Title"}
-          name="title"
-        />
-      </Box>
+          name={["title"]}
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
     </Create>
   );
 };

@@ -1,54 +1,36 @@
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
 import {
   DeleteButton,
   EditButton,
   List,
   ShowButton,
-  useDataGrid,
-} from "@refinedev/mui";
+  useTable,
+} from "@refinedev/antd";
+import type { BaseRecord } from "@refinedev/core";
+import { Space, Table } from "antd";
 import React from "react";
 
 export const CategoryList = () => {
-  const { dataGridProps } = useDataGrid({});
-
-  const columns = React.useMemo<GridColDef[]>(
-    () => [
-      {
-        field: "id",
-        headerName: "ID",
-        type: "number",
-        minWidth: 50,
-      },
-      {
-        field: "title",
-        flex: 1,
-        headerName: "Title",
-        minWidth: 200,
-      },
-      {
-        field: "actions",
-        headerName: "Actions",
-        sortable: false,
-        renderCell: function render({ row }) {
-          return (
-            <>
-              <EditButton hideText recordItemId={row.id} />
-              <ShowButton hideText recordItemId={row.id} />
-              <DeleteButton hideText recordItemId={row.id} />
-            </>
-          );
-        },
-        align: "center",
-        headerAlign: "center",
-        minWidth: 80,
-      },
-    ],
-    []
-  );
+  const { tableProps } = useTable({
+    syncWithLocation: true,
+  });
 
   return (
     <List>
-      <DataGrid {...dataGridProps} columns={columns} autoHeight />
+      <Table {...tableProps} rowKey="id">
+        <Table.Column dataIndex="id" title={"ID"} />
+        <Table.Column dataIndex="title" title={"title"} />
+        <Table.Column
+          title={"Actions"}
+          dataIndex="actions"
+          render={(_, record: BaseRecord) => (
+            <Space>
+              <EditButton hideText size="small" recordItemId={record.id} />
+              <ShowButton hideText size="small" recordItemId={record.id} />
+              <DeleteButton hideText size="small" recordItemId={record.id} />
+            </Space>
+          )}
+        />
+      </Table>
     </List>
   );
 };

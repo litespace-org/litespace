@@ -1,23 +1,17 @@
-import {
-  Refine,
-  WelcomePage,
-  Authenticated,
-  AuthBindings,
-} from "@refinedev/core";
+import { Refine, Authenticated } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
 import {
-  AuthPage,
   ErrorComponent,
-  notificationProvider,
-  RefineSnackbarProvider,
+  useNotificationProvider,
   ThemedLayoutV2,
-} from "@refinedev/mui";
+  ThemedSiderV2,
+} from "@refinedev/antd";
+import "@refinedev/antd/dist/reset.css";
 
 import dataProvider from "@refinedev/simple-rest";
-import CssBaseline from "@mui/material/CssBaseline";
-import GlobalStyles from "@mui/material/GlobalStyles";
+import { App as AntdApp } from "antd";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import routerBindings, {
   NavigateToResource,
@@ -25,7 +19,6 @@ import routerBindings, {
   UnsavedChangesNotifier,
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
-import axios from "axios";
 import {
   BlogPostList,
   BlogPostCreate,
@@ -41,33 +34,21 @@ import {
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
 import { Login } from "./pages/login";
-import { CredentialResponse } from "./interfaces/google";
-import { parseJwt } from "./utils/parse-jwt";
-
-const axiosInstance = axios.create();
-axiosInstance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (config.headers) {
-    config.headers["Authorization"] = `Bearer ${token}`;
-  }
-
-  return config;
-});
+import { ForgotPassword } from "./pages/forgotPassword";
+import { authProvider } from "./authProvider";
 
 function App() {
   return (
     <BrowserRouter>
       <RefineKbarProvider>
         <ColorModeContextProvider>
-          <CssBaseline />
-          <GlobalStyles styles={{ html: { WebkitFontSmoothing: "auto" } }} />
-          <RefineSnackbarProvider>
+          <AntdApp>
             <DevtoolsProvider>
               <Refine
                 dataProvider={dataProvider("https://api.fake-rest.refine.dev")}
-                notificationProvider={notificationProvider}
+                notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
-                // authProvider={authProvider}
+                authProvider={authProvider}
                 resources={[
                   {
                     name: "blog_posts",
@@ -94,7 +75,7 @@ function App() {
                   syncWithLocation: true,
                   warnWhenUnsavedChanges: true,
                   useNewQueryKeys: true,
-                  projectId: "gAHgwi-m2ITbo-B3LIC7",
+                  projectId: "jandTS-lwXMqr-xCLJLE",
                 }}
               >
                 <Routes>
@@ -104,7 +85,10 @@ function App() {
                         key="authenticated-inner"
                         fallback={<CatchAllNavigate to="/login" />}
                       >
-                        <ThemedLayoutV2 Header={() => <Header sticky />}>
+                        <ThemedLayoutV2
+                          Header={() => <Header sticky />}
+                          Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+                        >
                           <Outlet />
                         </ThemedLayoutV2>
                       </Authenticated>
@@ -139,6 +123,10 @@ function App() {
                     }
                   >
                     <Route path="/login" element={<Login />} />
+                    <Route
+                      path="/forgot-password"
+                      element={<ForgotPassword />}
+                    />
                   </Route>
                 </Routes>
 
@@ -148,7 +136,7 @@ function App() {
               </Refine>
               <DevtoolsPanel />
             </DevtoolsProvider>
-          </RefineSnackbarProvider>
+          </AntdApp>
         </ColorModeContextProvider>
       </RefineKbarProvider>
     </BrowserRouter>

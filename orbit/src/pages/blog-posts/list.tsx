@@ -1,5 +1,3 @@
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
-import { useMany } from "@refinedev/core";
 import {
   DateField,
   DeleteButton,
@@ -7,106 +5,70 @@ import {
   List,
   MarkdownField,
   ShowButton,
-  useDataGrid,
-} from "@refinedev/mui";
+  useTable,
+} from "@refinedev/antd";
+import { type BaseRecord, useMany } from "@refinedev/core";
+import { Space, Table } from "antd";
 import React from "react";
 
 export const BlogPostList = () => {
-  const { dataGridProps } = useDataGrid({
+  const { tableProps } = useTable({
     syncWithLocation: true,
   });
 
   const { data: categoryData, isLoading: categoryIsLoading } = useMany({
     resource: "categories",
     ids:
-      dataGridProps?.rows
-        ?.map((item: any) => item?.category?.id)
+      tableProps?.dataSource
+        ?.map((item) => item?.category?.id)
         .filter(Boolean) ?? [],
     queryOptions: {
-      enabled: !!dataGridProps?.rows,
+      enabled: !!tableProps?.dataSource,
     },
   });
 
-  const columns = React.useMemo<GridColDef[]>(
-    () => [
-      {
-        field: "id",
-        headerName: "ID",
-        type: "number",
-        minWidth: 50,
-      },
-      {
-        field: "title",
-        flex: 1,
-        headerName: "Title",
-        minWidth: 200,
-      },
-      {
-        field: "content",
-        flex: 1,
-        headerName: "content",
-        minWidth: 250,
-        renderCell: function render({ value }) {
-          if (!value) return "-";
-          return <MarkdownField value={value?.slice(0, 80) + "..." || ""} />;
-        },
-      },
-      {
-        field: "category",
-        flex: 1,
-        headerName: "Category",
-        minWidth: 300,
-        valueGetter: ({ row }) => {
-          const value = row?.category;
-          return value;
-        },
-        renderCell: function render({ value }) {
-          return categoryIsLoading ? (
-            <>Loading...</>
-          ) : (
-            categoryData?.data?.find((item) => item.id === value?.id)?.title
-          );
-        },
-      },
-      {
-        field: "status",
-        flex: 1,
-        headerName: "Status",
-        minWidth: 200,
-      },
-      {
-        field: "createdAt",
-        flex: 1,
-        headerName: "Created at",
-        minWidth: 250,
-        renderCell: function render({ value }) {
-          return <DateField value={value} />;
-        },
-      },
-      {
-        field: "actions",
-        headerName: "Actions",
-        sortable: false,
-        renderCell: function render({ row }) {
-          return (
-            <>
-              <EditButton hideText recordItemId={row.id} />
-              <ShowButton hideText recordItemId={row.id} />
-              <DeleteButton hideText recordItemId={row.id} />
-            </>
-          );
-        },
-        align: "center",
-        headerAlign: "center",
-        minWidth: 80,
-      },
-    ],
-    [categoryData]
-  );
-
   return (
     <List>
-      <DataGrid {...dataGridProps} columns={columns} autoHeight />
+      <Table {...tableProps} rowKey="id">
+        <Table.Column dataIndex="id" title={"ID"} />
+        <Table.Column dataIndex="title" title={"Title"} />
+        <Table.Column
+          dataIndex="content"
+          title={"Content"}
+          render={(value: any) => {
+            if (!value) return "-";
+            return <MarkdownField value={value.slice(0, 80) + "..."} />;
+          }}
+        />
+        <Table.Column
+          dataIndex={"category"}
+          title={"Category"}
+          render={(value) =>
+            categoryIsLoading ? (
+              <>Loading...</>
+            ) : (
+              categoryData?.data?.find((item) => item.id === value?.id)?.title
+            )
+          }
+        />
+        <Table.Column dataIndex="status" title={"Status"} />
+        <Table.Column
+          dataIndex={["createdAt"]}
+          title={"Created at"}
+          render={(value: any) => <DateField value={value} />}
+        />
+        <Table.Column
+          title={"Actions"}
+          dataIndex="actions"
+          render={(_, record: BaseRecord) => (
+            <Space>
+              <EditButton hideText size="small" recordItemId={record.id} />
+              <ShowButton hideText size="small" recordItemId={record.id} />
+              <DeleteButton hideText size="small" recordItemId={record.id} />
+            </Space>
+          )}
+        />
+      </Table>
     </List>
   );
 };

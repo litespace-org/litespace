@@ -1,35 +1,21 @@
-import { Box, TextField } from "@mui/material";
-import { Edit } from "@refinedev/mui";
-import { useForm } from "@refinedev/react-hook-form";
+import { Edit, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
+import React from "react";
 
 export const CategoryEdit = () => {
-  const {
-    saveButtonProps,
-    register,
-    formState: { errors },
-  } = useForm({});
+  const { formProps, saveButtonProps } = useForm({});
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
-      <Box
-        component="form"
-        sx={{ display: "flex", flexDirection: "column" }}
-        autoComplete="off"
-      >
-        <TextField
-          {...register("title", {
-            required: "This field is required",
-          })}
-          error={!!(errors as any)?.title}
-          helperText={(errors as any)?.title?.message}
-          margin="normal"
-          fullWidth
-          InputLabelProps={{ shrink: true }}
-          type="text"
+      <Form {...formProps} layout="vertical">
+        <Form.Item
           label={"Title"}
-          name="title"
-        />
-      </Box>
+          name={["title"]}
+          rules={[{ required: true }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
     </Edit>
   );
 };
