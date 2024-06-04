@@ -11,7 +11,7 @@ import { type BaseRecord, useMany } from "@refinedev/core";
 import { Space, Table } from "antd";
 import React from "react";
 
-export const BlogPostList = () => {
+export const BlogPostList: React.FC = () => {
   const { tableProps } = useTable({
     syncWithLocation: true,
   });

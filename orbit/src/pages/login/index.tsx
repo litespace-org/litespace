@@ -1,12 +1,20 @@
 import { AuthPage } from "@refinedev/antd";
-import { Typography } from "antd";
+import { Typography, Flex } from "antd";
+import { RocketFilled } from "@ant-design/icons";
 
 export const Login = () => {
   return (
     <AuthPage
       type="login"
       registerLink={false}
-      title={<Typography.Title level={2}>LiteSpace</Typography.Title>}
+      title={
+        <Flex gap="10px">
+          <RocketFilled style={{ fontSize: "30px" }} />
+          <Typography.Title level={2} style={{ marginBottom: "0px" }}>
+            LiteSpace
+          </Typography.Title>
+        </Flex>
+      }
       formProps={{
         initialValues: {
           email: "admin@litespace.com",
