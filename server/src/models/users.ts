@@ -72,7 +72,6 @@ export class Users {
       type: User.Type;
     }>
   ): Promise<void> {
-    console.log({ user });
     await query(
       `
         UPDATE users

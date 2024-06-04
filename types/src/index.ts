@@ -1,1 +1,10 @@
-export * as user from "./user";
+export * as User from "@/user";
+export * as Tutor from "@/tutor";
+export * as Examiner from "@/examiner";
+export * as Subscription from "@/subscription";
+export * as Slot from "@/slot";
+export * as Room from "@/room";
+export * as Rating from "@/rating";
+export * as Message from "@/message";
+export * as Lesson from "@/lesson";
+export * from "@/api";

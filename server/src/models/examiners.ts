@@ -1,4 +1,4 @@
-import { query, withTransaction } from "@/models/query";
+import { withTransaction } from "@/models/query";
 import { User, users } from "@/models/users";
 import { first } from "lodash";
 
