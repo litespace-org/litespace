@@ -7,6 +7,8 @@ export enum Type {
   Student = "student",
 }
 
+export type TutorOrStudent = Type.Tutor | Type.Student;
+
 export enum Gender {
   Male = "male",
   Female = "female",
