@@ -1,4 +1,5 @@
-import { User, tutors, users } from "@/models";
+import { tutors, users } from "@/models";
+import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
   forbidden,
@@ -20,7 +21,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists);
 
-  if (type === User.Type.Tutor) {
+  if (type === IUser.Type.Tutor) {
     const tutor = await tutors.create({ email, password, name });
     res.status(200).json({ token: generateAuthorizationToken(tutor.id) });
     return;

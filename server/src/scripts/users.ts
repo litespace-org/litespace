@@ -1,10 +1,11 @@
-import { User, examiners, tutors, users } from "@/models";
+import { examiners, tutors, users } from "@/models";
+import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace1###");
-  const superAdmin = User.Type.SuperAdmin;
-  const student = User.Type.Student;
+  const superAdmin = IUser.Type.SuperAdmin;
+  const student = IUser.Type.Student;
 
   await users.create({
     email: "admin@litespace.com",

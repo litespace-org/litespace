@@ -16,7 +16,7 @@ import {
   subscriptionPeriod,
   gender,
 } from "@/validation/utils";
-import { User } from "@/models";
+import { IUser } from "@litespace/types";
 
 const avatar = zod.union([zod.null(), zod.string().trim()], {
   message: "Invalid avatar",
@@ -28,7 +28,7 @@ const user = {
       email,
       password,
       name,
-      type: zod.enum([User.Type.Student, User.Type.Tutor]),
+      type: zod.enum([IUser.Type.Student, IUser.Type.Tutor]),
     },
     { message: "Empty request body" }
   ),
@@ -40,7 +40,7 @@ const user = {
       avatar: zod.optional(avatar),
       gender: zod.optional(gender),
       birthday: zod.optional(date),
-      type: zod.optional(zod.enum([User.Type.Tutor, User.Type.Student])),
+      type: zod.optional(zod.enum([IUser.Type.Tutor, IUser.Type.Student])),
     }),
   },
   delete: { query: zod.object({ id }) },

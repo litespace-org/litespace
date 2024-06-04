@@ -1,19 +1,11 @@
-import passport, { Profile } from "passport";
+import passport from "passport";
 import { Strategy as Google, VerifyCallback } from "passport-google-oauth20";
 import { Strategy as Facebook } from "passport-facebook";
 import { Strategy as Local } from "passport-local";
 import { Strategy as Custom } from "passport-custom";
-import {
-  discordConfig,
-  facebookConfig,
-  googleConfig,
-  zoomConfig,
-} from "@/constants";
+import { facebookConfig, googleConfig } from "@/constants";
 import { users } from "@/models";
-import { first } from "lodash";
 import { hashPassword } from "./user";
-import axios from "axios";
-import url from "node:url";
 import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
 import { jwtAuthorization } from "@/middleware/auth";

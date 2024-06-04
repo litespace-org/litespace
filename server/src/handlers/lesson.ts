@@ -1,4 +1,5 @@
-import { Lesson, User, complex, lessons, slots, tutors } from "@/models";
+import { complex, lessons, slots, tutors } from "@/models";
+import { ILesson, IUser } from "@litespace/types";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import {
@@ -25,7 +26,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   // - update user remaining minutes
   // - no lessons at this time.
 
-  if (req.user.type !== User.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden);
 
   const slot = await slots.findById(slotId);
   if (!slot) return next(slotNotFound);
@@ -89,11 +90,11 @@ async function delete_(
   res.status(200).send();
 }
 
-async function getLessons(user: User.Self): Promise<Lesson.Self[]> {
+async function getLessons(user: IUser.Self): Promise<ILesson.Self[]> {
   const id = user.id;
   const type = user.type;
-  const studnet = type === User.Type.Student;
-  const tutor = type === User.Type.Tutor;
+  const studnet = type === IUser.Type.Student;
+  const tutor = type === IUser.Type.Tutor;
 
   if (studnet) return await lessons.findByStudentId(id);
   if (tutor) return await lessons.findByTutuorId(id);

@@ -1,4 +1,5 @@
-import { User, users } from "@/models";
+import { users } from "@/models";
+import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
@@ -10,7 +11,7 @@ export async function create(req: Request.Default, res: Response) {
 
   const user = await users.create({
     password: hashPassword(password),
-    type: User.Type.Student,
+    type: IUser.Type.Student,
     email,
     name,
   });

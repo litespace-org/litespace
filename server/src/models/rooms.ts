@@ -1,6 +1,6 @@
 import { query } from "@/models/query";
 import { first } from "lodash";
-import { User } from "./users";
+import { IUser } from "@litespace/types";
 
 export class Rooms {
   async create({
@@ -88,10 +88,10 @@ export class Rooms {
     type,
   }: {
     userId: number;
-    type: User.Type;
+    type: IUser.Type;
   }): Promise<Room.Self[]> {
-    const tutorId = type === User.Type.Tutor ? userId : 0;
-    const studentId = type === User.Type.Student ? userId : 0;
+    const tutorId = type === IUser.Type.Tutor ? userId : 0;
+    const studentId = type === IUser.Type.Student ? userId : 0;
 
     const { rows } = await query<
       Room.Row,

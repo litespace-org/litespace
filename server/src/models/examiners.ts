@@ -1,13 +1,14 @@
 import { withTransaction } from "@/models/query";
-import { User, users } from "@/models/users";
+import { users } from "@/models/users";
 import { first } from "lodash";
+import { IExaminer, IUser } from "@litespace/types";
 
 export class Examiners {
   async create(
-    user: User.Credentials & { name: string }
-  ): Promise<Examiner.FullExaminer> {
+    user: IUser.Credentials & { name: string }
+  ): Promise<IExaminer.FullExaminer> {
     return withTransaction(async (client) => {
-      const { rows } = await client.query<User.Row>(
+      const { rows } = await client.query<IUser.Row>(
         `
         INSERT INTO
             "users" (
@@ -49,29 +50,3 @@ export class Examiners {
 }
 
 export const examiners = new Examiners();
-
-export namespace Examiner {
-  export type FullExaminer = User.Self & {
-    zoomRefreshToken: string | null;
-    aquiredRefreshTokenAt: string | null;
-    authorizedZoomApp: boolean;
-  };
-
-  export type Self = {
-    id: number;
-    zoomRefreshToken: string | null;
-    aquiredRefreshTokenAt: string | null;
-    authorizedZoomApp: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-
-  export type Row = {
-    id: number;
-    zoom_refresh_token: string | null;
-    aquired_refresh_token_at: Date | null;
-    authorized_zoom_app: boolean;
-    created_at: Date;
-    updated_at: Date;
-  };
-}

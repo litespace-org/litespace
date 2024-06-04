@@ -1,5 +1,6 @@
 import { isDev } from "@/constants";
-import { User, messages, rooms, users } from "@/models";
+import { messages, rooms, users } from "@/models";
+import { IUser } from "@litespace/types";
 import { Socket } from "socket.io";
 import { Events } from "@/wss/events";
 import { schema } from "@/validation";
@@ -7,7 +8,7 @@ import "colors";
 
 export class WssHandler {
   socket: Socket;
-  user: User.Self;
+  user: IUser.Self;
 
   constructor(socket: Socket) {
     this.socket = socket;

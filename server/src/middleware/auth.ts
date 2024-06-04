@@ -3,7 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
 import jwt from "jsonwebtoken";
 import { authorizationSecret } from "@/constants";
-import { User, users } from "@/models";
+import { users } from "@/models";
+import { IUser } from "@litespace/types";
 import { forbidden, userNotFound } from "@/lib/error";
 import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
@@ -17,14 +18,14 @@ declare global {
       _query: { sid: string | undefined };
     }
 
-    interface User extends User.Self {}
+    interface User extends IUser.Self {}
   }
 }
 
 // used for socket.io
 declare module "http" {
   interface IncomingMessage {
-    user: User.Self;
+    user: IUser.Self;
   }
 }
 
@@ -40,7 +41,7 @@ function extractToken(header: string): string {
  * @note empty roles list will make the next route accessable for all user
  * types.
  */
-function authHandler(roles?: User.Type[]) {
+function authHandler(roles?: IUser.Type[]) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     const { authorization } = schema.http.auth.header.parse(req.headers);
     const { id } = jwt.verify(
@@ -90,23 +91,23 @@ export function authorizedSocket(
   return authHandler([])(req, res, next);
 }
 
-function auth(roles?: User.Type[]) {
+function auth(roles?: IUser.Type[]) {
   return asyncHandler(authHandler(roles));
 }
 
 export const authorized = auth();
-export const tutorOnly = auth([User.Type.Tutor]);
-export const adminOnly = auth([User.Type.SuperAdmin, User.Type.RegularAdmin]);
+export const tutorOnly = auth([IUser.Type.Tutor]);
+export const adminOnly = auth([IUser.Type.SuperAdmin, IUser.Type.RegularAdmin]);
 export const tutorOrAdmin = auth([
-  User.Type.Tutor,
-  User.Type.SuperAdmin,
-  User.Type.RegularAdmin,
+  IUser.Type.Tutor,
+  IUser.Type.SuperAdmin,
+  IUser.Type.RegularAdmin,
 ]);
 export const studentOrAdmin = auth([
-  User.Type.Student,
-  User.Type.SuperAdmin,
-  User.Type.RegularAdmin,
+  IUser.Type.Student,
+  IUser.Type.SuperAdmin,
+  IUser.Type.RegularAdmin,
 ]);
-export const studentOrTutor = auth([User.Type.Student, User.Type.Tutor]);
-export const studentOnly = auth([User.Type.Student]);
+export const studentOrTutor = auth([IUser.Type.Student, IUser.Type.Tutor]);
+export const studentOnly = auth([IUser.Type.Student]);
 export default auth;

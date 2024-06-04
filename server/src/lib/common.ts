@@ -1,5 +1,5 @@
-import { User } from "@/models";
+import { IUser } from "@litespace/types";
 
-export function isAdmin(type: User.Type) {
-  return type === User.Type.SuperAdmin || type === User.Type.RegularAdmin;
+export function isAdmin(type: IUser.Type) {
+  return type === IUser.Type.SuperAdmin || type === IUser.Type.RegularAdmin;
 }

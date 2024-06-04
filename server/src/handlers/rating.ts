@@ -1,4 +1,5 @@
-import { User, ratings, tutors } from "@/models";
+import { ratings, tutors } from "@/models";
+import { IUser } from "@litespace/types";
 import {
   alreadyRated,
   forbidden,
@@ -18,7 +19,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     req.body
   );
 
-  if (req.user.type !== User.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden);
 
   const tutor = await tutors.findById(tutorId);
   if (!tutor) return next(tutorNotFound);

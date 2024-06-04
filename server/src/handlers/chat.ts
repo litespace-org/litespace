@@ -1,5 +1,6 @@
 import ResponseError, { forbidden, roomExists } from "@/lib/error";
-import { User, rooms } from "@/models";
+import { rooms } from "@/models";
+import { IUser } from "@litespace/types";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -24,7 +25,7 @@ async function findByUserId(
   const userId = req.user.id;
   const userType = req.user.type;
 
-  if (![User.Type.Student, User.Type.Tutor].includes(userType))
+  if (![IUser.Type.Student, IUser.Type.Tutor].includes(userType))
     return next(forbidden);
 
   const list = await rooms.findMemberRooms({

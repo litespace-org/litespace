@@ -1,5 +1,6 @@
 import { passwordRegex } from "@/constants";
-import { Slot, Subscription, User } from "@/models";
+import { Slot, Subscription } from "@/models";
+import { IUser } from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -10,7 +11,7 @@ export const password = zod
 
 export const email = zod.string().trim().email("Invalid email");
 
-export const gender = zod.enum([User.Gender.Male, User.Gender.Female]);
+export const gender = zod.enum([IUser.Gender.Male, IUser.Gender.Female]);
 
 export const name = zod.string().trim().min(3, "Invalid username");
 

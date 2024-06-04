@@ -2309,6 +2309,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@litespace/server@workspace:server"
   dependencies:
+    "@litespace/types": "npm:1.0.0"
     "@types/connect-pg-simple": "npm:^7.0.3"
     "@types/express": "npm:^4.17.21"
     "@types/express-session": "npm:^1.18.0"
@@ -2353,7 +2354,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@litespace/types@workspace:types":
+"@litespace/types@npm:1.0.0, @litespace/types@workspace:types":
   version: 0.0.0-use.local
   resolution: "@litespace/types@workspace:types"
   dependencies:

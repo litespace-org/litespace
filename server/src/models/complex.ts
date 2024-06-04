@@ -1,5 +1,5 @@
 import { query } from "@/models/query";
-import { User, Tutor } from "@/models";
+import { IUser } from "@litespace/types";
 import { first } from "lodash";
 
 export class Complex {
@@ -83,7 +83,7 @@ export namespace Complex {
       email: string;
       name: string | null;
       avatar: string | null;
-      gender: User.Gender | null;
+      gender: IUser.Gender | null;
       active: boolean;
       bio: string | null;
       about: string | null;

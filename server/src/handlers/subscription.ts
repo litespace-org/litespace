@@ -1,5 +1,6 @@
-import { User, subscriptions } from "@/models";
-import ResponseError, {
+import { subscriptions } from "@/models";
+import { IUser } from "@litespace/types";
+import {
   alreadySubscribed,
   badRequest,
   forbidden,
@@ -19,7 +20,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   const { monthlyMinutes, period, autoRenewal } =
     schema.http.subscription.create.body.parse(req.body);
 
-  if (req.user.type !== User.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
   if (subscription) return next(alreadySubscribed);
@@ -89,7 +90,7 @@ async function getStudentSubscription(
   res: Response,
   next: NextFunction
 ) {
-  if (req.user.type !== User.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
   if (!subscription) return next(subscriptionNotFound);

@@ -1,14 +1,15 @@
 import { query, withTransaction } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
-import { User, users } from "./users";
+import { users } from "@/models";
+import { IUser } from "@litespace/types";
 
 export class Tutors {
   async create(
-    user: User.Credentials & { name: string }
+    user: IUser.Credentials & { name: string }
   ): Promise<Tutor.FullTutor> {
     return withTransaction(async (client) => {
-      const { rows } = await client.query<User.Row>(
+      const { rows } = await client.query<IUser.Row>(
         `
         INSERT INTO
             "users" (
@@ -198,7 +199,7 @@ export namespace Tutor {
     updatedAt: string;
   };
 
-  export type FullTutor = User.Self & {
+  export type FullTutor = IUser.Self & {
     bio: string | null;
     about: string | null;
     video: string | null;

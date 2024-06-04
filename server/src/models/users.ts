@@ -1,16 +1,17 @@
 import { query } from "@/models/query";
 import { first } from "lodash";
+import { IUser } from "@litespace/types";
 
 export class Users {
   async create(user: {
     email: string;
     password: string;
     name: string;
-    type: User.Type;
-  }): Promise<User.Self> {
+    type: IUser.Type;
+  }): Promise<IUser.Self> {
     const { rows } = await query<
-      User.Row,
-      [email: string, password: string, name: string, type: User.Type]
+      IUser.Row,
+      [email: string, password: string, name: string, type: IUser.Type]
     >(
       `
         INSERT INTO
@@ -34,8 +35,8 @@ export class Users {
     return this.from(row);
   }
 
-  async createWithEmailOnly(email: string): Promise<User.Self> {
-    const { rows } = await query<User.Row, [email: string]>(
+  async createWithEmailOnly(email: string): Promise<IUser.Self> {
+    const { rows } = await query<IUser.Row, [email: string]>(
       `
       INSERT INTO
           "users" ("email")
@@ -67,9 +68,9 @@ export class Users {
       name: string;
       avatar: string;
       birthday: string;
-      gender: User.Gender;
+      gender: IUser.Gender;
       active: boolean;
-      type: User.Type;
+      type: IUser.Type;
     }>
   ): Promise<void> {
     await query(
@@ -106,8 +107,8 @@ export class Users {
     await query("DELETE FROM users WHERE id = $1", [id]);
   }
 
-  async findById(id: number): Promise<User.Self | null> {
-    const { rows } = await query<User.Row, [number]>(
+  async findById(id: number): Promise<IUser.Self | null> {
+    const { rows } = await query<IUser.Row, [number]>(
       `
         SELECT 
           "id",
@@ -132,8 +133,8 @@ export class Users {
     return this.from(row);
   }
 
-  async findByEmail(email: string): Promise<User.Self | null> {
-    const { rows } = await query<User.Row, [email: string]>(
+  async findByEmail(email: string): Promise<IUser.Self | null> {
+    const { rows } = await query<IUser.Row, [email: string]>(
       `
         SELECT 
           "id",
@@ -158,8 +159,8 @@ export class Users {
     return this.from(row);
   }
 
-  async findMany(ids: number[]): Promise<User.Self[]> {
-    const { rows } = await query<User.Row, [number[]]>(
+  async findMany(ids: number[]): Promise<IUser.Self[]> {
+    const { rows } = await query<IUser.Row, [number[]]>(
       `
         SELECT id, email, password, password, name, avatar, type, active, created_at, updated_at
         FROM users
@@ -171,8 +172,8 @@ export class Users {
     return rows.map((row) => this.from(row));
   }
 
-  async findAll(): Promise<User.Self[]> {
-    const { rows } = await query<User.Row, []>(
+  async findAll(): Promise<IUser.Self[]> {
+    const { rows } = await query<IUser.Row, []>(
       `
         SELECT id, email, password, name, avatar, type, active, created_at, updated_at
         FROM users;
@@ -185,8 +186,8 @@ export class Users {
   async findByCredentials(
     email: string,
     password: string
-  ): Promise<User.Self | null> {
-    const { rows } = await query<User.Row, [string, string]>(
+  ): Promise<IUser.Self | null> {
+    const { rows } = await query<IUser.Row, [string, string]>(
       `
         SELECT id, email, password, name, avatar, type, active, created_at, updated_at
         FROM users
@@ -202,20 +203,20 @@ export class Users {
     return this.from(row);
   }
 
-  async getTutors(): Promise<User.Self[]> {
-    const { rows } = await query<User.Row, [User.Type.Tutor]>(
+  async getTutors(): Promise<IUser.Self[]> {
+    const { rows } = await query<IUser.Row, [typeof IUser.Type.Tutor]>(
       `
         SELECT id, email, name, avatar, type, active, created_at, updated_at
         FROM users
         WHERE type = $1;
       `,
-      [User.Type.Tutor]
+      [IUser.Type.Tutor]
     );
 
     return rows.map((row) => this.from(row));
   }
 
-  from(row: User.Row): User.Self {
+  from(row: IUser.Row): IUser.Self {
     return {
       id: row.id,
       email: row.email,
@@ -233,42 +234,3 @@ export class Users {
 }
 
 export const users = new Users();
-
-export namespace User {
-  export enum Type {
-    SuperAdmin = "super_admin",
-    RegularAdmin = "reg_admin",
-    Tutor = "tutor",
-    Student = "student",
-  }
-
-  export enum Gender {
-    Male = "male",
-    Female = "female",
-  }
-
-  export type Self = {
-    id: number;
-    email: string;
-    hasPassword: boolean;
-    name: string | null;
-    avatar: string | null;
-    birthday: string | null;
-    gender: Gender | null;
-    type: Type;
-    active: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-
-  export type Row = Omit<Self, "createdAt" | "updatedAt" | "hasPassword"> & {
-    password: string | null;
-    created_at: Date;
-    updated_at: Date;
-  };
-
-  export type Credentials = {
-    email: string;
-    password: string;
-  };
-}

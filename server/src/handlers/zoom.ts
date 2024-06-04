@@ -1,5 +1,6 @@
-import { User, tutors } from "@/models";
-import ResponseError, { forbidden } from "@/lib/error";
+import { tutors } from "@/models";
+import { IUser } from "@litespace/types";
+import { forbidden } from "@/lib/error";
 import {
   generateUserBasedAccessToken,
   getZoomUserApp,
@@ -16,7 +17,7 @@ async function setZoomRefreshToken(
 ) {
   const { code } = schema.http.zoom.setRefreshToken.body.parse(req.body);
 
-  if (req.user.type !== User.Type.Tutor) return next(forbidden);
+  if (req.user.type !== IUser.Type.Tutor) return next(forbidden);
   const tokens = await generateUserBasedAccessToken(code, getZoomUserApp());
   const now = new Date().toUTCString();
   await tutors.markTutorWithAuthorizedZoomApp(req.user.id, tokens.refresh, now);

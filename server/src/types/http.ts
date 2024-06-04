@@ -1,4 +1,4 @@
-import { User } from "@/models";
+import { IUser } from "@litespace/types";
 import type { Request } from "express";
 
 export namespace Request {
@@ -6,7 +6,7 @@ export namespace Request {
   export type Params<T extends object> = Request<T>;
   export type Body<T extends object> = Request<{}, {}, T>;
   export type Query<T extends object> = Request<{}, {}, {}, T>;
-  export type WithUser = { user: User.Self };
+  export type WithUser = { user: IUser.Self };
 }
 
 export type { Response } from "express";
