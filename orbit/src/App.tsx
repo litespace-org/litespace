@@ -1,17 +1,19 @@
 import { Refine, Authenticated } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
+import { RocketFilled } from "@ant-design/icons";
 
 import {
   ErrorComponent,
   useNotificationProvider,
   ThemedLayoutV2,
   ThemedSiderV2,
+  ThemedTitleV2,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
 import dataProvider from "@refinedev/simple-rest";
-import { App as AntdApp } from "antd";
+import { App as AntdApp, Typography } from "antd";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import routerBindings, {
   NavigateToResource,
@@ -75,7 +77,6 @@ function App() {
                   syncWithLocation: true,
                   warnWhenUnsavedChanges: true,
                   useNewQueryKeys: true,
-                  projectId: "jandTS-lwXMqr-xCLJLE",
                 }}
               >
                 <Routes>
@@ -86,6 +87,22 @@ function App() {
                         fallback={<CatchAllNavigate to="/login" />}
                       >
                         <ThemedLayoutV2
+                          Title={({ collapsed }) => (
+                            <ThemedTitleV2
+                              collapsed={collapsed}
+                              text={
+                                <Typography.Title
+                                  level={3}
+                                  style={{ marginBottom: "0px" }}
+                                >
+                                  LiteSpace
+                                </Typography.Title>
+                              }
+                              icon={
+                                <RocketFilled style={{ fontSize: "22px" }} />
+                              }
+                            />
+                          )}
                           Header={() => <Header sticky />}
                           Sider={(props) => <ThemedSiderV2 {...props} fixed />}
                         >

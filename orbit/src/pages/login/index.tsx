@@ -1,37 +1,17 @@
 import { AuthPage } from "@refinedev/antd";
-import { OAuthProvider } from "@refinedev/core";
-import {
-  GoogleSquareFilled,
-  FacebookFilled,
-  DiscordFilled,
-} from "@ant-design/icons";
-
-const providers: OAuthProvider[] = [
-  {
-    name: "google",
-    icon: <GoogleSquareFilled />,
-    label: "Sign in with Google",
-  },
-  {
-    name: "facebook",
-    icon: <FacebookFilled />,
-    label: "Sign in with Facebook",
-  },
-  {
-    name: "discord",
-    icon: <DiscordFilled />,
-    label: "Sign in with Discord",
-  },
-];
+import { Typography } from "antd";
 
 export const Login = () => {
   return (
     <AuthPage
       type="login"
-      providers={providers}
       registerLink={false}
+      title={<Typography.Title level={2}>LiteSpace</Typography.Title>}
       formProps={{
-        initialValues: { email: "demo@refine.dev", password: "demodemo" },
+        initialValues: {
+          email: "admin@litespace.com",
+          password: "LiteSpace1###",
+        },
       }}
     />
   );
