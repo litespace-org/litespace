@@ -12,7 +12,7 @@ import {
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
-import { dataProvider } from "@/providers/data";
+import { Resource, dataProvider } from "@/providers/data";
 import { App as AntdApp, Typography } from "antd";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import routerBindings, {
@@ -22,6 +22,12 @@ import routerBindings, {
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
 import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
+import {
+  MyScheduleCreate,
+  MyScheduleEdit,
+  MyScheduleList,
+  MyScheduleShow,
+} from "./pages/my-schedule";
 import {
   BlogPostList,
   BlogPostCreate,
@@ -54,12 +60,20 @@ function App() {
                 authProvider={authProvider}
                 resources={[
                   {
-                    name: "users",
+                    name: Resource.Users,
                     list: "/users",
                     create: "/users/create",
                     edit: "/users/edit/:id",
                     show: "/users/show/:id",
-                    meta: { canDelete: true },
+                    meta: { canDelete: true, label: "Users" },
+                  },
+                  {
+                    name: Resource.MySchedule,
+                    list: "/my-schedule",
+                    create: "/my-schedule/create",
+                    edit: "/my-schedule/edit/:id",
+                    show: "/my-schedule/show/:id",
+                    meta: { canDelete: true, label: "My Schedule" },
                   },
                   {
                     name: "blog_posts",
@@ -67,9 +81,7 @@ function App() {
                     create: "/blog-posts/create",
                     edit: "/blog-posts/edit/:id",
                     show: "/blog-posts/show/:id",
-                    meta: {
-                      canDelete: true,
-                    },
+                    meta: { canDelete: true },
                   },
                   {
                     name: "categories",
@@ -77,9 +89,7 @@ function App() {
                     create: "/categories/create",
                     edit: "/categories/edit/:id",
                     show: "/categories/show/:id",
-                    meta: {
-                      canDelete: true,
-                    },
+                    meta: { canDelete: true },
                   },
                 ]}
                 options={{
@@ -122,13 +132,19 @@ function App() {
                   >
                     <Route
                       index
-                      element={<NavigateToResource resource="blog_posts" />}
+                      element={<NavigateToResource resource="users" />}
                     />
                     <Route path="/users">
                       <Route index element={<UserList />} />
                       <Route path="create" element={<UserCreate />} />
                       <Route path="edit/:id" element={<UserEdit />} />
                       <Route path="show/:id" element={<UserShow />} />
+                    </Route>
+                    <Route path="/my-schedule">
+                      <Route index element={<MyScheduleList />} />
+                      <Route path="create" element={<MyScheduleCreate />} />
+                      <Route path="edit/:id" element={<MyScheduleEdit />} />
+                      <Route path="show/:id" element={<MyScheduleShow />} />
                     </Route>
                     <Route path="/blog-posts">
                       <Route index element={<BlogPostList />} />

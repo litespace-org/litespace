@@ -9,7 +9,6 @@ export type Self = {
   id: number;
   tutorId: number;
   title: string;
-  description: string;
   weekday: number;
   time: { start: string; end: string };
   date: { start: string; end?: string };
@@ -22,7 +21,6 @@ export type Row = {
   id: number;
   tutor_id: number;
   title: string;
-  description: string;
   weekday: number;
   start_time: string;
   end_time: string;
@@ -37,7 +35,6 @@ export type Discrete = {
   id: number;
   tutorId: number;
   title: string;
-  description: string;
   start: string;
   end: string;
   createdAt: string;

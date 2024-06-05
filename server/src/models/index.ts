@@ -20,7 +20,6 @@ export { examiners } from "@/models/examiners";
 export { users } from "@/models/users";
 
 // types
-export { Slot } from "@/models/slots";
 export { Tutor } from "@/models/tutors";
 export { Lesson } from "@/models/lessons";
 export { Rating } from "@/models/ratings";

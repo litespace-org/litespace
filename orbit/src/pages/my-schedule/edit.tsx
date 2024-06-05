@@ -3,7 +3,7 @@ import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { DatePicker, Form, Input, Select } from "antd";
 import dayjs from "dayjs";
 
-export const UserEdit = () => {
+export const MyScheduleEdit = () => {
   const { formProps, saveButtonProps, formLoading, queryResult } =
     useForm<IUser.Self>({});
 

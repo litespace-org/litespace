@@ -15,7 +15,6 @@ import {
   string,
   subscriptionPeriod,
   gender,
-  userType,
 } from "@/validation/utils";
 import { IUser } from "@litespace/types";
 
@@ -67,8 +66,7 @@ const auth = {
 const slot = {
   create: zod.object({
     title: zod.string().trim(),
-    description: zod.string().trim(),
-    weekday: weekday,
+    weekday,
     time: zod.object({ start: time, end: time }),
     date: zod.object({ start: date, end: zod.optional(date) }),
     repeat,

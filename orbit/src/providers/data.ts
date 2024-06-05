@@ -1,8 +1,12 @@
 import { atlas, backendUrl } from "@/lib/atlas";
 import { IUser, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
-import zod from "zod";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
+
+export enum Resource {
+  Users = "users",
+  MySchedule = "my-schedule",
+}
 
 export const dataProvider: DataProvider = {
   async getOne({ resource, id }) {
@@ -46,6 +50,7 @@ export const dataProvider: DataProvider = {
     if (resource === "users") {
       await atlas.user.create(as.casted(variables));
       return { data: as.any(null) };
+    } else if (resource === Resource.MySchedule) {
     }
 
     console.log({ resource, variables, meta });

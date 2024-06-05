@@ -1,6 +1,5 @@
 import { passwordRegex } from "@/constants";
-import { Slot, Subscription } from "@/models";
-import { IUser } from "@litespace/types";
+import { IUser, ISlot, ISubscription } from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -30,10 +29,10 @@ export const date = zod.coerce.string().date();
 export const datetime = zod.coerce.string().datetime();
 
 export const repeat = zod.enum([
-  Slot.Repeat.No,
-  Slot.Repeat.Daily,
-  Slot.Repeat.Weekly,
-  Slot.Repeat.Monthly,
+  ISlot.Repeat.No,
+  ISlot.Repeat.Daily,
+  ISlot.Repeat.Weekly,
+  ISlot.Repeat.Monthly,
 ]);
 
 export const userType = zod.enum([
@@ -46,7 +45,7 @@ export const userType = zod.enum([
 export const url = zod.string().url().trim();
 
 export const subscriptionPeriod = zod.enum([
-  Subscription.Period.Month,
-  Subscription.Period.Quarter,
-  Subscription.Period.Year,
+  ISubscription.Period.Month,
+  ISubscription.Period.Quarter,
+  ISubscription.Period.Year,
 ]);

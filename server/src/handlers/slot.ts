@@ -1,28 +1,23 @@
 import { lessons, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { forbidden, slotNotFound } from "@/lib/error";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import dayjs from "@/lib/dayjs";
 import { unpackSlots } from "@/lib/slots";
 
-async function create(req: Request.Default, res: Response) {
+async function create(req: Request, res: Response) {
   const slot = schema.http.slot.create.parse(req.body);
-  const now = dayjs().toISOString();
 
   await slots.create({
     ...slot,
     tutorId: req.user.id,
-    createdAt: now,
-    updatedAt: now,
   });
 
   res.status(200).send();
 }
 
-async function update(req: Request.Default, res: Response, next: NextFunction) {
+async function update(req: Request, res: Response, next: NextFunction) {
   const fields = schema.http.slot.update.parse(req.body);
   const slot = await slots.findById(fields.id);
 
@@ -33,7 +28,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function getOne(req: Request.Default, res: Response, next: NextFunction) {
+async function getOne(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.get.query.parse(req.query).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
@@ -45,20 +40,12 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).json(slot);
 }
 
-async function getMany(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function getMany(req: Request, res: Response, next: NextFunction) {
   const list = await slots.findByTutor(req.user.id);
   res.status(200).json(list);
 }
 
-async function delete_(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function delete_(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.get.query.parse(req.query).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
@@ -67,7 +54,7 @@ async function delete_(
   res.status(200).send();
 }
 
-async function getDiscreteTimeSlots(req: Request.Default, res: Response) {
+async function getDiscreteTimeSlots(req: Request, res: Response) {
   const { tutorId } = schema.http.slot.getDiscreteTimeSlots.query.parse(
     req.query
   );

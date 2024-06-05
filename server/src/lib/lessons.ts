@@ -1,4 +1,3 @@
-import { Lesson, Slot } from "@/models";
 import {
   asDiscrateSlot,
   isAvailableSlot,
@@ -6,6 +5,7 @@ import {
   setDayTime,
 } from "@/lib/slots";
 import dayjs from "@/lib/dayjs";
+import { ISlot, ILesson } from "@litespace/types";
 
 export function hasEnoughTime({
   lesson,
@@ -13,8 +13,8 @@ export function hasEnoughTime({
   slot,
 }: {
   lesson: { start: string; duration: number };
-  lessons: Lesson.Self[];
-  slot: Slot.Self;
+  lessons: ILesson.Self[];
+  slot: ISlot.Self;
 }): boolean {
   const date = setDayTime(dayjs(lesson.start).utc());
   const availableSlot = isAvailableSlot(slot, date);

@@ -1,9 +1,8 @@
 import { Dayjs } from "dayjs";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
-import { Slot } from "@/models";
-import { Lesson } from "@/models";
 import { cloneDeep, isEmpty } from "lodash";
+import { ISlot, ILesson } from "@litespace/types";
 
 type Time = {
   hours: number;
@@ -26,14 +25,14 @@ export function asTimeValues(input: string): Time {
   };
 }
 
-function isSelectableDailySlot(slot: Slot.Self, date: Dayjs) {
+function isSelectableDailySlot(slot: ISlot.Self, date: Dayjs) {
   const bounded = !!slot.date.end;
   const started = dayjs(slot.date.start).isBefore(date.add(1, "second"));
   const eneded = dayjs(slot.date.end).isBefore(date);
   return bounded ? started && !eneded : started;
 }
 
-function isSelectableWeeklySlot(slot: Slot.Self, date: Dayjs) {
+function isSelectableWeeklySlot(slot: ISlot.Self, date: Dayjs) {
   const bounded = !!slot.date.end;
   const started = dayjs(slot.date.start).isBefore(date.add(1, "second"));
   const eneded = dayjs(slot.date.end).isBefore(date);
@@ -41,29 +40,29 @@ function isSelectableWeeklySlot(slot: Slot.Self, date: Dayjs) {
   return between && date.day() === slot.weekday;
 }
 
-function selectSlots(slots: Slot.Self[], date: Dayjs): Slot.Self[] {
+function selectSlots(slots: ISlot.Self[], date: Dayjs): ISlot.Self[] {
   return slots.filter((slot) => {
     // Handle specific slots (no repeat)
-    const noRepeat = slot.repeat === Slot.Repeat.No;
+    const noRepeat = slot.repeat === ISlot.Repeat.No;
     if (noRepeat) return dayjs(slot.date.start).isSame(date);
 
     // Handle daily slots (bounded & unbounded)
-    const daily = slot.repeat === Slot.Repeat.Daily;
+    const daily = slot.repeat === ISlot.Repeat.Daily;
     if (daily) return isSelectableDailySlot(slot, date);
 
     // Handle weekly slots (bounded & unbounded)
-    const weekly = slot.repeat === Slot.Repeat.Weekly;
+    const weekly = slot.repeat === ISlot.Repeat.Weekly;
     if (weekly) return isSelectableWeeklySlot(slot, date);
 
     return false;
   });
 }
 
-export function isAvailableSlot(slot: Slot.Self, date: Dayjs): boolean {
+export function isAvailableSlot(slot: ISlot.Self, date: Dayjs): boolean {
   return !isEmpty(selectSlots([slot], date));
 }
 
-export function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
+export function asDiscrateSlot(slot: ISlot.Self, date: Dayjs): ISlot.Discrete {
   const start = asTimeValues(slot.time.start);
   const end = asTimeValues(slot.time.end);
   const exactStartTime = setDayTime(date, start);
@@ -73,7 +72,6 @@ export function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
     id: slot.id,
     tutorId: slot.tutorId,
     title: slot.title,
-    description: slot.description,
     start: exactStartTime.toISOString(),
     end: exactEndTime.toISOString(),
     createdAt: slot.createdAt,
@@ -82,10 +80,10 @@ export function asDiscrateSlot(slot: Slot.Self, date: Dayjs): Slot.Discrete {
 }
 
 function asMaskedDiscrateSlot(
-  slot: Slot.Discrete,
+  slot: ISlot.Discrete,
   start: Dayjs,
   end: Dayjs
-): Slot.Discrete {
+): ISlot.Discrete {
   return {
     ...slot,
     start: start.toISOString(),
@@ -93,21 +91,23 @@ function asMaskedDiscrateSlot(
   };
 }
 
-function sortSlotLessons(lessons: Lesson.Self[]): Lesson.Self[] {
-  return cloneDeep(lessons).sort((current: Lesson.Self, next: Lesson.Self) => {
-    if (dayjs(current.start).isSame(next.start))
-      throw new Error(
-        "Two lessons with the same tutor at the same time, should never happen"
-      );
+function sortSlotLessons(lessons: ILesson.Self[]): ILesson.Self[] {
+  return cloneDeep(lessons).sort(
+    (current: ILesson.Self, next: ILesson.Self) => {
+      if (dayjs(current.start).isSame(next.start))
+        throw new Error(
+          "Two lessons with the same tutor at the same time, should never happen"
+        );
 
-    if (dayjs(current.start).isAfter(next.start)) return 1;
-    return -1;
-  });
+      if (dayjs(current.start).isAfter(next.start)) return 1;
+      return -1;
+    }
+  );
 }
 
-export function maskLessons(slot: Slot.Discrete, lessons: Lesson.Self[]) {
+export function maskLessons(slot: ISlot.Discrete, lessons: ILesson.Self[]) {
   const sorted = sortSlotLessons(lessons);
-  let masked: Slot.Discrete[] = [];
+  let masked: ISlot.Discrete[] = [];
   let prevSlot = slot;
 
   for (const lesson of sorted) {
@@ -162,17 +162,17 @@ export function asDayStart(date: Dayjs): Dayjs {
 }
 
 export function unpackSlots(
-  slots: Slot.Self[],
-  lessons: Lesson.Self[]
-): Array<{ day: string; slots: Slot.Discrete[] }> {
+  slots: ISlot.Self[],
+  lessons: ILesson.Self[]
+): Array<{ day: string; slots: ISlot.Discrete[] }> {
   const today = setDayTime(dayjs().utc());
-  const availableSlots: Array<{ day: string; slots: Slot.Discrete[] }> = [];
+  const availableSlots: Array<{ day: string; slots: ISlot.Discrete[] }> = [];
 
   for (let dayIndex = 0; dayIndex < 14; dayIndex++) {
     const day = today.add(dayIndex, "day");
     const selected = selectSlots(slots, day);
 
-    const available: Slot.Discrete[] = [];
+    const available: ISlot.Discrete[] = [];
 
     for (const slot of selected) {
       const slotLessons = lessons.filter((lesson) => lesson.slotId === slot.id);

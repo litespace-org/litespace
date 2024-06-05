@@ -76,7 +76,6 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     title: { type: "VARCHAR(255)", notNull: true },
-    description: { type: "TEXT", default: null },
     weekday: { type: "SMALLINT", notNull: true },
     start_time: { type: "TIME", notNull: true },
     end_time: { type: "TIME", notNull: true },
