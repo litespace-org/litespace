@@ -15,6 +15,7 @@ import {
   string,
   subscriptionPeriod,
   gender,
+  userType,
 } from "@/validation/utils";
 import { IUser } from "@litespace/types";
 
@@ -28,23 +29,28 @@ const user = {
       email,
       password,
       name,
-      type: zod.enum([IUser.Type.Student, IUser.Type.Tutor]),
+      type: zod.enum([
+        IUser.Type.SuperAdmin,
+        IUser.Type.RegularAdmin,
+        IUser.Type.Examiner,
+      ]),
     },
     { message: "Empty request body" }
   ),
   update: {
     body: zod.object({
+      id,
       email: zod.optional(email),
       password: zod.optional(password),
       name: zod.optional(name),
-      avatar: zod.optional(avatar),
+      avatar: zod.optional(zod.string()),
       gender: zod.optional(gender),
       birthday: zod.optional(date),
       type: zod.optional(zod.enum([IUser.Type.Tutor, IUser.Type.Student])),
     }),
   },
   delete: { query: zod.object({ id }) },
-  get: { query: zod.object({ id }) },
+  findById: { params: zod.object({ id }) },
   login: { body: zod.object({ email, password }) },
 } as const;
 

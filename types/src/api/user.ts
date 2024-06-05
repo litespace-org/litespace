@@ -1,4 +1,4 @@
-import { Self, TutorOrStudent, Gender } from "@/user";
+import { Self, Type, Gender } from "@/user";
 
 export type FindMeResponse = Self;
 
@@ -10,5 +10,5 @@ export type UpdateUserPayload = Partial<{
   birthday: string;
   gender: Gender;
   active: boolean;
-  type: TutorOrStudent;
-}>;
+  type: Type;
+}> & { id: number };

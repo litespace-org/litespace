@@ -36,6 +36,13 @@ export const repeat = zod.enum([
   Slot.Repeat.Monthly,
 ]);
 
+export const userType = zod.enum([
+  IUser.Type.SuperAdmin,
+  IUser.Type.RegularAdmin,
+  IUser.Type.Tutor,
+  IUser.Type.Student,
+]);
+
 export const url = zod.string().url().trim();
 
 export const subscriptionPeriod = zod.enum([

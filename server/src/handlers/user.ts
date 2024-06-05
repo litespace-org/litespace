@@ -1,4 +1,4 @@
-import { tutors, users } from "@/models";
+import { examiners, users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
@@ -21,33 +21,34 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists);
 
-  if (type === IUser.Type.Tutor) {
-    const tutor = await tutors.create({ email, password, name });
-    res.status(200).json({ token: generateAuthorizationToken(tutor.id) });
+  if (type === IUser.Type.Examiner) {
+    await examiners.create({ email, password, name });
+    res.status(200).send();
     return;
   }
 
-  const user = await users.create({
+  await users.create({
     password: hashPassword(password),
     type,
     email,
     name,
   });
 
-  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
+  res.status(200).send();
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
-  const { email, name, password, gender, birthday, type } =
+  const { id, email, name, password, gender, birthday, type, avatar } =
     schema.http.user.update.body.parse(req.body);
 
   if (type && req.user.type) return next(userAlreadyTyped);
 
-  await users.update(req.user.id, {
+  await users.update(id, {
     email,
     name,
     gender,
     birthday,
+    avatar,
     password: password ? hashPassword(password) : undefined,
     type,
   });
@@ -61,8 +62,8 @@ async function delete_(req: Request, res: Response) {
   res.status(200).send();
 }
 
-async function getOne(req: Request, res: Response, next: NextFunction) {
-  const id = schema.http.user.get.query.parse(req.query).id;
+async function findById(req: Request, res: Response, next: NextFunction) {
+  const id = schema.http.user.findById.params.parse(req.params).id;
   const user = await users.findById(id);
   if (!user) return next(userNotFound);
 
@@ -78,13 +79,6 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(list);
 }
 
-async function login(req: Request, res: Response, next: NextFunction) {
-  const { email, password } = schema.http.user.login.body.parse(req.body);
-  const user = await users.findByCredentials(email, hashPassword(password));
-  if (!user) return next(userNotFound);
-  res.status(200).json({ user, token: generateAuthorizationToken(user.id) });
-}
-
 async function findMe(req: Request, res: Response) {
   res.status(200).json(req.user);
 }
@@ -93,8 +87,7 @@ export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
-  getOne: asyncHandler(getOne),
+  findById: asyncHandler(findById),
   getMany: asyncHandler(getMany),
-  login: asyncHandler(login),
   findMe: asyncHandler(findMe),
 };

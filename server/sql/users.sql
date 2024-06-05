@@ -122,3 +122,15 @@ FROM users
     JOIN tutors on users.id = tutors.id
 WHERE
     users.id = tutors.id;
+
+SELECT
+    "id",
+    "email",
+    "password",
+    "name",
+    "avatar",
+    "type",
+    "active",
+    "created_at",
+    "updated_at"
+FROM users;

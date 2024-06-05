@@ -5,6 +5,7 @@ export enum Type {
   RegularAdmin = "reg_admin",
   Tutor = "tutor",
   Student = "student",
+  Examiner = "examiner",
 }
 
 export type TutorOrStudent = Type.Tutor | Type.Student;

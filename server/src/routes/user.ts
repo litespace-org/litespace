@@ -8,11 +8,10 @@ router
   .route("/")
   .post(handlers.user.create)
   .put(ensureAuth, handlers.user.update)
-  .delete(authorized, handlers.user.delete)
-  .get(authorized, handlers.user.getOne);
+  .delete(authorized, handlers.user.delete);
 
 router.get("/me", ensureAuth, handlers.user.findMe);
-router.get("/list", adminOnly, handlers.user.getMany);
-router.post("/login", handlers.user.login);
+router.get("/list", ensureAuth, handlers.user.getMany);
+router.get("/:id", ensureAuth, handlers.user.findById);
 
 export default router;

@@ -1,4 +1,3 @@
-import { Users } from "@/models/users";
 import { Slots } from "@/models/slots";
 import { Tutors } from "@/models/tutors";
 import { Lessons } from "@/models/lessons";

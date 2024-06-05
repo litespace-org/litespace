@@ -175,8 +175,17 @@ export class Users {
   async findAll(): Promise<IUser.Self[]> {
     const { rows } = await query<IUser.Row, []>(
       `
-        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
-        FROM users;
+      SELECT
+          "id",
+          "email",
+          "password",
+          "name",
+          "avatar",
+          "type",
+          "active",
+          "created_at",
+          "updated_at"
+      FROM users;
       `
     );
 

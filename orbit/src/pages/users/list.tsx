@@ -1,68 +1,46 @@
+import { IUser } from "@litespace/types";
 import {
   DateField,
   DeleteButton,
   EditButton,
   List,
-  MarkdownField,
   ShowButton,
   useTable,
+  TagField,
 } from "@refinedev/antd";
-import { type BaseRecord, useMany } from "@refinedev/core";
 import { Space, Table } from "antd";
 import React from "react";
 
 export const UserList: React.FC = () => {
-  const { tableProps } = useTable({
+  const { tableProps } = useTable<IUser.Self[]>({
     syncWithLocation: true,
   });
-
-  const { data: categoryData, isLoading: categoryIsLoading } = useMany({
-    resource: "categories",
-    ids:
-      tableProps?.dataSource
-        ?.map((item) => item?.category?.id)
-        .filter(Boolean) ?? [],
-    queryOptions: {
-      enabled: !!tableProps?.dataSource,
-    },
-  });
-
-  console.log({ tableProps });
 
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title={"ID"} />
-        <Table.Column dataIndex="title" title={"Title"} />
+        <Table.Column dataIndex="id" title="ID" />
+        <Table.Column dataIndex="email" title="Email" />
+        <Table.Column dataIndex="name" title="Name" />
         <Table.Column
-          dataIndex="content"
-          title={"Content"}
-          render={(value: any) => {
-            if (!value) return "-";
-            return <MarkdownField value={value.slice(0, 80) + "..."} />;
-          }}
+          dataIndex="type"
+          title={"User Type"}
+          render={(value) => <TagField value={value} />}
         />
-        <Table.Column
-          dataIndex={"category"}
-          title={"Category"}
-          render={(value) =>
-            categoryIsLoading ? (
-              <>Loading...</>
-            ) : (
-              categoryData?.data?.find((item) => item.id === value?.id)?.title
-            )
-          }
-        />
-        <Table.Column dataIndex="status" title={"Status"} />
         <Table.Column
           dataIndex={["createdAt"]}
           title={"Created at"}
-          render={(value: any) => <DateField value={value} />}
+          render={(value: string) => <DateField value={value} format="LLL" />}
+        />
+        <Table.Column
+          dataIndex={["udpatedAt"]}
+          title={"Updated At"}
+          render={(value: string) => <DateField value={value} format="LLL" />}
         />
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
-          render={(_, record: BaseRecord) => (
+          render={(_, record: IUser.Self) => (
             <Space>
               <EditButton hideText size="small" recordItemId={record.id} />
               <ShowButton hideText size="small" recordItemId={record.id} />
