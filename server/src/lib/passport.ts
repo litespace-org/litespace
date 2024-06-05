@@ -8,7 +8,7 @@ import { users } from "@/models";
 import { hashPassword } from "./user";
 import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
-import { jwtAuthorization } from "@/middleware/auth";
+import { jwtAuthorization, localAuthorization } from "@/middleware/auth";
 
 passport.serializeUser(async (user, done) => done(null, user.id));
 passport.deserializeUser<number>(async (id, done) => {
@@ -44,25 +44,7 @@ passport.use(
 );
 
 passport.use("discord", new Custom(discord));
-
 passport.use("jwt", new Custom(jwtAuthorization));
-
-passport.use(
-  new Local(
-    { usernameField: "email", passwordField: "password" },
-    async (email, password, done) => {
-      try {
-        const user = await users.findByCredentials(
-          email,
-          hashPassword(password)
-        );
-        if (!user) return done(new Error("Invalid email or password"));
-        return done(null, user);
-      } catch (error) {
-        done(error);
-      }
-    }
-  )
-);
+passport.use("local", new Custom(localAuthorization));
 
 export default passport;

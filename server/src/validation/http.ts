@@ -55,6 +55,7 @@ const auth = {
       .startsWith("Bearer", "Invalid bearer token")
       .trim(),
   }),
+  localAuthorization: zod.object({ email, password }),
 } as const;
 
 const slot = {

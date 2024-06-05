@@ -14,6 +14,7 @@ export class Auth extends Base {
 
   constructor(backend: Backend) {
     super(backend);
+
     const api = backendUrls[backend];
     this.authorization = {
       google: asFullUrl(api, "/api/v1/auth/google"),
@@ -23,9 +24,10 @@ export class Auth extends Base {
   }
 
   async password(credentials: IUser.Credentials) {
-    await this.client.post("/api/v1/auth/password", null, {
-      params: credentials,
-    });
+    await this.client.post(
+      "/api/v1/auth/password",
+      JSON.stringify(credentials)
+    );
   }
 
   async token(token: string) {

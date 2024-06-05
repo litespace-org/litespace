@@ -7,6 +7,7 @@ export const Login = () => {
     <AuthPage
       type="login"
       registerLink={false}
+      rememberMe={false}
       title={
         <Flex gap="10px">
           <RocketFilled style={{ fontSize: "30px" }} />

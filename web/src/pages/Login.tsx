@@ -15,6 +15,7 @@ import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { atlas } from "@/lib/atlas";
+import { IUser } from "@litespace/types";
 
 interface IFormInput {
   email: string;
@@ -24,11 +25,14 @@ interface IFormInput {
 const Login: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
-  const mutation = useMutation(atlas.auth.password, {
-    onSuccess() {
-      return navigate(Route.Root);
-    },
-  });
+  const mutation = useMutation(
+    (credentials: IUser.Credentials) => atlas.auth.password(credentials),
+    {
+      onSuccess() {
+        return navigate(Route.Root);
+      },
+    }
+  );
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
     async (data) => mutation.mutate(data),

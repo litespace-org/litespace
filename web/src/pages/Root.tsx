@@ -13,7 +13,7 @@ const Root: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
 
-  const mutation = useMutation(atlas.auth.logout, {
+  const mutation = useMutation(() => atlas.auth.logout(), {
     onSuccess() {
       dispatch(findMe());
     },

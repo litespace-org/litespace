@@ -9,6 +9,7 @@ import { forbidden, userNotFound } from "@/lib/error";
 import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
+import { hashPassword } from "@/lib/user";
 
 declare global {
   namespace Express {
@@ -74,6 +75,20 @@ export async function jwtAuthorization(req: Request, done: DoneCallback) {
     const user = await users.findById(id);
 
     if (!user) throw new Error("User not found");
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}
+
+export async function localAuthorization(req: Request, done: DoneCallback) {
+  try {
+    const credentials = schema.http.auth.localAuthorization.parse(req.body);
+    const user = await users.findByCredentials(
+      credentials.email,
+      hashPassword(credentials.password)
+    );
+    if (!user) return done(new Error("Invalid email or password"));
     return done(null, user);
   } catch (error) {
     return done(error);

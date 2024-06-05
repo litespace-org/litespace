@@ -1,19 +1,16 @@
-import { client } from "@/api/axios";
-import { findMe } from "@/api/user";
+import { atlas } from "@/lib/atlas";
 import type { AuthProvider } from "@refinedev/core";
 
 export const authProvider: AuthProvider = {
-  login: async (params: {
+  login: async ({
+    email,
+    password,
+  }: {
     email: string;
     password: string;
     remember?: boolean;
   }) => {
-    await client.get("/api/v1/auth/password", {
-      params: {
-        email: params.email,
-        password: params.password,
-      },
-    });
+    await atlas.auth.password({ email, password });
 
     return {
       success: true,
@@ -21,7 +18,7 @@ export const authProvider: AuthProvider = {
     };
   },
   logout: async () => {
-    await client.get("/api/v1/auth/logout");
+    await atlas.auth.logout();
 
     return {
       success: true,
@@ -29,24 +26,19 @@ export const authProvider: AuthProvider = {
     };
   },
   check: async () => {
-    const me = await findMe();
-    if (me) return { authenticated: true };
-    return {
-      authenticated: false,
-      redirectTo: "/login",
-    };
+    try {
+      await atlas.user.findMe();
+      return { authenticated: true };
+    } catch (error) {
+      return {
+        authenticated: false,
+        redirectTo: "/login",
+      };
+    }
   },
   getPermissions: async () => null,
   getIdentity: async () => {
-    const me = await findMe();
-    if (me) {
-      return {
-        id: 1,
-        name: "Ahmed Ibrahim",
-        avatar: "https://i.pravatar.cc/300",
-      };
-    }
-    return null;
+    return await atlas.user.findMe();
   },
   onError: async (error) => {
     console.error(error);
