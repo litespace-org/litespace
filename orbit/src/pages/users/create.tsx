@@ -3,7 +3,7 @@ import MDEditor from "@uiw/react-md-editor";
 import { Form, Input, Select } from "antd";
 import React from "react";
 
-export const BlogPostCreate = () => {
+export const UserCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
 
   const { selectProps: categorySelectProps } = useSelect({

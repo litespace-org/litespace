@@ -8,3 +8,4 @@ export * as IRating from "@/rating";
 export * as IMessage from "@/message";
 export * as ILesson from "@/lesson";
 export * from "@/api";
+export * from "@/lib";

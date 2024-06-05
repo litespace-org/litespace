@@ -1,38 +1,55 @@
-import { Create, useForm, useSelect } from "@refinedev/antd";
+import { Edit, useForm, useSelect } from "@refinedev/antd";
 import MDEditor from "@uiw/react-md-editor";
 import { Form, Input, Select } from "antd";
 import React from "react";
 
-export const BlogPostCreate = () => {
-  const { formProps, saveButtonProps } = useForm({});
+export const UserEdit = () => {
+  const { formProps, saveButtonProps, queryResult, formLoading } = useForm({});
+
+  const blogPostsData = queryResult?.data?.data;
 
   const { selectProps: categorySelectProps } = useSelect({
     resource: "categories",
+    defaultValue: blogPostsData?.category?.id,
+    queryOptions: {
+      enabled: !!blogPostsData?.category?.id,
+    },
   });
 
-  console.log({ categorySelectProps });
-
   return (
-    <Create saveButtonProps={saveButtonProps}>
+    <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
       <Form {...formProps} layout="vertical">
         <Form.Item
           label={"Title"}
           name={["title"]}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label={"Content"}
           name="content"
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         >
           <MDEditor data-color-mode="light" />
         </Form.Item>
         <Form.Item
           label={"Category"}
           name={["category", "id"]}
-          rules={[{ required: true }]}
+          initialValue={formProps?.initialValues?.category?.id}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         >
           <Select {...categorySelectProps} />
         </Form.Item>
@@ -40,7 +57,11 @@ export const BlogPostCreate = () => {
           label={"Status"}
           name={["status"]}
           initialValue={"draft"}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              required: true,
+            },
+          ]}
         >
           <Select
             defaultValue={"draft"}
@@ -53,6 +74,6 @@ export const BlogPostCreate = () => {
           />
         </Form.Item>
       </Form>
-    </Create>
+    </Edit>
   );
 };
