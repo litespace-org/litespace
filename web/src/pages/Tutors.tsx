@@ -1,10 +1,10 @@
-import tutor from "@/api/tutor";
+import { atlas } from "@/lib/atlas";
 import React from "react";
 import { useQuery } from "react-query";
 
 const Tutors: React.FC = () => {
   const query = useQuery({
-    queryFn: tutor.findAll,
+    queryFn: atlas.tutor.findAll,
     retry: false,
   });
 

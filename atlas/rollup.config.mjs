@@ -3,6 +3,7 @@ import commonjs from "@rollup/plugin-commonjs";
 import typescript from "@rollup/plugin-typescript";
 import alias from "@rollup/plugin-alias";
 import { dts } from "rollup-plugin-dts";
+import json from "@rollup/plugin-json";
 import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
 
@@ -24,6 +25,7 @@ export default [
     plugins: [
       resolve(),
       commonjs(),
+      json(),
       typescript({ tsconfig: "./tsconfig.json" }),
     ],
   },

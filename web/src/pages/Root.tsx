@@ -1,4 +1,4 @@
-import { auth } from "@/api";
+import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
@@ -13,7 +13,7 @@ const Root: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
 
-  const mutation = useMutation(auth.logout, {
+  const mutation = useMutation(atlas.auth.logout, {
     onSuccess() {
       dispatch(findMe());
     },

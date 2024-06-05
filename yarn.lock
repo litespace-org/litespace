@@ -2273,10 +2273,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@litespace/atlas@npm:1.0.0, @litespace/atlas@workspace:atlas":
+  version: 0.0.0-use.local
+  resolution: "@litespace/atlas@workspace:atlas"
+  dependencies:
+    "@litespace/types": "npm:1.0.0"
+    "@rollup/plugin-alias": "npm:^5.1.0"
+    "@rollup/plugin-commonjs": "npm:^25.0.8"
+    "@rollup/plugin-json": "npm:^6.1.0"
+    "@rollup/plugin-node-resolve": "npm:^15.2.3"
+    "@rollup/plugin-typescript": "npm:^11.1.6"
+    axios: "npm:^1.7.2"
+    rollup: "npm:^4.18.0"
+    rollup-plugin-dts: "npm:^6.1.1"
+    typescript: "npm:^5.4.5"
+  languageName: unknown
+  linkType: soft
+
 "@litespace/client@workspace:web":
   version: 0.0.0-use.local
   resolution: "@litespace/client@workspace:web"
   dependencies:
+    "@litespace/atlas": "npm:1.0.0"
+    "@litespace/types": "npm:1.0.0"
     "@litespace/uilib": "npm:1.0.0"
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@types/react": "npm:^18.2.66"
@@ -2362,22 +2381,6 @@ __metadata:
     "@rollup/plugin-commonjs": "npm:^25.0.8"
     "@rollup/plugin-node-resolve": "npm:^15.2.3"
     "@rollup/plugin-typescript": "npm:^11.1.6"
-    rollup: "npm:^4.18.0"
-    rollup-plugin-dts: "npm:^6.1.1"
-    typescript: "npm:^5.4.5"
-  languageName: unknown
-  linkType: soft
-
-"@litespace/typiatlas@workspace:atlas":
-  version: 0.0.0-use.local
-  resolution: "@litespace/typiatlas@workspace:atlas"
-  dependencies:
-    "@litespace/types": "npm:1.0.0"
-    "@rollup/plugin-alias": "npm:^5.1.0"
-    "@rollup/plugin-commonjs": "npm:^25.0.8"
-    "@rollup/plugin-node-resolve": "npm:^15.2.3"
-    "@rollup/plugin-typescript": "npm:^11.1.6"
-    axios: "npm:^1.7.2"
     rollup: "npm:^4.18.0"
     rollup-plugin-dts: "npm:^6.1.1"
     typescript: "npm:^5.4.5"
@@ -3328,6 +3331,20 @@ __metadata:
     rollup:
       optional: true
   checksum: 10c0/00d6fe41c33476dcb4b4ac3068f869b8537153646ea18f1fb9d0dfd5592792148567dd735d58ac15e2fdd4ed6c98453d20fe5343105f8cfa93d291198c9a90f5
+  languageName: node
+  linkType: hard
+
+"@rollup/plugin-json@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "@rollup/plugin-json@npm:6.1.0"
+  dependencies:
+    "@rollup/pluginutils": "npm:^5.1.0"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10c0/9400c431b5e0cf3088ba2eb2d038809a2b0fb2a84ed004997da85582f48cd64958ed3168893c4f2c8109e38652400ed68282d0c92bf8ec07a3b2ef2e1ceab0b7
   languageName: node
   linkType: hard
 

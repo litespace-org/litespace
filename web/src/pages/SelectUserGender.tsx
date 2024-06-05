@@ -1,4 +1,3 @@
-import { user } from "@/api";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { User } from "@/types";
@@ -10,13 +9,14 @@ import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import male from "@/assets/male-astronaut.png";
 import female from "@/assets/female-astronaut.png";
+import { atlas } from "@/lib/atlas";
 
 const SelectUserGender: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
   const mutation = useMutation(
-    async (gender: User.Gender) => user.update({ gender }),
+    async (gender: User.Gender) => atlas.user.update({ gender }),
     {
       async onSuccess() {
         await dispatch(findMe());

@@ -1,4 +1,4 @@
-import { user } from "@/api";
+import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { User } from "@/types";
@@ -14,7 +14,8 @@ const SelectUserType: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
   const mutation = useMutation(
-    async (type: User.Type.Tutor | User.Type.Student) => user.update({ type }),
+    async (type: User.Type.Tutor | User.Type.Student) =>
+      atlas.user.update({ type }),
     {
       async onSuccess() {
         await dispatch(findMe());

@@ -1,4 +1,3 @@
-import { user } from "@/api";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
@@ -8,6 +7,7 @@ import { useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { SubmitHandler } from "react-hook-form";
+import { atlas } from "@/lib/atlas";
 
 type IFormFields = {
   name: string;
@@ -19,12 +19,15 @@ const SetUserName: React.FC = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
-  const mutation = useMutation(async (name: string) => user.update({ name }), {
-    async onSuccess() {
-      await dispatch(findMe());
-      await navigate(Route.SelectUserType);
-    },
-  });
+  const mutation = useMutation(
+    async (name: string) => atlas.user.update({ name }),
+    {
+      async onSuccess() {
+        await dispatch(findMe());
+        await navigate(Route.SelectUserType);
+      },
+    }
+  );
 
   const onSubmit: SubmitHandler<IFormFields> = useCallback(
     ({ name }) => mutation.mutate(name),

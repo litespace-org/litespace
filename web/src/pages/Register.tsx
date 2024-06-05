@@ -12,13 +12,17 @@ import React, { useCallback } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
-import { auth, user } from "@/api";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { endpoints } from "@/api/url";
 import { User } from "@/types";
 import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
 import { Route } from "@/types/routes";
+import {
+  RegisterStudentPayload,
+  RegisterTutorPayload,
+  IUser,
+} from "@litespace/types";
+import { atlas } from "@/lib/atlas";
 
 interface IFormInput {
   name: string;
@@ -26,37 +30,37 @@ interface IFormInput {
   password: string;
 }
 
-// todos:
-// 1. add storybook for the components lib - 1 (done)
-// 2. move icons/locals to the components lib - 2 (done)
-// 3. add login page - 5
-// 4. login & logout - 6
-// 5. arabic errors (form) - 3 (done)
-// 6. arabic backend errors (error parsing) - 4
-
 const Register: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const { type } = useParams<{ type: User.Type.Student | User.Type.Tutor }>();
 
-  const mutation = useMutation(user.register, {
-    async onSuccess({ token }) {
-      await auth.token(token);
-      await dispatch(findMe());
-      navigate(Route.Root);
+  const mutation = useMutation(
+    async ({
+      payload,
+      type,
+    }: {
+      payload: RegisterTutorPayload | RegisterStudentPayload;
+      type: IUser.TutorOrStudent;
+    }) => {
+      if (type === IUser.Type.Tutor) return await atlas.tutor.register(payload);
+      return atlas.student.register(payload);
     },
-  });
+    {
+      async onSuccess({ token }) {
+        await atlas.auth.token(token);
+        await dispatch(findMe());
+        navigate(Route.Root);
+      },
+    }
+  );
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
-    async (data) => {
+    async (payload) => {
       if (!type) return;
       if (![User.Type.Student, User.Type.Tutor].includes(type)) return;
-
-      await mutation.mutate({
-        ...data,
-        type,
-      });
+      return await mutation.mutate({ payload, type });
     },
     [mutation, type]
   );
@@ -117,19 +121,19 @@ const Register: React.FC = () => {
       </Form>
       <div className="w-full h-0.5 bg-gray-100 rounded-full" />
       <div className="flex flex-row items-center justify-center gap-5 my-5">
-        <Link to={endpoints.authorization.google}>
+        <Link to={atlas.auth.authorization.google}>
           <Button>
             <Google width={40} height={40} className="fill-indigo-500" />
           </Button>
         </Link>
 
-        <Link to={endpoints.authorization.facebook}>
+        <Link to={atlas.auth.authorization.facebook}>
           <Button>
             <Facebook width={40} height={40} className="fill-indigo-500" />
           </Button>
         </Link>
 
-        <Link to={endpoints.authorization.discord}>
+        <Link to={atlas.auth.authorization.discord}>
           <Button>
             <Discord width={40} height={40} className="fill-indigo-500" />
           </Button>

@@ -12,10 +12,9 @@ import React, { useCallback } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
-import { auth } from "@/api";
 import { Link, useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
-import { endpoints } from "@/api/url";
+import { atlas } from "@/lib/atlas";
 
 interface IFormInput {
   email: string;
@@ -25,7 +24,7 @@ interface IFormInput {
 const Login: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
-  const mutation = useMutation(auth.password, {
+  const mutation = useMutation(atlas.auth.password, {
     onSuccess() {
       return navigate(Route.Root);
     },
@@ -81,19 +80,19 @@ const Login: React.FC = () => {
         <div className="w-full h-0.5 bg-gray-100 rounded-full" />
       </Form>
       <div className="flex flex-row items-center justify-center gap-5 my-5">
-        <Link to={endpoints.authorization.google}>
+        <Link to={atlas.auth.authorization.google}>
           <Button>
             <Google width={40} height={40} className="fill-indigo-500" />
           </Button>
         </Link>
 
-        <Link to={endpoints.authorization.facebook}>
+        <Link to={atlas.auth.authorization.facebook}>
           <Button>
             <Facebook width={40} height={40} className="fill-indigo-500" />
           </Button>
         </Link>
 
-        <Link to={endpoints.authorization.discord}>
+        <Link to={atlas.auth.authorization.discord}>
           <Button>
             <Discord width={40} height={40} className="fill-indigo-500" />
           </Button>

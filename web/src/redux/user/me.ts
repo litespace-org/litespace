@@ -1,8 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { user } from "@/api";
 import { User } from "@/types";
 import { MultiError } from "@/lib/error";
 import { RootState } from "@/redux/store";
+import { atlas } from "@/lib/atlas";
 
 type State = {
   loading: boolean;
@@ -17,7 +17,7 @@ const initialState: State = {
 export const findMe = createAsyncThunk(
   "user/profile/me",
   async (): Promise<State["profile"]> => {
-    const profile = await user.findMe();
+    const profile = await atlas.user.findMe();
     if (profile instanceof MultiError) return null;
     return profile;
   }
