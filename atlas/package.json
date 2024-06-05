@@ -23,7 +23,9 @@
     "typescript": "^5.4.5"
   },
   "dependencies": {
-    "@litespace/types": "1.0.0",
+    "@litespace/types": "1.0.0"
+  },
+  "peerDependencies": {
     "axios": "^1.7.2"
   }
 }
