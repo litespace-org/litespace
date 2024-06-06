@@ -1,24 +1,27 @@
 import { ISlot } from "@litespace/types";
-import { List, useTable } from "@refinedev/antd";
-import React, { useMemo } from "react";
+import { DeleteButton, EditButton, List, useTable } from "@refinedev/antd";
+import React, { useMemo, useState } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import timeGridPlugin from "@fullcalendar/timegrid";
-import { EventSourceInput } from "@fullcalendar/core";
+import { EventInput } from "@fullcalendar/core";
 import { unpackSlots } from "@litespace/atlas";
 import dayjs from "@/lib/dayjs";
+import { Flex, Modal } from "antd";
 
 export const MyScheduleList: React.FC = () => {
-  const { tableProps, tableQueryResult } = useTable<ISlot.Self>({
+  const [event, setEvent] = useState<EventInput | null>(null);
+
+  const { tableQueryResult } = useTable<ISlot.Self>({
     syncWithLocation: true,
   });
 
-  const list = useMemo((): EventSourceInput => {
+  const list = useMemo((): EventInput[] => {
     const slots = tableQueryResult.data?.data;
     if (!slots) return [];
 
     const discreteSlots = unpackSlots(slots, [], 40);
-    const events: EventSourceInput = [];
+    const events: EventInput[] = [];
 
     for (const { day, slots: unpackedSlots } of discreteSlots) {
       for (const slot of unpackedSlots) {
@@ -27,6 +30,7 @@ export const MyScheduleList: React.FC = () => {
           date: dayjs(day).format("YYYY-MM-DD"),
           start: slot.start,
           end: slot.end,
+          id: Math.floor(Math.random() * 1e9).toString(),
         });
       }
     }
@@ -51,7 +55,30 @@ export const MyScheduleList: React.FC = () => {
         }}
         initialView="timeGridWeek"
         events={list}
+        allDaySlot={false}
+        eventClick={(event) => {
+          console.log(event);
+          const id = event.event._def.publicId;
+          const selectedEvent = list.find((event) => event.id === id);
+          if (!selectedEvent) return;
+          return setEvent(selectedEvent);
+        }}
       />
+
+      <Modal
+        open={event !== null}
+        onClose={() => setEvent(null)}
+        onCancel={() => setEvent(null)}
+        footer={(_, { OkBtn, CancelBtn }) => (
+          <Flex gap="10px" justify="end">
+            <CancelBtn />
+            <EditButton />
+            <DeleteButton />
+          </Flex>
+        )}
+      >
+        kk
+      </Modal>
     </List>
   );
 };

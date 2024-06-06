@@ -57,7 +57,7 @@ export const BlogPostList: React.FC = () => {
         <Table.Column
           dataIndex={["createdAt"]}
           title={"Created at"}
-          render={(value: any) => <DateField value={value} />}
+          render={(value: string) => <DateField value={value} />}
         />
         <Table.Column
           title={"Actions"}

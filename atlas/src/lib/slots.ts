@@ -191,8 +191,6 @@ export function unpackSlots(
     const selected = selectSlots(slots, day);
     const available: ISlot.Discrete[] = [];
 
-    console.log({ day: day.toString(), selected });
-
     for (const slot of selected) {
       const slotLessons = lessons.filter((lesson) => lesson.slotId === slot.id);
       const discreteSlot = asDiscrateSlot(slot, day);
