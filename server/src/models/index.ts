@@ -6,9 +6,9 @@ import { Subscriptions } from "@/models/subscriptions";
 import { Rooms } from "@/models/rooms";
 import { Messages } from "@/models/messages";
 import { Complex } from "@/models/complex";
+import { ZoomAccounts } from "@/models/zoomAccounts";
 
 // services
-export const slots = new Slots();
 export const tutors = new Tutors();
 export const lessons = new Lessons();
 export const ratings = new Ratings();
@@ -18,11 +18,10 @@ export const messages = new Messages();
 export const complex = new Complex();
 export { examiners } from "@/models/examiners";
 export { users } from "@/models/users";
+export { zoomAccounts } from "@/models/zoomAccounts";
+export { slots } from "@/models/slots";
 
 // types
-export { Tutor } from "@/models/tutors";
-export { Lesson } from "@/models/lessons";
-export { Rating } from "@/models/ratings";
 export { Subscription } from "@/models/subscriptions";
 export { Room } from "@/models/rooms";
 export { Message } from "@/models/messages";

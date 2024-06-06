@@ -26,3 +26,9 @@ export type CreatePayload = {
   clientId: string;
   clientSecret: string;
 };
+
+export type UpdatePayload = Partial<{
+  accountId: string;
+  clientId: string;
+  clientSecret: string;
+}>;

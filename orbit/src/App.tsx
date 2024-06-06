@@ -23,23 +23,29 @@ import routerBindings, {
 } from "@refinedev/react-router-v6";
 import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
 import {
+  ZoomAccountCreate,
+  ZoomAccountEdit,
+  ZoomAccountList,
+  ZoomAccountShow,
+} from "@/pages/zoom-accounts";
+import {
   MyScheduleCreate,
   MyScheduleEdit,
   MyScheduleList,
   MyScheduleShow,
-} from "./pages/my-schedule";
+} from "@/pages/my-schedule";
 import {
   BlogPostList,
   BlogPostCreate,
   BlogPostEdit,
   BlogPostShow,
-} from "./pages/blog-posts";
+} from "@/pages/blog-posts";
 import {
   CategoryList,
   CategoryCreate,
   CategoryEdit,
   CategoryShow,
-} from "./pages/categories";
+} from "@/pages/categories";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import { Header } from "./components/header";
 import { Login } from "./pages/login";
@@ -74,6 +80,14 @@ function App() {
                     edit: "/my-schedule/edit/:id",
                     show: "/my-schedule/show/:id",
                     meta: { canDelete: true, label: "My Schedule" },
+                  },
+                  {
+                    name: Resource.ZoomAccounts,
+                    list: "/zoom-accounts",
+                    create: "/zoom-accounts/create",
+                    edit: "/zoom-accounts/edit/:id",
+                    show: "/zoom-accounts/show/:id",
+                    meta: { canDelete: true, label: "Zoom Account" },
                   },
                   {
                     name: "blog_posts",
@@ -145,6 +159,12 @@ function App() {
                       <Route path="create" element={<MyScheduleCreate />} />
                       <Route path="edit/:id" element={<MyScheduleEdit />} />
                       <Route path="show/:id" element={<MyScheduleShow />} />
+                    </Route>
+                    <Route path="/zoom-accounts">
+                      <Route index element={<ZoomAccountList />} />
+                      <Route path="create" element={<ZoomAccountCreate />} />
+                      <Route path="edit/:id" element={<ZoomAccountEdit />} />
+                      <Route path="show/:id" element={<ZoomAccountShow />} />
                     </Route>
                     <Route path="/blog-posts">
                       <Route index element={<BlogPostList />} />

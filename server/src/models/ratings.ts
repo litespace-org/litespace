@@ -1,8 +1,9 @@
 import { first, isEmpty } from "lodash";
-import { query } from "./query";
+import { query } from "@/models/query";
+import { IRating } from "@litespace/types";
 
 export class Ratings {
-  async create(rating: Omit<Rating.Self, "id">): Promise<number> {
+  async create(rating: Omit<IRating.Self, "id">): Promise<number> {
     const { rows } = await query<
       { id: number },
       [
@@ -11,7 +12,7 @@ export class Ratings {
         value: number,
         note: string | null,
         createdAt: string,
-        updatedAt: string
+        updatedAt: string,
       ]
     >(
       `
@@ -68,8 +69,8 @@ export class Ratings {
     await query(`DELETE FROM "ratings" WHERE id = $1;`, [id]);
   }
 
-  async findTutorRatings(tutorId: number): Promise<Rating.Self[]> {
-    const { rows } = await query<Rating.Row, [tutorId: number]>(
+  async findTutorRatings(tutorId: number): Promise<IRating.Self[]> {
+    const { rows } = await query<IRating.Row, [tutorId: number]>(
       `
         SELECT
             "id",
@@ -95,9 +96,9 @@ export class Ratings {
   }: {
     tutorId: number;
     studentId: number;
-  }): Promise<Rating.Self | null> {
+  }): Promise<IRating.Self | null> {
     const { rows } = await query<
-      Rating.Row,
+      IRating.Row,
       [tutorId: number, studnetId: number]
     >(
       `
@@ -126,8 +127,8 @@ export class Ratings {
     return this.fromRow(row);
   }
 
-  async findById(id: number): Promise<Rating.Self | null> {
-    const { rows } = await query<Rating.Row, [id: number]>(
+  async findById(id: number): Promise<IRating.Self | null> {
+    const { rows } = await query<IRating.Row, [id: number]>(
       `
         SELECT
             "id",
@@ -157,7 +158,7 @@ export class Ratings {
     return !isEmpty(rows);
   }
 
-  fromRow(row: Rating.Row): Rating.Self {
+  fromRow(row: IRating.Row): IRating.Self {
     return {
       id: row.id,
       tutorId: row.tutor_id,
@@ -168,26 +169,4 @@ export class Ratings {
       updatedAt: row.updated_at.toISOString(),
     };
   }
-}
-
-export namespace Rating {
-  export type Self = {
-    id: number;
-    tutorId: number;
-    studentId: number;
-    value: number;
-    note: string | null;
-    createdAt: string;
-    updatedAt: string;
-  };
-
-  export type Row = {
-    id: number;
-    tutor_id: number;
-    student_id: number;
-    value: number;
-    note: string | null;
-    created_at: Date;
-    updated_at: Date;
-  };
 }

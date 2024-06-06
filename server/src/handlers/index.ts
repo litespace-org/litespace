@@ -8,6 +8,7 @@ import rating from "@/handlers/rating";
 import subscription from "@/handlers/subscription";
 import chat from "@/handlers/chat";
 import utils from "@/handlers/utils";
+import zoomAccount from "@/handlers/zoomAccount";
 
 export default {
   user,
@@ -20,4 +21,5 @@ export default {
   subscription,
   chat,
   utils,
+  zoomAccount,
 };

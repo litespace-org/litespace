@@ -1,8 +1,9 @@
 import { query } from "@/models/query";
 import { first } from "lodash";
+import { ILesson } from "@litespace/types";
 
 export class Lessons {
-  async create(lesson: Omit<Lesson.Self, "id">): Promise<number> {
+  async create(lesson: Omit<ILesson.Self, "id">): Promise<number> {
     const { rows } = await query<
       { id: number },
       [
@@ -14,7 +15,7 @@ export class Lessons {
         duration: number,
         meatingUrl: string,
         createdAt: string,
-        updatedAt: string
+        updatedAt: string,
       ]
     >(
       `
@@ -54,8 +55,8 @@ export class Lessons {
     await query(` DELETE FROM lessons WHERE id = $1;`, [id]);
   }
 
-  async findById(id: number): Promise<Lesson.Self | null> {
-    const { rows } = await query<Lesson.Row, [number]>(
+  async findById(id: number): Promise<ILesson.Self | null> {
+    const { rows } = await query<ILesson.Row, [number]>(
       `
         SELECT
             "id",
@@ -80,8 +81,8 @@ export class Lessons {
     return this.as(lesson);
   }
 
-  async findByTutuorId(tutorId: number): Promise<Lesson.Self[]> {
-    const { rows } = await query<Lesson.Row, [number]>(
+  async findByTutuorId(tutorId: number): Promise<ILesson.Self[]> {
+    const { rows } = await query<ILesson.Row, [number]>(
       `
         SELECT
             "id",
@@ -104,8 +105,8 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
-  async findByStudentId(studentId: number): Promise<Lesson.Self[]> {
-    const { rows } = await query<Lesson.Row, [number]>(
+  async findByStudentId(studentId: number): Promise<ILesson.Self[]> {
+    const { rows } = await query<ILesson.Row, [number]>(
       `
         SELECT
             "id",
@@ -128,8 +129,8 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
-  async findBySlotId(slotId: number): Promise<Lesson.Self[]> {
-    const { rows } = await query<Lesson.Row, [number]>(
+  async findBySlotId(slotId: number): Promise<ILesson.Self[]> {
+    const { rows } = await query<ILesson.Row, [number]>(
       `
         SELECT
             "id",
@@ -152,8 +153,8 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
-  async findAll(): Promise<Lesson.Self[]> {
-    const { rows } = await query<Lesson.Row, []>(
+  async findAll(): Promise<ILesson.Self[]> {
+    const { rows } = await query<ILesson.Row, []>(
       `
         SELECT
             "id",
@@ -173,7 +174,7 @@ export class Lessons {
     return rows.map((row) => this.as(row));
   }
 
-  as(row: Lesson.Row): Lesson.Self {
+  as(row: ILesson.Row): ILesson.Self {
     return {
       id: row.id,
       tutorId: row.tutor_id,
@@ -187,32 +188,4 @@ export class Lessons {
       updatedAt: row.updated_at.toISOString(),
     };
   }
-}
-
-export namespace Lesson {
-  export type Row = {
-    id: number;
-    tutor_id: number;
-    student_id: number;
-    slot_id: number;
-    zoom_meeting_id: number;
-    start: Date;
-    duration: number;
-    meeting_url: string;
-    created_at: Date;
-    updated_at: Date;
-  };
-
-  export type Self = {
-    id: number;
-    tutorId: number;
-    studentId: number;
-    slotId: number;
-    zoomMeetingId: number;
-    start: string;
-    duration: number;
-    meetingUrl: string;
-    createdAt: string;
-    updatedAt: string;
-  };
 }

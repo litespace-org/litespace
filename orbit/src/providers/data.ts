@@ -1,5 +1,5 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { ISlot, IUser, as } from "@litespace/types";
+import { ISlot, IUser, IZoomAccount, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -7,6 +7,7 @@ import { Dayjs } from "dayjs";
 export enum Resource {
   Users = "users",
   MySchedule = "my-schedule",
+  ZoomAccounts = "zoom-accounts",
 }
 
 const empty = { data: null };
@@ -22,11 +23,17 @@ export const dataProvider: DataProvider = {
       const slot = await atlas.slot.findById(as.int(id));
       return { data: as.casted(slot) };
     }
+
+    if (resource === Resource.ZoomAccounts) {
+      const account = await atlas.zoom.findAccountById(as.int(id));
+      return { data: as.casted(account) };
+    }
+
     throw new Error("Not implemented");
   },
   async update({ id, resource, variables }) {
     console.log({ variables });
-    if (resource === "users") {
+    if (resource === Resource.Users) {
       const { uName, uEmail, uPassword, uAvatar, uBithday, uGender, uType } =
         as.casted<
           Partial<{
@@ -58,7 +65,8 @@ export const dataProvider: DataProvider = {
     if (resource === "users") {
       await atlas.user.create(as.casted(variables));
       return as.casted(empty);
-    } else if (resource === Resource.MySchedule) {
+    }
+    if (resource === Resource.MySchedule) {
       const {
         date: [startDate, endDate],
         endTime,
@@ -74,20 +82,6 @@ export const dataProvider: DataProvider = {
         title: string;
         weekday: number;
       }>(variables);
-
-      console.log({
-        title,
-        time: {
-          start: dayjs(startTime, "Africa/Cairo").utc().format("HH:mm:00"),
-          end: dayjs(endTime, "Africa/Cairo").utc().format("HH:mm:00"),
-        },
-        date: {
-          start: startDate.tz("Africa/Cairo").format("YYYY-MM-DD"),
-          end: endDate?.tz("Africa/Cairo").format("YYYY-MM-DD"),
-        },
-        repeat,
-        weekday,
-      });
 
       await atlas.slot.create({
         title,
@@ -105,6 +99,12 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.ZoomAccounts) {
+      const payload = as.casted<IZoomAccount.CreatePayload>(variables);
+      const account = await atlas.zoom.createAccount(payload);
+      return { data: as.casted(account) };
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
@@ -112,6 +112,12 @@ export const dataProvider: DataProvider = {
       await atlas.slot.delete(as.int(id));
       return as.casted(empty);
     }
+
+    if (resource === Resource.ZoomAccounts) {
+      await atlas.zoom.deleteAccount(as.int(id));
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   getList: async ({ resource }: GetListParams) => {
@@ -139,11 +145,14 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Users) {
       const list = await atlas.user.list();
-      return {
-        data: as.any(list),
-        total: list.length,
-      };
+      return { data: as.any(list), total: list.length };
     }
+
+    if (resource === Resource.ZoomAccounts) {
+      const list = await atlas.zoom.findAllAccounts();
+      return { data: as.any(list), total: list.length };
+    }
+
     throw new Error("Not implemented");
   },
   getApiUrl: () => backendUrl,

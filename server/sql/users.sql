@@ -152,3 +152,24 @@ RETURNING
     "remaining_api_calls",
     "created_at",
     "updated_at";
+
+UPDATE "zoom_accounts"
+SET
+    account_id = COALESCE($1, account_id),
+    client_id = COALESCE($1, client_id),
+    client_secret = COALESCE($1, client_secret)
+WHERE
+    id = 1;
+
+SELECT
+    "id",
+    "email",
+    "account_id",
+    "client_id",
+    "client_secret",
+    "remaining_api_calls",
+    "created_at",
+    "updated_at"
+FROM "zoom_accounts"
+WHERE
+    zoom_accounts.id = 1;

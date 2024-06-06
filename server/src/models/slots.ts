@@ -168,3 +168,5 @@ export class Slots {
     };
   }
 }
+
+export const slots = new Slots();

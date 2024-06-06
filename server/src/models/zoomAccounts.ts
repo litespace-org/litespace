@@ -1,6 +1,6 @@
 import { IZoomAccount } from "@litespace/types";
-import { query } from "./query";
-import { first, fromPairs } from "lodash";
+import { query } from "@/models/query";
+import { first } from "lodash";
 export class ZoomAccounts {
   async create(
     account: IZoomAccount.CreatePayload
@@ -15,9 +15,11 @@ export class ZoomAccounts {
                 "email",
                 "account_id",
                 "client_id",
-                "client_secret"
+                "client_secret",
+                "created_at",
+                "updated_at"
             )
-        VALUES ($1, $2, $3, $4)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())
         RETURNING
             "id",
             "email",
@@ -36,13 +38,77 @@ export class ZoomAccounts {
     return this.from(row);
   }
 
-  update() {}
+  async update(id: number, account: IZoomAccount.UpdatePayload) {
+    await query<
+      IZoomAccount.Row,
+      [
+        accountId: string | undefined,
+        clientId: string | undefined,
+        clientSecret: string | undefined,
+        id: number,
+      ]
+    >(
+      `
+        UPDATE "zoom_accounts"
+        SET
+            account_id = COALESCE($1, account_id),
+            client_id = COALESCE($2, client_id),
+            client_secret = COALESCE($3, client_secret)
+        WHERE
+            id = $4;
+      `,
+      [account.accountId, account.clientId, account.clientSecret, id]
+    );
+  }
 
-  findById() {}
+  async findById(id: number): Promise<IZoomAccount.Self | null> {
+    const { rows } = await query<IZoomAccount.Row, [id: number]>(
+      `
+        SELECT
+            "id",
+            "email",
+            "account_id",
+            "client_id",
+            "client_secret",
+            "remaining_api_calls",
+            "created_at",
+            "updated_at"
+        FROM "zoom_accounts"
+        WHERE
+            zoom_accounts.id = $1;
+      `,
+      [id]
+    );
 
-  delete() {}
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
 
-  findAll() {}
+  async delete(id: number): Promise<void> {
+    await query(`DELETE FROM "zoom_accounts" WHERE id = $1`, [id]);
+  }
+
+  async findAll(): Promise<IZoomAccount.Self[]> {
+    const { rows } = await query<IZoomAccount.Row, []>(
+      `
+        SELECT
+            "id",
+            "email",
+            "account_id",
+            "client_id",
+            "client_secret",
+            "remaining_api_calls",
+            "created_at",
+            "updated_at"
+        FROM "zoom_accounts"
+        WHERE
+            zoom_accounts.id = 1;
+      `
+    );
+
+    return rows.map((row) => this.from(row));
+  }
 
   from(row: IZoomAccount.Row): IZoomAccount.Self {
     return {

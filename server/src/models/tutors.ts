@@ -2,12 +2,12 @@ import { query, withTransaction } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
 import { users } from "@/models";
-import { IUser } from "@litespace/types";
+import { IUser, ITutor } from "@litespace/types";
 
 export class Tutors {
   async create(
     user: IUser.Credentials & { name: string }
-  ): Promise<Tutor.FullTutor> {
+  ): Promise<ITutor.FullTutor> {
     return withTransaction(async (client) => {
       const { rows } = await client.query<IUser.Row>(
         `
@@ -53,7 +53,7 @@ export class Tutors {
   }
 
   async update(
-    tutor: DeepPartial<Omit<Tutor.Self, "createdAt" | "updatedAt">> & {
+    tutor: DeepPartial<Omit<ITutor.Self, "createdAt" | "updatedAt">> & {
       id: number;
     }
   ): Promise<void> {
@@ -76,8 +76,8 @@ export class Tutors {
     await query(`DELETE FROM tutors WHERE id = $1;`, [id]);
   }
 
-  async findById(id: number): Promise<Tutor.Shareable | null> {
-    const { rows } = await query<Tutor.Row, [number]>(
+  async findById(id: number): Promise<ITutor.Shareable | null> {
+    const { rows } = await query<ITutor.Row, [number]>(
       `
         SELECT
             id,
@@ -101,8 +101,8 @@ export class Tutors {
     return this.asSherable(row);
   }
 
-  async findMany(ids: number[]): Promise<Tutor.Shareable[]> {
-    const { rows } = await query<Tutor.Row, [number[]]>(
+  async findMany(ids: number[]): Promise<ITutor.Shareable[]> {
+    const { rows } = await query<ITutor.Row, [number[]]>(
       `
         SELECT
             id,
@@ -171,7 +171,7 @@ export class Tutors {
     );
   }
 
-  asSherable(row: Tutor.Row): Tutor.Shareable {
+  asSherable(row: ITutor.Row): ITutor.Shareable {
     return {
       id: row.id,
       bio: row.bio,
@@ -184,41 +184,4 @@ export class Tutors {
       updatedAt: row.updated_at.toISOString(),
     };
   }
-}
-
-export namespace Tutor {
-  export type Self = {
-    id: number;
-    bio: string | null;
-    about: string | null;
-    video: string | null;
-    zoomRefreshToken: string | null;
-    aquiredRefreshTokenAt: string | null;
-    authorizedZoomApp: boolean;
-    createdAt: string;
-    updatedAt: string;
-  };
-
-  export type FullTutor = IUser.Self & {
-    bio: string | null;
-    about: string | null;
-    video: string | null;
-    zoomRefreshToken: string | null;
-    aquiredRefreshTokenAt: string | null;
-    authorizedZoomApp: boolean;
-  };
-
-  export type Row = {
-    id: number;
-    bio: string | null;
-    about: string | null;
-    video: string | null;
-    authorized_zoom_app: boolean;
-    zoom_refresh_token: boolean;
-    aquired_refresh_token_at: Date | null;
-    created_at: Date;
-    updated_at: Date;
-  };
-
-  export type Shareable = Omit<Self, "zoomRefreshToken">;
 }
