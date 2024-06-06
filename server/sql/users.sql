@@ -134,3 +134,21 @@ SELECT
     "created_at",
     "updated_at"
 FROM users;
+
+INSERT INTO
+    "zoom_accounts" (
+        "email",
+        "account_id",
+        "client_id",
+        "client_secret"
+    )
+VALUES ('test@test.io', '1', '2', '3')
+RETURNING
+    "id",
+    "email",
+    "account_id",
+    "client_id",
+    "client_secret",
+    "remaining_api_calls",
+    "created_at",
+    "updated_at";

@@ -7,5 +7,6 @@ export * as IRoom from "@/room";
 export * as IRating from "@/rating";
 export * as IMessage from "@/message";
 export * as ILesson from "@/lesson";
+export * as IZoomAccount from "@/zoomAccount";
 export * from "@/api";
 export * from "@/lib";
