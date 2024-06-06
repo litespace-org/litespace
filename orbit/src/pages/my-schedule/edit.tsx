@@ -1,97 +1,113 @@
-import { IUser } from "@litespace/types";
-import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { DatePicker, Form, Input, Select } from "antd";
-import dayjs from "dayjs";
+import { ISlot } from "@litespace/types";
+import { Edit, useForm } from "@refinedev/antd";
+import { DatePicker, Flex, Form, Input, Select } from "antd";
+import { weekdays, repeat } from "./create";
+import dayjs, { Dayjs } from "dayjs";
 
 export const MyScheduleEdit = () => {
   const { formProps, saveButtonProps, formLoading, queryResult } =
-    useForm<IUser.Self>({});
+    useForm<ISlot.Self>({});
 
-  const { selectProps: userTypes } = useSelect({
-    resource: "user_types",
-    optionLabel: "label",
-    optionValue: "value",
-    meta: { for: "edit-user" },
-  });
+  const slot = queryResult?.data?.data;
 
-  const user = queryResult?.data?.data;
+  console.log({ slot });
 
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
-      <Form {...formProps} layout="vertical">
+      <Form {...formProps} layout="vertical" autoComplete="off">
         <Form.Item
-          label={"Name"}
-          name={"uName"}
-          rules={[
-            { min: 3 },
-            { max: 50 },
-            { pattern: /^[\u0600-\u06FF\s]+$/, message: "Invalid arabic name" },
-          ]}
+          label={"Title"}
+          name={"uTitle"}
+          rules={[{ min: 5, message: "Title is too short" }]}
         >
-          <Input placeholder={user?.name || undefined} />
+          <Input placeholder={slot?.title} />
         </Form.Item>
-        <Form.Item
-          label="Email"
-          name="uEmail"
-          rules={[
-            {
-              pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-              message: "Invalid email",
-            },
-          ]}
-        >
-          <Input placeholder={user?.email} />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="uPassword"
-          rules={[
-            {
-              pattern:
-                /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-              message: "Invalid password",
-            },
-          ]}
-        >
-          <Input type="password" />
-        </Form.Item>
-        <Form.Item
-          label="Avatar"
-          name="uAvatar"
-          rules={[
-            {
-              pattern:
-                /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi,
-              message: "Invalid avtar url",
-            },
-          ]}
-        >
-          <Input placeholder={user?.avatar || undefined} />
-        </Form.Item>
-        <Form.Item label="Birthday" name="uBithday">
-          <DatePicker
-            placeholder={
-              user?.birthday
-                ? dayjs(user.birthday).format("YYYY-MM-DD")
-                : undefined
-            }
-          />
-        </Form.Item>
-        <Form.Item label={"Gender"} name={"uGender"}>
-          <Select
-            placeholder={user?.gender}
-            options={[
-              { value: IUser.Gender.Male, label: "Male" },
-              { value: IUser.Gender.Female, label: "Female" },
+        <Flex gap="40px">
+          <Form.Item label="Date" name="uDate">
+            <DatePicker.RangePicker
+              placeholder={[
+                dayjs(slot?.date.start).format("YYYY-MM-DD") || "Start date",
+                slot?.date.end
+                  ? dayjs(slot?.date.end).format("YYYY-MM-DD")
+                  : "End date",
+              ]}
+              allowEmpty={[false, true]}
+            />
+          </Form.Item>
+        </Flex>
+        <Flex gap="40px">
+          <Form.Item
+            label="Start Time"
+            name="uStartTime"
+            rules={[
+              (formInstance) => ({
+                message: "Invalid start time",
+                validator(_, startTime: Dayjs | null) {
+                  if (startTime === null) return Promise.resolve();
+                  const endTime = formInstance.getFieldValue(
+                    "endTime"
+                  ) as Dayjs | null;
+
+                  if (!endTime) return Promise.resolve();
+
+                  if (startTime.isAfter(endTime) || startTime?.isSame(endTime))
+                    return Promise.reject(new Error("Invalid start time"));
+
+                  const error = formInstance.getFieldError("endTime");
+                  if (error.length !== 0)
+                    formInstance.validateFields(["endTime"]);
+
+                  return Promise.resolve();
+                },
+              }),
             ]}
-          />
+          >
+            <DatePicker.TimePicker
+              minuteStep={15}
+              showSecond={false}
+              needConfirm={false}
+              use12Hours
+            />
+          </Form.Item>
+          <Form.Item
+            label="End Time"
+            name="uEndTime"
+            rules={[
+              (formInstance) => ({
+                message: "Invalid end time",
+                validator(_, endTime: Dayjs | null) {
+                  if (endTime === null) return Promise.resolve();
+                  const startTime = formInstance.getFieldValue(
+                    "startTime"
+                  ) as Dayjs | null;
+
+                  if (!startTime) return Promise.resolve();
+
+                  if (endTime.isBefore(startTime) || endTime.isSame(startTime))
+                    return Promise.reject(new Error("Invalid end time"));
+
+                  const error = formInstance.getFieldError("startTime");
+                  if (error.length !== 0)
+                    formInstance.validateFields(["startTime"]);
+
+                  return Promise.resolve();
+                },
+              }),
+            ]}
+          >
+            <DatePicker.TimePicker
+              minuteStep={15}
+              showSecond={false}
+              needConfirm={false}
+              use12Hours
+            />
+          </Form.Item>
+        </Flex>
+        <Form.Item label="Day of the week" name="weekday">
+          <Select options={weekdays} placeholder={slot?.weekday} />
         </Form.Item>
-        <Form.Item
-          label={"User Type"}
-          name={"uType"}
-          initialValue={formProps?.initialValues?.category?.id}
-        >
-          <Select {...userTypes} placeholder={user?.type} />
+        <Form.Item label="Repeat" name="uRepeat">
+          <Select options={repeat} placeholder={slot?.repeat} />
         </Form.Item>
       </Form>
     </Edit>

@@ -30,7 +30,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getOne(req: Request, res: Response, next: NextFunction) {
-  const id = schema.http.slot.get.query.parse(req.query).id;
+  const id = schema.http.slot.get.params.parse(req.params).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
 

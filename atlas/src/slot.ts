@@ -8,6 +8,12 @@ export class Slot extends Base {
     await this.client.post("/api/v1/slot", JSON.stringify(params));
   }
 
+  async findById(id: number): Promise<ISlot.Self> {
+    return await this.client
+      .get<ISlot.Self>(`/api/v1/slot/${id}`)
+      .then((response) => response.data);
+  }
+
   async update(id: number, params: UpdateSlotParams) {
     await this.client.put(`/api/v1/slot/${id}`, JSON.stringify(params));
   }

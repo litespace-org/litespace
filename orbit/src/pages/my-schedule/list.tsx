@@ -77,7 +77,6 @@ export const MyScheduleList: React.FC = () => {
         events={list}
         allDaySlot={false}
         eventClick={(event) => {
-          console.log(event);
           const id = event.event._def.publicId;
           const selectedEvent = list.find((event) => event.id === id);
           if (!selectedEvent) return;

@@ -2,9 +2,8 @@ import { ISlot } from "@litespace/types";
 import { Create, useForm } from "@refinedev/antd";
 import { DatePicker, Flex, Form, Input, Select } from "antd";
 import { Dayjs } from "dayjs";
-import { useState } from "react";
 
-const weekdays = [
+export const weekdays = [
   { label: "None", value: -1 },
   { label: "Saturday", value: 6 },
   { label: "Sunday", value: 0 },
@@ -15,7 +14,7 @@ const weekdays = [
   { label: "Friday", value: 5 },
 ];
 
-const repeat = [
+export const repeat = [
   { label: "No Rpeat", value: ISlot.Repeat.No },
   { label: "Daily", value: ISlot.Repeat.Daily },
   { label: "Weekly", value: ISlot.Repeat.Weekly },

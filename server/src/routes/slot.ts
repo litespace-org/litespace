@@ -1,10 +1,5 @@
 import handlers from "@/handlers";
-import {
-  ensureAuth,
-  studentOrAdmin,
-  tutorOnly,
-  tutorOrAdmin,
-} from "@/middleware/auth";
+import { ensureAuth } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
@@ -21,6 +16,7 @@ router.get("/list/discrete", ensureAuth, handlers.slot.getDiscreteTimeSlots);
 
 router
   .route("/:id")
+  .get(ensureAuth, handlers.slot.get)
   .delete(ensureAuth, handlers.slot.delete)
   .put(ensureAuth, handlers.slot.update);
 

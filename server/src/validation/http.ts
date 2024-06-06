@@ -85,7 +85,7 @@ const slot = {
       ),
     }),
   },
-  get: { query: zod.object({ id }) },
+  get: { params: zod.object({ id }) },
   delete: { params: zod.object({ id }) },
   getDiscreteTimeSlots: { query: zod.object({ tutorId: id }) },
 } as const;

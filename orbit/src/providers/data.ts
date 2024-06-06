@@ -13,9 +13,14 @@ const empty = { data: null };
 
 export const dataProvider: DataProvider = {
   async getOne({ resource, id }) {
-    if (resource === "users") {
+    if (resource === Resource.Users) {
       const user = await atlas.user.findById(id);
       return { data: as.casted(user) };
+    }
+
+    if (resource === Resource.MySchedule) {
+      const slot = await atlas.slot.findById(as.int(id));
+      return { data: as.casted(slot) };
     }
     throw new Error("Not implemented");
   },
