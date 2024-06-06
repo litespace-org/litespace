@@ -66,6 +66,8 @@ export const MyScheduleCreate = () => {
                     "endTime"
                   ) as Dayjs | null;
 
+                  if (!endTime) return Promise.resolve();
+
                   if (startTime.isAfter(endTime) || startTime?.isSame(endTime))
                     return Promise.reject(new Error("Invalid start time"));
 

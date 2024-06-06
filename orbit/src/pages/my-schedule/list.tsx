@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { ISlot, IUser } from "@litespace/types";
 import {
   DateField,
   DeleteButton,
@@ -7,48 +7,69 @@ import {
   ShowButton,
   useTable,
   TagField,
+  useModal,
 } from "@refinedev/antd";
-import { Space, Table } from "antd";
-import React from "react";
+import {
+  Space,
+  Table,
+  Calendar,
+  Divider,
+  CalendarProps,
+  BadgeProps,
+  Badge,
+  Button,
+  Modal,
+  ConfigProvider,
+} from "antd";
+import { createStyles, useTheme } from "antd-style";
+import React, { useCallback, useMemo } from "react";
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
+import timeGridPlugin from "@fullcalendar/timegrid";
+import { EventSourceInput } from "@fullcalendar/core";
+import { unpackSlots } from "@litespace/atlas";
+import dayjs from "@/lib/dayjs";
 
 export const MyScheduleList: React.FC = () => {
-  const { tableProps } = useTable<IUser.Self[]>({
+  const { tableProps, tableQueryResult } = useTable<ISlot.Self>({
     syncWithLocation: true,
   });
 
+  const list = useMemo((): EventSourceInput => {
+    const slots = tableQueryResult.data?.data;
+    if (!slots) return [];
+
+    const discreteSlots = unpackSlots(slots, [], 30);
+    const events: EventSourceInput = [];
+
+    console.log({ discreteSlots, slots });
+
+    for (const { day, slots: unpackedSlots } of discreteSlots) {
+      for (const slot of unpackedSlots) {
+        events.push({
+          title: slot.title,
+          date: dayjs(day).format("YYYY-MM-DD"),
+          start: slot.start,
+          end: slot.end,
+        });
+      }
+    }
+
+    return events;
+  }, [tableQueryResult.data?.data]);
+
   return (
     <List>
-      <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="id" title="ID" />
-        <Table.Column dataIndex="email" title="Email" />
-        <Table.Column dataIndex="name" title="Name" />
-        <Table.Column
-          dataIndex="type"
-          title={"User Type"}
-          render={(value) => <TagField value={value} />}
-        />
-        <Table.Column
-          dataIndex={["createdAt"]}
-          title={"Created at"}
-          render={(value: string) => <DateField value={value} format="LLL" />}
-        />
-        <Table.Column
-          dataIndex={["udpatedAt"]}
-          title={"Updated At"}
-          render={(value: string) => <DateField value={value} format="LLL" />}
-        />
-        <Table.Column
-          title={"Actions"}
-          dataIndex="actions"
-          render={(_, record: IUser.Self) => (
-            <Space>
-              <EditButton hideText size="small" recordItemId={record.id} />
-              <ShowButton hideText size="small" recordItemId={record.id} />
-              <DeleteButton hideText size="small" recordItemId={record.id} />
-            </Space>
-          )}
-        />
-      </Table>
+      <FullCalendar
+        plugins={[timeGridPlugin, dayGridPlugin]}
+        headerToolbar={{
+          right: "prev,next today",
+          center: "title",
+          left: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
+        initialView="timeGridWeek"
+        events={list}
+      />
     </List>
   );
 };
