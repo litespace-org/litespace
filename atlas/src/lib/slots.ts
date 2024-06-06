@@ -40,8 +40,25 @@ function isSelectableWeeklySlot(slot: ISlot.Self, date: Dayjs) {
   return between && date.day() === slot.weekday;
 }
 
+/**
+ * Range only slot has a start and end date without any repeating.
+ */
+function isRangeOnlySlot(slot: ISlot.Self): boolean {
+  return !!slot.date.end && slot.repeat === ISlot.Repeat.No;
+}
+
+function isSelectableRangeSlot(slot: ISlot.Self, date: Dayjs): boolean {
+  // range only slot has a start date and end date but no
+  const same = date.isSame(slot.date.start) || date.isSame(slot.date.end);
+  const between = date.isAfter(slot.date.start) && date.isBefore(slot.date.end);
+  return same || between;
+}
+
 function selectSlots(slots: ISlot.Self[], date: Dayjs): ISlot.Self[] {
   return slots.filter((slot) => {
+    // handle window based slots (start-end)
+    const rangeOnlySlot = isRangeOnlySlot(slot);
+    if (rangeOnlySlot) return isSelectableRangeSlot(slot, date);
     // Handle specific slots (no repeat)
     const noRepeat = slot.repeat === ISlot.Repeat.No;
     if (noRepeat) return dayjs(slot.date.start).isSame(date);
@@ -65,18 +82,8 @@ export function isAvailableSlot(slot: ISlot.Self, date: Dayjs): boolean {
 export function asDiscrateSlot(slot: ISlot.Self, date: Dayjs): ISlot.Discrete {
   const start = asTimeValues(slot.time.start);
   const end = asTimeValues(slot.time.end);
-  const exactStartTime = setDayTime(date.utc(), start);
-  const exactEndTime = setDayTime(date.utc(), end);
-
-  console.log({
-    ...slot,
-    exactStartTime,
-    exactEndTime,
-    est: exactStartTime.format("YYYY-MM-DDTHH:mm:00.000"),
-    eet: exactEndTime.format("YYYY-MM-DDTHH:mm:00.000"),
-    date,
-    s: { start, end },
-  });
+  const exactStartTime = setDayTime(date, start);
+  const exactEndTime = setDayTime(date, end);
 
   return {
     id: slot.id,
@@ -84,8 +91,6 @@ export function asDiscrateSlot(slot: ISlot.Self, date: Dayjs): ISlot.Discrete {
     title: slot.title,
     start: exactStartTime.toISOString(),
     end: exactEndTime.toISOString(),
-    // start: exactStartTime.format("YYYY-MM-DDTHH:mm:00.000"),
-    // end: exactEndTime.format("YYYY-MM-DDTHH:mm:00.000"),
     createdAt: slot.createdAt,
     updatedAt: slot.updatedAt,
   };
@@ -184,8 +189,9 @@ export function unpackSlots(
   for (let dayIndex = 0; dayIndex < window; dayIndex++) {
     const day = today.add(dayIndex, "day");
     const selected = selectSlots(slots, day);
-
     const available: ISlot.Discrete[] = [];
+
+    console.log({ day: day.toString(), selected });
 
     for (const slot of selected) {
       const slotLessons = lessons.filter((lesson) => lesson.slotId === slot.id);

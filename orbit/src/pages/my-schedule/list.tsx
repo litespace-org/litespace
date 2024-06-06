@@ -1,28 +1,6 @@
-import { ISlot, IUser } from "@litespace/types";
-import {
-  DateField,
-  DeleteButton,
-  EditButton,
-  List,
-  ShowButton,
-  useTable,
-  TagField,
-  useModal,
-} from "@refinedev/antd";
-import {
-  Space,
-  Table,
-  Calendar,
-  Divider,
-  CalendarProps,
-  BadgeProps,
-  Badge,
-  Button,
-  Modal,
-  ConfigProvider,
-} from "antd";
-import { createStyles, useTheme } from "antd-style";
-import React, { useCallback, useMemo } from "react";
+import { ISlot } from "@litespace/types";
+import { List, useTable } from "@refinedev/antd";
+import React, { useMemo } from "react";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid"; // a plugin!
 import timeGridPlugin from "@fullcalendar/timegrid";
@@ -39,10 +17,8 @@ export const MyScheduleList: React.FC = () => {
     const slots = tableQueryResult.data?.data;
     if (!slots) return [];
 
-    const discreteSlots = unpackSlots(slots, [], 30);
+    const discreteSlots = unpackSlots(slots, [], 40);
     const events: EventSourceInput = [];
-
-    console.log({ discreteSlots, slots });
 
     for (const { day, slots: unpackedSlots } of discreteSlots) {
       for (const slot of unpackedSlots) {
@@ -66,6 +42,12 @@ export const MyScheduleList: React.FC = () => {
           right: "prev,next today",
           center: "title",
           left: "dayGridMonth,timeGridWeek,timeGridDay",
+        }}
+        buttonText={{
+          today: "Today",
+          month: "Month",
+          week: "Week",
+          day: "Day",
         }}
         initialView="timeGridWeek"
         events={list}
