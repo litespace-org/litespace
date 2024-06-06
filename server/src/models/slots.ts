@@ -39,9 +39,8 @@ export class Slots {
   }
 
   async update(
-    slot: DeepPartial<Omit<ISlot.Self, "tutorId" | "createdAt">> & {
-      id: number;
-    }
+    id: number,
+    slot: DeepPartial<Omit<ISlot.Self, "tutorId" | "createdAt">>
   ): Promise<void> {
     await query(
       `
@@ -67,7 +66,7 @@ export class Slots {
         slot.date?.start,
         slot.date?.end,
         slot.updatedAt,
-        slot.id,
+        id,
       ]
     );
   }

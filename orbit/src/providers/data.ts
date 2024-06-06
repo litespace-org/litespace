@@ -9,6 +9,8 @@ export enum Resource {
   MySchedule = "my-schedule",
 }
 
+const empty = { data: null };
+
 export const dataProvider: DataProvider = {
   async getOne({ resource, id }) {
     if (resource === "users") {
@@ -48,11 +50,9 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
-    const emtpy = { data: null };
-
     if (resource === "users") {
       await atlas.user.create(as.casted(variables));
-      return as.casted(emtpy);
+      return as.casted(empty);
     } else if (resource === Resource.MySchedule) {
       const {
         date: [startDate, endDate],
@@ -97,12 +97,16 @@ export const dataProvider: DataProvider = {
         repeat,
         weekday,
       });
-      return as.casted(emtpy);
+      return as.casted(empty);
     }
 
     throw new Error("Not implemented");
   },
-  deleteOne: async () => {
+  deleteOne: async ({ resource, id }) => {
+    if (resource === Resource.MySchedule) {
+      await atlas.slot.delete(as.int(id));
+      return as.casted(empty);
+    }
     throw new Error("Not implemented");
   },
   getList: async ({ resource }: GetListParams) => {

@@ -18,13 +18,14 @@ async function create(req: Request, res: Response) {
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
-  const fields = schema.http.slot.update.parse(req.body);
-  const slot = await slots.findById(fields.id);
+  const fields = schema.http.slot.update.body.parse(req.body);
+  const slotId = schema.http.slot.update.params.parse(req.params).id;
+  const slot = await slots.findById(slotId);
 
   if (!slot) return next(slotNotFound);
   if (slot.tutorId !== req.user.id) return next(forbidden);
 
-  await slots.update(fields);
+  await slots.update(slotId, fields);
   res.status(200).send();
 }
 
@@ -46,7 +47,7 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
 }
 
 async function delete_(req: Request, res: Response, next: NextFunction) {
-  const id = schema.http.slot.get.query.parse(req.query).id;
+  const id = schema.http.slot.delete.params.parse(req.params).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
   if (slot.tutorId !== req.user.id) return next(forbidden);

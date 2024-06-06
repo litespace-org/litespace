@@ -71,20 +71,22 @@ const slot = {
     date: zod.object({ start: date, end: zod.optional(date) }),
     repeat,
   }),
-  update: zod.object({
-    id,
-    title: optionalString,
-    description: optionalString,
-    weekday: zod.optional(weekday),
-    time: zod.optional(
-      zod.object({ start: zod.optional(time), end: zod.optional(time) })
-    ),
-    date: zod.optional(
-      zod.object({ start: zod.optional(date), end: zod.optional(date) })
-    ),
-  }),
+  update: {
+    params: zod.object({ id }),
+    body: zod.object({
+      title: optionalString,
+      description: optionalString,
+      weekday: zod.optional(weekday),
+      time: zod.optional(
+        zod.object({ start: zod.optional(time), end: zod.optional(time) })
+      ),
+      date: zod.optional(
+        zod.object({ start: zod.optional(date), end: zod.optional(date) })
+      ),
+    }),
+  },
   get: { query: zod.object({ id }) },
-  delete: { query: zod.object({ id }) },
+  delete: { params: zod.object({ id }) },
   getDiscreteTimeSlots: { query: zod.object({ tutorId: id }) },
 } as const;
 
