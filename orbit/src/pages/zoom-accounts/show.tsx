@@ -20,7 +20,7 @@ export const ZoomAccountShow = () => {
   const zoomAccount = data?.data;
 
   return (
-    <Show isLoading={isLoading}>
+    <Show title="Zoom Account" isLoading={isLoading}>
       <Flex vertical gap="20px">
         {zoomAccount ? (
           <>

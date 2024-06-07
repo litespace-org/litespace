@@ -1,7 +1,6 @@
-import { IUser, IZoomAccount } from "@litespace/types";
-import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { DatePicker, Form, Input, Select } from "antd";
-import dayjs from "dayjs";
+import { IZoomAccount } from "@litespace/types";
+import { Edit, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
 
 export const ZoomAccountEdit = () => {
   const { formProps, saveButtonProps, formLoading, queryResult } =
@@ -11,20 +10,7 @@ export const ZoomAccountEdit = () => {
 
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
-      <Form {...formProps} layout="vertical">
-        <Form.Item
-          label="Email"
-          name="uEmail"
-          rules={[
-            {
-              pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-              message: "Invalid email",
-            },
-          ]}
-        >
-          <Input placeholder={zoomAccount?.email} />
-        </Form.Item>
-
+      <Form {...formProps} layout="vertical" autoComplete="off">
         <Form.Item label="Account ID" name="uAccountId">
           <Input placeholder={zoomAccount?.accountId} />
         </Form.Item>

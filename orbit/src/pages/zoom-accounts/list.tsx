@@ -18,7 +18,7 @@ export const ZoomAccountList: React.FC = () => {
   });
 
   return (
-    <List>
+    <List title="Zoom Accounts">
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID" />
         <Table.Column dataIndex="email" title="Email" />

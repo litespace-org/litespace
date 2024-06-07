@@ -59,6 +59,22 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(null) };
     }
 
+    if (resource === Resource.ZoomAccounts) {
+      const { uAccountId, uClientId, uClientSecret } = as.casted<{
+        uAccountId?: string;
+        uClientId?: string;
+        uClientSecret?: string;
+      }>(variables);
+
+      await atlas.zoom.updateAccount(as.int(id), {
+        accountId: uAccountId,
+        clientId: uClientId,
+        clientSecret: uClientSecret,
+      });
+
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
