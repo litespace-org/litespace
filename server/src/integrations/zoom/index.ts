@@ -1,47 +1,29 @@
-import { zoomConfig } from "@/constants";
-import axios, { Axios } from "axios";
-import { map, merge } from "lodash";
+import { Axios } from "axios";
+import { map } from "lodash";
 import {
-  generateServerBasedAccessToken,
-  generateUserBasedAccessToken,
-  getZoomServerApps,
-  getZoomUserApp,
-  refreshAccessToken,
   withAuthorization,
+  withCreateAuthorization,
 } from "@/integrations/zoom/authorization";
+import { IZoomAccount } from "@litespace/types";
 
-// ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate
+/**
+ * @param start meeting start time in the local time zone for the user.
+ * ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetingCreate
+ */
 export async function createZoomMeeting({
-  tutorId,
-  tutorEmail,
+  participants,
   start,
   duration,
 }: {
-  tutorId: number;
-  tutorEmail: string;
+  participants: Array<{ email: string }>;
   start: string;
   duration: number;
 }): Promise<ZoomMeeting.Self> {
-  /**
-   * Requirements:
-   * 1. Title should be the concatenation to the platform name, the user, and
-   *    the tutuor. or `LiteSpace Private One-To-One Lesson`
-   * 2. Check the ability to increase the limit or create a meeting on the
-   *    tutors behalf.
-   * 3. Correct meeting timing and correct timezone.
-   * 4. Validate if the video will be recoreded or not.
-   * 5. Getting recoreded videos.
-   * 6. Getting meetings.
-   * 7. Getting meeting by id.
-   * 8. Save the meeting to the `meetings` table with its id from zoom.
-   * 9. Find a way to increase the rate limit.
-   *    - try to release the app.
-   *    - download it in another account.
-   *    - create the meeting on his behalf.
-   */
-  return await withAuthorization(
-    tutorId,
-    async (client: Axios): Promise<ZoomMeeting.Self> => {
+  return await withCreateAuthorization(
+    async (
+      client: Axios,
+      zoomAccount: IZoomAccount.Self
+    ): Promise<ZoomMeeting.Self> => {
       const { data } = await client.post<ZoomMeeting.CreateMeetingApiResponse>(
         "/users/me/meetings",
         JSON.stringify({
@@ -50,14 +32,15 @@ export async function createZoomMeeting({
           duration,
           password: "LiteSpace",
           pre_schedule: false,
-          schedule_for: tutorEmail,
+          schedule_for: zoomAccount.email,
           settings: {
             allow_multiple_devices: true,
             alternative_hosts_email_notification: true,
             approval_type: 2, // No registration required
             audio: "both",
-            auto_recording: "cloud",
+            auto_recording: "local",
             calendar_type: 1, //  Zoom Outlook add-in
+            meeting_invitees: participants,
             close_registration: false,
             email_notification: true,
             encryption_type: "enhanced_encryption",
@@ -102,6 +85,7 @@ export async function createZoomMeeting({
       return {
         id: data.id,
         host: { email: data.host_email, id: data.host_id },
+        systemZoomAccountId: zoomAccount.id,
         invitees: map(data.settings.meeting_invitees, "email"),
         status: data.status,
         agenda: data.agenda,
@@ -121,7 +105,7 @@ export async function createZoomMeeting({
 }
 
 async function getUserInfo() {
-  return withAuthorization(2, async (client: Axios) => {
+  return withAuthorization(async (client: Axios) => {
     const { data } = await client.get("/users/me");
     return data;
   });
@@ -129,14 +113,13 @@ async function getUserInfo() {
 
 async function cancelZoomMeeting(id: number): Promise<void> {
   return await withAuthorization(
-    2,
     async (client) => await client.delete(`/meetings/${id}`)
   );
 }
 
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meeting
 async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
-  return await withAuthorization(2, async (client) => {
+  return await withAuthorization(async (client) => {
     const { data } = await client.get<ZoomMeeting.GetMeeingApiResponse>(
       `/meetings/${id}`
     );
@@ -144,6 +127,7 @@ async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
     return {
       id: data.id,
       host: { email: data.host_email, id: data.host_id },
+      systemZoomAccountId: 0,
       invitees: map(data.settings.meeting_invitees, "email"),
       status: data.status,
       agenda: data.agenda,
@@ -163,10 +147,11 @@ async function getZoomMeeting(id: number): Promise<ZoomMeeting.Self> {
 
 // ref: https://developers.zoom.us/docs/api/rest/reference/zoom-api/methods/#operation/meetings
 async function getZoomMeetings(): Promise<ZoomMeeting.GetMeetingsApiResponse> {
-  return await withAuthorization(2, async (client: Axios) => {
-    const { data } = await client.get<ZoomMeeting.GetMeetingsApiResponse>(
-      `/users/me/meetings`
-    );
+  return await withAuthorization(async (client: Axios) => {
+    const { data } =
+      await client.get<ZoomMeeting.GetMeetingsApiResponse>(
+        `/users/me/meetings`
+      );
     return data;
   });
 }
@@ -210,6 +195,7 @@ export namespace ZoomMeeting {
 
   export type Self = {
     id: number;
+    systemZoomAccountId: number;
     host: { email: string; id: string };
     invitees: string[];
     status: Status;
@@ -248,25 +234,3 @@ export namespace ZoomMeeting {
     }>;
   };
 }
-
-// createZoomMeeting();
-// getUserInfo();
-// getZoomMeeting(834_6610_1027).then(console.log);
-// getZoomMeeting(835_5246_4754).then(console.log);
-// getZoomMeetings().then(console.log);
-
-// generateUserBasedAccessToken("");
-
-// console.log(getZoomUserApp());
-// generateUserBasedAccessToken(
-//   "A6iDj5Jb9JOIDBym9agTAafNvb5W4ehtA",
-//   getZoomUserApp()
-// ).then(console.log);
-
-// const app = getZoomServerApps()[0];
-// generateServerBasedAccessToken(app).then(console.log);
-
-// refreshAccessToken(
-//   getZoomUserApp(),
-//   "eyJzdiI6IjAwMDAwMSIsImFsZyI6IkhTNTEyIiwidiI6IjIuMCIsImtpZCI6IjZlZTczMzIwLWJkZDMtNDY2MC1hZTQ2LWQ2ZDBiNjc3NzQ3ZSJ9.eyJ2ZXIiOjksImF1aWQiOiIzZGRiYWZlYzlhNmExZDhlZWYyZDk3ODdkNDQ4NjQ2YiIsImNvZGUiOiI2aEt1MnJ6RzVjSWhZOF9WbHE0VHFHWkxjSjZ6c0p5cnciLCJpc3MiOiJ6bTpjaWQ6cnVCVlVBM3hRNkNqMmpQYWFvQU5BIiwiZ25vIjowLCJ0eXBlIjoxLCJ0aWQiOjAsImF1ZCI6Imh0dHBzOi8vb2F1dGguem9vbS51cyIsInVpZCI6InJndm1MUllCUXMtWXRRdDFUMTN4YnciLCJuYmYiOjE3MTYwOTU0NzAsImV4cCI6MTcyMzg3MTQ3MCwiaWF0IjoxNzE2MDk1NDcwLCJhaWQiOiJGSEgzNExTelNlYUMtWkV4bEhpTl9BIn0.NPZSsHv01Wr7hv-ZoD_y1V-vWS-DnsNW5BT9U3nrsXrgdQHt0p6JdzO-RlSIoXYxe-qab3xk7FIo51YrNn3OjQ"
-// ).then(console.log);

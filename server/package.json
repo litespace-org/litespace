@@ -8,7 +8,7 @@
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc",
     "migrate": "env-cmd node-pg-migrate",
-    "reg:users": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/users.js"
+    "seed": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/seed.js"
   },
   "devDependencies": {
     "@types/connect-pg-simple": "^7.0.3",

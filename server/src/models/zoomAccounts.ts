@@ -101,13 +101,49 @@ export class ZoomAccounts {
             "remaining_api_calls",
             "created_at",
             "updated_at"
-        FROM "zoom_accounts"
-        WHERE
-            zoom_accounts.id = 1;
+        FROM "zoom_accounts";
       `
     );
 
     return rows.map((row) => this.from(row));
+  }
+
+  async findAvailableAccount(): Promise<IZoomAccount.Self | null> {
+    const { rows } = await query<IZoomAccount.Row, []>(
+      `
+      SELECT
+          "id",
+          "email",
+          "account_id",
+          "client_id",
+          "client_secret",
+          "created_at",
+          "updated_at",
+          MAX("remaining_api_calls") as "remaining_api_calls"
+      FROM "zoom_accounts"
+      GROUP BY
+          "id"
+      ORDER BY "remaining_api_calls" DESC
+      LIMIT 1;
+      `
+    );
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
+
+  async decreaseRemainingApiCalls(id: number, by: number = 1) {
+    await query<{}, [by: number, id: number]>(
+      `
+      UPDATE "zoom_accounts"
+      SET
+          remaining_api_calls = remaining_api_calls - $1 
+      WHERE
+          id = $2;
+      `,
+      [by, id]
+    );
   }
 
   from(row: IZoomAccount.Row): IZoomAccount.Self {

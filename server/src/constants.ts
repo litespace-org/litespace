@@ -29,24 +29,9 @@ export const serverConfig = {
   client: zod.string().url().parse(process.env.CLIENT_URL),
 } as const;
 
-// Zoom
-export enum ZoomAppType {
-  ServerBased = "server-to-server",
-  UserBased = "user-app",
-}
-
 export const zoomConfig = {
   tokenApi: "https://zoom.us/oauth/token",
   zoomApi: "https://api.zoom.us/v2/",
-  appType: zod
-    .enum([ZoomAppType.ServerBased, ZoomAppType.UserBased], {
-      message: "Invalid zoom app type",
-    })
-    .parse(process.env.ZOOM_APP_TYPE),
-  appsCount: zod.coerce
-    .number({ message: "Invalid zoom apps count" })
-    .positive({ message: "Invalid zoom apps count" })
-    .parse(process.env.ZOOM_APPS_COUNT),
 } as const;
 
 export const passwordRegex =

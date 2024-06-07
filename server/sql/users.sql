@@ -155,11 +155,9 @@ RETURNING
 
 UPDATE "zoom_accounts"
 SET
-    account_id = COALESCE($1, account_id),
-    client_id = COALESCE($1, client_id),
-    client_secret = COALESCE($1, client_secret)
+    remaining_api_calls = remaining_api_calls - 1
 WHERE
-    id = 1;
+    id = 2;
 
 SELECT
     "id",
@@ -172,4 +170,19 @@ SELECT
     "updated_at"
 FROM "zoom_accounts"
 WHERE
-    zoom_accounts.id = 1;
+    zoom_accounts.id = 2;
+
+SELECT
+    "id",
+    "email",
+    "account_id",
+    "client_id",
+    "client_secret",
+    "created_at",
+    "updated_at",
+    MAX("remaining_api_calls") as "remaining_api_calls"
+FROM "zoom_accounts"
+GROUP BY
+    "id"
+ORDER BY "remaining_api_calls" DESC
+LIMIT 1;
