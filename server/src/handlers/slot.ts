@@ -1,4 +1,4 @@
-import { lessons, slots } from "@/models";
+import { calls, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { forbidden, slotNotFound } from "@/lib/error";
 import { schema } from "@/validation";
@@ -11,7 +11,7 @@ async function create(req: Request, res: Response) {
 
   await slots.create({
     ...slot,
-    tutorId: req.user.id,
+    userId: req.user.id,
   });
 
   res.status(200).send();
@@ -23,7 +23,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const slot = await slots.findById(slotId);
 
   if (!slot) return next(slotNotFound);
-  if (slot.tutorId !== req.user.id) return next(forbidden);
+  if (slot.userId !== req.user.id) return next(forbidden);
 
   await slots.update(slotId, fields);
   res.status(200).send();
@@ -34,7 +34,7 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
 
-  const owner = req.user.id === slot.tutorId;
+  const owner = req.user.id === slot.userId;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(forbidden);
@@ -50,7 +50,7 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.delete.params.parse(req.params).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound);
-  if (slot.tutorId !== req.user.id) return next(forbidden);
+  if (slot.userId !== req.user.id) return next(forbidden);
   await slots.delete(slot.id);
   res.status(200).send();
 }
@@ -61,7 +61,7 @@ async function getDiscreteTimeSlots(req: Request, res: Response) {
   );
 
   const slotsList = await slots.findByTutor(tutorId);
-  const lessonsList = await lessons.findByTutuorId(tutorId);
+  const lessonsList = await calls.findByTutuorId(tutorId);
   const unpacked = unpackSlots(slotsList, lessonsList);
   res.status(200).json(unpacked);
 }

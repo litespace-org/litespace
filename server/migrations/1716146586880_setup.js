@@ -18,6 +18,7 @@ exports.up = (pgm) => {
     "student",
   ]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
+  pgm.createType("call_type", ["lesson", "interview"]);
   pgm.createType("user_gender_type", ["male", "female"]);
 
   // tables
@@ -31,28 +32,14 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     password: { type: "CHAR(64)", default: null },
-    name: { type: "VARCHAR(50)", default: null },
+    name: { type: "VARCHAR(50)", default: null }, // todo: add: name_ar, name_en
     avatar: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", default: null },
     birthday: { type: "DATE", default: null },
     gender: { type: "user_gender_type", default: null },
-    active: { type: "BOOLEAN", notNull: true, default: false },
+    online: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
-  });
-
-  pgm.createTable("examiners", {
-    id: {
-      type: "SERIAL",
-      notNull: true,
-      primaryKey: true,
-      references: "users(id)",
-    },
-    authorized_zoom_app: { type: "boolean", notNull: true, default: false },
-    zoom_refresh_token: { type: "VARCHAR(1000)", default: null },
-    aquired_refresh_token_at: { type: "TIMESTAMPTZ", default: null },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("tutors", {
@@ -65,16 +52,19 @@ exports.up = (pgm) => {
     bio: { type: "VARCHAR(1000)", default: null },
     about: { type: "TEXT", default: null },
     video: { type: "VARCHAR(255)", default: null },
-    authorized_zoom_app: { type: "boolean", notNull: true, default: false },
-    zoom_refresh_token: { type: "VARCHAR(1000)", default: null },
-    aquired_refresh_token_at: { type: "TIMESTAMPTZ", default: null },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    activated: { type: "BOOLEAN", notNull: true, default: false },
+    activated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+    passed_interview: { type: "BOOLEAN" },
+    private_feedback: { type: "TEXT" },
+    public_feedback: { type: "TEXT" },
+    interview_url: { type: "VARCHAR(255)" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
   });
 
   pgm.createTable("slots", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
-    tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     title: { type: "VARCHAR(255)", notNull: true },
     weekday: { type: "SMALLINT", notNull: true },
     start_time: { type: "TIME", notNull: true },
@@ -82,21 +72,23 @@ exports.up = (pgm) => {
     start_date: { type: "TIMESTAMPTZ", notNull: true },
     end_date: { type: "TIMESTAMPTZ", default: null },
     repeat: { type: "repeat_type", notNull: true, default: "no" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
   });
 
-  pgm.createTable("lessons", {
+  pgm.createTable("calls", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    student_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    type: { type: "call_type", notNull: true },
+    host_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    attendee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     slot_id: { type: "SERIAL", notNull: true, references: "slots(id)" },
     zoom_meeting_id: { type: "BIGINT", notNull: true, unique: true },
+    system_zoom_account_id: { type: "INT", notNull: true },
     start: { type: "TIMESTAMPTZ", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
     meeting_url: { type: "VARCHAR(255)", notNull: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
   });
 
   pgm.createTable("ratings", {
@@ -157,10 +149,9 @@ exports.up = (pgm) => {
   });
 
   // indexes
-  pgm.createIndex("lessons", "id");
+  pgm.createIndex("calls", "id");
   pgm.createIndex("slots", "id");
   pgm.createIndex("tutors", "id");
-  pgm.createIndex("examiners", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("subscriptions", "id");
@@ -193,9 +184,8 @@ exports.down = (pgm) => {
   pgm.dropIndex("rooms", "id", { ifExists: true });
   pgm.dropIndex("subscriptions", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
-  pgm.dropIndex("lessons", "id", { ifExists: true });
+  pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
-  pgm.dropIndex("examiners", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
   pgm.dropIndex("zoom_accounts", "id", { ifExists: true });
@@ -205,9 +195,8 @@ exports.down = (pgm) => {
   pgm.dropTable("rooms", { ifExists: true });
   pgm.dropTable("subscriptions", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
-  pgm.dropTable("lessons", { ifExists: true });
+  pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
-  pgm.dropTable("examiners", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
   pgm.dropTable("sessons", { ifExists: true });
@@ -216,5 +205,6 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
+  pgm.dropType("call_type", { ifExists: true });
   pgm.dropType("user_gender_type", { ifExists: true });
 };

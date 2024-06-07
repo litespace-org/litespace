@@ -24,7 +24,7 @@ export type Self = {
   birthday: Nullable<string>;
   gender: Nullable<Gender>;
   type: Type;
-  active: boolean;
+  online: boolean;
   createdAt: string;
   updatedAt: string;
 };

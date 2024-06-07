@@ -186,3 +186,36 @@ GROUP BY
     "id"
 ORDER BY "remaining_api_calls" DESC
 LIMIT 1;
+
+-- Calls
+
+INSERT INTO
+    "calls" (
+        "type",
+        "host_id",
+        "attendee_id",
+        "slot_id",
+        "zoom_meeting_id",
+        "system_zoom_account_id",
+        "start",
+        "duration",
+        "meeting_url"
+    )
+VALUES ()
+RETURNING
+    "id",
+    "type",
+    "host_id",
+    "attendee_id",
+    "slot_id",
+    "zoom_meeting_id",
+    "system_zoom_account_id",
+    "start",
+    "duration",
+    "meeting_url",
+    "created_at",
+    "updated_at";
+
+-- Calls
+
+SELECT * FROM calls;

@@ -1,4 +1,4 @@
-import { query, withTransaction } from "@/models/query";
+import { knex, query, withTransaction } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
 import { users } from "@/models";
@@ -8,48 +8,32 @@ export class Tutors {
   async create(
     user: IUser.Credentials & { name: string }
   ): Promise<ITutor.FullTutor> {
-    return withTransaction(async (client) => {
-      const { rows } = await client.query<IUser.Row>(
-        `
-        INSERT INTO
-            "users" (
-                "email",
-                "password",
-                "name",
-                "type",
-                "created_at",
-                "updated_at"
-            )
-        VALUES ($1, $2, $3, 'tutor', NOW(), NOW())
-        RETURNING
-            id, email, name, avatar, type, active, created_at, updated_at;
-      `,
-        [user.email, user.password, user.name]
-      );
-
-      const row = first(rows);
-      if (!row) throw new Error("User not found; should never happen");
-      const mapped = users.from(row);
-
-      await client.query(
-        `
-        INSERT INTO
-            tutors (id, bio, about, video, created_at, updated_at)
-        VALUES ($1, null, null, null, NOW(), NOW());
-        `,
-        [mapped.id]
-      );
-
-      return {
-        ...mapped,
-        zoomRefreshToken: null,
-        aquiredRefreshTokenAt: null,
-        authorizedZoomApp: false,
-        bio: null,
-        about: null,
-        video: null,
-      };
+    await knex.transaction((tx) => {
+      knex<IUser.Row>("users")
+        .transacting(tx)
+        .insert(
+          {
+            email: user.email,
+            password: user.password,
+            name: user.name,
+            type: IUser.Type.Tutor,
+          },
+          "*"
+        )
+        .then(async (rows) => {
+          const row = first(rows);
+          if (!row) throw new Error("User not found; should never happen");
+          return await knex<ITutor.Row>("tutors")
+            .transacting(tx)
+            .insert({ id: row.id }, "*");
+        })
+        .then(tx.commit)
+        .catch(tx.rollback);
     });
+
+    const tutor = await this.findByEmail(user.email);
+    if (!tutor) throw new Error("Tutor not found; should never happen");
+    return tutor;
   }
 
   async update(
@@ -74,6 +58,38 @@ export class Tutors {
 
   async delete(id: number): Promise<void> {
     await query(`DELETE FROM tutors WHERE id = $1;`, [id]);
+  }
+
+  async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
+    const tutors = await knex
+      .select<ITutor.FullTutor[]>({
+        id: "users.id",
+        email: "users.email",
+        name: "users.name",
+        avatar: "users.avatar",
+        type: "users.type",
+        birthday: "users.birthday",
+        gender: "users.gender",
+        online: "users.online",
+        createdAt: "users.created_at",
+        updatedAt: "users.updated_at",
+        metaUpdatedAt: "tutors.updated_at",
+        bio: "tutors.bio",
+        about: "tutors.about",
+        video: "tutors.video",
+        activated: "tutors.activated",
+        activatedBy: "tutors.activated_by",
+        passedInterview: "tutors.passed_interview",
+        privateFeedback: "tutors.private_feedback",
+        publicFeedback: "tutors.public_feedback",
+        interviewUrl: "tutors.interview_url",
+      })
+      .from("users")
+      .innerJoin("tutors", "users.id", "tutors.id")
+      .where("email", email);
+
+    const tutor = first(tutors);
+    return tutor || null;
   }
 
   async findById(id: number): Promise<ITutor.Shareable | null> {
@@ -171,15 +187,14 @@ export class Tutors {
     );
   }
 
-  asSherable(row: ITutor.Row): ITutor.Shareable {
+  // todo: fix this
+  // asSherable(row: ITutor.Row): ITutor.Shareable {
+  asSherable(row: ITutor.Row): any {
     return {
       id: row.id,
       bio: row.bio,
       about: row.about,
       video: row.video,
-      aquiredRefreshTokenAt:
-        row.aquired_refresh_token_at?.toISOString() || null,
-      authorizedZoomApp: row.authorized_zoom_app,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

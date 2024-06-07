@@ -1,5 +1,5 @@
-import { complex, lessons, slots, tutors } from "@/models";
-import { ILesson, IUser } from "@litespace/types";
+import { complex, calls, slots, tutors } from "@/models";
+import { ICall, IUser } from "@litespace/types";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import {
@@ -31,14 +31,14 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   const slot = await slots.findById(slotId);
   if (!slot) return next(slotNotFound);
 
-  const tutor = await complex.getTutorById(slot.tutorId);
+  const tutor = await complex.getTutorById(slot.userId);
   if (!tutor) return next(tutorNotFound);
 
-  const bookedLessons = await lessons.findBySlotId(slotId);
+  const bookedLessons = await calls.findBySlotId(slotId);
 
   const enough = hasEnoughTime({
-    lesson: { start, duration },
-    lessons: bookedLessons,
+    call: { start, duration },
+    calls: bookedLessons,
     slot,
   });
 
@@ -51,10 +51,10 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   //   duration,
   // });
 
-  const now = new Date().toISOString();
-  const id = await lessons.create({
-    tutorId: tutor.id,
-    studentId: req.user.id,
+  const id = await calls.create({
+    type: ICall.Type.Lesson,
+    hostId: tutor.id,
+    attendeeId: req.user.id,
     slotId,
     start,
     duration,
@@ -62,8 +62,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     // zoomMeetingId: meetting.id,
     meetingUrl: "some url",
     zoomMeetingId: Math.ceil(Math.random() * 1e10),
-    createdAt: now,
-    updatedAt: now,
+    systemZoomAccountId: 0,
   });
 
   res.status(200).json({ id });
@@ -76,29 +75,29 @@ async function delete_(
 ) {
   const { id } = schema.http.lesson.get.query.parse(req.query);
 
-  const lesson = await lessons.findById(id);
+  const lesson = await calls.findById(id);
   if (!lesson) return next(lessonNotFound);
 
   const userId = req.user.id;
-  const owner = userId === lesson.studentId || userId === lesson.tutorId;
+  const owner = userId === lesson.hostId || userId === lesson.attendeeId;
   const eligible = owner || isAdmin(req.user.type);
   if (!eligible) return next(forbidden);
 
   // todo: delete zoom meeting
 
-  await lessons.delete(id);
+  await calls.delete(id);
   res.status(200).send();
 }
 
-async function getLessons(user: IUser.Self): Promise<ILesson.Self[]> {
+async function getLessons(user: IUser.Self): Promise<ICall.Self[]> {
   const id = user.id;
   const type = user.type;
   const studnet = type === IUser.Type.Student;
   const tutor = type === IUser.Type.Tutor;
 
-  if (studnet) return await lessons.findByStudentId(id);
-  if (tutor) return await lessons.findByTutuorId(id);
-  return await lessons.findAll();
+  if (studnet) return await calls.findByStudentId(id);
+  if (tutor) return await calls.findByTutuorId(id);
+  return await calls.findAll();
 }
 
 async function getMany(
@@ -112,7 +111,7 @@ async function getMany(
 
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const { id } = schema.http.lesson.get.query.parse(req.query);
-  const lesson = await lessons.findById(id);
+  const lesson = await calls.findById(id);
   if (!lesson) return next(lessonNotFound);
   res.status(200).json(lesson);
 }

@@ -5,10 +5,11 @@ import {
   QueryResult,
   QueryResultRow,
 } from "pg";
+import init from "knex";
 
-import { databaseConnection } from "../constants";
+import { databaseConnection } from "@/constants";
 
-export const pool = new Pool({ ...databaseConnection });
+export const pool = new Pool(databaseConnection);
 
 export async function query<T extends QueryResultRow, V extends unknown[]>(
   query: string,
@@ -45,3 +46,5 @@ export async function withTransaction<T>(
     client.release();
   }
 }
+
+export const knex = init({ client: "pg", connection: databaseConnection });

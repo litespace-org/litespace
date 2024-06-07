@@ -1,4 +1,4 @@
-import { query } from "@/models/query";
+import { knex, query } from "@/models/query";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
 
@@ -9,29 +9,18 @@ export class Users {
     name: string;
     type: IUser.Type;
   }): Promise<IUser.Self> {
-    const { rows } = await query<
-      IUser.Row,
-      [email: string, password: string, name: string, type: IUser.Type]
-    >(
-      `
-        INSERT INTO
-            "users" (
-                "email",
-                "password",
-                "name",
-                "type",
-                "created_at",
-                "updated_at"
-            )
-        values ($1, $2, $3, $4, NOW(), NOW())
-        RETURNING
-            id, email, password, name, avatar, type, active, created_at, updated_at;
-      `,
-      [user.email, user.password, user.name, user.type]
+    const rows = await knex<IUser.Row>("users").insert(
+      {
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        type: user.type,
+      },
+      "*"
     );
 
     const row = first(rows);
-    if (!row) throw new Error("Missing row id");
+    if (!row) throw new Error("User not found; should never happen");
     return this.from(row);
   }
 
@@ -48,7 +37,7 @@ export class Users {
           "type",
           "birthday",
           "gender",
-          "active",
+          "online",
           "created_at",
           "updated_at";
       `,
@@ -69,7 +58,7 @@ export class Users {
       avatar: string;
       birthday: string;
       gender: IUser.Gender;
-      active: boolean;
+      online: boolean;
       type: IUser.Type;
     }>
   ): Promise<void> {
@@ -84,7 +73,7 @@ export class Users {
             type = COALESCE($5, type),
             birthday = COALESCE($6, birthday),
             gender = COALESCE($7, gender),
-            active = COALESCE($8, active),
+            online = COALESCE($8, online),
             updated_at = NOW()
         where
             id = $9;
@@ -97,7 +86,7 @@ export class Users {
         user.type,
         user.birthday,
         user.gender,
-        user.active,
+        user.online,
         id,
       ]
     );
@@ -119,7 +108,7 @@ export class Users {
           "type",
           "birthday",
           "gender",
-          "active",
+          "online",
           "created_at",
           "updated_at"
         FROM users
@@ -145,7 +134,7 @@ export class Users {
           "type",
           "birthday",
           "gender",
-          "active",
+          "online",
           "created_at",
           "updated_at"
         FROM users
@@ -162,7 +151,7 @@ export class Users {
   async findMany(ids: number[]): Promise<IUser.Self[]> {
     const { rows } = await query<IUser.Row, [number[]]>(
       `
-        SELECT id, email, password, password, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, password, password, name, avatar, type, online, created_at, updated_at
         FROM users
         WHERE id in $1;
       `,
@@ -182,7 +171,7 @@ export class Users {
           "name",
           "avatar",
           "type",
-          "active",
+          "online",
           "created_at",
           "updated_at"
       FROM users;
@@ -198,7 +187,7 @@ export class Users {
   ): Promise<IUser.Self | null> {
     const { rows } = await query<IUser.Row, [string, string]>(
       `
-        SELECT id, email, password, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, password, name, avatar, type, online, created_at, updated_at
         FROM users
         WHERE
             email = $1
@@ -215,7 +204,7 @@ export class Users {
   async getTutors(): Promise<IUser.Self[]> {
     const { rows } = await query<IUser.Row, [typeof IUser.Type.Tutor]>(
       `
-        SELECT id, email, name, avatar, type, active, created_at, updated_at
+        SELECT id, email, name, avatar, type, online, created_at, updated_at
         FROM users
         WHERE type = $1;
       `,
@@ -235,7 +224,7 @@ export class Users {
       birthday: row.birthday,
       gender: row.gender,
       type: row.type,
-      active: row.active,
+      online: row.online,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

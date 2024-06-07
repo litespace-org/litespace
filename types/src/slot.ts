@@ -7,7 +7,7 @@ export enum Repeat {
 
 export type Self = {
   id: number;
-  tutorId: number;
+  userId: number;
   title: string;
   weekday: number;
   time: { start: string; end: string };
@@ -19,7 +19,7 @@ export type Self = {
 
 export type Row = {
   id: number;
-  tutor_id: number;
+  user_id: number;
   title: string;
   weekday: number;
   start_time: string;
@@ -33,7 +33,7 @@ export type Row = {
 
 export type Discrete = {
   id: number;
-  tutorId: number;
+  userId: number;
   title: string;
   start: string;
   end: string;

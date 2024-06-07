@@ -1,9 +1,16 @@
+export enum Type {
+  Lesson = "lesson",
+  Interview = "interview",
+}
+
 export type Row = {
   id: number;
-  tutor_id: number;
-  student_id: number;
+  type: Type;
+  host_id: number;
+  attendee_id: number;
   slot_id: number;
   zoom_meeting_id: number;
+  system_zoom_account_id: number;
   start: Date;
   duration: number;
   meeting_url: string;
@@ -13,13 +20,17 @@ export type Row = {
 
 export type Self = {
   id: number;
-  tutorId: number;
-  studentId: number;
+  type: Type;
+  hostId: number;
+  attendeeId: number;
   slotId: number;
   zoomMeetingId: number;
+  systemZoomAccountId: number;
   start: string;
   duration: number;
   meetingUrl: string;
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreatePayload = Omit<Self, "id" | "createdAt" | "updatedAt">;

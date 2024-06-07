@@ -2696,6 +2696,7 @@ __metadata:
     express-async-handler: "npm:^1.2.0"
     express-session: "npm:^1.18.0"
     jsonwebtoken: "npm:^9.0.2"
+    knex: "npm:^3.1.0"
     lodash: "npm:^4.17.21"
     morgan: "npm:^1.10.0"
     node-pg-migrate: "npm:^7.3.2"
@@ -7547,6 +7548,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"colorette@npm:2.0.19":
+  version: 2.0.19
+  resolution: "colorette@npm:2.0.19"
+  checksum: 10c0/2bcc9134095750fece6e88167011499b964b78bf0ea953469130ddb1dba3c8fe6c03debb0ae181e710e2be10900d117460f980483a7df4ba4a1bac3b182ecb64
+  languageName: node
+  linkType: hard
+
 "colors@npm:^1.4.0":
   version: 1.4.0
   resolution: "colors@npm:1.4.0"
@@ -7581,6 +7589,13 @@ __metadata:
   version: 9.4.1
   resolution: "commander@npm:9.4.1"
   checksum: 10c0/04ea8ccc6fe3d3d1ca7ca26b06187498af8e6341a2c98b534528d504f8cad95b0c5ac2f3b78a7f0d332da16da9332db2ab9e43cb06241d367e9c7ee75cb76202
+  languageName: node
+  linkType: hard
+
+"commander@npm:^10.0.0":
+  version: 10.0.1
+  resolution: "commander@npm:10.0.1"
+  checksum: 10c0/53f33d8927758a911094adadda4b2cbac111a5b377d8706700587650fd8f45b0bbe336de4b5c3fe47fd61f420a3d9bd452b6e0e6e5600a7e74d7bf0174f6efe3
   languageName: node
   linkType: hard
 
@@ -7927,7 +7942,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"debug@npm:^4, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2, debug@npm:~4.3.4":
+"debug@npm:4.3.4, debug@npm:^4, debug@npm:^4.3.1, debug@npm:^4.3.2, debug@npm:^4.3.4, debug@npm:~4.3.1, debug@npm:~4.3.2, debug@npm:~4.3.4":
   version: 4.3.4
   resolution: "debug@npm:4.3.4"
   dependencies:
@@ -8858,6 +8873,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"esm@npm:^3.2.25":
+  version: 3.2.25
+  resolution: "esm@npm:3.2.25"
+  checksum: 10c0/8e60e8075506a7ce28681c30c8f54623fe18a251c364cd481d86719fc77f58aa055b293d80632d9686d5408aaf865ffa434897dc9fd9153c8b3f469fad23f094
+  languageName: node
+  linkType: hard
+
 "espree@npm:^9.6.0, espree@npm:^9.6.1":
   version: 9.6.1
   resolution: "espree@npm:9.6.1"
@@ -9566,6 +9588,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"get-package-type@npm:^0.1.0":
+  version: 0.1.0
+  resolution: "get-package-type@npm:0.1.0"
+  checksum: 10c0/e34cdf447fdf1902a1f6d5af737eaadf606d2ee3518287abde8910e04159368c268568174b2e71102b87b26c2020486f126bfca9c4fb1ceb986ff99b52ecd1be
+  languageName: node
+  linkType: hard
+
 "get-stream@npm:^6.0.0":
   version: 6.0.1
   resolution: "get-stream@npm:6.0.1"
@@ -9577,6 +9606,13 @@ __metadata:
   version: 8.0.1
   resolution: "get-stream@npm:8.0.1"
   checksum: 10c0/5c2181e98202b9dae0bb4a849979291043e5892eb40312b47f0c22b9414fc9b28a3b6063d2375705eb24abc41ecf97894d9a51f64ff021511b504477b27b4290
+  languageName: node
+  linkType: hard
+
+"getopts@npm:2.3.0":
+  version: 2.3.0
+  resolution: "getopts@npm:2.3.0"
+  checksum: 10c0/edbcbd7020e9d87dc41e4ad9add5eb3873ae61339a62431bd92a461be2c0eaa9ec33b6fd0d67fa1b44feedffcf1cf28d6f9dbdb7d604cb1617eaba146a33cbca
   languageName: node
   linkType: hard
 
@@ -10335,6 +10371,13 @@ __metadata:
     hasown: "npm:^2.0.0"
     side-channel: "npm:^1.0.4"
   checksum: 10c0/f8b294a4e6ea3855fc59551bbf35f2b832cf01fd5e6e2a97f5c201a071cc09b49048f856e484b67a6c721da5e55736c5b6ddafaf19e2dbeb4a3ff1821680de6c
+  languageName: node
+  linkType: hard
+
+"interpret@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "interpret@npm:2.2.0"
+  checksum: 10c0/c0ef90daec6c4120bb7a226fa09a9511f6b5618aa9c94cf4641472f486948e643bb3b36efbd0136bbffdee876435af9fdf7bbb4622f5a16778eed5397f8a1946
   languageName: node
   linkType: hard
 
@@ -11180,6 +11223,45 @@ __metadata:
   version: 4.1.5
   resolution: "kleur@npm:4.1.5"
   checksum: 10c0/e9de6cb49657b6fa70ba2d1448fd3d691a5c4370d8f7bbf1c2f64c24d461270f2117e1b0afe8cb3114f13bbd8e51de158c2a224953960331904e636a5e4c0f2a
+  languageName: node
+  linkType: hard
+
+"knex@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "knex@npm:3.1.0"
+  dependencies:
+    colorette: "npm:2.0.19"
+    commander: "npm:^10.0.0"
+    debug: "npm:4.3.4"
+    escalade: "npm:^3.1.1"
+    esm: "npm:^3.2.25"
+    get-package-type: "npm:^0.1.0"
+    getopts: "npm:2.3.0"
+    interpret: "npm:^2.2.0"
+    lodash: "npm:^4.17.21"
+    pg-connection-string: "npm:2.6.2"
+    rechoir: "npm:^0.8.0"
+    resolve-from: "npm:^5.0.0"
+    tarn: "npm:^3.0.2"
+    tildify: "npm:2.0.0"
+  peerDependenciesMeta:
+    better-sqlite3:
+      optional: true
+    mysql:
+      optional: true
+    mysql2:
+      optional: true
+    pg:
+      optional: true
+    pg-native:
+      optional: true
+    sqlite3:
+      optional: true
+    tedious:
+      optional: true
+  bin:
+    knex: bin/cli.js
+  checksum: 10c0/d8a1f99fad143c6057e94759b2ae700ae661a0b0b2385f643011962ef501dcc7b32cfdb5bda66ef81283ca56f13630f47691c579ce66ad0e8128e209533c3785
   languageName: node
   linkType: hard
 
@@ -13476,6 +13558,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pg-connection-string@npm:2.6.2":
+  version: 2.6.2
+  resolution: "pg-connection-string@npm:2.6.2"
+  checksum: 10c0/e8fdea74fcc8bdc3d7c5c6eadd9425fdba7e67fb7fe836f9c0cecad94c8984e435256657d1d8ce0483d1fedef667e7a57e32449a63cb805cb0289fc34b62da35
+  languageName: node
+  linkType: hard
+
 "pg-connection-string@npm:^2.6.4":
   version: 2.6.4
   resolution: "pg-connection-string@npm:2.6.4"
@@ -15343,6 +15432,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rechoir@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "rechoir@npm:0.8.0"
+  dependencies:
+    resolve: "npm:^1.20.0"
+  checksum: 10c0/1a30074124a22abbd5d44d802dac26407fa72a0a95f162aa5504ba8246bc5452f8b1a027b154d9bdbabcd8764920ff9333d934c46a8f17479c8912e92332f3ff
+  languageName: node
+  linkType: hard
+
 "redent@npm:^3.0.0":
   version: 3.0.0
   resolution: "redent@npm:3.0.0"
@@ -15750,7 +15848,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.19.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.22.8, resolve@npm:~1.22.1":
+"resolve@npm:^1.1.7, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.2, resolve@npm:^1.22.8, resolve@npm:~1.22.1":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
   dependencies:
@@ -15773,7 +15871,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.1#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^1.1.7#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.10.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.14.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.19.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.20.0#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.1#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.2#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^1.22.8#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A~1.22.1#optional!builtin<compat/resolve>":
   version: 1.22.8
   resolution: "resolve@patch:resolve@npm%3A1.22.8#optional!builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
@@ -16913,6 +17011,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"tarn@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "tarn@npm:3.0.2"
+  checksum: 10c0/ea2344e3d21936111176375bd6f34eba69a38ef1bc59434d523fd313166f8a28a47b0a847846c119f72dcf2c1e1231596d74ac3fcfc3cc73966b3d293a327269
+  languageName: node
+  linkType: hard
+
 "telejson@npm:^7.2.0":
   version: 7.2.0
   resolution: "telejson@npm:7.2.0"
@@ -17016,6 +17121,13 @@ __metadata:
   version: 2.3.8
   resolution: "through@npm:2.3.8"
   checksum: 10c0/4b09f3774099de0d4df26d95c5821a62faee32c7e96fb1f4ebd54a2d7c11c57fe88b0a0d49cf375de5fee5ae6bf4eb56dbbf29d07366864e2ee805349970d3cc
+  languageName: node
+  linkType: hard
+
+"tildify@npm:2.0.0":
+  version: 2.0.0
+  resolution: "tildify@npm:2.0.0"
+  checksum: 10c0/57961810a6915f47bdba7da7fa66a5f12597a0495fa016785de197b02e7ba9994ffebb30569294061bbf6d9395c6b1319d830076221e5a3f49f1318bc749565c
   languageName: node
   linkType: hard
 

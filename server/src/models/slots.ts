@@ -1,4 +1,4 @@
-import { query } from "@/models/query";
+import { knex, query } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { ISlot } from "@litespace/types";
 import { first } from "lodash";
@@ -7,35 +7,23 @@ import format from "pg-format";
 export class Slots {
   async create(
     slot: Omit<ISlot.Self, "id" | "createdAt" | "updatedAt">
-  ): Promise<void> {
-    await query(
-      `
-        INSERT INTO
-            "slots" (
-                tutor_id,
-                title,
-                weekday,
-                start_time,
-                end_time,
-                repeat,
-                start_date,
-                end_date,
-                created_at,
-                updated_at
-            )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW());
-      `,
-      [
-        slot.tutorId,
-        slot.title,
-        slot.weekday,
-        slot.time.start,
-        slot.time.end,
-        slot.repeat,
-        slot.date.start,
-        slot.date.end,
-      ]
+  ): Promise<ISlot.Self> {
+    const rows = await knex<ISlot.Row>("slots").insert(
+      {
+        user_id: slot.userId,
+        title: slot.title,
+        weekday: slot.weekday,
+        start_time: slot.time.start,
+        end_time: slot.time.end,
+        start_date: slot.date.start,
+        end_date: slot.date.end,
+        repeat: slot.repeat,
+      },
+      "*"
     );
+    const row = first(rows);
+    if (!row) throw new Error("Slot not found; should never happen");
+    return this.from(row);
   }
 
   async update(
@@ -99,7 +87,7 @@ export class Slots {
 
     const slot = first(rows);
     if (!slot) return null;
-    return this.as(slot);
+    return this.from(slot);
   }
 
   async findByTutor(id: number): Promise<ISlot.Self[]> {
@@ -124,7 +112,7 @@ export class Slots {
       [id]
     );
 
-    return rows.map((slot) => this.as(slot));
+    return rows.map((slot) => this.from(slot));
   }
 
   async findByTutors(ids: number[]): Promise<ISlot.Self[]> {
@@ -151,13 +139,13 @@ export class Slots {
       )
     );
 
-    return rows.map((slot) => this.as(slot));
+    return rows.map((slot) => this.from(slot));
   }
 
-  private as(slot: ISlot.Row): ISlot.Self {
+  private from(slot: ISlot.Row): ISlot.Self {
     return {
       id: slot.id,
-      tutorId: slot.tutor_id,
+      userId: slot.user_id,
       title: slot.title,
       weekday: slot.weekday,
       time: { start: slot.start_time, end: slot.end_time },

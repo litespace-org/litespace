@@ -1,62 +1,35 @@
-import { query } from "@/models/query";
+import { knex, query } from "@/models/query";
 import { first } from "lodash";
-import { ILesson } from "@litespace/types";
+import { ICall } from "@litespace/types";
 
-export class Lessons {
-  async create(lesson: Omit<ILesson.Self, "id">): Promise<number> {
-    const { rows } = await query<
-      { id: number },
-      [
-        tutorId: number,
-        studentId: number,
-        slotId: number,
-        zoomMeetingId: number,
-        start: string,
-        duration: number,
-        meatingUrl: string,
-        createdAt: string,
-        updatedAt: string,
-      ]
-    >(
-      `
-        INSERT INTO
-            "lessons" (
-                tutor_id,
-                student_id,
-                slot_id,
-                zoom_meeting_id,
-                start,
-                duration,
-                meeting_url,
-                created_at,
-                updated_at
-            )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING id;
-      `,
-      [
-        lesson.tutorId,
-        lesson.studentId,
-        lesson.slotId,
-        lesson.zoomMeetingId,
-        lesson.start,
-        lesson.duration,
-        lesson.meetingUrl,
-        lesson.createdAt,
-        lesson.updatedAt,
-      ]
+export class Calls {
+  async create(call: ICall.CreatePayload): Promise<ICall.Self> {
+    const rows = await knex<ICall.Row>("calls").insert(
+      {
+        type: call.type,
+        host_id: call.hostId,
+        attendee_id: call.attendeeId,
+        slot_id: call.slotId,
+        zoom_meeting_id: call.zoomMeetingId,
+        system_zoom_account_id: call.systemZoomAccountId,
+        start: new Date(call.start),
+        duration: call.duration,
+        meeting_url: call.meetingUrl,
+      },
+      "*"
     );
 
     const row = first(rows);
     if (!row) throw new Error("Lesson not found, should never happen");
-    return row.id;
+    return this.from(row);
   }
 
   async delete(id: number): Promise<void> {
     await query(` DELETE FROM lessons WHERE id = $1;`, [id]);
   }
 
-  async findById(id: number): Promise<ILesson.Self | null> {
-    const { rows } = await query<ILesson.Row, [number]>(
+  async findById(id: number): Promise<ICall.Self | null> {
+    const { rows } = await query<ICall.Row, [number]>(
       `
         SELECT
             "id",
@@ -78,11 +51,11 @@ export class Lessons {
 
     const lesson = first(rows);
     if (!lesson) return null;
-    return this.as(lesson);
+    return this.from(lesson);
   }
 
-  async findByTutuorId(tutorId: number): Promise<ILesson.Self[]> {
-    const { rows } = await query<ILesson.Row, [number]>(
+  async findByTutuorId(tutorId: number): Promise<ICall.Self[]> {
+    const { rows } = await query<ICall.Row, [number]>(
       `
         SELECT
             "id",
@@ -102,11 +75,11 @@ export class Lessons {
       [tutorId]
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
-  async findByStudentId(studentId: number): Promise<ILesson.Self[]> {
-    const { rows } = await query<ILesson.Row, [number]>(
+  async findByStudentId(studentId: number): Promise<ICall.Self[]> {
+    const { rows } = await query<ICall.Row, [number]>(
       `
         SELECT
             "id",
@@ -126,11 +99,11 @@ export class Lessons {
       [studentId]
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
-  async findBySlotId(slotId: number): Promise<ILesson.Self[]> {
-    const { rows } = await query<ILesson.Row, [number]>(
+  async findBySlotId(slotId: number): Promise<ICall.Self[]> {
+    const { rows } = await query<ICall.Row, [number]>(
       `
         SELECT
             "id",
@@ -150,11 +123,11 @@ export class Lessons {
       [slotId]
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
-  async findAll(): Promise<ILesson.Self[]> {
-    const { rows } = await query<ILesson.Row, []>(
+  async findAll(): Promise<ICall.Self[]> {
+    const { rows } = await query<ICall.Row, []>(
       `
         SELECT
             "id",
@@ -171,16 +144,18 @@ export class Lessons {
       `
     );
 
-    return rows.map((row) => this.as(row));
+    return rows.map((row) => this.from(row));
   }
 
-  as(row: ILesson.Row): ILesson.Self {
+  from(row: ICall.Row): ICall.Self {
     return {
       id: row.id,
-      tutorId: row.tutor_id,
-      studentId: row.student_id,
+      type: row.type,
+      hostId: row.host_id,
+      attendeeId: row.attendee_id,
       slotId: row.slot_id,
       zoomMeetingId: row.zoom_meeting_id,
+      systemZoomAccountId: row.system_zoom_account_id,
       start: row.start.toISOString(),
       duration: row.duration,
       meetingUrl: row.meeting_url,
@@ -189,3 +164,5 @@ export class Lessons {
     };
   }
 }
+
+export const calls = new Calls();

@@ -1,4 +1,4 @@
-import { examiners, users } from "@/models";
+import { users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
@@ -20,12 +20,6 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists);
-
-  if (type === IUser.Type.Examiner) {
-    await examiners.create({ email, password, name });
-    res.status(200).send();
-    return;
-  }
 
   await users.create({
     password: hashPassword(password),

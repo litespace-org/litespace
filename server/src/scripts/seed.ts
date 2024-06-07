@@ -1,5 +1,5 @@
-import { examiners, tutors, users, zoomAccounts } from "@/models";
-import { IUser, IZoomAccount } from "@litespace/types";
+import { calls, slots, tutors, users, zoomAccounts } from "@/models";
+import { ICall, ISlot, IUser, IZoomAccount } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { createZoomMeeting } from "@/integrations/zoom";
 import zod from "zod";
@@ -32,6 +32,13 @@ async function main(): Promise<void> {
     password,
   });
 
+  const examiner = await users.create({
+    type: IUser.Type.Examiner,
+    email: "examiner@litespace.com",
+    name: "LiteSpace Examiner",
+    password,
+  });
+
   const student = await users.create({
     type: IUser.Type.Student,
     email: "student@litespace.com",
@@ -45,24 +52,42 @@ async function main(): Promise<void> {
     password,
   });
 
-  const examiner = await examiners.create({
-    email: "examiner@litespace.com",
-    name: "LiteSpace Examiner",
-    password,
-  });
-
   for (const app of zoomApps) {
     await zoomAccounts.create(app);
   }
 
+  const startDate = dayjs().format("YYYY-MM-DD");
+  const startTime = dayjs().format("HH:mm:00");
+  const endTime = dayjs().add(4, "hours").format("HH:mm:00");
+  const slot = await slots.create({
+    userId: examiner.id,
+    date: { start: startDate },
+    time: { start: startTime, end: endTime },
+    title: "Examiner slot",
+    repeat: ISlot.Repeat.No,
+    weekday: -1,
+  });
+
   const now = dayjs().tz("Africa/Cairo").add(30, "minutes");
   const meeting = await createZoomMeeting({
-    participants: [],
+    participants: [{ email: examiner.email }, { email: tutor.email }],
     start: now.format("YYYY-MM-DDTHH:mm:ss"),
     duration: 30,
   });
 
-  console.log({ meeting });
+  const call = await calls.create({
+    hostId: examiner.id,
+    attendeeId: tutor.id,
+    duration: 30,
+    meetingUrl: meeting.joinUrl,
+    slotId: slot.id,
+    start: meeting.startTime,
+    systemZoomAccountId: meeting.systemZoomAccountId,
+    type: ICall.Type.Interview,
+    zoomMeetingId: meeting.id,
+  });
+
+  console.log({ call });
 }
 
 main()

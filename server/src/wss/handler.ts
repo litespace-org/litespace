@@ -17,7 +17,7 @@ export class WssHandler {
   }
 
   async initialize() {
-    await this.markUserAsActive();
+    await this.markUserOnline();
     await this.joinRooms();
 
     this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
@@ -25,7 +25,7 @@ export class WssHandler {
 
     this.socket.on("disconnect", async () => {
       if (isDev) console.log(`${this.user.name} is disconnected`.yellow);
-      await this.markUserAsInActive();
+      await this.markUserAsOffline();
     });
   }
 
@@ -88,12 +88,12 @@ export class WssHandler {
     }
   }
 
-  async markUserAsActive() {
-    await users.update(this.user.id, { active: true });
+  async markUserOnline() {
+    await users.update(this.user.id, { online: true });
   }
 
-  async markUserAsInActive() {
-    await users.update(this.user.id, { active: false });
+  async markUserAsOffline() {
+    await users.update(this.user.id, { online: false });
   }
 
   safe() {}
