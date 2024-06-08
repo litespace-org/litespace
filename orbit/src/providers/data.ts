@@ -1,5 +1,5 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { ISlot, IUser, IZoomAccount, as } from "@litespace/types";
+import { ISlot, ITutor, IUser, IZoomAccount, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -7,6 +7,7 @@ import { Dayjs } from "dayjs";
 export enum Resource {
   UserTypes = "user-types",
   Users = "users",
+  Tutors = "tutors",
   MySchedule = "my-schedule",
   ZoomAccounts = "zoom-accounts",
 }
@@ -18,6 +19,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.Users) {
       const user = await atlas.user.findById(id);
       return { data: as.casted(user) };
+    }
+
+    if (resource === Resource.Tutors) {
+      const tutor = await atlas.tutor.findById(as.int(id));
+      return { data: as.casted(tutor) };
     }
 
     if (resource === Resource.MySchedule) {
@@ -33,6 +39,7 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   async update({ id, resource, variables }) {
+    const resourceId = as.int(id);
     console.log({ variables });
     if (resource === Resource.Users) {
       const { uName, uEmail, uPassword, uAvatar, uBithday, uGender, uType } =
@@ -55,7 +62,7 @@ export const dataProvider: DataProvider = {
         birthday: uBithday ? uBithday.format("YYYY-MM-DD") : undefined,
         gender: uGender,
         type: uType,
-        id: as.int(id),
+        id: resourceId,
       });
       return { data: as.casted(null) };
     }
@@ -67,10 +74,45 @@ export const dataProvider: DataProvider = {
         uClientSecret?: string;
       }>(variables);
 
-      await atlas.zoom.updateAccount(as.int(id), {
+      await atlas.zoom.updateAccount(resourceId, {
         accountId: uAccountId,
         clientId: uClientId,
         clientSecret: uClientSecret,
+      });
+
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Tutors) {
+      const {
+        uBio,
+        uAbout,
+        uVideo,
+        uActivate,
+        uPassedInterview,
+        uPrivateFeedback,
+        uPublicFeedback,
+        uInterviewUrl,
+      } = as.casted<{
+        uBio: string;
+        uAbout: string;
+        uVideo: string;
+        uActivate: boolean;
+        uPassedInterview: boolean;
+        uPrivateFeedback: string;
+        uPublicFeedback: string;
+        uInterviewUrl: string;
+      }>(variables);
+
+      await atlas.tutor.update(resourceId, {
+        bio: uBio,
+        about: uAbout,
+        video: uVideo,
+        activated: uActivate,
+        passedInterview: uPassedInterview,
+        privateFeedback: uPrivateFeedback,
+        publicFeedback: uPublicFeedback,
+        interviewUrl: uInterviewUrl,
       });
 
       return as.casted(empty);
@@ -122,16 +164,29 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(account) };
     }
 
+    if (resource === Resource.Tutors) {
+      const payload = as.casted<ITutor.CreateApiPayload>(variables);
+      const response = await atlas.tutor.create(payload);
+      return { data: as.casted(response) };
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
+    const resourceId = as.int(id);
+
     if (resource === Resource.MySchedule) {
-      await atlas.slot.delete(as.int(id));
+      await atlas.slot.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.ZoomAccounts) {
-      await atlas.zoom.deleteAccount(as.int(id));
+      await atlas.zoom.deleteAccount(resourceId);
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Tutors) {
+      await atlas.tutor.delete(resourceId);
       return as.casted(empty);
     }
 
@@ -170,6 +225,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.ZoomAccounts) {
       const list = await atlas.zoom.findAllAccounts();
       return { data: as.any(list), total: list.length };
+    }
+
+    if (resource === Resource.Tutors) {
+      const list = await atlas.tutor.findAll();
+      return { data: as.casted(list), total: list.length };
     }
 
     throw new Error("Not implemented");

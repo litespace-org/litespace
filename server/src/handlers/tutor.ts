@@ -1,11 +1,10 @@
 import { complex, slots, tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { forbidden, userNotFound } from "@/lib/error";
+import { forbidden, tutorNotFound, userNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { map, merge, omit } from "lodash";
 import { generateAuthorizationToken } from "@/lib/auth";
 
 async function create(req: Request.Default, res: Response) {
@@ -15,40 +14,30 @@ async function create(req: Request.Default, res: Response) {
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {
-  const body = schema.http.tutor.update.body.parse(req.body);
+  const tutorId = schema.http.tutor.update.params.parse(req.params).id;
+  const fields = schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
-  if (!user) return next(userNotFound);
+  if (!user) return next(tutorNotFound);
 
-  const fields = { ...body, id: req.user.id };
-  await users.update(req.user.id, {});
-  await tutors.update(fields);
+  await tutors.update(tutorId, fields);
   res.status(200).send();
 }
 
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
-  const id = schema.http.tutor.get.query.parse(req.query).id;
+  const id = schema.http.tutor.get.params.parse(req.params).id;
+  const tutor = await tutors.findById(id);
+  if (!tutor) return next(userNotFound);
 
-  const [user, tutor] = await Promise.all([
-    users.findById(id),
-    tutors.findById(id),
-  ]);
-  if (!user || !tutor) return next(userNotFound);
-
-  const owner = req.user.id === user.id;
+  const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(forbidden);
 
-  const fullData = omit(merge(user, tutor), "password");
-  res.status(200).json(fullData);
+  res.status(200).json(tutor);
 }
 
 async function getTutors(req: Request.Default, res: Response) {
-  const list = await complex.findActivatedTutors();
-  const tutorsSlots = await slots.findByTutors(map(list, "id"));
-
-  console.log({ tutorsSlots });
-
+  const list = await tutors.findAll();
   res.status(200).json(list);
 }
 
@@ -57,18 +46,16 @@ async function delete_(
   res: Response,
   next: NextFunction
 ) {
-  const id = schema.http.tutor.get.query.parse(req.query).id;
-  const user = await users.findById(id);
-  if (!user) return next(userNotFound);
+  const id = schema.http.tutor.get.params.parse(req.params).id;
+  const tutor = await tutors.findById(id);
+  if (!tutor) return next(tutorNotFound);
 
-  const owner = req.user.id === user.id;
+  const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
   if (!eligible) return next(forbidden);
 
   await tutors.delete(id);
-  await users.delete(id);
-
   res.status(200).send();
 }
 

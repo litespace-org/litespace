@@ -23,7 +23,7 @@ export class Tutors {
         .then(async (rows) => {
           const row = first(rows);
           if (!row) throw new Error("User not found; should never happen");
-          // then add it as tutor in the tutors table
+          // then add it as a tutor in the tutors table
           return await knex<ITutor.Row>("tutors")
             .transacting(tx)
             .insert({ id: row.id });
@@ -37,28 +37,38 @@ export class Tutors {
     return tutor;
   }
 
-  async update(
-    tutor: DeepPartial<Omit<ITutor.Self, "createdAt" | "updatedAt">> & {
-      id: number;
-    }
-  ): Promise<void> {
-    await query(
-      `
-        UPDATE tutors
-        SET
-            bio = COALESCE($1, bio),
-            about = COALESCE($2, about),
-            video = COALESCE($3, video),
-            updated_at = NOW()
-        where
-            id = $4;
-        `,
-      [tutor.bio, tutor.about, tutor.video, tutor.id]
-    );
+  async update(id: number, tutor: ITutor.UpdatePayload): Promise<void> {
+    await knex<ITutor.Row>("tutors")
+      .update({
+        bio: tutor.bio,
+        about: tutor.about,
+        video: tutor.video,
+        activated: tutor.activated,
+        activated_by: tutor.activatedBy,
+        passed_interview: tutor.passedInterview,
+        private_feedback: tutor.privateFeedback,
+        public_feedback: tutor.publicFeedback,
+        interview_url: tutor.interviewUrl,
+        updated_at: new Date(),
+      })
+      .where("id", id);
   }
 
   async delete(id: number): Promise<void> {
-    await query(`DELETE FROM tutors WHERE id = $1;`, [id]);
+    await knex.transaction((tx) => {
+      knex<ITutor.Row>("tutors") // delete from the tutors table first
+        .transacting(tx)
+        .where("id", id)
+        .del()
+        .then(
+          async () =>
+            // then delete it from the users table
+            await knex<IUser.Row>("users").transacting(tx).where("id", id).del()
+        )
+        .then(tx.commit)
+        .catch(tx.rollback);
+    });
+    await knex<ITutor.Row>("tutors").where("id", id).del();
   }
 
   async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
@@ -67,8 +77,13 @@ export class Tutors {
   }
 
   async findById(id: number): Promise<ITutor.FullTutor | null> {
-    const tutors = await this.getSelectQuery().where("id", id).limit(1);
+    const tutors = await this.getSelectQuery().where("tutors.id", id).limit(1);
     return first(tutors) || null;
+  }
+
+  async findAll(): Promise<ITutor.FullTutor[]> {
+    const tutors = await this.getSelectQuery();
+    return tutors;
   }
 
   getSelectQuery() {

@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import {
   BooleanField,
   DateField,
@@ -12,10 +12,10 @@ import { Typography, Flex } from "antd";
 
 const { Title } = Typography;
 
-export const UserShow = () => {
+export const TutorShow = () => {
   const {
     queryResult: { data, isLoading },
-  } = useShow<IUser.Self>({});
+  } = useShow<ITutor.FullTutor>({});
 
   return (
     <Show isLoading={isLoading}>
@@ -49,13 +49,6 @@ export const UserShow = () => {
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Has Password :
-              </Title>
-              <BooleanField value={data.data.hasPassword} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
                 Online :
               </Title>
               <BooleanField value={data.data.online} />
@@ -66,6 +59,72 @@ export const UserShow = () => {
                 Name :
               </Title>
               <TextField value={data.data.name} />
+            </Flex>
+
+            {data.data.bio ? (
+              <Flex
+                style={{ flexDirection: "column" }}
+                justify="center"
+                gap="10px"
+              >
+                <Title level={5} style={{ margin: 0 }}>
+                  Bio :
+                </Title>
+                <TextField value={data.data.bio} />
+              </Flex>
+            ) : null}
+
+            {data.data.about ? (
+              <Flex
+                style={{ flexDirection: "column" }}
+                justify="center"
+                gap="10px"
+              >
+                <Title level={5} style={{ margin: 0 }}>
+                  About :
+                </Title>
+                <TextField value={data.data.about || "-"} />
+              </Flex>
+            ) : null}
+
+            {data.data.privateFeedback ? (
+              <Flex
+                style={{ flexDirection: "column" }}
+                justify="center"
+                gap="10px"
+              >
+                <Title level={5} style={{ margin: 0 }}>
+                  Public Feedback :
+                </Title>
+                <TextField value={data.data.publicFeedback} />
+              </Flex>
+            ) : null}
+
+            {data.data.privateFeedback ? (
+              <Flex
+                style={{ flexDirection: "column" }}
+                justify="center"
+                gap="10px"
+              >
+                <Title level={5} style={{ margin: 0 }}>
+                  Private Feedback :
+                </Title>
+                <TextField value={data.data.privateFeedback} />
+              </Flex>
+            ) : null}
+
+            <Flex align="center" gap="10px">
+              <Title level={5} style={{ margin: 0 }}>
+                Passed Interview :
+              </Title>
+              <BooleanField value={data.data.passedInterview} />
+            </Flex>
+
+            <Flex align="center" gap="10px">
+              <Title level={5} style={{ margin: 0 }}>
+                Activated :
+              </Title>
+              <BooleanField value={data.data.activated} />
             </Flex>
 
             <Flex align="center" gap="10px">
@@ -101,29 +160,6 @@ export const UserShow = () => {
               </Title>
               <DateField value={data.data.updatedAt} format="LLL" />
             </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Type :
-              </Title>
-              <TagField value={data.data.type} />
-            </Flex>
-
-            {/* <MarkdownField value={record?.content} />
-          <Title level={5}>{"Category"}</Title>
-          <TextField
-            value={
-              categoryIsLoading ? (
-                <>Loading...</>
-              ) : (
-                <>{categoryData?.data?.title}</>
-              )
-            }
-          />
-          <Title level={5}>{"Status"}</Title>
-          <TextField value={record?.status} />
-          <Title level={5}>{"CreatedAt"}</Title>
-          <DateField value={record?.createdAt} /> */}
           </>
         ) : null}
       </Flex>

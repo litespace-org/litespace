@@ -23,7 +23,7 @@ export type Row = {
   bio: string | null;
   about: string | null;
   video: string | null;
-  activate: boolean | null;
+  activated: boolean | null;
   activated_by: number | null;
   passed_interview: boolean | null;
   private_feedback: string | null;
@@ -33,4 +33,24 @@ export type Row = {
   updated_at: Date;
 };
 
+export type UpdatePayload = {
+  email?: string;
+  password?: string;
+  name?: string;
+  avatar?: string;
+  bio?: string;
+  about?: string;
+  video?: string;
+  activated?: boolean;
+  activatedBy?: number;
+  passedInterview?: boolean;
+  privateFeedback?: string;
+  publicFeedback?: string;
+  interviewUrl?: string;
+};
+
+export type CreateApiPayload = User.Credentials & { name: string };
+export type UpdateApiPayload = UpdatePayload;
+
+// todo: delete this type
 export type Shareable = Omit<Self, "zoomRefreshToken">;

@@ -1,13 +1,9 @@
 import { Base } from "@/base";
-import {
-  RegisterTutorPayload,
-  RegisterTutorResponse,
-  TutorsList,
-} from "@litespace/types";
+import { ITutor, RegisterTutorResponse } from "@litespace/types";
 
 export class Tutor extends Base {
-  async register(
-    payload: RegisterTutorPayload
+  async create(
+    payload: ITutor.CreateApiPayload
   ): Promise<RegisterTutorResponse> {
     const { data } = await this.client.post<RegisterTutorResponse>(
       "/api/v1/tutor",
@@ -17,9 +13,23 @@ export class Tutor extends Base {
     return data;
   }
 
-  async findAll(): Promise<TutorsList> {
+  async update(id: number, payload: ITutor.UpdateApiPayload): Promise<void> {
+    await this.client.put(`/api/v1/tutor/${id}`, JSON.stringify(payload));
+  }
+
+  async delete(id: number) {
+    await this.client.delete(`/api/v1/tutor/${id}`);
+  }
+
+  async findById(id: number): Promise<ITutor.FullTutor> {
     return await this.client
-      .get<TutorsList>("/api/v1/tutor/list")
+      .get<ITutor.FullTutor>(`/api/v1/tutor/${id}`)
+      .then((response) => response.data);
+  }
+
+  async findAll(): Promise<ITutor.FullTutor[]> {
+    return await this.client
+      .get<ITutor.FullTutor[]>("/api/v1/tutor/list")
       .then((response) => response.data);
   }
 }

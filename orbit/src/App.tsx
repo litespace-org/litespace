@@ -13,7 +13,7 @@ import {
 import "@refinedev/antd/dist/reset.css";
 
 import { Resource, dataProvider } from "@/providers/data";
-import { App as AntdApp, Typography } from "antd";
+import { App as AntdApp } from "antd";
 import { BrowserRouter, Route, Routes, Outlet } from "react-router-dom";
 import routerBindings, {
   NavigateToResource,
@@ -22,6 +22,7 @@ import routerBindings, {
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
 import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
+import { TutorCreate, TutorEdit, TutorList, TutorShow } from "./pages/tutors";
 import {
   ZoomAccountCreate,
   ZoomAccountEdit,
@@ -72,6 +73,14 @@ function App() {
                     edit: "/users/edit/:id",
                     show: "/users/show/:id",
                     meta: { canDelete: true, label: "Users" },
+                  },
+                  {
+                    name: Resource.Tutors,
+                    list: "/tutors",
+                    create: "/tutors/create",
+                    edit: "/tutors/edit/:id",
+                    show: "/tutors/show/:id",
+                    meta: { canDelete: true, label: "Tutors" },
                   },
                   {
                     name: Resource.MySchedule,
@@ -146,6 +155,12 @@ function App() {
                       <Route path="create" element={<UserCreate />} />
                       <Route path="edit/:id" element={<UserEdit />} />
                       <Route path="show/:id" element={<UserShow />} />
+                    </Route>
+                    <Route path="/tutors">
+                      <Route index element={<TutorList />} />
+                      <Route path="create" element={<TutorCreate />} />
+                      <Route path="edit/:id" element={<TutorEdit />} />
+                      <Route path="show/:id" element={<TutorShow />} />
                     </Route>
                     <Route path="/my-schedule">
                       <Route index element={<MyScheduleList />} />
