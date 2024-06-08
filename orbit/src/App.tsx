@@ -123,14 +123,7 @@ function App() {
                           Title={({ collapsed }) => (
                             <ThemedTitleV2
                               collapsed={collapsed}
-                              text={
-                                <Typography.Title
-                                  level={3}
-                                  style={{ marginBottom: "0px" }}
-                                >
-                                  LiteSpace
-                                </Typography.Title>
-                              }
+                              text="LiteSpace"
                               icon={
                                 <RocketFilled style={{ fontSize: "22px" }} />
                               }

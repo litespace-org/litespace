@@ -33,4 +33,16 @@ export type Self = {
   updatedAt: string;
 };
 
+export enum Size {
+  Short = "15",
+  Long = "30",
+}
+
+export type CreateApiPayload = {
+  type: Type;
+  start: string;
+  slotId: number;
+  size: Size;
+};
+
 export type CreatePayload = Omit<Self, "id" | "createdAt" | "updatedAt">;

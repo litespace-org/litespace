@@ -64,54 +64,14 @@ export class Slots {
   }
 
   async findById(id: number): Promise<ISlot.Self | null> {
-    const { rows } = await query<ISlot.Row, [number]>(
-      `
-        SELECT
-            id,
-            tutor_id,
-            title,
-            weekday,
-            start_time,
-            end_time,
-            repeat,
-            start_date,
-            end_date,
-            created_at,
-            updated_at
-        FROM slots
-        WHERE
-            id = $1;
-     `,
-      [id]
-    );
-
+    const rows = await knex<ISlot.Row>("slots").select().where("id", id);
     const slot = first(rows);
     if (!slot) return null;
     return this.from(slot);
   }
 
-  async findByTutor(id: number): Promise<ISlot.Self[]> {
-    const { rows } = await query<ISlot.Row, [number]>(
-      `
-        SELECT
-            id,
-            tutor_id,
-            title,
-            weekday,
-            start_time,
-            end_time,
-            repeat,
-            start_date,
-            end_date,
-            created_at,
-            updated_at
-        FROM slots
-        WHERE
-            tutor_id = $1;
-     `,
-      [id]
-    );
-
+  async findByUserId(id: number): Promise<ISlot.Self[]> {
+    const rows = await knex<ISlot.Row>("slots").select().where("user_id", id);
     return rows.map((slot) => this.from(slot));
   }
 

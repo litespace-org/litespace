@@ -5,6 +5,7 @@ import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 
 export enum Resource {
+  UserTypes = "user-types",
   Users = "users",
   MySchedule = "my-schedule",
   ZoomAccounts = "zoom-accounts",
@@ -139,7 +140,7 @@ export const dataProvider: DataProvider = {
   getList: async ({ resource }: GetListParams) => {
     console.log({ resource });
 
-    if (resource === "user_types") {
+    if (resource === Resource.UserTypes) {
       const list = [
         { label: "Super Admin", value: "super_admin" },
         { label: "Examiner", value: "examiner" },
@@ -152,10 +153,12 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.MySchedule) {
-      const list = await atlas.slot.findMySlots();
+      const slots = await atlas.slot.findMySlots();
+      const calls = await atlas.call.findMyCalls();
+
       return {
-        data: as.casted(list),
-        total: list.length,
+        data: as.casted([{ slots, calls }]),
+        total: 0,
       };
     }
 

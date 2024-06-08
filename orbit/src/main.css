@@ -13,8 +13,8 @@
   --fc-button-active-bg-color: #0958d9;
   --fc-button-active-border-color: #0958d9;
 
-  --fc-event-bg-color: #4096ff;
-  --fc-event-border-color: #4096ff;
+  --fc-event-bg-color: transparent;
+  --fc-event-border-color: transparent;
   --fc-event-text-color: #fff;
   --fc-event-selected-overlay-color: rgba(0, 0, 0, 0.25);
 
@@ -36,4 +36,24 @@
 .fc .fc-button {
   padding: 5px 10px;
   border-radius: 6px;
+}
+
+.fc .fc-event-main {
+  border-radius: 6px;
+}
+
+.fc .fc-event::after {
+  box-shadow: unset;
+  content: none;
+}
+
+.fc .fc-event::before {
+  box-shadow: unset;
+  content: none;
+}
+
+.fc .fc-timegrid-event-harness-inset .fc-timegrid-event,
+.fc-timegrid-event.fc-event-mirror,
+.fc-timegrid-more-link {
+  box-shadow: unset;
 }

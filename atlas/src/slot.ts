@@ -2,10 +2,8 @@ import { Base } from "@/base";
 import { ISlot, UpdateSlotParams } from "@litespace/types";
 
 export class Slot extends Base {
-  async create(
-    params: Omit<ISlot.Self, "id" | "tutorId" | "createdAt" | "updatedAt">
-  ) {
-    await this.client.post("/api/v1/slot", JSON.stringify(params));
+  async create(payload: ISlot.CreateApiPayload) {
+    await this.client.post("/api/v1/slot", JSON.stringify(payload));
   }
 
   async findById(id: number): Promise<ISlot.Self> {

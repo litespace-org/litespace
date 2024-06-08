@@ -15,6 +15,9 @@ import {
   string,
   subscriptionPeriod,
   gender,
+  identifyObject,
+  callType,
+  callSize,
 } from "@/validation/utils";
 import { IUser } from "@litespace/types";
 
@@ -120,16 +123,17 @@ const zoom = {
   },
 };
 
-const lesson = {
+const call = {
   create: {
     body: zod.object({
       slotId: id,
       start: datetime,
-      duration: zod.coerce.number().positive(),
+      type: callType,
+      size: callSize,
     }),
   },
-  get: { query: zod.object({ id }) },
-  delete: { query: zod.object({ id }) },
+  get: { params: identifyObject },
+  delete: { params: identifyObject },
 };
 
 const ratings = {
@@ -205,7 +209,7 @@ export default {
   student,
   tutor,
   zoom,
-  lesson,
+  call,
   rating: ratings,
   subscription,
   chat,

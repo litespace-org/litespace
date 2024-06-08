@@ -1,5 +1,5 @@
 import { passwordRegex } from "@/constants";
-import { IUser, ISlot, ISubscription } from "@litespace/types";
+import { IUser, ISlot, ISubscription, ICall } from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -42,10 +42,16 @@ export const userType = zod.enum([
   IUser.Type.Student,
 ]);
 
+export const callType = zod.enum([ICall.Type.Interview, ICall.Type.Lesson]);
+
 export const url = zod.string().url().trim();
+
+export const callSize = zod.enum([ICall.Size.Short, ICall.Size.Long]);
 
 export const subscriptionPeriod = zod.enum([
   ISubscription.Period.Month,
   ISubscription.Period.Quarter,
   ISubscription.Period.Year,
 ]);
+
+export const identifyObject = zod.object({ id });

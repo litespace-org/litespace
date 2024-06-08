@@ -40,3 +40,8 @@ export type Discrete = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type CreateApiPayload = Omit<
+  Self,
+  "id" | "userId" | "createdAt" | "updatedAt"
+>;

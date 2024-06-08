@@ -1,4 +1,4 @@
-import { complex, calls, slots, tutors } from "@/models";
+import { calls, slots, tutors } from "@/models";
 import { ICall, IUser } from "@litespace/types";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
@@ -14,9 +14,11 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
+import { asZoomStartTime } from "@/integrations/zoom/utils";
+import zod from "zod";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
-  const { slotId, start, duration } = schema.http.lesson.create.body.parse(
+  const { slotId, start, size, type } = schema.http.call.create.body.parse(
     req.body
   );
   // validation
@@ -31,41 +33,37 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   const slot = await slots.findById(slotId);
   if (!slot) return next(slotNotFound);
 
-  const tutor = await complex.getTutorById(slot.userId);
-  if (!tutor) return next(tutorNotFound);
+  const host = await tutors.findById(slot.userId);
+  if (!host) return next(tutorNotFound);
 
-  const bookedLessons = await calls.findBySlotId(slotId);
-
+  const bookedCalls = await calls.findBySlotId(slotId);
+  const duration = zod.coerce.number().parse(size);
   const enough = hasEnoughTime({
     call: { start, duration },
-    calls: bookedLessons,
+    calls: bookedCalls,
     slot,
   });
-
   if (!enough) return next(tutorHasNoTime);
 
-  // const meetting = await createZoomMeeting({
-  //   tutorId,
-  //   tutorEmail: tutor.email,
-  //   start,
-  //   duration,
-  // });
+  const meetting = await createZoomMeeting({
+    participants: [{ email: host.email }, { email: req.user.email }],
+    start: asZoomStartTime(start),
+    duration,
+  });
 
-  const id = await calls.create({
-    type: ICall.Type.Lesson,
-    hostId: tutor.id,
+  const call = await calls.create({
+    type,
+    hostId: host.id,
     attendeeId: req.user.id,
     slotId,
     start,
     duration,
-    // meetingUrl: meetting.joinUrl,
-    // zoomMeetingId: meetting.id,
-    meetingUrl: "some url",
-    zoomMeetingId: Math.ceil(Math.random() * 1e10),
-    systemZoomAccountId: 0,
+    zoomMeetingId: meetting.id,
+    meetingUrl: meetting.joinUrl,
+    systemZoomAccountId: meetting.systemZoomAccountId,
   });
 
-  res.status(200).json({ id });
+  res.status(200).json(call);
 }
 
 async function delete_(
@@ -73,13 +71,12 @@ async function delete_(
   res: Response,
   next: NextFunction
 ) {
-  const { id } = schema.http.lesson.get.query.parse(req.query);
-
-  const lesson = await calls.findById(id);
-  if (!lesson) return next(lessonNotFound);
+  const { id } = schema.http.call.delete.params.parse(req.params);
+  const call = await calls.findById(id);
+  if (!call) return next(lessonNotFound);
 
   const userId = req.user.id;
-  const owner = userId === lesson.hostId || userId === lesson.attendeeId;
+  const owner = userId === call.hostId || userId === call.attendeeId;
   const eligible = owner || isAdmin(req.user.type);
   if (!eligible) return next(forbidden);
 
@@ -89,15 +86,16 @@ async function delete_(
   res.status(200).send();
 }
 
-async function getLessons(user: IUser.Self): Promise<ICall.Self[]> {
+async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
   const id = user.id;
   const type = user.type;
   const studnet = type === IUser.Type.Student;
   const tutor = type === IUser.Type.Tutor;
+  const examiner = type === IUser.Type.Examiner;
 
-  if (studnet) return await calls.findByStudentId(id);
-  if (tutor) return await calls.findByTutuorId(id);
-  return await calls.findAll();
+  if (studnet) return await calls.findByAttendeeId(id);
+  if (tutor || examiner) return await calls.findByHostId(id);
+  return await calls.findAll(); // admin
 }
 
 async function getMany(
@@ -105,15 +103,15 @@ async function getMany(
   res: Response,
   next: NextFunction
 ) {
-  const lessons = await getLessons(req.user);
-  res.status(200).json(lessons);
+  const calls = await getCalls(req.user);
+  res.status(200).json(calls);
 }
 
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
-  const { id } = schema.http.lesson.get.query.parse(req.query);
-  const lesson = await calls.findById(id);
-  if (!lesson) return next(lessonNotFound);
-  res.status(200).json(lesson);
+  const { id } = schema.http.call.get.params.parse(req.query);
+  const call = await calls.findById(id);
+  if (!call) return next(lessonNotFound);
+  res.status(200).json(call);
 }
 
 export default {

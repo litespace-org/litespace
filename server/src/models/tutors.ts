@@ -1,7 +1,6 @@
-import { knex, query, withTransaction } from "@/models/query";
+import { knex, query } from "@/models/query";
 import { DeepPartial } from "@/types/utils";
 import { first } from "lodash";
-import { users } from "@/models";
 import { IUser, ITutor } from "@litespace/types";
 
 export class Tutors {
@@ -9,6 +8,7 @@ export class Tutors {
     user: IUser.Credentials & { name: string }
   ): Promise<ITutor.FullTutor> {
     await knex.transaction((tx) => {
+      // add tutor to the users table first
       knex<IUser.Row>("users")
         .transacting(tx)
         .insert(
@@ -18,14 +18,15 @@ export class Tutors {
             name: user.name,
             type: IUser.Type.Tutor,
           },
-          "*"
+          "id"
         )
         .then(async (rows) => {
           const row = first(rows);
           if (!row) throw new Error("User not found; should never happen");
+          // then add it as tutor in the tutors table
           return await knex<ITutor.Row>("tutors")
             .transacting(tx)
-            .insert({ id: row.id }, "*");
+            .insert({ id: row.id });
         })
         .then(tx.commit)
         .catch(tx.rollback);
@@ -61,7 +62,17 @@ export class Tutors {
   }
 
   async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
-    const tutors = await knex
+    const tutors = await this.getSelectQuery().where("email", email).limit(1);
+    return first(tutors) || null;
+  }
+
+  async findById(id: number): Promise<ITutor.FullTutor | null> {
+    const tutors = await this.getSelectQuery().where("id", id).limit(1);
+    return first(tutors) || null;
+  }
+
+  getSelectQuery() {
+    return knex
       .select<ITutor.FullTutor[]>({
         id: "users.id",
         email: "users.email",
@@ -84,119 +95,10 @@ export class Tutors {
         publicFeedback: "tutors.public_feedback",
         interviewUrl: "tutors.interview_url",
       })
-      .from("users")
-      .innerJoin("tutors", "users.id", "tutors.id")
-      .where("email", email);
-
-    const tutor = first(tutors);
-    return tutor || null;
-  }
-
-  async findById(id: number): Promise<ITutor.Shareable | null> {
-    const { rows } = await query<ITutor.Row, [number]>(
-      `
-        SELECT
-            id,
-            bio,
-            about,
-            video,
-            authorized_zoom_app,
-            aquired_refresh_token_at,
-            created_at,
-            updated_at
-        FROM tutors
-        WHERE
-            id = $1;
-            
-     `,
-      [id]
-    );
-
-    const row = first(rows);
-    if (!row) return null;
-    return this.asSherable(row);
-  }
-
-  async findMany(ids: number[]): Promise<ITutor.Shareable[]> {
-    const { rows } = await query<ITutor.Row, [number[]]>(
-      `
-        SELECT
-            id,
-            bio
-            about
-            video
-            authorized_zoom_app,
-            aquired_refresh_token_at,
-            created_at,
-            updated_at
-        FROM tutors
-        WHERE
-            id in $1;
-     `,
-      [ids]
-    );
-
-    return rows.map((row) => this.asSherable(row));
-  }
-
-  async findTutorZoomRefreshToken(id: number): Promise<string | null> {
-    const { rows } = await query<{ token: string | null }, [id: number]>(
-      `SELECT zoom_refresh_token as token FROM tutors WHERE id = $1;`,
-      [id]
-    );
-
-    const row = first(rows);
-    if (!row) return null;
-    return row.token;
-  }
-
-  async setTutorZoomRefreshToken(
-    id: number,
-    token: string,
-    date: string
-  ): Promise<void> {
-    await query<{}, [token: string, date: string, id: number]>(
-      `
-      UPDATE tutors
-      SET
-          zoom_refresh_token = $1,
-          aquired_refresh_token_at = $2 
-      WHERE
-          id = $3;
-    `,
-      [token, date, id]
-    );
-  }
-
-  async markTutorWithAuthorizedZoomApp(
-    id: number,
-    token: string,
-    date: string
-  ) {
-    await query<{}, [token: string, date: string, id: number]>(
-      `
-      UPDATE tutors
-      SET
-          authorized_zoom_app = true,
-          zoom_refresh_token = $1,
-          aquired_refresh_token_at = $2 
-      WHERE
-          id = $3;
-    `,
-      [token, date, id]
-    );
-  }
-
-  // todo: fix this
-  // asSherable(row: ITutor.Row): ITutor.Shareable {
-  asSherable(row: ITutor.Row): any {
-    return {
-      id: row.id,
-      bio: row.bio,
-      about: row.about,
-      video: row.video,
-      createdAt: row.created_at.toISOString(),
-      updatedAt: row.updated_at.toISOString(),
-    };
+      .from<IUser.Row>("users")
+      .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")
+      .clone();
   }
 }
+
+export const tutors = new Tutors();

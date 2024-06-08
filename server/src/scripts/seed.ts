@@ -57,8 +57,8 @@ async function main(): Promise<void> {
   }
 
   const startDate = dayjs().format("YYYY-MM-DD");
-  const startTime = dayjs().format("HH:mm:00");
-  const endTime = dayjs().add(4, "hours").format("HH:mm:00");
+  const startTime = dayjs().utc().format("HH:mm:00");
+  const endTime = dayjs().utc().add(4, "hours").format("HH:mm:00");
   const slot = await slots.create({
     userId: examiner.id,
     date: { start: startDate },
@@ -87,7 +87,18 @@ async function main(): Promise<void> {
     zoomMeetingId: meeting.id,
   });
 
-  console.log({ call });
+  console.log(
+    JSON.stringify(
+      {
+        call,
+        meeting,
+        slot,
+        examiner,
+      },
+      null,
+      2
+    )
+  );
 }
 
 main()

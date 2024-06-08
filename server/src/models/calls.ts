@@ -29,121 +29,31 @@ export class Calls {
   }
 
   async findById(id: number): Promise<ICall.Self | null> {
-    const { rows } = await query<ICall.Row, [number]>(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "slot_id",
-            "zoom_meeting_id",
-            "start",
-            "duration",
-            "meeting_url",
-            "created_at",
-            "updated_at"
-        FROM "lessons"
-        WHERE
-                id = $1;
-      `,
-      [id]
-    );
-
-    const lesson = first(rows);
-    if (!lesson) return null;
-    return this.from(lesson);
+    const rows = await knex<ICall.Row>("calls").select().where("id", id);
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
   }
 
-  async findByTutuorId(tutorId: number): Promise<ICall.Self[]> {
-    const { rows } = await query<ICall.Row, [number]>(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "slot_id",
-            "zoom_meeting_id",
-            "start",
-            "duration",
-            "meeting_url",
-            "created_at",
-            "updated_at"
-        FROM "lessons"
-        WHERE
-                tutor_id = $1;
-      `,
-      [tutorId]
-    );
-
+  async findByHostId(id: number): Promise<ICall.Self[]> {
+    const rows = await knex<ICall.Row>("calls").select().where("host_id", id);
     return rows.map((row) => this.from(row));
   }
 
-  async findByStudentId(studentId: number): Promise<ICall.Self[]> {
-    const { rows } = await query<ICall.Row, [number]>(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "slot_id",
-            "zoom_meeting_id",
-            "start",
-            "duration",
-            "meeting_url",
-            "created_at",
-            "updated_at"
-        FROM "lessons"
-        WHERE
-                student_id = $1;
-      `,
-      [studentId]
-    );
-
+  async findByAttendeeId(id: number): Promise<ICall.Self[]> {
+    const rows = await knex<ICall.Row>("calls")
+      .select()
+      .where("attendee_id", id);
     return rows.map((row) => this.from(row));
   }
 
-  async findBySlotId(slotId: number): Promise<ICall.Self[]> {
-    const { rows } = await query<ICall.Row, [number]>(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "slot_id",
-            "zoom_meeting_id",
-            "start",
-            "duration",
-            "meeting_url",
-            "created_at",
-            "updated_at"
-        FROM "lessons"
-        WHERE
-                slot_id = $1;
-      `,
-      [slotId]
-    );
-
+  async findBySlotId(id: number): Promise<ICall.Self[]> {
+    const rows = await knex<ICall.Row>("calls").select().where("slot_id", id);
     return rows.map((row) => this.from(row));
   }
 
   async findAll(): Promise<ICall.Self[]> {
-    const { rows } = await query<ICall.Row, []>(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "slot_id",
-            "zoom_meeting_id",
-            "start",
-            "duration",
-            "meeting_url",
-            "created_at",
-            "updated_at"
-        FROM "lessons";
-      `
-    );
-
+    const rows = await knex<ICall.Row>("calls").select();
     return rows.map((row) => this.from(row));
   }
 

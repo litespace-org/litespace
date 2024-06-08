@@ -42,7 +42,7 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getMany(req: Request, res: Response, next: NextFunction) {
-  const list = await slots.findByTutor(req.user.id);
+  const list = await slots.findByUserId(req.user.id);
   res.status(200).json(list);
 }
 
@@ -60,8 +60,8 @@ async function getDiscreteTimeSlots(req: Request, res: Response) {
     req.query
   );
 
-  const slotsList = await slots.findByTutor(tutorId);
-  const lessonsList = await calls.findByTutuorId(tutorId);
+  const slotsList = await slots.findByUserId(tutorId);
+  const lessonsList = await calls.findByHostId(tutorId);
   const unpacked = unpackSlots(slotsList, lessonsList);
   res.status(200).json(unpacked);
 }
