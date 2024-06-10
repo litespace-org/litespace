@@ -4,19 +4,14 @@ import { Form, Input, Select } from "antd";
 export const TutorCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
 
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "user_types",
-    optionLabel: "label",
-    optionValue: "value",
-  });
-
   return (
-    <Create saveButtonProps={saveButtonProps}>
+    <Create saveButtonProps={saveButtonProps} title="Register a tutor">
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Name"}
-          name={["name"]}
+          label="Name"
+          name="name"
           rules={[
+            { required: true, message: "This field is required" },
             { min: 3 },
             { max: 50 },
             { pattern: /^[\u0600-\u06FF\s]+$/, message: "Invalid arabic name" },
@@ -28,6 +23,7 @@ export const TutorCreate = () => {
           label="Email"
           name="email"
           rules={[
+            { required: true, message: "This field is required" },
             {
               pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
               message: "Invalid email",
@@ -40,6 +36,7 @@ export const TutorCreate = () => {
           label="Password"
           name="password"
           rules={[
+            { required: true, message: "This field is required" },
             {
               pattern:
                 /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
@@ -48,13 +45,6 @@ export const TutorCreate = () => {
           ]}
         >
           <Input type="password" />
-        </Form.Item>
-        <Form.Item
-          label={"Type"}
-          name={["type"]}
-          rules={[{ required: true, message: "User type is required" }]}
-        >
-          <Select {...categorySelectProps} />
         </Form.Item>
       </Form>
     </Create>

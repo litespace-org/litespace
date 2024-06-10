@@ -122,10 +122,11 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
-    if (resource === "users") {
+    if (resource === Resource.Users) {
       await atlas.user.create(as.casted(variables));
       return as.casted(empty);
     }
+
     if (resource === Resource.MySchedule) {
       const {
         date: [startDate, endDate],

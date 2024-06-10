@@ -6,6 +6,7 @@ import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { generateAuthorizationToken } from "@/lib/auth";
+import { IUser } from "@litespace/types";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -30,7 +31,8 @@ async function getOne(req: Request.Default, res: Response, next: NextFunction) {
 
   const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.type);
-  const eligible = owner || admin;
+  const examiner = req.user.type === IUser.Type.Examiner;
+  const eligible = owner || admin || examiner;
   if (!eligible) return next(forbidden);
 
   res.status(200).json(tutor);
