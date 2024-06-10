@@ -57,6 +57,29 @@ export class Calls {
     return rows.map((row) => this.from(row));
   }
 
+  async findHostCalls(id: number): Promise<ICall.HostCall[]> {
+    const rows = await knex<ICall.Row>("calls")
+      .select<ICall.HostCall[]>({
+        id: "calls.id",
+        hostId: "calls.host_id",
+        attendeeId: "calls.attendee_id",
+        attendeeEmail: "users.email",
+        attendeeName: "users.name",
+        slotId: "calls.slot_id",
+        zoomMeetingId: "calls.zoom_meeting_id",
+        systemZoomAccountId: "calls.system_zoom_account_id",
+        start: "calls.start",
+        duration: "calls.duration",
+        meetingUrl: "calls.meeting_url",
+        createdAt: "calls.created_at",
+        updatedAt: "calls.updated_at",
+      })
+      .innerJoin("users", "users.id", "calls.attendee_id")
+      .where("calls.host_id", id);
+
+    return rows;
+  }
+
   from(row: ICall.Row): ICall.Self {
     return {
       id: row.id,

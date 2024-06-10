@@ -87,18 +87,8 @@ async function main(): Promise<void> {
     zoomMeetingId: meeting.id,
   });
 
-  console.log(
-    JSON.stringify(
-      {
-        call,
-        meeting,
-        slot,
-        examiner,
-      },
-      null,
-      2
-    )
-  );
+  const examinerCalls = await calls.findHostCalls(examiner.id);
+  console.log({ examinerCalls });
 }
 
 main()

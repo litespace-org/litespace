@@ -2667,6 +2667,48 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@litespace/orbit@workspace:orbit":
+  version: 0.0.0-use.local
+  resolution: "@litespace/orbit@workspace:orbit"
+  dependencies:
+    "@ant-design/icons": "npm:^5.0.1"
+    "@fullcalendar/core": "npm:^6.1.14"
+    "@fullcalendar/daygrid": "npm:^6.1.14"
+    "@fullcalendar/google-calendar": "npm:^6.1.14"
+    "@fullcalendar/react": "npm:^6.1.14"
+    "@fullcalendar/timegrid": "npm:^6.1.14"
+    "@litespace/atlas": "npm:1.0.0"
+    "@litespace/types": "npm:1.0.0"
+    "@refinedev/antd": "npm:^5.37.4"
+    "@refinedev/cli": "npm:^2.16.33"
+    "@refinedev/core": "npm:^4.51.0"
+    "@refinedev/devtools": "npm:^1.2.3"
+    "@refinedev/kbar": "npm:^1.3.6"
+    "@refinedev/react-router-v6": "npm:^4.5.5"
+    "@refinedev/simple-rest": "npm:^5.0.1"
+    "@types/node": "npm:^18.16.2"
+    "@types/react": "npm:^18.0.0"
+    "@types/react-dom": "npm:^18.0.0"
+    "@typescript-eslint/eslint-plugin": "npm:^5.57.1"
+    "@typescript-eslint/parser": "npm:^5.57.1"
+    "@uiw/react-md-editor": "npm:^3.19.5"
+    "@vitejs/plugin-react": "npm:^4.0.0"
+    antd: "npm:^5.0.5"
+    antd-style: "npm:^3.6.2"
+    axios: "npm:^1.7.2"
+    dayjs: "npm:^1.11.11"
+    eslint: "npm:^8.38.0"
+    eslint-plugin-react-hooks: "npm:^4.6.0"
+    eslint-plugin-react-refresh: "npm:^0.3.4"
+    react: "npm:^18.0.0"
+    react-dom: "npm:^18.0.0"
+    react-router-dom: "npm:^6.8.1"
+    typescript: "npm:^5.4.5"
+    vite: "npm:^4.3.1"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
 "@litespace/server@workspace:server":
   version: 0.0.0-use.local
   resolution: "@litespace/server@workspace:server"
@@ -3421,11 +3463,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/cli@npm:^2.16.21":
-  version: 2.16.31
-  resolution: "@refinedev/cli@npm:2.16.31"
+"@refinedev/cli@npm:^2.16.33":
+  version: 2.16.33
+  resolution: "@refinedev/cli@npm:2.16.33"
   dependencies:
-    "@refinedev/devtools-server": "npm:1.1.29"
+    "@refinedev/devtools-server": "npm:1.1.31"
     boxen: "npm:^5.1.2"
     cardinal: "npm:^2.1.1"
     center-align: "npm:1.0.1"
@@ -3455,7 +3497,7 @@ __metadata:
     node-fetch: "npm:^2.6.7"
     ora: "npm:^5.4.1"
     pluralize: "npm:^8.0.0"
-    preferred-pm: "npm:^3.0.3"
+    preferred-pm: "npm:^3.1.3"
     prettier: "npm:^2.7.1"
     semver: "npm:7.5.2"
     semver-diff: "npm:^3.1.1"
@@ -3463,11 +3505,11 @@ __metadata:
     tslib: "npm:^2.6.2"
   bin:
     refine: dist/cli.cjs
-  checksum: 10c0/4a14b5bffeccfd6999fb82970a6c102c84aca01b713ec6dab4da1c7cbf2107d54ca1473b30f654287f65764d7f0d645ec0057459d38fbe854e504ac6fdd48fb3
+  checksum: 10c0/baf2714c34bc072acf0633277a8a79c2261f1270f335a110fc44245535edde3a3b23ca652fb0a68425f50ecf8e13718cf04566ca99cd6945b84e4cf612998cb3
   languageName: node
   linkType: hard
 
-"@refinedev/core@npm:^4.47.1, @refinedev/core@npm:^4.49.2":
+"@refinedev/core@npm:^4.49.2":
   version: 4.49.2
   resolution: "@refinedev/core@npm:4.49.2"
   dependencies:
@@ -3490,6 +3532,45 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@refinedev/core@npm:^4.51.0":
+  version: 4.51.0
+  resolution: "@refinedev/core@npm:4.51.0"
+  dependencies:
+    "@refinedev/devtools-internal": "npm:1.1.11"
+    "@tanstack/react-query": "npm:^4.10.1"
+    lodash: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.21"
+    papaparse: "npm:^5.3.0"
+    pluralize: "npm:^8.0.0"
+    qs: "npm:^6.10.1"
+    tslib: "npm:^2.6.2"
+    warn-once: "npm:^0.1.0"
+  peerDependencies:
+    "@tanstack/react-query": ^4.10.1
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/15ea2d2bfda5d4da909d219bb5e914e95288935838f7d65f454a99199afa001ff3a9019718b618ca00d2ce31fef065c783def529cc77886825ea4f402192f588
+  languageName: node
+  linkType: hard
+
+"@refinedev/devtools-internal@npm:1.1.11":
+  version: 1.1.11
+  resolution: "@refinedev/devtools-internal@npm:1.1.11"
+  dependencies:
+    "@refinedev/devtools-shared": "npm:1.1.9"
+    "@tanstack/react-query": "npm:^4.10.1"
+    error-stack-parser: "npm:^2.1.4"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/30e7f5c4c9ea177d824b4f86f42571100228458debe9ece698213cdb198b7f2c50d3798b555aa4ff851f3c2b2bef224eeda6e26ecc224df2684734ba013d27bd
+  languageName: node
+  linkType: hard
+
 "@refinedev/devtools-internal@npm:1.1.9":
   version: 1.1.9
   resolution: "@refinedev/devtools-internal@npm:1.1.9"
@@ -3506,12 +3587,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/devtools-server@npm:1.1.29":
-  version: 1.1.29
-  resolution: "@refinedev/devtools-server@npm:1.1.29"
+"@refinedev/devtools-server@npm:1.1.31":
+  version: 1.1.31
+  resolution: "@refinedev/devtools-server@npm:1.1.31"
   dependencies:
     "@ory/client": "npm:^1.5.2"
-    "@refinedev/devtools-shared": "npm:1.1.7"
+    "@refinedev/devtools-shared": "npm:1.1.9"
     body-parser: "npm:^1.20.2"
     boxen: "npm:^5.1.2"
     chalk: "npm:^4.1.2"
@@ -3528,7 +3609,7 @@ __metadata:
     lodash-es: "npm:^4.17.21"
     marked: "npm:^4.3.0"
     node-fetch: "npm:^2.6.7"
-    preferred-pm: "npm:^3.0.3"
+    preferred-pm: "npm:^3.1.3"
     react: "npm:^18.0.0"
     react-dom: "npm:^18.0.0"
     sanitize-html: "npm:^2.11.0"
@@ -3540,7 +3621,7 @@ __metadata:
     react-dom: ^17.0.0 || ^18.0.0
   bin:
     refine-devtools: dist/cli.cjs
-  checksum: 10c0/f903d34cd1c64739ffefe515c071e47c052620f9283c2395ab1cd8197ed33bc9daaaa993d7df818389cb121494f814679caaf430ba230cba054c6faeb421629c
+  checksum: 10c0/7f34903abf7586fa0d023cfc1c1aac1c9e2ddd62c7292f486153bc6f884bbe14fe4057c84d1f1bd6780b2bef49b644cf618a73b3cea9aa175a167f2adcc67bd1
   languageName: node
   linkType: hard
 
@@ -3559,24 +3640,39 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/devtools@npm:^1.1.32":
-  version: 1.2.1
-  resolution: "@refinedev/devtools@npm:1.2.1"
+"@refinedev/devtools-shared@npm:1.1.9":
+  version: 1.1.9
+  resolution: "@refinedev/devtools-shared@npm:1.1.9"
   dependencies:
-    "@aliemir/dom-to-fiber-utils": "npm:^0.4.0"
-    "@refinedev/devtools-shared": "npm:1.1.7"
+    "@tanstack/react-query": "npm:^4.10.1"
     error-stack-parser: "npm:^2.1.4"
-    lodash: "npm:^4.17.21"
-    lodash-es: "npm:^4.17.21"
   peerDependencies:
-    "@refinedev/cli": 2.16.31
-    "@refinedev/core": ^4.46.1
-    "@refinedev/devtools-server": 1.1.29
     "@types/react": ^17.0.0 || ^18.0.0
     "@types/react-dom": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10c0/f7646b814ba21c4aa0028b44c2b36a5f804650b4ea77e44fb4a5e6489704f7a0721d0eef2b1c9e415e09d556f0176997c71255d5bbe61988f20840aa1ceca06a
+  checksum: 10c0/97ac6475ebb1e91c221c495abde081a98b33352b19e27214d5fac09195a65c49f4087aaf7df61dfcffe04e10a2461c7ca082ebaf3d8e1b6726943afb62c6aa90
+  languageName: node
+  linkType: hard
+
+"@refinedev/devtools@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "@refinedev/devtools@npm:1.2.3"
+  dependencies:
+    "@aliemir/dom-to-fiber-utils": "npm:^0.4.0"
+    "@refinedev/devtools-shared": "npm:1.1.9"
+    error-stack-parser: "npm:^2.1.4"
+    lodash: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.21"
+  peerDependencies:
+    "@refinedev/cli": 2.16.33
+    "@refinedev/core": ^4.46.1
+    "@refinedev/devtools-server": 1.1.31
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/dd2b2c365de05d213effd837b76a91815eba7c68a8ec061f567c7418edf87811b9e752c6249d2985e6f6987854546ad5493990624b9ead803543cc43a042fd70
   languageName: node
   linkType: hard
 
@@ -13161,48 +13257,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"orbit@workspace:orbit":
-  version: 0.0.0-use.local
-  resolution: "orbit@workspace:orbit"
-  dependencies:
-    "@ant-design/icons": "npm:^5.0.1"
-    "@fullcalendar/core": "npm:^6.1.14"
-    "@fullcalendar/daygrid": "npm:^6.1.14"
-    "@fullcalendar/google-calendar": "npm:^6.1.14"
-    "@fullcalendar/react": "npm:^6.1.14"
-    "@fullcalendar/timegrid": "npm:^6.1.14"
-    "@litespace/atlas": "npm:1.0.0"
-    "@litespace/types": "npm:1.0.0"
-    "@refinedev/antd": "npm:^5.37.4"
-    "@refinedev/cli": "npm:^2.16.21"
-    "@refinedev/core": "npm:^4.47.1"
-    "@refinedev/devtools": "npm:^1.1.32"
-    "@refinedev/kbar": "npm:^1.3.6"
-    "@refinedev/react-router-v6": "npm:^4.5.5"
-    "@refinedev/simple-rest": "npm:^5.0.1"
-    "@types/node": "npm:^18.16.2"
-    "@types/react": "npm:^18.0.0"
-    "@types/react-dom": "npm:^18.0.0"
-    "@typescript-eslint/eslint-plugin": "npm:^5.57.1"
-    "@typescript-eslint/parser": "npm:^5.57.1"
-    "@uiw/react-md-editor": "npm:^3.19.5"
-    "@vitejs/plugin-react": "npm:^4.0.0"
-    antd: "npm:^5.0.5"
-    antd-style: "npm:^3.6.2"
-    axios: "npm:^1.7.2"
-    dayjs: "npm:^1.11.11"
-    eslint: "npm:^8.38.0"
-    eslint-plugin-react-hooks: "npm:^4.6.0"
-    eslint-plugin-react-refresh: "npm:^0.3.4"
-    react: "npm:^18.0.0"
-    react-dom: "npm:^18.0.0"
-    react-router-dom: "npm:^6.8.1"
-    typescript: "npm:^5.4.5"
-    vite: "npm:^4.3.1"
-    zod: "npm:^3.23.8"
-  languageName: unknown
-  linkType: soft
-
 "os-tmpdir@npm:~1.0.2":
   version: 1.0.2
   resolution: "os-tmpdir@npm:1.0.2"
@@ -13917,7 +13971,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"preferred-pm@npm:^3.0.3":
+"preferred-pm@npm:^3.1.3":
   version: 3.1.3
   resolution: "preferred-pm@npm:3.1.3"
   dependencies:

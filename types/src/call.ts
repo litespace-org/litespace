@@ -33,6 +33,12 @@ export type Self = {
   updatedAt: string;
 };
 
+export type HostCall = Self & {
+  attendeeId: number;
+  attendeeEmail: string;
+  attendeeName: string;
+};
+
 export enum Size {
   Short = "15",
   Long = "30",

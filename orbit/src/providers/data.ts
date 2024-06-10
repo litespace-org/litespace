@@ -10,6 +10,7 @@ export enum Resource {
   Tutors = "tutors",
   MySchedule = "my-schedule",
   ZoomAccounts = "zoom-accounts",
+  MyInterviews = "my-interviews",
 }
 
 const empty = { data: null };
@@ -192,8 +193,8 @@ export const dataProvider: DataProvider = {
 
     throw new Error("Not implemented");
   },
-  getList: async ({ resource }: GetListParams) => {
-    console.log({ resource });
+  getList: async ({ resource, meta }: GetListParams) => {
+    console.log({ resource, meta });
 
     if (resource === Resource.UserTypes) {
       const list = [
@@ -229,6 +230,16 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Tutors) {
       const list = await atlas.tutor.findAll();
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.MyInterviews) {
+      const id = meta?.id;
+      if (!id) return { data: as.casted([]), total: 0 };
+
+      const hostId = as.int(id);
+      const list = await atlas.call.findHostCalls(hostId);
+      console.log({ list });
       return { data: as.casted(list), total: list.length };
     }
 

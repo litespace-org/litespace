@@ -21,6 +21,7 @@ import routerBindings, {
   UnsavedChangesNotifier,
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
+import { MyInterviewList, MyInterviewShow } from "./pages/my-interviews";
 import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
 import { TutorCreate, TutorEdit, TutorList, TutorShow } from "./pages/tutors";
 import {
@@ -89,6 +90,14 @@ function App() {
                     edit: "/my-schedule/edit/:id",
                     show: "/my-schedule/show/:id",
                     meta: { canDelete: true, label: "My Schedule" },
+                  },
+                  {
+                    name: Resource.MyInterviews,
+                    list: "/my-interviews",
+                    // create: "/my-schedule/create",
+                    // edit: "/my-schedule/edit/:id",
+                    show: "/my-interviews/show/:id",
+                    meta: { canDelete: true, label: "My Interviews" },
                   },
                   {
                     name: Resource.ZoomAccounts,
@@ -166,6 +175,10 @@ function App() {
                       <Route index element={<MyScheduleList />} />
                       <Route path="create" element={<MyScheduleCreate />} />
                       <Route path="edit/:id" element={<MyScheduleEdit />} />
+                      <Route path="show/:id" element={<MyScheduleShow />} />
+                    </Route>
+                    <Route path="/my-interviews">
+                      <Route index element={<MyInterviewList />} />
                       <Route path="show/:id" element={<MyScheduleShow />} />
                     </Route>
                     <Route path="/zoom-accounts">

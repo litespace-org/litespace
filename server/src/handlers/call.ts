@@ -10,14 +10,13 @@ import {
   tutorNotFound,
 } from "@/lib/error";
 import { hasEnoughTime } from "@/lib/lessons";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { asZoomStartTime } from "@/integrations/zoom/utils";
 import zod from "zod";
 
-async function create(req: Request.Default, res: Response, next: NextFunction) {
+async function create(req: Request, res: Response, next: NextFunction) {
   const { slotId, start, size, type } = schema.http.call.create.body.parse(
     req.body
   );
@@ -66,11 +65,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).json(call);
 }
 
-async function delete_(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function delete_(req: Request, res: Response, next: NextFunction) {
   const { id } = schema.http.call.delete.params.parse(req.params);
   const call = await calls.findById(id);
   if (!call) return next(lessonNotFound);
@@ -98,20 +93,22 @@ async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
   return await calls.findAll(); // admin
 }
 
-async function getMany(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function getMany(req: Request, res: Response, next: NextFunction) {
   const calls = await getCalls(req.user);
   res.status(200).json(calls);
 }
 
-async function getOne(req: Request.Default, res: Response, next: NextFunction) {
-  const { id } = schema.http.call.get.params.parse(req.query);
+async function getOne(req: Request, res: Response, next: NextFunction) {
+  const { id } = schema.http.call.get.params.parse(req.params);
   const call = await calls.findById(id);
   if (!call) return next(lessonNotFound);
   res.status(200).json(call);
+}
+
+async function findHostCalls(req: Request, res: Response) {
+  const { id } = schema.http.call.get.params.parse(req.params);
+  const hostCalls = await calls.findHostCalls(id);
+  res.status(200).json(hostCalls);
 }
 
 export default {
@@ -119,4 +116,5 @@ export default {
   delete: asyncHandler(delete_),
   get: asyncHandler(getOne),
   list: asyncHandler(getMany),
+  findHostCalls: asyncHandler(findHostCalls),
 };
