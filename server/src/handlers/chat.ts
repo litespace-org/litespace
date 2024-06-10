@@ -11,7 +11,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   const studentId = req.user.id;
 
   const exists = await rooms.findByMembers({ studentId, tutorId });
-  if (exists) return next(roomExists);
+  if (exists) return next(roomExists());
 
   const id = await rooms.create({ tutorId, studentId });
   res.status(201).json({ id });
@@ -26,7 +26,7 @@ async function findByUserId(
   const userType = req.user.type;
 
   if (![IUser.Type.Student, IUser.Type.Tutor].includes(userType))
-    return next(forbidden);
+    return next(forbidden());
 
   const list = await rooms.findMemberRooms({
     userId: userId,

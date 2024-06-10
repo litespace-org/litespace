@@ -20,7 +20,13 @@ export class Call extends Base {
 
   async findHostCalls(id: number): Promise<ICall.HostCall[]> {
     return await this.client
-      .get<ICall.HostCall[]>(`/api/v1/call/host/${id}`)
+      .get<ICall.HostCall[]>(`/api/v1/call/host/${id}/list`)
+      .then((response) => response.data);
+  }
+
+  async findHostCallById(id: number): Promise<ICall.HostCall> {
+    return await this.client
+      .get<ICall.HostCall>(`/api/v1/call/host/${id}`)
       .then((response) => response.data);
   }
 

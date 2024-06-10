@@ -1,6 +1,6 @@
 import { knex, query } from "@/models/query";
 import { first } from "lodash";
-import { ICall } from "@litespace/types";
+import { ICall, IUser } from "@litespace/types";
 
 export class Calls {
   async create(call: ICall.CreatePayload): Promise<ICall.Self> {
@@ -58,7 +58,16 @@ export class Calls {
   }
 
   async findHostCalls(id: number): Promise<ICall.HostCall[]> {
-    const rows = await knex<ICall.Row>("calls")
+    return await this.getSelectHostCallQuery().where("calls.host_id", id);
+  }
+
+  async findHostCallById(id: number): Promise<ICall.HostCall | null> {
+    const rows = await this.getSelectHostCallQuery().where("calls.id", id);
+    return first(rows) || null;
+  }
+
+  getSelectHostCallQuery() {
+    return knex
       .select<ICall.HostCall[]>({
         id: "calls.id",
         hostId: "calls.host_id",
@@ -74,10 +83,9 @@ export class Calls {
         createdAt: "calls.created_at",
         updatedAt: "calls.updated_at",
       })
-      .innerJoin("users", "users.id", "calls.attendee_id")
-      .where("calls.host_id", id);
-
-    return rows;
+      .from<ICall.Row>("calls")
+      .innerJoin<IUser.Row>("users", "users.id", "calls.attendee_id")
+      .clone();
   }
 
   from(row: ICall.Row): ICall.Self {

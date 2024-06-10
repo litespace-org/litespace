@@ -11,7 +11,6 @@ import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { generateAuthorizationToken } from "@/lib/auth";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
@@ -19,7 +18,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   );
 
   const exists = await users.findByEmail(email);
-  if (exists) return next(userExists);
+  if (exists) return next(userExists());
 
   await users.create({
     password: hashPassword(password),
@@ -35,7 +34,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const { id, email, name, password, gender, birthday, type, avatar } =
     schema.http.user.update.body.parse(req.body);
 
-  if (type && req.user.type) return next(userAlreadyTyped);
+  if (type && req.user.type) return next(userAlreadyTyped());
 
   await users.update(id, {
     email,
@@ -59,12 +58,13 @@ async function delete_(req: Request, res: Response) {
 async function findById(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.user.findById.params.parse(req.params).id;
   const user = await users.findById(id);
-  if (!user) return next(userNotFound);
+  if (!user) return next(userNotFound());
 
   const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.type);
-  const eligible = owner || admin;
-  if (!eligible) return next(forbidden);
+  const examiner = req.user.type === IUser.Type.Examiner;
+  const eligible = owner || admin || examiner;
+  if (!eligible) return next(forbidden());
   res.status(200).json(user);
 }
 

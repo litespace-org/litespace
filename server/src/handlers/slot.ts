@@ -22,8 +22,8 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const slotId = schema.http.slot.update.params.parse(req.params).id;
   const slot = await slots.findById(slotId);
 
-  if (!slot) return next(slotNotFound);
-  if (slot.userId !== req.user.id) return next(forbidden);
+  if (!slot) return next(slotNotFound());
+  if (slot.userId !== req.user.id) return next(forbidden());
 
   await slots.update(slotId, fields);
   res.status(200).send();
@@ -32,12 +32,12 @@ async function update(req: Request, res: Response, next: NextFunction) {
 async function getOne(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.get.params.parse(req.params).id;
   const slot = await slots.findById(id);
-  if (!slot) return next(slotNotFound);
+  if (!slot) return next(slotNotFound());
 
   const owner = req.user.id === slot.userId;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(forbidden);
+  if (!eligible) return next(forbidden());
   res.status(200).json(slot);
 }
 
@@ -49,8 +49,8 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
 async function delete_(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.delete.params.parse(req.params).id;
   const slot = await slots.findById(id);
-  if (!slot) return next(slotNotFound);
-  if (slot.userId !== req.user.id) return next(forbidden);
+  if (!slot) return next(slotNotFound());
+  if (slot.userId !== req.user.id) return next(forbidden());
   await slots.delete(slot.id);
   res.status(200).send();
 }

@@ -179,7 +179,7 @@ function App() {
                     </Route>
                     <Route path="/my-interviews">
                       <Route index element={<MyInterviewList />} />
-                      <Route path="show/:id" element={<MyScheduleShow />} />
+                      <Route path="show/:id" element={<MyInterviewShow />} />
                     </Route>
                     <Route path="/zoom-accounts">
                       <Route index element={<ZoomAccountList />} />

@@ -8,9 +8,11 @@ import {
   useTable,
   TagField,
   UrlField,
+  TextField,
 } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
 import { Space, Table } from "antd";
+import dayjs from "dayjs";
 import React from "react";
 
 export const MyInterviewList: React.FC = () => {
@@ -30,12 +32,25 @@ export const MyInterviewList: React.FC = () => {
         <Table.Column
           dataIndex="meetingUrl"
           title="Interview URL"
-          render={(value: string) => <UrlField value={value} />}
+          render={(value: string) => (
+            <UrlField value="Zoom URL" href={value} target="_blank" />
+          )}
         />
+
         <Table.Column
           dataIndex="start"
-          title="Start Time"
-          render={(value: string) => <DateField value={value} format="LLL" />}
+          title="Interview Time"
+          render={(value: string) => (
+            <TextField value={dayjs(value).fromNow()} />
+          )}
+        />
+
+        <Table.Column
+          dataIndex="createdAt"
+          title="Created At"
+          render={(value: string) => (
+            <TextField value={dayjs(value).fromNow()} />
+          )}
         />
         <Table.Column
           title={"Actions"}

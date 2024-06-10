@@ -1,7 +1,7 @@
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import { cloneDeep, isEmpty } from "lodash";
-import { ISlot, ILesson } from "@litespace/types";
+import { ISlot, ICall } from "@litespace/types";
 import { Dayjs } from "dayjs";
 
 type Time = {
@@ -87,7 +87,7 @@ export function asDiscrateSlot(slot: ISlot.Self, date: Dayjs): ISlot.Discrete {
 
   return {
     id: slot.id,
-    tutorId: slot.tutorId,
+    userId: slot.userId,
     title: slot.title,
     start: exactStartTime.toISOString(),
     end: exactEndTime.toISOString(),
@@ -108,32 +108,30 @@ function asMaskedDiscrateSlot(
   };
 }
 
-function sortSlotLessons(lessons: ILesson.Self[]): ILesson.Self[] {
-  return cloneDeep(lessons).sort(
-    (current: ILesson.Self, next: ILesson.Self) => {
-      if (dayjs(current.start).isSame(next.start))
-        throw new Error(
-          "Two lessons with the same tutor at the same time, should never happen"
-        );
+function sortSlotCalls(calls: ICall.Self[]): ICall.Self[] {
+  return cloneDeep(calls).sort((current: ICall.Self, next: ICall.Self) => {
+    if (dayjs(current.start).isSame(next.start))
+      throw new Error(
+        "Two calls with the same host at the same time, should never happen"
+      );
 
-      if (dayjs(current.start).isAfter(next.start)) return 1;
-      return -1;
-    }
-  );
+    if (dayjs(current.start).isAfter(next.start)) return 1;
+    return -1;
+  });
 }
 
-export function maskLessons(slot: ISlot.Discrete, lessons: ILesson.Self[]) {
-  const sorted = sortSlotLessons(lessons);
+export function maskCalls(slot: ISlot.Discrete, calls: ICall.Self[]) {
+  const sorted = sortSlotCalls(calls);
   let masked: ISlot.Discrete[] = [];
   let prevSlot = slot;
 
-  for (const lesson of sorted) {
-    //  [ first slot  [ lesson ]  second slot    ]
+  for (const call of sorted) {
+    //  [ first slot  [ call ]  second slot    ]
     // 4pm           6pm      7pm               10pm
     const firstSlotStart = dayjs(prevSlot.start);
-    const firstSlotEnd = dayjs(lesson.start);
+    const firstSlotEnd = dayjs(call.start);
 
-    const secondSlotStart = dayjs(lesson.start).add(lesson.duration, "minutes");
+    const secondSlotStart = dayjs(call.start).add(call.duration, "minutes");
     const secondSlotEnd = dayjs(prevSlot.end);
 
     const firstSlot = asMaskedDiscrateSlot(
@@ -180,7 +178,7 @@ export function asDayStart(date: Dayjs): Dayjs {
 
 export function unpackSlots(
   slots: ISlot.Self[],
-  lessons: ILesson.Self[],
+  calls: ICall.Self[],
   window = 14
 ): Array<{ day: string; slots: ISlot.Discrete[] }> {
   const today = setDayTime(dayjs().utc());
@@ -192,9 +190,9 @@ export function unpackSlots(
     const available: ISlot.Discrete[] = [];
 
     for (const slot of selected) {
-      const slotLessons = lessons.filter((lesson) => lesson.slotId === slot.id);
+      const slotCalls = calls.filter((call) => call.slotId === slot.id);
       const discreteSlot = asDiscrateSlot(slot, day);
-      available.push(...maskLessons(discreteSlot, slotLessons));
+      available.push(...maskCalls(discreteSlot, slotCalls));
     }
 
     availableSlots.push({

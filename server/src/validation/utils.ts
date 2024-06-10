@@ -54,4 +54,4 @@ export const subscriptionPeriod = zod.enum([
   ISubscription.Period.Year,
 ]);
 
-export const identifyObject = zod.object({ id });
+export const identityObject = zod.object({ id });

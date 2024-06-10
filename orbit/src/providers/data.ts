@@ -17,24 +17,30 @@ const empty = { data: null };
 
 export const dataProvider: DataProvider = {
   async getOne({ resource, id }) {
+    const resourceId = as.int(id);
     if (resource === Resource.Users) {
-      const user = await atlas.user.findById(id);
+      const user = await atlas.user.findById(resourceId);
       return { data: as.casted(user) };
     }
 
     if (resource === Resource.Tutors) {
-      const tutor = await atlas.tutor.findById(as.int(id));
+      const tutor = await atlas.tutor.findById(resourceId);
       return { data: as.casted(tutor) };
     }
 
     if (resource === Resource.MySchedule) {
-      const slot = await atlas.slot.findById(as.int(id));
+      const slot = await atlas.slot.findById(resourceId);
       return { data: as.casted(slot) };
     }
 
     if (resource === Resource.ZoomAccounts) {
-      const account = await atlas.zoom.findAccountById(as.int(id));
+      const account = await atlas.zoom.findAccountById(resourceId);
       return { data: as.casted(account) };
+    }
+
+    if (resource === Resource.MyInterviews) {
+      const call = await atlas.call.findHostCallById(resourceId);
+      return { data: as.casted(call) };
     }
 
     throw new Error("Not implemented");

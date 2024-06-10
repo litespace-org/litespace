@@ -15,7 +15,7 @@ import {
   string,
   subscriptionPeriod,
   gender,
-  identifyObject,
+  identityObject,
   callType,
   callSize,
 } from "@/validation/utils";
@@ -118,10 +118,10 @@ const tutor = {
       publicFeedback: zod.optional(string),
       interviewUrl: zod.optional(url),
     }),
-    params: identifyObject,
+    params: identityObject,
   },
-  get: { params: identifyObject },
-  delete: { params: identifyObject },
+  get: { params: identityObject },
+  delete: { params: identityObject },
 } as const;
 
 const zoom = {
@@ -139,8 +139,8 @@ const call = {
       size: callSize,
     }),
   },
-  get: { params: identifyObject },
-  delete: { params: identifyObject },
+  get: { params: identityObject },
+  delete: { params: identityObject },
 };
 
 const ratings = {

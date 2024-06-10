@@ -1,129 +1,85 @@
-import { IUser } from "@litespace/types";
+import { ICall, IUser } from "@litespace/types";
 import {
-  BooleanField,
   DateField,
-  ImageField,
   Show,
+  ShowButton,
   TagField,
   TextField,
+  UrlField,
 } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
-import { Typography, Flex } from "antd";
+import { Typography, Flex, Button } from "antd";
+import dayjs from "@/lib/dayjs";
+import { Resource } from "@/providers/data";
 
 const { Title } = Typography;
 
 export const MyInterviewShow = () => {
   const {
     queryResult: { data, isLoading },
-  } = useShow<IUser.Self>({});
+  } = useShow<ICall.HostCall>({});
+
+  console.log({ data, src: "klk" });
 
   return (
     <Show isLoading={isLoading}>
       <Flex vertical gap="20px">
         {data ? (
           <>
-            {data.data.avatar ? (
-              <Flex align="center" gap="10px">
-                <ImageField
-                  style={{ borderRadius: "100%" }}
-                  value={data.data.avatar}
-                  width={200}
-                  height={200}
-                />
-              </Flex>
-            ) : null}
-
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                ID :
+                Call ID :
               </Title>
               <TextField value={data.data.id} />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Email :
+                Tutor Email :
               </Title>
-              <TextField value={data.data.email} />
+              <TextField value={data.data.attendeeEmail} />
+
+              <ShowButton
+                size="small"
+                resource={Resource.Tutors}
+                recordItemId={data.data.attendeeId}
+              />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Has Password :
+                Interview :
               </Title>
-              <BooleanField value={data.data.hasPassword} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Online :
-              </Title>
-              <BooleanField value={data.data.online} />
+              <TextField value={dayjs(data.data.start).fromNow()} />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
                 Name :
               </Title>
-              <TextField value={data.data.name} />
+              <TextField value={data.data.attendeeName} />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Gender :
+                Created:
               </Title>
-
-              <TagField value={data.data.gender || "unspecified"} />
+              <TextField value={dayjs(data.data.createdAt).fromNow()} />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Birthday :
+                Updated:
               </Title>
-
-              {data.data.birthday ? (
-                <DateField value={data.data.birthday} format="LL" />
-              ) : (
-                <TextField value="-" />
-              )}
+              <TextField value={dayjs(data.data.updatedAt).fromNow()} />
             </Flex>
 
             <Flex align="center" gap="10px">
               <Title level={5} style={{ margin: 0 }}>
-                Created At :
+                Interview URL :
               </Title>
-              <DateField value={data.data.createdAt} format="LLL" />
+              <UrlField value="Zoom URL" href={data.data.meetingUrl} />
             </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Updated At :
-              </Title>
-              <DateField value={data.data.updatedAt} format="LLL" />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Type :
-              </Title>
-              <TagField value={data.data.type} />
-            </Flex>
-
-            {/* <MarkdownField value={record?.content} />
-          <Title level={5}>{"Category"}</Title>
-          <TextField
-            value={
-              categoryIsLoading ? (
-                <>Loading...</>
-              ) : (
-                <>{categoryData?.data?.title}</>
-              )
-            }
-          />
-          <Title level={5}>{"Status"}</Title>
-          <TextField value={record?.status} />
-          <Title level={5}>{"CreatedAt"}</Title>
-          <DateField value={record?.createdAt} /> */}
           </>
         ) : null}
       </Flex>

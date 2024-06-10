@@ -19,17 +19,17 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
     req.body
   );
 
-  if (req.user.type !== IUser.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden());
 
   const tutor = await tutors.findById(tutorId);
-  if (!tutor) return next(tutorNotFound);
+  if (!tutor) return next(tutorNotFound());
 
   const rating = await ratings.findByEntities({
     tutorId,
     studentId,
   });
 
-  if (rating) return next(alreadyRated);
+  if (rating) return next(alreadyRated());
 
   const now = dayjs().utc().toISOString();
   const id = await ratings.create({
@@ -48,8 +48,8 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   const data = schema.http.rating.update.body.parse(req.body);
 
   const rating = await ratings.findById(data.id);
-  if (!rating) return next(ratingNotFound);
-  if (rating.studentId !== req.user.id) return next(forbidden);
+  if (!rating) return next(ratingNotFound());
+  if (rating.studentId !== req.user.id) return next(forbidden());
 
   await ratings.update(data);
   res.status(200).send();
@@ -63,12 +63,12 @@ async function delete_(
   const { id } = schema.http.rating.delete.query.parse(req.query);
 
   const rating = await ratings.findById(id);
-  if (!rating) return next(ratingNotFound);
+  if (!rating) return next(ratingNotFound());
 
   const owner = rating.studentId === req.user.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(forbidden);
+  if (!eligible) return next(forbidden());
 
   await ratings.delete(id);
   res.status(200).send();

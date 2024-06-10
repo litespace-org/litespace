@@ -3,8 +3,8 @@ import { ICall, IUser } from "@litespace/types";
 import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import {
+  callNotFound,
   forbidden,
-  lessonNotFound,
   slotNotFound,
   tutorHasNoTime,
   tutorNotFound,
@@ -27,13 +27,13 @@ async function create(req: Request, res: Response, next: NextFunction) {
   // - update user remaining minutes
   // - no lessons at this time.
 
-  if (req.user.type !== IUser.Type.Student) return next(forbidden);
+  if (req.user.type !== IUser.Type.Student) return next(forbidden());
 
   const slot = await slots.findById(slotId);
-  if (!slot) return next(slotNotFound);
+  if (!slot) return next(slotNotFound());
 
   const host = await tutors.findById(slot.userId);
-  if (!host) return next(tutorNotFound);
+  if (!host) return next(tutorNotFound());
 
   const bookedCalls = await calls.findBySlotId(slotId);
   const duration = zod.coerce.number().parse(size);
@@ -42,7 +42,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
     calls: bookedCalls,
     slot,
   });
-  if (!enough) return next(tutorHasNoTime);
+  if (!enough) return next(tutorHasNoTime());
 
   const meetting = await createZoomMeeting({
     participants: [{ email: host.email }, { email: req.user.email }],
@@ -68,12 +68,12 @@ async function create(req: Request, res: Response, next: NextFunction) {
 async function delete_(req: Request, res: Response, next: NextFunction) {
   const { id } = schema.http.call.delete.params.parse(req.params);
   const call = await calls.findById(id);
-  if (!call) return next(lessonNotFound);
+  if (!call) return next(callNotFound());
 
   const userId = req.user.id;
   const owner = userId === call.hostId || userId === call.attendeeId;
   const eligible = owner || isAdmin(req.user.type);
-  if (!eligible) return next(forbidden);
+  if (!eligible) return next(forbidden());
 
   // todo: delete zoom meeting
 
@@ -101,7 +101,7 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
 async function getOne(req: Request, res: Response, next: NextFunction) {
   const { id } = schema.http.call.get.params.parse(req.params);
   const call = await calls.findById(id);
-  if (!call) return next(lessonNotFound);
+  if (!call) return next(callNotFound());
   res.status(200).json(call);
 }
 
@@ -111,10 +111,22 @@ async function findHostCalls(req: Request, res: Response) {
   res.status(200).json(hostCalls);
 }
 
+async function findHostCallById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = schema.http.call.get.params.parse(req.params);
+  const hostCall = await calls.findHostCallById(id);
+  if (!hostCall) return next(callNotFound());
+  res.status(200).json(hostCall);
+}
+
 export default {
   create: asyncHandler(create),
   delete: asyncHandler(delete_),
   get: asyncHandler(getOne),
   list: asyncHandler(getMany),
   findHostCalls: asyncHandler(findHostCalls),
+  findHostCallById: asyncHandler(findHostCallById),
 };
