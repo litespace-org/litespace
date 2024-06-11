@@ -1,6 +1,5 @@
-import { knex, query } from "@/models/query";
-import { DeepPartial } from "@/types/utils";
-import { first } from "lodash";
+import { knex } from "@/models/query";
+import { first, isEmpty, values } from "lodash";
 import { IUser, ITutor } from "@litespace/types";
 
 export class Tutors {
@@ -38,20 +37,38 @@ export class Tutors {
   }
 
   async update(id: number, tutor: ITutor.UpdatePayload): Promise<void> {
-    await knex<ITutor.Row>("tutors")
-      .update({
-        bio: tutor.bio,
-        about: tutor.about,
-        video: tutor.video,
-        activated: tutor.activated,
-        activated_by: tutor.activatedBy,
-        passed_interview: tutor.passedInterview,
-        private_feedback: tutor.privateFeedback,
-        public_feedback: tutor.publicFeedback,
-        interview_url: tutor.interviewUrl,
+    const updateUserPayload: Partial<IUser.Row> = {
+      email: tutor.email,
+      name: tutor.name,
+      password: tutor.password,
+      avatar: tutor.avatar,
+    } as const;
+
+    const emptyUserPayload = values(updateUserPayload).every(isEmpty);
+    if (!emptyUserPayload)
+      await knex<IUser.Row>("users").update({
+        ...updateUserPayload,
         updated_at: new Date(),
-      })
-      .where("id", id);
+      });
+
+    const updateTutorPayload: Partial<ITutor.Row> = {
+      bio: tutor.bio,
+      about: tutor.about,
+      video: tutor.video,
+      activated: tutor.activated,
+      activated_by: tutor.activatedBy,
+      passed_interview: tutor.passedInterview,
+      interview_url: tutor.interviewUrl,
+    } as const;
+
+    const emptyTutorPayload = values(updateTutorPayload).every(isEmpty);
+    if (!emptyTutorPayload)
+      await knex<ITutor.Row>("tutors")
+        .update({
+          ...updateTutorPayload,
+          updated_at: new Date(),
+        })
+        .where("id", id);
   }
 
   async delete(id: number): Promise<void> {

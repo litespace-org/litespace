@@ -14,6 +14,8 @@ export type Row = {
   start: Date;
   duration: number;
   meeting_url: string;
+  note: string | null;
+  feedback: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -29,6 +31,8 @@ export type Self = {
   start: string;
   duration: number;
   meetingUrl: string;
+  note: string | null;
+  feedback: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -51,4 +55,7 @@ export type CreateApiPayload = {
   size: Size;
 };
 
-export type CreatePayload = Omit<Self, "id" | "createdAt" | "updatedAt">;
+export type CreatePayload = Omit<
+  Self,
+  "id" | "createdAt" | "updatedAt" | "note" | "feedback"
+>;

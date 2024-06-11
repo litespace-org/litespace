@@ -114,8 +114,6 @@ const tutor = {
       activated: zod.optional(zod.boolean()),
       activatedBy: zod.optional(id),
       passedInterview: zod.optional(zod.boolean()),
-      privateFeedback: zod.optional(string),
-      publicFeedback: zod.optional(string),
       interviewUrl: zod.optional(url),
     }),
     params: identityObject,

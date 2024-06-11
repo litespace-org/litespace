@@ -80,6 +80,8 @@ export class Calls {
         start: "calls.start",
         duration: "calls.duration",
         meetingUrl: "calls.meeting_url",
+        note: "calls.note",
+        feedback: "calls.feedback",
         createdAt: "calls.created_at",
         updatedAt: "calls.updated_at",
       })
@@ -100,6 +102,8 @@ export class Calls {
       start: row.start.toISOString(),
       duration: row.duration,
       meetingUrl: row.meeting_url,
+      note: row.note,
+      feedback: row.feedback,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

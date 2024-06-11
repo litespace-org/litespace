@@ -2,7 +2,8 @@ import { Backend } from "@litespace/types";
 import axios, { AxiosInstance } from "axios";
 
 export const backendUrls: Record<Backend, string> = {
-  [Backend.Local]: "http://localhost:8080",
+  // [Backend.Local]: "http://localhost:8080",
+  [Backend.Local]: "http://192.168.1.209:8080",
   [Backend.Staging]: "https://moon.litespace.com",
   [Backend.Production]: "https://mars.litespace.com",
 };

@@ -55,8 +55,6 @@ exports.up = (pgm) => {
     activated: { type: "BOOLEAN", notNull: true, default: false },
     activated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     passed_interview: { type: "BOOLEAN" },
-    private_feedback: { type: "TEXT" },
-    public_feedback: { type: "TEXT" },
     interview_url: { type: "VARCHAR(255)" },
     created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
@@ -87,6 +85,8 @@ exports.up = (pgm) => {
     start: { type: "TIMESTAMPTZ", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
     meeting_url: { type: "VARCHAR(255)", notNull: true },
+    note: { type: "TEXT" },
+    feedback: { type: "TEXT" },
     created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
   });

@@ -26,7 +26,6 @@ async function create(req: Request, res: Response, next: NextFunction) {
   // - validate user subscription
   // - update user remaining minutes
   // - no lessons at this time.
-
   if (req.user.type !== IUser.Type.Student) return next(forbidden());
 
   const slot = await slots.findById(slotId);

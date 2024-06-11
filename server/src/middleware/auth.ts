@@ -52,8 +52,9 @@ function authHandler(roles?: IUser.Type[]) {
       id: number;
     };
     const user = await users.findById(id);
-    if (!user) return next(userNotFound);
-    if (!isEmpty(roles) && !roles?.includes(user.type)) return next(forbidden);
+    if (!user) return next(userNotFound());
+    if (!isEmpty(roles) && !roles?.includes(user.type))
+      return next(forbidden());
 
     req.user = user;
     next();
@@ -62,7 +63,7 @@ function authHandler(roles?: IUser.Type[]) {
 
 export function ensureAuth(req: Request, res: Response, next: NextFunction) {
   if (req.isAuthenticated()) return next();
-  return next(forbidden);
+  return next(forbidden());
 }
 
 export async function jwtAuthorization(req: Request, done: DoneCallback) {
