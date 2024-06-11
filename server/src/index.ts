@@ -15,40 +15,45 @@ import connectPostgres from "connect-pg-simple";
 import { pool } from "@/models/query";
 import "colors";
 import { allowCrossDomains } from "@/middleware/domains";
+import { onlyForHandshake } from "./middleware/common";
 
 const SessionStore = connectPostgres(session);
+const sessionMiddleware = session({
+  secret: "keyboard cat", // todo: define constants
+  resave: false,
+  saveUninitialized: false,
+  store: new SessionStore({ pool, tableName: "sessons" }),
+  cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: isProduction }, // 30 days
+});
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*" },
+  cors: { credentials: true, origin: "http://localhost:5173" },
 });
 
 // todo: use dedicated auth middleware for socket.io
-io.engine.use(authorizedSocket);
+// io.engine.use(authorizedSocket);
+io.engine.use(onlyForHandshake(sessionMiddleware));
+io.engine.use(onlyForHandshake(passport.session()));
+io.engine.use(
+  onlyForHandshake((req, res, next) => {
+    if (req.user) {
+      next();
+    } else {
+      res.writeHead(401);
+      res.end();
+    }
+  })
+);
 io.on("connection", wssHandler);
 
 app.use(logger("dev"));
 // todo: enable back with correct config
-// app.use(cors());
+app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(allowCrossDomains);
-// https://youtu.be/SBvmnHTQIPY?t=2517
-// todos:
-// 1. session vs jwt
-// 2. use passport for
-// 3. add endpoint /api/v1/user/me ==> to get user info (done)
-// 4. add apple and discord
-// 5. save session (done)
-app.use(
-  session({
-    secret: "keyboard cat", // todo: define constants
-    resave: false,
-    saveUninitialized: false,
-    store: new SessionStore({ pool, tableName: "sessons" }),
-    cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: isProduction }, // 30 days
-  })
-);
+app.use(sessionMiddleware);
 
 app.use(passport.initialize());
 app.use(passport.session());

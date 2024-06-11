@@ -10,6 +10,14 @@ const message = {
   markMessageAsRead: zod.object({ id }),
 } as const;
 
+const call = {
+  callHost: zod.object({
+    offer: zod.object({ sdp: zod.string(), type: zod.literal("offer") }),
+    hostId: id,
+  }),
+} as const;
+
 export default {
   message,
+  call,
 };

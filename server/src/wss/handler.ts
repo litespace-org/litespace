@@ -1,7 +1,7 @@
 import { isDev } from "@/constants";
 import { messages, rooms, users } from "@/models";
 import { IUser } from "@litespace/types";
-import { Socket } from "socket.io";
+import { Server, Socket } from "socket.io";
 import { Events } from "@/wss/events";
 import { schema } from "@/validation";
 import "colors";
@@ -22,6 +22,7 @@ export class WssHandler {
 
     this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
     this.socket.on(Events.Client.MarkAsRead, this.markMessageAsRead.bind(this));
+    this.socket.on(Events.Client.CallHost, this.callHost.bind(this));
 
     this.socket.on("disconnect", async () => {
       if (isDev) console.log(`${this.user.name} is disconnected`.yellow);
@@ -38,6 +39,7 @@ export class WssHandler {
     const ids = list.map((room) => room.id.toString());
     this.socket.join(ids);
     this.socket.emit(Events.Server.JoinedRooms, ids);
+    this.socket.join(this.user.id.toString());
   }
 
   async sendMessage(data: unknown) {
@@ -86,6 +88,31 @@ export class WssHandler {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async callHost(data: unknown) {
+    try {
+      const { offer, hostId } = schema.wss.call.callHost.parse(data);
+
+      // this.socket.to(hostId.toString()).emit(Events.Server.CallMade, {
+      //   offer,
+      //   userId: this.user.id,
+      // });
+
+      this.socket.emit(Events.Server.CallMade, {
+        offer,
+        userId: this.user.id,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async makeAnswer(data: {
+    answer: RTCSessionDescriptionInit;
+    hostId: number;
+  }) {
+    this.socket.emit("answerMade", data);
   }
 
   async markUserOnline() {

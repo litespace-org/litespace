@@ -11,6 +11,7 @@ import SelectUserType from "@/pages/SelectUserType";
 import SelectUserGender from "@/pages/SelectUserGender";
 import SetUserName from "@/pages/SetUserName";
 import Tutors from "@/pages/Tutors";
+import Call from "@/pages/Call";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
@@ -34,6 +35,11 @@ const router = createBrowserRouter([
   {
     path: Route.Tutors,
     element: <Tutors />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: Route.Call,
+    element: <Call />,
     errorElement: <ErrorPage />,
   },
 ]);
