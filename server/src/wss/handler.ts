@@ -40,6 +40,14 @@ export class WssHandler {
     this.socket.join(ids);
     this.socket.emit(Events.Server.JoinedRooms, ids);
     this.socket.join(this.user.id.toString());
+
+    //! temp
+    this.socket.join("masterCall");
+    // this.socket.to("masterCall").emit("user-joined", this.user.id);
+    this.socket.on("peerOpened", (id) => {
+      console.log({ id, for: this.user.name });
+      this.socket.to("masterCall").emit("user-joined", id);
+    });
   }
 
   async sendMessage(data: unknown) {
@@ -94,12 +102,7 @@ export class WssHandler {
     try {
       const { offer, hostId } = schema.wss.call.callHost.parse(data);
 
-      // this.socket.to(hostId.toString()).emit(Events.Server.CallMade, {
-      //   offer,
-      //   userId: this.user.id,
-      // });
-
-      this.socket.emit(Events.Server.CallMade, {
+      this.socket.to(hostId.toString()).emit(Events.Server.CallMade, {
         offer,
         userId: this.user.id,
       });
@@ -112,7 +115,7 @@ export class WssHandler {
     answer: RTCSessionDescriptionInit;
     hostId: number;
   }) {
-    this.socket.emit("answerMade", data);
+    this.socket.to(data.hostId.toString()).emit("answerMade", data);
   }
 
   async markUserOnline() {

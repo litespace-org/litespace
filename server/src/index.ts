@@ -13,9 +13,9 @@ import cors from "cors";
 import logger from "morgan";
 import connectPostgres from "connect-pg-simple";
 import { pool } from "@/models/query";
-import "colors";
 import { allowCrossDomains } from "@/middleware/domains";
 import { onlyForHandshake } from "./middleware/common";
+import "colors";
 
 const SessionStore = connectPostgres(session);
 const sessionMiddleware = session({
@@ -29,7 +29,7 @@ const sessionMiddleware = session({
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
-  cors: { credentials: true, origin: "http://localhost:5173" },
+  cors: { credentials: true, origin: "http://localhost:3000" },
 });
 
 // todo: use dedicated auth middleware for socket.io
@@ -50,7 +50,7 @@ io.on("connection", wssHandler);
 
 app.use(logger("dev"));
 // todo: enable back with correct config
-app.use(cors({ credentials: true, origin: "http://localhost:5173" }));
+app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sessionMiddleware);

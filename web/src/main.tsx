@@ -13,17 +13,17 @@ import "@/index.css";
 const queryClient = new QueryClient();
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <IntlProvider
-      messages={locales["ar-EG"]}
-      locale="ar-EG"
-      defaultLocale="ar-EG"
-    >
-      <QueryClientProvider client={queryClient}>
-        <ReduxProvider store={store}>
-          <App />
-        </ReduxProvider>
-      </QueryClientProvider>
-    </IntlProvider>
-  </React.StrictMode>
+  // <React.StrictMode>
+  <IntlProvider
+    messages={locales["ar-EG"]}
+    locale="ar-EG"
+    defaultLocale="ar-EG"
+  >
+    <QueryClientProvider client={queryClient}>
+      <ReduxProvider store={store}>
+        <App />
+      </ReduxProvider>
+    </QueryClientProvider>
+  </IntlProvider>
+  // </React.StrictMode>
 );

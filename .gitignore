@@ -7,3 +7,6 @@ dist/
 
 # uilib 
 uilib/src/index.css
+
+# server 
+server/*.pem

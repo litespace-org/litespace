@@ -1,6 +1,8 @@
+import { backendSockets } from "@litespace/atlas";
 import { io } from "socket.io-client";
+import { backend } from "@/lib/atlas";
 
-const socket = io("ws://localhost:8080", {
+const socket = io(backendSockets[backend], {
   autoConnect: true,
   withCredentials: true,
 });
