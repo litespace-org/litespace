@@ -80,11 +80,8 @@ exports.up = (pgm) => {
     host_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     attendee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     slot_id: { type: "SERIAL", notNull: true, references: "slots(id)" },
-    zoom_meeting_id: { type: "BIGINT", notNull: true, unique: true },
-    system_zoom_account_id: { type: "INT", notNull: true },
     start: { type: "TIMESTAMPTZ", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
-    meeting_url: { type: "VARCHAR(255)", notNull: true },
     note: { type: "TEXT" },
     feedback: { type: "TEXT" },
     created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
@@ -137,17 +134,6 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
-  pgm.createTable("zoom_accounts", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    email: { type: "VARCHAR(50)", notNull: true, unique: true },
-    account_id: { type: "VARCHAR(50)", notNull: true, unique: true },
-    client_id: { type: "VARCHAR(50)", notNull: true, unique: true },
-    client_secret: { type: "VARCHAR(50)", notNull: true, unique: true },
-    remaining_api_calls: { type: "SMALLINT", notNull: true, default: 100 },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
-  });
-
   // indexes
   pgm.createIndex("calls", "id");
   pgm.createIndex("slots", "id");
@@ -157,7 +143,6 @@ exports.up = (pgm) => {
   pgm.createIndex("subscriptions", "id");
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
-  pgm.createIndex("zoom_accounts", "id");
 
   // constraints
   pgm.createConstraint("ratings", "ratings-student-tutor", {
@@ -188,7 +173,6 @@ exports.down = (pgm) => {
   pgm.dropIndex("slots", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
-  pgm.dropIndex("zoom_accounts", "id", { ifExists: true });
 
   // tables
   pgm.dropTable("messages", { ifExists: true });
@@ -200,7 +184,6 @@ exports.down = (pgm) => {
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
   pgm.dropTable("sessons", { ifExists: true });
-  pgm.dropTable("zoom_accounts", { ifExists: true });
 
   // types
   pgm.dropType("user_type", { ifExists: true });

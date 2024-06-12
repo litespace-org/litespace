@@ -25,34 +25,16 @@ import { MyInterviewList, MyInterviewShow } from "./pages/my-interviews";
 import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
 import { TutorCreate, TutorEdit, TutorList, TutorShow } from "./pages/tutors";
 import {
-  ZoomAccountCreate,
-  ZoomAccountEdit,
-  ZoomAccountList,
-  ZoomAccountShow,
-} from "@/pages/zoom-accounts";
-import {
   MyScheduleCreate,
   MyScheduleEdit,
   MyScheduleList,
   MyScheduleShow,
 } from "@/pages/my-schedule";
-import {
-  BlogPostList,
-  BlogPostCreate,
-  BlogPostEdit,
-  BlogPostShow,
-} from "@/pages/blog-posts";
-import {
-  CategoryList,
-  CategoryCreate,
-  CategoryEdit,
-  CategoryShow,
-} from "@/pages/categories";
-import { ColorModeContextProvider } from "./contexts/color-mode";
-import { Header } from "./components/header";
-import { Login } from "./pages/login";
-import { ForgotPassword } from "./pages/forgotPassword";
-import { authProvider } from "./providers/auth";
+import { ColorModeContextProvider } from "@/contexts/color-mode";
+import { Header } from "@/components/header";
+import { Login } from "@/pages/login";
+import { ForgotPassword } from "@/pages/forgotPassword";
+import { authProvider } from "@/providers/auth";
 
 function App() {
   return (
@@ -94,34 +76,8 @@ function App() {
                   {
                     name: Resource.MyInterviews,
                     list: "/my-interviews",
-                    // create: "/my-schedule/create",
-                    // edit: "/my-schedule/edit/:id",
                     show: "/my-interviews/show/:id",
                     meta: { canDelete: true, label: "My Interviews" },
-                  },
-                  {
-                    name: Resource.ZoomAccounts,
-                    list: "/zoom-accounts",
-                    create: "/zoom-accounts/create",
-                    edit: "/zoom-accounts/edit/:id",
-                    show: "/zoom-accounts/show/:id",
-                    meta: { canDelete: true, label: "Zoom Account" },
-                  },
-                  {
-                    name: "blog_posts",
-                    list: "/blog-posts",
-                    create: "/blog-posts/create",
-                    edit: "/blog-posts/edit/:id",
-                    show: "/blog-posts/show/:id",
-                    meta: { canDelete: true },
-                  },
-                  {
-                    name: "categories",
-                    list: "/categories",
-                    create: "/categories/create",
-                    edit: "/categories/edit/:id",
-                    show: "/categories/show/:id",
-                    meta: { canDelete: true },
                   },
                 ]}
                 options={{
@@ -180,24 +136,6 @@ function App() {
                     <Route path="/my-interviews">
                       <Route index element={<MyInterviewList />} />
                       <Route path="show/:id" element={<MyInterviewShow />} />
-                    </Route>
-                    <Route path="/zoom-accounts">
-                      <Route index element={<ZoomAccountList />} />
-                      <Route path="create" element={<ZoomAccountCreate />} />
-                      <Route path="edit/:id" element={<ZoomAccountEdit />} />
-                      <Route path="show/:id" element={<ZoomAccountShow />} />
-                    </Route>
-                    <Route path="/blog-posts">
-                      <Route index element={<BlogPostList />} />
-                      <Route path="create" element={<BlogPostCreate />} />
-                      <Route path="edit/:id" element={<BlogPostEdit />} />
-                      <Route path="show/:id" element={<BlogPostShow />} />
-                    </Route>
-                    <Route path="/categories">
-                      <Route index element={<CategoryList />} />
-                      <Route path="create" element={<CategoryCreate />} />
-                      <Route path="edit/:id" element={<CategoryEdit />} />
-                      <Route path="show/:id" element={<CategoryShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

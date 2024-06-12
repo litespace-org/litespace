@@ -45,6 +45,3 @@ export type UpdatePayload = {
 
 export type CreateApiPayload = User.Credentials & { name: string };
 export type UpdateApiPayload = UpdatePayload;
-
-// todo: delete this type
-export type Shareable = Omit<Self, "zoomRefreshToken">;

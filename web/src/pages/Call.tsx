@@ -2,13 +2,6 @@ import React, { useEffect, useRef } from "react";
 import socket from "@/lib/wss";
 import { Peer } from "peerjs";
 
-const callId = "masterCall";
-
-// 1. call host
-// 2. call made
-// 3. make answer
-// 4. answer made
-
 const peer = new Peer({
   host: "localhost",
   port: 3002,
@@ -66,11 +59,6 @@ const Call: React.FC = () => {
         });
       });
   }, [localRef, remoteRef]);
-
-  console.log({
-    l: localRef.current?.srcObject,
-    r: remoteRef.current?.srcObject,
-  });
 
   return (
     <div className="max-w-screen-md mx-auto my-20">

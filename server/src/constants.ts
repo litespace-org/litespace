@@ -27,11 +27,7 @@ export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
   client: zod.string().url().parse(process.env.CLIENT_URL),
-} as const;
-
-export const zoomConfig = {
-  tokenApi: "https://zoom.us/oauth/token",
-  zoomApi: "https://api.zoom.us/v2/",
+  origin: ["http://localhost:3000", "http://localhost:3001"],
 } as const;
 
 export const passwordRegex =

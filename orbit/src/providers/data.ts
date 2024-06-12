@@ -1,5 +1,5 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { ISlot, ITutor, IUser, IZoomAccount, as } from "@litespace/types";
+import { ISlot, ITutor, IUser, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -9,7 +9,6 @@ export enum Resource {
   Users = "users",
   Tutors = "tutors",
   MySchedule = "my-schedule",
-  ZoomAccounts = "zoom-accounts",
   MyInterviews = "my-interviews",
 }
 
@@ -33,11 +32,6 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(slot) };
     }
 
-    if (resource === Resource.ZoomAccounts) {
-      const account = await atlas.zoom.findAccountById(resourceId);
-      return { data: as.casted(account) };
-    }
-
     if (resource === Resource.MyInterviews) {
       const call = await atlas.call.findHostCallById(resourceId);
       return { data: as.casted(call) };
@@ -47,7 +41,6 @@ export const dataProvider: DataProvider = {
   },
   async update({ id, resource, variables }) {
     const resourceId = as.int(id);
-    console.log({ variables });
     if (resource === Resource.Users) {
       const { uName, uEmail, uPassword, uAvatar, uBithday, uGender, uType } =
         as.casted<
@@ -74,22 +67,6 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(null) };
     }
 
-    if (resource === Resource.ZoomAccounts) {
-      const { uAccountId, uClientId, uClientSecret } = as.casted<{
-        uAccountId?: string;
-        uClientId?: string;
-        uClientSecret?: string;
-      }>(variables);
-
-      await atlas.zoom.updateAccount(resourceId, {
-        accountId: uAccountId,
-        clientId: uClientId,
-        clientSecret: uClientSecret,
-      });
-
-      return as.casted(empty);
-    }
-
     if (resource === Resource.Tutors) {
       const {
         uBio,
@@ -97,8 +74,6 @@ export const dataProvider: DataProvider = {
         uVideo,
         uActivate,
         uPassedInterview,
-        uPrivateFeedback,
-        uPublicFeedback,
         uInterviewUrl,
       } = as.casted<{
         uBio: string;
@@ -117,8 +92,6 @@ export const dataProvider: DataProvider = {
         video: uVideo,
         activated: uActivate,
         passedInterview: uPassedInterview,
-        privateFeedback: uPrivateFeedback,
-        publicFeedback: uPublicFeedback,
         interviewUrl: uInterviewUrl,
       });
 
@@ -166,12 +139,6 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
-    if (resource === Resource.ZoomAccounts) {
-      const payload = as.casted<IZoomAccount.CreatePayload>(variables);
-      const account = await atlas.zoom.createAccount(payload);
-      return { data: as.casted(account) };
-    }
-
     if (resource === Resource.Tutors) {
       const payload = as.casted<ITutor.CreateApiPayload>(variables);
       const response = await atlas.tutor.create(payload);
@@ -188,11 +155,6 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
-    if (resource === Resource.ZoomAccounts) {
-      await atlas.zoom.deleteAccount(resourceId);
-      return as.casted(empty);
-    }
-
     if (resource === Resource.Tutors) {
       await atlas.tutor.delete(resourceId);
       return as.casted(empty);
@@ -201,8 +163,6 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   getList: async ({ resource, meta }: GetListParams) => {
-    console.log({ resource, meta });
-
     if (resource === Resource.UserTypes) {
       const list = [
         { label: "Super Admin", value: "super_admin" },
@@ -230,11 +190,6 @@ export const dataProvider: DataProvider = {
       return { data: as.any(list), total: list.length };
     }
 
-    if (resource === Resource.ZoomAccounts) {
-      const list = await atlas.zoom.findAllAccounts();
-      return { data: as.any(list), total: list.length };
-    }
-
     if (resource === Resource.Tutors) {
       const list = await atlas.tutor.findAll();
       return { data: as.casted(list), total: list.length };
@@ -246,7 +201,6 @@ export const dataProvider: DataProvider = {
 
       const hostId = as.int(id);
       const list = await atlas.call.findHostCalls(hostId);
-      console.log({ list });
       return { data: as.casted(list), total: list.length };
     }
 

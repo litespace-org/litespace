@@ -2,7 +2,6 @@ import user from "@/routes/user";
 import slot from "@/routes/slot";
 import tutor from "@/routes/tutor";
 import student from "@/routes/student";
-import zoom from "@/routes/zoom";
 import call from "@/routes/call";
 import rating from "@/routes/rating";
 import subscription from "@/routes/subscription";
@@ -14,10 +13,9 @@ export default {
   slot,
   tutor,
   student,
-  zoom,
   call,
+  chat,
   rating,
   subscription,
   authorization,
-  chat,
 };

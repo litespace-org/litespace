@@ -11,7 +11,6 @@ export const rooms = new Rooms();
 export const messages = new Messages();
 export const complex = new Complex();
 export { users } from "@/models/users";
-export { zoomAccounts } from "@/models/zoomAccounts";
 export { slots } from "@/models/slots";
 export { calls } from "@/models/calls";
 export { tutors } from "@/models/tutors";

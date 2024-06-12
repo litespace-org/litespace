@@ -9,11 +9,8 @@ export type Row = {
   host_id: number;
   attendee_id: number;
   slot_id: number;
-  zoom_meeting_id: number;
-  system_zoom_account_id: number;
   start: Date;
   duration: number;
-  meeting_url: string;
   note: string | null;
   feedback: string | null;
   created_at: Date;
@@ -26,11 +23,8 @@ export type Self = {
   hostId: number;
   attendeeId: number;
   slotId: number;
-  zoomMeetingId: number;
-  systemZoomAccountId: number;
   start: string;
   duration: number;
-  meetingUrl: string;
   note: string | null;
   feedback: string | null;
   createdAt: string;

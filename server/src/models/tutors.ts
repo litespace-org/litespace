@@ -123,8 +123,6 @@ export class Tutors {
         activated: "tutors.activated",
         activatedBy: "tutors.activated_by",
         passedInterview: "tutors.passed_interview",
-        privateFeedback: "tutors.private_feedback",
-        publicFeedback: "tutors.public_feedback",
         interviewUrl: "tutors.interview_url",
       })
       .from<IUser.Row>("users")

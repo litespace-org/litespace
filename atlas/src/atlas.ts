@@ -3,7 +3,6 @@ import { Tutor } from "@/tutor";
 import { Student } from "@/student";
 import { Auth } from "@/auth";
 import { Slot } from "@/slot";
-import { Zoom } from "@/zoom";
 import { Backend } from "@litespace/types";
 import { Call } from "@/call";
 
@@ -13,7 +12,6 @@ export class Atlas {
   public readonly student: Student;
   public readonly auth: Auth;
   public readonly slot: Slot;
-  public readonly zoom: Zoom;
   public readonly call: Call;
 
   constructor(backend: Backend) {
@@ -22,7 +20,6 @@ export class Atlas {
     this.student = new Student(backend);
     this.auth = new Auth(backend);
     this.slot = new Slot(backend);
-    this.zoom = new Zoom(backend);
     this.call = new Call(backend);
   }
 }

@@ -122,12 +122,6 @@ const tutor = {
   delete: { params: identityObject },
 } as const;
 
-const zoom = {
-  setRefreshToken: {
-    body: zod.object({ code: zod.string({ message: "Invalid zoom code" }) }),
-  },
-};
-
 const call = {
   create: {
     body: zod.object({
@@ -182,41 +176,14 @@ const chat = {
   },
 } as const;
 
-const zoomAccount = {
-  create: {
-    body: zod.object({
-      email,
-      accountId: string,
-      clientId: string,
-      clientSecret: string,
-    }),
-  },
-  update: {
-    params: zod.object({ id }),
-    body: zod.object({
-      accountId: zod.optional(string),
-      clientId: zod.optional(string),
-      clientSecret: zod.optional(string),
-    }),
-  },
-  delete: {
-    params: zod.object({ id }),
-  },
-  findById: {
-    params: zod.object({ id }),
-  },
-} as const;
-
 export default {
   user,
   auth,
   slot,
   student,
   tutor,
-  zoom,
   call,
   rating: ratings,
   subscription,
   chat,
-  zoomAccount,
 };

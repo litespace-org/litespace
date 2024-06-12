@@ -10,8 +10,6 @@ export const MyScheduleEdit = () => {
 
   const slot = queryResult?.data?.data;
 
-  console.log({ slot });
-
   return (
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
       <Form {...formProps} layout="vertical" autoComplete="off">

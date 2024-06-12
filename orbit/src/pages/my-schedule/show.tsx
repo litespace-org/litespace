@@ -18,6 +18,5 @@ export const MyScheduleShow: React.FC = () => {
     queryResult: { data, isLoading },
   } = useShow<ISlot.Self>({});
 
-  console.log({ data });
   return <Show isLoading={isLoading}></Show>;
 };

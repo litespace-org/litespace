@@ -1,14 +1,7 @@
-import { ICall, IUser } from "@litespace/types";
-import {
-  DateField,
-  Show,
-  ShowButton,
-  TagField,
-  TextField,
-  UrlField,
-} from "@refinedev/antd";
+import { ICall } from "@litespace/types";
+import { Show, ShowButton, TextField } from "@refinedev/antd";
 import { useShow } from "@refinedev/core";
-import { Typography, Flex, Button } from "antd";
+import { Typography, Flex } from "antd";
 import dayjs from "@/lib/dayjs";
 import { Resource } from "@/providers/data";
 
@@ -18,8 +11,6 @@ export const MyInterviewShow = () => {
   const {
     queryResult: { data, isLoading },
   } = useShow<ICall.HostCall>({});
-
-  console.log({ data, src: "klk" });
 
   return (
     <Show isLoading={isLoading}>
@@ -72,13 +63,6 @@ export const MyInterviewShow = () => {
                 Updated:
               </Title>
               <TextField value={dayjs(data.data.updatedAt).fromNow()} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Interview URL :
-              </Title>
-              <UrlField value="Zoom URL" href={data.data.meetingUrl} />
             </Flex>
           </>
         ) : null}

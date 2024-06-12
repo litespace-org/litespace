@@ -1,6 +1,5 @@
 import { calls, slots, tutors } from "@/models";
 import { ICall, IUser } from "@litespace/types";
-import { createZoomMeeting } from "@/integrations/zoom";
 import { isAdmin } from "@/lib/common";
 import {
   callNotFound,
@@ -13,7 +12,6 @@ import { hasEnoughTime } from "@/lib/lessons";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { asZoomStartTime } from "@/integrations/zoom/utils";
 import zod from "zod";
 
 async function create(req: Request, res: Response, next: NextFunction) {
@@ -43,12 +41,6 @@ async function create(req: Request, res: Response, next: NextFunction) {
   });
   if (!enough) return next(tutorHasNoTime());
 
-  const meetting = await createZoomMeeting({
-    participants: [{ email: host.email }, { email: req.user.email }],
-    start: asZoomStartTime(start),
-    duration,
-  });
-
   const call = await calls.create({
     type,
     hostId: host.id,
@@ -56,9 +48,6 @@ async function create(req: Request, res: Response, next: NextFunction) {
     slotId,
     start,
     duration,
-    zoomMeetingId: meetting.id,
-    meetingUrl: meetting.joinUrl,
-    systemZoomAccountId: meetting.systemZoomAccountId,
   });
 
   res.status(200).json(call);
@@ -73,8 +62,6 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
   const owner = userId === call.hostId || userId === call.attendeeId;
   const eligible = owner || isAdmin(req.user.type);
   if (!eligible) return next(forbidden());
-
-  // todo: delete zoom meeting
 
   await calls.delete(id);
   res.status(200).send();
