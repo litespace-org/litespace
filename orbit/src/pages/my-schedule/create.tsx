@@ -2,24 +2,7 @@ import { ISlot } from "@litespace/types";
 import { Create, useForm } from "@refinedev/antd";
 import { DatePicker, Flex, Form, Input, Select } from "antd";
 import { Dayjs } from "dayjs";
-
-export const weekdays = [
-  { label: "None", value: -1 },
-  { label: "Saturday", value: 6 },
-  { label: "Sunday", value: 0 },
-  { label: "Monday", value: 1 },
-  { label: "Tuesday", value: 2 },
-  { label: "Wednesday", value: 3 },
-  { label: "Thursday", value: 4 },
-  { label: "Friday", value: 5 },
-];
-
-export const repeat = [
-  { label: "No Rpeat", value: ISlot.Repeat.No },
-  { label: "Daily", value: ISlot.Repeat.Daily },
-  { label: "Weekly", value: ISlot.Repeat.Weekly },
-  { label: "Montly", value: ISlot.Repeat.Monthly },
-];
+import { weekdays, repeat } from "@/lib/constants";
 
 export const MyScheduleCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
@@ -31,8 +14,8 @@ export const MyScheduleCreate = () => {
     >
       <Form {...formProps} layout="vertical" autoComplete="off">
         <Form.Item
-          label={"Title"}
-          name={["title"]}
+          label="Title"
+          name="title"
           rules={[{ required: true, message: "Title is required" }, { min: 5 }]}
         >
           <Input />

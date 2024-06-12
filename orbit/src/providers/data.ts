@@ -3,6 +3,7 @@ import { ISlot, ITutor, IUser, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
+import { selectUpdatedOrNone } from "@/lib/utils";
 
 export enum Resource {
   UserTypes = "user-types",
@@ -39,29 +40,32 @@ export const dataProvider: DataProvider = {
 
     throw new Error("Not implemented");
   },
-  async update({ id, resource, variables }) {
+  async update({ id, resource, variables, meta }) {
     const resourceId = as.int(id);
-    if (resource === Resource.Users) {
-      const { uName, uEmail, uPassword, uAvatar, uBithday, uGender, uType } =
+    if (resource === Resource.Users && meta) {
+      const prev = as.casted<IUser.Self>(meta.user);
+      const { name, email, password, avatar, bithday, gender, type } =
         as.casted<
           Partial<{
-            uName: string;
-            uEmail: string;
-            uPassword: string;
-            uAvatar: string;
-            uBithday: Dayjs;
-            uGender: IUser.Gender;
-            uType: IUser.Type;
+            name: string;
+            email: string;
+            password: string;
+            avatar: string;
+            bithday: Dayjs;
+            gender: IUser.Gender;
+            type: IUser.Type;
           }>
         >(variables);
       await atlas.user.update({
-        name: uName,
-        email: uEmail,
-        password: uPassword,
-        avatar: uAvatar,
-        birthday: uBithday ? uBithday.format("YYYY-MM-DD") : undefined,
-        gender: uGender,
-        type: uType,
+        name: selectUpdatedOrNone(prev.name, name),
+        email: selectUpdatedOrNone(prev.email, email),
+        password,
+        avatar: selectUpdatedOrNone(prev.avatar, avatar),
+        birthday: bithday
+          ? selectUpdatedOrNone(prev.birthday, bithday.format("YYYY-MM-DD"))
+          : undefined,
+        gender: selectUpdatedOrNone(prev.gender, gender),
+        type: selectUpdatedOrNone(prev.type, type),
         id: resourceId,
       });
       return { data: as.casted(null) };

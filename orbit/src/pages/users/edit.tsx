@@ -1,50 +1,59 @@
 import { IUser } from "@litespace/types";
-import { Edit, useForm, useSelect } from "@refinedev/antd";
+import { Edit, useForm } from "@refinedev/antd";
 import { DatePicker, Form, Input, Select } from "antd";
 import dayjs from "dayjs";
+import { userTypes } from "@/lib/constants";
+import { useOne, useResource } from "@refinedev/core";
+import { Resource } from "@/providers/data";
 
 export const UserEdit = () => {
-  const { formProps, saveButtonProps, formLoading, queryResult } =
-    useForm<IUser.Self>({});
-
-  const { selectProps: userTypes } = useSelect({
-    resource: "user_types",
-    optionLabel: "label",
-    optionValue: "value",
-    meta: { for: "edit-user" },
+  const { resource, id } = useResource();
+  const { data, isLoading } = useOne<IUser.Self>({
+    resource: resource?.name,
+    id,
   });
+
+  const { formProps, saveButtonProps, formLoading, queryResult } =
+    useForm<IUser.Self>({
+      meta: { user: data?.data },
+    });
 
   const user = queryResult?.data?.data;
 
   return (
-    <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
+    <Edit
+      saveButtonProps={saveButtonProps}
+      isLoading={formLoading || isLoading}
+    >
       <Form {...formProps} layout="vertical">
         <Form.Item
-          label={"Name"}
-          name={"uName"}
+          label="Name"
+          name="name"
           rules={[
             { min: 3 },
             { max: 50 },
             { pattern: /^[\u0600-\u06FF\s]+$/, message: "Invalid arabic name" },
           ]}
+          initialValue={user?.name}
         >
           <Input placeholder={user?.name || undefined} />
         </Form.Item>
         <Form.Item
           label="Email"
-          name="uEmail"
+          name="email"
           rules={[
             {
               pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
               message: "Invalid email",
             },
           ]}
+          initialValue={user?.email}
         >
-          <Input placeholder={user?.email} />
+          <Input />
         </Form.Item>
         <Form.Item
           label="Password"
-          name="uPassword"
+          name="password"
           rules={[
             {
               pattern:
@@ -57,7 +66,7 @@ export const UserEdit = () => {
         </Form.Item>
         <Form.Item
           label="Avatar"
-          name="uAvatar"
+          name="avatar"
           rules={[
             {
               pattern:
@@ -65,33 +74,31 @@ export const UserEdit = () => {
               message: "Invalid avtar url",
             },
           ]}
+          initialValue={user?.avatar}
         >
-          <Input placeholder={user?.avatar || undefined} />
+          <Input />
         </Form.Item>
-        <Form.Item label="Birthday" name="uBithday">
-          <DatePicker
-            placeholder={
-              user?.birthday
-                ? dayjs(user.birthday).format("YYYY-MM-DD")
-                : undefined
-            }
-          />
+        <Form.Item
+          label="Birthday"
+          name="bithday"
+          initialValue={
+            user?.birthday
+              ? dayjs(user.birthday).format("YYYY-MM-DD")
+              : undefined
+          }
+        >
+          <DatePicker />
         </Form.Item>
-        <Form.Item label={"Gender"} name={"uGender"}>
+        <Form.Item label="Gender" name="gender" initialValue={user?.gender}>
           <Select
-            placeholder={user?.gender}
             options={[
               { value: IUser.Gender.Male, label: "Male" },
               { value: IUser.Gender.Female, label: "Female" },
             ]}
           />
         </Form.Item>
-        <Form.Item
-          label={"User Type"}
-          name={"uType"}
-          initialValue={formProps?.initialValues?.category?.id}
-        >
-          <Select {...userTypes} placeholder={user?.type} />
+        <Form.Item label="User Type" name="type" initialValue={user?.type}>
+          <Select options={userTypes} />
         </Form.Item>
       </Form>
     </Edit>

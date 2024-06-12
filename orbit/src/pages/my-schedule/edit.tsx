@@ -1,7 +1,7 @@
 import { ISlot } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
 import { DatePicker, Flex, Form, Input, Select } from "antd";
-import { weekdays, repeat } from "./create";
+import { weekdays, repeat } from "@/lib/constants";
 import dayjs, { Dayjs } from "dayjs";
 
 export const MyScheduleEdit = () => {
@@ -14,29 +14,31 @@ export const MyScheduleEdit = () => {
     <Edit saveButtonProps={saveButtonProps} isLoading={formLoading}>
       <Form {...formProps} layout="vertical" autoComplete="off">
         <Form.Item
-          label={"Title"}
-          name={"uTitle"}
+          label="Title"
+          name="title"
           rules={[{ min: 5, message: "Title is too short" }]}
+          initialValue={slot?.title}
         >
-          <Input placeholder={slot?.title} />
+          <Input />
         </Form.Item>
         <Flex gap="40px">
-          <Form.Item label="Date" name="uDate">
-            <DatePicker.RangePicker
-              placeholder={[
-                dayjs(slot?.date.start).format("YYYY-MM-DD") || "Start date",
-                slot?.date.end
-                  ? dayjs(slot?.date.end).format("YYYY-MM-DD")
-                  : "End date",
-              ]}
-              allowEmpty={[false, true]}
-            />
+          <Form.Item
+            label="Date"
+            name="date"
+            initialValue={[
+              dayjs(slot?.date.start).format("YYYY-MM-DD") || "Start date",
+              slot?.date.end
+                ? dayjs(slot?.date.end).format("YYYY-MM-DD")
+                : "End date",
+            ]}
+          >
+            <DatePicker.RangePicker allowEmpty={[false, true]} />
           </Form.Item>
         </Flex>
         <Flex gap="40px">
           <Form.Item
             label="Start Time"
-            name="uStartTime"
+            name="startTime"
             rules={[
               (formInstance) => ({
                 message: "Invalid start time",
@@ -69,7 +71,7 @@ export const MyScheduleEdit = () => {
           </Form.Item>
           <Form.Item
             label="End Time"
-            name="uEndTime"
+            name="endTime"
             rules={[
               (formInstance) => ({
                 message: "Invalid end time",
@@ -101,11 +103,15 @@ export const MyScheduleEdit = () => {
             />
           </Form.Item>
         </Flex>
-        <Form.Item label="Day of the week" name="weekday">
-          <Select options={weekdays} placeholder={slot?.weekday} />
+        <Form.Item
+          label="Day of the week"
+          name="weekday"
+          initialValue={slot?.weekday}
+        >
+          <Select options={weekdays} />
         </Form.Item>
-        <Form.Item label="Repeat" name="uRepeat">
-          <Select options={repeat} placeholder={slot?.repeat} />
+        <Form.Item label="Repeat" name="repeat" initialValue={slot?.repeat}>
+          <Select options={repeat} />
         </Form.Item>
       </Form>
     </Edit>

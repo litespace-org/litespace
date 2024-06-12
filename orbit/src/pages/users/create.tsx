@@ -1,21 +1,16 @@
-import { Create, useForm, useSelect } from "@refinedev/antd";
+import { Create, useForm } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
+import { userTypes } from "@/lib/constants";
 
 export const UserCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
 
-  const { selectProps: categorySelectProps } = useSelect({
-    resource: "user_types",
-    optionLabel: "label",
-    optionValue: "value",
-  });
-
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form {...formProps} layout="vertical" autoComplete="off">
         <Form.Item
-          label={"Name"}
-          name={["name"]}
+          label="Name"
+          name="name"
           rules={[
             { min: 3 },
             { max: 50 },
@@ -34,7 +29,7 @@ export const UserCreate = () => {
             },
           ]}
         >
-          <Input />
+          <Input autoComplete="username" />
         </Form.Item>
         <Form.Item
           label="Password"
@@ -47,14 +42,14 @@ export const UserCreate = () => {
             },
           ]}
         >
-          <Input type="password" />
+          <Input type="password" autoComplete="current-password" />
         </Form.Item>
         <Form.Item
-          label={"Type"}
-          name={["type"]}
+          label="Type"
+          name="type"
           rules={[{ required: true, message: "User type is required" }]}
         >
-          <Select {...categorySelectProps} />
+          <Select options={userTypes} />
         </Form.Item>
       </Form>
     </Create>

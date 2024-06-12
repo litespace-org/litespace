@@ -1,5 +1,5 @@
 import { Base } from "@/base";
-import { FindMeResponse, IUser, UpdateUserPayload } from "@litespace/types";
+import { FindMeResponse, IUser } from "@litespace/types";
 
 export class User extends Base {
   async create(params: {
@@ -28,7 +28,7 @@ export class User extends Base {
       .then((response) => response.data);
   }
 
-  async update(payload: UpdateUserPayload): Promise<void> {
+  async update(payload: IUser.UpdatePayload): Promise<void> {
     await this.client.put("/api/v1/user", JSON.stringify(payload));
   }
 }

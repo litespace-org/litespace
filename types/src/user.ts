@@ -39,3 +39,10 @@ export type Credentials = {
   email: string;
   password: string;
 };
+
+export type UpdatePayload = Partial<
+  Omit<Self, "id" | "hasPassword" | "createdAt" | "updatedAt">
+> & {
+  id: number;
+  password?: string;
+};
