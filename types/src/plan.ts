@@ -30,10 +30,33 @@ export type Self = {
   fullYearDiscount: number;
   forInvitesOnly: boolean;
   active: boolean;
-  createdAt: Date;
+  createdAt: string;
   createdBy: number;
-  updatedAt: Date;
+  updatedAt: string;
   updatedBy: number;
+};
+
+export type Attributed = {
+  id: number;
+  weeklyMinutes: number;
+  fullMonthPrice: number;
+  fullQuarterPrice: number;
+  halfYearPrice: number;
+  fullyearPrice: number;
+  fullMonthDiscount: number;
+  fullQuarterDiscount: number;
+  halfYearDiscount: number;
+  fullYearDiscount: number;
+  forInvitesOnly: boolean;
+  active: boolean;
+  createdAt: string;
+  createdById: number;
+  createdByEmail: number;
+  createdByName: number;
+  updatedAt: string;
+  updatedById: number;
+  updatedByEmail: number;
+  updatedByName: number;
 };
 
 export type CreatePayload = {
@@ -51,8 +74,10 @@ export type CreatePayload = {
   createdBy: number;
 };
 
-export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">>;
+export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
+  updatedBy: number;
+};
 
 export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
 
-export type UpdateApiPayload = UpdatePayload;
+export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
