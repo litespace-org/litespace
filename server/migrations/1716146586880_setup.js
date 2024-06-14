@@ -38,8 +38,8 @@ exports.up = (pgm) => {
     birthday: { type: "DATE", default: null },
     gender: { type: "user_gender_type", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("tutors", {
@@ -56,8 +56,8 @@ exports.up = (pgm) => {
     activated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     passed_interview: { type: "BOOLEAN" },
     interview_url: { type: "VARCHAR(255)" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("slots", {
@@ -70,8 +70,8 @@ exports.up = (pgm) => {
     start_date: { type: "TIMESTAMPTZ", notNull: true },
     end_date: { type: "TIMESTAMPTZ", default: null },
     repeat: { type: "repeat_type", notNull: true, default: "no" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("calls", {
@@ -84,8 +84,8 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     note: { type: "TEXT" },
     feedback: { type: "TEXT" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true, default: "NOW()" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("ratings", {

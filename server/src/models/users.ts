@@ -10,12 +10,15 @@ export class Users {
     name: string;
     type: IUser.Type;
   }): Promise<IUser.Self> {
+    const now = new Date();
     const rows = await knex<IUser.Row>("users").insert(
       {
         email: user.email,
         password: user.password,
         name: user.name,
         type: user.type,
+        created_at: now,
+        updated_at: now,
       },
       "*"
     );

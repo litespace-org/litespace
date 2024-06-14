@@ -7,6 +7,7 @@ export class Tutors {
   async create(
     user: IUser.Credentials & { name: string }
   ): Promise<ITutor.FullTutor> {
+    const now = new Date();
     await knex.transaction((tx) => {
       // add tutor to the users table first
       knex<IUser.Row>("users")
@@ -17,6 +18,8 @@ export class Tutors {
             password: user.password,
             name: user.name,
             type: IUser.Type.Tutor,
+            created_at: now,
+            updated_at: now,
           },
           "id"
         )
@@ -26,7 +29,7 @@ export class Tutors {
           // then add it as a tutor in the tutors table
           return await knex<ITutor.Row>("tutors")
             .transacting(tx)
-            .insert({ id: row.id });
+            .insert({ id: row.id, created_at: now, updated_at: now });
         })
         .then(tx.commit)
         .catch(tx.rollback);

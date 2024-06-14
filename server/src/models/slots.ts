@@ -8,6 +8,7 @@ export class Slots {
   async create(
     slot: Omit<ISlot.Self, "id" | "createdAt" | "updatedAt">
   ): Promise<ISlot.Self> {
+    const now = new Date();
     const rows = await knex<ISlot.Row>("slots").insert(
       {
         user_id: slot.userId,
@@ -18,6 +19,8 @@ export class Slots {
         start_date: slot.date.start,
         end_date: slot.date.end,
         repeat: slot.repeat,
+        created_at: now,
+        updated_at: now,
       },
       "*"
     );

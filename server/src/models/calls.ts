@@ -4,6 +4,7 @@ import { ICall, IUser } from "@litespace/types";
 
 export class Calls {
   async create(call: ICall.CreatePayload): Promise<ICall.Self> {
+    const now = new Date();
     const rows = await knex<ICall.Row>("calls").insert(
       {
         type: call.type,
@@ -12,6 +13,8 @@ export class Calls {
         slot_id: call.slotId,
         start: new Date(call.start),
         duration: call.duration,
+        created_at: now,
+        updated_at: now,
       },
       "*"
     );

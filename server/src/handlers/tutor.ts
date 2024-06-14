@@ -1,4 +1,4 @@
-import { complex, slots, tutors, users } from "@/models";
+import { tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
 import { forbidden, tutorNotFound, userNotFound } from "@/lib/error";
 import { Request, Response } from "@/types/http";
@@ -32,13 +32,13 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
   const id = schema.http.tutor.get.params.parse(req.params).id;
   const tutor = await tutors.findById(id);
-  if (!tutor) return next(userNotFound);
+  if (!tutor) return next(userNotFound());
 
   const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.type);
   const examiner = req.user.type === IUser.Type.Examiner;
   const eligible = owner || admin || examiner;
-  if (!eligible) return next(forbidden);
+  if (!eligible) return next(forbidden());
 
   res.status(200).json(tutor);
 }
@@ -55,12 +55,12 @@ async function delete_(
 ) {
   const id = schema.http.tutor.get.params.parse(req.params).id;
   const tutor = await tutors.findById(id);
-  if (!tutor) return next(tutorNotFound);
+  if (!tutor) return next(tutorNotFound());
 
   const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.type);
   const eligible = owner || admin;
-  if (!eligible) return next(forbidden);
+  if (!eligible) return next(forbidden());
 
   await tutors.delete(id);
   res.status(200).send();
