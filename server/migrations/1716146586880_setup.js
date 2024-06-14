@@ -131,47 +131,66 @@ exports.up = (pgm) => {
     active: { type: "BOOLEAN", default: false },
     for_invites_only: { type: "BOOLEAN", default: false },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("coupons", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    code: { type: "VARCHAR(255)", notNull: true },
-    discount: { type: "INT", notNull: true },
-    expires_at: { type: "DATE", notNull: true },
+    code: { type: "VARCHAR(255)", notNull: true, unique: true },
+    full_month_discount: { type: "INT", notNull: true, default: 0 },
+    full_quarter_discount: { type: "INT", notNull: true, default: 0 },
+    half_year_discount: { type: "INT", notNull: true, default: 0 },
+    full_year_discount: { type: "INT", notNull: true, default: 0 },
+    expires_at: { type: "TIMESTAMPTZ", notNull: true },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("invites", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
+    expires_at: { type: "TIMESTAMPTZ", notNull: true },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("reports", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    reporter: { type: "SERIAL", notNull: true, references: "users(id)" },
     title: { type: "VARCHAR(255)", notNull: true },
     description: { type: "TEXT(1000)", notNull: true },
     category: { type: "VARCHAR(255)", notNull: true },
     addressed: { type: "BOOLEAN", notNull: true },
     addressed_at: { type: "TIMESTAMPTZ" },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("report_threads", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    report_id: { type: "SERIAL", notNull: true, references: "reports(id)" },
     message: { text: "TEXT(1000)", notNull: true },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("gifts", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    sender_id: { type: "SERIAL", notNull: true, references: "user(id)" },
+    receiver_id: { type: "SERIAL", notNull: true, references: "user(id)" },
+    value: { type: "INT", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
 
   pgm.createTable("rooms", {
