@@ -1,23 +1,23 @@
 import handlers from "@/handlers";
-import { ensureAuth } from "@/middleware/auth";
+import { authorized, authorizer } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
 
 router
   .route("/")
-  .post(ensureAuth, handlers.slot.create)
-  .put(ensureAuth, handlers.slot.update)
-  .get(ensureAuth, handlers.slot.get);
+  .post(authorizer().tutor().examiner().handler(), handlers.slot.create)
+  .put(authorizer().tutor().examiner().handler(), handlers.slot.update)
+  .get(authorizer().tutor().examiner().handler(), handlers.slot.get);
 
-router.get("/list", ensureAuth, handlers.slot.list);
+router.get("/list", authorized, handlers.slot.list);
 
-router.get("/list/discrete", ensureAuth, handlers.slot.getDiscreteTimeSlots);
+router.get("/list/discrete", authorized, handlers.slot.getDiscreteTimeSlots);
 
 router
   .route("/:id")
-  .get(ensureAuth, handlers.slot.get)
-  .delete(ensureAuth, handlers.slot.delete)
-  .put(ensureAuth, handlers.slot.update);
+  .get(authorized, handlers.slot.get)
+  .delete(authorizer().tutor().staff().handler(), handlers.slot.delete)
+  .put(authorizer().tutor().staff().handler(), handlers.slot.update);
 
 export default router;

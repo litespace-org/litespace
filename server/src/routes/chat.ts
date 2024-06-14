@@ -1,12 +1,12 @@
 import handlers from "@/handlers";
-import { studentOnly, studentOrTutor } from "@/middleware/auth";
+import { authorizer, student } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
 
 router
   .route("/")
-  .post(studentOnly, handlers.chat.create)
-  .get(studentOrTutor, handlers.chat.findByUserId);
+  .post(student, handlers.chat.create)
+  .get(authorizer().tutor().student().handler(), handlers.chat.findByUserId);
 
 export default router;

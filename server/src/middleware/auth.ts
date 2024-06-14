@@ -39,32 +39,74 @@ function extractToken(header: string): string {
  *
  * @param roles list of user types that is allowed to access the next route.
  *
- * @note empty roles list will make the next route accessable for all user
+ * @note Empty roles list will make the next route accessable for all user
  * types.
  */
-function authHandler(roles?: IUser.Type[]) {
+function authHandler(roles: IUser.Type[]) {
   return async (req: Request, _res: Response, next: NextFunction) => {
-    const { authorization } = schema.http.auth.header.parse(req.headers);
-    const { id } = jwt.verify(
-      extractToken(authorization),
-      authorizationSecret
-    ) as {
-      id: number;
-    };
-    const user = await users.findById(id);
-    if (!user) return next(userNotFound());
-    if (!isEmpty(roles) && !roles?.includes(user.type))
-      return next(forbidden());
-
-    req.user = user;
-    next();
+    const authorized = req.isAuthenticated();
+    const allowAnyRole = isEmpty(roles);
+    const roleAllowed = roles.includes(req.user.type);
+    const validRole = allowAnyRole || roleAllowed;
+    if (!authorized || !validRole) return next(forbidden());
+    return next();
   };
 }
 
-export function ensureAuth(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) return next();
-  return next(forbidden());
+class Authorizer {
+  private roles: IUser.Type[] = [];
+
+  superAdmin(): Authorizer {
+    this.roles.push(IUser.Type.SuperAdmin);
+    return this;
+  }
+
+  regAdmin(): Authorizer {
+    this.roles.push(IUser.Type.RegularAdmin);
+    return this;
+  }
+
+  admins(): Authorizer {
+    return this.superAdmin().regAdmin();
+  }
+
+  examiner(): Authorizer {
+    this.roles.push(IUser.Type.Examiner);
+    return this;
+  }
+
+  staff(): Authorizer {
+    return this.superAdmin().regAdmin().examiner();
+  }
+
+  tutor(): Authorizer {
+    this.roles.push(IUser.Type.Tutor);
+    return this;
+  }
+
+  student(): Authorizer {
+    this.roles.push(IUser.Type.Student);
+    return this;
+  }
+
+  nonstaff(): Authorizer {
+    return this.tutor().student();
+  }
+
+  handler() {
+    return authHandler(this.roles);
+  }
 }
+
+export function authorizer() {
+  return new Authorizer();
+}
+
+export const student = authorizer().student().handler();
+export const tutor = authorizer().tutor().handler();
+export const admins = authorizer().admins().handler();
+export const staff = authorizer().staff().handler();
+export const authorized = authorizer().handler();
 
 export async function jwtAuthorization(req: Request, done: DoneCallback) {
   try {
@@ -95,35 +137,3 @@ export async function localAuthorization(req: Request, done: DoneCallback) {
     return done(error);
   }
 }
-
-export function authorizedSocket(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  // apply to the first HTTP request of the session.
-  const isHandshake = req._query.sid === undefined;
-  if (!isHandshake) return next();
-  return authHandler([])(req, res, next);
-}
-
-function auth(roles?: IUser.Type[]) {
-  return asyncHandler(authHandler(roles));
-}
-
-export const authorized = auth();
-export const tutorOnly = auth([IUser.Type.Tutor]);
-export const adminOnly = auth([IUser.Type.SuperAdmin, IUser.Type.RegularAdmin]);
-export const tutorOrAdmin = auth([
-  IUser.Type.Tutor,
-  IUser.Type.SuperAdmin,
-  IUser.Type.RegularAdmin,
-]);
-export const studentOrAdmin = auth([
-  IUser.Type.Student,
-  IUser.Type.SuperAdmin,
-  IUser.Type.RegularAdmin,
-]);
-export const studentOrTutor = auth([IUser.Type.Student, IUser.Type.Tutor]);
-export const studentOnly = auth([IUser.Type.Student]);
-export default auth;

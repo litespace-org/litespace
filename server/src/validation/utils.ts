@@ -18,6 +18,10 @@ export const rating = zod.coerce.number().positive().int().min(1).max(5);
 
 export const string = zod.string().trim();
 
+export const number = zod.coerce.number();
+
+export const boolean = zod.boolean();
+
 export const optionalString = zod.optional(string);
 
 export const weekday = zod.coerce.number().min(-1).max(6);

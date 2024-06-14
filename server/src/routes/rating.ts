@@ -1,14 +1,14 @@
 import handlers from "@/handlers";
-import { studentOnly, studentOrAdmin } from "@/middleware/auth";
+import { student, authorizer } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
 
 router
   .route("/")
-  .post(studentOnly, handlers.rating.create)
-  .put(studentOnly, handlers.rating.update)
+  .post(student, handlers.rating.create)
+  .put(student, handlers.rating.update)
   .get(handlers.rating.get)
-  .delete(studentOrAdmin, handlers.rating.delete);
+  .delete(authorizer().student().admins().handler(), handlers.rating.delete);
 
 export default router;

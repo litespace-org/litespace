@@ -7,6 +7,7 @@ import rating from "@/routes/rating";
 import subscription from "@/routes/subscription";
 import authorization from "@/routes/authorization";
 import chat from "@/routes/chat";
+import plan from "@/routes/plan";
 
 export default {
   user,
@@ -14,6 +15,7 @@ export default {
   tutor,
   student,
   call,
+  plan,
   chat,
   rating,
   subscription,

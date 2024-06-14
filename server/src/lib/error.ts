@@ -6,6 +6,7 @@ export enum ErrorCode {
   UserAlreadyTyped = "userAlreadyType",
   TutorHasNoTime = "tutorHasNoTime",
   Unexpected = "unexpected",
+  NotFound = "notFound",
   UserNotFound = "userNotFound",
   SlotNotFound = "slotNotFound",
   TutorNotFound = "tutorNotFound",
@@ -37,6 +38,10 @@ export const errors = {
   unexpected: {
     message: "Unexpected error occurred, please retry",
     code: ErrorCode.Unexpected,
+  },
+  notFound: {
+    message: "Not found",
+    code: ErrorCode.NotFound,
   },
   userNotFound: {
     message: "User not found",
@@ -84,6 +89,7 @@ export default class ResponseError extends Error {
 }
 
 export const forbidden = () => new ResponseError(errors.fobidden, 401);
+export const notfound = () => new ResponseError(errors.notFound, 404);
 export const badRequest = () => new ResponseError(errors.badRequest, 400);
 export const roomExists = () => new ResponseError(errors.roomExists, 400);
 export const userExists = () => new ResponseError(errors.userExists, 400);
