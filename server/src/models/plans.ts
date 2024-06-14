@@ -1,6 +1,6 @@
 import { IPlan } from "@litespace/types";
 import { knex } from "@/models/query";
-import { first } from "lodash";
+import { first, omit } from "lodash";
 
 export class Plans {
   async create(payload: IPlan.CreatePayload): Promise<IPlan.Self> {
@@ -64,13 +64,16 @@ export class Plans {
     await knex<IPlan.Row>("plans").delete().where("id", id);
   }
 
-  async findById(id: number): Promise<IPlan.Attributed | null> {
-    const plans = await this.getSelectQuery().where("id", id);
+  async findById(id: number): Promise<IPlan.MappedAttributes | null> {
+    const plans = this.mapSelectQuery(
+      await this.getSelectQuery().where("id", id)
+    );
+
     return first(plans) || null;
   }
 
-  async findAll(): Promise<IPlan.Attributed[]> {
-    return await this.getSelectQuery();
+  async findAll(): Promise<IPlan.MappedAttributes[]> {
+    return this.mapSelectQuery(await this.getSelectQuery());
   }
 
   getSelectQuery() {
@@ -97,9 +100,37 @@ export class Plans {
         updatedByEmail: "updator.email",
         updatedByName: "updator.name",
       })
-      .innerJoin("users AS creator", "users.id", "plans.created_by")
-      .innerJoin("users AS updator", "users.id", "plans.updated_by")
+      .innerJoin("users AS creator", "creator.id", "plans.created_by")
+      .innerJoin("users AS updator", "updator.id", "plans.updated_by")
       .clone();
+  }
+
+  mapSelectQuery(list: IPlan.Attributed[]): IPlan.MappedAttributes[] {
+    return list.map((plan) =>
+      omit(
+        {
+          ...plan,
+          createdBy: {
+            id: plan.createdById,
+            email: plan.createdByEmail,
+            name: plan.createdByName,
+          },
+          updatedBy: {
+            id: plan.updatedById,
+            email: plan.updatedByEmail,
+            name: plan.updatedByName,
+          },
+          createdAt: plan.createdAt.toISOString(),
+          updatedAt: plan.updatedAt.toISOString(),
+        },
+        "createdById",
+        "createdByEmail",
+        "createdByName",
+        "updatedById",
+        "udpatedByEmail",
+        "updatedByName"
+      )
+    );
   }
 
   from(row: IPlan.Row): IPlan.Self {

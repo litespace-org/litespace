@@ -14,6 +14,7 @@ export { users } from "@/models/users";
 export { slots } from "@/models/slots";
 export { calls } from "@/models/calls";
 export { tutors } from "@/models/tutors";
+export { plans } from "@/models/plans";
 
 // types
 export { Subscription } from "@/models/subscriptions";

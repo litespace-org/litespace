@@ -36,27 +36,30 @@ export type Self = {
   updatedBy: number;
 };
 
-export type Attributed = {
-  id: number;
-  weeklyMinutes: number;
-  fullMonthPrice: number;
-  fullQuarterPrice: number;
-  halfYearPrice: number;
-  fullyearPrice: number;
-  fullMonthDiscount: number;
-  fullQuarterDiscount: number;
-  halfYearDiscount: number;
-  fullYearDiscount: number;
-  forInvitesOnly: boolean;
-  active: boolean;
-  createdAt: string;
+type SelectableSelf = Omit<
+  Self,
+  "createdAt" | "updatedAt" | "createdBy" | "updatedBy"
+>;
+
+/**
+ * Attach updator and creator info to the plan object
+ */
+export type Attributed = SelectableSelf & {
+  createdAt: Date;
   createdById: number;
-  createdByEmail: number;
-  createdByName: number;
-  updatedAt: string;
+  createdByEmail: string;
+  createdByName: string;
+  updatedAt: Date;
   updatedById: number;
-  updatedByEmail: number;
-  updatedByName: number;
+  updatedByEmail: string;
+  updatedByName: string;
+};
+
+export type MappedAttributes = SelectableSelf & {
+  createdAt: string;
+  createdBy: { id: number; email: string; name: string };
+  updatedAt: string;
+  updatedBy: { id: number; email: string; name: string };
 };
 
 export type CreatePayload = {

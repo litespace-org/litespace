@@ -1,4 +1,4 @@
-import { calls, slots, tutors, users } from "@/models";
+import { calls, plans, slots, tutors, users } from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
@@ -45,7 +45,6 @@ async function main(): Promise<void> {
     repeat: ISlot.Repeat.No,
     weekday: -1,
   });
-
   const start = dayjs().tz("Africa/Cairo").add(30, "minutes");
 
   const call = await calls.create({
@@ -56,9 +55,22 @@ async function main(): Promise<void> {
     start: start.toISOString(),
     type: ICall.Type.Interview,
   });
-
   const examinerCalls = await calls.findHostCalls(examiner.id);
-  console.log({ examinerCalls });
+
+  const plan = await plans.create({
+    weeklyMinutes: 2.5 * 60,
+    fullMonthPrice: 1000_00,
+    fullQuarterPrice: 2000_00,
+    halfYearPrice: 2000_00,
+    fullyearPrice: 3000_00,
+    fullMonthDiscount: 100_00,
+    fullQuarterDiscount: 100_00,
+    halfYearDiscount: 100_00,
+    fullYearDiscount: 100_00,
+    forInvitesOnly: false,
+    active: true,
+    createdBy: admin.id,
+  });
 }
 
 main()
