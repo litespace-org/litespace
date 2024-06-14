@@ -37,7 +37,7 @@ export const TutorList: React.FC = () => {
         />
         <Table.Column
           dataIndex="createdAt"
-          title="Created at"
+          title="Created At"
           render={(value: string) => (
             <>
               <DateField value={value} format="LLL" />
@@ -47,7 +47,7 @@ export const TutorList: React.FC = () => {
           )}
         />
         <Table.Column
-          dataIndex="udpatedAt"
+          dataIndex="updatedAt"
           title="Updated At"
           render={(value: string) => (
             <>

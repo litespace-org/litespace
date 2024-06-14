@@ -1,168 +1,73 @@
+import TableView, { TableRow } from "@/components/TableView";
+import { Resource } from "@/providers/data";
+import { UserOutlined } from "@ant-design/icons";
 import { ITutor, IUser } from "@litespace/types";
-import {
-  BooleanField,
-  DateField,
-  ImageField,
-  Show,
-  TagField,
-  TextField,
-} from "@refinedev/antd";
-import { useShow } from "@refinedev/core";
-import { Typography, Flex } from "antd";
-
-const { Title } = Typography;
+import { Show } from "@refinedev/antd";
+import { useLink, useShow } from "@refinedev/core";
+import { Button } from "antd";
+import { useMemo } from "react";
 
 export const TutorShow = () => {
+  const Link = useLink();
   const {
     queryResult: { data, isLoading },
   } = useShow<ITutor.FullTutor>({});
 
+  const tutor = useMemo(() => data?.data, [data?.data]);
+
+  const dataSource: TableRow[] = useMemo(() => {
+    if (!tutor) return [];
+
+    return [
+      { name: "ID", value: tutor.id },
+      { name: "Name", value: tutor.name },
+      { name: "Email", value: tutor.email },
+      { name: "Has Password", value: tutor.hasPassword, type: "boolean" },
+      { name: "Online", value: tutor.online, type: "boolean" },
+      { name: "Gender", value: tutor.gender, type: "tag" },
+      { name: "Type", value: tutor.type, type: "tag" },
+      { name: "Bio", value: tutor.bio },
+      { name: "About", value: tutor.about },
+      { name: "Video", value: tutor.video, type: "url" },
+      { name: "Avatar", value: tutor.avatar, type: "url" },
+      {
+        name: "Passed The Interview",
+        value: tutor.passedInterview,
+        type: "boolean",
+      },
+      {
+        name: "Activated",
+        value: tutor.activated,
+        type: "boolean",
+      },
+      { name: "Created At", value: tutor.createdAt, type: "date" },
+      { name: "Updated At", value: tutor.updatedAt, type: "date" },
+    ];
+  }, [tutor]);
+
   return (
-    <Show isLoading={isLoading}>
-      <Flex vertical gap="20px">
-        {data ? (
+    <Show
+      headerButtons={({ defaultButtons }) => {
+        return (
           <>
-            {data.data.avatar ? (
-              <Flex align="center" gap="10px">
-                <ImageField
-                  style={{ borderRadius: "100%" }}
-                  value={data.data.avatar}
-                  width={200}
-                  height={200}
-                />
-              </Flex>
-            ) : null}
+            {defaultButtons}
 
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                ID :
-              </Title>
-              <TextField value={data.data.id} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Email :
-              </Title>
-              <TextField value={data.data.email} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Online :
-              </Title>
-              <BooleanField value={data.data.online} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Name :
-              </Title>
-              <TextField value={data.data.name} />
-            </Flex>
-
-            {data.data.bio ? (
-              <Flex
-                style={{ flexDirection: "column" }}
-                justify="center"
-                gap="10px"
+            <Link to={`/users/show/${tutor?.id}`}>
+              <Button
+                icon={<UserOutlined />}
+                resource={Resource.Users}
+                loading={isLoading}
               >
-                <Title level={5} style={{ margin: 0 }}>
-                  Bio :
-                </Title>
-                <TextField value={data.data.bio} />
-              </Flex>
-            ) : null}
-
-            {data.data.about ? (
-              <Flex
-                style={{ flexDirection: "column" }}
-                justify="center"
-                gap="10px"
-              >
-                <Title level={5} style={{ margin: 0 }}>
-                  About :
-                </Title>
-                <TextField value={data.data.about || "-"} />
-              </Flex>
-            ) : null}
-
-            {data.data.privateFeedback ? (
-              <Flex
-                style={{ flexDirection: "column" }}
-                justify="center"
-                gap="10px"
-              >
-                <Title level={5} style={{ margin: 0 }}>
-                  Public Feedback :
-                </Title>
-                <TextField value={data.data.publicFeedback} />
-              </Flex>
-            ) : null}
-
-            {data.data.privateFeedback ? (
-              <Flex
-                style={{ flexDirection: "column" }}
-                justify="center"
-                gap="10px"
-              >
-                <Title level={5} style={{ margin: 0 }}>
-                  Private Feedback :
-                </Title>
-                <TextField value={data.data.privateFeedback} />
-              </Flex>
-            ) : null}
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Passed Interview :
-              </Title>
-              <BooleanField value={data.data.passedInterview} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Activated :
-              </Title>
-              <BooleanField value={data.data.activated} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Gender :
-              </Title>
-
-              <TagField value={data.data.gender || "unspecified"} />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Birthday :
-              </Title>
-
-              {data.data.birthday ? (
-                <DateField value={data.data.birthday} format="LL" />
-              ) : (
-                <TextField value="-" />
-              )}
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Created At :
-              </Title>
-              <DateField value={data.data.createdAt} format="LLL" />
-            </Flex>
-
-            <Flex align="center" gap="10px">
-              <Title level={5} style={{ margin: 0 }}>
-                Updated At :
-              </Title>
-              <DateField value={data.data.updatedAt} format="LLL" />
-            </Flex>
+                View As A User
+              </Button>
+            </Link>
           </>
-        ) : null}
-      </Flex>
+        );
+      }}
+      isLoading={isLoading}
+      title="Tutor"
+    >
+      <TableView dataSource={dataSource} />
     </Show>
   );
 };

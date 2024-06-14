@@ -7,8 +7,10 @@ import {
   ShowButton,
   useTable,
   TagField,
+  TextField,
 } from "@refinedev/antd";
 import { Space, Table } from "antd";
+import dayjs from "dayjs";
 import React from "react";
 
 export const UserList: React.FC = () => {
@@ -28,17 +30,27 @@ export const UserList: React.FC = () => {
           render={(value) => <TagField value={value} />}
         />
         <Table.Column
-          dataIndex={["createdAt"]}
-          title={"Created at"}
-          render={(value: string) => <DateField value={value} format="LLL" />}
+          dataIndex="createdAt"
+          title="Created At"
+          render={(value: string) => (
+            <>
+              <DateField value={value} format="LLL" /> <br />
+              (<TextField value={dayjs(value).fromNow()} />)
+            </>
+          )}
         />
         <Table.Column
-          dataIndex={["udpatedAt"]}
-          title={"Updated At"}
-          render={(value: string) => <DateField value={value} format="LLL" />}
+          dataIndex="updatedAt"
+          title="Updated At"
+          render={(value: string) => (
+            <>
+              <DateField value={value} format="LLL" /> <br />
+              (<TextField value={dayjs(value).fromNow()} />)
+            </>
+          )}
         />
         <Table.Column
-          title={"Actions"}
+          title="Actions"
           dataIndex="actions"
           render={(_, record: IUser.Self) => (
             <Space>

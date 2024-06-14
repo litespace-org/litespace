@@ -42,8 +42,8 @@ async function update(req: Request, res: Response, next: NextFunction) {
     gender,
     birthday,
     avatar,
-    password: password ? hashPassword(password) : undefined,
     type,
+    password: password ? hashPassword(password) : undefined,
   });
 
   res.status(200).send();

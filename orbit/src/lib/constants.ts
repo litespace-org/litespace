@@ -25,3 +25,8 @@ export const repeat = [
   { label: "Weekly", value: ISlot.Repeat.Weekly },
   { label: "Montly", value: ISlot.Repeat.Monthly },
 ];
+
+export const genders = [
+  { value: IUser.Gender.Male, label: "Male" },
+  { value: IUser.Gender.Female, label: "Female" },
+];

@@ -2,7 +2,7 @@ import { IUser } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
 import { DatePicker, Form, Input, Select } from "antd";
 import dayjs from "dayjs";
-import { userTypes } from "@/lib/constants";
+import { genders, userTypes } from "@/lib/constants";
 import { useOne, useResource } from "@refinedev/core";
 import { Resource } from "@/providers/data";
 
@@ -49,7 +49,7 @@ export const UserEdit = () => {
           ]}
           initialValue={user?.email}
         >
-          <Input />
+          <Input autoComplete="username" />
         </Form.Item>
         <Form.Item
           label="Password"
@@ -62,7 +62,7 @@ export const UserEdit = () => {
             },
           ]}
         >
-          <Input type="password" />
+          <Input type="password" autoComplete="current-password" />
         </Form.Item>
         <Form.Item
           label="Avatar"
@@ -74,30 +74,20 @@ export const UserEdit = () => {
               message: "Invalid avatar url",
             },
           ]}
-          initialValue={user?.avatar}
         >
           <Input />
         </Form.Item>
         <Form.Item
           label="Birthday"
-          name="bithday"
-          initialValue={
-            user?.birthday
-              ? dayjs(user.birthday).format("YYYY-MM-DD")
-              : undefined
-          }
+          name="userBirthday"
+          initialValue={user?.birthday ? dayjs(user.birthday) : undefined}
         >
           <DatePicker />
         </Form.Item>
-        <Form.Item label="Gender" name="gender" initialValue={user?.gender}>
-          <Select
-            options={[
-              { value: IUser.Gender.Male, label: "Male" },
-              { value: IUser.Gender.Female, label: "Female" },
-            ]}
-          />
+        <Form.Item label="Gender" name="gender">
+          <Select options={genders} />
         </Form.Item>
-        <Form.Item label="User Type" name="type" initialValue={user?.type}>
+        <Form.Item label="User Type" name="type">
           <Select options={userTypes} />
         </Form.Item>
       </Form>

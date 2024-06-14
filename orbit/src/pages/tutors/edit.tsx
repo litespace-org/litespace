@@ -1,17 +1,23 @@
 import { ITutor } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
 import { useOne, useResource } from "@refinedev/core";
-import { Form, Input, Switch } from "antd";
+import { DatePicker, Form, Input, Select, Switch } from "antd";
+import dayjs from "@/lib/dayjs";
+import { genders } from "@/lib/constants";
 
 export const TutorEdit = () => {
   const { id, resource } = useResource();
-  const { data, isLoading: tutorLoading } = useOne<ITutor.Self>({
+
+  const { data, isLoading: tutorLoading } = useOne<ITutor.FullTutor>({
     resource: resource?.name,
     id,
   });
+
   const { formProps, saveButtonProps, formLoading } = useForm<ITutor.FullTutor>(
     { meta: { tutor: data?.data } }
   );
+
+  const tutor = data?.data;
 
   return (
     <Edit
@@ -70,6 +76,18 @@ export const TutorEdit = () => {
           ]}
         >
           <Input placeholder="https://example.com/photo.png" />
+        </Form.Item>
+
+        <Form.Item
+          label="Birthday"
+          name="userBirthday"
+          initialValue={tutor?.birthday ? dayjs(tutor.birthday) : undefined}
+        >
+          <DatePicker />
+        </Form.Item>
+
+        <Form.Item label="Gender" name="gender">
+          <Select options={genders} />
         </Form.Item>
 
         <Form.Item label="Bio" name="bio">

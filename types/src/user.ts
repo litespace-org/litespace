@@ -29,7 +29,11 @@ export type Self = {
   updatedAt: string;
 };
 
-export type Row = Omit<Self, "createdAt" | "updatedAt" | "hasPassword"> & {
+export type Row = Omit<
+  Self,
+  "createdAt" | "updatedAt" | "hasPassword" | "birthday"
+> & {
+  birthday: Date;
   password: Nullable<string>;
   created_at: Date;
   updated_at: Date;
@@ -40,9 +44,13 @@ export type Credentials = {
   password: string;
 };
 
-export type UpdatePayload = Partial<
-  Omit<Self, "id" | "hasPassword" | "createdAt" | "updatedAt">
-> & {
+export type UpdatePayload = {
   id: number;
+  email?: string;
   password?: string;
+  name?: Nullable<string>;
+  avatar?: Nullable<string>;
+  birthday?: Nullable<string>;
+  gender?: Nullable<Gender>;
+  type?: Type;
 };

@@ -1,6 +1,7 @@
 import { knex, query } from "@/models/query";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
+import dayjs from "dayjs";
 
 export class Users {
   async create(user: {
@@ -221,7 +222,7 @@ export class Users {
       hasPassword: row.password !== null,
       name: row.name,
       avatar: row.avatar,
-      birthday: row.birthday,
+      birthday: dayjs(row.birthday).format("YYYY-MM-DD"),
       gender: row.gender,
       type: row.type,
       online: row.online,

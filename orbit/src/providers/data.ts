@@ -44,28 +44,30 @@ export const dataProvider: DataProvider = {
     const resourceId = as.int(id);
     if (resource === Resource.Users && meta) {
       const prev = as.casted<IUser.Self>(meta.user);
-      const { name, email, password, avatar, bithday, gender, type } =
-        as.casted<
-          Partial<{
-            name: string;
-            email: string;
-            password: string;
-            avatar: string;
-            bithday: Dayjs;
-            gender: IUser.Gender;
-            type: IUser.Type;
-          }>
-        >(variables);
+      const updated = as.casted<
+        Partial<{
+          name: string;
+          email: string;
+          password: string;
+          avatar: string;
+          userBirthday: Dayjs;
+          gender: IUser.Gender;
+          type: IUser.Type;
+        }>
+      >(variables);
       await atlas.user.update({
-        name: selectUpdatedOrNone(prev.name, name),
-        email: selectUpdatedOrNone(prev.email, email),
-        password,
-        avatar: selectUpdatedOrNone(prev.avatar, avatar),
-        birthday: bithday
-          ? selectUpdatedOrNone(prev.birthday, bithday.format("YYYY-MM-DD"))
+        name: selectUpdatedOrNone(prev.name, updated.name),
+        email: selectUpdatedOrNone(prev.email, updated.email),
+        password: updated.password,
+        avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
+        birthday: updated.userBirthday
+          ? selectUpdatedOrNone(
+              prev.birthday,
+              updated.userBirthday.format("YYYY-MM-DD")
+            )
           : undefined,
-        gender: selectUpdatedOrNone(prev.gender, gender),
-        type: selectUpdatedOrNone(prev.type, type),
+        gender: selectUpdatedOrNone(prev.gender, updated.gender),
+        type: selectUpdatedOrNone(prev.type, updated.type),
         id: resourceId,
       });
       return { data: as.casted(null) };
@@ -79,6 +81,8 @@ export const dataProvider: DataProvider = {
           email: string;
           password: string;
           avatar: string;
+          userBirthday: Dayjs;
+          gender: IUser.Gender;
           bio: string;
           about: string;
           video: string;
@@ -92,6 +96,13 @@ export const dataProvider: DataProvider = {
         email: selectUpdatedOrNone(prev.email, updated.email),
         password: updated.password,
         avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
+        birthday: updated.userBirthday
+          ? selectUpdatedOrNone(
+              prev.birthday,
+              updated.userBirthday.format("YYYY-MM-DD")
+            )
+          : undefined,
+        gender: selectUpdatedOrNone(prev.gender, updated.gender),
         bio: selectUpdatedOrNone(prev.bio, updated.bio),
         about: selectUpdatedOrNone(prev.about, updated.about),
         video: selectUpdatedOrNone(prev.video, updated.video),

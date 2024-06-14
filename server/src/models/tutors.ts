@@ -43,13 +43,17 @@ export class Tutors {
       name: tutor.name,
       password: tutor.password,
       avatar: tutor.avatar,
+      birthday: tutor.birthday ? new Date(tutor.birthday) : undefined,
+      gender: tutor.gender,
     } as const;
 
     if (isValuedObject(updateUserPayload))
-      await knex<IUser.Row>("users").update({
-        ...updateUserPayload,
-        updated_at: new Date(),
-      });
+      await knex<IUser.Row>("users")
+        .update({
+          ...updateUserPayload,
+          updated_at: new Date(),
+        })
+        .where("id", id);
 
     const updateTutorPayload: Partial<ITutor.Row> = {
       bio: tutor.bio,
