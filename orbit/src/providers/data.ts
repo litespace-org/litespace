@@ -71,32 +71,35 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(null) };
     }
 
-    if (resource === Resource.Tutors) {
-      const {
-        uBio,
-        uAbout,
-        uVideo,
-        uActivate,
-        uPassedInterview,
-        uInterviewUrl,
-      } = as.casted<{
-        uBio: string;
-        uAbout: string;
-        uVideo: string;
-        uActivate: boolean;
-        uPassedInterview: boolean;
-        uPrivateFeedback: string;
-        uPublicFeedback: string;
-        uInterviewUrl: string;
-      }>(variables);
+    if (resource === Resource.Tutors && meta) {
+      const prev = as.casted<ITutor.FullTutor>(meta.tutor);
+      const updated = as.casted<
+        Partial<{
+          name: string;
+          email: string;
+          password: string;
+          avatar: string;
+          bio: string;
+          about: string;
+          video: string;
+          activated: boolean;
+          passedInterview: boolean;
+        }>
+      >(variables);
 
       await atlas.tutor.update(resourceId, {
-        bio: uBio,
-        about: uAbout,
-        video: uVideo,
-        activated: uActivate,
-        passedInterview: uPassedInterview,
-        interviewUrl: uInterviewUrl,
+        name: selectUpdatedOrNone(prev.name, updated.name),
+        email: selectUpdatedOrNone(prev.email, updated.email),
+        password: updated.password,
+        avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
+        bio: selectUpdatedOrNone(prev.bio, updated.bio),
+        about: selectUpdatedOrNone(prev.about, updated.about),
+        video: selectUpdatedOrNone(prev.video, updated.video),
+        activated: selectUpdatedOrNone(prev.activated, updated.activated),
+        passedInterview: selectUpdatedOrNone(
+          prev.passedInterview,
+          updated.passedInterview
+        ),
       });
 
       return as.casted(empty);

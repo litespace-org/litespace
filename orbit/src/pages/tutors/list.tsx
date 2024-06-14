@@ -6,11 +6,12 @@ import {
   List,
   ShowButton,
   useTable,
-  TagField,
   BooleanField,
+  TextField,
 } from "@refinedev/antd";
 import { Space, Table } from "antd";
 import React from "react";
+import dayjs from "@/lib/dayjs";
 
 export const TutorList: React.FC = () => {
   const { tableProps } = useTable<ITutor.FullTutor[]>({
@@ -37,12 +38,24 @@ export const TutorList: React.FC = () => {
         <Table.Column
           dataIndex="createdAt"
           title="Created at"
-          render={(value: string) => <DateField value={value} format="LLL" />}
+          render={(value: string) => (
+            <>
+              <DateField value={value} format="LLL" />
+              <br />
+              (<TextField value={dayjs(value).fromNow()} />)
+            </>
+          )}
         />
         <Table.Column
           dataIndex="udpatedAt"
           title="Updated At"
-          render={(value: string) => <DateField value={value} format="LLL" />}
+          render={(value: string) => (
+            <>
+              <DateField value={value} format="LLL" />
+              <br />
+              (<TextField value={dayjs(value).fromNow()} />)
+            </>
+          )}
         />
         <Table.Column
           title="Actions"

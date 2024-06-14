@@ -1,6 +1,7 @@
 import { knex } from "@/models/query";
 import { first, isEmpty, values } from "lodash";
 import { IUser, ITutor } from "@litespace/types";
+import { isValuedObject } from "@/lib/utils";
 
 export class Tutors {
   async create(
@@ -44,8 +45,7 @@ export class Tutors {
       avatar: tutor.avatar,
     } as const;
 
-    const emptyUserPayload = values(updateUserPayload).every(isEmpty);
-    if (!emptyUserPayload)
+    if (isValuedObject(updateUserPayload))
       await knex<IUser.Row>("users").update({
         ...updateUserPayload,
         updated_at: new Date(),
@@ -61,8 +61,7 @@ export class Tutors {
       interview_url: tutor.interviewUrl,
     } as const;
 
-    const emptyTutorPayload = values(updateTutorPayload).every(isEmpty);
-    if (!emptyTutorPayload)
+    if (isValuedObject(updateTutorPayload))
       await knex<ITutor.Row>("tutors")
         .update({
           ...updateTutorPayload,

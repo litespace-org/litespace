@@ -1,3 +1,6 @@
-export function selectUpdatedOrNone<T>(prev?: T, updated?: T): T | undefined {
+export function selectUpdatedOrNone<P, U>(
+  prev?: P,
+  updated?: U
+): U | undefined {
   return updated !== prev ? updated : undefined;
 }

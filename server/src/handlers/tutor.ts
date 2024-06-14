@@ -7,6 +7,7 @@ import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { generateAuthorizationToken } from "@/lib/auth";
 import { IUser } from "@litespace/types";
+import { hashPassword } from "@/lib/user";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -18,9 +19,13 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   const tutorId = schema.http.tutor.update.params.parse(req.params).id;
   const fields = schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
-  if (!user) return next(tutorNotFound);
+  if (!user) return next(tutorNotFound());
 
-  await tutors.update(tutorId, fields);
+  await tutors.update(tutorId, {
+    ...fields,
+    password: fields.password ? hashPassword(fields.password) : undefined,
+  });
+
   res.status(200).send();
 }
 
