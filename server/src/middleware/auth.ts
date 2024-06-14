@@ -105,6 +105,7 @@ export function authorizer() {
 export const student = authorizer().student().handler();
 export const tutor = authorizer().tutor().handler();
 export const admins = authorizer().admins().handler();
+export const superAdmin = authorizer().superAdmin().handler();
 export const staff = authorizer().staff().handler();
 export const authorized = authorizer().handler();
 
