@@ -20,6 +20,7 @@ exports.up = (pgm) => {
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
   pgm.createType("call_type", ["lesson", "interview"]);
   pgm.createType("user_gender_type", ["male", "female"]);
+  pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
 
   // tables
   pgm.createTable("sessons", {
@@ -100,19 +101,77 @@ exports.up = (pgm) => {
 
   pgm.createTable("subscriptions", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    student_id: {
+    user_id: {
       type: "SERIAL",
       notNull: true,
       references: "users(id)",
       unique: true,
     },
-    monthly_minutes: { type: "SMALLINT", notNull: true },
-    remaining_minutes: { type: "SMALLINT", notNull: true },
+    plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
+    plan_cycle: { type: "plan_cycle", notNull: true },
+    remaining_monthly_minutes: { type: "SMALLINT", notNull: true },
     auto_renewal: { type: "BOOLEAN", notNull: true, default: false },
     start: { type: "TIMESTAMPTZ", notNull: true },
-    end: { type: "TIMESTAMPTZ", notNull: true },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("plans", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    weekly_minutes: { type: "INT", notNull: true },
+    full_month_price: { type: "INT", notNull: true },
+    full_quarter_price: { type: "INT", notNull: true },
+    half_year_price: { type: "INT", notNull: true },
+    full_year_price: { type: "INT", notNull: true },
+    full_month_discount: { type: "INT", notNull: true, default: 0 },
+    full_quarter_discount: { type: "INT", notNull: true, default: 0 },
+    half_year_discount: { type: "INT", notNull: true, default: 0 },
+    full_year_discount: { type: "INT", notNull: true, default: 0 },
+    active: { type: "BOOLEAN", default: false },
+    for_invites_only: { type: "BOOLEAN", default: false },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("coupons", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    code: { type: "VARCHAR(255)", notNull: true },
+    discount: { type: "INT", notNull: true },
+    expires_at: { type: "DATE", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+  });
+
+  pgm.createTable("invites", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    email: { type: "VARCHAR(50)", notNull: true, unique: true },
+    plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("reports", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    reporter: { type: "SERIAL", notNull: true, references: "users(id)" },
+    title: { type: "VARCHAR(255)", notNull: true },
+    description: { type: "TEXT(1000)", notNull: true },
+    category: { type: "VARCHAR(255)", notNull: true },
+    addressed: { type: "BOOLEAN", notNull: true },
+    addressed_at: { type: "TIMESTAMPTZ" },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("report_threads", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    message: { text: "TEXT(1000)", notNull: true },
+    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("rooms", {
