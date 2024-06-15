@@ -1,5 +1,5 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { ISlot, ITutor, IUser, as } from "@litespace/types";
+import { IPlan, ISlot, ITutor, IUser, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -11,6 +11,7 @@ export enum Resource {
   Tutors = "tutors",
   MySchedule = "my-schedule",
   MyInterviews = "my-interviews",
+  Plans = "plans",
 }
 
 const empty = { data: null };
@@ -36,6 +37,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.MyInterviews) {
       const call = await atlas.call.findHostCallById(resourceId);
       return { data: as.casted(call) };
+    }
+
+    if (resource === Resource.MyInterviews) {
+      const plan = await atlas.plan.findById(resourceId);
+      return { data: as.casted(plan) };
     }
 
     throw new Error("Not implemented");
@@ -116,6 +122,71 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.Plans && meta && meta.plan) {
+      const prev = as.casted<IPlan.Attributed>(meta.tutor);
+      const updated = as.casted<
+        Partial<{
+          weeklyMinutes: number;
+          fullMonthPrice: number;
+          fullQuarterPrice: number;
+          halfYearPrice: number;
+          fullyearPrice: number;
+          fullMonthDiscount: number;
+          fullQuarterDiscount: number;
+          halfYearDiscount: number;
+          fullYearDiscount: number;
+          forInvitesOnly: boolean;
+          active: boolean;
+        }>
+      >(variables);
+
+      await atlas.plan.update(resourceId, {
+        weeklyMinutes: selectUpdatedOrNone(
+          prev.weeklyMinutes,
+          updated.weeklyMinutes
+        ),
+        fullMonthPrice: selectUpdatedOrNone(
+          prev.fullMonthPrice,
+          updated.fullMonthPrice
+        ),
+        fullQuarterPrice: selectUpdatedOrNone(
+          prev.fullQuarterPrice,
+          updated.fullQuarterPrice
+        ),
+        halfYearPrice: selectUpdatedOrNone(
+          prev.halfYearPrice,
+          updated.halfYearPrice
+        ),
+        fullyearPrice: selectUpdatedOrNone(
+          prev.fullyearPrice,
+          updated.fullyearPrice
+        ),
+        fullMonthDiscount: selectUpdatedOrNone(
+          prev.fullMonthDiscount,
+          updated.fullMonthDiscount
+        ),
+        fullQuarterDiscount: selectUpdatedOrNone(
+          prev.fullQuarterDiscount,
+          updated.fullQuarterDiscount
+        ),
+        halfYearDiscount: selectUpdatedOrNone(
+          prev.halfYearDiscount,
+          updated.halfYearDiscount
+        ),
+        fullYearDiscount: selectUpdatedOrNone(
+          prev.fullYearDiscount,
+          updated.fullYearDiscount
+        ),
+        forInvitesOnly: selectUpdatedOrNone(
+          prev.forInvitesOnly,
+          updated.forInvitesOnly
+        ),
+        active: selectUpdatedOrNone(prev.active, updated.active),
+      });
+
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
@@ -163,6 +234,10 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(response) };
     }
 
+    if (resource === Resource.Plans) {
+      console.log({ variables, resource });
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
@@ -178,21 +253,14 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.Plans) {
+      await atlas.plan.delete(resourceId);
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   getList: async ({ resource, meta }: GetListParams) => {
-    if (resource === Resource.UserTypes) {
-      const list = [
-        { label: "Super Admin", value: "super_admin" },
-        { label: "Examiner", value: "examiner" },
-      ];
-
-      return {
-        data: as.any(list),
-        total: list.length,
-      };
-    }
-
     if (resource === Resource.MySchedule) {
       const slots = await atlas.slot.findMySlots();
       const calls = await atlas.call.findMyCalls();
@@ -219,6 +287,11 @@ export const dataProvider: DataProvider = {
 
       const hostId = as.int(id);
       const list = await atlas.call.findHostCalls(hostId);
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.Plans) {
+      const list = await atlas.plan.findAll();
       return { data: as.casted(list), total: list.length };
     }
 
