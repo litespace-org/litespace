@@ -21,9 +21,10 @@ import routerBindings, {
   UnsavedChangesNotifier,
   DocumentTitleHandler,
 } from "@refinedev/react-router-v6";
-import { MyInterviewList, MyInterviewShow } from "./pages/my-interviews";
-import { UserList, UserCreate, UserEdit, UserShow } from "./pages/users";
-import { TutorCreate, TutorEdit, TutorList, TutorShow } from "./pages/tutors";
+import { MyInterviewList, MyInterviewShow } from "@/pages/my-interviews";
+import { UserList, UserCreate, UserEdit, UserShow } from "@/pages/users";
+import { TutorCreate, TutorEdit, TutorList, TutorShow } from "@/pages/tutors";
+import { PlanCreate, PlanEdit, PlanList, PlanShow } from "@/pages/plans";
 import {
   MyScheduleCreate,
   MyScheduleEdit,
@@ -64,6 +65,14 @@ function App() {
                     edit: "/tutors/edit/:id",
                     show: "/tutors/show/:id",
                     meta: { canDelete: true, label: "Tutors" },
+                  },
+                  {
+                    name: Resource.Plans,
+                    list: "/plans",
+                    create: "/plans/create",
+                    edit: "/plans/edit/:id",
+                    show: "/plans/show/:id",
+                    meta: { canDelete: true, label: "Plans" },
                   },
                   {
                     name: Resource.MySchedule,
@@ -126,6 +135,12 @@ function App() {
                       <Route path="create" element={<TutorCreate />} />
                       <Route path="edit/:id" element={<TutorEdit />} />
                       <Route path="show/:id" element={<TutorShow />} />
+                    </Route>
+                    <Route path="/plans">
+                      <Route index element={<PlanList />} />
+                      <Route path="create" element={<PlanCreate />} />
+                      <Route path="edit/:id" element={<PlanEdit />} />
+                      <Route path="show/:id" element={<PlanShow />} />
                     </Route>
                     <Route path="/my-schedule">
                       <Route index element={<MyScheduleList />} />
