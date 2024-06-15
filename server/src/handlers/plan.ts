@@ -1,20 +1,24 @@
-import { forbidden, notfound } from "@/lib/error";
+import { notfound } from "@/lib/error";
 import { plans } from "@/models";
 import { schema } from "@/validation";
 import { identityObject } from "@/validation/utils";
-import { IUser } from "@litespace/types";
+import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 
 async function create(req: Request, res: Response) {
-  const payload = schema.http.plan.create.body.parse(req.body);
+  const payload: IPlan.CreateApiPayload = schema.http.plan.create.body.parse(
+    req.body
+  );
   await plans.create({ ...payload, createdBy: req.user.id });
   res.status(200).send();
 }
 
 async function update(req: Request, res: Response) {
   const { id } = identityObject.parse(req.params);
-  const payload = schema.http.plan.update.body.parse(req.body);
+  const payload: IPlan.UpdateApiPayload = schema.http.plan.update.body.parse(
+    req.body
+  );
   await plans.update(id, { ...payload, updatedBy: req.user.id });
   res.status(200).send();
 }

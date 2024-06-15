@@ -5,6 +5,7 @@ import { Auth } from "@/auth";
 import { Slot } from "@/slot";
 import { Backend } from "@litespace/types";
 import { Call } from "@/call";
+import { Plan } from "@/plan";
 
 export class Atlas {
   public readonly user: User;
@@ -13,6 +14,7 @@ export class Atlas {
   public readonly auth: Auth;
   public readonly slot: Slot;
   public readonly call: Call;
+  public readonly plan: Plan;
 
   constructor(backend: Backend) {
     this.user = new User(backend);
@@ -21,5 +23,6 @@ export class Atlas {
     this.auth = new Auth(backend);
     this.slot = new Slot(backend);
     this.call = new Call(backend);
+    this.plan = new Plan(backend);
   }
 }
