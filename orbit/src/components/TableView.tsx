@@ -79,7 +79,7 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
           if (record.type === "duration")
             return <TextField value={formatDuration(value)} />;
 
-          return value;
+          return <TextField value={value} strong />;
         }}
       />
     </Table>

@@ -38,12 +38,11 @@ export const CouponList: React.FC = () => {
           )}
         />
         <Table.Column
-          // dataIndex="type"
           title="Discount"
           render={(value: ICoupon.MappedAttributes) => {
             const list = [
-              { label: "Month: ", value: value.fullMonthDiscount },
-              { label: "Quarter: ", value: value.fullQuarterDiscount },
+              { label: "Month", value: value.fullMonthDiscount },
+              { label: "Quarter", value: value.fullQuarterDiscount },
               { label: "Half-Year", value: value.halfYearDiscount },
               { label: "Full-Year", value: value.fullYearDiscount },
             ];
