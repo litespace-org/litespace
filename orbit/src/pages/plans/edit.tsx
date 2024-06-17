@@ -1,24 +1,39 @@
-import { IUser } from "@litespace/types";
+import { IPlan, IUser } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
-import { DatePicker, Form, Input, Select } from "antd";
+import {
+  DatePicker,
+  Flex,
+  Form,
+  Input,
+  InputNumber,
+  Select,
+  Switch,
+} from "antd";
 import dayjs from "dayjs";
 import { genders, userTypes } from "@/lib/constants";
 import { useOne, useResource } from "@refinedev/core";
-import { Resource } from "@/providers/data";
+import { useMemo } from "react";
+import { asDurationParts } from "@/lib/utils";
 
 export const PlanEdit = () => {
   const { resource, id } = useResource();
-  const { data, isLoading } = useOne<IUser.Self>({
+  const { data, isLoading } = useOne<IPlan.Attributed>({
     resource: resource?.name,
     id,
   });
 
   const { formProps, saveButtonProps, formLoading, queryResult } =
-    useForm<IUser.Self>({
-      meta: { user: data?.data },
-    });
+    useForm<IPlan.Attributed>({ meta: { plan: data?.data } });
 
-  const user = queryResult?.data?.data;
+  const plan = useMemo(
+    () => queryResult?.data?.data,
+    [queryResult?.data?.data]
+  );
+
+  const [hours, minutes] = useMemo(
+    () => asDurationParts(plan?.weeklyMinutes || 0),
+    [plan?.weeklyMinutes]
+  );
 
   return (
     <Edit
@@ -26,69 +41,88 @@ export const PlanEdit = () => {
       isLoading={formLoading || isLoading}
     >
       <Form {...formProps} layout="vertical">
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[
-            { min: 3 },
-            { max: 50 },
-            { pattern: /^[\u0600-\u06FF\s]+$/, message: "Invalid arabic name" },
-          ]}
-          initialValue={user?.name}
-        >
-          <Input placeholder={user?.name || undefined} />
+        <Flex gap="20px">
+          <Form.Item label="Hours" name="hours" initialValue={hours}>
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+          <Form.Item label="Minutes" name="minutes" initialValue={minutes}>
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item
+            label="Full Month Price"
+            name="fullMonthPrice"
+            initialValue={hours}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Full Month Discount"
+            name="fullMonthDiscount"
+            initialValue={minutes}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item
+            label="Full Quarter Price"
+            name="fullQuarterPrice"
+            initialValue={hours}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Full Quarter Discount"
+            name="fullQuarterDiscount"
+            initialValue={minutes}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item
+            label="Half Year Price"
+            name="halfYearPrice"
+            initialValue={hours}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Half Year Discount"
+            name="halfYearDiscount"
+            initialValue={minutes}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item
+            label="Full Year Price"
+            name="fullYearPrice"
+            initialValue={hours}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+          <Form.Item
+            label="Full Year Discount"
+            name="fullYearDiscount"
+            initialValue={minutes}
+          >
+            <InputNumber size="large" style={{ width: "150px" }} />
+          </Form.Item>
+        </Flex>
+
+        <Form.Item label="Active" name="active">
+          <Switch />
         </Form.Item>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-              message: "Invalid email",
-            },
-          ]}
-          initialValue={user?.email}
-        >
-          <Input autoComplete="username" />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              pattern:
-                /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-              message: "Invalid password",
-            },
-          ]}
-        >
-          <Input type="password" autoComplete="current-password" />
-        </Form.Item>
-        <Form.Item
-          label="Avatar"
-          name="avatar"
-          rules={[
-            {
-              pattern:
-                /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi,
-              message: "Invalid avatar url",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Birthday"
-          name="userBirthday"
-          initialValue={user?.birthday ? dayjs(user.birthday) : undefined}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item label="Gender" name="gender">
-          <Select options={genders} />
-        </Form.Item>
-        <Form.Item label="User Type" name="type">
-          <Select options={userTypes} />
+        <Form.Item label="For Invites Only" name="forInvitesOnly">
+          <Switch />
         </Form.Item>
       </Form>
     </Edit>

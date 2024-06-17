@@ -24,8 +24,7 @@ export function applyDiscount(price: number, discount: number): number {
 }
 
 export function formatDuration(duration: number) {
-  const hours = Math.floor(duration / 60);
-  const minutes = duration % 60;
+  const [hours, minutes] = asDurationParts(duration);
 
   const zeroHours = hours === 0;
   const zeroMinutes = minutes === 0;
@@ -37,4 +36,10 @@ export function formatDuration(duration: number) {
   if (zeroHours) return `${minutes} ${minutesLabel}`;
   if (zeroMinutes) return `${hours} ${hoursLabel}`;
   return `${hours} ${hoursLabel} and ${minutes} ${minutesLabel}`;
+}
+
+export function asDurationParts(duration: number) {
+  const hours = Math.floor(duration / 60);
+  const minutes = duration % 60;
+  return [hours, minutes];
 }
