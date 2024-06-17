@@ -101,6 +101,7 @@ exports.up = (pgm) => {
 
   pgm.createTable("plans", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    alias: { type: "VARCHAR(255)", notNull: true },
     weekly_minutes: { type: "INT", notNull: true },
     full_month_price: { type: "INT", notNull: true },
     full_quarter_price: { type: "INT", notNull: true },
@@ -126,11 +127,11 @@ exports.up = (pgm) => {
     full_quarter_discount: { type: "INT", notNull: true, default: 0 },
     half_year_discount: { type: "INT", notNull: true, default: 0 },
     full_year_discount: { type: "INT", notNull: true, default: 0 },
-    expires_at: { type: "TIMESTAMPTZ", notNull: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    expires_at: { type: "TIMESTAMP", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_by: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+    updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("invites", {
@@ -138,6 +139,8 @@ exports.up = (pgm) => {
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
     expires_at: { type: "TIMESTAMPTZ", notNull: true },
+    accepted: { type: "BOOLEAN", notNull: true, default: false },
+    accepted_at: { type: "TIMESTAMPTZ", notNull: true },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },

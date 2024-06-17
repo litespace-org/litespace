@@ -1,5 +1,6 @@
 export type Row = {
   id: number;
+  alias: string;
   weekly_minutes: number;
   full_month_price: number;
   full_quarter_price: number;
@@ -19,6 +20,7 @@ export type Row = {
 
 export type Self = {
   id: number;
+  alias: string;
   weeklyMinutes: number;
   fullMonthPrice: number;
   fullQuarterPrice: number;
@@ -63,6 +65,7 @@ export type MappedAttributes = SelectableSelf & {
 };
 
 export type CreatePayload = {
+  alias: string;
   weeklyMinutes: number;
   fullMonthPrice: number;
   fullQuarterPrice: number;

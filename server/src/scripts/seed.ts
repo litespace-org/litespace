@@ -1,4 +1,4 @@
-import { calls, plans, slots, tutors, users } from "@/models";
+import { calls, coupons, plans, slots, tutors, users } from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
@@ -58,6 +58,7 @@ async function main(): Promise<void> {
   const examinerCalls = await calls.findHostCalls(examiner.id);
 
   const plan = await plans.create({
+    alias: "Basic",
     weeklyMinutes: 2.5 * 60,
     fullMonthPrice: 1000_00,
     fullQuarterPrice: 2000_00,
@@ -69,6 +70,17 @@ async function main(): Promise<void> {
     fullYearDiscount: 40_09,
     forInvitesOnly: false,
     active: true,
+    createdBy: admin.id,
+  });
+
+  const coupon = await coupons.create({
+    code: "LiteSpace2024",
+    planId: plan.id,
+    expiresAt: dayjs().add(1, "month").toISOString(),
+    fullMonthDiscount: 10_00,
+    fullQuarterDiscount: 20_00,
+    halfYearDiscount: 30_00,
+    fullYearDiscount: 40_00,
     createdBy: admin.id,
   });
 }

@@ -7,6 +7,7 @@ export class Plans {
     const now = new Date();
     const rows = await knex<IPlan.Row>("plans").insert(
       {
+        alias: payload.alias,
         weekly_minutes: payload.weeklyMinutes,
         full_month_price: payload.fullMonthPrice,
         full_quarter_price: payload.fullQuarterPrice,
@@ -32,7 +33,7 @@ export class Plans {
     return this.from(row);
   }
 
-  async update(id: number, payload: IPlan.UpdatePayload) {
+  async update(id: number, payload: IPlan.UpdatePayload): Promise<IPlan.Self> {
     const rows = await knex<IPlan.Row>("plans")
       .update(
         {
@@ -80,6 +81,7 @@ export class Plans {
     return knex<IPlan.Row>({ plans: "plans" })
       .select<IPlan.Attributed[]>({
         id: "plans.id",
+        alias: "plans.alias",
         weeklyMinutes: "plans.weekly_minutes",
         fullMonthPrice: "plans.full_month_price",
         fullQuarterPrice: "plans.full_quarter_price",
@@ -136,6 +138,7 @@ export class Plans {
   from(row: IPlan.Row): IPlan.Self {
     return {
       id: row.id,
+      alias: row.alias,
       weeklyMinutes: row.weekly_minutes,
       fullMonthPrice: row.full_month_price,
       fullQuarterPrice: row.full_quarter_price,

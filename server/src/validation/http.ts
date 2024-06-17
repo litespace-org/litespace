@@ -179,6 +179,7 @@ const chat = {
 const plan = {
   create: {
     body: zod.object({
+      alias: string,
       weeklyMinutes: number,
       fullMonthPrice: number,
       fullQuarterPrice: number,

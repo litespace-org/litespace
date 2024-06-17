@@ -7,5 +7,6 @@ export * as IRating from "@/rating";
 export * as IMessage from "@/message";
 export * as ICall from "@/call";
 export * as IPlan from "@/plan";
+export * as ICoupon from "@/coupon";
 export * from "@/api";
 export * from "@/lib";

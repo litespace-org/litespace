@@ -1,6 +1,9 @@
+import { RecordAttributes, MappedRecordAttributes } from "@/utils";
+
 export type Row = {
   id: number;
   code: string;
+  plan_id: number;
   full_month_discount: number;
   full_quarter_discount: number;
   half_year_discount: number;
@@ -15,6 +18,7 @@ export type Row = {
 export type Self = {
   id: number;
   code: string;
+  planId: number;
   fullMonthDiscount: number;
   fullQuarterDiscount: number;
   halfYearDiscount: number;
@@ -26,8 +30,24 @@ export type Self = {
   updatedBy: number;
 };
 
+type SelectableSelf = Omit<
+  Self,
+  "createdAt" | "updatedAt" | "createdBy" | "updatedBy" | "expiresAt"
+>;
+
+export type Attributed = SelectableSelf &
+  RecordAttributes & {
+    expiresAt: Date;
+  };
+
+export type MappedAttributes = SelectableSelf &
+  MappedRecordAttributes & {
+    expiresAt: string;
+  };
+
 export type CreatePayload = {
   code: string;
+  planId: number;
   fullMonthDiscount: number;
   fullQuarterDiscount: number;
   halfYearDiscount: number;
@@ -36,8 +56,10 @@ export type CreatePayload = {
   createdBy: number;
 };
 
-export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">>;
+export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
+  updatedBy: number;
+};
 
 export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
 
-export type UpdateApiPayload = UpdatePayload;
+export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
