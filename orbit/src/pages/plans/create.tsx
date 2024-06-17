@@ -1,5 +1,5 @@
 import { Create, useForm } from "@refinedev/antd";
-import { Flex, Form, InputNumber, Switch } from "antd";
+import { Flex, Form, Input, InputNumber, Switch } from "antd";
 import Coin from "@/icons/Coin";
 import {
   discountFormatter,
@@ -16,6 +16,9 @@ export const PlanCreate = () => {
   return (
     <Create saveButtonProps={saveButtonProps}>
       <Form {...formProps} layout="vertical" autoComplete="off">
+        <Form.Item label="Alias" name="alias" rules={[required]}>
+          <Input size="large" />
+        </Form.Item>
         <Flex gap="20px">
           <Form.Item
             label="Hours"

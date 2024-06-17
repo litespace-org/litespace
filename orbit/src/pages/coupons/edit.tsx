@@ -1,99 +1,111 @@
-import { IUser } from "@litespace/types";
-import { Edit, useForm } from "@refinedev/antd";
-import { DatePicker, Form, Input, Select } from "antd";
+import { ICoupon, IPlan, IUser } from "@litespace/types";
+import { Edit, useForm, useSelect } from "@refinedev/antd";
+import { DatePicker, Flex, Form, Input, InputNumber, Select } from "antd";
 import dayjs from "dayjs";
 import { genders, userTypes } from "@/lib/constants";
-import { useOne, useResource } from "@refinedev/core";
+import {
+  HttpError,
+  UseSelectProps,
+  useOne,
+  useResource,
+} from "@refinedev/core";
 import { useMemo } from "react";
+import { PercentageOutlined } from "@ant-design/icons";
+import { discountFormatter, discountParser, formatDuration } from "@/lib/utils";
+import { Resource } from "@/providers/data";
+
+interface ICategory {
+  id: number;
+  weeklyMinutes: number;
+}
 
 export const CouponEdit = () => {
   const { resource, id } = useResource();
-  const { data, isLoading } = useOne<IUser.Self>({
-    resource: resource?.name,
-    id,
-  });
-
-  const { formProps, saveButtonProps, formLoading, queryResult } =
-    useForm<IUser.Self>({
-      meta: { user: data?.data },
-    });
-
-  const user = useMemo(
-    () => queryResult?.data?.data,
-    [queryResult?.data?.data]
+  const { data, isLoading: isCouponLoading } = useOne<ICoupon.MappedAttributes>(
+    {
+      resource: resource?.name,
+      id,
+    }
   );
 
-  console.log({ saveButtonProps, formProps });
+  const { formProps, saveButtonProps, formLoading, queryResult } =
+    useForm<ICoupon.MappedAttributes>({
+      meta: { coupon: data?.data },
+    });
+
+  const { selectProps } = useSelect<IPlan.MappedAttributes>({
+    resource: Resource.Plans,
+    optionLabel: ((item: IPlan.MappedAttributes) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      `#${item.id} ${item.alias} - ${formatDuration(item.weeklyMinutes)}`) as any,
+    optionValue: "id",
+    searchField: "alias",
+    sorters: [{ field: "id", order: "asc" }],
+  });
 
   return (
     <Edit
       saveButtonProps={saveButtonProps}
-      isLoading={formLoading || isLoading}
+      isLoading={formLoading || isCouponLoading}
     >
       <Form {...formProps} layout="vertical">
-        <Form.Item
-          label="Name"
-          name="name"
-          rules={[
-            { min: 3 },
-            { max: 50 },
-            { pattern: /^[\u0600-\u06FF\s]+$/, message: "Invalid arabic name" },
-          ]}
-          initialValue={user?.name}
-        >
-          <Input placeholder={user?.name || undefined} />
+        <Form.Item label="Code" name="code">
+          <Input size="large" />
         </Form.Item>
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              pattern: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-              message: "Invalid email",
-            },
-          ]}
-          initialValue={user?.email}
-        >
-          <Input autoComplete="username" />
-        </Form.Item>
-        <Form.Item
-          label="Password"
-          name="password"
-          rules={[
-            {
-              pattern:
-                /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-              message: "Invalid password",
-            },
-          ]}
-        >
-          <Input type="password" autoComplete="current-password" />
-        </Form.Item>
-        <Form.Item
-          label="Avatar"
-          name="avatar"
-          rules={[
-            {
-              pattern:
-                /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi,
-              message: "Invalid avatar url",
-            },
-          ]}
-        >
-          <Input />
-        </Form.Item>
-        <Form.Item
-          label="Birthday"
-          name="userBirthday"
-          initialValue={user?.birthday ? dayjs(user.birthday) : undefined}
-        >
-          <DatePicker />
-        </Form.Item>
-        <Form.Item label="Gender" name="gender">
-          <Select options={genders} />
-        </Form.Item>
-        <Form.Item label="User Type" name="type">
-          <Select options={userTypes} />
+        <Flex gap="20px">
+          <Form.Item label="Full Month Discount" name="fullMonthDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discountFormatter}
+              parser={discountParser}
+              min="0"
+            />
+          </Form.Item>
+
+          <Form.Item label="Full Quarter Discount" name="fullQuarterDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discountFormatter}
+              parser={discountParser}
+              min="0"
+            />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item label="Half Year Discount" name="halfYearDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discountFormatter}
+              parser={discountParser}
+              min="0"
+            />
+          </Form.Item>
+
+          <Form.Item label="Full Year Discount" name="fullYearDiscount">
+            <InputNumber
+              size="large"
+              addonBefore={<PercentageOutlined />}
+              style={{ width: "200px" }}
+              formatter={discountFormatter}
+              parser={discountParser}
+            />
+          </Form.Item>
+        </Flex>
+
+        <Form.Item label="Target Plan" name="planId">
+          <Select
+            placeholder="Select a plan"
+            style={{ width: "420px" }}
+            {...selectProps}
+            size="large"
+          />
         </Form.Item>
       </Form>
     </Edit>

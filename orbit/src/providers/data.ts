@@ -1,5 +1,5 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { IPlan, ISlot, ITutor, IUser, as } from "@litespace/types";
+import { ICoupon, IPlan, ISlot, ITutor, IUser, as } from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -187,6 +187,41 @@ export const dataProvider: DataProvider = {
           updated.forInvitesOnly
         ),
         active: selectUpdatedOrNone(prev.active, updated.active),
+      });
+
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Coupons && meta && meta.coupon) {
+      const prev = as.casted<ICoupon.MappedAttributes>(meta.coupon);
+      const updated = as.casted<{
+        code: string;
+        fullMonthDiscount: number;
+        fullQuarterDiscount: number;
+        halfYearDiscount: number;
+        fullYearDiscount: number;
+        planId: number;
+      }>(variables);
+
+      await atlas.coupon.update(resourceId, {
+        code: selectUpdatedOrNone(prev.code, updated.code),
+        fullMonthDiscount: selectUpdatedOrNone(
+          prev.fullMonthDiscount,
+          updated.fullMonthDiscount
+        ),
+        fullQuarterDiscount: selectUpdatedOrNone(
+          prev.fullQuarterDiscount,
+          updated.fullQuarterDiscount
+        ),
+        halfYearDiscount: selectUpdatedOrNone(
+          prev.halfYearDiscount,
+          updated.halfYearDiscount
+        ),
+        fullYearDiscount: selectUpdatedOrNone(
+          prev.fullYearDiscount,
+          updated.fullYearDiscount
+        ),
+        planId: selectUpdatedOrNone(prev.planId, updated.planId),
       });
 
       return as.casted(empty);

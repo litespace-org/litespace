@@ -1,11 +1,9 @@
-import { ICoupon, IPlan, IUser } from "@litespace/types";
+import { ICoupon, IPlan } from "@litespace/types";
 import { Show } from "@refinedev/antd";
-import { useLink, useOne, useShow } from "@refinedev/core";
+import { useOne, useShow } from "@refinedev/core";
 import { useMemo } from "react";
 import TableView, { TableRow } from "@/components/TableView";
-import { Button } from "antd";
 import { Resource } from "@/providers/data";
-import { UserOutlined } from "@ant-design/icons";
 import { formatDuration } from "@/lib/utils";
 
 export const CouponShow = () => {
@@ -28,7 +26,7 @@ export const CouponShow = () => {
       { name: "Code", value: coupon.code },
       {
         name: "Plan",
-        value: `#${coupon.planId} - ${formatDuration(planData?.data.weeklyMinutes || 0)}`,
+        value: `#${coupon.planId} ${planData?.data.alias} - ${formatDuration(planData?.data.weeklyMinutes || 0)}`,
         href: `/plans/show/${coupon.planId}`,
         type: "url",
       },
@@ -73,6 +71,7 @@ export const CouponShow = () => {
     ];
   }, [
     coupon,
+    planData?.data.alias,
     planData?.data.fullMonthPrice,
     planData?.data.fullQuarterPrice,
     planData?.data.fullYearPrice,
