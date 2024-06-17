@@ -1,6 +1,7 @@
 import { IPlan } from "@litespace/types";
 import { knex } from "@/models/query";
 import { first, omit } from "lodash";
+import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 
 export class Plans {
   async create(payload: IPlan.CreatePayload): Promise<IPlan.Self> {
@@ -66,73 +67,37 @@ export class Plans {
   }
 
   async findById(id: number): Promise<IPlan.MappedAttributes | null> {
-    const plans = this.mapSelectQuery(
-      await this.getSelectQuery().where("plans.id", id)
+    const plans = this.mapAttributesQuery(
+      await this.getAttributesQuery().where("plans.id", id)
     );
 
     return first(plans) || null;
   }
 
   async findAll(): Promise<IPlan.MappedAttributes[]> {
-    return this.mapSelectQuery(await this.getSelectQuery());
+    return this.mapAttributesQuery(await this.getAttributesQuery());
   }
 
-  getSelectQuery() {
-    return knex<IPlan.Row>({ plans: "plans" })
-      .select<IPlan.Attributed[]>({
-        id: "plans.id",
-        alias: "plans.alias",
-        weeklyMinutes: "plans.weekly_minutes",
-        fullMonthPrice: "plans.full_month_price",
-        fullQuarterPrice: "plans.full_quarter_price",
-        halfYearPrice: "plans.half_year_price",
-        fullYearPrice: "plans.full_year_price",
-        fullMonthDiscount: "plans.full_month_discount",
-        fullQuarterDiscount: "plans.full_quarter_discount",
-        halfYearDiscount: "plans.half_year_discount",
-        fullYearDiscount: "plans.full_year_discount",
-        forInvitesOnly: "plans.for_invites_only",
-        active: "plans.active",
-        createdAt: "plans.created_at",
-        createdById: "plans.created_by",
-        createdByEmail: "creator.email",
-        createdByName: "creator.name",
-        updatedAt: "plans.updated_at",
-        updatedById: "plans.updated_by",
-        updatedByEmail: "updator.email",
-        updatedByName: "updator.name",
-      })
-      .innerJoin("users AS creator", "creator.id", "plans.created_by")
-      .innerJoin("users AS updator", "updator.id", "plans.updated_by")
-      .clone();
+  getAttributesQuery() {
+    return asAttributesQuery<IPlan.Row, IPlan.Attributed[]>("plans", {
+      id: "plans.id",
+      alias: "plans.alias",
+      weeklyMinutes: "plans.weekly_minutes",
+      fullMonthPrice: "plans.full_month_price",
+      fullQuarterPrice: "plans.full_quarter_price",
+      halfYearPrice: "plans.half_year_price",
+      fullYearPrice: "plans.full_year_price",
+      fullMonthDiscount: "plans.full_month_discount",
+      fullQuarterDiscount: "plans.full_quarter_discount",
+      halfYearDiscount: "plans.half_year_discount",
+      fullYearDiscount: "plans.full_year_discount",
+      forInvitesOnly: "plans.for_invites_only",
+      active: "plans.active",
+    });
   }
 
-  mapSelectQuery(list: IPlan.Attributed[]): IPlan.MappedAttributes[] {
-    return list.map((plan) =>
-      omit(
-        {
-          ...plan,
-          createdBy: {
-            id: plan.createdById,
-            email: plan.createdByEmail,
-            name: plan.createdByName,
-          },
-          updatedBy: {
-            id: plan.updatedById,
-            email: plan.updatedByEmail,
-            name: plan.updatedByName,
-          },
-          createdAt: plan.createdAt.toISOString(),
-          updatedAt: plan.updatedAt.toISOString(),
-        },
-        "createdById",
-        "createdByEmail",
-        "createdByName",
-        "updatedById",
-        "udpatedByEmail",
-        "updatedByName"
-      )
-    );
+  mapAttributesQuery(list: IPlan.Attributed[]): IPlan.MappedAttributes[] {
+    return mapAttributesQuery(list, () => ({}));
   }
 
   from(row: IPlan.Row): IPlan.Self {

@@ -1,6 +1,7 @@
 import { IInvite } from "@litespace/types";
 import { knex } from "./query";
 import { first, omit } from "lodash";
+import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 
 export class Invites {
   async create(payload: IInvite.CreatePayload): Promise<IInvite.Self> {
@@ -53,69 +54,31 @@ export class Invites {
   }
 
   async findById(id: number): Promise<IInvite.MappedAttributes | null> {
-    const plans = this.mapSelectQuery(
-      await this.getSelectQuery().where("invites.id", id)
+    const plans = this.mapAttributesQuery(
+      await this.getAttributesQuery().where("invites.id", id)
     );
     return first(plans) || null;
   }
 
   async findAll(): Promise<IInvite.MappedAttributes[]> {
-    return this.mapSelectQuery(await this.getSelectQuery());
+    return this.mapAttributesQuery(await this.getAttributesQuery());
   }
 
-  getSelectQuery() {
-    return knex<IInvite.Row>("invites")
-      .select<IInvite.Attributed[]>({
-        id: "invites.id",
-        email: "invites.email",
-        planId: "invites.plan_id",
-        acceptedAt: "invites.accepted_at",
-        expiresAt: "invites.expires_at",
-        createdAt: "invites.created_at",
-        createdById: "invites.created_by",
-        createdByEmail: "creator.email",
-        createdByName: "creator.name",
-        updatedAt: "invites.updated_at",
-        updatedById: "invites.updated_by",
-        updatedByEmail: "updator.email",
-        updatedByName: "updator.name",
-      })
-      .innerJoin("users AS creator", "creator.id", "invites.created_by")
-      .innerJoin("users AS updator", "updator.id", "invites.updated_by")
-      .clone();
+  getAttributesQuery() {
+    return asAttributesQuery<IInvite.Row, IInvite.Attributed[]>("invites", {
+      id: "invites.id",
+      email: "invites.email",
+      planId: "invites.plan_id",
+      acceptedAt: "invites.accepted_at",
+      expiresAt: "invites.expires_at",
+    });
   }
 
-  // todo: impl. mapping util
-  mapSelectQuery(list: IInvite.Attributed[]): IInvite.MappedAttributes[] {
-    return list.map((invite) =>
-      omit(
-        {
-          ...invite,
-          createdBy: {
-            id: invite.createdById,
-            email: invite.createdByEmail,
-            name: invite.createdByName,
-          },
-          updatedBy: {
-            id: invite.updatedById,
-            email: invite.updatedByEmail,
-            name: invite.updatedByName,
-          },
-          createdAt: invite.createdAt.toISOString(),
-          updatedAt: invite.updatedAt.toISOString(),
-          expiresAt: invite.expiresAt.toISOString(),
-          acceptedAt: invite.acceptedAt
-            ? invite.acceptedAt.toISOString()
-            : null,
-        },
-        "createdById",
-        "createdByEmail",
-        "createdByName",
-        "updatedById",
-        "udpatedByEmail",
-        "updatedByName"
-      )
-    );
+  mapAttributesQuery(list: IInvite.Attributed[]): IInvite.MappedAttributes[] {
+    return mapAttributesQuery(list, (item) => ({
+      expiresAt: item.expiresAt.toISOString(),
+      acceptedAt: item.acceptedAt ? item.acceptedAt.toISOString() : null,
+    }));
   }
 
   from(row: IInvite.Row): IInvite.Self {
