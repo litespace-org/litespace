@@ -23,7 +23,7 @@ export type Self = {
   fullMonthPrice: number;
   fullQuarterPrice: number;
   halfYearPrice: number;
-  fullyearPrice: number;
+  fullYearPrice: number;
   fullMonthDiscount: number;
   fullQuarterDiscount: number;
   halfYearDiscount: number;
@@ -67,7 +67,7 @@ export type CreatePayload = {
   fullMonthPrice: number;
   fullQuarterPrice: number;
   halfYearPrice: number;
-  fullyearPrice: number;
+  fullYearPrice: number;
   fullMonthDiscount: number;
   fullQuarterDiscount: number;
   halfYearDiscount: number;

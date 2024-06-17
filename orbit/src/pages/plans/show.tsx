@@ -23,7 +23,7 @@ export const PlanShow = () => {
         type: "price",
       },
       { name: "Half-Year Price", value: plan.halfYearPrice, type: "price" },
-      { name: "Full-Year Price", value: plan.fullyearPrice, type: "price" },
+      { name: "Full-Year Price", value: plan.fullYearPrice, type: "price" },
       {
         name: "Full Month Discount",
         value: plan.fullMonthDiscount,
@@ -45,7 +45,7 @@ export const PlanShow = () => {
       {
         name: "Full-Year Discount",
         value: plan.fullYearDiscount,
-        original: plan.fullyearPrice,
+        original: plan.fullYearPrice,
         type: "discount",
       },
       { name: "Invites Only", value: plan.forInvitesOnly, type: "boolean" },

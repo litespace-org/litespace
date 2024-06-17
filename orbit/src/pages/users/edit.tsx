@@ -4,7 +4,7 @@ import { DatePicker, Form, Input, Select } from "antd";
 import dayjs from "dayjs";
 import { genders, userTypes } from "@/lib/constants";
 import { useOne, useResource } from "@refinedev/core";
-import { Resource } from "@/providers/data";
+import { useMemo } from "react";
 
 export const UserEdit = () => {
   const { resource, id } = useResource();
@@ -18,7 +18,12 @@ export const UserEdit = () => {
       meta: { user: data?.data },
     });
 
-  const user = queryResult?.data?.data;
+  const user = useMemo(
+    () => queryResult?.data?.data,
+    [queryResult?.data?.data]
+  );
+
+  console.log({ saveButtonProps, formProps });
 
   return (
     <Edit

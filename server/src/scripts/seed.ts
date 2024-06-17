@@ -62,7 +62,7 @@ async function main(): Promise<void> {
     fullMonthPrice: 1000_00,
     fullQuarterPrice: 2000_00,
     halfYearPrice: 2000_00,
-    fullyearPrice: 3000_00,
+    fullYearPrice: 3000_00,
     fullMonthDiscount: 10_01,
     fullQuarterDiscount: 20_33,
     halfYearDiscount: 30_80,

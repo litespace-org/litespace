@@ -9,7 +9,12 @@ import { Table } from "antd";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { formatEgp, formatPercent } from "@/lib/format";
-import { applyDiscount, formatDuration, unscaleDiscount } from "@/lib/utils";
+import {
+  applyDiscount,
+  formatDuration,
+  unscaleDiscount,
+  unscalePrice,
+} from "@/lib/utils";
 
 export type TableRow = {
   name: string;
@@ -44,7 +49,7 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
             );
 
           if (record.type === "price")
-            return <TextField value={formatEgp(value)} />;
+            return <TextField value={formatEgp(unscalePrice(value))} />;
 
           if (record.type === "discount") {
             const original = record.original || 0;
@@ -53,7 +58,12 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
                 <TextField value={formatPercent(unscaleDiscount(value))} />
                 <br />
                 (Original:{" "}
-                <TextField value={formatEgp(original)} strong italic />, After:{" "}
+                <TextField
+                  value={formatEgp(unscalePrice(original))}
+                  strong
+                  italic
+                />
+                , After:{" "}
                 <TextField
                   value={formatEgp(applyDiscount(original, value))}
                   strong

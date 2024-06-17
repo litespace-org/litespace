@@ -130,7 +130,7 @@ export const dataProvider: DataProvider = {
           fullMonthPrice: number;
           fullQuarterPrice: number;
           halfYearPrice: number;
-          fullyearPrice: number;
+          fullYearPrice: number;
           fullMonthDiscount: number;
           fullQuarterDiscount: number;
           halfYearDiscount: number;
@@ -157,9 +157,9 @@ export const dataProvider: DataProvider = {
           prev.halfYearPrice,
           updated.halfYearPrice
         ),
-        fullyearPrice: selectUpdatedOrNone(
-          prev.fullyearPrice,
-          updated.fullyearPrice
+        fullYearPrice: selectUpdatedOrNone(
+          prev.fullYearPrice,
+          updated.fullYearPrice
         ),
         fullMonthDiscount: selectUpdatedOrNone(
           prev.fullMonthDiscount,

@@ -2,7 +2,7 @@ export function formatEgp(value: number) {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
     currency: "EGP",
-  }).format(value / 100);
+  }).format(value);
 }
 
 export function formatPercent(value: number) {

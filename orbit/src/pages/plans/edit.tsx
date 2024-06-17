@@ -1,5 +1,5 @@
 import { IPlan, IUser } from "@litespace/types";
-import { Edit, useForm } from "@refinedev/antd";
+import { Edit, TextField, useForm } from "@refinedev/antd";
 import {
   DatePicker,
   Flex,
@@ -13,7 +13,16 @@ import dayjs from "dayjs";
 import { genders, userTypes } from "@/lib/constants";
 import { useOne, useResource } from "@refinedev/core";
 import { useMemo } from "react";
-import { asDurationParts } from "@/lib/utils";
+import {
+  asDurationParts,
+  scaleDiscount,
+  scalePrice,
+  unscaleDiscount,
+  unscalePrice,
+} from "@/lib/utils";
+import { PercentageOutlined } from "@ant-design/icons";
+import Coin from "@/icons/Coin";
+import { formatEgp, formatPercent } from "@/lib/format";
 
 export const PlanEdit = () => {
   const { resource, id } = useResource();
@@ -22,17 +31,56 @@ export const PlanEdit = () => {
     id,
   });
 
-  const { formProps, saveButtonProps, formLoading, queryResult } =
-    useForm<IPlan.Attributed>({ meta: { plan: data?.data } });
-
-  const plan = useMemo(
-    () => queryResult?.data?.data,
-    [queryResult?.data?.data]
+  const { formProps, saveButtonProps, formLoading } = useForm<IPlan.Attributed>(
+    { meta: { plan: data?.data } }
   );
+
+  const plan = useMemo(() => data?.data, [data?.data]);
 
   const [hours, minutes] = useMemo(
     () => asDurationParts(plan?.weeklyMinutes || 0),
     [plan?.weeklyMinutes]
+  );
+
+  const discount = useMemo(
+    () => ({
+      parser: (value?: string) => {
+        if (!value) return "0";
+        return scaleDiscount(Number(value.replace(/%|,/gi, ""))).toString();
+      },
+      formatter: (value?: string) => {
+        return formatPercent(value ? unscaleDiscount(Number(value)) : 0);
+      },
+    }),
+    []
+  );
+
+  const price = useMemo(
+    () => ({
+      parser: (value?: string) => {
+        console.log({
+          value,
+          src: "parser",
+          after: scalePrice(
+            Number(value?.replace(/E|G|P|,/gi, "").trim())
+          ).toString(),
+        });
+        if (!value) return "0";
+        return scalePrice(
+          Number(value.replace(/E|G|P|,/gi, "").trim())
+        ).toString();
+      },
+      formatter: (value?: string) => {
+        console.log({
+          value,
+          src: "formatter",
+          res: formatEgp(value ? unscalePrice(Number(value)) : 0),
+          unscaled: unscalePrice(Number(value)),
+        });
+        return formatEgp(value ? unscalePrice(Number(value)) : 0);
+      },
+    }),
+    []
   );
 
   return (
@@ -43,78 +91,101 @@ export const PlanEdit = () => {
       <Form {...formProps} layout="vertical">
         <Flex gap="20px">
           <Form.Item label="Hours" name="hours" initialValue={hours}>
-            <InputNumber size="large" style={{ width: "150px" }} />
+            <InputNumber size="large" min={0} style={{ width: "200px" }} />
           </Form.Item>
           <Form.Item label="Minutes" name="minutes" initialValue={minutes}>
-            <InputNumber size="large" style={{ width: "150px" }} />
+            <InputNumber size="large" min={0} style={{ width: "200px" }} />
           </Form.Item>
         </Flex>
 
         <Flex gap="20px">
-          <Form.Item
-            label="Full Month Price"
-            name="fullMonthPrice"
-            initialValue={hours}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Full Month Price" name="fullMonthPrice">
+            <InputNumber
+              size="large"
+              addonBefore={<Coin width={20} />}
+              style={{ width: "200px" }}
+              formatter={price.formatter}
+              parser={price.parser}
+              min="0"
+            />
           </Form.Item>
-          <Form.Item
-            label="Full Month Discount"
-            name="fullMonthDiscount"
-            initialValue={minutes}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
-          </Form.Item>
-        </Flex>
-
-        <Flex gap="20px">
-          <Form.Item
-            label="Full Quarter Price"
-            name="fullQuarterPrice"
-            initialValue={hours}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
-          </Form.Item>
-          <Form.Item
-            label="Full Quarter Discount"
-            name="fullQuarterDiscount"
-            initialValue={minutes}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Full Month Discount" name="fullMonthDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discount.formatter}
+              parser={discount.parser}
+              min="0"
+            />
           </Form.Item>
         </Flex>
 
         <Flex gap="20px">
-          <Form.Item
-            label="Half Year Price"
-            name="halfYearPrice"
-            initialValue={hours}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Full Quarter Price" name="fullQuarterPrice">
+            <InputNumber
+              size="large"
+              addonBefore={<Coin width={20} />}
+              style={{ width: "200px" }}
+              formatter={price.formatter}
+              parser={price.parser}
+              min="0"
+            />
           </Form.Item>
-          <Form.Item
-            label="Half Year Discount"
-            name="halfYearDiscount"
-            initialValue={minutes}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Full Quarter Discount" name="fullQuarterDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discount.formatter}
+              parser={discount.parser}
+              min="0"
+            />
           </Form.Item>
         </Flex>
 
         <Flex gap="20px">
-          <Form.Item
-            label="Full Year Price"
-            name="fullYearPrice"
-            initialValue={hours}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Half Year Price" name="halfYearPrice">
+            <InputNumber
+              size="large"
+              addonBefore={<Coin width={20} />}
+              style={{ width: "200px" }}
+              formatter={price.formatter}
+              parser={price.parser}
+              min="0"
+            />
           </Form.Item>
-          <Form.Item
-            label="Full Year Discount"
-            name="fullYearDiscount"
-            initialValue={minutes}
-          >
-            <InputNumber size="large" style={{ width: "150px" }} />
+          <Form.Item label="Half Year Discount" name="halfYearDiscount">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<PercentageOutlined />}
+              formatter={discount.formatter}
+              parser={discount.parser}
+              min="0"
+            />
+          </Form.Item>
+        </Flex>
+
+        <Flex gap="20px">
+          <Form.Item label="Full Year Price" name="fullYearPrice">
+            <InputNumber
+              size="large"
+              style={{ width: "200px" }}
+              addonBefore={<Coin width={20} />}
+              formatter={price.formatter}
+              parser={price.parser}
+              min="0"
+            />
+          </Form.Item>
+          <Form.Item label="Full Year Discount" name="fullYearDiscount">
+            <InputNumber
+              size="large"
+              addonBefore={<PercentageOutlined />}
+              style={{ width: "200px" }}
+              formatter={discount.formatter}
+              parser={discount.parser}
+            />
           </Form.Item>
         </Flex>
 
