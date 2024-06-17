@@ -26,6 +26,12 @@ import { UserList, UserCreate, UserEdit, UserShow } from "@/pages/users";
 import { TutorCreate, TutorEdit, TutorList, TutorShow } from "@/pages/tutors";
 import { PlanCreate, PlanEdit, PlanList, PlanShow } from "@/pages/plans";
 import {
+  CouponCreate,
+  CouponEdit,
+  CouponList,
+  CouponShow,
+} from "@/pages/coupons";
+import {
   MyScheduleCreate,
   MyScheduleEdit,
   MyScheduleList,
@@ -73,6 +79,14 @@ function App() {
                     edit: "/plans/edit/:id",
                     show: "/plans/show/:id",
                     meta: { canDelete: true, label: "Plans" },
+                  },
+                  {
+                    name: Resource.Coupons,
+                    list: "/coupons",
+                    create: "/coupons/create",
+                    edit: "/coupons/edit/:id",
+                    show: "/coupons/show/:id",
+                    meta: { canDelete: true, label: "Coupons" },
                   },
                   {
                     name: Resource.MySchedule,
@@ -141,6 +155,12 @@ function App() {
                       <Route path="create" element={<PlanCreate />} />
                       <Route path="edit/:id" element={<PlanEdit />} />
                       <Route path="show/:id" element={<PlanShow />} />
+                    </Route>
+                    <Route path="/coupons">
+                      <Route index element={<CouponList />} />
+                      <Route path="create" element={<CouponCreate />} />
+                      <Route path="edit/:id" element={<CouponEdit />} />
+                      <Route path="show/:id" element={<CouponShow />} />
                     </Route>
                     <Route path="/my-schedule">
                       <Route index element={<MyScheduleList />} />

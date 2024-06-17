@@ -209,7 +209,35 @@ const plan = {
       active: zod.optional(boolean),
     }),
   },
-};
+} as const;
+
+const coupon = {
+  create: {
+    body: zod.object({
+      code: string,
+      planId: number,
+      fullMonthDiscount: number,
+      fullQuarterDiscount: number,
+      halfYearDiscount: number,
+      fullYearDiscount: number,
+      expiresAt: datetime,
+    }),
+  },
+  update: {
+    body: zod.object({
+      code: zod.optional(string),
+      planId: zod.optional(number),
+      fullMonthDiscount: zod.optional(number),
+      fullQuarterDiscount: zod.optional(number),
+      halfYearDiscount: zod.optional(number),
+      fullYearDiscount: zod.optional(number),
+      expiresAt: zod.optional(datetime),
+    }),
+  },
+  findByCode: {
+    params: zod.object({ code: string }),
+  },
+} as const;
 
 export default {
   user,
@@ -222,4 +250,5 @@ export default {
   subscription,
   chat,
   plan,
+  coupon,
 };

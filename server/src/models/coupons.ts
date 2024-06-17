@@ -62,10 +62,17 @@ export class Coupons {
   }
 
   async findById(id: number): Promise<ICoupon.MappedAttributes | null> {
-    const plans = this.mapAttributesQuery(
+    const coupons = this.mapAttributesQuery(
       await this.getAttributesQuery().where("coupons.id", id)
     );
-    return first(plans) || null;
+    return first(coupons) || null;
+  }
+
+  async findByCode(code: string): Promise<ICoupon.MappedAttributes | null> {
+    const coupons = this.mapAttributesQuery(
+      await this.getAttributesQuery().where("coupons.code", code)
+    );
+    return first(coupons) || null;
   }
 
   async findAll(): Promise<ICoupon.MappedAttributes[]> {

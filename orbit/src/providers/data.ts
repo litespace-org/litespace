@@ -13,6 +13,7 @@ export enum Resource {
   MySchedule = "my-schedule",
   MyInterviews = "my-interviews",
   Plans = "plans",
+  Coupons = "coupons",
 }
 
 const empty = { data: null };
@@ -43,6 +44,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.Plans) {
       const plan = await atlas.plan.findById(resourceId);
       return { data: as.casted(plan) };
+    }
+
+    if (resource === Resource.Coupons) {
+      const coupon = await atlas.coupon.findById(resourceId);
+      return { data: as.casted(coupon) };
     }
 
     throw new Error("Not implemented");
@@ -268,6 +274,11 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.Coupons) {
+      await atlas.coupon.delete(resourceId);
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   getList: async ({ resource, meta }: GetListParams) => {
@@ -302,6 +313,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Plans) {
       const list = await atlas.plan.findAll();
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.Coupons) {
+      const list = await atlas.coupon.findAll();
       return { data: as.casted(list), total: list.length };
     }
 

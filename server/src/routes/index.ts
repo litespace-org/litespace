@@ -8,6 +8,7 @@ import subscription from "@/routes/subscription";
 import authorization from "@/routes/authorization";
 import chat from "@/routes/chat";
 import plan from "@/routes/plan";
+import coupon from "@/routes/coupon";
 
 export default {
   user,
@@ -18,6 +19,7 @@ export default {
   plan,
   chat,
   rating,
+  coupon,
   subscription,
   authorization,
 };

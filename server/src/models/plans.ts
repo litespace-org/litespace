@@ -30,7 +30,6 @@ export class Plans {
 
     const row = first(rows);
     if (!row) throw new Error("Plan not found; should never happen");
-
     return this.from(row);
   }
 
