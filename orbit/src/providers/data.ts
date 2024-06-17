@@ -123,28 +123,26 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.Plans && meta && meta.plan) {
-      const prev = as.casted<IPlan.Attributed>(meta.tutor);
-      const updated = as.casted<
-        Partial<{
-          weeklyMinutes: number;
-          fullMonthPrice: number;
-          fullQuarterPrice: number;
-          halfYearPrice: number;
-          fullYearPrice: number;
-          fullMonthDiscount: number;
-          fullQuarterDiscount: number;
-          halfYearDiscount: number;
-          fullYearDiscount: number;
-          forInvitesOnly: boolean;
-          active: boolean;
-        }>
-      >(variables);
+      const prev = as.casted<IPlan.Attributed>(meta.plan);
+      const updated = as.casted<{
+        hours: number;
+        minutes: number;
+        fullMonthPrice: number;
+        fullQuarterPrice: number;
+        halfYearPrice: number;
+        fullYearPrice: number;
+        fullMonthDiscount: number;
+        fullQuarterDiscount: number;
+        halfYearDiscount: number;
+        fullYearDiscount: number;
+        forInvitesOnly: boolean;
+        active: boolean;
+      }>(variables);
+
+      const weeklyMinutes = updated.hours * 60 + updated.minutes;
 
       await atlas.plan.update(resourceId, {
-        weeklyMinutes: selectUpdatedOrNone(
-          prev.weeklyMinutes,
-          updated.weeklyMinutes
-        ),
+        weeklyMinutes: selectUpdatedOrNone(prev.weeklyMinutes, weeklyMinutes),
         fullMonthPrice: selectUpdatedOrNone(
           prev.fullMonthPrice,
           updated.fullMonthPrice

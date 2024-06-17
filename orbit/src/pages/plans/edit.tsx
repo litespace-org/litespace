@@ -58,25 +58,12 @@ export const PlanEdit = () => {
   const price = useMemo(
     () => ({
       parser: (value?: string) => {
-        console.log({
-          value,
-          src: "parser",
-          after: scalePrice(
-            Number(value?.replace(/E|G|P|,/gi, "").trim())
-          ).toString(),
-        });
         if (!value) return "0";
         return scalePrice(
           Number(value.replace(/E|G|P|,/gi, "").trim())
         ).toString();
       },
       formatter: (value?: string) => {
-        console.log({
-          value,
-          src: "formatter",
-          res: formatEgp(value ? unscalePrice(Number(value)) : 0),
-          unscaled: unscalePrice(Number(value)),
-        });
         return formatEgp(value ? unscalePrice(Number(value)) : 0);
       },
     }),

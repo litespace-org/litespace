@@ -65,7 +65,9 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
                 />
                 , After:{" "}
                 <TextField
-                  value={formatEgp(applyDiscount(original, value))}
+                  value={formatEgp(
+                    applyDiscount(unscalePrice(original), value)
+                  )}
                   strong
                   italic
                 />
