@@ -8,11 +8,15 @@ import {
 import { Table } from "antd";
 import React from "react";
 import dayjs from "@/lib/dayjs";
+import { formatEgp, formatPercent } from "@/lib/format";
+import { applyDiscount, formatDuration, unscaleDiscount } from "@/lib/utils";
 
 export type TableRow = {
   name: string;
   value: boolean | number | string | null | undefined;
-  type?: "tag" | "boolean" | "date" | "url";
+  type?: "tag" | "boolean" | "date" | "url" | "price" | "discount" | "duration";
+  href?: string;
+  original?: number;
 };
 
 const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
@@ -28,7 +32,8 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
 
           if (record.type === "boolean") return <BooleanField value={value} />;
 
-          if (record.type === "url") return <UrlField value={value} />;
+          if (record.type === "url")
+            return <UrlField value={value} href={record.href} />;
 
           if (record.type === "date")
             return (
@@ -37,6 +42,30 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
                 <TextField value={dayjs(value).fromNow()} />
               </>
             );
+
+          if (record.type === "price")
+            return <TextField value={formatEgp(value)} />;
+
+          if (record.type === "discount") {
+            const original = record.original || 0;
+            return (
+              <>
+                <TextField value={formatPercent(unscaleDiscount(value))} />
+                <br />
+                (Original:{" "}
+                <TextField value={formatEgp(original)} strong italic />, After:{" "}
+                <TextField
+                  value={formatEgp(applyDiscount(original, value))}
+                  strong
+                  italic
+                />
+                )
+              </>
+            );
+          }
+
+          if (record.type === "duration")
+            return <TextField value={formatDuration(value)} />;
 
           return value;
         }}

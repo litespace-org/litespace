@@ -1,58 +1,74 @@
-import { IUser } from "@litespace/types";
-import { ExportButton, Show, ShowButton } from "@refinedev/antd";
-import { useLink, useShow } from "@refinedev/core";
+import { IPlan } from "@litespace/types";
+import { Show } from "@refinedev/antd";
+import { useShow } from "@refinedev/core";
 import { useMemo } from "react";
 import TableView, { TableRow } from "@/components/TableView";
-import { Button } from "antd";
-import { Resource } from "@/providers/data";
-import { UserOutlined } from "@ant-design/icons";
 
 export const PlanShow = () => {
   const {
     queryResult: { data, isLoading },
-  } = useShow<IUser.Self>({});
-  const Link = useLink();
+  } = useShow<IPlan.MappedAttributes>({});
 
-  const user = useMemo(() => data?.data, [data?.data]);
+  const plan = useMemo(() => data?.data, [data?.data]);
 
   const dataSoruce: TableRow[] = useMemo(() => {
-    if (!user) return [];
+    if (!plan) return [];
     return [
-      { name: "ID", value: user.id },
-      { name: "Name", value: user.name },
-      { name: "Email", value: user.email },
-      { name: "Has Password", value: user.hasPassword, type: "boolean" },
-      { name: "Online", value: user.online, type: "boolean" },
-      { name: "Gender", value: user.gender, type: "tag" },
-      { name: "Type", value: user.type, type: "tag" },
-      { name: "Created At", value: user.createdAt, type: "date" },
-      { name: "Updated At", value: user.updatedAt, type: "date" },
+      { name: "ID", value: plan.id },
+      { name: "Weekly Minutes", value: plan.weeklyMinutes, type: "duration" },
+      { name: "Full Month Price", value: plan.fullMonthPrice, type: "price" },
+      {
+        name: "Full Quarter Price",
+        value: plan.fullQuarterPrice,
+        type: "price",
+      },
+      { name: "Half-Year Price", value: plan.halfYearPrice, type: "price" },
+      { name: "Full-Year Price", value: plan.fullyearPrice, type: "price" },
+      {
+        name: "Full Month Discount",
+        value: plan.fullMonthDiscount,
+        original: plan.fullMonthPrice,
+        type: "discount",
+      },
+      {
+        name: "Full Quarter Discount",
+        value: plan.fullQuarterDiscount,
+        original: plan.fullQuarterPrice,
+        type: "discount",
+      },
+      {
+        name: "Half-Year Discount",
+        value: plan.halfYearDiscount,
+        original: plan.halfYearPrice,
+        type: "discount",
+      },
+      {
+        name: "Full-Year Discount",
+        value: plan.fullYearDiscount,
+        original: plan.fullyearPrice,
+        type: "discount",
+      },
+      { name: "Invites Only", value: plan.forInvitesOnly, type: "boolean" },
+      { name: "Active", value: plan.active, type: "boolean" },
+      { name: "Created At", value: plan.createdAt, type: "date" },
+      {
+        name: "Created By",
+        value: plan.createdBy.email,
+        href: `/users/show/${plan.createdBy.id}`,
+        type: "url",
+      },
+      { name: "Updated At", value: plan.updatedAt, type: "date" },
+      {
+        name: "Updated By",
+        value: plan.updatedBy.email,
+        href: `/users/show/${plan.updatedBy.id}`,
+        type: "url",
+      },
     ];
-  }, [user]);
+  }, [plan]);
 
   return (
-    <Show
-      headerButtons={({ defaultButtons }) => {
-        return (
-          <>
-            {defaultButtons}
-            {user?.type === IUser.Type.Tutor ? (
-              <Link to={`/tutors/show/${user.id}`}>
-                <Button
-                  icon={<UserOutlined />}
-                  resource={Resource.Tutors}
-                  loading={isLoading}
-                >
-                  View As A Tutor
-                </Button>
-              </Link>
-            ) : null}
-          </>
-        );
-      }}
-      isLoading={isLoading}
-      title="User"
-    >
+    <Show isLoading={isLoading} title="Plan">
       <TableView dataSource={dataSoruce} />
     </Show>
   );

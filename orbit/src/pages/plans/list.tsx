@@ -7,7 +7,6 @@ import {
   List,
   ShowButton,
   useTable,
-  TagField,
   TextField,
   BooleanField,
   UrlField,

@@ -39,7 +39,7 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(call) };
     }
 
-    if (resource === Resource.MyInterviews) {
+    if (resource === Resource.Plans) {
       const plan = await atlas.plan.findById(resourceId);
       return { data: as.casted(plan) };
     }

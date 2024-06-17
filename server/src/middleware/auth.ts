@@ -1,11 +1,8 @@
-import asyncHandler from "express-async-handler";
 import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
-import jwt from "jsonwebtoken";
-import { authorizationSecret } from "@/constants";
 import { users } from "@/models";
 import { IUser } from "@litespace/types";
-import { forbidden, userNotFound } from "@/lib/error";
+import { forbidden } from "@/lib/error";
 import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";

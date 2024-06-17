@@ -66,7 +66,7 @@ export class Plans {
 
   async findById(id: number): Promise<IPlan.MappedAttributes | null> {
     const plans = this.mapSelectQuery(
-      await this.getSelectQuery().where("id", id)
+      await this.getSelectQuery().where("plans.id", id)
     );
 
     return first(plans) || null;
