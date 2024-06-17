@@ -8,5 +8,6 @@ export * as IMessage from "@/message";
 export * as ICall from "@/call";
 export * as IPlan from "@/plan";
 export * as ICoupon from "@/coupon";
+export * as IInvite from "@/invite";
 export * from "@/api";
 export * from "@/lib";

@@ -16,6 +16,7 @@ export { calls } from "@/models/calls";
 export { tutors } from "@/models/tutors";
 export { plans } from "@/models/plans";
 export { coupons } from "@/models/coupons";
+export { invites } from "@/models/invites";
 
 // types
 export { Subscription } from "@/models/subscriptions";

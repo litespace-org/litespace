@@ -1,4 +1,4 @@
-import { calls, coupons, plans, slots, tutors, users } from "@/models";
+import { calls, coupons, invites, plans, slots, tutors, users } from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
@@ -82,6 +82,13 @@ async function main(): Promise<void> {
     halfYearDiscount: 30_00,
     fullYearDiscount: 40_00,
     createdBy: admin.id,
+  });
+
+  const invite = await invites.create({
+    email: "atlas@litespace.com",
+    expiresAt: dayjs().add(1, "week").toISOString(),
+    createdBy: admin.id,
+    planId: plan.id,
   });
 }
 

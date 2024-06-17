@@ -138,12 +138,11 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     plan_id: { type: "SERIAL", notNull: true, references: "plans(id)" },
-    expires_at: { type: "TIMESTAMPTZ", notNull: true },
-    accepted: { type: "BOOLEAN", notNull: true, default: false },
-    accepted_at: { type: "TIMESTAMPTZ", notNull: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    expires_at: { type: "TIMESTAMP", notNull: true },
+    accepted_at: { type: "TIMESTAMP" },
+    created_at: { type: "TIMESTAMP", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
