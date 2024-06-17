@@ -6,7 +6,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "install:clean": "yarn workspaces foreach -A run rimraf node_modules && yarn install"
+    "install:clean": "yarn workspaces foreach -A run rimraf node_modules && yarn install",
+    "build:orbit": "yarn workspace @litespace/orbit build",
+    "build:types": "yarn workspace @litespace/types build",
+    "build:atlas": "yarn workspace @litespace/atlas build"
   },
   "workspaces": {
     "packages": [

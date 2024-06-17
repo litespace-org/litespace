@@ -1,0 +1,31 @@
+name: Deploy
+
+on:
+  push:
+    branches: ["master"]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+      - name: Enable Yarn
+        run: corepack enable
+      - name: Install dependencies
+        run: yarn
+      - name: Build types
+        run: yarn build:types
+      - name: Build Atlas SDK
+        run: yarn build:atlas
+      - name: Build Orbit
+        run: yarn build:orbit
+      - name: ls
+        run: ls ./orbit/
