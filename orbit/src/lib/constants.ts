@@ -30,3 +30,5 @@ export const genders = [
   { value: IUser.Gender.Male, label: "Male" },
   { value: IUser.Gender.Female, label: "Female" },
 ];
+
+export const required = { required: true, message: "This field is required" };

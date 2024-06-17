@@ -1,3 +1,5 @@
+import { formatEgp, formatPercent } from "@/lib/format";
+
 export function selectUpdatedOrNone<P, U>(
   prev?: P,
   updated?: U
@@ -42,4 +44,22 @@ export function asDurationParts(duration: number) {
   const hours = Math.floor(duration / 60);
   const minutes = duration % 60;
   return [hours, minutes];
+}
+
+export function discountParser(value?: string): string {
+  if (!value) return "0";
+  return scaleDiscount(Number(value.replace(/%|,/gi, ""))).toString();
+}
+
+export function discountFormatter(value?: string): string {
+  return formatPercent(value ? unscaleDiscount(Number(value)) : 0);
+}
+
+export function priceParser(value?: string) {
+  if (!value) return "0";
+  return scalePrice(Number(value.replace(/E|G|P|,/gi, "").trim())).toString();
+}
+
+export function priceFormatter(value?: string) {
+  return formatEgp(value ? unscalePrice(Number(value)) : 0);
 }

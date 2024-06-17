@@ -4,6 +4,7 @@ import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { selectUpdatedOrNone } from "@/lib/utils";
+import { merge, omit } from "lodash";
 
 export enum Resource {
   UserTypes = "user-types",
@@ -233,7 +234,18 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.Plans) {
-      console.log({ variables, resource });
+      const payload = as.casted<
+        Omit<IPlan.CreateApiPayload, "weeklyMinutes"> & {
+          hours: number;
+          minutes: number;
+        }
+      >(variables);
+      const response = await atlas.plan.create(
+        merge(omit(payload, "minutes", "hours"), {
+          weeklyMinutes: payload.hours * 60 + payload.minutes,
+        })
+      );
+      return { data: as.casted(response) };
     }
 
     throw new Error("Not implemented");

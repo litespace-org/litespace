@@ -1,28 +1,17 @@
-import { IPlan, IUser } from "@litespace/types";
-import { Edit, TextField, useForm } from "@refinedev/antd";
-import {
-  DatePicker,
-  Flex,
-  Form,
-  Input,
-  InputNumber,
-  Select,
-  Switch,
-} from "antd";
-import dayjs from "dayjs";
-import { genders, userTypes } from "@/lib/constants";
+import { IPlan } from "@litespace/types";
+import { Edit, useForm } from "@refinedev/antd";
+import { Flex, Form, InputNumber, Switch } from "antd";
 import { useOne, useResource } from "@refinedev/core";
 import { useMemo } from "react";
 import {
   asDurationParts,
-  scaleDiscount,
-  scalePrice,
-  unscaleDiscount,
-  unscalePrice,
+  discountFormatter,
+  discountParser,
+  priceFormatter,
+  priceParser,
 } from "@/lib/utils";
 import { PercentageOutlined } from "@ant-design/icons";
 import Coin from "@/icons/Coin";
-import { formatEgp, formatPercent } from "@/lib/format";
 
 export const PlanEdit = () => {
   const { resource, id } = useResource();
@@ -40,34 +29,6 @@ export const PlanEdit = () => {
   const [hours, minutes] = useMemo(
     () => asDurationParts(plan?.weeklyMinutes || 0),
     [plan?.weeklyMinutes]
-  );
-
-  const discount = useMemo(
-    () => ({
-      parser: (value?: string) => {
-        if (!value) return "0";
-        return scaleDiscount(Number(value.replace(/%|,/gi, ""))).toString();
-      },
-      formatter: (value?: string) => {
-        return formatPercent(value ? unscaleDiscount(Number(value)) : 0);
-      },
-    }),
-    []
-  );
-
-  const price = useMemo(
-    () => ({
-      parser: (value?: string) => {
-        if (!value) return "0";
-        return scalePrice(
-          Number(value.replace(/E|G|P|,/gi, "").trim())
-        ).toString();
-      },
-      formatter: (value?: string) => {
-        return formatEgp(value ? unscalePrice(Number(value)) : 0);
-      },
-    }),
-    []
   );
 
   return (
@@ -91,8 +52,8 @@ export const PlanEdit = () => {
               size="large"
               addonBefore={<Coin width={20} />}
               style={{ width: "200px" }}
-              formatter={price.formatter}
-              parser={price.parser}
+              formatter={priceFormatter}
+              parser={priceParser}
               min="0"
             />
           </Form.Item>
@@ -101,8 +62,8 @@ export const PlanEdit = () => {
               size="large"
               style={{ width: "200px" }}
               addonBefore={<PercentageOutlined />}
-              formatter={discount.formatter}
-              parser={discount.parser}
+              formatter={discountFormatter}
+              parser={discountParser}
               min="0"
             />
           </Form.Item>
@@ -114,8 +75,8 @@ export const PlanEdit = () => {
               size="large"
               addonBefore={<Coin width={20} />}
               style={{ width: "200px" }}
-              formatter={price.formatter}
-              parser={price.parser}
+              formatter={priceFormatter}
+              parser={priceParser}
               min="0"
             />
           </Form.Item>
@@ -124,8 +85,8 @@ export const PlanEdit = () => {
               size="large"
               style={{ width: "200px" }}
               addonBefore={<PercentageOutlined />}
-              formatter={discount.formatter}
-              parser={discount.parser}
+              formatter={discountFormatter}
+              parser={discountParser}
               min="0"
             />
           </Form.Item>
@@ -137,8 +98,8 @@ export const PlanEdit = () => {
               size="large"
               addonBefore={<Coin width={20} />}
               style={{ width: "200px" }}
-              formatter={price.formatter}
-              parser={price.parser}
+              formatter={priceFormatter}
+              parser={priceParser}
               min="0"
             />
           </Form.Item>
@@ -147,8 +108,8 @@ export const PlanEdit = () => {
               size="large"
               style={{ width: "200px" }}
               addonBefore={<PercentageOutlined />}
-              formatter={discount.formatter}
-              parser={discount.parser}
+              formatter={discountFormatter}
+              parser={discountParser}
               min="0"
             />
           </Form.Item>
@@ -160,8 +121,8 @@ export const PlanEdit = () => {
               size="large"
               style={{ width: "200px" }}
               addonBefore={<Coin width={20} />}
-              formatter={price.formatter}
-              parser={price.parser}
+              formatter={priceFormatter}
+              parser={priceParser}
               min="0"
             />
           </Form.Item>
@@ -170,8 +131,8 @@ export const PlanEdit = () => {
               size="large"
               addonBefore={<PercentageOutlined />}
               style={{ width: "200px" }}
-              formatter={discount.formatter}
-              parser={discount.parser}
+              formatter={discountFormatter}
+              parser={discountParser}
             />
           </Form.Item>
         </Flex>
