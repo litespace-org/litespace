@@ -23,6 +23,7 @@
   },
   "packageManager": "yarn@4.2.2",
   "devDependencies": {
-    "rimraf": "^5.0.7"
+    "rimraf": "^5.0.7",
+    "vercel": "^34.2.7"
   }
 }

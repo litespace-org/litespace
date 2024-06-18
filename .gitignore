@@ -7,6 +7,8 @@ dist/
 
 # uilib 
 uilib/src/index.css
+storybook-static/
 
 # server 
 server/*.pem
+.vercel
