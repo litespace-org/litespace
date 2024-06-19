@@ -289,6 +289,22 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(response) };
     }
 
+    if (resource === Resource.Coupons) {
+      const payload = as.casted<
+        Omit<ICoupon.CreateApiPayload, "expiresAt"> & { expiresAt: Dayjs }
+      >(variables);
+
+      const response = await atlas.coupon.create(
+        merge(omit(payload, "expiresAt"), {
+          expiresAt: dayjs
+            .utc(payload.expiresAt.format("YYYY-MM-DD"))
+            .toISOString(),
+        })
+      );
+
+      return { data: as.casted(response) };
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {

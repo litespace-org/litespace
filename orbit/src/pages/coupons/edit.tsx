@@ -1,34 +1,18 @@
-import { ICoupon, IPlan, IUser } from "@litespace/types";
+import { ICoupon, IPlan } from "@litespace/types";
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { DatePicker, Flex, Form, Input, InputNumber, Select } from "antd";
-import dayjs from "dayjs";
-import { genders, userTypes } from "@/lib/constants";
-import {
-  HttpError,
-  UseSelectProps,
-  useOne,
-  useResource,
-} from "@refinedev/core";
-import { useMemo } from "react";
+import { Flex, Form, Input, InputNumber, Select } from "antd";
+import { useOne, useResource } from "@refinedev/core";
 import { PercentageOutlined } from "@ant-design/icons";
 import { discountFormatter, discountParser, formatDuration } from "@/lib/utils";
 import { Resource } from "@/providers/data";
 
-interface ICategory {
-  id: number;
-  weeklyMinutes: number;
-}
-
 export const CouponEdit = () => {
   const { resource, id } = useResource();
   const { data, isLoading: isCouponLoading } = useOne<ICoupon.MappedAttributes>(
-    {
-      resource: resource?.name,
-      id,
-    }
+    { resource: resource?.name, id }
   );
 
-  const { formProps, saveButtonProps, formLoading, queryResult } =
+  const { formProps, saveButtonProps, formLoading } =
     useForm<ICoupon.MappedAttributes>({
       meta: { coupon: data?.data },
     });

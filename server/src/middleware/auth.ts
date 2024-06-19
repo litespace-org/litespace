@@ -11,8 +11,6 @@ import { hashPassword } from "@/lib/user";
 declare global {
   namespace Express {
     interface Request {
-      // todo: enable back
-      // user: User.Self;
       _query: { sid: string | undefined };
     }
 
@@ -27,11 +25,6 @@ declare module "http" {
   }
 }
 
-function extractToken(header: string): string {
-  const [_, token] = header.split(" ");
-  return token.trim() || "";
-}
-
 /**
  *
  * @param roles list of user types that is allowed to access the next route.
@@ -43,7 +36,7 @@ function authHandler(roles: IUser.Type[]) {
   return async (req: Request, _res: Response, next: NextFunction) => {
     const authorized = req.isAuthenticated();
     const allowAnyRole = isEmpty(roles);
-    const roleAllowed = roles.includes(req.user.type);
+    const roleAllowed = roles.includes(req.user?.type);
     const validRole = allowAnyRole || roleAllowed;
     if (!authorized || !validRole) return next(forbidden());
     return next();

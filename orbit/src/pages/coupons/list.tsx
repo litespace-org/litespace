@@ -73,8 +73,8 @@ export const CouponList: React.FC = () => {
           )}
         />
         <Table.Column
-          dataIndex="updatedAt"
-          title="Updated At"
+          dataIndex="expiresAt"
+          title="Expires At"
           render={(value: string) => (
             <>
               <DateField value={value} format="LLL" /> <br />
