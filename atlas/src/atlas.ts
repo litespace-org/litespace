@@ -8,6 +8,7 @@ import { Call } from "@/call";
 import { Plan } from "@/plan";
 import { Coupon } from "@/coupon";
 import { Invite } from "@/invite";
+import { Report } from "@/report";
 
 export class Atlas {
   public readonly user: User;
@@ -19,6 +20,7 @@ export class Atlas {
   public readonly plan: Plan;
   public readonly coupon: Coupon;
   public readonly invite: Invite;
+  public readonly report: Report;
 
   constructor(backend: Backend) {
     this.user = new User(backend);
@@ -30,5 +32,6 @@ export class Atlas {
     this.plan = new Plan(backend);
     this.coupon = new Coupon(backend);
     this.invite = new Invite(backend);
+    this.report = new Report(backend);
   }
 }

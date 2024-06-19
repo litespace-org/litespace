@@ -256,6 +256,24 @@ const invite = {
   },
 } as const;
 
+const report = {
+  create: {
+    body: zod.object({
+      title: string.max(255),
+      description: string.max(1000),
+      category: string.max(255),
+    }),
+  },
+  update: {
+    body: zod.object({
+      title: zod.optional(string.max(255)),
+      description: zod.optional(string.max(1000)),
+      category: zod.optional(string.max(255)),
+      resolved: zod.optional(boolean),
+    }),
+  },
+} as const;
+
 export default {
   user,
   auth,
@@ -269,4 +287,5 @@ export default {
   plan,
   coupon,
   invite,
+  report,
 };

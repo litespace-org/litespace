@@ -52,10 +52,10 @@ export class Threads {
   }
 
   async findById(id: number): Promise<IReportThreads.MappedAttributes | null> {
-    const coupons = this.mapAttributesQuery(
+    const list = this.mapAttributesQuery(
       await this.getAttributesQuery().where("report_threads.id", id)
     );
-    return first(coupons) || null;
+    return first(list) || null;
   }
 
   async findAll(): Promise<IReportThreads.MappedAttributes[]> {

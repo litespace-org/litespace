@@ -38,6 +38,12 @@ import {
   InviteShow,
 } from "@/pages/invites";
 import {
+  ReportCreate,
+  ReportEdit,
+  ReportList,
+  ReportShow,
+} from "@/pages/reports";
+import {
   MyScheduleCreate,
   MyScheduleEdit,
   MyScheduleList,
@@ -101,6 +107,14 @@ function App() {
                     edit: "/invites/edit/:id",
                     show: "/invites/show/:id",
                     meta: { canDelete: true, label: "Invites" },
+                  },
+                  {
+                    name: Resource.Reports,
+                    list: "/reports",
+                    create: "/reports/create",
+                    edit: "/reports/edit/:id",
+                    show: "/reports/show/:id",
+                    meta: { canDelete: true, label: "Reports" },
                   },
                   {
                     name: Resource.MySchedule,
@@ -181,6 +195,12 @@ function App() {
                       <Route path="create" element={<InviteCreate />} />
                       <Route path="edit/:id" element={<InviteEdit />} />
                       <Route path="show/:id" element={<InviteShow />} />
+                    </Route>
+                    <Route path="/reports">
+                      <Route index element={<ReportList />} />
+                      <Route path="create" element={<ReportCreate />} />
+                      <Route path="edit/:id" element={<ReportEdit />} />
+                      <Route path="show/:id" element={<ReportShow />} />
                     </Route>
                     <Route path="/my-schedule">
                       <Route index element={<MyScheduleList />} />

@@ -7,6 +7,7 @@ import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
+import asyncHandler from "express-async-handler";
 
 declare global {
   namespace Express {
@@ -25,26 +26,35 @@ declare module "http" {
   }
 }
 
+type OwnerHandler = (req: Request) => Promise<number>;
+
 /**
- *
  * @param roles list of user types that is allowed to access the next route.
  *
  * @note Empty roles list will make the next route accessable for all user
  * types.
  */
-function authHandler(roles: IUser.Type[]) {
-  return async (req: Request, _res: Response, next: NextFunction) => {
-    const authorized = req.isAuthenticated();
-    const allowAnyRole = isEmpty(roles);
-    const roleAllowed = roles.includes(req.user?.type);
-    const validRole = allowAnyRole || roleAllowed;
-    if (!authorized || !validRole) return next(forbidden());
-    return next();
-  };
+function authHandler(roles: IUser.Type[], getOwnerId?: OwnerHandler) {
+  return asyncHandler(
+    async (req: Request, _res: Response, next: NextFunction) => {
+      const authorized = req.isAuthenticated();
+      const userId = req.user?.id;
+      const userType = req.user?.type;
+      const ownerId = getOwnerId ? await getOwnerId(req) : userId;
+      const isOwner = userId === ownerId;
+
+      const allowAnyRole = isEmpty(roles);
+      const roleAllowed = roles.includes(userType);
+      const eligible = allowAnyRole || roleAllowed || isOwner;
+      if (!authorized || !eligible) return next(forbidden());
+      return next();
+    }
+  );
 }
 
 class Authorizer {
   private roles: IUser.Type[] = [];
+  private ownerHandler?: OwnerHandler;
 
   superAdmin(): Authorizer {
     this.roles.push(IUser.Type.SuperAdmin);
@@ -83,8 +93,13 @@ class Authorizer {
     return this.tutor().student();
   }
 
+  owner(handler: OwnerHandler): Authorizer {
+    this.ownerHandler = handler;
+    return this;
+  }
+
   handler() {
-    return authHandler(this.roles);
+    return authHandler(this.roles, this.ownerHandler);
   }
 }
 

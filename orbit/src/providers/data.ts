@@ -3,6 +3,7 @@ import {
   ICoupon,
   IInvite,
   IPlan,
+  IReport,
   ISlot,
   ITutor,
   IUser,
@@ -23,6 +24,7 @@ export enum Resource {
   Plans = "plans",
   Coupons = "coupons",
   Invites = "invites",
+  Reports = "reports",
 }
 
 const empty = { data: null };
@@ -63,6 +65,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.Invites) {
       const invite = await atlas.invite.findById(resourceId);
       return { data: as.casted(invite) };
+    }
+
+    if (resource === Resource.Reports) {
+      const report = await atlas.report.findById(resourceId);
+      return { data: as.casted(report) };
     }
 
     throw new Error("Not implemented");
@@ -262,6 +269,25 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.Reports && meta && meta.report) {
+      const prev = as.casted<IReport.MappedAttributes>(meta.report);
+      const updated = as.casted<{
+        title: string;
+        description: string;
+        category: string;
+        resolved: boolean;
+      }>(variables);
+
+      await atlas.report.update(resourceId, {
+        title: selectUpdatedOrNone(prev.title, updated.title),
+        description: selectUpdatedOrNone(prev.description, updated.description),
+        category: selectUpdatedOrNone(prev.category, updated.category),
+        resolved: selectUpdatedOrNone(prev.resolved, updated.resolved),
+      });
+
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
@@ -356,6 +382,12 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(response) };
     }
 
+    if (resource === Resource.Reports) {
+      const payload = as.casted<IReport.CreateApiPayload>(variables);
+      const response = await atlas.report.create(payload);
+      return { data: as.casted(response) };
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
@@ -383,6 +415,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Invites) {
       await atlas.invite.delete(resourceId);
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Reports) {
+      await atlas.report.delete(resourceId);
       return as.casted(empty);
     }
 
@@ -430,6 +467,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Invites) {
       const list = await atlas.invite.findAll();
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.Reports) {
+      const list = await atlas.report.findAll();
       return { data: as.casted(list), total: list.length };
     }
 

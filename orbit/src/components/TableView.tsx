@@ -19,9 +19,18 @@ import {
 export type TableRow = {
   name: string;
   value: boolean | number | string | null | undefined;
-  type?: "tag" | "boolean" | "date" | "url" | "price" | "discount" | "duration";
+  type?:
+    | "text"
+    | "tag"
+    | "boolean"
+    | "date"
+    | "url"
+    | "price"
+    | "discount"
+    | "duration";
   href?: string;
   original?: number;
+  helper?: string;
 };
 
 const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
@@ -35,17 +44,20 @@ const TableView: React.FC<{ dataSource: TableRow[] }> = ({ dataSource }) => {
           if (record.type === "tag")
             return <TagField value={value || "unspecified"} />;
 
-          if (record.type === "boolean") return <BooleanField value={value} />;
+          if (record.type === "boolean")
+            return <BooleanField value={value} title={record.helper} />;
 
           if (record.type === "url")
             return <UrlField value={value} href={record.href} />;
 
           if (record.type === "date")
-            return (
+            return value ? (
               <>
                 <DateField value={value} format="LLL" /> -{" "}
                 <TextField value={dayjs(value).fromNow()} />
               </>
+            ) : (
+              "-"
             );
 
           if (record.type === "price")

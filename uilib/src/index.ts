@@ -5,3 +5,4 @@ export { Avatar } from "@/components/Avatar";
 export { messages, locales } from "@/locales";
 export { useValidation } from "@/hooks/validation";
 export * from "@/components/Icons";
+export * from "@/constants/labels";

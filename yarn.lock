@@ -2760,6 +2760,7 @@ __metadata:
     "@fullcalendar/timegrid": "npm:^6.1.14"
     "@litespace/atlas": "npm:1.0.0"
     "@litespace/types": "npm:1.0.0"
+    "@litespace/uilib": "npm:1.0.0"
     "@refinedev/antd": "npm:5.40.0"
     "@refinedev/cli": "npm:^2.16.33"
     "@refinedev/core": "npm:^4.51.0"

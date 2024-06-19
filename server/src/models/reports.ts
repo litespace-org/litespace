@@ -44,7 +44,7 @@ export class Reports {
       .where("id", id);
 
     const row = first(rows);
-    if (!row) throw new Error("Coupon not found; should never happen");
+    if (!row) throw new Error("Report not found; should never happen");
     return this.from(row);
   }
 
@@ -53,10 +53,10 @@ export class Reports {
   }
 
   async findById(id: number): Promise<IReport.MappedAttributes | null> {
-    const coupons = this.mapAttributesQuery(
+    const list = this.mapAttributesQuery(
       await this.getAttributesQuery().where("reports.id", id)
     );
-    return first(coupons) || null;
+    return first(list) || null;
   }
 
   async findAll(): Promise<IReport.MappedAttributes[]> {
