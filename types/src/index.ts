@@ -10,7 +10,7 @@ export * as IPlan from "@/plan";
 export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";
 export * as IReport from "@/report";
-export * as IReportThreads from "@/threads";
+export * as IReportReply from "@/reportReply";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";

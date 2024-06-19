@@ -1,18 +1,17 @@
 import { notfound } from "@/lib/error";
-import { reports } from "@/models";
+import { reportReplies, reports } from "@/models";
 import http from "@/validation/http";
 import { identityObject } from "@/validation/utils";
-import { IReport } from "@litespace/types";
+import { IReportReply } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { merge } from "lodash";
 
 async function create(req: Request, res: Response) {
-  const payload: IReport.CreateApiPayload = http.report.create.body.parse(
-    req.body
-  );
+  const payload: IReportReply.CreateApiPayload =
+    http.reportReply.create.body.parse(req.body);
 
-  const coupon = await reports.create(
+  const coupon = await reportReplies.create(
     merge(payload, { createdBy: req.user.id })
   );
 
@@ -22,9 +21,8 @@ async function create(req: Request, res: Response) {
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
 
-  const payload: IReport.UpdateApiPayload = http.report.update.body.parse(
-    req.body
-  );
+  const payload: IReportReply.UpdateApiPayload =
+    http.reportReply.update.body.parse(req.body);
 
   const coupon = await reports.update(
     id,
@@ -36,15 +34,15 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
 async function delete_(req: Request, res: Response) {
   const { id } = identityObject.parse(req.params);
-  await reports.delete(id);
+  await reportReplies.delete(id);
   res.status(200).send();
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const report = await reports.findById(id);
-  if (!report) return next(notfound());
-  res.status(200).json(report);
+  const reply = await reportReplies.findById(id);
+  if (!reply) return next(notfound());
+  res.status(200).json(reply);
 }
 
 async function findAll(req: Request, res: Response) {

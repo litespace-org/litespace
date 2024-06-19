@@ -18,7 +18,7 @@ export { plans } from "@/models/plans";
 export { coupons } from "@/models/coupons";
 export { invites } from "@/models/invites";
 export { reports } from "@/models/reports";
-export { threads } from "@/models/threads";
+export { reportReplies } from "@/models/reportReplies";
 
 // types
 export { Subscription } from "@/models/subscriptions";

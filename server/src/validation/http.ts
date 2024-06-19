@@ -274,6 +274,22 @@ const report = {
   },
 } as const;
 
+const reportReply = {
+  create: {
+    body: zod.object({
+      reportId: id,
+      message: string.max(1000),
+      draft: boolean,
+    }),
+  },
+  update: {
+    body: zod.object({
+      message: zod.optional(string.max(1000)),
+      draft: zod.optional(boolean),
+    }),
+  },
+} as const;
+
 export default {
   user,
   auth,
@@ -288,4 +304,5 @@ export default {
   coupon,
   invite,
   report,
+  reportReply,
 };

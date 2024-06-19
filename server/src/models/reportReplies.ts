@@ -1,14 +1,14 @@
-import { IReportThreads } from "@litespace/types";
+import { IReportReply } from "@litespace/types";
 import { knex } from "./query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 
-export class Threads {
+export class ReportReplies {
   async create(
-    payload: IReportThreads.CreatePayload
-  ): Promise<IReportThreads.Self> {
+    payload: IReportReply.CreatePayload
+  ): Promise<IReportReply.Self> {
     const now = new Date();
-    const rows = await knex<IReportThreads.Row>("report_threads").insert(
+    const rows = await knex<IReportReply.Row>("report_replies").insert(
       {
         report_id: payload.reportId,
         message: payload.message,
@@ -28,9 +28,9 @@ export class Threads {
 
   async update(
     id: number,
-    payload: IReportThreads.UpdatePayload
-  ): Promise<IReportThreads.Self> {
-    const rows = await knex<IReportThreads.Row>("report_threads")
+    payload: IReportReply.UpdatePayload
+  ): Promise<IReportReply.Self> {
+    const rows = await knex<IReportReply.Row>("report_replies")
       .update(
         {
           message: payload.message,
@@ -48,39 +48,39 @@ export class Threads {
   }
 
   async delete(id: number): Promise<void> {
-    await knex<IReportThreads.Row>("report_threads").delete().where("id", id);
+    await knex<IReportReply.Row>("report_replies").delete().where("id", id);
   }
 
-  async findById(id: number): Promise<IReportThreads.MappedAttributes | null> {
+  async findById(id: number): Promise<IReportReply.MappedAttributes | null> {
     const list = this.mapAttributesQuery(
-      await this.getAttributesQuery().where("report_threads.id", id)
+      await this.getAttributesQuery().where("report_replies.id", id)
     );
     return first(list) || null;
   }
 
-  async findAll(): Promise<IReportThreads.MappedAttributes[]> {
+  async findAll(): Promise<IReportReply.MappedAttributes[]> {
     return this.mapAttributesQuery(await this.getAttributesQuery());
   }
 
   getAttributesQuery() {
-    return asAttributesQuery<IReportThreads.Row, IReportThreads.Attributed[]>(
-      "report_threads",
+    return asAttributesQuery<IReportReply.Row, IReportReply.Attributed[]>(
+      "report_replies",
       {
-        id: "report_threads.id",
-        reportId: "report_threads.report_id",
-        message: "report_threads.message",
-        draft: "report_threads.draft",
+        id: "report_replies.id",
+        reportId: "report_replies.report_id",
+        message: "report_replies.message",
+        draft: "report_replies.draft",
       }
     );
   }
 
   mapAttributesQuery(
-    list: IReportThreads.Attributed[]
-  ): IReportThreads.MappedAttributes[] {
+    list: IReportReply.Attributed[]
+  ): IReportReply.MappedAttributes[] {
     return mapAttributesQuery(list, (item) => ({}));
   }
 
-  from(row: IReportThreads.Row): IReportThreads.Self {
+  from(row: IReportReply.Row): IReportReply.Self {
     return {
       id: row.id,
       reportId: row.report_id,
@@ -94,4 +94,4 @@ export class Threads {
   }
 }
 
-export const threads = new Threads();
+export const reportReplies = new ReportReplies();

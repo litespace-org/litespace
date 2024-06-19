@@ -177,7 +177,7 @@ exports.up = (pgm) => {
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
-  pgm.createTable("report_threads", {
+  pgm.createTable("report_replies", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     report_id: { type: "SERIAL", notNull: true, references: "reports(id)" },
     message: { type: "VARCHAR(1000)", notNull: true },
@@ -227,7 +227,7 @@ exports.up = (pgm) => {
   pgm.createIndex("invites", "id");
   pgm.createIndex("subscriptions", "id");
   pgm.createIndex("reports", "id");
-  pgm.createIndex("report_threads", "id");
+  pgm.createIndex("report_replies", "id");
   pgm.createIndex("gifts", "id");
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
@@ -260,7 +260,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("invites", "id");
   pgm.dropIndex("subscriptions", "id", { ifExists: true });
   pgm.dropIndex("reports", "id");
-  pgm.dropIndex("report_threads", "id");
+  pgm.dropIndex("report_replies", "id");
   pgm.dropIndex("gifts", "id");
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("calls", "id", { ifExists: true });
@@ -275,7 +275,7 @@ exports.down = (pgm) => {
   pgm.dropTable("invites", { ifExists: true });
   pgm.dropTable("coupons", { ifExists: true });
   pgm.dropTable("plans", { ifExists: true });
-  pgm.dropTable("report_threads", { ifExists: true });
+  pgm.dropTable("report_replies", { ifExists: true });
   pgm.dropTable("reports", { ifExists: true });
   pgm.dropTable("gifts", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });

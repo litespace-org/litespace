@@ -11,6 +11,7 @@ import plan from "@/routes/plan";
 import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
 import report from "@/routes/report";
+import reportReply from "@/routes/reportReply";
 
 export default {
   user,
@@ -24,6 +25,7 @@ export default {
   coupon,
   invite,
   report,
+  reportReply,
   subscription,
   authorization,
 };
