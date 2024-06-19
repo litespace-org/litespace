@@ -1,7 +1,6 @@
-import { ICoupon, IPlan } from "@litespace/types";
+import { ICoupon } from "@litespace/types";
 import { knex } from "./query";
-import { first, omit } from "lodash";
-import dayjs from "@/lib/dayjs";
+import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 
 export class Coupons {

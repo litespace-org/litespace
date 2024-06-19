@@ -1,4 +1,14 @@
-import { calls, coupons, invites, plans, slots, tutors, users } from "@/models";
+import {
+  calls,
+  coupons,
+  invites,
+  plans,
+  reports,
+  slots,
+  threads,
+  tutors,
+  users,
+} from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
@@ -55,6 +65,7 @@ async function main(): Promise<void> {
     start: start.toISOString(),
     type: ICall.Type.Interview,
   });
+
   const examinerCalls = await calls.findHostCalls(examiner.id);
 
   const plan = await plans.create({
@@ -89,6 +100,20 @@ async function main(): Promise<void> {
     expiresAt: dayjs().add(1, "week").toISOString(),
     createdBy: admin.id,
     planId: plan.id,
+  });
+
+  const report = await reports.create({
+    createdBy: student.id,
+    title: "Report title",
+    description: "Report description",
+    category: "Report Category",
+  });
+
+  const thread = await threads.create({
+    createdBy: admin.id,
+    draft: false,
+    message: "This is a thread message",
+    reportId: report.id,
   });
 }
 

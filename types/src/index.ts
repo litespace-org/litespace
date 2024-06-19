@@ -9,6 +9,8 @@ export * as ICall from "@/call";
 export * as IPlan from "@/plan";
 export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";
+export * as IReport from "@/report";
+export * as IReportThreads from "@/threads";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";
