@@ -32,6 +32,12 @@ export class ReportReply extends Base {
       .then((response) => response.data);
   }
 
+  async findByReportId(id: number): Promise<IReportReply.MappedAttributes[]> {
+    return this.client
+      .get<IReportReply.MappedAttributes[]>(`/api/v1/report/reply/report/${id}`)
+      .then((response) => response.data);
+  }
+
   async findAll(): Promise<IReportReply.MappedAttributes[]> {
     return this.client
       .get<IReportReply.MappedAttributes[]>(`/api/v1/report/reply/list`)

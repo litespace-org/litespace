@@ -45,6 +45,12 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(reply);
 }
 
+async function findByReportId(req: Request, res: Response, next: NextFunction) {
+  const { id } = identityObject.parse(req.params);
+  const replies = await reportReplies.findByReportId(id);
+  res.status(200).json(replies);
+}
+
 async function findAll(req: Request, res: Response) {
   const list = await reports.findAll();
   res.status(200).json(list);
@@ -55,5 +61,6 @@ export default {
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
   findById: asyncHandler(findById),
+  findByReportId: asyncHandler(findByReportId),
   findAll: asyncHandler(findAll),
 };

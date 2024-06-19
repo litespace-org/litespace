@@ -58,6 +58,12 @@ export class ReportReplies {
     return first(list) || null;
   }
 
+  async findByReportId(id: number): Promise<IReportReply.MappedAttributes[]> {
+    return this.mapAttributesQuery(
+      await this.getAttributesQuery().where("report_replies.report_id", id)
+    );
+  }
+
   async findAll(): Promise<IReportReply.MappedAttributes[]> {
     return this.mapAttributesQuery(await this.getAttributesQuery());
   }

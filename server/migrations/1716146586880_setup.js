@@ -255,13 +255,13 @@ exports.down = (pgm) => {
   // indexes
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
-  pgm.dropIndex("plans", "id");
-  pgm.dropIndex("coupons", "id");
-  pgm.dropIndex("invites", "id");
+  pgm.dropIndex("plans", "id", { ifExists: true });
+  pgm.dropIndex("coupons", "id", { ifExists: true });
+  pgm.dropIndex("invites", "id", { ifExists: true });
   pgm.dropIndex("subscriptions", "id", { ifExists: true });
-  pgm.dropIndex("reports", "id");
-  pgm.dropIndex("report_replies", "id");
-  pgm.dropIndex("gifts", "id");
+  pgm.dropIndex("report_replies", "id", { ifExists: true });
+  pgm.dropIndex("reports", "id", { ifExists: true });
+  pgm.dropIndex("gifts", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });

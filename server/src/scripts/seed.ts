@@ -5,7 +5,7 @@ import {
   plans,
   reports,
   slots,
-  threads,
+  reportReplies,
   tutors,
   users,
 } from "@/models";
@@ -109,7 +109,7 @@ async function main(): Promise<void> {
     category: "Report Category",
   });
 
-  const thread = await threads.create({
+  const reply = await reportReplies.create({
     createdBy: admin.id,
     draft: false,
     message: "This is a thread message",

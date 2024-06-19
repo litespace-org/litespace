@@ -20,6 +20,7 @@ const auth = authorizer()
 router.post("/", authorized, reply.create);
 router.get("/list", staff, reply.findAll);
 router.get("/:id", auth, reply.findById);
+router.get("/report/:id", auth, reply.findByReportId);
 router.put("/:id", auth, reply.update);
 router.delete("/:id", staff, reply.delete);
 
