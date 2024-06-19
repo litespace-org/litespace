@@ -54,10 +54,10 @@ export class Invites {
   }
 
   async findById(id: number): Promise<IInvite.MappedAttributes | null> {
-    const plans = this.mapAttributesQuery(
+    const list = this.mapAttributesQuery(
       await this.getAttributesQuery().where("invites.id", id)
     );
-    return first(plans) || null;
+    return first(list) || null;
   }
 
   async findAll(): Promise<IInvite.MappedAttributes[]> {

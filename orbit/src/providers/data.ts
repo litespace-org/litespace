@@ -1,5 +1,13 @@
 import { atlas, backendUrl } from "@/lib/atlas";
-import { ICoupon, IPlan, ISlot, ITutor, IUser, as } from "@litespace/types";
+import {
+  ICoupon,
+  IInvite,
+  IPlan,
+  ISlot,
+  ITutor,
+  IUser,
+  as,
+} from "@litespace/types";
 import { DataProvider, GetListParams } from "@refinedev/core";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
@@ -14,6 +22,7 @@ export enum Resource {
   MyInterviews = "my-interviews",
   Plans = "plans",
   Coupons = "coupons",
+  Invites = "invites",
 }
 
 const empty = { data: null };
@@ -49,6 +58,11 @@ export const dataProvider: DataProvider = {
     if (resource === Resource.Coupons) {
       const coupon = await atlas.coupon.findById(resourceId);
       return { data: as.casted(coupon) };
+    }
+
+    if (resource === Resource.Invites) {
+      const invite = await atlas.invite.findById(resourceId);
+      return { data: as.casted(invite) };
     }
 
     throw new Error("Not implemented");
@@ -227,6 +241,27 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.Invites && meta && meta.invite) {
+      const prev = as.casted<IInvite.MappedAttributes>(meta.invite);
+      const updated = as.casted<{
+        email: string;
+        expiresAt: Dayjs;
+        planId: number;
+      }>(variables);
+
+      const expiresAt = dayjs
+        .utc(updated.expiresAt.format("YYYY-MM-DD"))
+        .toISOString();
+
+      await atlas.invite.update(resourceId, {
+        email: selectUpdatedOrNone(prev.email, updated.email),
+        expiresAt: selectUpdatedOrNone(prev.expiresAt, expiresAt),
+        planId: selectUpdatedOrNone(prev.planId, updated.planId),
+      });
+
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {
@@ -305,6 +340,22 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(response) };
     }
 
+    if (resource === Resource.Invites) {
+      const payload = as.casted<
+        Omit<IInvite.CreateApiPayload, "expiresAt"> & { expiresAt: Dayjs }
+      >(variables);
+
+      const response = await atlas.invite.create(
+        merge(omit(payload, "expiresAt"), {
+          expiresAt: dayjs
+            .utc(payload.expiresAt.format("YYYY-MM-DD"))
+            .toISOString(),
+        })
+      );
+
+      return { data: as.casted(response) };
+    }
+
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
@@ -327,6 +378,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Coupons) {
       await atlas.coupon.delete(resourceId);
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Invites) {
+      await atlas.invite.delete(resourceId);
       return as.casted(empty);
     }
 
@@ -369,6 +425,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Coupons) {
       const list = await atlas.coupon.findAll();
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.Invites) {
+      const list = await atlas.invite.findAll();
       return { data: as.casted(list), total: list.length };
     }
 

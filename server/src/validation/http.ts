@@ -239,6 +239,23 @@ const coupon = {
   },
 } as const;
 
+const invite = {
+  create: {
+    body: zod.object({
+      email: email,
+      planId: id,
+      expiresAt: datetime,
+    }),
+  },
+  update: {
+    body: zod.object({
+      email: zod.optional(email),
+      planId: zod.optional(id),
+      expiresAt: zod.optional(datetime),
+    }),
+  },
+} as const;
+
 export default {
   user,
   auth,
@@ -251,4 +268,5 @@ export default {
   chat,
   plan,
   coupon,
+  invite,
 };

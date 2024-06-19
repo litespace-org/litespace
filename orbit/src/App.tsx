@@ -32,6 +32,12 @@ import {
   CouponShow,
 } from "@/pages/coupons";
 import {
+  InviteCreate,
+  InviteEdit,
+  InviteList,
+  InviteShow,
+} from "@/pages/invites";
+import {
   MyScheduleCreate,
   MyScheduleEdit,
   MyScheduleList,
@@ -87,6 +93,14 @@ function App() {
                     edit: "/coupons/edit/:id",
                     show: "/coupons/show/:id",
                     meta: { canDelete: true, label: "Coupons" },
+                  },
+                  {
+                    name: Resource.Invites,
+                    list: "/invites",
+                    create: "/invites/create",
+                    edit: "/invites/edit/:id",
+                    show: "/invites/show/:id",
+                    meta: { canDelete: true, label: "Invites" },
                   },
                   {
                     name: Resource.MySchedule,
@@ -161,6 +175,12 @@ function App() {
                       <Route path="create" element={<CouponCreate />} />
                       <Route path="edit/:id" element={<CouponEdit />} />
                       <Route path="show/:id" element={<CouponShow />} />
+                    </Route>
+                    <Route path="/invites">
+                      <Route index element={<InviteList />} />
+                      <Route path="create" element={<InviteCreate />} />
+                      <Route path="edit/:id" element={<InviteEdit />} />
+                      <Route path="show/:id" element={<InviteShow />} />
                     </Route>
                     <Route path="/my-schedule">
                       <Route index element={<MyScheduleList />} />
