@@ -33,7 +33,6 @@ import {
   SendOutlined,
 } from "@ant-design/icons";
 import { required } from "@/lib/constants";
-import { update } from "lodash";
 
 interface IReplyFormData {
   message: string;
@@ -41,8 +40,7 @@ interface IReplyFormData {
 }
 
 export const ReportShow = () => {
-  const [replyId, setReplyId] = useState(0);
-
+  const [editReplyId, setEditReplyId] = useState(0);
   const { id: resourceId } = useResource();
   const {
     queryResult: { data, isLoading: isCouponLoading },
@@ -61,6 +59,11 @@ export const ReportShow = () => {
 
   const { mutate: deleteReportReply, isLoading: isDeletingReportReply } =
     useDelete();
+
+  const { mutate: toggleDraftState, isLoading: isUpdatingDraftState } =
+    useUpdate({});
+
+  const { mutate: updateReply, isLoading: isUpdatingReply } = useUpdate();
 
   const report = useMemo(() => data?.data, [data?.data]);
 
@@ -114,20 +117,46 @@ export const ReportShow = () => {
     });
   }, [report, updateReport]);
 
-  const onReplyDelete = useCallback(() => {
-    return deleteReportReply({
-      resource: Resource.ReportReplies,
-      id: replyId,
-    });
-  }, [deleteReportReply, replyId]);
+  const onReplyDelete = useCallback(
+    (replyId: number) => {
+      return deleteReportReply({
+        resource: Resource.ReportReplies,
+        id: replyId,
+      });
+    },
+    [deleteReportReply]
+  );
 
-  const hide = useCallback(() => {
-    setReplyId(0);
-  }, []);
+  const onToggleDraftState = useCallback(
+    async (replyId: number) => {
+      const reply = reportReply?.data.find((reply) => reply.id === replyId);
+      if (!reply) return;
 
-  const handleOpenChange = useCallback((replyId: number) => {
-    setReplyId(replyId);
-  }, []);
+      await toggleDraftState({
+        resource: Resource.ReportReplies,
+        id: replyId,
+        values: { draft: !reply.draft },
+        meta: { reply },
+      });
+    },
+    [reportReply?.data, toggleDraftState]
+  );
+
+  const onUpdateReply = useCallback(
+    async ({ message }: { message: string }) => {
+      const reply = reportReply?.data.find((reply) => reply.id === editReplyId);
+      if (!reply) return;
+      await updateReply({
+        resource: Resource.ReportReplies,
+        id: editReplyId,
+        values: { message },
+        meta: { reply },
+      });
+
+      setEditReplyId(0);
+    },
+    [editReplyId, reportReply?.data, updateReply]
+  );
 
   return (
     <Show isLoading={isCouponLoading} title="Report">
@@ -157,86 +186,152 @@ export const ReportShow = () => {
                   }
                   position={ownedByReporter ? "right" : "left"}
                 >
-                  <Flex
-                    style={{
-                      flexDirection: "column",
-                      marginBottom: "20px",
-                    }}
-                  >
-                    <Card
-                      hoverable
+                  {editReplyId === reply.id ? (
+                    <Flex
                       style={{
-                        width: "720px",
-                        alignSelf: ownedByReporter ? "end" : "start",
+                        flexDirection: "column",
+                        marginBottom: "20px",
                       }}
-                      actions={
-                        ownedByReporter
-                          ? []
-                          : [
-                              <Tooltip title="Mark As Draft">
-                                <AuditOutlined />,
-                              </Tooltip>,
-                              <Tooltip title="Edit Reply">
-                                <EditOutlined />
-                              </Tooltip>,
-                              <Popover
-                                trigger="hover"
-                                open={reply.id === replyId}
-                                onOpenChange={() => handleOpenChange(reply.id)}
-                                content={
-                                  <Flex style={{ flexDirection: "column" }}>
-                                    <Flex
-                                      align="center"
-                                      justify="center"
-                                      gap="10px"
-                                    >
-                                      <Button onClick={hide}>Cancel</Button>
-                                      <Button
-                                        loading={isDeletingReportReply}
-                                        danger
-                                        onClick={onReplyDelete}
-                                      >
-                                        Delete
-                                      </Button>
-                                    </Flex>
-                                  </Flex>
-                                }
-                                title="Delete Reply"
-                              >
-                                <DeleteOutlined />
-                              </Popover>,
-                            ]
-                      }
                     >
-                      <Flex>
-                        <Typography.Paragraph>
-                          {reply.message}
-                        </Typography.Paragraph>
-                      </Flex>
-
-                      <Divider />
-
-                      <Flex
-                        align="flex-start"
-                        style={{ flexDirection: "column" }}
+                      <Card
+                        style={{
+                          width: "720px",
+                          alignSelf: "start",
+                        }}
                       >
-                        <Typography.Text strong>
-                          {reply.createdBy.name}
-                        </Typography.Text>
-                        <Typography.Text type="secondary">
-                          {reply.createdBy.email}
-                        </Typography.Text>
+                        <Form onFinish={onUpdateReply}>
+                          <Form.Item
+                            name="message"
+                            initialValue={reply.message}
+                          >
+                            <Input.TextArea rows={7} />
+                          </Form.Item>
 
-                        <Flex style={{ marginTop: "2px" }}>
-                          <TagField
-                            value={
-                              reply.draft ? "Draft (not visible)" : "Published"
-                            }
-                          />
+                          <Button
+                            loading={isUpdatingReply}
+                            htmlType="submit"
+                            type="primary"
+                          >
+                            Update
+                          </Button>
+                        </Form>
+                      </Card>
+                    </Flex>
+                  ) : (
+                    <Flex
+                      style={{
+                        flexDirection: "column",
+                        marginBottom: "20px",
+                      }}
+                    >
+                      <Card
+                        hoverable
+                        style={{
+                          width: "720px",
+                          alignSelf: ownedByReporter ? "end" : "start",
+                        }}
+                        actions={
+                          ownedByReporter
+                            ? []
+                            : [
+                                <Popover
+                                  trigger="hover"
+                                  title={
+                                    reply.draft
+                                      ? "Mark As Visible"
+                                      : "Mark As Draft"
+                                  }
+                                  content={
+                                    <Flex style={{ flexDirection: "column" }}>
+                                      <Flex
+                                        align="center"
+                                        justify="center"
+                                        gap="10px"
+                                      >
+                                        <Button
+                                          type="primary"
+                                          style={{ width: "100%" }}
+                                          loading={isUpdatingDraftState}
+                                          onClick={() =>
+                                            onToggleDraftState(reply.id)
+                                          }
+                                        >
+                                          Update
+                                        </Button>
+                                      </Flex>
+                                    </Flex>
+                                  }
+                                >
+                                  <AuditOutlined />,
+                                </Popover>,
+                                <Tooltip title="Edit Reply">
+                                  <EditOutlined
+                                    onClick={() => setEditReplyId(reply.id)}
+                                  />
+                                </Tooltip>,
+                                <Popover
+                                  trigger="hover"
+                                  content={
+                                    <Flex style={{ flexDirection: "column" }}>
+                                      <Flex
+                                        align="center"
+                                        justify="center"
+                                        gap="10px"
+                                      >
+                                        <Button
+                                          style={{ width: "100%" }}
+                                          loading={isDeletingReportReply}
+                                          danger
+                                          onClick={() =>
+                                            onReplyDelete(reply.id)
+                                          }
+                                        >
+                                          Delete
+                                        </Button>
+                                      </Flex>
+                                    </Flex>
+                                  }
+                                  title="Delete Reply! Are you sure?"
+                                >
+                                  <DeleteOutlined />
+                                </Popover>,
+                              ]
+                        }
+                      >
+                        <Flex>
+                          <Typography.Paragraph>
+                            {reply.message}
+                          </Typography.Paragraph>
                         </Flex>
-                      </Flex>
-                    </Card>
-                  </Flex>
+
+                        <Divider />
+
+                        <Flex
+                          align="flex-start"
+                          style={{ flexDirection: "column" }}
+                        >
+                          <Typography.Text strong>
+                            {reply.createdBy.name}
+                          </Typography.Text>
+                          <Typography.Text type="secondary">
+                            {reply.createdBy.email}
+                          </Typography.Text>
+
+                          {!ownedByReporter && (
+                            <Flex style={{ marginTop: "2px" }}>
+                              <TagField
+                                value={
+                                  reply.draft
+                                    ? "Draft (not visible)"
+                                    : "Published"
+                                }
+                              />
+                            </Flex>
+                          )}
+                        </Flex>
+                      </Card>
+                    </Flex>
+                  )}
                 </Timeline.Item>
               );
             })}

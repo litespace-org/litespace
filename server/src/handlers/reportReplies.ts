@@ -24,7 +24,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const payload: IReportReply.UpdateApiPayload =
     http.reportReply.update.body.parse(req.body);
 
-  const coupon = await reports.update(
+  const coupon = await reportReplies.update(
     id,
     merge(payload, { updatedBy: req.user.id })
   );

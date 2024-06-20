@@ -295,6 +295,20 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (resource === Resource.ReportReplies && meta && meta.reply) {
+      const prev = as.casted<IReportReply.MappedAttributes>(meta.reply);
+      const updated = as.casted<{
+        draft?: boolean;
+        message?: string;
+      }>(variables);
+
+      await atlas.reportReply.update(resourceId, {
+        draft: selectUpdatedOrNone(prev.draft, updated.draft),
+        message: selectUpdatedOrNone(prev.message, updated.message),
+      });
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables, meta }) => {

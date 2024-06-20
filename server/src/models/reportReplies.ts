@@ -60,7 +60,9 @@ export class ReportReplies {
 
   async findByReportId(id: number): Promise<IReportReply.MappedAttributes[]> {
     return this.mapAttributesQuery(
-      await this.getAttributesQuery().where("report_replies.report_id", id)
+      await this.getAttributesQuery()
+        .orderBy("report_replies.created_at", "asc")
+        .where("report_replies.report_id", id)
     );
   }
 
