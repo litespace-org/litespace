@@ -2,6 +2,9 @@ import { violet, blackA, mauve, green } from "@radix-ui/colors";
 
 /** @type {import('tailwindcss').Config} */
 export default {
+  corePlugins: {
+    preflight: false,
+  },
   prefix: "ui-",
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
