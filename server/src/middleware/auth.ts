@@ -2,12 +2,13 @@ import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
 import { users } from "@/models";
 import { IUser } from "@litespace/types";
-import { forbidden } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error";
 import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
+import { identityObject } from "@/validation/utils";
 
 declare global {
   namespace Express {
@@ -94,6 +95,20 @@ class Authorizer {
   }
 
   owner(handler: OwnerHandler): Authorizer {
+    this.ownerHandler = handler;
+    return this;
+  }
+
+  simpleOwner<
+    M extends object,
+    T extends { findById(id: number): Promise<M | null> },
+  >(model: T, selector: (record: M) => number): Authorizer {
+    async function handler(req: Request): Promise<number> {
+      const { id } = identityObject.parse(req.params);
+      const record = await model.findById(id);
+      if (!record) throw notfound();
+      return selector(record);
+    }
     this.ownerHandler = handler;
     return this;
   }
