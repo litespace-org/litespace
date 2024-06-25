@@ -1,8 +1,9 @@
 export type Row = {
   id: number;
   user_id: number;
-  expires_at: Date;
   token_hash: string;
+  expires_at: Date;
+  used: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -10,8 +11,9 @@ export type Row = {
 export type Self = {
   id: number;
   userId: number;
-  expiresAt: string;
   hash: string;
+  used: boolean;
+  expiresAt: string;
   createdAt: string;
   updatedAt: string;
 };

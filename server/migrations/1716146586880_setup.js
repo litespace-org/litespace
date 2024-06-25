@@ -47,6 +47,7 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     token_hash: { type: "CHAR(32)", notNull: true },
+    used: { type: "BOOLEAN", notNull: true, default: false },
     expires_at: { type: "TIMESTAMP", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
