@@ -1,9 +1,7 @@
 import { Router } from "express";
 import passport from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
-import redirect from "@/handlers/redirect";
 import utils from "@/handlers/utils";
-import { serverConfig } from "@/constants";
 
 const router = Router();
 const options = { failureRedirect: "/login" } as const;
@@ -18,11 +16,7 @@ router.get(
     ],
   })
 );
-router.get(
-  "/google/callback",
-  passport.authenticate("google", options),
-  redirect(serverConfig.client)
-);
+router.get("/google/callback", passport.authenticate("google", options));
 
 // facebook
 router.get(
@@ -31,19 +25,11 @@ router.get(
     scope: ["email", "public_profile"],
   })
 );
-router.get(
-  "/facebook/callback",
-  passport.authenticate("facebook", options),
-  redirect(serverConfig.client)
-);
+router.get("/facebook/callback", passport.authenticate("facebook", options));
 
 // discord
 router.get("/discord", passport.authenticate("discord"));
-router.get(
-  "/discord/callback",
-  passport.authenticate("discord", options),
-  redirect(serverConfig.client)
-);
+router.get("/discord/callback", passport.authenticate("discord", options));
 
 // others
 router.post("/password", passport.authenticate("local", {}), utils.end);

@@ -39,8 +39,17 @@ exports.up = (pgm) => {
     birthday: { type: "DATE", default: null },
     gender: { type: "user_gender_type", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable("tokens", {
+    id: { type: "SERIAL", primaryKey: true, notNull: true },
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    token_hash: { type: "CHAR(32)", notNull: true },
+    expires_at: { type: "TIMESTAMP", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("tutors", {

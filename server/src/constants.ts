@@ -1,10 +1,21 @@
 import zod from "zod";
 
-export type Environment = "production" | "staging" | "development";
-export const environment = process.env.ENVIRONMENT as Environment;
-export const isProduction = environment === "production";
-export const isStaging = environment === "staging";
-export const isDev = environment === "development";
+export enum Environment {
+  Development = "development",
+  Staging = "staging",
+  Production = "production",
+}
+
+export const environment = zod
+  .enum(
+    [Environment.Development, Environment.Staging, Environment.Production],
+    { message: "Missing server environment" }
+  )
+  .parse(process.env.ENVIRONMENT);
+
+export const isDev = environment === Environment.Development;
+export const isStaging = environment === Environment.Staging;
+export const isProduction = environment === Environment.Production;
 
 const schema = {
   string: zod.string().trim(),
@@ -26,7 +37,6 @@ const SERVER_HOST = process.env.SERVER_HOST;
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
-  client: zod.string().url().parse(process.env.CLIENT_URL),
   origin: ["http://localhost:3000", "http://localhost:3001"],
 } as const;
 
@@ -39,18 +49,36 @@ export const authorizationSecret = zod
   .trim();
 
 export const googleConfig = {
-  clientId: zod.string().trim().parse(process.env.GOOGLE_CLIENT_ID),
-  clientSecret: zod.string().trim().parse(process.env.GOOGLE_CLIENT_SECRET),
+  clientId: zod
+    .string({ message: "Missing or invalid google client id" })
+    .trim()
+    .parse(process.env.GOOGLE_CLIENT_ID),
+  clientSecret: zod
+    .string({ message: "Missing or invalid google client secret" })
+    .trim()
+    .parse(process.env.GOOGLE_CLIENT_SECRET),
 } as const;
 
 export const facebookConfig = {
-  appId: zod.string().trim().parse(process.env.FACEBOOK_APP_ID),
-  appSecret: zod.string().trim().parse(process.env.FACEBOOK_APP_SECRET),
+  appId: zod
+    .string({ message: "Missing or invalid facebook app id" })
+    .trim()
+    .parse(process.env.FACEBOOK_APP_ID),
+  appSecret: zod
+    .string({ message: "Missing or invalid facebook app secret" })
+    .trim()
+    .parse(process.env.FACEBOOK_APP_SECRET),
 } as const;
 
 export const discordConfig = {
-  clientId: zod.string().trim().parse(process.env.DISCORD_CLIENT_ID),
-  clientSecret: zod.string().trim().parse(process.env.DISCORD_CLIENT_SECRET),
+  clientId: zod
+    .string({ message: "Missing or invalid discord client id" })
+    .trim()
+    .parse(process.env.DISCORD_CLIENT_ID),
+  clientSecret: zod
+    .string({ message: "Missing or invalid discord client secret" })
+    .trim()
+    .parse(process.env.DISCORD_CLIENT_SECRET),
   tokenApi: "https://discord.com/api/v10/oauth2/token",
   api: "https://discord.com/api/v10",
 } as const;

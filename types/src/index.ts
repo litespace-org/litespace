@@ -11,6 +11,7 @@ export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";
 export * as IReport from "@/report";
 export * as IReportReply from "@/reportReply";
+export * as IToken from "@/token";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";
