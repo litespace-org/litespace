@@ -52,7 +52,7 @@ import {
 import { ColorModeContextProvider } from "@/contexts/color-mode";
 import { Header } from "@/components/header";
 import { Login } from "@/pages/login";
-import { ForgotPassword } from "@/pages/forgotPassword";
+import { ForgotPassword, ResetPassword } from "@/pages/password";
 import { authProvider } from "@/providers/auth";
 
 function App() {
@@ -229,6 +229,7 @@ function App() {
                       path="/forgot-password"
                       element={<ForgotPassword />}
                     />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                   </Route>
                 </Routes>
 

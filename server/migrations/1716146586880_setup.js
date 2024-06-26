@@ -46,7 +46,7 @@ exports.up = (pgm) => {
   pgm.createTable("tokens", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    token_hash: { type: "CHAR(32)", notNull: true },
+    token_hash: { type: "CHAR(64)", notNull: true },
     used: { type: "BOOLEAN", notNull: true, default: false },
     expires_at: { type: "TIMESTAMP", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
@@ -231,6 +231,7 @@ exports.up = (pgm) => {
   pgm.createIndex("slots", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
+  pgm.createIndex("tokens", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("plans", "id");
   pgm.createIndex("coupons", "id");
@@ -276,6 +277,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("slots", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
+  pgm.dropIndex("tokens", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
@@ -291,6 +293,7 @@ exports.down = (pgm) => {
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
+  pgm.dropTable("tokens", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
   pgm.dropTable("sessons", { ifExists: true });

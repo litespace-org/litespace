@@ -28,6 +28,10 @@ export const databaseConnection = {
   host: isDev ? "localhost" : schema.string.parse(process.env.PG_HOST),
   port: isDev ? 5432 : schema.number.parse(process.env.PG_PORT),
   database: isDev ? "litespace" : schema.string.parse(process.env.PG_DATABASE),
+  url: zod
+    .string({ message: "Missing or invalid database url" })
+    .startsWith("postgres://")
+    .parse(process.env.DATABASE_URL),
 } as const;
 
 // Server

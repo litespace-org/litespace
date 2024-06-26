@@ -2,6 +2,7 @@ import { Router } from "express";
 import passport from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
 import utils from "@/handlers/utils";
+import auth from "@/handlers/auth";
 
 const router = Router();
 const options = { failureRedirect: "/login" } as const;
@@ -31,8 +32,12 @@ router.get("/facebook/callback", passport.authenticate("facebook", options));
 router.get("/discord", passport.authenticate("discord"));
 router.get("/discord/callback", passport.authenticate("discord", options));
 
-// others
+// password
 router.post("/password", passport.authenticate("local", {}), utils.end);
+router.post("/password/forgot", auth.forgotPassword);
+router.put("/password/reset", auth.resetPassword);
+
+// others
 router.post("/token", passport.authenticate("jwt"), utils.end);
 router.post("/logout", logout);
 

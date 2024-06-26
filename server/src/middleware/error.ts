@@ -5,6 +5,7 @@ import { AxiosError } from "axios";
 import { NextFunction } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
+import { DatabaseError } from "pg";
 
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
@@ -13,7 +14,7 @@ function getZodMessage(error: ZodError) {
 }
 
 export function errorHandler(
-  error: Error | ResponseError | ZodError | AxiosError,
+  error: Error | DatabaseError | ResponseError | ZodError | AxiosError,
   req: Request.Default,
   res: Response,
   next: NextFunction
@@ -34,6 +35,7 @@ export function errorHandler(
   } else if (error instanceof AxiosError) {
     message = error.response?.data ? error.response.data : error.message;
     statusCode = error.response?.status || 400;
+  } else if (error instanceof DatabaseError) {
   } else if (error instanceof Error) {
     message = error.message;
   }

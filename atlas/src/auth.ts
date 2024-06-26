@@ -30,6 +30,26 @@ export class Auth extends Base {
     );
   }
 
+  async forgotPassword(email: string): Promise<void> {
+    await this.client.post(
+      "/api/v1/auth/password/forgot",
+      JSON.stringify({ email })
+    );
+  }
+
+  async resetPassword({
+    token,
+    password,
+  }: {
+    token: string;
+    password: string;
+  }): Promise<void> {
+    await this.client.put(
+      "/api/v1/auth/password/reset",
+      JSON.stringify({ token, password })
+    );
+  }
+
   async token(token: string) {
     await this.client.post("/api/v1/auth/token", null, {
       params: { token },
