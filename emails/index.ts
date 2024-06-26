@@ -1,2 +1,2 @@
 export { Emailer } from "./emailer";
-export { EmailTemplate } from "./emails";
+export { EmailTemplate } from "./emails/index";

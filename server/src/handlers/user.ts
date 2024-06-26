@@ -1,9 +1,8 @@
-import { tokens, users } from "@/models";
+import { users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
   forbidden,
-  notfound,
   userAlreadyTyped,
   userExists,
   userNotFound,
@@ -12,9 +11,6 @@ import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import http from "@/validation/http";
-import { randomBytes, sha256 } from "@/lib/crypto";
-import dayjs from "@/lib/dayjs";
 import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
 
@@ -31,6 +27,12 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     type,
     email,
     name,
+  });
+
+  await emailer.send({
+    to: email,
+    template: EmailTemplate.VerifyEmail,
+    props: { url: "http://example.com" },
   });
 
   res.status(200).send();
