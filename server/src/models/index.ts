@@ -19,6 +19,7 @@ export { coupons } from "@/models/coupons";
 export { invites } from "@/models/invites";
 export { reports } from "@/models/reports";
 export { reportReplies } from "@/models/reportReplies";
+export { tokens } from "@/models/tokens";
 
 // types
 export { Subscription } from "@/models/subscriptions";

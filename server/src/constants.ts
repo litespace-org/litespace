@@ -82,3 +82,13 @@ export const discordConfig = {
   tokenApi: "https://discord.com/api/v10/oauth2/token",
   api: "https://discord.com/api/v10",
 } as const;
+
+export const emailConfig = {
+  email: zod
+    .string({ message: "Missing or invalid email" })
+    .email({ message: "Invalid email" })
+    .parse(process.env.EMAIL),
+  password: zod
+    .string({ message: "Missing or invalid password" })
+    .parse(process.env.EMAIL_PASSWORD),
+} as const;

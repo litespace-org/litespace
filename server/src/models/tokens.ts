@@ -1,6 +1,6 @@
 import { IToken } from "@litespace/types";
 import { knex } from "./query";
-import { first, has } from "lodash";
+import { first } from "lodash";
 
 export class Tokens {
   async create(payload: IToken.CreatePayload): Promise<IToken.Self> {
@@ -45,6 +45,10 @@ export class Tokens {
     return this.from(row);
   }
 
+  async findByHash(hash: string): Promise<IToken.Self | null> {
+    return await this.findOneBy("token_hash", hash);
+  }
+
   from(row: IToken.Row): IToken.Self {
     return {
       id: row.id,
@@ -57,3 +61,5 @@ export class Tokens {
     };
   }
 }
+
+export const tokens = new Tokens();

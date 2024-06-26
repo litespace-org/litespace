@@ -3067,7 +3067,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@litespace/emails@workspace:emails":
+"@litespace/emails@npm:1.0.0, @litespace/emails@workspace:emails":
   version: 0.0.0-use.local
   resolution: "@litespace/emails@workspace:emails"
   dependencies:
@@ -3075,6 +3075,9 @@ __metadata:
     "@types/nodemailer": "npm:^6.4.15"
     nodemailer: "npm:^6.9.14"
     react-email: "npm:^2.1.4"
+    typescript: "npm:^5.4.5"
+    vite: "npm:^5.2.0"
+    vite-plugin-dts: "npm:^3.9.1"
   languageName: unknown
   linkType: soft
 
@@ -3130,6 +3133,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@litespace/server@workspace:server"
   dependencies:
+    "@litespace/emails": "npm:1.0.0"
     "@litespace/types": "npm:1.0.0"
     "@types/connect-pg-simple": "npm:^7.0.3"
     "@types/express": "npm:^4.17.21"

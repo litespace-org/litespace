@@ -97,59 +97,25 @@ export class Users {
   }
 
   async delete(id: number): Promise<void> {
-    await query("DELETE FROM users WHERE id = $1", [id]);
+    await knex<IUser.Row>("users").where("id", id).del();
+  }
+
+  async findOneBy<T extends keyof IUser.Row>(
+    key: T,
+    value: IUser.Row[T]
+  ): Promise<IUser.Self | null> {
+    const rows = await knex<IUser.Row>("users").select("*").where(key, value);
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
   }
 
   async findById(id: number): Promise<IUser.Self | null> {
-    const { rows } = await query<IUser.Row, [number]>(
-      `
-        SELECT 
-          "id",
-          "email",
-          "password",
-          "name",
-          "avatar",
-          "type",
-          "birthday",
-          "gender",
-          "online",
-          "created_at",
-          "updated_at"
-        FROM users
-        WHERE id = $1;
-      `,
-      [id]
-    );
-
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+    return await this.findOneBy("id", id);
   }
 
   async findByEmail(email: string): Promise<IUser.Self | null> {
-    const { rows } = await query<IUser.Row, [email: string]>(
-      `
-        SELECT 
-          "id",
-          "email",
-          "password",
-          "name",
-          "avatar",
-          "type",
-          "birthday",
-          "gender",
-          "online",
-          "created_at",
-          "updated_at"
-        FROM users
-        WHERE email = $1;
-      `,
-      [email]
-    );
-
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+    return await this.findOneBy("email", email);
   }
 
   async findMany(ids: number[]): Promise<IUser.Self[]> {

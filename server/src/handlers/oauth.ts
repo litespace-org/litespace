@@ -1,4 +1,3 @@
-import { serverConfig } from "@/constants";
 import { generateAuthorizationToken } from "@/lib/auth";
 import { NextFunction, Request, Response } from "express";
 

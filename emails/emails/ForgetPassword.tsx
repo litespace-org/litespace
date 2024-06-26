@@ -1,10 +1,10 @@
 import * as React from "react";
 import { Html, Button } from "@react-email/components";
 
-export default function Email({ url }: { url: string }) {
+export default function ForgetPassword({ url }: { url: string }) {
   return (
     <Html lang="en">
-      <Button href={url}>Click me</Button>
+      <Button href={url}>Reset Password</Button>
     </Html>
   );
 }

@@ -52,6 +52,8 @@ const user = {
   delete: { query: zod.object({ id }) },
   findById: { params: zod.object({ id }) },
   login: { body: zod.object({ email, password }) },
+  forgetPassword: { body: zod.object({ email }) },
+  resetPassword: { body: zod.object({ token: string, password }) },
 } as const;
 
 const auth = {
