@@ -8,9 +8,11 @@ import { NextFunction, Request, Response } from "express";
 import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
+import { IToken } from "@litespace/types";
+import { isValidToken } from "@/lib/token";
 
 async function forgotPassword(req: Request, res: Response, next: NextFunction) {
-  const { email } = http.user.forgotPassword.body.parse(req.body);
+  const { email } = http.auth.forgotPassword.body.parse(req.body);
   const user = await users.findByEmail(email);
   if (!user) return next(notfound());
 
@@ -19,6 +21,7 @@ async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   const expiresAt = dayjs.utc().add(10, "minutes").toDate();
 
   await tokens.create({
+    type: IToken.Type.ForgotPassword,
     userId: user.id,
     expiresAt,
     hash,
@@ -34,11 +37,11 @@ async function forgotPassword(req: Request, res: Response, next: NextFunction) {
 }
 
 async function resetPassword(req: Request, res: Response, next: NextFunction) {
-  const payload = http.user.resetPassword.body.parse(req.body);
+  const payload = http.auth.resetPassword.body.parse(req.body);
   const hash = sha256(payload.token);
   const token = await tokens.findByHash(hash);
-  const expired = !!token && dayjs.utc().isAfter(dayjs.utc(token.expiresAt));
-  if (!token || token.used || expired) return next(new Error("Invalid token"));
+  if (!isValidToken(token, IToken.Type.ForgotPassword))
+    return next(new Error("Invalid token"));
 
   // todo: use transaction query
   await tokens.makeAsUsed(token.id);
@@ -50,7 +53,21 @@ async function resetPassword(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
+async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+  const body = http.auth.verifyEmail.body.parse(req.body);
+  const hash = sha256(body.token);
+  const token = await tokens.findByHash(hash);
+
+  if (!isValidToken(token, IToken.Type.VerifyEmail))
+    return next(new Error("Invalid token"));
+
+  await tokens.makeAsUsed(token.id);
+  await users.update(token.userId, { verified: true });
+  res.status(200).send();
+}
+
 export default {
   forgotPassword: asyncHandler(forgotPassword),
   resetPassword: asyncHandler(resetPassword),
+  verifyEmail: asyncHandler(verifyEmail),
 };

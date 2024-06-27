@@ -21,19 +21,20 @@ export type Self = {
   hasPassword: boolean;
   name: Nullable<string>;
   avatar: Nullable<string>;
-  birthday: Nullable<string>;
+  birthYear: Nullable<number>;
   gender: Nullable<Gender>;
   type: Type;
   online: boolean;
+  verified: boolean;
   createdAt: string;
   updatedAt: string;
 };
 
 export type Row = Omit<
   Self,
-  "createdAt" | "updatedAt" | "hasPassword" | "birthday"
+  "createdAt" | "updatedAt" | "hasPassword" | "birthYear"
 > & {
-  birthday: Date;
+  birth_year: number;
   password: Nullable<string>;
   created_at: Date;
   updated_at: Date;
@@ -45,12 +46,12 @@ export type Credentials = {
 };
 
 export type UpdatePayload = {
-  id: number;
   email?: string;
   password?: string;
-  name?: Nullable<string>;
-  avatar?: Nullable<string>;
-  birthday?: Nullable<string>;
-  gender?: Nullable<Gender>;
+  name?: string;
+  avatar?: string;
+  birthYear?: number;
+  gender?: Gender;
   type?: Type;
+  verified?: boolean;
 };

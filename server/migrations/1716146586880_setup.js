@@ -21,6 +21,7 @@ exports.up = (pgm) => {
   pgm.createType("call_type", ["lesson", "interview"]);
   pgm.createType("user_gender_type", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
+  pgm.createType("token_type", ["forgot-password", "verify-email"]);
 
   // tables
   pgm.createTable("sessons", {
@@ -36,9 +37,10 @@ exports.up = (pgm) => {
     name: { type: "VARCHAR(50)", default: null }, // todo: add: name_ar, name_en
     avatar: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", default: null },
-    birthday: { type: "DATE", default: null },
+    birth_year: { type: "INT", default: null },
     gender: { type: "user_gender_type", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
+    verified: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -48,6 +50,7 @@ exports.up = (pgm) => {
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     token_hash: { type: "CHAR(64)", notNull: true },
     used: { type: "BOOLEAN", notNull: true, default: false },
+    type: { type: "token_type", notNull: true },
     expires_at: { type: "TIMESTAMP", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
@@ -299,6 +302,7 @@ exports.down = (pgm) => {
   pgm.dropTable("sessons", { ifExists: true });
 
   // types
+  pgm.dropType("token_type", { ifExists: true });
   pgm.dropType("user_type", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
   pgm.dropType("call_type", { ifExists: true });

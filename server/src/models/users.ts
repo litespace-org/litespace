@@ -1,5 +1,5 @@
 import { knex, query } from "@/models/query";
-import { first } from "lodash";
+import { first, merge } from "lodash";
 import { IUser } from "@litespace/types";
 import dayjs from "dayjs";
 
@@ -53,47 +53,21 @@ export class Users {
     return this.from(row);
   }
 
-  async update(
-    id: number,
-    user: Partial<{
-      email: string;
-      password: string;
-      name: string;
-      avatar: string;
-      birthday: string;
-      gender: IUser.Gender;
-      online: boolean;
-      type: IUser.Type;
-    }>
-  ): Promise<void> {
-    await query(
-      `
-        UPDATE users
-        SET
-            email = COALESCE($1, email),
-            password = COALESCE($2, password),
-            name = COALESCE($3, name),
-            avatar = COALESCE($4, avatar),
-            type = COALESCE($5, type),
-            birthday = COALESCE($6, birthday),
-            gender = COALESCE($7, gender),
-            online = COALESCE($8, online),
-            updated_at = NOW()
-        where
-            id = $9;
-      `,
-      [
-        user.email,
-        user.password,
-        user.name,
-        user.avatar,
-        user.type,
-        user.birthday,
-        user.gender,
-        user.online,
-        id,
-      ]
-    );
+  async update(id: number, payload: IUser.UpdatePayload): Promise<void> {
+    const now = new Date();
+    knex<IUser.Row>("users")
+      .update({
+        email: payload.email,
+        password: payload.password,
+        name: payload.name,
+        avatar: payload.avatar,
+        birth_year: payload.birthYear,
+        gender: payload.gender,
+        type: payload.type,
+        verified: payload.verified,
+        updated_at: now,
+      })
+      .where("id", id);
   }
 
   async delete(id: number): Promise<void> {
@@ -191,10 +165,11 @@ export class Users {
       hasPassword: row.password !== null,
       name: row.name,
       avatar: row.avatar,
-      birthday: dayjs(row.birthday).format("YYYY-MM-DD"),
+      birthYear: row.birth_year,
       gender: row.gender,
       type: row.type,
       online: row.online,
+      verified: row.verified,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

@@ -1,9 +1,15 @@
+export enum Type {
+  ForgotPassword = "forgot-password",
+  VerifyEmail = "verify-email",
+}
+
 export type Row = {
   id: number;
   user_id: number;
   token_hash: string;
-  expires_at: Date;
   used: boolean;
+  type: Type;
+  expires_at: Date;
   created_at: Date;
   updated_at: Date;
 };
@@ -13,6 +19,7 @@ export type Self = {
   userId: number;
   hash: string;
   used: boolean;
+  type: Type;
   expiresAt: string;
   createdAt: string;
   updatedAt: string;
@@ -22,4 +29,5 @@ export type CreatePayload = {
   userId: number;
   expiresAt: Date;
   hash: string;
+  type: Type;
 };

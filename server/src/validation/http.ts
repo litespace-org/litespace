@@ -52,8 +52,6 @@ const user = {
   delete: { query: zod.object({ id }) },
   findById: { params: zod.object({ id }) },
   login: { body: zod.object({ email, password }) },
-  forgotPassword: { body: zod.object({ email }) },
-  resetPassword: { body: zod.object({ token: string, password }) },
 } as const;
 
 const auth = {
@@ -64,6 +62,9 @@ const auth = {
       .trim(),
   }),
   localAuthorization: zod.object({ email, password }),
+  forgotPassword: { body: zod.object({ email }) },
+  resetPassword: { body: zod.object({ token: string, password }) },
+  verifyEmail: { body: zod.object({ token: string }) },
 } as const;
 
 const slot = {

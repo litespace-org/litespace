@@ -9,6 +9,7 @@ export class Tokens {
       {
         user_id: payload.userId,
         token_hash: payload.hash,
+        type: payload.type,
         expires_at: payload.expiresAt,
         created_at: now,
         updated_at: now,
@@ -55,6 +56,7 @@ export class Tokens {
       userId: row.user_id,
       hash: row.token_hash,
       used: row.used,
+      type: row.type,
       expiresAt: row.expires_at.toISOString(),
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
