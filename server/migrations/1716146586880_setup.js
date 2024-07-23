@@ -24,7 +24,7 @@ exports.up = (pgm) => {
   pgm.createType("token_type", ["forgot-password", "verify-email"]);
 
   // tables
-  pgm.createTable("sessons", {
+  pgm.createTable("sessions", {
     sid: { type: "CHARACTER VARYING", primaryKey: true, notNull: true },
     sess: { type: "JSON", notNull: true },
     expire: { type: "TIMESTAMP(6) WITHOUT TIME ZONE", notNull: true },
@@ -299,7 +299,7 @@ exports.down = (pgm) => {
   pgm.dropTable("tokens", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
-  pgm.dropTable("sessons", { ifExists: true });
+  pgm.dropTable("sessions", { ifExists: true });
 
   // types
   pgm.dropType("token_type", { ifExists: true });

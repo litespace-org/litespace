@@ -20,7 +20,7 @@ const sessionMiddleware = session({
   secret: "keyboard cat", // todo: define constants
   resave: false,
   saveUninitialized: false,
-  store: new SessionStore({ pool, tableName: "sessons" }),
+  store: new SessionStore({ pool, tableName: "sessions" }),
   cookie: { maxAge: 30 * 24 * 60 * 60 * 1000, secure: isProduction }, // 30 days
 });
 
