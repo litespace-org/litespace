@@ -1,6 +1,6 @@
 export enum Type {
-  SuperAdmin = "super_admin",
-  RegularAdmin = "reg_admin",
+  SuperAdmin = "super-admin",
+  RegularAdmin = "reg-admin",
   Tutor = "tutor",
   Student = "student",
 }

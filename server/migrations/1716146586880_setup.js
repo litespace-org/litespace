@@ -11,8 +11,8 @@ exports.shorthands = undefined;
 exports.up = (pgm) => {
   // types
   pgm.createType("user_type", [
-    "super_admin",
-    "reg_admin",
+    "super-admin",
+    "reg-admin",
     "examiner",
     "tutor",
     "student",
@@ -41,6 +41,7 @@ exports.up = (pgm) => {
     gender: { type: "user_gender_type", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
+    credit_score: { type: "INT", notNull: true, default: 0 },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

@@ -1,8 +1,8 @@
 import { Nullable } from "@/utils";
 
 export enum Type {
-  SuperAdmin = "super_admin",
-  RegularAdmin = "reg_admin",
+  SuperAdmin = "super-admin",
+  RegularAdmin = "reg-admin",
   Tutor = "tutor",
   Student = "student",
   Examiner = "examiner",
@@ -26,16 +26,23 @@ export type Self = {
   type: Type;
   online: boolean;
   verified: boolean;
+  creditScore: number;
   createdAt: string;
   updatedAt: string;
 };
 
-export type Row = Omit<
-  Self,
-  "createdAt" | "updatedAt" | "hasPassword" | "birthYear"
-> & {
-  birth_year: number;
-  password: Nullable<string>;
+export type Row = {
+  id: number;
+  email: string;
+  password: string | null;
+  name: string | null;
+  avatar: string | null;
+  birth_year: number | null;
+  gender: Gender | null;
+  type: Type;
+  online: boolean;
+  verified: boolean;
+  credit_score: number;
   created_at: Date;
   updated_at: Date;
 };

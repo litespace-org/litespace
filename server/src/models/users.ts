@@ -177,6 +177,7 @@ export class Users {
       type: row.type,
       online: row.online,
       verified: row.verified,
+      creditScore: row.credit_score,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
