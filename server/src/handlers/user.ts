@@ -39,7 +39,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
-  const { id, email, name, password, gender, birthday, type, avatar } =
+  const { id, email, name, password, gender, type, avatar, birthYear } =
     schema.http.user.update.body.parse(req.body);
 
   if (type && req.user.type) return next(userAlreadyTyped());
@@ -48,9 +48,9 @@ async function update(req: Request, res: Response, next: NextFunction) {
     email,
     name,
     gender,
-    birthday,
     avatar,
     type,
+    birthYear,
     password: password ? hashPassword(password) : undefined,
   });
 

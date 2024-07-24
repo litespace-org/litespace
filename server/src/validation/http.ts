@@ -45,7 +45,7 @@ const user = {
       name: zod.optional(name),
       avatar: zod.optional(zod.string()),
       gender: zod.optional(gender),
-      birthday: zod.optional(date),
+      birthYear: zod.optional(zod.number().min(1950)),
       type: zod.optional(zod.enum([IUser.Type.Tutor, IUser.Type.Student])),
     }),
   },
