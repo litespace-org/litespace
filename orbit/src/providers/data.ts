@@ -101,12 +101,12 @@ export const dataProvider: DataProvider = {
         email: selectUpdatedOrNone(prev.email, updated.email),
         password: updated.password,
         avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
-        birthday: updated.userBirthday
-          ? selectUpdatedOrNone(
-              prev.birthday,
-              updated.userBirthday.format("YYYY-MM-DD")
-            )
-          : undefined,
+        // birthday: updated.userBirthday
+        //   ? selectUpdatedOrNone(
+        //       prev.birthday,
+        //       updated.userBirthday.format("YYYY-MM-DD")
+        //     )
+        //   : undefined,
         gender: selectUpdatedOrNone(prev.gender, updated.gender),
         type: selectUpdatedOrNone(prev.type, updated.type),
         id: resourceId,
@@ -137,12 +137,12 @@ export const dataProvider: DataProvider = {
         email: selectUpdatedOrNone(prev.email, updated.email),
         password: updated.password,
         avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
-        birthday: updated.userBirthday
-          ? selectUpdatedOrNone(
-              prev.birthday,
-              updated.userBirthday.format("YYYY-MM-DD")
-            )
-          : undefined,
+        // birthday: updated.userBirthday
+        //   ? selectUpdatedOrNone(
+        //       prev.birthday,
+        //       updated.userBirthday.format("YYYY-MM-DD")
+        //     )
+        //   : undefined,
         gender: selectUpdatedOrNone(prev.gender, updated.gender),
         bio: selectUpdatedOrNone(prev.bio, updated.bio),
         about: selectUpdatedOrNone(prev.about, updated.about),

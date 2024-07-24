@@ -10,6 +10,8 @@ import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
 import { IToken } from "@litespace/types";
 import { isValidToken } from "@/lib/token";
+import { knex } from "@/models/query";
+import { DoneCallback } from "passport";
 
 async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   const { email } = http.auth.forgotPassword.body.parse(req.body);
@@ -36,38 +38,49 @@ async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function resetPassword(req: Request, res: Response, next: NextFunction) {
+export async function resetPassword(req: Request, done: DoneCallback) {
   const payload = http.auth.resetPassword.body.parse(req.body);
   const hash = sha256(payload.token);
   const token = await tokens.findByHash(hash);
   if (!isValidToken(token, IToken.Type.ForgotPassword))
-    return next(new Error("Invalid token"));
+    return done(new Error("Invalid token"));
 
-  // todo: use transaction query
-  await tokens.makeAsUsed(token.id);
-
-  await users.update(token.userId, {
-    password: hashPassword(payload.password),
+  await knex.transaction(async (tx) => {
+    await tokens.makeAsUsed(token.id, tx);
+    await users.update(
+      token.userId,
+      { password: hashPassword(payload.password) },
+      tx
+    );
   });
 
-  res.status(200).send();
+  const user = await users.findById(token.userId);
+  if (!user) return done(notfound());
+  return done(user);
 }
 
-async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+// todos:
+// 1. "verifyEmail" and "resetPassword" should be a passport callbacks.
+// 2. use transactions - done
+// todo: test this handler. What will happen to "passport" if the hendler throws an error.
+export async function verifyEmail(req: Request, done: DoneCallback) {
   const body = http.auth.verifyEmail.body.parse(req.body);
   const hash = sha256(body.token);
   const token = await tokens.findByHash(hash);
 
   if (!isValidToken(token, IToken.Type.VerifyEmail))
-    return next(new Error("Invalid token"));
+    return done(new Error("Invalid token"));
 
-  await tokens.makeAsUsed(token.id);
-  await users.update(token.userId, { verified: true });
-  res.status(200).send();
+  await knex.transaction(async (tx) => {
+    await tokens.makeAsUsed(token.id, tx);
+    await users.update(token.userId, { verified: true }, tx);
+  });
+
+  const user = await users.findById(token.userId);
+  if (!user) return done(notfound());
+  return done(user);
 }
 
 export default {
   forgotPassword: asyncHandler(forgotPassword),
-  resetPassword: asyncHandler(resetPassword),
-  verifyEmail: asyncHandler(verifyEmail),
 };

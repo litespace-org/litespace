@@ -5,12 +5,21 @@ import { Strategy as Local } from "passport-local";
 import { Strategy as Custom } from "passport-custom";
 import { facebookConfig, googleConfig } from "@/constants";
 import { users } from "@/models";
-import { hashPassword } from "./user";
 import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
 import { jwtAuthorization, localAuthorization } from "@/middleware/auth";
+import { resetPassword, verifyEmail } from "@/handlers/auth";
+
+export enum AuthStrategy {
+  Discord = "discord",
+  JWT = "jwt",
+  Local = "local",
+  EmailVerificationToken = "email-verification-token",
+  ResetPasswordToken = "reset-password-token",
+}
 
 passport.serializeUser(async (user, done) => done(null, user.id));
+
 passport.deserializeUser<number>(async (id, done) => {
   try {
     const info = await users.findById(id);
@@ -43,8 +52,10 @@ passport.use(
   )
 );
 
-passport.use("discord", new Custom(discord));
-passport.use("jwt", new Custom(jwtAuthorization));
-passport.use("local", new Custom(localAuthorization));
+passport.use(AuthStrategy.Discord, new Custom(discord));
+passport.use(AuthStrategy.JWT, new Custom(jwtAuthorization));
+passport.use(AuthStrategy.Local, new Custom(localAuthorization));
+passport.use(AuthStrategy.EmailVerificationToken, new Custom(verifyEmail));
+passport.use(AuthStrategy.ResetPasswordToken, new Custom(resetPassword));
 
 export default passport;

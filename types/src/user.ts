@@ -54,4 +54,5 @@ export type UpdatePayload = {
   gender?: Gender;
   type?: Type;
   verified?: boolean;
+  online?: boolean;
 };

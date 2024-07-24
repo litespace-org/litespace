@@ -11,8 +11,8 @@ import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { emailer } from "@/lib/email";
-import { EmailTemplate } from "@litespace/emails";
+import { sendUserVerificationEmail } from "@/lib/email";
+import { identityObject } from "@/validation/utils";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
@@ -22,24 +22,25 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists());
 
-  await users.create({
+  const user = await users.create({
     password: hashPassword(password),
     type,
     email,
     name,
   });
 
-  await emailer.send({
-    to: email,
-    template: EmailTemplate.VerifyEmail,
-    props: { url: "http://example.com" },
+  await sendUserVerificationEmail({
+    userId: user.id,
+    email: user.email,
+    baseUrl: req.baseUrl,
   });
 
   res.status(200).send();
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
-  const { id, email, name, password, gender, type, avatar, birthYear } =
+  const { id } = identityObject.parse(req.params);
+  const { email, name, password, gender, type, avatar, birthYear } =
     schema.http.user.update.body.parse(req.body);
 
   if (type && req.user.type) return next(userAlreadyTyped());

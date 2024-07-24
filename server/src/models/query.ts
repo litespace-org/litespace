@@ -5,7 +5,7 @@ import {
   QueryResult,
   QueryResultRow,
 } from "pg";
-import init from "knex";
+import init, { Knex } from "knex";
 
 import { databaseConnection } from "@/constants";
 
@@ -24,24 +24,6 @@ export async function withClient<T>(
   const client = await pool.connect();
   try {
     return await handler(client);
-  } finally {
-    client.release();
-  }
-}
-
-export async function withTransaction<T>(
-  handler: (client: PoolClient) => Promise<T>
-): Promise<T> {
-  const client = await pool.connect();
-
-  try {
-    await client.query("BEGIN");
-    const result = await handler(client);
-    await client.query("COMMIT");
-    return result;
-  } catch (error) {
-    await client.query("ROLLBACK");
-    throw error;
   } finally {
     client.release();
   }

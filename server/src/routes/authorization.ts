@@ -1,5 +1,5 @@
 import { Router } from "express";
-import passport from "@/lib/passport";
+import passport, { AuthStrategy } from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
 import utils from "@/handlers/utils";
 import auth from "@/handlers/auth";
@@ -35,7 +35,18 @@ router.get("/discord/callback", passport.authenticate("discord", options));
 // password
 router.post("/password", passport.authenticate("local", {}), utils.end);
 router.post("/password/forgot", auth.forgotPassword);
-router.put("/password/reset", auth.resetPassword);
+router.put(
+  "/password/reset",
+  passport.authenticate(AuthStrategy.ResetPasswordToken),
+  utils.end // todo: try to remove `utils.end`!
+);
+
+// email
+router.post(
+  "/verify-email",
+  passport.authenticate(AuthStrategy.EmailVerificationToken),
+  utils.end
+);
 
 // others
 router.post("/token", passport.authenticate("jwt"), utils.end);

@@ -1,8 +1,11 @@
 import { IToken } from "@litespace/types";
 import { knex } from "./query";
 import { first } from "lodash";
+import { Knex } from "knex";
 
 export class Tokens {
+  name = "tokens";
+
   async create(payload: IToken.CreatePayload): Promise<IToken.Self> {
     const now = new Date();
     const rows = await knex<IToken.Row>("tokens").insert(
@@ -22,8 +25,8 @@ export class Tokens {
     return this.from(row);
   }
 
-  async makeAsUsed(id: number): Promise<IToken.Self> {
-    const rows = await knex<IToken.Row>("tokens")
+  async makeAsUsed(id: number, tx?: Knex.Transaction): Promise<IToken.Self> {
+    const rows = await this.builder(tx)
       .update({ used: true }, "*")
       .where("id", id);
 
@@ -61,6 +64,10 @@ export class Tokens {
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<IToken.Row>(this.name) : knex<IToken.Row>(this.name);
   }
 }
 

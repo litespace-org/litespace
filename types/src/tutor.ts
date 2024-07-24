@@ -35,7 +35,7 @@ export type UpdatePayload = {
   name?: string;
   avatar?: string;
   bio?: string;
-  birthday?: string;
+  // birthday?: string;
   gender?: User.Gender;
   about?: string;
   video?: string;

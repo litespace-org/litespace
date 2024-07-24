@@ -2,8 +2,11 @@ import { knex, query } from "@/models/query";
 import { first, merge } from "lodash";
 import { IUser } from "@litespace/types";
 import dayjs from "dayjs";
+import { Knex } from "knex";
 
 export class Users {
+  name = "users";
+
   async create(user: {
     email: string;
     password: string;
@@ -53,9 +56,13 @@ export class Users {
     return this.from(row);
   }
 
-  async update(id: number, payload: IUser.UpdatePayload): Promise<void> {
+  async update(
+    id: number,
+    payload: IUser.UpdatePayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
     const now = new Date();
-    knex<IUser.Row>("users")
+    this.builder()
       .update({
         email: payload.email,
         password: payload.password,
@@ -173,6 +180,10 @@ export class Users {
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<IUser.Row>(this.name) : knex<IUser.Row>(this.name);
   }
 }
 

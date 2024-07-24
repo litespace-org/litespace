@@ -109,7 +109,7 @@ const tutor = {
       password: zod.optional(password),
       name: zod.optional(name),
       avatar: zod.optional(url),
-      birthday: zod.optional(date),
+      // birthday: zod.optional(date),
       gender: zod.optional(gender),
       bio: zod.optional(string),
       about: zod.optional(string),

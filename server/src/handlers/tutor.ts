@@ -5,21 +5,18 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { generateAuthorizationToken } from "@/lib/auth";
 import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
-import { emailer } from "@/lib/email";
-import { EmailTemplate } from "@litespace/emails";
+import { sendUserVerificationEmail } from "@/lib/email";
 
 async function create(req: Request.Default, res: Response) {
   const body = schema.http.tutor.create.body.parse(req.body);
+  const tutor = await tutors.create(body);
 
-  await tutors.create(body);
-
-  await emailer.send({
-    to: body.email,
-    template: EmailTemplate.VerifyEmail,
-    props: { url: "http://example.com" },
+  await sendUserVerificationEmail({
+    userId: tutor.id,
+    email: tutor.email,
+    baseUrl: req.baseUrl,
   });
 
   res.status(200).send();
