@@ -44,7 +44,7 @@ const Register: React.FC = () => {
       payload: RegisterTutorPayload | RegisterStudentPayload;
       type: IUser.TutorOrStudent;
     }) => {
-      if (type === IUser.Type.Tutor) return await atlas.tutor.register(payload);
+      if (type === IUser.Type.Tutor) return await atlas.tutor.create(payload);
       return atlas.student.register(payload);
     },
     {

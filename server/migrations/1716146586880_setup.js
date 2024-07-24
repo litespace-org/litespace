@@ -47,7 +47,7 @@ exports.up = (pgm) => {
 
   pgm.createTable("tokens", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    user_id: { type: "SERIAL", notNull: true },
     token_hash: { type: "CHAR(64)", notNull: true },
     used: { type: "BOOLEAN", notNull: true, default: false },
     type: { type: "token_type", notNull: true },

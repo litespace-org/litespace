@@ -2,7 +2,9 @@ import { users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
+  badRequest,
   forbidden,
+  notfound,
   userAlreadyTyped,
   userExists,
   userNotFound,
@@ -13,6 +15,7 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import { identityObject } from "@/validation/utils";
+import assert from "node:assert";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
@@ -29,10 +32,13 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     name,
   });
 
+  const origin = req.get("origin");
+  if (!origin) return next(badRequest());
+
   await sendUserVerificationEmail({
     userId: user.id,
     email: user.email,
-    baseUrl: req.baseUrl,
+    origin,
   });
 
   res.status(200).send();

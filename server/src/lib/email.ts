@@ -11,11 +11,11 @@ export const emailer = new Emailer(emailConfig.email, emailConfig.password);
 export async function sendUserVerificationEmail({
   userId,
   email,
-  baseUrl,
+  origin,
 }: {
   userId: number;
   email: string;
-  baseUrl: string;
+  origin: string;
 }) {
   const token = randomBytes();
   const hash = sha256(token);
@@ -28,7 +28,7 @@ export async function sendUserVerificationEmail({
     hash,
   });
 
-  const url = new Url("/verify-email", baseUrl)
+  const url = new Url("/verify-email", origin)
     .withParam("token", token)
     .toString();
 

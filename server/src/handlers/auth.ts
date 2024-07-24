@@ -59,9 +59,6 @@ export async function resetPassword(req: Request, done: DoneCallback) {
   return done(user);
 }
 
-// todos:
-// 1. "verifyEmail" and "resetPassword" should be a passport callbacks.
-// 2. use transactions - done
 // todo: test this handler. What will happen to "passport" if the hendler throws an error.
 export async function verifyEmail(req: Request, done: DoneCallback) {
   const body = http.auth.verifyEmail.body.parse(req.body);

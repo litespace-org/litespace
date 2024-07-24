@@ -41,7 +41,7 @@ const SERVER_HOST = process.env.SERVER_HOST;
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
-  origin: ["http://localhost:3000", "http://localhost:3001"],
+  origin: ["http://localhost:5173", "http://localhost:3001"],
 } as const;
 
 export const passwordRegex =

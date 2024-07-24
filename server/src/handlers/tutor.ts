@@ -1,6 +1,11 @@
 import { tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { forbidden, tutorNotFound, userNotFound } from "@/lib/error";
+import {
+  badRequest,
+  forbidden,
+  tutorNotFound,
+  userNotFound,
+} from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -9,14 +14,17 @@ import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { sendUserVerificationEmail } from "@/lib/email";
 
-async function create(req: Request.Default, res: Response) {
+async function create(req: Request.Default, res: Response, next: NextFunction) {
   const body = schema.http.tutor.create.body.parse(req.body);
   const tutor = await tutors.create(body);
+
+  const origin = req.get("origin");
+  if (!origin) return next(badRequest());
 
   await sendUserVerificationEmail({
     userId: tutor.id,
     email: tutor.email,
-    baseUrl: req.baseUrl,
+    origin,
   });
 
   res.status(200).send();

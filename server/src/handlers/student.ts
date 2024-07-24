@@ -5,8 +5,14 @@ import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
+import { NextFunction } from "express";
+import { badRequest } from "@/lib/error";
 
-export async function create(req: Request.Default, res: Response) {
+export async function create(
+  req: Request.Default,
+  res: Response,
+  next: NextFunction
+) {
   const { email, password, name } = schema.http.student.create.parse(req.body);
 
   const student = await users.create({
@@ -16,10 +22,13 @@ export async function create(req: Request.Default, res: Response) {
     name,
   });
 
+  const origin = req.get("origin");
+  if (!origin) return next(badRequest());
+
   await sendUserVerificationEmail({
     userId: student.id,
     email: student.email,
-    baseUrl: req.baseUrl,
+    origin,
   });
 
   res.status(200).send();

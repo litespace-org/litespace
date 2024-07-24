@@ -1,5 +1,7 @@
+import { Request } from "express";
+
 export class Url {
-  private url: URL;
+  public url: URL;
 
   constructor(url: string | URL, base?: string | URL) {
     this.url = new URL(url, base);
@@ -12,5 +14,9 @@ export class Url {
 
   toString(): string {
     return this.url.toString();
+  }
+
+  static fromReq(req: Request): Url {
+    return new Url(req.baseUrl, req.get("origin"));
   }
 }
