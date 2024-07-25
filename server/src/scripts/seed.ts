@@ -18,28 +18,28 @@ async function main(): Promise<void> {
   const superAdmin = IUser.Type.SuperAdmin;
 
   const admin = await users.create({
-    email: "admin@litespace.com",
+    email: "admin@litespace.org",
     name: "LiteSpace Admin",
     type: superAdmin,
     password,
   });
 
-  const examiner = await users.create({
-    type: IUser.Type.Examiner,
-    email: "examiner@litespace.com",
-    name: "LiteSpace Examiner",
+  const interviewer = await users.create({
+    type: IUser.Type.Interviewer,
+    email: "interviewer@litespace.org",
+    name: "LiteSpace Interviewer",
     password,
   });
 
   const student = await users.create({
     type: IUser.Type.Student,
-    email: "student@litespace.com",
+    email: "student@litespace.org",
     name: "LiteSpace Student",
     password,
   });
 
   const tutor = await tutors.create({
-    email: "tutor@litespace.com",
+    email: "tutor@litespace.org",
     name: "LiteSpace Tutor",
     password,
   });
@@ -48,17 +48,17 @@ async function main(): Promise<void> {
   const startTime = dayjs().utc().format("HH:mm:00");
   const endTime = dayjs().utc().add(4, "hours").format("HH:mm:00");
   const slot = await slots.create({
-    userId: examiner.id,
+    userId: interviewer.id,
     date: { start: startDate },
     time: { start: startTime, end: endTime },
-    title: "Examiner slot",
+    title: "Interviewer slot",
     repeat: ISlot.Repeat.No,
     weekday: -1,
   });
   const start = dayjs().tz("Africa/Cairo").add(30, "minutes");
 
   const call = await calls.create({
-    hostId: examiner.id,
+    hostId: interviewer.id,
     attendeeId: tutor.id,
     duration: 30,
     slotId: slot.id,
@@ -66,7 +66,7 @@ async function main(): Promise<void> {
     type: ICall.Type.Interview,
   });
 
-  const examinerCalls = await calls.findHostCalls(examiner.id);
+  const interviewerCalls = await calls.findHostCalls(interviewer.id);
 
   const plan = await plans.create({
     alias: "Basic",

@@ -5,7 +5,8 @@ export const userTypes = [
   { label: "Regular Admin", value: IUser.Type.RegularAdmin },
   { label: "Tutor", value: IUser.Type.Tutor },
   { label: "Student", value: IUser.Type.Student },
-  { label: "Examiner", value: IUser.Type.Examiner },
+  { label: "Interviewer", value: IUser.Type.Interviewer },
+  { label: "Media Provider", value: IUser.Type.MediaProvider },
 ];
 
 export const weekdays = [

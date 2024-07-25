@@ -72,10 +72,10 @@ async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
   const type = user.type;
   const studnet = type === IUser.Type.Student;
   const tutor = type === IUser.Type.Tutor;
-  const examiner = type === IUser.Type.Examiner;
+  const interviewer = type === IUser.Type.Interviewer;
 
   if (studnet) return await calls.findByAttendeeId(id);
-  if (tutor || examiner) return await calls.findByHostId(id);
+  if (tutor || interviewer) return await calls.findByHostId(id);
   return await calls.findAll(); // admin
 }
 

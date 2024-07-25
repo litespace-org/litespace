@@ -6,9 +6,9 @@ const router = Router();
 
 router
   .route("/")
-  .post(authorizer().tutor().examiner().handler(), handlers.slot.create)
-  .put(authorizer().tutor().examiner().handler(), handlers.slot.update)
-  .get(authorizer().tutor().examiner().handler(), handlers.slot.get);
+  .post(authorizer().tutor().interviwer().handler(), handlers.slot.create)
+  .put(authorizer().tutor().interviwer().handler(), handlers.slot.update)
+  .get(authorizer().tutor().interviwer().handler(), handlers.slot.get);
 
 router.get("/list", authorized, handlers.slot.list);
 

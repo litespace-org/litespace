@@ -13,9 +13,10 @@ exports.up = (pgm) => {
   pgm.createType("user_type", [
     "super-admin",
     "reg-admin",
-    "examiner",
     "tutor",
     "student",
+    "interviewer",
+    "media-provider",
   ]);
   pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
   pgm.createType("call_type", ["lesson", "interview"]);

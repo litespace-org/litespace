@@ -71,13 +71,13 @@ class Authorizer {
     return this.superAdmin().regAdmin();
   }
 
-  examiner(): Authorizer {
-    this.roles.push(IUser.Type.Examiner);
+  interviwer(): Authorizer {
+    this.roles.push(IUser.Type.Interviewer);
     return this;
   }
 
   staff(): Authorizer {
-    return this.superAdmin().regAdmin().examiner();
+    return this.superAdmin().regAdmin().interviwer();
   }
 
   tutor(): Authorizer {

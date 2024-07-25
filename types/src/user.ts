@@ -3,7 +3,8 @@ export enum Type {
   RegularAdmin = "reg-admin",
   Tutor = "tutor",
   Student = "student",
-  Examiner = "examiner",
+  Interviewer = "interviewer",
+  MediaProvider = "media-provider",
 }
 
 export type TutorOrStudent = Type.Tutor | Type.Student;

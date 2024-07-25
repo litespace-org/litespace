@@ -82,8 +82,8 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 
   const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.type);
-  const examiner = req.user.type === IUser.Type.Examiner;
-  const eligible = owner || admin || examiner;
+  const interviewer = req.user.type === IUser.Type.Interviewer;
+  const eligible = owner || admin || interviewer;
   if (!eligible) return next(forbidden());
   res.status(200).json(user);
 }
