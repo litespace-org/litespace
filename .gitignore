@@ -11,4 +11,5 @@ storybook-static/
 
 # server 
 server/*.pem
+server/uploads/
 .vercel

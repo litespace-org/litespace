@@ -3137,6 +3137,7 @@ __metadata:
     "@litespace/types": "npm:1.0.0"
     "@types/connect-pg-simple": "npm:^7.0.3"
     "@types/express": "npm:^4.17.21"
+    "@types/express-fileupload": "npm:^1"
     "@types/express-session": "npm:^1.18.0"
     "@types/jsonwebtoken": "npm:^9.0.6"
     "@types/lodash": "npm:^4.17.1"
@@ -3157,6 +3158,7 @@ __metadata:
     env-cmd: "npm:^10.1.0"
     express: "npm:^4.19.2"
     express-async-handler: "npm:^1.2.0"
+    express-fileupload: "npm:^1.5.1"
     express-session: "npm:^1.18.0"
     jsonwebtoken: "npm:^9.0.2"
     knex: "npm:^3.1.0"
@@ -6427,6 +6429,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/busboy@npm:*":
+  version: 1.5.4
+  resolution: "@types/busboy@npm:1.5.4"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/0bdd209069a445d5a71277e558978ec0db1b1a3d108335da96477d017177ae349c4d81d604db0bea19e3c99c10af2d60dbac20e36cef7cb7a517e5a4760738bd
+  languageName: node
+  linkType: hard
+
 "@types/connect-pg-simple@npm:^7.0.3":
   version: 7.0.3
   resolution: "@types/connect-pg-simple@npm:7.0.3"
@@ -6561,6 +6572,16 @@ __metadata:
   version: 0.0.51
   resolution: "@types/estree@npm:0.0.51"
   checksum: 10c0/a70c60d5e634e752fcd45b58c9c046ef22ad59ede4bc93ad5193c7e3b736ebd6bcd788ade59d9c3b7da6eeb0939235f011d4c59bb4fc04d8c346b76035099dd1
+  languageName: node
+  linkType: hard
+
+"@types/express-fileupload@npm:^1":
+  version: 1.5.0
+  resolution: "@types/express-fileupload@npm:1.5.0"
+  dependencies:
+    "@types/busboy": "npm:*"
+    "@types/express": "npm:*"
+  checksum: 10c0/0f6075d04ea111ad4a49b43d0fd43b44aac67793175547347a7bfff53d9a53830d519d39585b5a530a6feee06086f1b51898c0a3bfd96ce703f7ebb923d025c5
   languageName: node
   linkType: hard
 
@@ -8974,7 +8995,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"busboy@npm:1.6.0":
+"busboy@npm:1.6.0, busboy@npm:^1.6.0":
   version: 1.6.0
   resolution: "busboy@npm:1.6.0"
   dependencies:
@@ -11520,6 +11541,15 @@ __metadata:
   version: 1.2.0
   resolution: "express-async-handler@npm:1.2.0"
   checksum: 10c0/0c664965b86d8f6369883080bc7709266215c3c5d7e62ce7b00859e68293720bac409157d4f4ac8859b5fe59608f75b5038ce2b2f683fae356ff9f60874a1341
+  languageName: node
+  linkType: hard
+
+"express-fileupload@npm:^1.5.1":
+  version: 1.5.1
+  resolution: "express-fileupload@npm:1.5.1"
+  dependencies:
+    busboy: "npm:^1.6.0"
+  checksum: 10c0/6d2cae43958bd6bc7710a45ce71dfd1bb378611ea99c7c81aaa45655eff837ce969af8062b9c882ed05bbf179b4185b01b2d53f41ce5c242f7eac59cf280b1d1
   languageName: node
   linkType: hard
 

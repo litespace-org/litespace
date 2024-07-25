@@ -9,5 +9,4 @@ export default defineConfig({
       "@": resolve(__dirname, "./src"),
     },
   },
-  server: { host: "localhost", port: 3001 },
 });

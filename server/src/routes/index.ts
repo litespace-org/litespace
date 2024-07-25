@@ -12,6 +12,7 @@ import coupon from "@/routes/coupon";
 import invite from "@/routes/invite";
 import report from "@/routes/report";
 import reportReply from "@/routes/reportReply";
+import media from "@/routes/media";
 
 export default {
   user,
@@ -28,4 +29,5 @@ export default {
   reportReply,
   subscription,
   authorization,
+  media,
 };

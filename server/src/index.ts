@@ -13,6 +13,7 @@ import logger from "morgan";
 import connectPostgres from "connect-pg-simple";
 import { pool } from "@/models/query";
 import { onlyForHandshake } from "./middleware/common";
+import fileupload from "express-fileupload";
 import "colors";
 
 const SessionStore = connectPostgres(session);
@@ -30,8 +31,6 @@ const io = new Server(server, {
   cors: { credentials: true, origin: [...serverConfig.origin] },
 });
 
-// todo: use dedicated auth middleware for socket.io
-// io.engine.use(authorizedSocket);
 io.engine.use(onlyForHandshake(sessionMiddleware));
 io.engine.use(onlyForHandshake(passport.session()));
 io.engine.use(
@@ -47,8 +46,13 @@ io.engine.use(
 io.on("connection", wssHandler);
 
 app.use(logger("dev"));
-// todo: enable back with correct config
 app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
+app.use(
+  fileupload({
+    debug: !isProduction,
+    createParentPath: true,
+  })
+);
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
@@ -69,6 +73,7 @@ app.use("/api/v1/coupon", routes.coupon);
 app.use("/api/v1/invite", routes.invite);
 app.use("/api/v1/report", routes.report);
 app.use("/api/v1/report/reply", routes.reportReply);
+app.use("/api/v1/media", routes.media);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>
