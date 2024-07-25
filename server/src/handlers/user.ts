@@ -15,7 +15,6 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import { identityObject } from "@/validation/utils";
-import assert from "node:assert";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
