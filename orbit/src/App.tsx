@@ -54,6 +54,7 @@ import { Header } from "@/components/header";
 import { Login } from "@/pages/login";
 import { ForgotPassword, ResetPassword } from "@/pages/password";
 import { authProvider } from "@/providers/auth";
+import { accessControlProvider } from "@/providers/access";
 
 function App() {
   return (
@@ -64,6 +65,7 @@ function App() {
             <DevtoolsProvider>
               <Refine
                 dataProvider={dataProvider}
+                accessControlProvider={accessControlProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
                 authProvider={authProvider}

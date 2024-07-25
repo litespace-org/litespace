@@ -1,4 +1,5 @@
 import { atlas } from "@/lib/atlas";
+import { getUser, removeUser, setUser } from "@/lib/storage";
 import type { AuthProvider } from "@refinedev/core";
 
 export const authProvider: AuthProvider = {
@@ -11,9 +12,11 @@ export const authProvider: AuthProvider = {
     remember?: boolean;
   }) {
     await atlas.auth.password({ email, password });
+    setUser(await atlas.user.findMe());
     return { success: true, redirectTo: "/" };
   },
   async logout() {
+    removeUser();
     await atlas.auth.logout();
     return { success: true, redirectTo: "/login" };
   },
@@ -58,7 +61,9 @@ export const authProvider: AuthProvider = {
     return null;
   },
   async getIdentity() {
-    return await atlas.user.findMe();
+    const user = await atlas.user.findMe();
+    setUser(user);
+    return user;
   },
   async onError(error) {
     console.error(error, { src: "authProvider" });
