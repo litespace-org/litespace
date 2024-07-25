@@ -35,7 +35,7 @@ exports.up = (pgm) => {
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     password: { type: "CHAR(64)", default: null },
     name: { type: "VARCHAR(50)", default: null }, // todo: add: name_ar, name_en
-    avatar: { type: "VARCHAR(255)", default: null },
+    photo: { type: "VARCHAR(255)", default: null },
     type: { type: "user_type", default: null },
     birth_year: { type: "INT", default: null },
     gender: { type: "user_gender_type", default: null },

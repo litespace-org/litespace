@@ -90,17 +90,17 @@ export const dataProvider: DataProvider = {
           name: string;
           email: string;
           password: string;
-          avatar: string;
+          photo: string;
           userBirthday: Dayjs;
           gender: IUser.Gender;
           type: IUser.Type;
         }>
       >(variables);
-      await atlas.user.update({
+      await atlas.user.update(resourceId, {
         name: selectUpdatedOrNone(prev.name, updated.name),
         email: selectUpdatedOrNone(prev.email, updated.email),
         password: updated.password,
-        avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
+        photo: selectUpdatedOrNone(prev.photo, updated.photo),
         // birthday: updated.userBirthday
         //   ? selectUpdatedOrNone(
         //       prev.birthday,
@@ -109,7 +109,6 @@ export const dataProvider: DataProvider = {
         //   : undefined,
         gender: selectUpdatedOrNone(prev.gender, updated.gender),
         type: selectUpdatedOrNone(prev.type, updated.type),
-        id: resourceId,
       });
       return { data: as.casted(null) };
     }
@@ -121,7 +120,7 @@ export const dataProvider: DataProvider = {
           name: string;
           email: string;
           password: string;
-          avatar: string;
+          photo: string;
           userBirthday: Dayjs;
           gender: IUser.Gender;
           bio: string;
@@ -136,7 +135,7 @@ export const dataProvider: DataProvider = {
         name: selectUpdatedOrNone(prev.name, updated.name),
         email: selectUpdatedOrNone(prev.email, updated.email),
         password: updated.password,
-        avatar: selectUpdatedOrNone(prev.avatar, updated.avatar),
+        photo: selectUpdatedOrNone(prev.photo, updated.photo),
         // birthday: updated.userBirthday
         //   ? selectUpdatedOrNone(
         //       prev.birthday,
@@ -311,7 +310,7 @@ export const dataProvider: DataProvider = {
 
     throw new Error("Not implemented");
   },
-  create: async ({ resource, variables, meta }) => {
+  create: async ({ resource, variables }) => {
     if (resource === Resource.Users) {
       await atlas.user.create(as.casted(variables));
       return as.casted(empty);

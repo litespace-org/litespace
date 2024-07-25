@@ -20,7 +20,7 @@ CREATE TABLE users (
     email TEXT UNIQUE NOT NULL,
     password TEXT NOT NULL,
     name TEXT NOT NULL,
-    avatar TEXT DEFAULT NULL,
+    photo TEXT DEFAULT NULL,
     type user_type NOT NULL
 );
 
@@ -29,14 +29,14 @@ INSERT INTO
         email,
         password,
         name,
-        avatar,
+        photo,
         type
     )
 VALUES (
         'ahmed@litespace.com',
         'LiteSpace1###',
         'Ahmed',
-        'my_avatar',
+        'photo',
         'super_admin'
     );
 
@@ -45,7 +45,7 @@ INSERT INTO
         email,
         password,
         name,
-        avatar,
+        photo,
         type,
         created_at,
         updated_at
@@ -64,18 +64,18 @@ RETURNING
 
 SELECT * FrOM users;
 
-SELECT id, email, password, name, avatar, type
+SELECT id, email, password, name, photo, type
 FROM users
 WHERE
     id in (1, 2);
 
 UPDATE users
 SET
-    avatar = COALESCE('null', avatar)
+    photo = COALESCE('null', photo)
 where
     id = 1;
 
-SELECT id, email, password, name, avatar, type
+SELECT id, email, password, name, photo, type
 FROM users
 WHERE
     email = 'ahmed@litespace.com'
@@ -88,7 +88,7 @@ RETURNING
     "id",
     "email",
     "name",
-    "avatar",
+    "photo",
     "type",
     "active",
     "created_at",
@@ -109,7 +109,7 @@ SELECT
     users.id as id,
     users.email as email,
     users.name as name,
-    users.avatar as avatar,
+    users.photo as photo,
     users.gender as gender,
     users.active as active,
     users.created_at as created_at,
@@ -128,7 +128,7 @@ SELECT
     "email",
     "password",
     "name",
-    "avatar",
+    "photo",
     "type",
     "active",
     "created_at",

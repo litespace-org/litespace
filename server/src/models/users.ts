@@ -40,7 +40,7 @@ export class Users {
           "email",
           "password"
           "name",
-          "avatar",
+          "photo",
           "type",
           "birthday",
           "gender",
@@ -67,7 +67,7 @@ export class Users {
         email: payload.email,
         password: payload.password,
         name: payload.name,
-        avatar: payload.avatar,
+        photo: payload.photo,
         birth_year: payload.birthYear,
         gender: payload.gender,
         type: payload.type,
@@ -102,7 +102,7 @@ export class Users {
   async findMany(ids: number[]): Promise<IUser.Self[]> {
     const { rows } = await query<IUser.Row, [number[]]>(
       `
-        SELECT id, email, password, password, name, avatar, type, online, created_at, updated_at
+        SELECT id, email, password, password, name, photo, type, online, created_at, updated_at
         FROM users
         WHERE id in $1;
       `,
@@ -120,7 +120,7 @@ export class Users {
           "email",
           "password",
           "name",
-          "avatar",
+          "photo",
           "type",
           "online",
           "created_at",
@@ -138,7 +138,7 @@ export class Users {
   ): Promise<IUser.Self | null> {
     const { rows } = await query<IUser.Row, [string, string]>(
       `
-        SELECT id, email, password, name, avatar, type, online, created_at, updated_at
+        SELECT id, email, password, name, photo, type, online, created_at, updated_at
         FROM users
         WHERE
             email = $1
@@ -155,7 +155,7 @@ export class Users {
   async getTutors(): Promise<IUser.Self[]> {
     const { rows } = await query<IUser.Row, [typeof IUser.Type.Tutor]>(
       `
-        SELECT id, email, name, avatar, type, online, created_at, updated_at
+        SELECT id, email, name, photo, type, online, created_at, updated_at
         FROM users
         WHERE type = $1;
       `,
@@ -171,7 +171,7 @@ export class Users {
       email: row.email,
       hasPassword: row.password !== null,
       name: row.name,
-      avatar: row.avatar,
+      photo: row.photo,
       birthYear: row.birth_year,
       gender: row.gender,
       type: row.type,

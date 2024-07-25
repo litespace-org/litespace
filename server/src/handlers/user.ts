@@ -45,7 +45,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const { email, name, password, gender, type, avatar, birthYear } =
+  const { email, name, password, gender, type, photo, birthYear } =
     schema.http.user.update.body.parse(req.body);
 
   if (type && req.user.type) return next(userAlreadyTyped());
@@ -54,7 +54,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
     email,
     name,
     gender,
-    avatar,
+    photo,
     type,
     birthYear,
     password: password ? hashPassword(password) : undefined,

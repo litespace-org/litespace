@@ -78,13 +78,13 @@ export const TutorEdit = () => {
           <Input placeholder="https://example.com/photo.png" />
         </Form.Item>
 
-        <Form.Item
+        {/* <Form.Item
           label="Birthday"
           name="userBirthday"
           initialValue={tutor?.birthday ? dayjs(tutor.birthday) : undefined}
         >
           <DatePicker />
-        </Form.Item>
+        </Form.Item> */}
 
         <Form.Item label="Gender" name="gender">
           <Select options={genders} />

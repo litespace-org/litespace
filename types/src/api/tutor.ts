@@ -9,7 +9,7 @@ export type TutorsList = Array<{
   id: number;
   email: string;
   name: Nullable<string>;
-  avatar: Nullable<string>;
+  photo: Nullable<string>;
   gender: Nullable<string>;
   active: boolean;
   bio: Nullable<string>;

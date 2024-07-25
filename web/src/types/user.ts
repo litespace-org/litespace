@@ -15,7 +15,7 @@ export type Self = {
   email: string;
   hasPassword: boolean;
   name: string | null;
-  avatar: string | null;
+  photo: string | null;
   birthday: string | null;
   gender: Gender | null;
   type: Type;

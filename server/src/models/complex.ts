@@ -11,7 +11,7 @@ export class Complex {
             users.id as id,
             users.email as email,
             users.name as name,
-            users.avatar as avatar,
+            users.photo as photo,
             users.gender as gender,
             users.active as active,
             users.created_at as created_at,
@@ -36,7 +36,7 @@ export class Complex {
             users.id as id,
             users.email as email,
             users.name as name,
-            users.avatar as avatar,
+            users.photo as photo,
             users.gender as gender,
             users.active as active,
             users.created_at as created_at,
@@ -63,7 +63,7 @@ export class Complex {
       id: row.id,
       email: row.email,
       name: row.name,
-      avatar: row.avatar,
+      photo: row.photo,
       gender: row.gender,
       active: row.active,
       bio: row.bio,
@@ -82,7 +82,7 @@ export namespace Complex {
       id: number;
       email: string;
       name: string | null;
-      avatar: string | null;
+      photo: string | null;
       gender: IUser.Gender | null;
       active: boolean;
       bio: string | null;
@@ -97,7 +97,7 @@ export namespace Complex {
       id: number;
       email: string;
       name: string | null;
-      avatar: string | null;
+      photo: string | null;
       gender: string | null;
       active: boolean;
       bio: string | null;

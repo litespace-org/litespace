@@ -1,5 +1,3 @@
-import { Nullable } from "@/utils";
-
 export enum Type {
   SuperAdmin = "super-admin",
   RegularAdmin = "reg-admin",
@@ -19,10 +17,10 @@ export type Self = {
   id: number;
   email: string;
   hasPassword: boolean;
-  name: Nullable<string>;
-  avatar: Nullable<string>;
-  birthYear: Nullable<number>;
-  gender: Nullable<Gender>;
+  name: string | null;
+  photo: string | null;
+  birthYear: number | null;
+  gender: Gender | null;
   type: Type;
   online: boolean;
   verified: boolean;
@@ -36,7 +34,7 @@ export type Row = {
   email: string;
   password: string | null;
   name: string | null;
-  avatar: string | null;
+  photo: string | null;
   birth_year: number | null;
   gender: Gender | null;
   type: Type;
@@ -56,7 +54,7 @@ export type UpdatePayload = {
   email?: string;
   password?: string;
   name?: string;
-  avatar?: string;
+  photo?: string;
   birthYear?: number;
   gender?: Gender;
   type?: Type;

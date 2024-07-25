@@ -45,7 +45,7 @@ export class Tutors {
       email: tutor.email,
       name: tutor.name,
       password: tutor.password,
-      avatar: tutor.avatar,
+      photo: tutor.photo,
       // birth_year: tutor.birthday ? new Date(tutor.birthday) : undefined,
       gender: tutor.gender,
     } as const;
@@ -115,7 +115,7 @@ export class Tutors {
         id: "users.id",
         email: "users.email",
         name: "users.name",
-        avatar: "users.avatar",
+        photo: "users.photo",
         type: "users.type",
         // birthday: "users.birthday",
         gender: "users.gender",
