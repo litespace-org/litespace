@@ -15,6 +15,7 @@ import { pool } from "@/models/query";
 import { onlyForHandshake } from "./middleware/common";
 import fileupload from "express-fileupload";
 import "colors";
+import path from "node:path";
 
 const SessionStore = connectPostgres(session);
 const sessionMiddleware = session({
@@ -59,6 +60,7 @@ app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 
+app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", routes.authorization);
 app.use("/api/v1/user", routes.user);
 app.use("/api/v1/slot", routes.slot);

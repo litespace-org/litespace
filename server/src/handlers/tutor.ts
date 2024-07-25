@@ -58,7 +58,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
 }
 
 async function getOne(req: Request.Default, res: Response, next: NextFunction) {
-  const id = schema.http.tutor.get.params.parse(req.params).id;
+  const { id } = identityObject.parse(req.params);
   const tutor = await tutors.findById(id);
   if (!tutor) return next(userNotFound());
 
