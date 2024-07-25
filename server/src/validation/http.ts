@@ -32,7 +32,10 @@ const user = {
       type: zod.enum([
         IUser.Type.SuperAdmin,
         IUser.Type.RegularAdmin,
+        IUser.Type.Tutor,
+        IUser.Type.Student,
         IUser.Type.Interviewer,
+        IUser.Type.MediaProvider,
       ]),
     },
     { message: "Empty request body" }
