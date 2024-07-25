@@ -62,7 +62,7 @@ export class Users {
     tx?: Knex.Transaction
   ): Promise<void> {
     const now = new Date();
-    this.builder()
+    await this.builder(tx)
       .update({
         email: payload.email,
         password: payload.password,

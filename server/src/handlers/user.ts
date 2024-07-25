@@ -15,6 +15,7 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import { identityObject } from "@/validation/utils";
+import { uploadSingle } from "@/lib/media";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
@@ -45,10 +46,14 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const { email, name, password, gender, type, photo, birthYear } =
+  const { email, name, password, gender, type, birthYear } =
     schema.http.user.update.body.parse(req.body);
 
   if (type && req.user.type) return next(userAlreadyTyped());
+
+  const photo = req.files?.photo
+    ? await uploadSingle(req.files.photo)
+    : undefined;
 
   await users.update(id, {
     email,

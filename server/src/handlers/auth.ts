@@ -56,7 +56,7 @@ export async function resetPassword(req: Request, done: DoneCallback) {
 
   const user = await users.findById(token.userId);
   if (!user) return done(notfound());
-  return done(user);
+  return done(null, user);
 }
 
 // todo: test this handler. What will happen to "passport" if the hendler throws an error.
@@ -75,7 +75,7 @@ export async function verifyEmail(req: Request, done: DoneCallback) {
 
   const user = await users.findById(token.userId);
   if (!user) return done(notfound());
-  return done(user);
+  return done(null, user);
 }
 
 export default {

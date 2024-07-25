@@ -29,11 +29,18 @@ router.get(
 router.get("/facebook/callback", passport.authenticate("facebook", options));
 
 // discord
-router.get("/discord", passport.authenticate("discord"));
-router.get("/discord/callback", passport.authenticate("discord", options));
+router.get("/discord", passport.authenticate(AuthStrategy.Discord));
+router.get(
+  "/discord/callback",
+  passport.authenticate(AuthStrategy.Discord, options)
+);
 
 // password
-router.post("/password", passport.authenticate("local", {}), utils.end);
+router.post(
+  "/password",
+  passport.authenticate(AuthStrategy.Local, {}),
+  utils.end
+);
 router.post("/password/forgot", auth.forgotPassword);
 router.put(
   "/password/reset",

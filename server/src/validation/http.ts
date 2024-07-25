@@ -39,11 +39,9 @@ const user = {
   ),
   update: {
     body: zod.object({
-      id,
       email: zod.optional(email),
       password: zod.optional(password),
       name: zod.optional(name),
-      photo: zod.optional(zod.string()),
       gender: zod.optional(gender),
       birthYear: zod.optional(zod.number().min(1950)),
       type: zod.optional(zod.enum([IUser.Type.Tutor, IUser.Type.Student])),
