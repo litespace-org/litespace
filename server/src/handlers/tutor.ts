@@ -13,6 +13,9 @@ import asyncHandler from "express-async-handler";
 import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { sendUserVerificationEmail } from "@/lib/email";
+import { uploadSingle } from "@/lib/media";
+import { identityObject } from "@/validation/utils";
+import { FileType } from "@/constants";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -31,13 +34,23 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
 }
 
 async function update(req: Request.Default, res: Response, next: NextFunction) {
-  const tutorId = schema.http.tutor.update.params.parse(req.params).id;
+  const { id } = identityObject.parse(req.params);
   const fields = schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
   if (!user) return next(tutorNotFound());
+  if (user.type !== IUser.Type.Tutor) return next(badRequest());
 
-  await tutors.update(tutorId, {
+  const [photo, video] = await Promise.all(
+    [
+      { file: req.files?.photo, type: FileType.Image },
+      { file: req.files?.video, type: FileType.Video },
+    ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
+  );
+
+  await tutors.update(id, {
     ...fields,
+    photo,
+    video,
     password: fields.password ? hashPassword(fields.password) : undefined,
   });
 

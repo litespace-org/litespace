@@ -16,6 +16,7 @@ import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import { identityObject } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
+import { FileType } from "@/constants";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, type } = schema.http.user.create.parse(
@@ -52,7 +53,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   if (type && req.user.type) return next(userAlreadyTyped());
 
   const photo = req.files?.photo
-    ? await uploadSingle(req.files.photo)
+    ? await uploadSingle(req.files.photo, FileType.Image)
     : undefined;
 
   await users.update(id, {

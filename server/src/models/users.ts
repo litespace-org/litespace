@@ -1,7 +1,6 @@
 import { knex, query } from "@/models/query";
 import { first, merge } from "lodash";
 import { IUser } from "@litespace/types";
-import dayjs from "dayjs";
 import { Knex } from "knex";
 
 export class Users {

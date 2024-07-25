@@ -38,11 +38,22 @@ export const databaseConnection = {
 const SERVER_PORT = process.env.SERVER_PORT;
 const SERVER_HOST = process.env.SERVER_HOST;
 
+export enum FileType {
+  Image = "image",
+  Video = "video",
+}
+
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
   origin: ["http://localhost:5173", "http://localhost:5174"],
-  uploadsDir: "uploads/",
+  media: {
+    directory: "uploads/",
+    supported: {
+      [FileType.Image]: ["image/png"],
+      [FileType.Video]: ["video/webm", "video/mp4"],
+    },
+  },
 } as const;
 
 export const passwordRegex =

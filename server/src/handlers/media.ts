@@ -14,7 +14,7 @@ async function upload(req: Request, res: Response, next: NextFunction) {
   const filenames = await Promise.all(
     files.map(async (file) => {
       const filename = Date.now() + "-" + file.name;
-      await file.mv(path.join(serverConfig.uploadsDir, filename));
+      await file.mv(path.join(serverConfig.media.directory, filename));
       return filename;
     })
   );
