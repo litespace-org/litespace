@@ -1,7 +1,7 @@
 import TableView, { TableRow } from "@/components/TableView";
 import { Resource } from "@/providers/data";
 import { UserOutlined } from "@ant-design/icons";
-import { ITutor, IUser } from "@litespace/types";
+import { ITutor } from "@litespace/types";
 import { Show } from "@refinedev/antd";
 import { useLink, useShow } from "@refinedev/core";
 import { Button } from "antd";
@@ -29,7 +29,7 @@ export const TutorShow = () => {
       { name: "Bio", value: tutor.bio },
       { name: "About", value: tutor.about },
       { name: "Video", value: tutor.video, type: "url" },
-      { name: "Avatar", value: tutor.avatar, type: "url" },
+      { name: "Avatar", value: tutor.photo, type: "url" },
       {
         name: "Passed The Interview",
         value: tutor.passedInterview,

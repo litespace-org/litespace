@@ -32,4 +32,16 @@ export class Tutor extends Base {
       .get<ITutor.FullTutor[]>("/api/v1/tutor/list")
       .then((response) => response.data);
   }
+
+  async findTutorsMedia(): Promise<ITutor.TutorMedia[]> {
+    return await this.client
+      .get<ITutor.TutorMedia[]>("/api/v1/tutor/media/list")
+      .then((response) => response.data);
+  }
+
+  async findTutorMedaiById(id: number): Promise<ITutor.TutorMedia> {
+    return await this.client
+      .get<ITutor.TutorMedia>(`/api/v1/tutor/media/${id}`)
+      .then((response) => response.data);
+  }
 }

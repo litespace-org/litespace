@@ -4,6 +4,7 @@ import { Router } from "express";
 
 const router = Router();
 
+// note: use casbin to handle access control
 router.post("/", handlers.tutor.create);
 router.get("/list", authorized, handlers.tutor.list);
 router.get("/:id", authorized, handlers.tutor.get);
@@ -16,6 +17,18 @@ router.delete(
   "/:id",
   authorizer().tutor().staff().handler(),
   handlers.tutor.delete
+);
+
+router.get(
+  "/media/list",
+  authorizer().staff().mediaProvider().handler(),
+  handlers.tutor.getTutorsMedia
+);
+
+router.get(
+  "/media/:id",
+  authorizer().staff().mediaProvider().handler(),
+  handlers.tutor.getTutorMediaById
 );
 
 export default router;

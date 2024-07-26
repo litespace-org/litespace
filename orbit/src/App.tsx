@@ -24,6 +24,11 @@ import routerBindings, {
 import { MyInterviewList, MyInterviewShow } from "@/pages/my-interviews";
 import { UserList, UserCreate, UserEdit, UserShow } from "@/pages/users";
 import { TutorCreate, TutorEdit, TutorList, TutorShow } from "@/pages/tutors";
+import {
+  TutorMediaEdit,
+  TutorMediaList,
+  TutorMediaShow,
+} from "@/pages/tutorsMedia";
 import { PlanCreate, PlanEdit, PlanList, PlanShow } from "@/pages/plans";
 import {
   CouponCreate,
@@ -85,6 +90,13 @@ function App() {
                     edit: "/tutors/edit/:id",
                     show: "/tutors/show/:id",
                     meta: { canDelete: true, label: "Tutors" },
+                  },
+                  {
+                    name: Resource.TutorsMedia,
+                    list: "/tutors-media",
+                    edit: "/tutors-media/edit/:id",
+                    show: "/tutors-media/show/:id",
+                    meta: { canDelete: true, label: "Tutors Media" },
                   },
                   {
                     name: Resource.Plans,
@@ -179,6 +191,11 @@ function App() {
                       <Route path="create" element={<TutorCreate />} />
                       <Route path="edit/:id" element={<TutorEdit />} />
                       <Route path="show/:id" element={<TutorShow />} />
+                    </Route>
+                    <Route path="/tutors-media">
+                      <Route index element={<TutorMediaList />} />
+                      <Route path="edit/:id" element={<TutorMediaEdit />} />
+                      <Route path="show/:id" element={<TutorMediaShow />} />
                     </Route>
                     <Route path="/plans">
                       <Route index element={<PlanList />} />

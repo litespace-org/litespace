@@ -76,6 +76,11 @@ class Authorizer {
     return this;
   }
 
+  mediaProvider(): Authorizer {
+    this.roles.push(IUser.Type.MediaProvider);
+    return this;
+  }
+
   staff(): Authorizer {
     return this.superAdmin().regAdmin().interviwer();
   }

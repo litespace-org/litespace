@@ -1,8 +1,7 @@
 import { ITutor } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
 import { useOne, useResource } from "@refinedev/core";
-import { DatePicker, Form, Input, Select, Switch } from "antd";
-import dayjs from "@/lib/dayjs";
+import { Form, Input, Select, Switch } from "antd";
 import { genders } from "@/lib/constants";
 
 export const TutorEdit = () => {
@@ -16,8 +15,6 @@ export const TutorEdit = () => {
   const { formProps, saveButtonProps, formLoading } = useForm<ITutor.FullTutor>(
     { meta: { tutor: data?.data } }
   );
-
-  const tutor = data?.data;
 
   return (
     <Edit

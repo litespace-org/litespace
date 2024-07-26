@@ -132,7 +132,7 @@ export class Tutors {
         video: "tutors.video",
       })
       .innerJoin("tutors", "users.id", "tutors.id")
-      .where("id", id);
+      .where("users.id", id);
 
     return first(list) || null;
   }

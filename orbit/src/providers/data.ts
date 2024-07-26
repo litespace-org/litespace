@@ -45,6 +45,11 @@ export const dataProvider: DataProvider = {
       return { data: as.casted(tutor) };
     }
 
+    if (resource === Resource.TutorsMedia) {
+      const media = await atlas.tutor.findTutorMedaiById(resourceId);
+      return { data: as.casted(media) };
+    }
+
     if (resource === Resource.MySchedule) {
       const slot = await atlas.slot.findById(resourceId);
       return { data: as.casted(slot) };
@@ -155,6 +160,10 @@ export const dataProvider: DataProvider = {
       });
 
       return as.casted(empty);
+    }
+
+    if (resource === Resource.TutorsMedia) {
+      console.log({ here: true });
     }
 
     if (resource === Resource.Plans && meta && meta.plan) {
@@ -475,6 +484,11 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Tutors) {
       const list = await atlas.tutor.findAll();
+      return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.TutorsMedia) {
+      const list = await atlas.tutor.findTutorsMedia();
       return { data: as.casted(list), total: list.length };
     }
 
