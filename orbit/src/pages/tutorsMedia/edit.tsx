@@ -1,6 +1,11 @@
 import { backend, backendUrl } from "@/lib/atlas";
 import { Resource } from "@/providers/data";
-import { InboxOutlined, UploadOutlined } from "@ant-design/icons";
+import {
+  DeleteFilled,
+  DeleteOutlined,
+  InboxOutlined,
+  UploadOutlined,
+} from "@ant-design/icons";
 import { asUrl } from "@litespace/atlas";
 import { ITutor } from "@litespace/types";
 import { Edit, ImageField } from "@refinedev/antd";
@@ -72,13 +77,14 @@ export const TutorMediaEdit = () => {
     return undefined;
   }, [media?.video, video]);
 
-  const { mutateAsync, isLoading: isUpdating } = useUpdate();
+  const { mutateAsync: updateTutorMedia, isLoading: isUpdating } = useUpdate();
+  const { mutateAsync: dropTutorMedia, isLoading: isDropping } = useUpdate();
 
   const onSave = useCallback(async () => {
     if (!photo && !video) return;
     if (!id) return;
 
-    await mutateAsync({
+    await updateTutorMedia({
       resource: Resource.TutorsMedia,
       values: { photo, video },
       id,
@@ -86,7 +92,23 @@ export const TutorMediaEdit = () => {
 
     setPhoto(null);
     setVideo(null);
-  }, [id, mutateAsync, photo, video]);
+  }, [id, photo, updateTutorMedia, video]);
+
+  const onDrop = useCallback(
+    (media: "photo" | "video") => {
+      if (!id) return;
+      dropTutorMedia({
+        resource: Resource.TutorsMedia,
+        values: {
+          dropPhoto: media === "photo",
+          dropVideo: media === "video",
+        },
+        meta: { drop: true },
+        id,
+      });
+    },
+    [dropTutorMedia, id]
+  );
 
   return (
     <Edit
@@ -107,6 +129,15 @@ export const TutorMediaEdit = () => {
           <Upload {...photoProps}>
             <Button icon={<UploadOutlined />}>Update photo</Button>
           </Upload>
+
+          <Button
+            onClick={() => onDrop("photo")}
+            danger
+            icon={<DeleteOutlined />}
+            loading={isDropping}
+          >
+            Remove photo
+          </Button>
         </Space>
       </Space>
 
@@ -130,6 +161,15 @@ export const TutorMediaEdit = () => {
           <Upload {...videoProps}>
             <Button icon={<UploadOutlined />}>Update video</Button>
           </Upload>
+
+          <Button
+            onClick={() => onDrop("video")}
+            icon={<DeleteOutlined />}
+            loading={isDropping}
+            danger
+          >
+            Remove Video
+          </Button>
         </Space>
       </Space>
     </Edit>

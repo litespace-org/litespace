@@ -36,10 +36,10 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const fields = schema.http.tutor.update.body.parse(req.body);
+  const { dropPhoto, dropVideo, ...fields } =
+    schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
   if (!user) return next(tutorNotFound());
-  // if (user.type !== IUser.Type.Tutor) return next(badRequest());
 
   const [photo, video] = await Promise.all(
     [
@@ -50,8 +50,8 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
   await tutors.update(id, {
     ...fields,
-    photo,
-    video,
+    photo: dropPhoto ? null : photo,
+    video: dropVideo ? null : video,
     password: fields.password ? hashPassword(fields.password) : undefined,
   });
 

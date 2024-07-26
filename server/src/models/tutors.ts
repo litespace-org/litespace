@@ -50,6 +50,8 @@ export class Tutors {
       gender: tutor.gender,
     } as const;
 
+    console.log({ updateUserPayload, is: isValuedObject(updateUserPayload) });
+
     if (isValuedObject(updateUserPayload))
       await knex<IUser.Row>("users")
         .update({

@@ -41,12 +41,12 @@ export type UpdatePayload = {
   email?: string;
   password?: string;
   name?: string;
-  photo?: string;
+  photo?: string | null;
   bio?: string;
   // birthday?: string;
   gender?: User.Gender;
   about?: string;
-  video?: string;
+  video?: string | null;
   activated?: boolean;
   activatedBy?: number;
   passedInterview?: boolean;
@@ -54,4 +54,7 @@ export type UpdatePayload = {
 };
 
 export type CreateApiPayload = User.Credentials & { name: string };
-export type UpdateApiPayload = UpdatePayload;
+export type UpdateApiPayload = UpdatePayload & {
+  dropPhoto?: boolean;
+  dropVideo?: boolean;
+};

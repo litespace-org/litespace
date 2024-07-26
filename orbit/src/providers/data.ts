@@ -135,6 +135,8 @@ export const dataProvider: DataProvider = {
           video: string;
           activated: boolean;
           passedInterview: boolean;
+          dropPhoto?: boolean;
+          dropVideo?: boolean;
         }>
       >(variables);
 
@@ -158,6 +160,22 @@ export const dataProvider: DataProvider = {
           prev.passedInterview,
           updated.passedInterview
         ),
+      });
+
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.TutorsMedia && meta && meta.drop) {
+      const { dropPhoto, dropVideo } = zod
+        .object({
+          dropPhoto: zod.boolean(),
+          dropVideo: zod.boolean(),
+        })
+        .parse(variables);
+
+      await atlas.tutor.update(resourceId, {
+        dropPhoto,
+        dropVideo,
       });
 
       return as.casted(empty);

@@ -117,6 +117,8 @@ const tutor = {
       activatedBy: zod.optional(id),
       passedInterview: zod.optional(zod.boolean()),
       interviewUrl: zod.optional(url),
+      dropPhoto: zod.optional(boolean),
+      dropVideo: zod.optional(boolean),
     }),
     params: identityObject,
   },
