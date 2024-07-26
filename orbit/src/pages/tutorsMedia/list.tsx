@@ -1,5 +1,11 @@
 import { ITutor, IUser } from "@litespace/types";
-import { EditButton, List, ShowButton, useTable } from "@refinedev/antd";
+import {
+  BooleanField,
+  EditButton,
+  List,
+  ShowButton,
+  useTable,
+} from "@refinedev/antd";
 import { Space, Table } from "antd";
 import React from "react";
 
@@ -15,6 +21,16 @@ export const TutorMediaList: React.FC = () => {
         <Table.Column dataIndex="email" title="Email" />
         <Table.Column dataIndex="name" title="Name" />
         <Table.Column dataIndex="phoneNumber" title="Phone Number" />
+        <Table.Column
+          title="Done"
+          render={(_, record: ITutor.TutorMedia) => (
+            <BooleanField
+              value={!!record.photo && !!record.video}
+              valueLabelTrue="Has photo and video"
+              valueLabelFalse="Not yet has photo and video"
+            />
+          )}
+        />
         <Table.Column
           title="Actions"
           dataIndex="actions"
