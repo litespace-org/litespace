@@ -1,5 +1,5 @@
 import { atlas } from "@/lib/atlas";
-import { getUser, removeUser, setUser } from "@/lib/storage";
+import { removeUser, setUser } from "@/lib/storage";
 import type { AuthProvider } from "@refinedev/core";
 
 export const authProvider: AuthProvider = {

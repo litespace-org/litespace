@@ -29,6 +29,14 @@ export type Row = {
   updated_at: Date;
 };
 
+export type TutorMedia = {
+  id: number;
+  email: string;
+  name: string | null;
+  photo: string | null;
+  video: string | null;
+};
+
 export type UpdatePayload = {
   email?: string;
   password?: string;

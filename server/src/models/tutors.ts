@@ -107,8 +107,34 @@ export class Tutors {
   }
 
   async findAll(): Promise<ITutor.FullTutor[]> {
-    const tutors = await this.getSelectQuery();
-    return tutors;
+    return await this.getSelectQuery();
+  }
+
+  async findTutorsMedia(): Promise<ITutor.TutorMedia[]> {
+    return await knex<IUser.Row>("users")
+      .select<ITutor.TutorMedia[]>({
+        id: "users.id",
+        email: "users.email",
+        name: "users.name",
+        photo: "users.photo",
+        video: "tutors.video",
+      })
+      .innerJoin("tutors", "users.id", "tutors.id");
+  }
+
+  async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
+    const list = await knex<IUser.Row>("users")
+      .select<ITutor.TutorMedia[]>({
+        id: "users.id",
+        email: "users.email",
+        name: "users.name",
+        photo: "users.photo",
+        video: "tutors.video",
+      })
+      .innerJoin("tutors", "users.id", "tutors.id")
+      .where("id", id);
+
+    return first(list) || null;
   }
 
   getSelectQuery() {

@@ -22,6 +22,7 @@ export enum Resource {
   Tutors = "tutors",
   MySchedule = "my-schedule",
   MyInterviews = "my-interviews",
+  TutorsMedia = "tutors-media",
   Plans = "plans",
   Coupons = "coupons",
   Invites = "invites",
