@@ -2,7 +2,7 @@ import TableView, { TableRow } from "@/components/TableView";
 import { ITutor } from "@litespace/types";
 import { ImageField, Show } from "@refinedev/antd";
 import { useLink, useShow } from "@refinedev/core";
-import { Alert, Flex, Typography } from "antd";
+import { Alert, Flex, Table, Typography } from "antd";
 import { useMemo } from "react";
 import { asUrl } from "@litespace/atlas";
 import { backend } from "@/lib/atlas";
@@ -14,11 +14,15 @@ export const TutorMediaShow = () => {
 
   const tutor = useMemo(() => data?.data, [data?.data]);
 
-  return (
-    <Show canDelete={false} isLoading={isLoading} title="Tutor">
-      <Flex style={{ flexDirection: "column", marginBottom: "20px" }}>
-        <Typography.Title level={2}>Photo</Typography.Title>
-        {tutor?.photo ? (
+  const dataSource = useMemo((): TableRow[] => {
+    if (!tutor) return [];
+    return [
+      { name: "ID", value: tutor.id },
+      { name: "Name", value: tutor.name },
+      { name: "Email", value: tutor.email },
+      {
+        name: "Photo",
+        value: tutor.photo ? (
           <ImageField
             value={asUrl(backend, tutor.photo)}
             title={tutor?.name || undefined}
@@ -29,12 +33,11 @@ export const TutorMediaShow = () => {
             type="warning"
             showIcon
           />
-        )}
-      </Flex>
-
-      <Flex style={{ flexDirection: "column", marginBottom: "20px" }}>
-        <Typography.Title level={2}>Video</Typography.Title>
-        {tutor?.video ? (
+        ),
+      },
+      {
+        name: "Video",
+        value: tutor.video ? (
           <Flex>
             <video
               controls
@@ -48,8 +51,14 @@ export const TutorMediaShow = () => {
             type="warning"
             showIcon
           />
-        )}
-      </Flex>
+        ),
+      },
+    ];
+  }, [tutor]);
+
+  return (
+    <Show canDelete={false} isLoading={isLoading} title="Tutor">
+      <TableView dataSource={dataSource} />
     </Show>
   );
 };

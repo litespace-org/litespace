@@ -101,9 +101,7 @@ export const TutorMediaEdit = () => {
     >
       <Space style={{ display: "block" }}>
         <Typography.Title level={3}>Photo</Typography.Title>
-        <Flex>
-          <ImageField value={photoUrl} />
-        </Flex>
+        <ImageField value={photoUrl} />
 
         <Space style={{ marginTop: "20px" }}>
           <Upload {...photoProps}>
@@ -118,7 +116,11 @@ export const TutorMediaEdit = () => {
         <Typography.Title level={3}>Video</Typography.Title>
         <Flex>
           <video
-            style={{ display: "inline-block", width: "100%" }}
+            style={{
+              display: "inline-block",
+              width: "100%",
+              maxWidth: "1400px",
+            }}
             src={videoUrl}
             controls
           />

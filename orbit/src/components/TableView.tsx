@@ -6,7 +6,7 @@ import {
   UrlField,
 } from "@refinedev/antd";
 import { Table } from "antd";
-import React from "react";
+import React, { ReactNode } from "react";
 import dayjs from "@/lib/dayjs";
 import { formatEgp, formatPercent } from "@/lib/format";
 import {
@@ -18,7 +18,7 @@ import {
 
 export type TableRow = {
   name: string;
-  value: boolean | number | string | null | undefined;
+  value: boolean | number | string | null | undefined | ReactNode;
   type?:
     | "text"
     | "tag"
