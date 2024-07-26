@@ -15,6 +15,7 @@ import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { selectUpdatedOrNone } from "@/lib/utils";
 import { merge, omit } from "lodash";
+import zod from "zod";
 
 export enum Resource {
   UserTypes = "user-types",
@@ -88,7 +89,7 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   async update({ id, resource, variables, meta }) {
-    const resourceId = as.int(id);
+    const resourceId = zod.coerce.number().parse(id);
     if (resource === Resource.Users && meta) {
       const prev = as.casted<IUser.Self>(meta.user);
       const updated = as.casted<
@@ -163,7 +164,19 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.TutorsMedia) {
-      console.log({ here: true });
+      const { photo, video } = zod
+        .object({
+          photo: zod.union([zod.null(), zod.instanceof(File)]),
+          video: zod.union([zod.null(), zod.instanceof(File)]),
+        })
+        .parse(variables);
+
+      await atlas.tutor.updateMedai(resourceId, {
+        photo: photo || undefined,
+        video: video || undefined,
+      });
+
+      return as.casted(empty);
     }
 
     if (resource === Resource.Plans && meta && meta.plan) {

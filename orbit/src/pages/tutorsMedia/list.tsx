@@ -1,17 +1,7 @@
 import { ITutor, IUser } from "@litespace/types";
-import {
-  DateField,
-  DeleteButton,
-  EditButton,
-  List,
-  ShowButton,
-  useTable,
-  BooleanField,
-  TextField,
-} from "@refinedev/antd";
+import { EditButton, List, ShowButton, useTable } from "@refinedev/antd";
 import { Space, Table } from "antd";
 import React from "react";
-import dayjs from "@/lib/dayjs";
 
 export const TutorMediaList: React.FC = () => {
   const { tableProps } = useTable<ITutor.TutorMedia[]>({

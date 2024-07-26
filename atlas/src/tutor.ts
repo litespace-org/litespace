@@ -44,4 +44,21 @@ export class Tutor extends Base {
       .get<ITutor.TutorMedia>(`/api/v1/tutor/media/${id}`)
       .then((response) => response.data);
   }
+
+  async updateMedai(
+    id: number,
+    { photo, video }: { photo?: File; video?: File }
+  ): Promise<void> {
+    if (!photo && !video)
+      throw new Error("At least one media must be provided");
+
+    const formData = new FormData();
+
+    if (photo) formData.append("photo", photo);
+    if (video) formData.append("video", video);
+
+    await this.client.put(`/api/v1/tutor/${id}`, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  }
 }

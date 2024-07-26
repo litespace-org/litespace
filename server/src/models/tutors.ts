@@ -68,8 +68,6 @@ export class Tutors {
       interview_url: tutor.interviewUrl,
     } as const;
 
-    console.log({ updateUserPayload, updateTutorPayload });
-
     if (isValuedObject(updateTutorPayload))
       await knex<ITutor.Row>("tutors")
         .update({

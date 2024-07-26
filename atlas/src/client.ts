@@ -2,9 +2,9 @@ import { Backend } from "@litespace/types";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 export const backendApiUrls: Record<Backend, string> = {
-  [Backend.Local]: `http://localhost:8080`,
-  [Backend.Staging]: "https://moon.litespace.com",
-  [Backend.Production]: "https://mars.litespace.com",
+  [Backend.Local]: "http://localhost:8080",
+  [Backend.Staging]: "https://moon.litespace.org",
+  [Backend.Production]: "https://mars.litespace.org",
 };
 
 export const backendSockets = {

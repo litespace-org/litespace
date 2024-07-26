@@ -39,7 +39,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const fields = schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
   if (!user) return next(tutorNotFound());
-  if (user.type !== IUser.Type.Tutor) return next(badRequest());
+  // if (user.type !== IUser.Type.Tutor) return next(badRequest());
 
   const [photo, video] = await Promise.all(
     [

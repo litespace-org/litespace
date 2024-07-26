@@ -50,7 +50,7 @@ export const serverConfig = {
   media: {
     directory: "uploads/",
     supported: {
-      [FileType.Image]: ["image/png"],
+      [FileType.Image]: ["image/png", "image/jpeg"],
       [FileType.Video]: ["video/webm", "video/mp4"],
     },
   },
