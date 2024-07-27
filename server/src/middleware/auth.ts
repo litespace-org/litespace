@@ -44,8 +44,8 @@ function authHandler(roles: IUser.Type[], getOwnerId?: OwnerHandler) {
 
       const role = req.user?.type;
       const method = req.method;
-      const url = req.originalUrl;
-      const result = await enforcer.enforce(role, method, url);
+      const route = req.originalUrl;
+      const result = await enforcer.enforce(role, route, method);
       console.log({ result });
 
       const authorized = req.isAuthenticated();
