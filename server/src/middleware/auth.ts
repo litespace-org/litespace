@@ -9,6 +9,8 @@ import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
 import { identityObject } from "@/validation/utils";
+import { Enforcer } from "@/lib/casbin";
+import { isProduction } from "@/constants";
 
 declare global {
   namespace Express {
@@ -38,6 +40,19 @@ type OwnerHandler = (req: Request) => Promise<number>;
 function authHandler(roles: IUser.Type[], getOwnerId?: OwnerHandler) {
   return asyncHandler(
     async (req: Request, _res: Response, next: NextFunction) => {
+      const enforcer = await Enforcer.instance();
+
+      console.log(req);
+
+      console.log({
+        type: req.user.type,
+        method: req.method,
+        url: req.originalUrl,
+      });
+
+      const result = await enforcer.enforce("admin", "/", "put");
+      console.log({ result });
+
       const authorized = req.isAuthenticated();
       const userId = req.user?.id;
       const userType = req.user?.type;

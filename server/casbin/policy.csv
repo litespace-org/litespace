@@ -1,0 +1,3 @@
+p, super-admin, /*, *
+p, admin, /api/v1/user/list, GET 
+p, interviwer, /api/v1/user/list, GET
