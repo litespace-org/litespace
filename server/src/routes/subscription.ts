@@ -1,26 +1,15 @@
 import handlers from "@/handlers";
-import { student, admins, authorizer } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
 
 router
   .route("/")
-  .post(student, handlers.subscription.create)
-  .put(authorizer().student().admins().handler(), handlers.subscription.update)
-  .delete(
-    authorizer().student().admins().handler(),
-    handlers.subscription.delete
-  )
-  .get(
-    authorizer().student().admins().handler(),
-    handlers.subscription.getStudentSubscription
-  );
+  .post(handlers.subscription.create)
+  .put(handlers.subscription.update)
+  .delete(handlers.subscription.delete)
+  .get(handlers.subscription.getStudentSubscription);
 
-router.get(
-  "/list",
-  authorizer().admins().handler(),
-  handlers.subscription.getList
-);
+router.get("/list", handlers.subscription.getList);
 
 export default router;

@@ -3,14 +3,11 @@ import { schema } from "@/validation";
 import { users } from "@/models";
 import { IUser } from "@litespace/types";
 import { forbidden, notfound } from "@/lib/error";
-import { isEmpty } from "lodash";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
-import { identityObject } from "@/validation/utils";
 import { Enforcer } from "@/lib/casbin";
-import { isProduction } from "@/constants";
 
 declare global {
   namespace Express {
@@ -29,120 +26,17 @@ declare module "http" {
   }
 }
 
-type OwnerHandler = (req: Request) => Promise<number>;
-
-/**
- * @param roles list of user types that is allowed to access the next route.
- *
- * @note Empty roles list will make the next route accessable for all user
- * types.
- */
-function authHandler(roles: IUser.Type[], getOwnerId?: OwnerHandler) {
-  return asyncHandler(
-    async (req: Request, _res: Response, next: NextFunction) => {
-      const enforcer = await Enforcer.instance();
-
-      const role = req.user?.type;
-      const method = req.method;
-      const route = req.originalUrl;
-      const result = await enforcer.enforce(role, route, method);
-      console.log({ result });
-
-      const authorized = req.isAuthenticated();
-      const userId = req.user?.id;
-      const userType = req.user?.type;
-      const ownerId = getOwnerId ? await getOwnerId(req) : userId;
-      const isOwner = userId === ownerId;
-
-      const allowAnyRole = isEmpty(roles);
-      const roleAllowed = roles.includes(userType);
-      const eligible = allowAnyRole || roleAllowed || isOwner;
-      if (!authorized || !eligible) return next(forbidden());
-      return next();
-    }
-  );
-}
-
-class Authorizer {
-  private roles: IUser.Type[] = [];
-  private ownerHandler?: OwnerHandler;
-
-  superAdmin(): Authorizer {
-    this.roles.push(IUser.Type.SuperAdmin);
-    return this;
+export const authorize = asyncHandler(
+  async (req: Request, _res: Response, next: NextFunction) => {
+    const enforcer = await Enforcer.instance();
+    const role = req.user?.type;
+    const method = req.method;
+    const route = req.originalUrl;
+    const allowed = await enforcer.enforce(role, route, method);
+    if (!allowed) return next(forbidden());
+    return next();
   }
-
-  regAdmin(): Authorizer {
-    this.roles.push(IUser.Type.RegularAdmin);
-    return this;
-  }
-
-  admins(): Authorizer {
-    return this.superAdmin().regAdmin();
-  }
-
-  interviwer(): Authorizer {
-    this.roles.push(IUser.Type.Interviewer);
-    return this;
-  }
-
-  mediaProvider(): Authorizer {
-    this.roles.push(IUser.Type.MediaProvider);
-    return this;
-  }
-
-  staff(): Authorizer {
-    return this.superAdmin().regAdmin().interviwer();
-  }
-
-  tutor(): Authorizer {
-    this.roles.push(IUser.Type.Tutor);
-    return this;
-  }
-
-  student(): Authorizer {
-    this.roles.push(IUser.Type.Student);
-    return this;
-  }
-
-  nonstaff(): Authorizer {
-    return this.tutor().student();
-  }
-
-  owner(handler: OwnerHandler): Authorizer {
-    this.ownerHandler = handler;
-    return this;
-  }
-
-  simpleOwner<
-    M extends object,
-    T extends { findById(id: number): Promise<M | null> },
-  >(model: T, selector: (record: M) => number): Authorizer {
-    async function handler(req: Request): Promise<number> {
-      const { id } = identityObject.parse(req.params);
-      const record = await model.findById(id);
-      if (!record) throw notfound();
-      return selector(record);
-    }
-    this.ownerHandler = handler;
-    return this;
-  }
-
-  handler() {
-    return authHandler(this.roles, this.ownerHandler);
-  }
-}
-
-export function authorizer() {
-  return new Authorizer();
-}
-
-export const student = authorizer().student().handler();
-export const tutor = authorizer().tutor().handler();
-export const admins = authorizer().admins().handler();
-export const superAdmin = authorizer().superAdmin().handler();
-export const staff = authorizer().staff().handler();
-export const authorized = authorizer().handler();
+);
 
 export async function jwtAuthorization(req: Request, done: DoneCallback) {
   const token = req.query.token;

@@ -1,16 +1,17 @@
 # columns: policy, role, route, method
-# super-admin (upper management) has access to all routes
 # "role:authorized" -> route is accessible by any authorized user.
 # "role:unauthorized" -> route is public.
+
+# super-admin (upper management) has access to all routes
 p, super-admin, /*, *
 
-# "/api/v1/user" routes
+# users routes
 p, unauthorized, /api/v1/user, POST 
 p, reg-admin, /api/v1/user/list, GET 
 p, interviewer, /api/v1/user/list, GET
 p, authorized, /api/v1/user/me, GET
 
-# "api/v1/tutor" routes
+# tutor routes
 p, unauthorized, /api/v1/tutor, POST
 p, authorized, /api/v1/tutor/list, GET
 p, authorized, /api/v1/tutor/:id, GET
@@ -19,3 +20,75 @@ p, tutor, /api/v1/tutor/:id, DELETE
 p, reg-admin, /api/v1/tutor/media/*, GET 
 p, interviewer, /api/v1/tutor/media/*, GET 
 p, media-provider, /api/v1/tutor/media/*, GET
+
+# coupons routes
+p, reg-admin, /api/v1/coupon, POST
+p, reg-admin, /api/v1/coupon/list, GET
+p, interviewer, /api/v1/coupon/list, GET
+p, authorized, /api/v1/coupon/code/:code, GET
+p, authorized, /api/v1/coupon/:id, GET
+p, reg-admin, /api/v1/coupon/:id, PUT
+p, reg-admin, /api/v1/coupon/:id, DELETE
+
+# invites routes
+# invites are handled by admins only
+p, reg-admin, /api/v1/invite, *
+
+# "/api/v1/plan" routes
+p, reg-admin, /api/v1/plan, POST
+p, unauthorized, /api/v1/plan/list, GET
+p, unauthorized, /api/v1/plan/:id, GET
+p, reg-admin, /api/v1/plan/:id, PUT
+p, reg-admin, /api/v1/plan/:id, DELETE
+
+# ratings routes
+p, tutor, /api/v1/rate, POST
+p, student, /api/v1/rate, POST
+p, authorized, /api/v1/rate/:id, GET
+p, student, /api/v1/rate/:id, PUT
+p, tutor, /api/v1/rate/:id, PUT
+p, reg-admin, /api/v1/rate/:id, DELETE
+p, tutor, /api/v1/rate/:id, DELETE
+p, student, /api/v1/rate/:id, DELETE
+
+# reports routes
+p, authorized, /api/v1/report, POST
+p, reg-admin, /api/v1/report/list, GET
+p, authorized, /api/v1/report/:id, GET
+p, authorized, /api/v1/report/:id, PUT
+p, reg-admin, /api/v1/report/:id, DELETE
+
+# report replies routes
+p, authorized, /api/v1/report/reply, POST
+p, reg-admin, /api/v1/report/reply/list, GET
+p, authorized, /api/v1/report/reply/:id, GET
+p, authorized, /api/v1/report/reply/report/:id, GET
+p, authorized, /api/v1/report/reply/:id, PUT
+p, reg-admin, /api/v1/report/reply/:id, DELETE
+
+# slots routes
+p, tutor, /api/v1/slot, POST
+p, interviewer, /api/v1/slot, POST
+p, tutor, /api/v1/slot/:id, PUT
+p, interviewer, /api/v1/slot/:id, PUT
+p, tutor, /api/v1/slot/:id, GET
+p, interviewer, /api/v1/slot/:id, GET
+p, tutor, /api/v1/slot/me, GET 
+p, interviewer, /api/v1/slot/me, GET 
+p, authorized, /api/v1/slot/list/discrete, GET 
+p, tutor, /api/v1/slot/:id, DELETE
+p, interviewer, /api/v1/slot/:id, DELETE
+p, reg-admin, /api/v1/slot/:id, DELETE
+p, tutor, /api/v1/slot/:id, PUT
+p, interviewer, /api/v1/slot/:id, PUT
+p, reg-admin, /api/v1/slot/:id, PUT
+
+# subscription routes
+p, student, /api/v1/subscription, POST
+p, reg-admin, /api/v1/subscription/list, GET
+p, student, /api/v1/subscription/:id, PUT
+p, reg-admin, /api/v1/subscription/:id, PUT
+p, reg-admin, /api/v1/subscription/:id, DELETE
+p, student, /api/v1/subscription/:id, DELETE
+p, student, /api/v1/subscription/:id, GET
+p, reg-admin, /api/v1/subscription/:id, GET

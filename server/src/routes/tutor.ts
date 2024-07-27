@@ -1,33 +1,14 @@
 import handlers from "@/handlers";
-import { authorized, authorizer } from "@/middleware/auth";
 import { Router } from "express";
 
 const router = Router();
 
 router.post("/", handlers.tutor.create);
-router.get("/list", authorized, handlers.tutor.list);
-router.get("/:id", authorized, handlers.tutor.get);
-router.put(
-  "/:id",
-  authorizer().tutor().staff().handler(),
-  handlers.tutor.update
-);
-router.delete(
-  "/:id",
-  authorizer().tutor().staff().handler(),
-  handlers.tutor.delete
-);
-
-router.get(
-  "/media/list",
-  authorizer().staff().mediaProvider().handler(),
-  handlers.tutor.getTutorsMedia
-);
-
-router.get(
-  "/media/:id",
-  authorizer().staff().mediaProvider().handler(),
-  handlers.tutor.getTutorMediaById
-);
+router.get("/list", handlers.tutor.list);
+router.get("/:id", handlers.tutor.get);
+router.put("/:id", handlers.tutor.update);
+router.delete("/:id", handlers.tutor.delete);
+router.get("/media/list", handlers.tutor.getTutorsMedia);
+router.get("/media/:id", handlers.tutor.getTutorMediaById);
 
 export default router;
