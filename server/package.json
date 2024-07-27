@@ -9,7 +9,7 @@
     "build": "tsc",
     "migrate": "env-cmd node-pg-migrate",
     "seed": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/seed.js",
-    "test": "ts-jest"
+    "test": "jest"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",

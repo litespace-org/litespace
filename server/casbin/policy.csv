@@ -5,15 +5,17 @@
 p, super-admin, /*, *
 
 # "/api/v1/user" routes
-p, unauthorized, /api/v1/user/, POST 
-p, admin, /api/v1/user/list, GET 
-p, interviwer, /api/v1/user/list, GET
+p, unauthorized, /api/v1/user, POST 
+p, reg-admin, /api/v1/user/list, GET 
+p, interviewer, /api/v1/user/list, GET
 p, authorized, /api/v1/user/me, GET
 
 # "api/v1/tutor" routes
 p, unauthorized, /api/v1/tutor, POST
 p, authorized, /api/v1/tutor/list, GET
 p, authorized, /api/v1/tutor/:id, GET
-p, admin, /api/v1/tutor/:id, DELETE
-p, admin, /api/v1/tutor/media/*, GET 
+p, reg-admin, /api/v1/tutor/:id, DELETE
+p, tutor, /api/v1/tutor/:id, DELETE
+p, reg-admin, /api/v1/tutor/media/*, GET 
+p, interviewer, /api/v1/tutor/media/*, GET 
 p, media-provider, /api/v1/tutor/media/*, GET

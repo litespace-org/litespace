@@ -1,5 +1,6 @@
 import { IUser } from "@litespace/types";
 import { Enforcer as CasbinEnforcer, newEnforcer } from "casbin";
+import { sha256 } from "@/lib/crypto";
 import path from "node:path";
 
 const model = path.join(__dirname, "../../casbin/model.conf");
