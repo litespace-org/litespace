@@ -1,3 +1,19 @@
+# columns: policy, role, route, method
+# super-admin (upper management) has access to all routes
+# "role:authorized" -> route is accessible by any authorized user.
+# "role:unauthorized" -> route is public.
 p, super-admin, /*, *
+
+# "/api/v1/user" routes
+p, unauthorized, /api/v1/user/, POST 
 p, admin, /api/v1/user/list, GET 
 p, interviwer, /api/v1/user/list, GET
+p, authorized, /api/v1/user/me, GET
+
+# "api/v1/tutor" routes
+p, unauthorized, /api/v1/tutor, POST
+p, authorized, /api/v1/tutor/list, GET
+p, authorized, /api/v1/tutor/:id, GET
+p, admin, /api/v1/tutor/:id, DELETE
+p, admin, /api/v1/tutor/media/*, GET 
+p, media-provider, /api/v1/tutor/media/*, GET

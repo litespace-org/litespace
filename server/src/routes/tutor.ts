@@ -4,7 +4,6 @@ import { Router } from "express";
 
 const router = Router();
 
-// note: use casbin to handle access control
 router.post("/", handlers.tutor.create);
 router.get("/list", authorized, handlers.tutor.list);
 router.get("/:id", authorized, handlers.tutor.get);

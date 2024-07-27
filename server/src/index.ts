@@ -14,8 +14,8 @@ import connectPostgres from "connect-pg-simple";
 import { pool } from "@/models/query";
 import { onlyForHandshake } from "./middleware/common";
 import fileupload from "express-fileupload";
+import { capitalize } from "lodash";
 import "colors";
-import path from "node:path";
 
 const SessionStore = connectPostgres(session);
 const sessionMiddleware = session({
@@ -46,7 +46,21 @@ io.engine.use(
 );
 io.on("connection", wssHandler);
 
-app.use(logger("dev"));
+app.use(
+  logger(function (tokens, req, res) {
+    const role = req.user?.type || "unauthorized";
+    return [
+      capitalize(role),
+      tokens.method(req, res),
+      tokens.url(req, res),
+      tokens.status(req, res),
+      tokens.res(req, res, "content-length"),
+      "-",
+      tokens["response-time"](req, res),
+      "ms",
+    ].join(" ");
+  })
+);
 app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
 app.use(
   fileupload({

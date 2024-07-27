@@ -42,15 +42,10 @@ function authHandler(roles: IUser.Type[], getOwnerId?: OwnerHandler) {
     async (req: Request, _res: Response, next: NextFunction) => {
       const enforcer = await Enforcer.instance();
 
-      console.log(req);
-
-      console.log({
-        type: req.user.type,
-        method: req.method,
-        url: req.originalUrl,
-      });
-
-      const result = await enforcer.enforce("admin", "/", "put");
+      const role = req.user?.type;
+      const method = req.method;
+      const url = req.originalUrl;
+      const result = await enforcer.enforce(role, method, url);
       console.log({ result });
 
       const authorized = req.isAuthenticated();
