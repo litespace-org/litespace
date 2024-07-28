@@ -7,8 +7,9 @@ import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import { isAdmin } from "@/lib/common";
 import { identityObject } from "@/validation/utils";
+import { enforceRequest } from "@/middleware/accessControl";
 
-async function create(req: Request, res: Response, next: NextFunction) {
+async function createRating(req: Request, res: Response, next: NextFunction) {
   const raterId = req.user.id;
   const { rateeId, value, feedback } = schema.http.rating.create.body.parse(
     req.body
@@ -34,62 +35,79 @@ async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(data);
 }
 
-async function update(req: Request, res: Response, next: NextFunction) {
-  const data = schema.http.rating.update.body.parse(req.body);
+async function updateRating(req: Request, res: Response, next: NextFunction) {
+  const { id } = identityObject.parse(req.params);
+  const payload = schema.http.rating.update.body.parse(req.body);
+  const rating = await ratings.findById(id);
 
-  const rating = await ratings.findById(data.id);
-  if (!rating) return next(ratingNotFound());
-  if (rating.studentId !== req.user.id) return next(forbidden());
+  if (!rating) return next(notfound());
+  if (rating.raterId !== req.user.id) return next(forbidden());
 
-  await ratings.update(data);
+  await ratings.update(id, payload);
   res.status(200).send();
 }
 
-async function delete_(req: Request, res: Response, next: NextFunction) {
+async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
 
   const rating = await ratings.findById(id);
-  if (!rating) return next(ratingNotFound());
+  if (!rating) return next(notfound());
 
-  const owner = rating.studentId === req.user.id;
-  const admin = isAdmin(req.user.type);
-  const eligible = owner || admin;
-  if (!eligible) return next(forbidden());
+  const allowed = enforceRequest(req, rating.raterId === req.user.id);
+  if (!allowed) return next(forbidden());
 
   await ratings.delete(id);
   res.status(200).send();
 }
 
-async function getUserRatings(req: Request, res: Response, next: NextFunction) {
-  const { id } = identityObject.parse(req.params);
-  const list = await ratings.findTutorRatings(id);
+async function getRatings(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+  const list = await ratings.findAll();
   res.status(200).json(list);
 }
 
-async function getRatingById(req: Request, res: Response, next: NextFunction) {
-  const { id } = identityObject.parse(req.params);
-  const rating = await ratings.findById(id);
-  if (!rating) return next(notfound());
-  res.status(200).json(rating);
-}
-
-async function rateMediaProvider(
+async function getRaterRatings(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  if (req.user.type !== IUser.Type.Tutor) return next(forbidden());
+  const { id } = identityObject.parse(req.params);
+  const allowed = enforceRequest(req, id === req.user.id);
+  if (!allowed) return next(forbidden());
+  const list = await ratings.findByRaterId(id);
+  res.status(200).json(list);
+}
 
-  const tutorId = req.user.id;
-  const tutor = await tutors.findById(tutorId);
-  if (!tutor) return next(notfound);
+async function getRateeRatings(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = identityObject.parse(req.params);
+  const allowed = enforceRequest(req, id === req.user.id);
+  if (!allowed) return next(forbidden());
+  const list = await ratings.findByRateeId(id);
+  res.status(200).json(list);
+}
+
+async function getRatingById(req: Request, res: Response, next: NextFunction) {
+  const userId = req.user.id;
+  const { id } = identityObject.parse(req.params);
+  const rating = await ratings.findById(id);
+  if (!rating) return next(notfound());
+  const owner = rating.raterId === userId || rating.rateeId === userId;
+  const allowed = enforceRequest(req, owner);
+  if (!allowed) return next(forbidden());
+  res.status(200).json(rating);
 }
 
 export default {
-  create: asyncHandler(create),
-  update: asyncHandler(update),
-  getUserRatings: asyncHandler(getUserRatings),
+  createRating: asyncHandler(createRating),
+  updateRating: asyncHandler(updateRating),
+  getRatings: asyncHandler(getRatings),
+  getRaterRatings: asyncHandler(getRaterRatings),
+  getRateeRatings: asyncHandler(getRateeRatings),
   getRatingById: asyncHandler(getRatingById),
-  delete: asyncHandler(delete_),
-  rateMediaProvider: asyncHandler(rateMediaProvider),
+  deleteRating: asyncHandler(deleteRating),
 };

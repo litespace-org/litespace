@@ -80,6 +80,11 @@ export class Ratings {
     return await this.findManyBy("ratee_id", id);
   }
 
+  async findAll(): Promise<IRating.Self[]> {
+    const rows = await knex<IRating.Row>(this.name).select("*");
+    return rows.map((row) => this.from(row));
+  }
+
   async findByEntities(ids: {
     rater: number;
     ratee: number;
@@ -109,3 +114,5 @@ export class Ratings {
     };
   }
 }
+
+export const ratings = new Ratings();

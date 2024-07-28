@@ -31,7 +31,7 @@ export const authorize = asyncHandler(
     const role = req.user?.type || "unauthorize";
     const method = req.method as Method;
     const route = req.originalUrl;
-    const allowed = await enforce({ role, route, method });
+    const allowed = enforce({ role, route, method });
     if (!allowed) return next(forbidden());
     return next();
   }

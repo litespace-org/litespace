@@ -1,11 +1,10 @@
 import { expect } from "chai";
-import { routeMatch, enforce } from "../../src/lib/accessControl";
+import { routeMatch, enforce, Role } from "../../src/middleware/accessControl";
 import { IUser } from "@litespace/types";
-
-type Role = IUser.Type | "authorized" | "unauthorized";
 
 const unauthorized = "unauthorized";
 const authorized = "authorized";
+const owner = "owner";
 
 const authorizedRoles: Role[] = [
   authorized,
@@ -27,6 +26,8 @@ const staff: Role[] = [
 
 const admins: Role[] = [IUser.Type.SuperAdmin, IUser.Type.RegularAdmin];
 const customers: Role[] = [IUser.Type.Tutor, IUser.Type.Student];
+const superAdmin = IUser.Type.SuperAdmin;
+const regAdmin = IUser.Type.RegularAdmin;
 const tutor = IUser.Type.Tutor;
 const interviewer = IUser.Type.Interviewer;
 const student = IUser.Type.Student;
@@ -34,8 +35,8 @@ const provider = IUser.Type.MediaProvider;
 
 const policies: Array<{
   roles: { allowed: Role[]; denied: Role[] };
-  route: string;
   method: "POST" | "GET" | "PUT" | "DELETE";
+  route: string;
 }> = [
   // "/api/v1/user" routes
   {
@@ -205,21 +206,39 @@ const policies: Array<{
     route: "/api/v1/plan/2",
     method: "DELETE",
   },
+  {
+    roles: {
+      allowed: [superAdmin, owner],
+      denied: [regAdmin, ...customers, provider, interviewer],
+    },
+    route: "/api/v1/rate/1",
+    method: "PUT",
+  },
+  {
+    roles: {
+      allowed: [...admins, owner],
+      denied: [interviewer, ...customers, provider, interviewer],
+    },
+    route: "/api/v1/rate/list/rater/1",
+    method: "GET",
+  },
 ];
 
 describe("Access Control", () => {
-  it("Routes Access", async () => {
+  it.only("Routes Access", async () => {
     for (const { roles, route, method } of policies) {
       console.log(
         `ACL: ${route}, ${method}\nAllowed: ${roles.allowed}\nDenied: ${roles.denied}`
       );
 
       for (const role of roles.allowed) {
-        expect(enforce({ role, route, method })).to.be.true;
+        expect(enforce({ role, route, method, isOwner: role === "owner" })).to
+          .be.true;
       }
 
       for (const role of roles.denied) {
-        expect(enforce({ role, route, method })).to.be.false;
+        expect(enforce({ role, route, method, isOwner: role === "owner" })).to
+          .be.false;
       }
     }
   });

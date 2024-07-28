@@ -5,7 +5,6 @@ import { Messages } from "@/models/messages";
 import { Complex } from "@/models/complex";
 
 // services
-export const ratings = new Ratings();
 export const subscriptions = new Subscriptions();
 export const rooms = new Rooms();
 export const messages = new Messages();
@@ -20,9 +19,4 @@ export { invites } from "@/models/invites";
 export { reports } from "@/models/reports";
 export { reportReplies } from "@/models/reportReplies";
 export { tokens } from "@/models/tokens";
-
-// types
-export { Subscription } from "@/models/subscriptions";
-export { Room } from "@/models/rooms";
-export { Message } from "@/models/messages";
-export { Complex } from "@/models/complex";
+export { ratings } from "@/models/ratings";

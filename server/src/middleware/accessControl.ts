@@ -1,7 +1,8 @@
 import { IUser } from "@litespace/types";
-import path from "node:path";
+import { Request } from "express";
 import UrlPattern from "url-pattern";
 
+const owner = "owner";
 const authorized = "authorized";
 const unauthorized = "unauthorized";
 const superAdmin = IUser.Type.SuperAdmin;
@@ -11,15 +12,16 @@ const tutor = IUser.Type.Tutor;
 const student = IUser.Type.Student;
 const provider = IUser.Type.MediaProvider;
 
-export type Role = `${IUser.Type}` | "unauthorized" | "authorized";
+export type Role = `${IUser.Type}` | "owner" | "unauthorized" | "authorized";
 export type Method = "POST" | "GET" | "PUT" | "DELETE";
 
-function roleMatch(requestRole: Role, policyRoles: Role[]) {
+function roleMatch(requestRole: Role, policyRoles: Role[], isOwner?: boolean) {
+  const own = policyRoles.includes(owner) && isOwner;
   const authorized =
     policyRoles.includes("authorized") && requestRole !== "unauthorized";
   const unauthorized = policyRoles.includes("unauthorized");
   const exact = policyRoles.includes(requestRole);
-  return authorized || unauthorized || exact;
+  return authorized || unauthorized || exact || own;
 }
 
 export function routeMatch(
@@ -166,12 +168,27 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [tutor, student],
+    roles: [regAdmin],
+    route: "(/)api/v1/rate/list(/)",
+    methods: ["GET"],
+  },
+  {
+    roles: [regAdmin, owner],
+    route: "(/)api/v1/rate/list/rater/:id(/)",
+    methods: ["GET"],
+  },
+  {
+    roles: [regAdmin, owner],
+    route: "(/)api/v1/rate/list/ratee/:id(/)",
+    methods: ["GET"],
+  },
+  {
+    roles: [owner],
     route: "(/)api/v1/rate/:id(/)",
     methods: ["PUT"],
   },
   {
-    roles: [regAdmin, tutor, student],
+    roles: [regAdmin, owner],
     route: "(/)api/v1/rate/:id(/)",
     methods: ["DELETE"],
   },
@@ -270,6 +287,7 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/slot/:id(/)",
     methods: ["DELETE"],
   },
+  // subscription routes
   {
     roles: [student],
     route: "(/)api/v1/subscription(/)",
@@ -291,10 +309,11 @@ export function enforce(request: {
   role: Role;
   route: string;
   method: Method;
+  isOwner?: boolean;
 }): boolean {
   for (const policy of policies) {
     if (
-      roleMatch(request.role, policy.roles) &&
+      roleMatch(request.role, policy.roles, request.isOwner) &&
       routeMatch(request.route, policy.route, policy.ignore) &&
       methodMatch(request.method, policy.methods)
     )
@@ -302,4 +321,11 @@ export function enforce(request: {
   }
 
   return false;
+}
+
+export function enforceRequest(request: Request, isOwner?: boolean): boolean {
+  const role = request.user?.type || "unauthorize";
+  const method = request.method as Method;
+  const route = request.originalUrl;
+  return enforce({ role, method, route, isOwner });
 }

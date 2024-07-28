@@ -149,7 +149,6 @@ const ratings = {
   },
   update: {
     body: zod.object({
-      id,
       value: zod.optional(rating),
       feedback: zod.optional(string),
     }),
