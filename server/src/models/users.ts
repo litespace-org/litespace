@@ -1,5 +1,5 @@
 import { knex, query } from "@/models/query";
-import { first, merge } from "lodash";
+import { first, isEmpty, merge } from "lodash";
 import { IUser } from "@litespace/types";
 import { Knex } from "knex";
 
@@ -96,6 +96,11 @@ export class Users {
 
   async findByEmail(email: string): Promise<IUser.Self | null> {
     return await this.findOneBy("email", email);
+  }
+
+  async exists(id: number): Promise<boolean> {
+    const rows = await knex<IUser.Row>(this.name).select("id").where("id", id);
+    return !isEmpty(rows);
   }
 
   async findMany(ids: number[]): Promise<IUser.Self[]> {

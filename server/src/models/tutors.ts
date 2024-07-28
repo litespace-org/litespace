@@ -1,5 +1,5 @@
 import { knex } from "@/models/query";
-import { first, isEmpty, values } from "lodash";
+import { first, isEmpty } from "lodash";
 import { IUser, ITutor } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";
 
@@ -49,8 +49,6 @@ export class Tutors {
       // birth_year: tutor.birthday ? new Date(tutor.birthday) : undefined,
       gender: tutor.gender,
     } as const;
-
-    console.log({ updateUserPayload, is: isValuedObject(updateUserPayload) });
 
     if (isValuedObject(updateUserPayload))
       await knex<IUser.Row>("users")
@@ -106,6 +104,11 @@ export class Tutors {
     return first(tutors) || null;
   }
 
+  async exists(id: number): Promise<boolean> {
+    const rows = await knex<ITutor.Row>("tutors").select("id").where("id", id);
+    return !isEmpty(rows);
+  }
+
   async findAll(): Promise<ITutor.FullTutor[]> {
     return await this.getSelectQuery();
   }
@@ -158,6 +161,7 @@ export class Tutors {
         activatedBy: "tutors.activated_by",
         passedInterview: "tutors.passed_interview",
         interviewUrl: "tutors.interview_url",
+        meidaProviderId: "tutors.media_provider_id",
       })
       .from<IUser.Row>("users")
       .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")

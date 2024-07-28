@@ -72,6 +72,7 @@ exports.up = (pgm) => {
     activated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     passed_interview: { type: "BOOLEAN" },
     interview_url: { type: "VARCHAR(255)" },
+    media_provider_id: { type: "INT", default: null },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });
@@ -106,10 +107,10 @@ exports.up = (pgm) => {
 
   pgm.createTable("ratings", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    student_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    rater_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    ratee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     value: { type: "SMALLINT", notNull: true },
-    note: { type: "TEXT" },
+    feedback: { type: "TEXT" },
     created_at: { type: "TIMESTAMPTZ", notNull: true },
     updated_at: { type: "TIMESTAMPTZ", notNull: true },
   });

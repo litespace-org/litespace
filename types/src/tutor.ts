@@ -9,6 +9,7 @@ export type Self = {
   activatedBy: number | null;
   passedInterview: boolean | null;
   interviewUrl: string | null;
+  mediaProviderId: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -25,6 +26,7 @@ export type Row = {
   activated_by: number | null;
   passed_interview: boolean | null;
   interview_url: string | null;
+  media_provider_id: number | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -51,10 +53,11 @@ export type UpdatePayload = {
   activatedBy?: number;
   passedInterview?: boolean;
   interviewUrl?: string;
+  mediaProviderId?: number;
 };
 
 export type CreateApiPayload = User.Credentials & { name: string };
-export type UpdateApiPayload = UpdatePayload & {
+export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropPhoto?: boolean;
   dropVideo?: boolean;
 };

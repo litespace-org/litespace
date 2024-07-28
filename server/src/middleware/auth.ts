@@ -2,12 +2,12 @@ import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
 import { users } from "@/models";
 import { IUser } from "@litespace/types";
-import { forbidden, notfound } from "@/lib/error";
+import { forbidden } from "@/lib/error";
 import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
-import { enforce, Method, Role } from "@/lib/accessControl";
+import { enforce, Method } from "@/middleware/accessControl";
 
 declare global {
   namespace Express {

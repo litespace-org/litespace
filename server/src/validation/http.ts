@@ -142,16 +142,16 @@ const call = {
 const ratings = {
   create: {
     body: zod.object({
-      tutorId: id,
+      rateeId: id,
       value: rating,
-      note: zod.optional(string),
+      feedback: zod.optional(string),
     }),
   },
   update: {
     body: zod.object({
       id,
       value: zod.optional(rating),
-      note: zod.optional(string),
+      feedback: zod.optional(string),
     }),
   },
   get: { query: zod.object({ tutorId: id }) },

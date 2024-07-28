@@ -55,6 +55,11 @@ const policies: Array<Policy> = [
     methods: ["*"],
   },
   {
+    roles: [authorized],
+    route: "/assets/*",
+    methods: ["GET"],
+  },
+  {
     roles: [unauthorized],
     route: "(/)api/v1/user(/)",
     methods: ["POST"],
