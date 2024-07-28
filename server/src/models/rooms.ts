@@ -85,13 +85,13 @@ export class Rooms {
 
   async findMemberRooms({
     userId,
-    type,
+    role,
   }: {
     userId: number;
-    type: IUser.Type;
+    role: IUser.Role;
   }): Promise<Room.Self[]> {
-    const tutorId = type === IUser.Type.Tutor ? userId : 0;
-    const studentId = type === IUser.Type.Student ? userId : 0;
+    const tutorId = role === IUser.Role.Tutor ? userId : 0;
+    const studentId = role === IUser.Role.Student ? userId : 0;
 
     const { rows } = await query<
       Room.Row,

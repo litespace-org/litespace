@@ -1,8 +1,8 @@
 import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
-import { User } from "@/types";
 import { Route } from "@/types/routes";
+import { IUser } from "@litespace/types";
 import { Button, messages } from "@litespace/uilib";
 import React, { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
@@ -14,8 +14,8 @@ const SelectUserType: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
   const mutation = useMutation(
-    async (type: User.Type.Tutor | User.Type.Student) =>
-      atlas.user.update({ type }),
+    async (role: typeof IUser.Role.Tutor | typeof IUser.Role.Student) =>
+      atlas.user.update(1, { role }),
     {
       async onSuccess() {
         await dispatch(findMe());
@@ -34,10 +34,10 @@ const SelectUserType: React.FC = () => {
         <FormattedMessage id={messages.pages.select.type.title} />
       </h1>
       <div className="flex flex-row gap-5">
-        <Button onClick={() => mutation.mutate(User.Type.Tutor)}>
+        <Button onClick={() => mutation.mutate(IUser.Role.Tutor)}>
           <FormattedMessage id={messages.pages.select.type.options.tutor} />
         </Button>
-        <Button onClick={() => mutation.mutate(User.Type.Student)}>
+        <Button onClick={() => mutation.mutate(IUser.Role.Student)}>
           <FormattedMessage id={messages.pages.select.type.options.student} />
         </Button>
       </div>

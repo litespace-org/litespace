@@ -24,7 +24,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
   // - validate user subscription
   // - update user remaining minutes
   // - no lessons at this time.
-  if (req.user.type !== IUser.Type.Student) return next(forbidden());
+  if (req.user.role !== IUser.Role.Student) return next(forbidden());
 
   const slot = await slots.findById(slotId);
   if (!slot) return next(slotNotFound());
@@ -60,7 +60,7 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
 
   const userId = req.user.id;
   const owner = userId === call.hostId || userId === call.attendeeId;
-  const eligible = owner || isAdmin(req.user.type);
+  const eligible = owner || isAdmin(req.user.role);
   if (!eligible) return next(forbidden());
 
   await calls.delete(id);
@@ -69,11 +69,10 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
 
 async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
   const id = user.id;
-  const type = user.type;
-  const studnet = type === IUser.Type.Student;
-  const tutor = type === IUser.Type.Tutor;
-  const interviewer = type === IUser.Type.Interviewer;
-
+  const role = user.role;
+  const studnet = role === IUser.Role.Student;
+  const tutor = role === IUser.Role.Tutor;
+  const interviewer = role === IUser.Role.Interviewer;
   if (studnet) return await calls.findByAttendeeId(id);
   if (tutor || interviewer) return await calls.findByHostId(id);
   return await calls.findAll(); // admin

@@ -100,7 +100,7 @@ export const dataProvider: DataProvider = {
           photo: string;
           userBirthday: Dayjs;
           gender: IUser.Gender;
-          type: IUser.Type;
+          role: IUser.Role;
         }>
       >(variables);
       await atlas.user.update(resourceId, {

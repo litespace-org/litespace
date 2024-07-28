@@ -13,17 +13,16 @@ import asyncHandler from "express-async-handler";
 import dayjs from "@/lib/dayjs";
 import { asDayStart } from "@/lib/slots";
 import { calculateSubscriptionEndDate } from "@/lib/subscriptions";
-import { isAdmin } from "@/lib/common";
 import { isEmpty } from "lodash";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
   const { monthlyMinutes, period, autoRenewal } =
     schema.http.subscription.create.body.parse(req.body);
 
-  if (req.user.type !== IUser.Type.Student) return next(forbidden);
+  if (req.user.role !== IUser.Role.Student) return next(forbidden());
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
-  if (subscription) return next(alreadySubscribed);
+  if (subscription) return next(alreadySubscribed());
 
   const start = asDayStart(dayjs().utc());
   const end = calculateSubscriptionEndDate(start, period);
@@ -90,7 +89,7 @@ async function getStudentSubscription(
   res: Response,
   next: NextFunction
 ) {
-  if (req.user.type !== IUser.Type.Student) return next(forbidden);
+  if (req.user.role !== IUser.Role.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
   if (!subscription) return next(subscriptionNotFound);

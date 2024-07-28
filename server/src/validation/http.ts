@@ -20,24 +20,13 @@ import {
   callSize,
   number,
   boolean,
+  role,
 } from "@/validation/utils";
 import { IUser } from "@litespace/types";
 
 const user = {
   create: zod.object(
-    {
-      email,
-      password,
-      name,
-      type: zod.enum([
-        IUser.Type.SuperAdmin,
-        IUser.Type.RegularAdmin,
-        IUser.Type.Tutor,
-        IUser.Type.Student,
-        IUser.Type.Interviewer,
-        IUser.Type.MediaProvider,
-      ]),
-    },
+    { email, password, name, role },
     { message: "Empty request body" }
   ),
   update: {
@@ -47,7 +36,7 @@ const user = {
       name: zod.optional(name),
       gender: zod.optional(gender),
       birthYear: zod.optional(zod.number().min(1950)),
-      type: zod.optional(zod.enum([IUser.Type.Tutor, IUser.Type.Student])),
+      role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
     }),
   },
   delete: { query: zod.object({ id }) },

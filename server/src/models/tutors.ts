@@ -17,7 +17,7 @@ export class Tutors {
             email: user.email,
             password: user.password,
             name: user.name,
-            type: IUser.Type.Tutor,
+            role: IUser.Role.Tutor,
             created_at: now,
             updated_at: now,
           },

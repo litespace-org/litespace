@@ -10,7 +10,7 @@ export class Users {
     email: string;
     password: string;
     name: string;
-    type: IUser.Type;
+    role: IUser.Role;
   }): Promise<IUser.Self> {
     const now = new Date();
     const rows = await knex<IUser.Row>("users").insert(
@@ -18,7 +18,7 @@ export class Users {
         email: user.email,
         password: user.password,
         name: user.name,
-        type: user.type,
+        role: user.role,
         created_at: now,
         updated_at: now,
       },
@@ -69,7 +69,7 @@ export class Users {
         photo: payload.photo,
         birth_year: payload.birthYear,
         gender: payload.gender,
-        type: payload.type,
+        role: payload.role,
         verified: payload.verified,
         updated_at: now,
       })
@@ -157,13 +157,13 @@ export class Users {
   }
 
   async getTutors(): Promise<IUser.Self[]> {
-    const { rows } = await query<IUser.Row, [typeof IUser.Type.Tutor]>(
+    const { rows } = await query<IUser.Row, [typeof IUser.Role.Tutor]>(
       `
         SELECT id, email, name, photo, type, online, created_at, updated_at
         FROM users
         WHERE type = $1;
       `,
-      [IUser.Type.Tutor]
+      [IUser.Role.Tutor]
     );
 
     return rows.map((row) => this.from(row));
@@ -178,7 +178,7 @@ export class Users {
       photo: row.photo,
       birthYear: row.birth_year,
       gender: row.gender,
-      type: row.type,
+      role: row.role,
       online: row.online,
       verified: row.verified,
       creditScore: row.credit_score,

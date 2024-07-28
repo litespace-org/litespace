@@ -39,11 +39,13 @@ export const repeat = zod.enum([
   ISlot.Repeat.Monthly,
 ]);
 
-export const userType = zod.enum([
-  IUser.Type.SuperAdmin,
-  IUser.Type.RegularAdmin,
-  IUser.Type.Tutor,
-  IUser.Type.Student,
+export const role = zod.enum([
+  IUser.Role.SuperAdmin,
+  IUser.Role.RegularAdmin,
+  IUser.Role.Interviewer,
+  IUser.Role.MediaProvider,
+  IUser.Role.Tutor,
+  IUser.Role.Student,
 ]);
 
 export const callType = zod.enum([ICall.Type.Interview, ICall.Type.Lesson]);

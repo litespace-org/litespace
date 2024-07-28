@@ -19,7 +19,7 @@ import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
-  const { email, password, name, type } = schema.http.user.create.parse(
+  const { email, password, name, role } = schema.http.user.create.parse(
     req.body
   );
 
@@ -28,7 +28,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const user = await users.create({
     password: hashPassword(password),
-    type,
+    role,
     email,
     name,
   });
@@ -47,10 +47,10 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const { email, name, password, gender, type, birthYear } =
+  const { email, name, password, gender, role, birthYear } =
     schema.http.user.update.body.parse(req.body);
 
-  if (type && req.user.type) return next(userAlreadyTyped());
+  if (role && req.user.role) return next(userAlreadyTyped());
 
   const photo = req.files?.photo
     ? await uploadSingle(req.files.photo, FileType.Image)
@@ -61,7 +61,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
     name,
     gender,
     photo,
-    type,
+    role,
     birthYear,
     password: password ? hashPassword(password) : undefined,
   });
@@ -81,8 +81,8 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   if (!user) return next(userNotFound());
 
   const owner = user.id === req.user.id;
-  const admin = isAdmin(req.user.type);
-  const interviewer = req.user.type === IUser.Type.Interviewer;
+  const admin = isAdmin(req.user.role);
+  const interviewer = req.user.role === IUser.Role.Interviewer;
   const eligible = owner || admin || interviewer;
   if (!eligible) return next(forbidden());
   res.status(200).json(user);

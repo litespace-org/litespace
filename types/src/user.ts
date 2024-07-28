@@ -1,4 +1,4 @@
-export enum Type {
+export enum Role {
   SuperAdmin = "super-admin",
   RegularAdmin = "reg-admin",
   Tutor = "tutor",
@@ -7,7 +7,7 @@ export enum Type {
   MediaProvider = "media-provider",
 }
 
-export type TutorOrStudent = Type.Tutor | Type.Student;
+export type TutorOrStudent = Role.Tutor | Role.Student;
 
 export enum Gender {
   Male = "male",
@@ -22,7 +22,7 @@ export type Self = {
   photo: string | null;
   birthYear: number | null;
   gender: Gender | null;
-  type: Type;
+  role: Role;
   online: boolean;
   verified: boolean;
   creditScore: number;
@@ -38,7 +38,7 @@ export type Row = {
   photo: string | null;
   birth_year: number | null;
   gender: Gender | null;
-  type: Type;
+  role: Role;
   online: boolean;
   verified: boolean;
   credit_score: number;
@@ -58,7 +58,7 @@ export type UpdatePayload = {
   photo?: string;
   birthYear?: number;
   gender?: Gender;
-  type?: Type;
+  role?: Role;
   verified?: boolean;
   online?: boolean;
 };

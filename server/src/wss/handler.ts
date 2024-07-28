@@ -33,7 +33,7 @@ export class WssHandler {
   async joinRooms() {
     const list = await rooms.findMemberRooms({
       userId: this.user.id,
-      type: this.user.type,
+      role: this.user.role,
     });
 
     const ids = list.map((room) => room.id.toString());

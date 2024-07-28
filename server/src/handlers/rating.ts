@@ -8,15 +8,15 @@ import { identityObject } from "@/validation/utils";
 import { enforceRequest } from "@/middleware/accessControl";
 import { IUser } from "@litespace/types";
 
-const rateeRoles = [IUser.Type.Tutor, IUser.Type.MediaProvider];
+const rateeRoles = [IUser.Role.Tutor, IUser.Role.MediaProvider];
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
   const raterId = req.user.id;
-  const isTutor = req.user.type === IUser.Type.Tutor;
-  const isStudent = req.user.type === IUser.Type.Student;
+  const isTutor = req.user.role === IUser.Role.Tutor;
+  const isStudent = req.user.role === IUser.Role.Student;
   const { rateeId, value, feedback } = schema.http.rating.create.body.parse(
     req.body
   );
@@ -24,11 +24,11 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   const ratee = await users.findById(rateeId);
   if (!ratee) return next(notfound());
   // Only "tutors" and "media providers" can be rated
-  if (!rateeRoles.includes(ratee.type)) return next(badRequest());
+  if (!rateeRoles.includes(ratee.role)) return next(badRequest());
   // Students can only rate tutors
-  if (isStudent && ratee.type !== IUser.Type.Tutor) return next(badRequest());
+  if (isStudent && ratee.role !== IUser.Role.Tutor) return next(badRequest());
   // Tutors can only rate media providers
-  if (isTutor && ratee.type !== IUser.Type.MediaProvider)
+  if (isTutor && ratee.role !== IUser.Role.MediaProvider)
     return next(badRequest());
 
   const rating = await ratings.findByEntities({

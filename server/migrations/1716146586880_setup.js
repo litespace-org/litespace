@@ -10,7 +10,7 @@ exports.shorthands = undefined;
  */
 exports.up = (pgm) => {
   // types
-  pgm.createType("user_type", [
+  pgm.createType("user_role", [
     "super-admin",
     "reg-admin",
     "tutor",
@@ -37,7 +37,7 @@ exports.up = (pgm) => {
     password: { type: "CHAR(64)", default: null },
     name: { type: "VARCHAR(50)", default: null }, // todo: add: name_ar, name_en
     photo: { type: "VARCHAR(255)", default: null },
-    type: { type: "user_type", default: null },
+    role: { type: "user_role", default: null },
     birth_year: { type: "INT", default: null },
     gender: { type: "user_gender_type", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
@@ -306,7 +306,7 @@ exports.down = (pgm) => {
 
   // types
   pgm.dropType("token_type", { ifExists: true });
-  pgm.dropType("user_type", { ifExists: true });
+  pgm.dropType("user_role", { ifExists: true });
   pgm.dropType("repeat_type", { ifExists: true });
   pgm.dropType("call_type", { ifExists: true });
   pgm.dropType("user_gender_type", { ifExists: true });

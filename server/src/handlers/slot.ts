@@ -35,7 +35,7 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
   if (!slot) return next(slotNotFound());
 
   const owner = req.user.id === slot.userId;
-  const admin = isAdmin(req.user.type);
+  const admin = isAdmin(req.user.role);
   const eligible = owner || admin;
   if (!eligible) return next(forbidden());
   res.status(200).json(slot);

@@ -64,8 +64,8 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
   if (!tutor) return next(userNotFound());
 
   const owner = req.user.id === tutor.id;
-  const admin = isAdmin(req.user.type);
-  const interviewer = req.user.type === IUser.Type.Interviewer;
+  const admin = isAdmin(req.user.role);
+  const interviewer = req.user.role === IUser.Role.Interviewer;
   const eligible = owner || admin || interviewer;
   if (!eligible) return next(forbidden());
 
@@ -83,7 +83,7 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
   if (!tutor) return next(tutorNotFound());
 
   const owner = req.user.id === tutor.id;
-  const admin = isAdmin(req.user.type);
+  const admin = isAdmin(req.user.role);
   const eligible = owner || admin;
   if (!eligible) return next(forbidden());
 

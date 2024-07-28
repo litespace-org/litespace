@@ -1,12 +1,12 @@
 import { ISlot, IUser } from "@litespace/types";
 
 export const userTypes = [
-  { label: "Super Admin", value: IUser.Type.SuperAdmin },
-  { label: "Regular Admin", value: IUser.Type.RegularAdmin },
-  { label: "Tutor", value: IUser.Type.Tutor },
-  { label: "Student", value: IUser.Type.Student },
-  { label: "Interviewer", value: IUser.Type.Interviewer },
-  { label: "Media Provider", value: IUser.Type.MediaProvider },
+  { label: "Super Admin", value: IUser.Role.SuperAdmin },
+  { label: "Regular Admin", value: IUser.Role.RegularAdmin },
+  { label: "Tutor", value: IUser.Role.Tutor },
+  { label: "Student", value: IUser.Role.Student },
+  { label: "Interviewer", value: IUser.Role.Interviewer },
+  { label: "Media Provider", value: IUser.Role.MediaProvider },
 ];
 
 export const weekdays = [

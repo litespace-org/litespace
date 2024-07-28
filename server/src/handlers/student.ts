@@ -17,7 +17,7 @@ export async function create(
 
   const student = await users.create({
     password: hashPassword(password),
-    type: IUser.Type.Student,
+    role: IUser.Role.Student,
     email,
     name,
   });

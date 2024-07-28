@@ -13,7 +13,6 @@ import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { User } from "@/types";
 import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
 import { Route } from "@/types/routes";
@@ -34,17 +33,19 @@ const Register: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { type } = useParams<{ type: User.Type.Student | User.Type.Tutor }>();
+  const { role } = useParams<{
+    role: typeof IUser.Role.Student | typeof IUser.Role.Tutor;
+  }>();
 
   const mutation = useMutation(
     async ({
       payload,
-      type,
+      role,
     }: {
       payload: RegisterTutorPayload | RegisterStudentPayload;
-      type: IUser.TutorOrStudent;
+      role: IUser.TutorOrStudent;
     }) => {
-      if (type === IUser.Type.Tutor) return await atlas.tutor.create(payload);
+      if (role === IUser.Role.Tutor) return await atlas.tutor.create(payload);
       return atlas.student.register(payload);
     },
     {
@@ -58,11 +59,11 @@ const Register: React.FC = () => {
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
     async (payload) => {
-      if (!type) return;
-      if (![User.Type.Student, User.Type.Tutor].includes(type)) return;
-      return await mutation.mutate({ payload, type });
+      if (!role) return;
+      if (![IUser.Role.Student, IUser.Role.Tutor].includes(role)) return;
+      return await mutation.mutate({ payload, role });
     },
-    [mutation, type]
+    [mutation, role]
   );
   const valiedation = useValidation();
 

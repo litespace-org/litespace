@@ -1,5 +1,5 @@
 import { IUser } from "@litespace/types";
-import { ExportButton, Show, ShowButton } from "@refinedev/antd";
+import { Show } from "@refinedev/antd";
 import { useLink, useShow } from "@refinedev/core";
 import { useMemo } from "react";
 import TableView, { TableRow } from "@/components/TableView";
@@ -24,7 +24,7 @@ export const UserShow = () => {
       { name: "Has Password", value: user.hasPassword, type: "boolean" },
       { name: "Online", value: user.online, type: "boolean" },
       { name: "Gender", value: user.gender, type: "tag" },
-      { name: "Type", value: user.type, type: "tag" },
+      { name: "Role", value: user.role, type: "tag" },
       { name: "Created At", value: user.createdAt, type: "date" },
       { name: "Updated At", value: user.updatedAt, type: "date" },
     ];
@@ -36,7 +36,7 @@ export const UserShow = () => {
         return (
           <>
             {defaultButtons}
-            {user?.type === IUser.Type.Tutor ? (
+            {user?.role === IUser.Role.Tutor ? (
               <Link to={`/tutors/show/${user.id}`}>
                 <Button
                   icon={<UserOutlined />}

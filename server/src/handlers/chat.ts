@@ -22,15 +22,15 @@ async function findByUserId(
   res: Response,
   next: NextFunction
 ) {
-  const userId = req.user.id;
-  const userType = req.user.type;
+  const id = req.user.id;
+  const role = req.user.role;
 
-  if (![IUser.Type.Student, IUser.Type.Tutor].includes(userType))
+  if (![IUser.Role.Student, IUser.Role.Tutor].includes(role))
     return next(forbidden());
 
   const list = await rooms.findMemberRooms({
-    userId: userId,
-    type: userType,
+    userId: id,
+    role,
   });
 
   res.status(200).json(list);

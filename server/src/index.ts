@@ -48,7 +48,7 @@ io.on("connection", wssHandler);
 
 app.use(
   logger(function (tokens, req, res) {
-    const role = req.user?.type || "unauthorized";
+    const role = req.user?.role || "unauthorized";
     return [
       capitalize(role),
       tokens.method(req, res),

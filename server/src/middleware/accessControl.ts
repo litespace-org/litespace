@@ -5,14 +5,14 @@ import UrlPattern from "url-pattern";
 const owner = "owner";
 const authorized = "authorized";
 const unauthorized = "unauthorized";
-const superAdmin = IUser.Type.SuperAdmin;
-const regAdmin = IUser.Type.RegularAdmin;
-const interviewer = IUser.Type.Interviewer;
-const tutor = IUser.Type.Tutor;
-const student = IUser.Type.Student;
-const provider = IUser.Type.MediaProvider;
+const superAdmin = IUser.Role.SuperAdmin;
+const regAdmin = IUser.Role.RegularAdmin;
+const interviewer = IUser.Role.Interviewer;
+const tutor = IUser.Role.Tutor;
+const student = IUser.Role.Student;
+const provider = IUser.Role.MediaProvider;
 
-export type Role = `${IUser.Type}` | "owner" | "unauthorized" | "authorized";
+export type Role = `${IUser.Role}` | "owner" | "unauthorized" | "authorized";
 export type Method = "POST" | "GET" | "PUT" | "DELETE";
 
 function roleMatch(requestRole: Role, policyRoles: Role[], isOwner?: boolean) {
@@ -325,7 +325,7 @@ export function enforce(request: {
 }
 
 export function enforceRequest(request: Request, isOwner?: boolean): boolean {
-  const role = request.user?.type || "unauthorize";
+  const role = request.user?.role || "unauthorize";
   const method = request.method as Method;
   const route = request.originalUrl;
   return enforce({ role, method, route, isOwner });

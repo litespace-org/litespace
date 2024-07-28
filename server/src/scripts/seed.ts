@@ -19,26 +19,26 @@ async function main(): Promise<void> {
   const admin = await users.create({
     email: "admin@litespace.org",
     name: "LiteSpace Admin",
-    type: IUser.Type.SuperAdmin,
+    role: IUser.Role.SuperAdmin,
     password,
   });
 
   const interviewer = await users.create({
-    type: IUser.Type.Interviewer,
+    role: IUser.Role.Interviewer,
     email: "interviewer@litespace.org",
     name: "LiteSpace Interviewer",
     password,
   });
 
   const student = await users.create({
-    type: IUser.Type.Student,
+    role: IUser.Role.Student,
     email: "student@litespace.org",
     name: "LiteSpace Student",
     password,
   });
 
   const mediaProvider = await users.create({
-    type: IUser.Type.MediaProvider,
+    role: IUser.Role.MediaProvider,
     email: "media@litespace.org",
     name: "LiteSpace Media Provider",
     password,

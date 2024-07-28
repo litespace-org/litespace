@@ -8,30 +8,30 @@ const owner = "owner";
 
 const authorizedRoles: Role[] = [
   authorized,
-  IUser.Type.SuperAdmin,
-  IUser.Type.RegularAdmin,
-  IUser.Type.Interviewer,
-  IUser.Type.Student,
-  IUser.Type.Tutor,
-  IUser.Type.MediaProvider,
+  IUser.Role.SuperAdmin,
+  IUser.Role.RegularAdmin,
+  IUser.Role.Interviewer,
+  IUser.Role.Student,
+  IUser.Role.Tutor,
+  IUser.Role.MediaProvider,
 ];
 
 const fullRoles: Role[] = [unauthorized, ...authorizedRoles];
 
 const staff: Role[] = [
-  IUser.Type.SuperAdmin,
-  IUser.Type.RegularAdmin,
-  IUser.Type.Interviewer,
+  IUser.Role.SuperAdmin,
+  IUser.Role.RegularAdmin,
+  IUser.Role.Interviewer,
 ];
 
-const admins: Role[] = [IUser.Type.SuperAdmin, IUser.Type.RegularAdmin];
-const customers: Role[] = [IUser.Type.Tutor, IUser.Type.Student];
-const superAdmin = IUser.Type.SuperAdmin;
-const regAdmin = IUser.Type.RegularAdmin;
-const tutor = IUser.Type.Tutor;
-const interviewer = IUser.Type.Interviewer;
-const student = IUser.Type.Student;
-const provider = IUser.Type.MediaProvider;
+const admins: Role[] = [IUser.Role.SuperAdmin, IUser.Role.RegularAdmin];
+const customers: Role[] = [IUser.Role.Tutor, IUser.Role.Student];
+const superAdmin = IUser.Role.SuperAdmin;
+const regAdmin = IUser.Role.RegularAdmin;
+const tutor = IUser.Role.Tutor;
+const interviewer = IUser.Role.Interviewer;
+const student = IUser.Role.Student;
+const provider = IUser.Role.MediaProvider;
 
 const policies: Array<{
   roles: { allowed: Role[]; denied: Role[] };

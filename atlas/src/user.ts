@@ -6,7 +6,7 @@ export class User extends Base {
     name: string;
     email: string;
     password: string;
-    type: IUser.Type;
+    role: IUser.Role;
   }): Promise<void> {
     await this.client.post("/api/v1/user/", JSON.stringify(params));
   }
