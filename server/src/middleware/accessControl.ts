@@ -166,6 +166,7 @@ const policies: Array<Policy> = [
     roles: [authorized],
     route: "(/)api/v1/rating/:id(/)",
     methods: ["GET"],
+    ignore: { key: "id", value: "list" },
   },
   {
     roles: [regAdmin],
