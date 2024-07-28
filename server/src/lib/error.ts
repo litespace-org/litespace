@@ -56,7 +56,7 @@ export const errors = {
     code: ErrorCode.subscriptionNotFound,
   },
   alreadyRated: {
-    message: "Student already rated this tutor",
+    message: "User already rated",
     code: ErrorCode.AlreadyRated,
   },
   alreadySubscribed: {

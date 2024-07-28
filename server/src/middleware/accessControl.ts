@@ -159,37 +159,37 @@ const policies: Array<Policy> = [
   // ratings routes
   {
     roles: [tutor, student],
-    route: "(/)api/v1/rate(/)",
+    route: "(/)api/v1/rating(/)",
     methods: ["POST"],
   },
   {
     roles: [authorized],
-    route: "(/)api/v1/rate/:id(/)",
+    route: "(/)api/v1/rating/:id(/)",
     methods: ["GET"],
   },
   {
     roles: [regAdmin],
-    route: "(/)api/v1/rate/list(/)",
+    route: "(/)api/v1/rating/list(/)",
     methods: ["GET"],
   },
   {
     roles: [regAdmin, owner],
-    route: "(/)api/v1/rate/list/rater/:id(/)",
+    route: "(/)api/v1/rating/list/rater/:id(/)",
     methods: ["GET"],
   },
   {
     roles: [regAdmin, owner],
-    route: "(/)api/v1/rate/list/ratee/:id(/)",
+    route: "(/)api/v1/rating/list/ratee/:id(/)",
     methods: ["GET"],
   },
   {
     roles: [owner],
-    route: "(/)api/v1/rate/:id(/)",
+    route: "(/)api/v1/rating/:id(/)",
     methods: ["PUT"],
   },
   {
     roles: [regAdmin, owner],
-    route: "(/)api/v1/rate/:id(/)",
+    route: "(/)api/v1/rating/:id(/)",
     methods: ["DELETE"],
   },
   // reports routes

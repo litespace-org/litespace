@@ -251,7 +251,7 @@ exports.up = (pgm) => {
 
   // constraints
   pgm.createConstraint("ratings", "ratings-student-tutor", {
-    unique: [["student_id", "tutor_id"]],
+    unique: [["rater_id", "ratee_id"]],
   });
 
   pgm.createConstraint("rooms", "rooms-student-tutor", {

@@ -15,12 +15,11 @@ import dayjs from "@/lib/dayjs";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace1###");
-  const superAdmin = IUser.Type.SuperAdmin;
 
   const admin = await users.create({
     email: "admin@litespace.org",
     name: "LiteSpace Admin",
-    type: superAdmin,
+    type: IUser.Type.SuperAdmin,
     password,
   });
 
@@ -35,6 +34,13 @@ async function main(): Promise<void> {
     type: IUser.Type.Student,
     email: "student@litespace.org",
     name: "LiteSpace Student",
+    password,
+  });
+
+  const mediaProvider = await users.create({
+    type: IUser.Type.MediaProvider,
+    email: "media@litespace.org",
+    name: "LiteSpace Media Provider",
     password,
   });
 

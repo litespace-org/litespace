@@ -1,22 +1,35 @@
-import { ratings, tutors, users } from "@/models";
-import { IUser } from "@litespace/types";
-import { alreadyRated, forbidden, notfound, ratingNotFound } from "@/lib/error";
+import { ratings, users } from "@/models";
+import { alreadyRated, badRequest, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { isAdmin } from "@/lib/common";
 import { identityObject } from "@/validation/utils";
 import { enforceRequest } from "@/middleware/accessControl";
+import { IUser } from "@litespace/types";
+
+const rateeRoles = [IUser.Type.Tutor, IUser.Type.MediaProvider];
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
   const raterId = req.user.id;
+  const isTutor = req.user.type === IUser.Type.Tutor;
+  const isStudent = req.user.type === IUser.Type.Student;
   const { rateeId, value, feedback } = schema.http.rating.create.body.parse(
     req.body
   );
 
-  const exists = await users.exists(rateeId);
-  if (!exists) return next(notfound());
+  const ratee = await users.findById(rateeId);
+  if (!ratee) return next(notfound());
+  // Only "tutors" and "media providers" can be rated
+  if (!rateeRoles.includes(ratee.type)) return next(badRequest());
+  // Students can only rate tutors
+  if (isStudent && ratee.type !== IUser.Type.Tutor) return next(badRequest());
+  // Tutors can only rate media providers
+  if (isTutor && ratee.type !== IUser.Type.MediaProvider)
+    return next(badRequest());
 
   const rating = await ratings.findByEntities({
     rater: raterId,

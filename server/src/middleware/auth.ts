@@ -37,6 +37,14 @@ export const authorize = asyncHandler(
   }
 );
 
+export const authorized = asyncHandler(
+  async (req: Request, _res: Response, next: NextFunction) => {
+    const authenticated = req.isAuthenticated();
+    if (!authenticated) return next(forbidden());
+    return next();
+  }
+);
+
 export async function jwtAuthorization(req: Request, done: DoneCallback) {
   const token = req.query.token;
   if (!token || typeof token !== "string")
