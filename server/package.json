@@ -50,7 +50,6 @@
     "@litespace/types": "1.0.0",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",
-    "casbin": "^5.30.0",
     "colors": "^1.4.0",
     "connect-pg-simple": "^9.0.1",
     "cors": "^2.8.5",
@@ -71,6 +70,7 @@
     "pg": "^8.11.5",
     "pg-format": "^1.0.4",
     "socket.io": "^4.7.5",
+    "url-pattern": "^1.0.3",
     "zod": "^3.23.8"
   }
 }

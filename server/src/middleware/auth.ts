@@ -7,7 +7,7 @@ import { DoneCallback } from "passport";
 import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
-import { Enforcer } from "@/lib/casbin";
+import { enforce, Method, Role } from "@/lib/accessControl";
 
 declare global {
   namespace Express {
@@ -28,11 +28,10 @@ declare module "http" {
 
 export const authorize = asyncHandler(
   async (req: Request, _res: Response, next: NextFunction) => {
-    const enforcer = await Enforcer.instance();
-    const role = req.user?.type;
-    const method = req.method;
+    const role = req.user?.type || "unauthorize";
+    const method = req.method as Method;
     const route = req.originalUrl;
-    const allowed = await enforcer.enforce(role, route, method);
+    const allowed = await enforce({ role, route, method });
     if (!allowed) return next(forbidden());
     return next();
   }
