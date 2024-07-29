@@ -147,7 +147,7 @@ export class Tutors {
         email: "users.email",
         name: "users.name",
         photo: "users.photo",
-        type: "users.type",
+        role: "users.role",
         // birthday: "users.birthday",
         gender: "users.gender",
         online: "users.online",

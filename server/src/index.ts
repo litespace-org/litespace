@@ -89,7 +89,7 @@ app.use("/api/v1/coupon", routes.coupon);
 app.use("/api/v1/invite", routes.invite);
 app.use("/api/v1/report", routes.report);
 app.use("/api/v1/report/reply", routes.reportReply);
-app.use("/api/v1/media", routes.media);
+app.use("/api/v1/asset", routes.asset);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>

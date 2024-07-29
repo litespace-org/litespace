@@ -40,7 +40,7 @@ export class Users {
           "password"
           "name",
           "photo",
-          "type",
+          "role",
           "birthday",
           "gender",
           "online",
@@ -125,7 +125,7 @@ export class Users {
           "password",
           "name",
           "photo",
-          "type",
+          "role",
           "online",
           "created_at",
           "updated_at"
@@ -142,7 +142,7 @@ export class Users {
   ): Promise<IUser.Self | null> {
     const { rows } = await query<IUser.Row, [string, string]>(
       `
-        SELECT id, email, password, name, photo, type, online, created_at, updated_at
+        SELECT id, email, password, name, photo, role, online, created_at, updated_at
         FROM users
         WHERE
             email = $1

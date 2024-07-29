@@ -46,23 +46,31 @@ export const authorized = asyncHandler(
 );
 
 export async function jwtAuthorization(req: Request, done: DoneCallback) {
-  const token = req.query.token;
-  if (!token || typeof token !== "string")
-    throw new Error("Missing jwt authorization token");
+  try {
+    const token = req.query.token;
+    if (!token || typeof token !== "string")
+      throw new Error("Missing jwt authorization token");
 
-  const id = decodeAuthorizationToken(token);
-  const user = await users.findById(id);
+    const id = decodeAuthorizationToken(token);
+    const user = await users.findById(id);
 
-  if (!user) return done(new Error("User not found"));
-  return done(null, user);
+    if (!user) return done(new Error("User not found"));
+    return done(null, user);
+  } catch (error) {
+    done(error);
+  }
 }
 
 export async function localAuthorization(req: Request, done: DoneCallback) {
-  const credentials = schema.http.auth.localAuthorization.parse(req.body);
-  const user = await users.findByCredentials(
-    credentials.email,
-    hashPassword(credentials.password)
-  );
-  if (!user) return done(new Error("Invalid email or password"));
-  return done(null, user);
+  try {
+    const credentials = schema.http.auth.localAuthorization.parse(req.body);
+    const user = await users.findByCredentials(
+      credentials.email,
+      hashPassword(credentials.password)
+    );
+    if (!user) return done(new Error("Invalid email or password"));
+    return done(null, user);
+  } catch (error) {
+    done(error);
+  }
 }
