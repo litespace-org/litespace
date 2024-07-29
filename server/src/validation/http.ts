@@ -282,6 +282,12 @@ const reportReply = {
   },
 } as const;
 
+const assets = {
+  remove: {
+    params: zod.object({ name: string }),
+  },
+} as const;
+
 export default {
   user,
   auth,
@@ -297,4 +303,5 @@ export default {
   invite,
   report,
   reportReply,
+  assets,
 };
