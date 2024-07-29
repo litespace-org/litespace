@@ -10,6 +10,7 @@ import { Coupon } from "@/coupon";
 import { Invite } from "@/invite";
 import { Report } from "@/report";
 import { ReportReply } from "@/reportReply";
+import { Asset } from "@/asset";
 
 export class Atlas {
   public readonly user: User;
@@ -23,6 +24,7 @@ export class Atlas {
   public readonly invite: Invite;
   public readonly report: Report;
   public readonly reportReply: ReportReply;
+  public readonly asset: Asset;
 
   constructor(backend: Backend) {
     this.user = new User(backend);
@@ -36,5 +38,6 @@ export class Atlas {
     this.invite = new Invite(backend);
     this.report = new Report(backend);
     this.reportReply = new ReportReply(backend);
+    this.asset = new Asset(backend);
   }
 }
