@@ -1,6 +1,6 @@
-import { knex, query } from "@/models/query";
+import { knex, query, withFilter } from "@/models/query";
 import { first, isEmpty, merge } from "lodash";
-import { IUser } from "@litespace/types";
+import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
 
 export class Users {
@@ -116,9 +116,14 @@ export class Users {
     return rows.map((row) => this.from(row));
   }
 
-  async findAll(): Promise<IUser.Self[]> {
-    const rows = await knex<IUser.Row>(this.name).select("*");
-    return rows.map((row) => this.from(row));
+  async find(filter?: IFilter.Self): Promise<IUser.Self[]> {
+    // const rows = await knex<IUser.Row>(this.name).select("*");
+    // return rows.map((row) => this.from(row));
+
+    const builder = withFilter({ builder: knex<IUser.Row>(this.name), filter });
+    const result = await builder.then();
+
+    return [...result] as any;
   }
 
   async findByCredentials(

@@ -90,9 +90,12 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getMany(req: Request, res: Response, next: NextFunction) {
-  const filter = httpQueryFilter<keyof IUser.Row>(["id", "email"], req.query);
+  const filter = httpQueryFilter<keyof IUser.Row>(
+    ["id", "email", "created_at", "updated_at"],
+    req.query
+  );
   console.log({ filter });
-  const list = await users.findAll();
+  const list = await users.find(filter);
   res.status(200).json(list);
 }
 
