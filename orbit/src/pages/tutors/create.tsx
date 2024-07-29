@@ -1,5 +1,5 @@
-import { Create, useForm, useSelect } from "@refinedev/antd";
-import { Form, Input, Select } from "antd";
+import { Create, useForm } from "@refinedev/antd";
+import { Form, Input } from "antd";
 
 export const TutorCreate = () => {
   const { formProps, saveButtonProps } = useForm({});

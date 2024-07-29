@@ -4430,9 +4430,9 @@ __metadata:
     "@litespace/types": "npm:1.0.0"
     "@litespace/uilib": "npm:1.0.0"
     "@refinedev/antd": "npm:5.40.0"
-    "@refinedev/cli": "npm:^2.16.33"
-    "@refinedev/core": "npm:^4.51.0"
-    "@refinedev/devtools": "npm:^1.2.3"
+    "@refinedev/cli": "npm:2.16.36"
+    "@refinedev/core": "npm:4.53.0"
+    "@refinedev/devtools": "npm:1.2.6"
     "@refinedev/kbar": "npm:1.3.12"
     "@refinedev/react-router-v6": "npm:4.5.11"
     "@refinedev/simple-rest": "npm:5.0.8"
@@ -4816,15 +4816,6 @@ __metadata:
   version: 0.1.1
   resolution: "@one-ini/wasm@npm:0.1.1"
   checksum: 10c0/54700e055037f1a63bfcc86d24822203b25759598c2c3e295d1435130a449108aebc119c9c2e467744767dbe0b6ab47a182c61aa1071ba7368f5e20ab197ba65
-  languageName: node
-  linkType: hard
-
-"@ory/client@npm:^1.5.2":
-  version: 1.9.0
-  resolution: "@ory/client@npm:1.9.0"
-  dependencies:
-    axios: "npm:^1.6.1"
-  checksum: 10c0/22cf824adce397c54e1cfb95e39b9747cb52089fa3a7225a4e8697bebd165873e4664dadcf14d72dce5f9a4900c0e9f2983e570f58ced09151e24caeee4b9006
   languageName: node
   linkType: hard
 
@@ -5865,11 +5856,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/cli@npm:^2.16.33":
-  version: 2.16.33
-  resolution: "@refinedev/cli@npm:2.16.33"
+"@refinedev/cli@npm:2.16.36":
+  version: 2.16.36
+  resolution: "@refinedev/cli@npm:2.16.36"
   dependencies:
-    "@refinedev/devtools-server": "npm:1.1.31"
+    "@refinedev/devtools-server": "npm:1.1.34"
     boxen: "npm:^5.1.2"
     cardinal: "npm:^2.1.1"
     center-align: "npm:1.0.1"
@@ -5888,7 +5879,6 @@ __metadata:
     globby: "npm:^11.1.0"
     gray-matter: "npm:^4.0.3"
     handlebars: "npm:^4.7.7"
-    http-proxy-middleware: "npm:^2.0.6"
     inquirer: "npm:^8.2.5"
     inquirer-autocomplete-prompt: "npm:^2.0.0"
     jscodeshift: "npm:0.15.2"
@@ -5907,7 +5897,30 @@ __metadata:
     tslib: "npm:^2.6.2"
   bin:
     refine: dist/cli.cjs
-  checksum: 10c0/baf2714c34bc072acf0633277a8a79c2261f1270f335a110fc44245535edde3a3b23ca652fb0a68425f50ecf8e13718cf04566ca99cd6945b84e4cf612998cb3
+  checksum: 10c0/a6bf9d98a4cf98b8ff6ae6d14a085b5ed3ff31bfe4c60274bba642cf727665f452d21deab4c3fbd50ab849f2f63748e889ff089ec0f551693e76545093c68d3a
+  languageName: node
+  linkType: hard
+
+"@refinedev/core@npm:4.53.0":
+  version: 4.53.0
+  resolution: "@refinedev/core@npm:4.53.0"
+  dependencies:
+    "@refinedev/devtools-internal": "npm:1.1.13"
+    "@tanstack/react-query": "npm:^4.10.1"
+    lodash: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.21"
+    papaparse: "npm:^5.3.0"
+    pluralize: "npm:^8.0.0"
+    qs: "npm:^6.10.1"
+    tslib: "npm:^2.6.2"
+    warn-once: "npm:^0.1.0"
+  peerDependencies:
+    "@tanstack/react-query": ^4.10.1
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/aac9a4260b5a0141172d2dc0126514f1f6376053d7be3e70604f29a8f4e3da85de7520288269356606ba20652b129c2988b5377f10036755d991dd11c7be5090
   languageName: node
   linkType: hard
 
@@ -5950,12 +5963,27 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/devtools-server@npm:1.1.31":
-  version: 1.1.31
-  resolution: "@refinedev/devtools-server@npm:1.1.31"
+"@refinedev/devtools-internal@npm:1.1.13":
+  version: 1.1.13
+  resolution: "@refinedev/devtools-internal@npm:1.1.13"
   dependencies:
-    "@ory/client": "npm:^1.5.2"
-    "@refinedev/devtools-shared": "npm:1.1.9"
+    "@refinedev/devtools-shared": "npm:1.1.11"
+    "@tanstack/react-query": "npm:^4.10.1"
+    error-stack-parser: "npm:^2.1.4"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/9d33413cdc0282213c37a8adb462f271fc83a1a68771ef4d3c20b1e03185f06d9f6b00480e6b75a5093f02805be4847c3646102a9a5d2d6163dc368498b5eb3d
+  languageName: node
+  linkType: hard
+
+"@refinedev/devtools-server@npm:1.1.34":
+  version: 1.1.34
+  resolution: "@refinedev/devtools-server@npm:1.1.34"
+  dependencies:
+    "@refinedev/devtools-shared": "npm:1.1.11"
     body-parser: "npm:^1.20.2"
     boxen: "npm:^5.1.2"
     chalk: "npm:^4.1.2"
@@ -5966,7 +5994,7 @@ __metadata:
     fs-extra: "npm:^10.1.0"
     globby: "npm:^11.1.0"
     gray-matter: "npm:^4.0.3"
-    http-proxy-middleware: "npm:^2.0.6"
+    http-proxy-middleware: "npm:^3.0.0"
     jscodeshift: "npm:0.15.2"
     lodash: "npm:^4.17.21"
     lodash-es: "npm:^4.17.21"
@@ -5984,7 +6012,22 @@ __metadata:
     react-dom: ^17.0.0 || ^18.0.0
   bin:
     refine-devtools: dist/cli.cjs
-  checksum: 10c0/7f34903abf7586fa0d023cfc1c1aac1c9e2ddd62c7292f486153bc6f884bbe14fe4057c84d1f1bd6780b2bef49b644cf618a73b3cea9aa175a167f2adcc67bd1
+  checksum: 10c0/64dc92ee6aa10982c5586ee1669731ef8e8640e4c8d34a64777b576291dd5b2e3d089bb0f5d647a0b673ed96561ccd1afec7338595991e57e46ec9a201927237
+  languageName: node
+  linkType: hard
+
+"@refinedev/devtools-shared@npm:1.1.11":
+  version: 1.1.11
+  resolution: "@refinedev/devtools-shared@npm:1.1.11"
+  dependencies:
+    "@tanstack/react-query": "npm:^4.10.1"
+    error-stack-parser: "npm:^2.1.4"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: 10c0/4b5a81b6a7bf3e44e46deb3eecf5cf4816ff442ac841466e205be144db9864df7026256a62f509240752faf304e23a0d8c8280ca853e45324f6d8894d4eaab8e
   languageName: node
   linkType: hard
 
@@ -6003,24 +6046,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/devtools@npm:^1.2.3":
-  version: 1.2.3
-  resolution: "@refinedev/devtools@npm:1.2.3"
+"@refinedev/devtools@npm:1.2.6":
+  version: 1.2.6
+  resolution: "@refinedev/devtools@npm:1.2.6"
   dependencies:
     "@aliemir/dom-to-fiber-utils": "npm:^0.4.0"
-    "@refinedev/devtools-shared": "npm:1.1.9"
+    "@refinedev/devtools-shared": "npm:1.1.11"
     error-stack-parser: "npm:^2.1.4"
     lodash: "npm:^4.17.21"
     lodash-es: "npm:^4.17.21"
   peerDependencies:
-    "@refinedev/cli": 2.16.33
+    "@refinedev/cli": 2.16.36
     "@refinedev/core": ^4.46.1
-    "@refinedev/devtools-server": 1.1.31
+    "@refinedev/devtools-server": 1.1.34
     "@types/react": ^17.0.0 || ^18.0.0
     "@types/react-dom": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10c0/dd2b2c365de05d213effd837b76a91815eba7c68a8ec061f567c7418edf87811b9e752c6249d2985e6f6987854546ad5493990624b9ead803543cc43a042fd70
+  checksum: 10c0/110bcd0fa576a65f170fd19e873f52c47d256d4383d5919b732ffa34e4b7c346c00f86700e151a00f4593092bbed534bec90b1e8eefd39f8f0fc94a9cd1a5ae2
   languageName: node
   linkType: hard
 
@@ -8059,7 +8102,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-proxy@npm:^1.17.8":
+"@types/http-proxy@npm:^1.17.10":
   version: 1.17.14
   resolution: "@types/http-proxy@npm:1.17.14"
   dependencies:
@@ -10076,7 +10119,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:^1.6.1, axios@npm:^1.6.2, axios@npm:^1.7.2":
+"axios@npm:^1.6.2, axios@npm:^1.7.2":
   version: 1.7.2
   resolution: "axios@npm:1.7.2"
   dependencies:
@@ -14638,21 +14681,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"http-proxy-middleware@npm:^2.0.6":
-  version: 2.0.6
-  resolution: "http-proxy-middleware@npm:2.0.6"
+"http-proxy-middleware@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "http-proxy-middleware@npm:3.0.0"
   dependencies:
-    "@types/http-proxy": "npm:^1.17.8"
+    "@types/http-proxy": "npm:^1.17.10"
+    debug: "npm:^4.3.4"
     http-proxy: "npm:^1.18.1"
     is-glob: "npm:^4.0.1"
     is-plain-obj: "npm:^3.0.0"
-    micromatch: "npm:^4.0.2"
-  peerDependencies:
-    "@types/express": ^4.17.13
-  peerDependenciesMeta:
-    "@types/express":
-      optional: true
-  checksum: 10c0/25a0e550dd1900ee5048a692e0e9b2b6339d06d487a705d90c47e359e9c6561d648cd7862d001d090e651c9efffa1b6e5160fcf1f299b5fa4935f76e9754eb11
+    micromatch: "npm:^4.0.5"
+  checksum: 10c0/a3da2e9211483834384c27ad37dcff00dc8ea4990bb791f1383d3a5951f28f77fdc41dbaf2501a6607dcfca3dacac11e43bda22c4f68224abe532cbab8983ede
   languageName: node
   linkType: hard
 
