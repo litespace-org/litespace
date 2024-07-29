@@ -1,5 +1,5 @@
 import { users } from "@/models";
-import { IFilter, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
   badRequest,
@@ -14,10 +14,11 @@ import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
-import { httpQueryFilter, identityObject } from "@/validation/utils";
+import { identityObject } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
+import { httpQueryFilter } from "@/validation/http";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, role } = schema.http.user.create.parse(
@@ -91,7 +92,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 
 async function getMany(req: Request, res: Response, next: NextFunction) {
   const filter = httpQueryFilter<keyof IUser.Row>(
-    ["id", "email", "created_at", "updated_at"],
+    ["id", "email", "name", "created_at", "updated_at"],
     req.query
   );
   console.log({ filter });

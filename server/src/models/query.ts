@@ -19,6 +19,13 @@ export async function query<T extends QueryResultRow, V extends unknown[]>(
   return await pool.query(query, values);
 }
 
+function asSearchTerm(term: string, match: IFilter.Match): string {
+  if (match === IFilter.Match.Loose) return `%${term}%`;
+  if (match === IFilter.Match.Suffix) return `%${term}`;
+  if (match === IFilter.Match.Prefix) return `${term}%`;
+  return term;
+}
+
 export function withFilter<T extends Knex.QueryBuilder>({
   builder,
   filter,
@@ -28,8 +35,12 @@ export function withFilter<T extends Knex.QueryBuilder>({
   filter?: IFilter.Self;
   defaults?: {
     limit?: number;
-    select?: string | string[];
     order?: IFilter.OrderDirection;
+    search?: {
+      columns?: string[];
+      sensitive?: boolean;
+      match?: IFilter.Match;
+    };
   };
 }): T {
   if (filter?.page) {
@@ -50,7 +61,18 @@ export function withFilter<T extends Knex.QueryBuilder>({
     builder.orderBy(defs);
   }
 
-  builder.select(filter?.select || defaults?.select || "*");
+  if (filter?.search) {
+    const columns = filter.columns || defaults?.search?.columns || [];
+    const sensitive = filter.sensitive || defaults?.search?.sensitive || false;
+    const match =
+      filter.match || defaults?.search?.match || IFilter.Match.Loose;
+
+    for (const column of columns) {
+      const term = asSearchTerm(filter.search, match);
+      if (sensitive) builder.orWhereLike(column, term);
+      else builder.orWhereILike(column, term);
+    }
+  }
 
   return builder;
 }

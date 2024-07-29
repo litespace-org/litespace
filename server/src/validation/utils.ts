@@ -29,6 +29,10 @@ export const number = zod.coerce.number();
 
 export const boolean = zod.boolean();
 
+export const jsonBoolean = zod
+  .custom<"true" | "false">((value) => value === "true" || value === "false")
+  .transform((value) => value === "true");
+
 export const optionalString = zod.optional(string);
 
 export const weekday = zod.coerce.number().min(-1).max(6);
@@ -68,25 +72,3 @@ export const subscriptionPeriod = zod.enum([
 ]);
 
 export const identityObject = zod.object({ id });
-
-export function httpQueryFilter<T extends keyof Record<string, unknown>>(
-  fields: [T, ...T[]],
-  value: unknown
-): IFilter.Self {
-  return zod
-    .object({
-      page: zod.optional(zod.coerce.number().positive().min(1).int()),
-      size: zod.optional(zod.coerce.number().positive().min(1).int()),
-      select: zod.optional(zod.array(zod.enum(fields))),
-      order: zod.optional(zod.array(zod.enum(fields))),
-      direction: zod.optional(
-        zod.array(
-          zod.enum([
-            IFilter.OrderDirection.Ascending,
-            IFilter.OrderDirection.Descending,
-          ])
-        )
-      ),
-    })
-    .parse(value);
-}

@@ -21,8 +21,9 @@ import {
   number,
   boolean,
   role,
+  jsonBoolean,
 } from "@/validation/utils";
-import { IUser } from "@litespace/types";
+import { IFilter, IUser } from "@litespace/types";
 
 const user = {
   create: zod.object(
@@ -287,6 +288,38 @@ const assets = {
     params: zod.object({ name: string }),
   },
 } as const;
+
+export function httpQueryFilter<T extends keyof Record<string, unknown>>(
+  fields: [T, ...T[]],
+  value: unknown
+): IFilter.Self {
+  return zod
+    .object({
+      page: zod.optional(zod.coerce.number().positive().min(1).int()),
+      size: zod.optional(zod.coerce.number().positive().min(1).int()),
+      order: zod.optional(zod.array(zod.enum(fields))),
+      search: zod.optional(zod.string()),
+      columns: zod.optional(zod.array(zod.enum(fields))),
+      sensitive: zod.optional(jsonBoolean),
+      match: zod.optional(
+        zod.enum([
+          IFilter.Match.Exact,
+          IFilter.Match.Prefix,
+          IFilter.Match.Suffix,
+          IFilter.Match.Loose,
+        ])
+      ),
+      direction: zod.optional(
+        zod.array(
+          zod.enum([
+            IFilter.OrderDirection.Ascending,
+            IFilter.OrderDirection.Descending,
+          ])
+        )
+      ),
+    })
+    .parse(value);
+}
 
 export default {
   user,
