@@ -54,6 +54,7 @@ import {
   MyScheduleList,
   MyScheduleShow,
 } from "@/pages/my-schedule";
+import { AssetList, AssetShow } from "@/pages/assets";
 import { ColorModeContextProvider } from "@/contexts/color-mode";
 import { Header } from "@/components/header";
 import { Login } from "@/pages/login";
@@ -70,7 +71,7 @@ function App() {
             <DevtoolsProvider>
               <Refine
                 dataProvider={dataProvider}
-                accessControlProvider={accessControlProvider}
+                // accessControlProvider={accessControlProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerBindings}
                 authProvider={authProvider}
@@ -143,6 +144,12 @@ function App() {
                     list: "/my-interviews",
                     show: "/my-interviews/show/:id",
                     meta: { canDelete: true, label: "My Interviews" },
+                  },
+                  {
+                    name: Resource.Assets,
+                    list: "/assets",
+                    show: "/assets/show/:id",
+                    meta: { canDelete: true, label: "Server Assets" },
                   },
                 ]}
                 options={{
@@ -230,6 +237,10 @@ function App() {
                     <Route path="/my-interviews">
                       <Route index element={<MyInterviewList />} />
                       <Route path="show/:id" element={<MyInterviewShow />} />
+                    </Route>
+                    <Route path="/assets">
+                      <Route index element={<AssetList />} />
+                      <Route path="show/:id" element={<AssetShow />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

@@ -56,7 +56,7 @@ export class Auth extends Base {
     });
   }
 
-  async logout() {
+  async logout(): Promise<void> {
     await this.client.post("/api/v1/auth/logout");
   }
 }

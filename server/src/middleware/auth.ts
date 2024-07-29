@@ -28,7 +28,7 @@ declare module "http" {
 
 export const authorize = asyncHandler(
   async (req: Request, _res: Response, next: NextFunction) => {
-    const role = req.user?.role || "unauthorize";
+    const role = req.user?.role || "unauthorized";
     const method = req.method as Method;
     const route = req.originalUrl;
     const allowed = enforce({ role, route, method });

@@ -1,6 +1,8 @@
 import { IUser } from "@litespace/types";
 import { Request } from "express";
 import UrlPattern from "url-pattern";
+import "colors";
+import { isProduction } from "@/constants";
 
 const owner = "owner";
 const authorized = "authorized";
@@ -16,7 +18,7 @@ export type Role = `${IUser.Role}` | "owner" | "unauthorized" | "authorized";
 export type Method = "POST" | "GET" | "PUT" | "DELETE";
 
 function roleMatch(requestRole: Role, policyRoles: Role[], isOwner?: boolean) {
-  const own = policyRoles.includes(owner) && isOwner;
+  const own = policyRoles.includes(owner) && !!isOwner;
   const authorized =
     policyRoles.includes("authorized") && requestRole !== "unauthorized";
   const unauthorized = policyRoles.includes("unauthorized");
@@ -317,15 +319,24 @@ export function enforce(request: {
       roleMatch(request.role, policy.roles, request.isOwner) &&
       routeMatch(request.route, policy.route, policy.ignore) &&
       methodMatch(request.method, policy.methods)
-    )
+    ) {
+      if (!isProduction)
+        console.log(
+          [
+            "Access Control: ",
+            `Matched policy: ${policy.roles.join(", ")} - ${policy.methods.join(", ")} - ${policy.route}`,
+            `Request: ${request.role} - ${request.method} ${request.route} - ${request.isOwner}`,
+          ].join("\n").cyan
+        );
       return true;
+    }
   }
 
   return false;
 }
 
 export function enforceRequest(request: Request, isOwner?: boolean): boolean {
-  const role = request.user?.role || "unauthorize";
+  const role = request.user?.role || unauthorized;
   const method = request.method as Method;
   const route = request.originalUrl;
   return enforce({ role, method, route, isOwner });

@@ -29,6 +29,7 @@ export enum Resource {
   Invites = "invites",
   Reports = "reports",
   ReportReplies = "ReportReplies",
+  Assets = "assets",
 }
 
 const empty = { data: null };
@@ -115,7 +116,7 @@ export const dataProvider: DataProvider = {
         //     )
         //   : undefined,
         gender: selectUpdatedOrNone(prev.gender, updated.gender),
-        type: selectUpdatedOrNone(prev.type, updated.type),
+        role: selectUpdatedOrNone(prev.role, updated.role),
       });
       return { data: as.casted(null) };
     }
@@ -458,40 +459,51 @@ export const dataProvider: DataProvider = {
     throw new Error("Not implemented");
   },
   deleteOne: async ({ resource, id }) => {
-    const resourceId = as.int(id);
-
     if (resource === Resource.MySchedule) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.slot.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.Tutors) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.tutor.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.Plans) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.plan.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.Coupons) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.coupon.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.Invites) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.invite.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.Reports) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.report.delete(resourceId);
       return as.casted(empty);
     }
 
     if (resource === Resource.ReportReplies) {
+      const resourceId = zod.coerce.number().parse(id);
       await atlas.reportReply.delete(resourceId);
+      return as.casted(empty);
+    }
+
+    if (resource === Resource.Assets) {
+      const name = zod.string().parse(id);
+      await atlas.asset.delete(name);
       return as.casted(empty);
     }
 
@@ -553,9 +565,19 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.ReportReplies && meta && meta.reportId) {
-      const reportId = as.casted<number>(meta.reportId);
+      const { reportId } = zod
+        .object({ reportId: zod.coerce.number() })
+        .parse(meta);
       const list = await atlas.reportReply.findByReportId(reportId);
       return { data: as.casted(list), total: list.length };
+    }
+
+    if (resource === Resource.Assets) {
+      const list = await atlas.asset.find();
+      return {
+        data: list.map((name, index) => ({ name, index: index + 1 })),
+        total: list.length,
+      };
     }
 
     throw new Error("Not implemented");

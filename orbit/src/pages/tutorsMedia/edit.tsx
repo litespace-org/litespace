@@ -5,7 +5,7 @@ import {
   ReloadOutlined,
   UploadOutlined,
 } from "@ant-design/icons";
-import { asUrl } from "@litespace/atlas";
+import { asAssetUrl } from "@litespace/atlas";
 import { ITutor } from "@litespace/types";
 import { Edit, ImageField } from "@refinedev/antd";
 import { useOne, useResourceParams, useUpdate } from "@refinedev/core";
@@ -70,14 +70,14 @@ export const TutorMediaEdit = () => {
   const photoUrl = useMemo(() => {
     if (dropPhoto) return undefined;
     if (photo) return URL.createObjectURL(photo);
-    if (media?.photo) return asUrl(backend, media.photo);
+    if (media?.photo) return asAssetUrl(backend, media.photo);
     return undefined;
   }, [dropPhoto, media?.photo, photo]);
 
   const videoUrl = useMemo(() => {
     if (dropVideo) return undefined;
     if (video) return URL.createObjectURL(video);
-    if (media?.video) return asUrl(backend, media.video);
+    if (media?.video) return asAssetUrl(backend, media.video);
     return undefined;
   }, [media?.video, video, dropVideo]);
 

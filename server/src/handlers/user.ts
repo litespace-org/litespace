@@ -17,6 +17,7 @@ import { sendUserVerificationEmail } from "@/lib/email";
 import { identityObject } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
+import { enforceRequest } from "@/middleware/accessControl";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, role } = schema.http.user.create.parse(
@@ -93,7 +94,9 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(list);
 }
 
-async function findMe(req: Request, res: Response) {
+async function findMe(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
   res.status(200).json(req.user);
 }
 
