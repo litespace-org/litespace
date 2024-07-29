@@ -117,22 +117,7 @@ export class Users {
   }
 
   async findAll(): Promise<IUser.Self[]> {
-    const { rows } = await query<IUser.Row, []>(
-      `
-      SELECT
-          "id",
-          "email",
-          "password",
-          "name",
-          "photo",
-          "role",
-          "online",
-          "created_at",
-          "updated_at"
-      FROM users;
-      `
-    );
-
+    const rows = await knex<IUser.Row>(this.name).select("*");
     return rows.map((row) => this.from(row));
   }
 

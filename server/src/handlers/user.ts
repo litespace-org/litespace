@@ -1,5 +1,5 @@
 import { users } from "@/models";
-import { IUser } from "@litespace/types";
+import { IFilter, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
   badRequest,
@@ -14,7 +14,7 @@ import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
-import { identityObject } from "@/validation/utils";
+import { httpQueryFilter, identityObject } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
@@ -90,6 +90,8 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getMany(req: Request, res: Response, next: NextFunction) {
+  const filter = httpQueryFilter<keyof IUser.Row>(["id", "email"], req.query);
+  console.log({ filter });
   const list = await users.findAll();
   res.status(200).json(list);
 }

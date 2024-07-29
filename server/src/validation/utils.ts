@@ -1,5 +1,12 @@
 import { passwordRegex } from "@/constants";
-import { IUser, ISlot, ISubscription, ICall } from "@litespace/types";
+import {
+  IUser,
+  ISlot,
+  ISubscription,
+  ICall,
+  IFilter,
+  ITutor,
+} from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -61,3 +68,25 @@ export const subscriptionPeriod = zod.enum([
 ]);
 
 export const identityObject = zod.object({ id });
+
+export function httpQueryFilter<T extends keyof Record<string, unknown>>(
+  fields: [T, ...T[]],
+  value: unknown
+): IFilter.Self {
+  return zod
+    .object({
+      page: zod.optional(zod.coerce.number().positive().min(1).int()),
+      size: zod.optional(zod.coerce.number().positive().min(1).int()),
+      select: zod.optional(zod.array(zod.enum(fields))),
+      order: zod.optional(zod.array(zod.enum(fields))),
+      direction: zod.optional(
+        zod.array(
+          zod.enum([
+            IFilter.OrderDirection.Ascending,
+            IFilter.OrderDirection.Descending,
+          ])
+        )
+      ),
+    })
+    .parse(value);
+}
