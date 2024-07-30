@@ -1,5 +1,7 @@
 export type Nullable<T> = T | null;
 
+export type NonEmptyList<T> = [T, ...T[]];
+
 export type RecordAttributes = {
   createdAt: Date;
   createdById: number;

@@ -11,12 +11,14 @@ import { Request, Response } from "express";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { IUser } from "@litespace/types";
+import { IUser, NonEmptyList } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { sendUserVerificationEmail } from "@/lib/email";
 import { uploadSingle } from "@/lib/media";
 import { email, identityObject } from "@/validation/utils";
 import { FileType } from "@/constants";
+import { enforceRequest } from "@/middleware/accessControl";
+import { httpQueryFilter } from "@/validation/http";
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -72,8 +74,15 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(tutor);
 }
 
-async function getTutors(req: Request, res: Response) {
-  const list = await tutors.findAll();
+async function getTutors(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const filter = httpQueryFilter(
+    tutors.columns.filterable as NonEmptyList<string>,
+    req.query
+  );
+  const list = await tutors.find(filter);
   res.status(200).json(list);
 }
 

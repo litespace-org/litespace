@@ -24,7 +24,15 @@ function asSqlString<T extends { toString(): string }>(value: T): string {
 }
 
 function asSqlColumn<T extends { toString(): string }>(value: T): string {
-  return `"${value.toString()}"`;
+  const wrap = (value: string) => `"${value}"`;
+  const [first, second] = value.toString().split(".");
+  if (!second) return wrap(first);
+  return [wrap(first), wrap(second)].join(".");
+}
+
+export function asTableColumn(value: string): string {
+  const [table, column] = value.split(".");
+  return [asSqlColumn(table), asSqlColumn(column)].join(".");
 }
 
 function asSearchTerm(term: string, match: IFilter.Match): string {
@@ -51,8 +59,6 @@ export function withFilter<T extends Knex.QueryBuilder>({
     };
   };
 }): T {
-  console.log({ filter });
-
   if (filter?.page) {
     const limit = filter?.size || defaults?.limit || 10;
     const offset = limit * (filter.page - 1);

@@ -1,9 +1,51 @@
-import { knex } from "@/models/query";
-import { first, isEmpty } from "lodash";
-import { IUser, ITutor } from "@litespace/types";
+import { asTableColumn, knex, withFilter } from "@/models/query";
+import { first, isEmpty, omit } from "lodash";
+import { IUser, ITutor, IFilter } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";
 
+type FullTutorFields = Omit<ITutor.FullTutor, "hasPassword"> & {
+  password: string;
+};
+
+type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
+
+const fullTutorFields: FullTutorFieldsMap = {
+  id: "users.id",
+  email: "users.email",
+  name: "users.name",
+  photo: "users.photo",
+  role: "users.role",
+  password: "users.password",
+  birthYear: "users.birth_year",
+  gender: "users.gender",
+  online: "users.online",
+  verified: "users.verified",
+  creditScore: "users.credit_score",
+  createdAt: "users.created_at",
+  updatedAt: "users.updated_at",
+  metaUpdatedAt: "tutors.updated_at",
+  bio: "tutors.bio",
+  about: "tutors.about",
+  video: "tutors.video",
+  activated: "tutors.activated",
+  activatedBy: "tutors.activated_by",
+  passedInterview: "tutors.passed_interview",
+  interviewUrl: "tutors.interview_url",
+  mediaProviderId: "tutors.media_provider_id",
+} as const;
+
 export class Tutors {
+  table = "tutors";
+  columns: {
+    fullTutorFields: FullTutorFieldsMap;
+    filterable: Array<keyof FullTutorFields>;
+  } = {
+    fullTutorFields,
+    filterable: Object.values(omit(fullTutorFields, "password")) as Array<
+      keyof FullTutorFields
+    >,
+  };
+
   async create(
     user: IUser.Credentials & { name: string }
   ): Promise<ITutor.FullTutor> {
@@ -109,8 +151,12 @@ export class Tutors {
     return !isEmpty(rows);
   }
 
-  async findAll(): Promise<ITutor.FullTutor[]> {
-    return await this.getSelectQuery();
+  async find(filter?: IFilter.Self): Promise<ITutor.FullTutor[]> {
+    return await withFilter({
+      builder: this.getSelectQuery(),
+      filter,
+      defaults: { search: { columns: this.columns.filterable } },
+    }).then();
   }
 
   async findTutorsMedia(): Promise<ITutor.TutorMedia[]> {

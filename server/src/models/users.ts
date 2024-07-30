@@ -132,13 +132,12 @@ export class Users {
   }
 
   async find(filter?: IFilter.Self): Promise<IUser.Self[]> {
-    const builder = withFilter({
+    const rows = await withFilter({
       builder: knex<IUser.Row>(this.table),
       filter,
-    });
-    const result = await builder.then();
+    }).then();
 
-    return [...result] as any;
+    return rows.map((row) => this.from(row));
   }
 
   async findByCredentials(
