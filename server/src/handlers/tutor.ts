@@ -80,7 +80,7 @@ async function getTutors(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const filter = httpQueryFilter(
-    tutors.columns.filterable as NonEmptyList<string>,
+    tutors.columns.fullTutorFields.filterable as NonEmptyList<string>,
     req.query
   );
 
@@ -107,8 +107,20 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getTutorsMedia(req: Request, res: Response, next: NextFunction) {
-  const list = await tutors.findTutorsMedia();
-  res.status(200).json(list);
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const filter = httpQueryFilter(
+    tutors.columns.tutorMediaFields.filterable as NonEmptyList<string>,
+    req.query
+  );
+
+  const [list, total] = await Promise.all([
+    tutors.findTutorsMedia(filter),
+    count(tutors.table),
+  ]);
+
+  res.status(200).json({ list, total });
 }
 
 async function getTutorMediaById(

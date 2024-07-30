@@ -3,11 +3,11 @@ import { first, isEmpty, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";
 
+type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
+type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 type FullTutorFields = Omit<ITutor.FullTutor, "hasPassword"> & {
   password: string;
 };
-
-type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 
 const fullTutorFields: FullTutorFieldsMap = {
   id: "users.id",
@@ -34,16 +34,38 @@ const fullTutorFields: FullTutorFieldsMap = {
   mediaProviderId: "tutors.media_provider_id",
 } as const;
 
+const tutorMediaFields: TutorMediaFieldsMap = {
+  id: "users.id",
+  email: "users.email",
+  name: "users.name",
+  photo: "users.photo",
+  video: "tutors.video",
+} as const;
+
 export class Tutors {
   table = "tutors";
   columns: {
-    fullTutorFields: FullTutorFieldsMap;
-    filterable: Array<keyof FullTutorFields>;
+    fullTutorFields: {
+      map: FullTutorFieldsMap;
+      filterable: Array<keyof FullTutorFieldsMap>;
+    };
+    tutorMediaFields: {
+      map: TutorMediaFieldsMap;
+      filterable: Array<keyof TutorMediaFieldsMap>;
+    };
   } = {
-    fullTutorFields,
-    filterable: Object.values(omit(fullTutorFields, "password")) as Array<
-      keyof FullTutorFields
-    >,
+    fullTutorFields: {
+      map: fullTutorFields,
+      filterable: Object.values(omit(fullTutorFields, "password")) as Array<
+        keyof FullTutorFields
+      >,
+    },
+    tutorMediaFields: {
+      map: tutorMediaFields,
+      filterable: Object.values(tutorMediaFields) as Array<
+        keyof TutorMediaFieldsMap
+      >,
+    },
   };
 
   async create(
@@ -137,12 +159,12 @@ export class Tutors {
   }
 
   async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
-    const tutors = await this.getSelectQuery().where("email", email).limit(1);
+    const tutors = await this.fullTutorQuery().where("email", email).limit(1);
     return first(tutors) || null;
   }
 
   async findById(id: number): Promise<ITutor.FullTutor | null> {
-    const tutors = await this.getSelectQuery().where("tutors.id", id).limit(1);
+    const tutors = await this.fullTutorQuery().where("tutors.id", id).limit(1);
     return first(tutors) || null;
   }
 
@@ -153,62 +175,40 @@ export class Tutors {
 
   async find(filter?: IFilter.Self): Promise<ITutor.FullTutor[]> {
     return await withFilter({
-      builder: this.getSelectQuery(),
+      builder: this.fullTutorQuery(),
+      defaults: {
+        search: { columns: this.columns.fullTutorFields.filterable },
+      },
       filter,
-      defaults: { search: { columns: this.columns.filterable } },
     }).then();
   }
 
-  async findTutorsMedia(): Promise<ITutor.TutorMedia[]> {
-    return await knex<IUser.Row>("users")
-      .select<ITutor.TutorMedia[]>({
-        id: "users.id",
-        email: "users.email",
-        name: "users.name",
-        photo: "users.photo",
-        video: "tutors.video",
-      })
+  async findTutorsMedia(filter?: IFilter.Self): Promise<ITutor.TutorMedia[]> {
+    const builder = knex<IUser.Row>("users")
+      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
       .innerJoin("tutors", "users.id", "tutors.id");
+
+    return withFilter({
+      builder,
+      filter,
+      defaults: {
+        search: { columns: this.columns.tutorMediaFields.filterable },
+      },
+    });
   }
 
   async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
     const list = await knex<IUser.Row>("users")
-      .select<ITutor.TutorMedia[]>({
-        id: "users.id",
-        email: "users.email",
-        name: "users.name",
-        photo: "users.photo",
-        video: "tutors.video",
-      })
+      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
       .innerJoin("tutors", "users.id", "tutors.id")
       .where("users.id", id);
 
     return first(list) || null;
   }
 
-  getSelectQuery() {
+  fullTutorQuery() {
     return knex
-      .select<ITutor.FullTutor[]>({
-        id: "users.id",
-        email: "users.email",
-        name: "users.name",
-        photo: "users.photo",
-        role: "users.role",
-        // birthday: "users.birthday",
-        gender: "users.gender",
-        online: "users.online",
-        createdAt: "users.created_at",
-        updatedAt: "users.updated_at",
-        metaUpdatedAt: "tutors.updated_at",
-        bio: "tutors.bio",
-        about: "tutors.about",
-        video: "tutors.video",
-        activated: "tutors.activated",
-        activatedBy: "tutors.activated_by",
-        passedInterview: "tutors.passed_interview",
-        interviewUrl: "tutors.interview_url",
-        meidaProviderId: "tutors.media_provider_id",
-      })
+      .select<ITutor.FullTutor[]>(this.columns.fullTutorFields.map)
       .from<IUser.Row>("users")
       .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")
       .clone();
