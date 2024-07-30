@@ -19,6 +19,14 @@ export async function query<T extends QueryResultRow, V extends unknown[]>(
   return await pool.query(query, values);
 }
 
+function asSqlString<T extends { toString(): string }>(value: T): string {
+  return `'${value.toString()}'`;
+}
+
+function asSqlColumn<T extends { toString(): string }>(value: T): string {
+  return `"${value.toString()}"`;
+}
+
 function asSearchTerm(term: string, match: IFilter.Match): string {
   if (match === IFilter.Match.Loose) return `%${term}%`;
   if (match === IFilter.Match.Suffix) return `%${term}`;
@@ -43,6 +51,8 @@ export function withFilter<T extends Knex.QueryBuilder>({
     };
   };
 }): T {
+  console.log({ filter });
+
   if (filter?.page) {
     const limit = filter?.size || defaults?.limit || 10;
     const offset = limit * (filter.page - 1);
@@ -68,9 +78,14 @@ export function withFilter<T extends Knex.QueryBuilder>({
       filter.match || defaults?.search?.match || IFilter.Match.Loose;
 
     for (const column of columns) {
-      const term = asSearchTerm(filter.search, match);
-      if (sensitive) builder.orWhereLike(column, term);
-      else builder.orWhereILike(column, term);
+      const term = asSqlString(asSearchTerm(filter.search, match));
+      const col = asSqlColumn(column);
+      /**
+       * We cannot use `LIKE` or `ILIKE` on enum based columns. When peforming
+       * text-search, we should cast all columns to `TEXT`.
+       */
+      if (sensitive) builder.orWhereRaw(`${col} :: TEXT LIKE ${term}`);
+      else builder.orWhereRaw(`${col} :: TEXT ILIKE ${term}`);
     }
   }
 

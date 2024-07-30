@@ -4,7 +4,22 @@ import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
 
 export class Users {
-  name = "users";
+  table = "users";
+  columns: { filterable: [keyof IUser.Row, ...Array<keyof IUser.Row>] } = {
+    filterable: [
+      "id",
+      "email",
+      "name",
+      "role",
+      "birth_year",
+      "gender",
+      "online",
+      "verified",
+      "credit_score",
+      "created_at",
+      "updated_at",
+    ],
+  };
 
   async create(user: {
     email: string;
@@ -99,7 +114,7 @@ export class Users {
   }
 
   async exists(id: number): Promise<boolean> {
-    const rows = await knex<IUser.Row>(this.name).select("id").where("id", id);
+    const rows = await knex<IUser.Row>(this.table).select("id").where("id", id);
     return !isEmpty(rows);
   }
 
@@ -117,10 +132,10 @@ export class Users {
   }
 
   async find(filter?: IFilter.Self): Promise<IUser.Self[]> {
-    // const rows = await knex<IUser.Row>(this.name).select("*");
-    // return rows.map((row) => this.from(row));
-
-    const builder = withFilter({ builder: knex<IUser.Row>(this.name), filter });
+    const builder = withFilter({
+      builder: knex<IUser.Row>(this.table),
+      filter,
+    });
     const result = await builder.then();
 
     return [...result] as any;
@@ -178,7 +193,7 @@ export class Users {
   }
 
   builder(tx?: Knex.Transaction) {
-    return tx ? tx<IUser.Row>(this.name) : knex<IUser.Row>(this.name);
+    return tx ? tx<IUser.Row>(this.table) : knex<IUser.Row>(this.table);
   }
 }
 
