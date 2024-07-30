@@ -1,4 +1,4 @@
-import { asTableColumn, knex, withFilter } from "@/models/query";
+import { knex, withFilter } from "@/models/query";
 import { first, isEmpty, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";

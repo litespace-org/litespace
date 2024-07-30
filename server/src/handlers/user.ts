@@ -19,6 +19,7 @@ import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
+import { count } from "@/models/query";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, name, role } = schema.http.user.create.parse(
@@ -91,12 +92,20 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getMany(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
   const filter = httpQueryFilter<keyof IUser.Row>(
     users.columns.filterable,
     req.query
   );
-  const list = await users.find(filter);
-  res.status(200).json(list);
+
+  const [list, total] = await Promise.all([
+    users.find(filter),
+    count(users.table),
+  ]);
+
+  res.status(200).json({ list, total });
 }
 
 async function findMe(req: Request, res: Response, next: NextFunction) {

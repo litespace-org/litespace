@@ -19,6 +19,7 @@ import { email, identityObject } from "@/validation/utils";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
+import { count } from "@/models/query";
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const body = schema.http.tutor.create.body.parse(req.body);
@@ -82,8 +83,13 @@ async function getTutors(req: Request, res: Response, next: NextFunction) {
     tutors.columns.filterable as NonEmptyList<string>,
     req.query
   );
-  const list = await tutors.find(filter);
-  res.status(200).json(list);
+
+  const [list, total] = await Promise.all([
+    tutors.find(filter),
+    count(tutors.table),
+  ]);
+
+  res.status(200).json({ list, total });
 }
 
 async function delete_(req: Request, res: Response, next: NextFunction) {

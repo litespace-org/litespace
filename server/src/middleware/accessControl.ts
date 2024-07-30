@@ -324,8 +324,8 @@ export function enforce(request: {
         console.log(
           [
             "Access Control: ",
-            `Matched policy: ${policy.roles.join(", ")} - ${policy.methods.join(", ")} - ${policy.route}`,
-            `Request: ${request.role} - ${request.method} ${request.route} - ${request.isOwner}`,
+            ` ↳ Matched policy: ${policy.roles.join(", ")} - ${policy.methods.join(", ")} - ${policy.route}`,
+            ` ↳ Request: ${request.role} - ${request.method} ${request.route} - owner(${!!request.isOwner})`,
           ].join("\n").cyan
         );
       return true;

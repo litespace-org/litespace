@@ -1,16 +1,13 @@
-import {
-  Pool,
-  PoolClient,
-  QueryConfigValues,
-  QueryResult,
-  QueryResultRow,
-} from "pg";
+import { Pool, QueryConfigValues, QueryResult, QueryResultRow } from "pg";
 import init, { Knex } from "knex";
+import zod from "zod";
 
 import { databaseConnection } from "@/constants";
 import { IFilter } from "@litespace/types";
 
 export const pool = new Pool(databaseConnection);
+
+export const knex = init({ client: "pg", connection: databaseConnection });
 
 export async function query<T extends QueryResultRow, V extends unknown[]>(
   query: string,
@@ -28,11 +25,6 @@ function asSqlColumn<T extends { toString(): string }>(value: T): string {
   const [first, second] = value.toString().split(".");
   if (!second) return wrap(first);
   return [wrap(first), wrap(second)].join(".");
-}
-
-export function asTableColumn(value: string): string {
-  const [table, column] = value.split(".");
-  return [asSqlColumn(table), asSqlColumn(column)].join(".");
 }
 
 function asSearchTerm(term: string, match: IFilter.Match): string {
@@ -98,4 +90,9 @@ export function withFilter<T extends Knex.QueryBuilder>({
   return builder;
 }
 
-export const knex = init({ client: "pg", connection: databaseConnection });
+export async function count(table: string): Promise<number> {
+  const { count } = await knex(table)
+    .count("id AS count")
+    .first<{ count: string }>();
+  return zod.coerce.number().parse(count);
+}
