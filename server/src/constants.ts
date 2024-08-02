@@ -23,11 +23,11 @@ const schema = {
 } as const;
 
 export const databaseConnection = {
-  user: isDev ? "postgres" : schema.string.parse(process.env.PG_USER),
-  password: isDev ? "litespace" : schema.string.parse(process.env.PG_PASSWORD),
-  host: isDev ? "localhost" : schema.string.parse(process.env.PG_HOST),
-  port: isDev ? 5432 : schema.number.parse(process.env.PG_PORT),
-  database: isDev ? "litespace" : schema.string.parse(process.env.PG_DATABASE),
+  user: schema.string.parse(process.env.PG_USER),
+  password: schema.string.parse(process.env.PG_PASSWORD),
+  host: schema.string.parse(process.env.PG_HOST),
+  port: zod.coerce.number().parse(process.env.PG_PORT),
+  database: schema.string.parse(process.env.PG_DATABASE),
   url: zod
     .string({ message: "Missing or invalid database url" })
     .startsWith("postgres://")
