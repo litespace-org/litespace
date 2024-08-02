@@ -25,7 +25,7 @@ export const TutorShow = () => {
       { name: "Has Password", value: tutor.hasPassword, type: "boolean" },
       { name: "Online", value: tutor.online, type: "boolean" },
       { name: "Gender", value: tutor.gender, type: "tag" },
-      { name: "Type", value: tutor.type, type: "tag" },
+      { name: "Role", value: tutor.role, type: "tag" },
       { name: "Bio", value: tutor.bio },
       { name: "About", value: tutor.about },
       { name: "Video", value: tutor.video, type: "url" },

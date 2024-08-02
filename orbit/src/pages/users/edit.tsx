@@ -82,13 +82,13 @@ export const UserEdit = () => {
         >
           <Input />
         </Form.Item>
-        <Form.Item
+        {/* <Form.Item
           label="Birthday"
           name="userBirthday"
           initialValue={user?.birthday ? dayjs(user.birthday) : undefined}
         >
           <DatePicker />
-        </Form.Item>
+        </Form.Item> */}
         <Form.Item label="Gender" name="gender">
           <Select options={genders} />
         </Form.Item>
