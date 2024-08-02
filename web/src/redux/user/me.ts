@@ -19,7 +19,7 @@ export const findMe = createAsyncThunk(
   async (): Promise<State["profile"]> => {
     const profile = await atlas.user.findMe();
     if (profile instanceof MultiError) return null;
-    return profile;
+    return profile as unknown as State["profile"];
   }
 );
 

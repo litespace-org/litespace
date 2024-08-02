@@ -16,7 +16,7 @@ const SelectUserGender: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
   const mutation = useMutation(
-    async (gender: User.Gender) => atlas.user.update({ gender }),
+    async (gender: User.Gender) => atlas.user.update(1, { gender }),
     {
       async onSuccess() {
         await dispatch(findMe());

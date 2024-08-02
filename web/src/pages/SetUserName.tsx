@@ -20,7 +20,7 @@ const SetUserName: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
   const mutation = useMutation(
-    async (name: string) => atlas.user.update({ name }),
+    async (name: string) => atlas.user.update(1, { name }),
     {
       async onSuccess() {
         await dispatch(findMe());
