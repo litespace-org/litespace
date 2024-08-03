@@ -4430,7 +4430,7 @@ __metadata:
     "@litespace/atlas": "npm:1.0.0"
     "@litespace/types": "npm:1.0.0"
     "@litespace/uilib": "npm:1.0.0"
-    "@refinedev/antd": "npm:5.40.0"
+    "@refinedev/antd": "npm:5.42.0"
     "@refinedev/cli": "npm:2.16.36"
     "@refinedev/core": "npm:4.53.0"
     "@refinedev/devtools": "npm:1.2.6"
@@ -4449,6 +4449,7 @@ __metadata:
     antd-style: "npm:^3.6.2"
     axios: "npm:^1.7.2"
     dayjs: "npm:^1.11.11"
+    env-cmd: "npm:^10.1.0"
     eslint: "npm:^8.38.0"
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.3.4"
@@ -5831,9 +5832,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@refinedev/antd@npm:5.40.0":
-  version: 5.40.0
-  resolution: "@refinedev/antd@npm:5.40.0"
+"@refinedev/antd@npm:5.42.0":
+  version: 5.42.0
+  resolution: "@refinedev/antd@npm:5.42.0"
   dependencies:
     "@ant-design/icons": "npm:5.0.1"
     "@ant-design/pro-layout": "npm:7.17.12"
@@ -5853,7 +5854,7 @@ __metadata:
     dayjs: ^1.10.7
     react: ^17.0.0 || ^18.0.0
     react-dom: ^17.0.0 || ^18.0.0
-  checksum: 10c0/fe2308299a97007a05cc534f50844d70ed7c48a4d7bd8546150f9e27c1e1f4862b662ad24ea58bdb3f374c38843a6c480f01f505769b62e49aa19174a0d1adc2
+  checksum: 10c0/2b138ec0b5b7c9b566fef2582e7431a5e96197fd5de25a13581d0ce1bff26a772a98f6b16baacedf057fa830048e69bb4ee027b9bc9507a711e464972399d64c
   languageName: node
   linkType: hard
 

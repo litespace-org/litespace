@@ -13,7 +13,7 @@
     "@litespace/atlas": "1.0.0",
     "@litespace/types": "1.0.0",
     "@litespace/uilib": "1.0.0",
-    "@refinedev/antd": "5.40.0",
+    "@refinedev/antd": "5.42.0",
     "@refinedev/cli": "2.16.36",
     "@refinedev/core": "4.53.0",
     "@refinedev/devtools": "1.2.6",
@@ -41,6 +41,7 @@
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "@vitejs/plugin-react": "^4.0.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
@@ -51,7 +52,7 @@
   "scripts": {
     "dev": "refine dev --host",
     "build": "tsc && refine build",
-    "build:vercel": "yarn vercel build",
+    "build:vercel": "env-cmd -f .env.staging yarn vercel build",
     "vercel:deploy": "yarn vercel deploy --prebuilt",
     "preview": "refine start",
     "refine": "refine"
