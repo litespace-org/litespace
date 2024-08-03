@@ -1,5 +1,5 @@
 {
-  "name": "@litespace/uilib",
+  "name": "@litespace/luna",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -22,6 +22,8 @@
     "dev": "vite",
     "build": "tsc && vite build && yarn build:css",
     "build:css": "tailwindcss -m -i ./src/tailwind.css -o ./dist/style.css",
+    "build:vercel": "yarn vercel build",
+    "deploy:vercel": "yarn vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "storybook": "concurrently 'yarn storybook:css' 'yarn storybook:dev'",

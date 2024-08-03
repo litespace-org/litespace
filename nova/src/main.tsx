@@ -1,12 +1,12 @@
 import ReactDOM from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { locales } from "@litespace/uilib";
+import { locales } from "@litespace/luna";
 import { IntlProvider } from "react-intl";
 import { store } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "react-query";
 import App from "@/App";
 
-import "@litespace/uilib/style.css";
+import "@litespace/luna/style.css";
 import "@/index.css";
 
 const queryClient = new QueryClient();

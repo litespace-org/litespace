@@ -12,7 +12,6 @@
     "@fullcalendar/timegrid": "^6.1.14",
     "@litespace/atlas": "1.0.0",
     "@litespace/types": "1.0.0",
-    "@litespace/uilib": "1.0.0",
     "@refinedev/antd": "5.42.0",
     "@refinedev/cli": "2.16.36",
     "@refinedev/core": "4.53.0",

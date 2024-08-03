@@ -13,8 +13,8 @@
   },
   "dependencies": {
     "@litespace/atlas": "1.0.0",
+    "@litespace/luna": "1.0.0",
     "@litespace/types": "1.0.0",
-    "@litespace/uilib": "1.0.0",
     "@reduxjs/toolkit": "^2.2.5",
     "axios": "^1.7.2",
     "framer-motion": "^11.2.6",

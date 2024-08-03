@@ -2,7 +2,7 @@ import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
-import { Button, messages } from "@litespace/uilib";
+import { Button, messages } from "@litespace/luna";
 import React, { useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useMutation } from "react-query";

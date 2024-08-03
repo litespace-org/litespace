@@ -5,8 +5,8 @@ dist/
 .yarn/
 *storybook.log
 
-# uilib 
-uilib/src/index.css
+# luna 
+luna/src/index.css
 storybook-static/
 
 # server 

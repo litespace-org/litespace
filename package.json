@@ -10,11 +10,13 @@
     "build:orbit": "yarn workspace @litespace/orbit build",
     "build:types": "yarn workspace @litespace/types build",
     "build:atlas": "yarn workspace @litespace/atlas build",
-    "build:uilib": "yarn workspace @litespace/uilib build",
+    "build:luna": "yarn workspace @litespace/luna build",
     "build:orbit:vercel": "yarn workspace @litespace/orbit build:vercel",
     "build:nova:vercel": "yarn workspace @litespace/nova build:vercel",
+    "build:luna:vercel": "yarn workspace @litespace/luna build:vercel",
     "deploy:orbit:vercel": "yarn workspace @litespace/orbit deploy:vercel",
     "deploy:nova:vercel": "yarn workspace @litespace/nova deploy:vercel",
+    "deploy:luna:vercel": "yarn workspace @litespace/luna deploy:vercel",
     "vercel": "env-cmd ts-node scripts/vercel.ts",
     "vercel:ci": "ts-node scripts/vercel.ts"
   },
@@ -22,11 +24,11 @@
     "packages": [
       "server",
       "emails",
-      "uilib",
+      "luna",
       "orbit",
       "atlas",
       "types",
-      "web"
+      "nova"
     ]
   },
   "packageManager": "yarn@4.2.2",

@@ -4,7 +4,7 @@ import { Flex, Form, Input, InputNumber, Select, Switch } from "antd";
 import { useOne, useResource } from "@refinedev/core";
 import { PercentageOutlined } from "@ant-design/icons";
 import { discountFormatter, discountParser } from "@/lib/utils";
-import { categoryOptions } from "@litespace/uilib";
+import { categoryOptions } from "@litespace/luna";
 
 export const ReportEdit = () => {
   const { resource, id } = useResource();

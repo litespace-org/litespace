@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
-import { Button, Form, Input, messages, useValidation } from "@litespace/uilib";
+import { Button, Form, Input, messages, useValidation } from "@litespace/luna";
 import React, { useCallback, useEffect } from "react";
 import { useIntl } from "react-intl";
 import { useMutation } from "react-query";

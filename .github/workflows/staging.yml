@@ -23,21 +23,28 @@ jobs:
         run: yarn
       - name: Build types
         run: yarn build:types
-      - name: Build Atlas SDK
+      - name: Build Atlas (API SDK)
         run: yarn build:atlas
-      - name: Build Uilib
-        run: yarn build:uilib
-      # Oribit Deployment
+      - name: Build Luna (Design System & Storybooks)
+        run: yarn build:luna
+      # Orbit Deployment
       - name: Pull Orbit from Vercel
-        run: yarn vercel:ci pull "orbit" "./orbit/" --token=${{ secrets.VERCEL_TOKEN }}
+        run: yarn vercel:ci pull "orbit" "orbit/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Orbit using Vercel
         run: yarn build:orbit:vercel
       - name: Deploy Orbit to Vercel
         run: yarn deploy:orbit:vercel --token=${{ secrets.VERCEL_TOKEN }}
       # Nova Deployment
       - name: Pull Nova from Vercel
-        run: yarn vercel:ci pull "nova" "./web/" --token=${{ secrets.VERCEL_TOKEN }}
+        run: yarn vercel:ci pull "nova" "nova/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Nova using Vercel
         run: yarn build:nova:vercel
       - name: Deploy Nova to Vercel
         run: yarn deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Luna Deployment
+      - name: Pull Luna from Vercel
+        run: yarn vercel:ci pull "luna" "luna/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Luna using Vercel
+        run: yarn build:luna:vercel
+      - name: Deploy Luna to Vercel
+        run: yarn deploy:luna:vercel --token=${{ secrets.VERCEL_TOKEN }}

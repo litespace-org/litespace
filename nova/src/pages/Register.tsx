@@ -7,36 +7,63 @@ import {
   Discord,
   Facebook,
   useValidation,
-} from "@litespace/uilib";
+} from "@litespace/luna";
 import React, { useCallback } from "react";
 import { SubmitHandler } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { useAppDispatch } from "@/redux/store";
+import { findMe } from "@/redux/user/me";
 import { Route } from "@/types/routes";
+import {
+  RegisterStudentPayload,
+  RegisterTutorPayload,
+  IUser,
+} from "@litespace/types";
 import { atlas } from "@/lib/atlas";
-import { IUser } from "@litespace/types";
 
 interface IFormInput {
+  name: string;
   email: string;
   password: string;
 }
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const intl = useIntl();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { role } = useParams<{
+    role: typeof IUser.Role.Student | typeof IUser.Role.Tutor;
+  }>();
+
   const mutation = useMutation(
-    (credentials: IUser.Credentials) => atlas.auth.password(credentials),
+    async ({
+      payload,
+      role,
+    }: {
+      payload: RegisterTutorPayload | RegisterStudentPayload;
+      role: IUser.TutorOrStudent;
+    }) => {
+      if (role === IUser.Role.Tutor) return await atlas.tutor.create(payload);
+      return atlas.student.register(payload);
+    },
     {
-      onSuccess() {
-        return navigate(Route.Root);
+      async onSuccess({ token }) {
+        await atlas.auth.token(token);
+        await dispatch(findMe());
+        navigate(Route.Root);
       },
     }
   );
 
   const onSubmit: SubmitHandler<IFormInput> = useCallback(
-    async (data) => mutation.mutate(data),
-    [mutation]
+    async (payload) => {
+      if (!role) return;
+      if (![IUser.Role.Student, IUser.Role.Tutor].includes(role)) return;
+      return await mutation.mutate({ payload, role });
+    },
+    [mutation, role]
   );
   const valiedation = useValidation();
 
@@ -44,12 +71,24 @@ const Login: React.FC = () => {
     <div className="max-w-screen-sm mx-auto my-10">
       <div className="mb-4">
         <h1 className="text-3xl font-simi-bold text-center">
-          <FormattedMessage id={messages.pages.login.form.title} />
+          <FormattedMessage id={messages.pages.register.form.title} />
         </h1>
       </div>
 
       <Form<IFormInput> onSubmit={onSubmit}>
         <div className="flex flex-col gap-5">
+          <Input
+            type="text"
+            label={intl.formatMessage({
+              id: messages.pages.register.form.name.label,
+            })}
+            id="name"
+            placeholder={intl.formatMessage({
+              id: messages.pages.register.form.name.placeholder,
+            })}
+            autoComplete="name"
+            validation={valiedation.name}
+          />
           <Input
             type="text"
             label={intl.formatMessage({
@@ -75,14 +114,13 @@ const Login: React.FC = () => {
           <div className="flex items-center justify-center my-5">
             <Button type="submit">
               {intl.formatMessage({
-                id: messages.pages.login.form.button.label,
+                id: messages.pages.register.form.button.label,
               })}
             </Button>
           </div>
         </div>
-
-        <div className="w-full h-0.5 bg-gray-100 rounded-full" />
       </Form>
+      <div className="w-full h-0.5 bg-gray-100 rounded-full" />
       <div className="flex flex-row items-center justify-center gap-5 my-5">
         <Link to={atlas.auth.authorization.google}>
           <Button>
@@ -106,4 +144,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

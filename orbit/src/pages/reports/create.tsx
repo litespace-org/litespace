@@ -1,7 +1,7 @@
 import { Create, useForm } from "@refinedev/antd";
 import { Form, Input, Select } from "antd";
 import { required } from "@/lib/constants";
-import { categoryOptions } from "@litespace/uilib";
+import { categoryOptions } from "@litespace/luna";
 
 export const ReportCreate = () => {
   const { formProps, saveButtonProps } = useForm({});
