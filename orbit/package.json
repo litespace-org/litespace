@@ -51,6 +51,8 @@
   "scripts": {
     "dev": "refine dev --host",
     "build": "tsc && refine build",
+    "build:vercel": "yarn vercel build",
+    "vercel:deploy": "yarn vercel deploy --prebuilt",
     "preview": "refine start",
     "refine": "refine"
   },

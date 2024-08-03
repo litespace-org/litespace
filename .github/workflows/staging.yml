@@ -25,7 +25,11 @@ jobs:
         run: yarn build:types
       - name: Build Atlas SDK
         run: yarn build:atlas
-      - name: Build Orbit
-        run: yarn build:orbit
-      - name: ls
-        run: ls ./orbit/
+      - name: Build Uilib
+        run: yarn build:uilib
+      - name: Pull project from Vercel
+        run: yarn vercel pull "orbit" "./orbit/"
+      - name: Build Orbit using Vercel
+        run: yarn build:orbit:vercel
+      - name: Deploy to Vercel
+        run: yarn deploy:orbit:vercel --token=${{ secrets.VERCEL_TOKEN }}

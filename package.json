@@ -10,6 +10,9 @@
     "build:orbit": "yarn workspace @litespace/orbit build",
     "build:types": "yarn workspace @litespace/types build",
     "build:atlas": "yarn workspace @litespace/atlas build",
+    "build:uilib": "yarn workspace @litespace/uilib build",
+    "build:orbit:vercel": "yarn workspace @litespace/uilib build:vercel",
+    "deploy:orbit:vercel": "yarn workspace @litespace/uilib vercel:deploy",
     "vercel": "env-cmd ts-node scripts/vercel.ts"
   },
   "workspaces": {
