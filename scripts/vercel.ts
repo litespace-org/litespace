@@ -31,13 +31,15 @@ async function safe<T>(callback: () => Promise<T>): Promise<T | Error> {
   }
 }
 
-const client = axios.create({
-  baseURL: "https://api.vercel.com",
-  headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` },
-});
+function client(token?: string) {
+  return axios.create({
+    baseURL: "https://api.vercel.com",
+    headers: { Authorization: `Bearer ${token || process.env.VERCEL_TOKEN}` },
+  });
+}
 
-async function findProject(name: string): Promise<Project> {
-  return await client
+async function findProject(name: string, token?: string): Promise<Project> {
+  return await client(token)
     .get<Project>(`/v9/projects/${name}`)
     .then((response) => response.data);
 }
@@ -47,13 +49,15 @@ async function createProject({
   buildCommand = "yarn build",
   outputDirectory = "dist",
   installCommand = "yarn",
+  token,
 }: {
   name: string;
   buildCommand?: string;
   outputDirectory?: string;
   installCommand?: string;
+  token?: string;
 }): Promise<Project> {
-  const { data } = await client.post<Project>("/v10/projects", {
+  const { data } = await client(token).post<Project>("/v10/projects", {
     name,
     buildCommand,
     installCommand,
@@ -118,7 +122,8 @@ const pull = new Command()
   .name("pull")
   .argument("<name>", "Project name")
   .argument("<path>", "Where to save project info after pulling it from vercel")
-  .action(async (name: string, path: string) => {
+  .option("-t, --token <token>", "Vercel token")
+  .action(async (name: string, path: string, options: { token?: string }) => {
     if (!fs.existsSync(path)) throw new Error(`"${path}" not found`);
 
     const vercel = asVercelDirectory(path);
@@ -127,7 +132,7 @@ const pull = new Command()
 
     fs.mkdirSync(vercel);
 
-    const project = await safe(() => findProject(name));
+    const project = await safe(() => findProject(name, options.token));
     if (project instanceof Error) throw project;
 
     saveProject(vercel, project);

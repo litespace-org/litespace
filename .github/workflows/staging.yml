@@ -28,7 +28,7 @@ jobs:
       - name: Build Uilib
         run: yarn build:uilib
       - name: Pull project from Vercel
-        run: yarn vercel pull "orbit" "./orbit/"
+        run: yarn vercel:ci pull "orbit" "./orbit/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Orbit using Vercel
         run: yarn build:orbit:vercel
       - name: Deploy to Vercel

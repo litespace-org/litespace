@@ -13,7 +13,8 @@
     "build:uilib": "yarn workspace @litespace/uilib build",
     "build:orbit:vercel": "yarn workspace @litespace/uilib build:vercel",
     "deploy:orbit:vercel": "yarn workspace @litespace/uilib vercel:deploy",
-    "vercel": "env-cmd ts-node scripts/vercel.ts"
+    "vercel": "env-cmd ts-node scripts/vercel.ts",
+    "vercel:ci": "ts-node scripts/vercel.ts"
   },
   "workspaces": {
     "packages": [
