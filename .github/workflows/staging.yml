@@ -27,9 +27,17 @@ jobs:
         run: yarn build:atlas
       - name: Build Uilib
         run: yarn build:uilib
-      - name: Pull project from Vercel
+      # Oribit Deployment
+      - name: Pull Orbit from Vercel
         run: yarn vercel:ci pull "orbit" "./orbit/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Orbit using Vercel
         run: yarn build:orbit:vercel
-      - name: Deploy to Vercel
+      - name: Deploy Orbit to Vercel
         run: yarn deploy:orbit:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Nova Deployment
+      - name: Pull Nova from Vercel
+        run: yarn vercel:ci pull "nova" "./web/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Nova using Vercel
+        run: yarn build:nova:vercel
+      - name: Deploy Nova to Vercel
+        run: yarn deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}

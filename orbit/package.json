@@ -53,7 +53,7 @@
     "dev": "refine dev --host",
     "build": "tsc && refine build",
     "build:vercel": "env-cmd -f .env.staging yarn vercel build",
-    "vercel:deploy": "yarn vercel deploy --prebuilt",
+    "deploy:vercel": "yarn vercel deploy --prebuilt",
     "preview": "refine start",
     "refine": "refine"
   },

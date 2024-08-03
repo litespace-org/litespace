@@ -4365,9 +4365,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@litespace/client@workspace:web":
+"@litespace/emails@npm:1.0.0, @litespace/emails@workspace:emails":
   version: 0.0.0-use.local
-  resolution: "@litespace/client@workspace:web"
+  resolution: "@litespace/emails@workspace:emails"
+  dependencies:
+    "@react-email/components": "npm:^0.0.19"
+    "@types/nodemailer": "npm:^6.4.15"
+    nodemailer: "npm:^6.9.14"
+    react-email: "npm:^2.1.4"
+    typescript: "npm:^5.4.5"
+    vite: "npm:^5.2.0"
+    vite-plugin-dts: "npm:^3.9.1"
+  languageName: unknown
+  linkType: soft
+
+"@litespace/nova@workspace:web":
+  version: 0.0.0-use.local
+  resolution: "@litespace/nova@workspace:web"
   dependencies:
     "@litespace/atlas": "npm:1.0.0"
     "@litespace/types": "npm:1.0.0"
@@ -4400,20 +4414,6 @@ __metadata:
     typescript: "npm:^5.4.5"
     vercel: "npm:^35.2.2"
     vite: "npm:^5.2.0"
-  languageName: unknown
-  linkType: soft
-
-"@litespace/emails@npm:1.0.0, @litespace/emails@workspace:emails":
-  version: 0.0.0-use.local
-  resolution: "@litespace/emails@workspace:emails"
-  dependencies:
-    "@react-email/components": "npm:^0.0.19"
-    "@types/nodemailer": "npm:^6.4.15"
-    nodemailer: "npm:^6.9.14"
-    react-email: "npm:^2.1.4"
-    typescript: "npm:^5.4.5"
-    vite: "npm:^5.2.0"
-    vite-plugin-dts: "npm:^3.9.1"
   languageName: unknown
   linkType: soft
 
