@@ -9,7 +9,8 @@
     "install:clean": "yarn workspaces foreach -A run rimraf node_modules && yarn install",
     "build:orbit": "yarn workspace @litespace/orbit build",
     "build:types": "yarn workspace @litespace/types build",
-    "build:atlas": "yarn workspace @litespace/atlas build"
+    "build:atlas": "yarn workspace @litespace/atlas build",
+    "vercel": "env-cmd ts-node scripts/vercel.ts"
   },
   "workspaces": {
     "packages": [
@@ -24,7 +25,12 @@
   },
   "packageManager": "yarn@4.2.2",
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "rimraf": "^5.0.7",
+    "ts-node": "^10.9.2",
     "vercel": "^34.2.7"
+  },
+  "dependencies": {
+    "commander": "^12.1.0"
   }
 }
