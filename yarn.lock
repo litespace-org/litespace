@@ -3056,6 +3056,8 @@ __metadata:
     "@storybook/addon-links": "npm:^8.1.5"
     "@storybook/addon-onboarding": "npm:^8.1.5"
     "@storybook/blocks": "npm:^8.1.5"
+    "@storybook/docs-tools": "npm:^8.2.7"
+    "@storybook/node-logger": "npm:^8.2.7"
     "@storybook/react": "npm:^8.1.5"
     "@storybook/react-vite": "npm:^8.1.5"
     "@storybook/test": "npm:^8.1.5"
@@ -5400,6 +5402,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@storybook/docs-tools@npm:^8.2.7":
+  version: 8.2.7
+  resolution: "@storybook/docs-tools@npm:8.2.7"
+  peerDependencies:
+    storybook: ^8.2.7
+  checksum: 10c0/4986ef29e7bf3524f48991c0ebfa87e1e04977308e55238c2c22143203bfc0588ccce505c9317a3346dc234beebab63739ac14cc72bc7ac1c40d967ab1d5ee3b
+  languageName: node
+  linkType: hard
+
 "@storybook/global@npm:^5.0.0":
   version: 5.0.0
   resolution: "@storybook/global@npm:5.0.0"
@@ -5436,6 +5447,15 @@ __metadata:
   peerDependencies:
     storybook: ^8.2.7
   checksum: 10c0/39a35dad2cb96d145ed8442fce8906516f5d960e7c0babc8b7c253e64f6ca7f30808e3209ca68a20ee6fda28ca5656e13e3092d2f234af71c3314ea64e785127
+  languageName: node
+  linkType: hard
+
+"@storybook/node-logger@npm:^8.2.7":
+  version: 8.2.7
+  resolution: "@storybook/node-logger@npm:8.2.7"
+  peerDependencies:
+    storybook: ^8.2.7
+  checksum: 10c0/12da33ace7cd2e65420c7323d14fbb51481a8fd5258fbe8c3ec913848a1834046b3db65f30451112faeeeaea8c97f59e324996d7915e174a9c8a320f26ad9fd7
   languageName: node
   linkType: hard
 
