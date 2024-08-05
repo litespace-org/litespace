@@ -3,12 +3,14 @@ import { Command } from "commander";
 import fs from "node:fs";
 import path from "node:path";
 
+type Framework = "vite" | "nextjs";
+
 type Project = {
   id: string;
   name: string;
   accountId: string;
   createdAt: string;
-  framework: string;
+  framework: Framework;
   devCommand: string | null;
   installCommand: string | null;
   buildCommand: string | null;
@@ -46,12 +48,14 @@ async function findProject(name: string, token?: string): Promise<Project> {
 
 async function createProject({
   name,
+  framework = "vite",
   buildCommand = "yarn build",
   outputDirectory = "dist",
   installCommand = "yarn",
   token,
 }: {
   name: string;
+  framework?: Framework;
   buildCommand?: string;
   outputDirectory?: string;
   installCommand?: string;
@@ -59,10 +63,10 @@ async function createProject({
 }): Promise<Project> {
   const { data } = await client(token).post<Project>("/v10/projects", {
     name,
+    framework,
     buildCommand,
     installCommand,
     outputDirectory,
-    framework: "vite",
   });
 
   return data;
@@ -99,15 +103,22 @@ const create = new Command()
   .option("-b, --build <build-command>", "Project build command")
   .option("-i, --install <install-command>", "Project install command")
   .option("-o, --output <output-directory>", "Project output directory")
+  .option("-f, --framework <framework>", "Project framework")
   .action(
     async (
       name: string,
-      options: { build?: string; install?: string; output?: string }
+      options: {
+        build?: string;
+        install?: string;
+        output?: string;
+        framework: Framework;
+      }
     ) => {
       const project = await safe(() =>
         createProject({
           name,
           buildCommand: options.build,
+          framework: options.framework,
           installCommand: options.install,
           outputDirectory: options.output,
         })

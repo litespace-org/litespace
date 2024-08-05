@@ -522,12 +522,12 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.Users) {
       const list = await atlas.user.list();
-      return { data: as.any(list), total: list.length };
+      return { data: as.any(list).list, total: as.any(list).total };
     }
 
     if (resource === Resource.Tutors) {
       const list = await atlas.tutor.findAll();
-      return { data: as.casted(list), total: list.length };
+      return { data: as.any(list).list, total: as.any(list).total };
     }
 
     if (resource === Resource.TutorsMedia) {

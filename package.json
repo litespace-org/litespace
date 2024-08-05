@@ -14,9 +14,11 @@
     "build:orbit:vercel": "yarn workspace @litespace/orbit build:vercel",
     "build:nova:vercel": "yarn workspace @litespace/nova build:vercel",
     "build:luna:vercel": "yarn workspace @litespace/luna build:vercel",
+    "build:nebula:vercel": "yarn workspace @litespace/nebula build:vercel",
     "deploy:orbit:vercel": "yarn workspace @litespace/orbit deploy:vercel",
     "deploy:nova:vercel": "yarn workspace @litespace/nova deploy:vercel",
     "deploy:luna:vercel": "yarn workspace @litespace/luna deploy:vercel",
+    "deploy:nebula:vercel": "yarn workspace @litespace/nebula deploy:vercel",
     "vercel": "env-cmd ts-node scripts/vercel.ts",
     "vercel:ci": "ts-node scripts/vercel.ts"
   },
@@ -28,7 +30,8 @@
       "orbit",
       "atlas",
       "types",
-      "nova"
+      "nova",
+      "nebula"
     ]
   },
   "packageManager": "yarn@4.2.2",

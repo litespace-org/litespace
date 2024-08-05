@@ -27,6 +27,7 @@ const Root: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-screen-md my-10">
+      <h1>Version: 2.0</h1>
       <ul className="flex flex-col gap-4">
         <li>
           <Link to={Route.Login}>
@@ -56,7 +57,6 @@ const Root: React.FC = () => {
           </Button>
         </li>
       </ul>
-
       <div className="mt-10">
         <pre
           className="bg-gray-50 p-3 rounded-md text-gray-700 font-mono"
