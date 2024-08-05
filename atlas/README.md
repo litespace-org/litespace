@@ -1,3 +1,3 @@
-# Atlas (moon of Saturn)
+# Atlas (Moon of Saturn)
 
 LiteSpace API SDK

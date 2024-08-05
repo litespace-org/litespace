@@ -1,5 +1,6 @@
 {
   "name": "@litespace/luna",
+  "description": "LiteSpace Components & Design System",
   "private": true,
   "version": "1.0.0",
   "type": "module",
