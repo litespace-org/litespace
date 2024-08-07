@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { FieldValues, RegisterOptions, useFormContext } from "react-hook-form";
+import React from "react";
+import { ChangeHandler } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 
@@ -9,67 +9,59 @@ export const Input: React.FC<{
   placeholder?: string;
   autoComplete?: string;
   type: "text" | "password";
-  validation?: RegisterOptions<FieldValues>;
-}> = ({ label, type, id, placeholder, autoComplete, validation }) => {
-  const {
-    register,
-    formState: { errors },
-  } = useFormContext();
-
-  const error = errors[id];
-
-  const errorMessage = useMemo(() => {
-    if (!error) return null;
-    const mesage = error.message;
-    if (!mesage || typeof mesage !== "string") return null;
-    return mesage;
-  }, [error]);
-
+  onChange?: ChangeHandler;
+  onBlur?: ChangeHandler;
+  name?: string;
+  error?: string | null;
+}> = ({
+  label,
+  type,
+  id,
+  placeholder,
+  autoComplete,
+  onChange,
+  onBlur,
+  name,
+  error,
+}) => {
   return (
-    <div className="ui-flex ui-flex-col ui-w-full ui-gap-2">
-      <div className="ui-flex ui-flex-row">
-        <label
-          htmlFor={id}
-          className={cn("ui-font-semibold", {
-            "ui-text-red-400": !!error,
-            "ui--text-gray-800": !error,
-          })}
-        >
-          {label}
-        </label>
-        <AnimatePresence mode="wait" initial={false}>
-          {errorMessage ? (
-            <InputError message={errorMessage} key={label} />
-          ) : null}
-        </AnimatePresence>
-      </div>
+    <div className="ui-flex ui-flex-col ui-w-full">
+      <label
+        htmlFor={id}
+        className={cn(
+          "ui-text-dark-100 ui-font-cairo ui-font-bold ui-text-arxl ui-leading-normal ui-mb-xl"
+        )}
+      >
+        {label}
+      </label>
       <input
         id={id}
         type={type}
+        name={name}
         autoComplete={autoComplete}
+        onChange={onChange}
+        onBlur={onBlur}
         className={cn(
-          "ui-w-full ui-p-2 ui-font-medium ui-border ui-rounded-md ui-placeholder:opacity-60 focus:ui-outline-none focus:ui-ring-1",
+          "ui-bg-inputbg ui-py-[10px] ui-px-lg ui-rounded-2xl  ui-h-[72px] ui-font-cairo placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-normal",
+          "ui-text-arxl ui-font-bold ui-leading-normal ui-border focus:ui-outline-none focus:ui-border-blue-normal",
           {
-            "ui-border-red-400 ui-placeholder-red-400 ui-ring-red-400": !!error,
-            "ui-border-slate-300 ui-ring-slate-600": !error,
+            "ui-bg-red-light ui-border-red-border focus:ui-border-red-border":
+              !!error,
+            "ui-border-transparent": !error,
           }
         )}
         placeholder={placeholder}
-        {...register(id, validation)}
       />
+      <AnimatePresence mode="wait" initial={false}>
+        {error ? <InputError message={error} key={label} /> : null}
+      </AnimatePresence>
     </div>
   );
 };
 
 const InputError: React.FC<{ message: string }> = ({ message }) => {
   return (
-    <motion.p
-      className="ui-flex ui-items-center ui-italic ui-text-sm ui-text-red-400"
-      {...framerError}
-    >
-      <span className={cn("ui-mx-1 ui-inline-block ui-text-red-400")}>
-        &mdash;
-      </span>
+    <motion.p className="ui-text-arsm ui-text-red-400" {...framerError}>
       {message}
     </motion.p>
   );

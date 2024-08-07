@@ -45,9 +45,9 @@ jobs:
       - name: Pull Luna from Vercel
         run: yarn vercel:ci pull "luna" "luna/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Luna using Vercel
-        run: yarn build:luna:vercel
+        run: yarn build:luna:vercel --prod
       - name: Deploy Luna to Vercel
-        run: yarn deploy:luna:vercel --token=${{ secrets.VERCEL_TOKEN }}
+        run: yarn deploy:luna:vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
       # Nebula Deployment
       - name: Pull Nebula from Vercel
         run: yarn vercel:ci pull "nebula" "nebula/" --token=${{ secrets.VERCEL_TOKEN }}
