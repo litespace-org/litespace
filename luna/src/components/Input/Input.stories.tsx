@@ -29,12 +29,33 @@ export const Idle: StoryObj<typeof Wrapper> = {
   },
 };
 
+export const IdelWithValue: StoryObj<typeof Wrapper> = {
+  args: {
+    id: "name",
+    label: ar["global.form.email.label"],
+    placeholder: ar["global.form.email.placeholder"],
+    value: "لايت اسبيس",
+    onChange: () => {},
+  },
+};
+
 export const Error: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
     label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
     error: ar["errors.email.invlaid"],
+  },
+};
+
+export const ErrorWithValue: StoryObj<typeof Wrapper> = {
+  args: {
+    id: "name",
+    label: ar["global.form.email.label"],
+    placeholder: ar["global.form.email.placeholder"],
+    error: ar["errors.email.invlaid"],
+    value: "لايت اسبيس",
+    onChange: () => {},
   },
 };
 
