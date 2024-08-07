@@ -25,8 +25,6 @@ jobs:
         run: yarn build:types
       - name: Build Atlas (API SDK)
         run: yarn build:atlas
-      - name: Build Luna (Design System & Storybooks)
-        run: yarn build:luna
       # Orbit Deployment
       - name: Pull Orbit from Vercel
         run: yarn vercel:ci pull "orbit" "orbit/" --token=${{ secrets.VERCEL_TOKEN }}

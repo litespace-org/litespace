@@ -6,7 +6,6 @@ import {
   Google,
   Discord,
   Facebook,
-  useValidation,
 } from "@litespace/luna";
 import React, { useCallback } from "react";
 import { SubmitHandler } from "react-hook-form";
@@ -65,7 +64,6 @@ const Register: React.FC = () => {
     },
     [mutation, role]
   );
-  const valiedation = useValidation();
 
   return (
     <div className="max-w-screen-sm mx-auto my-10">
@@ -78,7 +76,6 @@ const Register: React.FC = () => {
       <Form<IFormInput> onSubmit={onSubmit}>
         <div className="flex flex-col gap-5">
           <Input
-            type="text"
             label={intl.formatMessage({
               id: messages.pages.register.form.name.label,
             })}
@@ -87,10 +84,8 @@ const Register: React.FC = () => {
               id: messages.pages.register.form.name.placeholder,
             })}
             autoComplete="name"
-            validation={valiedation.name}
           />
           <Input
-            type="text"
             label={intl.formatMessage({
               id: messages.global.form.email.label,
             })}
@@ -99,16 +94,13 @@ const Register: React.FC = () => {
               id: messages.global.form.email.placeholder,
             })}
             autoComplete="username"
-            validation={valiedation.email}
           />
           <Input
-            type="password"
             label={intl.formatMessage({
               id: messages.global.form.password.label,
             })}
             id="password"
             autoComplete="current-password"
-            validation={valiedation.password}
           />
 
           <div className="flex items-center justify-center my-5">

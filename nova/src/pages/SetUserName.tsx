@@ -1,7 +1,7 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findMe, profileSelector } from "@/redux/user/me";
 import { Route } from "@/types/routes";
-import { Button, Form, Input, messages, useValidation } from "@litespace/luna";
+import { Button, Form, Input, messages } from "@litespace/luna";
 import React, { useCallback, useEffect } from "react";
 import { useIntl } from "react-intl";
 import { useMutation } from "react-query";
@@ -15,7 +15,6 @@ type IFormFields = {
 
 const SetUserName: React.FC = () => {
   const intl = useIntl();
-  const valiedation = useValidation();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
@@ -43,7 +42,6 @@ const SetUserName: React.FC = () => {
       <Form<IFormFields> onSubmit={onSubmit} className="w-full">
         <div className="flex flex-col gap-5 min-w-screen-sm">
           <Input
-            type="text"
             label={intl.formatMessage({
               id: messages.pages.register.form.name.label,
             })}
@@ -52,7 +50,6 @@ const SetUserName: React.FC = () => {
               id: messages.pages.register.form.name.placeholder,
             })}
             autoComplete="name"
-            validation={valiedation.name}
           />
           <Button type="submit">next</Button>
         </div>

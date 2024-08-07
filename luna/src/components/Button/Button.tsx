@@ -24,13 +24,16 @@ export const Button: React.FC<{
       type={type}
       disabled={disabled}
       className={cn(
-        "ui-py-xxl ui-px-sm-section",
-        "ui-font-cairo ui-rounded-2xl ui-text-[24px] ui-text-white",
-        "ui-font-bold ui-leading-normal",
+        "ui-py-lg ui-px-sm-section ui-font-bold",
+        "ui-font-cairo ui-rounded-2xl ui-text-[24px]",
+        "flex ui-items-center ui-justify-center",
         "disabled:ui-bg-dark-56 disabled:ui-cursor-not-allowed",
         {
+          "ui-text-white": variant === Variant.Filled,
           "ui-bg-transparent ui-border-[2px] ui-border-solid ui-border-blue-normal ui-text-blue-normal disabled:ui-text-dark-56 disabled:ui-border-dark-56 disabled:ui-bg-transparent":
             variant === Variant.Outlined,
+          "ui-text-blue-normal":
+            variant === Variant.Outlined && color === Color.Primary,
           "ui-border-error ui-text-error":
             variant === Variant.Outlined && color === Color.Error,
           "ui-bg-blue-normal": color === Color.Primary,

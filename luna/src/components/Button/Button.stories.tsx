@@ -34,7 +34,7 @@ export const FilledError: StoryObj<typeof Button> = {
   },
 };
 
-export const OutlinePrimary: StoryObj<typeof Button> = {
+export const OutlinedPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.logout"],
     variant: Variant.Outlined,
