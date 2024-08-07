@@ -24,6 +24,7 @@ export default {
         "red-light": "rgba(238, 48, 36, 0.08)",
         "red-border": "#EE3024",
         error: "#EE3024",
+        light: "#EBEFF7",
       },
       keyframes: {
         overlayShow: {
@@ -50,6 +51,7 @@ export default {
         normal: "13px",
       },
       spacing: {
+        md: "4px",
         lg: "16px",
         xl: "24px",
         xxl: "32px",

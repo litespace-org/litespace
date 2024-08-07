@@ -1,25 +1,29 @@
 import React from "react";
 import * as ISelect from "@radix-ui/react-select";
 import cn from "classnames";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@radix-ui/react-icons";
+import { CheckIcon } from "@radix-ui/react-icons";
 import { Dir } from "@/components/Direction";
 import ArrowDown from "@/icons/ArrowDown";
+import { SelectList } from "@/components/Select/types";
 
-export const Select: React.FC<{ dir?: Dir; placeholder: string }> = ({
-  dir,
-  placeholder,
-}) => (
-  <ISelect.Root dir={dir}>
+export const Select: React.FC<{
+  dir?: Dir;
+  placeholder: string;
+  list: SelectList;
+  value?: string;
+  onChange?: (value: string) => void;
+}> = ({ dir, value, placeholder, list, onChange }) => (
+  <ISelect.Root value={value} onValueChange={onChange} dir={dir}>
     <ISelect.Trigger
       className={cn(
-        "ui-flex ui-justify-center ui-items-center ui-py-[10px] ui-px-lg ui-bg-inputbg ui-rounded-2xl ui-h-[72px]"
+        "ui-flex ui-justify-between ui-items-center ui-py-[10px] ui-px-lg ui-bg-inputbg ui-rounded-2xl ui-h-[72px] ui-min-w-[300px]",
+        "ui-font-cairo"
       )}
     >
-      <ISelect.Value placeholder={placeholder} />
+      <ISelect.Value
+        placeholder={placeholder}
+        className={cn("ui-text-[18px] ui-font-medium")}
+      />
       <ISelect.Icon className="ui-text-violet11">
         <ArrowDown />
       </ISelect.Icon>
@@ -27,54 +31,19 @@ export const Select: React.FC<{ dir?: Dir; placeholder: string }> = ({
     <ISelect.Portal>
       <ISelect.Content
         className={cn(
-          "ui-overflow-hidden ui-bg-white ui-rounded-md ui-shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+          "ui-overflow-hidden ui-bg-white ui-rounded-md",
+          "ui-shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
         )}
       >
-        <ISelect.ScrollUpButton className="ui-flex ui-items-center ui-justify-center ui-h-[25px] ui-bg-white ui-text-violet11 ui-cursor-default">
-          <ChevronUpIcon />
-        </ISelect.ScrollUpButton>
         <ISelect.Viewport className="ui-p-[5px]">
           <ISelect.Group>
-            <ISelect.Label className="ui-px-[25px] ui-text-xs ui-leading-[25px] ui-text-mauve11">
-              Fruits
-            </ISelect.Label>
-            <SelectItem value="apple">Apple</SelectItem>
-            <SelectItem value="banana">Banana</SelectItem>
-            <SelectItem value="blueberry">Blueberry</SelectItem>
-            <SelectItem value="grapes">Grapes</SelectItem>
-            <SelectItem value="pineapple">Pineapple</SelectItem>
-          </ISelect.Group>
-
-          <ISelect.Separator className="ui-h-[1px] ui-bg-violet6 ui-m-[5px]" />
-
-          <ISelect.Group>
-            <ISelect.Label className="ui-px-[25px] ui-text-xs ui-leading-[25px] ui-text-mauve11">
-              Vegetables
-            </ISelect.Label>
-            <SelectItem value="aubergine">Aubergine</SelectItem>
-            <SelectItem value="broccoli">Broccoli</SelectItem>
-            <SelectItem value="carrot" disabled>
-              Carrot
-            </SelectItem>
-            <SelectItem value="courgette">Courgette</SelectItem>
-            <SelectItem value="leek">Leek</SelectItem>
-          </ISelect.Group>
-
-          <ISelect.Separator className="ui-h-[1px] ui-bg-violet6 ui-m-[5px]" />
-
-          <ISelect.Group>
-            <ISelect.Label className="ui-px-[25px] ui-text-xs ui-leading-[25px] ui-text-mauve11">
-              Meat
-            </ISelect.Label>
-            <SelectItem value="beef">Beef</SelectItem>
-            <SelectItem value="chicken">Chicken</SelectItem>
-            <SelectItem value="lamb">Lamb</SelectItem>
-            <SelectItem value="pork">Pork</SelectItem>
+            {list.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
           </ISelect.Group>
         </ISelect.Viewport>
-        <ISelect.ScrollDownButton className="ui-flex ui-items-center ui-justify-center ui-h-[25px] ui-bg-white ui-text-violet11 ui-cursor-default">
-          <ChevronDownIcon />
-        </ISelect.ScrollDownButton>
       </ISelect.Content>
     </ISelect.Portal>
   </ISelect.Root>
@@ -85,8 +54,9 @@ const SelectItem = React.forwardRef<HTMLDivElement, ISelect.SelectItemProps>(
     return (
       <ISelect.Item
         className={cn(
-          "ui-text-[13px] ui-leading-none ui-text-violet11 ui-rounded-[3px] ui-flex ui-items-center",
-          "ui-h-[25px] ui-pr-[35px] ui-pl-[25px] ui-relative ui-select-none ui-data-[disabled]:text-mauve8 data-[disabled]:ui-pointer-events-none data-[highlighted]:ui-outline-none data-[highlighted]:ui-bg-violet9 data-[highlighted]:ui-text-violet1",
+          "ui-text-arxl ui-text-dark-100 ui-rounded-[3px] ui-flex ui-items-center ui-cursor-pointer ui-border-r-4 ui-border-transparent",
+          "ui-font-medium ui-leading-normal ui-font-cairo ui-mb-md",
+          "ui-p-lg ui-relative ui-select-none ui-data-[disabled]:text-mauve8 data-[disabled]:ui-pointer-events-none data-[highlighted]:ui-outline-none data-[highlighted]:ui-bg-light data-[highlighted]:ui-text-dark-100 data-[highlighted]:ui-border-blue-normal",
           className
         )}
         {...props}

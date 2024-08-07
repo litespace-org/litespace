@@ -17,10 +17,28 @@ const meta: Meta<ISelect> = {
   ],
 };
 
+const list = [
+  { label: "الاختيار الاول", value: "1" },
+  { label: "الاختيار الثاني", value: "2" },
+  { label: "الاختيار الثالث", value: "3" },
+  { label: "الاختيار الرابع", value: "4" },
+] as const;
+
 export const Primary: StoryObj<ISelect> = {
   args: {
     dir: Dir.RTL,
     placeholder: "ادخل سنه ميلادك",
+    list,
+  },
+};
+
+export const WithDefaultValueSelected: StoryObj<ISelect> = {
+  args: {
+    list,
+    value: "3",
+    dir: Dir.RTL,
+    placeholder: "ادخل سنه ميلادك",
+    onChange: (value: string) => console.log(value),
   },
 };
 
