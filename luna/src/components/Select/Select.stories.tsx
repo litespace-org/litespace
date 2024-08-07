@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Select } from "@/components/Select";
+import { Select, SelectList } from "@/components/Select";
 import { Direction, Dir } from "@/components/Direction";
 import React from "react";
 
@@ -17,12 +17,12 @@ const meta: Meta<ISelect> = {
   ],
 };
 
-const list = [
+const list: SelectList = [
   { label: "الاختيار الاول", value: "1" },
   { label: "الاختيار الثاني", value: "2" },
   { label: "الاختيار الثالث", value: "3" },
   { label: "الاختيار الرابع", value: "4" },
-] as const;
+];
 
 export const Primary: StoryObj<ISelect> = {
   args: {
