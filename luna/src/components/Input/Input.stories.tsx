@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Input } from "@/components/Input";
+import { Input, InputType } from "@/components/Input";
 import React, { ComponentProps, useState } from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
@@ -59,6 +59,49 @@ export const ErrorWithValue: StoryObj<typeof Wrapper> = {
   },
 };
 
+export const Password: StoryObj<typeof Wrapper> = {
+  args: {},
+  render: () => {
+    const [value, setValue] = useState<string>("");
+    return (
+      <Direction>
+        <div className="ui-w-[50rem]">
+          <Input
+            type={InputType.Password}
+            id="name"
+            label={ar["global.form.password.label"]}
+            placeholder={ar["global.form.password.label"]}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </div>
+      </Direction>
+    );
+  },
+};
+
+export const PasswordError: StoryObj<typeof Wrapper> = {
+  args: {},
+  render: () => {
+    const [value, setValue] = useState<string>("");
+    return (
+      <Direction>
+        <div className="ui-w-[50rem]">
+          <Input
+            type={InputType.Password}
+            id="name"
+            label={ar["global.form.password.label"]}
+            placeholder={ar["global.form.password.label"]}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+            error={ar["errors.password.invlaid"]}
+          />
+        </div>
+      </Direction>
+    );
+  },
+};
+
 export const InputEnglish = {
   render: () => {
     const [value, setValue] = useState<string>("");
@@ -66,7 +109,7 @@ export const InputEnglish = {
       <Direction>
         <div className="ui-w-[50rem]">
           <Input
-            type="text"
+            type={InputType.Text}
             id="name"
             label={ar["global.form.email.label"]}
             placeholder={ar["global.form.email.placeholder"]}
