@@ -18,10 +18,12 @@ export default {
         ...green,
         ...blackA,
         "dark-100": "#181B22",
+        "dark-56": "rgba(20, 32, 59, 0.56)",
         inputbg: "rgba(235, 237, 242, 0.32)",
         "blue-normal": "#3A5BAA",
         "red-light": "rgba(238, 48, 36, 0.08)",
         "red-border": "#EE3024",
+        error: "#EE3024",
       },
       keyframes: {
         overlayShow: {
@@ -50,6 +52,8 @@ export default {
       spacing: {
         lg: "16px",
         xl: "24px",
+        xxl: "32px",
+        "sm-section": "40px",
       },
     },
   },
