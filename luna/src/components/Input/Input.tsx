@@ -34,7 +34,7 @@ export const Input: React.FC<{
   value,
 }) => {
   const [show, setShow] = useState<boolean>(false);
-  const [kind, setKind] = useState<InputType>(type);
+  const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
   const dir: Dir | undefined = useMemo(() => {
     if (!value) return undefined;
@@ -44,7 +44,7 @@ export const Input: React.FC<{
   }, [type, value]);
 
   useEffect(() => {
-    setKind(type);
+    setKind(type || InputType.Text);
   }, [type]);
 
   const onEyeClick = useCallback((shouldShow: boolean) => {

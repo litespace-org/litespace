@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Input } from "@/components/Input";
+import { Input, InputType } from "@/components/Input";
 import { Form } from "@/components/Form";
 import React, { ComponentProps, useCallback } from "react";
 import { Direction } from "@/components/Direction";
@@ -31,25 +31,19 @@ const Wrapper: React.FC<ComponentProps<typeof Input>> = (props) => {
   );
 };
 
-const meta: Meta<typeof Input> = {
+const meta: Meta<typeof Wrapper> = {
   title: "Form",
   component: Wrapper,
   parameters: {},
 };
 
-export const Text: StoryObj<typeof Wrapper> = {
-  args: {
-    id: "name",
-    label: ar["global.form.email.label"],
-    placeholder: ar["global.form.email.placeholder"],
-  },
-};
-
 export const WithPassword: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    type: "password",
-    label: ar["global.form.password.label"],
+    type: InputType.Text,
+    label: ar["global.form.email.label"],
+    placeholder: ar["global.form.email.placeholder"],
+    autoComplete: "off",
   },
 };
 
