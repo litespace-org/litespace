@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Input } from "@/components/Input";
-import React, { ComponentProps } from "react";
+import React, { ComponentProps, useState } from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 
@@ -56,6 +56,26 @@ export const ErrorWithValue: StoryObj<typeof Wrapper> = {
     error: ar["errors.email.invlaid"],
     value: "لايت اسبيس",
     onChange: () => {},
+  },
+};
+
+export const InputEnglish = {
+  render: () => {
+    const [value, setValue] = useState<string>("");
+    return (
+      <Direction>
+        <div className="ui-w-[50rem]">
+          <Input
+            type="text"
+            id="name"
+            label={ar["global.form.email.label"]}
+            placeholder={ar["global.form.email.placeholder"]}
+            value={value}
+            onChange={(event) => setValue(event.target.value)}
+          />
+        </div>
+      </Direction>
+    );
   },
 };
 

@@ -55,6 +55,9 @@ export default {
         xxl: "32px",
         "sm-section": "40px",
       },
+      transitionProperty: {
+        "border-color": "border-color",
+      },
     },
   },
   plugins: [],

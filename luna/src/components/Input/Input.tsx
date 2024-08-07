@@ -1,8 +1,11 @@
 import React, { useMemo } from "react";
-import { ChangeHandler } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 import ErrorOutlined from "@/icons/ErrorOutlined";
+import { Dir } from "@/components/Direction";
+
+const arabic =
+  /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
 
 export const Input: React.FC<{
   id: string;
@@ -10,8 +13,8 @@ export const Input: React.FC<{
   placeholder?: string;
   autoComplete?: string;
   type: "text" | "password";
-  onChange?: ChangeHandler;
-  onBlur?: ChangeHandler;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
+  onBlur?: React.ChangeEventHandler<HTMLInputElement>;
   name?: string;
   error?: string | null;
   value?: string;
@@ -27,6 +30,12 @@ export const Input: React.FC<{
   error,
   value,
 }) => {
+  const dir: Dir | undefined = useMemo(() => {
+    if (!value) return undefined;
+    if (arabic.test(value[0])) return Dir.RTL;
+    return Dir.LRT;
+  }, [value]);
+
   return (
     <div className="ui-flex ui-flex-col ui-w-full">
       <label
@@ -39,6 +48,7 @@ export const Input: React.FC<{
       </label>
       <div className="ui-w-full ui-relative">
         <input
+          dir={dir}
           id={id}
           type={type}
           name={name}
@@ -47,12 +57,14 @@ export const Input: React.FC<{
           onChange={onChange}
           onBlur={onBlur}
           className={cn(
-            "ui-w-full ui-bg-inputbg ui-py-[10px] ui-px-lg ui-rounded-2xl  ui-h-[72px] ui-font-cairo placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-normal",
+            "ui-w-full ui-bg-inputbg ui-py-[10px] ui-px-lg ui-rounded-2xl  ui-h-[72px] ui-font-cairo",
+            "placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-normal placeholder:ui-text-right",
             "ui-text-arxl ui-font-bold ui-leading-normal ui-border focus:ui-outline-none focus:ui-border-blue-normal",
             {
               "ui-bg-red-light ui-border-red-border focus:ui-border-red-border":
                 !!error,
               "ui-border-transparent": !error,
+              "ui-text-right focus:ui-text-left": dir === Dir.LRT,
             }
           )}
           placeholder={placeholder}
