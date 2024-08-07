@@ -11,11 +11,11 @@ const arabic =
   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
 
 export const Input: React.FC<{
-  id: string;
+  id?: string;
   label: string;
   placeholder?: string;
   autoComplete?: string;
-  type: InputType;
+  type?: InputType;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
   onBlur?: React.ChangeEventHandler<HTMLInputElement>;
   name?: string;

@@ -42,13 +42,6 @@ export const Text: StoryObj<typeof Wrapper> = {
     id: "name",
     label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
-    validation: {
-      required: { value: true, message: ar["errors.required"] },
-      pattern: {
-        value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-        message: ar["errors.email.invlaid"],
-      },
-    },
   },
 };
 
@@ -57,14 +50,6 @@ export const WithPassword: StoryObj<typeof Wrapper> = {
     id: "name",
     type: "password",
     label: ar["global.form.password.label"],
-    validation: {
-      required: { value: true, message: ar["errors.required"] },
-      pattern: {
-        value:
-          /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-        message: ar["errors.password.invlaid"],
-      },
-    },
   },
 };
 
