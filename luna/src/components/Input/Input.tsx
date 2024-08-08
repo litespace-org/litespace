@@ -12,7 +12,6 @@ const arabic =
 
 export const Input: React.FC<{
   id?: string;
-  label: string;
   placeholder?: string;
   autoComplete?: string;
   type?: InputType;
@@ -22,7 +21,6 @@ export const Input: React.FC<{
   error?: string | null;
   value?: string;
 }> = ({
-  label,
   type,
   id,
   placeholder,
@@ -54,14 +52,6 @@ export const Input: React.FC<{
 
   return (
     <div className="ui-flex ui-flex-col ui-w-full">
-      <label
-        htmlFor={id}
-        className={cn(
-          "ui-text-dark-100 ui-font-cairo ui-font-bold ui-text-arxl ui-leading-normal ui-mb-xl"
-        )}
-      >
-        {label}
-      </label>
       <div className="ui-w-full ui-relative">
         <input
           dir={dir}
@@ -93,7 +83,7 @@ export const Input: React.FC<{
         )}
       </div>
       <AnimatePresence mode="wait" initial={false}>
-        {error ? <InputError message={error} key={label} /> : null}
+        {error ? <InputError message={error} key={id} /> : null}
       </AnimatePresence>
     </div>
   );

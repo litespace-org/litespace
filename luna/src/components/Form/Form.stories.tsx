@@ -2,48 +2,48 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Input, InputType } from "@/components/Input";
 import { Form } from "@/components/Form";
-import React, { ComponentProps, useCallback } from "react";
+import React from "react";
 import { Direction } from "@/components/Direction";
-import { Button } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
-import { SubmitHandler } from "react-hook-form";
+import { Label } from "@/components/Form/Label";
+import { Field } from "@/components/Form/Field";
 
-type IFormInputs = {
-  email: string;
-};
+type IForm = typeof Form;
 
-const Wrapper: React.FC<ComponentProps<typeof Input>> = (props) => {
-  const onSubmit: SubmitHandler<IFormInputs> = useCallback((data) => {
-    console.log(data);
-  }, []);
-
-  return (
-    <Direction>
-      <div className="ui-max-w-screen-md ui-mx-auto ui-my-10">
-        <Form<IFormInputs> onSubmit={onSubmit}>
-          <Input {...props} />
-          <div className="ui-mt-4">
-            <Button>{ar["page.register.form.button.submit.label"]}</Button>
-          </div>
-        </Form>
-      </div>
-    </Direction>
-  );
-};
-
-const meta: Meta<typeof Wrapper> = {
+const meta: Meta<IForm> = {
   title: "Form",
-  component: Wrapper,
-  parameters: {},
+  component: Form,
+  parameters: { layout: "centered" },
+  decorators: [
+    (Story: React.FC<{ children?: React.ReactNode }>) => (
+      <Direction>
+        <Story />
+      </Direction>
+    ),
+  ],
 };
 
-export const WithPassword: StoryObj<typeof Wrapper> = {
+export const Primary: StoryObj<IForm> = {
   args: {
-    id: "name",
-    type: InputType.Text,
-    label: ar["global.form.email.label"],
-    placeholder: ar["global.form.email.placeholder"],
-    autoComplete: "off",
+    children: (
+      <div className="ui-w-[40rem]">
+        <Field
+          label={
+            <Label required id="name">
+              {ar["global.form.email.label"]}
+            </Label>
+          }
+          field={
+            <Input
+              id="name"
+              type={InputType.Text}
+              placeholder={ar["global.form.email.placeholder"]}
+              autoComplete="off"
+            />
+          }
+        />
+      </div>
+    ),
   },
 };
 

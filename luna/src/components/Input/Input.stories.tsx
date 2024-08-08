@@ -24,7 +24,6 @@ const meta: Meta<typeof Input> = {
 export const Idle: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
   },
 };
@@ -32,7 +31,6 @@ export const Idle: StoryObj<typeof Wrapper> = {
 export const IdelWithValue: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
     value: "لايت اسبيس",
     onChange: () => {},
@@ -42,7 +40,6 @@ export const IdelWithValue: StoryObj<typeof Wrapper> = {
 export const Error: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
     error: ar["errors.email.invlaid"],
   },
@@ -51,7 +48,6 @@ export const Error: StoryObj<typeof Wrapper> = {
 export const ErrorWithValue: StoryObj<typeof Wrapper> = {
   args: {
     id: "name",
-    label: ar["global.form.email.label"],
     placeholder: ar["global.form.email.placeholder"],
     error: ar["errors.email.invlaid"],
     value: "لايت اسبيس",
@@ -69,7 +65,6 @@ export const Password: StoryObj<typeof Wrapper> = {
           <Input
             type={InputType.Password}
             id="name"
-            label={ar["global.form.password.label"]}
             placeholder={ar["global.form.password.label"]}
             value={value}
             onChange={(event) => setValue(event.target.value)}
@@ -90,7 +85,6 @@ export const PasswordError: StoryObj<typeof Wrapper> = {
           <Input
             type={InputType.Password}
             id="name"
-            label={ar["global.form.password.label"]}
             placeholder={ar["global.form.password.label"]}
             value={value}
             onChange={(event) => setValue(event.target.value)}
@@ -111,7 +105,6 @@ export const InputEnglish = {
           <Input
             type={InputType.Text}
             id="name"
-            label={ar["global.form.email.label"]}
             placeholder={ar["global.form.email.placeholder"]}
             value={value}
             onChange={(event) => setValue(event.target.value)}
