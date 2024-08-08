@@ -1,4 +1,4 @@
-import { users } from "@/models";
+import { tutors, users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import {
@@ -19,21 +19,37 @@ import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
-import { count } from "@/models/query";
+import { count, knex } from "@/models/query";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
-  const { email, password, name, role } = schema.http.user.create.parse(
-    req.body
-  );
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const { email, password, name, role, birthYear } =
+    schema.http.user.create.parse(req.body);
+
+  const creatorRole = req.user?.role;
+  const admin = isAdmin(creatorRole);
+  const publicRole = [IUser.Role.Tutor, IUser.Role.Student].includes(role);
+  if (!publicRole && !admin) return next(forbidden());
 
   const exists = await users.findByEmail(email);
   if (exists) return next(userExists());
 
-  const user = await users.create({
-    password: hashPassword(password),
-    role,
-    email,
-    name,
+  const user = await knex.transaction(async (tx) => {
+    const user = await users.create(
+      {
+        role,
+        email,
+        name,
+        birthYear,
+        password: hashPassword(password),
+      },
+      tx
+    );
+
+    if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
+    return user;
   });
 
   const origin = req.get("origin");
@@ -45,7 +61,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     origin,
   });
 
-  res.status(200).send();
+  res.status(201).json(user);
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {

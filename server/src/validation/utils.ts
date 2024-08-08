@@ -19,7 +19,7 @@ export const email = zod.string().trim().email("Invalid email");
 
 export const gender = zod.enum([IUser.Gender.Male, IUser.Gender.Female]);
 
-export const name = zod.string().trim().min(3, "Invalid username");
+export const name = zod.string().trim().min(3, "Invalid name");
 
 export const rating = zod.coerce.number().positive().int().min(1).max(5);
 
@@ -40,6 +40,13 @@ export const weekday = zod.coerce.number().min(-1).max(6);
 export const time = zod.string().time();
 
 export const date = zod.coerce.string().date();
+
+const year = new Date().getFullYear();
+
+export const birthYear = zod.coerce
+  .number()
+  .max(year)
+  .min(year - 80);
 
 export const datetime = zod.coerce.string().datetime();
 

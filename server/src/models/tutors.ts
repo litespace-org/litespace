@@ -1,7 +1,8 @@
 import { knex, withFilter } from "@/models/query";
-import { first, isEmpty, omit } from "lodash";
+import { first, fromPairs, isEmpty, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";
+import { Knex } from "knex";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
@@ -68,46 +69,24 @@ export class Tutors {
     },
   };
 
-  async create(
-    user: IUser.Credentials & { name: string }
-  ): Promise<ITutor.FullTutor> {
+  async create(id: number, tx?: Knex.Transaction): Promise<ITutor.Self> {
     const now = new Date();
-    await knex.transaction((tx) => {
-      // add tutor to the users table first
-      knex<IUser.Row>("users")
-        .transacting(tx)
-        .insert(
-          {
-            email: user.email,
-            password: user.password,
-            name: user.name,
-            role: IUser.Role.Tutor,
-            created_at: now,
-            updated_at: now,
-          },
-          "id"
-        )
-        .then(async (rows) => {
-          const row = first(rows);
-          if (!row) throw new Error("User not found; should never happen");
-          // then add it as a tutor in the tutors table
-          return await knex<ITutor.Row>("tutors")
-            .transacting(tx)
-            .insert({ id: row.id, created_at: now, updated_at: now });
-        })
-        .then(tx.commit)
-        .catch(tx.rollback);
-    });
-
-    const tutor = await this.findByEmail(user.email);
-    if (!tutor) throw new Error("Tutor not found; should never happen");
-    return tutor;
+    const rows = await this.builder(tx)
+      .insert({
+        id,
+        created_at: now,
+        updated_at: now,
+      })
+      .returning("*");
+    const row = first(rows);
+    if (!row) throw new Error("Tutor not found; should never happen");
+    return this.from(row);
   }
 
   async update(id: number, tutor: ITutor.UpdatePayload): Promise<void> {
     const updateUserPayload: Partial<IUser.Row> = {
       email: tutor.email,
-      name: tutor.name,
+      // name: tutor.name,
       password: tutor.password,
       photo: tutor.photo,
       // birth_year: tutor.birthday ? new Date(tutor.birthday) : undefined,
@@ -212,6 +191,26 @@ export class Tutors {
       .from<IUser.Row>("users")
       .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")
       .clone();
+  }
+
+  from(row: ITutor.Row): ITutor.Self {
+    return {
+      id: row.id,
+      bio: row.bio,
+      about: row.about,
+      activated: row.activated,
+      activatedBy: row.activated_by,
+      interviewUrl: row.interview_url,
+      mediaProviderId: row.media_provider_id,
+      passedInterview: row.passed_interview,
+      video: row.video,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+    };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<ITutor.Row>(this.table) : knex<ITutor.Row>(this.table);
   }
 }
 

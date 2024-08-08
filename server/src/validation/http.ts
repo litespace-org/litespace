@@ -22,12 +22,19 @@ import {
   boolean,
   role,
   jsonBoolean,
+  birthYear,
 } from "@/validation/utils";
 import { IFilter, IUser } from "@litespace/types";
 
 const user = {
   create: zod.object(
-    { email, password, name, role },
+    {
+      role,
+      email,
+      password,
+      name: zod.object({ ar: name, en: name }),
+      birthYear,
+    },
     { message: "Empty request body" }
   ),
   update: {

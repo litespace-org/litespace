@@ -40,7 +40,7 @@ const policies: Array<{
 }> = [
   // "/api/v1/user" routes
   {
-    roles: { allowed: fullRoles, denied: [] },
+    roles: { allowed: [...fullRoles, owner], denied: [] },
     route: "/api/v1/user/",
     method: "POST",
   },
@@ -211,7 +211,7 @@ const policies: Array<{
       allowed: [superAdmin, owner],
       denied: [regAdmin, ...customers, provider, interviewer],
     },
-    route: "/api/v1/rate/1",
+    route: "/api/v1/rating/1",
     method: "PUT",
   },
   {
@@ -219,7 +219,7 @@ const policies: Array<{
       allowed: [...admins, owner],
       denied: [interviewer, ...customers, provider, interviewer],
     },
-    route: "/api/v1/rate/list/rater/1",
+    route: "/api/v1/rating/list/rater/1",
     method: "GET",
   },
 ];

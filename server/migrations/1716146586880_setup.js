@@ -35,7 +35,8 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
     password: { type: "CHAR(64)", default: null },
-    name: { type: "VARCHAR(50)", default: null }, // todo: add: name_ar, name_en
+    name_ar: { type: "VARCHAR(50)", default: null },
+    name_en: { type: "VARCHAR(50)", default: null },
     photo: { type: "VARCHAR(255)", default: null },
     role: { type: "user_role", default: null },
     birth_year: { type: "INT", default: null },

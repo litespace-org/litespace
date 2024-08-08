@@ -1,8 +1,8 @@
 import { IUser } from "@litespace/types";
 import { Request } from "express";
 import UrlPattern from "url-pattern";
-import "colors";
 import { isProduction } from "@/constants";
+import "colors";
 
 const owner = "owner";
 const authorized = "authorized";
@@ -64,7 +64,7 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [unauthorized],
+    roles: [unauthorized, owner],
     route: "(/)api/v1/user(/)",
     methods: ["POST"],
   },

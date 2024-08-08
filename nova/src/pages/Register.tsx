@@ -89,19 +89,6 @@ const Register: React.FC = () => {
 
   const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
 
-  const birthYearField = useMemo(
-    () =>
-      register("birthYear", {
-        required: {
-          value: true,
-          message: intl.formatMessage({
-            id: messages["errors.required"],
-          }),
-        },
-      }),
-    [intl, register]
-  );
-
   return (
     <div className="max-w-screen-sm mx-auto my-10">
       <div className="mb-4">

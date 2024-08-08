@@ -9,6 +9,11 @@ export enum Role {
 
 export type TutorOrStudent = Role.Tutor | Role.Student;
 
+export type Name = {
+  ar: string | null;
+  en: string | null;
+};
+
 export enum Gender {
   Male = "male",
   Female = "female",
@@ -17,8 +22,8 @@ export enum Gender {
 export type Self = {
   id: number;
   email: string;
-  hasPassword: boolean;
-  name: string | null;
+  password: boolean;
+  name: Name;
   photo: string | null;
   birthYear: number | null;
   gender: Gender | null;
@@ -34,7 +39,8 @@ export type Row = {
   id: number;
   email: string;
   password: string | null;
-  name: string | null;
+  name_ar: string | null;
+  name_en: string | null;
   photo: string | null;
   birth_year: number | null;
   gender: Gender | null;
@@ -51,14 +57,23 @@ export type Credentials = {
   password: string;
 };
 
+export type CreatePayload = {
+  role?: Role;
+  email?: string;
+  password?: string;
+  name?: Partial<Name>;
+  birthYear?: number;
+  gender?: Gender;
+};
+
 export type UpdatePayload = {
   email?: string;
   password?: string;
-  name?: string;
+  name?: Partial<Name>;
   photo?: string;
   birthYear?: number;
   gender?: Gender;
-  role?: Role;
   verified?: boolean;
   online?: boolean;
+  creditScore?: number;
 };

@@ -45,7 +45,7 @@ export function withFilter<T extends Knex.QueryBuilder>({
     limit?: number;
     order?: IFilter.OrderDirection;
     search?: {
-      columns?: string[];
+      columns?: Array<string | number | symbol>;
       sensitive?: boolean;
       match?: IFilter.Match;
     };

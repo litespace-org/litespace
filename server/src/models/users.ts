@@ -9,7 +9,8 @@ export class Users {
     filterable: [
       "id",
       "email",
-      "name",
+      "name_ar",
+      "name_en",
       "role",
       "birth_year",
       "gender",
@@ -21,18 +22,19 @@ export class Users {
     ],
   };
 
-  async create(user: {
-    email: string;
-    password: string;
-    name: string;
-    role: IUser.Role;
-  }): Promise<IUser.Self> {
+  async create(
+    user: IUser.CreatePayload,
+    tx: Knex.Transaction
+  ): Promise<IUser.Self> {
     const now = new Date();
-    const rows = await knex<IUser.Row>("users").insert(
+    const rows = await this.builder(tx).insert(
       {
         email: user.email,
         password: user.password,
-        name: user.name,
+        name_ar: user.name?.ar,
+        name_en: user.name?.en,
+        birth_year: user.birthYear,
+        gender: user.gender,
         role: user.role,
         created_at: now,
         updated_at: now,
@@ -79,13 +81,15 @@ export class Users {
     await this.builder(tx)
       .update({
         email: payload.email,
-        password: payload.password,
-        name: payload.name,
         photo: payload.photo,
-        birth_year: payload.birthYear,
         gender: payload.gender,
-        role: payload.role,
+        online: payload.online,
+        name_ar: payload.name?.ar,
+        name_en: payload.name?.en,
         verified: payload.verified,
+        password: payload.password,
+        birth_year: payload.birthYear,
+        credit_score: payload.creditScore,
         updated_at: now,
       })
       .where("id", id);
@@ -177,8 +181,8 @@ export class Users {
     return {
       id: row.id,
       email: row.email,
-      hasPassword: row.password !== null,
-      name: row.name,
+      password: row.password !== null,
+      name: { ar: row.name_ar, en: row.name_en },
       photo: row.photo,
       birthYear: row.birth_year,
       gender: row.gender,
