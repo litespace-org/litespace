@@ -35,7 +35,6 @@ export const Primary: StoryObj<IForm> = {
           }
           field={
             <Input
-              id="name"
               type={InputType.Text}
               placeholder={ar["global.form.email.placeholder"]}
               autoComplete="off"

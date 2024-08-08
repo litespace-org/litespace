@@ -1,14 +1,18 @@
 import {
   Input,
   Form,
+  Label,
+  Field,
   Button,
   messages,
   Google,
   Discord,
   Facebook,
+  useValidation,
+  InputType,
 } from "@litespace/luna";
-import React, { useCallback } from "react";
-import { SubmitHandler } from "react-hook-form";
+import React, { useCallback, useMemo } from "react";
+import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
@@ -16,7 +20,7 @@ import { Route } from "@/types/routes";
 import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
 
-interface IFormInput {
+interface IForm {
   email: string;
   password: string;
 }
@@ -24,8 +28,27 @@ interface IFormInput {
 const Login: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
+  const validation = useValidation();
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<IForm>({
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const email = watch("email");
+  const password = watch("password");
+
   const mutation = useMutation(
-    (credentials: IUser.Credentials) => atlas.auth.password(credentials),
+    async (credentials: IUser.Credentials) => {
+      // atlas.auth.password(credentials),
+      console.log({ credentials });
+    },
     {
       onSuccess() {
         return navigate(Route.Root);
@@ -33,46 +56,72 @@ const Login: React.FC = () => {
     }
   );
 
-  const onSubmit: SubmitHandler<IFormInput> = useCallback(
-    async (data) => mutation.mutate(data),
-    [mutation]
+  const onSubmit = useMemo(
+    () =>
+      handleSubmit((credentials: IUser.Credentials) =>
+        mutation.mutate(credentials)
+      ),
+    [handleSubmit, mutation]
   );
 
   return (
     <div className="max-w-screen-sm mx-auto my-10">
       <div className="mb-4">
         <h1 className="text-3xl font-simi-bold text-center">
-          <FormattedMessage id={messages.pages.login.form.title} />
+          <FormattedMessage id={messages["page.login.form.title"]} />
         </h1>
       </div>
 
-      <Form<IFormInput> onSubmit={onSubmit}>
+      <Form onSubmit={onSubmit}>
         <div className="flex flex-col gap-5">
-          <Input
-            label={intl.formatMessage({
-              id: messages.global.form.email.label,
-            })}
-            id="email"
-            placeholder={intl.formatMessage({
-              id: messages.global.form.email.placeholder,
-            })}
-            autoComplete="username"
-          />
-          <Input
-            label={intl.formatMessage({
-              id: messages.global.form.password.label,
-            })}
-            id="password"
-            autoComplete="current-password"
+          <Field
+            label={
+              <Label id="email">
+                {intl.formatMessage({
+                  id: messages["global.form.email.label"],
+                })}
+              </Label>
+            }
+            field={
+              <Input
+                value={email}
+                register={register("email", validation.email)}
+                placeholder={intl.formatMessage({
+                  id: messages["global.form.email.placeholder"],
+                })}
+                autoComplete="off"
+                error={errors["email"]?.message}
+              />
+            }
           />
 
-          <div className="flex items-center justify-center my-5">
-            <Button type="submit">
-              {intl.formatMessage({
-                id: messages.pages.login.form.button.label,
-              })}
-            </Button>
-          </div>
+          <Field
+            label={
+              <Label id="password">
+                {intl.formatMessage({
+                  id: messages["global.form.password.label"],
+                })}
+              </Label>
+            }
+            field={
+              <Input
+                type={InputType.Password}
+                autoComplete="off"
+                value={password}
+                register={register("password", validation.password)}
+                placeholder={intl.formatMessage({
+                  id: messages["global.form.password.placeholder"],
+                })}
+                error={errors["password"]?.message}
+              />
+            }
+          />
+
+          <Button type="submit">
+            {intl.formatMessage({
+              id: messages["page.login.form.button.submit.label"],
+            })}
+          </Button>
         </div>
 
         <div className="w-full h-0.5 bg-gray-100 rounded-full" />

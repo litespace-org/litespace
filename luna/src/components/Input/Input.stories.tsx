@@ -1,9 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Input, InputType } from "@/components/Input";
-import React, { ComponentProps, useState } from "react";
+import React, { ComponentProps } from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
+import { useForm } from "react-hook-form";
 
 const Wrapper: React.FC<ComponentProps<typeof Input>> = (props) => {
   return (
@@ -58,16 +59,17 @@ export const ErrorWithValue: StoryObj<typeof Wrapper> = {
 export const Password: StoryObj<typeof Wrapper> = {
   args: {},
   render: () => {
-    const [value, setValue] = useState<string>("");
+    const { register, watch } = useForm<{ password: string }>({
+      defaultValues: { password: "" },
+    });
     return (
       <Direction>
         <div className="ui-w-[50rem]">
           <Input
             type={InputType.Password}
-            id="name"
             placeholder={ar["global.form.password.label"]}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
+            value={watch("password")}
+            register={register("password")}
           />
         </div>
       </Direction>
@@ -78,16 +80,17 @@ export const Password: StoryObj<typeof Wrapper> = {
 export const PasswordError: StoryObj<typeof Wrapper> = {
   args: {},
   render: () => {
-    const [value, setValue] = useState<string>("");
+    const { register, watch } = useForm<{ password: string }>({
+      defaultValues: { password: "" },
+    });
     return (
       <Direction>
         <div className="ui-w-[50rem]">
           <Input
             type={InputType.Password}
-            id="name"
             placeholder={ar["global.form.password.label"]}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
+            value={watch("password")}
+            register={register("password")}
             error={ar["errors.password.invlaid"]}
           />
         </div>
@@ -98,16 +101,17 @@ export const PasswordError: StoryObj<typeof Wrapper> = {
 
 export const InputEnglish = {
   render: () => {
-    const [value, setValue] = useState<string>("");
+    const { register, watch } = useForm<{ email: string }>({
+      defaultValues: { email: "" },
+    });
     return (
       <Direction>
         <div className="ui-w-[50rem]">
           <Input
             type={InputType.Text}
-            id="name"
             placeholder={ar["global.form.email.placeholder"]}
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
+            value={watch("email")}
+            register={register("email")}
           />
         </div>
       </Direction>

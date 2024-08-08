@@ -27,8 +27,7 @@ const Root: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-screen-md my-10">
-      <h1>Version: 2.0</h1>
-      <ul className="flex flex-col gap-4">
+      {/* <ul className="flex flex-col gap-4">
         <li>
           <Link to={Route.Login}>
             <Button>
@@ -64,7 +63,7 @@ const Root: React.FC = () => {
         >
           {JSON.stringify(profile, null, 2)}
         </pre>
-      </div>
+      </div> */}
     </div>
   );
 };

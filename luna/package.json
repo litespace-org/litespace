@@ -22,6 +22,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && yarn build:css",
+    "watch:build": "concurrently 'vite build -w' 'yarn build:css -w'",
     "build:css": "tailwindcss -m -i ./src/tailwind.css -o ./dist/style.css",
     "build:vercel": "yarn vercel build",
     "deploy:vercel": "yarn vercel deploy --prebuilt",

@@ -6,31 +6,19 @@ import { Dir } from "@/components/Direction";
 import OpenedEye from "@/icons/OpenedEye";
 import ClosedEye from "@/icons/ClosedEye";
 import { InputType } from "@/components/Input/types";
+import { UseFormRegisterReturn } from "react-hook-form";
 
 const arabic =
   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
 
 export const Input: React.FC<{
-  id?: string;
   placeholder?: string;
   autoComplete?: string;
   type?: InputType;
-  onChange?: React.ChangeEventHandler<HTMLInputElement>;
-  onBlur?: React.ChangeEventHandler<HTMLInputElement>;
-  name?: string;
   error?: string | null;
   value?: string;
-}> = ({
-  type,
-  id,
-  placeholder,
-  autoComplete,
-  onChange,
-  onBlur,
-  name,
-  error,
-  value,
-}) => {
+  register?: UseFormRegisterReturn;
+}> = ({ type, placeholder, autoComplete, error, value, register }) => {
   const [show, setShow] = useState<boolean>(false);
   const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
@@ -55,13 +43,11 @@ export const Input: React.FC<{
       <div className="ui-w-full ui-relative">
         <input
           dir={dir}
-          id={id}
+          id={register?.name}
           type={kind}
-          name={name}
           value={value}
           autoComplete={autoComplete}
-          onChange={onChange}
-          onBlur={onBlur}
+          {...register}
           className={cn(
             "ui-w-full ui-bg-inputbg ui-py-[10px] ui-px-lg ui-rounded-2xl  ui-h-[72px] ui-font-cairo",
             "placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-normal placeholder:ui-text-right",
@@ -71,8 +57,7 @@ export const Input: React.FC<{
                 !!error,
               "ui-border-transparent": !error,
               "ui-text-right focus:ui-text-left": dir === Dir.LTR,
-              "focus:ui-text-right":
-                dir === Dir.LTR && type === InputType.Password,
+              "focus:ui-text-right": dir === Dir.LTR,
             }
           )}
           placeholder={placeholder}
@@ -83,7 +68,7 @@ export const Input: React.FC<{
         )}
       </div>
       <AnimatePresence mode="wait" initial={false}>
-        {error ? <InputError message={error} key={id} /> : null}
+        {error ? <InputError message={error} key={register?.name} /> : null}
       </AnimatePresence>
     </div>
   );
