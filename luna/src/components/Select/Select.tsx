@@ -17,7 +17,7 @@ export const Select: React.FC<{
     <ISelect.Trigger
       className={cn(
         "ui-flex ui-justify-between ui-items-center ui-py-[10px] ui-px-lg ui-bg-inputbg ui-rounded-2xl ui-h-[72px] ui-min-w-[300px]",
-        "ui-font-cairo"
+        "ui-font-cairo ui-w-full"
       )}
     >
       <ISelect.Value
@@ -32,7 +32,8 @@ export const Select: React.FC<{
       <ISelect.Content
         className={cn(
           "ui-overflow-hidden ui-bg-white ui-rounded-md",
-          "ui-shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]"
+          "ui-shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]",
+          "ui-w-fit ui-min-w-[20rem]"
         )}
       >
         <ISelect.Viewport className="ui-p-[5px]">

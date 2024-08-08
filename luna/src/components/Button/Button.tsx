@@ -11,6 +11,7 @@ export const Button: React.FC<{
   variant?: Variant;
   color?: Color;
   disabled?: boolean;
+  className?: string;
 }> = ({
   children,
   type,
@@ -18,6 +19,7 @@ export const Button: React.FC<{
   color = Color.Primary,
   onClick,
   disabled,
+  className,
 }) => {
   return (
     <button
@@ -38,7 +40,8 @@ export const Button: React.FC<{
             variant === Variant.Outlined && color === Color.Error,
           "ui-bg-blue-normal": color === Color.Primary,
           "ui-bg-error": color === Color.Error,
-        }
+        },
+        className
       )}
       onClick={onClick}
     >

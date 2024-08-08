@@ -1,8 +1,9 @@
-import { Router } from "express";
+import { NextFunction, Request, Router } from "express";
 import passport, { AuthStrategy } from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
 import utils from "@/handlers/utils";
 import auth from "@/handlers/auth";
+import user from "@/handlers/user";
 
 const router = Router();
 const options = { failureRedirect: "/login" } as const;
@@ -38,14 +39,14 @@ router.get(
 // password
 router.post(
   "/password",
-  passport.authenticate(AuthStrategy.Local, {}),
-  utils.end
+  passport.authenticate(AuthStrategy.Local),
+  user.returnUser
 );
-router.post("/password/forgot", auth.forgotPassword);
+router.post("/password/forgot", auth.forgotPassword, user.returnUser);
 router.put(
   "/password/reset",
   passport.authenticate(AuthStrategy.ResetPasswordToken),
-  utils.end // todo: try to remove `utils.end`!
+  user.returnUser
 );
 
 // email

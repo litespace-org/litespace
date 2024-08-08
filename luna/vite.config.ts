@@ -33,6 +33,7 @@ export default defineConfig({
           "react-hook-form": "reactHookForm",
           "framer-motion": "framerMotion",
           "react-intl": "reactIntl",
+          lodash: "lodash",
         },
       },
     },

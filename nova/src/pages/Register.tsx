@@ -6,9 +6,16 @@ import {
   Google,
   Discord,
   Facebook,
+  Field,
+  Label,
+  useValidation,
+  Select,
+  years,
+  Dir,
+  InputType,
 } from "@litespace/luna";
-import React, { useCallback } from "react";
-import { SubmitHandler } from "react-hook-form";
+import React, { useCallback, useEffect, useMemo } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -22,116 +29,193 @@ import {
 } from "@litespace/types";
 import { atlas } from "@/lib/atlas";
 
-interface IFormInput {
-  name: string;
+interface IForm {
+  name: { ar: string; en: string };
   email: string;
   password: string;
 }
+
+type Role = (typeof roles)[number];
+
+const roles = [IUser.Role.Tutor, IUser.Role.Student] as const;
 
 const Register: React.FC = () => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const { role } = useParams<{
-    role: typeof IUser.Role.Student | typeof IUser.Role.Tutor;
-  }>();
+  const validation = useValidation();
+  const { role } = useParams<{ role: Role }>();
+  const {
+    register,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IForm>({
+    defaultValues: {
+      name: { ar: "", en: "" },
+      email: "",
+      password: "",
+    },
+  });
+
+  console.log({ errors });
+
+  const isValidRole = useMemo(() => role && roles.includes(role), [role]);
+
+  useEffect(() => {
+    if (!isValidRole) return navigate(Route.Root);
+  }, [isValidRole, navigate]);
 
   const mutation = useMutation(
     async ({
       payload,
       role,
     }: {
-      payload: RegisterTutorPayload | RegisterStudentPayload;
+      payload: IForm;
       role: IUser.TutorOrStudent;
     }) => {
-      if (role === IUser.Role.Tutor) return await atlas.tutor.create(payload);
-      return atlas.student.register(payload);
+      console.log({ payload, role });
+      // if (role === IUser.Role.Tutor) return await atlas.tutor.create(payload);
+      // return atlas.student.register(payload);
     },
     {
-      async onSuccess({ token }) {
-        await atlas.auth.token(token);
-        await dispatch(findMe());
-        navigate(Route.Root);
+      async onSuccess() {
+        // await atlas.auth.token(token);
+        // await dispatch(findMe());
+        // navigate(Route.Root);
+        console.log({ success: true });
       },
     }
   );
 
-  const onSubmit: SubmitHandler<IFormInput> = useCallback(
-    async (payload) => {
-      if (!role) return;
-      if (![IUser.Role.Student, IUser.Role.Tutor].includes(role)) return;
-      return await mutation.mutate({ payload, role });
-    },
-    [mutation, role]
+  const onSubmit = useMemo(
+    () =>
+      handleSubmit((payload: IForm) => {
+        if (!isValidRole || !role) return;
+        return mutation.mutate({ payload, role });
+      }),
+    [handleSubmit, isValidRole, mutation, role]
   );
+
+  const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
 
   return (
     <div className="max-w-screen-sm mx-auto my-10">
       <div className="mb-4">
         <h1 className="text-3xl font-simi-bold text-center">
-          <FormattedMessage id={messages.pages.register.form.title} />
+          <FormattedMessage
+            id={
+              tutor
+                ? messages["page.register.tutor.title"]
+                : messages["page.register.student.title"]
+            }
+          />
         </h1>
       </div>
 
-      <Form<IFormInput> onSubmit={onSubmit}>
-        <div className="flex flex-col gap-5">
-          <Input
-            label={intl.formatMessage({
-              id: messages.pages.register.form.name.label,
-            })}
-            id="name"
-            placeholder={intl.formatMessage({
-              id: messages.pages.register.form.name.placeholder,
-            })}
-            autoComplete="name"
-          />
-          <Input
-            label={intl.formatMessage({
-              id: messages.global.form.email.label,
-            })}
-            id="email"
-            placeholder={intl.formatMessage({
-              id: messages.global.form.email.placeholder,
-            })}
-            autoComplete="username"
-          />
-          <Input
-            label={intl.formatMessage({
-              id: messages.global.form.password.label,
-            })}
-            id="password"
-            autoComplete="current-password"
-          />
-
-          <div className="flex items-center justify-center my-5">
-            <Button type="submit">
+      <Form onSubmit={onSubmit}>
+        <Field
+          label={
+            <Label required>
               {intl.formatMessage({
-                id: messages.pages.register.form.button.label,
+                id: messages["page.register.form.name.label.ar"],
               })}
-            </Button>
-          </div>
-        </div>
+            </Label>
+          }
+          field={
+            <Input
+              placeholder={intl.formatMessage({
+                id: messages["page.register.form.name.placeholder"],
+              })}
+              register={register("name.ar", validation.name)}
+              error={errors["name"]?.ar?.message}
+            />
+          }
+        />
+
+        <Field
+          label={
+            <Label required>
+              {intl.formatMessage({
+                id: messages["page.register.form.name.label.en"],
+              })}
+            </Label>
+          }
+          field={
+            <Input
+              placeholder={intl.formatMessage({
+                id: messages["page.register.form.name.placeholder"],
+              })}
+              register={register("name.en", validation.name)}
+              error={errors["name"]?.en?.message}
+            />
+          }
+        />
+
+        <Field
+          label={
+            <Label required>
+              {intl.formatMessage({
+                id: messages["global.form.email.label"],
+              })}
+            </Label>
+          }
+          field={
+            <Input
+              placeholder={intl.formatMessage({
+                id: messages["global.form.email.placeholder"],
+              })}
+              register={register("email", validation.email)}
+              error={errors["email"]?.message}
+            />
+          }
+        />
+
+        <Field
+          label={
+            <Label required>
+              {intl.formatMessage({
+                id: messages["global.form.password.label"],
+              })}
+            </Label>
+          }
+          field={
+            <Input
+              placeholder={intl.formatMessage({
+                id: messages["global.form.password.placeholder"],
+              })}
+              register={register("password", validation.password)}
+              type={InputType.Password}
+              error={errors["password"]?.message}
+            />
+          }
+        />
+
+        <Field
+          label={
+            <Label required>
+              {intl.formatMessage({
+                id: messages["page.register.form.age.label"],
+              })}
+            </Label>
+          }
+          field={
+            <Select
+              dir={Dir.RTL}
+              list={years}
+              placeholder={intl.formatMessage({
+                id: messages["page.register.form.age.placeholder"],
+              })}
+            />
+          }
+        />
+
+        <Button type="submit" className="w-full mt-[56px]">
+          {intl.formatMessage({
+            id: messages["page.register.form.button.submit.label"],
+          })}
+        </Button>
       </Form>
-      <div className="w-full h-0.5 bg-gray-100 rounded-full" />
-      <div className="flex flex-row items-center justify-center gap-5 my-5">
-        <Link to={atlas.auth.authorization.google}>
-          <Button>
-            <Google width={40} height={40} className="fill-indigo-500" />
-          </Button>
-        </Link>
-
-        <Link to={atlas.auth.authorization.facebook}>
-          <Button>
-            <Facebook width={40} height={40} className="fill-indigo-500" />
-          </Button>
-        </Link>
-
-        <Link to={atlas.auth.authorization.discord}>
-          <Button>
-            <Discord width={40} height={40} className="fill-indigo-500" />
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 };

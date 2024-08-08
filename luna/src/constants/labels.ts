@@ -1,3 +1,5 @@
+import { range } from "lodash";
+
 export enum ReportCategory {
   Lesson = "lesson",
   Subscription = "subscription",
@@ -13,3 +15,10 @@ export const categoryOptions = [
     value: ReportCategory.Subscription,
   },
 ];
+
+const year = new Date().getFullYear();
+
+export const years = range(year, year - 70).map((year) => ({
+  label: year.toString(),
+  value: year.toString(),
+}));

@@ -3086,6 +3086,7 @@ __metadata:
     vite-plugin-dts: "npm:^3.9.1"
   peerDependencies:
     framer-motion: ^11.2.6
+    lodash: ^4.17.21
     react: ^18.2.0
     react-dom: ^18.2.0
     react-hook-form: ^7.51.5
@@ -3133,6 +3134,7 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.4.6"
     framer-motion: "npm:^11.2.6"
+    lodash: "npm:^4.17.21"
     peerjs: "npm:^1.5.4"
     postcss: "npm:^8.4.38"
     react: "npm:^18.2.0"

@@ -1,6 +1,6 @@
 export enum Route {
   Root = "/",
-  Register = "/:type/register",
+  Register = "/:role/register",
   Login = "/login",
   SelectUserType = "/select",
   SelectUserGender = "/gender",

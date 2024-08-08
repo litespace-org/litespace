@@ -114,6 +114,11 @@ async function findMe(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(req.user);
 }
 
+async function returnUser(req: Request, res: Response, next: NextFunction) {
+  if (!req.user) return next(notfound());
+  res.status(200).json(req.user);
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
@@ -121,4 +126,5 @@ export default {
   findById: asyncHandler(findById),
   getMany: asyncHandler(getMany),
   findMe: asyncHandler(findMe),
+  returnUser: asyncHandler(returnUser),
 };

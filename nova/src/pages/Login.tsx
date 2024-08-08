@@ -11,7 +11,7 @@ import {
   useValidation,
   InputType,
 } from "@litespace/luna";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
@@ -19,6 +19,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
+import { useAppDispatch } from "@/redux/store";
+import { setUserProfile } from "@/redux/user/me";
 
 interface IForm {
   email: string;
@@ -28,6 +30,7 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useIntl();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
   const validation = useValidation();
   const {
     register,
@@ -36,8 +39,8 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<IForm>({
     defaultValues: {
-      email: "",
-      password: "",
+      email: "student@litespace.org",
+      password: "LiteSpace1###",
     },
   });
 
@@ -46,8 +49,8 @@ const Login: React.FC = () => {
 
   const mutation = useMutation(
     async (credentials: IUser.Credentials) => {
-      // atlas.auth.password(credentials),
-      console.log({ credentials });
+      const profile = await atlas.auth.password(credentials);
+      dispatch(setUserProfile(profile));
     },
     {
       onSuccess() {
@@ -58,8 +61,9 @@ const Login: React.FC = () => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit((credentials: IUser.Credentials) =>
-        mutation.mutate(credentials)
+      handleSubmit(
+        async (credentials: IUser.Credentials) =>
+          await mutation.mutateAsync(credentials)
       ),
     [handleSubmit, mutation]
   );
