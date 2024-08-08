@@ -1,5 +1,5 @@
 export { Button } from "@/components/Button";
-export { Dir } from "@/components/Direction";
+export { Dir, RadixDirection } from "@/components/Direction";
 export { Input, InputType } from "@/components/Input";
 export { Form, Field, Label } from "@/components/Form";
 export { Select, type SelectList } from "@/components/Select";
