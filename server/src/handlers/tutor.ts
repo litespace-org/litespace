@@ -61,17 +61,13 @@ async function update(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function getOne(req: Request, res: Response, next: NextFunction) {
+async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
   const tutor = await tutors.findById(id);
   if (!tutor) return next(userNotFound());
 
-  const owner = req.user.id === tutor.id;
-  const admin = isAdmin(req.user.role);
-  const interviewer = req.user.role === IUser.Role.Interviewer;
-  const eligible = owner || admin || interviewer;
-  if (!eligible) return next(forbidden());
-
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
   res.status(200).json(tutor);
 }
 
@@ -137,7 +133,7 @@ async function getTutorMediaById(
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
-  get: asyncHandler(getOne),
+  findById: asyncHandler(findById),
   list: asyncHandler(getTutors),
   delete: asyncHandler(delete_),
   getTutorsMedia: asyncHandler(getTutorsMedia),

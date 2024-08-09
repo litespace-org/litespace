@@ -90,7 +90,7 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [authorized],
+    roles: [unauthorized],
     route: "(/)api/v1/tutor/:id(/)",
     methods: ["GET"],
   },

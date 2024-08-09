@@ -11,37 +11,19 @@ import SelectUserType from "@/pages/SelectUserType";
 import SelectUserGender from "@/pages/SelectUserGender";
 import SetUserName from "@/pages/SetUserName";
 import Tutors from "@/pages/Tutors";
+import TutorProfile from "@/pages/TutorProfile";
 import Call from "@/pages/Call";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
   { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
-  {
-    path: Route.SelectUserType,
-    element: <SelectUserType />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: Route.SelectUserGender,
-    element: <SelectUserGender />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: Route.SetUserName,
-    element: <SetUserName />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: Route.Tutors,
-    element: <Tutors />,
-    errorElement: <ErrorPage />,
-  },
-  {
-    path: Route.Call,
-    element: <Call />,
-    errorElement: <ErrorPage />,
-  },
+  { path: Route.SelectUserType, element: <SelectUserType /> },
+  { path: Route.SelectUserGender, element: <SelectUserGender /> },
+  { path: Route.SetUserName, element: <SetUserName /> },
+  { path: Route.Tutors, element: <Tutors /> },
+  { path: Route.Call, element: <Call /> },
+  { path: Route.TutorProfile, element: <TutorProfile /> },
 ]);
 
 function App(): React.JSX.Element {

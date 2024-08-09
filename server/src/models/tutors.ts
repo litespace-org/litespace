@@ -1,19 +1,18 @@
 import { knex, withFilter } from "@/models/query";
-import { first, fromPairs, isEmpty, omit } from "lodash";
+import { first, fromPairs, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { isValuedObject } from "@/lib/utils";
 import { Knex } from "knex";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
+type FullTutorFields = ITutor.FullTutorRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
-type FullTutorFields = Omit<ITutor.FullTutor, "hasPassword"> & {
-  password: string;
-};
 
 const fullTutorFields: FullTutorFieldsMap = {
   id: "users.id",
   email: "users.email",
-  name: "users.name",
+  arabicName: "users.name_ar",
+  englishName: "users.name_en",
   photo: "users.photo",
   role: "users.role",
   password: "users.password",
@@ -139,12 +138,16 @@ export class Tutors {
 
   async findByEmail(email: string): Promise<ITutor.FullTutor | null> {
     const tutors = await this.fullTutorQuery().where("email", email).limit(1);
-    return first(tutors) || null;
+    const tutor = first(tutors);
+    if (!tutor) return null;
+    return this.asFullTutor(tutor);
   }
 
   async findById(id: number): Promise<ITutor.FullTutor | null> {
     const tutors = await this.fullTutorQuery().where("tutors.id", id).limit(1);
-    return first(tutors) || null;
+    const tutor = first(tutors);
+    if (!tutor) return null;
+    return this.asFullTutor(tutor);
   }
 
   async exists(id: number): Promise<boolean> {
@@ -187,7 +190,7 @@ export class Tutors {
 
   fullTutorQuery() {
     return knex
-      .select<ITutor.FullTutor[]>(this.columns.fullTutorFields.map)
+      .select<ITutor.FullTutorRow[]>(this.columns.fullTutorFields.map)
       .from<IUser.Row>("users")
       .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")
       .clone();
@@ -207,6 +210,13 @@ export class Tutors {
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
+  }
+
+  asFullTutor(row: ITutor.FullTutorRow): ITutor.FullTutor {
+    return merge(omit(row, "arabicName", "englishName"), {
+      name: { ar: row.arabicName, en: row.englishName },
+      password: row.password !== null,
+    });
   }
 
   builder(tx?: Knex.Transaction) {

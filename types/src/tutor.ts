@@ -14,8 +14,11 @@ export type Self = {
   updatedAt: string;
 };
 
-export type FullTutor = User.Self &
-  Omit<Self, "id" | "createdAt" | "updatedAt"> & { metaUpdatedAt: string };
+export type FullTutor = User.Self & Self & { metaUpdatedAt: string };
+export type FullTutorRow = Omit<FullTutor, "name"> & {
+  arabicName: string | null;
+  englishName: string | null;
+};
 
 export type Row = {
   id: number;

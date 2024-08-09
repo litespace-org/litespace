@@ -16,12 +16,14 @@ import { knex } from "@/models/query";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^*");
+  const birthYear = 2001;
 
   const admin = await users.create({
     email: "admin@litespace.org",
     name: { en: "LiteSpace Admin", ar: "أحمد" },
     role: IUser.Role.SuperAdmin,
     password,
+    birthYear,
   });
 
   const interviewer = await users.create({
@@ -29,6 +31,7 @@ async function main(): Promise<void> {
     email: "interviewer@litespace.org",
     name: { en: "LiteSpace Interviewer", ar: "محمد" },
     password,
+    birthYear,
   });
 
   const student = await users.create({
@@ -36,6 +39,7 @@ async function main(): Promise<void> {
     email: "student@litespace.org",
     name: { en: "LiteSpace Student", ar: "إبراهيم" },
     password,
+    birthYear,
   });
 
   const mediaProvider = await users.create({
@@ -43,6 +47,7 @@ async function main(): Promise<void> {
     email: "media@litespace.org",
     name: { en: "LiteSpace Media Provider", ar: "يلا استب" },
     password,
+    birthYear,
   });
 
   const tutor = await knex.transaction(async (tx) => {
@@ -52,11 +57,17 @@ async function main(): Promise<void> {
         email: "tutor@litespace.org",
         name: { en: "LiteSpace Tutor", ar: "إسماعيل" },
         password,
+        birthYear,
       },
       tx
     );
 
     await tutors.create(tutor.id, tx);
+    await users.update(
+      tutor.id,
+      { photo: "test.jpg", gender: IUser.Gender.Male },
+      tx
+    );
     return tutor;
   });
 

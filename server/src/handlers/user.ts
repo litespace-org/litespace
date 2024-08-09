@@ -131,7 +131,6 @@ async function findMe(req: Request, res: Response, next: NextFunction) {
 }
 
 async function returnUser(req: Request, res: Response, next: NextFunction) {
-  console.log({ here: true });
   if (!req.user) return next(notfound());
   res.status(200).json(req.user);
 }

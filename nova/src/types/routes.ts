@@ -7,4 +7,5 @@ export enum Route {
   SetUserName = "/name",
   Tutors = "/tutors",
   Call = "/call",
+  TutorProfile = "/tutor/:id",
 }
