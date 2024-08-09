@@ -23,12 +23,11 @@ const TutorProfile: React.FC = () => {
       return await atlas.rating.findRateeRatings(tutor.data.id);
     },
     enabled: !!tutor.data,
+    retry: false,
   });
 
   if (tutor.isLoading) return <h1>Loading...</h1>;
   if (tutor.isError) return <h1>Error</h1>;
-
-  console.log({ ratings: ratings.data });
 
   return (
     <div className="max-w-screen-xl mx-auto px-20 py-24 font-cairo">

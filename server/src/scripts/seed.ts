@@ -16,7 +16,7 @@ import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
 
 async function main(): Promise<void> {
-  const password = hashPassword("LiteSpace432%^*");
+  const password = hashPassword("LiteSpace432%^&");
   const birthYear = 2001;
 
   const admin = await users.create({
