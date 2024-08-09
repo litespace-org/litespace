@@ -8,6 +8,7 @@ import {
   reportReplies,
   tutors,
   users,
+  ratings,
 } from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
@@ -34,12 +35,20 @@ async function main(): Promise<void> {
     birthYear,
   });
 
-  const student = await users.create({
-    role: IUser.Role.Student,
-    email: "student@litespace.org",
-    name: { en: "LiteSpace Student", ar: "إبراهيم ياسين" },
-    password,
-    birthYear,
+  const student = await knex.transaction(async (tx) => {
+    const student = await users.create(
+      {
+        role: IUser.Role.Student,
+        email: "student@litespace.org",
+        name: { en: "LiteSpace Student", ar: "إبراهيم ياسين" },
+        password,
+        birthYear,
+      },
+      tx
+    );
+
+    await users.update(student.id, { photo: "student.png" }, tx);
+    return student;
   });
 
   const mediaProvider = await users.create({
@@ -86,6 +95,13 @@ async function main(): Promise<void> {
       tx
     );
     return tutor;
+  });
+
+  await ratings.create({
+    raterId: student.id,
+    rateeId: tutor.id,
+    value: 5,
+    feedback: "مدرس عظيم جدا",
   });
 
   const startDate = dayjs().format("YYYY-MM-DD");

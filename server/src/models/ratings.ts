@@ -1,4 +1,4 @@
-import { first, isEmpty } from "lodash";
+import { first, isEmpty, merge, omit } from "lodash";
 import { knex, query } from "@/models/query";
 import { IRating } from "@litespace/types";
 
@@ -51,32 +51,48 @@ export class Ratings {
   async findManyBy<T extends keyof IRating.Row>(
     key: T,
     value: IRating.Row[T]
-  ): Promise<IRating.Self[]> {
+  ): Promise<IRating.Populated[]> {
     const rows = await knex<IRating.Row>(this.name)
-      .select("*")
+      .select<IRating.PopulatedRow[]>({
+        id: "ratings.id",
+        raterId: "rater.id",
+        raterArabicName: "rater.name_ar",
+        raterEnglishName: "rater.name_en",
+        raterPhoto: "rater.photo",
+        rateeId: "ratee.id",
+        rateeArabicName: "ratee.name_ar",
+        rateeEnglishName: "ratee.name_en",
+        rateePhoto: "ratee.photo",
+        value: "ratings.value",
+        feedback: "ratings.feedback",
+        createdAt: "ratings.created_at",
+        updatedAt: "ratings.updated_at",
+      })
+      .innerJoin("users AS rater", "rater.id", "ratings.rater_id")
+      .innerJoin("users AS ratee", "ratee.id", "ratings.ratee_id")
       .where(key, value);
-    return rows.map((row) => this.from(row));
+    return rows.map((row) => this.asPopulated(row));
   }
 
   async findOneBy<T extends keyof IRating.Row>(
     key: T,
     value: IRating.Row[T]
-  ): Promise<IRating.Self | null> {
+  ): Promise<IRating.Populated | null> {
     const ratings = await this.findManyBy(key, value);
     if (ratings.length > 1)
       throw new Error("too many ratings found; expecting one");
     return first(ratings) || null;
   }
 
-  async findById(id: number): Promise<IRating.Self | null> {
+  async findById(id: number): Promise<IRating.Populated | null> {
     return await this.findOneBy("id", id);
   }
 
-  async findByRaterId(id: number): Promise<IRating.Self[] | null> {
+  async findByRaterId(id: number): Promise<IRating.Populated[] | null> {
     return await this.findManyBy("rater_id", id);
   }
 
-  async findByRateeId(id: number): Promise<IRating.Self[] | null> {
+  async findByRateeId(id: number): Promise<IRating.Populated[] | null> {
     return await this.findManyBy("ratee_id", id);
   }
 
@@ -111,6 +127,26 @@ export class Ratings {
       feedback: row.feedback,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
+    };
+  }
+
+  asPopulated(row: IRating.PopulatedRow): IRating.Populated {
+    return {
+      id: row.id,
+      rater: {
+        id: row.raterId,
+        name: { ar: row.raterArabicName, en: row.raterEnglishName },
+        photo: row.raterPhoto,
+      },
+      ratee: {
+        id: row.rateeId,
+        name: { ar: row.rateeArabicName, en: row.rateeEnglishName },
+        photo: row.rateePhoto,
+      },
+      value: row.value,
+      feedback: row.feedback,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
     };
   }
 }

@@ -54,7 +54,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
   const rating = await ratings.findById(id);
 
   if (!rating) return next(notfound());
-  if (rating.raterId !== req.user.id) return next(forbidden());
+  if (rating.rater.id !== req.user.id) return next(forbidden());
 
   await ratings.update(id, payload);
   res.status(200).send();
@@ -66,7 +66,7 @@ async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const rating = await ratings.findById(id);
   if (!rating) return next(notfound());
 
-  const allowed = enforceRequest(req, rating.raterId === req.user.id);
+  const allowed = enforceRequest(req, rating.rater.id === req.user.id);
   if (!allowed) return next(forbidden());
 
   await ratings.delete(id);
@@ -98,7 +98,7 @@ async function getRateeRatings(
   next: NextFunction
 ) {
   const { id } = identityObject.parse(req.params);
-  const allowed = enforceRequest(req, id === req.user.id);
+  const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
   const list = await ratings.findByRateeId(id);
   res.status(200).json(list);
@@ -109,7 +109,7 @@ async function getRatingById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
   const rating = await ratings.findById(id);
   if (!rating) return next(notfound());
-  const owner = rating.raterId === userId || rating.rateeId === userId;
+  const owner = rating.rater.id === userId || rating.ratee.id === userId;
   const allowed = enforceRequest(req, owner);
   if (!allowed) return next(forbidden());
   res.status(200).json(rating);

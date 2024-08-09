@@ -85,13 +85,14 @@ const policies: Array<Policy> = [
     methods: ["POST"],
   },
   {
-    roles: [authorized],
-    route: "(/)api/v1/tutor/list(/)",
-    methods: ["GET"],
-  },
-  {
     roles: [unauthorized],
     route: "(/)api/v1/tutor/:id(/)",
+    methods: ["GET"],
+    ignore: { key: "id", value: "list" },
+  },
+  {
+    roles: [authorized],
+    route: "(/)api/v1/tutor/list(/)",
     methods: ["GET"],
   },
   {
@@ -181,7 +182,7 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [regAdmin, owner],
+    roles: [unauthorized],
     route: "(/)api/v1/rating/list/ratee/:id(/)",
     methods: ["GET"],
   },

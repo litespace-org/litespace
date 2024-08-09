@@ -66,7 +66,7 @@ const policies: Array<{
     method: "GET",
   },
   {
-    roles: { allowed: authorizedRoles, denied: [unauthorized] },
+    roles: { allowed: fullRoles, denied: [] },
     route: "/api/v1/tutor/1",
     method: "GET",
   },
@@ -225,7 +225,7 @@ const policies: Array<{
 ];
 
 describe("Access Control", () => {
-  it.only("Routes Access", async () => {
+  it("Routes Access", async () => {
     for (const { roles, route, method } of policies) {
       console.log(
         `ACL: ${route}, ${method}\nAllowed: ${roles.allowed}\nDenied: ${roles.denied}`
