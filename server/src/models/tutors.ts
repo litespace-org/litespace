@@ -82,41 +82,23 @@ export class Tutors {
     return this.from(row);
   }
 
-  async update(id: number, tutor: ITutor.UpdatePayload): Promise<void> {
-    const updateUserPayload: Partial<IUser.Row> = {
-      email: tutor.email,
-      // name: tutor.name,
-      password: tutor.password,
-      photo: tutor.photo,
-      // birth_year: tutor.birthday ? new Date(tutor.birthday) : undefined,
-      gender: tutor.gender,
-    } as const;
-
-    if (isValuedObject(updateUserPayload))
-      await knex<IUser.Row>("users")
-        .update({
-          ...updateUserPayload,
-          updated_at: new Date(),
-        })
-        .where("id", id);
-
-    const updateTutorPayload: Partial<ITutor.Row> = {
-      bio: tutor.bio,
-      about: tutor.about,
-      video: tutor.video,
-      activated: tutor.activated,
-      activated_by: tutor.activatedBy,
-      passed_interview: tutor.passedInterview,
-      interview_url: tutor.interviewUrl,
-    } as const;
-
-    if (isValuedObject(updateTutorPayload))
-      await knex<ITutor.Row>("tutors")
-        .update({
-          ...updateTutorPayload,
-          updated_at: new Date(),
-        })
-        .where("id", id);
+  async update(
+    id: number,
+    tutor: ITutor.UpdatePayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
+    await this.builder(tx)
+      .update({
+        bio: tutor.bio,
+        about: tutor.about,
+        video: tutor.video,
+        activated: tutor.activated,
+        activated_by: tutor.activatedBy,
+        media_provider_id: tutor.mediaProviderId,
+        passed_interview: tutor.passedInterview,
+        updated_at: new Date(),
+      })
+      .where("id", id);
   }
 
   async delete(id: number): Promise<void> {

@@ -20,7 +20,7 @@ async function main(): Promise<void> {
 
   const admin = await users.create({
     email: "admin@litespace.org",
-    name: { en: "LiteSpace Admin", ar: "أحمد" },
+    name: { en: "LiteSpace Admin", ar: "أحمد عبدالله" },
     role: IUser.Role.SuperAdmin,
     password,
     birthYear,
@@ -29,7 +29,7 @@ async function main(): Promise<void> {
   const interviewer = await users.create({
     role: IUser.Role.Interviewer,
     email: "interviewer@litespace.org",
-    name: { en: "LiteSpace Interviewer", ar: "محمد" },
+    name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو اسمعيل" },
     password,
     birthYear,
   });
@@ -37,7 +37,7 @@ async function main(): Promise<void> {
   const student = await users.create({
     role: IUser.Role.Student,
     email: "student@litespace.org",
-    name: { en: "LiteSpace Student", ar: "إبراهيم" },
+    name: { en: "LiteSpace Student", ar: "إبراهيم ياسين" },
     password,
     birthYear,
   });
@@ -55,7 +55,7 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Tutor,
         email: "tutor@litespace.org",
-        name: { en: "LiteSpace Tutor", ar: "إسماعيل" },
+        name: { en: "LiteSpace Tutor", ar: "إسماعيل عبد الكريم" },
         password,
         birthYear,
       },
@@ -66,6 +66,23 @@ async function main(): Promise<void> {
     await users.update(
       tutor.id,
       { photo: "test.jpg", gender: IUser.Gender.Male },
+      tx
+    );
+    await tutors.update(
+      tutor.id,
+      {
+        video: "test.mp4",
+        about: [
+          "محمد بن الحسن بن الحسن بن الهيثم أبو علي البصري 965-1039، لقب بالبصري نسبة إلى مدينة البصرة. ابن الهيثم هو عالم عربي في الرياضيات والبصريات والهندسة له العديد من المؤلفات والمكتشفات العلمية التي أكدها العلم الحديث.",
+          "درس ابن الهيثم ظواهر إنكسار الضوء وانعكاسه بشكل مفصّل، وخالف الآراء القديمة كنظريات بطليموس، فنفى أن الرؤية تتم بواسطة أشعة تنبعث من العين ، كما أرسى أساسيات علم العدسات وشرّح العين تشريحا كاملا .",
+          'يعتبر كتاب المناظر Optics المرجع الأهم الذي استند عليه علماء العصر الحديث في تطوير التقانة الضوئية، وهو تاريخياً أول من قام بتجارب الكاميرا وهو الاسم المشتق من الكلمة العربية : " قُمرة " وتعني الغرفة المظلمة بشباك صغير.',
+        ].join("\n"),
+        bio: "أحب الحياة البسيطة",
+        activated: true,
+        activatedBy: admin.id,
+        mediaProviderId: mediaProvider.id,
+        passedInterview: true,
+      },
       tx
     );
     return tutor;

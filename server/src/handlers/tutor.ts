@@ -53,9 +53,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
   await tutors.update(id, {
     ...fields,
-    photo: dropPhoto ? null : photo,
     video: dropVideo ? null : video,
-    password: fields.password ? hashPassword(fields.password) : undefined,
   });
 
   res.status(200).send();

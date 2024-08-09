@@ -43,19 +43,12 @@ export type TutorMedia = {
 };
 
 export type UpdatePayload = {
-  email?: string;
-  password?: string;
-  name?: string;
-  photo?: string | null;
   bio?: string;
-  // birthday?: string;
-  gender?: User.Gender;
   about?: string;
   video?: string | null;
   activated?: boolean;
   activatedBy?: number;
   passedInterview?: boolean;
-  interviewUrl?: string;
   mediaProviderId?: number;
 };
 
