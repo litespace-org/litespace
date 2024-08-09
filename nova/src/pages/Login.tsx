@@ -40,7 +40,7 @@ const Login: React.FC = () => {
   } = useForm<IForm>({
     defaultValues: {
       email: "student@litespace.org",
-      password: "LiteSpace1###",
+      password: "LiteSpace432%^&",
     },
   });
 

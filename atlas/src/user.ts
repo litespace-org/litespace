@@ -2,13 +2,12 @@ import { Base } from "@/base";
 import { FindMeResponse, IUser } from "@litespace/types";
 
 export class User extends Base {
-  async create(params: {
-    name: string;
-    email: string;
-    password: string;
-    role: IUser.Role;
-  }): Promise<void> {
-    await this.client.post("/api/v1/user/", JSON.stringify(params));
+  async create(payload: IUser.CreateApiPayload): Promise<IUser.Self> {
+    const { data } = await this.client.post<IUser.Self>(
+      "/api/v1/user/",
+      JSON.stringify(payload)
+    );
+    return data;
   }
 
   async findById(id: number | string): Promise<IUser.Self> {

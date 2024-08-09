@@ -17,7 +17,7 @@ export async function verify(
     const user = await users.findByEmail(email.value);
     if (user) return done(null, user);
 
-    const info = await users.createWithEmailOnly(email.value);
+    const info = await users.create({ email: email.value });
     return done(null, info);
   } catch (error) {
     done(error);

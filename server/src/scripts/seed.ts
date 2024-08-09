@@ -12,13 +12,14 @@ import {
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
+import { knex } from "@/models/query";
 
 async function main(): Promise<void> {
-  const password = hashPassword("LiteSpace1###");
+  const password = hashPassword("LiteSpace432%^*");
 
   const admin = await users.create({
     email: "admin@litespace.org",
-    name: "LiteSpace Admin",
+    name: { en: "LiteSpace Admin", ar: "أحمد" },
     role: IUser.Role.SuperAdmin,
     password,
   });
@@ -26,28 +27,37 @@ async function main(): Promise<void> {
   const interviewer = await users.create({
     role: IUser.Role.Interviewer,
     email: "interviewer@litespace.org",
-    name: "LiteSpace Interviewer",
+    name: { en: "LiteSpace Interviewer", ar: "محمد" },
     password,
   });
 
   const student = await users.create({
     role: IUser.Role.Student,
     email: "student@litespace.org",
-    name: "LiteSpace Student",
+    name: { en: "LiteSpace Student", ar: "إبراهيم" },
     password,
   });
 
   const mediaProvider = await users.create({
     role: IUser.Role.MediaProvider,
     email: "media@litespace.org",
-    name: "LiteSpace Media Provider",
+    name: { en: "LiteSpace Media Provider", ar: "يلا استب" },
     password,
   });
 
-  const tutor = await tutors.create({
-    email: "tutor@litespace.org",
-    name: "LiteSpace Tutor",
-    password,
+  const tutor = await knex.transaction(async (tx) => {
+    const tutor = await users.create(
+      {
+        role: IUser.Role.Tutor,
+        email: "tutor@litespace.org",
+        name: { en: "LiteSpace Tutor", ar: "إسماعيل" },
+        password,
+      },
+      tx
+    );
+
+    await tutors.create(tutor.id, tx);
+    return tutor;
   });
 
   const startDate = dayjs().format("YYYY-MM-DD");

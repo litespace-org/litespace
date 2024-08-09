@@ -34,7 +34,8 @@ export type Self = {
 export type HostCall = Self & {
   attendeeId: number;
   attendeeEmail: string;
-  attendeeName: string;
+  attendeeNameAr: string;
+  attendeeNameEn: string;
 };
 
 export enum Size {

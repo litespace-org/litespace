@@ -64,7 +64,7 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [unauthorized, owner],
+    roles: [unauthorized],
     route: "(/)api/v1/user(/)",
     methods: ["POST"],
   },

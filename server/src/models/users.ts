@@ -24,7 +24,7 @@ export class Users {
 
   async create(
     user: IUser.CreatePayload,
-    tx: Knex.Transaction
+    tx?: Knex.Transaction
   ): Promise<IUser.Self> {
     const now = new Date();
     const rows = await this.builder(tx).insert(
@@ -40,31 +40,6 @@ export class Users {
         updated_at: now,
       },
       "*"
-    );
-
-    const row = first(rows);
-    if (!row) throw new Error("User not found; should never happen");
-    return this.from(row);
-  }
-
-  async createWithEmailOnly(email: string): Promise<IUser.Self> {
-    const { rows } = await query<IUser.Row, [email: string]>(
-      `
-      INSERT INTO
-          "users" ("email")
-      values ($1) RETURNING "id",
-          "email",
-          "password"
-          "name",
-          "photo",
-          "role",
-          "birthday",
-          "gender",
-          "online",
-          "created_at",
-          "updated_at";
-      `,
-      [email]
     );
 
     const row = first(rows);
@@ -144,37 +119,18 @@ export class Users {
     return rows.map((row) => this.from(row));
   }
 
-  async findByCredentials(
-    email: string,
-    password: string
-  ): Promise<IUser.Self | null> {
-    const { rows } = await query<IUser.Row, [string, string]>(
-      `
-        SELECT id, email, password, name, photo, role, online, created_at, updated_at
-        FROM users
-        WHERE
-            email = $1
-            AND password = $2;
-      `,
-      [email, password]
-    );
+  async findByCredentials({
+    email,
+    password,
+  }: IUser.Credentials): Promise<IUser.Self | null> {
+    const rows = await knex<IUser.Row>(this.table)
+      .select("*")
+      .where("email", email)
+      .andWhere("password", password);
 
     const row = first(rows);
     if (!row) return null;
     return this.from(row);
-  }
-
-  async getTutors(): Promise<IUser.Self[]> {
-    const { rows } = await query<IUser.Row, [typeof IUser.Role.Tutor]>(
-      `
-        SELECT id, email, name, photo, type, online, created_at, updated_at
-        FROM users
-        WHERE type = $1;
-      `,
-      [IUser.Role.Tutor]
-    );
-
-    return rows.map((row) => this.from(row));
   }
 
   from(row: IUser.Row): IUser.Self {

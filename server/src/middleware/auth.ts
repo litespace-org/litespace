@@ -64,10 +64,10 @@ export async function jwtAuthorization(req: Request, done: DoneCallback) {
 export async function localAuthorization(req: Request, done: DoneCallback) {
   try {
     const credentials = schema.http.auth.localAuthorization.parse(req.body);
-    const user = await users.findByCredentials(
-      credentials.email,
-      hashPassword(credentials.password)
-    );
+    const user = await users.findByCredentials({
+      email: credentials.email,
+      password: hashPassword(credentials.password),
+    });
     if (!user) return done(new Error("Invalid email or password"));
     return done(null, user);
   } catch (error) {

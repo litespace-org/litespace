@@ -77,3 +77,12 @@ export type UpdatePayload = {
   online?: boolean;
   creditScore?: number;
 };
+
+export type CreateApiPayload = {
+  role: Role;
+  email: string;
+  password: string;
+  name: Name;
+  birthYear: number;
+  gender: Gender;
+};

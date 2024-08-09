@@ -18,6 +18,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
+import { atlas } from "@/lib/atlas";
+import { merge } from "lodash";
+import { setUserProfile } from "@/redux/user/me";
 
 interface IForm {
   name: { ar: string; en: string };
@@ -44,9 +47,10 @@ const Register: React.FC = () => {
     formState: { errors },
   } = useForm<IForm>({
     defaultValues: {
-      name: { ar: "", en: "" },
-      email: "",
-      password: "",
+      name: { ar: "أحمد", en: "Ahmed" },
+      email: "me@ahmedibrahim.dev",
+      password: "LiteSpace432%^&",
+      birthYear: "2001",
     },
   });
 
@@ -57,23 +61,12 @@ const Register: React.FC = () => {
   }, [isValidRole, navigate]);
 
   const mutation = useMutation(
-    async ({
-      payload,
-      role,
-    }: {
-      payload: IForm;
-      role: IUser.TutorOrStudent;
-    }) => {
-      console.log({ payload, role });
-      // if (role === IUser.Role.Tutor) return await atlas.tutor.create(payload);
-      // return atlas.student.register(payload);
-    },
+    async (payload: IUser.CreateApiPayload): Promise<IUser.Self> =>
+      await atlas.user.create(payload),
     {
-      async onSuccess() {
-        // await atlas.auth.token(token);
-        // await dispatch(findMe());
-        // navigate(Route.Root);
-        console.log({ success: true });
+      async onSuccess(user: IUser.Self) {
+        dispatch(setUserProfile(user));
+        navigate(Route.Root);
       },
     }
   );
@@ -82,7 +75,9 @@ const Register: React.FC = () => {
     () =>
       handleSubmit((payload: IForm) => {
         if (!isValidRole || !role) return;
-        return mutation.mutate({ payload, role });
+        return mutation.mutate(
+          merge(payload, { role, birthYear: Number(payload.birthYear) })
+        );
       }),
     [handleSubmit, isValidRole, mutation, role]
   );
@@ -118,7 +113,7 @@ const Register: React.FC = () => {
                 id: messages["page.register.form.name.placeholder"],
               })}
               value={watch("name.ar")}
-              register={register("name.ar", validation.name)}
+              register={register("name.ar", validation.name.ar)}
               error={errors["name"]?.ar?.message}
               autoComplete="off"
             />
@@ -139,7 +134,7 @@ const Register: React.FC = () => {
                 id: messages["page.register.form.name.placeholder"],
               })}
               value={watch("name.en")}
-              register={register("name.en", validation.name)}
+              register={register("name.en", validation.name.en)}
               error={errors["name"]?.en?.message}
               autoComplete="off"
             />

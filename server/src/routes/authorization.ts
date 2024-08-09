@@ -1,9 +1,10 @@
-import { NextFunction, Request, Router } from "express";
+import { Router } from "express";
 import passport, { AuthStrategy } from "@/lib/passport";
 import { logout } from "@/handlers/oauth";
 import utils from "@/handlers/utils";
 import auth from "@/handlers/auth";
 import user from "@/handlers/user";
+import asyncHandler from "express-async-handler";
 
 const router = Router();
 const options = { failureRedirect: "/login" } as const;
@@ -39,20 +40,20 @@ router.get(
 // password
 router.post(
   "/password",
-  passport.authenticate(AuthStrategy.Local),
+  asyncHandler(passport.authenticate(AuthStrategy.Local)),
   user.returnUser
 );
 router.post("/password/forgot", auth.forgotPassword, user.returnUser);
 router.put(
   "/password/reset",
-  passport.authenticate(AuthStrategy.ResetPasswordToken),
+  asyncHandler(passport.authenticate(AuthStrategy.ResetPasswordToken)),
   user.returnUser
 );
 
 // email
 router.post(
   "/verify-email",
-  passport.authenticate(AuthStrategy.EmailVerificationToken),
+  asyncHandler(passport.authenticate(AuthStrategy.EmailVerificationToken)),
   utils.end
 );
 

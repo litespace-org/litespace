@@ -22,17 +22,17 @@ import { httpQueryFilter } from "@/validation/http";
 import { count } from "@/models/query";
 
 async function create(req: Request, res: Response, next: NextFunction) {
-  const body = schema.http.tutor.create.body.parse(req.body);
-  const tutor = await tutors.create(body);
+  // const body = schema.http.tutor.create.body.parse(req.body);
+  // const tutor = await tutors.create();
 
-  const origin = req.get("origin");
-  if (!origin) return next(badRequest());
+  // const origin = req.get("origin");
+  // if (!origin) return next(badRequest());
 
-  await sendUserVerificationEmail({
-    userId: tutor.id,
-    email: tutor.email,
-    origin,
-  });
+  // await sendUserVerificationEmail({
+  //   userId: tutor.id,
+  //   email: tutor.email,
+  //   origin,
+  // });
 
   res.status(200).send();
 }

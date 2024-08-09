@@ -13,17 +13,11 @@ const Root: React.FC = () => {
   const navigate = useNavigate();
   const profile = useAppSelector(profileSelector);
 
-  const mutation = useMutation(() => atlas.auth.logout(), {
-    onSuccess() {
-      dispatch(findMe());
-    },
-  });
-
   // todo: should be move into the shared layout
-  useEffect(() => {
-    if (profile && profile.name === null) return navigate(Route.SetUserName);
-    if (profile && profile.type === null) return navigate(Route.SelectUserType);
-  }, [navigate, profile]);
+  // useEffect(() => {
+  //   if (profile && profile.name === null) return navigate(Route.SetUserName);
+  //   if (profile && profile.type === null) return navigate(Route.SelectUserType);
+  // }, [navigate, profile]);
 
   return (
     <div className="mx-auto max-w-screen-md my-10">

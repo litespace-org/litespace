@@ -19,7 +19,7 @@ export async function create(
     password: hashPassword(password),
     role: IUser.Role.Student,
     email,
-    name,
+    // name,
   });
 
   const origin = req.get("origin");

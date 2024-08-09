@@ -61,7 +61,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     origin,
   });
 
-  res.status(201).json(user);
+  next(); // Next handler should be the "Local Auth" from passport.
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
@@ -77,10 +77,10 @@ async function update(req: Request, res: Response, next: NextFunction) {
 
   await users.update(id, {
     email,
-    name,
+    // name,
     gender,
     photo,
-    role,
+    // role,
     birthYear,
     password: password ? hashPassword(password) : undefined,
   });
@@ -131,6 +131,7 @@ async function findMe(req: Request, res: Response, next: NextFunction) {
 }
 
 async function returnUser(req: Request, res: Response, next: NextFunction) {
+  console.log({ here: true });
   if (!req.user) return next(notfound());
   res.status(200).json(req.user);
 }

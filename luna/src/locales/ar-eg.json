@@ -22,9 +22,10 @@
   "global.logout": "تسجيـــــــل خــــروج",
   "errors.invalid": "خطـــــــــــأ",
   "errors.required": "مطـــــــــلوب",
-  "errors.name.length.short": "يجب الا يقـــــل الاسم عن ثلاثة حروف",
+  "errors.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",
   "errors.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
-  "errors.name.arabic": "مسموح فقط بالاسماء العــــــربية",
+  "errors.name.arabic": "أدخل اسمك باللغة العربية فقط",
+  "errors.name.english": "أدخل اسمك باللغة الانجليزية فقط",
   "errors.email.invlaid": "عنوان البريد الإليكتروني غير صـــــــالح",
   "errors.password.invlaid": "كلمة سر غير صــــــالحة"
 }
