@@ -20,6 +20,7 @@ import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
+import { sample } from "lodash";
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
@@ -135,6 +136,21 @@ async function returnUser(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(req.user);
 }
 
+async function selectInterviewer(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
+  const interviewer = sample(interviewers);
+  if (!interviewer) return next(notfound());
+
+  res.status(200).json(interviewer);
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
@@ -143,4 +159,5 @@ export default {
   getMany: asyncHandler(getMany),
   findMe: asyncHandler(findMe),
   returnUser: asyncHandler(returnUser),
+  selectInterviewer: asyncHandler(selectInterviewer),
 };

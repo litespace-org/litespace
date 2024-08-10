@@ -1,10 +1,12 @@
 import { calls, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { forbidden, slotNotFound } from "@/lib/error";
+import { forbidden, notfound, slotNotFound } from "@/lib/error";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { unpackSlots } from "@/lib/slots";
+import { unpackSlots } from "@litespace/sol";
+import { identityObject } from "@/validation/utils";
+import { enforceRequest } from "@/middleware/accessControl";
 
 async function create(req: Request, res: Response) {
   const slot = schema.http.slot.create.parse(req.body);
@@ -29,10 +31,10 @@ async function update(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function getOne(req: Request, res: Response, next: NextFunction) {
-  const id = schema.http.slot.get.params.parse(req.params).id;
+async function findById(req: Request, res: Response, next: NextFunction) {
+  const { id } = identityObject.parse(req.params);
   const slot = await slots.findById(id);
-  if (!slot) return next(slotNotFound());
+  if (!slot) return next(notfound());
 
   const owner = req.user.id === slot.userId;
   const admin = isAdmin(req.user.role);
@@ -41,12 +43,22 @@ async function getOne(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(slot);
 }
 
-async function getMany(req: Request, res: Response, next: NextFunction) {
+async function findUserSlots(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+  const { id } = identityObject.parse(req.params);
+  const list = await slots.findByUserId(id);
+  res.status(200).json(list);
+}
+
+async function findMySlots(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
   const list = await slots.findByUserId(req.user.id);
   res.status(200).json(list);
 }
 
-async function delete_(req: Request, res: Response, next: NextFunction) {
+async function deleteSlot(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.slot.delete.params.parse(req.params).id;
   const slot = await slots.findById(id);
   if (!slot) return next(slotNotFound());
@@ -56,21 +68,21 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
 }
 
 async function getDiscreteTimeSlots(req: Request, res: Response) {
-  const { tutorId } = schema.http.slot.getDiscreteTimeSlots.query.parse(
-    req.query
-  );
-
-  const slotsList = await slots.findByUserId(tutorId);
-  const lessonsList = await calls.findByHostId(tutorId);
-  const unpacked = unpackSlots(slotsList, lessonsList);
+  const { id } = identityObject.parse(req.params);
+  const [slotsList, callsList] = await Promise.all([
+    slots.findByUserId(id),
+    calls.findByHostId(id),
+  ]);
+  const unpacked = unpackSlots(slotsList, callsList);
   res.status(200).json(unpacked);
 }
 
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
-  get: asyncHandler(getOne),
-  list: asyncHandler(getMany),
-  delete: asyncHandler(delete_),
+  findById: asyncHandler(findById),
+  findUserSlots: asyncHandler(findUserSlots),
+  findMySlots: asyncHandler(findMySlots),
+  delete: asyncHandler(deleteSlot),
   getDiscreteTimeSlots: asyncHandler(getDiscreteTimeSlots),
 };

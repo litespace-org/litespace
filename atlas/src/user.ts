@@ -30,4 +30,10 @@ export class User extends Base {
   async update(id: number, payload: IUser.UpdatePayload): Promise<void> {
     await this.client.put(`/api/v1/user/${id}`, JSON.stringify(payload));
   }
+
+  async selectInterviewer(): Promise<IUser.Self> {
+    return await this.client
+      .get<IUser.Self>(`/api/v1/user/interviewer/select`)
+      .then((response) => response.data);
+  }
 }

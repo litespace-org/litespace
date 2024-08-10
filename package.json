@@ -31,7 +31,8 @@
       "atlas",
       "types",
       "nova",
-      "nebula"
+      "nebula",
+      "sol"
     ]
   },
   "packageManager": "yarn@4.2.2",

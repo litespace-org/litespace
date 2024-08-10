@@ -84,5 +84,4 @@ export type CreateApiPayload = {
   password: string;
   name: Name;
   birthYear: number;
-  gender: Gender;
 };

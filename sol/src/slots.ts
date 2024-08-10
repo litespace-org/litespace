@@ -1,5 +1,5 @@
 import zod from "zod";
-import dayjs from "@/lib/dayjs";
+import { dayjs } from "@/dayjs";
 import { cloneDeep, isEmpty } from "lodash";
 import { ISlot, ICall } from "@litespace/types";
 import { Dayjs } from "dayjs";
@@ -176,22 +176,39 @@ export function asDayStart(date: Dayjs): Dayjs {
   return dayjs(date.format("YYYY-MM-DD"));
 }
 
+export function selectSlotCalls(
+  calls: ICall.Self[],
+  slot: ISlot.Discrete
+): ICall.Self[] {
+  return calls.filter(
+    (call) =>
+      dayjs.utc(call.start).isBetween(slot.start, slot.end) &&
+      slot.id === call.slotId
+  );
+}
+
 export function unpackSlots(
   slots: ISlot.Self[],
   calls: ICall.Self[],
-  window = 14
+  {
+    start = dayjs.utc(),
+    window = 14,
+  }: {
+    start?: Dayjs;
+    window?: number;
+  } = {}
 ): Array<{ day: string; slots: ISlot.Discrete[] }> {
-  const today = setDayTime(dayjs().utc());
+  const startDay = setDayTime(start);
   const availableSlots: Array<{ day: string; slots: ISlot.Discrete[] }> = [];
 
   for (let dayIndex = 0; dayIndex < window; dayIndex++) {
-    const day = today.add(dayIndex, "day");
+    const day = startDay.add(dayIndex, "day");
     const selected = selectSlots(slots, day);
     const available: ISlot.Discrete[] = [];
 
     for (const slot of selected) {
-      const slotCalls = calls.filter((call) => call.slotId === slot.id);
       const discreteSlot = asDiscrateSlot(slot, day);
+      const slotCalls = selectSlotCalls(calls, discreteSlot);
       available.push(...maskCalls(discreteSlot, slotCalls));
     }
 

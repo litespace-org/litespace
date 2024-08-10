@@ -7,4 +7,4 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
 
-export default dayjs;
+export { dayjs };

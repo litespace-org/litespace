@@ -5,7 +5,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import { EventContentArg, EventInput } from "@fullcalendar/core";
-import { unpackSlots } from "@litespace/atlas";
+import { unpackSlots } from "@litespace/sol";
 import dayjs from "@/lib/dayjs";
 import { Flex, Modal, Typography } from "antd";
 import { useList } from "@refinedev/core";
@@ -45,7 +45,7 @@ export const MyScheduleList: React.FC = () => {
     if (!tuple || isLoading) return [];
 
     const [{ slots, calls }] = tuple;
-    const discreteSlots = unpackSlots(slots, [], 40);
+    const discreteSlots = unpackSlots(slots, [], { window: 40 });
     const events: EventInput[] = [];
 
     for (const { day, slots: unpackedSlots } of discreteSlots) {

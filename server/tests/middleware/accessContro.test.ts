@@ -54,6 +54,14 @@ const policies: Array<{
     route: "/api/v1/user/me",
     method: "GET",
   },
+  {
+    roles: {
+      allowed: [tutor, superAdmin],
+      denied: [interviewer, student, provider],
+    },
+    route: "/api/v1/user/interviewer/select",
+    method: "GET",
+  },
   // "/api/v1/tutors" routes
   {
     roles: { allowed: fullRoles, denied: [] },
@@ -247,6 +255,8 @@ describe("Access Control", () => {
     it("should match urls", () => {
       expect(routeMatch("/api/v1/user", "/api/v1/user")).to.be.true;
       expect(routeMatch("/api/v1/users", "/api/v1/user")).to.be.false;
+      expect(routeMatch("/api/v1/user/interviewer/select", "/api/v1/user/:id"))
+        .to.be.false;
     });
 
     it("should work with leading and trailing forward slash", () => {

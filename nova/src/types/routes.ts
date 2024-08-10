@@ -8,4 +8,5 @@ export enum Route {
   Tutors = "/tutors",
   Call = "/call",
   TutorProfile = "/tutor/:id",
+  TutorOnboarding = "/tutor/onboarding",
 }

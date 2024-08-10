@@ -14,6 +14,7 @@
   "dependencies": {
     "@litespace/atlas": "1.0.0",
     "@litespace/luna": "1.0.0",
+    "@litespace/sol": "1.0.0",
     "@litespace/types": "1.0.0",
     "@radix-ui/react-direction": "^1.1.0",
     "@reduxjs/toolkit": "^2.2.5",

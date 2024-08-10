@@ -13,6 +13,7 @@ import SetUserName from "@/pages/SetUserName";
 import Tutors from "@/pages/Tutors";
 import TutorProfile from "@/pages/TutorProfile";
 import Call from "@/pages/Call";
+import TutorOnboarding from "@/pages/TutorOnboarding";
 
 const router = createBrowserRouter([
   { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
@@ -24,6 +25,7 @@ const router = createBrowserRouter([
   { path: Route.Tutors, element: <Tutors /> },
   { path: Route.Call, element: <Call /> },
   { path: Route.TutorProfile, element: <TutorProfile /> },
+  { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
 ]);
 
 function App(): React.JSX.Element {

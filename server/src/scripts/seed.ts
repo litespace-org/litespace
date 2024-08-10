@@ -27,12 +27,20 @@ async function main(): Promise<void> {
     birthYear,
   });
 
-  const interviewer = await users.create({
-    role: IUser.Role.Interviewer,
-    email: "interviewer@litespace.org",
-    name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو اسمعيل" },
-    password,
-    birthYear,
+  const interviewer = await knex.transaction(async (tx) => {
+    const interviewer = await users.create(
+      {
+        role: IUser.Role.Interviewer,
+        email: "interviewer@litespace.org",
+        name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو اسمعيل" },
+        password,
+        birthYear,
+      },
+      tx
+    );
+
+    await users.update(interviewer.id, { photo: "interviewer.jpg" }, tx);
+    return interviewer;
   });
 
   const student = await knex.transaction(async (tx) => {
@@ -104,20 +112,24 @@ async function main(): Promise<void> {
     feedback: "مدرس عظيم جدا",
   });
 
-  const startDate = dayjs().format("YYYY-MM-DD");
-  const startTime = dayjs().utc().format("HH:mm:00");
-  const endTime = dayjs().utc().add(4, "hours").format("HH:mm:00");
+  const startDate = dayjs.utc().format("YYYY-MM-DD");
+  const startTime = dayjs.utc().format("HH:00:00");
+  const endTime = dayjs.utc().add(4, "hours").format("HH:00:00");
   const slot = await slots.create({
     userId: interviewer.id,
     date: { start: startDate },
     time: { start: startTime, end: endTime },
     title: "Interviewer slot",
-    repeat: ISlot.Repeat.No,
+    repeat: ISlot.Repeat.Daily,
     weekday: -1,
   });
-  const start = dayjs().tz("Africa/Cairo").add(30, "minutes");
+  const start = dayjs
+    .utc()
+    .set("minutes", 0)
+    .set("minutes", 0)
+    .add(30, "minutes");
 
-  const call = await calls.create({
+  await calls.create({
     hostId: interviewer.id,
     attendeeId: tutor.id,
     duration: 30,
@@ -126,7 +138,7 @@ async function main(): Promise<void> {
     type: ICall.Type.Interview,
   });
 
-  const interviewerCalls = await calls.findHostCalls(interviewer.id);
+  await calls.findHostCalls(interviewer.id);
 
   const plan = await plans.create({
     alias: "Basic",
@@ -144,7 +156,7 @@ async function main(): Promise<void> {
     createdBy: admin.id,
   });
 
-  const coupon = await coupons.create({
+  await coupons.create({
     code: "LiteSpace2024",
     planId: plan.id,
     expiresAt: dayjs().add(1, "month").toISOString(),
@@ -155,21 +167,21 @@ async function main(): Promise<void> {
     createdBy: admin.id,
   });
 
-  const invite = await invites.create({
+  await invites.create({
     email: "atlas@litespace.com",
     expiresAt: dayjs().add(1, "week").toISOString(),
     createdBy: admin.id,
     planId: plan.id,
   });
 
-  const report = await reports.create({
+  await reports.create({
     createdBy: student.id,
     title: "Report title",
     description: "Report description",
     category: "Report Category",
   });
 
-  const reply = await reportReplies.create({
+  await reportReplies.create({
     createdBy: 3,
     draft: false,
     message: "Thanks 2",

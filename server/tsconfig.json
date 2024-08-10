@@ -3,7 +3,7 @@
     "target": "ES6",
     "jsx": "react",
     "module": "commonjs",
-    "rootDir": "./src/",
+    // "rootDir": "./src/",
     "baseUrl": "./src/",
     "paths": {
       "@/*": ["./*"]
@@ -14,7 +14,7 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src/"],
+  "include": ["src/", "tests/"],
   "exclude": ["node_module"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]

@@ -35,6 +35,7 @@ export function routeMatch(
   const match = urlPattern.match(url) as Record<string, string> | null;
   if (match === null) return false;
   if (!ignore) return true;
+  console.log({ match });
   return match[ignore.key] !== ignore.value;
 }
 
@@ -67,6 +68,11 @@ const policies: Array<Policy> = [
     roles: [unauthorized],
     route: "(/)api/v1/user(/)",
     methods: ["POST"],
+  },
+  {
+    roles: [tutor],
+    route: "(/)api/v1/user/interviewer/select(/)",
+    methods: ["GET"],
   },
   {
     roles: [regAdmin, interviewer],

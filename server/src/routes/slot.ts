@@ -1,22 +1,15 @@
-import handlers from "@/handlers";
 import { Router } from "express";
+import slot from "@/handlers/slot";
 
 const router = Router();
 
-router
-  .route("/")
-  .post(handlers.slot.create)
-  .put(handlers.slot.update)
-  .get(handlers.slot.get);
-
-router.get("/me", handlers.slot.list);
-
-router.get("/list/discrete", handlers.slot.getDiscreteTimeSlots);
-
-router
-  .route("/:id")
-  .get(handlers.slot.get)
-  .delete(handlers.slot.delete)
-  .put(handlers.slot.update);
+router.post("/", slot.create);
+router.put("/:id", slot.update);
+router.get("/:id", slot.findById);
+router.get("/list", slot.update);
+router.get("/list/me", slot.findMySlots);
+router.get("/list/user/:id", slot.findUserSlots);
+router.get("/list/discrete/:id", slot.getDiscreteTimeSlots);
+router.delete("/:id", slot.delete);
 
 export default router;

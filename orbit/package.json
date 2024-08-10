@@ -12,6 +12,7 @@
     "@fullcalendar/react": "^6.1.14",
     "@fullcalendar/timegrid": "^6.1.14",
     "@litespace/atlas": "1.0.0",
+    "@litespace/sol": "1.0.0",
     "@litespace/types": "1.0.0",
     "@refinedev/antd": "5.42.0",
     "@refinedev/cli": "2.16.36",

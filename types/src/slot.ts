@@ -41,6 +41,11 @@ export type Discrete = {
   updatedAt: string;
 };
 
+export type Unpacked = {
+  day: string;
+  slots: Discrete[];
+};
+
 export type CreateApiPayload = Omit<
   Self,
   "id" | "userId" | "createdAt" | "updatedAt"

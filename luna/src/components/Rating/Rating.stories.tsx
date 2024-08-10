@@ -2,10 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 
 import { Rating } from "@/components/Rating/Rating";
 import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
 import { Controller, useForm } from "react-hook-form";
-import { Field, Form, Label } from "@/components/Form";
-import { Button } from "@/components/Button";
+import { Form } from "@/components/Form";
 
 type Component = typeof Rating;
 

@@ -78,10 +78,8 @@ export class Users {
     key: T,
     value: IUser.Row[T]
   ): Promise<IUser.Self | null> {
-    const rows = await knex<IUser.Row>("users").select("*").where(key, value);
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+    const rows = await this.findManyBy(key, value);
+    return first(rows) || null;
   }
 
   async findById(id: number): Promise<IUser.Self | null> {
@@ -90,6 +88,16 @@ export class Users {
 
   async findByEmail(email: string): Promise<IUser.Self | null> {
     return await this.findOneBy("email", email);
+  }
+
+  async findManyBy<T extends keyof IUser.Row>(
+    key: T,
+    value: IUser.Row[T]
+  ): Promise<IUser.Self[]> {
+    const rows = await knex<IUser.Row>(this.table)
+      .select("*")
+      .where(key, value);
+    return rows.map((row) => this.from(row));
   }
 
   async exists(id: number): Promise<boolean> {
