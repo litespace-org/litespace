@@ -113,16 +113,25 @@ async function main(): Promise<void> {
   });
 
   const startDate = dayjs.utc().format("YYYY-MM-DD");
-  const startTime = dayjs.utc().format("HH:00:00");
-  const endTime = dayjs.utc().add(4, "hours").format("HH:00:00");
-  const slot = await slots.create({
+
+  const firstSlot = await slots.create({
     userId: interviewer.id,
     date: { start: startDate },
-    time: { start: startTime, end: endTime },
+    time: { start: "08:00:00", end: "13:00:00" },
     title: "Interviewer slot",
     repeat: ISlot.Repeat.Daily,
     weekday: -1,
   });
+
+  await slots.create({
+    userId: interviewer.id,
+    date: { start: startDate },
+    time: { start: "17:00:00", end: "22:00:00" },
+    title: "Slot 2",
+    repeat: ISlot.Repeat.Daily,
+    weekday: -1,
+  });
+
   const start = dayjs
     .utc()
     .set("minutes", 0)
@@ -133,7 +142,7 @@ async function main(): Promise<void> {
     hostId: interviewer.id,
     attendeeId: tutor.id,
     duration: 30,
-    slotId: slot.id,
+    slotId: firstSlot.id,
     start: start.toISOString(),
     type: ICall.Type.Interview,
   });

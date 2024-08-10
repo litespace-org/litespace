@@ -43,7 +43,7 @@ async function delete_(req: Request, res: Response) {
 async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
   const report = await reports.findById(id);
-  if (!report) return next(notfound());
+  if (!report) return next(notfound.report());
   res.status(200).json(report);
 }
 

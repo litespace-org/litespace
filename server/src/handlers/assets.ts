@@ -42,7 +42,7 @@ async function removeAsset(req: Request, res: Response, next: NextFunction) {
     .access(asset)
     .then(() => true)
     .catch(() => false);
-  if (!exists) return next(notfound());
+  if (!exists) return next(notfound.asset());
 
   await fs.rm(asset);
   res.status(200).send();

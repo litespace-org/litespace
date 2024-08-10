@@ -4,6 +4,8 @@ import dayjs from "dayjs";
 import { isEmpty } from "lodash";
 import React from "react";
 import { useQuery } from "react-query";
+import cn from "classnames";
+import { splitSlot } from "@litespace/sol";
 
 const TutorOnboarding: React.FC = () => {
   const interviewer = useQuery({
@@ -46,13 +48,18 @@ const TutorOnboarding: React.FC = () => {
           </div>
         </div>
 
-        <div>
+        <div className="w-full">
           {slots.isLoading ? (
             <p>Loading...</p>
           ) : slots.error ? (
             <p>Error!!</p>
           ) : slots.data ? (
-            <div>
+            <div
+              className={cn(
+                "max-h-[900px] overflow-y-scroll w-full pr-10",
+                "scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 active:scrollbar-track-gray-300 hover:scrollbar-track-gray-400 scrollbar-thumb-rounded-full"
+              )}
+            >
               <div>
                 {slots.data.map(({ day, slots }) => {
                   if (isEmpty(slots)) return;
@@ -62,19 +69,43 @@ const TutorOnboarding: React.FC = () => {
                         {dayjs(day).format("dddd، DD MMMM، YYYY")}
                       </p>
 
-                      <ul className="flex flex-col gap-2 w-fit">
+                      <ul className="flex flex-col gap-5 w-fit">
                         {slots.map((slot) => (
-                          <li
-                            key={day + slot.id + slot.start}
-                            className="flex items-center justify-center rounded-lg shadow-lg hover:shadow-xl gap-2 bg-gray-100 px-4 py-3 cursor-pointer transition-shadow duration-150"
-                          >
-                            <span className="inline-block">
-                              {dayjs(slot.start).format("hh:mm a")}
-                            </span>
-                            <span className="inline-block">&larr;</span>
-                            <span className="inline-block">
-                              {dayjs(slot.end).format("hh:mm a")}
-                            </span>
+                          <li key={day + slot.id + slot.start}>
+                            <div
+                              className={cn(
+                                "mb-4 text-xl italic font-semibold"
+                              )}
+                            >
+                              <span className="inline-block">
+                                {dayjs(slot.start).format("hh:mm a")}
+                              </span>
+                              <span className="inline-block">&larr;</span>
+                              <span className="inline-block">
+                                {dayjs(slot.end).format("hh:mm a")}
+                              </span>
+                            </div>
+
+                            <ul className="pr-10 flex flex-col gap-4">
+                              {splitSlot(slot, 30).map((slot) => (
+                                <li
+                                  key={`splitted-solt-${slot.start}`}
+                                  className={cn(
+                                    "flex items-center justify-center rounded-lg shadow-lg hover:shadow-xl gap-2",
+                                    "bg-gray-100 px-4 py-3 cursor-pointer transition-shadow duration-150"
+                                  )}
+                                >
+                                  <span>↲</span>
+                                  <span className="inline-block">
+                                    {dayjs(slot.start).format("hh:mm a")}
+                                  </span>
+                                  <span className="inline-block">&larr;</span>
+                                  <span className="inline-block">
+                                    {dayjs(slot.end).format("hh:mm a")}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
                           </li>
                         ))}
                       </ul>

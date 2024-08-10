@@ -1,39 +1,28 @@
 import { calls, slots, tutors } from "@/models";
 import { ICall, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
-import {
-  callNotFound,
-  forbidden,
-  slotNotFound,
-  tutorHasNoTime,
-  tutorNotFound,
-} from "@/lib/error";
+import { forbidden, tutorHasNoTime, notfound } from "@/lib/error";
 import { hasEnoughTime } from "@/lib/lessons";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import zod from "zod";
+import { enforceRequest } from "@/middleware/accessControl";
 
-async function create(req: Request, res: Response, next: NextFunction) {
-  const { slotId, start, size, type } = schema.http.call.create.body.parse(
+async function createCall(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const { slotId, start, duration, type } = schema.http.call.create.body.parse(
     req.body
   );
-  // validation
-  // - validate empty slot
-  // - validate start and duration
-  // - validate user subscription
-  // - update user remaining minutes
-  // - no lessons at this time.
-  if (req.user.role !== IUser.Role.Student) return next(forbidden());
 
   const slot = await slots.findById(slotId);
-  if (!slot) return next(slotNotFound());
+  if (!slot) return next(notfound.slot());
 
   const host = await tutors.findById(slot.userId);
-  if (!host) return next(tutorNotFound());
+  if (!host) return next(notfound.user());
 
   const bookedCalls = await calls.findBySlotId(slotId);
-  const duration = zod.coerce.number().parse(size);
   const enough = hasEnoughTime({
     call: { start, duration },
     calls: bookedCalls,
@@ -53,10 +42,10 @@ async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(call);
 }
 
-async function delete_(req: Request, res: Response, next: NextFunction) {
+async function deleteCall(req: Request, res: Response, next: NextFunction) {
   const { id } = schema.http.call.delete.params.parse(req.params);
   const call = await calls.findById(id);
-  if (!call) return next(callNotFound());
+  if (!call) return next(notfound.call());
 
   const userId = req.user.id;
   const owner = userId === call.hostId || userId === call.attendeeId;
@@ -86,7 +75,7 @@ async function getMany(req: Request, res: Response, next: NextFunction) {
 async function getOne(req: Request, res: Response, next: NextFunction) {
   const { id } = schema.http.call.get.params.parse(req.params);
   const call = await calls.findById(id);
-  if (!call) return next(callNotFound());
+  if (!call) return next(notfound.call());
   res.status(200).json(call);
 }
 
@@ -103,13 +92,13 @@ async function findHostCallById(
 ) {
   const { id } = schema.http.call.get.params.parse(req.params);
   const hostCall = await calls.findHostCallById(id);
-  if (!hostCall) return next(callNotFound());
+  if (!hostCall) return next(notfound.call());
   res.status(200).json(hostCall);
 }
 
 export default {
-  create: asyncHandler(create),
-  delete: asyncHandler(delete_),
+  create: asyncHandler(createCall),
+  delete: asyncHandler(deleteCall),
   get: asyncHandler(getOne),
   list: asyncHandler(getMany),
   findHostCalls: asyncHandler(findHostCalls),

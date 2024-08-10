@@ -1,4 +1,4 @@
-import { unpackSlots } from "@/slots";
+import { asDayStart, asDiscrateSlot, splitSlot, unpackSlots } from "@/slots";
 import { ICall, ISlot } from "@litespace/types";
 import { expect } from "chai";
 import { dayjs } from "@/dayjs";
@@ -132,6 +132,78 @@ describe("Slots", () => {
           ],
         },
       ]);
+    });
+  });
+
+  describe("Split slots", () => {
+    it("should split slot into 30 minutes blocks", () => {
+      const slot: ISlot.Self = {
+        weekday: -1,
+        time: { start: "10:00:00", end: "12:00:00" },
+        date: { start: "2024-08-10" },
+        repeat: ISlot.Repeat.Daily,
+        ...sharedSlot,
+      };
+
+      const discrete = asDiscrateSlot(
+        slot,
+        dayjs.utc("2024-08-10", "YYYY-MM-DD")
+      );
+
+      const slots = splitSlot(discrete);
+      expect(slots).to.be.deep.eq(
+        [
+          {
+            start: "2024-08-10T10:00:00.000Z",
+            end: "2024-08-10T10:30:00.000Z",
+          },
+          {
+            start: "2024-08-10T10:30:00.000Z",
+            end: "2024-08-10T11:00:00.000Z",
+          },
+          {
+            start: "2024-08-10T11:00:00.000Z",
+            end: "2024-08-10T11:30:00.000Z",
+          },
+          {
+            start: "2024-08-10T11:30:00.000Z",
+            end: "2024-08-10T12:00:00.000Z",
+          },
+        ].map(({ start, end }) => ({ ...discrete, start, end }))
+      );
+    });
+
+    it("should split slot into 15 minutes blocks", () => {
+      const slot: ISlot.Self = {
+        weekday: -1,
+        time: { start: "10:00:00", end: "10:50:00" },
+        date: { start: "2024-08-10" },
+        repeat: ISlot.Repeat.Daily,
+        ...sharedSlot,
+      };
+
+      const discrete = asDiscrateSlot(
+        slot,
+        dayjs.utc("2024-08-10", "YYYY-MM-DD")
+      );
+
+      const slots = splitSlot(discrete, 15);
+      expect(slots).to.be.deep.eq(
+        [
+          {
+            start: "2024-08-10T10:00:00.000Z",
+            end: "2024-08-10T10:15:00.000Z",
+          },
+          {
+            start: "2024-08-10T10:15:00.000Z",
+            end: "2024-08-10T10:30:00.000Z",
+          },
+          {
+            start: "2024-08-10T10:30:00.000Z",
+            end: "2024-08-10T10:45:00.000Z",
+          },
+        ].map(({ start, end }) => ({ ...discrete, start, end }))
+      );
     });
   });
 });

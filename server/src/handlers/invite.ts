@@ -41,9 +41,9 @@ async function delete_(req: Request, res: Response) {
 
 async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const coupon = await invites.findById(id);
-  if (!coupon) return next(notfound());
-  res.status(200).json(coupon);
+  const invite = await invites.findById(id);
+  if (!invite) return next(notfound.invite());
+  res.status(200).json(invite);
 }
 
 async function findAll(req: Request, res: Response) {

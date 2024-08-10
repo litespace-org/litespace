@@ -1,12 +1,6 @@
 import { tutors, users } from "@/models";
 import { isAdmin } from "@/lib/common";
-import {
-  badRequest,
-  forbidden,
-  notfound,
-  tutorNotFound,
-  userNotFound,
-} from "@/lib/error";
+import { badRequest, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
@@ -42,7 +36,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const { dropPhoto, dropVideo, ...fields } =
     schema.http.tutor.update.body.parse(req.body);
   const user = await users.findById(req.user.id);
-  if (!user) return next(tutorNotFound());
+  if (!user) return next(notfound.user());
 
   const [photo, video] = await Promise.all(
     [
@@ -62,7 +56,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
 async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
   const tutor = await tutors.findById(id);
-  if (!tutor) return next(userNotFound());
+  if (!tutor) return next(notfound.tutor());
 
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
@@ -89,7 +83,7 @@ async function getTutors(req: Request, res: Response, next: NextFunction) {
 async function delete_(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.tutor.get.params.parse(req.params).id;
   const tutor = await tutors.findById(id);
-  if (!tutor) return next(tutorNotFound());
+  if (!tutor) return next(notfound.tutor());
 
   const owner = req.user.id === tutor.id;
   const admin = isAdmin(req.user.role);
@@ -124,7 +118,7 @@ async function getTutorMediaById(
 ) {
   const { id } = identityObject.parse(req.params);
   const media = await tutors.findTutorMediaById(id);
-  if (!media) return next(notfound());
+  if (!media) return next(notfound.tutor());
   res.status(200).json(media);
 }
 

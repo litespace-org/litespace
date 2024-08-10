@@ -16,7 +16,7 @@ import { DoneCallback } from "passport";
 async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   const { email } = http.auth.forgotPassword.body.parse(req.body);
   const user = await users.findByEmail(email);
-  if (!user) return next(notfound());
+  if (!user) return next(notfound.user());
 
   const token = randomBytes();
   const hash = sha256(token);
@@ -55,7 +55,7 @@ export async function resetPassword(req: Request, done: DoneCallback) {
   });
 
   const user = await users.findById(token.userId);
-  if (!user) return done(notfound());
+  if (!user) return done(notfound.user());
   return done(null, user);
 }
 
@@ -74,7 +74,7 @@ export async function verifyEmail(req: Request, done: DoneCallback) {
   });
 
   const user = await users.findById(token.userId);
-  if (!user) return done(notfound());
+  if (!user) return done(notfound.user());
   return done(null, user);
 }
 

@@ -3,7 +3,7 @@ import {
   isAvailableSlot,
   maskCalls,
   setDayTime,
-} from "@/lib/slots";
+} from "@litespace/sol";
 import dayjs from "@/lib/dayjs";
 import { ISlot, ICall } from "@litespace/types";
 

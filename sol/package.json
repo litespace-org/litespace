@@ -10,6 +10,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
+    "clean": "rm -rf dist/",
     "test": "jest"
   },
   "packageManager": "yarn@4.2.2",

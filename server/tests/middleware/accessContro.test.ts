@@ -230,6 +230,14 @@ const policies: Array<{
     route: "/api/v1/rating/list/rater/1",
     method: "GET",
   },
+  {
+    roles: {
+      allowed: [student, tutor],
+      denied: [regAdmin, interviewer, provider],
+    },
+    route: "/api/v1/call/",
+    method: "POST",
+  },
 ];
 
 describe("Access Control", () => {

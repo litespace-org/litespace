@@ -35,7 +35,6 @@ export function routeMatch(
   const match = urlPattern.match(url) as Record<string, string> | null;
   if (match === null) return false;
   if (!ignore) return true;
-  console.log({ match });
   return match[ignore.key] !== ignore.value;
 }
 
@@ -297,7 +296,13 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/slot/:id(/)",
     methods: ["DELETE"],
   },
-  // subscription routes
+  // calls
+  {
+    roles: [student, tutor],
+    route: "(/)api/v1/call(/)",
+    methods: ["POST"],
+  },
+  // subscriptions
   {
     roles: [student],
     route: "(/)api/v1/subscription(/)",

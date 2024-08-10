@@ -7,7 +7,6 @@ import {
   notfound,
   userAlreadyTyped,
   userExists,
-  userNotFound,
 } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
@@ -98,7 +97,7 @@ async function delete_(req: Request, res: Response) {
 async function findById(req: Request, res: Response, next: NextFunction) {
   const id = schema.http.user.findById.params.parse(req.params).id;
   const user = await users.findById(id);
-  if (!user) return next(userNotFound());
+  if (!user) return next(notfound.user());
 
   const owner = user.id === req.user.id;
   const admin = isAdmin(req.user.role);
@@ -132,7 +131,7 @@ async function findMe(req: Request, res: Response, next: NextFunction) {
 }
 
 async function returnUser(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) return next(notfound());
+  if (!req.user) return next(notfound.user());
   res.status(200).json(req.user);
 }
 
@@ -146,7 +145,7 @@ async function selectInterviewer(
 
   const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
   const interviewer = sample(interviewers);
-  if (!interviewer) return next(notfound());
+  if (!interviewer) return next(notfound.user());
 
   res.status(200).json(interviewer);
 }

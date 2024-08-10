@@ -42,14 +42,14 @@ async function delete_(req: Request, res: Response) {
 async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
   const coupon = await coupons.findById(id);
-  if (!coupon) return next(notfound());
+  if (!coupon) return next(notfound.coupon());
   res.status(200).json(coupon);
 }
 
 async function findByCode(req: Request, res: Response, next: NextFunction) {
   const { code } = http.coupon.findByCode.params.parse(req.params);
   const coupon = await coupons.findByCode(code);
-  if (!coupon) return next(notfound());
+  if (!coupon) return next(notfound.coupon());
   res.status(200).json(coupon);
 }
 

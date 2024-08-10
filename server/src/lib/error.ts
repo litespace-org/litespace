@@ -1,20 +1,27 @@
 export enum ErrorCode {
-  Unauthorized = "unauthorized-access",
-  BadRequest = "bad-reqest",
-  RoomExists = "room-exists",
-  UserExists = "user-exists",
-  UserAlreadyTyped = "user-already-typed",
-  TutorHasNoTime = "tutor-has-no-time",
-  Unexpected = "unexpected",
-  NotFound = "not-found",
-  UserNotFound = "user-not-found",
-  SlotNotFound = "slot-not-found",
-  TutorNotFound = "tutor-not-found",
-  LessonNotFound = "lesson-not-found",
-  ratingNotFound = "rating-not-found",
-  subscriptionNotFound = "subscription-not-found",
-  AlreadyRated = "already-rated",
-  AlreadySubscribed = "already-subscribed",
+  Unauthorized,
+  BadRequest,
+  RoomExists,
+  UserExists,
+  UserAlreadyTyped,
+  TutorHasNoTime,
+  Unexpected,
+  NotFound,
+  UserNotFound,
+  SlotNotFound,
+  CallNoteFound,
+  TutorNotFound,
+  LessonNotFound,
+  ratingNotFound,
+  CouponNotFound,
+  AssetNotFound,
+  InviteNotFound,
+  PlanNotFound,
+  ReportNotFound,
+  ReportReplyNotFound,
+  subscriptionNotFound,
+  AlreadyRated,
+  AlreadySubscribed,
 }
 
 type CodedError = {
@@ -39,21 +46,19 @@ export const errors = {
     message: "Unexpected error occurred, please retry",
     code: ErrorCode.Unexpected,
   },
-  notFound: { message: "Not found", code: ErrorCode.NotFound },
-  userNotFound: { message: "User not found", code: ErrorCode.UserNotFound },
-  slotNotFound: { message: "Slot not found", code: ErrorCode.SlotNotFound },
-  tutorNotFound: { message: "Tutor not found", code: ErrorCode.TutorNotFound },
-  lessonNotFound: {
-    message: "Lesson not found",
-    code: ErrorCode.LessonNotFound,
-  },
-  ratingNotFound: {
-    message: "Rating not found",
-    code: ErrorCode.ratingNotFound,
-  },
-  subscriptionNotFound: {
-    message: "Subscription not found",
-    code: ErrorCode.subscriptionNotFound,
+  notfound: {
+    base: { message: "Not found", code: ErrorCode.NotFound },
+    user: { message: "User not found", code: ErrorCode.UserNotFound },
+    slot: { message: "Slot not found", code: ErrorCode.SlotNotFound },
+    call: { message: "Call not found", code: ErrorCode.CallNoteFound },
+    tutor: { message: "Tutor not found", code: ErrorCode.TutorNotFound },
+    lesson: { message: "Lesson not found", code: ErrorCode.LessonNotFound },
+    rating: { message: "Rating not found", code: ErrorCode.ratingNotFound },
+    asset: { message: "Asset not found", code: ErrorCode.AssetNotFound },
+    subscription: {
+      message: "Subscription not found",
+      code: ErrorCode.subscriptionNotFound,
+    },
   },
   alreadyRated: {
     message: "User already rated",
@@ -77,7 +82,6 @@ export default class ResponseError extends Error {
 }
 
 export const forbidden = () => new ResponseError(errors.fobidden, 401);
-export const notfound = () => new ResponseError(errors.notFound, 404);
 export const badRequest = () => new ResponseError(errors.badRequest, 400);
 export const roomExists = () => new ResponseError(errors.roomExists, 400);
 export const userExists = () => new ResponseError(errors.userExists, 400);
@@ -85,14 +89,57 @@ export const userAlreadyTyped = () =>
   new ResponseError(errors.userAlreadyTyped, 400);
 export const tutorHasNoTime = () =>
   new ResponseError(errors.tutorHasNotTime, 400);
-export const userNotFound = () => new ResponseError(errors.userNotFound, 404);
-export const slotNotFound = () => new ResponseError(errors.slotNotFound, 404);
-export const tutorNotFound = () => new ResponseError(errors.tutorNotFound, 404);
-export const callNotFound = () => new ResponseError(errors.lessonNotFound, 404);
-export const ratingNotFound = () =>
-  new ResponseError(errors.ratingNotFound, 404);
 export const alreadyRated = () => new ResponseError(errors.alreadyRated, 400);
 export const alreadySubscribed = () =>
   new ResponseError(errors.alreadySubscribed, 400);
-export const subscriptionNotFound = () =>
-  new ResponseError(errors.subscriptionNotFound, 404);
+
+export const notfound = {
+  base: () => new ResponseError(errors.notfound.base, 404),
+  user: () => new ResponseError(errors.notfound.user, 404),
+  slot: () => new ResponseError(errors.notfound.slot, 404),
+  tutor: () => new ResponseError(errors.notfound.tutor, 404),
+  call: () => new ResponseError(errors.notfound.call, 404),
+  rating: () => new ResponseError(errors.notfound.rating, 404),
+  subscription: () => new ResponseError(errors.notfound.subscription, 404),
+  asset: () => new ResponseError(errors.notfound.asset, 400),
+  coupon: () =>
+    new ResponseError(
+      {
+        message: "Coupon not found",
+        code: ErrorCode.CouponNotFound,
+      },
+      400
+    ),
+  invite: () =>
+    new ResponseError(
+      {
+        message: "Invite not found",
+        code: ErrorCode.InviteNotFound,
+      },
+      400
+    ),
+  plan: () =>
+    new ResponseError(
+      {
+        message: "Plan not found",
+        code: ErrorCode.PlanNotFound,
+      },
+      400
+    ),
+  report: () =>
+    new ResponseError(
+      {
+        message: "Report not found",
+        code: ErrorCode.ReportNotFound,
+      },
+      400
+    ),
+  reportReply: () =>
+    new ResponseError(
+      {
+        message: "Report reply not found",
+        code: ErrorCode.ReportReplyNotFound,
+      },
+      400
+    ),
+} as const;

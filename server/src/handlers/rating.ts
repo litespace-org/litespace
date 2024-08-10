@@ -22,7 +22,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   );
 
   const ratee = await users.findById(rateeId);
-  if (!ratee) return next(notfound());
+  if (!ratee) return next(notfound.rating());
   // Only "tutors" and "media providers" can be rated
   if (!rateeRoles.includes(ratee.role)) return next(badRequest());
   // Students can only rate tutors
@@ -53,7 +53,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
   const payload = schema.http.rating.update.body.parse(req.body);
   const rating = await ratings.findById(id);
 
-  if (!rating) return next(notfound());
+  if (!rating) return next(notfound.rating());
   if (rating.rater.id !== req.user.id) return next(forbidden());
 
   await ratings.update(id, payload);
@@ -64,7 +64,7 @@ async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
 
   const rating = await ratings.findById(id);
-  if (!rating) return next(notfound());
+  if (!rating) return next(notfound.rating());
 
   const allowed = enforceRequest(req, rating.rater.id === req.user.id);
   if (!allowed) return next(forbidden());
@@ -108,7 +108,7 @@ async function getRatingById(req: Request, res: Response, next: NextFunction) {
   const userId = req.user.id;
   const { id } = identityObject.parse(req.params);
   const rating = await ratings.findById(id);
-  if (!rating) return next(notfound());
+  if (!rating) return next(notfound.rating());
   const owner = rating.rater.id === userId || rating.ratee.id === userId;
   const allowed = enforceRequest(req, owner);
   if (!allowed) return next(forbidden());

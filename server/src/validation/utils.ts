@@ -70,8 +70,6 @@ export const callType = zod.enum([ICall.Type.Interview, ICall.Type.Lesson]);
 
 export const url = zod.string().url().trim();
 
-export const callSize = zod.enum([ICall.Size.Short, ICall.Size.Long]);
-
 export const subscriptionPeriod = zod.enum([
   ISubscription.Period.Month,
   ISubscription.Period.Quarter,

@@ -220,3 +220,26 @@ export function unpackSlots(
 
   return availableSlots;
 }
+
+export function splitSlot(
+  slot: ISlot.Discrete,
+  duration: number = 30
+): ISlot.Discrete[] {
+  const list: ISlot.Discrete[] = [];
+  let start = dayjs.utc(slot.start);
+
+  while (true) {
+    const end = start.add(duration, "minutes");
+    if (end.isAfter(slot.end)) break;
+
+    list.push({
+      ...slot,
+      start: start.toISOString(),
+      end: end.toISOString(),
+    });
+
+    start = end;
+  }
+
+  return list;
+}

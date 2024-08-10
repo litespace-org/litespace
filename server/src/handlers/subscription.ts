@@ -4,16 +4,17 @@ import {
   alreadySubscribed,
   badRequest,
   forbidden,
-  subscriptionNotFound,
+  notfound,
 } from "@/lib/error";
 import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
 import dayjs from "@/lib/dayjs";
-import { asDayStart } from "@/lib/slots";
+import { asDayStart } from "@litespace/sol";
 import { calculateSubscriptionEndDate } from "@/lib/subscriptions";
 import { isEmpty } from "lodash";
+import { enforceRequest } from "@/middleware/accessControl";
 
 async function create(req: Request.Default, res: Response, next: NextFunction) {
   const { monthlyMinutes, period, autoRenewal } =
@@ -48,7 +49,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   if (isEmpty(req.body)) return next(badRequest);
 
   const subscription = await subscriptions.findByStudentId(studentId);
-  if (!subscription) return next(subscriptionNotFound);
+  if (!subscription) return next(notfound.subscription());
 
   const owner = studentId === subscription.studentId;
   if (!owner) return next(forbidden);
@@ -75,7 +76,7 @@ async function delete_(
   const studentId = req.user.id;
 
   const subscription = await subscriptions.findByStudentId(studentId);
-  if (!subscription) return next(subscriptionNotFound);
+  if (!subscription) return next(notfound.subscription());
 
   const owner = subscription.studentId === studentId;
   if (!owner) return next(forbidden);
@@ -92,7 +93,7 @@ async function getStudentSubscription(
   if (req.user.role !== IUser.Role.Student) return next(forbidden);
 
   const subscription = await subscriptions.findByStudentId(req.user.id);
-  if (!subscription) return next(subscriptionNotFound);
+  if (!subscription) return next(notfound.subscription());
 
   const owner = req.user.id === subscription.studentId;
   if (!owner) return next(forbidden);
@@ -105,6 +106,8 @@ async function getList(
   res: Response,
   next: NextFunction
 ) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
   const list = await subscriptions.findAll();
   res.status(200).json(list);
 }
