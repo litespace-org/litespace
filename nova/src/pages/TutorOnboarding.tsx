@@ -3,9 +3,10 @@ import { asAssetUrl } from "@litespace/atlas";
 import dayjs from "dayjs";
 import { isEmpty } from "lodash";
 import React from "react";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import cn from "classnames";
 import { splitSlot } from "@litespace/sol";
+import { ICall } from "@litespace/types";
 
 const TutorOnboarding: React.FC = () => {
   const interviewer = useQuery({
@@ -21,6 +22,10 @@ const TutorOnboarding: React.FC = () => {
       return await atlas.slot.findDiscreteTimeSlots(interviewer.data.id);
     },
     enabled: !!interviewer.data,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (payload: ICall.CreateApiPayload) => atlas.call.create(payload),
   });
 
   if (interviewer.isLoading) return <p>Loading..</p>;
@@ -89,11 +94,20 @@ const TutorOnboarding: React.FC = () => {
                             <ul className="pr-10 flex flex-col gap-4">
                               {splitSlot(slot, 30).map((slot) => (
                                 <li
+                                  aria-disabled={mutation.isLoading}
                                   key={`splitted-solt-${slot.start}`}
                                   className={cn(
                                     "flex items-center justify-center rounded-lg shadow-lg hover:shadow-xl gap-2",
-                                    "bg-gray-100 px-4 py-3 cursor-pointer transition-shadow duration-150"
+                                    "bg-gray-100 px-4 py-3 cursor-pointer transition-shadow duration-150 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
                                   )}
+                                  onClick={() =>
+                                    mutation.mutate({
+                                      duration: 30,
+                                      slotId: slot.id,
+                                      start: slot.start,
+                                      type: ICall.Type.Interview,
+                                    })
+                                  }
                                 >
                                   <span>↲</span>
                                   <span className="inline-block">

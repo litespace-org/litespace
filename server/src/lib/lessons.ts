@@ -16,7 +16,7 @@ export function hasEnoughTime({
   calls: ICall.Self[];
   slot: ISlot.Self;
 }): boolean {
-  const date = setDayTime(dayjs(call.start).utc());
+  const date = setDayTime(dayjs.utc(call.start));
   const availableSlot = isAvailableSlot(slot, date);
   if (!availableSlot) return false;
 

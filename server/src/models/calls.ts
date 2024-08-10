@@ -3,6 +3,8 @@ import { first } from "lodash";
 import { ICall, IUser } from "@litespace/types";
 
 export class Calls {
+  table = "calls";
+
   async create(call: ICall.CreatePayload): Promise<ICall.Self> {
     const now = new Date();
     const rows = await knex<ICall.Row>("calls").insert(
@@ -64,6 +66,15 @@ export class Calls {
   async findHostCallById(id: number): Promise<ICall.HostCall | null> {
     const rows = await this.getSelectHostCallQuery().where("calls.id", id);
     return first(rows) || null;
+  }
+
+  async findTutorInterviews(tutorId: number): Promise<ICall.Self[]> {
+    const rows = await knex<ICall.Row>(this.table)
+      .select("*")
+      .where("attendee_id", tutorId)
+      .andWhere("type", ICall.Type.Interview);
+
+    return rows.map((row) => this.from(row));
   }
 
   getSelectHostCallQuery() {
