@@ -1,5 +1,3 @@
-import { violet, blackA, mauve, green } from "@radix-ui/colors";
-
 /** @type {import('tailwindcss').Config} */
 export default {
   corePlugins: {
@@ -13,53 +11,44 @@ export default {
     },
     extend: {
       colors: {
-        ...mauve,
-        ...violet,
-        ...green,
-        ...blackA,
-        "dark-100": "#181B22",
-        "dark-56": "rgba(20, 32, 59, 0.56)",
-        inputbg: "rgba(235, 237, 242, 0.32)",
-        "blue-normal": "#3A5BAA",
-        "red-light": "rgba(238, 48, 36, 0.08)",
-        "red-border": "#EE3024",
-        error: "#EE3024",
-        light: "#EBEFF7",
-      },
-      keyframes: {
-        overlayShow: {
-          from: { opacity: "0" },
-          to: { opacity: "1" },
+        red: {
+          100: "var(--colors-red1)",
+          200: "var(--colors-red2)",
+          300: "var(--colors-red3)",
+          400: "var(--colors-red4)",
+          500: "var(--colors-red5)",
+          600: "var(--colors-red6)",
+          700: "var(--colors-red7)",
+          800: "var(--colors-red8)",
+          900: "var(--colors-red9)",
         },
-        contentShow: {
-          from: {
-            opacity: "0",
-            transform: "translate(-50%, -48%) scale(0.96)",
-          },
-          to: { opacity: "1", transform: "translate(-50%, -50%) scale(1)" },
+        control: "hsl(var(--border-control))",
+        foreground: {
+          DEFAULT: "hsl(var(--foreground-default))",
+          muted: "hsl(var(--foreground-muted))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning-default))",
+          200: "hsl(var(--warning-200))",
+          300: "hsl(var(--warning-300))",
+          400: "hsl(var(--warning-400))",
+          500: "hsl(var(--warning-500))",
+          600: "hsl(var(--warning-600))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive-default))",
+          200: "hsl(var(--destructive-200))",
+          300: "hsl(var(--destructive-300))",
+          400: "hsl(var(--destructive-400))",
+          500: "hsl(var(--destructive-500))",
+          600: "hsl(var(--destructive-600))",
+        },
+        background: {
+          200: "hsl(var(--background-200))",
+          control: "hsl(var(--background-control))",
         },
       },
-      animation: {
-        overlayShow: "overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-        contentShow: "contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1)",
-      },
-      fontSize: {
-        arsm: "0.875rem",
-        arxl: "1.125rem",
-      },
-      lineHeight: {
-        normal: "13px",
-      },
-      spacing: {
-        md: "4px",
-        lg: "16px",
-        xl: "24px",
-        xxl: "32px",
-        "sm-section": "40px",
-      },
-      transitionProperty: {
-        "border-color": "border-color",
-      },
+      keyframes: {},
     },
   },
   plugins: [],

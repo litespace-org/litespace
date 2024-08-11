@@ -1,35 +1,38 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
 import { Input, InputType } from "@/components/Input";
-import React, { ComponentProps } from "react";
+import React from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { useForm } from "react-hook-form";
 
-const Wrapper: React.FC<ComponentProps<typeof Input>> = (props) => {
-  return (
-    <Direction>
-      <div className="ui-w-[40rem]">
-        <Input {...props} />
-      </div>
-    </Direction>
-  );
-};
+type Component = typeof Input;
 
-const meta: Meta<typeof Input> = {
+const meta: Meta<Component> = {
   title: "Input",
-  component: Wrapper,
+  component: Input,
   parameters: { layout: "centered" },
+  decorators: [
+    (Story: React.FC) => {
+      return (
+        <Direction>
+          <div className="ui-bg-background-200 ui-w-[30rem] ui-h-[30rem] ui-px-12 ui-flex ui-items-center ui-justify-center ui-shadow-xl ui-rounded-md">
+            <Story />
+          </div>
+        </Direction>
+      );
+    },
+  ],
 };
 
-export const Idle: StoryObj<typeof Wrapper> = {
+export const Idle: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
   },
 };
 
-export const IdelWithValue: StoryObj<typeof Wrapper> = {
+export const IdelWithValue: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
@@ -38,7 +41,7 @@ export const IdelWithValue: StoryObj<typeof Wrapper> = {
   },
 };
 
-export const Error: StoryObj<typeof Wrapper> = {
+export const Error: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
@@ -46,7 +49,7 @@ export const Error: StoryObj<typeof Wrapper> = {
   },
 };
 
-export const ErrorWithValue: StoryObj<typeof Wrapper> = {
+export const ErrorWithValue: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
@@ -56,7 +59,7 @@ export const ErrorWithValue: StoryObj<typeof Wrapper> = {
   },
 };
 
-export const Password: StoryObj<typeof Wrapper> = {
+export const Password: StoryObj<Component> = {
   args: {},
   render: () => {
     const { register, watch } = useForm<{ password: string }>({
@@ -77,7 +80,7 @@ export const Password: StoryObj<typeof Wrapper> = {
   },
 };
 
-export const PasswordError: StoryObj<typeof Wrapper> = {
+export const PasswordError: StoryObj<Component> = {
   args: {},
   render: () => {
     const { register, watch } = useForm<{ password: string }>({
@@ -99,7 +102,7 @@ export const PasswordError: StoryObj<typeof Wrapper> = {
   },
 };
 
-export const InputEnglish = {
+export const InputEnglish: StoryObj<Component> = {
   render: () => {
     const { register, watch } = useForm<{ email: string }>({
       defaultValues: { email: "" },

@@ -3,3 +3,36 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --foreground-default: 0deg 0% 98%;
+  --background-200: 0deg 0% 9%;
+  --foreground-muted: 0deg 0% 30.2%;
+  --background-control: 0deg 0% 14.1%;
+  --border-control: 0deg 0% 22.4%;
+
+  --warning-default: 38.9deg 100% 42.9%;
+  --warning-600: 38.9deg 100% 42.9%;
+  --warning-500: 34.8deg 90.9% 21.6%;
+  --warning-400: 33.2deg 100% 14.5%;
+  --warning-300: 32.3deg 100% 10.2%;
+  --warning-200: 36.6deg 100% 8%;
+
+  --destructive-default: 10.2deg 77.9% 53.9%;
+  --destructive-600: 9.7deg 85.2% 62.9%;
+  --destructive-500: 7.9deg 71.6% 29%;
+  --destructive-400: 6.7deg 60% 20.6%;
+  --destructive-300: 7.5deg 51.3% 15.3%;
+  --destructive-200: 10.9deg 23.4% 9.2%;
+
+  --colors-red1: #1f1315;
+  --colors-red2: #291415;
+  --colors-red3: #3c181a;
+  --colors-red4: #481a1d;
+  --colors-red5: #541b1f;
+  --colors-red6: #671e22;
+  --colors-red7: #822025;
+  --colors-red8: #aa2429;
+  --colors-red9: #e5484d;
+  --colors-red10: #f2555a;
+}

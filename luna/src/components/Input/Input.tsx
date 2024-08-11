@@ -11,6 +11,8 @@ import { UseFormRegisterReturn } from "react-hook-form";
 const arabic =
   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
 
+const passwordPlaceholder = "••••••••";
+
 export const Input: React.FC<{
   placeholder?: string;
   autoComplete?: string;
@@ -49,18 +51,21 @@ export const Input: React.FC<{
           autoComplete={autoComplete}
           {...register}
           className={cn(
-            "ui-w-full ui-bg-inputbg ui-py-[10px] ui-px-lg ui-rounded-2xl  ui-h-[72px] ui-font-cairo",
-            "placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-normal placeholder:ui-text-right",
-            "ui-text-arxl ui-font-bold ui-leading-normal ui-border focus:ui-outline-none focus:ui-border-blue-normal",
+            "ui-font-cairo ui-block ui-box-border ui-w-full ui-rounded-md ui-shadow-sm ui-transition-all",
+            "ui-text-foreground focus-visible:ui-shadow-md ui-outline-none",
+            "focus:ui-ring-current focus:ui-ring-2 focus-visible:ui-border-foreground-muted",
+            "focus-visible:ui-ring-background-control ui-placeholder-foreground-muted ui-group",
+            "ui-bg-foreground/[.026] ui-border ui-border-control ui-text-sm ui-px-4 ui-py-2",
             {
-              "ui-bg-red-light ui-border-red-border focus:ui-border-red-border":
+              "ui-bg-destructive-200 ui-border ui-border-destructive-400 focus:ui-ring-destructive-400 placeholder:ui-text-destructive-400":
                 !!error,
-              "ui-border-transparent": !error,
-              "ui-text-right focus:ui-text-left": dir === Dir.LTR,
-              "focus:ui-text-right": dir === Dir.LTR,
             }
           )}
-          placeholder={placeholder}
+          placeholder={
+            type === InputType.Password
+              ? placeholder || passwordPlaceholder
+              : placeholder
+          }
         />
         <ErrorIcon error={!!error} />
         {type === InputType.Password && (
@@ -86,7 +91,10 @@ function framerError(y: string | number) {
 const InputError: React.FC<{ message: string }> = ({ message }) => {
   const framer = useMemo(() => framerError(0), []);
   return (
-    <motion.p className="ui-text-arsm ui-text-red-400" {...framer}>
+    <motion.p
+      className="ui-font-cairo ui-text-sm ui-text-red-900 ui-mt-2"
+      {...framer}
+    >
       {message}
     </motion.p>
   );
@@ -98,7 +106,7 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
     <AnimatePresence mode="wait" initial={false}>
       {error ? (
         <motion.div
-          className="ui-absolute ui-top-1/2 ui-left-lg ui-transform -ui-translate-y-1/2"
+          className="ui-absolute ui-top-1/2 ui-left-2 ui-transform -ui-translate-y-1/2 ui-text-red-900"
           {...framer}
         >
           <ErrorOutlined />

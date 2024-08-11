@@ -16,7 +16,7 @@
   "page.select.type.options.student": "انا ارغب في تعلم الانجليزية",
   "page.select.gender.title": "أنا....",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",
-  "global.form.email.placeholder": "example@gmail.com",
+  "global.form.email.placeholder": "you@example.com",
   "global.form.password.label": "كلمة المرور",
   "global.form.password.placeholder": "أدخل كلمة المرور",
   "global.logout": "تسجيـــــــل خــــروج",
@@ -30,6 +30,6 @@
   "errors.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
   "errors.name.arabic": "أدخل اسمك باللغة العربية فقط",
   "errors.name.english": "أدخل اسمك باللغة الانجليزية فقط",
-  "errors.email.invlaid": "عنوان البريد الإليكتروني غير صـــــــالح",
+  "errors.email.invlaid": "عنوان بريد اليكتروني غير صحيح",
   "errors.password.invlaid": "كلمة سر غير صــــــالحة"
 }
