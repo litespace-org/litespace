@@ -65,8 +65,9 @@ export const Input: React.FC<{
             "ui-text-foreground focus-visible:ui-shadow-md ui-outline-none",
             "focus:ui-ring-current focus:ui-ring-2 focus-visible:ui-border-foreground-muted",
             "focus-visible:ui-ring-background-control ui-placeholder-foreground-muted ui-group",
-            "ui-bg-foreground/[.026] ui-border ui-border-control ui-text-sm ui-px-4 ui-py-2",
+            " ui-border ui-border-control ui-text-sm ui-px-4 ui-py-2",
             {
+              "ui-bg-foreground/[.026]": !error,
               "ui-bg-destructive-200 ui-border ui-border-destructive-400 focus:ui-ring-destructive-400 placeholder:ui-text-destructive-400":
                 !!error,
               "ui-opacity-50 ui-cursor-not-allowed": disabled,

@@ -16,7 +16,17 @@ import Call from "@/pages/Call";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 
 const router = createBrowserRouter([
-  { path: Route.Root, element: <Root />, errorElement: <ErrorPage /> },
+  {
+    path: Route.Root,
+    element: <Root />,
+    children: [
+      {
+        path: "/login",
+        element: <Login />,
+      },
+    ],
+    errorElement: <ErrorPage />,
+  },
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
   { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
   { path: Route.SelectUserType, element: <SelectUserType /> },

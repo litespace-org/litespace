@@ -9,12 +9,16 @@
   "page.register.form.age.label": "سنه الميلاد",
   "page.register.form.age.placeholder": "ادخل سنه ميلادك",
   "page.register.form.button.submit.label": "انشاء حساب جدبد",
-  "page.login.form.title": "تسجيــــــل دخـــــــول",
-  "page.login.form.button.submit.label": "تسجـــــــــل دخــــــول",
+  "page.login.form.title": "تسجيل الدخول",
+  "page.login.form.button.submit.label": "تسجيل الدخول",
+  "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
   "page.select.type.title": "ماذا تريد ان تكون؟",
   "page.select.type.options.tutor": "انا اتحدث اللغة الانجليزية بطلاقة وعايز اكون معلم",
   "page.select.type.options.student": "انا ارغب في تعلم الانجليزية",
   "page.select.gender.title": "أنا....",
+  "page.error.title": "بتحاول توصل لايه؟ 🔍",
+  "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
+  "page.error.button.label": "الرجوع للخلف",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",
   "global.form.email.placeholder": "you@example.com",
   "global.form.password.label": "كلمة المرور",
@@ -24,8 +28,8 @@
   "global.start.chating": "ابداء محادثة",
   "global.report.label": "إبلاغ",
   "global.add.to.favorites": "إضافة الي قائمة المفضلة",
-  "errors.invalid": "خطـــــــــــأ",
-  "errors.required": "مطـــــــــلوب",
+  "errors.invalid": "خطأ",
+  "errors.required": "مطلوب",
   "errors.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",
   "errors.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
   "errors.name.arabic": "أدخل اسمك باللغة العربية فقط",

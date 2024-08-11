@@ -4,16 +4,13 @@ import cn from "classnames";
 export const Label: React.FC<{
   id?: string;
   children?: ReactNode;
-  required?: boolean;
-}> = ({ id, children, required }) => {
+}> = ({ id, children }) => {
   return (
     <label
       htmlFor={id}
-      className={cn(
-        "ui-text-dark-100 ui-font-cairo ui-font-bold ui-text-arxl ui-leading-normal ui-mb-xl ui-inline-block"
-      )}
+      className={cn("ui-block ui-text-foreground-light ui-text-sm")}
     >
-      {children} {required && <span className="ui-text-error">*</span>}
+      {children}
     </label>
   );
 };

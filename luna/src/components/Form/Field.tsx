@@ -7,7 +7,12 @@ export const Field: React.FC<{
   field?: React.ReactNode;
 }> = ({ className, label, field }) => {
   return (
-    <div className={cn("ui-mb-5 ui-w-full", className)}>
+    <div
+      className={cn(
+        "ui-mb-5 ui-flex ui-flex-col ui-gap-2 ui-w-full",
+        className
+      )}
+    >
       {label}
       {field}
     </div>

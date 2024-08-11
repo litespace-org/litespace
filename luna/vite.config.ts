@@ -1,5 +1,6 @@
-import { defineConfig } from "vite";
+import { viteStaticCopy } from "vite-plugin-static-copy";
 import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
 import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
@@ -11,6 +12,14 @@ export default defineConfig({
     dts({
       exclude: ["**/*.stories.tsx"],
     }),
+    viteStaticCopy({
+      targets: [
+        {
+          src: "tailwind.config.js",
+          dest: ".",
+        },
+      ],
+    }),
   ],
   resolve: {
     alias: {
@@ -19,7 +28,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      entry: "./src/index.ts",
+      entry: "src/index.ts",
       name: "ui",
       fileName: (format) => `ui.${format}.js`,
       formats: ["es", "cjs", "umd"],

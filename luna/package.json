@@ -14,6 +14,10 @@
     "./style.css": {
       "require": "./dist/style.css",
       "default": "./dist/style.css"
+    },
+    "./tailwind.config": {
+      "require": "./tailwind.config.js",
+      "default": "./tailwind.config.js"
     }
   },
   "files": [
@@ -21,19 +25,20 @@
   ],
   "scripts": {
     "dev": "vite",
+    "clean": "rm -rf dist/",
     "build": "tsc && vite build && yarn build:css",
     "watch:build": "concurrently 'vite build -w' 'yarn build:css -w'",
-    "build:css": "tailwindcss -m -i ./src/tailwind.css -o ./dist/style.css",
+    "build:css": "tailwindcss -m -i src/tailwind.css -o dist/style.css",
     "build:vercel": "yarn vercel build",
     "deploy:vercel": "yarn vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "storybook": "concurrently 'yarn storybook:css' 'yarn storybook:dev'",
     "storybook:dev": "storybook dev -p 6006",
-    "storybook:css": "tailwindcss -w -i ./src/tailwind.css -o ./src/index.css",
+    "storybook:css": "tailwindcss -w -i src/tailwind.css -o src/index.css",
     "storybook:build:all": "concurrently 'yarn storybook:build:css' 'yarn storybook:build'",
     "storybook:build": "storybook build",
-    "storybook:build:css": "tailwindcss -m -i ./src/tailwind.css -o ./src/index.css"
+    "storybook:build:css": "tailwindcss -m -i src/tailwind.css -o src/index.css"
   },
   "peerDependencies": {
     "framer-motion": "^11.2.6",
@@ -84,6 +89,8 @@
     "@radix-ui/react-icons": "^1.3.0",
     "@radix-ui/react-select": "^2.1.1",
     "classnames": "^2.5.1",
-    "vercel": "^34.2.7"
+    "tailwind-scrollbar": "^3.1.0",
+    "vercel": "^34.2.7",
+    "vite-plugin-static-copy": "^1.0.6"
   }
 }

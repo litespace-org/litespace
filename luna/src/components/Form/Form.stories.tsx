@@ -28,11 +28,7 @@ export const Primary: StoryObj<IForm> = {
     children: (
       <div className="ui-w-[40rem]">
         <Field
-          label={
-            <Label required id="name">
-              {ar["global.form.email.label"]}
-            </Label>
-          }
+          label={<Label id="name">{ar["global.form.email.label"]}</Label>}
           field={
             <Input
               type={InputType.Text}

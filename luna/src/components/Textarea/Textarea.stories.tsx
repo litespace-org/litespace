@@ -30,7 +30,7 @@ export const PrimaryInteractive: StoryObj<Component> = {
       <Direction>
         <Form onSubmit={handleSubmit(() => {})} className="ui-w-[50rem]">
           <Field
-            label={<Label required>{ar["global.add.to.favorites"]}</Label>}
+            label={<Label>{ar["global.add.to.favorites"]}</Label>}
             field={
               <Textarea
                 value={watch("feedback")}

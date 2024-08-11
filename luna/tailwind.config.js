@@ -1,16 +1,16 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  corePlugins: {
-    preflight: true,
-  },
-  prefix: "ui-",
   content: ["./src/**/*.{ts,tsx}"],
+  prefix: "ui-",
   theme: {
     fontFamily: {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
       colors: {
+        dash: {
+          sidebar: "hsl(var(--background-dash-sidebar))",
+        },
         red: {
           100: "var(--colors-red1)",
           200: "var(--colors-red2)",
@@ -40,6 +40,8 @@ export default {
         foreground: {
           DEFAULT: "hsl(var(--foreground-default))",
           muted: "hsl(var(--foreground-muted))",
+          light: "hsl(var(--foreground-light))",
+          lighter: "hsl(var(--foreground-lighter))",
         },
         warning: {
           DEFAULT: "hsl(var(--warning-default))",
@@ -89,8 +91,7 @@ export default {
           600: "hsl(var(--brand-600))",
         },
       },
-      keyframes: {},
     },
   },
-  plugins: [],
+  plugins: [require("tailwind-scrollbar")],
 };

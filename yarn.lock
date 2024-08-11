@@ -3080,11 +3080,13 @@ __metadata:
     react-hook-form: "npm:^7.51.5"
     react-intl: "npm:^6.6.8"
     storybook: "npm:^8.1.5"
+    tailwind-scrollbar: "npm:^3.1.0"
     tailwindcss: "npm:^3.4.3"
     typescript: "npm:^5.4.5"
     vercel: "npm:^34.2.7"
     vite: "npm:^5.2.0"
     vite-plugin-dts: "npm:^3.9.1"
+    vite-plugin-static-copy: "npm:^1.0.6"
   peerDependencies:
     framer-motion: ^11.2.6
     lodash: ^4.17.21
@@ -11983,7 +11985,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.1, fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.2.11, fast-glob@npm:^3.2.7, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.1, fast-glob@npm:^3.3.2":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
   dependencies:
@@ -22694,6 +22696,20 @@ __metadata:
     vite:
       optional: true
   checksum: 10c0/a38e02f2383df9db4b0b35bece0c2f96fc3f4bf695dd6cf717caadb4be457c1fdb4a87ed77b61a7beec494c730ea4c0656c9f968ecefbe42435f765c3b887996
+  languageName: node
+  linkType: hard
+
+"vite-plugin-static-copy@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "vite-plugin-static-copy@npm:1.0.6"
+  dependencies:
+    chokidar: "npm:^3.5.3"
+    fast-glob: "npm:^3.2.11"
+    fs-extra: "npm:^11.1.0"
+    picocolors: "npm:^1.0.0"
+  peerDependencies:
+    vite: ^5.0.0
+  checksum: 10c0/997114571bd429481974483465ab78d1ecd5fc48d2de06cbfe9dbf005f9b870aa072b0d9c22e2fd8def759db2c48ad662a6a0cdf47706fba409c82db7c03ed22
   languageName: node
   linkType: hard
 

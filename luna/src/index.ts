@@ -1,4 +1,4 @@
-export { Button, Color, Variant } from "@/components/Button";
+export { Button, ButtonType, ButtonSize } from "@/components/Button";
 export { Dir, RadixDirection } from "@/components/Direction";
 export { Input, InputType } from "@/components/Input";
 export { Form, Field, Label } from "@/components/Form";

@@ -1,6 +1,6 @@
 import { atlas, backend } from "@/lib/atlas";
 import { asAssetUrl } from "@litespace/atlas";
-import { Button, Color, messages, Variant } from "@litespace/luna";
+import { Button, ButtonType, messages } from "@litespace/luna";
 import React from "react";
 import { useIntl } from "react-intl";
 import { useQuery } from "react-query";
@@ -30,7 +30,7 @@ const TutorProfile: React.FC = () => {
   if (tutor.isError) return <h1>Error</h1>;
 
   return (
-    <div className="max-w-screen-xl mx-auto px-20 py-24 font-cairo">
+    <div className="max-w-screen-xl mx-auto px-20 py-24 font-cairo bg-dash-sidebar">
       <div className="flex flex-row gap-4">
         <div>
           <div className="w-[400px] h-[400px] overflow-hidden rounded-md shadow-lg">
@@ -71,13 +71,13 @@ const TutorProfile: React.FC = () => {
             <Button>
               {intl.formatMessage({ id: messages["global.book.lesson.label"] })}
             </Button>
-            <Button variant={Variant.Outlined}>
+            <Button type={ButtonType.Secondary}>
               {intl.formatMessage({ id: messages["global.add.to.favorites"] })}
             </Button>
-            <Button variant={Variant.Outlined}>
+            <Button type={ButtonType.Secondary}>
               {intl.formatMessage({ id: messages["global.start.chating"] })}
             </Button>
-            <Button color={Color.Error} variant={Variant.Outlined}>
+            <Button type={ButtonType.Error}>
               {intl.formatMessage({ id: messages["global.report.label"] })}
             </Button>
           </div>
