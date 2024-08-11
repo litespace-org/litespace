@@ -20,7 +20,16 @@ export const Input: React.FC<{
   error?: string | null;
   value?: string;
   register?: UseFormRegisterReturn;
-}> = ({ type, placeholder, autoComplete, error, value, register }) => {
+  disabled?: boolean;
+}> = ({
+  type,
+  placeholder,
+  autoComplete,
+  error,
+  value,
+  register,
+  disabled,
+}) => {
   const [show, setShow] = useState<boolean>(false);
   const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
@@ -49,6 +58,7 @@ export const Input: React.FC<{
           type={kind}
           value={value}
           autoComplete={autoComplete}
+          disabled={disabled}
           {...register}
           className={cn(
             "ui-font-cairo ui-block ui-box-border ui-w-full ui-rounded-md ui-shadow-sm ui-transition-all",
@@ -59,6 +69,7 @@ export const Input: React.FC<{
             {
               "ui-bg-destructive-200 ui-border ui-border-destructive-400 focus:ui-ring-destructive-400 placeholder:ui-text-destructive-400":
                 !!error,
+              "ui-opacity-50 ui-cursor-not-allowed": disabled,
             }
           )}
           placeholder={

@@ -1,9 +1,11 @@
-export enum Variant {
-  Filled = "filled",
-  Outlined = "outlined",
+export enum ButtonType {
+  Primary = "primary",
+  Secondary = "secondary",
+  Text = "Text",
+  Error = "error",
 }
 
-export enum Color {
-  Primary = "primary",
-  Error = "error",
+export enum ButtonSize {
+  Tiny = "tiny",
+  Large = "large",
 }

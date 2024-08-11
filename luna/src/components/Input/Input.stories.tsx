@@ -16,7 +16,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="ui-bg-background-200 ui-w-[30rem] ui-h-[30rem] ui-px-12 ui-flex ui-items-center ui-justify-center ui-shadow-xl ui-rounded-md">
+          <div className="ui-bg-surface-200 ui-w-[30rem] ui-h-[30rem] ui-px-12 ui-flex ui-items-center ui-justify-center ui-shadow-xl ui-rounded-md">
             <Story />
           </div>
         </Direction>
@@ -29,6 +29,15 @@ export const Idle: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
+  },
+};
+
+export const Disabled: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: ar["global.form.email.placeholder"],
+    disabled: true,
+    value: "Some value",
   },
 };
 
