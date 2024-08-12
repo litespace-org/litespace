@@ -7,7 +7,7 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
-import "@/index.css";
+import "@litespace/luna/tailwind.css";
 
 const queryClient = new QueryClient();
 

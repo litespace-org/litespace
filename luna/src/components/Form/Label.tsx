@@ -6,10 +6,7 @@ export const Label: React.FC<{
   children?: ReactNode;
 }> = ({ id, children }) => {
   return (
-    <label
-      htmlFor={id}
-      className={cn("ui-block ui-text-foreground-light ui-text-sm")}
-    >
+    <label htmlFor={id} className={cn("block text-foreground-light text-sm")}>
       {children}
     </label>
   );

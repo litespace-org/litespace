@@ -16,7 +16,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="ui-bg-surface-200 ui-w-[30rem] ui-h-[30rem] ui-px-12 ui-flex ui-items-center ui-justify-center ui-shadow-xl ui-rounded-md">
+          <div className="bg-surface-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl rounded-md">
             <Story />
           </div>
         </Direction>
@@ -76,7 +76,7 @@ export const Password: StoryObj<Component> = {
     });
     return (
       <Direction>
-        <div className="ui-w-[50rem]">
+        <div className="w-[50rem]">
           <Input
             type={InputType.Password}
             placeholder={ar["global.form.password.label"]}
@@ -97,7 +97,7 @@ export const PasswordError: StoryObj<Component> = {
     });
     return (
       <Direction>
-        <div className="ui-w-[50rem]">
+        <div className="w-[50rem]">
           <Input
             type={InputType.Password}
             placeholder={ar["global.form.password.label"]}
@@ -118,7 +118,7 @@ export const InputEnglish: StoryObj<Component> = {
     });
     return (
       <Direction>
-        <div className="ui-w-[50rem]">
+        <div className="w-[50rem]">
           <Input
             type={InputType.Text}
             placeholder={ar["global.form.email.placeholder"]}

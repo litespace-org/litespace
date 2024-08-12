@@ -14,10 +14,8 @@ export default defineConfig({
     }),
     viteStaticCopy({
       targets: [
-        {
-          src: "tailwind.config.js",
-          dest: ".",
-        },
+        { src: "tailwind.config.js", dest: "." },
+        { src: "src/tailwind.css", dest: "." },
       ],
     }),
   ],

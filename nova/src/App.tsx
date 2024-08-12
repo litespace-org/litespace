@@ -7,12 +7,7 @@ import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
-import SelectUserType from "@/pages/SelectUserType";
-import SelectUserGender from "@/pages/SelectUserGender";
-import SetUserName from "@/pages/SetUserName";
-import Tutors from "@/pages/Tutors";
 import TutorProfile from "@/pages/TutorProfile";
-import Call from "@/pages/Call";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 
 const router = createBrowserRouter([
@@ -20,22 +15,13 @@ const router = createBrowserRouter([
     path: Route.Root,
     element: <Root />,
     children: [
-      {
-        path: "/login",
-        element: <Login />,
-      },
+      { path: Route.Login, element: <Login /> },
+      { path: Route.Register, element: <Register /> },
+      { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
+      { path: Route.TutorProfile, element: <TutorProfile /> },
     ],
     errorElement: <ErrorPage />,
   },
-  { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
-  { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
-  { path: Route.SelectUserType, element: <SelectUserType /> },
-  { path: Route.SelectUserGender, element: <SelectUserGender /> },
-  { path: Route.SetUserName, element: <SetUserName /> },
-  { path: Route.Tutors, element: <Tutors /> },
-  { path: Route.Call, element: <Call /> },
-  { path: Route.TutorProfile, element: <TutorProfile /> },
-  { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
 ]);
 
 function App(): React.JSX.Element {

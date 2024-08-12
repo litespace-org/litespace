@@ -1,7 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./src/**/*.{ts,tsx}"],
-  prefix: "ui-",
+  content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     fontFamily: {
       cairo: ["Cairo", "sans-serif"],

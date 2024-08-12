@@ -16,8 +16,12 @@
       "default": "./dist/style.css"
     },
     "./tailwind.config": {
-      "require": "./tailwind.config.js",
-      "default": "./tailwind.config.js"
+      "require": "./dist/tailwind.config.js",
+      "default": "./dist/tailwind.config.js"
+    },
+    "./tailwind.css": {
+      "require": "./dist/tailwind.css",
+      "default": "./dist/tailwind.css"
     }
   },
   "files": [

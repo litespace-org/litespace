@@ -1,2 +1,2 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = require("@litespace/luna/tailwind.config");
+import config from "@litespace/luna/tailwind.config";
+export default config;

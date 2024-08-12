@@ -50,8 +50,8 @@ export const Input: React.FC<{
   }, []);
 
   return (
-    <div className="ui-flex ui-flex-col ui-w-full">
-      <div className="ui-w-full ui-relative">
+    <div className="flex flex-col w-full">
+      <div className="w-full relative">
         <input
           dir={dir}
           id={register?.name}
@@ -61,16 +61,16 @@ export const Input: React.FC<{
           disabled={disabled}
           {...register}
           className={cn(
-            "ui-font-cairo ui-block ui-box-border ui-w-full ui-rounded-md ui-shadow-sm ui-transition-all",
-            "ui-text-foreground focus-visible:ui-shadow-md ui-outline-none",
-            "focus:ui-ring-current focus:ui-ring-2 focus-visible:ui-border-foreground-muted",
-            "focus-visible:ui-ring-background-control ui-placeholder-foreground-muted ui-group",
-            " ui-border ui-border-control ui-text-sm ui-px-4 ui-py-2",
+            "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
+            "text-foreground focus-visible:shadow-md outline-none",
+            "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
+            "focus-visible:ring-background-control placeholder-foreground-muted group",
+            " border border-control text-sm px-4 py-2",
             {
-              "ui-bg-foreground/[.026]": !error,
-              "ui-bg-destructive-200 ui-border ui-border-destructive-400 focus:ui-ring-destructive-400 placeholder:ui-text-destructive-400":
+              "bg-foreground/[.026]": !error,
+              "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
-              "ui-opacity-50 ui-cursor-not-allowed": disabled,
+              "opacity-50 cursor-not-allowed": disabled,
             }
           )}
           placeholder={
@@ -103,10 +103,7 @@ function framerError(y: string | number) {
 const InputError: React.FC<{ message: string }> = ({ message }) => {
   const framer = useMemo(() => framerError(0), []);
   return (
-    <motion.p
-      className="ui-font-cairo ui-text-sm ui-text-red-900 ui-mt-2"
-      {...framer}
-    >
+    <motion.p className="font-cairo text-sm text-red-900 mt-2" {...framer}>
       {message}
     </motion.p>
   );
@@ -118,7 +115,7 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
     <AnimatePresence mode="wait" initial={false}>
       {error ? (
         <motion.div
-          className="ui-absolute ui-top-1/2 ui-left-2 ui-transform -ui-translate-y-1/2 ui-text-red-900"
+          className="absolute top-1/2 left-2 transform -translate-y-1/2 text-red-900"
           {...framer}
         >
           <ErrorOutlined />
@@ -137,10 +134,10 @@ const EyeIcon: React.FC<{
   return (
     <div
       className={cn(
-        "ui-absolute ui-top-1/2 ui-transform -ui-translate-y-1/2 ui-cursor-pointer",
+        "absolute top-1/2 transform -translate-y-1/2 cursor-pointer",
         {
-          "ui-left-12": error,
-          "ui-left-lg": !error,
+          "left-12": error,
+          "left-lg": !error,
         }
       )}
       {...framer}
