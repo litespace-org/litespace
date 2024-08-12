@@ -95,6 +95,7 @@ const TutorOnboarding: React.FC = () => {
             max={dayjs().add(14, "days")}
             selected={date}
             onSelect={(date) => setDate(dayjs(date.format("YYYY-MM-DD")))}
+            disable={mutation.isLoading}
           />
         </div>
 
@@ -117,6 +118,7 @@ const TutorOnboarding: React.FC = () => {
                           ? ButtonType.Primary
                           : ButtonType.Secondary
                       }
+                      disabled={mutation.isLoading}
                     >
                       {dayjs(slot.start).format("hh:mm a")}
                     </Button>

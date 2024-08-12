@@ -109,7 +109,8 @@ export const DatePicker: React.FC<{
   min?: Dayjs;
   max?: Dayjs;
   selected?: Dayjs;
-}> = ({ onSelect, selected, min, max }) => {
+  disable?: boolean;
+}> = ({ onSelect, selected, min, max, disable }) => {
   const [date, setDate] = useState<Dayjs>(selected || dayjs());
   const month = useMemo(() => date.get("month"), [date]);
   const monthText = useMemo(() => months[month], [month]);
@@ -151,7 +152,7 @@ export const DatePicker: React.FC<{
       <div className="flex flex-row items-center justify-between gap-10 w-[300px] mb-5">
         <div>
           <Button
-            disabled={!canGoNext}
+            disabled={!canGoNext || disable}
             onClick={nextMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
@@ -164,7 +165,7 @@ export const DatePicker: React.FC<{
         </p>
         <div>
           <Button
-            disabled={!canGoBack}
+            disabled={!canGoBack || disable}
             onClick={prevMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
@@ -196,7 +197,8 @@ export const DatePicker: React.FC<{
               disabled={
                 day === 0 ||
                 (min && dayDate.isBefore(min, "day")) ||
-                (max && dayDate.isAfter(max, "day"))
+                (max && dayDate.isAfter(max, "day")) ||
+                disable
               }
               className={cn(
                 "text-center relative",
