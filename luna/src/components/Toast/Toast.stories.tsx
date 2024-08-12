@@ -5,6 +5,7 @@ import { Button, ButtonType } from "@/components/Button";
 import React from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
+import "react-toastify/dist/ReactToastify.min.css";
 
 type Component = typeof Button;
 

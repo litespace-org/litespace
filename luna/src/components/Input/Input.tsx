@@ -36,7 +36,7 @@ export const Input: React.FC<{
 
   const dir: Dir | undefined = useMemo(() => {
     if (!value) return undefined;
-    if (type === InputType.Password) return Dir.RTL;
+    if (type === InputType.Password) return Dir.LTR;
     if (arabic.test(value[0])) return Dir.RTL;
     return Dir.LTR;
   }, [type, value]);

@@ -1,8 +1,6 @@
 import React from "react";
 import cn from "classnames";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { AlertCircle, Check, Info, AlertTriangle } from "react-feather";
-import "react-toastify/dist/ReactToastify.min.css";
 import { createPortal } from "react-dom";
 import { IconProps, ToastContainer } from "react-toastify";
 
@@ -13,9 +11,9 @@ export type ToastProps = {
 
 export const Toast: React.FC<ToastProps> = ({ title, description }) => {
   return (
-    <div>
+    <p>
       {title} {description ? `: ${description}` : null}
-    </div>
+    </p>
   );
 };
 
@@ -27,19 +25,19 @@ const Icon: React.FC<IconProps> = ({ type }) => {
   return <Check />;
 };
 
-export const Toaster = (): JSX.Element => {
+export const Toaster: React.FC = () => {
   return (
     <>
       {createPortal(
         <ToastContainer
-          className="w-screen md:max-w-sm"
+          className="w-[350px] ml-2"
           toastClassName={cn(
-            "flex px-3 pb-3 pt-2 md:rounded-lg",
+            "flex px-3 pb-3 pt-2 md:rounded-lg ",
             "border border-border-strong hover-border-border-stronger !bg-overlay",
-            "[&>button]:mt-2.5 !text-foreground"
+            "[&>button]:mt-2.5 [&>button]:pl-[6px] !text-foreground"
           )}
-          bodyClassName="!items-start gap-2 font-cairo [&_.Toastify\_\_toast-icon]:mt-0.5"
-          position="bottom-left"
+          bodyClassName="!items-start gap-2 font-cairo !pl-3 [&_.Toastify\_\_toast-icon]:mt-0.5"
+          position="top-left"
           icon={Icon}
           hideProgressBar
           limit={5}

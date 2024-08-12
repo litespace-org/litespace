@@ -50,7 +50,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.51.5",
-    "react-intl": "^6.6.8"
+    "react-intl": "^6.6.8",
+    "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",
@@ -94,7 +95,6 @@
     "@radix-ui/react-select": "^2.1.1",
     "classnames": "^2.5.1",
     "react-feather": "^2.0.10",
-    "react-toastify": "^10.0.5",
     "tailwind-scrollbar": "^3.1.0",
     "vercel": "^34.2.7",
     "vite-plugin-static-copy": "^1.0.6"

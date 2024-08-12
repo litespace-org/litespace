@@ -7,6 +7,7 @@ import {
   messages,
   useValidation,
   InputType,
+  toaster,
 } from "@litespace/luna";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -52,6 +53,12 @@ const Login: React.FC = () => {
     {
       onSuccess() {
         return navigate(Route.Root);
+      },
+      onError(error) {
+        toaster.error({
+          title: intl.formatMessage({ id: messages["page.login.failed"] }),
+          description: error instanceof Error ? error.message : undefined,
+        });
       },
     }
   );

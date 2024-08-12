@@ -1,6 +1,7 @@
 export { Button, ButtonType, ButtonSize } from "@/components/Button";
 export { Dir, RadixDirection } from "@/components/Direction";
 export { Input, InputType } from "@/components/Input";
+export { Toaster, toaster } from "@/components/Toast";
 export { Form, Field, Label } from "@/components/Form";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";

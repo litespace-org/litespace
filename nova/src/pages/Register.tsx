@@ -7,6 +7,7 @@ import {
   Label,
   useValidation,
   InputType,
+  toaster,
 } from "@litespace/luna";
 import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -58,8 +59,17 @@ const Register: React.FC = () => {
       await atlas.user.create(payload),
     {
       async onSuccess(user: IUser.Self) {
+        toaster.success({
+          title: intl.formatMessage({ id: messages["page.register.success"] }),
+        });
         dispatch(setUserProfile(user));
         navigate(Route.Root);
+      },
+      onError(error) {
+        toaster.error({
+          title: intl.formatMessage({ id: messages["page.register.failed"] }),
+          description: error instanceof Error ? error.message : undefined,
+        });
       },
     }
   );

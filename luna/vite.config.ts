@@ -41,6 +41,7 @@ export default defineConfig({
           "framer-motion": "framerMotion",
           "react-intl": "reactIntl",
           lodash: "lodash",
+          "react-toastify": "react-toastify",
         },
       },
     },

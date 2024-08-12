@@ -8,6 +8,7 @@ import App from "@/App";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
+import "react-toastify/dist/ReactToastify.min.css";
 
 const queryClient = new QueryClient();
 

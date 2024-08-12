@@ -9,9 +9,12 @@
   "page.register.form.age.label": "سنه الميلاد",
   "page.register.form.age.placeholder": "ادخل سنه ميلادك",
   "page.register.form.button.submit.label": "انشاء حساب جدبد",
+  "page.register.success": "تم إنشاء حسابك بنجاح",
+  "page.register.failed": "لديك مشكلة في إنشاء الحساب",
   "page.login.form.title": "تسجيل الدخول",
   "page.login.form.button.submit.label": "تسجيل الدخول",
   "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
+  "page.login.failed": "لديك مشكلة في تسجيل الدخول",
   "page.select.type.title": "ماذا تريد ان تكون؟",
   "page.select.type.options.tutor": "انا اتحدث اللغة الانجليزية بطلاقة وعايز اكون معلم",
   "page.select.type.options.student": "انا ارغب في تعلم الانجليزية",
@@ -36,5 +39,5 @@
   "errors.name.arabic": "أدخل اسمك باللغة العربية فقط",
   "errors.name.english": "أدخل اسمك باللغة الانجليزية فقط",
   "errors.email.invlaid": "عنوان بريد اليكتروني غير صحيح",
-  "errors.password.invlaid": "كلمة سر غير صــــــالحة"
+  "errors.password.invlaid": "كلمة مرور غير مناسبة"
 }
