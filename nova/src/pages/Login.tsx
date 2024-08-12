@@ -94,6 +94,7 @@ const Login: React.FC = () => {
                     })}
                     autoComplete="off"
                     error={errors["email"]?.message}
+                    disabled={mutation.isLoading}
                   />
                 }
               />
@@ -113,11 +114,12 @@ const Login: React.FC = () => {
                     value={password}
                     register={register("password", validation.password)}
                     error={errors["password"]?.message}
+                    disabled={mutation.isLoading}
                   />
                 }
               />
 
-              <Button>
+              <Button loading={mutation.isLoading}>
                 {intl.formatMessage({
                   id: messages["page.login.form.button.submit.label"],
                 })}

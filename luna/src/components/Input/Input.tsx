@@ -62,16 +62,16 @@ export const Input: React.FC<{
           disabled={disabled}
           {...register}
           className={cn(
-            "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
+            "font-cairo block box-border w-full rounded-md shadow-sm transition-all autofill:!bg-red-900",
             "text-foreground focus-visible:shadow-md outline-none",
             "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
             "focus-visible:ring-background-control placeholder-foreground-muted group",
-            " border border-control text-sm px-4 py-2",
+            "border border-control text-sm px-4 py-2",
+            "disabled:opacity-50 disabled:cursor-not-allowed",
             {
               "bg-foreground/[.026]": !error,
               "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
-              "opacity-50 cursor-not-allowed": disabled,
               "text-right": dir === Dir.LTR,
             }
           )}
@@ -87,6 +87,7 @@ export const Input: React.FC<{
           error={!!error}
           onEyeClick={onEyeClick}
           password={type === InputType.Password}
+          disabled={disabled}
         />
       </div>
       <AnimatePresence mode="wait" initial={false}>
@@ -129,9 +130,10 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
 };
 
 const EyeIcon: React.FC<{
+  disabled?: boolean;
   show?: boolean;
   toggle: (show: boolean) => void;
-}> = ({ toggle, show = false }) => {
+}> = ({ toggle, disabled, show = false }) => {
   return (
     <div>
       <Button
@@ -139,6 +141,7 @@ const EyeIcon: React.FC<{
         type={ButtonType.Secondary}
         size={ButtonSize.Tiny}
         onClick={() => toggle(!show)}
+        disabled={disabled}
       >
         <span className="text-foreground-muted">
           {show ? (
@@ -157,11 +160,14 @@ const Actions: React.FC<{
   password: boolean;
   show: boolean;
   onEyeClick: (show: boolean) => void;
-}> = ({ error, password, show, onEyeClick }) => {
+  disabled?: boolean;
+}> = ({ error, password, show, disabled, onEyeClick }) => {
   return (
     <div className="absolute inset-y-0 left-0 pr-3 pl-1 flex space-x-1 items-center">
       <ErrorIcon error={error} />
-      {password && <EyeIcon show={show} toggle={onEyeClick} />}
+      {password && (
+        <EyeIcon disabled={disabled} show={show} toggle={onEyeClick} />
+      )}
     </div>
   );
 };

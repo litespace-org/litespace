@@ -109,6 +109,7 @@ const Register: React.FC = () => {
                   register={register("email", validation.email)}
                   error={errors["email"]?.message}
                   autoComplete="off"
+                  disabled={mutation.isLoading}
                 />
               }
             />
@@ -130,12 +131,17 @@ const Register: React.FC = () => {
                   register={register("password", validation.password)}
                   type={InputType.Password}
                   error={errors["password"]?.message}
+                  disabled={mutation.isLoading}
                   autoComplete="off"
                 />
               }
             />
 
-            <Button htmlType="submit" className="w-full mt-[56px]">
+            <Button
+              loading={mutation.isLoading}
+              htmlType="submit"
+              className="w-full mt-[56px]"
+            >
               {intl.formatMessage({
                 id: messages["page.register.form.button.submit.label"],
               })}
