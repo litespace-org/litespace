@@ -1,13 +1,14 @@
-import handlers from "@/handlers";
 import { Router } from "express";
+import call from "@/handlers/call";
 
 const router = Router();
 
-router.post("/", handlers.call.create);
-router.get("/list", handlers.call.list);
-router.delete("/:id", handlers.call.delete);
-router.get("/:id", handlers.call.get);
-router.get("/host/:id", handlers.call.findHostCallById);
-router.get("/host/:id/list", handlers.call.findHostCalls);
+router.post("/", call.create);
+router.get("/list", call.list);
+router.delete("/:id", call.delete);
+router.get("/:id", call.get);
+router.get("/host/:id", call.findHostCallById);
+router.get("/host/:id/list", call.findHostCalls);
+router.get("/tutor/interviews/:id", call.findTutorInterviews);
 
 export default router;

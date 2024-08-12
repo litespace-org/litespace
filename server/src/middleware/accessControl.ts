@@ -302,6 +302,11 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/call(/)",
     methods: ["POST"],
   },
+  {
+    roles: [regAdmin, owner],
+    route: "(/)api/v1/call/tutor/interviews/:id(/)",
+    methods: ["GET"],
+  },
   // subscriptions
   {
     roles: [student],

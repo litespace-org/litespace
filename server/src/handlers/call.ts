@@ -8,6 +8,7 @@ import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { enforceRequest } from "@/middleware/accessControl";
 import { canBeInterviewed } from "@/lib/call";
+import { identityObject } from "@/validation/utils";
 
 const durations = [15, 30];
 
@@ -120,6 +121,22 @@ async function findHostCallById(
   res.status(200).json(hostCall);
 }
 
+async function findTutorInterviews(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = identityObject.parse(req.params);
+  const tutor = await users.findById(id);
+  if (!tutor) return next(notfound.tutor());
+
+  const allowed = enforceRequest(req, id === tutor.id);
+  if (!allowed) return next(forbidden());
+
+  const list = await calls.findTutorInterviews(id);
+  res.status(200).json(list);
+}
+
 export default {
   create: asyncHandler(createCall),
   delete: asyncHandler(deleteCall),
@@ -127,4 +144,5 @@ export default {
   list: asyncHandler(getMany),
   findHostCalls: asyncHandler(findHostCalls),
   findHostCallById: asyncHandler(findHostCallById),
+  findTutorInterviews: asyncHandler(findTutorInterviews),
 };

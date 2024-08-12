@@ -30,6 +30,12 @@ export class Call extends Base {
       .then((response) => response.data);
   }
 
+  async findTutorInterviews(id: number): Promise<ICall.AttendeeCall[]> {
+    return this.client
+      .get<ICall.AttendeeCall[]>(`/api/v1/call/tutor/interviews/${id}`)
+      .then((response) => response.data);
+  }
+
   async findById(id: number): Promise<ICall.Self> {
     return await this.client
       .get<ICall.Self>(`/api/v1/call/${id}`)

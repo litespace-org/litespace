@@ -1,5 +1,5 @@
 import { knex, query } from "@/models/query";
-import { first } from "lodash";
+import { first, merge, omit } from "lodash";
 import { ICall, IUser } from "@litespace/types";
 
 export class Calls {
@@ -68,13 +68,12 @@ export class Calls {
     return first(rows) || null;
   }
 
-  async findTutorInterviews(tutorId: number): Promise<ICall.Self[]> {
-    const rows = await knex<ICall.Row>(this.table)
-      .select("*")
+  async findTutorInterviews(tutorId: number): Promise<ICall.AttendeeCall[]> {
+    const rows = await this.getSelectAttendeeCallQuery()
       .where("attendee_id", tutorId)
       .andWhere("type", ICall.Type.Interview);
 
-    return rows.map((row) => this.from(row));
+    return rows.map((row) => this.asAttendeeCall(row));
   }
 
   getSelectHostCallQuery() {
@@ -99,6 +98,29 @@ export class Calls {
       .clone();
   }
 
+  getSelectAttendeeCallQuery() {
+    return knex
+      .select<ICall.AttendeeCallRow[]>({
+        id: "calls.id",
+        attendeeId: "calls.attendee_id",
+        hostId: "calls.host_id",
+        hostEmail: "users.email",
+        hostNameAr: "users.name_ar",
+        hostNameEn: "users.name_en",
+        slotId: "calls.slot_id",
+        start: "calls.start",
+        duration: "calls.duration",
+        type: "calls.type",
+        note: "calls.note",
+        feedback: "calls.feedback",
+        createdAt: "calls.created_at",
+        updatedAt: "calls.updated_at",
+      })
+      .from<ICall.Row>("calls")
+      .innerJoin("users", "users.id", "calls.host_id")
+      .clone();
+  }
+
   from(row: ICall.Row): ICall.Self {
     return {
       id: row.id,
@@ -113,6 +135,15 @@ export class Calls {
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
+  }
+
+  asAttendeeCall(row: ICall.AttendeeCallRow): ICall.AttendeeCall {
+    return merge(omit(row, "hostEmail", "hostNameAr", "hostNameEn"), {
+      host: {
+        email: row.hostEmail,
+        name: { ar: row.hostNameAr, en: row.hostNameEn },
+      },
+    });
   }
 }
 

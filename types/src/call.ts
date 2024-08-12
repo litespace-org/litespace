@@ -1,3 +1,5 @@
+import { IUser } from "@/index";
+
 export enum Type {
   Lesson = "lesson",
   Interview = "interview",
@@ -33,9 +35,19 @@ export type Self = {
 
 export type HostCall = Self & {
   attendeeId: number;
-  attendeeEmail: string;
-  attendeeNameAr: string;
-  attendeeNameEn: string;
+  attendeeEmail: string | null;
+  attendeeNameAr: string | null;
+  attendeeNameEn: string | null;
+};
+
+export type AttendeeCall = Self & {
+  host: { email: string | null; name: IUser.Name };
+};
+
+export type AttendeeCallRow = Self & {
+  hostEmail: string;
+  hostNameAr: string;
+  hostNameEn: string;
 };
 
 export type CreateApiPayload = {

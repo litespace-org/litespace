@@ -5,12 +5,7 @@ import cn from "classnames";
 
 const Root: React.FC = () => {
   return (
-    <div
-      className={cn(
-        "min-h-screen text-foreground flex flex-col",
-        "max-w-screen-xl mx-auto"
-      )}
-    >
+    <div className={cn("min-h-screen text-foreground flex flex-col")}>
       <Toaster />
       <Outlet />
     </div>
