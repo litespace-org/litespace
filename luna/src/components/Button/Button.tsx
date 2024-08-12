@@ -11,6 +11,7 @@ export const Button: React.FC<{
   size?: ButtonSize;
   disabled?: boolean;
   className?: string;
+  htmlType?: HTMLButtonElement["type"];
 }> = ({
   children,
   type = ButtonType.Primary,
@@ -18,9 +19,11 @@ export const Button: React.FC<{
   onClick,
   disabled,
   className,
+  htmlType,
 }) => {
   return (
     <button
+      type={htmlType}
       disabled={disabled}
       data-size={size}
       data-type={type}

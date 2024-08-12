@@ -7,6 +7,7 @@ import OpenedEye from "@/icons/OpenedEye";
 import ClosedEye from "@/icons/ClosedEye";
 import { InputType } from "@/components/Input/types";
 import { UseFormRegisterReturn } from "react-hook-form";
+import { Button, ButtonSize, ButtonType } from "../Button";
 
 const arabic =
   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
@@ -35,7 +36,7 @@ export const Input: React.FC<{
 
   const dir: Dir | undefined = useMemo(() => {
     if (!value) return undefined;
-    if (type === InputType.Password) return Dir.LTR;
+    if (type === InputType.Password) return Dir.RTL;
     if (arabic.test(value[0])) return Dir.RTL;
     return Dir.LTR;
   }, [type, value]);
@@ -71,6 +72,7 @@ export const Input: React.FC<{
               "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
               "opacity-50 cursor-not-allowed": disabled,
+              "text-right": dir === Dir.LTR,
             }
           )}
           placeholder={
@@ -79,10 +81,13 @@ export const Input: React.FC<{
               : placeholder
           }
         />
-        <ErrorIcon error={!!error} />
-        {type === InputType.Password && (
-          <EyeIcon show={show} error={!!error} toggle={onEyeClick} />
-        )}
+
+        <Actions
+          show={show}
+          error={!!error}
+          onEyeClick={onEyeClick}
+          password={type === InputType.Password}
+        />
       </div>
       <AnimatePresence mode="wait" initial={false}>
         {error ? <InputError message={error} key={register?.name} /> : null}
@@ -91,17 +96,14 @@ export const Input: React.FC<{
   );
 };
 
-function framerError(y: string | number) {
-  return {
-    initial: { opacity: 0, y: 10 },
-    animate: { opacity: 1, y },
-    exit: { opacity: 0, y: 10 },
-    transition: { duration: 0.2 },
-  };
-}
+const framer = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 10 },
+  transition: { duration: 0.2 },
+};
 
 const InputError: React.FC<{ message: string }> = ({ message }) => {
-  const framer = useMemo(() => framerError(0), []);
   return (
     <motion.p className="font-cairo text-sm text-red-900 mt-2" {...framer}>
       {message}
@@ -110,12 +112,13 @@ const InputError: React.FC<{ message: string }> = ({ message }) => {
 };
 
 const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
-  const framer = useMemo(() => framerError("-50%"), []);
   return (
     <AnimatePresence mode="wait" initial={false}>
       {error ? (
         <motion.div
-          className="absolute top-1/2 left-2 transform -translate-y-1/2 text-red-900"
+          className={cn(
+            "flex items-center justify-center pl-2 pr-2 text-red-900"
+          )}
           {...framer}
         >
           <ErrorOutlined />
@@ -127,23 +130,38 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
 
 const EyeIcon: React.FC<{
   show?: boolean;
-  error?: boolean;
   toggle: (show: boolean) => void;
-}> = ({ toggle, show = false, error = false }) => {
-  const framer = useMemo(() => framerError("-50%"), []);
+}> = ({ toggle, show = false }) => {
   return (
-    <div
-      className={cn(
-        "absolute top-1/2 transform -translate-y-1/2 cursor-pointer",
-        {
-          "left-12": error,
-          "left-lg": !error,
-        }
-      )}
-      {...framer}
-      onClick={() => toggle(!show)}
-    >
-      {show ? <OpenedEye /> : <ClosedEye />}
+    <div>
+      <Button
+        htmlType="button"
+        type={ButtonType.Secondary}
+        size={ButtonSize.Tiny}
+        onClick={() => toggle(!show)}
+      >
+        <span className="text-foreground-muted">
+          {show ? (
+            <OpenedEye className="w-[14px] h-[14px]" />
+          ) : (
+            <ClosedEye className="w-[14px] h-[14px]" />
+          )}
+        </span>
+      </Button>
+    </div>
+  );
+};
+
+const Actions: React.FC<{
+  error: boolean;
+  password: boolean;
+  show: boolean;
+  onEyeClick: (show: boolean) => void;
+}> = ({ error, password, show, onEyeClick }) => {
+  return (
+    <div className="absolute inset-y-0 left-0 pr-3 pl-1 flex space-x-1 items-center">
+      <ErrorIcon error={error} />
+      {password && <EyeIcon show={show} toggle={onEyeClick} />}
     </div>
   );
 };

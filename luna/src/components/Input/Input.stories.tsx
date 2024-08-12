@@ -16,7 +16,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="bg-surface-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl rounded-md">
+          <div className="bg-background-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl md">
             <Story />
           </div>
         </Direction>
@@ -75,16 +75,11 @@ export const Password: StoryObj<Component> = {
       defaultValues: { password: "" },
     });
     return (
-      <Direction>
-        <div className="w-[50rem]">
-          <Input
-            type={InputType.Password}
-            placeholder={ar["global.form.password.label"]}
-            value={watch("password")}
-            register={register("password")}
-          />
-        </div>
-      </Direction>
+      <Input
+        type={InputType.Password}
+        value={watch("password")}
+        register={register("password")}
+      />
     );
   },
 };
@@ -96,17 +91,12 @@ export const PasswordError: StoryObj<Component> = {
       defaultValues: { password: "" },
     });
     return (
-      <Direction>
-        <div className="w-[50rem]">
-          <Input
-            type={InputType.Password}
-            placeholder={ar["global.form.password.label"]}
-            value={watch("password")}
-            register={register("password")}
-            error={ar["errors.password.invlaid"]}
-          />
-        </div>
-      </Direction>
+      <Input
+        type={InputType.Password}
+        value={watch("password")}
+        register={register("password")}
+        error={ar["errors.password.invlaid"]}
+      />
     );
   },
 };
@@ -117,16 +107,12 @@ export const InputEnglish: StoryObj<Component> = {
       defaultValues: { email: "" },
     });
     return (
-      <Direction>
-        <div className="w-[50rem]">
-          <Input
-            type={InputType.Text}
-            placeholder={ar["global.form.email.placeholder"]}
-            value={watch("email")}
-            register={register("email")}
-          />
-        </div>
-      </Direction>
+      <Input
+        type={InputType.Text}
+        placeholder={ar["global.form.email.placeholder"]}
+        value={watch("email")}
+        register={register("email")}
+      />
     );
   },
 };
