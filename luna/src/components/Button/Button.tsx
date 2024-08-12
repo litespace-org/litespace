@@ -7,7 +7,7 @@ type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: React.FC<{
   children: React.ReactNode;
-  onClick?: () => Promise<void> | void;
+  onClick?: React.DOMAttributes<HTMLButtonElement>["onClick"];
   type?: ButtonType;
   size?: ButtonSize;
   disabled?: boolean;
