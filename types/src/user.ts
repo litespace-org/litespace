@@ -82,6 +82,4 @@ export type CreateApiPayload = {
   role: Role;
   email: string;
   password: string;
-  name: Name;
-  birthYear: number;
 };

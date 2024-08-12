@@ -1,8 +1,7 @@
 import { isProduction } from "@/constants";
 import ResponseError, { ErrorCode } from "@/lib/error";
-import { Request, Response } from "@/types/http";
 import { AxiosError } from "axios";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
@@ -15,9 +14,9 @@ function getZodMessage(error: ZodError) {
 
 export function errorHandler(
   error: Error | DatabaseError | ResponseError | ZodError | AxiosError,
-  req: Request.Default,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) {
   if (!isProduction) console.error(error);
 
@@ -36,6 +35,7 @@ export function errorHandler(
     message = error.response?.data ? error.response.data : error.message;
     statusCode = error.response?.status || 400;
   } else if (error instanceof DatabaseError) {
+    // ignore any database error: should never be shared with the client.
   } else if (error instanceof Error) {
     message = error.message;
   }

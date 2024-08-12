@@ -25,8 +25,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
-  const { email, password, name, role, birthYear } =
-    schema.http.user.create.parse(req.body);
+  const { email, password, role } = schema.http.user.create.parse(req.body);
 
   const creatorRole = req.user?.role;
   const admin = isAdmin(creatorRole);
@@ -38,13 +37,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const user = await knex.transaction(async (tx) => {
     const user = await users.create(
-      {
-        role,
-        email,
-        name,
-        birthYear,
-        password: hashPassword(password),
-      },
+      { role, email, password: hashPassword(password) },
       tx
     );
 

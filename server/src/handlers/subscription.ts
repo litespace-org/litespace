@@ -6,9 +6,8 @@ import {
   forbidden,
   notfound,
 } from "@/lib/error";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import dayjs from "@/lib/dayjs";
 import { asDayStart } from "@litespace/sol";
@@ -16,7 +15,7 @@ import { calculateSubscriptionEndDate } from "@/lib/subscriptions";
 import { isEmpty } from "lodash";
 import { enforceRequest } from "@/middleware/accessControl";
 
-async function create(req: Request.Default, res: Response, next: NextFunction) {
+async function create(req: Request, res: Response, next: NextFunction) {
   const { monthlyMinutes, period, autoRenewal } =
     schema.http.subscription.create.body.parse(req.body);
 
@@ -40,7 +39,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   res.status(200).json({ id });
 }
 
-async function update(req: Request.Default, res: Response, next: NextFunction) {
+async function update(req: Request, res: Response, next: NextFunction) {
   const studentId = req.user.id;
   const { period, autoRenewal } = schema.http.subscription.update.body.parse(
     req.body
@@ -68,11 +67,7 @@ async function update(req: Request.Default, res: Response, next: NextFunction) {
   res.status(204).send();
 }
 
-async function delete_(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function delete_(req: Request, res: Response, next: NextFunction) {
   const studentId = req.user.id;
 
   const subscription = await subscriptions.findByStudentId(studentId);
@@ -86,7 +81,7 @@ async function delete_(
 }
 
 async function getStudentSubscription(
-  req: Request.Default,
+  req: Request,
   res: Response,
   next: NextFunction
 ) {
@@ -101,11 +96,7 @@ async function getStudentSubscription(
   res.status(200).json(subscription);
 }
 
-async function getList(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function getList(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
   const list = await subscriptions.findAll();

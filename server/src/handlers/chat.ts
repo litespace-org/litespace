@@ -1,12 +1,11 @@
-import ResponseError, { forbidden, roomExists } from "@/lib/error";
+import { forbidden, roomExists } from "@/lib/error";
 import { rooms } from "@/models";
 import { IUser } from "@litespace/types";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 
-async function create(req: Request.Default, res: Response, next: NextFunction) {
+async function create(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = schema.http.chat.create.body.parse(req.body);
   const studentId = req.user.id;
 
@@ -17,11 +16,7 @@ async function create(req: Request.Default, res: Response, next: NextFunction) {
   res.status(201).json({ id });
 }
 
-async function findByUserId(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
+async function findByUserId(req: Request, res: Response, next: NextFunction) {
   const id = req.user.id;
   const role = req.user.role;
 

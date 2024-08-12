@@ -1,6 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { ButtonSize, ButtonType } from "@/components/Button/types";
+import Spinner from "@/icons/Spinner";
 
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
@@ -12,6 +13,7 @@ export const Button: React.FC<{
   disabled?: boolean;
   className?: string;
   htmlType?: HTMLButtonElement["type"];
+  loading?: boolean;
 }> = ({
   children,
   type = ButtonType.Primary,
@@ -20,6 +22,7 @@ export const Button: React.FC<{
   disabled,
   className,
   htmlType,
+  loading,
 }) => {
   return (
     <button
@@ -28,7 +31,7 @@ export const Button: React.FC<{
       data-size={size}
       data-type={type}
       className={cn(
-        "font-cairo cursor-pointer text-foreground",
+        "group font-cairo cursor-pointer text-foreground",
         "space-x-2 text-center font-normal transition-all ease-out duration-200 rounded-md",
         "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
         "w-full flex items-center justify-center text-base",
@@ -51,7 +54,17 @@ export const Button: React.FC<{
       )}
       onClick={onClick}
     >
-      {children}
+      {loading ? (
+        <Spinner
+          className={cn({
+            "text-brand": type === ButtonType.Primary,
+            "text-selection": type === ButtonType.Secondary,
+            "text-destructive": type === ButtonType.Error,
+          })}
+        />
+      ) : (
+        children
+      )}
     </button>
   );
 };

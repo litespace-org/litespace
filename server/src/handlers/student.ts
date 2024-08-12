@@ -1,19 +1,14 @@
 import { users } from "@/models";
 import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
-import { Request, Response } from "@/types/http";
 import { schema } from "@/validation";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
-import { NextFunction } from "express";
+import { NextFunction, Request, Response } from "express";
 import { badRequest } from "@/lib/error";
 
-export async function create(
-  req: Request.Default,
-  res: Response,
-  next: NextFunction
-) {
-  const { email, password, name } = schema.http.student.create.parse(req.body);
+export async function create(req: Request, res: Response, next: NextFunction) {
+  const { email, password } = schema.http.student.create.parse(req.body);
 
   const student = await users.create({
     password: hashPassword(password),

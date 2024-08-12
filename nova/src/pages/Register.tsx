@@ -6,12 +6,10 @@ import {
   Field,
   Label,
   useValidation,
-  Select,
-  years,
   InputType,
 } from "@litespace/luna";
 import React, { useEffect, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "react-query";
 import { useNavigate, useParams } from "react-router-dom";
@@ -23,10 +21,8 @@ import { merge } from "lodash";
 import { setUserProfile } from "@/redux/user/me";
 
 interface IForm {
-  name: { ar: string; en: string };
   email: string;
   password: string;
-  birthYear: string;
 }
 
 type Role = (typeof roles)[number];
@@ -43,14 +39,11 @@ const Register: React.FC = () => {
     register,
     watch,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<IForm>({
     defaultValues: {
-      name: { ar: "أحمد", en: "Ahmed" },
       email: "me@ahmedibrahim.dev",
       password: "LiteSpace432%^&",
-      birthYear: "2001",
     },
   });
 
@@ -75,9 +68,7 @@ const Register: React.FC = () => {
     () =>
       handleSubmit((payload: IForm) => {
         if (!isValidRole || !role) return;
-        return mutation.mutate(
-          merge(payload, { role, birthYear: Number(payload.birthYear) })
-        );
+        return mutation.mutate(merge(payload, { role }));
       }),
     [handleSubmit, isValidRole, mutation, role]
   );
@@ -85,137 +76,81 @@ const Register: React.FC = () => {
   const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
 
   return (
-    <div className="max-w-screen-sm mx-auto my-10">
-      <div className="mb-4">
-        <h1 className="text-3xl font-simi-bold text-center">
-          <FormattedMessage
-            id={
-              tutor
-                ? messages["page.register.tutor.title"]
-                : messages["page.register.student.title"]
-            }
-          />
-        </h1>
-      </div>
+    <div className="flex flex-row flex-1 h-full">
+      <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
+        <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
+          <div className="mb-4">
+            <h1 className="text-3xl font-simi-bold text-center">
+              <FormattedMessage
+                id={
+                  tutor
+                    ? messages["page.register.tutor.title"]
+                    : messages["page.register.student.title"]
+                }
+              />
+            </h1>
+          </div>
 
-      <Form onSubmit={onSubmit}>
-        <Field
-          label={
-            <Label required>
-              {intl.formatMessage({
-                id: messages["page.register.form.name.label.ar"],
-              })}
-            </Label>
-          }
-          field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages["page.register.form.name.placeholder"],
-              })}
-              value={watch("name.ar")}
-              register={register("name.ar", validation.name.ar)}
-              error={errors["name"]?.ar?.message}
-              autoComplete="off"
-            />
-          }
-        />
-
-        <Field
-          label={
-            <Label required>
-              {intl.formatMessage({
-                id: messages["page.register.form.name.label.en"],
-              })}
-            </Label>
-          }
-          field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages["page.register.form.name.placeholder"],
-              })}
-              value={watch("name.en")}
-              register={register("name.en", validation.name.en)}
-              error={errors["name"]?.en?.message}
-              autoComplete="off"
-            />
-          }
-        />
-
-        <Field
-          label={
-            <Label required>
-              {intl.formatMessage({
-                id: messages["global.form.email.label"],
-              })}
-            </Label>
-          }
-          field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages["global.form.email.placeholder"],
-              })}
-              value={watch("email")}
-              register={register("email", validation.email)}
-              error={errors["email"]?.message}
-              autoComplete="off"
-            />
-          }
-        />
-
-        <Field
-          label={
-            <Label required>
-              {intl.formatMessage({
-                id: messages["global.form.password.label"],
-              })}
-            </Label>
-          }
-          field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages["global.form.password.placeholder"],
-              })}
-              value={watch("password")}
-              register={register("password", validation.password)}
-              type={InputType.Password}
-              error={errors["password"]?.message}
-              autoComplete="off"
-            />
-          }
-        />
-
-        <Field
-          label={
-            <Label required>
-              {intl.formatMessage({
-                id: messages["page.register.form.age.label"],
-              })}
-            </Label>
-          }
-          field={
-            <Controller
-              name="birthYear"
-              control={control}
-              render={({ field }) => (
-                <Select
-                  list={years}
-                  placeholder={intl.formatMessage({
-                    id: messages["page.register.form.age.placeholder"],
+          <Form onSubmit={onSubmit}>
+            <Field
+              label={
+                <Label>
+                  {intl.formatMessage({
+                    id: messages["global.form.email.label"],
                   })}
-                  onChange={field.onChange}
-                  value={field.value}
+                </Label>
+              }
+              field={
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: messages["global.form.email.placeholder"],
+                  })}
+                  value={watch("email")}
+                  register={register("email", validation.email)}
+                  error={errors["email"]?.message}
+                  autoComplete="off"
                 />
-              )}
+              }
             />
-          }
-        />
 
-        <Button type="submit" className="w-full mt-[56px]">
-          {intl.formatMessage({
-            id: messages["page.register.form.button.submit.label"],
-          })}
-        </Button>
-      </Form>
+            <Field
+              label={
+                <Label>
+                  {intl.formatMessage({
+                    id: messages["global.form.password.label"],
+                  })}
+                </Label>
+              }
+              field={
+                <Input
+                  placeholder={intl.formatMessage({
+                    id: messages["global.form.password.placeholder"],
+                  })}
+                  value={watch("password")}
+                  register={register("password", validation.password)}
+                  type={InputType.Password}
+                  error={errors["password"]?.message}
+                  autoComplete="off"
+                />
+              }
+            />
+
+            <Button htmlType="submit" className="w-full mt-[56px]">
+              {intl.formatMessage({
+                id: messages["page.register.form.button.submit.label"],
+              })}
+            </Button>
+          </Form>
+        </div>
+      </main>
+      <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
+        <div className="flex flex-col gap-4 items-center justify-center">
+          <p className="text-4xl">LiteSpace</p>
+          <p className="text-lg">
+            {intl.formatMessage({ id: messages["page.login.slogan"] })}
+          </p>
+        </div>
+      </aside>
     </div>
   );
 };
