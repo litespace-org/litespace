@@ -28,6 +28,7 @@
   "global.start.chating": "ابداء محادثة",
   "global.report.label": "إبلاغ",
   "global.add.to.favorites": "إضافة الي قائمة المفضلة",
+  "global.labels.gotit": "تمام",
   "errors.invalid": "خطأ",
   "errors.required": "مطلوب",
   "errors.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",

@@ -64,10 +64,10 @@ export default {
           strong: "hsl(var(--border-strong))",
           alternative: "hsl(var(--border-alternative))",
           control: "hsl(var(--border-control))",
-          overlay: "hsl(var(--border-overlay))",
           secondary: "hsl(var(--border-secondary))",
           muted: "hsl(var(--border-muted))",
         },
+        overlay: "hsl(var(--border-overlay))",
         background: {
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
