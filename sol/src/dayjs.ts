@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import isBetween from "dayjs/plugin/isBetween";
@@ -8,3 +8,4 @@ dayjs.extend(timezone);
 dayjs.extend(isBetween);
 
 export { dayjs };
+export type { Dayjs };

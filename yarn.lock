@@ -3070,6 +3070,7 @@ __metadata:
     "@vitejs/plugin-react": "npm:^4.2.1"
     classnames: "npm:^2.5.1"
     concurrently: "npm:^8.2.2"
+    dayjs: "npm:^1.11.12"
     eslint: "npm:^8.57.0"
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.4.6"

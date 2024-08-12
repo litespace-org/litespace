@@ -33,7 +33,7 @@ const TutorOnboarding: React.FC = () => {
   if (!interviewer.data) return;
 
   return (
-    <div className="max-w-screen-xl mx-auto py-12 px-4 font-cairo">
+    <div className="">
       <div className="flex flex-row gap-10">
         <div className="flex flex-col gap-3">
           <div className="w-[300px] rounded-lg overflow-hidden shadow-2xl">
@@ -62,7 +62,7 @@ const TutorOnboarding: React.FC = () => {
             <div
               className={cn(
                 "max-h-[900px] overflow-y-scroll w-full pr-10",
-                "scrollbar-thin scrollbar-thumb-gray-200 scrollbar-track-gray-100 active:scrollbar-track-gray-300 hover:scrollbar-track-gray-400 scrollbar-thumb-rounded-full"
+                "scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-800 active:scrollbar-track-gray-700 hover:scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
               )}
             >
               <div>

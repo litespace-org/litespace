@@ -117,4 +117,20 @@ export const InputEnglish: StoryObj<Component> = {
   },
 };
 
+export const DatePicker: StoryObj<Component> = {
+  render: () => {
+    const { register, watch } = useForm<{ date: string }>({
+      defaultValues: { date: "" },
+    });
+    return (
+      <Input
+        type={InputType.Date}
+        placeholder={ar["global.form.email.placeholder"]}
+        value={watch("date")}
+        register={register("date")}
+      />
+    );
+  },
+};
+
 export default meta;

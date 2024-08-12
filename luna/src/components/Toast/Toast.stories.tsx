@@ -1,8 +1,8 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toaster } from "@/components/Toast/Toast";
 import { toaster } from "@/components/Toast/toaster";
 import { Button, ButtonType } from "@/components/Button";
-import React from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -12,9 +12,7 @@ type Component = typeof Button;
 const meta: Meta<Component> = {
   title: "Toast",
   component: Button,
-  parameters: {
-    layout: "centered",
-  },
+  parameters: { layout: "centered" },
   decorators: [
     (Story: React.FC) => (
       <Direction>

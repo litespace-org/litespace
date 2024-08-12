@@ -73,7 +73,8 @@ export const Input: React.FC<{
               "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
               "text-right": dir === Dir.LTR,
-            }
+            },
+            type === InputType.Date && [""]
           )}
           placeholder={
             type === InputType.Password
