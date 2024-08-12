@@ -3,6 +3,7 @@ export { Dir, RadixDirection } from "@/components/Direction";
 export { Input, InputType } from "@/components/Input";
 export { Toaster, toaster } from "@/components/Toast";
 export { Form, Field, Label } from "@/components/Form";
+export { DatePicker } from "@/components/DatePicker";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { messages, locales } from "@/locales";

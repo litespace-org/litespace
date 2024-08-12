@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { DatePicker } from "@/components/DatePicker";
 import { Direction } from "@/components/Direction";
-import { Dayjs } from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import { useState } from "react";
 
 type Component = typeof DatePicker;
@@ -26,6 +26,22 @@ export const Primary: StoryObj<Component> = {
     const [day, setDay] = useState<Dayjs>();
     console.log(day?.format("YYYY-MM-DD"));
     return <DatePicker selected={day} onSelect={setDay} />;
+  },
+};
+
+export const Bounded: StoryObj<Component> = {
+  render() {
+    const today = dayjs("2024-08-10", "YYYY/MM/DD");
+    const [day, setDay] = useState<Dayjs>(today);
+    console.log(day?.format("YYYY-MM-DD"));
+    return (
+      <DatePicker
+        selected={day}
+        onSelect={setDay}
+        min={today.subtract(12, "days")}
+        max={today.add(25, "days")}
+      />
+    );
   },
 };
 

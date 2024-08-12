@@ -106,8 +106,10 @@ function makeDaysGrid({
 
 export const DatePicker: React.FC<{
   onSelect?: (date: Dayjs) => void;
+  min?: Dayjs;
+  max?: Dayjs;
   selected?: Dayjs;
-}> = ({ onSelect, selected }) => {
+}> = ({ onSelect, selected, min, max }) => {
   const [date, setDate] = useState<Dayjs>(selected || dayjs());
   const month = useMemo(() => date.get("month"), [date]);
   const monthText = useMemo(() => months[month], [month]);
@@ -126,11 +128,30 @@ export const DatePicker: React.FC<{
     setDate(date.subtract(1, "month"));
   }, [date]);
 
+  console.log({
+    d1: date.add(1, "month").date(1).format("YYYY-MM-DD"),
+    max: max?.format("YYYY-MM-DD"),
+    d2: date
+      .subtract(1, "month")
+      .date(date.subtract(1, "month").daysInMonth())
+      .format("YYYY-MM-DD"),
+    min: min?.format("YYYY-MM-DD"),
+  });
+
+  const canGoBack = useMemo(() => {
+    const next = date.subtract(1, "month");
+    return min && next.date(next.daysInMonth()).isAfter(min);
+  }, [date, min]);
+  const canGoNext = useMemo(() => {
+    return max && date.add(1, "month").date(1).isBefore(max);
+  }, [date, max]);
+
   return (
     <div className="flex flex-col items-center">
       <div className="flex flex-row items-center justify-between gap-10 w-[300px] mb-5">
         <div>
           <Button
+            disabled={!canGoNext}
             onClick={nextMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
@@ -143,6 +164,7 @@ export const DatePicker: React.FC<{
         </p>
         <div>
           <Button
+            disabled={!canGoBack}
             onClick={prevMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
@@ -171,7 +193,11 @@ export const DatePicker: React.FC<{
 
           return (
             <Button
-              disabled={day === 0}
+              disabled={
+                day === 0 ||
+                (min && dayDate.isBefore(min, "day")) ||
+                (max && dayDate.isAfter(max, "day"))
+              }
               className={cn(
                 "text-center relative",
                 today.isSame(dayDate, "day") && "ring ring-surface-300"

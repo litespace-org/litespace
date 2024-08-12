@@ -1,14 +1,18 @@
 import { atlas, backend } from "@/lib/atlas";
 import { asAssetUrl } from "@litespace/atlas";
-import dayjs from "dayjs";
-import { isEmpty } from "lodash";
-import React from "react";
+import dayjs from "@/lib/dayjs";
+import { flatten } from "lodash";
+import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import cn from "classnames";
 import { splitSlot } from "@litespace/sol";
-import { ICall } from "@litespace/types";
+import { ICall, ISlot } from "@litespace/types";
+import { Button, ButtonType, DatePicker } from "@litespace/luna";
+import { Dayjs } from "dayjs";
 
 const TutorOnboarding: React.FC = () => {
+  const [date, setDate] = useState<Dayjs>(dayjs());
+  const [selectedSlot, setSelectedSlot] = useState<ISlot.Discrete | null>(null);
   const interviewer = useQuery({
     queryKey: "select-interviewer",
     queryFn: () => atlas.user.selectInterviewer(),
@@ -28,13 +32,23 @@ const TutorOnboarding: React.FC = () => {
     mutationFn: (payload: ICall.CreateApiPayload) => atlas.call.create(payload),
   });
 
+  const daySlots: ISlot.Discrete[] = useMemo(() => {
+    if (!slots.data) return [];
+    return slots.data.find((slot) => date.isSame(slot.day, "day"))?.slots ?? [];
+  }, [date, slots.data]);
+
+  const selectableSlots = useMemo(() => {
+    if (!daySlots) return [];
+    return flatten(daySlots.map((slot) => splitSlot(slot)));
+  }, [daySlots]);
+
   if (interviewer.isLoading) return <p>Loading..</p>;
   if (interviewer.isError) return <p>Error!!</p>;
   if (!interviewer.data) return;
 
   return (
-    <div className="">
-      <div className="flex flex-row gap-10">
+    <div className="py-10">
+      <div className="flex gap-12">
         <div className="flex flex-col gap-3">
           <div className="w-[300px] rounded-lg overflow-hidden shadow-2xl">
             {interviewer.data?.photo && (
@@ -53,82 +67,38 @@ const TutorOnboarding: React.FC = () => {
           </div>
         </div>
 
-        <div className="w-full">
-          {slots.isLoading ? (
-            <p>Loading...</p>
-          ) : slots.error ? (
-            <p>Error!!</p>
-          ) : slots.data ? (
-            <div
-              className={cn(
-                "max-h-[900px] overflow-y-scroll w-full pr-10",
-                "scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-800 active:scrollbar-track-gray-700 hover:scrollbar-track-gray-800 scrollbar-thumb-rounded-full"
-              )}
-            >
-              <div>
-                {slots.data.map(({ day, slots }) => {
-                  if (isEmpty(slots)) return;
-                  return (
-                    <div key={day} className="mb-4">
-                      <p className="text-xl font-medium mb-3">
-                        {dayjs(day).format("dddd، DD MMMM، YYYY")}
-                      </p>
+        <div>
+          <DatePicker
+            min={dayjs()}
+            selected={date}
+            onSelect={(date) => setDate(dayjs(date.format("YYYY-MM-DD")))}
+          />
+        </div>
 
-                      <ul className="flex flex-col gap-5 w-fit">
-                        {slots.map((slot) => (
-                          <li key={day + slot.id + slot.start}>
-                            <div
-                              className={cn(
-                                "mb-4 text-xl italic font-semibold"
-                              )}
-                            >
-                              <span className="inline-block">
-                                {dayjs(slot.start).format("hh:mm a")}
-                              </span>
-                              <span className="inline-block">&larr;</span>
-                              <span className="inline-block">
-                                {dayjs(slot.end).format("hh:mm a")}
-                              </span>
-                            </div>
+        <div>
+          <h3 className="text-2xl mb-[20px]">
+            {date.format("dddd، DD MMMM، YYYY")}
+          </h3>
 
-                            <ul className="pr-10 flex flex-col gap-4">
-                              {splitSlot(slot, 30).map((slot) => (
-                                <li
-                                  aria-disabled={mutation.isLoading}
-                                  key={`splitted-solt-${slot.start}`}
-                                  className={cn(
-                                    "flex items-center justify-center rounded-lg shadow-lg hover:shadow-xl gap-2",
-                                    "bg-gray-100 px-4 py-3 cursor-pointer transition-shadow duration-150 aria-disabled:cursor-not-allowed aria-disabled:opacity-50"
-                                  )}
-                                  onClick={() =>
-                                    mutation.mutate({
-                                      duration: 30,
-                                      slotId: slot.id,
-                                      start: slot.start,
-                                      type: ICall.Type.Interview,
-                                    })
-                                  }
-                                >
-                                  <span>↲</span>
-                                  <span className="inline-block">
-                                    {dayjs(slot.start).format("hh:mm a")}
-                                  </span>
-                                  <span className="inline-block">&larr;</span>
-                                  <span className="inline-block">
-                                    {dayjs(slot.end).format("hh:mm a")}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
+          <ul className="w-[200px] flex flex-col gap-3">
+            {selectableSlots.map((slot) => {
+              return (
+                <li key={slot.start}>
+                  <Button
+                    onClick={() => setSelectedSlot(slot)}
+                    type={
+                      selectedSlot &&
+                      dayjs(slot.start).isSame(selectedSlot.start, "minutes")
+                        ? ButtonType.Primary
+                        : ButtonType.Secondary
+                    }
+                  >
+                    {dayjs(slot.start).format("hh:mm a")}
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </div>
     </div>
