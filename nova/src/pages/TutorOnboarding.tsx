@@ -15,7 +15,6 @@ import {
 } from "@litespace/luna";
 import { Dayjs } from "dayjs";
 import { useIntl } from "react-intl";
-import cn from "classnames";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 
@@ -83,7 +82,7 @@ const TutorOnboarding: React.FC = () => {
   console.log({ interviews });
 
   return (
-    <div className={cn("max-w-screen-xl mx-auto")}>
+    <div className="max-w-screen-xl mx-auto">
       <div className="py-10">
         <div className="flex gap-12">
           <div className="flex flex-col gap-3">

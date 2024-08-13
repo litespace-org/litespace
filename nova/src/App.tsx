@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/redux/store";
 import { findMe } from "@/redux/user/me";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
+import Call from "@/pages/Call";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: Route.Register, element: <Register /> },
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
       { path: Route.TutorProfile, element: <TutorProfile /> },
+      { path: Route.Call, element: <Call /> },
     ],
     errorElement: <ErrorPage />,
   },

@@ -3148,6 +3148,7 @@ __metadata:
     postcss: "npm:^8.4.38"
     react: "npm:^18.2.0"
     react-dom: "npm:^18.2.0"
+    react-feather: "npm:^2.0.10"
     react-hook-form: "npm:^7.51.5"
     react-intl: "npm:^6.6.8"
     react-query: "npm:^3.39.3"

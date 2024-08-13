@@ -1,5 +1,5 @@
 import { knex, query, withFilter } from "@/models/query";
-import { first, isEmpty, merge } from "lodash";
+import { first, isEmpty } from "lodash";
 import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
 

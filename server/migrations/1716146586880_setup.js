@@ -74,8 +74,8 @@ exports.up = (pgm) => {
     passed_interview: { type: "BOOLEAN" },
     interview_url: { type: "VARCHAR(255)" },
     media_provider_id: { type: "INT", default: null },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("slots", {
@@ -85,11 +85,11 @@ exports.up = (pgm) => {
     weekday: { type: "SMALLINT", notNull: true },
     start_time: { type: "TIME", notNull: true },
     end_time: { type: "TIME", notNull: true },
-    start_date: { type: "TIMESTAMPTZ", notNull: true },
-    end_date: { type: "TIMESTAMPTZ", default: null },
+    start_date: { type: "TIMESTAMP", notNull: true },
+    end_date: { type: "TIMESTAMP", default: null },
     repeat: { type: "repeat_type", notNull: true, default: "no" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("calls", {
@@ -98,23 +98,27 @@ exports.up = (pgm) => {
     host_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     attendee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     slot_id: { type: "SERIAL", notNull: true, references: "slots(id)" },
-    start: { type: "TIMESTAMPTZ", notNull: true },
+    start: { type: "TIMESTAMP", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
     note: { type: "TEXT" },
     feedback: { type: "TEXT" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
-  pgm.createTable("ratings", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    rater_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    ratee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    value: { type: "SMALLINT", notNull: true },
-    feedback: { type: "TEXT" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
-  });
+  pgm.createTable(
+    "ratings",
+    {
+      id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+      rater_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      ratee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      value: { type: "SMALLINT", notNull: true },
+      feedback: { type: "TEXT" },
+      created_at: { type: "TIMESTAMP", notNull: true },
+      updated_at: { type: "TIMESTAMP", notNull: true },
+    },
+    { constraints: { unique: ["rater_id", "ratee_id"] } }
+  );
 
   pgm.createTable("plans", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
@@ -130,9 +134,9 @@ exports.up = (pgm) => {
     full_year_discount: { type: "INT", notNull: true, default: 0 },
     active: { type: "BOOLEAN", default: false },
     for_invites_only: { type: "BOOLEAN", default: false },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
@@ -175,9 +179,9 @@ exports.up = (pgm) => {
     plan_cycle: { type: "plan_cycle", notNull: true },
     remaining_monthly_minutes: { type: "SMALLINT", notNull: true },
     auto_renewal: { type: "BOOLEAN", notNull: true, default: false },
-    start: { type: "TIMESTAMPTZ", notNull: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    start: { type: "TIMESTAMP", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
@@ -187,10 +191,10 @@ exports.up = (pgm) => {
     description: { type: "VARCHAR(1000)", notNull: true },
     category: { type: "VARCHAR(255)", notNull: true },
     resolved: { type: "BOOLEAN", notNull: true, default: false },
-    resolved_at: { type: "TIMESTAMPTZ" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    resolved_at: { type: "TIMESTAMP" },
+    created_at: { type: "TIMESTAMP", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
@@ -199,9 +203,9 @@ exports.up = (pgm) => {
     report_id: { type: "SERIAL", notNull: true, references: "reports(id)" },
     message: { type: "VARCHAR(1000)", notNull: true },
     draft: { type: "BOOLEAN", default: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
@@ -210,27 +214,32 @@ exports.up = (pgm) => {
     sender_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     receiver_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     value: { type: "INT", notNull: true },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("rooms", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    tutor_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    student_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
   });
+
+  pgm.createTable(
+    "room_members",
+    {
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
+    },
+    { constraints: { primaryKey: ["user_id", "room_id"] } }
+  );
 
   pgm.createTable("messages", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
-    reply_id: { type: "INTEGER", references: "messages(id)", default: null },
-    body: { type: "VARCHAR(1000)", notNull: true },
-    is_read: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMPTZ", notNull: true },
-    updated_at: { type: "TIMESTAMPTZ", notNull: true },
+    text: { type: "VARCHAR(1000)", notNull: true },
+    read: { type: "BOOLEAN", notNull: true, default: false },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   // indexes
@@ -249,15 +258,6 @@ exports.up = (pgm) => {
   pgm.createIndex("gifts", "id");
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
-
-  // constraints
-  pgm.createConstraint("ratings", "ratings-student-tutor", {
-    unique: [["rater_id", "ratee_id"]],
-  });
-
-  pgm.createConstraint("rooms", "rooms-student-tutor", {
-    unique: [["student_id", "tutor_id"]],
-  });
 };
 
 /**
@@ -266,10 +266,6 @@ exports.up = (pgm) => {
  * @returns {Promise<void> | void}
  */
 exports.down = (pgm) => {
-  // constraints
-  pgm.dropConstraint("ratings", "ratings-student-tutor", { ifExists: true });
-  pgm.dropConstraint("rooms", "rooms-student-tutor", { ifExists: true });
-
   // indexes
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
@@ -289,6 +285,7 @@ exports.down = (pgm) => {
 
   // tables
   pgm.dropTable("messages", { ifExists: true });
+  pgm.dropTable("room_members", { ifExists: true });
   pgm.dropTable("rooms", { ifExists: true });
   pgm.dropTable("subscriptions", { ifExists: true });
   pgm.dropTable("invites", { ifExists: true });

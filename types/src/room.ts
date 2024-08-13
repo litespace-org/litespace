@@ -1,15 +1,19 @@
 export type Self = {
   id: number;
-  tutorId: number;
-  studentId: number;
   createdAt: string;
-  updatedAt: string;
 };
 
 export type Row = {
   id: number;
-  tutor_id: number;
-  student_id: number;
   created_at: Date;
-  updated_at: Date;
+};
+
+export type MemberRow = {
+  user_id: number;
+  room_id: number;
+};
+
+export type Member = {
+  userId: number;
+  roomId: number;
 };

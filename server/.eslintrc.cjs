@@ -11,6 +11,7 @@ module.exports = {
     ".eslintrc.cjs",
     "jest.config.js",
     "babel.config.js",
+    "migrations/*.js",
   ],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],

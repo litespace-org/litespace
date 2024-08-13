@@ -41,12 +41,9 @@ export class WssHandler {
     this.socket.emit(Events.Server.JoinedRooms, ids);
     this.socket.join(this.user.id.toString());
 
-    //! temp
-    this.socket.join("masterCall");
-    // this.socket.to("masterCall").emit("user-joined", this.user.id);
-    this.socket.on("peerOpened", (id) => {
-      console.log({ id, for: this.user.name });
-      this.socket.to("masterCall").emit("user-joined", id);
+    this.socket.on("peerOpened", (ids: { peer: string; call: string }) => {
+      this.socket.join(ids.call);
+      this.socket.to(ids.call).emit("user-joined", ids.peer);
     });
   }
 

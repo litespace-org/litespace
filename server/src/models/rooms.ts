@@ -1,151 +1,65 @@
-import { query } from "@/models/query";
+import { knex } from "@/models/query";
 import { first } from "lodash";
-import { IUser } from "@litespace/types";
+import { IRoom } from "@litespace/types";
+import { Knex } from "knex";
+import dayjs from "@/lib/dayjs";
 
-export class Rooms {
-  async create({
-    tutorId,
-    studentId,
-  }: {
-    tutorId: number;
-    studentId: number;
-  }): Promise<number> {
-    const { rows } = await query<
-      { id: number },
-      [tutorId: number, studentId: number]
-    >(
-      `
-        INSERT INTO
-            "rooms" (
-                "tutor_id",
-                "student_id",
-                "created_at",
-                "updated_at"
-            )
-        VALUES ($1, $2, NOW(), NOW()) RETURNING id;
-      `,
-      [tutorId, studentId]
-    );
+class Rooms {
+  tables = {
+    rooms: "rooms",
+    members: "room_members",
+  };
 
-    const row = first(rows);
-    if (!row) throw new Error("Room not found; should never happen");
-    return row.id;
+  async create(ids: number[]): Promise<number> {
+    return await knex.transaction(async (tx: Knex.Transaction) => {
+      const now = dayjs.utc();
+      const rows = await knex<IRoom.Row>(this.tables.rooms)
+        .transacting(tx)
+        .insert({ created_at: now.toDate() })
+        .returning("*");
+
+      const room = first(rows);
+      if (!room) throw new Error("Room not found; should never happen");
+
+      await knex<IRoom.MemberRow>(this.tables.members)
+        .transacting(tx)
+        .insert(ids.map((id) => ({ user_id: id, room_id: room.id })));
+
+      return room.id;
+    });
   }
 
-  async findById(id: number): Promise<Room.Self | null> {
-    const { rows } = await query<Room.Row, [id: number]>(
-      `
-      SELECT
-          "id",
-          "tutor_id",
-          "student_id",
-          "created_at",
-          "updated_at"
-      FROM "rooms"
-      WHERE id = $1
-      `,
-      [id]
-    );
+  async findById(id: number): Promise<IRoom.Self | null> {
+    const rows = await knex<IRoom.Row>(this.tables.rooms)
+      .select("*")
+      .where("id", id);
 
     const row = first(rows);
     if (!row) return null;
-    return this.from(row);
+    return this.asRoom(row);
   }
 
-  async findByMembers({
-    tutorId,
-    studentId,
-  }: {
-    tutorId: number;
-    studentId: number;
-  }): Promise<Room.Self | null> {
-    const { rows } = await query<
-      Room.Row,
-      [tutorId: number, studentId: number]
-    >(
-      `
-        SELECT
-            "id",
-            "tutor_id",
-            "student_id",
-            "created_at",
-            "updated_at"
-        FROM "rooms"
-        WHERE
-            "tutor_id" = $1
-            AND "student_id" = $2;
-      `,
-      [tutorId, studentId]
-    );
+  async findRoomMembers(roomId: number): Promise<IRoom.Member[]> {
+    const rows = await knex<IRoom.MemberRow>(this.tables.members)
+      .select("*")
+      .where("room_id", roomId);
 
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+    return rows.map((row) => this.asRoomMember(row));
   }
 
-  async findMemberRooms({
-    userId,
-    role,
-  }: {
-    userId: number;
-    role: IUser.Role;
-  }): Promise<Room.Self[]> {
-    const tutorId = role === IUser.Role.Tutor ? userId : 0;
-    const studentId = role === IUser.Role.Student ? userId : 0;
-
-    const { rows } = await query<
-      Room.Row,
-      [tutorId: number, studentId: number]
-    >(
-      `
-      SELECT
-          "id",
-          "tutor_id",
-          "student_id",
-          "created_at",
-          "updated_at"
-      FROM "rooms"
-      WHERE
-          CASE
-              WHEN $1 != 0 THEN "tutor_id" = $1
-              ELSE "student_id" = $2 
-          END;
-      `,
-      [tutorId, studentId]
-    );
-
-    return rows.map((row) => this.from(row));
-  }
-
-  async delete(id: number): Promise<void> {
-    await query(`DELETE FROM "rooms" WHERE id = $1;`, [id]);
-  }
-
-  from(row: Room.Row): Room.Self {
+  asRoom(row: IRoom.Row): IRoom.Self {
     return {
       id: row.id,
-      tutorId: row.tutor_id,
-      studentId: row.student_id,
       createdAt: row.created_at.toISOString(),
-      updatedAt: row.created_at.toISOString(),
+    };
+  }
+
+  asRoomMember(row: IRoom.MemberRow): IRoom.Member {
+    return {
+      userId: row.user_id,
+      roomId: row.room_id,
     };
   }
 }
 
-export namespace Room {
-  export type Self = {
-    id: number;
-    tutorId: number;
-    studentId: number;
-    createdAt: string;
-    updatedAt: string;
-  };
-
-  export type Row = {
-    id: number;
-    tutor_id: number;
-    student_id: number;
-    created_at: Date;
-    updated_at: Date;
-  };
-}
+export const rooms = new Rooms();
