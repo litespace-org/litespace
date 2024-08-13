@@ -1,6 +1,6 @@
 import { knex } from "@/models/query";
 import { first } from "lodash";
-import { IRoom } from "@litespace/types";
+import { IRoom, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
@@ -45,6 +45,15 @@ class Rooms {
       .where("room_id", roomId);
 
     return rows.map((row) => this.asRoomMember(row));
+  }
+
+  async findMemberRooms(userId: number): Promise<number[]> {
+    const rows = await knex<IUser.Row>("users")
+      .select<Array<{ roomId: number }>>({ roomId: "rooms.id" })
+      .join(this.tables.members, "room_members.user_id", "users.id")
+      .join(this.tables.rooms, "rooms.id", "room_members.room_id")
+      .where("users.id", userId);
+    return rows.map((row) => row.roomId);
   }
 
   asRoom(row: IRoom.Row): IRoom.Self {

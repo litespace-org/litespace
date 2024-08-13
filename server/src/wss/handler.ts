@@ -31,14 +31,14 @@ export class WssHandler {
   }
 
   async joinRooms() {
-    const list = await rooms.findMemberRooms({
-      userId: this.user.id,
-      role: this.user.role,
-    });
+    // const list = await rooms.findMemberRooms({
+    //   userId: this.user.id,
+    //   role: this.user.role,
+    // });
 
-    const ids = list.map((room) => room.id.toString());
-    this.socket.join(ids);
-    this.socket.emit(Events.Server.JoinedRooms, ids);
+    // const ids = list.map((room) => room.id.toString());
+    // this.socket.join(ids);
+    // this.socket.emit(Events.Server.JoinedRooms, ids);
     this.socket.join(this.user.id.toString());
 
     this.socket.on("peerOpened", (ids: { peer: string; call: string }) => {
@@ -52,19 +52,13 @@ export class WssHandler {
       const { roomId, body } = schema.wss.message.send.parse(data);
       const userId = this.user.id;
 
-      const room = await rooms.findById(roomId);
-      if (!room) throw Error("Room not found");
+      const members = await rooms.findRoomMembers(roomId);
+      if (!members) throw Error("Room not found");
 
-      const member = [room.studentId, room.tutorId].includes(userId);
+      const member = members.map((member) => member.userId).includes(userId);
       if (!member) throw new Error("Unauthorized");
 
-      const msg = await messages.create({
-        userId,
-        roomId,
-        body,
-        replyId: null,
-        isRead: false,
-      });
+      const msg = await messages.create({ userId, roomId, text: body });
 
       this.socket.broadcast
         .to(roomId.toString())
@@ -82,7 +76,7 @@ export class WssHandler {
 
       const userId = this.user.id;
       if (userId !== message.userId) throw new Error("Unauthorized");
-      if (message.isRead)
+      if (message.read)
         return console.log("Message is already marked as read".yellow);
 
       await messages.markAsRead(messageId);

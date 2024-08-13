@@ -9,6 +9,8 @@ import {
   tutors,
   users,
   ratings,
+  rooms,
+  messages,
 } from "@/models";
 import { ICall, ISlot, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
@@ -196,6 +198,26 @@ async function main(): Promise<void> {
     message: "Thanks 2",
     reportId: 1,
   });
+
+  const roomId = await rooms.create([tutor.id, interviewer.id]);
+
+  await messages.create({
+    userId: tutor.id,
+    text: "Hello!",
+    roomId,
+  });
+
+  await messages.create({
+    userId: interviewer.id,
+    text: "Nice to meet you!",
+    roomId,
+  });
+
+  const interviewerRooms = await rooms.findMemberRooms(interviewer.id);
+  const tutorRooms = await rooms.findMemberRooms(tutor.id);
+  const roomMembers = await rooms.findRoomMembers(roomId);
+
+  console.log({ interviewerRooms, tutorRooms, roomMembers });
 }
 
 main()
