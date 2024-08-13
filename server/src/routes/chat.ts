@@ -1,8 +1,8 @@
-import handlers from "@/handlers";
+import chat from "@/handlers/chat";
 import { Router } from "express";
 
 const router = Router();
 
-router.route("/").post(handlers.chat.create).get(handlers.chat.findByUserId);
+router.get("/list/:id/messages", chat.findRoomMessages);
 
 export default router;

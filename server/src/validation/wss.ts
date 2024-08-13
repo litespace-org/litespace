@@ -2,11 +2,7 @@ import zod from "zod";
 import { id } from "@/validation/utils";
 
 const message = {
-  send: zod.object({
-    roomId: id,
-    replyId: zod.optional(id),
-    body: zod.string(),
-  }),
+  send: zod.object({ roomId: id, text: zod.string() }),
   markMessageAsRead: zod.object({ id }),
 } as const;
 

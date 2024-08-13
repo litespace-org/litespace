@@ -47,6 +47,7 @@ export function useValidation() {
   const validation = useMemo(
     () =>
       ({
+        required,
         name: {
           en: validateName(true),
           ar: validateName(false),
@@ -76,8 +77,17 @@ export function useValidation() {
             }),
           },
         },
+        message: {
+          required,
+          maxLength: {
+            value: 500,
+            message: intl.formatMessage({
+              id: messages["global.chat.input.error.length.max"],
+            }),
+          },
+        },
       }) as const,
-    [intl, validateName]
+    [intl, required, validateName]
   );
 
   return validation;

@@ -54,6 +54,8 @@
   "global.months.october": "أكتوبر",
   "global.months.november": "نوفمبر",
   "global.months.december": "ديسمبر",
+  "global.chat.input.placeholder": "أكتب رسالتك...",
+  "global.chat.input.error.length.max": "من الأفضل ان لا تتخطي رسالتك ال 250 حرف",
   "errors.invalid": "خطأ",
   "errors.required": "مطلوب",
   "errors.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",

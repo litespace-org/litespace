@@ -1,12 +1,45 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import socket from "@/lib/wss";
 import { MediaConnection, Peer } from "peerjs";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Monitor } from "react-feather";
-import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  Form,
+  Input,
+  messages,
+  useValidation,
+  Spinner,
+} from "@litespace/luna";
+import {
+  Mic,
+  MicOff,
+  Video,
+  VideoOff,
+  PhoneOff,
+  Monitor,
+  Send,
+} from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
+import { useForm } from "react-hook-form";
+import { Events } from "@litespace/types";
+import { useIntl } from "react-intl";
+import { useQuery } from "react-query";
+import { atlas } from "@/lib/atlas";
+import { useAppSelector } from "@/redux/store";
+import { profileSelector } from "@/redux/user/me";
+import dayjs from "dayjs";
+
+type IForm = {
+  message: string;
+};
 
 const peer = new Peer({
   host: "localhost",
@@ -14,6 +47,8 @@ const peer = new Peer({
 });
 
 const Call: React.FC = () => {
+  const intl = useIntl();
+  const validation = useValidation();
   const profile = useAppSelector(profileSelector);
   const { id: callId } = useParams<{ id: string }>();
   const localRef = useRef<HTMLVideoElement>(null);
@@ -24,7 +59,9 @@ const Call: React.FC = () => {
   const [accessCamera, setCameraAccess] = useState<boolean>(true);
   const [permissionError, setPermissionError] = useState<boolean>(false);
 
-  console.log({ profile });
+  const chat = useQuery({
+    queryFn: () => atlas.chat.findRoomMessages(1),
+  });
 
   const acknowledgePeer = useCallback(
     (peer: string) => {
@@ -78,6 +115,29 @@ const Call: React.FC = () => {
         setPermissionError(true);
       });
   }, [accessCamera, accessMic, localRef, remoteRef]);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm<IForm>({
+    defaultValues: { message: "" },
+  });
+
+  const sendMessage = useMemo(
+    () =>
+      handleSubmit(({ message }) => {
+        socket.emit(Events.Client.SendMessage, {
+          roomId: 1,
+          text: message,
+        });
+        reset();
+        chat.refetch();
+      }),
+    [chat, handleSubmit, reset]
+  );
 
   return (
     <div className="grid grid-cols-12  flex-1 w-full">
@@ -149,10 +209,54 @@ const Call: React.FC = () => {
       <div
         className={cn(
           "col-span-3 bg-surface-300",
-          "border border-border-strong hover:border-border-stronger"
+          "border border-border-strong hover:border-border-stronger",
+          "flex flex-col px-4"
         )}
       >
-        Here!!
+        <div className="flex flex-1">
+          {chat.isLoading ? (
+            <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
+              <Spinner />
+            </div>
+          ) : chat.data && profile ? (
+            <div className="mt-10">
+              <ul className="flex flex-col gap-4">
+                {chat.data.map((message) => {
+                  return (
+                    <li className="bg-selection rounded-xl pr-4 pl-6 py-2">
+                      <p className="mb-1">{message.text}</p>
+                      <span className="text-xs">
+                        {dayjs(message.createdAt).fromNow()}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ) : null}
+        </div>
+        <Form onSubmit={sendMessage} className="flex flex-row gap-3 my-10">
+          <Input
+            value={watch("message")}
+            register={register("message", validation.message)}
+            placeholder={intl.formatMessage({
+              id: messages["global.chat.input.placeholder"],
+            })}
+            error={errors["message"]?.message}
+            autoComplete="off"
+            disabled={chat.isLoading}
+          />
+          <div>
+            <Button
+              disabled={!watch("message") || chat.isLoading}
+              htmlType="submit"
+              size={ButtonSize.Small}
+              className="h-[37px]"
+            >
+              <Send className="w-[20px] h-[20px]" />
+            </Button>
+          </div>
+        </Form>
       </div>
     </div>
   );

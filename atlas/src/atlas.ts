@@ -12,6 +12,7 @@ import { Report } from "@/report";
 import { ReportReply } from "@/reportReply";
 import { Asset } from "@/asset";
 import { Rating } from "@/rating";
+import { Chat } from "@/chat";
 
 export class Atlas {
   public readonly user: User;
@@ -27,6 +28,7 @@ export class Atlas {
   public readonly reportReply: ReportReply;
   public readonly asset: Asset;
   public readonly rating: Rating;
+  public readonly chat: Chat;
 
   constructor(backend: Backend) {
     this.user = new User(backend);
@@ -42,5 +44,6 @@ export class Atlas {
     this.reportReply = new ReportReply(backend);
     this.asset = new Asset(backend);
     this.rating = new Rating(backend);
+    this.chat = new Chat(backend);
   }
 }

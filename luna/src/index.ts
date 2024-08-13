@@ -8,5 +8,6 @@ export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { messages, locales } from "@/locales";
 export { useValidation } from "@/hooks/validation";
+export { default as Spinner } from "@/icons/Spinner";
 export * from "@/components/Icons";
 export * from "@/constants/labels";
