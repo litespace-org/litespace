@@ -22,6 +22,7 @@ export type Member = {
 
 export type PopulatedMemberRow = {
   id: IUser.Row["id"];
+  roomId: Row["id"];
   email: IUser.Row["email"];
   arabicName: IUser.Row["name_ar"];
   englishName: IUser.Row["name_en"];
@@ -34,6 +35,7 @@ export type PopulatedMemberRow = {
 
 export type PopulatedMember = {
   id: IUser.Self["id"];
+  roomId: Self["id"];
   email: IUser.Self["email"];
   name: IUser.Self["name"];
   photo: IUser.Self["photo"];
@@ -42,3 +44,5 @@ export type PopulatedMember = {
   createdAt: IUser.Self["createdAt"];
   updatedAt: IUser.Self["updatedAt"];
 };
+
+export type RoomMap = Record<number, PopulatedMember[]>;

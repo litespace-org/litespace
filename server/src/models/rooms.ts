@@ -11,6 +11,12 @@ class Rooms {
     members: "room_members",
   };
 
+  column = {
+    rooms: (value: keyof IRoom.Row) => column(value, this.tables.rooms),
+    members: (value: keyof IRoom.MemberRow) =>
+      column(value, this.tables.members),
+  };
+
   async create(ids: number[]): Promise<number> {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const now = dayjs.utc();
@@ -40,10 +46,11 @@ class Rooms {
     return this.asRoom(row);
   }
 
-  async findRoomMembers(roomId: number): Promise<IRoom.PopulatedMember[]> {
+  async findRoomMembers(roomIds: number[]): Promise<IRoom.PopulatedMember[]> {
     const rows = await knex<IUser.Row>(users.table)
       .select<IRoom.PopulatedMemberRow[]>({
         id: users.column("id"),
+        roomId: this.column.members("room_id"),
         email: users.column("email"),
         arabicName: users.column("name_ar"),
         englishName: users.column("name_en"),
@@ -58,7 +65,7 @@ class Rooms {
         column<IRoom.MemberRow>("user_id", this.tables.members),
         column<IUser.Row>("id", users.table)
       )
-      .where("room_id", roomId);
+      .whereIn("room_id", roomIds);
 
     return rows.map((row) => this.asPopulatedMember(row));
   }

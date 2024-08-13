@@ -3,6 +3,7 @@ import { Router } from "express";
 
 const router = Router();
 
-router.get("/list/:id/messages", chat.findRoomMessages);
+router.get("/list/rooms/:userId", chat.findUserRooms);
+router.get("/list/:roomId/messages", chat.findRoomMessages);
 
 export default router;

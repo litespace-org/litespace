@@ -1,9 +1,10 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "@/redux/user";
+import chat from "@/redux/chat";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 
-const reducer = combineReducers({ user });
+const reducer = combineReducers({ user, chat });
 
 export const store = configureStore({
   reducer,

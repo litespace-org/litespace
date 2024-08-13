@@ -61,6 +61,7 @@ const Call: React.FC = () => {
 
   const chat = useQuery({
     queryFn: () => atlas.chat.findRoomMessages(1),
+    queryKey: "room-messages",
   });
 
   const acknowledgePeer = useCallback(
@@ -77,6 +78,17 @@ const Call: React.FC = () => {
       peer.off("open", acknowledgePeer);
     };
   }, [acknowledgePeer]);
+
+  const rooms = useQuery({
+    queryFn: async () => {
+      if (!profile) return [];
+      return await atlas.chat.findRooms(profile.id);
+    },
+    enabled: !!profile,
+    queryKey: "user-rooms",
+  });
+
+  console.log({ rooms });
 
   useEffect(() => {
     navigator.mediaDevices
