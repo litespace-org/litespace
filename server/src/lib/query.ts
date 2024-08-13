@@ -1,6 +1,6 @@
 import { knex } from "@/models/query";
 import { merge, omit } from "lodash";
-import { MappedRecordAttributes, RecordAttributes } from "@litespace/types";
+import { RecordAttributes } from "@litespace/types";
 
 /**
  * Most internal tables have `created_at`, `created_by`, `updated_at`, `updated_by`

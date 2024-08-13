@@ -53,7 +53,7 @@ export class WssHandler {
       const members = await rooms.findRoomMembers(roomId);
       if (!members) throw Error("Room not found");
 
-      const member = members.map((member) => member.userId).includes(userId);
+      const member = members.map((member) => member.id).includes(userId);
       if (!member) throw new Error("Unauthorized");
 
       const message = await messages.create({ userId, roomId, text });

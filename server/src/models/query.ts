@@ -96,3 +96,8 @@ export async function count(table: string): Promise<number> {
     .first<{ count: string }>();
   return zod.coerce.number().parse(count);
 }
+
+export function column<T>(value: keyof T, table: string | null = null): string {
+  if (!table) return value.toString();
+  return `${table}.${value.toString()}`;
+}

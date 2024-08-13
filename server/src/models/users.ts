@@ -1,4 +1,4 @@
-import { knex, query, withFilter } from "@/models/query";
+import { column, knex, query, withFilter } from "@/models/query";
 import { first, isEmpty } from "lodash";
 import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
@@ -161,6 +161,10 @@ export class Users {
 
   builder(tx?: Knex.Transaction) {
     return tx ? tx<IUser.Row>(this.table) : knex<IUser.Row>(this.table);
+  }
+
+  column(value: keyof IUser.Row) {
+    return column(value, this.table);
   }
 }
 

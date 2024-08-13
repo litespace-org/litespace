@@ -14,6 +14,9 @@ const arabic =
 
 const passwordPlaceholder = "••••••••";
 
+// auto resize text input, used for chat box
+// https://www.youtube.com/watch?v=sOnPz_GMa38
+
 export const Input: React.FC<{
   placeholder?: string;
   autoComplete?: string;

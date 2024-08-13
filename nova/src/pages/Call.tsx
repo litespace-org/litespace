@@ -29,7 +29,7 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { useForm } from "react-hook-form";
-import { Events } from "@litespace/types";
+import { Events, IMessage } from "@litespace/types";
 import { useIntl } from "react-intl";
 import { useQuery } from "react-query";
 import { atlas } from "@/lib/atlas";
@@ -140,17 +140,17 @@ const Call: React.FC = () => {
   );
 
   return (
-    <div className="grid grid-cols-12  flex-1 w-full">
+    <div className="grid grid-cols-12 grid-rows-12 h-screen overflow-hidden w-full">
       <div
         className={cn(
-          "col-span-9 flex flex-col",
+          "col-span-9 row-span-12 flex flex-col w-full h-full",
           "bg-surface-100 transition-all flex",
           "border border-border-strong hover:border-border-stronger"
         )}
       >
         <div
           className={cn(
-            "relative flex flex-col flex-1 w-full items-center justify-center"
+            "relative flex flex-col _flex-1 h-full w-full items-center justify-center"
           )}
         >
           <div className="absolute bottom-[20px] right-[20px] w-[400px] rounded-lg overflow-hidden">
@@ -208,25 +208,66 @@ const Call: React.FC = () => {
 
       <div
         className={cn(
-          "col-span-3 bg-surface-300",
+          "col-span-3 row-span-12 bg-surface-300",
           "border border-border-strong hover:border-border-stronger",
-          "flex flex-col px-4"
+          "flex flex-col"
         )}
       >
-        <div className="flex flex-1">
+        <div
+          className={cn(
+            "h-full overflow-auto pt-4 pb-6 px-4",
+            "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+          )}
+        >
           {chat.isLoading ? (
             <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
               <Spinner />
             </div>
           ) : chat.data && profile ? (
-            <div className="mt-10">
-              <ul className="flex flex-col gap-4">
-                {chat.data.map((message) => {
+            <div className="mt-10 ">
+              <ul className="flex flex-col">
+                {chat.data.map((message, idx) => {
+                  const prevMessage: IMessage.Self | undefined =
+                    chat.data[idx - 1];
+
+                  const nextMessage: IMessage.Self | undefined =
+                    chat.data[idx + 1];
+
+                  const ownMessage = message.userId === profile.id;
+                  const ownPrevMessage = prevMessage?.userId === message.userId;
+                  const ownNextMessage = nextMessage?.userId === message.userId;
+
                   return (
-                    <li className="bg-selection rounded-xl pr-4 pl-6 py-2">
+                    <li
+                      key={message.id}
+                      className={cn(
+                        "pr-4 pl-6 py-2 w-fit min-w-[200px] border",
+                        "transition-colors duration-200 rounded-l-3xl",
+                        ownMessage
+                          ? "bg-brand-button border-brand/30 hover:border-brand"
+                          : "bg-selection border-border-strong hover:border-border-stronger",
+                        {
+                          "mt-1": ownPrevMessage,
+                          "rounded-l-3xl rounded-tr-xl":
+                            ownPrevMessage && !ownNextMessage,
+                          "rounded-r-xl": ownNextMessage && ownPrevMessage,
+                          "rounded-r-3xl rounded-br-xl mt-4":
+                            ownNextMessage && !ownPrevMessage,
+                          "mt-4 rounded-tr-3xl":
+                            !ownNextMessage && !ownPrevMessage,
+                        }
+                      )}
+                    >
                       <p className="mb-1">{message.text}</p>
-                      <span className="text-xs">
-                        {dayjs(message.createdAt).fromNow()}
+                      <span
+                        className={cn(
+                          "text-xs",
+                          ownMessage
+                            ? "text-foreground-light"
+                            : "text-foreground-lighter"
+                        )}
+                      >
+                        {dayjs(message.createdAt).format("HH:mm a")}
                       </span>
                     </li>
                   );
@@ -235,7 +276,10 @@ const Call: React.FC = () => {
             </div>
           ) : null}
         </div>
-        <Form onSubmit={sendMessage} className="flex flex-row gap-3 my-10">
+        <Form
+          onSubmit={sendMessage}
+          className="flex flex-row gap-3 px-4 mb-10 mt-4 shadow-lg"
+        >
           <Input
             value={watch("message")}
             register={register("message", validation.message)}

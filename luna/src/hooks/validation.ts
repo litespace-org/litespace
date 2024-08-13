@@ -53,10 +53,7 @@ export function useValidation() {
           ar: validateName(false),
         },
         email: {
-          required: {
-            value: true,
-            message: intl.formatMessage({ id: messages["errors.required"] }),
-          },
+          required,
           pattern: {
             value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
             message: intl.formatMessage({
@@ -65,10 +62,7 @@ export function useValidation() {
           },
         },
         password: {
-          required: {
-            value: true,
-            message: intl.formatMessage({ id: messages["errors.required"] }),
-          },
+          required,
           pattern: {
             value:
               /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
@@ -78,7 +72,6 @@ export function useValidation() {
           },
         },
         message: {
-          required,
           maxLength: {
             value: 500,
             message: intl.formatMessage({

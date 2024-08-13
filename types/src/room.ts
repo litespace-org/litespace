@@ -1,3 +1,5 @@
+import { IUser } from ".";
+
 export type Self = {
   id: number;
   createdAt: string;
@@ -16,4 +18,27 @@ export type MemberRow = {
 export type Member = {
   userId: number;
   roomId: number;
+};
+
+export type PopulatedMemberRow = {
+  id: IUser.Row["id"];
+  email: IUser.Row["email"];
+  arabicName: IUser.Row["name_ar"];
+  englishName: IUser.Row["name_en"];
+  photo: IUser.Row["photo"];
+  role: IUser.Row["role"];
+  online: IUser.Row["online"];
+  createdAt: IUser.Row["created_at"];
+  updatedAt: IUser.Row["updated_at"];
+};
+
+export type PopulatedMember = {
+  id: IUser.Self["id"];
+  email: IUser.Self["email"];
+  name: IUser.Self["name"];
+  photo: IUser.Self["photo"];
+  role: IUser.Self["role"];
+  online: IUser.Self["online"];
+  createdAt: IUser.Self["createdAt"];
+  updatedAt: IUser.Self["updatedAt"];
 };

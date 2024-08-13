@@ -1,8 +1,9 @@
-import { knex } from "@/models/query";
-import { first } from "lodash";
+import { column, knex } from "@/models/query";
+import { first, merge, omit } from "lodash";
 import { IRoom, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import { users } from "./users";
 
 class Rooms {
   tables = {
@@ -39,12 +40,27 @@ class Rooms {
     return this.asRoom(row);
   }
 
-  async findRoomMembers(roomId: number): Promise<IRoom.Member[]> {
-    const rows = await knex<IRoom.MemberRow>(this.tables.members)
-      .select("*")
+  async findRoomMembers(roomId: number): Promise<IRoom.PopulatedMember[]> {
+    const rows = await knex<IUser.Row>(users.table)
+      .select<IRoom.PopulatedMemberRow[]>({
+        id: users.column("id"),
+        email: users.column("email"),
+        arabicName: users.column("name_ar"),
+        englishName: users.column("name_en"),
+        photo: users.column("photo"),
+        role: users.column("role"),
+        online: users.column("online"),
+        createdAt: users.column("created_at"),
+        updatedAt: users.column("updated_at"),
+      })
+      .join(
+        this.tables.members,
+        column<IRoom.MemberRow>("user_id", this.tables.members),
+        column<IUser.Row>("id", users.table)
+      )
       .where("room_id", roomId);
 
-    return rows.map((row) => this.asRoomMember(row));
+    return rows.map((row) => this.asPopulatedMember(row));
   }
 
   async findMemberRooms(userId: number): Promise<number[]> {
@@ -68,6 +84,17 @@ class Rooms {
       userId: row.user_id,
       roomId: row.room_id,
     };
+  }
+
+  asPopulatedMember(row: IRoom.PopulatedMemberRow): IRoom.PopulatedMember {
+    return merge(
+      omit(row, "arabicName", "englishName", "createdAt", "updatedAt"),
+      {
+        name: { ar: row.arabicName, en: row.englishName },
+        createdAt: row.createdAt.toISOString(),
+        updatedAt: row.updatedAt.toISOString(),
+      }
+    );
   }
 }
 
