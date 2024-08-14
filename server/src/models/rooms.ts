@@ -70,6 +70,20 @@ class Rooms {
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
+  async findRoomByMembers(members: number[]): Promise<number | null> {
+    const rows = await knex<IRoom.MemberRow>(this.tables.members)
+      .select("room_id")
+      .groupBy("room_id")
+      .havingRaw(
+        `array_agg(room_members.user_id order by room_members.user_id) = ?`,
+        [members]
+      );
+
+    const row = first(rows);
+    if (!row) return null;
+    return row.room_id;
+  }
+
   async findMemberRooms(userId: number): Promise<number[]> {
     const rows = await knex<IUser.Row>("users")
       .select<Array<{ roomId: number }>>({ roomId: "rooms.id" })

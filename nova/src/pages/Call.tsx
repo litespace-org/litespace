@@ -16,6 +16,7 @@ import {
   messages,
   useValidation,
   Spinner,
+  toaster,
 } from "@litespace/luna";
 import {
   Mic,
@@ -29,13 +30,15 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { useForm } from "react-hook-form";
-import { Events, IMessage } from "@litespace/types";
+import { Events, IMessage, IRoom } from "@litespace/types";
 import { useIntl } from "react-intl";
-import { useQuery } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import { atlas } from "@/lib/atlas";
-import { useAppSelector } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import dayjs from "dayjs";
+import { findRooms, roomsSelector } from "@/redux/chat/rooms";
+import { entries, first, isEqual, sortBy } from "lodash";
 
 type IForm = {
   message: string;
@@ -49,7 +52,9 @@ const peer = new Peer({
 const Call: React.FC = () => {
   const intl = useIntl();
   const validation = useValidation();
+  const dispath = useAppDispatch();
   const profile = useAppSelector(profileSelector);
+  const rooms = useAppSelector(roomsSelector);
   const { id: callId } = useParams<{ id: string }>();
   const localRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
@@ -59,9 +64,36 @@ const Call: React.FC = () => {
   const [accessCamera, setCameraAccess] = useState<boolean>(true);
   const [permissionError, setPermissionError] = useState<boolean>(false);
 
+  const call = useQuery({
+    queryFn: async () => {
+      if (!callId) throw new Error("Missing call id; should never happen.");
+      // todo: validate "callId"
+      return await atlas.call.findById(Number(callId));
+    },
+    enabled: !!callId,
+  });
+
+  const callRoomId = useMemo(() => {
+    if (!call.data || !rooms.value) return null;
+    const room = entries<IRoom.PopulatedMember[]>(rooms.value).find(
+      ([_, members]) => {
+        const roomMemberIds = members.map((member) => member.id);
+        const callMemberIds = [call.data.hostId, call.data.attendeeId];
+        return isEqual(sortBy(roomMemberIds), sortBy(callMemberIds));
+      }
+    );
+    const roomId = first(room);
+    if (!roomId) return null;
+    return Number(roomId);
+  }, [call.data, rooms]);
+
   const chat = useQuery({
-    queryFn: () => atlas.chat.findRoomMessages(1),
+    queryFn: async () => {
+      if (!callRoomId) return [];
+      return await atlas.chat.findRoomMessages(callRoomId);
+    },
     queryKey: "room-messages",
+    enabled: !!callRoomId,
   });
 
   const acknowledgePeer = useCallback(
@@ -78,17 +110,6 @@ const Call: React.FC = () => {
       peer.off("open", acknowledgePeer);
     };
   }, [acknowledgePeer]);
-
-  const rooms = useQuery({
-    queryFn: async () => {
-      if (!profile) return [];
-      return await atlas.chat.findRooms(profile.id);
-    },
-    enabled: !!profile,
-    queryKey: "user-rooms",
-  });
-
-  console.log({ rooms });
 
   useEffect(() => {
     navigator.mediaDevices
@@ -141,21 +162,52 @@ const Call: React.FC = () => {
   const sendMessage = useMemo(
     () =>
       handleSubmit(({ message }) => {
+        if (!callRoomId) return;
         socket.emit(Events.Client.SendMessage, {
-          roomId: 1,
+          roomId: callRoomId,
           text: message,
         });
         reset();
         chat.refetch();
       }),
-    [chat, handleSubmit, reset]
+    [callRoomId, chat, handleSubmit, reset]
   );
 
+  const isHost = useMemo(
+    () => call.data?.hostId === profile?.id,
+    [call.data?.hostId, profile?.id]
+  );
+
+  const otherUserId = useMemo(() => {
+    return isHost ? call.data?.attendeeId : call.data?.hostId;
+  }, [call.data?.attendeeId, call.data?.hostId, isHost]);
+
+  const createRoom = useMutation({
+    mutationFn: useCallback(async () => {
+      if (!otherUserId)
+        throw new Error("Other user id not defined; should never happen.");
+      return await atlas.chat.createRoom(otherUserId);
+    }, [otherUserId]),
+    mutationKey: "create-room",
+    onSuccess() {
+      if (!profile) throw new Error("Profile not found; should never happen.");
+      dispath(findRooms(profile.id));
+    },
+    onError(error) {
+      toaster.error({
+        title: intl.formatMessage({
+          id: messages["page.call.start.chat.now.error"],
+        }),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+  });
+
   return (
-    <div className="grid grid-cols-12 grid-rows-12 h-screen overflow-hidden w-full">
+    <div className="flex h-screen overflow-hidden w-full">
       <div
         className={cn(
-          "col-span-9 row-span-12 flex flex-col w-full h-full",
+          "flex flex-col w-full h-full",
           "bg-surface-100 transition-all flex",
           "border border-border-strong hover:border-border-stronger"
         )}
@@ -220,99 +272,128 @@ const Call: React.FC = () => {
 
       <div
         className={cn(
-          "col-span-3 row-span-12 bg-surface-300",
+          "min-w-[450px] bg-surface-300",
           "border border-border-strong hover:border-border-stronger",
           "flex flex-col"
         )}
       >
-        <div
-          className={cn(
-            "h-full overflow-auto pt-4 pb-6 px-4",
-            "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
-          )}
-        >
-          {chat.isLoading ? (
-            <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
-              <Spinner />
-            </div>
-          ) : chat.data && profile ? (
-            <div className="mt-10 ">
-              <ul className="flex flex-col">
-                {chat.data.map((message, idx) => {
-                  const prevMessage: IMessage.Self | undefined =
-                    chat.data[idx - 1];
-
-                  const nextMessage: IMessage.Self | undefined =
-                    chat.data[idx + 1];
-
-                  const ownMessage = message.userId === profile.id;
-                  const ownPrevMessage = prevMessage?.userId === message.userId;
-                  const ownNextMessage = nextMessage?.userId === message.userId;
-
-                  return (
-                    <li
-                      key={message.id}
-                      className={cn(
-                        "pr-4 pl-6 py-2 w-fit min-w-[200px] border",
-                        "transition-colors duration-200 rounded-l-3xl",
-                        ownMessage
-                          ? "bg-brand-button border-brand/30 hover:border-brand"
-                          : "bg-selection border-border-strong hover:border-border-stronger",
-                        {
-                          "mt-1": ownPrevMessage,
-                          "rounded-l-3xl rounded-tr-xl":
-                            ownPrevMessage && !ownNextMessage,
-                          "rounded-r-xl": ownNextMessage && ownPrevMessage,
-                          "rounded-r-3xl rounded-br-xl mt-4":
-                            ownNextMessage && !ownPrevMessage,
-                          "mt-4 rounded-tr-3xl":
-                            !ownNextMessage && !ownPrevMessage,
-                        }
-                      )}
-                    >
-                      <p className="mb-1">{message.text}</p>
-                      <span
-                        className={cn(
-                          "text-xs",
-                          ownMessage
-                            ? "text-foreground-light"
-                            : "text-foreground-lighter"
-                        )}
-                      >
-                        {dayjs(message.createdAt).format("HH:mm a")}
-                      </span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ) : null}
-        </div>
-        <Form
-          onSubmit={sendMessage}
-          className="flex flex-row gap-3 px-4 mb-10 mt-4 shadow-lg"
-        >
-          <Input
-            value={watch("message")}
-            register={register("message", validation.message)}
-            placeholder={intl.formatMessage({
-              id: messages["global.chat.input.placeholder"],
-            })}
-            error={errors["message"]?.message}
-            autoComplete="off"
-            disabled={chat.isLoading}
-          />
-          <div>
-            <Button
-              disabled={!watch("message") || chat.isLoading}
-              htmlType="submit"
-              size={ButtonSize.Small}
-              className="h-[37px]"
-            >
-              <Send className="w-[20px] h-[20px]" />
-            </Button>
+        {rooms.loading || call.isLoading ? (
+          <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
+            <Spinner />
           </div>
-        </Form>
+        ) : !callRoomId ? (
+          <div className="flex items-center justify-center h-full">
+            <div>
+              <Button
+                loading={createRoom.isLoading}
+                onClick={() => createRoom.mutate()}
+                className="min-w-[200px]"
+              >
+                {intl.formatMessage({
+                  id: messages["page.call.start.chat.now"],
+                })}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className={cn(
+                "h-full overflow-auto pt-4 pb-6 px-4",
+                "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+              )}
+            >
+              {chat.isLoading ? (
+                <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
+                  <Spinner />
+                </div>
+              ) : chat.data && profile ? (
+                <div className="mt-10 ">
+                  <ul className="flex flex-col">
+                    {chat.data.map((message, idx) => {
+                      const prevMessage: IMessage.Self | undefined =
+                        chat.data[idx - 1];
+
+                      const nextMessage: IMessage.Self | undefined =
+                        chat.data[idx + 1];
+
+                      const ownMessage = message.userId === profile.id;
+                      const ownPrevMessage =
+                        prevMessage?.userId === message.userId;
+                      const ownNextMessage =
+                        nextMessage?.userId === message.userId;
+
+                      return (
+                        <li
+                          key={message.id}
+                          className={cn(
+                            "pr-4 pl-6 py-2 w-fit min-w-[200px] border",
+                            "transition-colors duration-200 rounded-l-3xl",
+                            ownMessage
+                              ? "bg-brand-button border-brand/30 hover:border-brand"
+                              : "bg-selection border-border-strong hover:border-border-stronger",
+                            {
+                              "mt-1": ownPrevMessage,
+                              "rounded-l-3xl rounded-tr-xl":
+                                ownPrevMessage && !ownNextMessage,
+                              "rounded-r-xl": ownNextMessage && ownPrevMessage,
+                              "rounded-r-3xl rounded-br-xl mt-4":
+                                ownNextMessage && !ownPrevMessage,
+                              "mt-4 rounded-tr-3xl":
+                                !ownNextMessage && !ownPrevMessage,
+                            }
+                          )}
+                        >
+                          <p className="mb-1">{message.text}</p>
+                          <span
+                            className={cn(
+                              "text-xs",
+                              ownMessage
+                                ? "text-foreground-light"
+                                : "text-foreground-lighter"
+                            )}
+                          >
+                            {dayjs(message.createdAt).format("HH:mm a")}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+              ) : null}
+            </div>
+            <Form
+              onSubmit={sendMessage}
+              className="flex flex-row gap-3 px-4 mb-10 mt-4 shadow-lg"
+            >
+              <Input
+                value={watch("message")}
+                register={register("message", validation.message)}
+                placeholder={intl.formatMessage({
+                  id: messages["global.chat.input.placeholder"],
+                })}
+                error={errors["message"]?.message}
+                autoComplete="off"
+                disabled={chat.isLoading}
+              />
+              <div>
+                <Button
+                  disabled={
+                    !watch("message") ||
+                    chat.isLoading ||
+                    rooms.loading ||
+                    callRoomId === null
+                  }
+                  htmlType="submit"
+                  size={ButtonSize.Small}
+                  className="h-[37px]"
+                >
+                  <Send className="w-[20px] h-[20px]" />
+                </Button>
+              </div>
+            </Form>
+          </>
+        )}
       </div>
     </div>
   );
