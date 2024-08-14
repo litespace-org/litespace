@@ -9,4 +9,10 @@ export enum Route {
   Call = "/call/:id",
   TutorProfile = "/tutor/:id",
   TutorOnboarding = "/tutor/onboarding",
+  Complete = "/complete",
+}
+
+export enum RoutePatterns {
+  Register = "(/):role/register(/)",
+  Login = "(/)login(/)",
 }

@@ -80,6 +80,12 @@ const policies: Array<Policy> = [
   },
   {
     roles: [authorized],
+    route: "(/)api/v1/user/:id(/)",
+    methods: ["PUT"],
+    ignore: { key: "id", value: "me" },
+  },
+  {
+    roles: [authorized],
     route: "(/)api/v1/user/me(/)",
     methods: ["GET"],
   },

@@ -78,6 +78,14 @@ export type UpdatePayload = {
   creditScore?: number;
 };
 
+export type UpdateApiPayload = {
+  email?: string;
+  password?: string;
+  name?: Partial<Name>;
+  birthYear?: number;
+  gender?: Gender;
+};
+
 export type CreateApiPayload = {
   role: Role;
   email: string;

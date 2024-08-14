@@ -39,7 +39,7 @@ const user = {
       password: zod.optional(password),
       name: zod.optional(name),
       gender: zod.optional(gender),
-      birthYear: zod.optional(zod.number().min(1950)),
+      birthYear: zod.optional(zod.number().positive()),
       role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
     }),
   },

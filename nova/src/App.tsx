@@ -6,10 +6,11 @@ import Register from "@/pages/Register";
 import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findMe, profileSelector } from "@/redux/user/me";
+import { findProfile, profileSelector } from "@/redux/user/me";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";
+import Complete from "@/pages/Complete";
 import { findRooms } from "./redux/chat/rooms";
 
 const router = createBrowserRouter([
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
       { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Call, element: <Call /> },
+      { path: Route.Complete, element: <Complete /> },
     ],
     errorElement: <ErrorPage />,
   },
@@ -32,7 +34,7 @@ function App(): React.JSX.Element {
   const profile = useAppSelector(profileSelector);
 
   useEffect(() => {
-    dispatch(findMe());
+    dispatch(findProfile());
   }, [dispatch]);
 
   useEffect(() => {

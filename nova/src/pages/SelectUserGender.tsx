@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findMe, profileSelector } from "@/redux/user/me";
+import { findProfile, profileSelector } from "@/redux/user/me";
 import { User } from "@/types";
 import { Route } from "@/types/routes";
 import { Button, messages } from "@litespace/luna";
@@ -19,7 +19,7 @@ const SelectUserGender: React.FC = () => {
     async (gender: User.Gender) => atlas.user.update(1, { gender }),
     {
       async onSuccess() {
-        await dispatch(findMe());
+        await dispatch(findProfile());
         await navigate(Route.Root);
       },
     }

@@ -83,7 +83,7 @@ const Login: React.FC = () => {
           </div>
 
           <Form onSubmit={onSubmit}>
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-4">
               <Field
                 label={
                   <Label id="email">

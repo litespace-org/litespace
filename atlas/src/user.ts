@@ -27,8 +27,13 @@ export class User extends Base {
       .then((response) => response.data);
   }
 
-  async update(id: number, payload: IUser.UpdatePayload): Promise<void> {
-    await this.client.put(`/api/v1/user/${id}`, JSON.stringify(payload));
+  async update(
+    id: number,
+    payload: IUser.UpdateApiPayload
+  ): Promise<IUser.Self> {
+    return await this.client
+      .put(`/api/v1/user/${id}`, JSON.stringify(payload))
+      .then((response) => response.data);
   }
 
   async selectInterviewer(): Promise<IUser.Self> {

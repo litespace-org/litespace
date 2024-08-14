@@ -30,7 +30,7 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { useForm } from "react-hook-form";
-import { IMessage, IRoom } from "@litespace/types";
+import { Events, IMessage, IRoom } from "@litespace/types";
 import { useIntl } from "react-intl";
 import { useMutation, useQuery } from "react-query";
 import { atlas } from "@/lib/atlas";
@@ -102,9 +102,9 @@ const Call: React.FC = () => {
   });
 
   const acknowledgePeer = useCallback(
-    (peer: string) => {
+    (peerId: string) => {
       if (!callId) return;
-      socket.emit("peerOpened", { peer, call: callId });
+      socket.emit(Events.Client.PeerOpened, { peerId, callId });
     },
     [callId]
   );
@@ -131,7 +131,7 @@ const Call: React.FC = () => {
           });
         });
 
-        socket.on("user-joined", (userId) => {
+        socket.on(Events.Server.UserJoinedCall, (userId) => {
           setTimeout(() => {
             // shared my stream with the connected user
             const call = peer.call(userId, stream);
@@ -241,16 +241,17 @@ const Call: React.FC = () => {
         )}
       >
         <div
-          className={cn(
-            "relative flex-1 w-full max-h-[calc(100%-110px)] bg-red-100"
-          )}
+          className={cn("relative flex-1 w-full max-h-[calc(100%-110px)]")}
           ref={constraintsRef}
         >
           <motion.div
             drag
-            draggable={true}
+            draggable
+            dragElastic
             dragConstraints={constraintsRef}
-            className="cursor-pointer h-[300px] rounded-3xl overflow-hidden absolute z-10"
+            whileDrag={{ scale: 1.03 }}
+            dragMomentum={false}
+            className="h-[300px] rounded-3xl overflow-hidden absolute bottom-10 right-10 z-10"
           >
             <video
               className=" inline-block w-full h-full"

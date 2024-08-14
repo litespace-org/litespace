@@ -2,6 +2,7 @@ import { column, knex, query, withFilter } from "@/models/query";
 import { first, isEmpty } from "lodash";
 import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
+import dayjs from "@/lib/dayjs";
 
 export class Users {
   table = "users";
@@ -51,9 +52,9 @@ export class Users {
     id: number,
     payload: IUser.UpdatePayload,
     tx?: Knex.Transaction
-  ): Promise<void> {
-    const now = new Date();
-    await this.builder(tx)
+  ): Promise<IUser.Self> {
+    const now = dayjs.utc().toDate();
+    const rows = await this.builder(tx)
       .update({
         email: payload.email,
         photo: payload.photo,
@@ -67,7 +68,12 @@ export class Users {
         credit_score: payload.creditScore,
         updated_at: now,
       })
-      .where("id", id);
+      .where("id", id)
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("User not found; should never happen.");
+    return this.from(row);
   }
 
   async delete(id: number): Promise<void> {

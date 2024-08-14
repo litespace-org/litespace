@@ -2,6 +2,8 @@ export type Nullable<T> = T | null;
 
 export type NonEmptyList<T> = [T, ...T[]];
 
+export type NumericString = `${number}`;
+
 export type RecordAttributes = {
   createdAt: Date;
   createdById: number;

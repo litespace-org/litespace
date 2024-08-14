@@ -1,10 +1,17 @@
 import { isDev } from "@/constants";
-import { messages, rooms, users } from "@/models";
+import { calls, messages, rooms, users } from "@/models";
 import { IUser } from "@litespace/types";
 import { Socket } from "socket.io";
 import { Events } from "@litespace/types";
 import wss from "@/validation/wss";
+import zod from "zod";
 import "colors";
+import { id, string } from "@/validation/utils";
+
+const peerOpenedPayload = zod.object({
+  callId: id,
+  peerId: string,
+});
 
 export class WssHandler {
   socket: Socket;
@@ -35,9 +42,20 @@ export class WssHandler {
     // private channel
     this.socket.join(this.user.id.toString());
 
-    this.socket.on("peerOpened", (ids: { peer: string; call: string }) => {
-      this.socket.join(ids.call);
-      this.socket.to(ids.call).emit("user-joined", ids.peer);
+    this.socket.on(Events.Client.PeerOpened, async (ids: unknown) => {
+      // todo: add error handling
+      const { callId, peerId } = peerOpenedPayload.parse(ids);
+
+      const call = await calls.findById(callId);
+      if (!call) return;
+
+      const isMember = [call.hostId, call.attendeeId].includes(this.user.id);
+      if (!isMember) return;
+
+      this.socket.join(callId.toString());
+      this.socket
+        .to(callId.toString())
+        .emit(Events.Server.UserJoinedCall, peerId);
     });
   }
 

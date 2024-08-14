@@ -102,60 +102,59 @@ const Register: React.FC = () => {
           </div>
 
           <Form onSubmit={onSubmit}>
-            <Field
-              label={
-                <Label>
-                  {intl.formatMessage({
-                    id: messages["global.form.email.label"],
-                  })}
-                </Label>
-              }
-              field={
-                <Input
-                  placeholder={intl.formatMessage({
-                    id: messages["global.form.email.placeholder"],
-                  })}
-                  value={watch("email")}
-                  register={register("email", validation.email)}
-                  error={errors["email"]?.message}
-                  autoComplete="off"
-                  disabled={mutation.isLoading}
-                />
-              }
-            />
+            <div className="flex flex-col gap-4">
+              <Field
+                label={
+                  <Label>
+                    {intl.formatMessage({
+                      id: messages["global.form.email.label"],
+                    })}
+                  </Label>
+                }
+                field={
+                  <Input
+                    placeholder={intl.formatMessage({
+                      id: messages["global.form.email.placeholder"],
+                    })}
+                    value={watch("email")}
+                    register={register("email", validation.email)}
+                    error={errors["email"]?.message}
+                    autoComplete="off"
+                    disabled={mutation.isLoading}
+                  />
+                }
+              />
 
-            <Field
-              label={
-                <Label>
-                  {intl.formatMessage({
-                    id: messages["global.form.password.label"],
-                  })}
-                </Label>
-              }
-              field={
-                <Input
-                  placeholder={intl.formatMessage({
-                    id: messages["global.form.password.placeholder"],
-                  })}
-                  value={watch("password")}
-                  register={register("password", validation.password)}
-                  type={InputType.Password}
-                  error={errors["password"]?.message}
-                  disabled={mutation.isLoading}
-                  autoComplete="off"
-                />
-              }
-            />
+              <Field
+                label={
+                  <Label>
+                    {intl.formatMessage({
+                      id: messages["global.form.password.label"],
+                    })}
+                  </Label>
+                }
+                field={
+                  <Input
+                    value={watch("password")}
+                    register={register("password", validation.password)}
+                    type={InputType.Password}
+                    error={errors["password"]?.message}
+                    disabled={mutation.isLoading}
+                    autoComplete="off"
+                  />
+                }
+              />
 
-            <Button
-              loading={mutation.isLoading}
-              htmlType="submit"
-              className="w-full mt-[56px]"
-            >
-              {intl.formatMessage({
-                id: messages["page.register.form.button.submit.label"],
-              })}
-            </Button>
+              <Button
+                loading={mutation.isLoading}
+                htmlType="submit"
+                className="w-full mt-8"
+              >
+                {intl.formatMessage({
+                  id: messages["page.register.form.button.submit.label"],
+                })}
+              </Button>
+            </div>
           </Form>
         </div>
       </main>

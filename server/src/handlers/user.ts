@@ -13,13 +13,30 @@ import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
-import { identityObject } from "@/validation/utils";
+import {
+  email,
+  gender,
+  identityObject,
+  password,
+  name,
+} from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
 import { sample } from "lodash";
+import zod from "zod";
+
+const updateUserPayload = zod.object({
+  email: zod.optional(email),
+  password: zod.optional(password),
+  name: zod.optional(
+    zod.object({ ar: zod.optional(name), en: zod.optional(name) })
+  ),
+  gender: zod.optional(gender),
+  birthYear: zod.optional(zod.number().positive()),
+});
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
@@ -59,26 +76,29 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
 async function update(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
-  const { email, name, password, gender, role, birthYear } =
-    schema.http.user.update.body.parse(req.body);
 
-  if (role && req.user.role) return next(userAlreadyTyped());
+  const allowed = enforceRequest(req, id === req.user?.id);
+  if (!allowed) return next(forbidden());
 
+  const { email, name, password, gender, birthYear } = updateUserPayload.parse(
+    req.body
+  );
+
+  // todo: handle user photos
   const photo = req.files?.photo
     ? await uploadSingle(req.files.photo, FileType.Image)
     : undefined;
 
-  await users.update(id, {
+  const user = await users.update(id, {
     email,
-    // name,
+    name,
     gender,
     photo,
-    // role,
     birthYear,
     password: password ? hashPassword(password) : undefined,
   });
 
-  res.status(200).send();
+  res.status(200).json(user);
 }
 
 async function delete_(req: Request, res: Response) {

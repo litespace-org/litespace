@@ -79,6 +79,21 @@ export function useValidation() {
             }),
           },
         },
+        birthYear: {
+          validate(value: string) {
+            const year = Number(value);
+            if (Number.isNaN(year)) return "Invalid birth year";
+
+            const current = new Date().getFullYear();
+            const max = current - 10;
+            const min = current - 100;
+
+            if (year > max) return "You still too young!!";
+            if (year < 1_900) return "Invalid year";
+            if (year < min) return "You are too old!!";
+            return true;
+          },
+        },
       }) as const,
     [intl, required, validateName]
   );

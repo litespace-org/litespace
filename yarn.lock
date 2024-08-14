@@ -3159,6 +3159,7 @@ __metadata:
     tailwind-scrollbar: "npm:^3.1.0"
     tailwindcss: "npm:^3.4.3"
     typescript: "npm:^5.4.5"
+    url-pattern: "npm:^1.0.3"
     vercel: "npm:^34.2.7"
     vite: "npm:^5.2.0"
   languageName: unknown
