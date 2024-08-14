@@ -24,7 +24,6 @@ async function findUserRooms(req: Request, res: Response) {
   const userRooms = await rooms.findMemberRooms(userId);
   const members = await rooms.findRoomMembers(userRooms);
   const grouped = groupBy(members, "roomId");
-  console.log({ userRooms, members, grouped });
   res.status(200).json(grouped);
 }
 

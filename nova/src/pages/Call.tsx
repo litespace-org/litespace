@@ -30,7 +30,7 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { useForm } from "react-hook-form";
-import { Events, IMessage, IRoom } from "@litespace/types";
+import { IMessage, IRoom } from "@litespace/types";
 import { useIntl } from "react-intl";
 import { useMutation, useQuery } from "react-query";
 import { atlas } from "@/lib/atlas";
@@ -39,6 +39,8 @@ import { profileSelector } from "@/redux/user/me";
 import dayjs from "dayjs";
 import { findRooms, roomsSelector } from "@/redux/chat/rooms";
 import { entries, first, isEqual, sortBy } from "lodash";
+import { useChat } from "@/hooks/chat";
+import { motion } from "framer-motion";
 
 type IForm = {
   message: string;
@@ -58,6 +60,9 @@ const Call: React.FC = () => {
   const { id: callId } = useParams<{ id: string }>();
   const localRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const constraintsRef = useRef<HTMLDivElement>(null);
+  const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
   const [accessMic, setMicAccess] = useState<boolean>(true);
@@ -87,7 +92,7 @@ const Call: React.FC = () => {
     return Number(roomId);
   }, [call.data, rooms]);
 
-  const chat = useQuery({
+  const roomMessages = useQuery({
     queryFn: async () => {
       if (!callRoomId) return [];
       return await atlas.chat.findRoomMessages(callRoomId);
@@ -149,6 +154,11 @@ const Call: React.FC = () => {
       });
   }, [accessCamera, accessMic, localRef, remoteRef]);
 
+  useEffect(() => {
+    if (messagesRef.current && !userScrolled)
+      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+  }, [roomMessages.data, userScrolled]);
+
   const {
     register,
     handleSubmit,
@@ -159,18 +169,36 @@ const Call: React.FC = () => {
     defaultValues: { message: "" },
   });
 
+  const onMessage = useCallback(
+    (_message: IMessage.Self) => {
+      roomMessages.refetch();
+    },
+    [roomMessages]
+  );
+
+  const chat = useChat(onMessage);
+
+  const onScroll = useCallback(() => {
+    const el = messagesRef.current;
+    if (!el) return;
+    const scrollTop = el.scrollTop + 100;
+    const diff = el.scrollHeight - el.offsetHeight;
+    const scrolled = scrollTop < diff;
+    setUserScolled(scrolled);
+  }, []);
+
   const sendMessage = useMemo(
     () =>
       handleSubmit(({ message }) => {
         if (!callRoomId) return;
-        socket.emit(Events.Client.SendMessage, {
-          roomId: callRoomId,
-          text: message,
-        });
+
         reset();
-        chat.refetch();
+        chat.sendMessage({ roomId: callRoomId, message });
+
+        if (messagesRef.current)
+          messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
       }),
-    [callRoomId, chat, handleSubmit, reset]
+    [handleSubmit, callRoomId, chat, reset]
   );
 
   const isHost = useMemo(
@@ -208,19 +236,30 @@ const Call: React.FC = () => {
       <div
         className={cn(
           "flex flex-col w-full h-full",
-          "bg-surface-100 transition-all flex",
+          "bg-surface-100 transition-all duration-300",
           "border border-border-strong hover:border-border-stronger"
         )}
       >
         <div
           className={cn(
-            "relative flex flex-col _flex-1 h-full w-full items-center justify-center"
+            "relative flex-1 w-full max-h-[calc(100%-110px)] bg-red-100"
           )}
+          ref={constraintsRef}
         >
-          <div className="absolute bottom-[20px] right-[20px] w-[400px] rounded-lg overflow-hidden">
-            <video muted autoPlay ref={localRef} />
-          </div>
-          <div className="w-full h-full">
+          <motion.div
+            drag
+            draggable={true}
+            dragConstraints={constraintsRef}
+            className="cursor-pointer h-[300px] rounded-3xl overflow-hidden absolute z-10"
+          >
+            <video
+              className=" inline-block w-full h-full"
+              muted
+              autoPlay
+              ref={localRef}
+            />
+          </motion.div>
+          <div className="flex flex-1 w-full h-full">
             <video muted autoPlay ref={remoteRef} className="w-full h-full" />
           </div>
         </div>
@@ -302,20 +341,22 @@ const Call: React.FC = () => {
                 "h-full overflow-auto pt-4 pb-6 px-4",
                 "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
               )}
+              ref={messagesRef}
+              onScroll={onScroll}
             >
-              {chat.isLoading ? (
+              {roomMessages.isLoading ? (
                 <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
                   <Spinner />
                 </div>
-              ) : chat.data && profile ? (
-                <div className="mt-10 ">
+              ) : roomMessages.data && profile ? (
+                <div className="mt-10">
                   <ul className="flex flex-col">
-                    {chat.data.map((message, idx) => {
+                    {roomMessages.data.map((message, idx) => {
                       const prevMessage: IMessage.Self | undefined =
-                        chat.data[idx - 1];
+                        roomMessages.data[idx - 1];
 
                       const nextMessage: IMessage.Self | undefined =
-                        chat.data[idx + 1];
+                        roomMessages.data[idx + 1];
 
                       const ownMessage = message.userId === profile.id;
                       const ownPrevMessage =
@@ -374,13 +415,13 @@ const Call: React.FC = () => {
                 })}
                 error={errors["message"]?.message}
                 autoComplete="off"
-                disabled={chat.isLoading}
+                disabled={roomMessages.isLoading}
               />
               <div>
                 <Button
                   disabled={
                     !watch("message") ||
-                    chat.isLoading ||
+                    roomMessages.isLoading ||
                     rooms.loading ||
                     callRoomId === null
                   }

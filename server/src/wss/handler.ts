@@ -58,6 +58,8 @@ export class WssHandler {
 
       const message = await messages.create({ userId, roomId, text });
 
+      this.socket.emit(Events.Server.RoomMessage, message);
+
       this.socket.broadcast
         .to(roomId.toString())
         .emit(Events.Server.RoomMessage, message);
