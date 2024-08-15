@@ -28,7 +28,7 @@ export const Primary: StoryObj<Component> = {
     steps: [
       { label: ar["page.tutor.onboarding.steps.first"], value: 1 },
       { label: ar["page.tutor.onboarding.steps.second"], value: 2 },
-      { label: ar["page.tutor.onboarding.steps.thrid"], value: 3 },
+      { label: ar["page.tutor.onboarding.steps.third"], value: 3 },
     ],
     value: 2,
   },

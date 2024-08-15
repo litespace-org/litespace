@@ -6,6 +6,8 @@ export { Form, Field, Label } from "@/components/Form";
 export { DatePicker } from "@/components/DatePicker";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
+export { Stepper } from "@/components/Stepper";
+export { TextEditor } from "@/components/TextEditor";
 export { messages, locales } from "@/locales";
 export { useValidation } from "@/hooks/validation";
 export { default as Spinner } from "@/icons/Spinner";

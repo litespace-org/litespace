@@ -3145,6 +3145,7 @@ __metadata:
     eslint-plugin-react-refresh: "npm:^0.4.6"
     framer-motion: "npm:^11.2.6"
     lodash: "npm:^4.17.21"
+    marked: "npm:^14.0.0"
     peerjs: "npm:^1.5.4"
     postcss: "npm:^8.4.38"
     react: "npm:^18.2.0"
@@ -15555,6 +15556,15 @@ __metadata:
   bin:
     marked: bin/marked.js
   checksum: 10c0/7f5993bfb2d260806ffada81051c45952857117cba0fd82790779dc696c7ebd35a96be47409b4bdabd75e7ede286f5f5142a75a47200e3fa54eaf8b0cd6f74f6
+  languageName: node
+  linkType: hard
+
+"marked@npm:^14.0.0":
+  version: 14.0.0
+  resolution: "marked@npm:14.0.0"
+  bin:
+    marked: bin/marked.js
+  checksum: 10c0/57a47cb110f7b1a10f398b0a7236f9183aad2dcd5345ee73f2732b6387e585d04cef472bc655d2f84c542296be9728e179aebe3ed7f2f8666b8a0a9dae592876
   languageName: node
   linkType: hard
 
