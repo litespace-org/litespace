@@ -5,13 +5,14 @@ import { Bold, Italic, Underline, List } from "react-feather";
 import { InputError } from "@/components/Input/Input";
 
 export const TextEditor: React.FC<{
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
   error?: string;
-}> = ({ onChange, error }) => {
+  disabled?: boolean;
+}> = ({ onChange, error, disabled }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const onInput = useCallback(() => {
     if (!editorRef || !editorRef.current) return;
-    onChange(editorRef.current.innerHTML);
+    onChange && onChange(editorRef.current.innerHTML);
   }, [onChange]);
 
   const execCommand = useCallback((command: string) => {
@@ -33,8 +34,10 @@ export const TextEditor: React.FC<{
         {actions.map(({ Icon, onClick }, idx) => (
           <div key={idx}>
             <Button
+              htmlType="button"
               type={ButtonType.Text}
               size={ButtonSize.Small}
+              disabled={disabled}
               onClick={onClick}
             >
               {<Icon className="w-[20px] h-[20px]" />}
@@ -52,16 +55,17 @@ export const TextEditor: React.FC<{
           "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
           "focus-visible:ring-background-control placeholder-foreground-muted group",
           "border border-control text-sm px-4 py-4",
-          "disabled:opacity-50 disabled:cursor-not-allowed",
+          "aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
           {
             "bg-foreground/[.026]": !error,
             "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
               !!error,
           },
-          "[&_ul]:list-disc [&_ul]:list-inside",
-          "empty:text-foreground-muted"
+          "[&_ul]:list-disc [&_ul]:list-inside [&_ul_li]:mb-2 [&_ul]:pr-4",
+          "[&_div]:leading-loose"
         )}
-        contentEditable
+        contentEditable={!disabled}
+        aria-disabled={disabled}
         ref={editorRef}
         onInput={onInput}
       />

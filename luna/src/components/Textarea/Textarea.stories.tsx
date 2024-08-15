@@ -36,7 +36,7 @@ export const PrimaryInteractive: StoryObj<Component> = {
                 value={watch("feedback")}
                 placeholder={ar["global.start.chating"]}
                 register={register("feedback", {
-                  required: { value: true, message: ar["errors.required"] },
+                  required: { value: true, message: ar["error.required"] },
                 })}
                 error={errors["feedback"]?.message}
               />
@@ -53,7 +53,7 @@ export const PrimaryInteractive: StoryObj<Component> = {
 export const Errored: StoryObj<Component> = {
   args: {
     placeholder: ar["global.start.chating"],
-    error: ar["errors.required"],
+    error: ar["error.required"],
     className: "ui-min-w-[600px] ui-border",
   },
   render: (props: object) => {

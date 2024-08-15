@@ -33,7 +33,7 @@ export const Success: StoryObj<Component> = {
     onClick() {
       toaster.success({
         title: ar["page.login.form.title"],
-        description: ar["errors.email.invlaid"],
+        description: ar["error.email.invlaid"],
       });
     },
   },
@@ -46,7 +46,7 @@ export const Error: StoryObj<Component> = {
     onClick() {
       toaster.error({
         title: ar["page.login.form.title"],
-        description: ar["errors.email.invlaid"],
+        description: ar["error.email.invlaid"],
       });
     },
   },
@@ -59,7 +59,7 @@ export const Info: StoryObj<Component> = {
     onClick() {
       toaster.info({
         title: ar["page.login.form.title"],
-        description: ar["errors.email.invlaid"],
+        description: ar["error.email.invlaid"],
       });
     },
   },
@@ -72,7 +72,7 @@ export const Warning: StoryObj<Component> = {
     onClick() {
       toaster.warning({
         title: ar["page.login.form.title"],
-        description: ar["errors.email.invlaid"],
+        description: ar["error.email.invlaid"],
       });
     },
   },

@@ -41,7 +41,7 @@ export const Toaster: React.FC = () => {
           icon={Icon}
           hideProgressBar
           limit={5}
-          autoClose={false}
+          autoClose={3000}
           rtl
           theme="dark"
         />,

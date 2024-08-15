@@ -54,7 +54,7 @@ export const Error: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
-    error: ar["errors.email.invlaid"],
+    error: ar["error.email.invlaid"],
   },
 };
 
@@ -62,7 +62,7 @@ export const ErrorWithValue: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
-    error: ar["errors.email.invlaid"],
+    error: ar["error.email.invlaid"],
     value: "لايت اسبيس",
     onChange: () => {},
   },
@@ -95,7 +95,7 @@ export const PasswordError: StoryObj<Component> = {
         type={InputType.Password}
         value={watch("password")}
         register={register("password")}
-        error={ar["errors.password.invlaid"]}
+        error={ar["error.password.invlaid"]}
       />
     );
   },

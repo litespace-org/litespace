@@ -19,7 +19,7 @@ export const Login = () => {
       formProps={{
         initialValues: {
           email: "admin@litespace.org",
-          password: "LiteSpace1###",
+          password: "LiteSpace432%^&",
         },
       }}
     />

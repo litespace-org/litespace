@@ -20,7 +20,8 @@ import { splitSlot } from "@litespace/sol";
 import { asAssetUrl } from "@litespace/atlas";
 import cn from "classnames";
 import { marked } from "marked";
-import interviewMarkdown from "@/markdown/interview.md?raw";
+import markdown from "@/markdown/tutorOnboarding/interview.md?raw";
+import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
 
 const ScheduleInterview: React.FC = () => {
   const intl = useIntl();
@@ -85,10 +86,7 @@ const ScheduleInterview: React.FC = () => {
 
   const html = useMemo(() => {
     return marked.parse(
-      interviewMarkdown.replace(
-        /{interviewer}/gi,
-        interviewer.data?.name.ar || ""
-      ),
+      markdown.replace(/{interviewer}/gi, interviewer.data?.name.ar || ""),
       { async: false }
     );
   }, [interviewer.data?.name.ar]);
@@ -102,17 +100,7 @@ const ScheduleInterview: React.FC = () => {
 
   return (
     <div className="pb-10 flex flex-col w-full">
-      <div
-        className={cn(
-          "mb-5 max-w-screen-md",
-          "[&_h3]:text-2xl [&_h3]:text-foreground [&_h3]:pb-2 [&_h3]:mt-5",
-          "[&_p]:text-foreground-light [&_p]:mb-4 [&_p]:text-base [&_p]:leading-loose",
-          "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:pr-4",
-          "[&_ul_li]:text-foreground-light [&_ul_li]:mb-2"
-        )}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
-
+      <RawHtml html={html} />
       <div className="flex flex-row gap-12 mt-5">
         <div className="flex flex-col gap-3 w-[300px]">
           <div className="rounded-3xl overflow-hidden">

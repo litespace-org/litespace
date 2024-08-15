@@ -2,13 +2,16 @@ import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 
+const arabicRegExp = /^[\u0600-\u06FF\s]+$/;
+const englishRegExp = /^[a-zA-Z\s]+$/;
+
 export function useValidation() {
   const intl = useIntl();
 
   const required = useMemo(
     () => ({
       value: true,
-      message: intl.formatMessage({ id: messages["errors.required"] }),
+      message: intl.formatMessage({ id: messages["error.required"] }),
     }),
     [intl]
   );
@@ -17,25 +20,23 @@ export function useValidation() {
     (english: boolean) => ({
       required,
       validate(value: string) {
-        const regex = new RegExp(
-          english ? /^[a-zA-Z\s]+$/ : /^[\u0600-\u06FF\s]+$/
-        );
+        const regex = new RegExp(english ? englishRegExp : arabicRegExp);
         const match = regex.test(value);
         if (!match)
           return intl.formatMessage({
             id: english
-              ? messages["errors.name.english"]
-              : messages["errors.name.arabic"],
+              ? messages["error.name.english"]
+              : messages["error.name.arabic"],
           });
 
         if (value.length < 3)
           return intl.formatMessage({
-            id: messages["errors.name.length.short"],
+            id: messages["error.name.length.short"],
           });
 
         if (value.length > 50)
           return intl.formatMessage({
-            id: messages["errors.name.length.long"],
+            id: messages["error.name.length.long"],
           });
 
         return true;
@@ -57,7 +58,7 @@ export function useValidation() {
           pattern: {
             value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
             message: intl.formatMessage({
-              id: messages["errors.email.invlaid"],
+              id: messages["error.email.invlaid"],
             }),
           },
         },
@@ -67,7 +68,7 @@ export function useValidation() {
             value:
               /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
             message: intl.formatMessage({
-              id: messages["errors.password.invlaid"],
+              id: messages["error.password.invlaid"],
             }),
           },
         },
@@ -92,6 +93,44 @@ export function useValidation() {
             if (year < 1_900) return "Invalid year";
             if (year < min) return "You are too old!!";
             return true;
+          },
+        },
+        bio: {
+          required,
+          validate(value: string) {
+            const regex = new RegExp(/^[\u0600-\u06FF\s!\-\\\\./,]+$/);
+            const match = regex.test(value);
+            if (!match)
+              return intl.formatMessage({
+                id: messages["error.tutor.bio.arabic.only"],
+              });
+
+            if (value.length < 15)
+              return intl.formatMessage({
+                id: messages["error.tutor.about.or.abio.min.length.error"],
+              });
+
+            if (value.length > 50)
+              return intl.formatMessage({
+                id: messages["error.tutor.about.or.abio.max.length.error"],
+              });
+
+            return true;
+          },
+        },
+        about: {
+          required,
+          minLength: {
+            value: 50,
+            message: intl.formatMessage({
+              id: messages["error.tutor.about.or.abio.min.length.error"],
+            }),
+          },
+          maxLength: {
+            value: 1000,
+            message: intl.formatMessage({
+              id: messages["error.tutor.about.or.abio.max.length.error"],
+            }),
           },
         },
       }) as const,

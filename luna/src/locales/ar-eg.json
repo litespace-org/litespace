@@ -13,9 +13,11 @@
   "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
   "page.tutor.onboarding.steps.second": "زورنا في يلا استب",
   "page.tutor.onboarding.steps.third": "قدم نفسك لطلابك",
-  "page.tutor.onboarding.book.interview.title": "أهلا بيك في يلا استيب 👋",
-  "page.tutor.onboarding.book.interview.description.1": "رحلتك معانا بتداء بمقابلة لطيفة مدتها 30 دقيقة",
-  "page.tutor.onboarding.book.interview.description.2": "رحلتك معانا بتداء بمقابلة لطيفة مدتها 30 دقيقة",
+  "page.tutor.onboarding.steps.third.description": "علشان انت تعرف نفسك أكثر من أي حد تاني، حاول توصف نفسك في كلمات معدوده...",
+  "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.label": "أكتب شيء بارع ولافت للنظر تصف نفسك فيه باختصار",
+  "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.placeholder": "إسمي يوسف، وعاشق للغة الانجليزية",
+  "page.tutor.onboarding.steps.third.introduce.yourself.form.about.label": "أكتب نبذه عن نفسك",
+  "page.tutor.onboarding.steps.third.introduce.yourself.form.about.placeholder": "طالب جامعي محب للغة الانجليزية منذ الصغر...",
   "page.tutor.onboarding.book.interview.button.label": "تأكيد الحجز",
   "page.tutor.onboarding.book.interview.success.title": "تم حجز مقابلتك بنجاح",
   "page.tutor.onboarding.book.interview.fail.title": "لم نتمكن من حجز مقابلتك",
@@ -66,12 +68,17 @@
   "global.months.december": "ديسمبر",
   "global.chat.input.placeholder": "أكتب رسالتك...",
   "global.chat.input.error.length.max": "من الأفضل ان لا تتخطي رسالتك ال 250 حرف",
-  "errors.invalid": "خطأ",
-  "errors.required": "مطلوب",
-  "errors.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",
-  "errors.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
-  "errors.name.arabic": "أدخل اسمك باللغة العربية فقط",
-  "errors.name.english": "أدخل اسمك باللغة الانجليزية فقط",
-  "errors.email.invlaid": "عنوان بريد اليكتروني غير صحيح",
-  "errors.password.invlaid": "كلمة مرور غير مناسبة"
+  "global.notify.update.data": "تم تحديث بياناتك بنجاح",
+  "error.invalid": "خطأ",
+  "error.required": "مطلوب",
+  "error.name.length.short": "يجب الا يقل الاسم عن ثلاثة حروف",
+  "error.name.length.long": "يجب الا يتجاوز الاسم عن خمسين حرف",
+  "error.name.arabic": "أدخل اسمك باللغة العربية فقط",
+  "error.name.english": "أدخل اسمك باللغة الانجليزية فقط",
+  "error.email.invlaid": "عنوان بريد اليكتروني غير صحيح",
+  "error.password.invlaid": "كلمة مرور غير مناسبة",
+  "error.tutor.about.or.abio.min.length.error": "النص قصير جدا",
+  "error.tutor.about.or.abio.max.length.error": "النص طويل جدا",
+  "error.tutor.bio.arabic.only": "الافضل أن تكون النبذه باللغة العربية",
+  "error.update.data": "مشكلة في تحديث بياناتك"
 }
