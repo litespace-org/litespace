@@ -540,7 +540,7 @@ export const dataProvider: DataProvider = {
       if (!id) return { data: as.casted([]), total: 0 };
 
       const hostId = as.int(id);
-      const list = await atlas.call.findHostCalls(hostId);
+      const list = await atlas.interview.find(hostId);
       return { data: as.casted(list), total: list.length };
     }
 

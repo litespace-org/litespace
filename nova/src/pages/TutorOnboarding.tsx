@@ -41,7 +41,7 @@ const TutorOnboarding: React.FC = () => {
       </div>
 
       <div>
-        <TutorOnboardingSteps step={3} />
+        <TutorOnboardingSteps step={1} />
       </div>
     </div>
   );

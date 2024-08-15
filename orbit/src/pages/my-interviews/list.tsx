@@ -1,4 +1,4 @@
-import { IUser } from "@litespace/types";
+import { IInterview, IUser } from "@litespace/types";
 import {
   DeleteButton,
   EditButton,
@@ -6,6 +6,8 @@ import {
   ShowButton,
   useTable,
   TextField,
+  BooleanField,
+  UrlField,
 } from "@refinedev/antd";
 import { useGetIdentity } from "@refinedev/core";
 import { Space, Table } from "antd";
@@ -14,7 +16,7 @@ import React from "react";
 
 export const MyInterviewList: React.FC = () => {
   const { data: user } = useGetIdentity<IUser.Self>();
-  const { tableProps } = useTable<IUser.Self[]>({
+  const { tableProps } = useTable<IInterview.Self[]>({
     syncWithLocation: true,
     meta: { id: user?.id },
   });
@@ -22,24 +24,58 @@ export const MyInterviewList: React.FC = () => {
   return (
     <List>
       <Table {...tableProps} rowKey="id">
-        <Table.Column dataIndex="attendeeEmail" title="Tutor Email" />
-        <Table.Column dataIndex="attendeeName" title="Name" />
+        <Table.Column
+          dataIndex={["ids", "interviewee"]}
+          title="Interviewee"
+          render={(value: number) => (
+            <UrlField href={`/users/show/${value}`} value={`# ${value}`} />
+          )}
+        />
 
         <Table.Column
-          dataIndex="start"
-          title="Interview Time"
-          render={(value: string) => (
-            <TextField value={dayjs(value).fromNow()} />
-          )}
+          dataIndex="passed"
+          title="Passed Interview"
+          render={(value: boolean | null) =>
+            value === null ? (
+              <TextField value="Never set" />
+            ) : (
+              <BooleanField
+                value={value}
+                title={value ? "Passed" : "Rejected"}
+              />
+            )
+          }
+        />
+
+        <Table.Column
+          dataIndex="approved"
+          title="Approved"
+          render={(value: boolean | null) =>
+            value === null ? (
+              <TextField value="Never set" />
+            ) : (
+              <BooleanField
+                value={value}
+                title={value ? "Passed" : "Rejected"}
+              />
+            )
+          }
         />
 
         <Table.Column
           dataIndex="createdAt"
           title="Created At"
+          render={(value: string) => <TextField value={value} />}
+        />
+
+        <Table.Column
+          dataIndex="udpatedAt"
+          title="Updated At"
           render={(value: string) => (
             <TextField value={dayjs(value).fromNow()} />
           )}
         />
+
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
@@ -47,7 +83,6 @@ export const MyInterviewList: React.FC = () => {
             <Space>
               <EditButton hideText size="small" recordItemId={record.id} />
               <ShowButton hideText size="small" recordItemId={record.id} />
-              <DeleteButton hideText size="small" recordItemId={record.id} />
             </Space>
           )}
         />
