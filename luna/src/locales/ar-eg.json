@@ -29,6 +29,8 @@
   "page.complete.profile.form.name.ar.placeholder": "محمد إبراهيم",
   "page.complete.profile.form.name.en.placeholder": "Mohamed Ibrahim",
   "page.complete.profile.form.gender.label": "حابب نشير لك بايه؟",
+  "page.complete.profile.form.phone.number.label": "رقم هاتفك",
+  "page.complete.profile.form.phone.number.placeholder": "xxx xxxx xxxx",
   "page.complete.profile.form.success": "تم تحديد بياناتك بنجاح",
   "page.complete.profile.form.error": "لديك مشكلة في تحديدث بياناتك",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",

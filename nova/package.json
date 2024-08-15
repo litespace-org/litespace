@@ -37,6 +37,7 @@
     "url-pattern": "^1.0.3"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1.6.0",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-redux": "^7.1.33",

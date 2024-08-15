@@ -15,7 +15,7 @@ import {
 } from "@litespace/luna";
 import { IUser, NumericString } from "@litespace/types";
 import { isEmpty } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import { useMutation } from "react-query";
@@ -26,6 +26,7 @@ type IForm = {
   password: string;
   name: { ar: string; en: string };
   birthYear: NumericString | "";
+  phoneNumber: string;
   gender: string;
 };
 
@@ -47,6 +48,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
       name: { ar: profile.name.ar || "", en: profile.name.en || "" },
       birthYear: "",
       gender: "",
+      phoneNumber: "",
     },
   });
 
@@ -93,6 +95,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
     name: { ar: watch("name.ar"), en: watch("name.en") },
     birthYear: watch("birthYear"),
     gender: watch("gender"),
+    phoneNumber: watch("phoneNumber"),
   };
 
   const disabled = useMemo(() => {
@@ -207,11 +210,37 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                     "page.complete.profile.form.name.en.placeholder"
                   ],
                 })}
-                // value={watch("name.en")}
                 value={fields.name.en}
                 register={register("name.en", validation.name.en)}
                 type={InputType.Text}
                 error={errors["name"]?.en?.message}
+                autoComplete="off"
+                disabled={mutation.isLoading}
+              />
+            }
+          />
+        ) : null}
+
+        {profile.role === IUser.Role.Tutor ? (
+          <Field
+            label={
+              <Label>
+                {intl.formatMessage({
+                  id: messages["page.complete.profile.form.phone.number.label"],
+                })}
+              </Label>
+            }
+            field={
+              <Input
+                placeholder={intl.formatMessage({
+                  id: messages[
+                    "page.complete.profile.form.phone.number.placeholder"
+                  ],
+                })}
+                value={fields.phoneNumber}
+                register={register("phoneNumber", validation.name.en)}
+                type={InputType.Text}
+                error={errors["phoneNumber"]?.message}
                 autoComplete="off"
                 disabled={mutation.isLoading}
               />
