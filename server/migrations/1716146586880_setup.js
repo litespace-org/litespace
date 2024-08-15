@@ -106,6 +106,24 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
+  pgm.createTable("interviews", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    interviewer_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
+    interviewer_feedback: { type: "VARCHAR(1000)", default: null },
+    interviewee_feedback: { type: "VARCHAR(1000)", default: null },
+    interviewer_note: { type: "VARCHAR(1000)", default: null },
+    score: { type: "INT", default: null },
+    passed: { type: "BOOLEAN", default: null },
+    passed_at: { type: "TIMESTAMP", default: null },
+    approved: { type: "BOOLEAN", default: null },
+    approved_at: { type: "TIMESTAMP", default: null },
+    approved_by: { type: "INT", default: null },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
   pgm.createTable(
     "ratings",
     {
@@ -295,6 +313,7 @@ exports.down = (pgm) => {
   pgm.dropTable("reports", { ifExists: true });
   pgm.dropTable("gifts", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
+  pgm.dropTable("interviews", { ifExists: true });
   pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("slots", { ifExists: true });
   pgm.dropTable("tokens", { ifExists: true });

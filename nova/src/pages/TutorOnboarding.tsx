@@ -5,7 +5,7 @@ import { flatten } from "lodash";
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
 import { splitSlot } from "@litespace/sol";
-import { ICall, ISlot } from "@litespace/types";
+import { IInterview, ISlot } from "@litespace/types";
 import {
   Button,
   ButtonType,
@@ -38,9 +38,20 @@ const TutorOnboarding: React.FC = () => {
     enabled: !!interviewer.data,
   });
 
+  const interviews = useQuery({
+    queryFn: async () => {
+      if (!profile) return [];
+      return await atlas.interview.find(profile.id);
+    },
+    enabled: !!profile,
+  });
+
   const mutation = useMutation({
-    mutationFn: (payload: ICall.CreateApiPayload) => atlas.call.create(payload),
+    mutationFn: (payload: IInterview.CreateApiPayload) =>
+      atlas.interview.create(payload),
     onSuccess() {
+      interviews.refetch();
+      slots.refetch();
       toaster.success({
         title: intl.formatMessage({
           id: messages["page.tutor.onboarding.book.interview.success.title"],
@@ -57,14 +68,6 @@ const TutorOnboarding: React.FC = () => {
     },
   });
 
-  const interviews = useQuery({
-    queryFn: async () => {
-      if (!profile) return [];
-      return await atlas.call.findTutorInterviews(profile.id);
-    },
-    enabled: !!profile,
-  });
-
   const daySlots: ISlot.Discrete[] = useMemo(() => {
     if (!slots.data) return [];
     return slots.data.find((slot) => date.isSame(slot.day, "day"))?.slots ?? [];
@@ -78,8 +81,6 @@ const TutorOnboarding: React.FC = () => {
   if (interviewer.isLoading) return <p>Loading..</p>;
   if (interviewer.isError) return <p>Error!!</p>;
   if (!interviewer.data) return;
-
-  console.log({ interviews });
 
   return (
     <div className="max-w-screen-xl mx-auto">
@@ -135,7 +136,7 @@ const TutorOnboarding: React.FC = () => {
                             ? ButtonType.Primary
                             : ButtonType.Secondary
                         }
-                        disabled={mutation.isLoading}
+                        disabled={mutation.isLoading || slots.isFetching}
                       >
                         {dayjs(slot.start).format("hh:mm a")}
                       </Button>
@@ -149,12 +150,10 @@ const TutorOnboarding: React.FC = () => {
         <div className="w-[250px] mt-12">
           <Button
             onClick={() => {
-              if (!selectedSlot) return;
+              if (!selectedSlot || !interviewer.data) return;
               mutation.mutate({
-                type: ICall.Type.Interview,
-                slotId: selectedSlot.id,
-                start: selectedSlot.start,
-                duration: 30,
+                interviewerId: interviewer.data.id,
+                call: { slotId: selectedSlot.id, start: selectedSlot.start },
               });
             }}
             disabled={!selectedSlot || mutation.isLoading}

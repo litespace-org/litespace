@@ -108,7 +108,7 @@ const framer = {
   transition: { duration: 0.2 },
 };
 
-const InputError: React.FC<{ message: string }> = ({ message }) => {
+export const InputError: React.FC<{ message: string }> = ({ message }) => {
   return (
     <motion.p className="font-cairo text-sm text-red-900 mt-2" {...framer}>
       {message}

@@ -3,6 +3,7 @@ import slot from "@/routes/slot";
 import tutor from "@/routes/tutor";
 import student from "@/routes/student";
 import call from "@/routes/call";
+import interview from "@/routes/interview";
 import rating from "@/routes/rating";
 import subscription from "@/routes/subscription";
 import authorization from "@/routes/authorization";
@@ -29,5 +30,6 @@ export default {
   reportReply,
   subscription,
   authorization,
+  interview,
   asset,
 };

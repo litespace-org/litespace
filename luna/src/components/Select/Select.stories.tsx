@@ -6,6 +6,7 @@ import React from "react";
 type ISelect = typeof Select;
 
 const meta: Meta<ISelect> = {
+  title: "Select",
   component: Select,
   parameters: { layout: "centered" },
   decorators: [

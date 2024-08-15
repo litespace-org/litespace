@@ -17,3 +17,4 @@ export { tokens } from "@/models/tokens";
 export { ratings } from "@/models/ratings";
 export { rooms } from "@/models/rooms";
 export { messages } from "@/models/messages";
+export { interviews } from "@/models/interviews";

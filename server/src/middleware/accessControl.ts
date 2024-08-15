@@ -313,6 +313,22 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/call/tutor/interviews/:id(/)",
     methods: ["GET"],
   },
+  // interviews
+  {
+    roles: [tutor],
+    route: "(/)api/v1/interview(/)",
+    methods: ["POST"],
+  },
+  {
+    roles: [interviewer, tutor],
+    route: "(/)api/v1/interview/list/:userId(/)",
+    methods: ["GET"],
+  },
+  {
+    roles: [owner],
+    route: "(/)api/v1/interview/:id(/)",
+    methods: ["PUT"],
+  },
   // subscriptions
   {
     roles: [student],

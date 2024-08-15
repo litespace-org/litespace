@@ -129,16 +129,6 @@ export const DatePicker: React.FC<{
     setDate(date.subtract(1, "month"));
   }, [date]);
 
-  console.log({
-    d1: date.add(1, "month").date(1).format("YYYY-MM-DD"),
-    max: max?.format("YYYY-MM-DD"),
-    d2: date
-      .subtract(1, "month")
-      .date(date.subtract(1, "month").daysInMonth())
-      .format("YYYY-MM-DD"),
-    min: min?.format("YYYY-MM-DD"),
-  });
-
   const canGoBack = useMemo(() => {
     const next = date.subtract(1, "month");
     return min && next.date(next.daysInMonth()).isAfter(min);

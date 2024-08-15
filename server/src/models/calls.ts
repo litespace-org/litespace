@@ -1,13 +1,17 @@
 import { knex, query } from "@/models/query";
 import { first, merge, omit } from "lodash";
 import { ICall, IUser } from "@litespace/types";
+import { Knex } from "knex";
 
 export class Calls {
   table = "calls";
 
-  async create(call: ICall.CreatePayload): Promise<ICall.Self> {
+  async create(
+    call: ICall.CreatePayload,
+    tx?: Knex.Transaction
+  ): Promise<ICall.Self> {
     const now = new Date();
-    const rows = await knex<ICall.Row>("calls").insert(
+    const rows = await this.builder(tx).insert(
       {
         type: call.type,
         host_id: call.hostId,
@@ -144,6 +148,12 @@ export class Calls {
         name: { ar: row.hostNameAr, en: row.hostNameEn },
       },
     });
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx
+      ? tx<ICall.Row>(this.table).clone()
+      : knex<ICall.Row>(this.table).clone();
   }
 }
 
