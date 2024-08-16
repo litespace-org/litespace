@@ -3,13 +3,18 @@ import {
   TUTUOR_ONBOARDING_INTERVIEW_STEP_ID,
 } from "@/constants/user";
 import React from "react";
-import ScheduleInterview from "@/components/TutorOnboardingSteps/ScheduleInterview";
+import Interview from "@/components/TutorOnboardingSteps/Interview";
 import MediaShot from "@/components/TutorOnboardingSteps/MediaShot";
 import IntorduceYourself from "@/components/TutorOnboardingSteps/IntroduceYourself";
+import { IInterview } from "@litespace/types";
+import { UseQueryResult } from "react-query";
 
-const TutorOnboardingSteps: React.FC<{ step: number }> = ({ step }) => {
+const TutorOnboardingSteps: React.FC<{
+  step: number;
+  interviews: UseQueryResult<IInterview.Self[], unknown>;
+}> = ({ step, interviews }) => {
   if (step === TUTUOR_ONBOARDING_INTERVIEW_STEP_ID)
-    return <ScheduleInterview />;
+    return <Interview interviews={interviews} />;
 
   if (step === TUTUOR__ONBOARDING_MEDIA_STEP_ID) return <MediaShot />;
 

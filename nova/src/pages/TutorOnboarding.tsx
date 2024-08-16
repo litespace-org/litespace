@@ -7,9 +7,14 @@ import {
   TUTUOR_ONBOARDING_PROFILE_STEP_ID,
 } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
+import { useQuery } from "react-query";
+import { atlas } from "@/lib/atlas";
+import { useAppSelector } from "@/redux/store";
+import { profileSelector } from "@/redux/user/me";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useIntl();
+  const profile = useAppSelector(profileSelector);
 
   const steps = useMemo(() => {
     return [
@@ -34,14 +39,22 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
+  const interviews = useQuery({
+    queryFn: async () => {
+      if (!profile) return [];
+      return await atlas.interview.findInterviews(profile.id);
+    },
+    enabled: !!profile,
+  });
+
   return (
-    <div className="max-w-screen-2xl mx-auto w-full py-12">
+    <div className="max-w-screen-2xl px-8 mx-auto w-full py-12">
       <div className="mb-10">
         <Stepper steps={steps} value={TUTUOR__ONBOARDING_MEDIA_STEP_ID} />
       </div>
 
       <div>
-        <TutorOnboardingSteps step={1} />
+        <TutorOnboardingSteps step={1} interviews={interviews} />
       </div>
     </div>
   );
