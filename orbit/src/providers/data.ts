@@ -1,6 +1,7 @@
 import { atlas, backendUrl } from "@/lib/atlas";
 import {
   ICoupon,
+  IInterview,
   IInvite,
   IPlan,
   IReport,
@@ -33,10 +34,11 @@ export enum Resource {
 }
 
 const empty = { data: null };
+const getOneData = <T>(data: T) => ({ data: as.any(data) });
 
 export const dataProvider: DataProvider = {
-  async getOne({ resource, id }) {
-    const resourceId = as.int(id);
+  async getOne({ resource, id, meta }) {
+    const resourceId = zod.coerce.number().parse(id);
     if (resource === Resource.Users) {
       const user = await atlas.user.findById(resourceId);
       return { data: as.casted(user) };
@@ -58,8 +60,15 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.MyInterviews) {
-      const call = await atlas.call.findHostCallById(resourceId);
-      return { data: as.casted(call) };
+      const interview = await atlas.interview.findInterviewById(resourceId);
+      if (meta?.interviewOnly) return getOneData(interview);
+      const interviewee = await atlas.user.findById(interview.ids.interviewee);
+      const call = await atlas.call.findById(interview.ids.call);
+      return getOneData({
+        interview,
+        interviewee,
+        call,
+      });
     }
 
     if (resource === Resource.Plans) {
@@ -350,6 +359,50 @@ export const dataProvider: DataProvider = {
       return as.casted(empty);
     }
 
+    if (
+      resource === Resource.MyInterviews &&
+      meta &&
+      meta.interview &&
+      meta.currentUserId
+    ) {
+      const currentUserId = meta.currentUserId as number;
+      const prev = meta.interview as IInterview.Self;
+      const updated = zod
+        .object({
+          feedback: zod.object({
+            interviewer: zod.union([zod.null(), zod.string()]),
+          }),
+          interviewerNote: zod.union([zod.null(), zod.string()]),
+          passed: zod.union([zod.null(), zod.boolean()]),
+          score: zod.union([zod.null(), zod.coerce.number()]),
+          approved: zod.optional(zod.union([zod.null(), zod.boolean()])),
+        })
+        .parse(variables);
+
+      await atlas.interview.update(resourceId, {
+        feedback: {
+          interviewer:
+            selectUpdatedOrNone(
+              prev.feedback.interviewer,
+              updated.feedback.interviewer
+            ) || undefined,
+        },
+        score: selectUpdatedOrNone(prev.score, updated.score) || undefined,
+        interviewerNote:
+          selectUpdatedOrNone(prev.interviewerNote, updated.interviewerNote) ||
+          undefined,
+        passed: selectUpdatedOrNone(prev.passed, updated.passed) || undefined,
+        approved:
+          selectUpdatedOrNone(prev.approved, updated.approved) || undefined,
+        approvedBy:
+          updated.approved !== undefined && updated.approved !== null
+            ? currentUserId
+            : undefined,
+      });
+
+      return as.casted(empty);
+    }
+
     throw new Error("Not implemented");
   },
   create: async ({ resource, variables }) => {
@@ -540,7 +593,7 @@ export const dataProvider: DataProvider = {
       if (!id) return { data: as.casted([]), total: 0 };
 
       const hostId = as.int(id);
-      const list = await atlas.interview.find(hostId);
+      const list = await atlas.interview.findInterviews(hostId);
       return { data: as.casted(list), total: list.length };
     }
 

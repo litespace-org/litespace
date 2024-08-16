@@ -1,7 +1,6 @@
 import { IUser } from "@litespace/types";
 import { Edit, useForm } from "@refinedev/antd";
-import { DatePicker, Form, Input, Select } from "antd";
-import dayjs from "dayjs";
+import { Form, Input, Select } from "antd";
 import { genders, userTypes } from "@/lib/constants";
 import { useOne, useResource } from "@refinedev/core";
 import { useMemo } from "react";
@@ -22,8 +21,6 @@ export const UserEdit = () => {
     () => queryResult?.data?.data,
     [queryResult?.data?.data]
   );
-
-  console.log({ saveButtonProps, formProps });
 
   return (
     <Edit

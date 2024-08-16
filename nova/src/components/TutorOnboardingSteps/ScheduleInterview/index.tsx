@@ -47,7 +47,7 @@ const ScheduleInterview: React.FC = () => {
   const interviews = useQuery({
     queryFn: async () => {
       if (!profile) return [];
-      return await atlas.interview.find(profile.id);
+      return await atlas.interview.findInterviews(profile.id);
     },
     enabled: !!profile,
   });

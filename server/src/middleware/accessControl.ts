@@ -326,6 +326,11 @@ const policies: Array<Policy> = [
   },
   {
     roles: [owner],
+    route: "(/)api/v1/interview/:interviewId(/)",
+    methods: ["GET"],
+  },
+  {
+    roles: [owner],
     route: "(/)api/v1/interview/:id(/)",
     methods: ["PUT"],
   },

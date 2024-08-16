@@ -14,7 +14,7 @@ import { Space, Table } from "antd";
 import dayjs from "dayjs";
 import React from "react";
 
-export const MyInterviewList: React.FC = () => {
+export const MyInterviewsList: React.FC = () => {
   const { data: user } = useGetIdentity<IUser.Self>();
   const { tableProps } = useTable<IInterview.Self[]>({
     syncWithLocation: true,
@@ -79,10 +79,18 @@ export const MyInterviewList: React.FC = () => {
         <Table.Column
           title={"Actions"}
           dataIndex="actions"
-          render={(_, record: IUser.Self) => (
+          render={(_, record: IInterview.Self) => (
             <Space>
-              <EditButton hideText size="small" recordItemId={record.id} />
-              <ShowButton hideText size="small" recordItemId={record.id} />
+              <EditButton
+                hideText
+                size="small"
+                recordItemId={record.ids.self}
+              />
+              <ShowButton
+                hideText
+                size="small"
+                recordItemId={record.ids.self}
+              />
             </Space>
           )}
         />

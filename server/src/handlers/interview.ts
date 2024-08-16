@@ -22,6 +22,7 @@ const createInterviewPayload = zod.object({
 
 const findInterviewsPayload = zod.object({ userId: id });
 const updateInterviewParams = zod.object({ interviewId: id });
+const findInterviewByIdParams = zod.object({ interviewId: id });
 const updateInterviewPayload = zod.object({
   feedback: zod.optional(
     zod.object({
@@ -103,6 +104,26 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(list);
 }
 
+async function findInterviewById(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { interviewId } = findInterviewByIdParams.parse(req.params);
+  const interview = await interviews.findById(interviewId);
+  if (!interview) return next(notfound.base());
+
+  const allowed = enforceRequest(
+    req,
+    [interview.ids.interviewer, interview.ids.interviewee].includes(
+      req.user?.id
+    )
+  );
+  if (!allowed) return next(forbidden());
+
+  res.status(200).json(interview);
+}
+
 async function updateInterview(
   req: Request,
   res: Response,
@@ -131,4 +152,5 @@ export default {
   createInterview: asyncHandler(createInterview),
   findInterviews: asyncHandler(findInterviews),
   updateInterview: asyncHandler(updateInterview),
+  findInterviewById: asyncHandler(findInterviewById),
 };
