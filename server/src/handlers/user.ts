@@ -22,6 +22,7 @@ import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
 import { sample } from "lodash";
 import zod from "zod";
+import { Knex } from "knex";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -31,6 +32,14 @@ const updateUserPayload = zod.object({
   ),
   gender: zod.optional(gender),
   birthYear: zod.optional(zod.number().positive()),
+  drop: zod.optional(
+    zod.object({
+      photo: zod.optional(zod.boolean()),
+      video: zod.optional(zod.boolean()),
+    })
+  ),
+  bio: zod.optional(zod.string().trim()),
+  about: zod.optional(zod.string().trim()),
 });
 
 const findTutorMetaParams = zod.object({ tutorId: id });
@@ -77,22 +86,69 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req, id === req.user?.id);
   if (!allowed) return next(forbidden());
 
-  const { email, name, password, gender, birthYear } = updateUserPayload.parse(
-    req.body
+  const currentUser = req.user;
+  const targetUser = await users.findById(id);
+  if (!targetUser) return next(forbidden());
+
+  const { email, name, password, gender, birthYear, drop, bio, about } =
+    updateUserPayload.parse(req.body);
+
+  const files = {
+    image: {
+      file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
+      type: FileType.Image,
+    },
+    video: {
+      file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
+      type: FileType.Video,
+    },
+  };
+
+  // Only media provider can update tutor media files (images and videos)
+  // Tutor cannot upload it for himself.
+  const isUpdatingTutorMedia =
+    (files.image.file || files.video.file) &&
+    targetUser.role === IUser.Role.Tutor;
+  const isEligibleUser = [
+    IUser.Role.SuperAdmin,
+    IUser.Role.RegularAdmin,
+    IUser.Role.MediaProvider,
+  ].includes(currentUser.role);
+  if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
+
+  // Only media providers can upload videos.
+  // e.g., students/interviewers cannot try to upload videos
+  if (files.video.file && !isEligibleUser) return next(forbidden());
+
+  const [photo, video] = await Promise.all(
+    [
+      { file: req.files?.photo, type: FileType.Image },
+      { file: req.files?.video, type: FileType.Video },
+    ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
   );
 
-  // todo: handle user photos
-  const photo = req.files?.photo
-    ? await uploadSingle(req.files.photo, FileType.Image)
-    : undefined;
+  const user = await knex.transaction(async (tx: Knex.Transaction) => {
+    const user = await users.update(
+      id,
+      {
+        name,
+        email,
+        gender,
+        birthYear,
+        photo: drop?.photo === true ? null : photo,
+        password: password ? hashPassword(password) : undefined,
+      },
+      tx
+    );
 
-  const user = await users.update(id, {
-    email,
-    name,
-    gender,
-    photo,
-    birthYear,
-    password: password ? hashPassword(password) : undefined,
+    if (bio || about || video || drop?.video)
+      await tutors.update(
+        targetUser.id,
+        { bio, about, video: drop?.video ? null : video },
+        tx
+      );
+
+    return user;
   });
 
   res.status(200).json(user);

@@ -70,7 +70,7 @@ export type UpdatePayload = {
   email?: string;
   password?: string;
   name?: Partial<Name>;
-  photo?: string;
+  photo?: string | null;
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
@@ -82,9 +82,17 @@ export type UpdateApiPayload = {
   email?: string;
   password?: string;
   name?: Partial<Name>;
-  birthYear?: number;
   gender?: Gender;
+  birthYear?: number;
+  drop?: { photo?: boolean; video?: boolean };
+  bio?: string;
+  about?: string;
 };
+
+export enum UpdateMediaFilesApiKeys {
+  Photo = "photo",
+  Video = "video",
+}
 
 export type CreateApiPayload = {
   role: Role;

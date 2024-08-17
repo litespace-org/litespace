@@ -99,8 +99,8 @@ export const TutorMediaEdit = () => {
     if (!id) return;
     dropTutorMedia({
       resource: Resource.TutorsMedia,
-      values: { dropPhoto, dropVideo },
-      meta: { drop: true },
+      meta: { drop: { photo: dropPhoto, video: dropVideo } },
+      values: {},
       id,
     });
   }, [dropPhoto, dropTutorMedia, dropVideo, id]);
@@ -146,11 +146,16 @@ export const TutorMediaEdit = () => {
       <Space style={{ display: "block" }}>
         <Typography.Title level={3}>Photo</Typography.Title>
         {photoUrl ? (
-          <Flex style={{ maxWidth: "1500px" }}>
-            <ImageField value={photoUrl} />
+          <Flex>
+            <ImageField style={{ maxHeight: "1000px" }} value={photoUrl} />
           </Flex>
         ) : (
-          <Flex style={{ width: "100%" }}>
+          <Flex
+            style={{
+              width: "100%",
+              maxWidth: "100%",
+            }}
+          >
             <Alert
               message="Tutor has no profile image yet"
               type="warning"
@@ -194,8 +199,8 @@ export const TutorMediaEdit = () => {
             <video
               style={{
                 display: "inline-block",
-                width: "100%",
-                maxWidth: "1500px",
+                maxHeight: "1000px",
+                maxWidth: "100%",
               }}
               src={videoUrl}
               controls
@@ -216,7 +221,6 @@ export const TutorMediaEdit = () => {
           <Upload {...videoProps}>
             <Button icon={<UploadOutlined />}>Update video</Button>
           </Upload>
-
           <Button
             onClick={() => setDropVideo(true)}
             icon={<DeleteOutlined />}

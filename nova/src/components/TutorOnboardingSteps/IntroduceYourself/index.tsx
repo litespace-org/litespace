@@ -1,6 +1,7 @@
 import { atlas } from "@/lib/atlas";
-import { useAppSelector } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
+import { findTutorMeta } from "@/redux/user/tutor";
 import {
   Button,
   Field,
@@ -24,8 +25,9 @@ type IForm = {
 
 const IntorduceYourself: React.FC = () => {
   const intl = useIntl();
-  const profile = useAppSelector(profileSelector);
+  const dispatch = useAppDispatch();
   const validation = useValidation();
+  const profile = useAppSelector(profileSelector);
   const {
     register,
     watch,
@@ -55,6 +57,7 @@ const IntorduceYourself: React.FC = () => {
           id: messages["global.notify.update.data"],
         }),
       });
+      if (profile) dispatch(findTutorMeta(profile.id));
     },
     onError() {
       toaster.error({

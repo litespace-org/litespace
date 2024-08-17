@@ -20,9 +20,10 @@ export const TutorShow = () => {
 
     return [
       { name: "ID", value: tutor.id },
-      { name: "Name", value: tutor.name },
+      { name: "Name (EN)", value: tutor.name.en || "-" },
+      { name: "Name (AR)", value: tutor.name.ar || "-" },
       { name: "Email", value: tutor.email },
-      { name: "Has Password", value: tutor.hasPassword, type: "boolean" },
+      { name: "Has Password", value: tutor.password, type: "boolean" },
       { name: "Online", value: tutor.online, type: "boolean" },
       { name: "Gender", value: tutor.gender, type: "tag" },
       { name: "Role", value: tutor.role, type: "tag" },

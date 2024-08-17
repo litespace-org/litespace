@@ -8,6 +8,7 @@ import { Route, RoutePatterns } from "@/types/routes";
 import UrlPattern from "url-pattern";
 import { IUser } from "@litespace/types";
 import { tutorMetaSelector } from "@/redux/user/tutor";
+import Sidebar from "@/components/Sidebar";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelector);
@@ -18,23 +19,16 @@ const Root: React.FC = () => {
   useEffect(() => {
     if (!profile) return;
 
-    const register = new UrlPattern(RoutePatterns.Register).match(
-      location.pathname
-    );
-    const login = new UrlPattern(RoutePatterns.Login).match(location.pathname);
     const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
-    const ignore = register || login;
 
     if (
       [profile.email, profile.name.ar, profile.name.en].some(
         (value) => value === null
-      ) &&
-      !ignore
+      )
     )
       return navigate(Route.Complete);
 
     if (
-      !ignore &&
       !call &&
       profile &&
       profile.role === IUser.Role.Tutor &&
@@ -48,9 +42,10 @@ const Root: React.FC = () => {
   }, [navigate, profile, location.pathname, tutorMeta]);
 
   return (
-    <div className={cn("min-h-screen text-foreground flex flex-col")}>
-      <Toaster />
+    <div className={cn("min-h-screen text-foreground flex flex-row")}>
+      <Sidebar />
       <Outlet />
+      <Toaster />
     </div>
   );
 };

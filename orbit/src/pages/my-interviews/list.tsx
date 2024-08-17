@@ -1,6 +1,5 @@
 import { IInterview, IUser } from "@litespace/types";
 import {
-  DeleteButton,
   EditButton,
   List,
   ShowButton,
@@ -23,7 +22,8 @@ export const MyInterviewsList: React.FC = () => {
 
   return (
     <List>
-      <Table {...tableProps} rowKey="id">
+      <Table {...tableProps}>
+        <Table.Column dataIndex={["ids", "self"]} title="ID" />
         <Table.Column
           dataIndex={["ids", "interviewee"]}
           title="Interviewee"

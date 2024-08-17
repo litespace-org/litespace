@@ -1,4 +1,5 @@
 import * as User from "@/user";
+import { Name } from "@/user";
 
 export type Self = {
   id: number;
@@ -37,7 +38,16 @@ export type Row = {
 export type TutorMedia = {
   id: number;
   email: string;
-  name: string | null;
+  name: Name;
+  photo: string | null;
+  video: string | null;
+};
+
+export type TutorMediaRow = {
+  id: number;
+  email: string;
+  arabicName: string | null;
+  englishName: string | null;
   photo: string | null;
   video: string | null;
 };

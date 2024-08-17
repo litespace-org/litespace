@@ -94,7 +94,11 @@ async function delete_(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function getTutorsMedia(req: Request, res: Response, next: NextFunction) {
+async function findTutorsMedia(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
@@ -111,7 +115,7 @@ async function getTutorsMedia(req: Request, res: Response, next: NextFunction) {
   res.status(200).json({ list, total });
 }
 
-async function getTutorMediaById(
+async function findTutorMediaById(
   req: Request,
   res: Response,
   next: NextFunction
@@ -128,6 +132,6 @@ export default {
   findById: asyncHandler(findById),
   list: asyncHandler(getTutors),
   delete: asyncHandler(delete_),
-  getTutorsMedia: asyncHandler(getTutorsMedia),
-  getTutorMediaById: asyncHandler(getTutorMediaById),
+  findTutorsMedia: asyncHandler(findTutorsMedia),
+  findTutorMediaById: asyncHandler(findTutorMediaById),
 };

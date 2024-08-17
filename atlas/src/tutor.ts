@@ -1,5 +1,10 @@
 import { Base } from "@/base";
-import { ITutor, RegisterTutorResponse } from "@litespace/types";
+import {
+  ITutor,
+  IUser,
+  Paginated,
+  RegisterTutorResponse,
+} from "@litespace/types";
 
 export class Tutor extends Base {
   async create(
@@ -33,16 +38,12 @@ export class Tutor extends Base {
       .then((response) => response.data);
   }
 
-  async findTutorsMedia(): Promise<ITutor.TutorMedia[]> {
-    return await this.client
-      .get<ITutor.TutorMedia[]>("/api/v1/tutor/media/list")
-      .then((response) => response.data);
+  async findTutorsMedia(): Promise<Paginated<ITutor.TutorMedia>> {
+    return this.get("/api/v1/tutor/media/list");
   }
 
   async findTutorMedaiById(id: number): Promise<ITutor.TutorMedia> {
-    return await this.client
-      .get<ITutor.TutorMedia>(`/api/v1/tutor/media/${id}`)
-      .then((response) => response.data);
+    return this.get(`/api/v1/tutor/media/${id}`);
   }
 
   async updateMedai(
@@ -54,7 +55,7 @@ export class Tutor extends Base {
 
     const formData = new FormData();
 
-    if (photo) formData.append("photo", photo);
+    if (photo) formData.append(IUser.UpdateMediaFilesApiKeys.Photo, photo);
     if (video) formData.append("video", video);
 
     await this.client.put(`/api/v1/tutor/${id}`, formData, {

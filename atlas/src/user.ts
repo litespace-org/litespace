@@ -29,9 +29,26 @@ export class User extends Base {
     id: number,
     payload: IUser.UpdateApiPayload
   ): Promise<IUser.Self> {
-    return await this.client
-      .put(`/api/v1/user/${id}`, JSON.stringify(payload))
-      .then((response) => response.data);
+    return this.put(`/api/v1/user/${id}`, payload);
+  }
+
+  async updateMedia(
+    id: number,
+    { photo, video }: { photo?: File; video?: File }
+  ): Promise<IUser.Self> {
+    if (!photo && !video)
+      throw new Error("At least one media must be provided");
+
+    const formData = new FormData();
+    if (photo) formData.append(IUser.UpdateMediaFilesApiKeys.Photo, photo);
+    if (video) formData.append(IUser.UpdateMediaFilesApiKeys.Video, video);
+
+    const { data } = await this.client.put<IUser.Self>(
+      `/api/v1/user/${id}`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
+    return data;
   }
 
   async selectInterviewer(): Promise<IUser.Self> {

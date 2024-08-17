@@ -26,7 +26,7 @@ const Complete: React.FC = () => {
   }, [navigate, profile.loading, profile.value]);
 
   return (
-    <div className="flex-1 flex items-center justify-center">
+    <div className="flex items-center justify-center min-h-screen">
       {profile.loading ? (
         <Spinner className="text-foreground-lighter" />
       ) : profile.value ? (

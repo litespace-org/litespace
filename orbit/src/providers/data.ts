@@ -39,6 +39,7 @@ const getListData = <T>(data: T, total: number) => ({
   data: as.any(data),
   total,
 });
+const updateDate = () => as.any({ data: null });
 
 export const dataProvider: DataProvider = {
   async getOne({ resource, id, meta }) {
@@ -180,19 +181,14 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.TutorsMedia && meta && meta.drop) {
-      const { dropPhoto, dropVideo } = zod
+      const drop = zod
         .object({
-          dropPhoto: zod.boolean(),
-          dropVideo: zod.boolean(),
+          photo: zod.boolean(),
+          video: zod.boolean(),
         })
-        .parse(variables);
-
-      await atlas.tutor.update(resourceId, {
-        dropPhoto,
-        dropVideo,
-      });
-
-      return as.casted(empty);
+        .parse(meta.drop);
+      await atlas.user.update(resourceId, { drop });
+      return updateDate();
     }
 
     if (resource === Resource.TutorsMedia) {
@@ -202,13 +198,11 @@ export const dataProvider: DataProvider = {
           video: zod.union([zod.null(), zod.instanceof(File)]),
         })
         .parse(variables);
-
-      await atlas.tutor.updateMedai(resourceId, {
+      await atlas.user.updateMedia(resourceId, {
         photo: photo || undefined,
         video: video || undefined,
       });
-
-      return as.casted(empty);
+      return updateDate();
     }
 
     if (resource === Resource.Plans && meta && meta.plan) {
@@ -589,7 +583,7 @@ export const dataProvider: DataProvider = {
 
     if (resource === Resource.TutorsMedia) {
       const list = await atlas.tutor.findTutorsMedia();
-      return { data: as.casted(list), total: list.length };
+      return getListData(list.list, list.total);
     }
 
     if (resource === Resource.MyInterviews) {

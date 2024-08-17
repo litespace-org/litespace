@@ -4,6 +4,7 @@ import {
   EditButton,
   List,
   ShowButton,
+  TextField,
   useTable,
 } from "@refinedev/antd";
 import { Space, Table } from "antd";
@@ -19,7 +20,14 @@ export const TutorMediaList: React.FC = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID" />
         <Table.Column dataIndex="email" title="Email" />
-        <Table.Column dataIndex="name" title="Name" />
+        <Table.Column
+          title="Name"
+          render={(record: ITutor.TutorMedia) => (
+            <TextField
+              value={`${record.name.en || "-"} (${record.name.ar || "-"})`}
+            />
+          )}
+        />
         <Table.Column dataIndex="phoneNumber" title="Phone Number" />
         <Table.Column
           title="Done"

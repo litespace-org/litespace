@@ -16,16 +16,19 @@ export const TutorMediaShow = () => {
 
   const dataSource = useMemo((): TableRow[] => {
     if (!tutor) return [];
+    console.log(tutor);
     return [
       { name: "ID", value: tutor.id },
-      { name: "Name", value: tutor.name },
+      { name: "Name (EN)", value: tutor.name.en || "-" },
+      { name: "Name (AR)", value: tutor.name.ar || "-" },
       { name: "Email", value: tutor.email },
       {
         name: "Photo",
         value: tutor.photo ? (
           <ImageField
+            style={{ maxHeight: "900px", maxWidth: "100%" }}
             value={asAssetUrl(backend, tutor.photo)}
-            title={tutor?.name || undefined}
+            title={tutor.name.en || tutor.name.ar || "Tutor" || undefined}
           />
         ) : (
           <Alert
@@ -41,7 +44,11 @@ export const TutorMediaShow = () => {
           <Flex>
             <video
               controls
-              style={{ display: "inline-block", width: "100%", height: "100%" }}
+              style={{
+                display: "inline-block",
+                maxHeight: "900px",
+                maxWidth: "100%",
+              }}
               src={asAssetUrl(backend, tutor.video)}
             />
           </Flex>

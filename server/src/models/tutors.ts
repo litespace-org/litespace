@@ -1,44 +1,48 @@
-import { knex, withFilter } from "@/models/query";
+import { column, knex, withFilter } from "@/models/query";
 import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { Knex } from "knex";
+import { users } from "@/models/users";
 
-type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
+type TutorMediaFieldsMap = Record<keyof ITutor.TutorMediaRow, string>;
 type FullTutorFields = ITutor.FullTutorRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 
+const tutorColumn = (key: keyof ITutor.Row) => column(key, "tutors");
+
 const fullTutorFields: FullTutorFieldsMap = {
-  id: "users.id",
-  email: "users.email",
-  arabicName: "users.name_ar",
-  englishName: "users.name_en",
-  photo: "users.photo",
-  role: "users.role",
-  password: "users.password",
-  birthYear: "users.birth_year",
-  gender: "users.gender",
-  online: "users.online",
-  verified: "users.verified",
-  creditScore: "users.credit_score",
-  createdAt: "users.created_at",
-  updatedAt: "users.updated_at",
-  metaUpdatedAt: "tutors.updated_at",
-  bio: "tutors.bio",
-  about: "tutors.about",
-  video: "tutors.video",
-  activated: "tutors.activated",
-  activatedBy: "tutors.activated_by",
-  passedInterview: "tutors.passed_interview",
-  interviewUrl: "tutors.interview_url",
-  mediaProviderId: "tutors.media_provider_id",
+  id: users.column("id"),
+  email: users.column("email"),
+  arabicName: users.column("name_ar"),
+  englishName: users.column("name_en"),
+  photo: users.column("photo"),
+  role: users.column("role"),
+  password: users.column("password"),
+  birthYear: users.column("birth_year"),
+  gender: users.column("gender"),
+  online: users.column("online"),
+  verified: users.column("verified"),
+  creditScore: users.column("credit_score"),
+  createdAt: users.column("created_at"),
+  updatedAt: users.column("updated_at"),
+  metaUpdatedAt: tutorColumn("updated_at"),
+  bio: tutorColumn("bio"),
+  about: tutorColumn("about"),
+  video: tutorColumn("video"),
+  activated: tutorColumn("activated"),
+  activatedBy: tutorColumn("activated_by"),
+  passedInterview: tutorColumn("passed_interview"),
+  interviewUrl: tutorColumn("interview_url"),
+  mediaProviderId: tutorColumn("media_provider_id"),
 } as const;
 
 const tutorMediaFields: TutorMediaFieldsMap = {
-  id: "users.id",
-  email: "users.email",
-  name: "users.name",
-  photo: "users.photo",
-  video: "tutors.video",
+  id: users.column("id"),
+  email: users.column("email"),
+  arabicName: users.column("name_ar"),
+  englishName: users.column("name_en"),
+  photo: users.column("photo"),
+  video: tutorColumn("video"),
 } as const;
 
 export class Tutors {
@@ -146,20 +150,6 @@ export class Tutors {
     }).then();
   }
 
-  async findTutorsMedia(filter?: IFilter.Self): Promise<ITutor.TutorMedia[]> {
-    const builder = knex<IUser.Row>("users")
-      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
-      .innerJoin("tutors", "users.id", "tutors.id");
-
-    return withFilter({
-      builder,
-      filter,
-      defaults: {
-        search: { columns: this.columns.tutorMediaFields.filterable },
-      },
-    });
-  }
-
   async findSelfById(id: number): Promise<ITutor.Self | null> {
     const rows = await knex<ITutor.Row>(this.table).select("*").where("id", id);
     const row = first(rows);
@@ -167,20 +157,38 @@ export class Tutors {
     return this.from(row);
   }
 
-  async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
-    const list = await knex<IUser.Row>("users")
-      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
-      .innerJoin("tutors", "users.id", "tutors.id")
-      .where("users.id", id);
+  async findTutorsMedia(filter?: IFilter.Self): Promise<ITutor.TutorMedia[]> {
+    const builder = knex<IUser.Row>(users.table)
+      .select<ITutor.TutorMediaRow[]>(this.columns.tutorMediaFields.map)
+      .innerJoin(this.table, users.column("id"), this.column("id"));
 
-    return first(list) || null;
+    const rows = await withFilter({
+      builder,
+      filter,
+      defaults: {
+        search: { columns: this.columns.tutorMediaFields.filterable },
+      },
+    });
+
+    return rows.map((row) => this.asTutorMedia(row));
+  }
+
+  async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
+    const rows = await knex<IUser.Row>(users.table)
+      .select<ITutor.TutorMediaRow[]>(this.columns.tutorMediaFields.map)
+      .innerJoin(this.table, users.column("id"), this.column("id"))
+      .where(users.column("id"), id);
+
+    const row = first(rows);
+    if (!row) return null;
+    return this.asTutorMedia(row);
   }
 
   fullTutorQuery() {
     return knex
       .select<ITutor.FullTutorRow[]>(this.columns.fullTutorFields.map)
-      .from<IUser.Row>("users")
-      .innerJoin<IUser.Row>("tutors", "users.id", "tutors.id")
+      .from<IUser.Row>(users.table)
+      .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"))
       .clone();
   }
 
@@ -207,8 +215,18 @@ export class Tutors {
     });
   }
 
+  asTutorMedia(row: ITutor.TutorMediaRow): ITutor.TutorMedia {
+    return merge(omit(row, "arabicName", "englishName"), {
+      name: { ar: row.arabicName, en: row.englishName },
+    });
+  }
+
   builder(tx?: Knex.Transaction) {
     return tx ? tx<ITutor.Row>(this.table) : knex<ITutor.Row>(this.table);
+  }
+
+  column(key: keyof ITutor.Row): string {
+    return tutorColumn(key);
   }
 }
 
