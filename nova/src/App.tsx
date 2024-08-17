@@ -14,8 +14,15 @@ import Complete from "@/pages/Complete";
 import { findRooms } from "./redux/chat/rooms";
 import { IUser } from "@litespace/types";
 import { findTutorMeta } from "@/redux/user/tutor";
+import Dashboard from "@/pages/Dashboard";
+import Schedule from "@/pages/Schedule";
+import Settings from "@/pages/Settings";
+import Payments from "@/pages/Payments";
 
 const router = createBrowserRouter([
+  { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
+  { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
+  { path: Route.Complete, element: <Complete />, errorElement: <ErrorPage /> },
   {
     path: Route.Root,
     element: <Root />,
@@ -23,12 +30,13 @@ const router = createBrowserRouter([
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
       { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Call, element: <Call /> },
+      { path: Route.Dashboard, element: <Dashboard /> },
+      { path: Route.Schedule, element: <Schedule /> },
+      { path: Route.Settings, element: <Settings /> },
+      { path: Route.Payments, element: <Payments /> },
     ],
     errorElement: <ErrorPage />,
   },
-  { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
-  { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
-  { path: Route.Complete, element: <Complete />, errorElement: <ErrorPage /> },
 ]);
 
 function App(): React.JSX.Element {
@@ -41,8 +49,8 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (!profile) return;
-    dispatch(findRooms(profile.id));
     if (profile.role === IUser.Role.Tutor) dispatch(findTutorMeta(profile.id));
+    dispatch(findRooms(profile.id));
   }, [dispatch, profile]);
 
   return <RouterProvider router={router} />;

@@ -12,7 +12,9 @@ const Complete: React.FC = () => {
   useEffect(() => {
     if (profile.loading) return;
     const user = profile.value;
+
     if (
+      user === null ||
       [
         user?.email,
         user?.name,

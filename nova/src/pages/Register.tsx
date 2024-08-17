@@ -49,6 +49,7 @@ const Register: React.FC = () => {
   });
 
   const isValidRole = useMemo(() => role && roles.includes(role), [role]);
+  const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
 
   useEffect(() => {
     if (!isValidRole) return navigate(Route.Root);
@@ -82,8 +83,6 @@ const Register: React.FC = () => {
       }),
     [handleSubmit, isValidRole, mutation, role]
   );
-
-  const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
 
   return (
     <div className="flex flex-row flex-1 min-h-screen h-full">

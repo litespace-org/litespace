@@ -3,7 +3,6 @@ import { Toaster } from "@litespace/luna";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
 import { Route, RoutePatterns } from "@/types/routes";
 import UrlPattern from "url-pattern";
 import { IUser } from "@litespace/types";
@@ -11,18 +10,19 @@ import { tutorMetaSelector } from "@/redux/user/tutor";
 import Sidebar from "@/components/Sidebar";
 
 const Root: React.FC = () => {
-  const profile = useAppSelector(profileSelector);
+  const me = useAppSelector((state) => state.user.me);
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
-    if (!profile) return;
-
+    const profile = me.value;
     const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
 
+    if (!me.value && !me.loading && !me.error) return navigate(Route.Login);
+
     if (
-      [profile.email, profile.name.ar, profile.name.en].some(
+      [profile?.email, profile?.name.ar, profile?.name.en].some(
         (value) => value === null
       )
     )
@@ -39,7 +39,7 @@ const Root: React.FC = () => {
         tutorMeta.video === null)
     )
       return navigate(Route.TutorOnboarding);
-  }, [navigate, profile, location.pathname, tutorMeta]);
+  }, [navigate, location.pathname, tutorMeta, me]);
 
   return (
     <div className={cn("min-h-screen text-foreground flex flex-row")}>

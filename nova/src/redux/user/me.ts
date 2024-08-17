@@ -20,7 +20,7 @@ export const slice = createSlice({
   initialState,
   reducers: {
     resetUserProfile: () => initialState,
-    setUserProfile: (state, { payload }: PayloadAction<IUser.Self>) => {
+    setUserProfile: (state, { payload }: PayloadAction<IUser.Self | null>) => {
       state.loading = false;
       state.error = null;
       state.value = payload;

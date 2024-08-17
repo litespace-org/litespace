@@ -1,5 +1,11 @@
 export enum Route {
   Root = "/",
+  Dashboard = "/dashboard",
+  Schedule = "/schedule",
+  Subscription = "/subscription",
+  Settings = "/settings",
+  Profile = "/profile",
+  Payments = "/payments",
   Register = "/:role/register",
   Login = "/login",
   SelectUserType = "/select",
@@ -16,4 +22,10 @@ export enum RoutePatterns {
   Register = "(/):role/register(/)",
   Login = "(/)login(/)",
   Call = "(/)call/:id(/)",
+  Dashboard = "(/)dashboard(/)",
+  Schedule = "(/)schedule(/)",
+  Subscription = "(/)subscription(/)",
+  Settings = "(/)settings(/)",
+  Profile = "(/)profile(/)",
+  Payments = "(/)payments(/)",
 }
