@@ -180,11 +180,12 @@ export function selectSlotCalls(
   calls: ICall.Self[],
   slot: ISlot.Discrete
 ): ICall.Self[] {
-  return calls.filter(
-    (call) =>
-      dayjs.utc(call.start).isBetween(slot.start, slot.end) &&
+  return calls.filter((call) => {
+    return (
+      dayjs.utc(call.start).isBetween(slot.start, slot.end, "minutes", "[]") &&
       slot.id === call.slotId
-  );
+    );
+  });
 }
 
 export function unpackSlots(

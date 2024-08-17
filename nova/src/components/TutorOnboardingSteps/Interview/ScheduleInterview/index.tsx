@@ -1,7 +1,7 @@
 import { IInterview, ISlot, IUser } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
-import { useMutation, useQuery, UseQueryResult } from "react-query";
+import { useMutation, useQuery } from "react-query";
 import dayjs from "@/lib/dayjs";
 import { asAssetUrl } from "@litespace/atlas";
 import { atlas, backend } from "@/lib/atlas";
@@ -17,6 +17,8 @@ import { splitSlot } from "@litespace/sol";
 import { flatten } from "lodash";
 import { useIntl } from "react-intl";
 
+const WINDOW = 30;
+
 const ScheduleInterview: React.FC<{
   interviewer: IUser.Self;
   onSuccess(): void;
@@ -25,10 +27,16 @@ const ScheduleInterview: React.FC<{
   const [date, setDate] = useState<Dayjs>(dayjs());
   const [selectedSlot, setSelectedSlot] = useState<ISlot.Discrete | null>(null);
 
+  const start = useMemo(() => dayjs(), []);
+  const end = useMemo(() => start.add(WINDOW, "days"), [start]);
+
   const slots = useQuery({
     queryKey: "interviewer-slots",
     queryFn: async () => {
-      return await atlas.slot.findDiscreteTimeSlots(interviewer.id);
+      return await atlas.slot.findDiscreteTimeSlots(interviewer.id, {
+        start: start.format("YYYY-MM-DD"),
+        window: WINDOW,
+      });
     },
   });
 
@@ -64,6 +72,8 @@ const ScheduleInterview: React.FC<{
     return flatten(daySlots.map((slot) => splitSlot(slot)));
   }, [daySlots]);
 
+  console.log({ slots: slots.data });
+
   return (
     <div>
       <div className="flex flex-row gap-12 mt-5">
@@ -86,8 +96,8 @@ const ScheduleInterview: React.FC<{
         </div>
 
         <DatePicker
-          min={dayjs()}
-          max={dayjs().add(14, "days")}
+          min={start}
+          max={end.subtract(1, "day")}
           selected={date}
           onSelect={(date) => setDate(dayjs(date.format("YYYY-MM-DD")))}
           disable={mutation.isLoading || slots.isLoading}

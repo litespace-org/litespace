@@ -63,6 +63,7 @@ const policies: Array<Policy> = [
     route: "/assets/*",
     methods: ["GET"],
   },
+  // use
   {
     roles: [unauthorized],
     route: "(/)api/v1/user(/)",
@@ -89,7 +90,12 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/user/me(/)",
     methods: ["GET"],
   },
-  // tutors routes
+  {
+    roles: [authorized],
+    route: "(/)api/v1/user/tutor/meta/:tutorId(/)",
+    methods: ["GET"],
+  },
+  // tutors
   {
     roles: [unauthorized],
     route: "(/)api/v1/tutor(/)",
@@ -265,7 +271,7 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/report/reply/:id(/)",
     methods: ["DELETE"],
   },
-  // slots routes
+  // slots
   {
     roles: [interviewer, tutor],
     route: "(/)api/v1/slot(/)",
@@ -289,7 +295,7 @@ const policies: Array<Policy> = [
   },
   {
     roles: [authorized],
-    route: "(/)api/v1/slot/list/discrete(/)",
+    route: "(/)api/v1/slot/list/discrete/:userId(/)",
     methods: ["GET"],
   },
   {
@@ -382,6 +388,6 @@ export function enforce(request: {
 export function enforceRequest(request: Request, isOwner?: boolean): boolean {
   const role = request.user?.role || unauthorized;
   const method = request.method as Method;
-  const route = request.originalUrl;
+  const route = request.baseUrl + request.path;
   return enforce({ role, method, route, isOwner });
 }

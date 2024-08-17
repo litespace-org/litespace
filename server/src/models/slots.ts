@@ -5,6 +5,8 @@ import { first } from "lodash";
 import format from "pg-format";
 
 export class Slots {
+  readonly table = "slots" as const;
+
   async create(
     slot: Omit<ISlot.Self, "id" | "createdAt" | "updatedAt">
   ): Promise<ISlot.Self> {
@@ -74,7 +76,9 @@ export class Slots {
   }
 
   async findByUserId(id: number): Promise<ISlot.Self[]> {
-    const rows = await knex<ISlot.Row>("slots").select().where("user_id", id);
+    const rows = await knex<ISlot.Row>("slots")
+      .select("*")
+      .where("user_id", id);
     return rows.map((slot) => this.from(slot));
   }
 

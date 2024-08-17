@@ -5,8 +5,18 @@ import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { unpackSlots } from "@litespace/sol";
-import { identityObject } from "@/validation/utils";
+import { id, identityObject } from "@/validation/utils";
 import { enforceRequest } from "@/middleware/accessControl";
+import dayjs from "@/lib/dayjs";
+import zod from "zod";
+import { ISlot } from "@litespace/types";
+
+const findDiscreteTimeSlotsQuery = zod.object({
+  start: zod.optional(zod.string().date()),
+  window: zod.optional(zod.coerce.number()),
+});
+
+const findDiscreteTimeSlotsParams = zod.object({ userId: id });
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
@@ -69,14 +79,30 @@ async function deleteSlot(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-async function getDiscreteTimeSlots(req: Request, res: Response) {
-  const { id } = identityObject.parse(req.params);
+async function findDiscreteTimeSlots(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const { userId } = findDiscreteTimeSlotsParams.parse(req.params);
+  const query: ISlot.SlotFilter = findDiscreteTimeSlotsQuery.parse(req.query);
+  const window = query.window || 30;
+  const start = query.start || dayjs.utc().format("YYYY-MM-DD");
+  const end = dayjs.utc(start).add(window, "day").format("YYYY-MM-DD");
+  const options = { start, end };
+
   const [slotsList, callsList] = await Promise.all([
-    slots.findByUserId(id),
-    calls.findByHostId(id),
+    slots.findByUserId(userId),
+    calls.findByHostId(userId, options),
   ]);
 
-  const unpacked = unpackSlots(slotsList, callsList);
+  const unpacked = unpackSlots(slotsList, callsList, {
+    start: dayjs.utc(start),
+    window,
+  });
   res.status(200).json(unpacked);
 }
 
@@ -87,5 +113,5 @@ export default {
   findUserSlots: asyncHandler(findUserSlots),
   findMySlots: asyncHandler(findMySlots),
   delete: asyncHandler(deleteSlot),
-  getDiscreteTimeSlots: asyncHandler(getDiscreteTimeSlots),
+  findDiscreteTimeSlots: asyncHandler(findDiscreteTimeSlots),
 };

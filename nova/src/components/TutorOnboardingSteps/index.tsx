@@ -1,7 +1,4 @@
-import {
-  TUTUOR__ONBOARDING_MEDIA_STEP_ID,
-  TUTUOR_ONBOARDING_INTERVIEW_STEP_ID,
-} from "@/constants/user";
+import { TutorOnboardingStep } from "@/constants/user";
 import React from "react";
 import Interview from "@/components/TutorOnboardingSteps/Interview";
 import MediaShot from "@/components/TutorOnboardingSteps/MediaShot";
@@ -12,13 +9,15 @@ import { UseQueryResult } from "react-query";
 const TutorOnboardingSteps: React.FC<{
   step: number;
   interviews: UseQueryResult<IInterview.Self[], unknown>;
-}> = ({ step, interviews }) => {
-  if (step === TUTUOR_ONBOARDING_INTERVIEW_STEP_ID)
-    return <Interview interviews={interviews} />;
-
-  if (step === TUTUOR__ONBOARDING_MEDIA_STEP_ID) return <MediaShot />;
-
-  return <IntorduceYourself />;
+  currentInterview: IInterview.Self | null;
+}> = ({ step, interviews, currentInterview }) => {
+  if (step === TutorOnboardingStep.Interview)
+    return (
+      <Interview interviews={interviews} currentInterview={currentInterview} />
+    );
+  if (step === TutorOnboardingStep.Media) return <MediaShot />;
+  if (step === TutorOnboardingStep.Profile) return <IntorduceYourself />;
+  return null;
 };
 
 export default TutorOnboardingSteps;

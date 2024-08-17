@@ -41,6 +41,11 @@ export type Discrete = {
   updatedAt: string;
 };
 
+export type SlotFilter = {
+  start?: string;
+  window?: number;
+};
+
 export type Unpacked = {
   day: string;
   slots: Discrete[];

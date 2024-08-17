@@ -11,8 +11,9 @@ router
 
 router.get("/interviewer/select", user.selectInterviewer);
 router.get("/me", user.findMe);
-router.get("/list", user.getMany);
+router.get("/list", user.findUsers);
 router.get("/:id", user.findById);
 router.put("/:id", user.update);
+router.get("/tutor/meta/:tutorId", user.findTutorMeta);
 
 export default router;

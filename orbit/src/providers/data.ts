@@ -35,6 +35,10 @@ export enum Resource {
 
 const empty = { data: null };
 const getOneData = <T>(data: T) => ({ data: as.any(data) });
+const getListData = <T>(data: T, total: number) => ({
+  data: as.any(data),
+  total,
+});
 
 export const dataProvider: DataProvider = {
   async getOne({ resource, id, meta }) {
@@ -574,8 +578,8 @@ export const dataProvider: DataProvider = {
     }
 
     if (resource === Resource.Users) {
-      const list = await atlas.user.list();
-      return { data: as.any(list).list, total: as.any(list).total };
+      const list = await atlas.user.find();
+      return getListData(list.list, list.total);
     }
 
     if (resource === Resource.Tutors) {

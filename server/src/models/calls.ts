@@ -41,8 +41,16 @@ export class Calls {
     return this.from(row);
   }
 
-  async findByHostId(id: number): Promise<ICall.Self[]> {
-    const rows = await knex<ICall.Row>("calls").select().where("host_id", id);
+  async findByHostId(
+    id: number,
+    options: { start?: string; end?: string } = {}
+  ): Promise<ICall.Self[]> {
+    const query = knex<ICall.Row>("calls").select().where("host_id", id);
+
+    if (options.start) query.andWhere("start", ">=", new Date(options.start));
+    if (options.end) query.andWhere("start", "<=", new Date(options.end));
+
+    const rows = await query.then();
     return rows.map((row) => this.from(row));
   }
 

@@ -1,7 +1,6 @@
 import { knex, withFilter } from "@/models/query";
-import { first, fromPairs, isEmpty, merge, omit } from "lodash";
+import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
-import { isValuedObject } from "@/lib/utils";
 import { Knex } from "knex";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
@@ -159,6 +158,13 @@ export class Tutors {
         search: { columns: this.columns.tutorMediaFields.filterable },
       },
     });
+  }
+
+  async findSelfById(id: number): Promise<ITutor.Self | null> {
+    const rows = await knex<ITutor.Row>(this.table).select("*").where("id", id);
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
   }
 
   async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {

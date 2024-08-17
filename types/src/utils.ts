@@ -4,6 +4,8 @@ export type NonEmptyList<T> = [T, ...T[]];
 
 export type NumericString = `${number}`;
 
+export type Paginated<T> = { list: T[]; total: number };
+
 export type RecordAttributes = {
   createdAt: Date;
   createdById: number;

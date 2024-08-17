@@ -23,10 +23,17 @@ export const UserList: React.FC = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID" />
         <Table.Column dataIndex="email" title="Email" />
-        <Table.Column dataIndex="name" title="Name" />
         <Table.Column
-          dataIndex="type"
-          title={"User Type"}
+          title="Name"
+          render={(record: IUser.Self) => (
+            <TextField
+              value={`${record.name.en || "-"} (${record.name.ar || "-"})`}
+            />
+          )}
+        />
+        <Table.Column
+          dataIndex="role"
+          title="Role"
           render={(value) => <TagField value={value} />}
         />
         <Table.Column

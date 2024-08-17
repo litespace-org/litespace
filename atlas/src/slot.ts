@@ -20,10 +20,11 @@ export class Slot extends Base {
     await this.client.delete(`/api/v1/slot/${id}`);
   }
 
-  async findDiscreteTimeSlots(userId: number): Promise<ISlot.Unpacked[]> {
-    return this.client
-      .get<ISlot.Unpacked[]>(`/api/v1/slot/list/discrete/${userId}`)
-      .then((response) => response.data);
+  async findDiscreteTimeSlots(
+    userId: number,
+    filter?: ISlot.SlotFilter
+  ): Promise<ISlot.Unpacked[]> {
+    return this.get(`/api/v1/slot/list/discrete/${userId}`, null, filter);
   }
 
   async findMySlots(): Promise<ISlot.Self[]> {

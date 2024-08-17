@@ -12,6 +12,8 @@ import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";
 import Complete from "@/pages/Complete";
 import { findRooms } from "./redux/chat/rooms";
+import { IUser } from "@litespace/types";
+import { findTutorMeta } from "@/redux/user/tutor";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +42,7 @@ function App(): React.JSX.Element {
   useEffect(() => {
     if (!profile) return;
     dispatch(findRooms(profile.id));
+    if (profile.role === IUser.Role.Tutor) dispatch(findTutorMeta(profile.id));
   }, [dispatch, profile]);
 
   return <RouterProvider router={router} />;

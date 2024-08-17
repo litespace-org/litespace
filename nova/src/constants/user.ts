@@ -1,3 +1,14 @@
-export const TUTUOR_ONBOARDING_INTERVIEW_STEP_ID = 1;
-export const TUTUOR__ONBOARDING_MEDIA_STEP_ID = 2;
-export const TUTUOR_ONBOARDING_PROFILE_STEP_ID = 3;
+export enum TutorOnboardingStep {
+  /**
+   * Have interview with the interviewer
+   */
+  Interview = 1,
+  /**
+   * Take professional photo and video.
+   */
+  Media = 2,
+  /**
+   * Update his profile bio and about.
+   */
+  Profile = 3,
+}

@@ -1,13 +1,7 @@
 import { tutors, users } from "@/models";
 import { IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
-import {
-  badRequest,
-  forbidden,
-  notfound,
-  userAlreadyTyped,
-  userExists,
-} from "@/lib/error";
+import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
@@ -19,6 +13,7 @@ import {
   identityObject,
   password,
   name,
+  id,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
@@ -37,6 +32,8 @@ const updateUserPayload = zod.object({
   gender: zod.optional(gender),
   birthYear: zod.optional(zod.number().positive()),
 });
+
+const findTutorMetaParams = zod.object({ tutorId: id });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
@@ -120,7 +117,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(user);
 }
 
-async function getMany(req: Request, res: Response, next: NextFunction) {
+async function findUsers(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
@@ -163,13 +160,24 @@ async function selectInterviewer(
   res.status(200).json(interviewer);
 }
 
+async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
+  const allowed = enforceRequest(req);
+  if (!allowed) return next(forbidden());
+
+  const { tutorId } = findTutorMetaParams.parse(req.params);
+  const meta = await tutors.findSelfById(tutorId);
+  if (!meta) return next(notfound.tutor());
+  res.status(200).json(meta);
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
   delete: asyncHandler(delete_),
   findById: asyncHandler(findById),
-  getMany: asyncHandler(getMany),
+  findUsers: asyncHandler(findUsers),
   findMe: asyncHandler(findMe),
   returnUser: asyncHandler(returnUser),
   selectInterviewer: asyncHandler(selectInterviewer),
+  findTutorMeta: asyncHandler(findTutorMeta),
 };

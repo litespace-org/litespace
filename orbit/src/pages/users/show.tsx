@@ -19,9 +19,10 @@ export const UserShow = () => {
     if (!user) return [];
     return [
       { name: "ID", value: user.id },
-      { name: "Name", value: user.name },
+      { name: "Name (AR)", value: user.name.ar || "-" },
+      { name: "Name (EN)", value: user.name.en || "-" },
       { name: "Email", value: user.email },
-      { name: "Has Password", value: user.hasPassword, type: "boolean" },
+      { name: "Has Password", value: user.password, type: "boolean" },
       { name: "Online", value: user.online, type: "boolean" },
       { name: "Gender", value: user.gender, type: "tag" },
       { name: "Role", value: user.role, type: "tag" },

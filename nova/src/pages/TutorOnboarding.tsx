@@ -1,20 +1,23 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { messages, Stepper } from "@litespace/luna";
 import { useIntl } from "react-intl";
-import {
-  TUTUOR__ONBOARDING_MEDIA_STEP_ID,
-  TUTUOR_ONBOARDING_INTERVIEW_STEP_ID,
-  TUTUOR_ONBOARDING_PROFILE_STEP_ID,
-} from "@/constants/user";
+import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
 import { useQuery } from "react-query";
 import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
+import { selectCurrentInterview } from "@/lib/interview";
+import { tutorMetaSelector } from "@/redux/user/tutor";
+import { useNavigate } from "react-router-dom";
+import { Route } from "@/types/routes";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useIntl();
   const profile = useAppSelector(profileSelector);
+  const tutorMeta = useAppSelector(tutorMetaSelector);
+  const navigate = useNavigate();
+  const [step, setStep] = useState<number>(-1);
 
   const steps = useMemo(() => {
     return [
@@ -22,19 +25,19 @@ const TutorOnboarding: React.FC = () => {
         label: intl.formatMessage({
           id: messages["page.tutor.onboarding.steps.first"],
         }),
-        value: TUTUOR_ONBOARDING_INTERVIEW_STEP_ID,
+        value: TutorOnboardingStep.Interview,
       },
       {
         label: intl.formatMessage({
           id: messages["page.tutor.onboarding.steps.second"],
         }),
-        value: TUTUOR__ONBOARDING_MEDIA_STEP_ID,
+        value: TutorOnboardingStep.Media,
       },
       {
         label: intl.formatMessage({
           id: messages["page.tutor.onboarding.steps.third"],
         }),
-        value: TUTUOR_ONBOARDING_PROFILE_STEP_ID,
+        value: TutorOnboardingStep.Profile,
       },
     ];
   }, [intl]);
@@ -47,14 +50,57 @@ const TutorOnboarding: React.FC = () => {
     enabled: !!profile,
   });
 
+  const currentInterview = useMemo(() => {
+    if (!interviews.data) return null;
+    return selectCurrentInterview(interviews.data);
+  }, [interviews.data]);
+
+  useEffect(() => {
+    if (
+      interviews.data &&
+      (!currentInterview ||
+        currentInterview.approved == null ||
+        currentInterview.passed === null)
+    )
+      return setStep(TutorOnboardingStep.Interview);
+
+    if (
+      profile &&
+      tutorMeta &&
+      (tutorMeta.video === null || profile?.photo === null)
+    )
+      return setStep(TutorOnboardingStep.Media);
+
+    if (tutorMeta && (tutorMeta.bio === null || tutorMeta.about === null))
+      return setStep(TutorOnboardingStep.Profile);
+
+    if (
+      interviews.data &&
+      currentInterview &&
+      currentInterview.passed &&
+      currentInterview.approved &&
+      profile &&
+      tutorMeta &&
+      tutorMeta.bio &&
+      tutorMeta.about &&
+      profile.photo &&
+      tutorMeta.video
+    )
+      return navigate(Route.Root);
+  }, [currentInterview, interviews.data, navigate, profile, tutorMeta]);
+
   return (
     <div className="max-w-screen-2xl px-8 mx-auto w-full py-12">
       <div className="mb-10">
-        <Stepper steps={steps} value={TUTUOR__ONBOARDING_MEDIA_STEP_ID} />
+        <Stepper steps={steps} value={step} />
       </div>
 
       <div>
-        <TutorOnboardingSteps step={1} interviews={interviews} />
+        <TutorOnboardingSteps
+          step={step}
+          interviews={interviews}
+          currentInterview={currentInterview}
+        />
       </div>
     </div>
   );

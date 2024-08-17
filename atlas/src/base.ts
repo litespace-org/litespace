@@ -25,9 +25,13 @@ export class Base {
     return this.client.delete(route).then((response) => response.data);
   }
 
-  async get<T, R = void>(route: string, payload?: T): Promise<R> {
+  async get<T, R = void, P = {}>(
+    route: string,
+    payload?: T,
+    params?: P
+  ): Promise<R> {
     return this.client
-      .get<R>(route, { data: payload })
+      .get<R>(route, { data: payload, params })
       .then((response) => response.data);
   }
 }

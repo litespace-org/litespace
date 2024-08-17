@@ -15,4 +15,5 @@ export enum Route {
 export enum RoutePatterns {
   Register = "(/):role/register(/)",
   Login = "(/)login(/)",
+  Call = "(/)call/:id(/)",
 }

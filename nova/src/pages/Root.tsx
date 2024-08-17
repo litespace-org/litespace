@@ -6,9 +6,12 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { Route, RoutePatterns } from "@/types/routes";
 import UrlPattern from "url-pattern";
+import { IUser } from "@litespace/types";
+import { tutorMetaSelector } from "@/redux/user/tutor";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelector);
+  const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -19,6 +22,7 @@ const Root: React.FC = () => {
       location.pathname
     );
     const login = new UrlPattern(RoutePatterns.Login).match(location.pathname);
+    const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
     const ignore = register || login;
 
     if (
@@ -28,7 +32,20 @@ const Root: React.FC = () => {
       !ignore
     )
       return navigate(Route.Complete);
-  }, [navigate, profile, location.pathname]);
+
+    if (
+      !ignore &&
+      !call &&
+      profile &&
+      profile.role === IUser.Role.Tutor &&
+      tutorMeta &&
+      (tutorMeta.bio === null ||
+        tutorMeta.about === null ||
+        profile.photo === null ||
+        tutorMeta.video === null)
+    )
+      return navigate(Route.TutorOnboarding);
+  }, [navigate, profile, location.pathname, tutorMeta]);
 
   return (
     <div className={cn("min-h-screen text-foreground flex flex-col")}>

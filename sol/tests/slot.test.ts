@@ -1,4 +1,4 @@
-import { asDayStart, asDiscrateSlot, splitSlot, unpackSlots } from "@/slots";
+import { asDiscrateSlot, splitSlot, unpackSlots } from "@/slots";
 import { ICall, ISlot } from "@litespace/types";
 import { expect } from "chai";
 import { dayjs } from "@/dayjs";
@@ -133,6 +133,40 @@ describe("Slots", () => {
         },
       ]);
     });
+  });
+
+  describe.only("TEST", () => {
+    const data = {
+      calls: [
+        {
+          start: "2024-09-01T08:00:00.000Z",
+          duration: 30,
+          ...sharedCall,
+        },
+      ],
+      slots: [
+        {
+          weekday: -1,
+          time: { start: "08:00:00", end: "13:00:00" },
+          date: { start: "2024-08-14T21:00:00.000Z" },
+          repeat: ISlot.Repeat.Daily,
+          ...sharedSlot,
+        },
+        {
+          weekday: -1,
+          time: { start: "17:00:00", end: "22:00:00" },
+          date: { start: "2024-08-14T21:00:00.000Z" },
+          repeat: ISlot.Repeat.Daily,
+          ...sharedSlot,
+        },
+      ],
+    };
+
+    const unpacked = unpackSlots(data.slots, data.calls, {
+      start: dayjs.utc("2024-09-01", "YYYY-MM-DD"), // ISO date format
+      window: 1,
+    });
+    console.log(JSON.stringify(unpacked, null, 2), unpacked);
   });
 
   describe("Split slots", () => {

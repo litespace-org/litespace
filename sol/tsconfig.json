@@ -18,6 +18,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/", "tests/"],
-  "exclude": ["tests/"]
+  "include": ["src/", "tests/"]
 }
