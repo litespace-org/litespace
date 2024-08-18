@@ -3,15 +3,19 @@ import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
+import { cache } from "@/lib/cache";
+import { CacheKey } from "@/constants/cache";
 
 type State = LoadableState<IUser.Self>;
 
-const initialState: State = initial();
+const initialState: State = initial(cache.load(CacheKey.Profile));
 
 export const findProfile = createAsyncThunk(
   "user/profile/me",
   async (): Promise<IUser.Self> => {
-    return await atlas.user.findMe();
+    const user = await atlas.user.findMe();
+    cache.save(CacheKey.Profile, user);
+    return user;
   }
 );
 

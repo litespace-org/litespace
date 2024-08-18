@@ -25,11 +25,11 @@ export type LoadableState<T> = {
   value: T | null;
 };
 
-export function initial<T>(): LoadableState<T> {
+export function initial<T>(value: T | null = null): LoadableState<T> {
   return clone({
     loading: false,
     error: null,
-    value: null,
+    value,
   });
 }
 

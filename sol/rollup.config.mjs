@@ -26,7 +26,7 @@ export default [
       resolve(),
       commonjs(),
       json(),
-      typescript({ tsconfig: "tsconfig.json" }),
+      typescript({ tsconfig: "tsconfig.build.json" }),
     ],
     external: Object.keys(pkg.peerDependencies),
   },

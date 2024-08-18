@@ -222,11 +222,11 @@ export function unpackSlots(
   return availableSlots;
 }
 
-export function splitSlot(
-  slot: ISlot.Discrete,
+export function splitSlot<T extends { start: string; end: string }>(
+  slot: T,
   duration: number = 30
-): ISlot.Discrete[] {
-  const list: ISlot.Discrete[] = [];
+): T[] {
+  const list: T[] = [];
   let start = dayjs.utc(slot.start);
 
   while (true) {
