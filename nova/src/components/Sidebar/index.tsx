@@ -117,6 +117,7 @@ const Sidebar: React.FC = () => {
 
             return (
               <Link
+                role="button"
                 to={loading ? location.pathname : to || location.pathname}
                 onClick={onClick}
                 key={label}

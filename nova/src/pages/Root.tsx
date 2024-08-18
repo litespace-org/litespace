@@ -19,7 +19,7 @@ const Root: React.FC = () => {
     const profile = me.value;
     const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
 
-    if (!me.value && !me.loading && !me.error) return navigate(Route.Login);
+    if (!me.value && !me.loading) return navigate(Route.Login);
 
     if (
       [profile?.email, profile?.name.ar, profile?.name.en].some(

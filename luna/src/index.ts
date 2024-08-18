@@ -4,6 +4,7 @@ export { Input, InputType } from "@/components/Input";
 export { Toaster, toaster } from "@/components/Toast";
 export { Form, Field, Label } from "@/components/Form";
 export { DatePicker } from "@/components/DatePicker";
+export { Calendar, type Event } from "@/components/Calendar";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { Stepper } from "@/components/Stepper";

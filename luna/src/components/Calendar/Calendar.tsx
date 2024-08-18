@@ -96,7 +96,7 @@ export const Calendar: React.FC<{
         "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
       )}
     >
-      <div className="p-4 flex justify-start items-center gap-4">
+      <div className="py-4  flex justify-start items-center gap-4">
         <div className="flex flex-row gap-4">
           <Button
             disabled={disabled}
@@ -119,11 +119,7 @@ export const Calendar: React.FC<{
           {date.format("MMMM")} {year}
         </p>
       </div>
-      <div
-        className={cn(
-          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
-        )}
-      >
+      <div>
         <ul className="flex flex-row flex-1 items-center w-full">
           <li className="w-[48px] min-w-[48px] h-[96px] border-l border-t border-border-strong bg-surface-100 border-b" />
           {days.map((day, idx) => {

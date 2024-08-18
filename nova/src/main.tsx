@@ -1,9 +1,10 @@
 import ReactDOM from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { Dir, RadixDirection, locales } from "@litespace/luna";
+import { Dir, RadixDirection, Spinner, locales } from "@litespace/luna";
 import { IntlProvider } from "react-intl";
-import { store } from "@/redux/store";
+import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { PersistGate } from "redux-persist/integration/react";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -21,7 +22,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     >
       <QueryClientProvider client={queryClient}>
         <ReduxProvider store={store}>
-          <App />
+          <PersistGate loading={<Spinner />} persistor={persistor}>
+            <App />
+          </PersistGate>
         </ReduxProvider>
       </QueryClientProvider>
     </IntlProvider>
