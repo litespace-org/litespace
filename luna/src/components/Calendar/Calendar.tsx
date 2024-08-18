@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { days, months } from "@/constants/labels";
+import { days } from "@/constants/labels";
 import { Dayjs } from "dayjs";
 import { Button, ButtonSize, ButtonType } from "../Button";
 import { ChevronLeft, ChevronRight } from "react-feather";
@@ -8,7 +8,6 @@ import { DAYS_OF_WEEK, HOURS_OF_DAY } from "@/constants/number";
 import { IEvent } from "@/components/Calendar/types";
 import Event from "@/components/Calendar/Event";
 import dayjs from "@/lib/dayjs";
-import ar from "@/locales/ar-eg.json";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];
@@ -64,69 +63,11 @@ function isWrapper(target: IEvent, events: IEvent[]): boolean {
   return false;
 }
 
-const events: IEvent[] = [
-  {
-    id: 1,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-18T09:00:00.000Z",
-    end: "2024-08-18T10:00:00.000Z",
-  },
-  {
-    id: 2,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-18T10:00:00.000Z",
-    end: "2024-08-18T11:00:00.000Z",
-  },
-  {
-    id: 3,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-18T12:30:00.000Z",
-    end: "2024-08-18T13:30:00.000Z",
-  },
-  {
-    id: 5,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-19T09:00:00.000Z",
-    end: "2024-08-19T10:00:00.000Z",
-  },
-  {
-    id: 6,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-19T12:30:00.000Z",
-    end: "2024-08-19T13:30:00.000Z",
-  },
-  {
-    id: 7,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-21T08:00:00.000Z",
-    end: "2024-08-21T13:30:00.000Z",
-  },
-  {
-    id: 8,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-21T08:15:00.000Z",
-    end: "2024-08-21T08:30:00.000Z",
-  },
-  {
-    id: 9,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-21T09:15:00.000Z",
-    end: "2024-08-21T09:45:00.000Z",
-  },
-  {
-    id: 9,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-25T08:15:00.000Z",
-    end: "2024-08-25T08:30:00.000Z",
-  },
-];
-
 export const Calendar: React.FC<{
   disabled?: boolean;
-}> = ({ disabled }) => {
+  events?: IEvent[];
+}> = ({ disabled, events = [] }) => {
   const [date, setDate] = useState(dayjs().startOf("week"));
-  const month = useMemo(() => date.get("month"), [date]);
-  const monthText = useMemo(() => months[month], [month]);
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs().startOf("day"), []);
   const dayHours = useMemo(() => makeDayHours(), []);
@@ -142,33 +83,20 @@ export const Calendar: React.FC<{
 
   const weekEvents = useMemo(() => {
     return events.filter((event) => {
-      const eventStart = dayjs(event.start);
-      const eventEnd = dayjs(event.end);
-      const weekStart = date;
-      const weekEnd = date.add(1, "week");
-
-      // event already ended
-      if (
-        eventEnd.isBefore(weekStart, "days") ||
-        eventEnd.isSame(weekStart, "days")
-      )
-        return false;
-
-      // event didn't start yet
-      if (
-        eventStart.isAfter(weekEnd, "days") ||
-        eventStart.isSame(weekEnd, "days")
-      )
-        return false;
-
-      // event intersects with the current hour
-      return true;
+      const start = date;
+      const end = date.add(1, "week");
+      return dayjs(event.start).isBetween(start, end, "day", "[]");
     });
-  }, [date]);
+  }, [date, events]);
 
   return (
-    <div>
-      <div className="border-b border-border-strong p-4 flex justify-start items-center gap-4">
+    <div
+      className={cn(
+        "w-full flex flex-col items-start justify-center overflow-x-auto",
+        "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+      )}
+    >
+      <div className="p-4 flex justify-start items-center gap-4">
         <div className="flex flex-row gap-4">
           <Button
             disabled={disabled}
@@ -188,12 +116,16 @@ export const Calendar: React.FC<{
           </Button>
         </div>
         <p>
-          {monthText} {year}
+          {date.format("MMMM")} {year}
         </p>
       </div>
-      <div className="w-full overflow-x-auto">
+      <div
+        className={cn(
+          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+        )}
+      >
         <ul className="flex flex-row flex-1 items-center w-full">
-          <li className="w-[48px] min-w-[48px] h-[96px] border-l border-border-strong bg-surface-100" />
+          <li className="w-[48px] min-w-[48px] h-[96px] border-l border-t border-border-strong bg-surface-100 border-b" />
           {days.map((day, idx) => {
             const dayDate = date.add(idx, "day");
             const isToday = dayDate.isSame(today, "day");
@@ -202,7 +134,7 @@ export const Calendar: React.FC<{
                 key={day}
                 className={cn(
                   "flex flex-col justify-center items-center gap-1",
-                  "w-[250px] min-w-[250px] border-l border-border-strong py-4 bg-surface-100"
+                  "w-[250px] min-w-[250px] h-[96px] border-l border-t border-border-strong bg-surface-100 border-b"
                 )}
               >
                 <p className={cn("text-sm")}>{day}</p>
