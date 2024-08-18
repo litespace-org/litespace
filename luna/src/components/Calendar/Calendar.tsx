@@ -8,6 +8,7 @@ import { DAYS_OF_WEEK, HOURS_OF_DAY } from "@/constants/number";
 import { IEvent } from "@/components/Calendar/types";
 import Event from "@/components/Calendar/Event";
 import dayjs from "@/lib/dayjs";
+import ar from "@/locales/ar-eg.json";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];
@@ -33,13 +34,91 @@ function makeDayHours(): Dayjs[] {
   return hours;
 }
 
+function isWrapped(target: IEvent, events: IEvent[]): boolean {
+  const filtered = events.filter((event) => event.id !== target.id);
+
+  for (const event of filtered) {
+    const targetStart = dayjs(target.start);
+    const eventStart = dayjs(event.start);
+    const eventEnd = dayjs(event.end);
+
+    if (targetStart.isBetween(eventStart, eventEnd, "minutes", "[)"))
+      return true;
+  }
+
+  return false;
+}
+
+function isWrapper(target: IEvent, events: IEvent[]): boolean {
+  const filtered = events.filter((event) => event.id !== target.id);
+
+  for (const event of filtered) {
+    const eventStart = dayjs(event.start);
+    const targetStart = dayjs(target.start);
+    const targetEnd = dayjs(target.end);
+
+    if (eventStart.isBetween(targetStart, targetEnd, "minutes", "[)"))
+      return true;
+  }
+
+  return false;
+}
+
 const events: IEvent[] = [
-  { start: "2024-08-18T09:00:00.000Z", end: "2024-08-18T10:00:00.000Z" },
-  { start: "2024-08-18T10:00:00.000Z", end: "2024-08-18T11:00:00.000Z" },
-  { start: "2024-08-18T12:30:00.000Z", end: "2024-08-18T13:30:00.000Z" },
-  { start: "2024-08-19T09:00:00.000Z", end: "2024-08-19T10:00:00.000Z" },
-  { start: "2024-08-19T12:30:00.000Z", end: "2024-08-19T13:30:00.000Z" },
-  { start: "2024-08-21T08:00:00.000Z", end: "2024-08-21T13:30:00.000Z" },
+  {
+    id: 1,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-18T09:00:00.000Z",
+    end: "2024-08-18T10:00:00.000Z",
+  },
+  {
+    id: 2,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-18T10:00:00.000Z",
+    end: "2024-08-18T11:00:00.000Z",
+  },
+  {
+    id: 3,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-18T12:30:00.000Z",
+    end: "2024-08-18T13:30:00.000Z",
+  },
+  {
+    id: 5,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-19T09:00:00.000Z",
+    end: "2024-08-19T10:00:00.000Z",
+  },
+  {
+    id: 6,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-19T12:30:00.000Z",
+    end: "2024-08-19T13:30:00.000Z",
+  },
+  {
+    id: 7,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-21T08:00:00.000Z",
+    end: "2024-08-21T13:30:00.000Z",
+  },
+  {
+    id: 8,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-21T08:15:00.000Z",
+    end: "2024-08-21T08:30:00.000Z",
+  },
+  {
+    id: 9,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-21T09:15:00.000Z",
+    end: "2024-08-21T09:45:00.000Z",
+  },
+  {
+    id: 9,
+    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    start: "2024-08-25T08:15:00.000Z",
+    end: "2024-08-25T08:30:00.000Z",
+  },
 ];
 
 export const Calendar: React.FC<{
@@ -51,10 +130,7 @@ export const Calendar: React.FC<{
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs().startOf("day"), []);
   const dayHours = useMemo(() => makeDayHours(), []);
-
-  const grid = useMemo(() => {
-    return makeWeekHours();
-  }, []);
+  const weekHours = useMemo(() => makeWeekHours(), []);
 
   const nextWeek = useCallback(() => {
     setDate(date.add(1, "week"));
@@ -157,7 +233,7 @@ export const Calendar: React.FC<{
             })}
           </ul>
           <div className="flex items-center w-full relative">
-            {grid.map((day, dayIndex) => {
+            {weekHours.map((day, dayIndex) => {
               return (
                 <ul key={`d-${dayIndex}`}>
                   {day.map((hour) => {
@@ -178,8 +254,13 @@ export const Calendar: React.FC<{
               );
             })}
 
-            {weekEvents.map((event) => (
-              <Event key={event.start} event={event} />
+            {weekEvents.map((event, idx) => (
+              <Event
+                key={event.start + event.end + idx}
+                event={event}
+                wrapper={isWrapper(event, events)}
+                wrapped={isWrapped(event, events)}
+              />
             ))}
           </div>
         </div>
