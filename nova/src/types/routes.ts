@@ -2,6 +2,7 @@ export enum Route {
   Root = "/",
   Dashboard = "/dashboard",
   Schedule = "/schedule",
+  EditSchedule = "/schedule/edit",
   Subscription = "/subscription",
   Settings = "/settings",
   Profile = "/profile",

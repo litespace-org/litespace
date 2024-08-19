@@ -18,6 +18,7 @@ import Dashboard from "@/pages/Dashboard";
 import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
+import EditSchedule from "@/pages/EditSchedule";
 
 const router = createBrowserRouter([
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: Route.Call, element: <Call /> },
       { path: Route.Dashboard, element: <Dashboard /> },
       { path: Route.Schedule, element: <Schedule /> },
+      { path: Route.EditSchedule, element: <EditSchedule /> },
       { path: Route.Settings, element: <Settings /> },
       { path: Route.Payments, element: <Payments /> },
     ],
