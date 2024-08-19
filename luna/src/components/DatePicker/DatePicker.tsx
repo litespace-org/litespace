@@ -61,6 +61,12 @@ export const DatePicker: React.FC<{
     if (onSelect) onSelect(today);
   }, [onSelect, today]);
 
+  const isDateDisabled = useCallback(
+    (date: Dayjs) =>
+      (min && date.isBefore(min, "day")) || (max && date.isAfter(max, "day")),
+    [max, min]
+  );
+
   const canGoBack = useMemo(() => {
     const next = date.subtract(1, "month");
     return !min || (min && next.date(next.daysInMonth()).isAfter(min));
@@ -105,17 +111,19 @@ export const DatePicker: React.FC<{
             <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>
         </div>
-        <div className="absolute top-0 right-1">
-          <Button
-            onClick={reset}
-            size={ButtonSize.Tiny}
-            type={ButtonType.Secondary}
-            className={cn(compact && "!p-1 !h-[25px] text-xs")}
-            disabled={disable}
-          >
-            {todayLabel}
-          </Button>
-        </div>
+        {todayLabel ? (
+          <div className="absolute top-0 right-1">
+            <Button
+              onClick={reset}
+              size={ButtonSize.Tiny}
+              type={ButtonType.Secondary}
+              className={cn(compact && "!p-1 !h-[25px] text-xs")}
+              disabled={disable || isDateDisabled(dayjs())}
+            >
+              {todayLabel}
+            </Button>
+          </div>
+        ) : null}
       </div>
 
       <ul className={cn("grid grid-cols-7", compact ? "gap-1.5" : "gap-4")}>

@@ -5,9 +5,9 @@ import ErrorOutlined from "@/icons/ErrorOutlined";
 import { Dir } from "@/components/Direction";
 import OpenedEye from "@/icons/OpenedEye";
 import ClosedEye from "@/icons/ClosedEye";
-import { InputType } from "@/components/Input/types";
+import { InputType, InputAction } from "@/components/Input/types";
 import { UseFormRegisterReturn } from "react-hook-form";
-import { Button, ButtonSize, ButtonType } from "../Button";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
 const arabic =
   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
@@ -28,6 +28,7 @@ export const Input: React.FC<{
   onFocus?: () => void;
   onChange?: (value: string) => void;
   overrideDir?: Dir;
+  actions?: Array<InputAction>;
 }> = ({
   type,
   placeholder,
@@ -37,6 +38,7 @@ export const Input: React.FC<{
   register,
   disabled,
   overrideDir,
+  actions = [],
   onFocus,
   onChange,
 }) => {
@@ -103,6 +105,7 @@ export const Input: React.FC<{
           onEyeClick={onEyeClick}
           password={type === InputType.Password}
           disabled={disabled}
+          actions={actions}
         />
       </div>
       <AnimatePresence mode="wait" initial={false}>
@@ -176,13 +179,27 @@ const Actions: React.FC<{
   show: boolean;
   onEyeClick: (show: boolean) => void;
   disabled?: boolean;
-}> = ({ error, password, show, disabled, onEyeClick }) => {
+  actions: InputAction[];
+}> = ({ error, password, show, disabled, actions, onEyeClick }) => {
   return (
     <div className="absolute inset-y-0 left-0 pr-3 pl-1 flex space-x-1 items-center">
       <ErrorIcon error={error} />
       {password && (
         <EyeIcon disabled={disabled} show={show} toggle={onEyeClick} />
       )}
+
+      {actions.map(({ id, Icon, onClick }) => (
+        <Button
+          key={id}
+          htmlType="button"
+          type={ButtonType.Secondary}
+          size={ButtonSize.Tiny}
+          disabled={disabled}
+          onClick={onClick}
+        >
+          {<Icon className="w-[14px] h-[14px]" />}
+        </Button>
+      ))}
     </div>
   );
 };

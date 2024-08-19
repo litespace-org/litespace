@@ -1,8 +1,15 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Input } from "@/components/Input";
 import { DatePicker } from "../DatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
+import { Calendar } from "react-feather";
 
 export const DateInput: React.FC<{
   placeholder?: string;
@@ -35,6 +42,8 @@ export const DateInput: React.FC<{
     [onChange]
   );
 
+  const open = useCallback(() => setShow(true), []);
+
   useEffect(() => {
     document.addEventListener("click", hide);
     return () => {
@@ -49,14 +58,15 @@ export const DateInput: React.FC<{
         error={error}
         value={value}
         disabled={disabled}
-        onChange={onChange}
-        onFocus={useCallback(() => {
-          setShow(true);
-        }, [])}
+        onFocus={open}
+        actions={useMemo(
+          () => [{ id: 1, Icon: Calendar, onClick: () => setShow(!show) }],
+          [show]
+        )}
       />
       {show ? (
         <div
-          className="absolute z-10 border border-control p-3 rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl"
+          className="absolute z-10 border border-control p-3 rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl w-max"
           ref={dateRef}
         >
           <DatePicker

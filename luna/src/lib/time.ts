@@ -27,3 +27,13 @@ export function asMiddayHour(hour: number): [number, "pm" | "am"] {
   if (hour <= 12) return [hour, "am"];
   return [hour - 12, "pm"];
 }
+
+export function parseRailywayTime(time: string): {
+  hours: number;
+  minutes: number;
+} {
+  const [prefix, suffix] = time.split(":");
+  const hours = Number(prefix);
+  const minutes = Number(suffix);
+  return { hours, minutes };
+}

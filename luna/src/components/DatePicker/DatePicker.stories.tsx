@@ -31,7 +31,7 @@ export const Primary: StoryObj<Component> = {
 
 export const Bounded: StoryObj<Component> = {
   render() {
-    const today = dayjs("2024-08-10", "YYYY/MM/DD");
+    const today = dayjs("2024-08-10", "YYYY-MM-DD");
     const [day, setDay] = useState<Dayjs>(today);
     console.log(day?.format("YYYY-MM-DD"));
     return (

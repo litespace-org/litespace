@@ -119,5 +119,10 @@
   "error.tutor.about.or.abio.min.length.error": "النص قصير جدا",
   "error.tutor.about.or.abio.max.length.error": "النص طويل جدا",
   "error.tutor.bio.arabic.only": "الافضل أن تكون النبذه باللغة العربية",
-  "error.update.data": "مشكلة في تحديث بياناتك"
+  "error.update.data": "مشكلة في تحديث بياناتك",
+  "error.schedule.title.arabic.only": "الأفضل أن يكون العنوان باللغة العربية",
+  "error.schedule.title.min.length": "العنوان قصير جدا",
+  "error.schedule.title.max.length": "العنوان طويل جدا",
+  "error.schedule.date": "التاريخ غير مناسب",
+  "error.schedule.time": "الموعد غير مناسب"
 }

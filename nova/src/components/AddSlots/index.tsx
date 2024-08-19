@@ -9,6 +9,8 @@ import {
   Label,
   messages,
   Select,
+  TimePicker,
+  useValidation,
 } from "@litespace/luna";
 import { ISlot } from "@litespace/types";
 import React, { useMemo } from "react";
@@ -25,6 +27,7 @@ type IForm = {
 
 const AddSlots: React.FC = () => {
   const intl = useIntl();
+  const validate = useValidation();
   const form = useForm<IForm>({
     defaultValues: {
       title: "",
@@ -34,7 +37,13 @@ const AddSlots: React.FC = () => {
     },
   });
 
-  const onSubmit = useMemo(() => form.handleSubmit(() => {}), [form]);
+  const onSubmit = useMemo(
+    () =>
+      form.handleSubmit((fields: IForm) => {
+        console.log(fields);
+      }),
+    [form]
+  );
 
   const repeatOptions = useMemo(
     () => [
@@ -63,6 +72,18 @@ const AddSlots: React.FC = () => {
         value: ISlot.Repeat.Monthly,
       },
     ],
+    [intl]
+  );
+
+  const meridiem = useMemo(
+    () => ({
+      am: intl.formatMessage({
+        id: messages["global.labels.am"],
+      }),
+      pm: intl.formatMessage({
+        id: messages["global.labels.pm"],
+      }),
+    }),
     [intl]
   );
 
@@ -97,77 +118,99 @@ const AddSlots: React.FC = () => {
                   "page.schedule.edit.add.dialog.form.fields.title.placeholder"
                 ],
               })}
-              register={form.register("title")}
+              register={form.register("title", validate.slotTitle)}
               error={form.formState.errors["title"]?.message}
             />
           }
         />
 
-        <Field
-          label={
-            <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.schedule.edit.add.dialog.form.fields.start-date.label"
-                ],
-              })}
-            </Label>
-          }
-          field={
-            <Controller
-              control={form.control}
-              name="date.start"
-              render={({ field }) => {
-                const value = form.watch("date.start");
-                return (
-                  <DateInput
-                    placeholder={intl.formatMessage({
-                      id: messages[
-                        "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
-                      ],
-                    })}
-                    error={form.formState.errors["date"]?.start?.message}
-                    onChange={field.onChange}
-                    value={dayjs(value || undefined)}
-                  />
-                );
-              }}
-            />
-          }
-        />
+        <div className="flex gap-4">
+          <Field
+            label={
+              <Label>
+                {intl.formatMessage({
+                  id: messages[
+                    "page.schedule.edit.add.dialog.form.fields.start-date.label"
+                  ],
+                })}
+              </Label>
+            }
+            field={
+              <Controller
+                control={form.control}
+                rules={validate.date.start}
+                name="date.start"
+                render={({ field }) => {
+                  const value = form.watch("date.start");
+                  return (
+                    <DateInput
+                      placeholder={intl.formatMessage({
+                        id: messages[
+                          "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
+                        ],
+                      })}
+                      error={form.formState.errors["date"]?.start?.message}
+                      min={dayjs().startOf("day")}
+                      onChange={(value: string) => {
+                        field.onChange(value);
+                        form.trigger("date.start");
+                        form.trigger("date.end");
+                      }}
+                      value={value}
+                      today={intl.formatMessage({
+                        id: messages["global.labels.today"],
+                      })}
+                    />
+                  );
+                }}
+              />
+            }
+          />
 
-        <Field
-          label={
-            <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.schedule.edit.add.dialog.form.fields.end-date.label"
-                ],
-              })}
-            </Label>
-          }
-          field={
-            <Controller
-              control={form.control}
-              name="date.end"
-              render={({ field }) => {
-                const value = form.watch("date.end");
-                return (
-                  <DateInput
-                    placeholder={intl.formatMessage({
-                      id: messages[
-                        "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
-                      ],
-                    })}
-                    error={form.formState.errors["date"]?.end?.message}
-                    onChange={field.onChange}
-                    value={value ? dayjs(value) : undefined}
-                  />
-                );
-              }}
-            />
-          }
-        />
+          <Field
+            label={
+              <Label>
+                {intl.formatMessage({
+                  id: messages[
+                    "page.schedule.edit.add.dialog.form.fields.end-date.label"
+                  ],
+                })}
+              </Label>
+            }
+            field={
+              <Controller
+                control={form.control}
+                rules={validate.date.end}
+                name="date.end"
+                render={({ field }) => {
+                  const value = form.watch("date.end");
+                  const min = form.watch("date.start");
+
+                  return (
+                    <DateInput
+                      placeholder={intl.formatMessage({
+                        id: messages[
+                          "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
+                        ],
+                      })}
+                      error={form.formState.errors["date"]?.end?.message}
+                      onChange={(value: string) => {
+                        field.onChange(value);
+                        form.trigger("date.start");
+                        form.trigger("date.end");
+                      }}
+                      min={min ? dayjs(min) : undefined}
+                      value={value}
+                      today={intl.formatMessage({
+                        id: messages["global.labels.today"],
+                      })}
+                    />
+                  );
+                }}
+              />
+            }
+          />
+        </div>
         <div className="flex gap-4">
           <Field
             label={
@@ -180,14 +223,29 @@ const AddSlots: React.FC = () => {
               </Label>
             }
             field={
-              <Input
-                placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.start-time.placeholder"
-                  ],
-                })}
-                register={form.register("time.start")}
-                error={form.formState.errors["time"]?.start?.message}
+              <Controller
+                control={form.control}
+                name="time.start"
+                rules={validate.time.start}
+                render={({ field }) => {
+                  return (
+                    <TimePicker
+                      placeholder={intl.formatMessage({
+                        id: messages[
+                          "page.schedule.edit.add.dialog.form.fields.start-time.placeholder"
+                        ],
+                      })}
+                      error={form.formState.errors["time"]?.start?.message}
+                      onChange={(value: string) => {
+                        field.onChange(value);
+                        form.trigger("time.start");
+                        form.trigger("time.end");
+                      }}
+                      labels={meridiem}
+                      value={form.watch("time.start")}
+                    />
+                  );
+                }}
               />
             }
           />
@@ -203,14 +261,29 @@ const AddSlots: React.FC = () => {
               </Label>
             }
             field={
-              <Input
-                placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.end-time.placeholder"
-                  ],
-                })}
-                register={form.register("time.end")}
-                error={form.formState.errors["time"]?.end?.message}
+              <Controller
+                control={form.control}
+                name="time.end"
+                rules={validate.time.end}
+                render={({ field }) => {
+                  return (
+                    <TimePicker
+                      placeholder={intl.formatMessage({
+                        id: messages[
+                          "page.schedule.edit.add.dialog.form.fields.end-time.placeholder"
+                        ],
+                      })}
+                      error={form.formState.errors["time"]?.end?.message}
+                      onChange={(value: string) => {
+                        field.onChange(value);
+                        form.trigger("time.start");
+                        form.trigger("time.end");
+                      }}
+                      labels={meridiem}
+                      value={form.watch("time.end")}
+                    />
+                  );
+                }}
               />
             }
           />

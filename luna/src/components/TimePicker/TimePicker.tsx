@@ -10,6 +10,7 @@ import Picker, { Meridiem } from "@/components/TimePicker/Picker";
 import dayjs from "@/lib/dayjs";
 import { Dir } from "@/components/Direction";
 import { asMiddayHour, asRailwayHour } from "@/lib/time";
+import { Clock } from "react-feather";
 
 export const TimePicker: React.FC<{
   placeholder?: string;
@@ -32,7 +33,7 @@ export const TimePicker: React.FC<{
   const [show, setShow] = useState<boolean>(false);
   const [mintue, setMintue] = useState<number>(initial?.mintues || 0);
   const [hour, setHour] = useState<number>(
-    Number(initial?.hour || dayjs().format("h"))
+    initial?.hour || Number(dayjs().format("h"))
   );
   const [meridiem, setMeridiem] = useState<Meridiem>(initial?.meridiem || "pm");
 
@@ -53,7 +54,9 @@ export const TimePicker: React.FC<{
       mintue.toString().padStart(2, "0"),
     ].join(":");
     onChange(time);
-  }, [hour, meridiem, mintue, onChange]);
+    // note: don't add `onChange` handler not to create infinite re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hour, meridiem, mintue]);
 
   useEffect(() => {
     document.addEventListener("click", hide);
@@ -84,6 +87,10 @@ export const TimePicker: React.FC<{
         onFocus={useCallback(() => {
           setShow(true);
         }, [])}
+        actions={useMemo(
+          () => [{ id: 1, Icon: Clock, onClick: () => setShow(!show) }],
+          [show]
+        )}
       />
 
       {show ? (

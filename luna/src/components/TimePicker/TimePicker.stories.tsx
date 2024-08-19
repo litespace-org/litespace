@@ -3,7 +3,7 @@ import { TimePicker } from "@/components/TimePicker";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
-import { useState } from "react";
+import { Controller, useForm } from "react-hook-form";
 
 type Component = typeof TimePicker;
 
@@ -25,13 +25,28 @@ const meta: Meta<Comment> = {
 
 export const Primary: StoryObj<Component> = {
   render() {
-    const [value, setValue] = useState("13:00");
+    const form = useForm<{ value: string }>({
+      defaultValues: { value: "13:00" },
+    });
+
+    console.log("here...");
     return (
       <Form>
-        <TimePicker
-          labels={{ am: ar["global.labels.am"], pm: ar["global.labels.pm"] }}
-          value={value}
-          onChange={setValue}
+        <Controller
+          control={form.control}
+          name="value"
+          render={({ field }) => {
+            return (
+              <TimePicker
+                labels={{
+                  am: ar["global.labels.am"],
+                  pm: ar["global.labels.pm"],
+                }}
+                value={form.watch("value")}
+                onChange={field.onChange}
+              />
+            );
+          }}
         />
       </Form>
     );

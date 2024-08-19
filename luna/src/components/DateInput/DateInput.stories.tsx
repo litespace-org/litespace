@@ -39,6 +39,21 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const Small: StoryObj<Component> = {
+  render() {
+    const [value, setValue] = useState("");
+    return (
+      <Form className="w-[200px]">
+        <DateInput
+          placeholder={ar["global.form.email.placeholder"]}
+          value={value}
+          onChange={(value) => setValue(value)}
+        />
+      </Form>
+    );
+  },
+};
+
 export const Bounded: StoryObj<Component> = {
   render() {
     const [value, setValue] = useState("");

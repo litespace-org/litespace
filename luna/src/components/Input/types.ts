@@ -3,3 +3,9 @@ export enum InputType {
   Text = "text",
   Date = "date",
 }
+
+export type InputAction = {
+  id: number;
+  Icon: React.FC<{ className?: string }>;
+  onClick: () => void;
+};
