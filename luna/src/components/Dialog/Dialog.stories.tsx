@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "@/components/Dialog";
-import { Dir, Direction, RadixDirection } from "@/components/Direction";
+import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
-import { Button } from "../Button";
+import { Button } from "@/components/Button";
 
 const meta: Meta<typeof Dialog> = {
   title: "Dialog",
@@ -10,11 +10,9 @@ const meta: Meta<typeof Dialog> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <RadixDirection dir={Dir.LTR}>
-          <div className="font-cairo text-foreground bg-dash-sidebar w-full min-h-screen px-10 py-10">
-            <Story />
-          </div>
-        </RadixDirection>
+        <div className="font-cairo text-foreground bg-dash-sidebar w-full min-h-screen px-10 py-10">
+          <Story />
+        </div>
       </Direction>
     ),
   ],

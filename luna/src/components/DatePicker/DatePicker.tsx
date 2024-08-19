@@ -131,10 +131,10 @@ export const DatePicker: React.FC<{
 
   const canGoBack = useMemo(() => {
     const next = date.subtract(1, "month");
-    return min && next.date(next.daysInMonth()).isAfter(min);
+    return !min || (min && next.date(next.daysInMonth()).isAfter(min));
   }, [date, min]);
   const canGoNext = useMemo(() => {
-    return max && date.add(1, "month").date(1).isBefore(max);
+    return !max || (max && date.add(1, "month").date(1).isBefore(max));
   }, [date, max]);
 
   return (
@@ -142,6 +142,7 @@ export const DatePicker: React.FC<{
       <div className="flex flex-row items-center justify-between gap-10 w-[300px] mb-5">
         <div>
           <Button
+            htmlType="button"
             disabled={!canGoNext || disable}
             onClick={nextMonth}
             size={ButtonSize.Small}
@@ -155,6 +156,7 @@ export const DatePicker: React.FC<{
         </p>
         <div>
           <Button
+            htmlType="button"
             disabled={!canGoBack || disable}
             onClick={prevMonth}
             size={ButtonSize.Small}
@@ -202,6 +204,7 @@ export const DatePicker: React.FC<{
               size={ButtonSize.Small}
               key={idx}
               onClick={() => onSelect && onSelect(dayDate)}
+              htmlType="button"
             >
               {day || "-"}
             </Button>

@@ -25,6 +25,8 @@ export const Input: React.FC<{
   value?: string;
   register?: UseFormRegisterReturn;
   disabled?: boolean;
+  onFocus?: () => void;
+  onChange?: (value: string) => void;
 }> = ({
   type,
   placeholder,
@@ -33,6 +35,8 @@ export const Input: React.FC<{
   value,
   register,
   disabled,
+  onFocus,
+  onChange,
 }) => {
   const [show, setShow] = useState<boolean>(false);
   const [kind, setKind] = useState<InputType>(type || InputType.Text);
@@ -63,6 +67,10 @@ export const Input: React.FC<{
           value={value}
           autoComplete={autoComplete}
           disabled={disabled}
+          onFocus={onFocus}
+          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
+            onChange && onChange(event.target.value)
+          }
           {...register}
           className={cn(
             "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
