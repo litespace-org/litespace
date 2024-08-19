@@ -26,14 +26,14 @@ const meta: Meta<Comment> = {
 
 export const Primary: StoryObj<Component> = {
   render() {
-    const [value, setValue] = useState(dayjs().format("YYYY-MM-DD"));
+    const [value, setValue] = useState(dayjs());
     console.log({ value });
     return (
       <Form>
         <DateInput
           placeholder={ar["global.form.email.placeholder"]}
           value={value}
-          onChange={(value) => setValue(value)}
+          onChange={(value) => setValue(dayjs(value))}
         />
       </Form>
     );

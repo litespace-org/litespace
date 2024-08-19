@@ -1,6 +1,7 @@
 import {
   Button,
   ButtonSize,
+  DateInput,
   Dialog,
   Field,
   Form,
@@ -13,6 +14,7 @@ import { ISlot } from "@litespace/types";
 import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
+import dayjs from "@/lib/dayjs";
 
 type IForm = {
   title: string;
@@ -26,7 +28,7 @@ const AddSlots: React.FC = () => {
   const form = useForm<IForm>({
     defaultValues: {
       title: "",
-      date: { start: "", end: "" },
+      date: { start: dayjs().format("YYYY-MM-DD"), end: "" },
       time: { start: "", end: "" },
       repeat: ISlot.Repeat.No,
     },
@@ -101,53 +103,71 @@ const AddSlots: React.FC = () => {
           }
         />
 
-        <div className="flex gap-4">
-          <Field
-            label={
-              <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.start-date.label"
-                  ],
-                })}
-              </Label>
-            }
-            field={
-              <Input
-                placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
-                  ],
-                })}
-                register={form.register("date.start")}
-                error={form.formState.errors["date"]?.start?.message}
-              />
-            }
-          />
+        <Field
+          label={
+            <Label>
+              {intl.formatMessage({
+                id: messages[
+                  "page.schedule.edit.add.dialog.form.fields.start-date.label"
+                ],
+              })}
+            </Label>
+          }
+          field={
+            <Controller
+              control={form.control}
+              name="date.start"
+              render={({ field }) => {
+                const value = form.watch("date.start");
+                return (
+                  <DateInput
+                    placeholder={intl.formatMessage({
+                      id: messages[
+                        "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
+                      ],
+                    })}
+                    error={form.formState.errors["date"]?.start?.message}
+                    onChange={field.onChange}
+                    value={dayjs(value || undefined)}
+                  />
+                );
+              }}
+            />
+          }
+        />
 
-          <Field
-            label={
-              <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.end-date.label"
-                  ],
-                })}
-              </Label>
-            }
-            field={
-              <Input
-                placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
-                  ],
-                })}
-                register={form.register("date.end")}
-                error={form.formState.errors["date"]?.end?.message}
-              />
-            }
-          />
-        </div>
+        <Field
+          label={
+            <Label>
+              {intl.formatMessage({
+                id: messages[
+                  "page.schedule.edit.add.dialog.form.fields.end-date.label"
+                ],
+              })}
+            </Label>
+          }
+          field={
+            <Controller
+              control={form.control}
+              name="date.end"
+              render={({ field }) => {
+                const value = form.watch("date.end");
+                return (
+                  <DateInput
+                    placeholder={intl.formatMessage({
+                      id: messages[
+                        "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
+                      ],
+                    })}
+                    error={form.formState.errors["date"]?.end?.message}
+                    onChange={field.onChange}
+                    value={value ? dayjs(value) : undefined}
+                  />
+                );
+              }}
+            />
+          }
+        />
         <div className="flex gap-4">
           <Field
             label={

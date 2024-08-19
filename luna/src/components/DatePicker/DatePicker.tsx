@@ -27,7 +27,8 @@ export const DatePicker: React.FC<{
   max?: Dayjs;
   selected?: Dayjs;
   disable?: boolean;
-}> = ({ onSelect, selected, min, max, disable }) => {
+  compact?: boolean;
+}> = ({ onSelect, selected, min, max, disable, compact }) => {
   const value = useMemo(() => selected || dayjs(), [selected]);
   const [date, setDate] = useState<Dayjs>(value.startOf("month"));
   const year = useMemo(() => date.get("year"), [date]);
@@ -52,8 +53,13 @@ export const DatePicker: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col items-center">
-      <div className="flex flex-row items-center justify-between gap-10 w-[300px] mb-5">
+    <div className="flex flex-col items-center text-foreground">
+      <div
+        className={cn(
+          "flex flex-row items-center justify-between mb-5",
+          compact ? "gap-2 text-xs" : "gap-10 w-[300px] "
+        )}
+      >
         <div>
           <Button
             htmlType="button"
@@ -61,8 +67,9 @@ export const DatePicker: React.FC<{
             onClick={nextMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
+            className={cn(compact ? "!p-1 !h-auto" : "")}
           >
-            <ChevronRight />
+            <ChevronRight className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>
         </div>
         <p className="flex-1 flex items-center justify-center text-center">
@@ -75,15 +82,19 @@ export const DatePicker: React.FC<{
             onClick={prevMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
+            className={cn(compact && "!p-1 !h-auto")}
           >
-            <ChevronLeft />
+            <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>
         </div>
       </div>
 
-      <ul className="grid grid-cols-7 gap-4">
+      <ul className={cn("grid grid-cols-7", compact ? "gap-1.5" : "gap-4")}>
         {days.map((day) => (
-          <li key={day} className="text-sm text-center">
+          <li
+            key={day}
+            className={cn("text-center", compact ? "text-xs" : "text-sm")}
+          >
             {day}
           </li>
         ))}
@@ -98,7 +109,8 @@ export const DatePicker: React.FC<{
               }
               className={cn(
                 "text-center relative",
-                today.isSame(day, "day") && "ring ring-surface-300"
+                today.isSame(day, "day") && "ring ring-surface-300",
+                compact && "!p-1 !h-auto"
               )}
               type={
                 selected && selected.isSame(day, "day")

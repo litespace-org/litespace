@@ -2,12 +2,11 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/Input";
 import { DatePicker } from "../DatePicker";
 import { Dayjs } from "dayjs";
-import dayjs from "@/lib/dayjs";
 
 export const DateInput: React.FC<{
   placeholder?: string;
   error?: string | null;
-  value?: string;
+  value?: Dayjs;
   disabled?: boolean;
   onChange?: (value: string) => void;
 }> = ({ placeholder, error, value, disabled, onChange }) => {
@@ -25,7 +24,10 @@ export const DateInput: React.FC<{
   }, []);
 
   const onSelect = useCallback(
-    (date: Dayjs) => onChange && onChange(date.format("YYYY-MM-DD")),
+    (date: Dayjs) => {
+      if (onChange) onChange(date.format("YYYY-MM-DD"));
+      return setShow(false);
+    },
     [onChange]
   );
 
@@ -41,7 +43,7 @@ export const DateInput: React.FC<{
       <Input
         placeholder={placeholder}
         error={error}
-        value={value}
+        value={value?.format("YYYY-MM-DD")}
         disabled={disabled}
         onChange={onChange}
         onFocus={useCallback(() => {
@@ -50,10 +52,10 @@ export const DateInput: React.FC<{
       />
       {show ? (
         <div
-          className="absolute border border-control p-3 rounded-md top-[40px] left-0 bg-surface-100 shadow-2xl"
+          className="absolute z-10 border border-control p-3 rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl"
           ref={dateRef}
         >
-          <DatePicker selected={dayjs(value)} onSelect={onSelect} />
+          <DatePicker selected={value} onSelect={onSelect} compact />
         </div>
       ) : null}
     </div>

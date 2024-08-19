@@ -45,4 +45,12 @@ export const Bounded: StoryObj<Component> = {
   },
 };
 
+export const Compact: StoryObj<Component> = {
+  render() {
+    const [day, setDay] = useState<Dayjs>();
+    console.log(day?.format("YYYY-MM-DD"));
+    return <DatePicker selected={day} onSelect={setDay} compact />;
+  },
+};
+
 export default meta;

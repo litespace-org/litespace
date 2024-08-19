@@ -9,7 +9,7 @@ const Schedule: React.FC = () => {
       <div className="flex flex-row justify-between">
         <h1 className="text-4xl mb-5">
           {intl.formatMessage({
-            id: messages["page.schedule.title"],
+            id: messages["global.labels.my-schedule"],
           })}
         </h1>
 
