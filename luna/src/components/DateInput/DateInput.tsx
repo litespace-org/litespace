@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Input } from "@/components/Input";
 import { DatePicker } from "../DatePicker";
-import dayjs, { Dayjs } from "dayjs";
+import { Dayjs } from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 export const DateInput: React.FC<{
   placeholder?: string;

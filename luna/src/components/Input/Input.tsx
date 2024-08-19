@@ -27,6 +27,7 @@ export const Input: React.FC<{
   disabled?: boolean;
   onFocus?: () => void;
   onChange?: (value: string) => void;
+  overrideDir?: Dir;
 }> = ({
   type,
   placeholder,
@@ -35,6 +36,7 @@ export const Input: React.FC<{
   value,
   register,
   disabled,
+  overrideDir,
   onFocus,
   onChange,
 }) => {
@@ -42,11 +44,12 @@ export const Input: React.FC<{
   const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
   const dir: Dir | undefined = useMemo(() => {
+    if (overrideDir) return overrideDir;
     if (!value) return undefined;
     if (type === InputType.Password) return Dir.LTR;
     if (arabic.test(value[0])) return Dir.RTL;
     return Dir.LTR;
-  }, [type, value]);
+  }, [overrideDir, type, value]);
 
   useEffect(() => {
     setKind(type || InputType.Text);

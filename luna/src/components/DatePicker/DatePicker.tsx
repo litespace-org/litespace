@@ -59,7 +59,7 @@ export const DatePicker: React.FC<{
   const reset = useCallback(() => {
     setDate(today.startOf("month"));
     if (onSelect) onSelect(today);
-  }, []);
+  }, [onSelect, today]);
 
   const canGoBack = useMemo(() => {
     const next = date.subtract(1, "month");
