@@ -35,13 +35,13 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
   },
 };
 
 export const PrimaryTiny: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Primary,
     size: ButtonSize.Tiny,
   },
@@ -56,14 +56,14 @@ export const PrimaryTiny: StoryObj<typeof Button> = {
 
 export const PrimaryLoading: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     loading: true,
   },
 };
 
 export const PrimaryDisabled: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Primary,
     disabled: true,
   },
@@ -71,7 +71,7 @@ export const PrimaryDisabled: StoryObj<typeof Button> = {
 
 export const Secondary: StoryObj<Component> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Secondary,
   },
   render(props: object & { children: React.ReactNode }) {
@@ -81,7 +81,7 @@ export const Secondary: StoryObj<Component> = {
 
 export const SecondaryLoading: StoryObj<Component> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Secondary,
     loading: true,
   },
@@ -92,7 +92,7 @@ export const SecondaryLoading: StoryObj<Component> = {
 
 export const SecondaryTiny: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Secondary,
     size: ButtonSize.Tiny,
   },
@@ -101,7 +101,7 @@ export const SecondaryTiny: StoryObj<typeof Button> = {
 
 export const SecondaryDisabled: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Secondary,
     disabled: true,
   },
@@ -109,14 +109,14 @@ export const SecondaryDisabled: StoryObj<typeof Button> = {
 
 export const Text: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Text,
   },
 };
 
 export const TextTiny: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Text,
     size: ButtonSize.Tiny,
   },
@@ -125,7 +125,7 @@ export const TextTiny: StoryObj<typeof Button> = {
 
 export const TextDisabled: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Text,
     disabled: true,
   },
@@ -133,14 +133,14 @@ export const TextDisabled: StoryObj<typeof Button> = {
 
 export const Error: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Error,
   },
 };
 
 export const ErrorTiny: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Error,
     size: ButtonSize.Tiny,
   },
@@ -149,7 +149,7 @@ export const ErrorTiny: StoryObj<typeof Button> = {
 
 export const ErrorLoading: StoryObj<typeof Button> = {
   args: {
-    children: ar["global.logout"],
+    children: ar["global.labels.logout"],
     type: ButtonType.Error,
     loading: true,
   },

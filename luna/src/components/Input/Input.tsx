@@ -65,7 +65,7 @@ export const Input: React.FC<{
           disabled={disabled}
           {...register}
           className={cn(
-            "font-cairo block box-border w-full rounded-md shadow-sm transition-all autofill:!bg-red-900",
+            "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
             "text-foreground focus-visible:shadow-md outline-none",
             "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
             "focus-visible:ring-background-control placeholder-foreground-muted group",

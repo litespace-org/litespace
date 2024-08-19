@@ -3,8 +3,8 @@ import * as ISelect from "@radix-ui/react-select";
 import cn from "classnames";
 import { CheckIcon } from "@radix-ui/react-icons";
 import { Dir } from "@/components/Direction";
-import ArrowDown from "@/icons/ArrowDown";
 import { SelectList } from "@/components/Select/types";
+import { ChevronDown } from "react-feather";
 
 export const Select: React.FC<{
   dir?: Dir;
@@ -16,27 +16,24 @@ export const Select: React.FC<{
   <ISelect.Root value={value} onValueChange={onChange} dir={dir}>
     <ISelect.Trigger
       className={cn(
-        "ui-flex ui-justify-between ui-items-center ui-py-[10px] ui-px-lg ui-bg-inputbg ui-rounded-2xl ui-h-[72px] ui-min-w-[300px]",
-        "ui-font-cairo ui-w-full"
+        "flex items-center justify-between px-3 py-2 rounded-md w-full",
+        "outline-none focus-visible:ring-2 focus-visible:ring-background-control",
+        "border border-control",
+        "bg-foreground/[.026]"
       )}
     >
-      <ISelect.Value
-        placeholder={placeholder}
-        className={cn("ui-text-[18px] ui-font-medium")}
-      />
-      <ISelect.Icon className="ui-text-violet11">
-        <ArrowDown />
+      <ISelect.Value placeholder={placeholder} className="text-xs" />
+      <ISelect.Icon className="text-foreground">
+        <ChevronDown className="w-[20px] h-[20px]" />
       </ISelect.Icon>
     </ISelect.Trigger>
     <ISelect.Portal>
       <ISelect.Content
         className={cn(
-          "ui-overflow-hidden ui-bg-white ui-rounded-md",
-          "ui-shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)]",
-          "ui-w-fit ui-min-w-[20rem]"
+          "border border-border-strong bg-background-control focus-visible:ring-2 focus-visible:ring-background-control w-full rounded-md"
         )}
       >
-        <ISelect.Viewport className="ui-p-[5px]">
+        <ISelect.Viewport className="p-[5px]">
           <ISelect.Group>
             {list.map((item) => (
               <SelectItem key={item.value} value={item.value}>
@@ -55,16 +52,15 @@ const SelectItem = React.forwardRef<HTMLDivElement, ISelect.SelectItemProps>(
     return (
       <ISelect.Item
         className={cn(
-          "ui-text-arxl ui-text-dark-100 ui-rounded-[3px] ui-flex ui-items-center ui-cursor-pointer ui-border-r-4 ui-border-transparent",
-          "ui-font-medium ui-leading-normal ui-font-cairo ui-mb-md",
-          "ui-p-lg ui-relative ui-select-none ui-data-[disabled]:text-mauve8 data-[disabled]:ui-pointer-events-none data-[highlighted]:ui-outline-none data-[highlighted]:ui-bg-light data-[highlighted]:ui-text-dark-100 data-[highlighted]:ui-border-blue-normal",
+          "text-foreground flex items-center justify-between pr-3 py-2 font-cairo cursor-pointer",
+          "outline-none focus-visible:ring-2 focus-visible:ring-border-strong rounded-md",
           className
         )}
         {...props}
         ref={forwardedRef}
       >
         <ISelect.ItemText>{children}</ISelect.ItemText>
-        <ISelect.ItemIndicator className="ui-absolute ui-left-0 ui-w-[25px] ui-inline-flex ui-items-center ui-justify-center">
+        <ISelect.ItemIndicator className="w-[25px] inline-flex items-center justify-center">
           <CheckIcon />
         </ISelect.ItemIndicator>
       </ISelect.Item>

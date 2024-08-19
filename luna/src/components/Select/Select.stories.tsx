@@ -8,11 +8,14 @@ type ISelect = typeof Select;
 const meta: Meta<ISelect> = {
   title: "Select",
   component: Select,
-  parameters: { layout: "centered" },
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <Story />
+        <div className="bg-dash-sidebar w-full min-h-screen flex justify-center items-center text-foreground font-cairo">
+          <div className="w-[500px]">
+            <Story />
+          </div>
+        </div>
       </Direction>
     ),
   ],
