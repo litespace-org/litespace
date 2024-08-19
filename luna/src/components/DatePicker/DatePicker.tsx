@@ -1,107 +1,24 @@
 import React, { useCallback, useMemo, useState } from "react";
-import ar from "@/locales/ar-eg.json";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { ChevronRight, ChevronLeft } from "react-feather";
-import { concat, flatten, range } from "lodash";
+import { flatten, range } from "lodash";
+import { days } from "@/constants/labels";
 import cn from "classnames";
-import dayjs, { Dayjs } from "dayjs";
-import { padStart } from "lodash";
-
-/**
- * Facts:
- * 1. Sun has index of "0"
- * 2. Jun has index of "0"
- * 3. First day of the month is "1" not "0"
- */
-
-function dayOfWeek(year: number, month: number, day: number): number {
-  return new Date(year, month, day).getDay();
-}
-
-function asWeekDayShiftedIndex(index: number): number {
-  return index === 6 ? 0 : index + 1;
-}
-
-function pad<T>(
-  values: T[],
-  length: number,
-  value: T,
-  start: boolean = true
-): T[] {
-  if (values.length === length) return values;
-  const remaining = length - values.length;
-  const padding = new Array(remaining).fill(value);
-  if (start) return concat(padding, values);
-  return concat(values, padding);
-}
-
-const days = [
-  ar["global.days.sat"],
-  ar["global.days.sun"],
-  ar["global.days.mon"],
-  ar["global.days.tue"],
-  ar["global.days.wed"],
-  ar["global.days.thu"],
-  ar["global.days.fri"],
-] as const;
-
-const months = [
-  ar["global.months.january"],
-  ar["global.months.february"],
-  ar["global.months.march"],
-  ar["global.months.april"],
-  ar["global.months.may"],
-  ar["global.months.june"],
-  ar["global.months.july"],
-  ar["global.months.august"],
-  ar["global.months.september"],
-  ar["global.months.october"],
-  ar["global.months.november"],
-  ar["global.months.december"],
-] as const;
+import { Dayjs } from "dayjs";
+import dayjs from "@/lib/dayjs";
 
 const rows = 6;
 const cols = 7;
-const cellCount = rows * cols;
 
-type DayGrid = Array<number>;
+type DayGrid = Dayjs[];
 
-function makeDaysGrid({
-  daysInMonth,
-  year,
-  month,
-}: {
-  daysInMonth: number;
-  year: number;
-  month: number;
-}): DayGrid {
-  const days = range(1, daysInMonth + 1).map((day) => {
-    const weekDay = dayOfWeek(year, month, day);
-    return {
-      dayOfWeek: weekDay,
-      weekDayShiftedIndex: asWeekDayShiftedIndex(weekDay),
-      dayOfMonth: day,
-    };
-  });
-
-  const weeks: Array<number[]> = [];
-  let weekIndex = 0;
-
-  for (const day of days) {
-    if (!weeks[weekIndex]) weeks[weekIndex] = [];
-    weeks[weekIndex].push(day.dayOfMonth);
-
-    if (
-      day.weekDayShiftedIndex === 0 &&
-      weekIndex === 0 &&
-      weeks[weekIndex].length === 1
-    )
-      continue;
-    if (day.weekDayShiftedIndex === 6) weekIndex += 1;
-  }
-
-  const grid = flatten(weeks.map((week, idx) => pad(week, 7, 0, idx === 0)));
-  return pad(grid, cellCount, 0, false);
+function makeDayGrid(month: Dayjs): DayGrid {
+  return flatten(
+    range(0, rows).map((week) => {
+      const start = month.add(week, "weeks").startOf("week");
+      return range(0, cols).map((day) => start.add(day, "days"));
+    })
+  );
 }
 
 export const DatePicker: React.FC<{
@@ -111,15 +28,11 @@ export const DatePicker: React.FC<{
   selected?: Dayjs;
   disable?: boolean;
 }> = ({ onSelect, selected, min, max, disable }) => {
-  const [date, setDate] = useState<Dayjs>(selected || dayjs());
-  const month = useMemo(() => date.get("month"), [date]);
-  const monthText = useMemo(() => months[month], [month]);
+  const value = useMemo(() => selected || dayjs(), [selected]);
+  const [date, setDate] = useState<Dayjs>(value.startOf("month"));
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs(), []);
-  const dayGrid = useMemo(
-    () => makeDaysGrid({ daysInMonth: date.daysInMonth(), year, month }),
-    [date, month, year]
-  );
+  const grid = useMemo(() => makeDayGrid(date), [date]);
 
   const nextMonth = useCallback(() => {
     setDate(date.add(1, "month"));
@@ -133,6 +46,7 @@ export const DatePicker: React.FC<{
     const next = date.subtract(1, "month");
     return !min || (min && next.date(next.daysInMonth()).isAfter(min));
   }, [date, min]);
+
   const canGoNext = useMemo(() => {
     return !max || (max && date.add(1, "month").date(1).isBefore(max));
   }, [date, max]);
@@ -152,7 +66,7 @@ export const DatePicker: React.FC<{
           </Button>
         </div>
         <p className="flex-1 flex items-center justify-center text-center">
-          {monthText} {year}
+          {date.format("MMMM")} {year}
         </p>
         <div>
           <Button
@@ -174,39 +88,28 @@ export const DatePicker: React.FC<{
           </li>
         ))}
 
-        {dayGrid.map((day, idx) => {
-          const dayDate = dayjs(
-            [
-              year,
-              padStart((month + 1).toString(), 2, "0"),
-              padStart(day.toString(), 2, "0"),
-            ].join("/"),
-            "YYYY-MM-DD"
-          );
-
+        {grid.map((day) => {
           return (
             <Button
               disabled={
-                day === 0 ||
-                (min && dayDate.isBefore(min, "day")) ||
-                (max && dayDate.isAfter(max, "day")) ||
+                (min && day.isBefore(min, "day")) ||
+                (max && day.isAfter(max, "day")) ||
                 disable
               }
               className={cn(
                 "text-center relative",
-                today.isSame(dayDate, "day") && "ring ring-surface-300"
+                today.isSame(day, "day") && "ring ring-surface-300"
               )}
               type={
-                selected && selected.isSame(dayDate, "day") && day !== 0
+                selected && selected.isSame(day, "day")
                   ? ButtonType.Primary
                   : ButtonType.Secondary
               }
               size={ButtonSize.Small}
-              key={idx}
-              onClick={() => onSelect && onSelect(dayDate)}
+              onClick={() => onSelect && onSelect(day)}
               htmlType="button"
             >
-              {day || "-"}
+              {day.get("date")}
             </Button>
           );
         })}

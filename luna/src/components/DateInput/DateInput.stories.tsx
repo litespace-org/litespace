@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { DateInput } from "@/components/DateInput";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
-import { Button } from "@/components/Button";
 import { Form } from "@/components/Form";
 import dayjs from "@/lib/dayjs";
 import { useState } from "react";
