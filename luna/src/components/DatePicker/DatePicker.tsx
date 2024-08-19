@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { ChevronRight, ChevronLeft } from "react-feather";
 import { flatten, range } from "lodash";
@@ -28,12 +28,25 @@ export const DatePicker: React.FC<{
   selected?: Dayjs;
   disable?: boolean;
   compact?: boolean;
-}> = ({ onSelect, selected, min, max, disable, compact }) => {
+  today?: string;
+}> = ({
+  onSelect,
+  selected,
+  min,
+  max,
+  disable,
+  compact,
+  today: todayLabel,
+}) => {
   const value = useMemo(() => selected || dayjs(), [selected]);
   const [date, setDate] = useState<Dayjs>(value.startOf("month"));
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs(), []);
   const grid = useMemo(() => makeDayGrid(date), [date]);
+
+  useEffect(() => {
+    if (selected) setDate(selected.startOf("month"));
+  }, [selected]);
 
   const nextMonth = useCallback(() => {
     setDate(date.add(1, "month"));
@@ -42,6 +55,11 @@ export const DatePicker: React.FC<{
   const prevMonth = useCallback(() => {
     setDate(date.subtract(1, "month"));
   }, [date]);
+
+  const reset = useCallback(() => {
+    setDate(today.startOf("month"));
+    if (onSelect) onSelect(today);
+  }, []);
 
   const canGoBack = useMemo(() => {
     const next = date.subtract(1, "month");
@@ -53,7 +71,7 @@ export const DatePicker: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col items-center text-foreground">
+    <div className="flex flex-col items-center text-foreground relative">
       <div
         className={cn(
           "flex flex-row items-center justify-between mb-5",
@@ -87,6 +105,17 @@ export const DatePicker: React.FC<{
             <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>
         </div>
+        <div className="absolute top-0 right-1">
+          <Button
+            onClick={reset}
+            size={ButtonSize.Tiny}
+            type={ButtonType.Secondary}
+            className={cn(compact && "!p-1 !h-[25px] text-xs")}
+            disabled={disable}
+          >
+            {todayLabel}
+          </Button>
+        </div>
       </div>
 
       <ul className={cn("grid grid-cols-7", compact ? "gap-1.5" : "gap-4")}>
@@ -100,8 +129,10 @@ export const DatePicker: React.FC<{
         ))}
 
         {grid.map((day) => {
+          const isCurrentMonth = day.isSame(date, "month");
           return (
             <Button
+              key={day.format("YYYY-MM-DD")}
               disabled={
                 (min && day.isBefore(min, "day")) ||
                 (max && day.isAfter(max, "day")) ||
@@ -110,7 +141,8 @@ export const DatePicker: React.FC<{
               className={cn(
                 "text-center relative",
                 today.isSame(day, "day") && "ring ring-surface-300",
-                compact && "!p-1 !h-auto"
+                compact && "!p-1 !h-auto",
+                !isCurrentMonth && "opacity-40"
               )}
               type={
                 selected && selected.isSame(day, "day")

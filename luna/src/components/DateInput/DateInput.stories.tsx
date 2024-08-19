@@ -3,8 +3,8 @@ import { DateInput } from "@/components/DateInput";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
-import dayjs from "@/lib/dayjs";
 import { useState } from "react";
+import dayjs from "@/lib/dayjs";
 
 type Component = typeof DateInput;
 
@@ -26,14 +26,31 @@ const meta: Meta<Comment> = {
 
 export const Primary: StoryObj<Component> = {
   render() {
-    const [value, setValue] = useState(dayjs());
-    console.log({ value });
+    const [value, setValue] = useState("");
     return (
       <Form>
         <DateInput
           placeholder={ar["global.form.email.placeholder"]}
           value={value}
-          onChange={(value) => setValue(dayjs(value))}
+          onChange={(value) => setValue(value)}
+        />
+      </Form>
+    );
+  },
+};
+
+export const Bounded: StoryObj<Component> = {
+  render() {
+    const [value, setValue] = useState("");
+    return (
+      <Form>
+        <DateInput
+          placeholder={ar["global.form.email.placeholder"]}
+          value={value}
+          onChange={(value) => setValue(value)}
+          min={dayjs().subtract(10, "days")}
+          max={dayjs().add(10, "days")}
+          today={ar["global.labels.today"]}
         />
       </Form>
     );
