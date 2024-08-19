@@ -8,16 +8,16 @@ import { ChevronDown } from "react-feather";
 
 export const Select: React.FC<{
   dir?: Dir;
-  placeholder: string;
-  list: SelectList;
+  placeholder?: string;
+  list?: SelectList;
   value?: string;
   onChange?: (value: string) => void;
-}> = ({ dir, value, placeholder, list, onChange }) => (
+}> = ({ dir, value, placeholder, list = [], onChange }) => (
   <ISelect.Root value={value} onValueChange={onChange} dir={dir}>
     <ISelect.Trigger
       className={cn(
-        "flex items-center justify-between px-3 py-2 rounded-md w-full",
-        "outline-none focus-visible:ring-2 focus-visible:ring-background-control",
+        "flex items-center justify-between px-3 py-2 rounded-md w-full text-foreground",
+        "outline-none focus:ring-2 focus:ring-background-control",
         "border border-control",
         "bg-foreground/[.026]"
       )}
@@ -30,7 +30,7 @@ export const Select: React.FC<{
     <ISelect.Portal>
       <ISelect.Content
         className={cn(
-          "border border-border-strong bg-background-control focus-visible:ring-2 focus-visible:ring-background-control w-full rounded-md"
+          "border border-border-strong bg-background-control focus:ring-2 focus:ring-background-control w-full rounded-md"
         )}
       >
         <ISelect.Viewport className="p-[5px]">
@@ -53,7 +53,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, ISelect.SelectItemProps>(
       <ISelect.Item
         className={cn(
           "text-foreground flex items-center justify-between pr-3 py-2 font-cairo cursor-pointer",
-          "outline-none focus-visible:ring-2 focus-visible:ring-border-strong rounded-md",
+          "outline-none focus:ring-2 focus:ring-border-strong rounded-md",
           className
         )}
         {...props}

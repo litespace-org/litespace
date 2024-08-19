@@ -11,7 +11,7 @@ const meta: Meta<ISelect> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <div className="bg-dash-sidebar w-full min-h-screen flex justify-center items-center text-foreground font-cairo">
+        <div className="bg-dash-sidebar w-full min-h-screen flex justify-center items-center font-cairo">
           <div className="w-[500px]">
             <Story />
           </div>

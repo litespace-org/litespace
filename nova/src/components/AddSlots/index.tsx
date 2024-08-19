@@ -11,10 +11,28 @@ import {
 } from "@litespace/luna";
 import { ISlot } from "@litespace/types";
 import React, { useMemo } from "react";
+import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
+
+type IForm = {
+  title: string;
+  date: { start: string; end: string };
+  time: { start: string; end: string };
+  repeat: ISlot.Repeat;
+};
 
 const AddSlots: React.FC = () => {
   const intl = useIntl();
+  const form = useForm<IForm>({
+    defaultValues: {
+      title: "",
+      date: { start: "", end: "" },
+      time: { start: "", end: "" },
+      repeat: ISlot.Repeat.No,
+    },
+  });
+
+  const onSubmit = useMemo(() => form.handleSubmit(() => {}), [form]);
 
   const repeatOptions = useMemo(
     () => [
@@ -45,6 +63,7 @@ const AddSlots: React.FC = () => {
     ],
     [intl]
   );
+
   return (
     <Dialog
       trigger={
@@ -58,7 +77,7 @@ const AddSlots: React.FC = () => {
         id: messages["page.schedule.edit.add.dialog.title"],
       })}
     >
-      <Form className="flex flex-col gap-4">
+      <Form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={
             <Label>
@@ -76,6 +95,8 @@ const AddSlots: React.FC = () => {
                   "page.schedule.edit.add.dialog.form.fields.title.placeholder"
                 ],
               })}
+              register={form.register("title")}
+              error={form.formState.errors["title"]?.message}
             />
           }
         />
@@ -98,6 +119,8 @@ const AddSlots: React.FC = () => {
                     "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
                   ],
                 })}
+                register={form.register("date.start")}
+                error={form.formState.errors["date"]?.start?.message}
               />
             }
           />
@@ -119,6 +142,8 @@ const AddSlots: React.FC = () => {
                     "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
                   ],
                 })}
+                register={form.register("date.end")}
+                error={form.formState.errors["date"]?.end?.message}
               />
             }
           />
@@ -141,6 +166,8 @@ const AddSlots: React.FC = () => {
                     "page.schedule.edit.add.dialog.form.fields.start-time.placeholder"
                   ],
                 })}
+                register={form.register("time.start")}
+                error={form.formState.errors["time"]?.start?.message}
               />
             }
           />
@@ -162,6 +189,8 @@ const AddSlots: React.FC = () => {
                     "page.schedule.edit.add.dialog.form.fields.end-time.placeholder"
                   ],
                 })}
+                register={form.register("time.end")}
+                error={form.formState.errors["time"]?.end?.message}
               />
             }
           />
@@ -178,16 +207,25 @@ const AddSlots: React.FC = () => {
             </Label>
           }
           field={
-            <Select
-              placeholder={intl.formatMessage({
-                id: messages[
-                  "page.schedule.edit.add.dialog.form.fields.end-time.placeholder"
-                ],
-              })}
-              list={repeatOptions}
+            <Controller
+              control={form.control}
+              name="repeat"
+              render={({ field }) => (
+                <Select
+                  value={form.watch("repeat")}
+                  onChange={field.onChange}
+                  list={repeatOptions}
+                />
+              )}
             />
           }
         />
+
+        <Button htmlType="submit" className="mt-4">
+          {intl.formatMessage({
+            id: messages["global.labels.confirm"],
+          })}
+        </Button>
       </Form>
     </Dialog>
   );
