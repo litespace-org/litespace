@@ -11,8 +11,8 @@ const CHILD_EVENT_OFFSET = 130;
 const CHILD_EVENT_WIDTH = 120;
 const WRAPPER_BOX_WIDTH = 150;
 
-function mintuesToPixelsHight(mintues: number): number {
-  return mintues * ONE_MINTUE_HIGHT;
+function minutesToPixelsHight(minutes: number): number {
+  return minutes * ONE_MINTUE_HIGHT;
 }
 
 function hoursToPixelsHight(hours: number): number {
@@ -28,24 +28,24 @@ const Event: React.FC<{
   const end = useMemo(() => dayjs(event.end), [event.end]);
   const arabicDayIndex = useMemo(() => asArabicDayIndex(start.day()), [start]);
   const hour = useMemo(() => start.hour(), [start]);
-  const mintues = useMemo(() => start.minute(), [start]);
+  const minutes = useMemo(() => start.minute(), [start]);
   const length = useMemo(() => end.diff(start, "minutes"), [end, start]);
 
   const style = useMemo(() => {
     const rightOffset = arabicDayIndex * 250;
     return {
-      top: hoursToPixelsHight(hour) + mintuesToPixelsHight(mintues),
+      top: hoursToPixelsHight(hour) + minutesToPixelsHight(minutes),
       right: wrapped ? rightOffset + CHILD_EVENT_OFFSET : rightOffset + 1,
       width: wrapped
         ? CHILD_EVENT_WIDTH - 1
         : wrapper
           ? WRAPPER_BOX_WIDTH - 1
           : EVENT_BOX_WIDTH - 1,
-      height: mintuesToPixelsHight(length) - 1,
+      height: minutesToPixelsHight(length) - 1,
       zIndex: 1000 - length,
       borderRadius: "4px",
     };
-  }, [arabicDayIndex, hour, length, mintues, wrapped, wrapper]);
+  }, [arabicDayIndex, hour, length, minutes, wrapped, wrapper]);
 
   return (
     <div

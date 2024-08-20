@@ -1,4 +1,4 @@
-import { Meridiem, Time } from "@/time";
+import { Level, Meridiem, Time } from "@/time";
 import { expect } from "chai";
 
 describe("Time", () => {
@@ -13,19 +13,19 @@ describe("Time", () => {
       ["23:00", 23, 0],
       ["23:59", 23, 59],
       ["", 0, 0],
+      [":", 0, 0],
       // invalid
       ["24:00", -1, 0],
       ["-1:00", -1, 0],
       ["-2:00", -1, 0],
       ["12:99", 12, -1],
-      [":", -1, -1],
       ["t:t", -1, -1],
     ];
 
     for (const [raw, hours, minutes] of tests) {
       const time = Time.from(raw);
       expect(time.hours()).to.be.eq(hours);
-      expect(time.mintues()).to.be.eq(minutes);
+      expect(time.minutes()).to.be.eq(minutes);
     }
   });
 
@@ -57,7 +57,7 @@ describe("Time", () => {
     for (const [parts, [hours, minutes]] of tests) {
       const time = Time.from(parts);
       expect(time.hours()).to.be.eq(hours);
-      expect(time.mintues()).to.be.eq(minutes);
+      expect(time.minutes()).to.be.eq(minutes);
     }
   });
 
@@ -66,25 +66,67 @@ describe("Time", () => {
       // valid
       ["01:00", Meridiem.AM, 1, 0],
       ["10:00", Meridiem.AM, 10, 0],
-      ["12:30", Meridiem.AM, 12, 30],
+      ["12:30", Meridiem.AM, 0, 30],
       ["01:00", Meridiem.PM, 13, 0],
       ["11:00", Meridiem.PM, 23, 0],
       ["11:59", Meridiem.PM, 23, 59],
+      [":", Meridiem.PM, 0, 0],
       // invalid
       ["00:00", Meridiem.AM, -1, 0],
       ["24:00", Meridiem.AM, -1, 0],
       ["-1:00", Meridiem.AM, -1, 0],
       ["-2:00", Meridiem.PM, -1, 0],
-      ["12:99", Meridiem.AM, 12, -1],
-      ["12:99", Meridiem.PM, 0, -1],
-      [":", Meridiem.PM, -1, -1],
+      ["12:99", Meridiem.AM, 0, -1],
+      ["12:99", Meridiem.PM, 12, -1],
       ["t:t", Meridiem.PM, -1, -1],
     ];
 
     for (const [raw, meridiem, hours, minutes] of tests) {
       const time = Time.from([raw, meridiem]);
       expect(time.hours()).to.be.eq(hours);
-      expect(time.mintues()).to.be.eq(minutes);
+      expect(time.minutes()).to.be.eq(minutes);
+    }
+  });
+
+  it("should parse raw middday time", () => {
+    const tests: Array<[string, number, number]> = [
+      // valid
+      ["12:00 am", 0, 0],
+      ["1 am", 1, 0],
+      ["2:00am", 2, 0],
+      ["3:05am", 3, 5],
+      ["4:555am", 4, -1],
+      ["5am", 5, 0],
+      ["6am", 6, 0],
+      ["7am", 7, 0],
+      ["8am", 8, 0],
+      ["9am", 9, 0],
+      ["10am", 10, 0],
+      ["11am", 11, 0],
+      ["12pm", 12, 0],
+      ["1pm", 13, 0],
+      ["2pm", 14, 0],
+      ["3pm", 15, 0],
+      ["4pm", 16, 0],
+      ["5pm", 17, 0],
+      ["6pm", 18, 0],
+      ["7pm", 19, 0],
+      ["8pm", 20, 0],
+      ["9pm", 21, 0],
+      ["10pm", 22, 0],
+      ["11pm", 23, 0],
+      // invalid
+      ["-1pm", -1, 0],
+      ["-1:-1pm", -1, -1],
+      ["-1:pm", -1, 0],
+      ["-1:-1pm", -1, -1],
+      ["-10:-20pm", -1, -1],
+    ];
+
+    for (const [raw, hours, minutes] of tests) {
+      const time = Time.from(raw);
+      expect(time.hours()).to.be.eq(hours);
+      expect(time.minutes()).to.be.eq(minutes);
     }
   });
 
@@ -97,50 +139,39 @@ describe("Time", () => {
   });
 
   it("should compare times (isBefore)", () => {
-    expect(Time.from(["01:00", Meridiem.AM]).isBefore(["02:00", Meridiem.AM]))
-      .to.be.true;
+    const tests: Array<[string, string, Level, boolean]> = [
+      ["1am", "2am", "h", true],
+      ["2am", "2am", "h", false],
+      ["3pm", "2am", "h", false],
+      ["10pm", "11pm", "h", true],
+      ["11pm", "10pm", "h", false],
+      ["12:30pm", "12:10pm", "m", false],
+      ["12:10pm", "12:11pm", "m", true],
+      ["1am", "12am", "h", false],
+      ["12am", "1am", "h", true],
+      ["12pm", "12am", "h", false],
+    ];
 
-    expect(Time.from(["02:00", Meridiem.AM]).isBefore(["02:00", Meridiem.AM]))
-      .to.be.false;
-
-    expect(Time.from(["02:00", Meridiem.PM]).isBefore(["02:00", Meridiem.AM]))
-      .to.be.false;
-
-    expect(Time.from(["12:00", Meridiem.PM]).isBefore(["02:00", Meridiem.AM]))
-      .to.be.false;
-
-    expect(Time.from(["11:00", Meridiem.PM]).isBefore(["12:00", Meridiem.PM]))
-      .to.be.true;
-
-    expect(Time.from(["11:05", Meridiem.PM]).isBefore(["11:10", Meridiem.PM]))
-      .to.be.true;
-
-    expect(
-      Time.from(["11:05", Meridiem.PM]).isBefore(["11:10", Meridiem.PM], "h")
-    ).to.be.false;
+    for (const [base, target, level, isBefore] of tests) {
+      expect(Time.from(base).isBefore(target, level)).to.be.eq(isBefore);
+    }
   });
 
   it("should compare times (isAfter)", () => {
-    expect(Time.from(["01:00", Meridiem.AM]).isAfter(["02:00", Meridiem.AM])).to
-      .be.false;
+    const tests: Array<[string, string, Level, boolean]> = [
+      ["1am", "2am", "h", false],
+      ["2am", "2am", "h", false],
+      ["3pm", "2am", "h", true],
+      ["10pm", "11pm", "h", false],
+      ["11pm", "10pm", "h", true],
+      ["12:30pm", "12:10pm", "m", true],
+      ["12:10pm", "12:11pm", "m", false],
+      ["1am", "12am", "h", true],
+      ["12pm", "12am", "h", true],
+    ];
 
-    expect(Time.from(["02:00", Meridiem.AM]).isAfter(["02:00", Meridiem.AM])).to
-      .be.false;
-
-    expect(Time.from(["02:00", Meridiem.PM]).isAfter(["02:00", Meridiem.AM])).to
-      .be.true;
-
-    expect(Time.from(["12:00", Meridiem.PM]).isAfter(["02:00", Meridiem.AM])).to
-      .be.true;
-
-    expect(Time.from(["11:00", Meridiem.PM]).isAfter(["12:00", Meridiem.PM])).to
-      .be.false;
-
-    expect(Time.from(["11:05", Meridiem.PM]).isAfter(["11:10", Meridiem.PM])).to
-      .be.false;
-
-    expect(
-      Time.from(["11:05", Meridiem.PM]).isAfter(["11:10", Meridiem.PM], "h")
-    ).to.be.false;
+    for (const [base, target, level, isAfter] of tests) {
+      expect(Time.from(base).isAfter(target, level)).to.be.eq(isAfter);
+    }
   });
 });

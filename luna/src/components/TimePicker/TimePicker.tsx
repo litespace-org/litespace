@@ -25,13 +25,13 @@ export const TimePicker: React.FC<{
 
   const initial = useMemo(() => {
     if (!value) return;
-    const [hours, mintues] = value.split(":");
+    const [hours, minutes] = value.split(":");
     const [hour, meridiem] = asMiddayHour(Number(hours));
-    return { hour, mintues: Number(mintues), meridiem };
+    return { hour, minutes: Number(minutes), meridiem };
   }, [value]);
 
   const [show, setShow] = useState<boolean>(false);
-  const [mintue, setMintue] = useState<number>(initial?.mintues || 0);
+  const [mintue, setMintue] = useState<number>(initial?.minutes || 0);
   const [hour, setHour] = useState<number>(
     initial?.hour || Number(dayjs().format("h"))
   );

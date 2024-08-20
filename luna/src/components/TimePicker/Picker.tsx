@@ -12,7 +12,7 @@ const Picker: React.FC<{
   mintue?: number;
   onMeridiemChange?: (meridiem: Meridiem) => void;
   onHourChange?: (hour: number) => void;
-  onMintueChange?: (mintues: number) => void;
+  onMintueChange?: (minutes: number) => void;
 }> = ({
   labels,
   meridiem,
@@ -30,7 +30,7 @@ const Picker: React.FC<{
     }));
   }, [hour, onHourChange]);
 
-  const mintues = useMemo(() => {
+  const minutes = useMemo(() => {
     return [0, 15, 30, 45].map((option) => ({
       label: option.toString().padStart(2, "0"),
       active: option === mintue,
@@ -51,8 +51,8 @@ const Picker: React.FC<{
   }, [labels.am, labels.pm, meridiem, onMeridiemChange]);
 
   const cols = useMemo(
-    () => [hours, mintues, meridiems],
-    [hours, meridiems, mintues]
+    () => [hours, minutes, meridiems],
+    [hours, meridiems, minutes]
   );
 
   return (

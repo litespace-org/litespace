@@ -86,28 +86,28 @@ export function useValidation() {
         id: messages["error.schedule.time"],
       });
       const time = parseRailywayTime(payload.time);
-      const timeMintues = time.hours * MINUTES_OF_HOUR + time.minutes;
+      const timeMinutes = time.hours * MINUTES_OF_HOUR + time.minutes;
       if (Number.isNaN(time.hours) || Number.isNaN(time.minutes))
         return message;
 
       if (payload.min) {
         const min = parseRailywayTime(payload.min);
-        const minMintues = min.hours * MINUTES_OF_HOUR + min.minutes;
+        const minMinutes = min.hours * MINUTES_OF_HOUR + min.minutes;
         if (
           Number.isNaN(min.hours) ||
           Number.isNaN(min.minutes) ||
-          timeMintues < minMintues
+          timeMinutes < minMinutes
         )
           return message;
       }
 
       if (payload.max) {
         const max = parseRailywayTime(payload.max);
-        const maxMintues = max.hours * MINUTES_OF_HOUR + max.minutes;
+        const maxMinutes = max.hours * MINUTES_OF_HOUR + max.minutes;
         if (
           Number.isNaN(max.hours) ||
           Number.isNaN(max.minutes) ||
-          timeMintues > maxMintues
+          timeMinutes > maxMinutes
         )
           return message;
       }
