@@ -6,36 +6,22 @@ import React, {
   useState,
 } from "react";
 import { Input } from "@/components/Input";
-import Picker, { Meridiem } from "@/components/TimePicker/Picker";
-import dayjs from "@/lib/dayjs";
+import Picker from "@/components/TimePicker/Picker";
 import { Dir } from "@/components/Direction";
-import { asMiddayHour, asRailwayHour } from "@/lib/time";
 import { Clock } from "react-feather";
+import { Time } from "@litespace/sol";
 
 export const TimePicker: React.FC<{
   placeholder?: string;
   error?: string | null;
-  value?: string;
+  time?: Time;
   disabled?: boolean;
   labels: { am: string; pm: string };
-  onChange?: (value: string) => void;
-}> = ({ placeholder, error, value, disabled, labels, onChange }) => {
+  onChange?: (time: Time) => void;
+}> = ({ placeholder, error, time, disabled, labels, onChange }) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
-
-  const initial = useMemo(() => {
-    if (!value) return;
-    const [hours, minutes] = value.split(":");
-    const [hour, meridiem] = asMiddayHour(Number(hours));
-    return { hour, minutes: Number(minutes), meridiem };
-  }, [value]);
-
   const [show, setShow] = useState<boolean>(false);
-  const [mintue, setMintue] = useState<number>(initial?.minutes || 0);
-  const [hour, setHour] = useState<number>(
-    initial?.hour || Number(dayjs().format("h"))
-  );
-  const [meridiem, setMeridiem] = useState<Meridiem>(initial?.meridiem || "pm");
 
   const hide = useCallback((e: Event) => {
     if (
@@ -47,33 +33,11 @@ export const TimePicker: React.FC<{
   }, []);
 
   useEffect(() => {
-    if (!onChange) return;
-    const railwayHour = asRailwayHour(hour, meridiem === "pm");
-    const time = [
-      railwayHour.toString().padStart(2, "0"),
-      mintue.toString().padStart(2, "0"),
-    ].join(":");
-    onChange(time);
-    // note: don't add `onChange` handler not to create infinite re-renders
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hour, meridiem, mintue]);
-
-  useEffect(() => {
     document.addEventListener("click", hide);
     return () => {
       document.removeEventListener("click", hide);
     };
   }, [hide]);
-
-  const inputValue = useMemo(() => {
-    return [
-      hour.toString().padStart(2, "0"),
-      ":",
-      mintue.toString().padStart(2, "0"),
-      " ",
-      meridiem === "am" ? labels.am : labels.pm,
-    ].join("");
-  }, [hour, labels.am, labels.pm, meridiem, mintue]);
 
   return (
     <div className="w-full relative" ref={inputRef}>
@@ -81,9 +45,8 @@ export const TimePicker: React.FC<{
         overrideDir={Dir.RTL}
         placeholder={placeholder}
         error={error}
-        value={inputValue}
+        value={time?.format("midday", {}) || ""}
         disabled={disabled}
-        onChange={onChange}
         onFocus={useCallback(() => {
           setShow(true);
         }, [])}
@@ -98,15 +61,7 @@ export const TimePicker: React.FC<{
           className="absolute z-10 border border-control rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl"
           ref={dateRef}
         >
-          <Picker
-            labels={labels}
-            meridiem={meridiem}
-            hour={hour}
-            mintue={mintue}
-            onMeridiemChange={setMeridiem}
-            onHourChange={setHour}
-            onMintueChange={setMintue}
-          />
+          <Picker labels={labels} time={time} onChange={onChange} />
         </div>
       ) : null}
     </div>

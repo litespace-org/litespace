@@ -4,6 +4,7 @@ import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { Controller, useForm } from "react-hook-form";
+import { Time } from "@litespace/sol";
 
 type Component = typeof TimePicker;
 
@@ -25,11 +26,10 @@ const meta: Meta<Comment> = {
 
 export const Primary: StoryObj<Component> = {
   render() {
-    const form = useForm<{ value: string }>({
-      defaultValues: { value: "13:00" },
+    const form = useForm<{ value: Time }>({
+      defaultValues: { value: Time.from("3pm") },
     });
 
-    console.log("here...");
     return (
       <Form>
         <Controller
@@ -42,7 +42,7 @@ export const Primary: StoryObj<Component> = {
                   am: ar["global.labels.am"],
                   pm: ar["global.labels.pm"],
                 }}
-                value={form.watch("value")}
+                time={form.watch("value")}
                 onChange={field.onChange}
               />
             );

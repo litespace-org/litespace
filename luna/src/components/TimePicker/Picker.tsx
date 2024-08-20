@@ -2,53 +2,63 @@ import React, { useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
 import { Button, ButtonSize, ButtonType } from "../Button";
-
-export type Meridiem = "am" | "pm";
+import { Meridiem, Time } from "@litespace/sol";
 
 const Picker: React.FC<{
   labels: { am: string; pm: string };
-  meridiem?: Meridiem;
-  hour?: number;
-  mintue?: number;
-  onMeridiemChange?: (meridiem: Meridiem) => void;
-  onHourChange?: (hour: number) => void;
-  onMintueChange?: (minutes: number) => void;
-}> = ({
-  labels,
-  meridiem,
-  hour,
-  mintue,
-  onMeridiemChange,
-  onHourChange,
-  onMintueChange,
-}) => {
+  time?: Time;
+  onChange?: (time: Time) => void;
+}> = ({ labels, time, onChange }) => {
+  const midday = useMemo(() => time?.asMiddayParts(), [time]);
+
   const hours = useMemo(() => {
-    return range(1, 13).map((dayHour) => ({
-      label: dayHour,
-      active: dayHour === hour,
-      onClick: () => onHourChange && onHourChange(dayHour),
+    return range(1, 13).map((hours) => ({
+      label: hours,
+      active: hours === midday?.hours,
+      onClick: () => {
+        if (!onChange) return;
+        const updated = time
+          ? time.setHours(hours, false)
+          : Time.from({ hours, minutes: 0, meridiem: Meridiem.PM });
+
+        onChange(updated);
+      },
     }));
-  }, [hour, onHourChange]);
+  }, [midday?.hours, onChange, time]);
 
   const minutes = useMemo(() => {
-    return [0, 15, 30, 45].map((option) => ({
-      label: option.toString().padStart(2, "0"),
-      active: option === mintue,
-      onClick: () => onMintueChange && onMintueChange(option),
+    return [0, 15, 30, 45].map((minutes) => ({
+      label: minutes.toString().padStart(2, "0"),
+      active: minutes === midday?.minutes,
+      onClick: () => {
+        if (!onChange) return;
+        const updated = time
+          ? time.setMintues(minutes)
+          : Time.from({ hours: 1, minutes, meridiem: Meridiem.PM });
+
+        onChange(updated);
+      },
     }));
-  }, [mintue, onMintueChange]);
+  }, [midday?.minutes, onChange, time]);
 
   const meridiems = useMemo(() => {
     const options: Array<{ label: string; value: Meridiem }> = [
-      { label: labels.am, value: "am" },
-      { label: labels.pm, value: "pm" },
+      { label: labels.am, value: Meridiem.AM },
+      { label: labels.pm, value: Meridiem.PM },
     ];
     return options.map(({ label, value }) => ({
       label,
-      active: meridiem === value,
-      onClick: () => onMeridiemChange && onMeridiemChange(value),
+      active: value === midday?.meridiem,
+      onClick: () => {
+        if (!onChange) return;
+        const updated = time
+          ? time.setMeridiem(value)
+          : Time.from({ hours: 1, minutes: 0, meridiem: value });
+
+        onChange(updated);
+      },
     }));
-  }, [labels.am, labels.pm, meridiem, onMeridiemChange]);
+  }, [labels.am, labels.pm, midday?.meridiem, onChange, time]);
 
   const cols = useMemo(
     () => [hours, minutes, meridiems],
