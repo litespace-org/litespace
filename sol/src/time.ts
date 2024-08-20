@@ -42,7 +42,29 @@ export type Level = "h" | "m";
 export type Format = "midday" | "railway";
 export type Midday = { hours: number; minutes: number; meridiem: Meridiem };
 
+export type FormatterMap = {
+  midnight?: string; // 12am - 2pm
+  morning?: string; // 3pm - 11am
+  noon?: string; // 12pm - 2pm
+  afternoon?: string; // 3pm - 5pm
+  night?: string; // 6pm - 11pm
+};
+
+type DaySegment = {
+  start: string;
+  end: string;
+  id: keyof FormatterMap;
+  default: string;
+};
+
 const start: TimeParts = { hours: 0, minutes: 0 };
+const segments: Array<DaySegment> = [
+  { start: "12am", end: "2am", id: "midnight", default: "Midnight" },
+  { start: "3am", end: "11am", id: "morning", default: "Morning" },
+  { start: "12pm", end: "2pm", id: "noon", default: "Noon" },
+  { start: "3pm", end: "5pm", id: "afternoon", default: "Afternoon" },
+  { start: "6pm", end: "11pm", id: "night", default: "Night" },
+];
 
 const INVALID_CODE = -1;
 
@@ -97,18 +119,43 @@ export class Time {
     return baseHours + this.minutes() > targetHours + target.minutes();
   }
 
-  public asRailway() {}
+  public isBetween(
+    first: RawTime,
+    second: RawTime,
+    level: Level = "m"
+  ): boolean {
+    const t1 = Time.from(first);
+    const t2 = Time.from(second);
+    const same = this.isSame(t1, level) || this.isSame(t2, level);
+    const between = this.isAfter(t1, level) && this.isBefore(t2, level);
+    return same || between;
+  }
 
   public asMiddayParts(): Midday {
     const [hours, meridiem] = Time.asMiddayHour(this.hours());
     return { hours, minutes: this.minutes(), meridiem };
   }
 
-  public format(format: Format = "railway") {
+  public format(format: Format = "railway", map: FormatterMap = {}) {
     if (format === "railway")
       return [prefix(this.hours()), prefix(this.minutes())].join(":");
 
-    return "";
+    const { hours, minutes, meridiem } = this.asMiddayParts();
+    const time = [prefix(hours), prefix(minutes)].join(":");
+    const segment = this.getDaySegment();
+    console.log({ segment });
+    if (!map || !segment) return [time, meridiem].join(" ");
+    const label = map[segment.id] || segment.default;
+    return [time, label].join(" ");
+  }
+
+  private getDaySegment(): DaySegment | null {
+    for (const segment of segments) {
+      if (this.isBetween(Time.from(segment.start), Time.from(segment.end), "h"))
+        return segment;
+    }
+
+    return null;
   }
 
   private static asMiddayHour(
@@ -127,11 +174,6 @@ export class Time {
     return (
       this.parts.hours !== INVALID_CODE || this.parts.minutes !== INVALID_CODE
     );
-  }
-
-  private static asComperableHour(hour: number): number {
-    if (hour === MIN_RAILWAY_HOUR) return DAY_HOUR_COUNT;
-    return hour;
   }
 
   private static parseTime(value: string, min: number, max: number): TimeParts {
@@ -174,8 +216,6 @@ export class Time {
       MIN_MIDDAY_HOUR,
       MAX_MIDDAY_HOUR
     );
-
-    console.log({ hours, minutes });
 
     return {
       hours:

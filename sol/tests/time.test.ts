@@ -174,4 +174,52 @@ describe("Time", () => {
       expect(Time.from(base).isAfter(target, level)).to.be.eq(isAfter);
     }
   });
+
+  describe("Formatting", () => {
+    describe("Format using midday time with day segments", () => {
+      const tests: Array<[string, string]> = [
+        ["12am", "12:00 Midnight"],
+        ["1am", "01:00 Midnight"],
+        ["2am", "02:00 Midnight"],
+        ["3am", "03:00 Morning"],
+        ["5am", "05:00 Morning"],
+        ["11am", "11:00 Morning"],
+        ["12pm", "12:00 Noon"],
+        ["1pm", "01:00 Noon"],
+        ["3pm", "03:00 Afternoon"],
+        ["4:30pm", "04:30 Afternoon"],
+        ["6pm", "06:00 Night"],
+        ["7pm", "07:00 Night"],
+        ["11pm", "11:00 Night"],
+        ["11:59pm", "11:59 Night"],
+      ];
+
+      for (const [time, formatted] of tests) {
+        expect(Time.from(time).format("midday")).to.be.eq(formatted);
+      }
+    });
+
+    describe("Format using railway time", () => {
+      const tests: Array<[string, string]> = [
+        ["12am", "00:00"],
+        ["1am", "01:00"],
+        ["2am", "02:00"],
+        ["3am", "03:00"],
+        ["5am", "05:00"],
+        ["11am", "11:00"],
+        ["12pm", "12:00"],
+        ["1pm", "13:00"],
+        ["3pm", "15:00"],
+        ["4:30pm", "16:30"],
+        ["6pm", "18:00"],
+        ["7pm", "19:00"],
+        ["11pm", "23:00"],
+        ["11:59pm", "23:59"],
+      ];
+
+      for (const [time, formatted] of tests) {
+        expect(Time.from(time).format("railway")).to.be.eq(formatted);
+      }
+    });
+  });
 });
