@@ -1,11 +1,3 @@
-// construct internal rep. of time ✅
-// compare time ✅
-// parse time ✅
-// Add time.
-// conversion
-// formating
-// setter
-
 const DAY_HOUR_COUNT = 24;
 const MIN_RAILWAY_HOUR = 0;
 const MAX_RAILWAY_HOUR = 23;
@@ -142,7 +134,12 @@ export class Time {
     return { hours, minutes: this.minutes(), meridiem };
   }
 
-  public format(format: Format = "railway", map: FormatterMap | null = null) {
+  public format(
+    format: Format = "railway",
+    map: FormatterMap | null = null
+  ): string {
+    if (!this.isValid()) return INVALID_CODE.toString();
+
     if (format === "railway")
       return [prefix(this.hours()), prefix(this.minutes())].join(":");
 
@@ -154,34 +151,34 @@ export class Time {
     return [time, label].join(" ");
   }
 
-  public setHours(hour: number | string, railway: boolean = true) {
-    const parsed = Time.parseHours(
-      hour.toString(),
+  public setHours(value: number | string, railway: boolean = true): Time {
+    const hours = Time.parseHours(
+      value.toString(),
       railway ? MIN_RAILWAY_HOUR : MIN_MIDDAY_HOUR,
       railway ? MAX_RAILWAY_HOUR : MAX_MIDDAY_HOUR
     );
 
-    if (railway)
-      return Time.from({ minutes: this.parts.minutes, hours: parsed });
+    if (railway) return Time.from({ minutes: this.parts.minutes, hours });
 
     const midday = this.asMiddayParts();
-    console.log({
-      midday,
-      parsed,
-      r: {
-        ...midday,
-        hours: parsed,
-      },
-    });
     return Time.from({
       ...midday,
-      hours: parsed,
+      hours,
     });
   }
 
-  public setMintues() {}
+  public setMintues(value: number | string): Time {
+    const minutes = Time.parseMinutes(value.toString());
+    return Time.from({
+      hours: this.parts.hours,
+      minutes,
+    });
+  }
 
-  public setMeridiem() {}
+  public setMeridiem(meridiem: Meridiem): Time {
+    const parts = this.asMiddayParts();
+    return Time.from({ ...parts, meridiem });
+  }
 
   private getDaySegment(): DaySegment | null {
     for (const segment of segments) {
@@ -207,7 +204,7 @@ export class Time {
 
   public isValid() {
     return (
-      this.parts.hours !== INVALID_CODE || this.parts.minutes !== INVALID_CODE
+      this.parts.hours !== INVALID_CODE && this.parts.minutes !== INVALID_CODE
     );
   }
 
@@ -233,10 +230,9 @@ export class Time {
     min: number,
     max: number
   ) {
-    console.log({ value, not: !value });
     if (!value) return 0;
     const hours = Number(value);
-    if (Number.isNaN(hours) || !prefix || hours > max || hours < min)
+    if (Number.isNaN(hours) || !value || hours > max || hours < min)
       return INVALID_CODE;
     return hours;
   }

@@ -260,6 +260,7 @@ describe("Time", () => {
         ["7pm", "19:00"],
         ["11pm", "23:00"],
         ["11:59pm", "23:59"],
+        ["14:59pm", "-1"],
       ];
 
       for (const [time, formatted] of tests) {
@@ -307,13 +308,44 @@ describe("Time", () => {
         ["6pm", 11, "11:00 pm"],
         ["7pm", 12, "12:00 pm"],
         ["11pm", 11, "11:00 pm"],
-        ["11:59pm", 0, "-1:59 am"],
+        ["11:59pm", 0, "-1"],
       ];
 
       for (const [time, hours, modified] of tests) {
         expect(
           Time.from(time).setHours(hours, false).format("midday")
         ).to.be.eq(modified);
+      }
+    });
+
+    it("should be able to set minutes", () => {
+      const tests: Array<[string, number | string, string]> = [
+        ["12am", 0, "12:00 am"],
+        ["1am", 15, "01:15 am"],
+        ["1am", "30", "01:30 am"],
+        ["1am", "45", "01:45 am"],
+        ["1am", "60", "-1"],
+        ["1am", "-3", "-1"],
+      ];
+
+      for (const [time, minutes, modified] of tests) {
+        expect(Time.from(time).setMintues(minutes).format("midday")).to.be.eq(
+          modified
+        );
+      }
+    });
+
+    it("should be able to set meridiem", () => {
+      const tests: Array<[string, Meridiem, string]> = [
+        ["12am", Meridiem.PM, "12:00 pm"],
+        ["1am", Meridiem.PM, "01:00 pm"],
+        ["1am", Meridiem.AM, "01:00 am"],
+      ];
+
+      for (const [time, meridiem, modified] of tests) {
+        expect(Time.from(time).setMeridiem(meridiem).format("midday")).to.be.eq(
+          modified
+        );
       }
     });
   });
