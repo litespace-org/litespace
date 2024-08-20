@@ -19,7 +19,12 @@ export enum Meridiem {
 }
 
 export type PartsTuple = [horus: number, min: number];
-export type RawMiddayParts = [time: string, meridiem: Meridiem];
+export type RawMiddayPartsTuple = [time: string, meridiem: Meridiem];
+export type MiddayParts = {
+  hours: number | string;
+  minutes: number | string;
+  meridiem: Meridiem;
+};
 export type RawMidday = `${string} ${Meridiem}`;
 export type TimeParts = {
   /**
@@ -34,9 +39,10 @@ export type TimeParts = {
 export type RawTime =
   | string
   | PartsTuple
-  | RawMiddayParts
+  | RawMiddayPartsTuple
   | Time
   | TimeParts
+  | MiddayParts
   | `${string} ${Meridiem}`;
 export type Level = "h" | "m";
 export type Format = "midday" | "railway";
@@ -136,18 +142,46 @@ export class Time {
     return { hours, minutes: this.minutes(), meridiem };
   }
 
-  public format(format: Format = "railway", map: FormatterMap = {}) {
+  public format(format: Format = "railway", map: FormatterMap | null = null) {
     if (format === "railway")
       return [prefix(this.hours()), prefix(this.minutes())].join(":");
 
     const { hours, minutes, meridiem } = this.asMiddayParts();
     const time = [prefix(hours), prefix(minutes)].join(":");
     const segment = this.getDaySegment();
-    console.log({ segment });
-    if (!map || !segment) return [time, meridiem].join(" ");
+    if (map === null || !segment) return [time, meridiem].join(" ");
     const label = map[segment.id] || segment.default;
     return [time, label].join(" ");
   }
+
+  public setHours(hour: number | string, railway: boolean = true) {
+    const parsed = Time.parseHours(
+      hour.toString(),
+      railway ? MIN_RAILWAY_HOUR : MIN_MIDDAY_HOUR,
+      railway ? MAX_RAILWAY_HOUR : MAX_MIDDAY_HOUR
+    );
+
+    if (railway)
+      return Time.from({ minutes: this.parts.minutes, hours: parsed });
+
+    const midday = this.asMiddayParts();
+    console.log({
+      midday,
+      parsed,
+      r: {
+        ...midday,
+        hours: parsed,
+      },
+    });
+    return Time.from({
+      ...midday,
+      hours: parsed,
+    });
+  }
+
+  public setMintues() {}
+
+  public setMeridiem() {}
 
   private getDaySegment(): DaySegment | null {
     for (const segment of segments) {
@@ -161,8 +195,9 @@ export class Time {
   private static asMiddayHour(
     hour: number
   ): [hour: number, meridiem: Meridiem] {
-    if (hour === 0) return [12, Meridiem.PM];
-    if (hour <= 12) return [hour, Meridiem.AM];
+    if (hour === 0) return [12, Meridiem.AM];
+    if (hour === 12) return [12, Meridiem.PM];
+    if (hour < 12) return [hour, Meridiem.AM];
     return [hour - 12, Meridiem.PM];
   }
 
@@ -198,6 +233,7 @@ export class Time {
     min: number,
     max: number
   ) {
+    console.log({ value, not: !value });
     if (!value) return 0;
     const hours = Number(value);
     if (Number.isNaN(hours) || !prefix || hours > max || hours < min)
@@ -209,7 +245,7 @@ export class Time {
     return Time.parseTime(value, MIN_RAILWAY_HOUR, MAX_RAILWAY_HOUR);
   }
 
-  private static parseMiddayParts(value: [time: string, meridiem: Meridiem]) {
+  private static parseMiddayPartsTuple(value: RawMiddayPartsTuple) {
     const [time, meridiem] = value;
     const { hours, minutes } = Time.parseTime(
       time,
@@ -222,6 +258,22 @@ export class Time {
         hours === INVALID_CODE
           ? INVALID_CODE
           : Time.asRailwayHour(hours, meridiem),
+      minutes,
+    };
+  }
+
+  private static parseMiddayParts(value: MiddayParts) {
+    const { hours, minutes } = Time.parseTime(
+      `${value.hours}:${value.minutes}`,
+      MIN_MIDDAY_HOUR,
+      MAX_MIDDAY_HOUR
+    );
+
+    return {
+      hours:
+        hours === INVALID_CODE
+          ? INVALID_CODE
+          : Time.asRailwayHour(hours, value.meridiem),
       minutes,
     };
   }
@@ -252,9 +304,7 @@ export class Time {
     return hour;
   }
 
-  private static parseParts(
-    value: [hours: number, minutes: number]
-  ): TimeParts {
+  private static parsePartsTuple(value: PartsTuple): TimeParts {
     const [hours, minutes] = value;
     return {
       hours: hours >= DAY_HOUR_COUNT || hours < 0 ? INVALID_CODE : hours,
@@ -277,9 +327,7 @@ export class Time {
     return value instanceof Time;
   }
 
-  private static isParts(
-    value: RawTime
-  ): value is [horus: number, minutes: number] {
+  private static isPartsTuple(value: RawTime): value is PartsTuple {
     return (
       Array.isArray(value) &&
       typeof value[0] === "number" &&
@@ -287,7 +335,9 @@ export class Time {
     );
   }
 
-  private static isMiddayParts(value: RawTime): value is RawMiddayParts {
+  private static isMiddayPartsTuple(
+    value: RawTime
+  ): value is RawMiddayPartsTuple {
     return (
       Array.isArray(value) &&
       typeof value[0] === "string" &&
@@ -295,11 +345,27 @@ export class Time {
     );
   }
 
+  private static isMiddayParts(value: RawTime): value is MiddayParts {
+    return (
+      typeof value === "object" &&
+      "hours" in value &&
+      "minutes" in value &&
+      "meridiem" in value &&
+      (typeof value.hours === "string" || typeof value.hours === "number") &&
+      (typeof value.minutes === "string" ||
+        typeof value.minutes === "number") &&
+      typeof value.meridiem === "string" &&
+      (value.meridiem === Meridiem.AM || value.meridiem === Meridiem.PM)
+    );
+  }
+
   private static parse(value: RawTime): TimeParts {
     if (Time.isRawMidday(value)) return Time.parseMiddayRaw(value);
     if (Time.isRaw(value)) return Time.parseRailway(value);
-    if (Time.isParts(value)) return Time.parseParts(value);
+    if (Time.isPartsTuple(value)) return Time.parsePartsTuple(value);
     if (Time.isMiddayParts(value)) return Time.parseMiddayParts(value);
+    if (Time.isMiddayPartsTuple(value))
+      return Time.parseMiddayPartsTuple(value);
     if (Time.isTime(value))
       return { hours: value.hours(), minutes: value.minutes() };
     return value;

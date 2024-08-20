@@ -175,8 +175,30 @@ describe("Time", () => {
     }
   });
 
+  it("should convert from railway time into midday", () => {
+    const tests: Array<[string, number, number, Meridiem]> = [
+      ["00:00", 12, 0, Meridiem.AM],
+      ["01:00", 1, 0, Meridiem.AM],
+      ["02:00", 2, 0, Meridiem.AM],
+      ["10:00", 10, 0, Meridiem.AM],
+      ["12:00", 12, 0, Meridiem.PM],
+      ["13:00", 1, 0, Meridiem.PM],
+      ["14:00", 2, 0, Meridiem.PM],
+      ["23:00", 11, 0, Meridiem.PM],
+      ["23:59", 11, 59, Meridiem.PM],
+    ];
+
+    for (const [time, hours, minutes, meridiem] of tests) {
+      expect(Time.from(time).asMiddayParts()).to.be.deep.eq({
+        hours,
+        minutes,
+        meridiem,
+      });
+    }
+  });
+
   describe("Formatting", () => {
-    describe("Format using midday time with day segments", () => {
+    it("Format using midday time with day segments", () => {
       const tests: Array<[string, string]> = [
         ["12am", "12:00 Midnight"],
         ["1am", "01:00 Midnight"],
@@ -195,11 +217,34 @@ describe("Time", () => {
       ];
 
       for (const [time, formatted] of tests) {
+        expect(Time.from(time).format("midday", {})).to.be.eq(formatted);
+      }
+    });
+
+    it("Format using midday time using am/pm notation", () => {
+      const tests: Array<[string, string]> = [
+        ["12am", "12:00 am"],
+        ["1am", "01:00 am"],
+        ["2am", "02:00 am"],
+        ["3am", "03:00 am"],
+        ["5am", "05:00 am"],
+        ["11am", "11:00 am"],
+        ["12pm", "12:00 pm"],
+        ["1pm", "01:00 pm"],
+        ["3pm", "03:00 pm"],
+        ["4:30pm", "04:30 pm"],
+        ["6pm", "06:00 pm"],
+        ["7pm", "07:00 pm"],
+        ["11pm", "11:00 pm"],
+        ["11:59pm", "11:59 pm"],
+      ];
+
+      for (const [time, formatted] of tests) {
         expect(Time.from(time).format("midday")).to.be.eq(formatted);
       }
     });
 
-    describe("Format using railway time", () => {
+    it("Format using railway time", () => {
       const tests: Array<[string, string]> = [
         ["12am", "00:00"],
         ["1am", "01:00"],
@@ -219,6 +264,56 @@ describe("Time", () => {
 
       for (const [time, formatted] of tests) {
         expect(Time.from(time).format("railway")).to.be.eq(formatted);
+      }
+    });
+  });
+
+  describe("Modify time", () => {
+    it("should be able to set hours (railway)", () => {
+      const tests: Array<[string, number, string]> = [
+        ["12am", 1, "01:00"],
+        ["1am", 2, "02:00"],
+        ["2am", 3, "03:00"],
+        ["3am", 4, "04:00"],
+        ["5am", 5, "05:00"],
+        ["11am", 6, "06:00"],
+        ["12pm", 7, "07:00"],
+        ["1pm", 8, "08:00"],
+        ["4pm", 15, "15:00"],
+        ["4:30pm", 10, "10:30"],
+        ["6pm", 11, "11:00"],
+        ["7pm", 19, "19:00"],
+        ["11pm", 23, "23:00"],
+        ["11:59pm", 0, "00:59"],
+      ];
+
+      for (const [time, hours, modified] of tests) {
+        expect(Time.from(time).setHours(hours).format()).to.be.eq(modified);
+      }
+    });
+
+    it("should be able to set hours (midday)", () => {
+      const tests: Array<[string, number, string]> = [
+        ["12am", 1, "01:00 am"],
+        ["1am", 2, "02:00 am"],
+        ["2am", 3, "03:00 am"],
+        ["3am", 4, "04:00 am"],
+        ["5am", 5, "05:00 am"],
+        ["11am", 6, "06:00 am"],
+        ["12pm", 7, "07:00 pm"],
+        ["1pm", 8, "08:00 pm"],
+        ["4pm", 12, "12:00 pm"],
+        ["4:30pm", 3, "03:30 pm"],
+        ["6pm", 11, "11:00 pm"],
+        ["7pm", 12, "12:00 pm"],
+        ["11pm", 11, "11:00 pm"],
+        ["11:59pm", 0, "-1:59 am"],
+      ];
+
+      for (const [time, hours, modified] of tests) {
+        expect(
+          Time.from(time).setHours(hours, false).format("midday")
+        ).to.be.eq(modified);
       }
     });
   });
