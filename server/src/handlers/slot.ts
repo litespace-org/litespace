@@ -1,11 +1,11 @@
 import { calls, slots } from "@/models";
 import { isAdmin } from "@/lib/common";
-import { forbidden, notfound } from "@/lib/error";
+import { badRequest, forbidden, notfound } from "@/lib/error";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { unpackSlots } from "@litespace/sol";
-import { id, identityObject } from "@/validation/utils";
+import { Time, unpackSlots } from "@litespace/sol";
+import { id, identityObject, repeat } from "@/validation/utils";
 import { enforceRequest } from "@/middleware/accessControl";
 import dayjs from "@/lib/dayjs";
 import zod from "zod";
@@ -16,19 +16,45 @@ const findDiscreteTimeSlotsQuery = zod.object({
   window: zod.optional(zod.coerce.number()),
 });
 
+const createSlotPayload = zod.object({
+  title: zod.string().trim().min(5).max(255),
+  time: zod.object({ start: zod.string(), end: zod.string() }),
+  date: zod.object({
+    start: zod.string().date(),
+    end: zod.optional(zod.string().date()),
+  }),
+  repeat,
+});
+
 const findDiscreteTimeSlotsParams = zod.object({ userId: id });
 
 async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
-  const slot = schema.http.slot.create.parse(req.body);
-  await slots.create({
-    ...slot,
+  const payload = createSlotPayload.parse(req.body);
+
+  const start = Time.from(payload.time.start);
+  const end = Time.from(payload.time.end);
+  if (
+    !start.isValid() ||
+    !end.isValid() ||
+    start.isSame(end) ||
+    start.isAfter(end) ||
+    end.isBefore(start)
+  )
+    return next(badRequest());
+
+  const slot = await slots.create({
     userId: req.user.id,
+    title: payload.title,
+    time: payload.time,
+    date: payload.date,
+    repeat: payload.repeat,
+    weekday: -1,
   });
 
-  res.status(200).send();
+  res.status(200).json(slot);
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {

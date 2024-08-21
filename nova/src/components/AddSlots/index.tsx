@@ -10,6 +10,8 @@ import {
   messages,
   Select,
   TimePicker,
+  toaster,
+  useFormatterMap,
   useValidation,
 } from "@litespace/luna";
 import { ISlot } from "@litespace/types";
@@ -17,32 +19,64 @@ import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
+import { Time } from "@litespace/sol";
+import { useMutation } from "react-query";
+import { atlas } from "@/lib/atlas";
 
 type IForm = {
   title: string;
   date: { start: string; end: string };
-  time: { start: string; end: string };
+  time: { start: Time; end: Time };
   repeat: ISlot.Repeat;
 };
 
 const AddSlots: React.FC = () => {
   const intl = useIntl();
   const validate = useValidation();
+  const formatterMap = useFormatterMap();
   const form = useForm<IForm>({
     defaultValues: {
       title: "",
-      date: { start: dayjs().format("YYYY-MM-DD"), end: "" },
-      time: { start: "", end: "" },
+      date: { start: dayjs().format("YYYY-MM-DD") },
       repeat: ISlot.Repeat.No,
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (payload: ISlot.CreateApiPayload) => {
+      return await atlas.slot.create(payload);
+    },
+    onSuccess() {
+      toaster.success({
+        title: intl.formatMessage({
+          id: messages["global.notify.schedule.update.success"],
+        }),
+      });
+    },
+    onError(error) {
+      toaster.error({
+        title: intl.formatMessage({
+          id: messages["global.notify.schedule.update.error"],
+        }),
+        description: error instanceof Error ? error.message : undefined,
+      });
     },
   });
 
   const onSubmit = useMemo(
     () =>
-      form.handleSubmit((fields: IForm) => {
-        console.log(fields);
-      }),
-    [form]
+      form.handleSubmit((fields: IForm) =>
+        mutation.mutate({
+          title: fields.title,
+          time: {
+            start: fields.time.start.format(),
+            end: fields.time.end.format(),
+          },
+          date: fields.date,
+          repeat: fields.repeat,
+        })
+      ),
+    [form, mutation]
   );
 
   const repeatOptions = useMemo(
@@ -75,6 +109,29 @@ const AddSlots: React.FC = () => {
     [intl]
   );
 
+  const timeRules = useMemo(() => {
+    return {
+      start: {
+        required: validate.required,
+        validate(value: Time, values: IForm): boolean | string {
+          return validate.validateTime({
+            time: value,
+            max: values.time.end,
+          });
+        },
+      },
+      end: {
+        required: validate.required,
+        validate(value: Time, values: IForm): boolean | string {
+          return validate.validateTime({
+            time: value,
+            min: values.time.start,
+          });
+        },
+      },
+    };
+  }, [validate]);
+
   const meridiem = useMemo(
     () => ({
       am: intl.formatMessage({
@@ -87,10 +144,12 @@ const AddSlots: React.FC = () => {
     [intl]
   );
 
+  const disabled = useMemo(() => mutation.isLoading, [mutation.isLoading]);
+
   return (
     <Dialog
       trigger={
-        <Button size={ButtonSize.Small}>
+        <Button disabled={disabled} size={ButtonSize.Small}>
           {intl.formatMessage({
             id: messages["page.schedule.edit.add"],
           })}
@@ -120,6 +179,7 @@ const AddSlots: React.FC = () => {
               })}
               register={form.register("title", validate.slotTitle)}
               error={form.formState.errors["title"]?.message}
+              disabled={disabled}
             />
           }
         />
@@ -160,6 +220,7 @@ const AddSlots: React.FC = () => {
                       today={intl.formatMessage({
                         id: messages["global.labels.today"],
                       })}
+                      disabled={disabled}
                     />
                   );
                 }}
@@ -200,10 +261,11 @@ const AddSlots: React.FC = () => {
                         form.trigger("date.end");
                       }}
                       min={min ? dayjs(min) : undefined}
-                      value={value}
+                      value={value || ""}
                       today={intl.formatMessage({
                         id: messages["global.labels.today"],
                       })}
+                      disabled={disabled}
                     />
                   );
                 }}
@@ -226,7 +288,7 @@ const AddSlots: React.FC = () => {
               <Controller
                 control={form.control}
                 name="time.start"
-                rules={validate.time.start}
+                rules={timeRules.start}
                 render={({ field }) => {
                   return (
                     <TimePicker
@@ -236,13 +298,15 @@ const AddSlots: React.FC = () => {
                         ],
                       })}
                       error={form.formState.errors["time"]?.start?.message}
-                      onChange={(value: string) => {
+                      onChange={(value: Time) => {
                         field.onChange(value);
                         form.trigger("time.start");
                         form.trigger("time.end");
                       }}
                       labels={meridiem}
-                      value={form.watch("time.start")}
+                      time={form.watch("time.start")}
+                      formatterMap={formatterMap}
+                      disabled={disabled}
                     />
                   );
                 }}
@@ -264,7 +328,7 @@ const AddSlots: React.FC = () => {
               <Controller
                 control={form.control}
                 name="time.end"
-                rules={validate.time.end}
+                rules={timeRules.end}
                 render={({ field }) => {
                   return (
                     <TimePicker
@@ -274,13 +338,15 @@ const AddSlots: React.FC = () => {
                         ],
                       })}
                       error={form.formState.errors["time"]?.end?.message}
-                      onChange={(value: string) => {
+                      onChange={(value: Time) => {
                         field.onChange(value);
                         form.trigger("time.start");
                         form.trigger("time.end");
                       }}
                       labels={meridiem}
-                      value={form.watch("time.end")}
+                      time={form.watch("time.end")}
+                      formatterMap={formatterMap}
+                      disabled={disabled}
                     />
                   );
                 }}
@@ -314,7 +380,12 @@ const AddSlots: React.FC = () => {
           }
         />
 
-        <Button htmlType="submit" className="mt-4">
+        <Button
+          loading={mutation.isLoading}
+          disabled={mutation.isLoading}
+          htmlType="submit"
+          className="mt-4"
+        >
           {intl.formatMessage({
             id: messages["global.labels.confirm"],
           })}

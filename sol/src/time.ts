@@ -1,9 +1,10 @@
 const DAY_HOUR_COUNT = 24;
+const HOUR_MINUTE_COUNT = 60;
+const DAY_MINUTE_COUNT = DAY_HOUR_COUNT * HOUR_MINUTE_COUNT;
 const MIN_RAILWAY_HOUR = 0;
 const MAX_RAILWAY_HOUR = 23;
 const MIN_MIDDAY_HOUR = 1;
 const MAX_MIDDAY_HOUR = 12;
-const HOUR_MINUTE_COUNT = 60;
 
 export enum Meridiem {
   AM = "am",
@@ -151,6 +152,39 @@ export class Time {
     return [time, label].join(" ");
   }
 
+  public addMinutes(minutes: number): Time {
+    const total = this.totalMinutes() + minutes;
+    const parts = this.convertMinutesIntoParts(total);
+    return Time.from(parts);
+  }
+
+  public diff(time: RawTime): number {
+    return Math.abs(this.totalMinutes() - Time.from(time).totalMinutes());
+  }
+
+  public utc(): Time {
+    const offset = new Date().getTimezoneOffset();
+    return this.addMinutes(offset);
+  }
+
+  public local(): Time {
+    const offset = new Date().getTimezoneOffset();
+    return this.addMinutes(-offset);
+  }
+
+  private convertMinutesIntoParts(minutes: number): TimeParts {
+    const modified = minutes % DAY_MINUTE_COUNT;
+    const adjuested = modified < 0 ? modified + DAY_MINUTE_COUNT : modified;
+    const hours = Math.floor(adjuested / HOUR_MINUTE_COUNT);
+    const remainingMinutes = adjuested - hours * HOUR_MINUTE_COUNT;
+    return { hours, minutes: remainingMinutes };
+  }
+
+  public totalMinutes(): number {
+    if (!this.isValid()) return INVALID_CODE;
+    return this.hours() * HOUR_MINUTE_COUNT + this.minutes();
+  }
+
   public setHours(value: number | string, railway: boolean = true): Time {
     const hours = Time.parseHours(
       value.toString(),
@@ -208,16 +242,20 @@ export class Time {
     );
   }
 
-  private static parseTime(value: string, min: number, max: number): TimeParts {
+  private static parseTime(
+    value: string | number,
+    min: number,
+    max: number
+  ): TimeParts {
     if (!value) return start;
-    const [prefix, suffix] = value.split(":");
+    const [prefix, suffix] = value.toString().split(":");
     return {
       hours: Time.parseHours(prefix, min, max),
       minutes: Time.parseMinutes(suffix),
     };
   }
 
-  private static parseMinutes(value: string | undefined) {
+  private static parseMinutes(value: string | number | undefined) {
     if (!value) return 0;
     const minutes = Number(value);
     if (Number.isNaN(minutes) || minutes >= HOUR_MINUTE_COUNT || minutes < 0)
@@ -226,7 +264,7 @@ export class Time {
   }
 
   private static parseHours(
-    value: string | undefined,
+    value: string | number | undefined,
     min: number,
     max: number
   ) {
@@ -291,6 +329,13 @@ export class Time {
           ? INVALID_CODE
           : Time.asRailwayHour(hours, meridiem),
       minutes,
+    };
+  }
+
+  private static parseTimeParts(parts: TimeParts): TimeParts {
+    return {
+      hours: Time.parseHours(parts.hours, MIN_RAILWAY_HOUR, MAX_RAILWAY_HOUR),
+      minutes: Time.parseMinutes(parts.minutes),
     };
   }
 
@@ -364,6 +409,6 @@ export class Time {
       return Time.parseMiddayPartsTuple(value);
     if (Time.isTime(value))
       return { hours: value.hours(), minutes: value.minutes() };
-    return value;
+    return Time.parseTimeParts(value);
   }
 }

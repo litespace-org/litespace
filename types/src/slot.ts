@@ -17,6 +17,20 @@ export type Self = {
   updatedAt: string;
 };
 
+export type ModifiedSelf = {
+  id: number;
+  userId: number;
+  title: string;
+  weekday: number;
+  start: string;
+  end: string | null;
+  time: string;
+  duration: number;
+  repeat: Repeat;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type Row = {
   id: number;
   user_id: number;
@@ -51,7 +65,9 @@ export type Unpacked = {
   slots: Discrete[];
 };
 
-export type CreateApiPayload = Omit<
-  Self,
-  "id" | "userId" | "createdAt" | "updatedAt"
->;
+export type CreateApiPayload = {
+  title: string;
+  time: { start: string; end: string };
+  date: { start: string; end?: string };
+  repeat: Repeat;
+};

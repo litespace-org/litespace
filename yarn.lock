@@ -3303,6 +3303,7 @@ __metadata:
     jest: "npm:^29.7.0"
     rollup: "npm:^4.18.0"
     rollup-plugin-dts: "npm:^6.1.1"
+    rrule: "npm:^2.8.1"
     ts-jest: "npm:^29.2.4"
     typescript: "npm:^5.5.4"
     zod: "npm:^3.23.8"
@@ -20276,6 +20277,15 @@ __metadata:
   bin:
     rollup: dist/bin/rollup
   checksum: 10c0/9b23bf0e3380e64573a5f68a55274d5c7969036e55c19aab9fb4deea2e938d76769db70f3c95ee3783c24af152bea1772ad73f9e3625b6ffd4e600a788fe97ea
+  languageName: node
+  linkType: hard
+
+"rrule@npm:^2.8.1":
+  version: 2.8.1
+  resolution: "rrule@npm:2.8.1"
+  dependencies:
+    tslib: "npm:^2.4.0"
+  checksum: 10c0/c9350620bbd57d0cdf99320b576121a2d7ed579fda4ae50891e2779c7dfd6dc7b174b558b6598adefb1f0e053549dc977740e1a265f77dcf0827aaeea60b45e7
   languageName: node
   linkType: hard
 

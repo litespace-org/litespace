@@ -9,16 +9,25 @@ import { Input } from "@/components/Input";
 import Picker from "@/components/TimePicker/Picker";
 import { Dir } from "@/components/Direction";
 import { Clock } from "react-feather";
-import { Time } from "@litespace/sol";
+import { FormatterMap, Time } from "@litespace/sol";
 
 export const TimePicker: React.FC<{
   placeholder?: string;
   error?: string | null;
   time?: Time;
+  formatterMap?: FormatterMap;
   disabled?: boolean;
   labels: { am: string; pm: string };
   onChange?: (time: Time) => void;
-}> = ({ placeholder, error, time, disabled, labels, onChange }) => {
+}> = ({
+  time,
+  error,
+  labels,
+  disabled,
+  placeholder,
+  formatterMap,
+  onChange,
+}) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState<boolean>(false);
@@ -45,7 +54,7 @@ export const TimePicker: React.FC<{
         overrideDir={Dir.RTL}
         placeholder={placeholder}
         error={error}
-        value={time?.format("midday", {}) || ""}
+        value={time?.format("midday", formatterMap) || ""}
         disabled={disabled}
         onFocus={useCallback(() => {
           setShow(true);

@@ -349,4 +349,77 @@ describe("Time", () => {
       }
     });
   });
+
+  describe("Manipulate time", () => {
+    it("should add/subtract mintues to the time", () => {
+      const tests: Array<[string, number, string]> = [
+        ["1am", 1, "01:01 am"],
+        ["1:30am", 30, "02:00 am"],
+        ["1:30am", 32, "02:02 am"],
+        ["1:30am", 120, "03:30 am"],
+        ["1:30am", -30, "01:00 am"],
+        ["03:00am", -180, "12:00 am"],
+        ["12:00am", 60 * 24 - 1, "11:59 pm"],
+        ["12:00am", 60 * 12, "12:00 pm"],
+        ["12:00am", -180, "09:00 pm"],
+        ["1am", -180, "10:00 pm"],
+        ["12:00am", 60 * 24, "12:00 am"],
+        ["12:00am", 60 * 24 * 2, "12:00 am"],
+      ];
+
+      for (const [input, minutes, output] of tests) {
+        expect(
+          Time.from(input).addMinutes(minutes).format("midday", null)
+        ).to.be.eq(output);
+      }
+    });
+
+    it("should find the diff between two times", () => {
+      const tests: Array<[string, string, number]> = [
+        ["1am", "2am", 60],
+        ["2am", "1am", 60],
+        ["12am", "12pm", 60 * 12],
+        ["12pm", "12pm", 0],
+        ["12am", "11:59pm", 24 * 60 - 1],
+      ];
+
+      for (const [start, end, diff] of tests) {
+        expect(Time.from(start).diff(end)).to.be.eq(diff);
+      }
+    });
+  });
+
+  describe("UTC and Local", () => {
+    it("should convert local to utc time", () => {
+      const tests: Array<[string, string]> = [
+        ["3am", "12am"],
+        ["4am", "1am"],
+        ["12am", "9pm"],
+        ["8pm", "5pm"],
+        ["12pm", "9am"],
+      ];
+
+      for (const [local, utc] of tests) {
+        expect(Time.from(local).utc().format()).to.be.eq(
+          Time.from(utc).format()
+        );
+      }
+    });
+
+    it("should convert local time to utc", () => {
+      const tests: Array<[string, string]> = [
+        ["3am", "6am"],
+        ["4am", "7am"],
+        ["12am", "3am"],
+        ["8pm", "11pm"],
+        ["9pm", "12am"],
+      ];
+
+      for (const [local, utc] of tests) {
+        expect(Time.from(local).local().format()).to.be.eq(
+          Time.from(utc).format()
+        );
+      }
+    });
+  });
 });

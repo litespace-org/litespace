@@ -14,6 +14,7 @@ export { Stepper } from "@/components/Stepper";
 export { TextEditor } from "@/components/TextEditor";
 export { messages, locales } from "@/locales";
 export { useValidation } from "@/hooks/validation";
+export { useFormatterMap } from "@/hooks/time";
 export { default as Spinner } from "@/icons/Spinner";
 export * from "@/components/Icons";
 export * from "@/constants/labels";

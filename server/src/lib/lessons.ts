@@ -1,9 +1,4 @@
-import {
-  asDiscrateSlot,
-  isAvailableSlot,
-  maskCalls,
-  setDayTime,
-} from "@litespace/sol";
+import { asDiscrateSlot, isAvailableSlot, maskCalls } from "@litespace/sol";
 import dayjs from "@/lib/dayjs";
 import { ISlot, ICall } from "@litespace/types";
 
@@ -16,7 +11,7 @@ export function hasEnoughTime({
   calls: ICall.Self[];
   slot: ISlot.Self;
 }): boolean {
-  const date = setDayTime(dayjs.utc(call.start));
+  const date = dayjs.utc(call.start).startOf("day");
   const availableSlot = isAvailableSlot(slot, date);
   if (!availableSlot) return false;
 

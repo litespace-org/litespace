@@ -2,9 +2,8 @@ import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
-import { parseRailywayTime } from "@/lib/time";
-import { MINUTES_OF_HOUR } from "@/constants/number";
 import { isEmpty } from "lodash";
+import { Time } from "@litespace/sol";
 
 const arabicRegExp = /^[\u0600-\u06FF\s]+$/;
 const englishRegExp = /^[a-zA-Z\s]+$/;
@@ -81,36 +80,15 @@ export function useValidation() {
   );
 
   const validateTime = useCallback(
-    (payload: { time: string; min?: string; max?: string }) => {
-      const message = intl.formatMessage({
-        id: messages["error.schedule.time"],
-      });
-      const time = parseRailywayTime(payload.time);
-      const timeMinutes = time.hours * MINUTES_OF_HOUR + time.minutes;
-      if (Number.isNaN(time.hours) || Number.isNaN(time.minutes))
-        return message;
+    ({ time, min, max }: { time: Time; min?: Time; max?: Time }) => {
+      const same =
+        (min && time.isSame(min, "m")) || (max && time.isSame(max, "m"));
 
-      if (payload.min) {
-        const min = parseRailywayTime(payload.min);
-        const minMinutes = min.hours * MINUTES_OF_HOUR + min.minutes;
-        if (
-          Number.isNaN(min.hours) ||
-          Number.isNaN(min.minutes) ||
-          timeMinutes < minMinutes
-        )
-          return message;
-      }
+      const before = min && time.isBefore(min);
+      const after = max && time.isAfter(max);
 
-      if (payload.max) {
-        const max = parseRailywayTime(payload.max);
-        const maxMinutes = max.hours * MINUTES_OF_HOUR + max.minutes;
-        if (
-          Number.isNaN(max.hours) ||
-          Number.isNaN(max.minutes) ||
-          timeMinutes > maxMinutes
-        )
-          return message;
-      }
+      if (same || before || after)
+        return intl.formatMessage({ id: messages["error.schedule.time"] });
 
       return true;
     },
@@ -121,6 +99,7 @@ export function useValidation() {
     () =>
       ({
         required,
+        validateTime,
         name: {
           en: validateName(true),
           ar: validateName(false),
@@ -246,35 +225,6 @@ export function useValidation() {
               return validateDate({
                 date: value,
                 min: values.date.start,
-              });
-            },
-          },
-        },
-
-        time: {
-          start: {
-            required,
-            validate<T extends { time: { end: string } }>(
-              value: string,
-              values: T
-            ) {
-              console.log({ src: "start", value, values });
-              return validateTime({
-                time: value,
-                max: values.time.end,
-              });
-            },
-          },
-          end: {
-            required,
-            validate<T extends { time: { start: string } }>(
-              value: string,
-              values: T
-            ) {
-              console.log({ src: "end", value, values });
-              return validateTime({
-                time: value,
-                min: values.time.start,
               });
             },
           },
