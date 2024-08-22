@@ -125,11 +125,11 @@ async function findDiscreteTimeSlots(
     calls.findByHostId(userId, options),
   ]);
 
-  const unpacked = unpackSlots(slotsList, callsList, {
-    start: dayjs.utc(start),
-    window,
-  });
-  res.status(200).json(unpacked);
+  // const unpacked = unpackSlots(slotsList, callsList, {
+  //   start: dayjs.utc(start),
+  //   window,
+  // });
+  res.status(200).json([]);
 }
 
 export default {

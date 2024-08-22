@@ -206,7 +206,7 @@ export function selectSlotCalls(
   return calls.filter((call) => {
     return (
       dayjs.utc(call.start).isBetween(slot.start, slot.end, "minutes", "[]") &&
-      slot.id === call.slotId
+      slot.id === call.ruleId
     );
   });
 }

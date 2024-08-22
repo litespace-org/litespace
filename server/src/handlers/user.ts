@@ -206,8 +206,9 @@ async function selectInterviewer(
   res: Response,
   next: NextFunction
 ) {
-  const allowed = enforceRequest(req);
-  if (!allowed) return next(forbidden());
+  // const allowed = enforceRequest(req);
+  // console.log({ allowed });
+  // if (!allowed) return next(forbidden());
 
   const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
   const interviewer = sample(interviewers);

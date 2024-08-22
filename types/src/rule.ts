@@ -9,7 +9,7 @@ export type Self = {
   end: string;
   time: string;
   duration: number;
-  weekday: Weekday[];
+  weekdays: Weekday[];
   monthday?: number;
   createAt: string;
   updatedAt: string;
@@ -24,10 +24,16 @@ export type Row = {
   end: Date;
   time: string;
   duration: number;
-  weekday: Weekday[];
+  weekdays: string;
   monthday: number | null;
   created_at: Date;
   updated_at: Date;
+};
+
+export type RuleEvent = {
+  id: number;
+  start: string;
+  end: string;
 };
 
 export type CreatePayload = {
@@ -38,7 +44,7 @@ export type CreatePayload = {
   end: string;
   time: string;
   duration: number;
-  weekday?: Weekday[];
+  weekdays?: Weekday[];
   monthday?: number;
 };
 
@@ -49,6 +55,11 @@ export type CreateApiPayload = {
   end: string;
   time: string;
   duration: number;
-  weekday?: Weekday[];
+  weekdays?: Weekday[];
   monthday?: number;
+};
+
+export type FindUnpackedUserRulesResponse = {
+  rules: Self[];
+  unpacked: RuleEvent[];
 };

@@ -70,6 +70,7 @@
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.11.5",
     "pg-format": "^1.0.4",
+    "rrule": "^2.8.1",
     "socket.io": "^4.7.5",
     "url-pattern": "^1.0.3",
     "zod": "^3.23.8"

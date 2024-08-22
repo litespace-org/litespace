@@ -78,6 +78,7 @@ app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", routes.authorization);
 app.use("/api/v1/user", routes.user);
 app.use("/api/v1/slot", routes.slot);
+app.use("/api/v1/rule", routes.rule);
 app.use("/api/v1/tutor", routes.tutor);
 app.use("/api/v1/student", routes.student);
 app.use("/api/v1/call", routes.call);

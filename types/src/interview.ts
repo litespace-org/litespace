@@ -43,7 +43,7 @@ export type CreatePayload = {
 
 export type CreateApiPayload = {
   interviewerId: number;
-  call: { start: string; slotId: number };
+  call: { start: string; ruleId: number };
 };
 
 export type UpdatePayload = {

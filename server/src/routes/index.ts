@@ -14,6 +14,7 @@ import invite from "@/routes/invite";
 import report from "@/routes/report";
 import reportReply from "@/routes/reportReply";
 import asset from "@/routes/asset";
+import rule from "@/routes/rule";
 
 export default {
   user,
@@ -32,4 +33,5 @@ export default {
   authorization,
   interview,
   asset,
+  rule,
 };

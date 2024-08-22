@@ -3274,6 +3274,7 @@ __metadata:
     passport-google-oauth20: "npm:^2.0.0"
     pg: "npm:^8.11.5"
     pg-format: "npm:^1.0.4"
+    rrule: "npm:^2.8.1"
     socket.io: "npm:^4.7.5"
     ts-jest: "npm:^29.2.3"
     ts-node: "npm:^10.9.2"

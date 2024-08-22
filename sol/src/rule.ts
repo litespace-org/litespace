@@ -1,9 +1,9 @@
-import { RRule, Frequency, Weekday } from "rrule";
+import { RRule, Frequency, Weekday, datetime } from "rrule";
 import { dayjs } from "@/dayjs";
 import { RawTime, Time } from "@/time";
 import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
-import { IDate, IRule } from "@litespace/types";
+import { ICall, IDate, IRule } from "@litespace/types";
 
 // export type { Frequency, Weekday, RRule };
 
@@ -199,7 +199,10 @@ export class Schedule {
     return events;
   }
 
-  public static order(events: Event[], order: "asc" | "desc"): Event[] {
+  public static order<T extends Event>(
+    events: T[],
+    order: "asc" | "desc"
+  ): T[] {
     return orderBy(events, (event) => dayjs.utc(event.start).unix(), order);
   }
 
@@ -260,7 +263,68 @@ export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
     end: rule.end,
     time: rule.time,
     duration: rule.duration,
-    weekday: rule.weekday?.map((day) => weekdayMap[day]),
+    weekday: rule.weekdays?.map((day) => weekdayMap[day]),
     monthday: rule.monthday,
   };
+}
+
+export function unpackRules({
+  rules,
+  calls,
+  start,
+  end,
+}: {
+  rules: IRule.Self[];
+  calls: ICall.Self[];
+  start: string;
+  end: string;
+}) {
+  const output: IRule.RuleEvent[] = [];
+
+  for (const rule of rules) {
+    const ruleCalls = calls
+      .filter((call) => call.ruleId === rule.id)
+      .map((call) => {
+        const start = dayjs.utc(call.start);
+        const end = start.add(call.duration, "minutes");
+        return Schedule.event(start, end);
+      });
+
+    const ruleEvents: IRule.RuleEvent[] = Schedule.from(asRule(rule))
+      .between(start, end, ruleCalls)
+      .map((event) => ({ id: rule.id, ...event }));
+
+    output.push(...ruleEvents);
+  }
+
+  return output;
+}
+
+export function splitRuleEvent<T extends Event>(
+  rule: T,
+  duration: number
+): T[] {
+  const list: T[] = [];
+  let start = dayjs.utc(rule.start);
+
+  while (true) {
+    const end = start.add(duration, "minutes");
+    if (end.isAfter(rule.end)) break;
+    list.push({ ...rule, start: start.toISOString(), end: end.toISOString() });
+    start = end;
+  }
+
+  return list;
+}
+
+export function toUtcDate(value: string | Dayjs) {
+  const date = dayjs.utc(value);
+  return datetime(
+    date.year(),
+    date.month() + 1,
+    date.date(),
+    date.hour(),
+    date.minute(),
+    date.second()
+  );
 }

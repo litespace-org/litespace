@@ -1,28 +1,41 @@
-import { calls, slots, users } from "@/models";
+import { calls, rules, users } from "@/models";
 import { ICall, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { forbidden, notfound, badRequest } from "@/lib/error";
-import { hasEnoughTime } from "@/lib/lessons";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { enforceRequest } from "@/middleware/accessControl";
 import { canBeInterviewed } from "@/lib/call";
-import { identityObject } from "@/validation/utils";
+import {
+  callType,
+  datetime,
+  id,
+  identityObject,
+  number,
+} from "@/validation/utils";
+import zod from "zod";
 
 const durations = [15, 30];
+
+const createCallPayload = zod.object({
+  ruleId: id,
+  start: datetime,
+  type: callType,
+  duration: number,
+});
 
 async function createCall(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
-  const payload = schema.http.call.create.body.parse(req.body);
+  const payload = createCallPayload.parse(req.body);
   if (!durations.includes(payload.duration)) return next(badRequest());
 
-  const slot = await slots.findById(payload.slotId);
-  if (!slot) return next(notfound.slot());
+  const rule = await rules.findById(payload.ruleId);
+  if (!rule) return next(notfound.base());
 
-  const host = await users.findById(slot.userId);
+  const host = await users.findById(rule.userId);
   if (!host) return next(notfound.user());
 
   const student = req.user.role === IUser.Role.Student;
@@ -45,19 +58,19 @@ async function createCall(req: Request, res: Response, next: NextFunction) {
     if (!canBeInterviewed(interviews)) return next(badRequest());
   }
 
-  const bookedCalls = await calls.findBySlotId(payload.slotId);
-  const enough = hasEnoughTime({
-    call: { start: payload.start, duration: payload.duration },
-    calls: bookedCalls,
-    slot,
-  });
-  if (!enough) return next(badRequest());
+  // const bookedCalls = await calls.findBySlotId(payload.ruleId);
+  // const enough = hasEnoughTime({
+  //   call: { start: payload.start, duration: payload.duration },
+  //   calls: bookedCalls,
+  //   slot,
+  // });
+  // if (!enough) return next(badRequest());
 
   const call = await calls.create({
     hostId: host.id,
     type: payload.type,
     start: payload.start,
-    slotId: payload.slotId,
+    ruleId: payload.ruleId,
     attendeeId: req.user.id,
     duration: payload.duration,
   });

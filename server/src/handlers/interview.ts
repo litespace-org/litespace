@@ -1,8 +1,7 @@
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
-import { hasEnoughTime } from "@/lib/lessons";
 import { enforceRequest } from "@/middleware/accessControl";
-import { calls, interviews, slots, users } from "@/models";
+import { calls, interviews, rules, users } from "@/models";
 import { knex } from "@/models/query";
 import { boolean, datetime, id, number, string } from "@/validation/utils";
 import { ICall, IInterview } from "@litespace/types";
@@ -16,7 +15,7 @@ const createInterviewPayload = zod.object({
   interviewerId: id,
   call: zod.object({
     start: datetime,
-    slotId: id,
+    ruleId: id,
   }),
 });
 
@@ -56,16 +55,16 @@ async function createInterview(
   const interviewable = canBeInterviewed(list);
   if (!interviewable) return next(badRequest());
 
-  const slot = await slots.findById(call.slotId);
-  if (!slot) return next(notfound.slot());
+  const rule = await rules.findById(call.ruleId);
+  if (!rule) return next(notfound.base());
 
-  const bookedCalls = await calls.findBySlotId(call.slotId);
-  const enough = hasEnoughTime({
-    call: { start: call.start, duration: INTERVIEW_DURATION },
-    calls: bookedCalls,
-    slot,
-  });
-  if (!enough) return next(badRequest());
+  // const bookedCalls = await calls.findBySlotId(call.ruleId);
+  // const enough = hasEnoughTime({
+  //   call: { start: call.start, duration: INTERVIEW_DURATION },
+  //   calls: bookedCalls,
+  //   slot,
+  // });
+  // if (!enough) return next(badRequest());
 
   const [interview, interviewCall] = await knex.transaction(async (tx) => {
     const interviewCall = await calls.create(
@@ -73,7 +72,7 @@ async function createInterview(
         hostId: interviewerId,
         attendeeId: intervieweeId,
         duration: INTERVIEW_DURATION,
-        slotId: call.slotId,
+        ruleId: call.ruleId,
         start: call.start,
         type: ICall.Type.Interview,
       },

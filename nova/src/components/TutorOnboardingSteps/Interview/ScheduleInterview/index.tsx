@@ -1,4 +1,4 @@
-import { IInterview, ISlot, IUser } from "@litespace/types";
+import { IInterview, IRule, IUser } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "react-query";
@@ -13,9 +13,9 @@ import {
   toaster,
 } from "@litespace/luna";
 import cn from "classnames";
-import { splitSlot } from "@litespace/sol";
-import { flatten } from "lodash";
 import { useIntl } from "react-intl";
+import { flatten } from "lodash";
+import { splitRuleEvent } from "@litespace/sol";
 
 const WINDOW = 30;
 
@@ -25,27 +25,37 @@ const ScheduleInterview: React.FC<{
 }> = ({ interviewer, onSuccess }) => {
   const intl = useIntl();
   const [date, setDate] = useState<Dayjs>(dayjs());
-  const [selectedSlot, setSelectedSlot] = useState<ISlot.Discrete | null>(null);
+  const [selectedRule, setSelectedRule] = useState<IRule.RuleEvent | null>(
+    null
+  );
 
   const start = useMemo(() => dayjs(), []);
   const end = useMemo(() => start.add(WINDOW, "days"), [start]);
 
-  const slots = useQuery({
+  const rules = useQuery({
     queryKey: "interviewer-slots",
     queryFn: async () => {
-      return await atlas.slot.findDiscreteTimeSlots(interviewer.id, {
-        start: start.format("YYYY-MM-DD"),
-        window: WINDOW,
-      });
+      return atlas.rule.findUnpackedUserRules(
+        interviewer.id,
+        start.utc().format("YYYY-MM-DD"),
+        end.utc().format("YYYY-MM-DD")
+      );
     },
   });
+
+  const dayRules: IRule.RuleEvent[] = useMemo(() => {
+    if (!rules.data) return [];
+    return rules.data.unpacked.filter((rule) =>
+      dayjs(rule.start).isSame(date, "day")
+    );
+  }, [date, rules.data]);
 
   const mutation = useMutation({
     mutationFn: (payload: IInterview.CreateApiPayload) =>
       atlas.interview.create(payload),
     onSuccess() {
       onSuccess();
-      slots.refetch();
+      rules.refetch();
       toaster.success({
         title: intl.formatMessage({
           id: messages["page.tutor.onboarding.book.interview.success.title"],
@@ -62,17 +72,9 @@ const ScheduleInterview: React.FC<{
     },
   });
 
-  const daySlots: ISlot.Discrete[] = useMemo(() => {
-    if (!slots.data) return [];
-    return slots.data.find((slot) => date.isSame(slot.day, "day"))?.slots ?? [];
-  }, [date, slots.data]);
-
-  const selectableSlots = useMemo(() => {
-    if (!daySlots) return [];
-    return flatten(daySlots.map((slot) => splitSlot(slot)));
-  }, [daySlots]);
-
-  console.log({ slots: slots.data });
+  const selectableEvents: IRule.RuleEvent[] = useMemo(() => {
+    return flatten(dayRules.map((rule) => splitRuleEvent(rule, 30)));
+  }, [dayRules]);
 
   return (
     <div>
@@ -100,7 +102,7 @@ const ScheduleInterview: React.FC<{
           max={end.subtract(1, "day")}
           selected={date}
           onSelect={(date) => setDate(dayjs(date.format("YYYY-MM-DD")))}
-          disable={mutation.isLoading || slots.isLoading}
+          disable={mutation.isLoading || rules.isLoading}
         />
 
         <div className="flex flex-col w-[300px]">
@@ -114,22 +116,24 @@ const ScheduleInterview: React.FC<{
               "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
             )}
           >
-            {selectableSlots
-              .filter((slot) => dayjs(slot.start).isAfter(dayjs(), "minutes"))
-              .map((slot) => {
+            {selectableEvents
+              .filter((event) =>
+                dayjs.utc(event.start).isAfter(dayjs.utc(), "minutes")
+              )
+              .map((event) => {
                 return (
-                  <li key={slot.start}>
+                  <li key={event.start}>
                     <Button
-                      onClick={() => setSelectedSlot(slot)}
+                      onClick={() => setSelectedRule(event)}
                       type={
-                        selectedSlot &&
-                        dayjs(slot.start).isSame(selectedSlot.start, "minutes")
+                        selectedRule &&
+                        dayjs(event.start).isSame(selectedRule.start, "minutes")
                           ? ButtonType.Primary
                           : ButtonType.Secondary
                       }
-                      disabled={mutation.isLoading || slots.isFetching}
+                      disabled={mutation.isLoading || rules.isFetching}
                     >
-                      {dayjs(slot.start).format("hh:mm a")}
+                      {dayjs(event.start).format("hh:mm a")}
                     </Button>
                   </li>
                 );
@@ -140,13 +144,13 @@ const ScheduleInterview: React.FC<{
       <div className="w-[250px] mt-12">
         <Button
           onClick={() => {
-            if (!selectedSlot) return;
+            if (!selectedRule) return;
             mutation.mutate({
               interviewerId: interviewer.id,
-              call: { slotId: selectedSlot.id, start: selectedSlot.start },
+              call: { ruleId: selectedRule.id, start: selectedRule.start },
             });
           }}
-          disabled={!selectedSlot || mutation.isLoading}
+          disabled={!selectedRule || mutation.isLoading}
           loading={mutation.isLoading}
         >
           <span className="truncate">

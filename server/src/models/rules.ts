@@ -5,7 +5,7 @@ import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 
 export class Rules {
-  table = "rule" as const;
+  table = "rules" as const;
 
   async create(
     payload: IRule.CreatePayload,
@@ -21,7 +21,7 @@ export class Rules {
         end: dayjs.utc(payload.end).toDate(),
         time: payload.time,
         duration: payload.duration,
-        weekday: payload.weekday || [],
+        weekdays: JSON.stringify(payload.weekdays || []),
         monthday: payload.monthday || null,
         created_at: now,
         updated_at: now,
@@ -58,6 +58,7 @@ export class Rules {
   }
 
   from(row: IRule.Row): IRule.Self {
+    console.log(row.weekdays, typeof row.weekdays);
     return {
       id: row.id,
       userId: row.user_id,
@@ -67,7 +68,7 @@ export class Rules {
       end: row.end.toISOString(),
       time: row.time,
       duration: row.duration,
-      weekday: row.weekday,
+      weekdays: row.weekdays as unknown as IRule.Self["weekdays"],
       monthday: row.monthday || undefined,
       createAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),

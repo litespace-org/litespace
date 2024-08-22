@@ -1,7 +1,8 @@
-import { knex, query } from "@/models/query";
+import { column, knex, query } from "@/models/query";
 import { first, merge, omit } from "lodash";
 import { ICall, IUser } from "@litespace/types";
 import { Knex } from "knex";
+import { users } from "./users";
 
 export class Calls {
   table = "calls";
@@ -16,7 +17,7 @@ export class Calls {
         type: call.type,
         host_id: call.hostId,
         attendee_id: call.attendeeId,
-        slot_id: call.slotId,
+        rule_id: call.ruleId,
         start: new Date(call.start),
         duration: call.duration,
         created_at: now,
@@ -47,8 +48,8 @@ export class Calls {
   ): Promise<ICall.Self[]> {
     const query = knex<ICall.Row>("calls").select().where("host_id", id);
 
-    if (options.start) query.andWhere("start", ">=", new Date(options.start));
-    if (options.end) query.andWhere("start", "<=", new Date(options.end));
+    if (options.start) query.andWhere("start", ">=", options.start);
+    if (options.end) query.andWhere("start", "<=", options.end);
 
     const rows = await query.then();
     return rows.map((row) => this.from(row));
@@ -61,8 +62,8 @@ export class Calls {
     return rows.map((row) => this.from(row));
   }
 
-  async findBySlotId(id: number): Promise<ICall.Self[]> {
-    const rows = await knex<ICall.Row>("calls").select().where("slot_id", id);
+  async findByRuleId(id: number): Promise<ICall.Self[]> {
+    const rows = await knex<ICall.Row>("calls").select().where("rule_id", id);
     return rows.map((row) => this.from(row));
   }
 
@@ -91,19 +92,19 @@ export class Calls {
   getSelectHostCallQuery() {
     return knex
       .select<ICall.HostCall[]>({
-        id: "calls.id",
-        hostId: "calls.host_id",
-        attendeeId: "calls.attendee_id",
-        attendeeEmail: "users.email",
-        attendeeNameAr: "users.name_ar",
-        attendeeNameEn: "users.name_en",
-        slotId: "calls.slot_id",
-        start: "calls.start",
-        duration: "calls.duration",
-        note: "calls.note",
-        feedback: "calls.feedback",
-        createdAt: "calls.created_at",
-        updatedAt: "calls.updated_at",
+        id: this.column("id"),
+        hostId: this.column("host_id"),
+        attendeeId: this.column("attendee_id"),
+        attendeeEmail: users.column("email"),
+        attendeeNameAr: users.column("name_ar"),
+        attendeeNameEn: users.column("name_en"),
+        ruleId: this.column("rule_id"),
+        start: this.column("start"),
+        duration: this.column("duration"),
+        note: this.column("note"),
+        feedback: this.column("feedback"),
+        createdAt: this.column("created_at"),
+        updatedAt: this.column("updated_at"),
       })
       .from<ICall.Row>("calls")
       .innerJoin<IUser.Row>("users", "users.id", "calls.attendee_id")
@@ -113,20 +114,20 @@ export class Calls {
   getSelectAttendeeCallQuery() {
     return knex
       .select<ICall.AttendeeCallRow[]>({
-        id: "calls.id",
-        attendeeId: "calls.attendee_id",
-        hostId: "calls.host_id",
-        hostEmail: "users.email",
-        hostNameAr: "users.name_ar",
-        hostNameEn: "users.name_en",
-        slotId: "calls.slot_id",
-        start: "calls.start",
-        duration: "calls.duration",
-        type: "calls.type",
-        note: "calls.note",
-        feedback: "calls.feedback",
-        createdAt: "calls.created_at",
-        updatedAt: "calls.updated_at",
+        id: this.column("id"),
+        attendeeId: this.column("attendee_id"),
+        hostId: this.column("host_id"),
+        hostEmail: users.column("email"),
+        hostNameAr: users.column("name_ar"),
+        hostNameEn: users.column("name_en"),
+        ruleId: this.column("rule_id"),
+        start: this.column("start"),
+        duration: this.column("duration"),
+        type: this.column("type"),
+        note: this.column("note"),
+        feedback: this.column("feedback"),
+        createdAt: this.column("created_at"),
+        updatedAt: this.column("updated_at"),
       })
       .from<ICall.Row>("calls")
       .innerJoin("users", "users.id", "calls.host_id")
@@ -139,7 +140,7 @@ export class Calls {
       type: row.type,
       hostId: row.host_id,
       attendeeId: row.attendee_id,
-      slotId: row.slot_id,
+      ruleId: row.rule_id,
       start: row.start.toISOString(),
       duration: row.duration,
       note: row.note,
@@ -162,6 +163,10 @@ export class Calls {
     return tx
       ? tx<ICall.Row>(this.table).clone()
       : knex<ICall.Row>(this.table).clone();
+  }
+
+  column(value: keyof ICall.Row) {
+    return column(value, this.table);
   }
 }
 

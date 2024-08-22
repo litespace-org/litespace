@@ -10,7 +10,7 @@ export type Row = {
   type: Type;
   host_id: number;
   attendee_id: number;
-  slot_id: number;
+  rule_id: number;
   start: Date;
   duration: number;
   note: string | null;
@@ -24,7 +24,7 @@ export type Self = {
   type: Type;
   hostId: number;
   attendeeId: number;
-  slotId: number;
+  ruleId: number;
   start: string;
   duration: number;
   note: string | null;
@@ -53,7 +53,7 @@ export type AttendeeCallRow = Self & {
 export type CreateApiPayload = {
   type: Type;
   start: string;
-  slotId: number;
+  ruleId: number;
   duration: number;
 };
 

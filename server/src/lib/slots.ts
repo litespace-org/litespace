@@ -183,7 +183,7 @@ export function selectSlotCalls(
   return calls.filter(
     (call) =>
       dayjs.utc(call.start).isBetween(slot.start, slot.end) &&
-      slot.id === call.slotId
+      slot.id === call.ruleId
   );
 }
 

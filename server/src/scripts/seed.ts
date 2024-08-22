@@ -4,18 +4,21 @@ import {
   invites,
   plans,
   reports,
-  slots,
   reportReplies,
   tutors,
   users,
   ratings,
   rooms,
   messages,
+  rules,
 } from "@/models";
-import { ICall, ISlot, IUser } from "@litespace/types";
+import { ICall, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
+import { Frequency } from "rrule";
+import { Time } from "@litespace/sol";
+import { IDate } from "@litespace/types";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -114,38 +117,33 @@ async function main(): Promise<void> {
     feedback: "مدرس عظيم جدا",
   });
 
-  const startDate = dayjs.utc().format("YYYY-MM-DD");
-
-  const firstSlot = await slots.create({
+  const rule = await rules.create({
     userId: interviewer.id,
-    date: { start: startDate },
-    time: { start: "08:00:00", end: "13:00:00" },
-    title: "Interviewer slot",
-    repeat: ISlot.Repeat.Daily,
-    weekday: -1,
+    frequence: Frequency.DAILY,
+    start: dayjs.utc().startOf("day").toISOString(),
+    end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
+    time: Time.from("2pm").utc().format(),
+    duration: 180,
+    title: "Main Rule",
+    weekdays: [
+      IDate.Weekday.Monday,
+      IDate.Weekday.Tuesday,
+      IDate.Weekday.Wednesday,
+      IDate.Weekday.Thursday,
+      IDate.Weekday.Friday,
+    ],
   });
-
-  await slots.create({
-    userId: interviewer.id,
-    date: { start: startDate },
-    time: { start: "17:00:00", end: "22:00:00" },
-    title: "Slot 2",
-    repeat: ISlot.Repeat.Daily,
-    weekday: -1,
-  });
-
-  const start = dayjs
-    .utc()
-    .set("minutes", 0)
-    .set("minutes", 0)
-    .add(30, "minutes");
 
   await calls.create({
     hostId: interviewer.id,
     attendeeId: tutor.id,
     duration: 30,
-    slotId: firstSlot.id,
-    start: start.toISOString(),
+    ruleId: rule.id,
+    start: dayjs
+      .utc()
+      .startOf("day")
+      .add(Time.from("2pm").totalMinutes(), "minutes")
+      .toISOString(),
     type: ICall.Type.Interview,
   });
 

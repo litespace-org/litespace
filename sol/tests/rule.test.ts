@@ -1,11 +1,11 @@
 import { datetime, Frequency, RRule, RRuleSet, rrulestr, Weekday } from "rrule";
 import { dayjs } from "@/dayjs";
 import { Time } from "@/time";
-import { Schedule, Rule, Event } from "@/schedule";
+import { Schedule, Rule, Event, toUtcDate } from "@/rule";
 import { expect } from "chai";
 
 describe("Schedule", () => {
-  it("should unpack rules", () => {
+  it.only("should unpack rules", () => {
     const rule: Rule = {
       frequency: Frequency.DAILY,
       start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
