@@ -1,12 +1,5 @@
 import { passwordRegex } from "@/constants";
-import {
-  IUser,
-  ISlot,
-  ISubscription,
-  ICall,
-  IFilter,
-  ITutor,
-} from "@litespace/types";
+import { IUser, ISlot, ISubscription, ICall, IDate } from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -35,7 +28,19 @@ export const jsonBoolean = zod
 
 export const optionalString = zod.optional(string);
 
-export const weekday = zod.coerce.number().min(-1).max(6);
+export const weekday = zod
+  .enum([
+    IDate.Weekday.Monday.toString(),
+    IDate.Weekday.Tuesday.toString(),
+    IDate.Weekday.Wednesday.toString(),
+    IDate.Weekday.Thursday.toString(),
+    IDate.Weekday.Friday.toString(),
+    IDate.Weekday.Saturday.toString(),
+    IDate.Weekday.Sunday.toString(),
+  ])
+  .pipe(zod.coerce.number());
+
+export const monthday = zod.coerce.number().min(1).max(31);
 
 export const time = zod.string().time();
 

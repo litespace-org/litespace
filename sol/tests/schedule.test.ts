@@ -5,7 +5,7 @@ import { Schedule, Rule, Event } from "@/schedule";
 import { expect } from "chai";
 
 describe("Schedule", () => {
-  it("should work", () => {
+  it("should unpack rules", () => {
     const rule: Rule = {
       frequency: Frequency.DAILY,
       start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
@@ -25,6 +25,25 @@ describe("Schedule", () => {
     expect(recurrence).to.be.deep.eq([
       { start: "2024-08-11T12:30:00.000Z", end: "2024-08-11T13:00:00.000Z" },
       { start: "2024-08-12T12:00:00.000Z", end: "2024-08-12T13:00:00.000Z" },
+    ]);
+  });
+
+  it("should unpack single rule with single event", () => {
+    const rule: Rule = {
+      frequency: Frequency.DAILY,
+      start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
+      end: dayjs.utc("2024-08-02").startOf("day").toISOString(),
+      time: Time.from("12pm"),
+      duration: 60,
+    };
+
+    const recurrence = new Schedule(rule).between(
+      dayjs.utc("2024-08-01").toDate(),
+      dayjs.utc("2024-08-02").toDate() // non includsive
+    );
+
+    expect(recurrence).to.be.deep.eq([
+      { start: "2024-08-01T12:00:00.000Z", end: "2024-08-01T13:00:00.000Z" },
     ]);
   });
 

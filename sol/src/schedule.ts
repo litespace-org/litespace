@@ -1,16 +1,11 @@
-import {
-  datetime,
-  RRule,
-  Frequency,
-  RRuleSet,
-  rrulestr,
-  ByWeekday,
-  Weekday,
-} from "rrule";
+import { RRule, Frequency, Weekday } from "rrule";
 import { dayjs } from "@/dayjs";
 import { RawTime, Time } from "@/time";
-import { orderBy, isEmpty, isEqual, intersection, minBy, maxBy } from "lodash";
+import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
+import { IDate, IRule } from "@litespace/types";
+
+// export type { Frequency, Weekday, RRule };
 
 /**
  * ### Notes
@@ -26,9 +21,11 @@ import { Dayjs } from "dayjs";
  * 5. `WEEKLY` with none: event will happen at the start of every week.
  * 6. `MONTHLY` with none: event will happen each month at the same `Rule.start`
  *    day.
+ * 7. Single event has a date range of one day (e.g., start = 2024-08-01 & end = 2024-08-02)
+ *
  */
 export type Rule = {
-  frequency: Frequency;
+  frequency: Frequency.DAILY | Frequency.WEEKLY | Frequency.MONTHLY;
   /**
    * UTC based start time
    */
@@ -59,18 +56,6 @@ export type Event = {
 
 type Rulish = Rule | Schedule;
 type Datish = string | Date | Dayjs;
-
-function asRule(rule: Rule): RRule {
-  const time = Time.from(rule.time);
-  return new RRule({
-    freq: rule.frequency,
-    dtstart: dayjs.utc(rule.start).toDate(),
-    until: rule.end ? dayjs.utc(rule.end).toDate() : null,
-    byweekday: rule.weekday,
-    byhour: time.hours(),
-    byminute: time.minutes(),
-  });
-}
 
 export class Schedule {
   private readonly rule: Rule;
@@ -135,31 +120,6 @@ export class Schedule {
     if (!end || !start) throw new Error("Unable to determine date overlap");
 
     return Schedule.event(start, end);
-  }
-
-  private isIntersectingDateTime(rule: Rulish): boolean {
-    const target = rule instanceof Schedule ? rule.rule : rule;
-    return (
-      this.isDateOverlapping(target.start, target.end) &&
-      this.isTimeOverlapping(target.time, target.duration)
-    );
-  }
-
-  public isWeekdayOverlapping(weekday: Rule["weekday"]) {
-    const noweekday = isEmpty(weekday) || isEmpty(this.rule.weekday);
-    const shared =
-      weekday &&
-      this.rule.weekday &&
-      intersection(
-        this.rule.weekday.map((day) => day.toString()),
-        weekday.map((day) => day.toString())
-      );
-
-    return noweekday || !isEmpty(shared);
-  }
-
-  public isSameWeekdayFreq(freq: Rule["frequency"]): boolean {
-    return this.rule.frequency === freq;
   }
 
   public isTimeOverlapping(time: RawTime, duration: number): boolean {
@@ -281,9 +241,26 @@ export class Schedule {
   }
 }
 
-export function applyDuration(dates: Date[], duration: number) {
-  return dates.map((date) => [
-    date.toISOString(),
-    dayjs.utc(date).add(duration, "minutes").toDate().toISOString(),
-  ]);
+export const weekdayMap = {
+  [IDate.Weekday.Monday]: RRule.MO,
+  [IDate.Weekday.Tuesday]: RRule.TU,
+  [IDate.Weekday.Wednesday]: RRule.WE,
+  [IDate.Weekday.Thursday]: RRule.TH,
+  [IDate.Weekday.Friday]: RRule.FR,
+  [IDate.Weekday.Saturday]: RRule.SA,
+  [IDate.Weekday.Sunday]: RRule.SU,
+};
+
+export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
+  rule: T
+): Rule {
+  return {
+    frequency: rule.frequence as Rule["frequency"],
+    start: rule.start,
+    end: rule.end,
+    time: rule.time,
+    duration: rule.duration,
+    weekday: rule.weekday?.map((day) => weekdayMap[day]),
+    monthday: rule.monthday,
+  };
 }

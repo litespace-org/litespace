@@ -5,6 +5,7 @@ import { Complex } from "@/models/complex";
 export const subscriptions = new Subscriptions();
 export const complex = new Complex();
 export { users } from "@/models/users";
+export { rules } from "@/models/rules";
 export { slots } from "@/models/slots";
 export { calls } from "@/models/calls";
 export { tutors } from "@/models/tutors";

@@ -15,6 +15,8 @@ export * as IToken from "@/token";
 export * as IFilter from "@/filter";
 export * as IInterview from "@/interview";
 export * as Events from "@/wss";
+export * as IRule from "@/rule";
+export * as IDate from "@/date";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";

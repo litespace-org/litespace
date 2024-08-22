@@ -5,7 +5,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
 export class Users {
-  table = "users";
+  table = "users" as const;
   columns: { filterable: [keyof IUser.Row, ...Array<keyof IUser.Row>] } = {
     filterable: [
       "id",

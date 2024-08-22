@@ -3309,6 +3309,7 @@ __metadata:
     zod: "npm:^3.23.8"
   peerDependencies:
     axios: ^1.7.2
+    rrule: ^2.8.1
   languageName: unknown
   linkType: soft
 

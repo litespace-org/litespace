@@ -6,6 +6,17 @@ export type NumericString = `${number}`;
 
 export type Paginated<T> = { list: T[]; total: number };
 
+export type Event = {
+  /**
+   * UTC based start time
+   */
+  start: string;
+  /**
+   * UTC based end time
+   */
+  end: string;
+};
+
 export type RecordAttributes = {
   createdAt: Date;
   createdById: number;
