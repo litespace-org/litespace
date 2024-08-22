@@ -134,6 +134,23 @@ async function main(): Promise<void> {
     ],
   });
 
+  await rules.create({
+    userId: tutor.id,
+    frequence: Frequency.DAILY,
+    start: dayjs.utc().startOf("day").toISOString(),
+    end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
+    time: Time.from("6pm").utc().format(),
+    duration: 180,
+    title: "Main Rule",
+    weekdays: [
+      IDate.Weekday.Monday,
+      IDate.Weekday.Tuesday,
+      IDate.Weekday.Wednesday,
+      IDate.Weekday.Thursday,
+      IDate.Weekday.Friday,
+    ],
+  });
+
   await calls.create({
     hostId: interviewer.id,
     attendeeId: tutor.id,
