@@ -3,7 +3,7 @@ import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
 import { isEmpty } from "lodash";
-import { Time } from "@litespace/sol";
+import { Duration, Time } from "@litespace/sol";
 
 const arabicRegExp = /^[\u0600-\u06FF\s]+$/;
 const englishRegExp = /^[a-zA-Z\s]+$/;
@@ -100,6 +100,7 @@ export function useValidation() {
       ({
         required,
         validateTime,
+        validateDate,
         name: {
           en: validateName(true),
           ar: validateName(false),
@@ -203,35 +204,36 @@ export function useValidation() {
             });
           },
         },
-        date: {
-          start: {
-            required,
-            validate<T extends { date: { end: string } }>(
-              value: string,
-              values: T
-            ) {
-              return validateDate({
-                date: value,
-                max: values.date.end,
-              });
-            },
-          },
-          end: {
-            validate<T extends { date: { start: string } }>(
-              value: string,
-              values: T
-            ) {
-              if (isEmpty(value)) return true;
-              return validateDate({
-                date: value,
-                min: values.date.start,
-              });
-            },
-          },
-        },
       }) as const,
     [intl, required, validateDate, validateName, validateTime]
   );
 
   return validation;
+}
+
+export function useRequired() {
+  const intl = useIntl();
+  return useMemo(
+    () => ({
+      value: true,
+      message: intl.formatMessage({ id: messages["error.required"] }),
+    }),
+    [intl]
+  );
+}
+
+export function useValidateDuration() {
+  const intl = useIntl();
+  const required = useRequired();
+
+  return {
+    required,
+    validate(duration: Duration) {
+      if (duration.minutes() < 30)
+        return intl.formatMessage({
+          id: messages["error.schedule.duration"],
+        });
+      return true;
+    },
+  };
 }

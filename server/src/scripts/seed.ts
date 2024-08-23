@@ -16,9 +16,8 @@ import { ICall, IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
-import { Frequency } from "rrule";
 import { Time } from "@litespace/sol";
-import { IDate } from "@litespace/types";
+import { IDate, IRule } from "@litespace/types";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -119,7 +118,7 @@ async function main(): Promise<void> {
 
   const rule = await rules.create({
     userId: interviewer.id,
-    frequence: Frequency.DAILY,
+    frequency: IRule.Frequency.Daily,
     start: dayjs.utc().startOf("day").toISOString(),
     end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
     time: Time.from("2pm").utc().format(),
@@ -136,7 +135,7 @@ async function main(): Promise<void> {
 
   await rules.create({
     userId: tutor.id,
-    frequence: Frequency.DAILY,
+    frequency: IRule.Frequency.Daily,
     start: dayjs.utc().startOf("day").toISOString(),
     end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
     time: Time.from("6pm").utc().format(),

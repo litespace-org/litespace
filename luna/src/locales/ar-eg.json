@@ -52,7 +52,7 @@
   "page.schedule.edit.add.dialog.form.fields.start-time.label": "موعد البدء",
   "page.schedule.edit.add.dialog.form.fields.start-time.placeholder": "12:00 ظهراً",
   "page.schedule.edit.add.dialog.form.fields.duration.label": "المدة",
-  "page.schedule.edit.add.dialog.form.fields.duration.placeholder": "xx:xx",
+  "page.schedule.edit.add.dialog.form.fields.duration.placeholder": "1س 30د",
   "page.schedule.edit.add.dialog.form.fields.end-date.label": "تاريخ الإنتهاء",
   "page.schedule.edit.add.dialog.form.fields.end-date.placeholder": "2024-09-01",
   "page.schedule.edit.add.dialog.form.fields.repeat.label": "التكرار",
@@ -104,6 +104,15 @@
   "global.months.october": "أكتوبر",
   "global.months.november": "نوفمبر",
   "global.months.december": "ديسمبر",
+  "global.duration.hour": "ساعة",
+  "global.duration.hours": "ساعات",
+  "global.duration.hours.pair": "ساعتين",
+  "global.duration.minute": "دقيقة",
+  "global.duration.minutes": "دقائق",
+  "global.duration.minutes.pair": "دقيقتين",
+  "global.duration.hour.short": "س",
+  "global.duration.minute.short": "د",
+  "global.duration.seperator": "و",
   "global.chat.input.placeholder": "أكتب رسالتك...",
   "global.chat.input.error.length.max": "من الأفضل ان لا تتخطي رسالتك ال 250 حرف",
   "global.notify.update.data": "تم تحديث بياناتك بنجاح",
@@ -131,5 +140,6 @@
   "error.schedule.title.min.length": "العنوان قصير جدا",
   "error.schedule.title.max.length": "العنوان طويل جدا",
   "error.schedule.date": "التاريخ غير مناسب",
-  "error.schedule.time": "الموعد غير مناسب"
+  "error.schedule.time": "الموعد غير مناسب",
+  "error.schedule.duration": "أقل مده هي 30 دقيقة"
 }

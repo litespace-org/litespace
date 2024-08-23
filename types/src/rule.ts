@@ -4,7 +4,7 @@ export type Self = {
   id: number;
   userId: number;
   title: string;
-  frequence: number;
+  frequency: Frequency;
   start: string;
   end: string;
   time: string;
@@ -19,7 +19,7 @@ export type Row = {
   id: number;
   user_id: number;
   title: string;
-  frequence: number;
+  frequency: Frequency;
   start: Date;
   end: Date;
   time: string;
@@ -39,7 +39,7 @@ export type RuleEvent = {
 export type CreatePayload = {
   userId: number;
   title: string;
-  frequence: number;
+  frequency: Frequency;
   start: string;
   end: string;
   time: string;
@@ -48,9 +48,15 @@ export type CreatePayload = {
   monthday?: number;
 };
 
+export enum Frequency {
+  Daily,
+  Weekly,
+  Monthly,
+}
+
 export type CreateApiPayload = {
   title: string;
-  frequence: number;
+  frequency: Frequency;
   start: string;
   end: string;
   time: string;

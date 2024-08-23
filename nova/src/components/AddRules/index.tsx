@@ -13,38 +13,46 @@ import {
   toaster,
   useFormatterMap,
   useValidation,
+  useValidateDuration,
+  useDurationUnitMap,
+  Duration as DurationInput,
 } from "@litespace/luna";
-import { ISlot } from "@litespace/types";
+import { IRule } from "@litespace/types";
 import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
-import { Time } from "@litespace/sol";
+import { Duration, Time } from "@litespace/sol";
 import { useMutation } from "react-query";
 import { atlas } from "@/lib/atlas";
 
 type IForm = {
   title: string;
-  date: { start: string; end: string };
-  time: { start: Time; end: Time };
-  repeat: ISlot.Repeat;
+  frequency: string;
+  start: string;
+  end: string;
+  time: Time;
+  duration: Duration;
+  weekday: [];
+  monthday: number;
 };
 
 const AddRules: React.FC = () => {
   const intl = useIntl();
   const validate = useValidation();
   const formatterMap = useFormatterMap();
+  const durationMap = useDurationUnitMap();
+  const validateDuration = useValidateDuration();
   const form = useForm<IForm>({
     defaultValues: {
-      title: "",
-      date: { start: dayjs().format("YYYY-MM-DD") },
-      repeat: ISlot.Repeat.No,
+      start: dayjs().format("YYYY-MM-DD"),
+      frequency: IRule.Frequency.Daily.toString(),
     },
   });
 
   const mutation = useMutation({
-    mutationFn: async (payload: ISlot.CreateApiPayload) => {
-      return await atlas.slot.create(payload);
+    mutationFn: async (payload: IRule.CreateApiPayload) => {
+      return await atlas.rule.create(payload);
     },
     onSuccess() {
       toaster.success({
@@ -65,17 +73,17 @@ const AddRules: React.FC = () => {
 
   const onSubmit = useMemo(
     () =>
-      form.handleSubmit((fields: IForm) =>
-        mutation.mutate({
+      form.handleSubmit((fields: IForm) => {
+        return mutation.mutate({
           title: fields.title,
-          time: {
-            start: fields.time.start.format(),
-            end: fields.time.end.format(),
-          },
-          date: fields.date,
-          repeat: fields.repeat,
-        })
-      ),
+          start: dayjs(fields.start).startOf("day").utc().toISOString(),
+          end: dayjs(fields.end).startOf("day").utc().toISOString(),
+          frequency: Number(fields.frequency) as IRule.Frequency,
+          time: fields.time.utc().format("railway"),
+          duration: fields.duration.minutes(),
+          weekdays: [],
+        });
+      }),
     [form, mutation]
   );
 
@@ -83,54 +91,25 @@ const AddRules: React.FC = () => {
     () => [
       {
         label: intl.formatMessage({
-          id: messages["global.schedule.repeat.types.no"],
-        }),
-        value: ISlot.Repeat.No,
-      },
-      {
-        label: intl.formatMessage({
           id: messages["global.schedule.repeat.types.daily"],
         }),
-        value: ISlot.Repeat.Daily,
+        value: IRule.Frequency.Daily.toString(),
       },
       {
         label: intl.formatMessage({
           id: messages["global.schedule.repeat.types.weekly"],
         }),
-        value: ISlot.Repeat.Weekly,
+        value: IRule.Frequency.Weekly.toString(),
       },
       {
         label: intl.formatMessage({
           id: messages["global.schedule.repeat.types.monthly"],
         }),
-        value: ISlot.Repeat.Monthly,
+        value: IRule.Frequency.Monthly.toString(),
       },
     ],
     [intl]
   );
-
-  const timeRules = useMemo(() => {
-    return {
-      start: {
-        required: validate.required,
-        validate(value: Time, values: IForm): boolean | string {
-          return validate.validateTime({
-            time: value,
-            max: values.time.end,
-          });
-        },
-      },
-      end: {
-        required: validate.required,
-        validate(value: Time, values: IForm): boolean | string {
-          return validate.validateTime({
-            time: value,
-            min: values.time.start,
-          });
-        },
-      },
-    };
-  }, [validate]);
 
   const meridiem = useMemo(
     () => ({
@@ -142,6 +121,24 @@ const AddRules: React.FC = () => {
       }),
     }),
     [intl]
+  );
+
+  const date = useMemo(
+    () => ({
+      start: {
+        required: validate.required,
+        validate(date: string, values: IForm) {
+          return validate.validateDate({ date, max: values.end });
+        },
+      },
+      end: {
+        required: validate.required,
+        validate(date: string, values: IForm) {
+          return validate.validateDate({ date, min: values.end });
+        },
+      },
+    }),
+    [validate]
   );
 
   const disabled = useMemo(() => mutation.isLoading, [mutation.isLoading]);
@@ -198,10 +195,10 @@ const AddRules: React.FC = () => {
             field={
               <Controller
                 control={form.control}
-                rules={validate.date.start}
-                name="date.start"
+                rules={date.start}
+                name="start"
                 render={({ field }) => {
-                  const value = form.watch("date.start");
+                  const value = form.watch("start");
                   return (
                     <DateInput
                       placeholder={intl.formatMessage({
@@ -209,12 +206,12 @@ const AddRules: React.FC = () => {
                           "page.schedule.edit.add.dialog.form.fields.start-date.placeholder"
                         ],
                       })}
-                      error={form.formState.errors["date"]?.start?.message}
+                      error={form.formState.errors["start"]?.message}
                       min={dayjs().startOf("day")}
                       onChange={(value: string) => {
                         field.onChange(value);
-                        form.trigger("date.start");
-                        form.trigger("date.end");
+                        form.trigger("start");
+                        form.trigger("end");
                       }}
                       value={value}
                       today={intl.formatMessage({
@@ -241,11 +238,11 @@ const AddRules: React.FC = () => {
             field={
               <Controller
                 control={form.control}
-                rules={validate.date.end}
-                name="date.end"
+                rules={date.end}
+                name="end"
                 render={({ field }) => {
-                  const value = form.watch("date.end");
-                  const min = form.watch("date.start");
+                  const value = form.watch("end");
+                  const min = form.watch("start");
 
                   return (
                     <DateInput
@@ -254,11 +251,11 @@ const AddRules: React.FC = () => {
                           "page.schedule.edit.add.dialog.form.fields.end-date.placeholder"
                         ],
                       })}
-                      error={form.formState.errors["date"]?.end?.message}
+                      error={form.formState.errors["end"]?.message}
                       onChange={(value: string) => {
                         field.onChange(value);
-                        form.trigger("date.start");
-                        form.trigger("date.end");
+                        form.trigger("start");
+                        form.trigger("end");
                       }}
                       min={min ? dayjs(min) : undefined}
                       value={value || ""}
@@ -287,8 +284,8 @@ const AddRules: React.FC = () => {
             field={
               <Controller
                 control={form.control}
-                name="time.start"
-                rules={timeRules.start}
+                name="time"
+                rules={{ required: validate.required }}
                 render={({ field }) => {
                   return (
                     <TimePicker
@@ -297,14 +294,10 @@ const AddRules: React.FC = () => {
                           "page.schedule.edit.add.dialog.form.fields.start-time.placeholder"
                         ],
                       })}
-                      error={form.formState.errors["time"]?.start?.message}
-                      onChange={(value: Time) => {
-                        field.onChange(value);
-                        form.trigger("time.start");
-                        form.trigger("time.end");
-                      }}
+                      error={form.formState.errors["time"]?.message}
+                      onChange={field.onChange}
                       labels={meridiem}
-                      time={form.watch("time.start")}
+                      time={form.watch("time")}
                       formatterMap={formatterMap}
                       disabled={disabled}
                     />
@@ -327,25 +320,20 @@ const AddRules: React.FC = () => {
             field={
               <Controller
                 control={form.control}
-                name="time.end"
-                rules={timeRules.end}
+                name="duration"
+                rules={validateDuration}
                 render={({ field }) => {
                   return (
-                    <TimePicker
+                    <DurationInput
                       placeholder={intl.formatMessage({
                         id: messages[
                           "page.schedule.edit.add.dialog.form.fields.duration.placeholder"
                         ],
                       })}
-                      error={form.formState.errors["time"]?.end?.message}
-                      onChange={(value: Time) => {
-                        field.onChange(value);
-                        form.trigger("time.start");
-                        form.trigger("time.end");
-                      }}
-                      labels={meridiem}
-                      time={form.watch("time.end")}
-                      formatterMap={formatterMap}
+                      error={form.formState.errors["duration"]?.message}
+                      onChange={field.onChange}
+                      labels={durationMap}
+                      value={form.watch("duration")}
                       disabled={disabled}
                     />
                   );
@@ -368,10 +356,10 @@ const AddRules: React.FC = () => {
           field={
             <Controller
               control={form.control}
-              name="repeat"
+              name="frequency"
               render={({ field }) => (
                 <Select
-                  value={form.watch("repeat")}
+                  value={form.watch("frequency")}
                   onChange={field.onChange}
                   list={repeatOptions}
                 />

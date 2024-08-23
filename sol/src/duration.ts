@@ -1,15 +1,15 @@
 const HOUR_MINUTE_COUNT = 60;
 
-type RawDuration = string;
+export type RawDuration = string;
 
-type Unit = { value: number; label: string | undefined };
+export type Unit = { value: number; label: string | undefined };
 
 const labels = {
   hour: ["hours", "hour", "hrs", "hr", "h", "ساعات", "ساعة", "س"],
   minutes: ["minutes", "minute", "mins", "min", "m", "دقائق", "دقيقة", "د"],
 };
 
-type UnitMap = {
+export type UnitMap = {
   hour?: string;
   pairHours?: string;
   hours?: string;
@@ -19,7 +19,7 @@ type UnitMap = {
   seperator?: string;
 };
 
-type UnitMapShort = {
+export type UnitMapShort = {
   hour?: string;
   minute?: string;
 };
@@ -83,12 +83,12 @@ export class Duration {
       .trim();
   }
 
-  formatHoursShort(hours: number, map: UnitMapShort) {
+  private formatHoursShort(hours: number, map: UnitMapShort) {
     if (hours === 0) return "";
     return [hours, map.hour].join("");
   }
 
-  formatMinutesShort(minutes: number, map: UnitMapShort) {
+  private formatMinutesShort(minutes: number, map: UnitMapShort) {
     if (minutes === 0) return "";
     return [minutes, map.minute].join("");
   }

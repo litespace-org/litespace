@@ -5,8 +5,6 @@ import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
 import { ICall, IDate, IRule } from "@litespace/types";
 
-// export type { Frequency, Weekday, RRule };
-
 /**
  * ### Notes
  * 1. Any frequency with `monthday` and
@@ -25,7 +23,7 @@ import { ICall, IDate, IRule } from "@litespace/types";
  *
  */
 export type Rule = {
-  frequency: Frequency.DAILY | Frequency.WEEKLY | Frequency.MONTHLY;
+  frequency: IRule.Frequency;
   /**
    * UTC based start time
    */
@@ -56,6 +54,22 @@ export type Event = {
 
 type Rulish = Rule | Schedule;
 type Datish = string | Date | Dayjs;
+
+export const weekdayMap = {
+  [IDate.Weekday.Monday]: RRule.MO,
+  [IDate.Weekday.Tuesday]: RRule.TU,
+  [IDate.Weekday.Wednesday]: RRule.WE,
+  [IDate.Weekday.Thursday]: RRule.TH,
+  [IDate.Weekday.Friday]: RRule.FR,
+  [IDate.Weekday.Saturday]: RRule.SA,
+  [IDate.Weekday.Sunday]: RRule.SU,
+};
+
+export const frequencyMap = {
+  [IRule.Frequency.Daily]: Frequency.DAILY,
+  [IRule.Frequency.Weekly]: Frequency.WEEKLY,
+  [IRule.Frequency.Monthly]: Frequency.MONTHLY,
+};
 
 export class Schedule {
   private readonly rule: Rule;
@@ -145,7 +159,7 @@ export class Schedule {
 
   public isDailyOnly() {
     return (
-      this.rule.frequency === Frequency.DAILY &&
+      this.rule.frequency === IRule.Frequency.Daily &&
       isEmpty(this.rule.weekday) &&
       this.rule.monthday === undefined
     );
@@ -233,7 +247,7 @@ export class Schedule {
   public static asRRule(rule: Rule): RRule {
     const time = Time.from(rule.time);
     return new RRule({
-      freq: rule.frequency,
+      freq: frequencyMap[rule.frequency],
       dtstart: dayjs.utc(rule.start).toDate(),
       until: dayjs.utc(rule.end).toDate(),
       byweekday: rule.weekday,
@@ -244,21 +258,11 @@ export class Schedule {
   }
 }
 
-export const weekdayMap = {
-  [IDate.Weekday.Monday]: RRule.MO,
-  [IDate.Weekday.Tuesday]: RRule.TU,
-  [IDate.Weekday.Wednesday]: RRule.WE,
-  [IDate.Weekday.Thursday]: RRule.TH,
-  [IDate.Weekday.Friday]: RRule.FR,
-  [IDate.Weekday.Saturday]: RRule.SA,
-  [IDate.Weekday.Sunday]: RRule.SU,
-};
-
 export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
   rule: T
 ): Rule {
   return {
-    frequency: rule.frequence as Rule["frequency"],
+    frequency: rule.frequency,
     start: rule.start,
     end: rule.end,
     time: rule.time,

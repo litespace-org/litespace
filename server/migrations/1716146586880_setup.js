@@ -82,7 +82,7 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     title: { type: "VARCHAR(255)", notNull: true },
-    frequence: { type: "SMALLINT", notNull: true },
+    frequency: { type: "SMALLINT", notNull: true },
     start: { type: "TIMESTAMP", notNull: true },
     end: { type: "TIMESTAMP", notNull: true },
     time: { type: "CHAR(5)", notNull: true },

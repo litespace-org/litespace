@@ -16,7 +16,7 @@ export class Rules {
       .insert({
         user_id: payload.userId,
         title: payload.title,
-        frequence: payload.frequence,
+        frequency: payload.frequency,
         start: dayjs.utc(payload.start).toDate(),
         end: dayjs.utc(payload.end).toDate(),
         time: payload.time,
@@ -63,7 +63,7 @@ export class Rules {
       id: row.id,
       userId: row.user_id,
       title: row.title,
-      frequence: row.frequence,
+      frequency: row.frequency,
       start: row.start.toISOString(),
       end: row.end.toISOString(),
       time: row.time,

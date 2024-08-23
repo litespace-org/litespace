@@ -17,7 +17,7 @@ import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol";
 
 const createRulePayload = zod.object({
   title: zod.string().min(5).max(255),
-  frequence: number,
+  frequency: number,
   start: datetime,
   end: datetime,
   time: string,

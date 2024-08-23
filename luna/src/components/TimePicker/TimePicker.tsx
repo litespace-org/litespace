@@ -7,7 +7,6 @@ import React, {
 } from "react";
 import { Input } from "@/components/Input";
 import Picker from "@/components/TimePicker/Picker";
-import { Dir } from "@/components/Direction";
 import { Clock } from "react-feather";
 import { FormatterMap, Time } from "@litespace/sol";
 
@@ -56,7 +55,6 @@ export const TimePicker: React.FC<{
   return (
     <div className="w-full relative" ref={inputRef}>
       <Input
-        overrideDir={Dir.RTL}
         placeholder={placeholder}
         error={error}
         value={value}

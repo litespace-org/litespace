@@ -9,8 +9,18 @@ import { InputType, InputAction } from "@/components/Input/types";
 import { UseFormRegisterReturn } from "react-hook-form";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
-const arabic =
-  /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
+// const arabic =
+//   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
+// const ignore = /[0-9!-_()[]\*&\^%\$#@\s`~]/;
+// const arabicv2 = /^[ء-ي\s\d:]+$/;
+// const arabicv3 =
+//   /^[\u0600-\u06ff\u0750-\u077f\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-\ufd8f\ufd92-\ufdc7\ufe70-\ufefc\uFDF0-\uFDFD\s\d:-]+/;
+const ARABIC_LETTERS = `[\\u0600-\\u06ff\\u0750-\\u077f\\ufb50-\\ufbc1\\ufbd3-\\ufd3f\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufe70-\\ufefc\\uFDF0-\\uFDFD]`;
+const SEPECIAL_LETTERS = `[\\d !-_\\(\\)\\[\\]\\*&\\^%\\$#@\`~]`;
+// ref: https://regex101.com/r/lbpjvo/2
+const arabicv4 = new RegExp(
+  `(^${SEPECIAL_LETTERS}+$)|(^${SEPECIAL_LETTERS}*${ARABIC_LETTERS}+)`
+);
 
 const passwordPlaceholder = "••••••••";
 
@@ -26,8 +36,8 @@ export const Input: React.FC<{
   register?: UseFormRegisterReturn;
   disabled?: boolean;
   onFocus?: () => void;
+  onBlur?: () => void;
   onChange?: (value: string) => void;
-  overrideDir?: Dir;
   actions?: Array<InputAction>;
 }> = ({
   type,
@@ -37,21 +47,20 @@ export const Input: React.FC<{
   value,
   register,
   disabled,
-  overrideDir,
   actions = [],
   onFocus,
+  onBlur,
   onChange,
 }) => {
   const [show, setShow] = useState<boolean>(false);
   const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
   const dir: Dir | undefined = useMemo(() => {
-    if (overrideDir) return overrideDir;
     if (!value) return undefined;
     if (type === InputType.Password) return Dir.LTR;
-    if (arabic.test(value[0])) return Dir.RTL;
+    if (arabicv4.test(value)) return Dir.RTL;
     return Dir.LTR;
-  }, [overrideDir, type, value]);
+  }, [type, value]);
 
   useEffect(() => {
     setKind(type || InputType.Text);
@@ -73,6 +82,7 @@ export const Input: React.FC<{
           autoComplete={autoComplete}
           disabled={disabled}
           onFocus={onFocus}
+          onBlur={onBlur}
           onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
             onChange && onChange(event.target.value)
           }
@@ -84,13 +94,12 @@ export const Input: React.FC<{
             "focus-visible:ring-background-control placeholder-foreground-muted group",
             "border border-control text-sm px-4 py-2",
             "disabled:opacity-50 disabled:cursor-not-allowed",
+            "text-right", // align all text to the right
             {
               "bg-foreground/[.026]": !error,
               "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
-              "text-right": dir === Dir.LTR,
-            },
-            type === InputType.Date && [""]
+            }
           )}
           placeholder={
             type === InputType.Password
