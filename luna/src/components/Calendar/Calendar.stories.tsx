@@ -3,6 +3,7 @@ import { Calendar } from "@/components/Calendar";
 import { Direction } from "@/components/Direction";
 import { IEvent } from "@/components/Calendar/types";
 import ar from "@/locales/ar-eg.json";
+import dayjs from "@/lib/dayjs";
 
 type Component = typeof Calendar;
 
@@ -24,14 +25,14 @@ const events: IEvent[] = [
   {
     id: 0,
     title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-17T09:00:00.000Z",
-    end: "2024-08-17T10:00:00.000Z",
+    start: dayjs().startOf("day").add(1, "hour").toISOString(),
+    end: dayjs().startOf("day").add(5, "hours").toISOString(),
   },
   {
     id: 1,
     title: ar["page.complete.profile.form.name.ar.placeholder"],
-    start: "2024-08-18T09:00:00.000Z",
-    end: "2024-08-18T10:00:00.000Z",
+    start: dayjs().add(1, "day").startOf("day").add(10, "hour").toISOString(),
+    end: dayjs().add(1, "day").startOf("day").add(15, "hours").toISOString(),
   },
   {
     id: 2,
@@ -82,6 +83,8 @@ const events: IEvent[] = [
     end: "2024-08-25T08:30:00.000Z",
   },
 ];
+
+console.log(events);
 
 export const Primary: StoryObj<Component> = {
   args: {

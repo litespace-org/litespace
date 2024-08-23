@@ -46,7 +46,7 @@ const Schedule: React.FC = () => {
   }, [rules.data]);
 
   return (
-    <div className="w-full overflow-hidden max-w-screen-2xl mx-auto px-4 pb-12 pt-10">
+    <div className="w-full max-w-screen-2xl mx-auto overflow-hidden px-4 pb-36 pt-10">
       <div className="flex flex-row justify-between">
         <h1 className="text-4xl mb-5">
           {intl.formatMessage({

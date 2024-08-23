@@ -91,10 +91,7 @@ export const Calendar: React.FC<{
 
   return (
     <div
-      className={cn(
-        "w-full flex flex-col items-start justify-center overflow-x-auto",
-        "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
-      )}
+      className={cn("w-full h-full flex flex-col items-start justify-center")}
     >
       <div className="py-4  flex justify-start items-center gap-4">
         <div className="flex flex-row gap-4">
@@ -119,9 +116,20 @@ export const Calendar: React.FC<{
           {date.format("MMMM")} {year}
         </p>
       </div>
-      <div>
+      <div
+        className={cn(
+          "overflow-auto w-full",
+          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+        )}
+      >
         <ul className="flex flex-row flex-1 items-center w-full">
-          <li className="w-[48px] min-w-[48px] h-[96px] border-l border-t border-border-strong bg-surface-100 border-b" />
+          <li
+            className={cn(
+              "border-l border-t border-border-strong bg-surface-100 border-b",
+              "w-[40px] min-w-[40px] 2xl:w-[70px] 2xl:min-w-[70px] h-[50px]",
+              "sm:h-[60px] md:h-[60px] lg:h-[80px] 2xl:h-[90px]"
+            )}
+          />
           {days.map((day, idx) => {
             const dayDate = date.add(idx, "day");
             const isToday = dayDate.isSame(today, "day");
@@ -130,13 +138,19 @@ export const Calendar: React.FC<{
                 key={day}
                 className={cn(
                   "flex flex-col justify-center items-center gap-1",
-                  "w-[250px] min-w-[250px] h-[96px] border-l border-t border-border-strong bg-surface-100 border-b"
+                  "w-[70px] h-[50px] p-1",
+                  "sm:w-[80px] sm:min-w-[80px] sm:h-[60px]",
+                  "md:w-[100px] md:min-w-[100px] md:h-[60px]",
+                  "lg:w-[130px] lg:min-w-[130px] lg:h-[80px]",
+                  "xl:w-[170px] xl:min-w-[170px] xl:h-[80px]",
+                  "2xl:w-[205px] 2xl:min-w-[205px] 2xl:h-[90px]",
+                  "border-l border-t border-border-strong bg-surface-100 border-b"
                 )}
               >
-                <p className={cn("text-sm")}>{day}</p>
+                <p className={cn("text-xs md:!text-base")}>{day}</p>
                 <p
                   className={cn(
-                    "h-10 w-10 rounded-full flex items-center justify-center text-xl",
+                    "w-5 h-5 md:w-7 md:h-7 lg:h-10 lg:w-10 rounded-full flex items-center justify-center text-xs md:!text-base lg:!text-lg",
                     isToday ? "bg-selection" : "bg-transparent"
                   )}
                 >
@@ -147,20 +161,23 @@ export const Calendar: React.FC<{
           })}
         </ul>
 
-        <div className="flex items-center relative">
-          <ul className="w-[48px]">
+        <div className="flex items-start relative">
+          <ul className="w-[40px] 2xl:w-[70px]">
             {dayHours.map((hour) => {
               return (
                 <li
                   key={hour.toDate().toISOString()}
-                  className="h-[80px] w-[48px] text-center text-xs"
+                  className={cn(
+                    "h-[50px] w-[40px] 2xl:w-[70px] text-center text-xs p-1",
+                    "sm:h-[60px] md:h-[90px] lg:h-[90px]"
+                  )}
                 >
                   {hour.format("h a")}
                 </li>
               );
             })}
           </ul>
-          <div className="flex items-center w-full relative">
+          <div className="flex items-start w-full relative">
             {weekHours.map((day, dayIndex) => {
               return (
                 <ul key={`d-${dayIndex}`}>
@@ -174,7 +191,15 @@ export const Calendar: React.FC<{
                       <li
                         data-time={time}
                         key={time}
-                        className="h-[80px] w-[250px] border border-muted relative"
+                        className={cn(
+                          "border border-muted relative",
+                          "w-[70px] h-[50px]",
+                          "sm:w-[80px] sm:h-[60px]",
+                          "md:w-[100px] md:h-[90px]",
+                          "lg:w-[130px] md:h-[90px]",
+                          "xl:w-[170px] md:h-[90px]",
+                          "2xl:w-[205px] 2xl:h-[90px]"
+                        )}
                       />
                     );
                   })}
