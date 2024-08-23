@@ -1,5 +1,5 @@
-import AddSlots from "@/components/AddSlots";
-import { Button, ButtonSize, messages } from "@litespace/luna";
+import AddRules from "@/components/AddRules";
+import { messages } from "@litespace/luna";
 import React from "react";
 import { useIntl } from "react-intl";
 
@@ -15,7 +15,7 @@ const EditSchedule: React.FC = () => {
         </h1>
 
         <div>
-          <AddSlots />
+          <AddRules />
         </div>
       </div>
     </div>

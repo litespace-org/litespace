@@ -19,7 +19,11 @@ const Picker: React.FC<{
         if (!onChange) return;
         const updated = time
           ? time.setHours(hours, false)
-          : Time.from({ hours, minutes: 0, meridiem: Meridiem.PM });
+          : Time.from({
+              hours,
+              minutes: 0,
+              meridiem: Meridiem.PM,
+            });
 
         onChange(updated);
       },
@@ -60,10 +64,9 @@ const Picker: React.FC<{
     }));
   }, [labels.am, labels.pm, midday?.meridiem, onChange, time]);
 
-  const cols = useMemo(
-    () => [hours, minutes, meridiems],
-    [hours, meridiems, minutes]
-  );
+  const cols = useMemo(() => {
+    return [hours, minutes, meridiems];
+  }, [hours, meridiems, minutes]);
 
   return (
     <div className="pb-2">

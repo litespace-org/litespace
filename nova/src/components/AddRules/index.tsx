@@ -30,7 +30,7 @@ type IForm = {
   repeat: ISlot.Repeat;
 };
 
-const AddSlots: React.FC = () => {
+const AddRules: React.FC = () => {
   const intl = useIntl();
   const validate = useValidation();
   const formatterMap = useFormatterMap();
@@ -319,7 +319,7 @@ const AddSlots: React.FC = () => {
               <Label>
                 {intl.formatMessage({
                   id: messages[
-                    "page.schedule.edit.add.dialog.form.fields.end-time.label"
+                    "page.schedule.edit.add.dialog.form.fields.duration.label"
                   ],
                 })}
               </Label>
@@ -334,7 +334,7 @@ const AddSlots: React.FC = () => {
                     <TimePicker
                       placeholder={intl.formatMessage({
                         id: messages[
-                          "page.schedule.edit.add.dialog.form.fields.end-time.placeholder"
+                          "page.schedule.edit.add.dialog.form.fields.duration.placeholder"
                         ],
                       })}
                       error={form.formState.errors["time"]?.end?.message}
@@ -395,4 +395,4 @@ const AddSlots: React.FC = () => {
   );
 };
 
-export default AddSlots;
+export default AddRules;

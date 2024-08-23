@@ -7,10 +7,13 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import dayjs from "@/lib/dayjs";
 import { first, groupBy } from "lodash";
+import { useNavigate } from "react-router-dom";
+import { Route } from "@/types/routes";
 
 const Schedule: React.FC = () => {
   const intl = useIntl();
   const profile = useAppSelector(profileSelector);
+  const navigate = useNavigate();
 
   const rules = useQuery({
     queryFn: () => {
@@ -52,7 +55,7 @@ const Schedule: React.FC = () => {
         </h1>
 
         <div>
-          <Button>
+          <Button onClick={() => navigate(Route.EditSchedule)}>
             {intl.formatMessage({
               id: messages["global.labels.edit"],
             })}

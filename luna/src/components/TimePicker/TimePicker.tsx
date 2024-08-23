@@ -48,13 +48,18 @@ export const TimePicker: React.FC<{
     };
   }, [hide]);
 
+  const value = useMemo(() => {
+    if (!time) return "";
+    return time.format("midday", formatterMap);
+  }, [formatterMap, time]);
+
   return (
     <div className="w-full relative" ref={inputRef}>
       <Input
         overrideDir={Dir.RTL}
         placeholder={placeholder}
         error={error}
-        value={time?.format("midday", formatterMap) || ""}
+        value={value}
         disabled={disabled}
         onFocus={useCallback(() => {
           setShow(true);
