@@ -25,12 +25,14 @@ const meta: Meta<Component> = {
 const events: IEvent[] = [
   {
     id: 0,
+    wrapper: false,
     title: ar["page.complete.profile.form.name.ar.placeholder"],
     start: dayjs().startOf("day").add(1, "hour").toISOString(),
     end: dayjs().startOf("day").add(5, "hours").toISOString(),
   },
   {
     id: 1,
+    wrapper: false,
     title: ar["page.complete.profile.form.name.ar.placeholder"],
     start: dayjs().add(1, "day").startOf("day").add(10, "hour").toISOString(),
     end: dayjs().add(1, "day").startOf("day").add(15, "hours").toISOString(),
