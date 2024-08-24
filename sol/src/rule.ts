@@ -56,13 +56,13 @@ type Rulish = Rule | Schedule;
 type Datish = string | Date | Dayjs;
 
 export const weekdayMap = {
+  [IDate.Weekday.Sunday]: RRule.SU,
   [IDate.Weekday.Monday]: RRule.MO,
   [IDate.Weekday.Tuesday]: RRule.TU,
   [IDate.Weekday.Wednesday]: RRule.WE,
   [IDate.Weekday.Thursday]: RRule.TH,
   [IDate.Weekday.Friday]: RRule.FR,
   [IDate.Weekday.Saturday]: RRule.SA,
-  [IDate.Weekday.Sunday]: RRule.SU,
 };
 
 export const frequencyMap = {

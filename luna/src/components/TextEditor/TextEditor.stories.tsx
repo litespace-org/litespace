@@ -9,7 +9,6 @@ const meta: Meta<typeof TextEditor> = {
   parameters: {
     layout: "centered",
   },
-
   decorators: [DrarkWrapper],
 };
 

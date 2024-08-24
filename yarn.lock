@@ -3050,6 +3050,7 @@ __metadata:
     "@litespace/sol": "npm:1.0.0"
     "@radix-ui/colors": "npm:^3.0.0"
     "@radix-ui/react-avatar": "npm:^1.0.4"
+    "@radix-ui/react-checkbox": "npm:^1.1.1"
     "@radix-ui/react-dialog": "npm:^1.0.5"
     "@radix-ui/react-direction": "npm:^1.1.0"
     "@radix-ui/react-icons": "npm:^1.3.0"
@@ -3057,7 +3058,6 @@ __metadata:
     "@storybook/addon-essentials": "npm:^8.1.5"
     "@storybook/addon-interactions": "npm:^8.1.5"
     "@storybook/addon-links": "npm:^8.1.5"
-    "@storybook/addon-onboarding": "npm:^8.1.5"
     "@storybook/blocks": "npm:^8.1.5"
     "@storybook/docs-tools": "npm:^8.2.7"
     "@storybook/node-logger": "npm:^8.2.7"
@@ -3696,6 +3696,32 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10c0/6358ae171c886aa66a4b381d847ef8c84b7020adceaea8676f4f434e5229ff06a13022ff611557f548dd4e8739eadf1b0d22111ae3d47e08b5dd1005edcf76a5
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-checkbox@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@radix-ui/react-checkbox@npm:1.1.1"
+  dependencies:
+    "@radix-ui/primitive": "npm:1.1.0"
+    "@radix-ui/react-compose-refs": "npm:1.1.0"
+    "@radix-ui/react-context": "npm:1.1.0"
+    "@radix-ui/react-presence": "npm:1.1.0"
+    "@radix-ui/react-primitive": "npm:2.0.0"
+    "@radix-ui/react-use-controllable-state": "npm:1.1.0"
+    "@radix-ui/react-use-previous": "npm:1.1.0"
+    "@radix-ui/react-use-size": "npm:1.1.0"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10c0/2d7d35b8319298166905057e9f7fb1d4b51d73bdec6c7c2127d2266e0f053c39586e316ea0da9a24612dfa86b8fc1f5160d4c37f79ae567025b62616de95c2c7
   languageName: node
   linkType: hard
 
@@ -5432,17 +5458,6 @@ __metadata:
   peerDependencies:
     storybook: ^8.2.7
   checksum: 10c0/7d84445cd5965808d48fbe60e2e89220043b7e2ce1c304f91a762f40c09543afddd2e053c997910111b980e7ab0659b89b0a8524bbcc0817a4167c8fcacad720
-  languageName: node
-  linkType: hard
-
-"@storybook/addon-onboarding@npm:^8.1.5":
-  version: 8.2.7
-  resolution: "@storybook/addon-onboarding@npm:8.2.7"
-  dependencies:
-    react-confetti: "npm:^6.1.0"
-  peerDependencies:
-    storybook: ^8.2.7
-  checksum: 10c0/4540f5099cbea3fa0cb3a11f67c3ea1ddd2f0ffc1a805708d4b99a18ec45eb297d0291f531e6dfe425c6c6500252d05765b84fa89b0684cc412b0b175537b4ae
   languageName: node
   linkType: hard
 

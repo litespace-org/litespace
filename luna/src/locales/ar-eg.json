@@ -81,6 +81,7 @@
   "global.labels.today": "اليوم",
   "global.labels.am": "صباحاً",
   "global.labels.pm": "مساءً",
+  "global.labels.all": "الجميع",
   "global.schedule.repeat.types.no": "بدون تكرار",
   "global.schedule.repeat.types.daily": "بشكل يومي",
   "global.schedule.repeat.types.weekly": "بشكل اسبوعي",
