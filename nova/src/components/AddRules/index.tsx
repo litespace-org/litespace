@@ -25,6 +25,9 @@ import dayjs from "@/lib/dayjs";
 import { Duration, Time } from "@litespace/sol";
 import { useMutation } from "react-query";
 import { atlas } from "@/lib/atlas";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { findUserRules } from "@/redux/user/schedule";
+import { profileSelector } from "@/redux/user/me";
 
 type IForm = {
   title: string;
@@ -43,6 +46,8 @@ const AddRules: React.FC = () => {
   const formatterMap = useFormatterMap();
   const durationMap = useDurationUnitMap();
   const validateDuration = useValidateDuration();
+  const profile = useAppSelector(profileSelector);
+  const dispatch = useAppDispatch();
   const form = useForm<IForm>({
     defaultValues: {
       start: dayjs().format("YYYY-MM-DD"),
@@ -55,6 +60,7 @@ const AddRules: React.FC = () => {
       return await atlas.rule.create(payload);
     },
     onSuccess() {
+      if (profile) dispatch(findUserRules(profile.id));
       toaster.success({
         title: intl.formatMessage({
           id: messages["global.notify.schedule.update.success"],

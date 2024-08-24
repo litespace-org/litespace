@@ -33,6 +33,7 @@ const Schedule: React.FC = () => {
             id: event.id,
             start: event.start,
             end: event.end,
+            wrapper: null,
             title,
           };
         })

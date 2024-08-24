@@ -35,36 +35,6 @@ function makeDayHours(): Dayjs[] {
   return hours;
 }
 
-function isWrapped(target: IEvent, events: IEvent[]): boolean {
-  const filtered = events.filter((event) => event.id !== target.id);
-
-  for (const event of filtered) {
-    const targetStart = dayjs(target.start);
-    const eventStart = dayjs(event.start);
-    const eventEnd = dayjs(event.end);
-
-    if (targetStart.isBetween(eventStart, eventEnd, "minutes", "[)"))
-      return true;
-  }
-
-  return false;
-}
-
-function isWrapper(target: IEvent, events: IEvent[]): boolean {
-  const filtered = events.filter((event) => event.id !== target.id);
-
-  for (const event of filtered) {
-    const eventStart = dayjs(event.start);
-    const targetStart = dayjs(target.start);
-    const targetEnd = dayjs(target.end);
-
-    if (eventStart.isBetween(targetStart, targetEnd, "minutes", "[)"))
-      return true;
-  }
-
-  return false;
-}
-
 export const Calendar: React.FC<{
   disabled?: boolean;
   events?: IEvent[];
@@ -238,12 +208,7 @@ export const Calendar: React.FC<{
             })}
 
             {weekEvents.map((event, idx) => (
-              <Event
-                key={event.start + event.end + idx}
-                event={event}
-                wrapper={isWrapper(event, events)}
-                wrapped={isWrapped(event, events)}
-              />
+              <Event key={event.start + event.end + idx} event={event} />
             ))}
           </div>
         </div>

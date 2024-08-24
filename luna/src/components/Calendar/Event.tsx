@@ -18,9 +18,7 @@ function asArabicDayIndex(day: number) {
 
 const Event: React.FC<{
   event: IEvent;
-  wrapper: boolean;
-  wrapped: boolean;
-}> = ({ event, wrapper, wrapped }) => {
+}> = ({ event }) => {
   const start = useMemo(() => dayjs(event.start), [event.start]);
   const end = useMemo(() => dayjs(event.end), [event.end]);
   const arabicDayIndex = useMemo(() => asArabicDayIndex(start.day()), [start]);
@@ -79,14 +77,21 @@ const Event: React.FC<{
 
   const style = useMemo(() => {
     const rightOffset = arabicDayIndex * dimensions.width;
+    const width =
+      event.wrapper === false
+        ? dimensions.childWidth - 1
+        : event.wrapper
+          ? dimensions.parentWidth - 1
+          : dimensions.width - 3;
+
     return {
       top: hoursToPixelsHight(hour) + minutesToPixelsHight(minutes),
-      right: wrapped ? rightOffset + dimensions.childOffset : rightOffset + 1,
-      width: wrapped
-        ? dimensions.childWidth - 1
-        : wrapper
-          ? dimensions.parentWidth - 1
-          : dimensions.width - 1,
+      right:
+        event.wrapper === false
+          ? rightOffset + dimensions.childOffset
+          : rightOffset + 1,
+      width,
+      minWidth: width,
       height: minutesToPixelsHight(length) - 1,
       zIndex: 700 - length,
       borderRadius: "4px",
@@ -97,13 +102,12 @@ const Event: React.FC<{
     dimensions.childWidth,
     dimensions.parentWidth,
     dimensions.width,
+    event.wrapper,
     hour,
     hoursToPixelsHight,
     length,
     minutes,
     minutesToPixelsHight,
-    wrapped,
-    wrapper,
   ]);
 
   return (
