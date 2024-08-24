@@ -1,13 +1,14 @@
 import { datetime, Frequency, RRule, RRuleSet, rrulestr, Weekday } from "rrule";
 import { dayjs } from "@/dayjs";
 import { Time } from "@/time";
-import { Schedule, Rule, Event, toUtcDate } from "@/rule";
+import { Schedule, Rule, Event } from "@/rule";
 import { expect } from "chai";
+import { IRule } from "@litespace/types";
 
 describe("Schedule", () => {
   it.only("should unpack rules", () => {
     const rule: Rule = {
-      frequency: Frequency.DAILY,
+      frequency: IRule.Frequency.Daily,
       start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
       end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
       time: Time.from("12pm"),
@@ -30,7 +31,7 @@ describe("Schedule", () => {
 
   it("should unpack single rule with single event", () => {
     const rule: Rule = {
-      frequency: Frequency.DAILY,
+      frequency: IRule.Frequency.Daily,
       start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
       end: dayjs.utc("2024-08-02").startOf("day").toISOString(),
       time: Time.from("12pm"),
@@ -50,7 +51,7 @@ describe("Schedule", () => {
   describe("Rule intersection", () => {
     it("should handle intersecting daily rules", () => {
       const rule: Rule = {
-        frequency: Frequency.DAILY,
+        frequency: IRule.Frequency.Daily,
         start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
         end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
         time: Time.from("12pm"),
@@ -60,7 +61,7 @@ describe("Schedule", () => {
       expect(Schedule.from(rule).intersecting(rule)).to.be.true;
       expect(
         Schedule.from(rule).intersecting({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1pm"), // start at a different time
@@ -69,7 +70,7 @@ describe("Schedule", () => {
       ).to.be.false;
       expect(
         Schedule.from(rule).intersecting({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-010").startOf("day").toISOString(), // ends before the base rule
           time: Time.from("12pm"),
@@ -78,7 +79,7 @@ describe("Schedule", () => {
       ).to.be.false;
       expect(
         Schedule.from(rule).intersecting({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-11").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("12pm"),
@@ -89,7 +90,7 @@ describe("Schedule", () => {
 
     it("should handle rules with weekdays", () => {
       const rule: Rule = {
-        frequency: Frequency.DAILY,
+        frequency: IRule.Frequency.Daily,
         start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
         end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
         time: Time.from("12pm"),
@@ -99,14 +100,14 @@ describe("Schedule", () => {
 
       expect(
         Schedule.from({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1am"),
           duration: 60, // ends at 1pm
           weekday: [],
         }).intersecting({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("2pm"),
@@ -117,14 +118,14 @@ describe("Schedule", () => {
 
       expect(
         Schedule.from({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-07-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           time: Time.from("1am"),
           duration: 60, // ends at 1pm
           weekday: [],
         }).intersecting({
-          frequency: Frequency.DAILY,
+          frequency: IRule.Frequency.Daily,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("2pm"),
@@ -135,14 +136,14 @@ describe("Schedule", () => {
 
       expect(
         Schedule.from({
-          frequency: Frequency.MONTHLY,
+          frequency: IRule.Frequency.Monthly,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1am"),
           duration: 60, // ends at 1pm
           weekday: [RRule.SA, RRule.SU],
         }).intersecting({
-          frequency: Frequency.WEEKLY,
+          frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-07-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           time: Time.from("1am"),
@@ -153,14 +154,14 @@ describe("Schedule", () => {
 
       expect(
         Schedule.from({
-          frequency: Frequency.MONTHLY,
+          frequency: IRule.Frequency.Monthly,
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1am"),
           duration: 60, // ends at 1pm
           weekday: [],
         }).intersecting({
-          frequency: Frequency.WEEKLY,
+          frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-07-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           time: Time.from("1am"),
@@ -171,14 +172,14 @@ describe("Schedule", () => {
 
       expect(
         Schedule.from({
-          frequency: Frequency.MONTHLY,
+          frequency: IRule.Frequency.Monthly,
           start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
           time: Time.from("1am"),
           duration: 60, // ends at 1pm
           weekday: [],
         }).intersecting({
-          frequency: Frequency.WEEKLY,
+          frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-09-15").startOf("day").toISOString(),
           time: Time.from("1am"),
@@ -186,22 +187,6 @@ describe("Schedule", () => {
           weekday: [RRule.MO, RRule.TU],
         })
       ).to.be.true;
-
-      // expect(
-      //   Schedule.from({
-      //     frequency: Frequency.DAILY,
-      //     start: dayjs.utc("2024-08-11").startOf("day").toISOString(),
-      //     time: Time.from("1am"),
-      //     duration: 60, // ends at 1pm
-      //     weekday: [RRule.SA, RRule.SU],
-      //   }).intersecting({
-      //     frequency: Frequency.DAILY,
-      //     start: dayjs.utc("2024-08-11").startOf("day").toISOString(),
-      //     time: Time.from("1am"),
-      //     duration: 60, // ends at 1pm
-      //     weekday: [],
-      //   })
-      // ).to.be.true;
     });
   });
 });

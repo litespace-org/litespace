@@ -1,49 +1,49 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, Calendar, Event, messages } from "@litespace/luna";
 import { useIntl } from "react-intl";
-import { useQuery } from "react-query";
-import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
-import dayjs from "@/lib/dayjs";
 import { first, groupBy } from "lodash";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
+import { userRulesSelector } from "@/redux/user/schedule";
+import dayjs, { Dayjs } from "dayjs";
+import { unpackRules } from "@litespace/sol";
+import { nameof, withDevLog } from "@/lib/log";
 
 const Schedule: React.FC = () => {
   const intl = useIntl();
-  const profile = useAppSelector(profileSelector);
+  const rules = useAppSelector(userRulesSelector.full);
   const navigate = useNavigate();
+  const [events, setEvents] = useState<Event[]>([]);
 
-  const rules = useQuery({
-    queryFn: () => {
-      if (!profile) return null;
-      const start = dayjs.utc().startOf("day");
-      return atlas.rule.findUnpackedUserRules(
-        profile.id,
-        start.format("YYYY-MM-DD"),
-        start.add(30, "days").format("YYYY-MM-DD")
+  const unpack = useCallback(
+    (week: Dayjs) => {
+      if (!rules.value) return [];
+      const ruleMap = groupBy(rules.value, "id");
+      const start = week.utc().toISOString();
+      const end = week.utc().add(7, "days").toISOString();
+      withDevLog({ src: nameof(unpack), start, end });
+      const events = unpackRules({ rules: rules.value, calls: [], start, end });
+      setEvents(
+        events.map((event) => {
+          const rules = ruleMap[event.id];
+          const rule = first(rules);
+          const title = rule ? rule.title : "";
+          return {
+            id: event.id,
+            start: event.start,
+            end: event.end,
+            title,
+          };
+        })
       );
     },
-    enabled: !!profile,
-  });
+    [rules.value]
+  );
 
-  const events: Event[] = useMemo((): Event[] => {
-    if (!rules.data) return [];
-    const ruleMap = groupBy(rules.data.rules, "id");
-
-    return rules.data.unpacked.map((event) => {
-      const rules = ruleMap[event.id];
-      const rule = first(rules);
-      const title = rule ? rule.title : "";
-      return {
-        id: event.id,
-        start: event.start,
-        end: event.end,
-        title,
-      };
-    });
-  }, [rules.data]);
+  useEffect(() => {
+    unpack(dayjs().startOf("week"));
+  }, [unpack]);
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto overflow-hidden px-4 pb-36 pt-10">
@@ -63,7 +63,12 @@ const Schedule: React.FC = () => {
         </div>
       </div>
 
-      <Calendar events={events} />
+      <Calendar
+        loading={rules.loading}
+        events={events}
+        onNextWeek={unpack}
+        onPrevWeek={unpack}
+      />
     </div>
   );
 };

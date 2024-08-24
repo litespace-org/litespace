@@ -15,8 +15,8 @@ export const findTutorMeta = createAsyncThunk(
   }
 );
 
-export const slice = createSlice({
-  name: "user/me/profile",
+const slice = createSlice({
+  name: "user/tutor",
   initialState,
   reducers: {
     resetTutorMeta: () => initialState,

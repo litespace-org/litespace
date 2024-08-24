@@ -19,6 +19,7 @@ import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
 import EditSchedule from "@/pages/EditSchedule";
+import { findUserRules } from "@/redux/user/schedule";
 
 const router = createBrowserRouter([
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
@@ -51,8 +52,11 @@ function App(): React.JSX.Element {
 
   useEffect(() => {
     if (!profile) return;
-    if (profile.role === IUser.Role.Tutor) dispatch(findTutorMeta(profile.id));
+    const tutor = profile.role === IUser.Role.Tutor;
+    const interviewer = profile.role === IUser.Role.Interviewer;
     dispatch(findRooms(profile.id));
+    if (tutor) dispatch(findTutorMeta(profile.id));
+    if (tutor || interviewer) dispatch(findUserRules(profile.id));
   }, [dispatch, profile]);
 
   return <RouterProvider router={router} />;
