@@ -8,6 +8,8 @@ import { DAYS_OF_WEEK, HOURS_OF_DAY } from "@/constants/number";
 import { IEvent } from "@/components/Calendar/types";
 import Event from "@/components/Calendar/Event";
 import dayjs from "@/lib/dayjs";
+import { useMediaQueries } from "@/hooks/media";
+import Overlay from "@/components/Calendar/Overlay";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];
@@ -66,20 +68,47 @@ function isWrapper(target: IEvent, events: IEvent[]): boolean {
 export const Calendar: React.FC<{
   disabled?: boolean;
   events?: IEvent[];
-}> = ({ disabled, events = [] }) => {
+  loading?: boolean;
+  onNextWeek?: (day: Dayjs) => void;
+  onPrevWeek?: (day: Dayjs) => void;
+  onNextMonth?: (day: Dayjs) => void;
+  onPrevMonth?: (day: Dayjs) => void;
+}> = ({
+  disabled,
+  loading,
+  onNextWeek,
+  onPrevWeek,
+  onNextMonth,
+  onPrevMonth,
+  events = [],
+}) => {
   const [date, setDate] = useState(dayjs().startOf("week"));
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs().startOf("day"), []);
   const dayHours = useMemo(() => makeDayHours(), []);
   const weekHours = useMemo(() => makeWeekHours(), []);
+  const { xl } = useMediaQueries();
 
   const nextWeek = useCallback(() => {
-    setDate(date.add(1, "week"));
-  }, [date]);
+    const week = date.add(1, "week");
+    const start = week.subtract(1, "minute");
+    const end = week.add(1, "week").subtract(1, "minute");
+    setDate(week);
+    if (onNextWeek) onNextWeek(week);
+    if (start.month() !== end.month() && onNextMonth)
+      onNextMonth(end.startOf("month"));
+  }, [date, onNextMonth, onNextWeek]);
 
   const prevWeek = useCallback(() => {
-    setDate(date.subtract(1, "week"));
-  }, [date]);
+    const prev = date;
+    const week = date.subtract(1, "week");
+    const start = prev.add(1, "minute");
+    const end = week.add(1, "minute");
+    setDate(week);
+    if (onPrevWeek) onPrevWeek(week);
+    if (start.month() !== end.month() && onPrevMonth)
+      onPrevMonth(end.startOf("month"));
+  }, [date, onPrevMonth, onPrevWeek]);
 
   const weekEvents = useMemo(() => {
     return events.filter((event) => {
@@ -93,36 +122,38 @@ export const Calendar: React.FC<{
     <div
       className={cn("w-full h-full flex flex-col items-start justify-center")}
     >
-      <div className="py-4  flex justify-start items-center gap-4">
-        <div className="flex flex-row gap-4">
+      <div className="py-4 flex justify-start items-center gap-4">
+        <div className="flex items-center justify-center flex-row gap-4">
           <Button
-            disabled={disabled}
-            onClick={nextWeek}
-            size={ButtonSize.Small}
+            disabled={disabled || loading}
+            onClick={prevWeek}
+            size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
             <ChevronRight />
           </Button>
           <Button
-            disabled={disabled}
-            onClick={prevWeek}
-            size={ButtonSize.Small}
+            disabled={disabled || loading}
+            onClick={nextWeek}
+            size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
             <ChevronLeft />
           </Button>
         </div>
-        <p>
+        <p className="text-sm xl:text-base">
           {date.format("MMMM")} {year}
         </p>
       </div>
       <div
         className={cn(
-          "overflow-auto w-full",
-          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+          "overflow-auto w-fit relative",
+          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
+          loading && "opacity-70"
         )}
       >
-        <ul className="flex flex-row flex-1 items-center w-full">
+        {loading ? <Overlay /> : null}
+        <ul className="flex flex-row flex-1 items-center w-fit">
           <li
             className={cn(
               "border-l border-t border-border-strong bg-surface-100 border-b",
@@ -160,7 +191,6 @@ export const Calendar: React.FC<{
             );
           })}
         </ul>
-
         <div className="flex items-start relative">
           <ul className="w-[40px] 2xl:w-[70px]">
             {dayHours.map((hour) => {

@@ -2,7 +2,6 @@ import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
-import { isEmpty } from "lodash";
 import { Duration, Time } from "@litespace/sol";
 
 const arabicRegExp = /^[\u0600-\u06FF\s]+$/;

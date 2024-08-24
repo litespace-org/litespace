@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { IEvent } from "@/components/Calendar/types";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { useMediaQuery } from "react-responsive";
+import { useMediaQueries } from "@/hooks/media";
 
 /**
  * "Dayjs" index days from Sunday (0) to Saturday (6)
@@ -28,11 +28,7 @@ const Event: React.FC<{
   const minutes = useMemo(() => start.minute(), [start]);
   const length = useMemo(() => end.diff(start, "minutes"), [end, start]);
 
-  const sm = useMediaQuery({ query: "(min-width: 640px)" });
-  const md = useMediaQuery({ query: "(min-width: 768px)" });
-  const lg = useMediaQuery({ query: "(min-width: 1024px)" });
-  const xl = useMediaQuery({ query: "(min-width: 1280px)" });
-  const xxl = useMediaQuery({ query: "(min-width: 1536px)" });
+  const { sm, md, lg, xl, xxl } = useMediaQueries();
 
   const width = useMemo(() => {
     if (xxl) return 205;
@@ -92,7 +88,7 @@ const Event: React.FC<{
           ? dimensions.parentWidth - 1
           : dimensions.width - 1,
       height: minutesToPixelsHight(length) - 1,
-      zIndex: 1000 - length,
+      zIndex: 700 - length,
       borderRadius: "4px",
     };
   }, [
