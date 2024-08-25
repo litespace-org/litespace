@@ -20,6 +20,9 @@
   --background-alternative-default: 0deg 0% 5.9%;
   --background-selection: 0deg 0% 19.2%;
   --background-muted: 0deg 0% 14.1%;
+  --background-overlay-hover: 0deg 0% 18%;
+  --background-overlay-default: 0deg 0% 14.1%;
+  --background-dialog-default: 0deg 0% 7.1%;
   --border-control: 0deg 0% 22.4%;
   --foreground-muted: 0deg 0% 30.2%;
 

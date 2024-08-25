@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from "react";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { X } from "react-feather";
-import { Button, ButtonSize, ButtonType } from "../Button";
 
 export const Dialog: React.FC<{
   children?: React.ReactNode;
@@ -38,7 +38,7 @@ export const Dialog: React.FC<{
       >
         <div
           ref={contentRef}
-          className="bg-surface-100  border border-border-strong rounded-md px-5 py-4 min-w-[500px]"
+          className="bg-background-dialog border border-border-strong rounded-md px-5 py-4 min-w-[500px]"
         >
           <div className="flex justify-between items-center pb-4">
             <p className="text-foreground font-medium text-base">{title}</p>

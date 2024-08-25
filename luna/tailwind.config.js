@@ -71,6 +71,13 @@ export default {
         background: {
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
+          overlay: {
+            DEFAULT: "hsl(var(--background-overlay-default))",
+            hover: "hsl(var(--background-overlay-hover))",
+          },
+          dialog: {
+            DEFAULT: "hsl(var(--background-dialog-default))",
+          },
         },
         surface: {
           75: "hsl(var(--background-surface-75))",
