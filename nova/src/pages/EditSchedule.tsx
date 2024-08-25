@@ -1,4 +1,5 @@
 import AddRules from "@/components/AddRules";
+import Rules from "@/components/Rules";
 import { messages } from "@litespace/luna";
 import React from "react";
 import { useIntl } from "react-intl";
@@ -17,6 +18,10 @@ const EditSchedule: React.FC = () => {
         <div>
           <AddRules />
         </div>
+      </div>
+
+      <div>
+        <Rules />
       </div>
     </div>
   );

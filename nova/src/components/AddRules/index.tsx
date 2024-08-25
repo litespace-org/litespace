@@ -11,7 +11,7 @@ import {
   Select,
   TimePicker,
   toaster,
-  useFormatterMap,
+  useTimeFormatterMap,
   useValidation,
   useValidateDuration,
   useDurationUnitMap,
@@ -43,7 +43,7 @@ type IForm = {
 const AddRules: React.FC = () => {
   const intl = useIntl();
   const validate = useValidation();
-  const formatterMap = useFormatterMap();
+  const formatterMap = useTimeFormatterMap();
   const durationMap = useDurationUnitMap();
   const validateDuration = useValidateDuration();
   const profile = useAppSelector(profileSelector);
@@ -97,19 +97,19 @@ const AddRules: React.FC = () => {
     () => [
       {
         label: intl.formatMessage({
-          id: messages["global.schedule.repeat.types.daily"],
+          id: messages["global.schedule.freq.daily"],
         }),
         value: IRule.Frequency.Daily.toString(),
       },
       {
         label: intl.formatMessage({
-          id: messages["global.schedule.repeat.types.weekly"],
+          id: messages["global.schedule.freq.weekly"],
         }),
         value: IRule.Frequency.Weekly.toString(),
       },
       {
         label: intl.formatMessage({
-          id: messages["global.schedule.repeat.types.monthly"],
+          id: messages["global.schedule.freq.monthly"],
         }),
         value: IRule.Frequency.Monthly.toString(),
       },

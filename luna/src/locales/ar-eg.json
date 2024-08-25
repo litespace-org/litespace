@@ -95,6 +95,7 @@
   "global.schedule.rule.format.from": "من",
   "global.schedule.rule.format.onDay": "يوم",
   "global.schedule.rule.format.day": "يوم",
+  "global.schedule.rule.format.weekday.seperator": "و",
   "global.days.sat": "السبت",
   "global.days.sun": "الأحد",
   "global.days.mon": "الاثنين",

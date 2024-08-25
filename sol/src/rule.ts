@@ -63,6 +63,7 @@ export type RuleFormatterMap = {
     from: string;
     onDay: string;
     day: string;
+    weekdaySeperator: string;
   };
 };
 
@@ -101,6 +102,7 @@ export const defaultRuleFormatterMap: RuleFormatterMap = {
     from: "from",
     onDay: "on",
     day: "day",
+    weekdaySeperator: "or",
   },
 };
 
@@ -229,7 +231,11 @@ export class Schedule {
 
     if (!isEmpty(this.rule.weekday) && this.rule.monthday) {
       return [
-        this.formatWeekdays(map.days, map.labels.onDay),
+        this.formatWeekdays(
+          map.days,
+          map.labels.onDay,
+          map.labels.weekdaySeperator
+        ),
         time,
         this.formatMonthday(this.rule.monthday, map.labels.monthday),
         dates,
@@ -247,7 +253,11 @@ export class Schedule {
 
     if (!isEmpty(this.rule.weekday))
       return [
-        this.formatWeekdays(map.days, map.labels.onDay),
+        this.formatWeekdays(
+          map.days,
+          map.labels.onDay,
+          map.labels.weekdaySeperator
+        ),
         time,
         dates,
       ].join(" ");
@@ -272,11 +282,17 @@ export class Schedule {
       ].join(" ");
   }
 
-  private formatWeekdays(days: RuleFormatterMap["days"], on: string): string {
+  private formatWeekdays(
+    days: RuleFormatterMap["days"],
+    on: string,
+    seperator: string
+  ): string {
     const weekdays = this.rule.weekday;
     if (!weekdays || isEmpty(weekdays)) return "";
     if (weekdays.length == 1) return days[weekdays[0]];
-    return [on, weekdays.map((day) => days[day]).join(" or ")].join(" ");
+    return [on, weekdays.map((day) => days[day]).join(` ${seperator} `)].join(
+      " "
+    );
   }
 
   private formatFreq(freq: RuleFormatterMap["frequency"]): string {

@@ -66,6 +66,9 @@ export function useRuleFormatterMap(): RuleFormatterMap {
       day: intl.formatMessage({
         id: messages["global.schedule.rule.format.day"],
       }),
+      weekdaySeperator: intl.formatMessage({
+        id: messages["global.schedule.rule.format.weekday.seperator"],
+      }),
     },
     time,
   };
