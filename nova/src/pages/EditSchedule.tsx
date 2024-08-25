@@ -20,7 +20,7 @@ const EditSchedule: React.FC = () => {
         </div>
       </div>
 
-      <div>
+      <div className="mt-8">
         <Rules />
       </div>
     </div>

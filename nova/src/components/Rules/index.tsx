@@ -17,9 +17,14 @@ const Rules: React.FC = () => {
   if (rules.value === null) return null;
 
   return (
-    <div>
+    <div className="grid grid-cols-12 gap-4">
       {rules.value.map((rule) => (
-        <Rule key={rule.id} rule={rule} formatterMap={formatterMap} />
+        <div
+          className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3"
+          key={rule.id}
+        >
+          <Rule rule={rule} formatterMap={formatterMap} />
+        </div>
       ))}
     </div>
   );
