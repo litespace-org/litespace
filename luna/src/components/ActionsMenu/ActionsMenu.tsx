@@ -17,7 +17,7 @@ export const ActionsMenu: React.FC<{ actions: MenuAction[] }> = ({
       if (
         event.target instanceof HTMLElement &&
         menuRef.current &&
-        event.target.contains(menuRef.current)
+        !menuRef.current.contains(event.target)
       )
         hide();
     },
@@ -43,10 +43,10 @@ export const ActionsMenu: React.FC<{ actions: MenuAction[] }> = ({
       <ul
         data-open={open}
         className={cn(
-          "bg-background-overlay border border-overlay rounded-md min-w-[180px]",
+          "bg-background-overlay border border-overlay rounded-md z-[1]",
           "absolute whitespace-nowrap top-[calc(100%+5px)] left-1/2 -translate-x-1/2 overflow-hidden px-2 py-2",
           "flex flex-col gap-1.5",
-          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+10px)]",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+10px)] invisible data-[open=true]:visible",
           "shadow-2xl"
         )}
       >
@@ -61,9 +61,9 @@ export const ActionsMenu: React.FC<{ actions: MenuAction[] }> = ({
               className={cn(
                 "w-full text-center rounded-md disabled:opacity-50 disabled:cursor-not-allowed",
                 "border border-transparent outline-none focus:outline-1 transition-colors duration-300",
-                "px-4 py-2 h-[42px] text-sm",
+                "px-2.5 py-1.5 h-[30px] text-sm !leading-none",
                 {
-                  "hover:bg-surface-300_ hover:bg-background-overlay-hover focus:outline-border-strong focus:border-border-stronger":
+                  "hover:bg-background-overlay-hover focus:outline-border-strong focus:border-border-stronger":
                     !action.danger,
                   "bg-destructive-400 hover:bg-destructive/50 focus:outline-amber-700":
                     action.danger,

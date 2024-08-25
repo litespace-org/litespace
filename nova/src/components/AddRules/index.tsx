@@ -18,7 +18,7 @@ import {
   Duration as DurationInput,
 } from "@litespace/luna";
 import { IRule } from "@litespace/types";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
@@ -42,6 +42,9 @@ type IForm = {
 
 const AddRules: React.FC = () => {
   const intl = useIntl();
+  const [open, setOpen] = useState(false);
+  const show = useCallback(() => setOpen(true), []);
+  const hide = useCallback(() => setOpen(false), []);
   const validate = useValidation();
   const formatterMap = useTimeFormatterMap();
   const durationMap = useDurationUnitMap();
@@ -66,6 +69,8 @@ const AddRules: React.FC = () => {
           id: messages["global.notify.schedule.update.success"],
         }),
       });
+      form.reset();
+      hide();
     },
     onError(error) {
       toaster.error({
@@ -152,7 +157,7 @@ const AddRules: React.FC = () => {
   return (
     <Dialog
       trigger={
-        <Button disabled={disabled} size={ButtonSize.Small}>
+        <Button onClick={show} disabled={disabled} size={ButtonSize.Small}>
           {intl.formatMessage({
             id: messages["page.schedule.edit.add"],
           })}
@@ -161,6 +166,8 @@ const AddRules: React.FC = () => {
       title={intl.formatMessage({
         id: messages["page.schedule.edit.add.dialog.title"],
       })}
+      open={open}
+      close={hide}
     >
       <Form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field

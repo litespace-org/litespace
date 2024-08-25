@@ -100,3 +100,7 @@
   --colors-amberA11: rgba(255, 171, 14, 0.938);
   --colors-amberA12: rgba(255, 248, 225, 0.98);
 }
+
+.main-scrollbar {
+  @apply scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300;
+}

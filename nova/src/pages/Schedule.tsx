@@ -1,50 +1,19 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Button, Calendar, Event, messages } from "@litespace/luna";
+import React from "react";
+import { Button, Calendar, messages } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { useAppSelector } from "@/redux/store";
-import { first, groupBy } from "lodash";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { userRulesSelector } from "@/redux/user/schedule";
-import dayjs, { Dayjs } from "dayjs";
-import { unpackRules } from "@litespace/sol";
-import { nameof, withDevLog } from "@/lib/log";
+import { useCalendarEvents } from "@/hooks/event";
 
 const Schedule: React.FC = () => {
   const intl = useIntl();
   const rules = useAppSelector(userRulesSelector.full);
   const navigate = useNavigate();
-  const [events, setEvents] = useState<Event[]>([]);
-
-  const unpack = useCallback(
-    (week: Dayjs) => {
-      if (!rules.value) return [];
-      const ruleMap = groupBy(rules.value, "id");
-      const start = week.utc().toISOString();
-      const end = week.utc().add(7, "days").toISOString();
-      withDevLog({ src: nameof(unpack), start, end });
-      const events = unpackRules({ rules: rules.value, calls: [], start, end });
-      setEvents(
-        events.map((event) => {
-          const rules = ruleMap[event.id];
-          const rule = first(rules);
-          const title = rule ? rule.title : "";
-          return {
-            id: event.id,
-            start: event.start,
-            end: event.end,
-            wrapper: null,
-            title,
-          };
-        })
-      );
-    },
-    [rules.value]
-  );
-
-  useEffect(() => {
-    unpack(dayjs().startOf("week"));
-  }, [unpack]);
+  const { events, unapckWeek } = useCalendarEvents({
+    rules: rules.value || [],
+  });
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto overflow-hidden px-4 pb-36 pt-10">
@@ -67,8 +36,8 @@ const Schedule: React.FC = () => {
       <Calendar
         loading={rules.loading}
         events={events}
-        onNextWeek={unpack}
-        onPrevWeek={unpack}
+        onNextWeek={unapckWeek}
+        onPrevWeek={unapckWeek}
       />
     </div>
   );

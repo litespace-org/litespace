@@ -1,8 +1,8 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { days } from "@/constants/labels";
 import { Dayjs } from "dayjs";
 import { Button, ButtonSize, ButtonType } from "../Button";
-import { ChevronLeft, ChevronRight } from "react-feather";
+import { ChevronLeft, ChevronRight, RotateCcw } from "react-feather";
 import cn from "classnames";
 import { DAYS_OF_WEEK, HOURS_OF_DAY } from "@/constants/number";
 import { IEvent } from "@/components/Calendar/types";
@@ -39,25 +39,63 @@ export const Calendar: React.FC<{
   disabled?: boolean;
   events?: IEvent[];
   loading?: boolean;
+  className?: string;
+  start?: string;
+  min?: string;
+  max?: string;
   onNextWeek?: (day: Dayjs) => void;
   onPrevWeek?: (day: Dayjs) => void;
   onNextMonth?: (day: Dayjs) => void;
   onPrevMonth?: (day: Dayjs) => void;
 }> = ({
-  disabled,
+  min,
+  max,
+  start,
   loading,
+  disabled,
+  className,
+  events = [],
   onNextWeek,
   onPrevWeek,
   onNextMonth,
   onPrevMonth,
-  events = [],
 }) => {
-  const [date, setDate] = useState(dayjs().startOf("week"));
+  const currentWeek = useMemo(
+    () => (start ? dayjs(start).startOf("week") : dayjs().startOf("week")),
+    [start]
+  );
+  const [date, setDate] = useState(currentWeek);
   const year = useMemo(() => date.get("year"), [date]);
   const today = useMemo(() => dayjs().startOf("day"), []);
   const dayHours = useMemo(() => makeDayHours(), []);
   const weekHours = useMemo(() => makeWeekHours(), []);
   const { xl } = useMediaQueries();
+
+  useEffect(() => {
+    setDate(dayjs(start).startOf("week"));
+  }, [start]);
+
+  const canGoNext = useMemo(() => {
+    const next = date.add(1, "week");
+    return !max || next.isSame(max, "day") || next.isBefore(max, "day");
+  }, [date, max]);
+
+  const canGoBack = useMemo(() => {
+    const prev = date.subtract(1, "week");
+    return !min || prev.isSame(min, "day") || prev.isAfter(min, "day");
+  }, [date, min]);
+
+  const canGoStartOfCurrentWeek = useMemo(() => {
+    return (
+      (!min ||
+        currentWeek.isSame(min, "day") ||
+        currentWeek.isAfter(min, "day")) &&
+      (!max ||
+        currentWeek.isSame(max, "day") ||
+        currentWeek.isBefore(max, "day")) &&
+      !date.isSame(currentWeek)
+    );
+  }, [currentWeek, date, max, min]);
 
   const nextWeek = useCallback(() => {
     const week = date.add(1, "week");
@@ -88,27 +126,35 @@ export const Calendar: React.FC<{
     });
   }, [date, events]);
 
+  const startOfCurrentWeek = useCallback(() => setDate(currentWeek), []);
+
   return (
-    <div
-      className={cn("w-full h-full flex flex-col items-start justify-center")}
-    >
+    <div className="flex flex-col">
       <div className="py-4 flex justify-start items-center gap-4">
         <div className="flex items-center justify-center flex-row gap-4">
           <Button
-            disabled={disabled || loading}
+            disabled={disabled || loading || !canGoStartOfCurrentWeek}
+            onClick={startOfCurrentWeek}
+            size={xl ? ButtonSize.Small : ButtonSize.Tiny}
+            type={ButtonType.Secondary}
+          >
+            <RotateCcw className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
+          </Button>
+          <Button
+            disabled={disabled || loading || !canGoBack}
             onClick={prevWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
-            <ChevronRight />
+            <ChevronRight className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
           </Button>
           <Button
-            disabled={disabled || loading}
+            disabled={disabled || loading || !canGoNext}
             onClick={nextWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
-            <ChevronLeft />
+            <ChevronLeft className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
           </Button>
         </div>
         <p className="text-sm xl:text-base">
@@ -119,7 +165,8 @@ export const Calendar: React.FC<{
         className={cn(
           "overflow-auto w-fit relative",
           "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
-          loading && "opacity-70"
+          loading && "opacity-70",
+          className
         )}
       >
         {loading ? <Overlay /> : null}
