@@ -1,6 +1,6 @@
-import { RRule, Frequency, Weekday, datetime } from "rrule";
+import { RRule, Frequency, datetime } from "rrule";
 import { dayjs } from "@/dayjs";
-import { RawTime, Time } from "@/time";
+import { FormatterMap, RawTime, Time } from "@/time";
 import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
 import { ICall, IDate, IRule } from "@litespace/types";
@@ -16,7 +16,7 @@ import { ICall, IDate, IRule } from "@litespace/types";
  * 3. `DAILY` with `weekday` only : event will happen on week days that match
  *    `weekday`.
  * 4. `DAILY` with none: event will happen everyday.
- * 5. `WEEKLY` with none: event will happen at the start of every week.
+ * 5. `WEEKLY` with none: event will happen at the start (sunday) of every week.
  * 6. `MONTHLY` with none: event will happen each month at the same `Rule.start`
  *    day.
  * 7. Single event has a date range of one day (e.g., start = 2024-08-01 & end = 2024-08-02)
@@ -37,7 +37,7 @@ export type Rule = {
    *  Rule duration in minutes
    */
   duration: number;
-  weekday?: Weekday[];
+  weekday?: IDate.Weekday[];
   monthday?: number;
 };
 
@@ -50,6 +50,20 @@ export type Event = {
    * UTC based end time
    */
   end: string;
+};
+
+export type RuleFormatterMap = {
+  days: Record<IDate.Weekday, string>;
+  frequency: Record<IRule.Frequency, string>;
+  time?: FormatterMap | null;
+  labels: {
+    monthday: { prefix: string; suffix: string };
+    start: string;
+    until: string;
+    from: string;
+    onDay: string;
+    day: string;
+  };
 };
 
 type Rulish = Rule | Schedule;
@@ -65,6 +79,31 @@ export const weekdayMap = {
   [IDate.Weekday.Saturday]: RRule.SA,
 };
 
+export const defaultRuleFormatterMap: RuleFormatterMap = {
+  days: {
+    [IDate.Weekday.Sunday]: "Sunday",
+    [IDate.Weekday.Monday]: "Monday",
+    [IDate.Weekday.Tuesday]: "Thuesday",
+    [IDate.Weekday.Wednesday]: "Wednesday",
+    [IDate.Weekday.Thursday]: "Thursday",
+    [IDate.Weekday.Friday]: "Friday",
+    [IDate.Weekday.Saturday]: "Saturday",
+  },
+  frequency: {
+    [IRule.Frequency.Daily]: "Every day",
+    [IRule.Frequency.Weekly]: "Every week",
+    [IRule.Frequency.Monthly]: "Every month",
+  },
+  labels: {
+    monthday: { prefix: "the", suffix: "of the month" },
+    start: "starting from",
+    until: "until",
+    from: "from",
+    onDay: "on",
+    day: "day",
+  },
+};
+
 export const frequencyMap = {
   [IRule.Frequency.Daily]: Frequency.DAILY,
   [IRule.Frequency.Weekly]: Frequency.WEEKLY,
@@ -74,10 +113,16 @@ export const frequencyMap = {
 export class Schedule {
   private readonly rule: Rule;
   private readonly rrule: RRule;
+  private dayjs: typeof dayjs = dayjs;
 
   constructor(rule: Rulish) {
     this.rule = rule instanceof Schedule ? rule.rule : rule;
     this.rrule = Schedule.asRRule(this.rule);
+  }
+
+  public withDayjs(day: typeof dayjs): Schedule {
+    this.dayjs = day;
+    return this;
   }
 
   public static from(rule: Rule | Schedule): Schedule {
@@ -93,7 +138,7 @@ export class Schedule {
     return Schedule.mask(events, exclude);
   }
 
-  public intersecting(rule: Rulish, window = 1) {
+  public intersecting(rule: Rulish) {
     const target = Schedule.from(rule);
 
     const dateOverlap = this.isDateOverlapping(
@@ -173,6 +218,101 @@ export class Schedule {
     return xs.isBefore(ye) && ys.isBefore(xe);
   }
 
+  public format(map: RuleFormatterMap = defaultRuleFormatterMap) {
+    const freq = this.formatFreq(map.frequency);
+    const dates =
+      this.formatDates({
+        start: map.labels.start,
+        until: map.labels.until,
+      }) + ".";
+    const time = this.formatTime(map.labels.until, map.labels.from, map.time);
+
+    if (!isEmpty(this.rule.weekday) && this.rule.monthday) {
+      return [
+        this.formatWeekdays(map.days, map.labels.onDay),
+        time,
+        this.formatMonthday(this.rule.monthday, map.labels.monthday),
+        dates,
+      ].join(" ");
+    }
+
+    if (this.rule.monthday)
+      return [
+        map.labels.day,
+        this.rule.monthday,
+        map.labels.monthday.suffix,
+        time,
+        dates,
+      ].join(" ");
+
+    if (!isEmpty(this.rule.weekday))
+      return [
+        this.formatWeekdays(map.days, map.labels.onDay),
+        time,
+        dates,
+      ].join(" ");
+
+    if (this.rule.frequency === IRule.Frequency.Daily)
+      return [freq, time, dates].join(" ");
+
+    if (this.rule.frequency === IRule.Frequency.Weekly)
+      return [
+        freq,
+        map.labels.onDay,
+        map.days[IDate.Weekday.Sunday],
+        time,
+        dates,
+      ].join(" ");
+
+    if (this.rule.frequency === IRule.Frequency.Monthly)
+      return [
+        this.formatMonthday(dayjs(this.rule.start).date(), map.labels.monthday),
+        time,
+        dates,
+      ].join(" ");
+  }
+
+  private formatWeekdays(days: RuleFormatterMap["days"], on: string): string {
+    const weekdays = this.rule.weekday;
+    if (!weekdays || isEmpty(weekdays)) return "";
+    if (weekdays.length == 1) return days[weekdays[0]];
+    return [on, weekdays.map((day) => days[day]).join(" or ")].join(" ");
+  }
+
+  private formatFreq(freq: RuleFormatterMap["frequency"]): string {
+    return freq[this.rule.frequency];
+  }
+
+  private formatDates(labels: { start: string; until: string }): string {
+    return [
+      labels.start,
+      this.dayjs(this.rule.start).format("DD MMMM, YYYY"),
+      labels.until,
+      this.dayjs(this.rule.end).format("DD MMMM, YYYY"),
+    ].join(" ");
+  }
+
+  private formatTime(
+    until: string,
+    from: string,
+    map?: FormatterMap | null
+  ): string {
+    const start = Time.from(this.rule.time);
+    return [
+      from,
+      start.local().format("midday", map),
+      until,
+      start.local().addMinutes(this.rule.duration).format("midday", map),
+    ].join(" ");
+  }
+
+  private formatMonthday(
+    monthday: number,
+    labels: RuleFormatterMap["labels"]["monthday"]
+  ): string {
+    return [labels.prefix, monthday, labels.suffix].join(" ");
+  }
+
   public text(): string {
     return this.rrule.toText();
   }
@@ -250,7 +390,7 @@ export class Schedule {
       freq: frequencyMap[rule.frequency],
       dtstart: dayjs.utc(rule.start).toDate(),
       until: dayjs.utc(rule.end).toDate(),
-      byweekday: rule.weekday,
+      byweekday: rule.weekday?.map((weekday) => weekdayMap[weekday]),
       byhour: time.hours(),
       byminute: time.minutes(),
       bymonthday: rule.monthday,
@@ -267,7 +407,7 @@ export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
     end: rule.end,
     time: rule.time,
     duration: rule.duration,
-    weekday: rule.weekdays?.map((day) => weekdayMap[day]),
+    weekday: rule.weekdays,
     monthday: rule.monthday,
   };
 }

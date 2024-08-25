@@ -23,7 +23,7 @@ export {
   useValidateDuration,
 } from "@/hooks/validation";
 export { useDurationUnitMap } from "@/hooks/duration";
-export { useFormatterMap } from "@/hooks/time";
+export { useTimeFormatterMap } from "@/hooks/time";
 export { default as Spinner } from "@/icons/Spinner";
 export * from "@/components/Icons";
 export * from "@/constants/labels";

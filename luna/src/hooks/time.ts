@@ -3,7 +3,7 @@ import { FormatterMap } from "@litespace/sol";
 import { useMemo } from "react";
 import { messages } from "@/locales";
 
-export function useFormatterMap(): FormatterMap {
+export function useTimeFormatterMap(): FormatterMap {
   const intl = useIntl();
 
   return useMemo(

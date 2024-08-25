@@ -3,10 +3,10 @@ import { dayjs } from "@/dayjs";
 import { Time } from "@/time";
 import { Schedule, Rule, Event } from "@/rule";
 import { expect } from "chai";
-import { IRule } from "@litespace/types";
+import { IDate, IRule } from "@litespace/types";
 
 describe("Schedule", () => {
-  it.only("should unpack rules", () => {
+  it("should unpack rules", () => {
     const rule: Rule = {
       frequency: IRule.Frequency.Daily,
       start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
@@ -95,7 +95,7 @@ describe("Schedule", () => {
         end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
         time: Time.from("12pm"),
         duration: 60, // ends at 1pm
-        weekday: [RRule.MO],
+        weekday: [IDate.Weekday.Monday],
       };
 
       expect(
@@ -140,15 +140,15 @@ describe("Schedule", () => {
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
-          weekday: [RRule.SA, RRule.SU],
+          duration: 60,
+          weekday: [IDate.Weekday.Saturday, IDate.Weekday.Sunday],
         }).intersecting({
           frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-07-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
-          weekday: [RRule.MO, RRule.TU],
+          duration: 60,
+          weekday: [IDate.Weekday.Monday, IDate.Weekday.Tuesday],
         })
       ).to.be.false;
 
@@ -158,15 +158,15 @@ describe("Schedule", () => {
           start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
+          duration: 60,
           weekday: [],
         }).intersecting({
           frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-07-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
-          weekday: [RRule.MO, RRule.TU],
+          duration: 60,
+          weekday: [IDate.Weekday.Monday, IDate.Weekday.Tuesday],
         })
       ).to.be.true;
 
@@ -176,17 +176,137 @@ describe("Schedule", () => {
           start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
           end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
+          duration: 60,
           weekday: [],
         }).intersecting({
           frequency: IRule.Frequency.Weekly,
           start: dayjs.utc("2024-08-15").startOf("day").toISOString(),
           end: dayjs.utc("2024-09-15").startOf("day").toISOString(),
           time: Time.from("1am"),
-          duration: 60, // ends at 1pm
-          weekday: [RRule.MO, RRule.TU],
+          duration: 60,
+          weekday: [IDate.Weekday.Monday, IDate.Weekday.Tuesday],
         })
       ).to.be.true;
+    });
+  });
+
+  describe("Format rules", () => {
+    it("should format daily/monthly/weekly with weekday and month day", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Daily,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 60,
+        weekday: [IDate.Weekday.Monday, IDate.Weekday.Tuesday],
+        monthday: 10,
+      });
+
+      expect(s.format()).to.be.eq(
+        `on Monday or Thuesday from 04:00 am until 05:00 am the 10 of the month starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format daily/monthly/weekly with weekday and month day", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Monthly,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 60,
+        weekday: [IDate.Weekday.Monday, IDate.Weekday.Tuesday],
+        monthday: 10,
+      });
+
+      expect(s.format()).to.be.eq(
+        `on Monday or Thuesday from 04:00 am until 05:00 am the 10 of the month starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format daily/monthly/weekly with weekday and month day", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Weekly,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 120,
+        weekday: [IDate.Weekday.Thursday, IDate.Weekday.Friday],
+        monthday: 10,
+      });
+
+      expect(s.format()).to.be.eq(
+        `on Thursday or Friday from 04:00 am until 06:00 am the 10 of the month starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format daily/monthly/weekly month day only", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Daily,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 120,
+        monthday: 4,
+      });
+      expect(s.format()).to.be.eq(
+        `day 4 of the month from 04:00 am until 06:00 am starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format daily/monthly/weekly weekday day only", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Daily,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 120,
+        weekday: [IDate.Weekday.Thursday, IDate.Weekday.Friday],
+      });
+      expect(s.format()).to.be.eq(
+        `on Thursday or Friday from 04:00 am until 06:00 am starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format daily only", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Daily,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 120,
+      });
+
+      expect(s.format()).to.be.eq(
+        `Every day from 04:00 am until 06:00 am starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format weekly only", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Weekly,
+        start: dayjs.utc("2024-09-01").startOf("day").toISOString(),
+        end: dayjs.utc("2024-09-30").startOf("day").toISOString(),
+        time: Time.from("1am"),
+        duration: 120,
+      });
+
+      expect(s.format()).to.be.eq(
+        `Every week on Sunday from 04:00 am until 06:00 am starting from 01 September, 2024 until 30 September, 2024.`
+      );
+    });
+
+    it("should format monthly only", () => {
+      const s = Schedule.from({
+        frequency: IRule.Frequency.Monthly,
+        start: dayjs.utc("2024-08-03").toISOString(),
+        end: dayjs.utc("2025-12-01").toISOString(),
+        time: Time.from("1am"),
+        duration: 20,
+      });
+
+      expect(s.format()).to.be.eq(
+        `the 3 of the month from 04:00 am until 04:20 am starting from 03 August, 2024 until 01 December, 2025.`
+      );
     });
   });
 });
