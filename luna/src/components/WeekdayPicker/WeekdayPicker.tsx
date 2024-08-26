@@ -14,16 +14,8 @@ import {
   CaretDownIcon,
   Cross1Icon,
 } from "@radix-ui/react-icons";
-import { motion, AnimatePresence } from "framer-motion";
 import { clone, concat, orderBy } from "lodash";
 import { asArabicDayIndex } from "@/lib/time";
-
-const framer = {
-  initial: { opacity: 0, y: 3 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: 3 },
-  transition: { duration: 0.1 },
-};
 
 export type WeekdayMap = {
   saturday: string;
@@ -127,10 +119,11 @@ export const WeekdayPicker: React.FC<{
         tabIndex={0}
         className={cn(
           "w-full outline-none text-foreground focus:ring-background-control focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control",
-          "border border-control text-sm pr-4 pl-1 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
-          "flex justify-between items-center"
+          "border border-control text-sm px-4 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
+          "flex justify-between items-center cursor-pointer"
         )}
         onFocus={show}
+        onMouseDown={toggle}
       >
         <ul className="flex flex-wrap max-w-[80%] items-center gap-3">
           {display.map((weekday) => {
@@ -162,60 +155,61 @@ export const WeekdayPicker: React.FC<{
             <p className="text-foreground-muted select-none">{placeholder}</p>
           ) : null}
         </ul>
-        <div>
-          <Button
-            onClick={toggle}
-            htmlType="button"
-            size={ButtonSize.Tiny}
-            type={ButtonType.Text}
-            className="!p-0 !h-[25px] !w-[25px]"
-          >
-            <CaretDownIcon />
-          </Button>
+        <div
+          data-open={open}
+          className={cn(
+            "data-[open=true]:rotate-180 transition-transform duration-300"
+          )}
+        >
+          <CaretDownIcon />
         </div>
       </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        {open ? (
-          <motion.div
-            {...framer}
-            className="flex flex-col border border-control absolute top-[42px] w-[200px] rounded-md bg-surface-100 py-2"
-          >
-            <ul className="flex flex-col gap-2">
-              {options.map((option) => (
-                <li key={option.value} className="px-4 hover:bg-surface-200">
-                  <Checkbox
-                    label={option.label}
-                    checked={weekdays.includes(option.value)}
-                    onCheckedChange={(checked: boolean) =>
-                      onCheckedChange(option.value, checked)
-                    }
-                  />
-                </li>
-              ))}
-            </ul>
+      <div
+        data-open={open}
+        className={cn(
+          "bg-background-overlay border border-overlay rounded-md z-[1]",
+          "flex flex-col gap-2 shadow-2xl ",
+          "absolute whitespace-nowrap top-[calc(100%+1px)] right-0 overflow-hidden px-1 py-2",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+5px)] invisible data-[open=true]:visible"
+        )}
+      >
+        <ul className="flex flex-col gap-2">
+          {options.map((option) => (
+            <li
+              key={option.value}
+              className="px-2 py-0.5 rounded-md hover:bg-background-overlay-hover"
+            >
+              <Checkbox
+                label={option.label}
+                checked={weekdays.includes(option.value)}
+                onCheckedChange={(checked: boolean) =>
+                  onCheckedChange(option.value, checked)
+                }
+              />
+            </li>
+          ))}
+        </ul>
 
-            <div className="flex px-4 mt-2 gap-2">
-              <Button
-                onClick={reset}
-                htmlType="button"
-                size={ButtonSize.Tiny}
-                type={ButtonType.Secondary}
-              >
-                {weekdayMap.reset}
-              </Button>
-              <Button
-                htmlType="button"
-                onClick={selectAll}
-                size={ButtonSize.Tiny}
-                type={ButtonType.Secondary}
-              >
-                {weekdayMap.all}
-              </Button>
-            </div>
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+        <div className="flex px-2 mt-2 gap-2">
+          <Button
+            onClick={reset}
+            htmlType="button"
+            size={ButtonSize.Tiny}
+            type={ButtonType.Secondary}
+          >
+            {weekdayMap.reset}
+          </Button>
+          <Button
+            htmlType="button"
+            onClick={selectAll}
+            size={ButtonSize.Tiny}
+            type={ButtonType.Secondary}
+          >
+            {weekdayMap.all}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };

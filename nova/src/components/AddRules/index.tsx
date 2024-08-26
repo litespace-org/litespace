@@ -409,7 +409,7 @@ const AddRules: React.FC = () => {
                 <Select
                   value={form.watch("frequency")}
                   onChange={field.onChange}
-                  list={frequencyOptions}
+                  options={frequencyOptions}
                 />
               )}
             />

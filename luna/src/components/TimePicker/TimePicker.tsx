@@ -9,6 +9,7 @@ import { Input } from "@/components/Input";
 import Picker from "@/components/TimePicker/Picker";
 import { Clock } from "react-feather";
 import { FormatterMap, Time } from "@litespace/sol";
+import cn from "classnames";
 
 export const TimePicker: React.FC<{
   placeholder?: string;
@@ -29,7 +30,10 @@ export const TimePicker: React.FC<{
 }) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
-  const [show, setShow] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
+
+  const show = useCallback(() => setOpen(true), []);
+  const toggle = useCallback(() => setOpen(!open), [open]);
 
   const hide = useCallback((e: Event) => {
     if (
@@ -37,7 +41,7 @@ export const TimePicker: React.FC<{
       e.target instanceof HTMLElement &&
       !inputRef.current.contains(e.target)
     )
-      return setShow(false);
+      return setOpen(false);
   }, []);
 
   useEffect(() => {
@@ -59,23 +63,25 @@ export const TimePicker: React.FC<{
         error={error}
         value={value}
         disabled={disabled}
-        onFocus={useCallback(() => {
-          setShow(true);
-        }, [])}
+        onFocus={show}
         actions={useMemo(
-          () => [{ id: 1, Icon: Clock, onClick: () => setShow(!show) }],
-          [show]
+          () => [{ id: 1, Icon: Clock, onClick: toggle }],
+          [toggle]
         )}
       />
 
-      {show ? (
-        <div
-          className="absolute z-10 border border-control rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl"
-          ref={dateRef}
-        >
-          <Picker labels={labels} time={time} onChange={onChange} />
-        </div>
-      ) : null}
+      <div
+        data-open={open}
+        ref={dateRef}
+        className={cn(
+          "bg-background-overlay border border-overlay rounded-md z-[1]",
+          "flex flex-col gap-2 shadow-2xl",
+          "absolute whitespace-nowrap top-[calc(100%+1px)] right-0 overflow-hidden px-1 py-2",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+5px)] invisible data-[open=true]:visible"
+        )}
+      >
+        <Picker labels={labels} time={time} onChange={onChange} />
+      </div>
     </div>
   );
 };

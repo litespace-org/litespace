@@ -10,7 +10,10 @@ export const Checkbox: React.FC<{
   onCheckedChange?: (checked: boolean) => void;
 }> = ({ id, label, checked, onCheckedChange }) => {
   return (
-    <div className="flex items-center">
+    <div
+      className="flex items-center cursor-pointer"
+      onClick={() => onCheckedChange && onCheckedChange(!checked)}
+    >
       <Root
         className={cn(
           "w-[25px] h-[25px] bg-surface-300 hover:bg-selection flex items-center justify-center rounded-md",
@@ -26,7 +29,7 @@ export const Checkbox: React.FC<{
         </Indicator>
       </Root>
       <label
-        className="pr-2 text-[15px] leading-none text-foreground cursor-pointer"
+        className="pr-2 text-[13px] leading-none text-foreground cursor-pointer"
         htmlFor={id}
       >
         {label}
