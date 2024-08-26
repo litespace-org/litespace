@@ -46,8 +46,26 @@ export const WeekdayPicker: React.FC<{
   onChange?: (weekdays: IDate.Weekday[]) => void;
 }> = ({ weekdayMap, placeholder, weekdays = [], onChange }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
-
   const [open, setOpen] = useState<boolean>(false);
+
+  const show = useCallback(() => setOpen(true), []);
+  const toggle = useCallback(() => setOpen(!open), [open]);
+  const hide = useCallback((e: MouseEvent) => {
+    if (!wrapperRef.current) return;
+
+    if (
+      e.target instanceof HTMLElement &&
+      e.target !== wrapperRef.current &&
+      !wrapperRef.current.contains(e.target)
+    )
+      setOpen(false);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("click", hide);
+    return () => document.removeEventListener("click", hide);
+  }, [hide]);
+
   const options = useMemo(() => {
     return [
       { label: weekdayMap.saturday, value: IDate.Weekday.Saturday },
@@ -67,30 +85,6 @@ export const WeekdayPicker: React.FC<{
     weekdayMap.tuesday,
     weekdayMap.wednesday,
   ]);
-
-  const show = useCallback(() => {
-    setOpen(true);
-  }, []);
-
-  const hide = useCallback((e: MouseEvent) => {
-    if (!wrapperRef.current) return;
-
-    if (
-      e.target instanceof HTMLElement &&
-      e.target !== wrapperRef.current &&
-      !wrapperRef.current.contains(e.target)
-    )
-      setOpen(false);
-  }, []);
-
-  const toggle = useCallback(() => {
-    setOpen(!open);
-  }, [open]);
-
-  useEffect(() => {
-    document.addEventListener("click", hide);
-    return () => document.removeEventListener("click", hide);
-  }, [hide]);
 
   const onCheckedChange = useCallback(
     (weekday: IDate.Weekday, checked: boolean) => {

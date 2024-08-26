@@ -1,4 +1,4 @@
-export type SelectList = Array<{
+export type SelectList<T extends string | number> = Array<{
   label: string;
-  value: string;
+  value: T;
 }>;
