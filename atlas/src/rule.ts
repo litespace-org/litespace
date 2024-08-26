@@ -7,21 +7,38 @@ export class Rule extends Base {
   }
 
   /**
-   *
    * @param id user id (interviewer or tutor)
    * @param start  utc start time
    * @param end utc end time
-   * @returns
    */
   async findUserRules(id: number): Promise<IRule.Self[]> {
-    return this.get(`/api/v1/rule/list/${id}`);
+    return await this.get(`/api/v1/rule/list/${id}`);
   }
 
+  /**
+   * @param id user id (interviewer or tutor)
+   * @param start  utc start time
+   * @param end utc end time
+   */
   async findUnpackedUserRules(
     id: number,
     start: string,
     end: string
   ): Promise<IRule.FindUnpackedUserRulesResponse> {
-    return this.get(`/api/v1/rule/list/unpacked/${id}`, null, { start, end });
+    return await this.get(`/api/v1/rule/list/unpacked/${id}`, null, {
+      start,
+      end,
+    });
+  }
+
+  async update(
+    id: number,
+    payload: IRule.UpdateApiPayload
+  ): Promise<IRule.Self> {
+    return await this.put(`/api/v1/rule/${id}`, payload);
+  }
+
+  async delete(id: number): Promise<IRule.Self> {
+    return await this.del(`/api/v1/rule/${id}`);
   }
 }

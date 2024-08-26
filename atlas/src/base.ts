@@ -21,7 +21,7 @@ export class Base {
       .then((response) => response.data);
   }
 
-  async del<T, R = void>(route: string, payload: T): Promise<R> {
+  async del<T, R = void>(route: string): Promise<R> {
     return this.client.delete(route).then((response) => response.data);
   }
 

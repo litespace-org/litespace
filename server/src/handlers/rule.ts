@@ -11,12 +11,14 @@ import {
   weekday,
 } from "@/validation/utils";
 import { IRule, IUser } from "@litespace/types";
-import { badRequest, forbidden } from "@/lib/error";
+import { badRequest, forbidden, notfound } from "@/lib/error";
 import { calls, rules } from "@/models";
 import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol";
+import { isEmpty } from "lodash";
 
+const title = zod.string().min(5).max(255);
 const createRulePayload = zod.object({
-  title: zod.string().min(5).max(255),
+  title,
   frequency: number,
   start: datetime,
   end: datetime,
@@ -26,12 +28,20 @@ const createRulePayload = zod.object({
   monthday: zod.optional(monthday),
 });
 const findUserRulesPayload = zod.object({ userId: id });
-
 const findUnpackedUserRulesParams = zod.object({ userId: id });
-
-const findUnpackedUserRulesQuery = zod.object({
-  start: date,
-  end: date,
+const findUnpackedUserRulesQuery = zod.object({ start: date, end: date });
+const updateRuleParams = zod.object({ ruleId: id });
+const deleteRuleParams = zod.object({ ruleId: id });
+const updateRulePayload = zod.object({
+  title: zod.optional(title),
+  frequency: zod.optional(number),
+  start: zod.optional(datetime),
+  end: zod.optional(datetime),
+  time: zod.optional(string),
+  duration: zod.optional(number),
+  weekday: zod.optional(zod.array(weekday)),
+  monthday: zod.optional(monthday),
+  activated: zod.optional(zod.boolean()),
 });
 
 async function createRule(req: Request, res: Response, next: NextFunction) {
@@ -92,8 +102,47 @@ async function findUnpackedUserRules(
   });
 }
 
+async function updateRule(req: Request, res: Response, next: NextFunction) {
+  const payload: IRule.UpdateApiPayload = updateRulePayload.parse(req.body);
+  const { ruleId } = updateRuleParams.parse(req.params);
+  const userId = req.user?.id;
+  if (!userId) return next(forbidden());
+
+  const rule = await rules.findById(ruleId);
+  if (!rule || rule.deleted) return next(notfound.base());
+
+  const owner = rule.userId === userId;
+  if (!owner) return next(forbidden());
+
+  const updatedRule = await rules.update(ruleId, payload);
+  res.status(200).json(updatedRule);
+}
+
+async function deleteRule(req: Request, res: Response, next: NextFunction) {
+  const { ruleId } = deleteRuleParams.parse(req.params);
+  const userId = req.user?.id;
+  if (!userId) return next(forbidden());
+
+  const rule = await rules.findById(ruleId);
+  if (!rule) return next(notfound.base());
+
+  const owner = rule.userId === userId;
+  if (!owner) return next(forbidden());
+
+  const ruleCalls = await calls.findByRuleId(ruleId);
+  const deletable = isEmpty(ruleCalls);
+
+  const deletedRule = deletable
+    ? await rules.delete(ruleId)
+    : await rules.update(ruleId, { deleted: true });
+
+  res.status(204).json(deletedRule);
+}
+
 export default {
   createRule: asyncHandler(createRule),
   findUserRules: asyncHandler(findUserRules),
   findUnpackedUserRules: asyncHandler(findUnpackedUserRules),
+  updateRule: asyncHandler(updateRule),
+  deleteRule: asyncHandler(deleteRule),
 };

@@ -33,6 +33,40 @@ export class Rules {
     return this.from(row);
   }
 
+  async update(
+    id: number,
+    payload: IRule.UpdatePayload,
+    tx?: Knex.Transaction
+  ): Promise<IRule.Self> {
+    const rows = await this.builder(tx)
+      .update({
+        title: payload.title,
+        frequency: payload.frequency,
+        start: payload.start ? dayjs.utc(payload.start).toDate() : undefined,
+        end: payload.end ? dayjs.utc(payload.end).toDate() : undefined,
+        time: payload.time,
+        duration: payload.duration,
+        weekdays: payload.weekdays
+          ? JSON.stringify(payload.weekdays)
+          : undefined,
+        monthday: payload.monthday || null,
+        updated_at: dayjs.utc().toDate(),
+      })
+      .where("id", id)
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("Rule not found; should never happen.");
+    return this.from(row);
+  }
+
+  async delete(id: number, tx?: Knex.Transaction): Promise<IRule.Self> {
+    const rows = await this.builder(tx).where("id", id).delete().returning("*");
+    const row = first(rows);
+    if (!row) throw new Error("Rule not found; should never happen");
+    return this.from(row);
+  }
+
   async findManyBy<T extends keyof IRule.Row>(
     key: T,
     value: IRule.Row[T]
@@ -67,8 +101,15 @@ export class Rules {
       end: row.end.toISOString(),
       time: row.time,
       duration: row.duration,
-      weekdays: row.weekdays as unknown as IRule.Self["weekdays"],
-      monthday: row.monthday || undefined,
+      weekdays:
+        typeof row.weekdays === "string"
+          ? JSON.parse(row.weekdays)
+          : Array.isArray(row.weekdays)
+            ? row.weekdays
+            : [],
+      monthday: row.monthday,
+      activated: row.activated,
+      deleted: row.deleted,
       createAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

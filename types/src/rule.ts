@@ -10,7 +10,9 @@ export type Self = {
   time: string;
   duration: number;
   weekdays: Weekday[];
-  monthday?: number;
+  monthday: number | null;
+  activated: boolean;
+  deleted: boolean;
   createAt: string;
   updatedAt: string;
 };
@@ -26,6 +28,8 @@ export type Row = {
   duration: number;
   weekdays: string;
   monthday: number | null;
+  activated: boolean;
+  deleted: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -64,6 +68,20 @@ export type CreateApiPayload = {
   weekdays?: Weekday[];
   monthday?: number;
 };
+
+export type UpdatePayload = {
+  title?: string;
+  frequency?: Frequency;
+  start?: string;
+  end?: string;
+  time?: string;
+  duration?: number;
+  weekdays?: Weekday[];
+  monthday?: number;
+  activated?: boolean;
+};
+
+export type UpdateApiPayload = UpdatePayload;
 
 export type FindUnpackedUserRulesResponse = {
   rules: Self[];

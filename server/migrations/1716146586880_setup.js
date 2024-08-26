@@ -89,6 +89,8 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     weekdays: { type: "JSONB", notNull: true, default: "[]" },
     monthday: { type: "SMALLINT" },
+    activated: { type: "BOOLEAN", notNull: true, default: false },
+    deleted: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
