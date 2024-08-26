@@ -25,7 +25,7 @@ export {
   useValidateDuration,
 } from "@/hooks/validation";
 export { useDurationUnitMap } from "@/hooks/duration";
-export { useTimeFormatterMap } from "@/hooks/time";
+export { useTimeFormatterMap, useWeekdayMap } from "@/hooks/datetime";
 export { useRuleFormatterMap } from "@/hooks/rule";
 export { default as Spinner } from "@/icons/Spinner";
 export * from "@/components/Icons";

@@ -78,7 +78,7 @@ export const WeekdayPicker: React.FC<{
     if (
       e.target instanceof HTMLElement &&
       e.target !== wrapperRef.current &&
-      e.target.contains(wrapperRef.current)
+      !wrapperRef.current.contains(e.target)
     )
       setOpen(false);
   }, []);
@@ -128,7 +128,7 @@ export const WeekdayPicker: React.FC<{
   );
 
   return (
-    <div className="w-full relative">
+    <div className="w-full relative" ref={wrapperRef}>
       <div
         tabIndex={0}
         className={cn(
@@ -137,7 +137,6 @@ export const WeekdayPicker: React.FC<{
           "flex justify-between items-center"
         )}
         onFocus={show}
-        ref={wrapperRef}
       >
         <ul className="flex flex-wrap max-w-[80%] items-center gap-3">
           {display.map((weekday) => {
@@ -172,6 +171,7 @@ export const WeekdayPicker: React.FC<{
         <div>
           <Button
             onClick={toggle}
+            htmlType="button"
             size={ButtonSize.Tiny}
             type={ButtonType.Text}
             className="!p-0 !h-[25px] !w-[25px]"
@@ -204,12 +204,14 @@ export const WeekdayPicker: React.FC<{
             <div className="flex px-4 mt-2 gap-2">
               <Button
                 onClick={reset}
+                htmlType="button"
                 size={ButtonSize.Tiny}
                 type={ButtonType.Secondary}
               >
                 {weekdayMap.reset}
               </Button>
               <Button
+                htmlType="button"
                 onClick={selectAll}
                 size={ButtonSize.Tiny}
                 type={ButtonType.Secondary}

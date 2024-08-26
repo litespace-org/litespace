@@ -19,7 +19,7 @@
     "@radix-ui/react-direction": "^1.1.0",
     "@reduxjs/toolkit": "^2.2.5",
     "axios": "^1.7.2",
-    "dayjs": "^1.11.12",
+    "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
     "framer-motion": "^11.2.6",
     "lodash": "^4.17.21",
     "marked": "^14.0.0",

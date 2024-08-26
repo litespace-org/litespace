@@ -58,7 +58,6 @@ export class Rules {
   }
 
   from(row: IRule.Row): IRule.Self {
-    console.log(row.weekdays, typeof row.weekdays);
     return {
       id: row.id,
       userId: row.user_id,

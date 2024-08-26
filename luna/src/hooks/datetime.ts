@@ -2,6 +2,7 @@ import { useIntl } from "react-intl";
 import { FormatterMap } from "@litespace/sol";
 import { useMemo } from "react";
 import { messages } from "@/locales";
+import { WeekdayMap } from "@/components/WeekdayPicker";
 
 export function useTimeFormatterMap(): FormatterMap {
   const intl = useIntl();
@@ -26,4 +27,19 @@ export function useTimeFormatterMap(): FormatterMap {
     }),
     [intl]
   );
+}
+
+export function useWeekdayMap(): WeekdayMap {
+  const intl = useIntl();
+  return {
+    saturday: intl.formatMessage({ id: messages["global.days.sat"] }),
+    sunday: intl.formatMessage({ id: messages["global.days.sun"] }),
+    monday: intl.formatMessage({ id: messages["global.days.mon"] }),
+    tuesday: intl.formatMessage({ id: messages["global.days.tue"] }),
+    wednesday: intl.formatMessage({ id: messages["global.days.wed"] }),
+    thursday: intl.formatMessage({ id: messages["global.days.thu"] }),
+    friday: intl.formatMessage({ id: messages["global.days.fri"] }),
+    all: intl.formatMessage({ id: messages["global.labels.all"] }),
+    reset: intl.formatMessage({ id: messages["global.labels.cancel"] }),
+  };
 }

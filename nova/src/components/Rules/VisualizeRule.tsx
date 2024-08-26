@@ -11,7 +11,6 @@ const VisualizeRule: React.FC<{
 }> = ({ rule, open, close }) => {
   const payload = useMemo(() => ({ rule }), [rule]);
   const { events } = useCalendarEvents(payload);
-  console.log(events);
   return (
     <Dialog title={rule.title} open={open} close={close}>
       <div className={cn("max-h-[70vh] overflow-hidden text-foreground ")}>

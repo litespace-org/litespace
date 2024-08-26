@@ -65,12 +65,15 @@ export function useValidation() {
 
   const validateDate = useCallback(
     ({ date, min, max }: { date: string; min?: string; max?: string }) => {
-      const time = dayjs(date);
-      if (
-        !time.isValid() ||
-        (min && time.isBefore(min, "day")) ||
-        (max && time.isAfter(max, "day"))
-      )
+      const day = dayjs(date);
+      const valid = day.isValid();
+      const before =
+        !!min && (day.isBefore(min, "day") || day.isSame(min, "day"));
+      const after =
+        !!max && (day.isAfter(max, "day") || day.isSame(max, "day"));
+
+      console.log({ min, max, before, after, valid, date });
+      if (!valid || before || after)
         return intl.formatMessage({ id: messages["error.schedule.date"] });
 
       return true;
