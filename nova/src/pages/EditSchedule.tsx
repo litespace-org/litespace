@@ -1,11 +1,14 @@
-import AddRules from "@/components/AddRules";
+import RuleForm from "@/components/RuleForm";
 import Rules from "@/components/Rules";
-import { messages } from "@litespace/luna";
+import { useRender } from "@/hooks/render";
+import { Button, ButtonSize, messages } from "@litespace/luna";
 import React from "react";
 import { useIntl } from "react-intl";
 
 const EditSchedule: React.FC = () => {
   const intl = useIntl();
+  const { open, show, hide } = useRender();
+
   return (
     <div className="w-full overflow-hidden max-w-screen-2xl mx-auto px-4 pb-12 pt-10">
       <div className="flex flex-row items-center justify-between">
@@ -16,7 +19,12 @@ const EditSchedule: React.FC = () => {
         </h1>
 
         <div>
-          <AddRules />
+          <Button onClick={show} size={ButtonSize.Small}>
+            {intl.formatMessage({
+              id: messages["page.schedule.add"],
+            })}
+          </Button>
+          <RuleForm open={open} hide={hide} />
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Button, Calendar, messages } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { useAppSelector } from "@/redux/store";
@@ -11,9 +11,8 @@ const Schedule: React.FC = () => {
   const intl = useIntl();
   const rules = useAppSelector(userRulesSelector.full);
   const navigate = useNavigate();
-  const { events, unapckWeek } = useCalendarEvents({
-    rules: rules.value || [],
-  });
+  const list = useMemo(() => rules.value || [], [rules.value]);
+  const { events, unapckWeek } = useCalendarEvents({ rules: list });
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto overflow-hidden px-4 pb-36 pt-10">

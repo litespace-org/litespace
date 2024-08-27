@@ -1,6 +1,5 @@
 import {
   Button,
-  ButtonSize,
   DateInput,
   Dialog,
   Field,
@@ -19,8 +18,8 @@ import {
   WeekdayPicker,
   useWeekdayMap,
 } from "@litespace/luna";
-import { IRule } from "@litespace/types";
-import React, { useCallback, useMemo, useState } from "react";
+import { IDate, IRule } from "@litespace/types";
+import React, { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
@@ -33,20 +32,21 @@ import { profileSelector } from "@/redux/user/me";
 
 type IForm = {
   title: string;
-  frequency: string;
+  frequency: IRule.Frequency;
   start: string;
   end: string;
   time: Time;
   duration: Duration;
-  weekdays: [];
+  weekdays: IDate.Weekday[];
   monthday: number;
 };
 
-const AddRules: React.FC = () => {
+const RuleForm: React.FC<{
+  rule?: IRule.Self;
+  open: boolean;
+  hide: () => void;
+}> = ({ rule, open, hide }) => {
   const intl = useIntl();
-  const [open, setOpen] = useState(false);
-  const show = useCallback(() => setOpen(true), []);
-  const hide = useCallback(() => setOpen(false), []);
   const validate = useValidation();
   const formatterMap = useTimeFormatterMap();
   const durationMap = useDurationUnitMap();
@@ -54,29 +54,35 @@ const AddRules: React.FC = () => {
   const validateDuration = useValidateDuration();
   const profile = useAppSelector(profileSelector);
   const dispatch = useAppDispatch();
-  const form = useForm<IForm>({
-    defaultValues: {
-      start: dayjs().format("YYYY-MM-DD"),
-      frequency: IRule.Frequency.Daily.toString(),
-      weekdays: [],
-    },
-  });
 
-  const mutation = useMutation({
-    mutationFn: async (payload: IRule.CreateApiPayload) => {
-      return await atlas.rule.create(payload);
-    },
-    onSuccess() {
-      if (profile) dispatch(findUserRules(profile.id));
-      toaster.success({
-        title: intl.formatMessage({
-          id: messages["global.notify.schedule.update.success"],
-        }),
-      });
-      form.reset();
-      hide();
-    },
-    onError(error) {
+  const defaultValues = useMemo((): Partial<IForm> => {
+    return {
+      title: rule?.title,
+      frequency: rule?.frequency || IRule.Frequency.Daily,
+      start: dayjs(rule?.start).format("YYYY-MM-DD"),
+      end: rule?.end ? dayjs(rule.end).format("YYYY-MM-DD") : undefined,
+      time: rule ? Time.from(rule.time) : undefined,
+      duration: rule ? Duration.from(rule.duration.toString()) : undefined,
+      weekdays: rule ? rule.weekdays : [],
+      monthday: rule?.monthday || undefined,
+    };
+  }, [rule]);
+
+  const form = useForm<IForm>({ defaultValues });
+
+  const onSuccess = useCallback(() => {
+    if (profile) dispatch(findUserRules(profile.id));
+    toaster.success({
+      title: intl.formatMessage({
+        id: messages["global.notify.schedule.update.success"],
+      }),
+    });
+    form.reset();
+    hide();
+  }, [dispatch, form, hide, intl, profile]);
+
+  const onError = useCallback(
+    (error: unknown) => {
       toaster.error({
         title: intl.formatMessage({
           id: messages["global.notify.schedule.update.error"],
@@ -84,12 +90,33 @@ const AddRules: React.FC = () => {
         description: error instanceof Error ? error.message : undefined,
       });
     },
+    [intl]
+  );
+
+  const create = useMutation({
+    mutationFn: useCallback(async (payload: IRule.CreateApiPayload) => {
+      return await atlas.rule.create(payload);
+    }, []),
+    onSuccess,
+    onError,
+  });
+
+  const update = useMutation({
+    mutationFn: useCallback(
+      async (payload: IRule.UpdateApiPayload) => {
+        if (!rule) return;
+        return await atlas.rule.update(rule.id, payload);
+      },
+      [rule]
+    ),
+    onSuccess,
+    onError,
   });
 
   const onSubmit = useMemo(
     () =>
-      form.handleSubmit((fields: IForm) => {
-        return mutation.mutate({
+      form.handleSubmit(async (fields: IForm) => {
+        const payload = {
           title: fields.title,
           start: dayjs(fields.start).startOf("day").utc().toISOString(),
           end: dayjs(fields.end).startOf("day").utc().toISOString(),
@@ -97,9 +124,11 @@ const AddRules: React.FC = () => {
           time: fields.time.utc().format("railway"),
           duration: fields.duration.minutes(),
           weekdays: fields.weekdays,
-        });
+        };
+        if (rule) return await update.mutate(payload);
+        return await create.mutate(payload);
       }),
-    [form, mutation]
+    [create, form, rule, update]
   );
 
   const frequencyOptions = useMemo(
@@ -108,19 +137,19 @@ const AddRules: React.FC = () => {
         label: intl.formatMessage({
           id: messages["global.schedule.freq.daily"],
         }),
-        value: IRule.Frequency.Daily.toString(),
+        value: IRule.Frequency.Daily,
       },
       {
         label: intl.formatMessage({
           id: messages["global.schedule.freq.weekly"],
         }),
-        value: IRule.Frequency.Weekly.toString(),
+        value: IRule.Frequency.Weekly,
       },
       {
         label: intl.formatMessage({
           id: messages["global.schedule.freq.monthly"],
         }),
-        value: IRule.Frequency.Monthly.toString(),
+        value: IRule.Frequency.Monthly,
       },
     ],
     [intl]
@@ -156,23 +185,33 @@ const AddRules: React.FC = () => {
     [validate]
   );
 
-  const disabled = useMemo(() => mutation.isLoading, [mutation.isLoading]);
+  const disabled = useMemo(
+    () => create.isLoading || update.isLoading,
+    [create.isLoading, update.isLoading]
+  );
+
+  const title = useMemo(
+    () =>
+      intl.formatMessage({
+        id: rule
+          ? messages["page.schedule.update.dialog.title"]
+          : messages["page.schedule.add.dialog.title"],
+      }),
+    [intl, rule]
+  );
+
+  const buttonLabel = useMemo(
+    () =>
+      intl.formatMessage({
+        id: rule
+          ? messages["global.labels.update"]
+          : messages["global.labels.confirm"],
+      }),
+    [intl, rule]
+  );
 
   return (
-    <Dialog
-      trigger={
-        <Button onClick={show} disabled={disabled} size={ButtonSize.Small}>
-          {intl.formatMessage({
-            id: messages["page.schedule.add"],
-          })}
-        </Button>
-      }
-      title={intl.formatMessage({
-        id: messages["page.schedule.add.dialog.title"],
-      })}
-      open={open}
-      close={hide}
-    >
+    <Dialog title={title} open={open} close={hide}>
       <Form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={
@@ -417,18 +456,16 @@ const AddRules: React.FC = () => {
         />
 
         <Button
-          loading={mutation.isLoading}
-          disabled={mutation.isLoading}
+          loading={create.isLoading || update.isLoading}
+          disabled={create.isLoading || update.isLoading}
           htmlType="submit"
           className="mt-4"
         >
-          {intl.formatMessage({
-            id: messages["global.labels.confirm"],
-          })}
+          {buttonLabel}
         </Button>
       </Form>
     </Dialog>
   );
 };
 
-export default AddRules;
+export default RuleForm;

@@ -72,7 +72,6 @@ export function useValidation() {
       const after =
         !!max && (day.isAfter(max, "day") || day.isSame(max, "day"));
 
-      console.log({ min, max, before, after, valid, date });
       if (!valid || before || after)
         return intl.formatMessage({ id: messages["error.schedule.date"] });
 

@@ -1,18 +1,20 @@
 import { IRule } from "@litespace/types";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { asRule, RuleFormatterMap, Schedule } from "@litespace/sol";
 import { Card, ActionsMenu, type MenuAction, messages } from "@litespace/luna";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 import VisualizeRule from "@/components/Rules/VisualizeRule";
+import { useRender } from "@/hooks/render";
+import RuleForm from "@/components/RuleForm";
 
 const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   rule,
   formatterMap,
 }) => {
   const intl = useIntl();
-  const [open, setOpen] = useState<boolean>(false);
-  const hide = useCallback(() => setOpen(false), []);
+  const visualize = useRender();
+  const form = useRender();
 
   const actions = useMemo((): MenuAction[] => {
     return [
@@ -21,20 +23,14 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         label: intl.formatMessage({
           id: messages["page.schedule.list.actions.visualize"],
         }),
-        onClick: () => setOpen(true),
+        onClick: visualize.show,
       },
       {
         id: 2,
         label: intl.formatMessage({
           id: messages["page.schedule.list.actions.update"],
         }),
-      },
-      {
-        id: 3,
-        label: intl.formatMessage({
-          id: messages["page.schedule.list.actions.deactivate"],
-        }),
-        danger: true,
+        onClick: form.show,
       },
       {
         id: 4,
@@ -44,7 +40,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         danger: true,
       },
     ];
-  }, [intl]);
+  }, [form.show, intl, visualize.show]);
 
   return (
     <Card className="flex flex-col">
@@ -56,7 +52,9 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         {Schedule.from(asRule(rule)).withDayjs(dayjs).format(formatterMap)}
       </p>
 
-      <VisualizeRule rule={rule} open={open} close={hide} />
+      <VisualizeRule rule={rule} open={visualize.open} close={visualize.hide} />
+
+      <RuleForm rule={rule} open={form.open} hide={form.hide} />
     </Card>
   );
 };

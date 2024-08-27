@@ -71,7 +71,10 @@ export class Rules {
     key: T,
     value: IRule.Row[T]
   ): Promise<IRule.Self[]> {
-    const rows = await this.builder().select("*").where(key, value);
+    const rows = await this.builder()
+      .select("*")
+      .where(key, value)
+      .orderBy("created_at", "desc");
     return rows.map((row) => this.from(row));
   }
 

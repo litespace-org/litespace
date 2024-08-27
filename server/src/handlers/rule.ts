@@ -114,7 +114,17 @@ async function updateRule(req: Request, res: Response, next: NextFunction) {
   const owner = rule.userId === userId;
   if (!owner) return next(forbidden());
 
-  const updatedRule = await rules.update(ruleId, payload);
+  const updatedRule = await rules.update(ruleId, {
+    title: payload.title,
+    frequency: payload.frequency,
+    start: payload.start,
+    end: payload.end,
+    time: payload.time,
+    duration: payload.duration,
+    weekdays: payload.weekdays,
+    monthday: payload.monthday,
+    activated: payload.activated,
+  });
   res.status(200).json(updatedRule);
 }
 

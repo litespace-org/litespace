@@ -79,9 +79,10 @@ export type UpdatePayload = {
   weekdays?: Weekday[];
   monthday?: number;
   activated?: boolean;
+  deleted?: boolean;
 };
 
-export type UpdateApiPayload = UpdatePayload;
+export type UpdateApiPayload = Omit<UpdatePayload, "deleted">;
 
 export type FindUnpackedUserRulesResponse = {
   rules: Self[];
