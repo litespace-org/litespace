@@ -8,7 +8,9 @@ import VisualizeRule from "@/components/Rules/VisualizeRule";
 import { useRender } from "@/hooks/render";
 import RuleForm from "@/components/RuleForm";
 import DeleteRule from "@/components/Rules/DeleteRule";
-import ToggleRule from "@/components/Rules/ToggleRule";
+import { useActivateRule } from "@/hooks/rule";
+import cn from "classnames";
+import DeactivateRule from "./DeactivateRule";
 
 const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   rule,
@@ -18,9 +20,11 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   const visualize = useRender();
   const form = useRender();
   const deleteRule = useRender();
+  const deactivateRule = useRender();
+  const activate = useActivateRule(rule.id);
 
   const actions = useMemo((): MenuAction[] => {
-    return [
+    const list: MenuAction[] = [
       {
         id: 1,
         label: intl.formatMessage({
@@ -36,6 +40,17 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         onClick: form.show,
       },
       {
+        id: 3,
+        label: intl.formatMessage({
+          id: rule.activated
+            ? messages["page.schedule.list.actions.deactivate"]
+            : messages["page.schedule.list.actions.activate"],
+        }),
+        onClick: rule.activated ? deactivateRule.show : activate.mutate,
+        disabled: activate.isLoading,
+        danger: rule.activated,
+      },
+      {
         id: 4,
         label: intl.formatMessage({
           id: messages["page.schedule.list.actions.delete"],
@@ -44,16 +59,23 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         danger: true,
       },
     ];
-  }, [deleteRule.show, form.show, intl, visualize.show]);
+    return list;
+  }, [
+    activate.isLoading,
+    activate.mutate,
+    deactivateRule.show,
+    deleteRule.show,
+    form.show,
+    intl,
+    rule.activated,
+    visualize.show,
+  ]);
 
   return (
-    <Card className="flex flex-col">
+    <Card className={cn("flex flex-col", !rule.activated && "opacity-75")}>
       <div className="flex flex-row items-center justify-between mb-4">
         <h3 className="text-xl text-foreground ">{rule.title}</h3>
-        <div className="flex flex-row items-center justify-center gap-1">
-          <ToggleRule activated={rule.activated} id={rule.id} />
-          <ActionsMenu actions={actions} />
-        </div>
+        <ActionsMenu actions={actions} />
       </div>
       <p className="text-foreground-light mb-4">
         {Schedule.from(asRule(rule)).withDayjs(dayjs).format(formatterMap)}
@@ -62,6 +84,11 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
       <VisualizeRule rule={rule} open={visualize.open} close={visualize.hide} />
       <RuleForm rule={rule} open={form.open} close={form.hide} />
       <DeleteRule rule={rule} open={deleteRule.open} close={deleteRule.hide} />
+      <DeactivateRule
+        rule={rule}
+        open={deactivateRule.open}
+        close={deactivateRule.hide}
+      />
     </Card>
   );
 };
