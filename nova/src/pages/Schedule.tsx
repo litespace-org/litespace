@@ -11,8 +11,9 @@ const Schedule: React.FC = () => {
   const intl = useIntl();
   const rules = useAppSelector(userRulesSelector.full);
   const navigate = useNavigate();
-  const list = useMemo(() => rules.value || [], [rules.value]);
-  const { events, unapckWeek } = useCalendarEvents({ rules: list });
+  const { events, unapckWeek } = useCalendarEvents(
+    useMemo(() => ({ rules: rules.value || [] }), [rules.value])
+  );
 
   return (
     <div className="w-full max-w-screen-2xl mx-auto overflow-hidden px-4 pb-36 pt-10">

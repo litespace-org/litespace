@@ -50,6 +50,8 @@ export class Rules {
           ? JSON.stringify(payload.weekdays)
           : undefined,
         monthday: payload.monthday || null,
+        activated: payload.activated,
+        deleted: payload.deleted,
         updated_at: dayjs.utc().toDate(),
       })
       .where("id", id)

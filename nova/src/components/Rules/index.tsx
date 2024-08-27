@@ -19,10 +19,7 @@ const Rules: React.FC = () => {
   return (
     <div className="grid grid-cols-12 gap-4">
       {rules.value.map((rule) => (
-        <div
-          className="col-span-12 md:col-span-6 lg:col-span-4 xl:col-span-3"
-          key={rule.id}
-        >
+        <div className="col-span-12 lg:col-span-4 xl:col-span-4" key={rule.id}>
           <Rule rule={rule} formatterMap={formatterMap} />
         </div>
       ))}

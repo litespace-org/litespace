@@ -7,7 +7,8 @@ import { useIntl } from "react-intl";
 import VisualizeRule from "@/components/Rules/VisualizeRule";
 import { useRender } from "@/hooks/render";
 import RuleForm from "@/components/RuleForm";
-import DeleteRule from "./DeleteRule";
+import DeleteRule from "@/components/Rules/DeleteRule";
+import ToggleRule from "@/components/Rules/ToggleRule";
 
 const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   rule,
@@ -49,16 +50,17 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
     <Card className="flex flex-col">
       <div className="flex flex-row items-center justify-between mb-4">
         <h3 className="text-xl text-foreground ">{rule.title}</h3>
-        <ActionsMenu actions={actions} />
+        <div className="flex flex-row items-center justify-center gap-1">
+          <ToggleRule activated={rule.activated} id={rule.id} />
+          <ActionsMenu actions={actions} />
+        </div>
       </div>
       <p className="text-foreground-light mb-4">
         {Schedule.from(asRule(rule)).withDayjs(dayjs).format(formatterMap)}
       </p>
 
       <VisualizeRule rule={rule} open={visualize.open} close={visualize.hide} />
-
       <RuleForm rule={rule} open={form.open} close={form.hide} />
-
       <DeleteRule rule={rule} open={deleteRule.open} close={deleteRule.hide} />
     </Card>
   );

@@ -424,7 +424,7 @@ export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
     time: rule.time,
     duration: rule.duration,
     weekday: rule.weekdays,
-    monthday: rule.monthday,
+    monthday: rule.monthday || undefined,
   };
 }
 

@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { IRule } from "@litespace/types";
@@ -20,6 +20,9 @@ const slice = createSlice({
   initialState,
   reducers: {
     resetUserRules: () => initialState,
+    setUserRules: (state, { payload }: PayloadAction<IRule.Self[]>) => {
+      state.value = payload;
+    },
   },
   extraReducers(builder) {
     fetcher(builder, findUserRules);
@@ -30,5 +33,7 @@ export const userRulesSelector = {
   full: (state: RootState) => state.user.schedule,
   value: (state: RootState) => state.user.schedule.value,
 };
+
+export const { resetUserRules, setUserRules } = slice.actions;
 
 export default slice.reducer;

@@ -65,6 +65,8 @@
   "page.schedule.delete.dialog.alert.description.1": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك.",
   "page.schedule.delete.dialog.alert.description.2": "لن يتمكن طلابك من حجز المزيد من المواعيد معك خلال هذه الأوقات.",
   "page.schedule.delete.dialog.alert.button.label": "فهمتك، تأكيد",
+  "page.schedule.rule.toggle.active": "الموعد مفعل. يمكن للطلاب حجز الحصص معك.",
+  "page.schedule.rule.toggle.inactive": "الموعد غير مفعل. لا يمكن للطلاب حجز الحصص معك خلال هذه الأوقات.",
   "page.schedule.list.actions.visualize": "عرض",
   "page.schedule.list.actions.update": "تعديل",
   "page.schedule.list.actions.delete": "حذف",
