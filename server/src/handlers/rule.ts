@@ -114,6 +114,14 @@ async function updateRule(req: Request, res: Response, next: NextFunction) {
   const owner = rule.userId === userId;
   if (!owner) return next(forbidden());
 
+  const withUpdates: IRule.Self = { ...rule, ...payload };
+  const existingRules = await rules.findByUserId(userId);
+  const otherRules = existingRules.filter((rule) => rule.id !== withUpdates.id);
+  for (const rule of otherRules) {
+    if (Schedule.from(asRule(rule)).intersecting(asRule(withUpdates)))
+      return next(badRequest());
+  }
+
   const updatedRule = await rules.update(ruleId, {
     title: payload.title,
     frequency: payload.frequency,

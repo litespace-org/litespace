@@ -17,18 +17,21 @@ import {
   Duration as DurationInput,
   WeekdayPicker,
   useWeekdayMap,
+  Card,
+  useRuleFormatterMap,
 } from "@litespace/luna";
 import { IDate, IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
-import { Duration, Time } from "@litespace/sol";
+import { Duration, Schedule, Time } from "@litespace/sol";
 import { useMutation } from "react-query";
 import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
 import { profileSelector } from "@/redux/user/me";
+import RuleAlert from "@/components/Rules/RuleAlert";
 
 type IForm = {
   title: string;
@@ -51,6 +54,7 @@ const RuleForm: React.FC<{
   const formatterMap = useTimeFormatterMap();
   const durationMap = useDurationUnitMap();
   const weekdayMap = useWeekdayMap();
+  const ruleFormatterMap = useRuleFormatterMap();
   const validateDuration = useValidateDuration();
   const profile = useAppSelector(profileSelector);
   const dispatch = useAppDispatch();
@@ -61,7 +65,7 @@ const RuleForm: React.FC<{
       frequency: rule?.frequency || IRule.Frequency.Daily,
       start: dayjs(rule?.start).format("YYYY-MM-DD"),
       end: rule?.end ? dayjs(rule.end).format("YYYY-MM-DD") : undefined,
-      time: rule ? Time.from(rule.time) : undefined,
+      time: rule ? Time.from(rule.time).local() : undefined,
       duration: rule ? Duration.from(rule.duration.toString()) : undefined,
       weekdays: rule ? rule.weekdays : [],
       monthday: rule?.monthday || undefined,
@@ -190,6 +194,22 @@ const RuleForm: React.FC<{
     [create.isLoading, update.isLoading]
   );
 
+  const text = useMemo(() => {
+    const values = form.getValues();
+    if (!values.end || !values.time || !values.duration) return null;
+    return Schedule.from({
+      frequency: values.frequency,
+      start: values.start,
+      end: values.end,
+      time: values.time.utc(),
+      duration: values.duration.minutes(),
+      weekday: values.weekdays,
+      monthday: values.monthday,
+    })
+      .withDayjs(dayjs)
+      .format(ruleFormatterMap);
+  }, [form, ruleFormatterMap]);
+
   const title = useMemo(
     () =>
       intl.formatMessage({
@@ -210,8 +230,13 @@ const RuleForm: React.FC<{
     [intl, rule]
   );
 
+  const closeDialog = useCallback(() => {
+    close();
+    form.reset();
+  }, [close, form]);
+
   return (
-    <Dialog title={title} open={open} close={close}>
+    <Dialog title={title} open={open} close={closeDialog} className="w-[550px]">
       <Form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={
@@ -454,6 +479,18 @@ const RuleForm: React.FC<{
             />
           }
         />
+
+        {text ? (
+          <Card className="mt-4">
+            <p className="text-foreground-light">{text}</p>
+          </Card>
+        ) : null}
+
+        {rule ? (
+          <div className="mt-4">
+            <RuleAlert />
+          </div>
+        ) : null}
 
         <Button
           loading={create.isLoading || update.isLoading}

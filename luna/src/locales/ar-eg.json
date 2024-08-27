@@ -59,6 +59,8 @@
   "page.schedule.add.dialog.form.fields.weekdays.label": "أيام الأسبوع",
   "page.schedule.add.dialog.form.fields.weekdays.placeholder": "الخميس والجمعة",
   "page.schedule.update.dialog.title": "تعديل موعد",
+  "page.schedule.update.alert.title": "أنت علي وشك تعديل جدولك",
+  "page.schedule.update.alert.description": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك حتي بعد تعديل الجدول.",
   "page.schedule.delete.dialog.title": "حذف موعد",
   "page.schedule.delete.dialog.alert.title": "حذف \"{title}\"",
   "page.schedule.delete.dialog.alert.description.0": "بعد حذف أي موعد:",
