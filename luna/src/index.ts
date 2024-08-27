@@ -16,12 +16,14 @@ export { ActionsMenu, type MenuAction } from "@/components/ActionsMenu";
 export { Dialog } from "@/components/Dialog";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
+export { Alert } from "@/components/Alert";
+export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";
 export { TextEditor } from "@/components/TextEditor";
 export { messages, locales } from "@/locales";
 export {
-  useValidation,
   useRequired,
+  useValidation,
   useValidateDuration,
 } from "@/hooks/validation";
 export { useDurationUnitMap } from "@/hooks/duration";
