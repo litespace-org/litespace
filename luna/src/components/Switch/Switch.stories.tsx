@@ -15,4 +15,8 @@ export const Primary: StoryObj<Component> = {
   args: { id: "switch" },
 };
 
+export const Disabled: StoryObj<Component> = {
+  args: { id: "switch", disabled: true, checked: true },
+};
+
 export default meta;

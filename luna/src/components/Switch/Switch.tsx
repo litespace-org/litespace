@@ -6,7 +6,8 @@ export const Switch: React.FC<{
   id?: string;
   checked?: boolean;
   onChange?: (checked: boolean) => void;
-}> = ({ id, checked, onChange }) => {
+  disabled?: boolean;
+}> = ({ id, checked, onChange, disabled }) => {
   return (
     <Root
       className={cn(
@@ -19,6 +20,7 @@ export const Switch: React.FC<{
       id={id}
       checked={checked}
       onCheckedChange={onChange}
+      disabled={disabled}
     >
       <Thumb
         className={cn(

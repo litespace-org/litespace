@@ -5,14 +5,14 @@ import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
 export const Alert: React.FC<{
   title?: string;
-  description?: string;
+  children?: React.ReactNode;
   action?: {
     label: string;
     onClick?: () => void;
     disabled?: boolean;
     loading?: boolean;
   };
-}> = ({ title, description, action }) => {
+}> = ({ title, children, action }) => {
   return (
     <div
       className={cn(
@@ -25,18 +25,22 @@ export const Alert: React.FC<{
       </div>
       <div className="flex flex-col items-start justify-center">
         {title ? (
-          <h4 className={cn(action || description ? "mb-2" : "")}>{title}</h4>
+          <h4
+            className={cn(action || children ? "mb-2" : "", "text-foreground")}
+          >
+            {title}
+          </h4>
         ) : null}
 
-        {description ? (
-          <p
+        {children ? (
+          <div
             className={cn(
               "text-foreground-light font-normal",
               action && "mb-2"
             )}
           >
-            {description}
-          </p>
+            {children}
+          </div>
         ) : null}
 
         {action ? (

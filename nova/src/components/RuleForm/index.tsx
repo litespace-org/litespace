@@ -44,8 +44,8 @@ type IForm = {
 const RuleForm: React.FC<{
   rule?: IRule.Self;
   open: boolean;
-  hide: () => void;
-}> = ({ rule, open, hide }) => {
+  close: () => void;
+}> = ({ rule, open, close }) => {
   const intl = useIntl();
   const validate = useValidation();
   const formatterMap = useTimeFormatterMap();
@@ -78,8 +78,8 @@ const RuleForm: React.FC<{
       }),
     });
     form.reset();
-    hide();
-  }, [dispatch, form, hide, intl, profile]);
+    close();
+  }, [dispatch, form, close, intl, profile]);
 
   const onError = useCallback(
     (error: unknown) => {
@@ -211,7 +211,7 @@ const RuleForm: React.FC<{
   );
 
   return (
-    <Dialog title={title} open={open} close={hide}>
+    <Dialog title={title} open={open} close={close}>
       <Form onSubmit={onSubmit} className="flex flex-col gap-4">
         <Field
           label={

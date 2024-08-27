@@ -7,6 +7,7 @@ import { useIntl } from "react-intl";
 import VisualizeRule from "@/components/Rules/VisualizeRule";
 import { useRender } from "@/hooks/render";
 import RuleForm from "@/components/RuleForm";
+import DeleteRule from "./DeleteRule";
 
 const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   rule,
@@ -15,6 +16,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   const intl = useIntl();
   const visualize = useRender();
   const form = useRender();
+  const deleteRule = useRender();
 
   const actions = useMemo((): MenuAction[] => {
     return [
@@ -37,10 +39,11 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         label: intl.formatMessage({
           id: messages["page.schedule.list.actions.delete"],
         }),
+        onClick: deleteRule.show,
         danger: true,
       },
     ];
-  }, [form.show, intl, visualize.show]);
+  }, [deleteRule.show, form.show, intl, visualize.show]);
 
   return (
     <Card className="flex flex-col">
@@ -54,7 +57,9 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
 
       <VisualizeRule rule={rule} open={visualize.open} close={visualize.hide} />
 
-      <RuleForm rule={rule} open={form.open} hide={form.hide} />
+      <RuleForm rule={rule} open={form.open} close={form.hide} />
+
+      <DeleteRule rule={rule} open={deleteRule.open} close={deleteRule.hide} />
     </Card>
   );
 };

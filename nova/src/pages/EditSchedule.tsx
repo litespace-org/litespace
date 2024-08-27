@@ -24,7 +24,7 @@ const EditSchedule: React.FC = () => {
               id: messages["page.schedule.add"],
             })}
           </Button>
-          <RuleForm open={open} hide={hide} />
+          <RuleForm open={open} close={hide} />
         </div>
       </div>
 
