@@ -2,17 +2,9 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
-import { Direction } from "@/components/Direction";
+import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
 
 type Component = typeof Button;
-
-function wrap(props: object & { children: React.ReactNode }) {
-  return (
-    <div>
-      <Button {...props}>{props.children}</Button>;
-    </div>
-  );
-}
 
 const meta: Meta<Component> = {
   component: Button,
@@ -20,17 +12,7 @@ const meta: Meta<Component> = {
   argTypes: {
     children: { control: "text" },
   },
-  decorators: [
-    (Story: React.FC) => {
-      return (
-        <Direction>
-          <div className="bg-background-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl md">
-            <Story />
-          </div>
-        </Direction>
-      );
-    },
-  ],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<typeof Button> = {
@@ -48,7 +30,7 @@ export const PrimaryTiny: StoryObj<typeof Button> = {
   render(props: object & { children: React.ReactNode }) {
     return (
       <div>
-        <Button {...props}>{props.children}</Button>;
+        <Button {...props}>{props.children}</Button>
       </div>
     );
   },
@@ -96,7 +78,6 @@ export const SecondaryTiny: StoryObj<typeof Button> = {
     type: ButtonType.Secondary,
     size: ButtonSize.Tiny,
   },
-  render: wrap,
 };
 
 export const SecondaryDisabled: StoryObj<typeof Button> = {
@@ -120,7 +101,6 @@ export const TextTiny: StoryObj<typeof Button> = {
     type: ButtonType.Text,
     size: ButtonSize.Tiny,
   },
-  render: wrap,
 };
 
 export const TextDisabled: StoryObj<typeof Button> = {
@@ -144,7 +124,6 @@ export const ErrorTiny: StoryObj<typeof Button> = {
     type: ButtonType.Error,
     size: ButtonSize.Tiny,
   },
-  render: wrap,
 };
 
 export const ErrorLoading: StoryObj<typeof Button> = {
@@ -152,6 +131,22 @@ export const ErrorLoading: StoryObj<typeof Button> = {
     children: ar["global.labels.logout"],
     type: ButtonType.Error,
     loading: true,
+  },
+};
+
+export const LoadingOverHiddenText: StoryObj<typeof Button> = {
+  args: {
+    children: ar["global.labels.logout"],
+    type: ButtonType.Primary,
+    size: ButtonSize.Tiny,
+    loading: true,
+  },
+  render(props: object & { children: React.ReactNode }) {
+    return (
+      <div>
+        <Button {...props}>{props.children}</Button>
+      </div>
+    );
   },
 };
 

@@ -31,7 +31,7 @@ export const Button: React.FC<{
       data-size={size}
       data-type={type}
       className={cn(
-        "group font-cairo cursor-pointer text-foreground",
+        "relative font-cairo cursor-pointer text-foreground",
         "space-x-2 text-center font-normal transition-all ease-out duration-200 rounded-md",
         "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
         "w-full flex items-center justify-center text-base",
@@ -54,17 +54,23 @@ export const Button: React.FC<{
       )}
       onClick={onClick}
     >
-      {loading ? (
+      <span
+        className={cn(
+          loading
+            ? "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+            : "hidden"
+        )}
+      >
         <Spinner
           className={cn({
             "text-brand": type === ButtonType.Primary,
             "text-selection": type === ButtonType.Secondary,
             "text-destructive": type === ButtonType.Error,
+            "w-[20px h-[20px]": size === ButtonSize.Tiny,
           })}
         />
-      ) : (
-        children
-      )}
+      </span>
+      <span className={cn(loading && "opacity-0")}>{children}</span>
     </button>
   );
 };
