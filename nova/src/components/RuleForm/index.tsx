@@ -199,9 +199,9 @@ const RuleForm: React.FC<{
     if (!values.end || !values.time || !values.duration) return null;
     return Schedule.from({
       frequency: values.frequency,
-      start: values.start,
-      end: values.end,
-      time: values.time.utc(),
+      start: dayjs(values.start).utc().toISOString(),
+      end: dayjs(values.end).utc().toISOString(),
+      time: values.time.utc().format(),
       duration: values.duration.minutes(),
       weekday: values.weekdays,
       monthday: values.monthday,

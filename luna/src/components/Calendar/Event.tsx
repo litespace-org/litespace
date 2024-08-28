@@ -16,9 +16,23 @@ function asArabicDayIndex(day: number) {
   return day < 6 ? day + 1 : 0;
 }
 
-const Event: React.FC<{
-  event: IEvent;
-}> = ({ event }) => {
+function isMultiDayEvent(event: IEvent) {
+  return !dayjs(event.start).isSame(event.end, "day");
+}
+
+function splitMultidayEvent(event: IEvent) {
+  return [
+    { start: event.start, end: dayjs(event.start).endOf("day").toISOString() },
+    { start: dayjs(event.end).startOf("day").toISOString(), end: event.end },
+  ];
+}
+
+const EventCard: React.FC<{
+  start: string;
+  end: string;
+  wrapper: boolean | null;
+  title: string;
+}> = (event) => {
   const start = useMemo(() => dayjs(event.start), [event.start]);
   const end = useMemo(() => dayjs(event.end), [event.end]);
   const arabicDayIndex = useMemo(() => asArabicDayIndex(start.day()), [start]);
@@ -126,6 +140,29 @@ const Event: React.FC<{
         {event.title}, {dayjs(event.start).format("h:mm a")}
       </p>
     </div>
+  );
+};
+
+const Event: React.FC<{
+  event: IEvent;
+}> = ({ event }) => {
+  const chunks = useMemo(() => {
+    if (isMultiDayEvent(event)) return splitMultidayEvent(event);
+    return [{ start: event.start, end: event.end }];
+  }, [event]);
+
+  return (
+    <>
+      {chunks.map((chunk, idx) => (
+        <EventCard
+          start={chunk.start}
+          end={chunk.end}
+          wrapper={event.wrapper}
+          title={event.title}
+          key={`${event.id}-${idx}`}
+        />
+      ))}
+    </>
   );
 };
 

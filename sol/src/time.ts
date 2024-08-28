@@ -401,14 +401,14 @@ export class Time {
   }
 
   private static parse(value: RawTime): TimeParts {
+    if (Time.isTime(value))
+      return { hours: value.hours(), minutes: value.minutes() };
     if (Time.isRawMidday(value)) return Time.parseMiddayRaw(value);
     if (Time.isRaw(value)) return Time.parseRailway(value);
     if (Time.isPartsTuple(value)) return Time.parsePartsTuple(value);
     if (Time.isMiddayParts(value)) return Time.parseMiddayParts(value);
     if (Time.isMiddayPartsTuple(value))
       return Time.parseMiddayPartsTuple(value);
-    if (Time.isTime(value))
-      return { hours: value.hours(), minutes: value.minutes() };
     return Time.parseTimeParts(value);
   }
 }

@@ -122,11 +122,14 @@ export const Calendar: React.FC<{
     return events.filter((event) => {
       const start = date;
       const end = date.add(1, "week");
-      return dayjs(event.start).isBetween(start, end, "day", "[]");
+      return dayjs(event.start).isBetween(start, end, "minutes", "[]");
     });
   }, [date, events]);
 
-  const startOfCurrentWeek = useCallback(() => setDate(currentWeek), []);
+  const startOfCurrentWeek = useCallback(
+    () => setDate(currentWeek),
+    [currentWeek]
+  );
 
   return (
     <div className="flex flex-col">

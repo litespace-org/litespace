@@ -32,7 +32,7 @@ export const Button: React.FC<{
       data-type={type}
       className={cn(
         "relative font-cairo cursor-pointer text-foreground",
-        "space-x-2 text-center font-normal transition-all ease-out duration-200 rounded-md",
+        "text-center font-normal transition-all ease-out duration-200 rounded-md",
         "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
         "w-full flex items-center justify-center text-base",
         "disabled:opacity-50 disabled:cursor-not-allowed",
@@ -70,7 +70,9 @@ export const Button: React.FC<{
           })}
         />
       </span>
-      <span className={cn(loading && "opacity-0")}>{children}</span>
+      <span className={cn(loading ? "opacity-0" : "opacity-100")}>
+        {children}
+      </span>
     </button>
   );
 };
