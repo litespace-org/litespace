@@ -47,16 +47,16 @@ function App(): React.JSX.Element {
   const profile = useAppSelector(profileSelector);
 
   useEffect(() => {
-    dispatch(findProfile());
+    dispatch(findProfile.call(null));
   }, [dispatch]);
 
   useEffect(() => {
     if (!profile) return;
     const tutor = profile.role === IUser.Role.Tutor;
     const interviewer = profile.role === IUser.Role.Interviewer;
-    dispatch(findRooms(profile.id));
-    if (tutor) dispatch(findTutorMeta(profile.id));
-    if (tutor || interviewer) dispatch(findUserRules(profile.id));
+    dispatch(findRooms.call(profile.id));
+    if (tutor) dispatch(findTutorMeta.call(profile.id));
+    if (tutor || interviewer) dispatch(findUserRules.call(profile.id));
   }, [dispatch, profile]);
 
   return <RouterProvider router={router} />;

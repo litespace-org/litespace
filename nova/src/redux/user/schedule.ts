@@ -1,18 +1,20 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { IRule } from "@litespace/types";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
+import { createThunk } from "@/redux/thunk";
 
 type State = LoadableState<IRule.Self[]>;
 
 const initialState: State = initial();
 
-export const findUserRules = createAsyncThunk(
+export const findUserRules = createThunk(
   "user/schedule/rules",
   async (id: number): Promise<IRule.Self[]> => {
     return await atlas.rule.findUserRules(id);
-  }
+  },
+  (state) => state.user.schedule
 );
 
 const slice = createSlice({

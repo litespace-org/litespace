@@ -1,19 +1,18 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
+import { createThunk } from "../thunk";
 
 type State = LoadableState<IUser.Self>;
 
 const initialState: State = initial();
 
-export const findProfile = createAsyncThunk(
-  "user/profile/me",
-  async (): Promise<IUser.Self> => {
-    const user = await atlas.user.findMe();
-    return user;
-  }
+export const findProfile = createThunk(
+  "user/profile/me/thunk",
+  () => atlas.user.findMe(),
+  (state) => state.user.me
 );
 
 export const slice = createSlice({

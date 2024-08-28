@@ -1,26 +1,10 @@
-import {
-  ActionReducerMapBuilder,
-  AsyncThunk,
-  Draft,
-  PayloadAction,
-  ThunkDispatch,
-  UnknownAction,
-} from "@reduxjs/toolkit";
+import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { clone } from "lodash";
-
-type AsyncThunkConfig = {
-  state?: unknown;
-  dispatch?: ThunkDispatch<unknown, unknown, UnknownAction>;
-  extra?: unknown;
-  rejectValue?: unknown;
-  serializedErrorType?: unknown;
-  pendingMeta?: unknown;
-  fulfilledMeta?: unknown;
-  rejectedMeta?: unknown;
-};
+import { Thunk } from "./thunk";
 
 export type LoadableState<T> = {
   loading: boolean;
+  fetching: boolean;
   error: string | null;
   value: T | null;
 };
@@ -28,28 +12,32 @@ export type LoadableState<T> = {
 export function initial<T>(value: T | null = null): LoadableState<T> {
   return clone({
     loading: false,
+    fetching: false,
     error: null,
     value,
   });
 }
 
-export function fetcher<T, P>(
-  builder: ActionReducerMapBuilder<LoadableState<T>>,
-  thunk: AsyncThunk<T, P, AsyncThunkConfig>
+export function fetcher<R, A = null>(
+  builder: ActionReducerMapBuilder<LoadableState<R>>,
+  thunk: Thunk<R, A>
 ) {
   builder
-    .addCase(thunk.pending, (state) => {
+    .addCase(thunk.loading, (state) => {
       state.loading = true;
-      state.error = null;
     })
-    .addCase(thunk.fulfilled, (state, { payload }: PayloadAction<T>) => {
+    .addCase(thunk.fetching, (state) => {
+      state.fetching = true;
+    })
+    .addCase(thunk.fulfilled, (state, { payload }) => {
       state.loading = false;
       state.error = null;
-      state.value = payload as Draft<T>;
+      state.value = payload;
     })
-    .addCase(thunk.rejected, (state, { error }) => {
+    .addCase(thunk.rejected, (state, { payload }) => {
       state.loading = false;
-      state.error = error.message || null;
-      state.value = null;
+      state.loading = false;
+      state.fetching = false;
+      state.error = payload instanceof Error ? payload.message : null;
     });
 }

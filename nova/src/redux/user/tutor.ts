@@ -1,18 +1,20 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { ITutor } from "@litespace/types";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
+import { createThunk } from "@/redux/thunk";
 
 type State = LoadableState<ITutor.Self>;
 
 const initialState: State = initial();
 
-export const findTutorMeta = createAsyncThunk(
+export const findTutorMeta = createThunk(
   "user/tutor/meta",
   async (tutorId: number): Promise<ITutor.Self> => {
     return await atlas.user.findTutorMeta(tutorId);
-  }
+  },
+  (state) => state.user.tutor
 );
 
 const slice = createSlice({
