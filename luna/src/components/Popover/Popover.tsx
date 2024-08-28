@@ -20,7 +20,7 @@ export const Popover: React.FC<{
           'after:content[""] after:absolute after:-bottom-[4px] after:left-1/2',
           "after:w-0 after:h-0 after:border-4 after:border-surface-400 after:rotate-45 after:-translate-x-1/2",
           "bg-surface-400 rounded p-2 z-50 min-w-[200px] text-center",
-          "opacity-0 data-[open=true]:opacity-100 transition-opacity duration-200 ease-in",
+          "opacity-0 data-[open=true]:opacity-100 invisible data-[open=true]:visible transition-opacity duration-200 ease-in",
           className
         )}
       >
