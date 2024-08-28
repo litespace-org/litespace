@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { IEvent } from "@/components/Calendar/types";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { useMediaQueries } from "@/hooks/media";
+import { useDimensions } from "@/components/Calendar/dimensions";
 
 /**
  * "Dayjs" index days from Sunday (0) to Saturday (6)
@@ -39,41 +39,7 @@ const EventCard: React.FC<{
   const hour = useMemo(() => start.hour(), [start]);
   const minutes = useMemo(() => start.minute(), [start]);
   const length = useMemo(() => end.diff(start, "minutes"), [end, start]);
-
-  const { sm, md, lg, xl, xxl } = useMediaQueries();
-
-  const width = useMemo(() => {
-    if (xxl) return 205;
-    if (xl) return 170;
-    if (lg) return 130;
-    if (md) return 100;
-    if (sm) return 80;
-    return 70;
-  }, [lg, md, sm, xl, xxl]);
-
-  const height = useMemo(() => {
-    if (xxl) return 90;
-    if (xl || lg) return 80;
-    if (md || sm) return 60;
-    return 50;
-  }, [lg, md, sm, xl, xxl]);
-
-  const dimensions = useMemo(() => {
-    const hour = height;
-    const minute = hour / 60;
-    const childOffset = 0.05 * width;
-    const childWidth = width - childOffset;
-    const parentWidth = 0.8 * width;
-    return {
-      width,
-      height,
-      hour,
-      minute,
-      childWidth,
-      parentWidth,
-      childOffset,
-    };
-  }, [height, width]);
+  const dimensions = useDimensions();
 
   const minutesToPixelsHight = useCallback(
     (minutes: number): number => {

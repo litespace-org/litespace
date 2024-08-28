@@ -10,6 +10,7 @@ import Event from "@/components/Calendar/Event";
 import dayjs from "@/lib/dayjs";
 import { useMediaQueries } from "@/hooks/media";
 import Overlay from "@/components/Calendar/Overlay";
+import Indicator from "@/components/Calendar/Indicator";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];
@@ -260,6 +261,8 @@ export const Calendar: React.FC<{
             {weekEvents.map((event, idx) => (
               <Event key={event.start + event.end + idx} event={event} />
             ))}
+
+            <Indicator />
           </div>
         </div>
       </div>
