@@ -1,6 +1,5 @@
 import { ICall, IRule, ITutor } from "@litespace/types";
 import { Dayjs } from "dayjs";
-import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
 import { Knex } from "knex";
 import { calls, rules, tutors } from "@/models";
@@ -81,14 +80,6 @@ export async function cacheAvailableTutors(
   start: Dayjs
 ): Promise<ITutor.Cache> {
   const cache = await constructAvailableTutorsCache(start);
-  await Promise.all([
-    availableTutorsCache.setDates({
-      start: dayjs.utc(cache.start),
-      end: dayjs.utc(cache.end),
-    }),
-    availableTutorsCache.setTutors(cache.tutors),
-    availableTutorsCache.setRules(cache.unpackedRules),
-  ]);
-
+  await availableTutorsCache.set(cache);
   return cache;
 }
