@@ -18,7 +18,7 @@ import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
-import { first, range } from "lodash";
+import { first, range, sample } from "lodash";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -60,7 +60,11 @@ async function main(): Promise<void> {
       tx
     );
 
-    await users.update(student.id, { photo: "student.png" }, tx);
+    await users.update(
+      student.id,
+      { photo: "student.png", gender: IUser.Gender.Male },
+      tx
+    );
     return student;
   });
 
@@ -74,7 +78,7 @@ async function main(): Promise<void> {
 
   const addedTutors = await knex.transaction(async (tx) => {
     return await Promise.all(
-      range(1, 100).map(async (idx) => {
+      range(1, 101).map(async (idx) => {
         const email = `tutor${idx}@litespace.org`;
         const tutor = await users.create(
           {
@@ -93,7 +97,11 @@ async function main(): Promise<void> {
         await tutors.create(tutor.id, tx);
         await users.update(
           tutor.id,
-          { photo: "test.jpg", gender: IUser.Gender.Male },
+          {
+            photo: "test.jpg",
+            gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+            online: sample([true, false]),
+          },
           tx
         );
         await tutors.update(
@@ -143,24 +151,37 @@ async function main(): Promise<void> {
       IDate.Weekday.Thursday,
       IDate.Weekday.Friday,
     ],
+    monthday: sample(range(1, 31)),
   });
 
-  await rules.create({
-    userId: tutor.id,
-    frequency: IRule.Frequency.Daily,
-    start: dayjs.utc().startOf("day").toISOString(),
-    end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
-    time: Time.from("6pm").utc().format(),
-    duration: 180,
-    title: "Main Rule",
-    weekdays: [
-      IDate.Weekday.Monday,
-      IDate.Weekday.Tuesday,
-      IDate.Weekday.Wednesday,
-      IDate.Weekday.Thursday,
-      IDate.Weekday.Friday,
-    ],
-  });
+  const times = range(0, 24).map((hour) =>
+    [hour.toString().padStart(2, "0"), "00"].join(":")
+  );
+
+  await Promise.all(
+    addedTutors.map(async (tutor) => {
+      await rules.create({
+        userId: tutor.id,
+        frequency: IRule.Frequency.Daily,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
+        time: Time.from(sample(times)!).utc().format(),
+        duration: 180,
+        title: "Main Rule",
+        weekdays: [
+          sample([
+            IDate.Weekday.Monday,
+            IDate.Weekday.Tuesday,
+            IDate.Weekday.Wednesday,
+            IDate.Weekday.Thursday,
+            IDate.Weekday.Friday,
+            IDate.Weekday.Saturday,
+            IDate.Weekday.Sunday,
+          ]),
+        ],
+      });
+    })
+  );
 
   await calls.create({
     hostId: interviewer.id,

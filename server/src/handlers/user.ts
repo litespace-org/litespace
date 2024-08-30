@@ -1,5 +1,5 @@
 import { tutors, users } from "@/models";
-import { IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
@@ -20,10 +20,10 @@ import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
-import { sample } from "lodash";
+import { drop, first, orderBy, reduce, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
 
@@ -46,6 +46,11 @@ const updateUserPayload = zod.object({
 });
 
 const findTutorMetaParams = zod.object({ tutorId: id });
+
+const findAvailableTutorsQuery = zod.object({
+  page: zod.optional(zod.coerce.number().min(1)),
+  size: zod.optional(zod.coerce.number().max(50)),
+});
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
@@ -288,6 +293,7 @@ async function findAvailableTutors(
   const allowedRole = req.user?.role === IUser.Role.Student;
   if (!userId || !allowedRole) return next(forbidden());
 
+  const query = findAvailableTutorsQuery.parse(req.query);
   const start = dayjs.utc().startOf("day");
   const [dates, exists] = await Promise.all([
     availableTutorsCache.getDates(),
@@ -309,10 +315,41 @@ async function findAvailableTutors(
 
   if (!cache.tutors || !cache.unpackedRules) return next(badRequest()); // should send "ServerError"
 
-  res.status(200).json({
-    tutors: cache.tutors,
-    rules: cache.unpackedRules,
-  });
+  const iteratees = [
+    // sort in ascending order by the first availablity
+    (tutor: ITutor.FullTutor) => {
+      const rules = cache.unpackedRules?.[tutor.id.toString()];
+      const rule = first(rules);
+      if (!rule) return Infinity;
+      return dayjs.utc(rule.start).unix();
+    },
+    (tutor: ITutor.FullTutor) => {
+      if (!req.user.gender) return 0; // disable ordering by gender if user gener is unkown.
+      if (!tutor.gender) return Infinity;
+      const same = req.user.gender === tutor.gender;
+      return same ? 0 : 1;
+    },
+    "online",
+  ];
+  const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc"];
+  const tutors = orderBy(cache.tutors, iteratees, orders);
+  const unpackedRules = cache.unpackedRules;
+  const page = query.page || 1;
+  const size = query.size || 10;
+  const offset = (page - 1) * size;
+  const total = tutors.length;
+  const paginated = drop(tutors, offset).slice(0, size);
+  const rules = reduce(
+    paginated,
+    (acc: ITutor.Cache["unpackedRules"], tutor) => {
+      const id = tutor.id.toString();
+      acc[id] = unpackedRules[id] || [];
+      return acc;
+    },
+    {}
+  );
+
+  res.status(200).json({ total, tutors: paginated, rules });
 }
 
 export default {
