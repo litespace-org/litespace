@@ -6,6 +6,8 @@ export type NumericString = `${number}`;
 
 export type Paginated<T> = { list: T[]; total: number };
 
+export type PagniationParams = { page?: number; size?: number };
+
 export type Event = {
   /**
    * UTC based start time

@@ -1,5 +1,11 @@
 import { Base } from "@/base";
-import { FindMeResponse, ITutor, IUser, Paginated } from "@litespace/types";
+import {
+  FindMeResponse,
+  ITutor,
+  IUser,
+  Paginated,
+  PagniationParams,
+} from "@litespace/types";
 
 export class User extends Base {
   async create(payload: IUser.CreateApiPayload): Promise<IUser.Self> {
@@ -59,5 +65,9 @@ export class User extends Base {
 
   async findTutorMeta(tutorId: number): Promise<ITutor.Self> {
     return await this.get(`/api/v1/user/tutor/meta/${tutorId}`);
+  }
+
+  async findAvailableTutors(params?: PagniationParams) {
+    return await this.get(`/api/v1/tutor/list/available`, null, params);
   }
 }
