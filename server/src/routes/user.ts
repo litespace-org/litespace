@@ -15,5 +15,6 @@ router.get("/list", user.findUsers);
 router.get("/:id", user.findById);
 router.put("/:id", user.update);
 router.get("/tutor/meta/:tutorId", user.findTutorMeta);
+router.get("/tutor/list/available", user.findAvailableTutors);
 
 export default router;

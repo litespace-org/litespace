@@ -1,5 +1,6 @@
 import * as User from "@/user";
 import { Name } from "@/user";
+import { IRule } from ".";
 
 export type Self = {
   id: number;
@@ -66,4 +67,11 @@ export type CreateApiPayload = User.Credentials & { name: string };
 export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropPhoto?: boolean;
   dropVideo?: boolean;
+};
+
+export type Cache = {
+  start: string;
+  end: string;
+  tutors: FullTutor[];
+  unpackedRules: Record<string, Array<IRule.RuleEvent>>;
 };

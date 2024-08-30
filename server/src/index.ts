@@ -15,7 +15,11 @@ import { pool } from "@/models/query";
 import { onlyForHandshake } from "./middleware/common";
 import fileupload from "express-fileupload";
 import { capitalize } from "lodash";
+import { client } from "@/redis/client";
 import "colors";
+
+// connect to the redis server
+client.connect();
 
 const SessionStore = connectPostgres(session);
 const sessionMiddleware = session({

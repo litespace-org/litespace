@@ -184,8 +184,18 @@ export class Tutors {
     return this.asTutorMedia(row);
   }
 
-  fullTutorQuery() {
-    return knex
+  async findActivatedTutors(
+    tx?: Knex.Transaction
+  ): Promise<ITutor.FullTutor[]> {
+    const rows = await this.fullTutorQuery(tx).where(
+      this.column("activated"),
+      true
+    );
+    return rows.map((row) => this.asFullTutor(row));
+  }
+
+  fullTutorQuery(tx?: Knex.Transaction) {
+    return this.builder(tx)
       .select<ITutor.FullTutorRow[]>(this.columns.fullTutorFields.map)
       .from<IUser.Row>(users.table)
       .innerJoin<IUser.Row>(this.table, users.column("id"), this.column("id"))

@@ -92,6 +92,19 @@ export class Rules {
     return this.findOneBy("id", id);
   }
 
+  async findTutorsActivatedRules(
+    tutorIds: number[],
+    start: string,
+    tx?: Knex.Transaction
+  ): Promise<IRule.Self[]> {
+    const rows = await this.builder(tx)
+      .select("*")
+      .whereIn("user_id", tutorIds)
+      .andWhere("activated", true)
+      .andWhere("end", ">=", start); // select rules that didn't end yet.
+    return rows.map((row) => this.from(row));
+  }
+
   async findByUserId(id: number): Promise<IRule.Self[]> {
     return this.findManyBy("user_id", id);
   }

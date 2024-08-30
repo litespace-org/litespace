@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "es2022",
     "jsx": "react",
-    "module": "commonjs",
-    // "rootDir": "./src/",
+    "module": "NodeNext",
     "baseUrl": "./src/",
     "paths": {
       "@/*": ["./*"]

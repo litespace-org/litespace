@@ -58,9 +58,9 @@ export function withFilter<T extends Knex.QueryBuilder>({
   }
 
   if (filter?.order) {
-    const defs = filter?.order?.map((column, index) => {
+    const defs = filter.order?.map((column, index) => {
       const direction =
-        filter?.direction?.[index] ||
+        filter.direction?.[index] ||
         defaults?.order ||
         IFilter.OrderDirection.Ascending;
       return { column, order: direction };

@@ -23,6 +23,9 @@ import { count, knex } from "@/models/query";
 import { sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
+import dayjs from "dayjs";
+import { availableTutorsCache } from "@/redis/tutor";
+import { cacheAvailableTutors } from "@/lib/tutor";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -227,6 +230,91 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(meta);
 }
 
+/**
+ * Tutors selection algorithm:
+ * 1. Online tutors comes first.
+ * 2. Same gener comes first.
+ * 3. High rated tutor comes first (not implemented)
+ * 4. Available tutors comes first.
+ *
+ *
+ * List should be cached and shared between all of our students.
+ *
+ * Globally accessable list of tutors and their schedules will be cached in
+ * Redis instance.
+ *
+ * Cache will be updated based on events emitted:
+ * 1. Information update (e.g., status: online vs offline) will only update
+ *    status of the cached list.
+ * 2. Updating/Creating schedule will update
+ * 3. Scheduling a new lesson with a given tutor should trigger and update to
+ *    the cache.
+ *
+ * # Why use Cache?
+ * It will enable use to store expensive information about a tutor.
+ * 1. Schedule, which will enable us to sort tutors by their availablity.
+ * 2. Tutor avg. rating which will be the agreggate result for all his ratings.
+ * 3: Will be the base for "Available now" feature.
+ *
+ *
+ * ### Unpacking bounds for the in memory cache?
+ *
+ * Notes:
+ * 1. At the time of selecting a tutors, all students are subscribed (or have
+ *    free minutes).
+ * 2. Subscriptions will be monthly.
+ *
+ * The worest case sendairo will be that the student just get subscribed today
+ * and we need to unpack the rest of month for him.
+ *
+ * This mean we can unpack only one month starting from today.
+ *
+ * The cache time for the tutors list will be "one day"
+ *
+ * ### Implemenation steps:
+ * 1. Construct the tutors list with their schedules.
+ * 2. Set the cache.
+ * 3. Apply the sorting on the cache.
+ *
+ *
+ * TODO: txs in redis
+ */
+async function findAvailableTutors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const userId = req.user?.id;
+  const allowedRole = req.user?.role === IUser.Role.Student;
+  if (!userId || !allowedRole) return next(forbidden());
+
+  const start = dayjs.utc().startOf("day");
+  const [dates, exists] = await Promise.all([
+    availableTutorsCache.getDates(),
+    availableTutorsCache.exists(),
+  ]);
+
+  const validCache =
+    exists &&
+    dates.start &&
+    dates.end &&
+    start.isBetween(dates.start, dates.end, "day", "[]");
+
+  const cache = validCache
+    ? {
+        tutors: await availableTutorsCache.getTutors(),
+        unpackedRules: await availableTutorsCache.getRules(),
+      }
+    : await cacheAvailableTutors(start);
+
+  if (!cache.tutors || !cache.unpackedRules) return next(badRequest()); // should send "ServerError"
+
+  res.status(200).json({
+    tutors: cache.tutors,
+    rules: cache.unpackedRules,
+  });
+}
+
 export default {
   create: asyncHandler(create),
   update: asyncHandler(update),
@@ -237,4 +325,5 @@ export default {
   returnUser: asyncHandler(returnUser),
   selectInterviewer: asyncHandler(selectInterviewer),
   findTutorMeta: asyncHandler(findTutorMeta),
+  findAvailableTutors: asyncHandler(findAvailableTutors),
 };

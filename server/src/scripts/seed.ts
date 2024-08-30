@@ -18,6 +18,7 @@ import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
+import { first, range } from "lodash";
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -71,43 +72,54 @@ async function main(): Promise<void> {
     birthYear,
   });
 
-  const tutor = await knex.transaction(async (tx) => {
-    const tutor = await users.create(
-      {
-        role: IUser.Role.Tutor,
-        email: "tutor@litespace.org",
-        name: { en: "LiteSpace Tutor", ar: "إسماعيل عبد الكريم" },
-        password,
-        birthYear,
-      },
-      tx
-    );
+  const addedTutors = await knex.transaction(async (tx) => {
+    return await Promise.all(
+      range(1, 100).map(async (idx) => {
+        const email = `tutor${idx}@litespace.org`;
+        const tutor = await users.create(
+          {
+            role: IUser.Role.Tutor,
+            email,
+            name: {
+              en: `LiteSpace Tutor #${idx}`,
+              ar: `أيمن عبدالعزيز (${idx})`,
+            },
+            password,
+            birthYear,
+          },
+          tx
+        );
 
-    await tutors.create(tutor.id, tx);
-    await users.update(
-      tutor.id,
-      { photo: "test.jpg", gender: IUser.Gender.Male },
-      tx
+        await tutors.create(tutor.id, tx);
+        await users.update(
+          tutor.id,
+          { photo: "test.jpg", gender: IUser.Gender.Male },
+          tx
+        );
+        await tutors.update(
+          tutor.id,
+          {
+            video: "test.mp4",
+            about: [
+              "محمد بن الحسن بن الحسن بن الهيثم أبو علي البصري 965-1039، لقب بالبصري نسبة إلى مدينة البصرة. ابن الهيثم هو عالم عربي في الرياضيات والبصريات والهندسة له العديد من المؤلفات والمكتشفات العلمية التي أكدها العلم الحديث.",
+              "درس ابن الهيثم ظواهر إنكسار الضوء وانعكاسه بشكل مفصّل، وخالف الآراء القديمة كنظريات بطليموس، فنفى أن الرؤية تتم بواسطة أشعة تنبعث من العين ، كما أرسى أساسيات علم العدسات وشرّح العين تشريحا كاملا .",
+              'يعتبر كتاب المناظر Optics المرجع الأهم الذي استند عليه علماء العصر الحديث في تطوير التقانة الضوئية، وهو تاريخياً أول من قام بتجارب الكاميرا وهو الاسم المشتق من الكلمة العربية : " قُمرة " وتعني الغرفة المظلمة بشباك صغير.',
+            ].join("\n"),
+            bio: "أحب الحياة البسيطة",
+            activated: true,
+            activatedBy: admin.id,
+            mediaProviderId: mediaProvider.id,
+            passedInterview: true,
+          },
+          tx
+        );
+        return tutor;
+      })
     );
-    await tutors.update(
-      tutor.id,
-      {
-        video: "test.mp4",
-        about: [
-          "محمد بن الحسن بن الحسن بن الهيثم أبو علي البصري 965-1039، لقب بالبصري نسبة إلى مدينة البصرة. ابن الهيثم هو عالم عربي في الرياضيات والبصريات والهندسة له العديد من المؤلفات والمكتشفات العلمية التي أكدها العلم الحديث.",
-          "درس ابن الهيثم ظواهر إنكسار الضوء وانعكاسه بشكل مفصّل، وخالف الآراء القديمة كنظريات بطليموس، فنفى أن الرؤية تتم بواسطة أشعة تنبعث من العين ، كما أرسى أساسيات علم العدسات وشرّح العين تشريحا كاملا .",
-          'يعتبر كتاب المناظر Optics المرجع الأهم الذي استند عليه علماء العصر الحديث في تطوير التقانة الضوئية، وهو تاريخياً أول من قام بتجارب الكاميرا وهو الاسم المشتق من الكلمة العربية : " قُمرة " وتعني الغرفة المظلمة بشباك صغير.',
-        ].join("\n"),
-        bio: "أحب الحياة البسيطة",
-        activated: true,
-        activatedBy: admin.id,
-        mediaProviderId: mediaProvider.id,
-        passedInterview: true,
-      },
-      tx
-    );
-    return tutor;
   });
+
+  const tutor = first(addedTutors);
+  if (!tutor) throw new Error("Tutor not found; should never happen.");
 
   await ratings.create({
     raterId: student.id,

@@ -34,6 +34,14 @@ export const databaseConnection = {
     .parse(process.env.DATABASE_URL),
 } as const;
 
+export const redisUrl = zod
+  .string({ message: "Missing or invalid redis url" })
+  .regex(
+    /^redis:\/\/\w+:\d+/,
+    "Provided redis url doesn't match the expected format `redis://<host>:<port>`"
+  )
+  .parse(process.env.REDIS_URL);
+
 // Server
 const SERVER_PORT = process.env.SERVER_PORT;
 const SERVER_HOST = process.env.SERVER_HOST;

@@ -89,6 +89,25 @@ export class Calls {
     return rows.map((row) => this.asAttendeeCall(row));
   }
 
+  async findHostsCallsByRange({
+    userIds,
+    start,
+    end,
+    tx,
+  }: {
+    userIds: number[];
+    start: string;
+    end: string;
+    tx?: Knex.Transaction;
+  }) {
+    const rows = await this.builder(tx)
+      .select("*")
+      .whereIn("host_id", userIds)
+      .andWhereBetween("start", [start, end]);
+
+    return rows.map((row) => this.from(row));
+  }
+
   getSelectHostCallQuery() {
     return knex
       .select<ICall.HostCall[]>({
