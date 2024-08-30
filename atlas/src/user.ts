@@ -67,7 +67,9 @@ export class User extends Base {
     return await this.get(`/api/v1/user/tutor/meta/${tutorId}`);
   }
 
-  async findAvailableTutors(params?: PagniationParams) {
-    return await this.get(`/api/v1/tutor/list/available`, null, params);
+  async findAvailableTutors(
+    params?: PagniationParams
+  ): Promise<ITutor.FindAvailableTutorsApiResponse> {
+    return await this.get(`/api/v1/user/tutor/list/available`, null, params);
   }
 }

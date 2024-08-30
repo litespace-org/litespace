@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { Router, RouterProvider, createBrowserRouter } from "react-router-dom";
 import Root from "@/pages/Root";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
@@ -20,6 +20,7 @@ import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
 import EditSchedule from "@/pages/EditSchedule";
 import { findUserRules } from "@/redux/user/schedule";
+import Tutors from "@/pages/Tutors";
 
 const router = createBrowserRouter([
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: Route.EditSchedule, element: <EditSchedule /> },
       { path: Route.Settings, element: <Settings /> },
       { path: Route.Payments, element: <Payments /> },
+      { path: Route.Tutors, element: <Tutors /> },
     ],
     errorElement: <ErrorPage />,
   },

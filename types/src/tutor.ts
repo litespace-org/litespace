@@ -75,3 +75,9 @@ export type Cache = {
   tutors: FullTutor[];
   unpackedRules: Record<string, Array<IRule.RuleEvent>>;
 };
+
+export type FindAvailableTutorsApiResponse = {
+  total: number;
+  tutors: Cache["tutors"];
+  rules: Cache["unpackedRules"];
+};

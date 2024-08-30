@@ -105,6 +105,8 @@
   "global.labels.am": "صباحاً",
   "global.labels.pm": "مساءً",
   "global.labels.all": "الجميع",
+  "global.labels.reload.page": "إعادة تحميل الصفحة",
+  "global.labels.book": "إحجز",
   "global.schedule.freq.daily": "بشكل يومي",
   "global.schedule.freq.weekly": "بشكل اسبوعي",
   "global.schedule.freq.monthly": "بشكل شهري",
@@ -175,5 +177,7 @@
   "error.schedule.title.max.length": "العنوان طويل جدا",
   "error.schedule.date": "التاريخ غير مناسب",
   "error.schedule.time": "الموعد غير مناسب",
-  "error.schedule.duration": "أقل مده هي 30 دقيقة"
+  "error.schedule.duration": "أقل مده هي 30 دقيقة",
+  "error.tutors.list.error": "حدثت مشكلة أثناء تحصيل قائمة المعلمين، الرجاء المحاولة لاحقاً",
+  "error.tutors.list.empty": "يبدو أنه لا يوجد معلمين متاحين الان. الرجاء المحاولة لاحقاً"
 }
