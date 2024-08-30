@@ -20,7 +20,7 @@ import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
-import { drop, first, orderBy, reduce, sample } from "lodash";
+import { concat, drop, first, orderBy, reduce, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -159,6 +159,35 @@ async function update(req: Request, res: Response, next: NextFunction) {
     return user;
   });
 
+  // handle available tutors cache
+  const isTutor = user.role === IUser.Role.Tutor;
+  if (!isTutor) {
+    res.status(200).json(user);
+    return;
+  }
+
+  const start = dayjs.utc().startOf("day");
+  const exists = await availableTutorsCache.exists();
+  const dates = await availableTutorsCache.getDates();
+  if (
+    !exists ||
+    !dates.start ||
+    !dates.end ||
+    !start.isBetween(dates.start, dates.end, "day", "[]")
+  ) {
+    await cacheAvailableTutors(dayjs.utc().startOf("day"));
+    res.status(200).json(user);
+    return;
+  }
+
+  // update the available tutors cache
+  const tutor = await tutors.findById(targetUser.id);
+  if (!tutor) return next(notfound.tutor());
+
+  const list = await availableTutorsCache.getTutors();
+  const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
+  const updated = concat(filtered, tutor);
+  await availableTutorsCache.setTutors(updated);
   res.status(200).json(user);
 }
 
