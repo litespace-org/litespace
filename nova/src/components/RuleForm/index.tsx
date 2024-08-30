@@ -75,7 +75,7 @@ const RuleForm: React.FC<{
   const form = useForm<IForm>({ defaultValues });
 
   const onSuccess = useCallback(() => {
-    if (profile) dispatch(findUserRules(profile.id));
+    if (profile) dispatch(findUserRules.call(profile.id));
     toaster.success({
       title: intl.formatMessage({
         id: messages["global.notify.schedule.update.success"],

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Router, RouterProvider, createBrowserRouter } from "react-router-dom";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import Root from "@/pages/Root";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";

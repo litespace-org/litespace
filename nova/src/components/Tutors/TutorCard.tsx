@@ -6,8 +6,12 @@ import cn from "classnames";
 import React from "react";
 import { useIntl } from "react-intl";
 
-const TutorCard: React.FC<{ tutor: ITutor.FullTutor }> = ({ tutor }) => {
+const TutorCard: React.FC<{
+  tutor: ITutor.FullTutor;
+  select: () => void;
+}> = ({ tutor, select }) => {
   const intl = useIntl();
+
   return (
     <div
       className={cn(
@@ -31,7 +35,7 @@ const TutorCard: React.FC<{ tutor: ITutor.FullTutor }> = ({ tutor }) => {
         </div>
 
         <div>
-          <Button size={ButtonSize.Small}>
+          <Button onClick={select} size={ButtonSize.Small}>
             {intl.formatMessage({ id: messages["global.book.lesson.label"] })}
           </Button>
         </div>
