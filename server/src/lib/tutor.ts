@@ -12,7 +12,7 @@ export async function constructAvailableTutorsCache(
 ): Promise<ITutor.Cache> {
   // create the cache for the next month starting from `start`
   const start = date.startOf("day");
-  const end = start.add(45, "days").endOf("day");
+  const end = start.add(30, "days").endOf("day");
 
   const [activatedTutors, tutorsRules, ruleCalls] = await knex.transaction(
     async (

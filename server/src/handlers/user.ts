@@ -20,13 +20,14 @@ import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import { count, knex } from "@/models/query";
-import { concat, drop, first, orderBy, reduce, sample } from "lodash";
+import { concat, drop, entries, first, orderBy, reduce, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
+import { Schedule } from "@litespace/sol";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -275,52 +276,44 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
 
 /**
  * Tutors selection algorithm:
- * 1. Online tutors comes first.
- * 2. Same gener comes first.
- * 3. High rated tutor comes first (not implemented)
- * 4. Available tutors comes first.
+ * 1. First available tutors (1st order).
+ * 2. Same gender as user (2nd order)
+ * 3. Online (3rd order)
+ * 4. Rate (4th order) (not implemented)
+ *
+ * Best candidate will be: available in the nerest time, same gender as the user
+ * and online.
  *
  *
- * List should be cached and shared between all of our students.
- *
- * Globally accessable list of tutors and their schedules will be cached in
- * Redis instance.
- *
- * Cache will be updated based on events emitted:
- * 1. Information update (e.g., status: online vs offline) will only update
- *    status of the cached list.
- * 2. Updating/Creating schedule will update
- * 3. Scheduling a new lesson with a given tutor should trigger and update to
- *    the cache.
- *
- * # Why use Cache?
- * It will enable use to store expensive information about a tutor.
- * 1. Schedule, which will enable us to sort tutors by their availablity.
- * 2. Tutor avg. rating which will be the agreggate result for all his ratings.
- * 3: Will be the base for "Available now" feature.
+ * To be able to sort tutors by their availablity we should have access to their
+ * schedule (rules) and their upcoming lessons. It is an expensive operation to
+ * do for all of our tutors **on each request**. That's why we will do this
+ * operation once and cache it (using Redis). It should be shared between all
+ * students.
  *
  *
- * ### Unpacking bounds for the in memory cache?
+ * ### When to updated the cache?
+ * - When the tutor info is updated (e.g., status, bio, about, ...).
+ * - When the tutor schedule (rules) is modified (CRUD).
+ * - When a new lesson is canceled or registered.
  *
- * Notes:
- * 1. At the time of selecting a tutors, all students are subscribed (or have
- *    free minutes).
- * 2. Subscriptions will be monthly.
+ * ### Notify cache updates
+ * On updating the cache, specific event will be emitted to specific **shared
+ * room** (e.g., available_tutors) at which all active students will be there.
+ * The event will trigger the client to refetch the available tutors cache.
  *
- * The worest case sendairo will be that the student just get subscribed today
- * and we need to unpack the rest of month for him.
+ * ### Date size & Cache TTL (time to live)
  *
- * This mean we can unpack only one month starting from today.
+ * At the worse case, student should have access to the tutors' shcedules for
+ * the next 30 days (in case he just got subscribed today). Other students will
+ * be some where in their monthly subscription.
  *
- * The cache time for the tutors list will be "one day"
+ * - We will unpack all tutors rules in next 30 days.
+ * - We will keep the cache for 15 days and then rebuild it again.
  *
- * ### Implemenation steps:
- * 1. Construct the tutors list with their schedules.
- * 2. Set the cache.
- * 3. Apply the sorting on the cache.
- *
- *
- * TODO: txs in redis
+ * This mean that at first day from the cache, studnets has access to 30 days of
+ * data. At the last day of the cache they will have access 15 days of
+ * information.
  */
 async function findAvailableTutors(
   req: Request,
@@ -353,10 +346,23 @@ async function findAvailableTutors(
 
   if (!cache.tutors || !cache.unpackedRules) return next(badRequest()); // should send "ServerError"
 
+  // filter old rules and create a new map
+  const unpackedRules = reduce(
+    entries(cache.unpackedRules),
+    (acc: ITutor.Cache["unpackedRules"], [tutorId, rules]) => {
+      acc[tutorId] = Schedule.order(
+        rules.filter((rule) => dayjs.utc(rule.end).isAfter(dayjs.utc())),
+        "asc"
+      );
+      return acc;
+    },
+    {}
+  );
+
   const iteratees = [
     // sort in ascending order by the first availablity
     (tutor: ITutor.FullTutor) => {
-      const rules = cache.unpackedRules?.[tutor.id.toString()];
+      const rules = unpackedRules[tutor.id.toString()];
       const rule = first(rules);
       if (!rule) return Infinity;
       return dayjs.utc(rule.start).unix();
@@ -371,7 +377,6 @@ async function findAvailableTutors(
   ];
   const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc"];
   const tutors = orderBy(cache.tutors, iteratees, orders);
-  const unpackedRules = cache.unpackedRules;
   const page = query.page || 1;
   const size = query.size || 10;
   const offset = (page - 1) * size;
