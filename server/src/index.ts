@@ -16,6 +16,7 @@ import { onlyForHandshake } from "./middleware/common";
 import fileupload from "express-fileupload";
 import { capitalize } from "lodash";
 import { client } from "@/redis/client";
+import { ApiContext } from "@/types/api";
 import "colors";
 
 // connect to the redis server
@@ -35,6 +36,7 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: { credentials: true, origin: [...serverConfig.origin] },
 });
+const context: ApiContext = { io };
 
 io.engine.use(onlyForHandshake(sessionMiddleware));
 io.engine.use(onlyForHandshake(passport.session()));
@@ -80,7 +82,7 @@ app.use(passport.session());
 
 app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", routes.authorization);
-app.use("/api/v1/user", routes.user);
+app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/slot", routes.slot);
 app.use("/api/v1/rule", routes.rule);
 app.use("/api/v1/tutor", routes.tutor);

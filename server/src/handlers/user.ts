@@ -26,6 +26,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
+import { ApiContext } from "@/types/api";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -88,107 +89,115 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   next(); // Next handler should be the "Local Auth" from passport.
 }
 
-async function update(req: Request, res: Response, next: NextFunction) {
-  const { id } = identityObject.parse(req.params);
+function update(context: ApiContext) {
+  return asyncHandler(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = identityObject.parse(req.params);
 
-  const allowed = enforceRequest(req, id === req.user?.id);
-  if (!allowed) return next(forbidden());
+      const allowed = enforceRequest(req, id === req.user?.id);
+      if (!allowed) return next(forbidden());
 
-  const currentUser = req.user;
-  const targetUser = await users.findById(id);
-  if (!targetUser) return next(forbidden());
+      const currentUser = req.user;
+      const targetUser = await users.findById(id);
+      if (!targetUser) return next(forbidden());
 
-  const { email, name, password, gender, birthYear, drop, bio, about } =
-    updateUserPayload.parse(req.body);
+      const { email, name, password, gender, birthYear, drop, bio, about } =
+        updateUserPayload.parse(req.body);
 
-  const files = {
-    image: {
-      file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
-      type: FileType.Image,
-    },
-    video: {
-      file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
-      type: FileType.Video,
-    },
-  };
+      const files = {
+        image: {
+          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
+          type: FileType.Image,
+        },
+        video: {
+          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
+          type: FileType.Video,
+        },
+      };
 
-  // Only media provider can update tutor media files (images and videos)
-  // Tutor cannot upload it for himself.
-  const isUpdatingTutorMedia =
-    (files.image.file || files.video.file) &&
-    targetUser.role === IUser.Role.Tutor;
-  const isEligibleUser = [
-    IUser.Role.SuperAdmin,
-    IUser.Role.RegularAdmin,
-    IUser.Role.MediaProvider,
-  ].includes(currentUser.role);
-  if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
+      // Only media provider can update tutor media files (images and videos)
+      // Tutor cannot upload it for himself.
+      const isUpdatingTutorMedia =
+        (files.image.file || files.video.file) &&
+        targetUser.role === IUser.Role.Tutor;
+      const isEligibleUser = [
+        IUser.Role.SuperAdmin,
+        IUser.Role.RegularAdmin,
+        IUser.Role.MediaProvider,
+      ].includes(currentUser.role);
+      if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
 
-  // Only media providers can upload videos.
-  // e.g., students/interviewers cannot try to upload videos
-  if (files.video.file && !isEligibleUser) return next(forbidden());
+      // Only media providers can upload videos.
+      // e.g., students/interviewers cannot try to upload videos
+      if (files.video.file && !isEligibleUser) return next(forbidden());
 
-  const [photo, video] = await Promise.all(
-    [
-      { file: req.files?.photo, type: FileType.Image },
-      { file: req.files?.video, type: FileType.Video },
-    ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
-  );
-
-  const user = await knex.transaction(async (tx: Knex.Transaction) => {
-    const user = await users.update(
-      id,
-      {
-        name,
-        email,
-        gender,
-        birthYear,
-        photo: drop?.photo === true ? null : photo,
-        password: password ? hashPassword(password) : undefined,
-      },
-      tx
-    );
-
-    if (bio || about || video || drop?.video)
-      await tutors.update(
-        targetUser.id,
-        { bio, about, video: drop?.video ? null : video },
-        tx
+      const [photo, video] = await Promise.all(
+        [
+          { file: req.files?.photo, type: FileType.Image },
+          { file: req.files?.video, type: FileType.Video },
+        ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
       );
 
-    return user;
-  });
+      const user = await knex.transaction(async (tx: Knex.Transaction) => {
+        const user = await users.update(
+          id,
+          {
+            name,
+            email,
+            gender,
+            birthYear,
+            photo: drop?.photo === true ? null : photo,
+            password: password ? hashPassword(password) : undefined,
+          },
+          tx
+        );
 
-  // handle available tutors cache
-  const isTutor = user.role === IUser.Role.Tutor;
-  if (!isTutor) {
-    res.status(200).json(user);
-    return;
-  }
+        if (bio || about || video || drop?.video)
+          await tutors.update(
+            targetUser.id,
+            { bio, about, video: drop?.video ? null : video },
+            tx
+          );
 
-  const start = dayjs.utc().startOf("day");
-  const exists = await availableTutorsCache.exists();
-  const dates = await availableTutorsCache.getDates();
-  if (
-    !exists ||
-    !dates.start ||
-    !dates.end ||
-    !start.isBetween(dates.start, dates.end, "day", "[]")
-  ) {
-    await cacheAvailableTutors(dayjs.utc().startOf("day"));
-    res.status(200).json(user);
-    return;
-  }
+        return user;
+      });
 
-  // update the available tutors cache
-  const tutor = await tutors.findById(targetUser.id);
-  if (!tutor) return next(notfound.tutor());
+      const end = () => {
+        res.status(200).json(user);
+      };
 
-  const list = await availableTutorsCache.getTutors();
-  const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
-  const updated = concat(filtered, tutor);
-  await availableTutorsCache.setTutors(updated);
-  res.status(200).json(user);
+      // handle available tutors cache
+      const isTutor = user.role === IUser.Role.Tutor;
+      if (!isTutor) return end();
+
+      const start = dayjs.utc().startOf("day");
+      const exists = await availableTutorsCache.exists();
+      const dates = await availableTutorsCache.getDates();
+      if (
+        !exists ||
+        !dates.start ||
+        !dates.end ||
+        !start.isBetween(dates.start, dates.end, "day", "[]")
+      ) {
+        await cacheAvailableTutors(dayjs.utc().startOf("day"));
+        context.io.sockets.emit("update");
+        return end();
+      }
+
+      // todo: handle deactivated tutors
+      const tutor = await tutors.findById(targetUser.id);
+      if (!tutor) return next(notfound.tutor());
+      if (!tutor.activated) return end();
+
+      const list = await availableTutorsCache.getTutors();
+      const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
+      const updated = concat(filtered, tutor);
+      await availableTutorsCache.setTutors(updated);
+      // ideally, we will emit the event to a sepecial room
+      context.io.sockets.emit("update");
+      return end();
+    }
+  );
 }
 
 async function delete_(req: Request, res: Response) {
@@ -383,7 +392,7 @@ async function findAvailableTutors(
 
 export default {
   create: asyncHandler(create),
-  update: asyncHandler(update),
+  update,
   delete: asyncHandler(delete_),
   findById: asyncHandler(findById),
   findUsers: asyncHandler(findUsers),
