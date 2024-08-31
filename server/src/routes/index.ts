@@ -15,9 +15,11 @@ import report from "@/routes/report";
 import reportReply from "@/routes/reportReply";
 import asset from "@/routes/asset";
 import rule from "@/routes/rule";
+import lesson from "@/routes/lesson";
 
 export default {
   user,
+  lesson,
   slot,
   tutor,
   student,

@@ -88,6 +88,7 @@ app.use("/api/v1/rule", routes.rule);
 app.use("/api/v1/tutor", routes.tutor);
 app.use("/api/v1/student", routes.student);
 app.use("/api/v1/call", routes.call);
+app.use("/api/v1/lesson", routes.lesson(context));
 app.use("/api/v1/interview", routes.interview);
 app.use("/api/v1/rating", routes.rating);
 app.use("/api/v1/subscription", routes.subscription);

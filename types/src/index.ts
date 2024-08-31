@@ -17,6 +17,7 @@ export * as IInterview from "@/interview";
 export * as Events from "@/wss";
 export * as IRule from "@/rule";
 export * as IDate from "@/date";
+export * as ILesson from "@/lesson";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";

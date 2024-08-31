@@ -8,6 +8,7 @@ export { users } from "@/models/users";
 export { rules } from "@/models/rules";
 export { slots } from "@/models/slots";
 export { calls } from "@/models/calls";
+export { lessons } from "@/models/lessons";
 export { tutors } from "@/models/tutors";
 export { plans } from "@/models/plans";
 export { coupons } from "@/models/coupons";

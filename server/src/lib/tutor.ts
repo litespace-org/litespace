@@ -24,10 +24,11 @@ export async function constructAvailableTutorsCache(
       // find all active tutors "rules" and "lessons"
       const [tutorsRules, ruleCalls] = await Promise.all([
         // find all tutors rules that are available "after" "start"
-        rules.findTutorsActivatedRules(tutorIds, start.toISOString(), tx),
+        rules.findActivatedRules(tutorIds, start.toISOString(), tx),
         calls.findMemberCalls({
           userIds: tutorIds,
           between: { start: start.toISOString(), end: end.toISOString() },
+          ignoreCanceled: true,
           tx,
         }),
       ]);
@@ -36,8 +37,7 @@ export async function constructAvailableTutorsCache(
   );
 
   // filter canceled calls
-  const filteredCalls = ruleCalls.filter((call) => call.canceledBy === null);
-  const tutorCallsMap = groupBy<ICall.Self>(filteredCalls, "hostId");
+  const tutorCallsMap = groupBy<ICall.Self>(ruleCalls, "hostId");
   const tutorRulesMap = groupBy<IRule.Self>(tutorsRules, "userId");
   const unpackedRules = entries<IRule.Self[]>(tutorRulesMap).map(
     ([tutorId, rules]): { tutorId: string; rules: IRule.RuleEvent[] } => {

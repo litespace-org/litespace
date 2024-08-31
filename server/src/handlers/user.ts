@@ -180,7 +180,7 @@ function update(context: ApiContext) {
         !dates.end ||
         !start.isBetween(dates.start, dates.end, "day", "[]")
       ) {
-        await cacheAvailableTutors(dayjs.utc().startOf("day"));
+        await cacheAvailableTutors(start);
         context.io.sockets.emit("update");
         return end();
       }

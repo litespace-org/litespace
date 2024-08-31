@@ -15,7 +15,7 @@ export class Calls {
 
   async create(
     payload: ICall.CreatePayload,
-    tx?: Knex.Transaction
+    tx: Knex.Transaction
   ): Promise<{ call: ICall.Self; members: ICall.Member[] }> {
     const now = dayjs.utc().toDate();
     const builder = this.builder(tx);
@@ -47,6 +47,16 @@ export class Calls {
     return { call, members: members.map((member) => this.asMember(member)) };
   }
 
+  async cancel(
+    id: number,
+    canceledBy: number,
+    tx: Knex.Transaction
+  ): Promise<void> {
+    await this.builder(tx)
+      .calls.update({ canceled_by: canceledBy })
+      .where("id", id);
+  }
+
   async findById(
     id: number,
     tx?: Knex.Transaction
@@ -57,31 +67,6 @@ export class Calls {
     return this.from(row);
   }
 
-  async findByHostId(
-    id: number,
-    options: { start?: string; end?: string } = {}
-  ): Promise<ICall.Self[]> {
-    const query = knex<ICall.Row>("calls").select().where("host_id", id);
-
-    if (options.start) query.andWhere("start", ">=", options.start);
-    if (options.end) query.andWhere("start", "<=", options.end);
-
-    const rows = await query.then();
-    return rows.map((row) => this.from(row));
-  }
-
-  async findByAttendeeId(id: number): Promise<ICall.Self[]> {
-    const rows = await knex<ICall.Row>("calls")
-      .select()
-      .where("attendee_id", id);
-    return rows.map((row) => this.from(row));
-  }
-
-  async findByRuleId(id: number, tx?: Knex.Transaction): Promise<ICall.Self[]> {
-    const rows = await this.builder(tx).calls.select("*").where("rule_id", id);
-    return rows.map((row) => this.from(row));
-  }
-
   async findCallMembers(
     callIds: number[],
     tx?: Knex.Transaction
@@ -89,6 +74,7 @@ export class Calls {
     const fields: Record<keyof ICall.PopuldatedMemberRow, string> = {
       userId: users.column("id"),
       callId: this.columns.members("call_id"),
+      host: this.columns.members("host"),
       email: users.column("email"),
       arabicName: users.column("name_ar"),
       englishName: users.column("name_en"),
@@ -129,12 +115,14 @@ export class Calls {
   }
 
   async findMemberCalls({
+    ignoreCanceled,
     userIds,
     between,
     tx,
   }: {
     userIds: number[];
     between?: { start: string; end: string };
+    ignoreCanceled?: boolean;
     tx?: Knex.Transaction;
   }): Promise<ICall.Self[]> {
     const fields: Record<keyof ICall.Row, string> = {
@@ -147,7 +135,7 @@ export class Calls {
       updated_at: this.columns.calls("updated_at"),
     };
 
-    const builder = users
+    const builder = users //? do we really need the "users" table? we can join "call_members" and "calls" directly!
       .builder(tx)
       .select<ICall.Row[]>(fields)
       .join(
@@ -169,90 +157,12 @@ export class Calls {
       ]);
     }
 
+    if (ignoreCanceled)
+      builder.andWhere(this.columns.calls("canceled_by"), "!=", null);
+
     const rows = await builder.then();
     return rows.map((row) => this.from(row));
   }
-
-  // async findHostCalls(id: number): Promise<ICall.HostCall[]> {
-  //   return await this.getSelectHostCallQuery().where("calls.host_id", id);
-  // }
-
-  // async findHostCallById(id: number): Promise<ICall.HostCall | null> {
-  //   const rows = await this.getSelectHostCallQuery().where("calls.id", id);
-  //   return first(rows) || null;
-  // }
-
-  // async findTutorInterviews(tutorId: number): Promise<ICall.AttendeeCall[]> {
-  //   const rows = await this.getSelectAttendeeCallQuery()
-  //     .where("attendee_id", tutorId)
-  //     .andWhere("type", ICall.Type.Interview);
-
-  //   return rows.map((row) => this.asAttendeeCall(row));
-  // }
-
-  // async findHostsCallsByRange({
-  //   userIds,
-  //   start,
-  //   end,
-  //   tx,
-  // }: {
-  //   userIds: number[];
-  //   start: string;
-  //   end: string;
-  //   tx?: Knex.Transaction;
-  // }) {
-  //   const rows = await this.builder(tx)
-  //     .select("*")
-  //     .whereIn("host_id", userIds)
-  //     .andWhereBetween("start", [start, end]);
-
-  //   return rows.map((row) => this.from(row));
-  // }
-
-  // getSelectHostCallQuery() {
-  //   return knex
-  //     .select<ICall.HostCall[]>({
-  //       id: this.column("id"),
-  //       hostId: this.column("host_id"),
-  //       attendeeId: this.column("attendee_id"),
-  //       attendeeEmail: users.column("email"),
-  //       attendeeNameAr: users.column("name_ar"),
-  //       attendeeNameEn: users.column("name_en"),
-  //       ruleId: this.column("rule_id"),
-  //       start: this.column("start"),
-  //       duration: this.column("duration"),
-  //       note: this.column("note"),
-  //       feedback: this.column("feedback"),
-  //       createdAt: this.column("created_at"),
-  //       updatedAt: this.column("updated_at"),
-  //     })
-  //     .from<ICall.Row>("calls")
-  //     .innerJoin<IUser.Row>("users", "users.id", "calls.attendee_id")
-  //     .clone();
-  // }
-
-  // getSelectAttendeeCallQuery() {
-  //   return knex
-  //     .select<ICall.AttendeeCallRow[]>({
-  //       id: this.column("id"),
-  //       attendeeId: this.column("attendee_id"),
-  //       hostId: this.column("host_id"),
-  //       hostEmail: users.column("email"),
-  //       hostNameAr: users.column("name_ar"),
-  //       hostNameEn: users.column("name_en"),
-  //       ruleId: this.column("rule_id"),
-  //       start: this.column("start"),
-  //       duration: this.column("duration"),
-  //       type: this.column("type"),
-  //       note: this.column("note"),
-  //       feedback: this.column("feedback"),
-  //       createdAt: this.column("created_at"),
-  //       updatedAt: this.column("updated_at"),
-  //     })
-  //     .from<ICall.Row>("calls")
-  //     .innerJoin("users", "users.id", "calls.host_id")
-  //     .clone();
-  // }
 
   from(row: ICall.Row): ICall.Self {
     return {
@@ -289,15 +199,6 @@ export class Calls {
       }
     );
   }
-
-  // asAttendeeCall(row: ICall.AttendeeCallRow): ICall.AttendeeCall {
-  //   return merge(omit(row, "hostEmail", "hostNameAr", "hostNameEn"), {
-  //     host: {
-  //       email: row.hostEmail,
-  //       name: { ar: row.hostNameAr, en: row.hostNameEn },
-  //     },
-  //   });
-  // }
 
   builder(tx?: Knex.Transaction) {
     return {
