@@ -6,22 +6,28 @@ import {
   Label,
   messages,
   Select,
+  toaster,
 } from "@litespace/luna";
 import { Schedule, splitRuleEvent } from "@litespace/sol";
-import { IRule } from "@litespace/types";
+import { ILesson, IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
+import { useMutation } from "react-query";
+import { atlas } from "@/lib/atlas";
 
 const BookLesson: React.FC<{
   open: boolean;
   close: () => void;
+  tutorId: number;
   name: string;
   rules: IRule.RuleEvent[];
-}> = ({ open, close, name, rules }) => {
+}> = ({ open, close, tutorId, name, rules }) => {
   const intl = useIntl();
-  const [duration, setDuration] = useState<number>(30);
+  const [duration, setDuration] = useState<ILesson.Duration>(
+    ILesson.Duration.Long
+  );
   const [selectedEvent, setSelectedEvent] = useState<IRule.RuleEvent | null>(
     null
   );
@@ -43,6 +49,43 @@ const BookLesson: React.FC<{
     setSelectedEvent(null);
     close();
   }, [close]);
+
+  const onSuccess = useCallback(() => {
+    toaster.success({
+      title: intl.formatMessage(
+        { id: messages["page.tutors.book.lesson.success"] },
+        { tutor: name }
+      ),
+    });
+
+    onClose();
+  }, [intl, name, onClose]);
+
+  const onError = useCallback(
+    (error: unknown) => {
+      toaster.error({
+        title: intl.formatMessage({
+          id: messages["page.tutors.book.lesson.error"],
+        }),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+    [intl]
+  );
+
+  const mutation = useMutation({
+    mutationFn: useCallback(async () => {
+      if (!selectedEvent) return;
+      return await atlas.lesson.create({
+        tutorId,
+        duration,
+        ruleId: selectedEvent.id,
+        start: selectedEvent.start,
+      });
+    }, [duration, selectedEvent, tutorId]),
+    onSuccess,
+    onError,
+  });
 
   const options = useMemo(() => {
     return [
@@ -94,6 +137,7 @@ const BookLesson: React.FC<{
                 <li key={event.start} className="px-6">
                   <Button
                     onClick={() => setSelectedEvent(event)}
+                    disabled={mutation.isLoading}
                     type={
                       selectedEvent?.start === event.start
                         ? ButtonType.Primary
@@ -109,7 +153,12 @@ const BookLesson: React.FC<{
         ))}
       </ul>
 
-      <Button disabled={!selectedEvent} className="mt-4">
+      <Button
+        disabled={!selectedEvent || mutation.isLoading}
+        loading={mutation.isLoading}
+        onClick={() => mutation.mutate()}
+        className="mt-4"
+      >
         {intl.formatMessage({
           id: messages["global.labels.confirm"],
         })}

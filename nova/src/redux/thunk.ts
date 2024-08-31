@@ -5,7 +5,7 @@ import { LoadableState } from "@/redux/fetcher";
 export type Thunk<R, A = null> = {
   loading: PayloadActionCreator<void, string>;
   fetching: PayloadActionCreator<void, string>;
-  rejected: PayloadActionCreator<unknown, string>;
+  rejected: PayloadActionCreator<string, string>;
   fulfilled: PayloadActionCreator<R, string>;
   call: (
     arg: A
@@ -19,7 +19,7 @@ export function createThunk<A = null, R = void, S = void>(
 ): Thunk<R, A> {
   const loading = createAction(prefix + "/loading");
   const fetching = createAction(prefix + "/fetching");
-  const rejected = createAction<unknown>(prefix + "/rejected");
+  const rejected = createAction<string>(prefix + "/rejected");
   const fulfilled = createAction<R>(prefix + "/fulfilled");
 
   function actionCreator(arg: A) {
@@ -32,7 +32,11 @@ export function createThunk<A = null, R = void, S = void>(
         const result = await callback(arg);
         dispatch(fulfilled(result));
       } catch (error) {
-        dispatch(rejected(error));
+        dispatch(
+          rejected(
+            error instanceof Error ? error.message : "Unexpected error occured"
+          )
+        );
       }
     };
   }

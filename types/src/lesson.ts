@@ -63,5 +63,15 @@ export type CreateApiPayload = {
   tutorId: number;
   ruleId: number;
   start: string;
-  duration: ICall.Duration;
+  duration: Duration;
 };
+
+export type CreateApiResponse = {
+  lesson: Self;
+  call: ICall.Self;
+};
+
+export enum Duration {
+  Short = 15,
+  Long = 30,
+}

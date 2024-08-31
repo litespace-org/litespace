@@ -38,6 +38,6 @@ export function fetcher<R, A = null>(
       state.loading = false;
       state.loading = false;
       state.fetching = false;
-      state.error = payload instanceof Error ? payload.message : null;
+      state.error = payload;
     });
 }

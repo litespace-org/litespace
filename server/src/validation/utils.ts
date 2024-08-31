@@ -3,9 +3,9 @@ import {
   IUser,
   ISlot,
   ISubscription,
-  ICall,
   IDate,
   StringLiteral,
+  ILesson,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -47,9 +47,10 @@ export const weekday = zod
   ])
   .pipe(zod.coerce.number());
 
-export const duration = zod
-  .enum([ICall.Duration.Short.toString(), ICall.Duration.Long.toString()])
-  .pipe(zod.coerce.number());
+export const duration = zod.union([
+  zod.literal(ILesson.Duration.Short),
+  zod.literal(ILesson.Duration.Long),
+]);
 
 export const monthday = zod.coerce.number().min(1).max(31);
 

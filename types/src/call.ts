@@ -76,12 +76,7 @@ export type PopuldatedMember = {
 export type CreatePayload = {
   ruleId: number;
   start: string;
-  duration: Duration;
+  duration: number;
   memberIds: number[];
   hostId: number;
 };
-
-export enum Duration {
-  Short = 15,
-  Long = 30,
-}

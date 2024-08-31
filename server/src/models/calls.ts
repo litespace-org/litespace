@@ -164,6 +164,17 @@ export class Calls {
     return rows.map((row) => this.from(row));
   }
 
+  async findByRuleId(
+    ruleId: number,
+    tx?: Knex.Transaction
+  ): Promise<ICall.Self[]> {
+    const rows = await this.builder(tx)
+      .calls.select("*")
+      .where("rule_id", ruleId);
+
+    return rows.map((row) => this.from(row));
+  }
+
   from(row: ICall.Row): ICall.Self {
     return {
       id: row.id,

@@ -50,8 +50,8 @@ export class Lessons {
     const members = await builder.members
       .insert(
         concat(payload.members, payload.hostId).map((userId) => ({
-          userId,
-          lessonId: lesson.id,
+          user_id: userId,
+          lesson_id: lesson.id,
           host: userId === payload.hostId,
         }))
       )

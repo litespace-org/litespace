@@ -120,10 +120,10 @@ async function findDiscreteTimeSlots(
   const end = dayjs.utc(start).add(window, "day").format("YYYY-MM-DD");
   const options = { start, end };
 
-  const [slotsList, callsList] = await Promise.all([
-    slots.findByUserId(userId),
-    calls.findByHostId(userId, options),
-  ]);
+  // const [slotsList, callsList] = await Promise.all([
+  //   slots.findByUserId(userId),
+  //   calls.findByHostId(userId, options),
+  // ]);
 
   // const unpacked = unpackSlots(slotsList, callsList, {
   //   start: dayjs.utc(start),

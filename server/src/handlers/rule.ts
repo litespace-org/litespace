@@ -86,7 +86,11 @@ async function findUnpackedUserRules(
 
   const [userRules, userCalls] = await Promise.all([
     rules.findByUserId(targetUserId),
-    calls.findByHostId(targetUserId, { start, end }),
+    calls.findMemberCalls({
+      userIds: [targetUserId],
+      between: { start, end },
+      ignoreCanceled: true,
+    }),
   ]);
 
   const list = unpackRules({

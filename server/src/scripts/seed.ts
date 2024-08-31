@@ -183,16 +183,21 @@ async function main(): Promise<void> {
     })
   );
 
-  await calls.create({
-    hostId: interviewer.id,
-    memberIds: [tutor.id],
-    duration: 30,
-    ruleId: rule.id,
-    start: dayjs
-      .utc()
-      .startOf("day")
-      .add(Time.from("2pm").totalMinutes(), "minutes")
-      .toISOString(),
+  await knex.transaction(async (tx) => {
+    await calls.create(
+      {
+        hostId: interviewer.id,
+        memberIds: [tutor.id],
+        duration: 30,
+        ruleId: rule.id,
+        start: dayjs
+          .utc()
+          .startOf("day")
+          .add(Time.from("2pm").totalMinutes(), "minutes")
+          .toISOString(),
+      },
+      tx
+    );
   });
 
   const plan = await plans.create({

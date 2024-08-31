@@ -29,6 +29,8 @@
   "page.tutor.onboarding.book.interview.fail.title": "لم نتمكن من حجز مقابلتك",
   "page.tutors.book.lesson.dialog.title": "إحجز حصة مع {name}",
   "page.tutors.book.lesson.dialog.lesson.duration": "مدة الحصة",
+  "page.tutors.book.lesson.success": "تم حجز حصصتك مع {tutor} بنجاح",
+  "page.tutors.book.lesson.error": "حدثت مشكلة أثناء حجز حصتك، الرجاء المحاولة لاحقاً",
   "page.call.start.chat.now": "إبداء محادثة الان!",
   "page.call.start.chat.now.error": "مشكلة في إنشاء غرفة المحادثة",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",

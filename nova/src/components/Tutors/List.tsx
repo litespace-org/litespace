@@ -17,7 +17,9 @@ const TutorList: React.FC<{
   const select = useCallback((tutor: ITutor.FullTutor) => setTutor(tutor), []);
   const deselect = useCallback(() => setTutor(null), []);
 
-  const name = useMemo(() => tutor?.name.ar || "", [tutor?.name.ar]);
+  const name = useMemo(() => tutor?.name.ar, [tutor?.name.ar]);
+  const tutorId = useMemo(() => tutor?.id, [tutor?.id]);
+
   const rules = useMemo(() => {
     if (!tutor?.id) return [];
     return tutors.data?.rules[tutor.id.toString()] || [];
@@ -72,7 +74,15 @@ const TutorList: React.FC<{
         </div>
       ))}
 
-      <BookLesson open={!!tutor} close={deselect} name={name} rules={rules} />
+      {!!name && !!tutorId ? (
+        <BookLesson
+          open={!!tutor}
+          close={deselect}
+          name={name}
+          rules={rules}
+          tutorId={tutorId}
+        />
+      ) : null}
     </div>
   );
 };
