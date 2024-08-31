@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WeekdayPicker } from "@/components/WeekdayPicker";
-import { DrarkWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -13,7 +13,7 @@ const meta: Meta<Component> = {
   title: "WeekdayPicker",
   component: WeekdayPicker,
   parameters: { layout: "centered" },
-  decorators: [DrarkWrapper],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {

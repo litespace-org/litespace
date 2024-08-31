@@ -75,7 +75,7 @@ export const TimePicker: React.FC<{
         ref={dateRef}
         className={cn(
           "bg-background-overlay border border-overlay rounded-md z-[1]",
-          "flex flex-col gap-2 shadow-2xl",
+          "flex flex-col gap-2 shadow-lg",
           "absolute whitespace-nowrap top-[calc(100%+1px)] right-0 overflow-hidden px-1 py-2",
           "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+5px)] invisible data-[open=true]:visible"
         )}

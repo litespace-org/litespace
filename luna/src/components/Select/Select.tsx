@@ -90,7 +90,7 @@ export const Select = <T extends string | number>({
             key={option.value}
             className={cn(
               "hover:bg-background-overlay-hover cursor-pointer text-sm px-3 py-2",
-              "transition-colors duration-300 rounded-md focus:outline-none focus:ring focus:ring-selection",
+              "transition-colors duration-300 rounded-md focus:outline-none focus:ring focus:ring-background-selection",
               "flex flex-row items-center justify-between"
             )}
             onClick={() => onOptionClick(option.value)}

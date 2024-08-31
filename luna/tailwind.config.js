@@ -34,10 +34,6 @@ export default {
           800: "var(--colors-amber8)",
           900: "var(--colors-amber9)",
         },
-        alternative: {
-          DEFAULT: "hsl(var(--background-alternative-default))",
-          200: "hsl(var(--background-alternative-200))",
-        },
         control: "hsl(var(--border-control))",
         muted: "hsl(var(--background-muted))",
         foreground: {
@@ -90,6 +86,10 @@ export default {
           },
           button: {
             DEFAULT: "hsl(var(--background-button-default))",
+          },
+          alternative: {
+            DEFAULT: "hsl(var(--background-alternative-default))",
+            200: "hsl(var(--background-alternative-200))",
           },
         },
         surface: {

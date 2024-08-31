@@ -87,11 +87,11 @@ export const DatePicker: React.FC<{
         <div>
           <Button
             htmlType="button"
-            disabled={!canGoNext || disable}
-            onClick={nextMonth}
+            disabled={!canGoBack || disable}
+            onClick={prevMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
-            className={cn(compact ? "!p-1 !h-auto" : "")}
+            className={cn(compact && "!p-1 !h-auto")}
           >
             <ChevronRight className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>
@@ -102,11 +102,11 @@ export const DatePicker: React.FC<{
         <div>
           <Button
             htmlType="button"
-            disabled={!canGoBack || disable}
-            onClick={prevMonth}
+            disabled={!canGoNext || disable}
+            onClick={nextMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
-            className={cn(compact && "!p-1 !h-auto")}
+            className={cn(compact ? "!p-1 !h-auto" : "")}
           >
             <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
           </Button>

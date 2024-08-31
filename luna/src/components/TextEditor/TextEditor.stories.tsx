@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TextEditor } from "@/components/TextEditor";
-import { DrarkWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 
 const meta: Meta<typeof TextEditor> = {
@@ -9,7 +9,7 @@ const meta: Meta<typeof TextEditor> = {
   parameters: {
     layout: "centered",
   },
-  decorators: [DrarkWrapper],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<typeof TextEditor> = {

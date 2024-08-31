@@ -31,6 +31,7 @@ export const Primary: StoryObj<typeof Dialog> = {
       </div>
     ),
     title: ar["error.update.data"],
+    open: true,
   },
 };
 

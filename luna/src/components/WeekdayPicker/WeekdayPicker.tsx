@@ -133,7 +133,7 @@ export const WeekdayPicker: React.FC<{
                 type="button"
                 role="button"
                 key={weekday}
-                className="bg-selection px-2 rounded-lg flex items-center justify-center gap-1 h-[20px] text-sm"
+                className="bg-background-selection px-2 rounded-lg flex items-center justify-center gap-1 h-[20px] text-sm"
               >
                 <Cross1Icon
                   className="w-[15px] h-[15px] px-1 cursor-pointer bg-muted rounded-full"
@@ -145,7 +145,7 @@ export const WeekdayPicker: React.FC<{
           })}
 
           {many ? (
-            <li className="bg-selection px-2 rounded-lg flex items-center justify-center h-[20px] text-foreground text-xs gap-1">
+            <li className="bg-background-selection px-2 rounded-lg flex items-center justify-center h-[20px] text-foreground text-xs gap-1">
               {weekdays.length - DISPLAY_DAY_COUNT}
               <BorderDottedIcon />
             </li>
