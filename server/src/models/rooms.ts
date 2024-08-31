@@ -1,5 +1,5 @@
 import { column, knex } from "@/models/query";
-import { first, merge, omit } from "lodash";
+import { first, merge, omit, orderBy } from "lodash";
 import { IRoom, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -76,7 +76,7 @@ class Rooms {
       .groupBy("room_id")
       .havingRaw(
         `array_agg(room_members.user_id order by room_members.user_id) = ?`,
-        [members]
+        [orderBy(members)]
       );
 
     const row = first(rows);

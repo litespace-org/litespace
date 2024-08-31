@@ -25,12 +25,9 @@ export async function constructAvailableTutorsCache(
       const [tutorsRules, ruleCalls] = await Promise.all([
         // find all tutors rules that are available "after" "start"
         rules.findTutorsActivatedRules(tutorIds, start.toISOString(), tx),
-        // find tutors lesson for the upcoming month. It will be used to mask
-        // the tutor rules.
-        calls.findHostsCallsByRange({
+        calls.findMemberCalls({
           userIds: tutorIds,
-          start: start.toISOString(),
-          end: end.toISOString(),
+          between: { start: start.toISOString(), end: end.toISOString() },
           tx,
         }),
       ]);
@@ -38,7 +35,9 @@ export async function constructAvailableTutorsCache(
     }
   );
 
-  const tutorCallsMap = groupBy<ICall.Self>(ruleCalls, "hostId");
+  // filter canceled calls
+  const filteredCalls = ruleCalls.filter((call) => call.canceledBy === null);
+  const tutorCallsMap = groupBy<ICall.Self>(filteredCalls, "hostId");
   const tutorRulesMap = groupBy<IRule.Self>(tutorsRules, "userId");
   const unpackedRules = entries<IRule.Self[]>(tutorRulesMap).map(
     ([tutorId, rules]): { tutorId: string; rules: IRule.RuleEvent[] } => {

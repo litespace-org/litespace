@@ -7,6 +7,7 @@ import wss from "@/validation/wss";
 import zod from "zod";
 import "colors";
 import { id, string } from "@/validation/utils";
+import { isEmpty, map } from "lodash";
 
 const peerOpenedPayload = zod.object({
   callId: id,
@@ -46,10 +47,10 @@ export class WssHandler {
       // todo: add error handling
       const { callId, peerId } = peerOpenedPayload.parse(ids);
 
-      const call = await calls.findById(callId);
-      if (!call) return;
+      const members = await calls.findCallMembers([callId]);
+      if (isEmpty(members)) return;
 
-      const isMember = [call.hostId, call.attendeeId].includes(this.user.id);
+      const isMember = map(members, "userId").includes(this.user.id);
       if (!isMember) return;
 
       this.socket.join(callId.toString());

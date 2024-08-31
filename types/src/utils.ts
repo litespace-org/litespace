@@ -8,6 +8,8 @@ export type Paginated<T> = { list: T[]; total: number };
 
 export type PagniationParams = { page?: number; size?: number };
 
+export type StringLiteral<T> = T extends `${string & T}` ? T : never;
+
 export type Event = {
   /**
    * UTC based start time

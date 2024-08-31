@@ -1,161 +1,139 @@
-import { calls, rules, users } from "@/models";
-import { ICall, IUser } from "@litespace/types";
-import { isAdmin } from "@/lib/common";
-import { forbidden, notfound, badRequest } from "@/lib/error";
-import { schema } from "@/validation";
+import { calls } from "@/models";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
-import { enforceRequest } from "@/middleware/accessControl";
-import { canBeInterviewed } from "@/lib/call";
-import {
-  callType,
-  datetime,
-  id,
-  identityObject,
-  number,
-} from "@/validation/utils";
-import zod from "zod";
+import { withNamedId } from "@/validation/utils";
+import { groupBy, map } from "lodash";
+import { notfound } from "@/lib/error";
 
-const durations = [15, 30];
+// async function createCall(req: Request, res: Response, next: NextFunction) {
+//   const allowed = enforceRequest(req);
+//   if (!allowed) return next(forbidden());
 
-const createCallPayload = zod.object({
-  ruleId: id,
-  start: datetime,
-  type: callType,
-  duration: number,
-});
+//   const payload = createCallPayload.parse(req.body);
+//   if (!durations.includes(payload.duration)) return next(badRequest());
 
-async function createCall(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
-  if (!allowed) return next(forbidden());
+//   const rule = await rules.findById(payload.ruleId);
+//   if (!rule) return next(notfound.base());
 
-  const payload = createCallPayload.parse(req.body);
-  if (!durations.includes(payload.duration)) return next(badRequest());
+//   const host = await users.findById(rule.userId);
+//   if (!host) return next(notfound.user());
 
-  const rule = await rules.findById(payload.ruleId);
-  if (!rule) return next(notfound.base());
+//   const student = req.user.role === IUser.Role.Student;
+//   const tutor = req.user.role === IUser.Role.Tutor;
+//   // Only "students" can create "lessons" with "tutors"
+//   const lesson =
+//     student &&
+//     host.role === IUser.Role.Tutor &&
+//     payload.type === ICall.Type.Lesson;
+//   // Only "tutors" can create "interviews" with "interviewers"
+//   const interview =
+//     tutor &&
+//     host.role === IUser.Role.Interviewer &&
+//     payload.type === ICall.Type.Interview;
+//   const eligible = lesson || interview;
+//   if (!eligible) return next(forbidden());
 
-  const host = await users.findById(rule.userId);
-  if (!host) return next(notfound.user());
+//   if (interview) {
+//     const interviews = await calls.findTutorInterviews(req.user.id);
+//     if (!canBeInterviewed(interviews)) return next(badRequest());
+//   }
 
-  const student = req.user.role === IUser.Role.Student;
-  const tutor = req.user.role === IUser.Role.Tutor;
-  // Only "students" can create "lessons" with "tutors"
-  const lesson =
-    student &&
-    host.role === IUser.Role.Tutor &&
-    payload.type === ICall.Type.Lesson;
-  // Only "tutors" can create "interviews" with "interviewers"
-  const interview =
-    tutor &&
-    host.role === IUser.Role.Interviewer &&
-    payload.type === ICall.Type.Interview;
-  const eligible = lesson || interview;
-  if (!eligible) return next(forbidden());
+// const bookedCalls = await calls.findBySlotId(payload.ruleId);
+// const enough = hasEnoughTime({
+//   call: { start: payload.start, duration: payload.duration },
+//   calls: bookedCalls,
+//   slot,
+// });
+// if (!enough) return next(badRequest());
 
-  if (interview) {
-    const interviews = await calls.findTutorInterviews(req.user.id);
-    if (!canBeInterviewed(interviews)) return next(badRequest());
-  }
+//   const call = await calls.create({
+//     hostId: host.id,
+//     type: payload.type,
+//     start: payload.start,
+//     ruleId: payload.ruleId,
+//     attendeeId: req.user.id,
+//     duration: payload.duration,
+//   });
 
-  // const bookedCalls = await calls.findBySlotId(payload.ruleId);
-  // const enough = hasEnoughTime({
-  //   call: { start: payload.start, duration: payload.duration },
-  //   calls: bookedCalls,
-  //   slot,
-  // });
-  // if (!enough) return next(badRequest());
+//   res.status(200).json(call);
+// }
 
-  const call = await calls.create({
-    hostId: host.id,
-    type: payload.type,
-    start: payload.start,
-    ruleId: payload.ruleId,
-    attendeeId: req.user.id,
-    duration: payload.duration,
-  });
+// async function deleteCall(req: Request, res: Response, next: NextFunction) {
+//   const { id } = schema.http.call.delete.params.parse(req.params);
+//   const call = await calls.findById(id);
+//   if (!call) return next(notfound.call());
 
-  res.status(200).json(call);
-}
+//   const userId = req.user.id;
+//   const owner = userId === call.hostId || userId === call.attendeeId;
+//   const eligible = owner || isAdmin(req.user.role);
+//   if (!eligible) return next(forbidden());
 
-async function deleteCall(req: Request, res: Response, next: NextFunction) {
-  const { id } = schema.http.call.delete.params.parse(req.params);
-  const call = await calls.findById(id);
+//   await calls.delete(id);
+//   res.status(200).send();
+// }
+
+// async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
+//   const id = user.id;
+//   const role = user.role;
+//   const studnet = role === IUser.Role.Student;
+//   const tutor = role === IUser.Role.Tutor;
+//   const interviewer = role === IUser.Role.Interviewer;
+//   if (studnet) return await calls.findByAttendeeId(id);
+//   if (tutor || interviewer) return await calls.findByHostId(id);
+//   return await calls.findAll(); // admin
+// }
+
+// async function getMany(req: Request, res: Response, next: NextFunction) {
+//   const allowed = enforceRequest(req);
+//   if (!allowed) return next(forbidden());
+//   const calls = await getCalls(req.user);
+//   res.status(200).json(calls);
+// }
+
+async function findCallById(req: Request, res: Response, next: NextFunction) {
+  const { callId } = withNamedId("callId").parse(req.params);
+  const [call, members] = await Promise.all([
+    calls.findById(callId),
+    calls.findCallMembers([callId]),
+  ]);
   if (!call) return next(notfound.call());
-
-  const userId = req.user.id;
-  const owner = userId === call.hostId || userId === call.attendeeId;
-  const eligible = owner || isAdmin(req.user.role);
-  if (!eligible) return next(forbidden());
-
-  await calls.delete(id);
-  res.status(200).send();
+  res.status(200).json({ call, members });
 }
 
-async function getCalls(user: IUser.Self): Promise<ICall.Self[]> {
-  const id = user.id;
-  const role = user.role;
-  const studnet = role === IUser.Role.Student;
-  const tutor = role === IUser.Role.Tutor;
-  const interviewer = role === IUser.Role.Interviewer;
-  if (studnet) return await calls.findByAttendeeId(id);
-  if (tutor || interviewer) return await calls.findByHostId(id);
-  return await calls.findAll(); // admin
+async function findCallsByUserId(req: Request, res: Response) {
+  const { userId } = withNamedId("userId").parse(req.params);
+  const userCalls = await calls.findMemberCalls({ userIds: [userId] });
+  const members = await calls.findCallMembers(map(userCalls, "id"));
+  const callMembersMap = groupBy(members, "callId");
+  res.status(200).json({ calls: userCalls, members: callMembersMap });
 }
 
-async function getMany(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
-  if (!allowed) return next(forbidden());
-  const calls = await getCalls(req.user);
-  res.status(200).json(calls);
-}
+// should be moved to the `/interview` route and then removed.
+// async function findTutorInterviews(
+//   req: Request,
+//   res: Response,
+//   next: NextFunction
+// ) {
+//   const { id } = identityObject.parse(req.params);
+//   const tutor = await users.findById(id);
+//   if (!tutor) return next(notfound.tutor());
 
-async function getOne(req: Request, res: Response, next: NextFunction) {
-  const { id } = schema.http.call.get.params.parse(req.params);
-  const call = await calls.findById(id);
-  if (!call) return next(notfound.call());
-  res.status(200).json(call);
-}
+//   const allowed = enforceRequest(req, id === tutor.id);
+//   if (!allowed) return next(forbidden());
 
-async function findHostCalls(req: Request, res: Response) {
-  const { id } = schema.http.call.get.params.parse(req.params);
-  const hostCalls = await calls.findHostCalls(id);
-  res.status(200).json(hostCalls);
-}
-
-async function findHostCallById(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const { id } = schema.http.call.get.params.parse(req.params);
-  const hostCall = await calls.findHostCallById(id);
-  if (!hostCall) return next(notfound.call());
-  res.status(200).json(hostCall);
-}
-
-async function findTutorInterviews(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const { id } = identityObject.parse(req.params);
-  const tutor = await users.findById(id);
-  if (!tutor) return next(notfound.tutor());
-
-  const allowed = enforceRequest(req, id === tutor.id);
-  if (!allowed) return next(forbidden());
-
-  const list = await calls.findTutorInterviews(id);
-  res.status(200).json(list);
-}
+//   // const list = await calls.findTutorInterviews(id);
+//   res.status(200).json([]);
+// }
 
 export default {
-  create: asyncHandler(createCall),
-  delete: asyncHandler(deleteCall),
-  get: asyncHandler(getOne),
-  list: asyncHandler(getMany),
-  findHostCalls: asyncHandler(findHostCalls),
-  findHostCallById: asyncHandler(findHostCallById),
-  findTutorInterviews: asyncHandler(findTutorInterviews),
+  // create: asyncHandler(createCall),
+  // delete: asyncHandler(deleteCall),
+  // get: asyncHandler(getOne),
+  // list: asyncHandler(getMany),
+  // findCall: asyncHandler(findCall),
+  // findHostCalls: asyncHandler(findHostCalls),
+  // findHostCallById: asyncHandler(findHostCallById),
+  // findTutorInterviews: asyncHandler(findTutorInterviews),
+  findCallById: asyncHandler(findCallById),
+  findCallsByUserId: asyncHandler(findCallsByUserId),
 };

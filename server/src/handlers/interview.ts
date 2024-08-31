@@ -3,8 +3,15 @@ import { canBeInterviewed } from "@/lib/interview";
 import { enforceRequest } from "@/middleware/accessControl";
 import { calls, interviews, rules, users } from "@/models";
 import { knex } from "@/models/query";
-import { boolean, datetime, id, number, string } from "@/validation/utils";
-import { ICall, IInterview } from "@litespace/types";
+import {
+  boolean,
+  datetime,
+  id,
+  number,
+  string,
+  withNamedId,
+} from "@/validation/utils";
+import { IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import zod from "zod";
@@ -13,15 +20,9 @@ const INTERVIEW_DURATION = 30;
 
 const createInterviewPayload = zod.object({
   interviewerId: id,
-  call: zod.object({
-    start: datetime,
-    ruleId: id,
-  }),
+  start: datetime,
+  ruleId: id,
 });
-
-const findInterviewsPayload = zod.object({ userId: id });
-const updateInterviewParams = zod.object({ interviewId: id });
-const findInterviewByIdParams = zod.object({ interviewId: id });
 const updateInterviewPayload = zod.object({
   feedback: zod.optional(
     zod.object({
@@ -45,7 +46,7 @@ async function createInterview(
   if (!allowed) return next(forbidden());
 
   const intervieweeId = req.user.id;
-  const { interviewerId, call }: IInterview.CreateApiPayload =
+  const { interviewerId, start, ruleId }: IInterview.CreateApiPayload =
     createInterviewPayload.parse(req.body);
 
   const interviewer = await users.findById(interviewerId);
@@ -55,7 +56,7 @@ async function createInterview(
   const interviewable = canBeInterviewed(list);
   if (!interviewable) return next(badRequest());
 
-  const rule = await rules.findById(call.ruleId);
+  const rule = await rules.findById(ruleId);
   if (!rule) return next(notfound.base());
 
   // const bookedCalls = await calls.findBySlotId(call.ruleId);
@@ -66,15 +67,14 @@ async function createInterview(
   // });
   // if (!enough) return next(badRequest());
 
-  const [interview, interviewCall] = await knex.transaction(async (tx) => {
-    const interviewCall = await calls.create(
+  const [interview, call] = await knex.transaction(async (tx) => {
+    const { call } = await calls.create(
       {
+        ruleId,
         hostId: interviewerId,
-        attendeeId: intervieweeId,
+        memberIds: [intervieweeId],
+        start: start,
         duration: INTERVIEW_DURATION,
-        ruleId: call.ruleId,
-        start: call.start,
-        type: ICall.Type.Interview,
       },
       tx
     );
@@ -83,22 +83,21 @@ async function createInterview(
       {
         interviewer: interviewerId,
         interviewee: intervieweeId,
-        call: interviewCall.id,
+        call: call.id,
       },
       tx
     );
 
-    return [interview, interviewCall];
+    return [interview, call];
   });
 
-  res.status(200).json({ interview, call: interviewCall });
+  res.status(200).json({ interview, call });
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
-
-  const { userId } = findInterviewsPayload.parse(req.params);
+  const { userId } = withNamedId("userId").parse(req.params);
   const list = await interviews.findByUser(userId);
   res.status(200).json(list);
 }
@@ -108,7 +107,7 @@ async function findInterviewById(
   res: Response,
   next: NextFunction
 ) {
-  const { interviewId } = findInterviewByIdParams.parse(req.params);
+  const { interviewId } = withNamedId("interviewId").parse(req.params);
   const interview = await interviews.findById(interviewId);
   if (!interview) return next(notfound.base());
 
@@ -128,7 +127,7 @@ async function updateInterview(
   res: Response,
   next: NextFunction
 ) {
-  const { interviewId } = updateInterviewParams.parse(req.params);
+  const { interviewId } = withNamedId("interviewId").parse(req.params);
   const payload: IInterview.UpdatePayload = updateInterviewPayload.parse(
     req.body
   );

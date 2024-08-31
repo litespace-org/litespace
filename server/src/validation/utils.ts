@@ -1,5 +1,12 @@
 import { passwordRegex } from "@/constants";
-import { IUser, ISlot, ISubscription, ICall, IDate } from "@litespace/types";
+import {
+  IUser,
+  ISlot,
+  ISubscription,
+  ICall,
+  IDate,
+  StringLiteral,
+} from "@litespace/types";
 import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
@@ -40,6 +47,10 @@ export const weekday = zod
   ])
   .pipe(zod.coerce.number());
 
+export const duration = zod
+  .enum([ICall.Duration.Short.toString(), ICall.Duration.Long.toString()])
+  .pipe(zod.coerce.number());
+
 export const monthday = zod.coerce.number().min(1).max(31);
 
 export const time = zod.string().time();
@@ -71,8 +82,6 @@ export const role = zod.enum([
   IUser.Role.Student,
 ]);
 
-export const callType = zod.enum([ICall.Type.Interview, ICall.Type.Lesson]);
-
 export const url = zod.string().url().trim();
 
 export const subscriptionPeriod = zod.enum([
@@ -82,3 +91,9 @@ export const subscriptionPeriod = zod.enum([
 ]);
 
 export const identityObject = zod.object({ id });
+
+export function withNamedId<T>(key: StringLiteral<T>) {
+  return zod.object({ [key]: id }) as zod.ZodObject<{
+    [P in StringLiteral<T>]: Zod.ZodNumber;
+  }>;
+}

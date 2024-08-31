@@ -16,7 +16,6 @@ import {
   subscriptionPeriod,
   gender,
   identityObject,
-  callType,
   number,
   boolean,
   role,
@@ -119,16 +118,7 @@ const tutor = {
 } as const;
 
 const call = {
-  create: {
-    body: zod.object({
-      slotId: id,
-      start: datetime,
-      type: callType,
-      duration: number,
-    }),
-  },
   get: { params: identityObject },
-  delete: { params: identityObject },
 };
 
 const ratings = {

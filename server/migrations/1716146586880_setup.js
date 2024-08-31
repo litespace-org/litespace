@@ -18,9 +18,8 @@ exports.up = (pgm) => {
     "interviewer",
     "media-provider",
   ]);
-  pgm.createType("repeat_type", ["no", "daily", "weekly", "monthly"]);
-  pgm.createType("call_type", ["lesson", "interview"]);
-  pgm.createType("user_gender_type", ["male", "female"]);
+  pgm.createType("call_event", ["join", "leave"]);
+  pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
   pgm.createType("token_type", ["forgot-password", "verify-email"]);
 
@@ -40,7 +39,7 @@ exports.up = (pgm) => {
     photo: { type: "VARCHAR(255)", default: null },
     role: { type: "user_role", default: null },
     birth_year: { type: "INT", default: null },
-    gender: { type: "user_gender_type", default: null },
+    gender: { type: "user_gender", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
     credit_score: { type: "INT", notNull: true, default: 0 },
@@ -97,16 +96,48 @@ exports.up = (pgm) => {
 
   pgm.createTable("calls", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    type: { type: "call_type", notNull: true },
-    host_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    attendee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     rule_id: { type: "SERIAL", notNull: true, references: "rules(id)" },
     start: { type: "TIMESTAMP", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
-    note: { type: "TEXT" },
-    feedback: { type: "TEXT" },
+    canceled_by: { type: "SERIAL", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable(
+    "call_members",
+    {
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
+      host: { type: "BOOLEAN", notNull: true, default: false },
+      note: { type: "TEXT" },
+      feedback: { type: "TEXT" },
+      rate: { type: "SMALLINT" },
+      created_at: { type: "TIMESTAMP", notNull: true },
+      updated_at: { type: "TIMESTAMP", notNull: true },
+    },
+    { constraints: { primaryKey: ["user_id", "call_id"] } }
+  );
+
+  pgm.createTable("call_events", {
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
+    event_type: { type: "call_event", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable("lessons", {
+    id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
+    call_id: { type: "SERIAL", notNull: true },
+    canceled_by: { type: "SERIAL", references: "users(id)" },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable("lesson_members", {
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    lesson_id: { type: "SERIAL", notNull: true, references: "lessons(id)" },
+    host: { type: "BOOLEAN", notNull: true, default: false },
   });
 
   pgm.createTable("interviews", {
@@ -123,6 +154,7 @@ exports.up = (pgm) => {
     approved: { type: "BOOLEAN", default: null },
     approved_at: { type: "TIMESTAMP", default: null },
     approved_by: { type: "INT", default: null },
+    canceled_by: { type: "SERIAL", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -265,6 +297,7 @@ exports.up = (pgm) => {
 
   // indexes
   pgm.createIndex("calls", "id");
+  pgm.createIndex("lessons", "id");
   pgm.createIndex("rules", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
@@ -298,6 +331,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("reports", "id", { ifExists: true });
   pgm.dropIndex("gifts", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
+  pgm.dropIndex("lessons", "id", { ifExists: true });
   pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("rules", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
@@ -317,6 +351,10 @@ exports.down = (pgm) => {
   pgm.dropTable("gifts", { ifExists: true });
   pgm.dropTable("ratings", { ifExists: true });
   pgm.dropTable("interviews", { ifExists: true });
+  pgm.dropTable("lesson_members", { ifExists: true });
+  pgm.dropTable("lessons", { ifExists: true });
+  pgm.dropTable("call_events", { ifExists: true });
+  pgm.dropTable("call_members", { ifExists: true });
   pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tokens", { ifExists: true });
@@ -327,8 +365,7 @@ exports.down = (pgm) => {
   // types
   pgm.dropType("token_type", { ifExists: true });
   pgm.dropType("user_role", { ifExists: true });
-  pgm.dropType("repeat_type", { ifExists: true });
-  pgm.dropType("call_type", { ifExists: true });
-  pgm.dropType("user_gender_type", { ifExists: true });
+  pgm.dropType("user_gender", { ifExists: true });
   pgm.dropType("plan_cycle", { ifExists: true });
+  pgm.dropType("call_event", { ifExists: true });
 };

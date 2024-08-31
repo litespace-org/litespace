@@ -12,7 +12,7 @@ import {
   messages,
   rules,
 } from "@/models";
-import { ICall, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
 import { knex } from "@/models/query";
@@ -185,7 +185,7 @@ async function main(): Promise<void> {
 
   await calls.create({
     hostId: interviewer.id,
-    attendeeId: tutor.id,
+    memberIds: [tutor.id],
     duration: 30,
     ruleId: rule.id,
     start: dayjs
@@ -193,10 +193,7 @@ async function main(): Promise<void> {
       .startOf("day")
       .add(Time.from("2pm").totalMinutes(), "minutes")
       .toISOString(),
-    type: ICall.Type.Interview,
   });
-
-  await calls.findHostCalls(interviewer.id);
 
   const plan = await plans.create({
     alias: "Basic",

@@ -101,3 +101,7 @@ export function column<T>(value: keyof T, table: string | null = null): string {
   if (!table) return value.toString();
   return `${table}.${value.toString()}`;
 }
+
+export function aggArrayOrder(column: string) {
+  return `array_agg(${column} order by ${column}) = ?` as const;
+}

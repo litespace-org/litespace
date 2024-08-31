@@ -1,6 +1,5 @@
 import {
   Button,
-  ButtonSize,
   ButtonType,
   Dialog,
   Field,
@@ -11,7 +10,7 @@ import {
 import { Schedule, splitRuleEvent } from "@litespace/sol";
 import { IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 
