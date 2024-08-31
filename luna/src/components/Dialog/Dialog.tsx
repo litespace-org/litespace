@@ -35,12 +35,15 @@ export const Dialog: React.FC<{
         open={open}
         ref={dialogRef}
         onClick={onClose}
-        className="open:inset-0 open:w-full open:h-full open:flex open:items-center open:justify-center open:backdrop-blur-sm open:bg-transparent z-50"
+        className={cn(
+          "fixed inset-0 w-screen h-screen flex items-center justify-center ",
+          "bg-transparent backdrop-blur-sm shadow-lg"
+        )}
       >
         <div
           ref={contentRef}
           className={cn(
-            "bg-background-dialog border border-border-strong rounded-md px-5 py-4 min-w-[500px]",
+            "bg-background-dialog border border-border-strong rounded-md px-5 py-4 min-w-[500px] shadow-lg",
             className
           )}
         >
