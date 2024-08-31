@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
   theme: {
     fontFamily: {
@@ -9,6 +10,7 @@ export default {
       colors: {
         dash: {
           sidebar: "hsl(var(--background-dash-sidebar))",
+          canva: "hsl(var(--background-dash-canvas))",
         },
         red: {
           100: "var(--colors-red1)",
@@ -32,10 +34,12 @@ export default {
           800: "var(--colors-amber8)",
           900: "var(--colors-amber9)",
         },
-        alternative: "hsl(var(--background-alternative-default))",
+        alternative: {
+          DEFAULT: "hsl(var(--background-alternative-default))",
+          200: "hsl(var(--background-alternative-200))",
+        },
         control: "hsl(var(--border-control))",
         muted: "hsl(var(--background-muted))",
-        selection: "hsl(var(--background-selection))",
         foreground: {
           DEFAULT: "hsl(var(--foreground-default))",
           muted: "hsl(var(--foreground-muted))",
@@ -66,17 +70,26 @@ export default {
           control: "hsl(var(--border-control))",
           secondary: "hsl(var(--border-secondary))",
           muted: "hsl(var(--border-muted))",
+          overlay: "hsl(var(--border-overlay))",
+          button: {
+            DEFAULT: "hsl(var(--border-button-default))",
+            hover: "hsl(var(--border-button-hover))",
+          },
         },
-        overlay: "hsl(var(--border-overlay))",
         background: {
+          DEFAULT: "hsl(var(--background-default))",
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
+          selection: "hsl(var(--background-selection))",
           overlay: {
             DEFAULT: "hsl(var(--background-overlay-default))",
             hover: "hsl(var(--background-overlay-hover))",
           },
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
+          },
+          button: {
+            DEFAULT: "hsl(var(--background-button-default))",
           },
         },
         surface: {
@@ -95,6 +108,11 @@ export default {
           400: "hsl(var(--brand-400))",
           500: "hsl(var(--brand-500))",
           600: "hsl(var(--brand-600))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary-default))",
+          200: "hsl(var(--secondary-400))",
+          400: "hsl(var(--secondary-200))",
         },
       },
     },

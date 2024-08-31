@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ActionsMenu } from "@/components/ActionsMenu";
-import { DrarkWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 
 type Component = typeof ActionsMenu;
@@ -9,7 +9,7 @@ const meta: Meta<Component> = {
   title: "ActionMenu",
   component: ActionsMenu,
   parameters: { layout: "centered" },
-  decorators: [DrarkWrapper],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {
