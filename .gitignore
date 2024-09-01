@@ -13,3 +13,6 @@ storybook-static/
 server/*.pem
 server/uploads/
 .vercel
+
+# recorder
+recorder/assets/

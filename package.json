@@ -24,6 +24,7 @@
   },
   "workspaces": {
     "packages": [
+      "recorder",
       "server",
       "emails",
       "luna",

@@ -16,6 +16,7 @@ import { Chat } from "@/chat";
 import { Interview } from "@/interview";
 import { Rule } from "@/rule";
 import { Lesson } from "@/lesson";
+import { Recorder } from "@/recorder";
 
 export class Atlas {
   public readonly user: User;
@@ -35,6 +36,7 @@ export class Atlas {
   public readonly interview: Interview;
   public readonly rule: Rule;
   public readonly lesson: Lesson;
+  public readonly recorder: Recorder;
 
   constructor(backend: Backend) {
     this.user = new User(backend);
@@ -54,5 +56,6 @@ export class Atlas {
     this.interview = new Interview(backend);
     this.rule = new Rule(backend);
     this.lesson = new Lesson(backend);
+    this.recorder = new Recorder();
   }
 }

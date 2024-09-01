@@ -80,3 +80,13 @@ export type CreatePayload = {
   memberIds: number[];
   hostId: number;
 };
+
+export type FindCallByIdApiResponse = {
+  call: Self;
+  members: PopuldatedMember[];
+};
+
+export type FindUserCallsApiResponse = {
+  calls: Self[];
+  members: Record<string, PopuldatedMember[]>;
+};

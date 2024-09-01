@@ -38,9 +38,10 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import dayjs from "dayjs";
 import { findRooms, roomsSelector } from "@/redux/chat/rooms";
-import { entries, first, isEqual, sortBy } from "lodash";
+import { entries, first, isEqual, map, sortBy } from "lodash";
 import { useChat } from "@/hooks/chat";
 import { motion } from "framer-motion";
+import { useCallRecorder } from "@/hooks/call";
 
 type IForm = {
   message: string;
@@ -62,6 +63,7 @@ const Call: React.FC = () => {
   const remoteRef = useRef<HTMLVideoElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const constraintsRef = useRef<HTMLDivElement>(null);
+  const { start: startRecording } = useCallRecorder();
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
@@ -82,8 +84,8 @@ const Call: React.FC = () => {
     if (!call.data || !rooms.value) return null;
     const room = entries<IRoom.PopulatedMember[]>(rooms.value).find(
       ([_, members]) => {
-        const roomMemberIds = members.map((member) => member.id);
-        const callMemberIds = [call.data.hostId, call.data.attendeeId];
+        const roomMemberIds = map(members, "id");
+        const callMemberIds = map(call.data.members, "userId");
         return isEqual(sortBy(roomMemberIds), sortBy(callMemberIds));
       }
     );
@@ -123,6 +125,10 @@ const Call: React.FC = () => {
         if (!localRef.current || !remoteRef.current || !peer) return;
         localRef.current.srcObject = stream;
 
+        // record the call
+        startRecording(stream);
+
+        // listen for calls
         peer.on("call", (call) => {
           call.answer(stream);
           call.on("stream", (stream) => {
@@ -152,7 +158,7 @@ const Call: React.FC = () => {
       .catch(() => {
         setPermissionError(true);
       });
-  }, [accessCamera, accessMic, localRef, remoteRef]);
+  }, [accessCamera, accessMic, localRef, remoteRef, startRecording]);
 
   useEffect(() => {
     if (messagesRef.current && !userScrolled)
@@ -201,14 +207,14 @@ const Call: React.FC = () => {
     [handleSubmit, callRoomId, chat, reset]
   );
 
-  const isHost = useMemo(
-    () => call.data?.hostId === profile?.id,
-    [call.data?.hostId, profile?.id]
-  );
-
   const otherUserId = useMemo(() => {
-    return isHost ? call.data?.attendeeId : call.data?.hostId;
-  }, [call.data?.attendeeId, call.data?.hostId, isHost]);
+    if (!call.data || !profile) return null;
+    const otherMembers = call.data.members.filter(
+      (member) => member.userId !== profile.id
+    );
+    const otherMember = first(otherMembers);
+    return otherMember?.userId || null;
+  }, [call.data, profile]);
 
   const createRoom = useMutation({
     mutationFn: useCallback(async () => {
@@ -219,7 +225,7 @@ const Call: React.FC = () => {
     mutationKey: "create-room",
     onSuccess() {
       if (!profile) throw new Error("Profile not found; should never happen.");
-      dispath(findRooms(profile.id));
+      dispath(findRooms.call(profile.id));
     },
     onError(error) {
       toaster.error({
