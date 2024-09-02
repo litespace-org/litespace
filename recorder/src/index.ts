@@ -1,19 +1,30 @@
 import express, { json, urlencoded } from "express";
-import cors from "cors";
+import cors, { CorsOptions } from "cors";
+import { Server } from "socket.io";
+import { createServer } from "node:http";
 import { serverConfig } from "@/config";
 import call from "@/routes/call";
 import { error } from "@/middlewares/error";
+import { init } from "@/wss";
 import "colors";
 
-const app = express();
+const corsOptions: CorsOptions = {
+  credentials: true,
+  origin: serverConfig.origin,
+};
 
+const app = express();
+const server = createServer(app);
+const io = new Server(server, { cors: corsOptions, maxHttpBufferSize: 1e10 });
+
+init(io);
 app.use(json());
 app.use(urlencoded({ extended: true }));
-app.use(cors({ credentials: true, origin: serverConfig.origin }));
+app.use(cors(corsOptions));
 app.use("/", express.static(serverConfig.assets));
 app.use("/api/v1/call", call);
 app.use(error);
 
-app.listen(serverConfig.port, () =>
+server.listen(serverConfig.port, () =>
   console.log(`Server is running on port ${serverConfig.port}`.green)
 );

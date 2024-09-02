@@ -16,38 +16,38 @@ const body = zod.object({
 // "[0scaled]pad=1280:720[0padded]",
 // "[0padded][1scaled]overlay=shortest=1:x=640[output]",
 
-ffmpeg()
-  .input("assets/1-1.mp4")
-  .input("assets/sample.mp4")
-  .addOption("-threads 1")
-  .complexFilter([
-    "[0:a][1:a]amix=inputs=2:duration=longest[amixed]",
-    "[0]scale=640:720[0scaled]",
-    "[1]scale=640:720[1scaled]",
-    "[0scaled]pad=1280:720[0padded]",
-    "[0padded][1scaled]overlay=shortest=1:x=640[output]", // todo: overlay the longest!
-  ])
-  .outputOptions(["-map [amixed]"])
-  .outputOptions(["-map [output]"])
-  .output("assets/output2.mp4")
-  .on("error", function (er) {
-    console.log("error occured: " + er.message);
-  })
-  .on("start", (cmd) => {
-    console.log(cmd);
-  })
-  .on("codecData", function (data) {
-    console.log(
-      "Input is " + data.audio + " audio " + "with " + data.video + " video"
-    );
-  })
-  .on("progress", function (progress) {
-    console.log("Processing: " + progress.percent + "% done");
-  })
-  .on("end", function () {
-    console.log("success");
-  })
-  .run();
+// ffmpeg()
+//   .input("assets/1-1.mp4")
+//   .input("assets/sample.mp4")
+//   .addOption("-threads 1")
+//   .complexFilter([
+//     "[0:a][1:a]amix=inputs=2:duration=longest[amixed]",
+//     "[0]scale=640:720[0scaled]",
+//     "[1]scale=640:720[1scaled]",
+//     "[0scaled]pad=1280:720[0padded]",
+//     "[0padded][1scaled]overlay=shortest=1:x=640[output]", // todo: overlay the longest!
+//   ])
+//   .outputOptions(["-map [amixed]"])
+//   .outputOptions(["-map [output]"])
+//   .output("assets/output2.mp4")
+//   .on("error", function (er) {
+//     console.log("error occured: " + er.message);
+//   })
+//   .on("start", (cmd) => {
+//     console.log(cmd);
+//   })
+//   .on("codecData", function (data) {
+//     console.log(
+//       "Input is " + data.audio + " audio " + "with " + data.video + " video"
+//     );
+//   })
+//   .on("progress", function (progress) {
+//     console.log("Processing: " + progress.percent + "% done");
+//   })
+//   .on("end", function () {
+//     console.log("success");
+//   })
+//   .run();
 
 export async function uploadChunk(req: Request, res: Response) {
   const chunk = req.file;
