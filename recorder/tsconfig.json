@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "jsx": "react",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "baseUrl": "./src/",
+    "paths": {
+      "@/*": ["./*"]
+    },
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true
+  },
+  "include": ["src/", "tests/"],
+  "exclude": ["node_module", "tests/"],
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  }
+}

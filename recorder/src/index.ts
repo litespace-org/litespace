@@ -1,5 +1,4 @@
 import express, { json, urlencoded } from "express";
-import bodyParser from "body-parser";
 import cors from "cors";
 import { serverConfig } from "@/config";
 import call from "@/routes/call";
@@ -10,7 +9,6 @@ const app = express();
 
 app.use(json());
 app.use(urlencoded({ extended: true }));
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors({ credentials: true, origin: serverConfig.origin }));
 app.use("/", express.static(serverConfig.assets));
 app.use("/api/v1/call", call);

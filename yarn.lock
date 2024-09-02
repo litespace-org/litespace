@@ -3283,6 +3283,7 @@ __metadata:
     redis: "npm:^4.7.0"
     ts-jest: "npm:^29.2.3"
     ts-node: "npm:^10.9.2"
+    tsc-alias: "npm:^1.8.10"
     tsconfig-paths: "npm:^4.2.0"
     typescript: "npm:^5.4.5"
     zod: "npm:^3.23.8"
@@ -9904,7 +9905,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^9.4.1":
+"commander@npm:^9.0.0, commander@npm:^9.4.1":
   version: 9.5.0
   resolution: "commander@npm:9.5.0"
   checksum: 10c0/5f7784fbda2aaec39e89eb46f06a999e00224b3763dc65976e05929ec486e174fe9aac2655f03ba6a5e83875bd173be5283dc19309b7c65954701c02025b3c1d
@@ -13120,7 +13121,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"globby@npm:^11.1.0":
+"globby@npm:^11.0.4, globby@npm:^11.1.0":
   version: 11.1.0
   resolution: "globby@npm:11.1.0"
   dependencies:
@@ -16941,6 +16942,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"mylas@npm:^2.1.9":
+  version: 2.1.13
+  resolution: "mylas@npm:2.1.13"
+  checksum: 10c0/093dfaf88f444d9da956c68a61ddcfe05ab9411c0024b0c7f4d721639ba7d311ea8f9c052ce617344e67d40982f67614cd634b525b923048bf9a191234968c9c
+  languageName: node
+  linkType: hard
+
 "mz@npm:^2.7.0":
   version: 2.7.0
   resolution: "mz@npm:2.7.0"
@@ -18251,6 +18259,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"plimit-lit@npm:^1.2.6":
+  version: 1.6.1
+  resolution: "plimit-lit@npm:1.6.1"
+  dependencies:
+    queue-lit: "npm:^1.5.1"
+  checksum: 10c0/af5d351bb55afe1eaa84b27c2b329699e150e4cf70464f3d474f5eabe9bdb9f48ed378ada1498d3b893f68ee7da2423ba6d9a4d88b1429d3b0aea22afcf5292b
+  languageName: node
+  linkType: hard
+
 "pluralize@npm:^8.0.0":
   version: 8.0.0
   resolution: "pluralize@npm:8.0.0"
@@ -18695,6 +18712,13 @@ __metadata:
     split-on-first: "npm:^1.0.0"
     strict-uri-encode: "npm:^2.0.0"
   checksum: 10c0/a896c08e9e0d4f8ffd89a572d11f668c8d0f7df9c27c6f49b92ab31366d3ba0e9c331b9a620ee747893436cd1f2f821a6327e2bc9776bde2402ac6c270b801b2
+  languageName: node
+  linkType: hard
+
+"queue-lit@npm:^1.5.1":
+  version: 1.5.2
+  resolution: "queue-lit@npm:1.5.2"
+  checksum: 10c0/8aa838b2c939aeaa6cd272b5b6b172379a3fa1d9193b2a3e687643c68c0efee3cd3493af4f1f8a11ff79b8207e4d00cc5d0b072f6e4bbeaaa27ee01f567ec4ac
   languageName: node
   linkType: hard
 
@@ -22257,6 +22281,22 @@ __metadata:
   version: 6.15.5
   resolution: "ts-toolbelt@npm:6.15.5"
   checksum: 10c0/c2c5cf77b006cbedb836abb260e9544aef268b0fc718e52db44600308ac6836c8c1824f57373ed72f920b92eb1daa78d1a9cec4c12368230a208e0723de9c2f0
+  languageName: node
+  linkType: hard
+
+"tsc-alias@npm:^1.8.10":
+  version: 1.8.10
+  resolution: "tsc-alias@npm:1.8.10"
+  dependencies:
+    chokidar: "npm:^3.5.3"
+    commander: "npm:^9.0.0"
+    globby: "npm:^11.0.4"
+    mylas: "npm:^2.1.9"
+    normalize-path: "npm:^3.0.0"
+    plimit-lit: "npm:^1.2.6"
+  bin:
+    tsc-alias: dist/bin/index.js
+  checksum: 10c0/6f319d37b35d2f660c09c4a5413305c78943dd09bdaf395f4c1da69e19ad15b4d149db28d9251acd8bb52e755af55895018b2fe55f1511774da2e9e30a5c826a
   languageName: node
   linkType: hard
 
