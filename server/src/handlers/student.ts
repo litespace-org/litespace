@@ -1,4 +1,4 @@
-import { users } from "@/models";
+import { users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";

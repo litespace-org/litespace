@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { column, knex } from "@/models/query";
+import { column, knex } from "@/query";
 import { IRule } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";

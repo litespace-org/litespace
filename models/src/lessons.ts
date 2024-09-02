@@ -2,8 +2,8 @@ import { ILesson } from "@litespace/types";
 import knex, { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
-import { users } from "./users";
-import { aggArrayOrder, column } from "./query";
+import { users } from "@/users";
+import { aggArrayOrder, column } from "@/query";
 
 export class Lessons {
   table = {

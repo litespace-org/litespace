@@ -4,7 +4,7 @@ import { Strategy as Facebook } from "passport-facebook";
 import { Strategy as Local } from "passport-local";
 import { Strategy as Custom } from "passport-custom";
 import { facebookConfig, googleConfig } from "@/constants";
-import { users } from "@/models";
+import { users } from "@litespace/models";
 import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
 import { jwtAuthorization, localAuthorization } from "@/middleware/auth";

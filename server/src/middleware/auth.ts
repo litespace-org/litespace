@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { schema } from "@/validation";
-import { users } from "@/models";
+import { users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { forbidden } from "@/lib/error";
 import { DoneCallback } from "passport";
@@ -10,6 +10,7 @@ import asyncHandler from "express-async-handler";
 import { enforce, Method } from "@/middleware/accessControl";
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
       _query: { sid: string | undefined };

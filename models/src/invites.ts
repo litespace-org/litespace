@@ -1,5 +1,5 @@
 import { IInvite } from "@litespace/types";
-import { knex } from "./query";
+import { knex } from "@/query";
 import { first, omit } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 

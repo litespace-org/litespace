@@ -12,7 +12,7 @@ import {
 } from "@/validation/utils";
 import { IRule, IUser } from "@litespace/types";
 import { badRequest, forbidden, notfound } from "@/lib/error";
-import { calls, rules } from "@/models";
+import { calls, rules } from "@litespace/models";
 import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol";
 import { isEmpty } from "lodash";
 

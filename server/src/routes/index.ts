@@ -1,5 +1,4 @@
 import user from "@/routes/user";
-import slot from "@/routes/slot";
 import tutor from "@/routes/tutor";
 import student from "@/routes/student";
 import call from "@/routes/call";
@@ -20,7 +19,6 @@ import lesson from "@/routes/lesson";
 export default {
   user,
   lesson,
-  slot,
   tutor,
   student,
   call,

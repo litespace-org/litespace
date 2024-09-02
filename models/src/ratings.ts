@@ -1,5 +1,5 @@
-import { first, isEmpty, merge, omit } from "lodash";
-import { knex, query } from "@/models/query";
+import { first } from "lodash";
+import { knex } from "@/query";
 import { IRating } from "@litespace/types";
 
 export class Ratings {

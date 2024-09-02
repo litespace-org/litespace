@@ -1,6 +1,6 @@
 import { IPlan } from "@litespace/types";
-import { knex } from "@/models/query";
-import { first, omit } from "lodash";
+import { knex } from "@/query";
+import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 
 export class Plans {

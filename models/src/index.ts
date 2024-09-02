@@ -1,0 +1,16 @@
+export { calls } from "@/calls";
+export { coupons } from "@/coupons";
+export { interviews } from "@/interviews";
+export { invites } from "@/invites";
+export { lessons } from "@/lessons";
+export { messages } from "@/messages";
+export { plans } from "@/plans";
+export { ratings } from "@/ratings";
+export { reportReplies } from "@/reportReplies";
+export { reports } from "@/reports";
+export { rules } from "@/rules";
+export { tokens } from "@/tokens";
+export { tutors } from "@/tutors";
+export { users } from "@/users";
+export { rooms } from "@/rooms";
+export { knex, pool, count } from "@/query";

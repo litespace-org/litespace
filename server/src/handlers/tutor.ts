@@ -1,19 +1,16 @@
-import { tutors, users } from "@/models";
+import { tutors, users, count } from "@litespace/models";
 import { isAdmin } from "@/lib/common";
-import { badRequest, forbidden, notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { schema } from "@/validation";
 import { NextFunction } from "express";
 import asyncHandler from "express-async-handler";
-import { IUser, NonEmptyList } from "@litespace/types";
-import { hashPassword } from "@/lib/user";
-import { sendUserVerificationEmail } from "@/lib/email";
+import { NonEmptyList } from "@litespace/types";
 import { uploadSingle } from "@/lib/media";
-import { email, identityObject } from "@/validation/utils";
+import { identityObject } from "@/validation/utils";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
-import { count } from "@/models/query";
 
 async function create(req: Request, res: Response, next: NextFunction) {
   // const body = schema.http.tutor.create.body.parse(req.body);

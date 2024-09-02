@@ -1,5 +1,4 @@
 import user from "@/handlers/user";
-import slot from "@/handlers/slot";
 import tutor from "@/handlers/tutor";
 import student from "@/handlers/student";
 import call from "@/handlers/call";
@@ -11,7 +10,6 @@ import plan from "@/handlers/plan";
 
 export default {
   user,
-  slot,
   tutor,
   student,
   call,

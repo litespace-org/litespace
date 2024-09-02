@@ -1,4 +1,4 @@
-import { users } from "@/models";
+import { users } from "@litespace/models";
 import { first } from "lodash";
 import { DoneCallback, Profile } from "passport";
 import { VerifiedCallback } from "passport-custom";

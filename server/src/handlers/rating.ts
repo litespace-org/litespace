@@ -1,4 +1,4 @@
-import { ratings, users } from "@/models";
+import { ratings, users } from "@litespace/models";
 import { alreadyRated, badRequest, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { schema } from "@/validation";

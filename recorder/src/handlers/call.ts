@@ -25,7 +25,7 @@ ffmpeg()
     "[0]scale=640:720[0scaled]",
     "[1]scale=640:720[1scaled]",
     "[0scaled]pad=1280:720[0padded]",
-    "[0padded][1scaled]overlay=shortest=1:x=640[output]",
+    "[0padded][1scaled]overlay=shortest=1:x=640[output]", // todo: overlay the longest!
   ])
   .outputOptions(["-map [amixed]"])
   .outputOptions(["-map [output]"])

@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { randomBytes, sha256 } from "@/lib/crypto";
 import { notfound } from "@/lib/error";
-import { tokens, users } from "@/models";
+import { tokens, users, knex } from "@litespace/models";
 import http from "@/validation/http";
 import dayjs from "@/lib/dayjs";
 import { NextFunction, Request, Response } from "express";
@@ -10,7 +10,6 @@ import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
 import { IToken } from "@litespace/types";
 import { isValidToken } from "@/lib/token";
-import { knex } from "@/models/query";
 import { DoneCallback } from "passport";
 
 async function forgotPassword(req: Request, res: Response, next: NextFunction) {

@@ -1,5 +1,5 @@
 import { notfound } from "@/lib/error";
-import { coupons } from "@/models";
+import { coupons } from "@litespace/models";
 import http from "@/validation/http";
 import { identityObject } from "@/validation/utils";
 import { ICoupon } from "@litespace/types";

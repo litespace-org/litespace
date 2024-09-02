@@ -2,9 +2,9 @@ import { emailConfig } from "@/constants";
 import { Emailer, EmailTemplate } from "@litespace/emails";
 import { randomBytes, sha256 } from "@/lib/crypto";
 import dayjs from "@/lib/dayjs";
-import { tokens } from "@/models";
+import { tokens } from "@litespace/models";
 import { IToken } from "@litespace/types";
-import { Url } from "./url";
+import { Url } from "@/lib/url";
 
 export const emailer = new Emailer(emailConfig.email, emailConfig.password);
 

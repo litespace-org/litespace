@@ -1,4 +1,4 @@
-import { knex } from "@/models/query";
+import { knex } from "@/query";
 import { merge, omit } from "lodash";
 import { RecordAttributes } from "@litespace/types";
 

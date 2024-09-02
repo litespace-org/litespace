@@ -1,5 +1,5 @@
 import { isDev } from "@/constants";
-import { calls, messages, rooms, users } from "@/models";
+import { calls, messages, rooms, users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { Socket } from "socket.io";
 import { Events } from "@litespace/types";

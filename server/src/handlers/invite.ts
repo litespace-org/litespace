@@ -1,8 +1,8 @@
 import { notfound } from "@/lib/error";
-import { coupons, invites } from "@/models";
+import { invites } from "@litespace/models";
 import http from "@/validation/http";
 import { identityObject } from "@/validation/utils";
-import { ICoupon, IInvite } from "@litespace/types";
+import { IInvite } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { merge } from "lodash";

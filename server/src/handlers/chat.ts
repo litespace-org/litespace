@@ -1,4 +1,4 @@
-import { messages, rooms } from "@/models";
+import { messages, rooms } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { groupBy } from "lodash";

@@ -1,4 +1,4 @@
-import { tutors, users } from "@/models";
+import { tutors, users, count, knex } from "@litespace/models";
 import { ITutor, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
@@ -19,7 +19,6 @@ import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
-import { count, knex } from "@/models/query";
 import { concat, drop, entries, first, orderBy, reduce, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";

@@ -1,15 +1,15 @@
-import { column, knex } from "@/models/query";
+import { column, knex } from "@/query";
 import { first, merge, omit, orderBy } from "lodash";
 import { IRoom, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { users } from "./users";
+import { users } from "@/users";
 
-class Rooms {
+export class Rooms {
   tables = {
     rooms: "rooms",
     members: "room_members",
-  };
+  } as const;
 
   column = {
     rooms: (value: keyof IRoom.Row) => column(value, this.tables.rooms),

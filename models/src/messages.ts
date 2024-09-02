@@ -1,10 +1,10 @@
-import { knex } from "@/models/query";
+import { knex } from "@/query";
 import { first } from "lodash";
 import { IMessage } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 
 export class Messages {
-  table = "messages";
+  table = "messages" as const;
 
   async create(payload: IMessage.CreatePayload): Promise<IMessage.Self> {
     const now = dayjs.utc().toDate();

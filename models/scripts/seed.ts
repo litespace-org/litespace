@@ -1,24 +1,28 @@
 import {
+  knex,
+  users,
+  tutors,
+  ratings,
+  rules,
   calls,
+  plans,
   coupons,
   invites,
-  plans,
   reports,
   reportReplies,
-  tutors,
-  users,
-  ratings,
-  rooms,
   messages,
-  rules,
-} from "@/models";
+  rooms,
+} from "@/index";
 import { IUser } from "@litespace/types";
-import { hashPassword } from "@/lib/user";
 import dayjs from "@/lib/dayjs";
-import { knex } from "@/models/query";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
 import { first, range, sample } from "lodash";
+import crypto from "node:crypto";
+
+export function hashPassword(password: string): string {
+  return crypto.createHash("sha256").update(password).digest("hex");
+}
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -37,7 +41,7 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Interviewer,
         email: "interviewer@litespace.org",
-        name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو اسمعيل" },
+        name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو إسماعيل" },
         password,
         birthYear,
       },

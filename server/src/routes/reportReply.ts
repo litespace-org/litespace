@@ -1,9 +1,5 @@
 import { Router } from "express";
 import reply from "@/handlers/reportReplies";
-import { reportReplies, reports } from "@/models";
-import { IReport, IReportReply } from "@litespace/types";
-import { ReportReplies } from "@/models/reportReplies";
-import { Reports } from "@/models/reports";
 
 const router = Router();
 

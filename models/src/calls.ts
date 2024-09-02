@@ -1,8 +1,8 @@
-import { aggArrayOrder, column, knex } from "@/models/query";
+import { aggArrayOrder, column, knex } from "@/query";
 import { concat, first, merge, omit, sortBy } from "lodash";
 import { ICall } from "@litespace/types";
 import { Knex } from "knex";
-import { users } from "@/models/users";
+import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
 
 export class Calls {

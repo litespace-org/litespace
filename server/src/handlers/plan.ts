@@ -1,5 +1,5 @@
 import { notfound } from "@/lib/error";
-import { plans } from "@/models";
+import { plans } from "@litespace/models";
 import { schema } from "@/validation";
 import { identityObject } from "@/validation/utils";
 import { IPlan } from "@litespace/types";

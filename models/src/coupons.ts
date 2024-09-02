@@ -1,5 +1,5 @@
 import { ICoupon } from "@litespace/types";
-import { knex } from "./query";
+import { knex } from "@/query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 

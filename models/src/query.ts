@@ -2,19 +2,18 @@ import { Pool, QueryConfigValues, QueryResult, QueryResultRow } from "pg";
 import init, { Knex } from "knex";
 import zod from "zod";
 
-import { databaseConnection } from "@/constants";
 import { IFilter } from "@litespace/types";
 
-export const pool = new Pool(databaseConnection);
+const connection = {
+  user: zod.string().parse(process.env.PG_USER),
+  password: zod.string().parse(process.env.PG_PASSWORD),
+  host: zod.string().parse(process.env.PG_HOST),
+  port: zod.coerce.number().parse(process.env.PG_PORT),
+  database: zod.string().parse(process.env.PG_DATABASE),
+} as const;
 
-export const knex = init({ client: "pg", connection: databaseConnection });
-
-export async function query<T extends QueryResultRow, V extends unknown[]>(
-  query: string,
-  values?: QueryConfigValues<V>
-): Promise<QueryResult<T>> {
-  return await pool.query(query, values);
-}
+export const pool = new Pool(connection);
+export const knex = init({ client: "pg", connection });
 
 function asSqlString<T extends { toString(): string }>(value: T): string {
   return `'${value.toString()}'`;

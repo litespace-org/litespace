@@ -1,5 +1,5 @@
 import { notfound } from "@/lib/error";
-import { reportReplies, reports } from "@/models";
+import { reportReplies, reports } from "@litespace/models";
 import http from "@/validation/http";
 import { identityObject } from "@/validation/utils";
 import { IReportReply } from "@litespace/types";
@@ -18,7 +18,7 @@ async function create(req: Request, res: Response) {
   res.status(200).json(coupon);
 }
 
-async function update(req: Request, res: Response, next: NextFunction) {
+async function update(req: Request, res: Response) {
   const { id } = identityObject.parse(req.params);
 
   const payload: IReportReply.UpdateApiPayload =
@@ -45,7 +45,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(reply);
 }
 
-async function findByReportId(req: Request, res: Response, next: NextFunction) {
+async function findByReportId(req: Request, res: Response) {
   const { id } = identityObject.parse(req.params);
   const replies = await reportReplies.findByReportId(id);
   res.status(200).json(replies);

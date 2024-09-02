@@ -1,8 +1,7 @@
 import { ICall, IRule, ITutor } from "@litespace/types";
 import { Dayjs } from "dayjs";
-import { knex } from "@/models/query";
 import { Knex } from "knex";
-import { calls, rules, tutors } from "@/models";
+import { calls, rules, tutors, knex } from "@litespace/models";
 import { entries, groupBy, map, reduce } from "lodash";
 import { Schedule, unpackRules } from "@litespace/sol";
 import { availableTutorsCache } from "@/redis/tutor";

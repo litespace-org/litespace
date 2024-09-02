@@ -1,5 +1,5 @@
 import { IToken } from "@litespace/types";
-import { knex } from "./query";
+import { knex } from "@/query";
 import { first } from "lodash";
 import { Knex } from "knex";
 

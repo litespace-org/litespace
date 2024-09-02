@@ -1,4 +1,4 @@
-import { calls } from "@/models";
+import { calls } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { withNamedId } from "@/validation/utils";

@@ -1,12 +1,14 @@
-import { column, knex, query, withFilter } from "@/models/query";
+import { column, knex, withFilter } from "@/query";
 import { first, isEmpty } from "lodash";
 import { IFilter, IUser } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
 export class Users {
-  table = "users" as const;
-  columns: { filterable: [keyof IUser.Row, ...Array<keyof IUser.Row>] } = {
+  public readonly table = "users" as const;
+  public readonly columns: {
+    filterable: [keyof IUser.Row, ...Array<keyof IUser.Row>];
+  } = {
     filterable: [
       "id",
       "email",
@@ -21,7 +23,7 @@ export class Users {
       "created_at",
       "updated_at",
     ],
-  };
+  } as const;
 
   async create(
     user: IUser.CreatePayload,
@@ -109,19 +111,6 @@ export class Users {
   async exists(id: number): Promise<boolean> {
     const rows = await knex<IUser.Row>(this.table).select("id").where("id", id);
     return !isEmpty(rows);
-  }
-
-  async findMany(ids: number[]): Promise<IUser.Self[]> {
-    const { rows } = await query<IUser.Row, [number[]]>(
-      `
-        SELECT id, email, password, password, name, photo, type, online, created_at, updated_at
-        FROM users
-        WHERE id in $1;
-      `,
-      [ids]
-    );
-
-    return rows.map((row) => this.from(row));
   }
 
   async find(filter?: IFilter.Self): Promise<IUser.Self[]> {

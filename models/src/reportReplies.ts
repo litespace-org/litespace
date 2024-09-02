@@ -1,7 +1,7 @@
-import { IReportReply } from "@litespace/types";
-import { knex } from "./query";
-import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
+import { IReportReply } from "@litespace/types";
+import { knex } from "@/query";
+import { first } from "lodash";
 
 export class ReportReplies {
   async create(

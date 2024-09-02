@@ -1,5 +1,5 @@
 import { notfound } from "@/lib/error";
-import { reports } from "@/models";
+import { reports } from "@litespace/models";
 import http from "@/validation/http";
 import { identityObject } from "@/validation/utils";
 import { IReport } from "@litespace/types";
@@ -19,7 +19,7 @@ async function create(req: Request, res: Response) {
   res.status(200).json(coupon);
 }
 
-async function update(req: Request, res: Response, next: NextFunction) {
+async function update(req: Request, res: Response) {
   const { id } = identityObject.parse(req.params);
 
   const payload: IReport.UpdateApiPayload = http.report.update.body.parse(

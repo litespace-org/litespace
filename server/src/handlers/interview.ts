@@ -1,8 +1,7 @@
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import { enforceRequest } from "@/middleware/accessControl";
-import { calls, interviews, rules, users } from "@/models";
-import { knex } from "@/models/query";
+import { calls, interviews, rules, users, knex } from "@litespace/models";
 import {
   boolean,
   datetime,

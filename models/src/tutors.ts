@@ -1,8 +1,8 @@
-import { column, knex, withFilter } from "@/models/query";
+import { column, knex, withFilter } from "@/query";
 import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter } from "@litespace/types";
 import { Knex } from "knex";
-import { users } from "@/models/users";
+import { users } from "@/users";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMediaRow, string>;
 type FullTutorFields = ITutor.FullTutorRow;

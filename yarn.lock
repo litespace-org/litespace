@@ -3101,6 +3101,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@litespace/models@npm:1.0.0, @litespace/models@workspace:models":
+  version: 0.0.0-use.local
+  resolution: "@litespace/models@workspace:models"
+  dependencies:
+    "@litespace/types": "npm:1.0.0"
+    "@rollup/plugin-alias": "npm:^5.1.0"
+    "@rollup/plugin-commonjs": "npm:^25.0.8"
+    "@rollup/plugin-json": "npm:^6.1.0"
+    "@rollup/plugin-node-resolve": "npm:^15.2.3"
+    "@rollup/plugin-typescript": "npm:^11.1.6"
+    dayjs: "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch"
+    env-cmd: "npm:^10.1.0"
+    esbuild-runner: "npm:^2.2.2"
+    node-pg-migrate: "npm:^7.3.2"
+    rollup: "npm:^4.18.0"
+    rollup-plugin-dts: "npm:^6.1.1"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.4.5"
+  peerDependencies:
+    knex: ^3.1.0
+    lodash: ^4.17.21
+    pg: ^8.11.5
+    zod: ^3.23.8
+  languageName: unknown
+  linkType: soft
+
 "@litespace/nebula@workspace:nebula":
   version: 0.0.0-use.local
   resolution: "@litespace/nebula@workspace:nebula"
@@ -3272,6 +3298,7 @@ __metadata:
     "@babel/preset-typescript": "npm:^7.24.7"
     "@jest/globals": "npm:^29.7.0"
     "@litespace/emails": "npm:1.0.0"
+    "@litespace/models": "npm:1.0.0"
     "@litespace/sol": "npm:1.0.0"
     "@litespace/types": "npm:1.0.0"
     "@types/babel__core": "npm:^7"
@@ -3326,7 +3353,6 @@ __metadata:
     tsconfig-paths: "npm:^4.2.0"
     typescript: "npm:^5.4.5"
     url-pattern: "npm:^1.0.3"
-    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -11250,6 +11276,20 @@ __metadata:
   peerDependencies:
     esbuild: ">=0.12 <1"
   checksum: 10c0/77193b7ca32ba9f81b35ddf3d3d0138efb0b1429d71b39480cfee932e1189dd2e492bd32bf04a4d0bc3adfbc7ec7381ceb5ffd06efe35f3e70904f1f686566d5
+  languageName: node
+  linkType: hard
+
+"esbuild-runner@npm:^2.2.2":
+  version: 2.2.2
+  resolution: "esbuild-runner@npm:2.2.2"
+  dependencies:
+    source-map-support: "npm:0.5.21"
+    tslib: "npm:2.4.0"
+  peerDependencies:
+    esbuild: "*"
+  bin:
+    esr: bin/esr.js
+  checksum: 10c0/88085203dcf862117ead19a44a9ef39a4831392a15a0c484bafcd23439a7e9327fe1118dee35881337a9dd91f3ae33c600899d3f4c6af960d6b84becb995ab87
   languageName: node
   linkType: hard
 
@@ -21092,7 +21132,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-support@npm:^0.5.16, source-map-support@npm:~0.5.20":
+"source-map-support@npm:0.5.21, source-map-support@npm:^0.5.16, source-map-support@npm:~0.5.20":
   version: 0.5.21
   resolution: "source-map-support@npm:0.5.21"
   dependencies:
@@ -22240,6 +22280,13 @@ __metadata:
     minimist: "npm:^1.2.6"
     strip-bom: "npm:^3.0.0"
   checksum: 10c0/09a5877402d082bb1134930c10249edeebc0211f36150c35e1c542e5b91f1047b1ccf7da1e59babca1ef1f014c525510f4f870de7c9bda470c73bb4e2721b3ea
+  languageName: node
+  linkType: hard
+
+"tslib@npm:2.4.0":
+  version: 2.4.0
+  resolution: "tslib@npm:2.4.0"
+  checksum: 10c0/eb19bda3ae545b03caea6a244b34593468e23d53b26bf8649fbc20fce43e9b21a71127fd6d2b9662c0fe48ee6ff668ead48fd00d3b88b2b716b1c12edae25b5d
   languageName: node
   linkType: hard
 

@@ -1,11 +1,11 @@
 import { IInterview } from "@litespace/types";
-import { knex } from "@/models/query";
+import { knex } from "@/query";
 import { first } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 
 export class Interviews {
-  table = "interviews";
+  readonly table = "interviews" as const;
 
   async create(
     payload: IInterview.CreatePayload,
