@@ -7,11 +7,18 @@ export const backendApiUrls: Record<Backend, string> = {
   [Backend.Production]: "https://mars.litespace.org",
 };
 
-export const backendSockets = {
-  [Backend.Local]: `ws://localhost:8080`,
-  [Backend.Staging]: "wss://moon.litespace.com",
-  [Backend.Production]: "wss://mars.litespace.com",
-};
+export const sockets = {
+  recorder: {
+    [Backend.Local]: `ws://localhost:9090`,
+    [Backend.Staging]: "wss://moon.litespace.com",
+    [Backend.Production]: "wss://mars.litespace.com",
+  },
+  backend: {
+    [Backend.Local]: `ws://localhost:8080`,
+    [Backend.Staging]: "wss://moon.litespace.com",
+    [Backend.Production]: "wss://mars.litespace.com",
+  },
+} as const;
 
 export function createClient(backend: Backend): AxiosInstance {
   const client = axios.create({

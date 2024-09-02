@@ -29,6 +29,7 @@
       "server",
       "emails",
       "luna",
+      "auth",
       "orbit",
       "atlas",
       "types",

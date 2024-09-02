@@ -1,31 +1,13 @@
-import { atlas } from "@/lib/atlas";
 import { useCallback, useMemo, useState } from "react";
-
-const chunks: Blob[] = [];
+import { recorder as socket } from "@/lib/wss";
 
 export function useCallRecorder() {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
 
   const onDataAvailable = useCallback(async (event: BlobEvent) => {
     if (event.data.size === 0) return;
-    console.log("data...", event.data.size, event.data.type);
-    chunks.push(event.data);
-
-    // if (chunks.length === 3) {
-    //   const blob = new Blob(chunks, { type: "video/webm" });
-    //   const url = URL.createObjectURL(blob);
-    //   const a = document.createElement("a");
-    //   document.body.appendChild(a);
-    //   //@ts-ignore
-    //   a.style = "display: none";
-    //   a.href = url;
-    //   a.download = "test.webm";
-    //   a.click();
-    //   window.URL.revokeObjectURL(url);
-    //   return;
-    // }
-    await atlas.recorder.upload({
-      blob: event.data,
+    socket.emit("chunk", {
+      chunk: event.data,
       call: 1,
       user: 1,
     });

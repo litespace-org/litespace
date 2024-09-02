@@ -1,7 +1,6 @@
 import passport from "passport";
-import { Strategy as Google, VerifyCallback } from "passport-google-oauth20";
+import { Strategy as Google } from "passport-google-oauth20";
 import { Strategy as Facebook } from "passport-facebook";
-import { Strategy as Local } from "passport-local";
 import { Strategy as Custom } from "passport-custom";
 import { facebookConfig, googleConfig } from "@/constants";
 import { users } from "@litespace/models";
@@ -9,6 +8,7 @@ import { verify } from "@/lib/oauth";
 import { verifyCallback as discord } from "@/integrations/discord";
 import { jwtAuthorization, localAuthorization } from "@/middleware/auth";
 import { resetPassword, verifyEmail } from "@/handlers/auth";
+import { IUser } from "@litespace/types";
 
 export enum AuthStrategy {
   Discord = "discord",
@@ -18,9 +18,9 @@ export enum AuthStrategy {
   ResetPasswordToken = "reset-password-token",
 }
 
-passport.serializeUser(async (user, done) => done(null, user.id));
+passport.serializeUser(async (user: IUser.Self, done) => done(null, user.id));
 
-passport.deserializeUser<number>(async (id, done) => {
+passport.deserializeUser(async (id: number, done) => {
   try {
     const info = await users.findById(id);
     done(null, info);

@@ -73,6 +73,7 @@
     "pg-format": "^1.0.4",
     "redis": "^4.7.0",
     "socket.io": "^4.7.5",
-    "url-pattern": "^1.0.3"
+    "url-pattern": "^1.0.3",
+    "zod": "^3.23.8"
   }
 }

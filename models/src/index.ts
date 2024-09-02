@@ -14,3 +14,4 @@ export { tutors } from "@/tutors";
 export { users } from "@/users";
 export { rooms } from "@/rooms";
 export { knex, pool, count } from "@/query";
+export { hashPassword, isSamePassword } from "@/lib/password";

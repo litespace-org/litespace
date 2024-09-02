@@ -5,11 +5,17 @@ import zod from "zod";
 import { IFilter } from "@litespace/types";
 
 const connection = {
-  user: zod.string().parse(process.env.PG_USER),
-  password: zod.string().parse(process.env.PG_PASSWORD),
-  host: zod.string().parse(process.env.PG_HOST),
-  port: zod.coerce.number().parse(process.env.PG_PORT),
-  database: zod.string().parse(process.env.PG_DATABASE),
+  user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),
+  password: zod
+    .string({ message: "Missing PG_PASSWORD" })
+    .parse(process.env.PG_PASSWORD),
+  host: zod.string({ message: "Missing PG_HOST" }).parse(process.env.PG_HOST),
+  port: zod.coerce
+    .number({ message: "Missing PG_PORT" })
+    .parse(process.env.PG_PORT),
+  database: zod
+    .string({ message: "Missing PG_DATABASE" })
+    .parse(process.env.PG_DATABASE),
 } as const;
 
 export const pool = new Pool(connection);
