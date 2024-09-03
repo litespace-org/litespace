@@ -14,12 +14,14 @@ import {
   authenticated,
 } from "@litespace/auth";
 import "colors";
+import { initWorker } from "@/workers";
 
 const corsOptions: CorsOptions = {
   credentials: true,
   origin: serverConfig.origin,
 };
 
+initWorker("ffmpeg.js");
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: corsOptions, maxHttpBufferSize: 1e10 });

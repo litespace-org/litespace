@@ -8,9 +8,8 @@ import { NextFunction, Request, Response } from "express";
 import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
-import { IToken } from "@litespace/types";
+import { IToken, IUser } from "@litespace/types";
 import { isValidToken } from "@/lib/token";
-import { DoneCallback } from "passport";
 
 async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   const { email } = http.auth.forgotPassword.body.parse(req.body);
@@ -37,7 +36,10 @@ async function forgotPassword(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
-export async function resetPassword(req: Request, done: DoneCallback) {
+export async function resetPassword(
+  req: Request,
+  done: (error: Error | null, user?: IUser.Self) => void
+) {
   const payload = http.auth.resetPassword.body.parse(req.body);
   const hash = sha256(payload.token);
   const token = await tokens.findByHash(hash);
@@ -59,7 +61,10 @@ export async function resetPassword(req: Request, done: DoneCallback) {
 }
 
 // todo: test this handler. What will happen to "passport" if the hendler throws an error.
-export async function verifyEmail(req: Request, done: DoneCallback) {
+export async function verifyEmail(
+  req: Request,
+  done: (error: Error | null, user?: IUser.Self) => void
+) {
   const body = http.auth.verifyEmail.body.parse(req.body);
   const hash = sha256(body.token);
   const token = await tokens.findByHash(hash);

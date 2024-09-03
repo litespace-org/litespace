@@ -1,5 +1,5 @@
 import { aggArrayOrder, column, knex } from "@/query";
-import { concat, first, merge, omit, sortBy } from "lodash";
+import { concat, first, merge, now, omit, sortBy } from "lodash";
 import { ICall } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
@@ -12,6 +12,21 @@ export class Calls {
     members: (value: keyof ICall.MemberRow) =>
       column(value, this.tables.members),
   };
+
+  rows: { calls: Record<keyof ICall.Row, string> } = {
+    calls: {
+      id: this.columns.calls("id"),
+      rule_id: this.columns.calls("rule_id"),
+      start: this.columns.calls("start"),
+      duration: this.columns.calls("duration"),
+      canceled_by: this.columns.calls("canceled_by"),
+      canceled_at: this.columns.calls("canceled_at"),
+      recording_status: this.columns.calls("recording_status"),
+      processing_time: this.columns.calls("processing_time"),
+      created_at: this.columns.calls("created_at"),
+      updated_at: this.columns.calls("updated_at"),
+    },
+  } as const;
 
   async create(
     payload: ICall.CreatePayload,
@@ -52,9 +67,37 @@ export class Calls {
     canceledBy: number,
     tx: Knex.Transaction
   ): Promise<void> {
+    const now = dayjs.utc().toDate();
     await this.builder(tx)
-      .calls.update({ canceled_by: canceledBy })
+      .calls.update({ canceled_by: canceledBy, canceled_at: now })
       .where("id", id);
+  }
+
+  async update(
+    ids: number[],
+    payload: ICall.UpdatePayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .calls.update({
+        recording_status: payload.recordingStatus,
+        processing_time: payload.processingTime,
+        canceled_by: payload.canceledBy,
+        canceled_at: payload.canceledBy ? now : undefined,
+        updated_at: now,
+      })
+      .whereIn(this.columns.calls("id"), ids);
+  }
+
+  async findCallsByRecordingStatus(
+    status: ICall.RecordingStatus,
+    tx?: Knex.Transaction
+  ): Promise<ICall.Self[]> {
+    const rows = await this.builder(tx)
+      .calls.select(this.rows.calls)
+      .where(this.columns.calls("recording_status"), status);
+    return rows.map((row) => this.from(row));
   }
 
   async findById(
@@ -125,19 +168,9 @@ export class Calls {
     ignoreCanceled?: boolean;
     tx?: Knex.Transaction;
   }): Promise<ICall.Self[]> {
-    const fields: Record<keyof ICall.Row, string> = {
-      id: this.columns.calls("id"),
-      rule_id: this.columns.calls("rule_id"),
-      start: this.columns.calls("start"),
-      duration: this.columns.calls("duration"),
-      canceled_by: this.columns.calls("canceled_by"),
-      created_at: this.columns.calls("created_at"),
-      updated_at: this.columns.calls("updated_at"),
-    };
-
     const builder = users //? do we really need the "users" table? we can join "call_members" and "calls" directly!
       .builder(tx)
-      .select<ICall.Row[]>(fields)
+      .select<ICall.Row[]>(this.rows.calls)
       .join(
         this.tables.members,
         this.columns.members("user_id"),
@@ -182,6 +215,9 @@ export class Calls {
       start: row.start.toISOString(),
       duration: row.duration,
       canceledBy: row.canceled_by,
+      canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
+      recordingStatus: row.recording_status,
+      processingTime: row.processing_time,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

@@ -19,6 +19,15 @@ exports.up = (pgm) => {
     "media-provider",
   ]);
   pgm.createType("call_event", ["join", "leave"]);
+  pgm.createType("call_recording_status", [
+    "idle",
+    "recording",
+    "recorded",
+    "queued",
+    "processing",
+    "processed",
+    "processing-failed",
+  ]);
   pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
   pgm.createType("token_type", ["forgot-password", "verify-email"]);
@@ -100,6 +109,13 @@ exports.up = (pgm) => {
     start: { type: "TIMESTAMP", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
     canceled_by: { type: "SERIAL", references: "users(id)" },
+    canceled_at: { type: "TIMESTAMP" },
+    recording_status: {
+      type: "call_recording_status",
+      notNull: true,
+      default: "idle",
+    },
+    processing_time: { type: "INT" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -368,4 +384,5 @@ exports.down = (pgm) => {
   pgm.dropType("user_gender", { ifExists: true });
   pgm.dropType("plan_cycle", { ifExists: true });
   pgm.dropType("call_event", { ifExists: true });
+  pgm.dropType("call_recording_status", { ifExists: true });
 };

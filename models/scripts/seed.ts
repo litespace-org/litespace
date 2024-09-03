@@ -13,7 +13,7 @@ import {
   messages,
   rooms,
 } from "@/index";
-import { IUser } from "@litespace/types";
+import { ICall, IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
@@ -188,18 +188,20 @@ async function main(): Promise<void> {
   );
 
   await knex.transaction(async (tx) => {
-    await calls.create(
+    const { call } = await calls.create(
       {
         hostId: interviewer.id,
         memberIds: [tutor.id],
         duration: 30,
         ruleId: rule.id,
-        start: dayjs
-          .utc()
-          .startOf("day")
-          .add(Time.from("2pm").totalMinutes(), "minutes")
-          .toISOString(),
+        start: dayjs.utc().startOf("day").toISOString(),
       },
+      tx
+    );
+
+    await calls.update(
+      [call.id],
+      { recordingStatus: ICall.RecordingStatus.Recording },
       tx
     );
   });

@@ -1,7 +1,6 @@
-import { Pool, QueryConfigValues, QueryResult, QueryResultRow } from "pg";
+import { Pool } from "pg";
 import init, { Knex } from "knex";
 import zod from "zod";
-
 import { IFilter } from "@litespace/types";
 
 const connection = {

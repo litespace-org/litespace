@@ -1,13 +1,13 @@
 import { users } from "@litespace/models";
+import { IUser } from "@litespace/types";
 import { first } from "lodash";
-import { DoneCallback, Profile } from "passport";
-import { VerifiedCallback } from "passport-custom";
+import { Profile } from "passport";
 
 export async function verify(
   accessToken: string,
   refershToken: string,
   profile: Profile,
-  done: DoneCallback | VerifiedCallback
+  done: (error: Error | unknown | null, user?: IUser.Self) => void
 ): Promise<void> {
   try {
     const email = first(profile.emails);

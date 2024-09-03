@@ -3,9 +3,10 @@ import { asBase64 } from "@/lib/http";
 import { Tokens } from "@/types/OAuth";
 import axios from "axios";
 import { Request } from "express";
-import { DoneCallback, Profile } from "passport";
+import { Profile } from "passport";
 import url from "node:url";
 import { verify } from "@/lib/oauth";
+import { IUser } from "@litespace/types";
 
 // oauth ref: https://discord.com/developers/docs/topics/oauth2#oauth2
 export async function exchangeCode({
@@ -91,7 +92,7 @@ async function handleCodeExchange({
 }: {
   code: string;
   redirectUrl: string;
-  done: DoneCallback;
+  done: (error: Error | unknown | null, user?: IUser.Self) => void;
 }) {
   const tokens = await exchangeCode({ code, redirectUrl });
   const profile = await findUserProfile(tokens.access);
@@ -99,7 +100,10 @@ async function handleCodeExchange({
 }
 
 // todo: handle access denided error
-export async function verifyCallback(req: Request, done: DoneCallback) {
+export async function verifyCallback(
+  req: Request,
+  done: (error: Error | unknown | null, user?: IUser.Self) => void
+) {
   const code = req.query.code;
   const urls = constrcutUrls(req);
   const res = req.res;

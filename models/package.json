@@ -11,7 +11,8 @@
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
     "migrate": "env-cmd node-pg-migrate",
-    "seed": "env-cmd esr scripts/seed.ts"
+    "seed": "env-cmd esr scripts/seed.ts",
+    "reseed": "yarn migrate down && yarn migrate up && yarn seed"
   },
   "packageManager": "yarn@4.2.2",
   "devDependencies": {
@@ -22,7 +23,9 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "env-cmd": "^10.1.0",
     "esbuild-runner": "^2.2.2",
+    "knex": "^3.1.0",
     "node-pg-migrate": "^7.3.2",
+    "pg": "^8.11.5",
     "rollup": "^4.18.0",
     "rollup-plugin-dts": "^6.1.1",
     "ts-node": "^10.9.2",

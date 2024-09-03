@@ -1,11 +1,24 @@
 import { IUser } from "@/index";
 
+export enum RecordingStatus {
+  Idle = "idle",
+  Recording = "recording",
+  Recorded = "recorded",
+  Queued = "queued",
+  Processing = "processing",
+  Processed = "processed",
+  ProcessingFailed = "processing-failed",
+}
+
 export type Row = {
   id: number;
   rule_id: number;
   start: Date;
   duration: number;
   canceled_by: number | null;
+  canceled_at: Date | null;
+  recording_status: RecordingStatus;
+  processing_time: number | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -16,6 +29,9 @@ export type Self = {
   start: string;
   duration: number;
   canceledBy: number | null;
+  canceledAt: string | null;
+  recordingStatus: RecordingStatus;
+  processingTime: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -79,6 +95,12 @@ export type CreatePayload = {
   duration: number;
   memberIds: number[];
   hostId: number;
+};
+
+export type UpdatePayload = {
+  recordingStatus?: RecordingStatus;
+  canceledBy?: number;
+  processingTime?: number;
 };
 
 export type FindCallByIdApiResponse = {

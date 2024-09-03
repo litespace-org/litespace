@@ -45,6 +45,7 @@
     "colors": "^1.4.0",
     "connect-pg-simple": "^9.0.1",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.13",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",
     "express-fileupload": "^1.5.1",
