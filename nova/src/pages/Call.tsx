@@ -58,7 +58,7 @@ const Call: React.FC = () => {
   const dispath = useAppDispatch();
   const profile = useAppSelector(profileSelector);
   const rooms = useAppSelector(roomsSelector);
-  const { id: callId } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const localRef = useRef<HTMLVideoElement>(null);
   const remoteRef = useRef<HTMLVideoElement>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -71,11 +71,16 @@ const Call: React.FC = () => {
   const [accessCamera, setCameraAccess] = useState<boolean>(true);
   const [permissionError, setPermissionError] = useState<boolean>(false);
 
+  const callId = useMemo(() => {
+    const call = Number(id);
+    if (!id || Number.isNaN(call)) return null;
+    return call;
+  }, [id]);
+
   const call = useQuery({
     queryFn: async () => {
-      if (!callId) throw new Error("Missing call id; should never happen.");
-      // todo: validate "callId"
-      return await atlas.call.findById(Number(callId));
+      if (!callId) throw new Error("missing/invalid call id");
+      return await atlas.call.findById(callId);
     },
     enabled: !!callId,
   });
@@ -126,7 +131,7 @@ const Call: React.FC = () => {
         localRef.current.srcObject = stream;
 
         // record the call
-        startRecording(stream);
+        if (callId) startRecording(stream, callId);
 
         // listen for calls
         peer.on("call", (call) => {

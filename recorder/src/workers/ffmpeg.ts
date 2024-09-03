@@ -37,14 +37,26 @@ async function processCall({
   output,
 }: CallRecordingPaths): Promise<Error | number> {
   return safe(async () => {
-    if (!fs.existsSync(first))
-      throw new Error(`${first} doesn't exist. Call is not recorded?!`);
-
-    if (!fs.existsSync(second))
-      throw new Error(`${second} doesn't exist. Call is not recorded?!`);
+    const firstExists = fs.existsSync(first);
+    const secondExists = fs.existsSync(second);
 
     if (fs.existsSync(output))
       throw new Error(`${output} already exist. Call is already processed?!`);
+
+    if (firstExists && !secondExists) {
+      fs.renameSync(first, output);
+      return 0;
+    }
+
+    if (secondExists && !firstExists) {
+      fs.renameSync(second, output);
+      return 0;
+    }
+
+    if (!firstExists && !secondExists)
+      throw new Error(
+        `Neither ${first} or ${second} exist.At least one should exist. Call is not recorded?!`
+      );
 
     const start = performance.now();
     await joinVideos({ first, second, output });
@@ -110,7 +122,9 @@ async function main() {
       );
 
       if (recordedCalls.length === 0)
-        return console.log(`Found no call to be proccessed`.cyan);
+        return console.log(
+          withIteration(`Found no call to be proccessed`).yellow
+        );
 
       const ids = map(recordedCalls, "id");
       const members = await calls.findCallMembers(ids);

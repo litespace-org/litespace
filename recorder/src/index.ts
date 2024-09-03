@@ -33,7 +33,7 @@ const session = initSession({
 
 io.engine.use(onlyForHandshake(session));
 io.engine.use(onlyForHandshake(passport.session()));
-io.engine.use(authorizeSocket);
+io.engine.use(onlyForHandshake(authorizeSocket));
 
 init(io);
 app.use(json());

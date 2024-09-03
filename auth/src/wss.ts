@@ -11,10 +11,12 @@ export function onlyForHandshake(middleware: RequestHandler) {
   };
 }
 
-export function authorizeSocket() {
-  return onlyForHandshake((req: Request, res: Response, next: NextFunction) => {
-    if ("user" in req) return next();
-    res.writeHead(401);
-    res.end();
-  });
+export function authorizeSocket(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if ("user" in req) return next();
+  res.writeHead(401);
+  res.end();
 }
