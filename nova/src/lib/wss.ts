@@ -1,15 +1,17 @@
-import { sockets } from "@litespace/atlas";
+import { sockets as urls } from "@litespace/atlas";
 import { io } from "socket.io-client";
 import { backend } from "@/lib/atlas";
 
-const socket = io(sockets.backend[backend], {
+const server = io(urls.backend[backend], {
   autoConnect: true,
   withCredentials: true,
 });
 
-export const recorder = io(sockets.recorder[backend], {
+const recorder = io(urls.recorder[backend], {
   autoConnect: true,
   withCredentials: true,
 });
 
-export default socket;
+export const sockets = { server, recorder };
+
+export default server;

@@ -6,6 +6,7 @@ export enum Client {
   SendMessage = "SendMessage",
   MarkAsRead = "MarkAsRead",
   PeerOpened = "PeerOpened",
+  UserSharingScreen = "UserSharingScreen",
 }
 /**
  * Events emitted by the server
@@ -15,4 +16,5 @@ export enum Server {
   JoinedRooms = "JoinedRooms",
   MessageRead = "MessageRead",
   UserJoinedCall = "UserJoinedCall",
+  UserSharedScreen = "UserSharedScreen",
 }

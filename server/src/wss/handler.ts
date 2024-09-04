@@ -9,7 +9,7 @@ import "colors";
 import { id, string } from "@/validation/utils";
 import { isEmpty, map } from "lodash";
 
-const peerOpenedPayload = zod.object({
+const peerPayload = zod.object({
   callId: id,
   peerId: string,
 });
@@ -27,8 +27,7 @@ export class WssHandler {
   async initialize() {
     await Promise.all([this.setUserStatus(true), this.joinRooms()]);
     this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
-    // this.socket.on(Events.Client.MarkAsRead, this.markMessageAsRead.bind(this));
-    // this.socket.on(Events.Client.CallHost, this.callHost.bind(this));
+    this.socket.on(Events.Client.PeerOpened, this.peerOpened.bind(this));
 
     this.socket.on("disconnect", async () => {
       if (isDev) console.log(`${this.user.name.en} is disconnected`.yellow);
@@ -42,22 +41,22 @@ export class WssHandler {
     this.socket.join(ids);
     // private channel
     this.socket.join(this.user.id.toString());
+  }
 
-    this.socket.on(Events.Client.PeerOpened, async (ids: unknown) => {
-      // todo: add error handling
-      const { callId, peerId } = peerOpenedPayload.parse(ids);
+  async peerOpened(ids: unknown) {
+    // todo: add error handling
+    const { callId, peerId } = peerPayload.parse(ids);
 
-      const members = await calls.findCallMembers([callId]);
-      if (isEmpty(members)) return;
+    const members = await calls.findCallMembers([callId]);
+    if (isEmpty(members)) return;
 
-      const isMember = map(members, "userId").includes(this.user.id);
-      if (!isMember) return;
+    const isMember = map(members, "userId").includes(this.user.id);
+    if (!isMember) return;
 
-      this.socket.join(callId.toString());
-      this.socket
-        .to(callId.toString())
-        .emit(Events.Server.UserJoinedCall, peerId);
-    });
+    this.socket.join(callId.toString());
+    this.socket
+      .to(callId.toString())
+      .emit(Events.Server.UserJoinedCall, peerId);
   }
 
   async sendMessage(data: unknown) {

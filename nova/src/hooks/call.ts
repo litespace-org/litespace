@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { recorder as socket } from "@/lib/wss";
+import { sockets } from "@/lib/wss";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { isPermissionDenied, safe } from "@/lib/error";
@@ -14,7 +14,7 @@ export function useCallRecorder() {
     async (event: BlobEvent) => {
       if (event.data.size === 0 || !profile || !call) return;
       console.debug(`Processing chunk (${event.data.size})`);
-      socket.emit("chunk", {
+      sockets.recorder.emit("chunk", {
         chunk: event.data,
         user: profile.id,
         call,

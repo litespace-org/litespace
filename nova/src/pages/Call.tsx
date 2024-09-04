@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import socket from "@/lib/wss";
+import { sockets } from "@/lib/wss";
 import { MediaConnection, Peer } from "peerjs";
 import {
   Button,
@@ -47,10 +47,7 @@ type IForm = {
   message: string;
 };
 
-const peer = new Peer({
-  host: "localhost",
-  port: 3002,
-});
+const peer = new Peer({ host: "localhost", port: 3002 });
 
 const Call: React.FC = () => {
   const intl = useIntl();
@@ -116,13 +113,14 @@ const Call: React.FC = () => {
   const acknowledgePeer = useCallback(
     (peerId: string) => {
       if (!callId) return;
-      socket.emit(Events.Client.PeerOpened, { peerId, callId });
+      sockets.server.emit(Events.Client.PeerOpened, { peerId, callId });
     },
     [callId]
   );
 
   const onCall = useCallback(
     (call: MediaConnection) => {
+      console.log({ ops: call.options });
       call.answer(userMediaStream || undefined);
       call.on("stream", setRemoteMediaStream);
     },
@@ -131,10 +129,15 @@ const Call: React.FC = () => {
 
   const onJoinCall = useCallback(
     (peerId: string) => {
+      console.log(`${peerId} joined the call`);
       setTimeout(() => {
         if (!userMediaStream) return;
         // shared my stream with the connected user
-        const call = peer.call(peerId, userMediaStream);
+        const call = peer.call(peerId, userMediaStream, {
+          metadata: {
+            k: true,
+          },
+        });
         call.on("stream", setRemoteMediaStream);
         call.on("close", () => setRemoteMediaStream(null));
       }, 3000);
@@ -162,13 +165,14 @@ const Call: React.FC = () => {
   }, [getUserMedia]);
 
   useEffect(() => {
-    socket.on(Events.Server.UserJoinedCall, onJoinCall);
+    sockets.server.on(Events.Server.UserJoinedCall, onJoinCall);
     return () => {
-      socket.off(Events.Server.UserJoinedCall, onJoinCall);
+      sockets.server.off(Events.Server.UserJoinedCall, onJoinCall);
     };
-  }, [onJoinCall, userMediaStream]);
+  }, [onJoinCall]);
 
   useEffect(() => {
+    // todo: disable recording in case call is not recordable
     if (callId && userMediaStream) startRecording(userMediaStream, callId);
   }, [callId, startRecording, userMediaStream]);
 
@@ -249,12 +253,6 @@ const Call: React.FC = () => {
     },
   });
 
-  // useEffect(() => {
-  //   // attache the shared screen stream to the screen ref.
-  //   if (shareScreen.stream && localScreenRef.current)
-  //     localScreenRef.current.srcObject = shareScreen.stream;
-  // }, [shareScreen.stream]);
-
   return (
     <div className="flex h-screen overflow-hidden w-full">
       <div
@@ -266,7 +264,7 @@ const Call: React.FC = () => {
       >
         <div
           className={cn(
-            "relative flex-1 w-full max-h-[calc(100%-110px)] pt-10"
+            "relative flex-1 w-full max-h-[calc(100%-110px)] pt-10 px-4"
           )}
         >
           <Media
@@ -423,7 +421,7 @@ const Call: React.FC = () => {
             </div>
             <Form
               onSubmit={sendMessage}
-              className="flex flex-row gap-3 px-4 mb-10 mt-4 shadow-lg"
+              className="flex flex-row gap-3 px-4 mb-10 mt-4"
             >
               <Input
                 value={watch("message")}
