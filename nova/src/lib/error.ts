@@ -1,30 +1,16 @@
-import { AxiosError, isAxiosError } from "axios";
+export type PossibleError<T> = Error | T;
 
-enum ErrorCode {
-  Unkown = "unkown",
-}
+// export enum ErrorCode {
+//   DeniedShareScreen = "",
+// }
 
-/**
- * Error message with error code
- */
-type CodedError = {
-  message: string;
-  code: ErrorCode;
-};
+// export class MultiError<T> extends Error {
+//   constructor(error: T) {
+//     super();
+//   }
+// }
 
-export type PossibleError<T> = MultiError | T;
-
-export class MultiError extends Error {
-  public readonly errorCode: ErrorCode;
-
-  constructor(error: unknown) {
-    const err = parseErrorMessage(error);
-    if (!err) throw new Error("Unsupported error type");
-
-    super(err.message);
-    this.errorCode = err.code;
-  }
-}
+// function parseErrorMessage() {}
 
 export async function safe<T>(
   callback: () => Promise<T>
@@ -32,21 +18,17 @@ export async function safe<T>(
   try {
     return await callback();
   } catch (error) {
-    return new MultiError(error);
+    return error instanceof Error
+      ? error
+      : new Error("unexpected error occurred");
   }
 }
 
-function parseErrorMessage(error: unknown): CodedError | null {
-  if (isAxiosError(error)) return parseAxiosError(error);
-  if (error instanceof Error)
-    return { message: error.message, code: ErrorCode.Unkown };
-  return null;
-}
-
-function parseAxiosError(
-  error: AxiosError<{ message: string; code: ErrorCode }>
-): CodedError | null {
-  const data = error.response?.data;
-  if (!data) return null;
-  return { message: data.message, code: data.code };
+export function isPermissionDenied(error: Error): boolean {
+  return (
+    error.name === "NotAllowedError" &&
+    error.message === "Permission denied" &&
+    "code" in error &&
+    error.code === 0
+  );
 }

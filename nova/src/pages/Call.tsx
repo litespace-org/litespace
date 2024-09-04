@@ -40,8 +40,8 @@ import dayjs from "dayjs";
 import { findRooms, roomsSelector } from "@/redux/chat/rooms";
 import { entries, first, isEqual, map, sortBy } from "lodash";
 import { useChat } from "@/hooks/chat";
-import { motion } from "framer-motion";
-import { useCallRecorder } from "@/hooks/call";
+import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
+import Media from "@/components/Call/Media";
 
 type IForm = {
   message: string;
@@ -59,17 +59,22 @@ const Call: React.FC = () => {
   const profile = useAppSelector(profileSelector);
   const rooms = useAppSelector(roomsSelector);
   const { id } = useParams<{ id: string }>();
-  const localRef = useRef<HTMLVideoElement>(null);
-  const remoteRef = useRef<HTMLVideoElement>(null);
+  const [remoteMediaStream, setRemoteMediaStream] =
+    useState<MediaStream | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
-  const constraintsRef = useRef<HTMLDivElement>(null);
   const { start: startRecording } = useCallRecorder();
+  const shareScreen = useShareScreen();
+  const {
+    start: getUserMedia,
+    stream: userMediaStream,
+    toggleSound,
+    toggleCamera,
+    mic,
+    camera,
+    cameraOff,
+    muteded,
+  } = useUserMedia();
   const [userScrolled, setUserScolled] = useState<boolean>(false);
-  const [mediaConnection, setMediaConnection] =
-    useState<MediaConnection | null>(null);
-  const [accessMic, setMicAccess] = useState<boolean>(true);
-  const [accessCamera, setCameraAccess] = useState<boolean>(true);
-  const [permissionError, setPermissionError] = useState<boolean>(false);
 
   const callId = useMemo(() => {
     const call = Number(id);
@@ -116,6 +121,27 @@ const Call: React.FC = () => {
     [callId]
   );
 
+  const onCall = useCallback(
+    (call: MediaConnection) => {
+      call.answer(userMediaStream || undefined);
+      call.on("stream", setRemoteMediaStream);
+    },
+    [userMediaStream]
+  );
+
+  const onJoinCall = useCallback(
+    (peerId: string) => {
+      setTimeout(() => {
+        if (!userMediaStream) return;
+        // shared my stream with the connected user
+        const call = peer.call(peerId, userMediaStream);
+        call.on("stream", setRemoteMediaStream);
+        call.on("close", () => setRemoteMediaStream(null));
+      }, 3000);
+    },
+    [userMediaStream]
+  );
+
   useEffect(() => {
     peer.on("open", acknowledgePeer);
     return () => {
@@ -124,46 +150,27 @@ const Call: React.FC = () => {
   }, [acknowledgePeer]);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: accessCamera, audio: accessMic })
-      .then((stream) => {
-        if (!localRef.current || !remoteRef.current || !peer) return;
-        localRef.current.srcObject = stream;
+    // listen for calls
+    peer.on("call", onCall);
+    return () => {
+      peer.off("call", onCall);
+    };
+  }, [onCall]);
 
-        // record the call
-        if (callId) startRecording(stream, callId);
+  useEffect(() => {
+    getUserMedia();
+  }, [getUserMedia]);
 
-        // listen for calls
-        peer.on("call", (call) => {
-          call.answer(stream);
-          call.on("stream", (stream) => {
-            if (!remoteRef.current) return;
-            remoteRef.current.srcObject = stream;
-          });
-        });
+  useEffect(() => {
+    socket.on(Events.Server.UserJoinedCall, onJoinCall);
+    return () => {
+      socket.off(Events.Server.UserJoinedCall, onJoinCall);
+    };
+  }, [onJoinCall, userMediaStream]);
 
-        socket.on(Events.Server.UserJoinedCall, (userId) => {
-          setTimeout(() => {
-            // shared my stream with the connected user
-            const call = peer.call(userId, stream);
-            setMediaConnection(call);
-
-            call.on("stream", (stream) => {
-              if (!remoteRef.current) return;
-              remoteRef.current.srcObject = stream;
-            });
-
-            call.on("close", () => {
-              if (!remoteRef.current) return;
-              remoteRef.current.srcObject = null;
-            });
-          }, 3000);
-        });
-      })
-      .catch(() => {
-        setPermissionError(true);
-      });
-  }, [accessCamera, accessMic, localRef, remoteRef, startRecording]);
+  useEffect(() => {
+    if (callId && userMediaStream) startRecording(userMediaStream, callId);
+  }, [callId, startRecording, userMediaStream]);
 
   useEffect(() => {
     if (messagesRef.current && !userScrolled)
@@ -242,6 +249,12 @@ const Call: React.FC = () => {
     },
   });
 
+  // useEffect(() => {
+  //   // attache the shared screen stream to the screen ref.
+  //   if (shareScreen.stream && localScreenRef.current)
+  //     localScreenRef.current.srcObject = shareScreen.stream;
+  // }, [shareScreen.stream]);
+
   return (
     <div className="flex h-screen overflow-hidden w-full">
       <div
@@ -252,28 +265,15 @@ const Call: React.FC = () => {
         )}
       >
         <div
-          className={cn("relative flex-1 w-full max-h-[calc(100%-110px)]")}
-          ref={constraintsRef}
+          className={cn(
+            "relative flex-1 w-full max-h-[calc(100%-110px)] pt-10"
+          )}
         >
-          <motion.div
-            drag
-            draggable
-            dragElastic
-            dragConstraints={constraintsRef}
-            whileDrag={{ scale: 1.03 }}
-            dragMomentum={false}
-            className="h-[300px] rounded-3xl overflow-hidden absolute bottom-10 right-10 z-10"
-          >
-            <video
-              className=" inline-block w-full h-full"
-              muted
-              autoPlay
-              ref={localRef}
-            />
-          </motion.div>
-          <div className="flex flex-1 w-full h-full">
-            <video muted autoPlay ref={remoteRef} className="w-full h-full" />
-          </div>
+          <Media
+            userMediaStream={userMediaStream}
+            remoteMediaStream={remoteMediaStream}
+            userScreenStream={shareScreen.stream}
+          />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
           <div>
@@ -283,38 +283,44 @@ const Call: React.FC = () => {
           </div>
           <div>
             <Button
-              disabled={!mediaConnection}
+              onClick={
+                shareScreen.stream ? shareScreen.stop : shareScreen.start
+              }
+              loading={shareScreen.loading}
+              disabled={shareScreen.loading}
               size={ButtonSize.Small}
-              type={ButtonType.Secondary}
+              type={
+                shareScreen.stream ? ButtonType.Error : ButtonType.Secondary
+              }
             >
               <Monitor className="w-[20px] h-[20px]" />
             </Button>
           </div>
           <div>
             <Button
-              onClick={() => setCameraAccess(!accessCamera)}
+              onClick={toggleCamera}
+              disabled={!camera}
               size={ButtonSize.Small}
-              type={permissionError ? ButtonType.Error : ButtonType.Secondary}
-              disabled={permissionError}
+              type={cameraOff ? ButtonType.Error : ButtonType.Secondary}
             >
-              {accessCamera ? (
-                <Video className="w-[20px] h-[20px]" />
-              ) : (
+              {cameraOff ? (
                 <VideoOff className="w-[20px] h-[20px]" />
+              ) : (
+                <Video className="w-[20px] h-[20px]" />
               )}
             </Button>
           </div>
           <div>
             <Button
-              onClick={() => setMicAccess(!accessMic)}
+              onClick={toggleSound}
+              disabled={!mic}
               size={ButtonSize.Small}
-              type={permissionError ? ButtonType.Error : ButtonType.Secondary}
-              disabled={permissionError}
+              type={muteded ? ButtonType.Error : ButtonType.Secondary}
             >
-              {accessMic ? (
-                <Mic className="w-[20px] h-[20px]" />
-              ) : (
+              {muteded ? (
                 <MicOff className="w-[20px] h-[20px]" />
+              ) : (
+                <Mic className="w-[20px] h-[20px]" />
               )}
             </Button>
           </div>
