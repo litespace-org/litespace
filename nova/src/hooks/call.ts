@@ -1,9 +1,10 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { sockets } from "@/lib/wss";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { isPermissionDenied, safe } from "@/lib/error";
-import { first } from "lodash";
+import { MediaConnection } from "peerjs";
+import peer from "@/lib/peer";
 
 export function useCallRecorder() {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
@@ -45,10 +46,18 @@ export function useCallRecorder() {
   );
 }
 
-export function useShareScreen() {
+export function useShareScreen(peerId?: string) {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
+  const [mediaConnection, setMediaConnection] =
+    useState<MediaConnection | null>(null);
+
+  const terminateConnection = useCallback(() => {
+    if (!mediaConnection) return;
+    mediaConnection.close();
+    setMediaConnection(null);
+  }, [mediaConnection]);
 
   const start = useCallback(async () => {
     setLoading(true);
@@ -70,11 +79,11 @@ export function useShareScreen() {
     }
 
     if (!error) {
-      const video = first(stream.getVideoTracks());
-      if (video)
-        video.addEventListener("ended", () => {
+      stream.getVideoTracks().map((track) => {
+        track.addEventListener("ended", () => {
           setStream(null);
         });
+      });
     }
 
     if (!error) setError(error ? stream : null);
@@ -85,7 +94,24 @@ export function useShareScreen() {
     if (!stream) return;
     stream.getTracks().forEach((track) => track.stop());
     setStream(null);
-  }, [stream]);
+    terminateConnection();
+  }, [stream, terminateConnection]);
+
+  // share the stream with my peer
+  useEffect(() => {
+    if (!peerId || !stream) return;
+    const call = peer.call(peerId, stream, {
+      metadata: { screen: true },
+    });
+    setMediaConnection(call);
+  }, [peerId, stream]);
+
+  useEffect(() => {
+    if (!stream) return;
+    stream.getVideoTracks().forEach((track) => {
+      track.addEventListener("ended", terminateConnection);
+    });
+  }, [stream, terminateConnection]);
 
   return {
     loading,

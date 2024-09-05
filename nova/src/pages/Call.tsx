@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { sockets } from "@/lib/wss";
-import { MediaConnection, Peer } from "peerjs";
+import { MediaConnection } from "peerjs";
 import {
   Button,
   ButtonSize,
@@ -42,12 +42,11 @@ import { entries, first, isEqual, map, sortBy } from "lodash";
 import { useChat } from "@/hooks/chat";
 import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
 import Media from "@/components/Call/Media";
+import peer from "@/lib/peer";
 
 type IForm = {
   message: string;
 };
-
-const peer = new Peer({ host: "localhost", port: 3002 });
 
 const Call: React.FC = () => {
   const intl = useIntl();
@@ -58,9 +57,13 @@ const Call: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
+  const [remoteScreenStream, setRemoteScreenStream] =
+    useState<MediaStream | null>(null);
   const messagesRef = useRef<HTMLDivElement>(null);
   const { start: startRecording } = useCallRecorder();
-  const shareScreen = useShareScreen();
+  const [mediaConnection, setMediaConnection] =
+    useState<MediaConnection | null>(null);
+  const shareScreen = useShareScreen(mediaConnection?.peer);
   const {
     start: getUserMedia,
     stream: userMediaStream,
@@ -118,11 +121,19 @@ const Call: React.FC = () => {
     [callId]
   );
 
+  // executed on the receiver side
   const onCall = useCallback(
     (call: MediaConnection) => {
-      console.log({ ops: call.options });
+      setMediaConnection(call);
       call.answer(userMediaStream || undefined);
-      call.on("stream", setRemoteMediaStream);
+      call.on("stream", (stream: MediaStream) => {
+        if (call.metadata?.screen) return setRemoteScreenStream(stream);
+        return setRemoteMediaStream(stream);
+      });
+      call.on("close", () => {
+        if (call.metadata?.screen) return setRemoteScreenStream(null);
+        return setRemoteMediaStream(null);
+      });
     },
     [userMediaStream]
   );
@@ -133,11 +144,8 @@ const Call: React.FC = () => {
       setTimeout(() => {
         if (!userMediaStream) return;
         // shared my stream with the connected user
-        const call = peer.call(peerId, userMediaStream, {
-          metadata: {
-            k: true,
-          },
-        });
+        const call = peer.call(peerId, userMediaStream);
+        setMediaConnection(call);
         call.on("stream", setRemoteMediaStream);
         call.on("close", () => setRemoteMediaStream(null));
       }, 3000);
@@ -271,6 +279,7 @@ const Call: React.FC = () => {
             userMediaStream={userMediaStream}
             remoteMediaStream={remoteMediaStream}
             userScreenStream={shareScreen.stream}
+            remoteScreenStream={remoteScreenStream}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
