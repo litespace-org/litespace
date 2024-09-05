@@ -21,7 +21,7 @@ const corsOptions: CorsOptions = {
   origin: serverConfig.origin,
 };
 
-initWorker("ffmpeg.js");
+// initWorker("ffmpeg.js");
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: corsOptions, maxHttpBufferSize: 1e10 });

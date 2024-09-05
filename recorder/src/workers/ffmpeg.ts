@@ -25,10 +25,10 @@ function constructCallRecordingPaths(
   members: [number, number]
 ): CallRecordingPaths {
   const [firstMember, secondMember] = members;
-  const first = asRecordingPath(call, firstMember);
-  const second = asRecordingPath(call, secondMember);
-  const output = asProcessedPath(call);
-  return { first, second, output };
+  // const first = asRecordingPath(call, firstMember);
+  // const second = asRecordingPath(call, secondMember);
+  // const output = asProcessedPath(call);
+  return { first: "", second: "", output: "" };
 }
 
 async function processCall({

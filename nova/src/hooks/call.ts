@@ -1,27 +1,25 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { sockets } from "@/lib/wss";
-import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
+import dayjs from "@/lib/dayjs";
 
-export function useCallRecorder() {
+export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
-  const [call, setCall] = useState<number | null>();
-  const profile = useAppSelector(profileSelector);
 
   const onDataAvailable = useCallback(
-    async (event: BlobEvent) => {
-      if (event.data.size === 0 || !profile || !call) return;
+    (call: number, timestamp: number) => (event: BlobEvent) => {
+      if (event.data.size === 0) return;
       console.debug(`Processing chunk (${event.data.size})`);
       sockets.recorder.emit("chunk", {
         chunk: event.data,
-        user: profile.id,
+        timestamp,
+        screen,
         call,
       });
     },
-    [call, profile]
+    [screen]
   );
 
   const start = useCallback(
@@ -29,10 +27,9 @@ export function useCallRecorder() {
       const recorder = new MediaRecorder(stream, {
         mimeType: `video/mp4; codecs="avc1.424028, mp4a.40.2"`,
       });
-      recorder.ondataavailable = onDataAvailable;
+      recorder.ondataavailable = onDataAvailable(call, dayjs.utc().valueOf());
       recorder.start(2_000);
       setRecorder(recorder);
-      setCall(call);
     },
     [onDataAvailable]
   );
@@ -46,12 +43,13 @@ export function useCallRecorder() {
   );
 }
 
-export function useShareScreen(peerId?: string) {
+export function useShareScreen(callId: number | null, peerId: string | null) {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
+  const { start: startRecording } = useCallRecorder(true);
 
   const terminateConnection = useCallback(() => {
     if (!mediaConnection) return;
@@ -84,11 +82,13 @@ export function useShareScreen(peerId?: string) {
           setStream(null);
         });
       });
+
+      if (callId) startRecording(stream, callId);
     }
 
     if (!error) setError(error ? stream : null);
     setStream(error ? null : stream);
-  }, []);
+  }, [callId, startRecording]);
 
   const stop = useCallback(() => {
     if (!stream) return;

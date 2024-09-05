@@ -7,15 +7,14 @@ import { calls } from "@litespace/models";
 import { asRecordingPath } from "@/lib/call";
 import { map } from "lodash";
 import dayjs from "@/lib/dayjs";
-import "colors";
 import { safe } from "@/lib/error";
-
-/// <reference path="@litespace/auth" />
+import "colors";
 
 const chunkData = zod.object({
+  timestamp: zod.number(),
   chunk: zod.instanceof(Buffer),
   call: zod.coerce.number(),
-  user: zod.coerce.number(),
+  screen: zod.optional(zod.boolean()),
 });
 
 type Call = {
@@ -39,21 +38,20 @@ class WssHandler {
   chunk() {
     this.socket.on("chunk", async (data: unknown) => {
       const result = await safe(async () => {
-        const { chunk, call, user } = chunkData.parse(data);
-        if (user !== this.user.id) return console.log("Unauthorized".red);
-
+        const { chunk, call, timestamp, screen } = chunkData.parse(data);
+        const user = this.user.id;
         const userCall = await this.findCall(call, user);
         if (userCall === null) return console.log("Call not found".red);
 
-        const recordable = this.isRecordable(userCall.call);
-        if (!recordable) return console.log("Call is not recordable".red);
+        // const recordable = this.isRecordable(userCall.call);
+        // if (!recordable) return console.log("Call is not recordable".red);
 
         if (userCall.call.recordingStatus !== ICall.RecordingStatus.Recording)
           await calls.update([call], {
             recordingStatus: ICall.RecordingStatus.Recording,
           });
 
-        const location = asRecordingPath(call, user);
+        const location = asRecordingPath({ call, user, timestamp, screen });
         console.log(
           `[chunk] Processing: ${location} size: ${chunk.byteLength} bytes`.gray
         );

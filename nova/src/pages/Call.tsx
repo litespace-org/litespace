@@ -63,7 +63,6 @@ const Call: React.FC = () => {
   const { start: startRecording } = useCallRecorder();
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
-  const shareScreen = useShareScreen(mediaConnection?.peer);
   const {
     start: getUserMedia,
     stream: userMediaStream,
@@ -81,6 +80,8 @@ const Call: React.FC = () => {
     if (!id || Number.isNaN(call)) return null;
     return call;
   }, [id]);
+
+  const shareScreen = useShareScreen(callId, mediaConnection?.peer || null);
 
   const call = useQuery({
     queryFn: async () => {
