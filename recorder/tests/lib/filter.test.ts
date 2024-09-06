@@ -25,7 +25,7 @@ describe("Filter Chain", () => {
     ).to.be.eq("[a][b] amix=inputs=2 [audio]");
   });
 
-  it("should create mul", () => {
+  it("should create audio mix filter", () => {
     expect(
       FilterChain.init()
         .amix(2)

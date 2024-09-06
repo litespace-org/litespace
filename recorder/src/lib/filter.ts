@@ -1,12 +1,17 @@
 import { entries } from "lodash";
+import {
+  MILLISECONDS_IN_SECOND,
+  SECONDS_IN_MINUTE,
+  MINUTES_IN_HOUR,
+} from "@/constants/time";
 
 type FilterName = string;
 type Arguments = Record<string, string>;
 type Dim = { w: number; h: number };
 
-const MILLISECONDS_IN_SECOND = 1000;
-const SECONDS_IN_MINUTE = 60;
-const MINUTES_IN_HOUR = 60;
+function seconds(ms: number) {
+  return ms / MILLISECONDS_IN_SECOND;
+}
 
 export class FilterChain {
   private chain: Record<FilterName, { args: Arguments; expr: string }> = {};
@@ -56,6 +61,26 @@ export class FilterChain {
     return this.withName(name).withExpr(name, `${w}x${h}`);
   }
 
+  trim(start: number, end: number): FilterChain {
+    const name = "trim";
+    const pts = "setpts";
+    return this.withName(name)
+      .withArg(name, "start", seconds(start))
+      .withArg(name, "end", seconds(end))
+      .withName(pts)
+      .withExpr(pts, "PTS-STARTPTS");
+  }
+
+  overlay(): FilterChain {
+    const name = "overlay";
+    return this.withName(name).withArg(name, "eof_action", "pass");
+  }
+
+  overlayx(x: number): FilterChain {
+    const name = "overlay";
+    return this.withName(name).withArg(name, "x", x);
+  }
+
   /**
    * Apply video delay filter
    *
@@ -63,8 +88,7 @@ export class FilterChain {
    */
   vdelay(duration: number): FilterChain {
     const name = "setpts";
-    const seconds = duration / MILLISECONDS_IN_SECOND;
-    return this.withExpr(name, `PTS+${seconds}/TB`);
+    return this.withExpr(name, `PTS+${seconds(duration)}/TB`);
   }
 
   /**
@@ -87,8 +111,10 @@ export class FilterChain {
     return this.withName(name).withArg(name, "inputs", inputs);
   }
 
-  withInput(input: string | string[]): FilterChain {
-    const values = Array.isArray(input) ? input : [input];
+  withInput(input: string | number | Array<number | string>): FilterChain {
+    const values = Array.isArray(input)
+      ? input.map(String)
+      : [input.toString()];
     this.inputs.push(...values);
     return this;
   }
