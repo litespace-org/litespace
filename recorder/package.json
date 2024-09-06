@@ -8,7 +8,8 @@
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc && tsc-alias",
     "test": "env-cmd -f .env.test jest",
-    "clean": "rm -rf dist/"
+    "clean": "rm -rf dist/",
+    "ffmpeg": "ts-node scripts/ffmpeg.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
