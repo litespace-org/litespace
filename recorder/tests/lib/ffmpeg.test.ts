@@ -4,6 +4,8 @@ import {
   asArtifactSlices,
   constructFullScreenFilter,
   constructGroupFilters,
+  constructSoloPresenterFilters,
+  constructSoloPresenterScreenFilters,
   constructSplitScreenFilters,
   findBreakPoints,
   groupArtifacts,
@@ -11,6 +13,7 @@ import {
 import dayjs from "@/lib/dayjs";
 import { duration } from "@/lib/filter";
 import { expect } from "chai";
+import { nameof } from "@/lib/utils";
 
 describe("FFmpeg", () => {
   const start = dayjs.utc().startOf("hour");
@@ -31,7 +34,7 @@ describe("FFmpeg", () => {
         "[1] trim=start=0:end=300, setpts=PTS-STARTPTS [trim-1]"
       );
       expect(scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+0/TB, scale=1280x720 [scale-1]"
+        "[trim-1] setpts=PTS+0/TB, scale=1280x720:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
       );
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
@@ -52,7 +55,7 @@ describe("FFmpeg", () => {
         "[1] trim=start=180:end=480, setpts=PTS-STARTPTS [trim-1]"
       );
       expect(scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+300/TB, scale=1280x720 [scale-1]"
+        "[trim-1] setpts=PTS+300/TB, scale=1280x720:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
       );
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
@@ -78,7 +81,7 @@ describe("FFmpeg", () => {
       );
 
       expect(left.scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+300/TB, scale=640x720 [scale-1]"
+        "[trim-1] setpts=PTS+300/TB, scale=640x720:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
       );
 
       expect(left.overlay.toString()).to.be.eq(
@@ -90,11 +93,48 @@ describe("FFmpeg", () => {
       );
 
       expect(right.scale.toString()).to.be.eq(
-        "[trim-2] setpts=PTS+300/TB, scale=640x720 [scale-2]"
+        "[trim-2] setpts=PTS+300/TB, scale=640x720:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-2]"
       );
 
       expect(right.overlay.toString()).to.be.eq(
         "[overlay-1][scale-2] overlay=eof_action=pass:x=640 [overlay-2]"
+      );
+    });
+  });
+
+  describe(nameof(constructSoloPresenterScreenFilters), () => {
+    it.only("should construct full screen and the persenter should be rendered at the bottom right", () => {
+      const { screen, presenter } = constructSoloPresenterScreenFilters({
+        backgroundId: "bg",
+        base: minute(0),
+        slice: { start: minute(5), end: minute(10) },
+        presenterId: 0,
+        screenId: 1,
+        presenterStart: minute(0),
+        screenStart: minute(0),
+      });
+
+      expect(screen.cut.toString()).to.be.eq(
+        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]"
+      );
+
+      expect(screen.scale.toString()).to.be.eq(
+        "[trim-1] setpts=PTS+300/TB, scale=1279x719:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
+      );
+
+      expect(screen.overlay.toString()).to.be.eq(
+        "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
+      );
+
+      expect(presenter.cut.toString()).to.be.eq(
+        "[0] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-0]"
+      );
+      expect(presenter.scale.toString()).to.be.eq(
+        "[trim-0] setpts=PTS+300/TB, scale=255x143:force_original_aspect_ratio=decrease, pad=256:144:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]"
+      );
+
+      expect(presenter.overlay.toString()).to.be.eq(
+        "[overlay-1][scale-0] overlay=eof_action=pass:x=1015:y=567 [overlay-0]"
       );
     });
   });

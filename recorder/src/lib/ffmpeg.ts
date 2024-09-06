@@ -117,7 +117,7 @@ export function constructFullScreenFilter({
 
   const second = FilterChain.init()
     .vdelay(playTime.start)
-    .scale({ w: width, h: height })
+    .scale({ w: width - 1, h: height - 1 })
     .withInput(tirmOutput)
     .withOutput(scaleOutput);
 
@@ -206,6 +206,88 @@ export function constructSplitScreenFilters({
   });
 
   return { left: leftFilters, right: rightFilters };
+}
+
+export function constructSoloPresenterFilters({
+  artifactStart,
+  artifactId,
+  slice,
+  base,
+  backgroundId,
+}: {
+  artifactStart: number;
+  slice: ArtifactSlice;
+  artifactId: number;
+  base: number;
+  backgroundId: string;
+}) {
+  const { width, height } = mediaConfig.recordingDim;
+  const playTime = calculateRelativeTime(base, slice);
+  const trimTime = calculateRelativeTime(artifactStart, slice);
+  const tirmOutput = `trim-${artifactId}`;
+  const scaleOutput = `scale-${artifactId}`;
+  const overlayOutput = `overlay-${artifactId}`;
+
+  const first = FilterChain.init()
+    .trim(trimTime.start, trimTime.end)
+    .withInput(artifactId)
+    .withOutput(tirmOutput);
+
+  const w = Math.floor(width / 5) - 1;
+  const h = Math.floor(height / 5) - 1;
+  const x = width - w - 10;
+  const y = height - h - 10;
+
+  const second = FilterChain.init()
+    .vdelay(playTime.start)
+    .scale({ w, h })
+    .withInput(tirmOutput)
+    .withOutput(scaleOutput);
+
+  const overlay = FilterChain.init()
+    .withInput([backgroundId, scaleOutput])
+    .overlay()
+    .overlayx(x)
+    .overlayy(y)
+    .withOutput(overlayOutput);
+
+  return { cut: first, scale: second, overlay };
+}
+
+export function constructSoloPresenterScreenFilters({
+  presenterId,
+  presenterStart,
+  screenStart,
+  screenId,
+  slice,
+  base,
+  backgroundId,
+}: {
+  screenStart: number;
+  presenterStart: number;
+  presenterId: number;
+  screenId: number;
+  slice: ArtifactSlice;
+  base: number;
+  backgroundId: string;
+}) {
+  const screen = constructFullScreenFilter({
+    slice,
+    artifactStart: screenStart,
+    artifactId: screenId,
+    backgroundId,
+    base,
+  });
+
+  const presenter = constructSoloPresenterFilters({
+    backgroundId: screen.overlay.outputs[0],
+    artifactStart: presenterStart,
+    artifactId: presenterId,
+    base,
+    slice,
+  });
+
+  return { screen, presenter };
 }
 
 export function constructGroupFilters({

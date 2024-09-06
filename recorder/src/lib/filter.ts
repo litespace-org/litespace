@@ -57,8 +57,17 @@ export class FilterChain {
   }
 
   scale({ w, h }: Dim): FilterChain {
-    const name = "scale";
-    return this.withName(name).withExpr(name, `${w}x${h}`);
+    const scale = "scale";
+    const pad = "pad";
+    const setser = "setsar";
+
+    return this.withName(scale)
+      .withExpr(scale, `${w}x${h}`)
+      .withArg(scale, "force_original_aspect_ratio", "decrease")
+      .withName(pad)
+      .withExpr(pad, `${w + 1}:${h + 1}:(ow-iw)/2:(oh-ih)/2`)
+      .withName(setser)
+      .withExpr(setser, "1");
   }
 
   trim(start: number, end: number): FilterChain {
@@ -79,6 +88,11 @@ export class FilterChain {
   overlayx(x: number): FilterChain {
     const name = "overlay";
     return this.withName(name).withArg(name, "x", x);
+  }
+
+  overlayy(y: number): FilterChain {
+    const name = "overlay";
+    return this.withName(name).withArg(name, "y", y);
   }
 
   /**
