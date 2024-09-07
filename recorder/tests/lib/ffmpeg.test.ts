@@ -2,13 +2,14 @@ import {
   ArtifactSlice,
   ArtifactSliceGroup,
   asArtifactSlices,
-  constructFullScreenFilter,
+  asFullScreenView,
   constructGroupFilters,
-  constructSoloPresenterFilters,
-  constructSoloPresenterScreenFilters,
-  constructSplitScreenFilters,
+  asSoloPersenterView,
+  asSplitScreenView,
   findBreakPoints,
   groupArtifacts,
+  asAccompaniedPersenterView,
+  asMultiPersenterView,
 } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import { duration } from "@/lib/filter";
@@ -19,22 +20,20 @@ describe("FFmpeg", () => {
   const start = dayjs.utc().startOf("hour");
   const minute = (minute: number) => start.add(minute, "minutes").valueOf();
 
-  describe("constructFullScreenArtifact", () => {
+  describe(nameof(asFullScreenView), () => {
     it("should construct full screen artifact", () => {
       const slice: ArtifactSlice = { start: minute(0), end: minute(5) };
-      const { cut, scale, overlay } = constructFullScreenFilter({
+      const { cut, scale, overlay } = asFullScreenView({
         slice,
-        base: minute(0),
-        artifactStart: minute(0),
-        artifactId: 1,
-        backgroundId: "bg",
+        start: { full: minute(0), artifact: minute(0) },
+        ids: { artifact: 1, background: "bg" },
       });
 
       expect(cut.toString()).to.be.eq(
         "[1] trim=start=0:end=300, setpts=PTS-STARTPTS [trim-1]"
       );
       expect(scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+0/TB, scale=1280x720:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
+        "[trim-1] setpts=PTS+0/TB, scale=1279x719:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
       );
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
@@ -43,19 +42,17 @@ describe("FFmpeg", () => {
 
     it("should construct full screen artifact with a delay", () => {
       const slice: ArtifactSlice = { start: minute(5), end: minute(10) };
-      const { cut, scale, overlay } = constructFullScreenFilter({
+      const { cut, scale, overlay } = asFullScreenView({
         slice,
-        base: minute(0),
-        artifactStart: minute(2),
-        artifactId: 1,
-        backgroundId: "bg",
+        start: { full: minute(0), artifact: minute(2) },
+        ids: { artifact: 1, background: "bg" },
       });
 
       expect(cut.toString()).to.be.eq(
         "[1] trim=start=180:end=480, setpts=PTS-STARTPTS [trim-1]"
       );
       expect(scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+300/TB, scale=1280x720:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
+        "[trim-1] setpts=PTS+300/TB, scale=1279x719:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
       );
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
@@ -63,17 +60,15 @@ describe("FFmpeg", () => {
     });
   });
 
-  describe("constructSplitScreenFilters", () => {
+  describe(nameof(asSplitScreenView), () => {
     it("should construct left and right half screen filters", () => {
-      const { left, right } = constructSplitScreenFilters({
-        artifacts: [minute(0), minute(0)],
-        backgroundId: "bg",
-        base: minute(0),
-        group: {
-          start: minute(5),
-          end: minute(10),
-          ids: [1, 2],
+      const { left, right } = asSplitScreenView({
+        start: {
+          full: minute(0),
+          artifacts: { left: minute(0), right: minute(0) },
         },
+        slice: { start: minute(5), end: minute(10) },
+        ids: { artifacts: { left: 1, right: 2 }, background: "bg" },
       });
 
       expect(left.cut.toString()).to.be.eq(
@@ -81,7 +76,7 @@ describe("FFmpeg", () => {
       );
 
       expect(left.scale.toString()).to.be.eq(
-        "[trim-1] setpts=PTS+300/TB, scale=640x720:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-1]"
+        "[trim-1] setpts=PTS+300/TB, scale=639x719:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
       );
 
       expect(left.overlay.toString()).to.be.eq(
@@ -93,7 +88,7 @@ describe("FFmpeg", () => {
       );
 
       expect(right.scale.toString()).to.be.eq(
-        "[trim-2] setpts=PTS+300/TB, scale=640x720:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setser=1 [scale-2]"
+        "[trim-2] setpts=PTS+300/TB, scale=639x719:force_original_aspect_ratio=decrease, pad=640:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-2]"
       );
 
       expect(right.overlay.toString()).to.be.eq(
@@ -102,16 +97,12 @@ describe("FFmpeg", () => {
     });
   });
 
-  describe(nameof(constructSoloPresenterScreenFilters), () => {
-    it.only("should construct full screen and the persenter should be rendered at the bottom right", () => {
-      const { screen, presenter } = constructSoloPresenterScreenFilters({
-        backgroundId: "bg",
-        base: minute(0),
+  describe(nameof(asSoloPersenterView), () => {
+    it("should construct full screen and the persenter should be rendered at the bottom right", () => {
+      const { screen, presenter } = asSoloPersenterView({
+        ids: { background: "bg", screen: 1, presenter: 0 },
+        start: { full: minute(0), presenter: minute(0), screen: minute(0) },
         slice: { start: minute(5), end: minute(10) },
-        presenterId: 0,
-        screenId: 1,
-        presenterStart: minute(0),
-        screenStart: minute(0),
       });
 
       expect(screen.cut.toString()).to.be.eq(
@@ -134,8 +125,120 @@ describe("FFmpeg", () => {
       );
 
       expect(presenter.overlay.toString()).to.be.eq(
-        "[overlay-1][scale-0] overlay=eof_action=pass:x=1015:y=567 [overlay-0]"
+        "[overlay-1][scale-0] overlay=eof_action=pass:x=1014:y=566 [overlay-0]"
       );
+    });
+  });
+
+  describe(nameof(asAccompaniedPersenterView), () => {
+    it("should construct filters for two users and one screen", () => {
+      const { screen, users, output } = asAccompaniedPersenterView({
+        ids: { background: "bg", screen: 2, users: [0, 1] },
+        start: {
+          full: minute(0),
+          users: [minute(0), minute(0)],
+          screen: minute(0),
+        },
+        slice: { start: minute(5), end: minute(10) },
+      });
+
+      expect(screen.cut.toString()).to.be.eq(
+        "[2] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-2]"
+      );
+
+      expect(screen.scale.toString()).to.be.eq(
+        "[trim-2] setpts=PTS+300/TB, scale=959x719:force_original_aspect_ratio=decrease, pad=960:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-2]"
+      );
+
+      expect(screen.overlay.toString()).to.be.eq(
+        "[bg][scale-2] overlay=eof_action=pass [overlay-2]"
+      );
+
+      expect(users.first.cut.toString()).to.be.eq(
+        "[0] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-0]"
+      );
+      expect(users.first.scale.toString()).to.be.eq(
+        "[trim-0] setpts=PTS+300/TB, scale=319x359:force_original_aspect_ratio=decrease, pad=320:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]"
+      );
+
+      expect(users.first.overlay.toString()).to.be.eq(
+        "[overlay-2][scale-0] overlay=eof_action=pass:x=960 [overlay-0]"
+      );
+
+      expect(users.second.cut.toString()).to.be.eq(
+        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]"
+      );
+      expect(users.second.scale.toString()).to.be.eq(
+        "[trim-1] setpts=PTS+300/TB, scale=319x359:force_original_aspect_ratio=decrease, pad=320:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
+      );
+
+      expect(users.second.overlay.toString()).to.be.eq(
+        "[overlay-0][scale-1] overlay=eof_action=pass:x=960:y=360 [overlay-1]"
+      );
+
+      expect(output).to.be.eq("overlay-1");
+    });
+  });
+
+  describe(nameof(asMultiPersenterView), () => {
+    it("should construct filters for two users and two screens", () => {
+      const { screens, users, output } = asMultiPersenterView({
+        ids: { background: "bg", screens: [2, 3], users: [0, 1] },
+        start: {
+          full: minute(0),
+          users: [minute(0), minute(0)],
+          screens: [minute(0), minute(0)],
+        },
+        slice: { start: minute(5), end: minute(10) },
+      });
+
+      expect(screens.first.cut.toString()).to.be.eq(
+        "[2] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-2]"
+      );
+
+      expect(screens.first.scale.toString()).to.be.eq(
+        "[trim-2] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-2]"
+      );
+
+      expect(screens.first.overlay.toString()).to.be.eq(
+        "[bg][scale-2] overlay=eof_action=pass [overlay-2]"
+      );
+
+      expect(screens.second.cut.toString()).to.be.eq(
+        "[3] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-3]"
+      );
+
+      expect(screens.second.scale.toString()).to.be.eq(
+        "[trim-3] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-3]"
+      );
+
+      expect(screens.second.overlay.toString()).to.be.eq(
+        "[overlay-2][scale-3] overlay=eof_action=pass:x=640 [overlay-3]"
+      );
+
+      expect(users.first.cut.toString()).to.be.eq(
+        "[0] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-0]"
+      );
+      expect(users.first.scale.toString()).to.be.eq(
+        "[trim-0] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]"
+      );
+
+      expect(users.first.overlay.toString()).to.be.eq(
+        "[overlay-3][scale-0] overlay=eof_action=pass:y=360 [overlay-0]"
+      );
+
+      expect(users.second.cut.toString()).to.be.eq(
+        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]"
+      );
+      expect(users.second.scale.toString()).to.be.eq(
+        "[trim-1] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]"
+      );
+
+      expect(users.second.overlay.toString()).to.be.eq(
+        "[overlay-0][scale-1] overlay=eof_action=pass:x=640:y=360 [overlay-1]"
+      );
+
+      expect(output).to.be.eq("overlay-1");
     });
   });
 

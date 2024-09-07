@@ -62,10 +62,10 @@ export class FilterChain {
     const setser = "setsar";
 
     return this.withName(scale)
-      .withExpr(scale, `${w}x${h}`)
+      .withExpr(scale, `${w - 1}x${h - 1}`)
       .withArg(scale, "force_original_aspect_ratio", "decrease")
       .withName(pad)
-      .withExpr(pad, `${w + 1}:${h + 1}:(ow-iw)/2:(oh-ih)/2`)
+      .withExpr(pad, `${w}:${h}:(ow-iw)/2:(oh-ih)/2`)
       .withName(setser)
       .withExpr(setser, "1");
   }

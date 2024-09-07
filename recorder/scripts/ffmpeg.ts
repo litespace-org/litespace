@@ -38,15 +38,27 @@ async function main() {
     ffmpeg()
       .input("assets/v1.mp4")
       .input("assets/v2.mp4")
+      .input("assets/screen.mp4")
+      .input("assets/screen-2.mp4")
       .withOption("-threads 5")
       .complexFilter([
         "color=color=black:size=1280x720:duration=900[bg]",
-        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]",
-        "[trim-1] setpts=PTS+300/TB, scale=1279x719:force_original_aspect_ratio=decrease, pad=1280:720:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]",
-        "[bg][scale-1] overlay=eof_action=pass [overlay-1]",
+        "[2] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-2]",
+        "[trim-2] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-2]",
+        "[bg][scale-2] overlay=eof_action=pass [overlay-2]",
+        "[3] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-3]",
+        "[trim-3] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-3]",
+        "[overlay-2][scale-3] overlay=eof_action=pass:x=640 [overlay-3]",
         "[0] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-0]",
-        "[trim-0] setpts=PTS+300/TB, scale=255x143:force_original_aspect_ratio=decrease, pad=256:144:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]",
-        "[overlay-1][scale-0] overlay=eof_action=pass:x=1015:y=567 [output]",
+        "[trim-0] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]",
+        "[overlay-3][scale-0] overlay=eof_action=pass:y=360 [overlay-0]",
+        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]",
+        "[trim-1] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]",
+        "[overlay-0][scale-1] overlay=eof_action=pass:x=640:y=360 [output]",
+
+        // audio
+        // "[0:a]adelay=delays=20000:all=1[0a]",
+        // "[2:a][0a]amix=inputs=2[audio]",
       ])
       .outputOptions(["-map [output]"])
       .output("assets/script-output.mp4")
