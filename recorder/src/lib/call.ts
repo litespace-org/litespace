@@ -1,6 +1,10 @@
 import { serverConfig } from "@/config";
 import path from "path";
 import { number } from "@/lib/utils";
+import { globSync } from "glob";
+import fs from "node:fs/promises";
+import { getVideoDurationInSeconds } from "get-video-duration";
+import { MILLISECONDS_IN_SECOND } from "@/constants/time";
 
 type RecordingInfo = {
   call: number;
@@ -39,4 +43,13 @@ export function parseCallRecording(file: string): RecordingInfo {
 
 export function asProcessedPath(call: number) {
   return path.join(serverConfig.assets, `${call}.mp4`);
+}
+
+export function findCallArtifacts(call: number): string[] {
+  return globSync(path.join(serverConfig.assets, `*.${call}.*`));
+}
+
+export async function getCallDuration(path: string): Promise<number> {
+  const duration = await getVideoDurationInSeconds(path);
+  return duration * MILLISECONDS_IN_SECOND;
 }

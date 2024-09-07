@@ -2461,6 +2461,95 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ffprobe-installer/darwin-arm64@npm:5.0.1":
+  version: 5.0.1
+  resolution: "@ffprobe-installer/darwin-arm64@npm:5.0.1"
+  conditions: os=darwin & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/darwin-x64@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/darwin-x64@npm:5.0.0"
+  conditions: os=darwin & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/ffprobe@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "@ffprobe-installer/ffprobe@npm:1.4.1"
+  dependencies:
+    "@ffprobe-installer/darwin-arm64": "npm:5.0.1"
+    "@ffprobe-installer/darwin-x64": "npm:5.0.0"
+    "@ffprobe-installer/linux-arm": "npm:5.0.0"
+    "@ffprobe-installer/linux-arm64": "npm:5.0.0"
+    "@ffprobe-installer/linux-ia32": "npm:5.0.0"
+    "@ffprobe-installer/linux-x64": "npm:5.0.0"
+    "@ffprobe-installer/win32-ia32": "npm:5.0.0"
+    "@ffprobe-installer/win32-x64": "npm:5.0.0"
+  dependenciesMeta:
+    "@ffprobe-installer/darwin-arm64":
+      optional: true
+    "@ffprobe-installer/darwin-x64":
+      optional: true
+    "@ffprobe-installer/linux-arm":
+      optional: true
+    "@ffprobe-installer/linux-arm64":
+      optional: true
+    "@ffprobe-installer/linux-ia32":
+      optional: true
+    "@ffprobe-installer/linux-x64":
+      optional: true
+    "@ffprobe-installer/win32-ia32":
+      optional: true
+    "@ffprobe-installer/win32-x64":
+      optional: true
+  checksum: 10c0/6fc1bb51cd551087ec722444cae261ccd5c0d3871fbe6609d617bd091e7861d12bc4760b400f79fba978b51dd51b235ad6774b563a3679803239d33c71e2246e
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/linux-arm64@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/linux-arm64@npm:5.0.0"
+  conditions: os=linux & cpu=arm64
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/linux-arm@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/linux-arm@npm:5.0.0"
+  conditions: os=linux & cpu=arm
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/linux-ia32@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/linux-ia32@npm:5.0.0"
+  conditions: os=linux & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/linux-x64@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/linux-x64@npm:5.0.0"
+  conditions: os=linux & cpu=x64
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/win32-ia32@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/win32-ia32@npm:5.0.0"
+  conditions: os=win32 & cpu=ia32
+  languageName: node
+  linkType: hard
+
+"@ffprobe-installer/win32-x64@npm:5.0.0":
+  version: 5.0.0
+  resolution: "@ffprobe-installer/win32-x64@npm:5.0.0"
+  conditions: os=win32 & cpu=x64
+  languageName: node
+  linkType: hard
+
 "@floating-ui/core@npm:^1.6.0":
   version: 1.6.5
   resolution: "@floating-ui/core@npm:1.6.5"
@@ -3307,6 +3396,7 @@ __metadata:
     express-async-handler: "npm:^1.2.0"
     express-fileupload: "npm:^1.5.1"
     fluent-ffmpeg: "npm:^2.1.3"
+    get-video-duration: "npm:^4.1.0"
     glob: "npm:^11.0.0"
     jest: "npm:^29.7.0"
     lodash: "npm:^4.17.21"
@@ -13002,6 +13092,17 @@ __metadata:
   dependencies:
     resolve-pkg-maps: "npm:^1.0.0"
   checksum: 10c0/2240e1b13e996dfbb947d177f422f83d09d1f93c9ce16959ebb3c2bdf8bdf4f04f98eba043859172da1685f9c7071091f0acfa964ebbe4780394d83b7dc3f58a
+  languageName: node
+  linkType: hard
+
+"get-video-duration@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "get-video-duration@npm:4.1.0"
+  dependencies:
+    "@ffprobe-installer/ffprobe": "npm:^1.4.1"
+    execa: "npm:^5.0.0"
+    is-stream: "npm:^2.0.0"
+  checksum: 10c0/d54f410239d60304ecda91013e8541c8bd334d49d0c4376c7116af2b67f59b0a3b8b3a41a4b161ba92752f20767cc4e78b6fd444c7421d5c2757177ca3c3b682
   languageName: node
   linkType: hard
 

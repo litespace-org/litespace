@@ -53,7 +53,7 @@ export class FilterChain {
     return this.withName(name)
       .withArg(name, "color", "black")
       .withDims(name, "size", dim)
-      .withArg(name, "duration", duration / MILLISECONDS_IN_SECOND);
+      .withArg(name, "duration", seconds(duration));
   }
 
   scale({ w, h }: Dim): FilterChain {
@@ -136,6 +136,11 @@ export class FilterChain {
   withOutput(output: string | string[]): FilterChain {
     const values = Array.isArray(output) ? output : [output];
     this.outputs.push(...values);
+    return this;
+  }
+
+  overrideOutput(output: string): FilterChain {
+    this.outputs = [output];
     return this;
   }
 

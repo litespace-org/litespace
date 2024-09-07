@@ -194,7 +194,7 @@ async function main(): Promise<void> {
         memberIds: [tutor.id],
         duration: 30,
         ruleId: rule.id,
-        start: dayjs.utc().startOf("day").toISOString(),
+        start: dayjs.utc().toISOString(),
       },
       tx
     );

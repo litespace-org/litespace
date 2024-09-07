@@ -36,25 +36,14 @@ async function main() {
 
   return new Promise((resolve, reject) => {
     ffmpeg()
-      .input("assets/v1.mp4")
-      .input("assets/v2.mp4")
-      .input("assets/screen.mp4")
-      .input("assets/screen-2.mp4")
+      .input("assets/student-s-1.mp4")
+      .input("assets/student-s-2.mp4")
+      .input("assets/tutor.mp4")
+      .input("assets/first-share-screen.mp4")
+      .input("assets/second-share-screen.mp4")
       .withOption("-threads 5")
       .complexFilter([
-        "color=color=black:size=1280x720:duration=900[bg]",
-        "[2] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-2]",
-        "[trim-2] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-2]",
-        "[bg][scale-2] overlay=eof_action=pass [overlay-2]",
-        "[3] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-3]",
-        "[trim-3] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-3]",
-        "[overlay-2][scale-3] overlay=eof_action=pass:x=640 [overlay-3]",
-        "[0] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-0]",
-        "[trim-0] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-0]",
-        "[overlay-3][scale-0] overlay=eof_action=pass:y=360 [overlay-0]",
-        "[1] trim=start=300:end=600, setpts=PTS-STARTPTS [trim-1]",
-        "[trim-1] setpts=PTS+300/TB, scale=639x359:force_original_aspect_ratio=decrease, pad=640:360:(ow-iw)/2:(oh-ih)/2, setsar=1 [scale-1]",
-        "[overlay-0][scale-1] overlay=eof_action=pass:x=640:y=360 [output]",
+        "color=color=black:size=1280x720:duration=1800[bg]",
 
         // audio
         // "[0:a]adelay=delays=20000:all=1[0a]",

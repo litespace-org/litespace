@@ -3,7 +3,6 @@ import cors, { CorsOptions } from "cors";
 import { Server } from "socket.io";
 import { createServer } from "node:http";
 import { serverConfig } from "@/config";
-import call from "@/routes/call";
 import { error } from "@/middlewares/error";
 import { init } from "@/wss";
 import {
@@ -21,7 +20,7 @@ const corsOptions: CorsOptions = {
   origin: [...serverConfig.origin],
 };
 
-// initWorker("ffmpeg.js");
+initWorker("ffmpeg.js");
 const app = express();
 const server = createServer(app);
 const io = new Server(server, { cors: corsOptions, maxHttpBufferSize: 1e10 });
@@ -43,7 +42,6 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 app.use("/", authenticated, express.static(serverConfig.assets));
-app.use("/api/v1/call", call);
 app.use(error);
 
 server.listen(serverConfig.port, () =>

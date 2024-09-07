@@ -10,6 +10,9 @@ import {
   groupArtifacts,
   asAccompaniedPersenterView,
   asMultiPersenterView,
+  selectBestView,
+  View,
+  computeFilterGraph,
 } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import { duration } from "@/lib/filter";
@@ -23,10 +26,11 @@ describe("FFmpeg", () => {
   describe(nameof(asFullScreenView), () => {
     it("should construct full screen artifact", () => {
       const slice: ArtifactSlice = { start: minute(0), end: minute(5) };
-      const { cut, scale, overlay } = asFullScreenView({
+      const { cut, scale, overlay, output } = asFullScreenView({
         slice,
-        start: { full: minute(0), artifact: minute(0) },
-        ids: { artifact: 1, background: "bg" },
+        start: { anchor: minute(0), artifact: minute(0) },
+        ids: { artifact: "1", input: "bg" },
+        index: 1,
       });
 
       expect(cut.toString()).to.be.eq(
@@ -38,14 +42,17 @@ describe("FFmpeg", () => {
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
       );
+
+      expect(output).to.be.eq("overlay-1");
     });
 
     it("should construct full screen artifact with a delay", () => {
       const slice: ArtifactSlice = { start: minute(5), end: minute(10) };
-      const { cut, scale, overlay } = asFullScreenView({
+      const { cut, scale, overlay, output } = asFullScreenView({
         slice,
-        start: { full: minute(0), artifact: minute(2) },
-        ids: { artifact: 1, background: "bg" },
+        start: { anchor: minute(0), artifact: minute(2) },
+        ids: { artifact: "1", input: "bg" },
+        index: 1,
       });
 
       expect(cut.toString()).to.be.eq(
@@ -57,6 +64,7 @@ describe("FFmpeg", () => {
       expect(overlay.toString()).to.be.eq(
         "[bg][scale-1] overlay=eof_action=pass [overlay-1]"
       );
+      expect(output).to.be.eq("overlay-1");
     });
   });
 
@@ -64,11 +72,12 @@ describe("FFmpeg", () => {
     it("should construct left and right half screen filters", () => {
       const { left, right } = asSplitScreenView({
         start: {
-          full: minute(0),
+          anchor: minute(0),
           artifacts: { left: minute(0), right: minute(0) },
         },
         slice: { start: minute(5), end: minute(10) },
-        ids: { artifacts: { left: 1, right: 2 }, background: "bg" },
+        ids: { artifacts: { left: "1", right: "2" }, input: "bg" },
+        indices: { left: 1, right: 2 },
       });
 
       expect(left.cut.toString()).to.be.eq(
@@ -100,9 +109,10 @@ describe("FFmpeg", () => {
   describe(nameof(asSoloPersenterView), () => {
     it("should construct full screen and the persenter should be rendered at the bottom right", () => {
       const { screen, presenter } = asSoloPersenterView({
-        ids: { background: "bg", screen: 1, presenter: 0 },
-        start: { full: minute(0), presenter: minute(0), screen: minute(0) },
+        ids: { input: "bg", screen: "1", presenter: "0" },
+        start: { anchor: minute(0), presenter: minute(0), screen: minute(0) },
         slice: { start: minute(5), end: minute(10) },
+        indices: { screen: 1, presenter: 0 },
       });
 
       expect(screen.cut.toString()).to.be.eq(
@@ -133,13 +143,14 @@ describe("FFmpeg", () => {
   describe(nameof(asAccompaniedPersenterView), () => {
     it("should construct filters for two users and one screen", () => {
       const { screen, users, output } = asAccompaniedPersenterView({
-        ids: { background: "bg", screen: 2, users: [0, 1] },
+        ids: { input: "bg", screen: "2", users: ["0", "1"] },
         start: {
-          full: minute(0),
+          anchor: minute(0),
           users: [minute(0), minute(0)],
           screen: minute(0),
         },
         slice: { start: minute(5), end: minute(10) },
+        indices: { screen: 2, users: [0, 1] },
       });
 
       expect(screen.cut.toString()).to.be.eq(
@@ -183,9 +194,10 @@ describe("FFmpeg", () => {
   describe(nameof(asMultiPersenterView), () => {
     it("should construct filters for two users and two screens", () => {
       const { screens, users, output } = asMultiPersenterView({
-        ids: { background: "bg", screens: [2, 3], users: [0, 1] },
+        ids: { input: "bg", screens: ["2", "3"], users: ["0", "1"] },
+        indices: { screens: [2, 3], users: [0, 1] },
         start: {
-          full: minute(0),
+          anchor: minute(0),
           users: [minute(0), minute(0)],
           screens: [minute(0), minute(0)],
         },
@@ -239,6 +251,63 @@ describe("FFmpeg", () => {
       );
 
       expect(output).to.be.eq("overlay-1");
+    });
+  });
+
+  describe(nameof(selectBestView), () => {
+    const artifact = (id: number, screen: boolean = false) => ({
+      id,
+      duration: 0,
+      start: 0,
+      screen,
+    });
+
+    it("should select full screen view incase of only one user", () => {
+      expect(selectBestView([artifact(1)])).to.be.eq(View.FullScreen);
+    });
+
+    it("should select multi persenter view incase of two users and two screens", () => {
+      expect(
+        selectBestView([
+          artifact(1),
+          artifact(2, true),
+          artifact(3),
+          artifact(4, true),
+        ])
+      ).to.be.eq(View.MultiPersenter);
+    });
+
+    it("should select solo persenter view incase of one user and one screen", () => {
+      expect(selectBestView([artifact(1), artifact(2, true)])).to.be.eq(
+        View.SoloPersenter
+      );
+    });
+
+    it("should select accompanied persenter view incase of two users and one screen", () => {
+      expect(
+        selectBestView([artifact(1), artifact(2), artifact(3, true)])
+      ).to.be.eq(View.AccompaniedPersenter);
+    });
+
+    it("should select split screen view incase of two users and no screens", () => {
+      expect(selectBestView([artifact(1), artifact(2)])).to.be.eq(
+        View.SplitScreen
+      );
+    });
+
+    it("should return null for all invlaid ids", () => {
+      // empty artifacts
+      expect(selectBestView([])).to.be.eq(null);
+      // tree screens
+      expect(
+        selectBestView([
+          artifact(1, true),
+          artifact(2, true),
+          artifact(3, true),
+        ])
+      ).to.be.eq(null);
+      // one screen
+      expect(selectBestView([artifact(1, true)])).to.be.eq(null);
     });
   });
 
@@ -353,13 +422,13 @@ describe("FFmpeg", () => {
 
       expect(
         groupArtifacts([
-          { id: a1.id, slices: as1 },
-          { id: a2.id, slices: as2 },
+          { slices: as1, artifact: a1 },
+          { slices: as2, artifact: a2 },
         ])
       ).to.be.deep.eq([
-        { start: minute(0), end: minute(10), ids: [1] },
-        { start: minute(10), end: minute(25), ids: [1, 2] },
-        { start: minute(25), end: minute(30), ids: [1] },
+        { start: minute(0), end: minute(10), artifacts: [a1] },
+        { start: minute(10), end: minute(25), artifacts: [a1, a2] },
+        { start: minute(25), end: minute(30), artifacts: [a1] },
       ]);
     });
 
@@ -415,19 +484,19 @@ describe("FFmpeg", () => {
       ]);
 
       const groups = groupArtifacts([
-        { id: a1.id, slices: as1 },
-        { id: a2.id, slices: as2 },
-        { id: a3.id, slices: as3 },
-        { id: a4.id, slices: as4 },
-        { id: a5.id, slices: as5 },
+        { slices: as1, artifact: a1 },
+        { slices: as2, artifact: a2 },
+        { slices: as3, artifact: a3 },
+        { slices: as4, artifact: a4 },
+        { slices: as5, artifact: a5 },
       ]);
 
       expect(groups).to.be.deep.members([
-        { start: minute(0), end: minute(5), ids: [1, 3] },
-        { start: minute(5), end: minute(15), ids: [1, 3, 4] },
-        { start: minute(15), end: minute(16), ids: [3, 4] },
-        { start: minute(16), end: minute(20), ids: [2, 3, 4] },
-        { start: minute(20), end: minute(30), ids: [2, 3, 5] },
+        { start: minute(0), end: minute(5), artifacts: [a1, a3] },
+        { start: minute(5), end: minute(15), artifacts: [a1, a3, a4] },
+        { start: minute(15), end: minute(16), artifacts: [a3, a4] },
+        { start: minute(16), end: minute(20), artifacts: [a2, a3, a4] },
+        { start: minute(20), end: minute(30), artifacts: [a2, a3, a5] },
       ]);
     });
 
@@ -467,16 +536,16 @@ describe("FFmpeg", () => {
       ]);
 
       const groups = groupArtifacts([
-        { id: a1.id, slices: as1 },
-        { id: a2.id, slices: as2 },
-        { id: a3.id, slices: as3 },
+        { slices: as1, artifact: a1 },
+        { slices: as2, artifact: a2 },
+        { slices: as3, artifact: a3 },
       ]);
 
       expect(groups).to.be.deep.members([
-        { start: minute(0), end: minute(1), ids: [1] },
-        { start: minute(1), end: minute(10), ids: [1, 3] },
-        { start: minute(10), end: minute(29), ids: [1, 2, 3] },
-        { start: minute(29), end: minute(30), ids: [1, 2] },
+        { start: minute(0), end: minute(1), artifacts: [a1] },
+        { start: minute(1), end: minute(10), artifacts: [a1, a3] },
+        { start: minute(10), end: minute(29), artifacts: [a1, a2, a3] },
+        { start: minute(29), end: minute(30), artifacts: [a1, a2] },
       ]);
     });
   });
