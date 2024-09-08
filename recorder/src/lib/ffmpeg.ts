@@ -1,5 +1,5 @@
 import ffmpeg from "fluent-ffmpeg";
-import { number, omitByIdex } from "@/lib/utils";
+import { nameof, number, omitByIdex } from "@/lib/utils";
 import {
   entries,
   first,
@@ -12,6 +12,8 @@ import {
 import { FilterChain } from "@/lib/filter";
 import { mediaConfig, serverConfig } from "@/config";
 import path from "node:path";
+import { logger } from "@/lib/log";
+import { asProcessedPath } from "./call";
 
 export type Artifact = {
   id: number;
@@ -275,14 +277,12 @@ export function computeGroupFilterGraph({
 
 export async function processArtifacts({
   artifacts,
-  input,
-  anchor,
   files,
+  call,
 }: {
   artifacts: Artifact[];
-  input: string;
-  anchor: number;
   files: string[];
+  call: number;
 }) {
   const groups = groupArtifacts(
     artifacts.map((artifact, idx) => {
@@ -292,46 +292,49 @@ export async function processArtifacts({
     })
   );
 
-  let prev = null;
+  const intermediateArtifacts: string[] = [];
 
   for (const [groupId, group] of entries(orderBy(groups, "start", "asc"))) {
     const result = computeGroupFilterGraph({
       groupId: number(groupId),
-      input: "prev",
-      anchor,
+      input: "input",
+      anchor: group.start, // anchor its group to itself
       group,
     });
     if (result === null) continue; // invalid or unsupported group
 
     const output = last(result.filters);
     if (output) output.overrideOutput("output");
-    const tmp = path.join(serverConfig.assets, `temp-g${groupId}.mp4`);
+    const tmp = path.join(serverConfig.assets, `tmp-${call}-${groupId}.mp4`);
 
-    if (prev === null) {
-      const { width, height } = mediaConfig.recordingDim;
-      const blank = FilterChain.init()
-        .black({ w: width, h: height }, 10 * 60 * 1000)
-        .withOutput("prev");
+    const { width, height } = mediaConfig.recordingDim;
+    const blank = FilterChain.init()
+      .black({ w: width, h: height }, group.end - group.start)
+      .withOutput("input");
 
-      const filters = [blank, ...result.filters];
-      await processArtifactGroup({ files, filters, output: tmp });
-
-      prev = tmp;
-      continue;
-    }
-
-    const allFiles = [...files, prev];
-    const tmpidx = allFiles.length - 1;
-    const filter = FilterChain.init()
-      .withInput(tmpidx)
-      .vdelay(0)
-      .withOutput("prev");
-    await processArtifactGroup({
-      files: allFiles,
-      filters: [filter, ...result.filters],
+    const filters = [blank, ...result.filters];
+    await processFilters({
+      files,
+      filters,
       output: tmp,
+      key: `${number(groupId) + 1}/${groups.length}`,
     });
+    intermediateArtifacts.push(tmp);
   }
+
+  // join all groups into one video
+  const indices = intermediateArtifacts.map((_, idx) => idx);
+  const concat = FilterChain.init()
+    .concat(intermediateArtifacts.length)
+    .withInput(indices)
+    .withOutput("output");
+
+  await processFilters({
+    files: intermediateArtifacts,
+    filters: [concat],
+    output: asProcessedPath(call),
+    key: `${call}`,
+  });
 }
 
 function calculateRelativeTime(base: number, artifact: ArtifactSlice) {
@@ -678,23 +681,23 @@ export async function joinVideos({
   });
 }
 
-function processArtifactGroup({
+function processFilters({
   files,
   filters,
   output,
+  key,
 }: {
   files: string[];
   filters: FilterChain[];
   output: string;
+  key: string;
 }) {
   return new Promise((resolve, reject) => {
+    const { log } = logger(nameof(processArtifacts), output, key);
     const comand = ffmpeg().withOption("-threads 1");
+    for (const file of files) comand.input(file);
 
-    for (const file of files) {
-      comand.input(file);
-    }
-
-    console.log({
+    log({
       files,
       filters: filters.map((filter) => filter.toString()),
     });
@@ -706,7 +709,7 @@ function processArtifactGroup({
       .on("error", reject)
       .on("progress", function (progress) {
         if (!progress.percent) return;
-        console.log(`Processing ${progress.percent.toFixed(2)} %`);
+        log(`Processing ${progress.percent.toFixed(2)} %`);
       })
       .on("end", () => resolve(output))
       .run();

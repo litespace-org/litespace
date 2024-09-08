@@ -162,27 +162,8 @@ async function main() {
       );
       // process calls sequentially
       for (const call of orderedCalls) {
-        const files = findCallArtifacts(call.id);
-        const artifacts: Artifact[] = await Promise.all(
-          files.map(async (file, idx) => {
-            const info = parseCallRecording(file);
-            const duration = await getCallDuration(file);
-            return {
-              id: idx,
-              start: info.timestamp,
-              duration,
-              screen: info.screen,
-            };
-          })
-        );
-
-        await processArtifacts({
-          artifacts,
-          input: "bg",
-          // anchor: dayjs.utc(call.start).unix(),
-          anchor: 1725701419668 - 1000,
-          files,
-        });
+        const { artifacts, files } = await findCallArtifacts(call.id);
+        await processArtifacts({ artifacts, files, call: call.id });
 
         // const groups = groupArtifacts(
         //   artifacts.map((artifact, idx) => {

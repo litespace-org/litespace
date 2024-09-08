@@ -5,6 +5,7 @@ import { globSync } from "glob";
 import fs from "node:fs/promises";
 import { getVideoDurationInSeconds } from "get-video-duration";
 import { MILLISECONDS_IN_SECOND } from "@/constants/time";
+import { Artifact } from "./ffmpeg";
 
 type RecordingInfo = {
   call: number;
@@ -45,8 +46,23 @@ export function asProcessedPath(call: number) {
   return path.join(serverConfig.assets, `${call}.mp4`);
 }
 
-export function findCallArtifacts(call: number): string[] {
-  return globSync(path.join(serverConfig.assets, `*.${call}.*`));
+export async function findCallArtifacts(
+  call: number
+): Promise<{ files: string[]; artifacts: Artifact[] }> {
+  const files = globSync(path.join(serverConfig.assets, `*.${call}.*`));
+  const artifacts: Artifact[] = await Promise.all(
+    files.map(async (file, idx) => {
+      const info = parseCallRecording(file);
+      const duration = await getCallDuration(file);
+      return {
+        id: idx,
+        start: info.timestamp,
+        duration,
+        screen: info.screen,
+      };
+    })
+  );
+  return { files, artifacts };
 }
 
 export async function getCallDuration(path: string): Promise<number> {

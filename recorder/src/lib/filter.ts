@@ -70,6 +70,11 @@ export class FilterChain {
       .withExpr(setser, "1");
   }
 
+  concat(count: number): FilterChain {
+    const name = "concat";
+    return this.withName(name).withArg(name, "n", count);
+  }
+
   trim(start: number, end: number): FilterChain {
     const name = "trim";
     const pts = "setpts";
