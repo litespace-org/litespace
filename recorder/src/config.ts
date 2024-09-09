@@ -7,5 +7,6 @@ export const mediaConfig = {
 export const serverConfig = {
   origin: ["http://localhost:5173"],
   assets: "assets/",
+  artifacts: "artifacts/",
   port: zod.coerce.number().parse(process.env.PORT),
 } as const;

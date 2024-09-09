@@ -12,11 +12,10 @@ import {
   uniq,
 } from "lodash";
 import { FilterChain } from "@/lib/filter";
-import { mediaConfig, serverConfig } from "@/config";
-import path from "node:path";
+import { mediaConfig } from "@/config";
 import { logger } from "@/lib/log";
-import { asProcessedPath } from "@/lib/call";
-import { spawn, exec } from "node:child_process";
+import { asGroupArtifactPath, asProcessedPath } from "@/lib/call";
+import { exec } from "node:child_process";
 import { MILLISECONDS_IN_SECOND } from "@/constants/time";
 
 export type Artifact = {
@@ -136,6 +135,19 @@ export function selectBestView(artifacts: Artifact[]) {
   if (screenCount(0) && userCount(2)) return View.SplitScreen;
   if (screenCount(0) && userCount(1)) return View.FullScreen;
   return null;
+}
+
+function createVideoTemplate({
+  output,
+  duration,
+}: {
+  output: string;
+  duration: number;
+}) {
+  const { width, height } = mediaConfig.recordingDim;
+  return FilterChain.init()
+    .black({ w: width, h: height }, duration)
+    .withOutput(output);
 }
 
 export function computeGroupFilterGraph({
@@ -346,11 +358,12 @@ export async function processArtifacts({
   const orderedGroups = orderBy(groups, "start", "asc");
   const audioOutput = "audio";
   const videoOutput = "video";
+  const videoInput = "input";
 
   for (const [groupId, group] of entries(orderedGroups)) {
     const result = computeGroupFilterGraph({
       groupId: number(groupId),
-      input: "input",
+      input: videoInput,
       anchor: group.start, // anchor its group to itself
       group,
     });
@@ -358,14 +371,15 @@ export async function processArtifacts({
 
     const output = last(result.filters);
     if (output) output.overrideOutput(videoOutput);
-    const tmp = path.join(serverConfig.assets, `tmp-${call}-${groupId}.mp4`);
 
-    const { width, height } = mediaConfig.recordingDim;
-    const blank = FilterChain.init()
-      .black({ w: width, h: height }, group.end - group.start)
-      .withOutput("input");
+    const tmp = asGroupArtifactPath(call, groupId);
+    const groupDuration = group.end - group.start;
+    const template = createVideoTemplate({
+      output: videoInput,
+      duration: groupDuration,
+    });
 
-    const filters = [blank, ...result.filters];
+    const filters = [template, ...result.filters];
     await processFilters({
       files,
       filters,

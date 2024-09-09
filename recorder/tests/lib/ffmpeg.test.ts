@@ -11,6 +11,7 @@ import {
   selectBestView,
   View,
   synchronizeArtifactsAudio,
+  Artifact,
 } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import { duration } from "@/lib/filter";
@@ -22,10 +23,13 @@ describe("FFmpeg", () => {
   const minute = (minute: number) => start.add(minute, "minutes").valueOf();
 
   describe(nameof(synchronizeArtifactsAudio), () => {
-    const artifact = (id: number, start: number) => ({
+    const artifact = (id: number, start: number): Artifact => ({
       id,
       duration: 0,
       start,
+      audio: false,
+      screen: false,
+      file: "",
     });
 
     it("should output blank audio in case of no artifacts", () => {
@@ -34,10 +38,17 @@ describe("FFmpeg", () => {
         artifacts: [],
         output: "audio",
         template: 1,
+        duration: 0,
       });
 
-      expect(filters).to.be.of.length(1);
-      expect(filters[0].toString()).to.be.eq("[1] amix=inputs=1 [audio]");
+      const [first, second] = filters;
+      expect(filters).to.be.of.length(2);
+      expect(first.toString()).to.be.eq(
+        "[1] atrim=start=0:end=0 [template-output]"
+      );
+      expect(second.toString()).to.be.eq(
+        "[template-output] amix=inputs=1 [audio]"
+      );
     });
 
     it("should output blank audio in case of no artifacts", () => {
@@ -50,18 +61,20 @@ describe("FFmpeg", () => {
         ],
         output: "audio",
         template: 3,
+        duration: 10_000,
       });
 
-      expect(filters).to.be.of.length(4);
-      const [first, second, third, last] = filters;
+      expect(filters).to.be.of.length(5);
+      const [first, second, third, forth, last] = filters;
 
-      expect(first.toString()).to.be.eq("[0] adelay=delays=0:all=1 [0-a]");
-      expect(second.toString()).to.be.eq(
-        "[1] adelay=delays=600000:all=1 [1-a]"
+      expect(first.toString()).to.be.eq(
+        "[3] atrim=start=0:end=10 [template-output]"
       );
-      expect(third.toString()).to.be.eq("[2] adelay=delays=900000:all=1 [2-a]");
+      expect(second.toString()).to.be.eq("[0] adelay=delays=0:all=1 [0-a]");
+      expect(third.toString()).to.be.eq("[1] adelay=delays=600000:all=1 [1-a]");
+      expect(forth.toString()).to.be.eq("[2] adelay=delays=900000:all=1 [2-a]");
       expect(last.toString()).to.be.eq(
-        "[0-a][1-a][2-a][3] amix=inputs=4 [audio]"
+        "[0-a][1-a][2-a][template-output] amix=inputs=4 [audio]"
       );
     });
   });
@@ -298,11 +311,13 @@ describe("FFmpeg", () => {
   });
 
   describe(nameof(selectBestView), () => {
-    const artifact = (id: number, screen: boolean = false) => ({
+    const artifact = (id: number, screen: boolean = false): Artifact => ({
       id,
       duration: 0,
       start: 0,
       screen,
+      audio: false,
+      file: "",
     });
 
     it("should select full screen view incase of only one user", () => {
@@ -355,14 +370,36 @@ describe("FFmpeg", () => {
   });
 
   describe("Uitls", () => {
+    const artifact = (artifact: Partial<Artifact>): Artifact => ({
+      id: 0,
+      audio: false,
+      file: "",
+      start: 0,
+      duration: 0,
+      screen: false,
+      ...artifact,
+    });
+
     it("should find recording breakpoints (1)", () => {
       const t1 = minute(0);
       const t2 = minute(5);
 
       expect(
-        findBreakPoints({ id: 1, start: t1, duration: duration("30min") }, [
-          { id: 2, start: t2, duration: duration("1min"), screen: true },
-        ])
+        findBreakPoints(
+          artifact({
+            id: 1,
+            start: t1,
+            duration: duration("30min"),
+          }),
+          [
+            artifact({
+              id: 2,
+              start: t2,
+              duration: duration("1min"),
+              screen: true,
+            }),
+          ]
+        )
       ).to.be.deep.eq([minute(5), minute(6)]);
     });
 
@@ -372,10 +409,13 @@ describe("FFmpeg", () => {
       const t3 = minute(15);
 
       expect(
-        findBreakPoints({ id: 1, start: t1, duration: duration("30min") }, [
-          { id: 2, start: t2, duration: duration("1min") },
-          { id: 3, start: t3, duration: duration("10min") },
-        ])
+        findBreakPoints(
+          artifact({ id: 1, start: t1, duration: duration("30min") }),
+          [
+            artifact({ id: 2, start: t2, duration: duration("1min") }),
+            artifact({ id: 3, start: t3, duration: duration("10min") }),
+          ]
+        )
       ).to.be.deep.members([minute(5), minute(6), minute(15), minute(25)]);
     });
 
@@ -385,10 +425,13 @@ describe("FFmpeg", () => {
       const t3 = minute(15);
 
       expect(
-        findBreakPoints({ id: 1, start: t1, duration: duration("30min") }, [
-          { id: 2, start: t2, duration: duration("1min") },
-          { id: 3, start: t3, duration: duration("15min") },
-        ])
+        findBreakPoints(
+          artifact({ id: 1, start: t1, duration: duration("30min") }),
+          [
+            artifact({ id: 2, start: t2, duration: duration("1min") }),
+            artifact({ id: 3, start: t3, duration: duration("15min") }),
+          ]
+        )
       ).to.be.deep.eq([minute(5), minute(6), minute(15)]);
     });
 
@@ -397,17 +440,18 @@ describe("FFmpeg", () => {
       const t2 = minute(10);
 
       expect(
-        findBreakPoints({ id: 1, start: t1, duration: duration("5min") }, [
-          { id: 2, start: t2, duration: duration("30min") },
-        ])
+        findBreakPoints(
+          artifact({ id: 1, start: t1, duration: duration("5min") }),
+          [artifact({ id: 2, start: t2, duration: duration("30min") })]
+        )
       ).to.be.deep.eq([]);
     });
 
     it("should find recording breakpoints (5)", () => {
       const t1 = minute(15);
       const t2 = minute(20);
-      const a1 = { id: 2, start: t1, duration: duration("15min") };
-      const a2 = { id: 2, start: t2, duration: duration("10min") };
+      const a1 = artifact({ id: 2, start: t1, duration: duration("15min") });
+      const a2 = artifact({ id: 2, start: t2, duration: duration("10min") });
 
       expect(findBreakPoints(a1, [a2])).to.be.deep.eq([minute(20)]);
       expect(findBreakPoints(a2, [a1])).to.be.deep.eq([]);
@@ -416,12 +460,12 @@ describe("FFmpeg", () => {
     it("should convert breakpoints into artifact slices (1)", () => {
       const t1 = minute(0);
       const t2 = minute(5);
-      const artifact = { id: 1, start: t1, duration: duration("30min") };
-      const breakpoints = findBreakPoints(artifact, [
-        { id: 2, start: t2, duration: duration("1min") },
+      const a = artifact({ id: 1, start: t1, duration: duration("30min") });
+      const breakpoints = findBreakPoints(a, [
+        artifact({ id: 2, start: t2, duration: duration("1min") }),
       ]);
 
-      expect(asArtifactSlices(artifact, breakpoints)).to.be.deep.eq([
+      expect(asArtifactSlices(a, breakpoints)).to.be.deep.eq([
         { start: minute(0), end: minute(5) },
         { start: minute(5), end: minute(6) },
         { start: minute(6), end: minute(30) },
@@ -430,9 +474,9 @@ describe("FFmpeg", () => {
 
     it("should convert breakpoints into artifact slices (2)", () => {
       const t1 = minute(0);
-      const artifact = { id: 1, start: t1, duration: duration("30min") };
+      const a = artifact({ id: 1, start: t1, duration: duration("30min") });
 
-      expect(asArtifactSlices(artifact, [])).to.be.deep.eq([
+      expect(asArtifactSlices(a, [])).to.be.deep.eq([
         { start: minute(0), end: minute(30) },
       ]);
     });
@@ -440,14 +484,14 @@ describe("FFmpeg", () => {
     it("should convert breakpoints into artifact slices (3)", () => {
       const t1 = minute(0);
       const t2 = minute(15);
-      const artifact = { id: 1, start: t1, duration: duration("30min") };
+      const a = artifact({ id: 1, start: t1, duration: duration("30min") });
 
-      const breakpoints = findBreakPoints(artifact, [
-        { id: 1, start: t2, duration: duration("15min") },
+      const breakpoints = findBreakPoints(a, [
+        artifact({ id: 1, start: t2, duration: duration("15min") }),
       ]);
 
       expect(breakpoints).to.be.of.length(1);
-      expect(asArtifactSlices(artifact, breakpoints)).to.be.deep.eq([
+      expect(asArtifactSlices(a, breakpoints)).to.be.deep.eq([
         { start: minute(0), end: minute(15) },
         { start: minute(15), end: minute(30) },
       ]);
@@ -456,8 +500,8 @@ describe("FFmpeg", () => {
     it("should group similar artifact slices (1)", () => {
       const t1 = minute(0);
       const t2 = minute(10);
-      const a1 = { id: 1, start: t1, duration: duration("30min") };
-      const a2 = { id: 2, start: t2, duration: duration("15min") };
+      const a1 = artifact({ id: 1, start: t1, duration: duration("30min") });
+      const a2 = artifact({ id: 2, start: t2, duration: duration("15min") });
       const bp1 = findBreakPoints(a1, [a2]);
       const bp2 = findBreakPoints(a2, [a1]);
       const as1 = asArtifactSlices(a1, bp1);
@@ -481,11 +525,11 @@ describe("FFmpeg", () => {
       const t3 = minute(0);
       const t4 = minute(5);
       const t5 = minute(20);
-      const a1 = { id: 1, start: t1, duration: duration("15min") }; // e.g., user-1 joined for the first 15 mins
-      const a2 = { id: 2, start: t2, duration: duration("14min") }; // e.g., user-1 left and rejoined the last 15 mins
-      const a3 = { id: 3, start: t3, duration: duration("30min") }; // e..g, user-2 joined the full 30 mins
-      const a4 = { id: 4, start: t4, duration: duration("15min") }; // e.g., share screen
-      const a5 = { id: 5, start: t5, duration: duration("10min") }; // e.g., user-1 share screen in the last 10 mins
+      const a1 = artifact({ id: 1, start: t1, duration: duration("15min") }); // e.g., user-1 joined for the first 15 mins
+      const a2 = artifact({ id: 2, start: t2, duration: duration("14min") }); // e.g., user-1 left and rejoined the last 15 mins
+      const a3 = artifact({ id: 3, start: t3, duration: duration("30min") }); // e..g, user-2 joined the full 30 mins
+      const a4 = artifact({ id: 4, start: t4, duration: duration("15min") }); // e.g., share screen
+      const a5 = artifact({ id: 5, start: t5, duration: duration("10min") }); // e.g., user-1 share screen in the last 10 mins
       const bp1 = findBreakPoints(a1, [a2, a3, a4, a5]);
       const bp2 = findBreakPoints(a2, [a1, a3, a4, a5]);
       const bp3 = findBreakPoints(a3, [a1, a2, a4, a5]);
@@ -547,9 +591,9 @@ describe("FFmpeg", () => {
       const t1 = minute(0);
       const t2 = minute(10);
       const t3 = minute(1);
-      const a1 = { id: 1, start: t1, duration: duration("30min") }; // e.g., user-1 joined for the first 15 mins
-      const a2 = { id: 2, start: t2, duration: duration("20min") }; // e.g., user-1 left and rejoined the last 15 mins
-      const a3 = { id: 3, start: t3, duration: duration("28min") }; // e..g, user-2 joined the full 30 mins
+      const a1 = artifact({ id: 1, start: t1, duration: duration("30min") }); // e.g., user-1 joined for the first 15 mins
+      const a2 = artifact({ id: 2, start: t2, duration: duration("20min") }); // e.g., user-1 left and rejoined the last 15 mins
+      const a3 = artifact({ id: 3, start: t3, duration: duration("28min") }); // e..g, user-2 joined the full 30 mins
       const bp1 = findBreakPoints(a1, [a2, a3]);
       const bp2 = findBreakPoints(a2, [a1, a3]);
       const bp3 = findBreakPoints(a3, [a1, a2]);

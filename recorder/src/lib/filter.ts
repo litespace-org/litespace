@@ -133,7 +133,7 @@ export class FilterChain {
   atrim({ start = 0, end }: { start?: number; end?: number }): FilterChain {
     const name = "atrim";
     this.withName(name).withArg(name, "start", seconds(start));
-    if (end) this.withArg(name, "end", seconds(end));
+    if (end !== undefined) this.withArg(name, "end", seconds(end));
     return this;
   }
 

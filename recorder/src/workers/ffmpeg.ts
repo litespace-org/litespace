@@ -1,7 +1,7 @@
 import { sleep } from "@/lib/time";
 import { calls } from "@litespace/models";
 import { ICall } from "@litespace/types";
-import { groupBy, map, orderBy } from "lodash";
+import { groupBy, isEmpty, map, orderBy } from "lodash";
 import { joinVideos, processArtifacts } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import fs from "node:fs";
@@ -140,7 +140,7 @@ async function main() {
       // });
       // console.log(`Marked calls as queued`.green);
 
-      // order calls by start time (older comes first)
+      // order calls by start time (older calls come first)
       const orderedCalls = orderBy(
         recordedCalls,
         (call) => dayjs.utc(call.start).unix(),

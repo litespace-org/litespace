@@ -20,7 +20,7 @@ export function asRecordingPath({
 }: RecordingInfo) {
   const prefix = `${timestamp}.${call}.${user}`;
   const name = screen ? `${prefix}.screen.webm` : `${prefix}.webm`;
-  return path.join(serverConfig.assets, name);
+  return path.join(serverConfig.artifacts, name);
 }
 
 export function parseCallRecording(file: string): RecordingInfo {
@@ -44,10 +44,17 @@ export function asProcessedPath(call: number) {
   return path.join(serverConfig.assets, `${call}.mp4`);
 }
 
+export function asGroupArtifactPath(
+  call: number,
+  group: number | string
+): string {
+  return path.join(serverConfig.artifacts, `tmp-${call}-${group}.mp4`);
+}
+
 export async function findCallArtifacts(
   call: number
 ): Promise<{ files: string[]; artifacts: Artifact[] }> {
-  const files = globSync(path.join(serverConfig.assets, `*.${call}.*`));
+  const files = globSync(path.join(serverConfig.artifacts, `*.${call}.*`));
   const artifacts: Artifact[] = [];
 
   for (const [idx, file] of entries(files)) {
