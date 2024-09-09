@@ -5,6 +5,7 @@ export enum RecordingStatus {
   Recording = "recording",
   Recorded = "recorded",
   Queued = "queued",
+  Empty = "empty",
   Processing = "processing",
   Processed = "processed",
   ProcessingFailed = "processing-failed",

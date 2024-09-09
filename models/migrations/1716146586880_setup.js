@@ -24,6 +24,7 @@ exports.up = (pgm) => {
     "recording",
     "recorded",
     "queued",
+    "empty",
     "processing",
     "processed",
     "processing-failed",

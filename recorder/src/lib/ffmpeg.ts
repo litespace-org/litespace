@@ -17,6 +17,7 @@ import { logger } from "@/lib/log";
 import { asGroupArtifactPath, asProcessedPath } from "@/lib/call";
 import { exec } from "node:child_process";
 import { MILLISECONDS_IN_SECOND } from "@/constants/time";
+import fs from "node:fs/promises";
 
 export type Artifact = {
   id: number;
@@ -420,6 +421,8 @@ export async function processArtifacts({
     audio: audioOutput,
     prefix: call.toString(),
   });
+
+  await deleteArtifacts(intermediateArtifacts.concat(map(artifacts, "file")));
 }
 
 function calculateRelativeTime(base: number, artifact: ArtifactSlice) {
@@ -725,6 +728,14 @@ export function asMultiPersenterView({
     users: { first: firstUser, second: secondUser },
     output: secondUser.output,
   };
+}
+
+export async function deleteArtifacts(files: string[]) {
+  for (const file of files) {
+    logger(nameof(deleteArtifacts)).log(`Deleting ${file}`);
+    await fs.unlink(file);
+    logger(nameof(deleteArtifacts)).success(`${file} Deleted`);
+  }
 }
 
 export async function joinVideos({

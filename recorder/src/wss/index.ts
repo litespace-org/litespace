@@ -55,8 +55,8 @@ class WssHandler {
         console.log(
           `[chunk] Processing: ${location} size: ${chunk.byteLength} bytes`.gray
         );
-        if (!fs.existsSync(serverConfig.assets))
-          fs.mkdirSync(serverConfig.assets);
+        if (!fs.existsSync(serverConfig.artifacts))
+          fs.mkdirSync(serverConfig.artifacts);
 
         fs.appendFileSync(location, chunk);
       });

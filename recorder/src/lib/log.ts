@@ -23,10 +23,13 @@ export function logger(...prefixs: string[]) {
       console.log(message(value).red.bold);
     },
     info: <T extends Loggable>(value: T) => {
-      console.log(message(value).cyan.bold);
+      console.log(message(value).gray.bold);
     },
     warning: <T extends Loggable>(value: T) => {
       console.log(message(value).yellow.bold);
+    },
+    success: <T extends Loggable>(value: T) => {
+      console.log(message(value).green.bold);
     },
   };
 }

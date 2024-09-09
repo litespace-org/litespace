@@ -9,67 +9,11 @@ import { findCallArtifacts } from "@/lib/call";
 import { safe } from "@/lib/error";
 import { performance } from "node:perf_hooks";
 import "colors";
-
-type CallRecordingPaths = {
-  first: string;
-  second: string;
-  output: string;
-};
+import { serverConfig } from "@/config";
+import { logger } from "@/lib/log";
 
 function isValidCallMembers(members: number[]): members is [number, number] {
   return members.length === 2;
-}
-
-function constructCallRecordingPaths(
-  call: number,
-  members: [number, number]
-): CallRecordingPaths {
-  const [firstMember, secondMember] = members;
-  // const first = asRecordingPath(call, firstMember);
-  // const second = asRecordingPath(call, secondMember);
-  // const output = asProcessedPath(call);
-  return { first: "", second: "", output: "" };
-}
-
-async function processCall({
-  first,
-  second,
-  output,
-}: CallRecordingPaths): Promise<Error | number> {
-  return safe(async () => {
-    const firstExists = fs.existsSync(first);
-    const secondExists = fs.existsSync(second);
-
-    if (fs.existsSync(output))
-      throw new Error(`${output} already exist. Call is already processed?!`);
-
-    if (firstExists && !secondExists) {
-      fs.renameSync(first, output);
-      return 0;
-    }
-
-    if (secondExists && !firstExists) {
-      fs.renameSync(second, output);
-      return 0;
-    }
-
-    if (!firstExists && !secondExists)
-      throw new Error(
-        `Neither ${first} or ${second} exist.At least one should exist. Call is not recorded?!`
-      );
-
-    const start = performance.now();
-    await joinVideos({ first, second, output });
-    const end = performance.now();
-    return Math.floor(end - start);
-  });
-}
-
-async function clean(paths: Omit<CallRecordingPaths, "output">) {
-  return safe(async () => {
-    if (fs.existsSync(paths.first)) fs.rmSync(paths.first);
-    if (fs.existsSync(paths.second)) fs.rmSync(paths.second);
-  });
 }
 
 function formatTime(ms: number) {
@@ -82,63 +26,54 @@ function formatTime(ms: number) {
 }
 
 async function main() {
-  let iteration = 0;
-  const withIteration = <T>(message: T) => `[${iteration}] ${message}`;
+  const { log, info, success, error } = logger("ffmpeg");
+
+  if (!fs.existsSync(serverConfig.assets)) fs.mkdirSync(serverConfig.assets);
+  if (!fs.existsSync(serverConfig.artifacts))
+    fs.mkdirSync(serverConfig.artifacts);
 
   while (true) {
     const result = await safe(async () => {
       // get calls with "recording" status and mark them as "recorded" if needed
-      // const recordingCalls = await calls.findCallsByRecordingStatus(
-      //   ICall.RecordingStatus.Recording
-      // );
-
-      // console.log(
-      //   withIteration(`Found ${recordingCalls.length} in recording status`).gray
-      // );
-
-      // if (recordingCalls.length) {
-      //   const ended = recordingCalls.filter((call) =>
-      //     dayjs
-      //       .utc(call.start)
-      //       .add(call.duration, "minutes")
-      //       .isBefore(dayjs.utc(), "minutes")
-      //   );
-
-      //   console.log(
-      //     withIteration(
-      //       `${ended.length} of ${recordingCalls.length} ended. Will be marked as recorded.`
-      //         .gray
-      //     )
-      //   );
-
-      //   await calls.update(map(ended, "id"), {
-      //     recordingStatus: ICall.RecordingStatus.Recorded,
-      //   });
-      // }
-
-      // get all recorded calls
-      const recordedCalls = await calls.findCallsByRecordingStatus(
+      const recordingCalls = await calls.findCallsByRecordingStatus(
         ICall.RecordingStatus.Recording
       );
 
-      if (recordedCalls.length === 0)
-        return console.log(
-          withIteration(`Found no call to be proccessed`).yellow
+      info(`Found ${recordingCalls.length} in recording status`);
+
+      if (!isEmpty(recordingCalls)) {
+        const ended = recordingCalls.filter((call) =>
+          dayjs
+            .utc(call.start)
+            .add(call.duration, "minutes")
+            .isBefore(dayjs.utc(), "minutes")
         );
+
+        info(
+          `${ended.length} of ${recordingCalls.length} ended. Will be marked as recorded.`
+        );
+
+        await calls.update(map(ended, "id"), {
+          recordingStatus: ICall.RecordingStatus.Recorded,
+        });
+      }
+
+      // get all recorded calls
+      const recordedCalls = await calls.findCallsByRecordingStatus(
+        ICall.RecordingStatus.Recorded
+      );
+      if (isEmpty(recordedCalls)) return info(`Found no call to be proccessed`);
+      info(`Found ${recordedCalls.length} calls to be processed`);
 
       const ids = map(recordedCalls, "id");
       const members = await calls.findCallMembers(ids);
       const membersMap = groupBy(members, "callId");
-      console.log(
-        withIteration(`Found ${recordedCalls.length} calls to be processed`)
-          .cyan
-      );
 
       // mark recorded calls as queued
-      // await calls.update(map(recordedCalls, "id"), {
-      //   recordingStatus: ICall.RecordingStatus.Queued,
-      // });
-      // console.log(`Marked calls as queued`.green);
+      await calls.update(map(recordedCalls, "id"), {
+        recordingStatus: ICall.RecordingStatus.Queued,
+      });
+      success(`Marked calls as queued`);
 
       // order calls by start time (older calls come first)
       const orderedCalls = orderBy(
@@ -149,67 +84,50 @@ async function main() {
       // process calls sequentially
       for (const call of orderedCalls) {
         const { artifacts, files } = await findCallArtifacts(call.id);
-        await processArtifacts({ artifacts, files, call: call.id });
+        const empty = isEmpty(artifacts) || isEmpty(files);
 
-        // const groups = groupArtifacts(
-        //   artifacts.map((artifact, idx) => {
-        //     const others = omitByIdex(artifacts, idx);
-        //     const breakpoints = findBreakPoints(artifact, others);
-        //     const slices = asArtifactSlices(artifact, breakpoints);
-        //     return { slices, artifact };
-        //   })
-        // );
+        if (empty) {
+          log(`"${call}" has no artifacts, will be marked as empty`);
+          await calls.update([call.id], {
+            recordingStatus: ICall.RecordingStatus.Empty,
+          });
+          continue; // skip to the next call
+        }
 
-        // console.log({ groups });
+        const callMembers = membersMap[call.id.toString()] || [];
+        const callMembersIds = map(callMembers, "userId");
+        if (!isValidCallMembers(callMembersIds)) continue; // skip calls with members other than two.
 
-        // const callMembers = membersMap[call.id.toString()] || [];
-        // const callMembersIds = map(callMembers, "userId");
-        // if (!isValidCallMembers(callMembersIds)) continue; // skip calls with members other than two.
+        const start = performance.now();
+        const output = await safe(() =>
+          processArtifacts({ artifacts, files, call: call.id })
+        );
+        const end = performance.now();
+        const time = Math.floor(end - start);
+        const formatted = formatTime(time);
 
-        // const paths = constructCallRecordingPaths(call.id, callMembersIds);
-        // const output = await processCall(paths);
-        // const error = output instanceof Error;
+        const errorOutput = result instanceof Error;
 
-        // if (error)
-        //   console.log(
-        //     withIteration(`Failed to process ${call.id}: ${output.message}`).red
-        //   );
-        // else
-        //   console.log(
-        //     withIteration(
-        //       `${call.id} is processed successfully in ${formatTime(output)}`
-        //     ).green
-        //   );
+        if (errorOutput)
+          error(`Failed to process ${call.id}: ${result.message}`);
+        else success(`${call.id} is processed successfully in ${formatted}`);
 
-        // const result = await safe(async () =>
-        //   calls.update([call.id], {
-        //     recordingStatus: error
-        //       ? ICall.RecordingStatus.ProcessingFailed
-        //       : ICall.RecordingStatus.Processed,
-        //     processingTime: error ? undefined : output,
-        //   })
-        // );
+        const updateResult = await safe(async () =>
+          calls.update([call.id], {
+            recordingStatus: errorOutput
+              ? ICall.RecordingStatus.ProcessingFailed
+              : ICall.RecordingStatus.Processed,
+            processingTime: time,
+          })
+        );
 
-        // if (result instanceof Error)
-        //   console.log(withIteration(`Failed to update ${call.id} status`).red);
-
-        // // don't clean in case of processing error
-        // if (output instanceof Error) return;
-
-        // const cleanError = await clean(paths);
-        // if (cleanError instanceof Error)
-        //   console.log(
-        //     withIteration(
-        //       `Failed to clean after processing "${call}": ${cleanError.message}`
-        //     ).red
-        //   );
+        if (updateResult instanceof Error)
+          error(`Failed to update ${call.id} status`);
       }
     });
 
-    if (result instanceof Error)
-      console.log(withIteration(`Iteration error: ${result.message}`).red);
+    if (result instanceof Error) error(`Iteration error: ${result.message}`);
     await sleep(1_000 * 60);
-    iteration++;
   }
 }
 
