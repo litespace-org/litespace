@@ -10,6 +10,7 @@ import {
   asMultiPersenterView,
   selectBestView,
   View,
+  synchronizeArtifactsAudio,
 } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import { duration } from "@/lib/filter";
@@ -19,6 +20,51 @@ import { nameof } from "@/lib/utils";
 describe("FFmpeg", () => {
   const start = dayjs.utc().startOf("hour");
   const minute = (minute: number) => start.add(minute, "minutes").valueOf();
+
+  describe(nameof(synchronizeArtifactsAudio), () => {
+    const artifact = (id: number, start: number) => ({
+      id,
+      duration: 0,
+      start,
+    });
+
+    it("should output blank audio in case of no artifacts", () => {
+      const filters = synchronizeArtifactsAudio({
+        anchor: minute(0),
+        artifacts: [],
+        output: "audio",
+        template: 1,
+      });
+
+      expect(filters).to.be.of.length(1);
+      expect(filters[0].toString()).to.be.eq("[1] amix=inputs=1 [audio]");
+    });
+
+    it("should output blank audio in case of no artifacts", () => {
+      const filters = synchronizeArtifactsAudio({
+        anchor: minute(0),
+        artifacts: [
+          artifact(0, minute(0)),
+          artifact(1, minute(10)),
+          artifact(2, minute(15)),
+        ],
+        output: "audio",
+        template: 3,
+      });
+
+      expect(filters).to.be.of.length(4);
+      const [first, second, third, last] = filters;
+
+      expect(first.toString()).to.be.eq("[0] adelay=delays=0:all=1 [0-a]");
+      expect(second.toString()).to.be.eq(
+        "[1] adelay=delays=600000:all=1 [1-a]"
+      );
+      expect(third.toString()).to.be.eq("[2] adelay=delays=900000:all=1 [2-a]");
+      expect(last.toString()).to.be.eq(
+        "[0-a][1-a][2-a][3] amix=inputs=4 [audio]"
+      );
+    });
+  });
 
   describe(nameof(asFullScreenView), () => {
     it("should construct full screen artifact", () => {

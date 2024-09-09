@@ -6,7 +6,8 @@ import UserMedia from "@/components/Call/UserMedia";
 const MovableMedia: React.FC<{
   container: React.RefObject<HTMLDivElement>;
   stream: MediaStream;
-}> = ({ container, stream }) => {
+  muted?: boolean;
+}> = ({ container, stream, muted }) => {
   return (
     <motion.div
       id={stream.id}
@@ -20,7 +21,7 @@ const MovableMedia: React.FC<{
         "rounded-xl overflow-hidden absolute bottom-10 right-10 z-10 cursor-pointer w-[300px] shadow-lg border-b-0"
       )}
     >
-      <UserMedia stream={stream} />
+      <UserMedia stream={stream} muted={muted} />
     </motion.div>
   );
 };

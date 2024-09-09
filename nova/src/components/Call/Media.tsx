@@ -41,11 +41,11 @@ const Media: React.FC<{
       ref={containerRef}
     >
       {userMediaStream && !remoteMediaStream && !screen ? (
-        <UserMedia stream={userMediaStream} />
+        <UserMedia stream={userMediaStream} muted />
       ) : null}
 
       {userMediaStream && remoteMediaStream && !screen ? (
-        <MovableMedia stream={userMediaStream} container={containerRef} />
+        <MovableMedia stream={userMediaStream} container={containerRef} muted />
       ) : null}
 
       {remoteMediaStream && !screen ? (

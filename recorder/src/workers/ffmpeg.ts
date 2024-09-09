@@ -2,27 +2,13 @@ import { sleep } from "@/lib/time";
 import { calls } from "@litespace/models";
 import { ICall } from "@litespace/types";
 import { groupBy, map, orderBy } from "lodash";
-import {
-  Artifact,
-  asArtifactSlices,
-  findBreakPoints,
-  groupArtifacts,
-  joinVideos,
-  processArtifacts,
-} from "@/lib/ffmpeg";
+import { joinVideos, processArtifacts } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import fs from "node:fs";
-import {
-  asProcessedPath,
-  asRecordingPath,
-  findCallArtifacts,
-  getCallDuration,
-  parseCallRecording,
-} from "@/lib/call";
+import { findCallArtifacts } from "@/lib/call";
 import { safe } from "@/lib/error";
 import { performance } from "node:perf_hooks";
 import "colors";
-import { omitByIdex } from "@/lib/utils";
 
 type CallRecordingPaths = {
   first: string;

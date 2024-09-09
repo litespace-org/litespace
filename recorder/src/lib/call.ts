@@ -2,10 +2,8 @@ import { serverConfig } from "@/config";
 import path from "path";
 import { number } from "@/lib/utils";
 import { globSync } from "glob";
-import fs from "node:fs/promises";
-import { getVideoDurationInSeconds } from "get-video-duration";
-import { MILLISECONDS_IN_SECOND } from "@/constants/time";
-import { Artifact } from "./ffmpeg";
+import { Artifact, getVideoDuration, withAudio } from "@/lib/ffmpeg";
+import { entries } from "lodash";
 
 type RecordingInfo = {
   call: number;
@@ -21,12 +19,12 @@ export function asRecordingPath({
   timestamp,
 }: RecordingInfo) {
   const prefix = `${timestamp}.${call}.${user}`;
-  const name = screen ? `${prefix}.screen.mp4` : `${prefix}.mp4`;
+  const name = screen ? `${prefix}.screen.webm` : `${prefix}.webm`;
   return path.join(serverConfig.assets, name);
 }
 
 export function parseCallRecording(file: string): RecordingInfo {
-  const regex = /(\d+)\.(\d+)\.(\d+)(\.screen)?\.mp4/;
+  const regex = /(\d+)\.(\d+)\.(\d+)(\.screen)?\.webm/;
   const match = file.match(regex);
   if (!match) throw new Error("Invalid file name");
   const timestamp = number(match[1]);
@@ -37,8 +35,8 @@ export function parseCallRecording(file: string): RecordingInfo {
   return {
     call,
     user,
-    timestamp,
     screen,
+    timestamp,
   };
 }
 
@@ -50,22 +48,21 @@ export async function findCallArtifacts(
   call: number
 ): Promise<{ files: string[]; artifacts: Artifact[] }> {
   const files = globSync(path.join(serverConfig.assets, `*.${call}.*`));
-  const artifacts: Artifact[] = await Promise.all(
-    files.map(async (file, idx) => {
-      const info = parseCallRecording(file);
-      const duration = await getCallDuration(file);
-      return {
-        id: idx,
-        start: info.timestamp,
-        duration,
-        screen: info.screen,
-      };
-    })
-  );
-  return { files, artifacts };
-}
+  const artifacts: Artifact[] = [];
 
-export async function getCallDuration(path: string): Promise<number> {
-  const duration = await getVideoDurationInSeconds(path);
-  return duration * MILLISECONDS_IN_SECOND;
+  for (const [idx, file] of entries(files)) {
+    const info = parseCallRecording(file);
+    const duration = await getVideoDuration(file);
+    const audio = await withAudio(file);
+    artifacts.push({
+      id: number(idx),
+      start: info.timestamp,
+      duration,
+      screen: info.screen,
+      file,
+      audio,
+    });
+  }
+
+  return { files, artifacts };
 }

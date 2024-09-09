@@ -2,14 +2,35 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { sockets } from "@/lib/wss";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
+import { fixWebmDuration } from "@fix-webm-duration/fix";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
+
+const chunks: Blob[] = [];
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
 
   const onDataAvailable = useCallback(
-    (call: number, timestamp: number) => (event: BlobEvent) => {
+    (call: number, timestamp: number) => async (event: BlobEvent) => {
+      // if (chunks.length === 5) {
+      //   const blob = new Blob(chunks, {
+      //     // type: `video/mp4; codecs="avc1.4d002a"`,
+      //     type: `video/mp4`,
+      //   });
+      //   const url = URL.createObjectURL(blob);
+      //   const a = document.createElement("a");
+      //   document.body.appendChild(a);
+      //   //@ts-ignore
+      //   a.style = "display: none";
+      //   a.href = url;
+      //   a.download = "test.mp4";
+      //   a.click();
+      //   window.URL.revokeObjectURL(url);
+      // }
+
+      chunks.push(event.data);
+
       if (event.data.size === 0) return;
       console.debug(`Processing chunk (${event.data.size})`);
       sockets.recorder.emit("chunk", {
@@ -25,9 +46,13 @@ export function useCallRecorder(screen: boolean = false) {
   const start = useCallback(
     (stream: MediaStream, call: number) => {
       const recorder = new MediaRecorder(stream, {
-        mimeType: `video/mp4; codecs="avc1.424028, mp4a.40.2"`,
+        // mimeType: `video/mp4; codecs="avc1.424028, mp4a.40.2"`,
+        // mimeType: `video/mp4; codecs="avc1.4d002a"`,
+        // mimeType: `video/webm;codecs=h264,opus`,
+        mimeType: `video/webm`,
       });
       recorder.ondataavailable = onDataAvailable(call, dayjs.utc().valueOf());
+
       recorder.start(2_000);
       setRecorder(recorder);
     },

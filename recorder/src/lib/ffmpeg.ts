@@ -1,4 +1,4 @@
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg, { ffprobe, FfprobeData } from "fluent-ffmpeg";
 import { nameof, number, omitByIdex } from "@/lib/utils";
 import {
   entries,
@@ -6,20 +6,26 @@ import {
   flattenDeep,
   isEmpty,
   last,
+  map,
   orderBy,
+  range,
   uniq,
 } from "lodash";
 import { FilterChain } from "@/lib/filter";
 import { mediaConfig, serverConfig } from "@/config";
 import path from "node:path";
 import { logger } from "@/lib/log";
-import { asProcessedPath } from "./call";
+import { asProcessedPath } from "@/lib/call";
+import { spawn, exec } from "node:child_process";
+import { MILLISECONDS_IN_SECOND } from "@/constants/time";
 
 export type Artifact = {
   id: number;
   start: number;
   duration: number;
   screen?: boolean;
+  file: string;
+  audio: boolean;
 };
 
 export type ArtifactSlice = { start: number; end: number };
@@ -275,6 +281,50 @@ export function computeGroupFilterGraph({
   return null;
 }
 
+export function synchronizeArtifactsAudio({
+  anchor,
+  artifacts,
+  template,
+  output,
+  duration,
+}: {
+  anchor: number;
+  artifacts: Artifact[];
+  template: number;
+  output: string;
+  duration: number;
+}) {
+  const templateOutput = "template-output";
+  const trimAudio = FilterChain.init()
+    .withInput(template)
+    .atrim({ start: 0, end: duration })
+    .withOutput(templateOutput);
+
+  const filters: FilterChain[] = [trimAudio];
+  const outputs: string[] = [];
+
+  for (const artifact of artifacts) {
+    const delay = artifact.start - anchor;
+    const output = `${artifact.id}-a`;
+
+    const filter = FilterChain.init()
+      .withInput(artifact.id)
+      .adelay(delay)
+      .withOutput(`${artifact.id}-a`);
+
+    filters.push(filter);
+    outputs.push(output);
+  }
+
+  const inputs = [...outputs, templateOutput];
+  const filter = FilterChain.init()
+    .withInput(...inputs)
+    .amix(inputs.length)
+    .withOutput(output);
+
+  return [...filters, filter];
+}
+
 export async function processArtifacts({
   artifacts,
   files,
@@ -293,8 +343,11 @@ export async function processArtifacts({
   );
 
   const intermediateArtifacts: string[] = [];
+  const orderedGroups = orderBy(groups, "start", "asc");
+  const audioOutput = "audio";
+  const videoOutput = "video";
 
-  for (const [groupId, group] of entries(orderBy(groups, "start", "asc"))) {
+  for (const [groupId, group] of entries(orderedGroups)) {
     const result = computeGroupFilterGraph({
       groupId: number(groupId),
       input: "input",
@@ -304,7 +357,7 @@ export async function processArtifacts({
     if (result === null) continue; // invalid or unsupported group
 
     const output = last(result.filters);
-    if (output) output.overrideOutput("output");
+    if (output) output.overrideOutput(videoOutput);
     const tmp = path.join(serverConfig.assets, `tmp-${call}-${groupId}.mp4`);
 
     const { width, height } = mediaConfig.recordingDim;
@@ -317,23 +370,41 @@ export async function processArtifacts({
       files,
       filters,
       output: tmp,
-      key: `${number(groupId) + 1}/${groups.length}`,
+      video: videoOutput,
+      prefix: `${number(groupId) + 1}/${groups.length}`,
     });
     intermediateArtifacts.push(tmp);
   }
 
   // join all groups into one video
-  const indices = intermediateArtifacts.map((_, idx) => idx);
+  const sound = "templates/30-minutes-of-silence.mp3";
+  const audioOnly = artifacts.filter((artifact) => artifact.audio);
+  const all = [...map(artifacts, "file"), sound, ...intermediateArtifacts];
+  const anchor = first(orderedGroups)?.start || 0;
+  const lastGroup = last(orderedGroups)?.end || 0;
+  const duration = lastGroup - anchor; // duration in miliseconds
+  const template = files.length;
+  const indices = range(template + 1, all.length);
   const concat = FilterChain.init()
     .concat(intermediateArtifacts.length)
-    .withInput(indices)
-    .withOutput("output");
+    .withInput(...indices)
+    .withOutput(videoOutput);
+
+  const audio = synchronizeArtifactsAudio({
+    output: audioOutput,
+    artifacts: audioOnly,
+    template,
+    duration,
+    anchor,
+  });
 
   await processFilters({
-    files: intermediateArtifacts,
-    filters: [concat],
+    files: all,
+    filters: [concat, ...audio],
     output: asProcessedPath(call),
-    key: `${call}`,
+    video: videoOutput,
+    audio: audioOutput,
+    prefix: call.toString(),
   });
 }
 
@@ -388,7 +459,7 @@ function overlayVideo({
     .withOutput(scaleOutput);
 
   const overlay = FilterChain.init()
-    .withInput([ids.input, scaleOutput])
+    .withInput(ids.input, scaleOutput)
     .overlay()
     .withOutput(overlayOutput);
 
@@ -685,33 +756,75 @@ function processFilters({
   files,
   filters,
   output,
-  key,
+  video,
+  audio,
+  prefix = "",
 }: {
   files: string[];
   filters: FilterChain[];
+  video: string;
+  audio?: string;
   output: string;
-  key: string;
+  prefix?: string;
 }) {
   return new Promise((resolve, reject) => {
-    const { log } = logger(nameof(processArtifacts), output, key);
-    const comand = ffmpeg().withOption("-threads 1");
-    for (const file of files) comand.input(file);
+    const { log } = logger(nameof(processArtifacts), output, prefix);
+    log({ files, filters: filters.map((filter) => filter.toString()) });
 
-    log({
-      files,
-      filters: filters.map((filter) => filter.toString()),
-    });
-
-    comand
+    const comand = ffmpeg()
+      .withOption("-threads 1")
       .complexFilter(filters.map((filter) => filter.toString()))
-      .outputOptions(["-map [output]"])
+      .outputOptions([`-map [${video}]`])
       .output(output)
       .on("error", reject)
       .on("progress", function (progress) {
-        if (!progress.percent) return;
-        log(`Processing ${progress.percent.toFixed(2)} %`);
+        if (progress.percent)
+          return log(`Processing ${progress.percent.toFixed(2)} %`);
+        return log(`Processing: ${progress.timemark}`);
       })
-      .on("end", () => resolve(output))
-      .run();
+      .on("end", () => resolve(output));
+
+    for (const file of files) comand.input(file);
+    if (audio) comand.outputOptions([`-map [${audio}]`]);
+
+    comand.run();
+  });
+}
+
+export async function withAudio(file: string): Promise<boolean> {
+  const metadata = await getMediaMetadata(file);
+  return metadata.streams.some((stream) => stream.codec_type === "audio");
+}
+
+/**
+ * Get video duration in miliseconds
+ */
+export async function getVideoDuration(file: string): Promise<number> {
+  return new Promise((resolve, reject) => {
+    exec(
+      `ffprobe -v 0 -hide_banner -of compact=p=0:nk=1 -show_entries packet=pts_time -read_intervals 99999%+#1000 ${file} | tail -1`,
+      (error, stdout, stderr) => {
+        if (error) return reject(error);
+        if (stderr) return reject(stdout);
+        try {
+          const duration = number(stdout.trim());
+          return resolve(duration * MILLISECONDS_IN_SECOND);
+        } catch (error) {
+          return reject(error);
+        }
+      }
+    );
+  });
+}
+
+function getMediaMetadata(
+  file: string,
+  options: string[] = []
+): Promise<FfprobeData> {
+  return new Promise((resolve, reject) => {
+    ffprobe(file, options, (error: unknown, data: FfprobeData) => {
+      if (error) return reject(error);
+      return resolve(data);
+    });
   });
 }

@@ -28,7 +28,11 @@ const Screen: React.FC<{
       </div>
 
       {one ? (
-        <MovableMedia stream={first(activeStreams)!} container={containerRef} />
+        <MovableMedia
+          stream={first(activeStreams)!}
+          container={containerRef}
+          muted
+        />
       ) : null}
 
       {many ? (

@@ -130,11 +130,16 @@ export class FilterChain {
     return this.withName(name).withArg(name, "inputs", inputs);
   }
 
-  withInput(input: string | number | Array<number | string>): FilterChain {
-    const values = Array.isArray(input)
-      ? input.map(String)
-      : [input.toString()];
-    this.inputs.push(...values);
+  atrim({ start = 0, end }: { start?: number; end?: number }): FilterChain {
+    const name = "atrim";
+    this.withName(name).withArg(name, "start", seconds(start));
+    if (end) this.withArg(name, "end", seconds(end));
+    return this;
+  }
+
+  withInput(...input: Array<number | string>): FilterChain {
+    const inputs = input.map(String);
+    this.inputs.push(...inputs);
     return this;
   }
 
