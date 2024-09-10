@@ -1,30 +1,42 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar } from "@/components/Avatar";
-import text from "@/data/text.json";
+import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import React from "react";
 
-const meta: Meta<typeof Avatar> = {
+type Component = typeof Avatar;
+
+const meta: Meta<Component> = {
   title: "Avatar",
   component: Avatar,
   argTypes: {
     src: { control: "text" },
     alt: { control: "text" },
-    fallback: { control: "text" },
   },
   parameters: {
     layout: "centered",
   },
+  decorators: [
+    (Story: React.FC) =>
+      DarkStoryWrapper(() => (
+        <div className="w-[400px] h-[400px]">
+          <Story />
+        </div>
+      )),
+  ],
 };
 
-export const ImageBased: StoryObj<typeof Avatar> = {
+const url = "https://picsum.photos/1900";
+
+export const Primary: StoryObj<Component> = {
   args: {
-    src: "https://cdn.cloudflare.steamstatic.com/steamcommunity/public/images/avatars/d4/d423168c5c9344a46468f5ef41ac1a2aa923dc08_full.jpg",
+    src: url,
     alt: "My Avtar",
   },
 };
 
-export const TextBased: StoryObj<typeof Avatar> = {
+export const Fallback: StoryObj<Component> = {
   args: {
-    fallback: text["stories.avatar.text"],
+    src: "",
   },
 };
 

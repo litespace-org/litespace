@@ -15,7 +15,7 @@ const meta: Meta<Component> = {
 export const Primary: StoryObj<Component> = {
   args: {
     title: ar["global.notify.schedule.update.success"],
-    description: ar["page.tutor.onboarding.steps.third.description"],
+    children: ar["page.tutor.onboarding.steps.third.description"],
     action: {
       label: ar["page.schedule.list.actions.delete"],
     },
@@ -30,14 +30,14 @@ export const ErrorTitleOnly: StoryObj<Component> = {
 
 export const ErrorDescriptionOnly: StoryObj<Component> = {
   args: {
-    description: ar["page.tutor.onboarding.steps.third.description"],
+    children: ar["page.tutor.onboarding.steps.third.description"],
   },
 };
 
 export const ErrorLoading: StoryObj<Component> = {
   args: {
     title: ar["global.notify.schedule.update.success"],
-    description: ar["page.tutor.onboarding.steps.third.description"],
+    children: ar["page.tutor.onboarding.steps.third.description"],
     action: {
       label: ar["page.schedule.list.actions.delete"],
       loading: true,
@@ -48,7 +48,7 @@ export const ErrorLoading: StoryObj<Component> = {
 export const ErrrorDisalbed: StoryObj<Component> = {
   args: {
     title: ar["global.notify.schedule.update.success"],
-    description: ar["page.tutor.onboarding.steps.third.description"],
+    children: ar["page.tutor.onboarding.steps.third.description"],
     action: {
       label: ar["page.schedule.list.actions.delete"],
       disabled: true,
