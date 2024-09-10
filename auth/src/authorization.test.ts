@@ -44,5 +44,14 @@ describe("Authorization", () => {
         .true;
       expect(checker.check({})).to.be.false;
     });
+
+    it("allow authed users", () => {
+      const checker = authorizer().authenticated();
+      expect(checker.check()).to.be.false;
+      expect(checker.check({ role: IUser.Role.SuperAdmin })).to.be.true;
+      expect(checker.check({ id: 2 })).to.be.true;
+      expect(checker.check({ id: 2, role: IUser.Role.MediaProvider })).to.be
+        .true;
+    });
   });
 });

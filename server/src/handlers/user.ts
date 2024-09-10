@@ -27,6 +27,7 @@ import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { Schedule } from "@litespace/sol";
+import { authorizer } from "@litespace/auth";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -54,9 +55,6 @@ const findAvailableTutorsQuery = zod.object({
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
-  if (!allowed) return next(forbidden());
-
   const { email, password, role } = schema.http.user.create.parse(req.body);
 
   const creatorRole = req.user?.role;
@@ -99,7 +97,7 @@ function update(context: ApiContext) {
 
       const currentUser = req.user;
       const targetUser = await users.findById(id);
-      if (!targetUser) return next(forbidden());
+      if (!targetUser) return next(notfound.user());
 
       const { email, name, password, gender, birthYear, drop, bio, about } =
         updateUserPayload.parse(req.body);
@@ -198,12 +196,6 @@ function update(context: ApiContext) {
       return end();
     }
   );
-}
-
-async function delete_(req: Request, res: Response) {
-  const { id } = schema.http.user.delete.query.parse(req.query);
-  await users.delete(id);
-  res.status(200).send();
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
@@ -397,7 +389,6 @@ async function findAvailableTutors(
 export default {
   create: asyncHandler(create),
   update,
-  delete: asyncHandler(delete_),
   findById: asyncHandler(findById),
   findUsers: asyncHandler(findUsers),
   findMe: asyncHandler(findMe),

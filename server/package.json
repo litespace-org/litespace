@@ -50,6 +50,7 @@
     "@litespace/models": "1.0.0",
     "@litespace/sol": "1.0.0",
     "@litespace/types": "1.0.0",
+    "@litespace/auth": "1.0.0",
     "axios": "^1.6.8",
     "body-parser": "^1.20.2",
     "colors": "^1.4.0",

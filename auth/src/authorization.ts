@@ -9,6 +9,12 @@ export function authenticated(req: Request, res: Response, next: NextFunction) {
 export class Authorizer {
   private roles: IUser.Role[] = [];
   private ids: number[] = [];
+  private isAuthenticated: boolean = false;
+
+  authenticated(): Authorizer {
+    this.isAuthenticated = true;
+    return this;
+  }
 
   role(role: IUser.Role): Authorizer {
     if (this.roles.includes(role)) return this;
@@ -22,6 +28,10 @@ export class Authorizer {
 
   regAdmin(): Authorizer {
     return this.role(IUser.Role.RegularAdmin);
+  }
+
+  admin(): Authorizer {
+    return this.superAdmin().regAdmin();
   }
 
   interviewer(): Authorizer {
@@ -68,7 +78,16 @@ export class Authorizer {
       typeof user.id === "number" &&
       this.ids.includes(user.id);
 
-    return (anyRole && skipOwnership) || allowedRole || checkOwnership;
+    const skipAuth = this.isAuthenticated === false;
+    const checkAuth =
+      this.isAuthenticated === true && !!user && typeof user === "object";
+
+    return (
+      (anyRole && skipOwnership && skipAuth) ||
+      allowedRole ||
+      checkOwnership ||
+      checkAuth
+    );
   }
 }
 
