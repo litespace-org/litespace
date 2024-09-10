@@ -114,6 +114,18 @@ export default {
           200: "hsl(var(--secondary-400))",
           400: "hsl(var(--secondary-200))",
         },
+        "calendar-day-level": {
+          1: "var(--color-calendar-graph-day-L1-bg)",
+          2: "var(--color-calendar-graph-day-L2-bg)",
+          3: "var(--color-calendar-graph-day-L3-bg)",
+          4: "var(--color-calendar-graph-day-L4-bg)",
+        },
+        "calendar-day-border-level": {
+          1: "var(--color-calendar-graph-day-L1-border)",
+          2: "var(--color-calendar-graph-day-L2-border)",
+          3: "var(--color-calendar-graph-day-L3-border)",
+          4: "var(--color-calendar-graph-day-L4-border)",
+        },
       },
     },
   },
