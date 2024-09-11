@@ -1,18 +1,28 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import cn from "classnames";
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
-import { SelectList } from "@/components/Select/types";
+import { SelectList, SelectPlacement } from "@/components/Select/types";
 
 export const Select = <T extends string | number>({
   value,
   placeholder,
   options = [],
+  placement = "bottom",
+  children,
   onChange,
 }: {
   placeholder?: string;
   options?: SelectList<T>;
   value?: T;
   onChange?: (value: T) => void;
+  placement?: SelectPlacement;
+  children?: React.ReactNode;
 }) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<boolean>(false);
@@ -49,39 +59,60 @@ export const Select = <T extends string | number>({
 
   return (
     <div ref={wrapperRef} className="text-foreground relative">
-      <div
-        tabIndex={0}
-        className={cn(
-          "w-full outline-none text-foreground focus:ring-background-control focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control",
-          "border border-control text-sm px-4 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
-          "flex justify-between items-center cursor-pointer"
-        )}
-        onMouseDown={toggle}
-        onFocus={show}
-      >
-        {label ? (
-          <p className="text-foreground">{label}</p>
-        ) : (
-          <p className="text-foreground-muted select-none">{placeholder}</p>
-        )}
-
+      {children ? (
         <div
-          data-open={open}
+          tabIndex={0}
+          onMouseDown={toggle}
+          onFocus={show}
           className={cn(
-            "data-[open=true]:rotate-180 transition-transform duration-300"
+            "cursor-pointer w-full outline-none text-foreground ",
+            "focus:ring-background-control rounded-md focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control"
           )}
         >
-          <ChevronDownIcon />
+          {children}
         </div>
-      </div>
+      ) : (
+        <div
+          tabIndex={0}
+          className={cn(
+            "w-full outline-none text-foreground focus:ring-background-control focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control",
+            "border border-control text-sm px-4 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
+            "flex justify-between items-center cursor-pointer"
+          )}
+          onMouseDown={toggle}
+          onFocus={show}
+        >
+          {label ? (
+            <p className="text-foreground">{label}</p>
+          ) : (
+            <p className="text-foreground-muted select-none">{placeholder}</p>
+          )}
+
+          <div
+            data-open={open}
+            className={cn(
+              "data-[open=true]:rotate-180 transition-transform duration-300"
+            )}
+          >
+            <ChevronDownIcon />
+          </div>
+        </div>
+      )}
 
       <ul
         data-open={open}
         className={cn(
           "bg-background-overlay border border-overlay rounded-md z-[1]",
           "flex flex-col gap-2 shadow-2xl w-full",
-          "absolute whitespace-nowrap top-[calc(100%+5px)] left-1/2 -translate-x-1/2 overflow-hidden px-1 py-2",
-          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+10px)] invisible data-[open=true]:visible"
+          "absolute whitespace-nowrap overflow-hidden px-1 py-2",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300  invisible data-[open=true]:visible",
+          "min-w-[100px]",
+          {
+            "bottom-[calc(100%+5px)] left-1/2 -translate-x-1/2 data-[open=true]:bottom-[calc(100%+10px)]":
+              placement === "top",
+            "top-[calc(100%+5px)] left-1/2 -translate-x-1/2 data-[open=true]:top-[calc(100%+10px)]":
+              placement === "bottom",
+          }
         )}
       >
         {options.map((option) => (
