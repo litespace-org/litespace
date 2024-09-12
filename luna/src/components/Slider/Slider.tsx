@@ -1,5 +1,4 @@
-import React, { useCallback } from "react";
-import { Root, Track, Range, Thumb } from "@radix-ui/react-slider";
+import React, { useCallback, useEffect, useRef } from "react";
 import cn from "classnames";
 
 export const Slider: React.FC<{
@@ -8,50 +7,55 @@ export const Slider: React.FC<{
   step?: number;
   value?: number;
   disabled?: boolean;
-  onChange?: (value: number) => void;
-  onFocus?: () => void;
-  onBlur?: () => void;
+  name?: string;
+  id?: string;
+  onValueChange?: (value: number) => void;
 }> = ({
   min = 0,
   max = 0,
   step = 0,
   value,
+  name,
+  id,
   disabled,
-  onChange,
-  onFocus,
-  onBlur,
+  onValueChange,
 }) => {
-  const onValueChange = useCallback(
-    (values: number[]) => {
-      const [value] = values;
-      if (!value || !onChange) return;
-      onChange(value);
+  const ref = useRef<HTMLInputElement>(null);
+
+  const onChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const value = Number(event.target.value);
+      if (Number.isNaN(value) || !onValueChange) return;
+      onValueChange(value);
     },
-    [onChange]
+    [onValueChange]
   );
 
+  useEffect(() => {
+    if (!ref.current) return;
+    const currentValue = value || 0;
+    const progress = (currentValue / max) * 100;
+    ref.current.style.background = `linear-gradient(to right, #ffffff99 ${progress}%, #ffffff20 ${progress}%)`;
+  }, [max, min, value]);
+
   return (
-    <Root
-      className="relative flex items-center select-none touch-none h-5"
-      max={max}
+    <input
+      dir="ltr"
+      ref={ref}
       min={min}
+      max={max}
       step={step}
+      onChange={onChange}
+      value={value}
+      className={cn(
+        "focus:outline-none",
+        "w-full appearance-none h-1 bg-white/30",
+        "disabled:opacity-50"
+      )}
       disabled={disabled}
-      value={[value || 0]}
-      onValueChange={onValueChange}
-      onFocus={onFocus}
-      onBlur={onBlur}
-    >
-      <Track className="bg-gray-200 relative grow rounded-full h-[4px] cursor-pointer">
-        <Range className="absolute bg-brand-400 dark:bg-brand-500 hover:bg-brand/80 dark:hover:bg-brand/50 rounded-full h-full" />
-      </Track>
-      <Thumb
-        className={cn(
-          "block w-3 h-3 bg-brand-400 dark:bg-brand-500 shadow-lg rounded-full focus:outline-none",
-          "border border-brand-500/75 dark:border-brand/30 hover:border-brand-600 dark:hover-border-brand cursor-pointer",
-          "focus:outline-brand-600"
-        )}
-      />
-    </Root>
+      type="range"
+      name={name}
+      id={id}
+    />
   );
 };

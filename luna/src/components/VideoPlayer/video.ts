@@ -63,7 +63,7 @@ function reducer(state: State, action: Action): State {
     return mutate({ muted: action.muted });
 
   if (action.type === ActionType.SetCurrentTime)
-    return mutate({ currentTime: action.time });
+    return mutate({ currentTime: action.time, readyState: 0 });
 
   if (action.type === ActionType.SetVolume)
     return mutate({ volume: action.volume, muted: action.volume <= 0.01 });
@@ -130,7 +130,14 @@ export function useVideo() {
   const setPlaybackRate = useCallback((rate: number) => {
     if (!ref.current) return;
     ref.current.playbackRate = rate;
+    ref.current.preservesPitch = true;
     dispatch({ type: ActionType.SetPlaybackRate, rate });
+  }, []);
+
+  const setCurrentTime = useCallback((time: number) => {
+    if (!ref.current) return;
+    ref.current.currentTime = time;
+    dispatch({ type: ActionType.SetCurrentTime, time });
   }, []);
 
   const onCanPlay = useCallback(
@@ -141,6 +148,11 @@ export function useVideo() {
     },
     [asSnapshot]
   );
+
+  const toggleSize = useCallback(() => {
+    if (!ref.current) return;
+    ref.current.requestFullscreen();
+  }, []);
 
   const onError = useCallback(() => {
     setStatus(Status.Error);
@@ -156,6 +168,8 @@ export function useVideo() {
     onCanPlay,
     onError,
     setPlaybackRate,
+    setCurrentTime,
+    toggleSize,
     status,
     ...state,
   };

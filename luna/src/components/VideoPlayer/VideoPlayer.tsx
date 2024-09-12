@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import cn from "classnames";
 import Spinner from "@/icons/Spinner";
-import { AlertCircle, Pause, Play } from "react-feather";
+import { AlertCircle, Pause, Play, Maximize } from "react-feather";
 import SoundController from "@/components/VideoPlayer/SoundController";
 import Time from "@/components/VideoPlayer/Time";
 import Speed from "@/components/VideoPlayer/Speed";
 import { useVideo } from "@/components/VideoPlayer/video";
+import Progress from "@/components/VideoPlayer/Progress";
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const {
@@ -16,6 +17,8 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     onCanPlay,
     onError,
     setPlaybackRate,
+    setCurrentTime,
+    toggleSize,
     ref,
     paused,
     volume,
@@ -24,25 +27,17 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     duration,
     status,
     playbackRate,
+    readyState,
   } = useVideo();
 
-  const keypress = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.code === "Space") return togglePlay();
-      if (event.key === "s") return toggleSound();
-    },
-    [togglePlay, toggleSound]
-  );
-
-  useEffect(() => {
-    document.addEventListener("keypress", keypress);
-    return () => {
-      document.removeEventListener("keypress", keypress);
-    };
-  }, [keypress]);
-
   return (
-    <div className="relative w-full h-full flex-1 bg-surface-200 rounded-md _disable_overflow-hidden">
+    <div className="relative w-full h-full flex-1 bg-surface-200 rounded-md overflow-hidden">
+      <span
+        data-loading={readyState <= 1}
+        className="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 text-white data-[loading=true]:block"
+      >
+        <Spinner />
+      </span>
       <div
         data-status={status}
         className={cn(
@@ -50,6 +45,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
         )}
       >
         <video
+          data-ready={readyState >= 2}
           src={src}
           playsInline
           onCanPlay={onCanPlay}
@@ -57,30 +53,46 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
           onTimeUpdate={onTimeUpdate}
           ref={ref}
           onClick={togglePlay}
-          className="cursor-pointer"
+          className="data-[ready=true]:cursor-pointer"
         />
-        <div className="flex flex-row-reverse items-center justify-between gap-4 absolute bottom-0 left-0 w-full h-12 text-white px-4">
-          <div className="flex flex-row-reverse gap-2">
-            <button
-              className={cn(
-                "flex items-center justify-center h-[30px] w-[30px] focus:outline-none",
-                "focus:ring-background-control rounded-md focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control"
-              )}
-              onClick={togglePlay}
-            >
-              {paused ? <Play /> : <Pause />}
-            </button>
-            <SoundController
-              toggle={toggleSound}
-              setVolume={setVolume}
-              volume={volume}
-              muted={muted}
-            />
-          </div>
+        <div className="flex flex-col gap-2 absolute bottom-0 left-0 w-full pb-2">
+          <Progress
+            set={setCurrentTime}
+            current={currentTime}
+            duration={duration}
+          />
+          <div className="flex flex-row-reverse items-center justify-between gap-4 text-white px-4">
+            <div className="flex flex-row-reverse gap-2">
+              <button
+                className={cn(
+                  "flex items-center justify-center h-[30px] w-[30px] focus:outline-none",
+                  "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+                )}
+                onClick={togglePlay}
+              >
+                {paused ? <Play /> : <Pause />}
+              </button>
 
-          <div className="flex items-center justify-center flex-row-reverse gap-4">
-            <Time total={duration} current={currentTime} />
-            <Speed set={setPlaybackRate} rate={playbackRate} />
+              <SoundController
+                toggle={toggleSound}
+                setVolume={setVolume}
+                volume={volume}
+                muted={muted}
+              />
+            </div>
+
+            <div className="flex items-center justify-center flex-row-reverse gap-4">
+              <Time total={duration} current={currentTime} />
+              <Speed set={setPlaybackRate} rate={playbackRate} />
+              <button
+                onClick={toggleSize}
+                className={cn(
+                  "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+                )}
+              >
+                <Maximize />
+              </button>
+            </div>
           </div>
         </div>
       </div>

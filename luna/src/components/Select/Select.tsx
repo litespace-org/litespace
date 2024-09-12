@@ -66,7 +66,7 @@ export const Select = <T extends string | number>({
           onFocus={show}
           className={cn(
             "cursor-pointer w-full outline-none text-foreground ",
-            "focus:ring-background-control rounded-md focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+            "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
           )}
         >
           {children}

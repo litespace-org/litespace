@@ -32,7 +32,7 @@ const Time: React.FC<{ current?: number; total?: number }> = ({
   const duration = useMemo(() => (total ? format(total) : null), [total]);
 
   return (
-    <div>
+    <div dir="ltr">
       {duration ? format(current || 0, duration.length).text : "-"} &#47;
       {duration ? duration.text : "-"}
     </div>

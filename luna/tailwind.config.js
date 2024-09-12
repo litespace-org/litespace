@@ -1,3 +1,5 @@
+import plugin from "tailwindcss/plugin";
+
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
@@ -131,11 +133,9 @@ export default {
   },
   plugins: [
     require("tailwind-scrollbar"),
-    require("@vidstack/react/tailwind.cjs")({
-      // Optimize output by specifying player selector.
-      selector: ".media-player",
-      // Change the media variants prefix.
-      prefix: "media",
+    plugin(({ addVariant }) => {
+      addVariant("webkit-slider-thumb", "&::-webkit-slider-thumb");
+      addVariant("moz-slider-thumb", "&::-moz-range-thumb");
     }),
   ],
 };
