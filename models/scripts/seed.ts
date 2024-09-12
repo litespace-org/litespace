@@ -12,13 +12,15 @@ import {
   reportReplies,
   messages,
   rooms,
+  lessons,
 } from "@/index";
-import { ICall, IUser } from "@litespace/types";
+import { ICall, ILesson, IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
-import { first, range, sample } from "lodash";
+import { first, map, random, range, sample } from "lodash";
 import crypto from "node:crypto";
+import { Knex } from "knex";
 
 export function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -205,6 +207,36 @@ async function main(): Promise<void> {
       tx
     );
   });
+
+  for (const tutorId of map(addedTutors, "id")) {
+    await knex.transaction(async (tx: Knex.Transaction) => {
+      const { call } = await calls.create(
+        {
+          duration: sample([ILesson.Duration.Short, ILesson.Duration.Long])!,
+          hostId: tutorId,
+          memberIds: [student.id],
+          ruleId: 1, // todo: pick valid rule id
+          start: dayjs
+            .utc()
+            .subtract(sample(range(1, 100))!, "days")
+            .set("hours", sample(range(0, 24))!)
+            .set("minutes", sample(range(0, 60))!)
+            .startOf("minutes")
+            .toISOString(),
+        },
+        tx
+      );
+
+      const lesson = await lessons.create(
+        {
+          callId: call.id,
+          hostId: tutorId,
+          members: [student.id],
+        },
+        tx
+      );
+    });
+  }
 
   const plan = await plans.create({
     alias: "Basic",

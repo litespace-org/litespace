@@ -19,6 +19,7 @@ import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
 import EditSchedule from "@/pages/EditSchedule";
+import Lessons from "@/pages/Lessons";
 import { findUserRules } from "@/redux/user/schedule";
 import Tutors from "@/pages/Tutors";
 
@@ -39,6 +40,7 @@ const router = createBrowserRouter([
       { path: Route.Settings, element: <Settings /> },
       { path: Route.Payments, element: <Payments /> },
       { path: Route.Tutors, element: <Tutors /> },
+      { path: Route.Lessons, element: <Lessons /> },
     ],
     errorElement: <ErrorPage />,
   },

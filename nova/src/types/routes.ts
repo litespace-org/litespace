@@ -17,6 +17,7 @@ export enum Route {
   TutorProfile = "/tutor/:id",
   TutorOnboarding = "/tutor/onboarding",
   Complete = "/complete",
+  Lessons = "/lessons",
 }
 
 export enum RoutePatterns {

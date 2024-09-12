@@ -27,7 +27,6 @@ import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { Schedule } from "@litespace/sol";
-import { authorizer } from "@litespace/auth";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -215,10 +214,7 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
   const allowed = enforceRequest(req);
   if (!allowed) return next(forbidden());
 
-  const filter = httpQueryFilter<keyof IUser.Row>(
-    users.columns.filterable,
-    req.query
-  );
+  const filter = httpQueryFilter(users.columns.filterable, req.query);
 
   const [list, total] = await Promise.all([
     users.find(filter),

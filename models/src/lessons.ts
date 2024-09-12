@@ -1,9 +1,10 @@
-import { ILesson } from "@litespace/types";
-import knex, { Knex } from "knex";
+import { IFilter, ILesson } from "@litespace/types";
+import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
 import { users } from "@/users";
-import { aggArrayOrder, column } from "@/query";
+import { aggArrayOrder, knex, column, withPagination } from "@/query";
+import { calls } from "@/calls";
 
 export class Lessons {
   table = {
@@ -27,6 +28,10 @@ export class Lessons {
       created_at: this.columns.lessons("created_at"),
       updated_at: this.columns.lessons("updated_at"),
     },
+  } as const;
+
+  filter = {
+    lesson: Object.values(this.rows.lesson),
   } as const;
 
   async create(
@@ -132,16 +137,27 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findMemberLessons(members: number[], tx?: Knex.Transaction) {
-    const rows = await this.builder(tx)
+  async findMemberLessons(
+    members: number[],
+    pagination?: IFilter.Pagination,
+    tx?: Knex.Transaction
+  ): Promise<ILesson.Self[]> {
+    const builder = this.builder(tx)
       .members.join(
         this.table.lessons,
         this.columns.lessons("id"),
         this.columns.members("lesson_id")
       )
+      .join(
+        calls.tables.calls,
+        calls.columns.calls("id"),
+        this.columns.lessons("call_id")
+      )
       .select<ILesson.Row[]>(this.rows.lesson)
+      .orderBy(calls.columns.calls("start"), "desc")
       .whereIn(this.columns.members("user_id"), members);
 
+    const rows = await withPagination(builder, pagination).then();
     return rows.map((row) => this.from(row));
   }
 

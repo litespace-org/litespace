@@ -110,6 +110,11 @@ export class Calls {
     return this.from(row);
   }
 
+  async findByIds(ids: number[], tx?: Knex.Transaction): Promise<ICall.Self[]> {
+    const rows = await this.builder(tx).calls.select("*").whereIn("id", ids);
+    return rows.map((row) => this.from(row));
+  }
+
   async findCallMembers(
     callIds: number[],
     tx?: Knex.Transaction

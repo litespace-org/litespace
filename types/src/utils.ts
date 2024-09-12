@@ -10,6 +10,9 @@ export type PagniationParams = { page?: number; size?: number };
 
 export type StringLiteral<T> = T extends `${string & T}` ? T : never;
 
+export type Element<ArrayType extends readonly unknown[]> =
+  ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+
 export type Event = {
   /**
    * UTC based start time

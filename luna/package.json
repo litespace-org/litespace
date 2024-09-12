@@ -88,7 +88,9 @@
   "dependencies": {
     "@litespace/sol": "1.0.0",
     "@radix-ui/colors": "^3.0.0",
+    "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-icons": "^1.3.0",
+    "@radix-ui/react-switch": "^1.1.0",
     "@vidstack/react": "^1.12.9",
     "classnames": "^2.5.1",
     "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",

@@ -12,6 +12,8 @@ export type Self = {
   direction?: OrderDirection[];
 };
 
+export type Pagination = { page?: number; size?: number };
+
 export enum Match {
   Exact = "exact",
   Suffix = "suffix",

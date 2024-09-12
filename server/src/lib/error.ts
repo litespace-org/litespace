@@ -93,6 +93,8 @@ export const alreadyRated = () => new ResponseError(errors.alreadyRated, 400);
 export const alreadySubscribed = () =>
   new ResponseError(errors.alreadySubscribed, 400);
 
+export const unexpected = () => new ResponseError(errors.unexpected, 500);
+
 export const notfound = {
   base: () => new ResponseError(errors.notfound.base, 404),
   user: () => new ResponseError(errors.notfound.user, 404),

@@ -1,7 +1,7 @@
 import { Base } from "@/base";
 import { asFullUrl } from "@/utils";
 import { Backend, IUser } from "@litespace/types";
-import { backendApiUrls } from "@/client";
+import { backends } from "@/client";
 
 type AuthorizationUrls = {
   google: string;
@@ -15,7 +15,7 @@ export class Auth extends Base {
   constructor(backend: Backend) {
     super(backend);
 
-    const api = backendApiUrls[backend];
+    const api = backends.main[backend];
     this.authorization = {
       google: asFullUrl(api, "/api/v1/auth/google"),
       facebook: asFullUrl(api, "/api/v1/auth/facebook"),

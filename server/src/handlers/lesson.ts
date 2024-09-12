@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import zod from "zod";
-import { datetime, duration, id, withNamedId } from "@/validation/utils";
-import { forbidden, notfound } from "@/lib/error";
+import {
+  datetime,
+  duration,
+  id,
+  pagination,
+  withNamedId,
+} from "@/validation/utils";
+import { forbidden, notfound, unexpected } from "@/lib/error";
 import { ILesson, IRule, IUser } from "@litespace/types";
-import { calls, lessons, rules, users, knex } from "@litespace/models";
+import { calls, lessons, rules, users, knex, count } from "@litespace/models";
 import { Knex } from "knex";
 import asyncHandler from "express-async-handler";
 import { ApiContext } from "@/types/api";
@@ -11,6 +17,7 @@ import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
 import { Schedule, unpackRules } from "@litespace/sol";
 import { map } from "lodash";
+import { authorizer } from "@litespace/auth";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -97,6 +104,38 @@ function create(context: ApiContext) {
   );
 }
 
+async function findUserLessons(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { id } = withNamedId("id").parse(req.params);
+  const allowed = authorizer().admin().owner(id).check(req.user);
+  if (!allowed) return next(forbidden());
+
+  const query = pagination.parse(req.query);
+  const total = await count(lessons.table.lessons);
+  const userLessons = await lessons.findMemberLessons([id], query);
+  const lessonMembers = await lessons.findLessonMembers(map(userLessons, "id"));
+  const lessonCalls = await calls.findByIds(map(userLessons, "callId"));
+
+  const result: ILesson.FindUserLessonsApiResponse = {
+    list: userLessons.map((lesson) => {
+      const members = lessonMembers.filter(
+        (member) => member.lessonId === lesson.id
+      );
+
+      const call = lessonCalls.find((call) => call.id === lesson.callId);
+      if (!call) throw unexpected();
+
+      return { lesson, members, call };
+    }),
+    total,
+  };
+
+  res.status(200).json(result);
+}
+
 function cancel(context: ApiContext) {
   return asyncHandler(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -151,4 +190,8 @@ function cancel(context: ApiContext) {
   );
 }
 
-export default { create, cancel };
+export default {
+  create,
+  cancel,
+  findUserLessons: asyncHandler(findUserLessons),
+};

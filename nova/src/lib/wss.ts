@@ -2,7 +2,7 @@ import { sockets as urls } from "@litespace/atlas";
 import { io } from "socket.io-client";
 import { backend } from "@/lib/atlas";
 
-const server = io(urls.backend[backend], {
+const server = io(urls.main[backend], {
   autoConnect: true,
   withCredentials: true,
 });

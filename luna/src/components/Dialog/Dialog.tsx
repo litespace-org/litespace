@@ -6,11 +6,10 @@ import cn from "classnames";
 export const Dialog: React.FC<{
   children?: React.ReactNode;
   title: React.ReactElement | string;
-  trigger?: React.ReactElement;
   open?: boolean;
   close?: () => void;
   className?: string;
-}> = ({ trigger, title, children, open, className, close }) => {
+}> = ({ title, children, open, className, close }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -30,14 +29,13 @@ export const Dialog: React.FC<{
 
   return (
     <>
-      {trigger ? <div>{trigger}</div> : null}
       <dialog
         open={open}
         ref={dialogRef}
         onClick={onClose}
         className={cn(
-          "fixed inset-0 w-screen h-screen flex items-center justify-center ",
-          "bg-transparent backdrop-blur-sm shadow-lg"
+          "fixed inset-0 w-screen h-screen flex items-center justify-center",
+          "bg-transparent backdrop-blur-sm shadow-lg p-6"
         )}
       >
         <div
@@ -57,7 +55,7 @@ export const Dialog: React.FC<{
                 type={ButtonType.Text}
                 className="w-[25px] h-[25px] flex items-center justify-center !p-1"
               >
-                <X className="w-[20px] h-[20px]" />
+                <X className="w-[20px] h-[20px] text-foreground" />
               </Button>
             </div>
           </div>

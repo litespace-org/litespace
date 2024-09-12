@@ -281,8 +281,10 @@ const assets = {
   },
 } as const;
 
-export function httpQueryFilter<T extends keyof Record<string, unknown>>(
-  fields: [T, ...T[]],
+export type FilterFields = [string, ...string[]];
+
+export function httpQueryFilter(
+  fields: FilterFields,
   value: unknown
 ): IFilter.Self {
   return zod

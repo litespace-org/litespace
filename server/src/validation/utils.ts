@@ -98,3 +98,8 @@ export function withNamedId<T>(key: StringLiteral<T>) {
     [P in StringLiteral<T>]: Zod.ZodNumber;
   }>;
 }
+
+export const pagination = zod.object({
+  page: zod.optional(zod.coerce.number().positive().min(1).int()).default(1),
+  size: zod.optional(zod.coerce.number().positive().min(1).int()).default(10),
+});

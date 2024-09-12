@@ -55,11 +55,11 @@ export function withFilter<T extends Knex.QueryBuilder>({
     };
   };
 }): T {
-  if (filter?.page) {
-    const limit = filter?.size || defaults?.limit || 10;
-    const offset = limit * (filter.page - 1);
-    builder.offset(offset).limit(limit);
-  }
+  // pagination
+  const page = filter?.page || 1;
+  const limit = filter?.size || defaults?.limit || 10;
+  const offset = limit * (page - 1);
+  builder.offset(offset).limit(limit);
 
   if (filter?.order) {
     const defs = filter.order?.map((column, index) => {
@@ -91,6 +91,17 @@ export function withFilter<T extends Knex.QueryBuilder>({
     }
   }
 
+  return builder;
+}
+
+export function withPagination<T extends Knex.QueryBuilder>(
+  builder: T,
+  pagination: IFilter.Pagination = {}
+): T {
+  const page = pagination.page || 1;
+  const size = pagination.size || 10;
+  const offset = size * (page - 1);
+  builder.offset(offset).limit(size);
   return builder;
 }
 

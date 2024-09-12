@@ -1,4 +1,4 @@
-import { ICall, IUser } from "@/index";
+import { ICall, IUser, Paginated } from "@/index";
 
 export type Row = {
   id: number;
@@ -65,6 +65,12 @@ export type CreateApiPayload = {
   start: string;
   duration: Duration;
 };
+
+export type FindUserLessonsApiResponse = Paginated<{
+  lesson: Self;
+  members: PopuldatedMember[];
+  call: ICall.Self;
+}>;
 
 export type CreateApiResponse = {
   lesson: Self;
