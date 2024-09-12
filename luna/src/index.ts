@@ -17,6 +17,7 @@ export { Dialog } from "@/components/Dialog";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { VideoPlayer } from "@/components/VideoPlayer";
+export { Timeline, type TimelineItem } from "@/components/Timeline";
 export { Alert } from "@/components/Alert";
 export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";

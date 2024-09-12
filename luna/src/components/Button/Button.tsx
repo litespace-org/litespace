@@ -34,7 +34,7 @@ export const Button: React.FC<{
         "relative font-cairo cursor-pointer font-medium ",
         "text-center font-normal transition-all ease-out duration-200 rounded-md",
         "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
-        "w-full flex items-center justify-center text-base",
+        "w-fit flex items-center justify-center text-base",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         "flex items-center",
         {
