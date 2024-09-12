@@ -102,7 +102,7 @@ export const Select = <T extends string | number>({
       <ul
         data-open={open}
         className={cn(
-          "bg-background-overlay border border-overlay rounded-md z-[1]",
+          "bg-background-overlay border border-control rounded-md z-[1]",
           "flex flex-col gap-2 shadow-2xl w-full",
           "absolute whitespace-nowrap overflow-hidden px-1 py-2",
           "opacity-0 data-[open=true]:opacity-100 transition-all duration-300  invisible data-[open=true]:visible",
