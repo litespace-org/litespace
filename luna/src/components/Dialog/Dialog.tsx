@@ -10,12 +10,10 @@ export const Dialog: React.FC<{
   close?: () => void;
   className?: string;
 }> = ({ title, children, open, className, close }) => {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
 
   const onClose = useCallback(
     (e: React.SyntheticEvent<HTMLDialogElement>) => {
-      if (!contentRef.current) return;
       if (
         close &&
         contentRef.current &&
@@ -28,20 +26,20 @@ export const Dialog: React.FC<{
   );
 
   return (
-    <>
-      <dialog
-        open={open}
-        ref={dialogRef}
-        onClick={onClose}
-        className={cn(
-          "fixed inset-0 w-screen h-screen flex items-center justify-center",
-          "bg-transparent backdrop-blur-sm shadow-lg p-6"
-        )}
-      >
+    <dialog
+      open={open}
+      onClick={onClose}
+      className={cn(
+        "fixed inset-0 w-screen h-screen flex items-center justify-center",
+        "bg-transparent backdrop-blur-sm shadow-lg p-6 hidden open:block z-[999]"
+      )}
+    >
+      <div className="relative h-full w-full">
         <div
           ref={contentRef}
           className={cn(
-            "bg-background-dialog border border-border-strong rounded-md px-5 py-4 min-w-[500px] shadow-lg",
+            "bg-background-dialog border border-border-strong rounded-md px-5 py-4 shadow-lg",
+            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
             className
           )}
         >
@@ -61,7 +59,7 @@ export const Dialog: React.FC<{
           </div>
           <div>{children}</div>
         </div>
-      </dialog>
-    </>
+      </div>
+    </dialog>
   );
 };
