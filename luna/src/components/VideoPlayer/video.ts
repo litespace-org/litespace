@@ -1,6 +1,7 @@
 import { clone, merge } from "lodash";
 import React, {
   useCallback,
+  useEffect,
   useMemo,
   useReducer,
   useRef,
@@ -21,6 +22,7 @@ type State = {
   volume: number;
   duration: number;
   playbackRate: number;
+  fullscreen: boolean;
   readyState: number;
 };
 
@@ -33,6 +35,7 @@ const initial: State = {
   duration: 0,
   playbackRate: 1,
   readyState: 0,
+  fullscreen: false,
 };
 
 enum ActionType {
@@ -42,6 +45,7 @@ enum ActionType {
   SetVolume,
   Snapshot,
   SetPlaybackRate,
+  SetFullScreen,
 }
 
 type Action =
@@ -50,7 +54,8 @@ type Action =
   | { type: ActionType.SetCurrentTime; time: number }
   | { type: ActionType.SetVolume; volume: number }
   | { type: ActionType.SetPlaybackRate; rate: number }
-  | { type: ActionType.Snapshot; snapshot: State };
+  | { type: ActionType.Snapshot; snapshot: State }
+  | { type: ActionType.SetFullScreen; fullscreen: boolean };
 
 function reducer(state: State, action: Action): State {
   const mutate = (incoming: Partial<State>): State =>
@@ -71,14 +76,20 @@ function reducer(state: State, action: Action): State {
   if (action.type === ActionType.SetPlaybackRate)
     return mutate({ playbackRate: action.rate });
 
+  if (action.type === ActionType.SetFullScreen)
+    return mutate({ fullscreen: action.fullscreen });
+
   if (action.type === ActionType.Snapshot) return action.snapshot;
   return clone(state);
 }
 
+export const CONTAINER_ID = "litespace-video-player";
+
 export function useVideo() {
   const [status, setStatus] = useState<Status>(Status.Loading);
   const [state, dispatch] = useReducer(reducer, initial);
-  const ref = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const playing = useMemo(() => {
     return state.currentTime > 0 && !state.paused && state.readyState > 2;
@@ -95,6 +106,7 @@ export function useVideo() {
       duration: Number.isNaN(duration) ? 0 : duration,
       playbackRate: video.playbackRate,
       readyState: video.readyState,
+      fullscreen: document.fullscreenElement?.id === CONTAINER_ID,
     };
     return snapshot;
   }, []);
@@ -108,35 +120,35 @@ export function useVideo() {
   );
 
   const togglePlay = useCallback(() => {
-    if (!ref.current) return;
-    if (state.paused) ref.current.play();
-    else ref.current.pause();
+    if (!videoRef.current) return;
+    if (state.paused) videoRef.current.play();
+    else videoRef.current.pause();
     dispatch({ type: ActionType.TogglePlay });
   }, [state.paused]);
 
   const toggleSound = useCallback(() => {
-    if (!ref.current) return;
-    ref.current.muted = !ref.current.muted;
-    dispatch({ type: ActionType.ToggleMuted, muted: ref.current.muted });
+    if (!videoRef.current) return;
+    videoRef.current.muted = !videoRef.current.muted;
+    dispatch({ type: ActionType.ToggleMuted, muted: videoRef.current.muted });
   }, []);
 
   const setVolume = useCallback((volume: number) => {
-    if (!ref.current) return;
-    ref.current.volume = Math.abs(volume);
-    ref.current.muted = volume <= 0.01;
-    dispatch({ type: ActionType.SetVolume, volume: ref.current.volume });
+    if (!videoRef.current) return;
+    videoRef.current.volume = Math.abs(volume);
+    videoRef.current.muted = volume <= 0.01;
+    dispatch({ type: ActionType.SetVolume, volume: videoRef.current.volume });
   }, []);
 
   const setPlaybackRate = useCallback((rate: number) => {
-    if (!ref.current) return;
-    ref.current.playbackRate = rate;
-    ref.current.preservesPitch = true;
+    if (!videoRef.current) return;
+    videoRef.current.playbackRate = rate;
+    videoRef.current.preservesPitch = true;
     dispatch({ type: ActionType.SetPlaybackRate, rate });
   }, []);
 
   const setCurrentTime = useCallback((time: number) => {
-    if (!ref.current) return;
-    ref.current.currentTime = time;
+    if (!videoRef.current) return;
+    videoRef.current.currentTime = time;
     dispatch({ type: ActionType.SetCurrentTime, time });
   }, []);
 
@@ -149,17 +161,36 @@ export function useVideo() {
     [asSnapshot]
   );
 
-  const toggleSize = useCallback(() => {
-    if (!ref.current) return;
-    ref.current.requestFullscreen();
-  }, []);
+  const toggleSize = useCallback(async () => {
+    if (!containerRef.current) return;
+    const fullscreen =
+      document.fullscreenElement?.id === containerRef.current.id;
+
+    if (fullscreen) await document.exitFullscreen();
+    else await containerRef.current.requestFullscreen();
+
+    dispatch({ type: ActionType.SetFullScreen, fullscreen: !state.fullscreen });
+  }, [state.fullscreen]);
 
   const onError = useCallback(() => {
     setStatus(Status.Error);
   }, []);
 
+  const onFullScreen = useCallback(() => {
+    const fullscreen = document.fullscreenElement?.id === CONTAINER_ID;
+    dispatch({ type: ActionType.SetFullScreen, fullscreen });
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", onFullScreen);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullScreen);
+    };
+  }, [onFullScreen]);
+
   return {
-    ref,
+    videoRef,
+    containerRef,
     playing,
     togglePlay,
     onTimeUpdate,

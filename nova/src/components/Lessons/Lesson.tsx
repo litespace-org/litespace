@@ -57,9 +57,11 @@ const Lesson: React.FC<
       </div>
 
       <WatchLesson
+        // open={watch.open}
         open={watch.open}
         close={watch.hide}
-        callId={call.id}
+        // callId={call.id}
+        callId={1}
         title={title}
       />
     </Card>

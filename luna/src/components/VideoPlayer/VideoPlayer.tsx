@@ -1,12 +1,19 @@
 import React from "react";
 import cn from "classnames";
 import Spinner from "@/icons/Spinner";
-import { AlertCircle, Pause, Play, Maximize } from "react-feather";
+import { AlertCircle, Pause, Play, Maximize, Minimize } from "react-feather";
 import SoundController from "@/components/VideoPlayer/SoundController";
 import Time from "@/components/VideoPlayer/Time";
 import Speed from "@/components/VideoPlayer/Speed";
-import { useVideo } from "@/components/VideoPlayer/video";
+import { CONTAINER_ID, useVideo } from "@/components/VideoPlayer/video";
 import Progress from "@/components/VideoPlayer/Progress";
+import Overlay from "./Overlay";
+
+// l-1 => spinner
+// l-2 => error
+// l-3 => video
+// l-4 => overlay
+// l-5 => controls
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const {
@@ -19,7 +26,8 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     setPlaybackRate,
     setCurrentTime,
     toggleSize,
-    ref,
+    videoRef,
+    containerRef,
     paused,
     volume,
     muted,
@@ -28,20 +36,29 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     status,
     playbackRate,
     readyState,
+    fullscreen,
   } = useVideo();
 
   return (
-    <div className="relative w-full h-full flex-1 bg-surface-200 rounded-md overflow-hidden">
+    <div
+      ref={containerRef}
+      id={CONTAINER_ID}
+      className={cn(
+        "relative w-full h-full flex flex-col flex-1 rounded-md overflow-hidden"
+      )}
+    >
       <span
         data-loading={readyState <= 1}
-        className="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-1 text-white data-[loading=true]:block"
+        className="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1] text-white data-[loading=true]:block"
       >
         <Spinner />
       </span>
+      <Overlay onClick={togglePlay} />
       <div
         data-status={status}
         className={cn(
-          "opacity-0 transition-opacity duration-300 ease-linear data-[status=loaded]:opacity-100"
+          "opacity-0 transition-opacity duration-300 ease-linear data-[status=loaded]:opacity-100",
+          "flex-1 h-full w-full"
         )}
       >
         <video
@@ -51,11 +68,20 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
           onCanPlay={onCanPlay}
           onError={onError}
           onTimeUpdate={onTimeUpdate}
-          ref={ref}
+          ref={videoRef}
           onClick={togglePlay}
-          className="data-[ready=true]:cursor-pointer"
+          className={cn(
+            "data-[ready=true]:cursor-pointer absolute w-full h-full z-[3]"
+          )}
         />
-        <div className="flex flex-col gap-2 absolute bottom-0 left-0 w-full pb-2">
+
+        <div
+          id="player-controls"
+          className={cn(
+            "flex flex-col gap-2 absolute bottom-0 left-0 z-[5] w-full pb-2"
+            // "bg-gradient-to-t from-gray-400 from-20% to-80% to-gray-100 "
+          )}
+        >
           <Progress
             set={setCurrentTime}
             current={currentTime}
@@ -87,10 +113,10 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
               <button
                 onClick={toggleSize}
                 className={cn(
-                  "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+                  "focus:outline-none focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
                 )}
               >
-                <Maximize />
+                {fullscreen ? <Minimize /> : <Maximize />}
               </button>
             </div>
           </div>
@@ -101,7 +127,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
         data-status={status}
         className={cn(
           "absolute inset-0 w-full h-full flex items-center justify-center bg-destructive-300",
-          "opacity-0 -z-[1] data-[status=error]:opacity-100 data-[status=error]:z-[1] transition-opacity duration-300"
+          "opacity-0 -z-[1] data-[status=error]:opacity-100 data-[status=error]:z-[2] transition-opacity duration-300"
         )}
       >
         <AlertCircle className="text-destructive-600" />
