@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
-import { Element, ICall, ILesson, IUser } from "@litespace/types";
+import { Element, ILesson, IUser } from "@litespace/types";
 import { useIntl } from "react-intl";
 import { Avatar, Button, Card, messages } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";

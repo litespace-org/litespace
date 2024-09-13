@@ -2,12 +2,13 @@ import React, { useMemo } from "react";
 import { Element, ILesson, IUser } from "@litespace/types";
 import { Timeline, TimelineItem } from "@litespace/luna";
 import Lesson from "@/components/Lessons/Lesson";
-import { Hash } from "react-feather";
+import { Hash, X } from "react-feather";
 
 const List: React.FC<{
   list: Element<ILesson.FindUserLessonsApiResponse["list"]>[];
   user: IUser.Self;
 }> = ({ list, user }) => {
+  console.log(list);
   const timeline = useMemo((): TimelineItem[] => {
     const lessons = list.map(
       ({ call, lesson, members }): TimelineItem => ({
@@ -15,7 +16,7 @@ const List: React.FC<{
         children: (
           <Lesson lesson={lesson} members={members} call={call} user={user} />
         ),
-        icon: <Hash />,
+        icon: lesson.canceledBy ? <X /> : <Hash />,
       })
     );
     return lessons;

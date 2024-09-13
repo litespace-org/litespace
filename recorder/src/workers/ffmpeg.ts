@@ -2,7 +2,7 @@ import { sleep } from "@/lib/time";
 import { calls } from "@litespace/models";
 import { ICall } from "@litespace/types";
 import { groupBy, isEmpty, map, orderBy } from "lodash";
-import { joinVideos, processArtifacts } from "@/lib/ffmpeg";
+import { processArtifacts } from "@/lib/ffmpeg";
 import dayjs from "@/lib/dayjs";
 import fs from "node:fs";
 import { findCallArtifacts } from "@/lib/call";

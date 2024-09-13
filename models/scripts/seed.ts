@@ -218,16 +218,31 @@ async function main(): Promise<void> {
           ruleId: 1, // todo: pick valid rule id
           start: dayjs
             .utc()
-            .subtract(sample(range(1, 100))!, "days")
+            .subtract(50, "days")
+            .add(sample(range(1, 100))!, "days")
             .set("hours", sample(range(0, 24))!)
-            .set("minutes", sample(range(0, 60))!)
+            .set("minutes", sample([0, 15, 30, 45])!)
             .startOf("minutes")
             .toISOString(),
         },
         tx
       );
 
-      const lesson = await lessons.create(
+      if (sample([0, 1]))
+        await calls.update([call.id], {
+          recordingStatus: sample([
+            ICall.RecordingStatus.Empty,
+            ICall.RecordingStatus.Idle,
+            ICall.RecordingStatus.Processed,
+            ICall.RecordingStatus.Processing,
+            ICall.RecordingStatus.ProcessingFailed,
+            ICall.RecordingStatus.Queued,
+            ICall.RecordingStatus.Recorded,
+            ICall.RecordingStatus.Recording,
+          ])!,
+        });
+
+      const { lesson } = await lessons.create(
         {
           callId: call.id,
           hostId: tutorId,
@@ -235,6 +250,11 @@ async function main(): Promise<void> {
         },
         tx
       );
+
+      if (sample([0, 1])) {
+        await calls.cancel(call.id, sample([tutorId, student.id])!, tx);
+        await lessons.cancel(lesson.id, sample([tutorId, student.id])!, tx);
+      }
     });
   }
 

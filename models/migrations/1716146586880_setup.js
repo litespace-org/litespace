@@ -146,7 +146,7 @@ exports.up = (pgm) => {
   pgm.createTable("lessons", {
     id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
     call_id: { type: "SERIAL", notNull: true },
-    canceled_by: { type: "SERIAL", references: "users(id)" },
+    canceled_by: { type: "INT", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
