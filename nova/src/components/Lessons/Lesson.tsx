@@ -3,11 +3,10 @@ import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import { useIntl } from "react-intl";
 import {
+  ActionsMenu,
   Avatar,
-  Button,
-  ButtonSize,
-  ButtonType,
   Card,
+  MenuAction,
   messages,
 } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
@@ -71,6 +70,54 @@ const Lesson: React.FC<
     );
   }, [intl, otherMember?.name.ar]);
 
+  const actions = useMemo((): MenuAction[] => {
+    const list: MenuAction[] = [
+      {
+        id: 1,
+        label: intl.formatMessage({
+          id: messages["page.lessons.lesson.reschedule"],
+        }),
+        onClick() {
+          alert("show schedule lesson dialog");
+        },
+      },
+    ];
+
+    if (call.recordingStatus === ICall.RecordingStatus.Processed) {
+      list.push(
+        {
+          id: 2,
+          label: intl.formatMessage({
+            id: messages["global.labels.watch.lesson"],
+          }),
+          onClick: watch.show,
+        },
+        {
+          id: 3,
+          label: intl.formatMessage({
+            id: messages["global.labels.download.lesson"],
+          }),
+          onClick: () => {
+            alert("download");
+          },
+        }
+      );
+    }
+
+    list.push({
+      id: 4,
+      label: intl.formatMessage({
+        id: messages["global.labels.block.or.ban"],
+      }),
+      danger: true,
+      onClick() {
+        alert("show block or ban dialog");
+      },
+    });
+
+    return list;
+  }, [call.recordingStatus, intl, watch.show]);
+
   const recordingStatusText = useMemo(() => {
     if (call.recordingStatus === ICall.RecordingStatus.Empty)
       return intl.formatMessage({
@@ -103,23 +150,27 @@ const Lesson: React.FC<
 
   return (
     <Card className={cn("w-full lg:w-2/3")}>
-      <div className="flex flex-row items-center justify-start gap-2 mb-2">
-        <div className="w-12 h-12 rounded-full overflow-hidden">
-          <Avatar
-            src={
-              otherMember?.photo
-                ? asFullAssetUrl(otherMember.photo)
-                : "/avatar-1.png"
-            }
-          />
+      <div className="flex flex-row justify-between items-center">
+        <div className="flex flex-row items-center justify-start gap-2 mb-2">
+          <div className="w-12 h-12 rounded-full overflow-hidden">
+            <Avatar
+              src={
+                otherMember?.photo
+                  ? asFullAssetUrl(otherMember.photo)
+                  : "/avatar-1.png"
+              }
+            />
+          </div>
+          <div>
+            <p>{otherMember?.name.ar}</p>
+            <p className="text-sm text-foreground-lighter">
+              {dayjs(call.start).format("dddd D MMMM YYYY")} (
+              {dayjs(call.start).fromNow()})
+            </p>
+          </div>
         </div>
-        <div>
-          <p>{otherMember?.name.ar}</p>
-          <p className="text-sm text-foreground-lighter">
-            {dayjs(call.start).format("dddd D MMMM YYYY")} (
-            {dayjs(call.start).fromNow()})
-          </p>
-        </div>
+
+        <ActionsMenu actions={actions} />
       </div>
 
       <div className="flex flex-row items-center gap-2 mt-4 text-foreground-light">
@@ -227,28 +278,6 @@ const Lesson: React.FC<
           <p>{recordingStatusText}</p>
         </div>
       ) : null}
-
-      <div className="flex flex-row items-center gap-2 mt-4">
-        {call.recordingStatus === ICall.RecordingStatus.Processed ? (
-          <Button size={ButtonSize.Small} onClick={watch.show}>
-            {intl.formatMessage({ id: messages["global.labels.watch.lesson"] })}
-          </Button>
-        ) : null}
-
-        {!upcoming ? (
-          <Button size={ButtonSize.Small}>
-            {intl.formatMessage({
-              id: messages["page.lessons.lesson.reschedule"],
-            })}
-          </Button>
-        ) : null}
-
-        <Button size={ButtonSize.Small} type={ButtonType.Error}>
-          {intl.formatMessage({
-            id: messages["global.labels.block.or.ban"],
-          })}
-        </Button>
-      </div>
 
       <WatchLesson
         open={watch.open}

@@ -53,7 +53,7 @@ export const ActionsMenu: React.FC<{
       <ul
         data-open={open}
         className={cn(
-          "bg-background-overlay border border-overlay rounded-md z-[1]",
+          "bg-background-overlay border border-border-overlay rounded-md z-[1]",
           "absolute whitespace-nowrap overflow-hidden px-2 py-2",
           "flex flex-col gap-1.5",
           "opacity-0 data-[open=true]:opacity-100 transition-all duration-300  invisible data-[open=true]:visible",
