@@ -1,11 +1,14 @@
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
-import { Element, ILesson, IUser } from "@litespace/types";
+import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import { useIntl } from "react-intl";
-import { Avatar, Button, Card, messages } from "@litespace/luna";
+import { Avatar, Button, ButtonSize, Card, messages } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
 import WatchLesson from "./WatchLesson";
 import { useRender } from "@/hooks/render";
+import { map } from "lodash";
+import cn from "classnames";
+import { Calendar, Video, X } from "react-feather";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -13,8 +16,31 @@ const Lesson: React.FC<
   const intl = useIntl();
   const watch = useRender();
   const otherMember = useMemo(() => {
-    return members.find((member) => member.userId !== user.id) || null;
+    return members.find((member) => member.userId !== user.id);
   }, [members, user.id]);
+
+  const canceller = useMemo(() => {
+    return members.find((member) => member.userId === lesson.canceledBy);
+  }, [lesson.canceledBy, members]);
+
+  const isUserCanceled = useMemo(() => {
+    return canceller?.userId === user.id;
+  }, [canceller?.userId, user.id]);
+
+  const isMemberCanceled = useMemo(() => {
+    if (!canceller?.userId) return;
+    return map(members, "userId").includes(canceller.userId);
+  }, [canceller?.userId, members]);
+
+  const canceledAt = useMemo(() => {
+    if (!lesson.canceledAt) return "";
+    return dayjs(lesson.canceledAt).format("dddd D MMMM YYYY");
+  }, [lesson.canceledAt]);
+
+  const canceledSince = useMemo(() => {
+    if (!lesson.canceledAt) return "";
+    return dayjs(lesson.canceledAt).fromNow();
+  }, [lesson.canceledAt]);
 
   const title = useMemo(() => {
     return intl.formatMessage(
@@ -23,8 +49,42 @@ const Lesson: React.FC<
     );
   }, [intl, otherMember?.name.ar]);
 
+  const recordingStatusText = useMemo(() => {
+    if (call.recordingStatus === ICall.RecordingStatus.Empty)
+      return intl.formatMessage({
+        id: messages["page.lessons.lesson.status.empty"],
+      });
+
+    if (call.recordingStatus === ICall.RecordingStatus.Recording)
+      return intl.formatMessage({
+        id: messages["page.lessons.lesson.status.recording"],
+      });
+
+    if (call.recordingStatus === ICall.RecordingStatus.Recorded)
+      return intl.formatMessage({
+        id: messages["page.lessons.lesson.status.recorded"],
+      });
+
+    if (
+      call.recordingStatus === ICall.RecordingStatus.Processing ||
+      call.recordingStatus === ICall.RecordingStatus.Queued
+    )
+      return intl.formatMessage({
+        id: messages["page.lessons.lesson.status.processing"],
+      });
+
+    if (call.recordingStatus === ICall.RecordingStatus.ProcessingFailed)
+      return intl.formatMessage({
+        id: messages["page.lessons.lesson.status.processing.failed"],
+      });
+  }, [call.recordingStatus, intl]);
+
   return (
-    <Card className="w-[900px]">
+    <Card
+      className={cn("w-[900px]", {
+        "opacity-70": canceledAt,
+      })}
+    >
       <div className="flex flex-row items-center justify-start gap-2 mb-2">
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <Avatar
@@ -38,30 +98,79 @@ const Lesson: React.FC<
         <div>
           <p>{otherMember?.name.ar}</p>
           <p className="text-sm text-foreground-lighter">
-            {intl.formatMessage(
-              { id: messages["global.labels.call.start.with.duration"] },
-              {
-                start: dayjs(call.start).fromNow(),
-                duration: call.duration,
-                time: dayjs(call.start).format("h:mm a"),
-              }
-            )}
+            {dayjs(call.start).format("dddd D MMMM YYYY")} (
+            {dayjs(call.start).fromNow()})
           </p>
         </div>
       </div>
 
-      <div className="mt-3">
-        <Button onClick={watch.show}>
+      <div className="flex flex-row items-center gap-2 mt-4 text-foreground-light">
+        <Calendar />
+        <p>
+          {intl.formatMessage(
+            { id: messages["page.lessons.lesson.start.with.duration"] },
+            {
+              start: dayjs(call.start).format("h:mm a"),
+              duration: call.duration,
+            }
+          )}
+        </p>
+      </div>
+
+      {lesson.canceledBy ? (
+        <div className="flex flex-row gap-2 mt-2 text-foreground-light">
+          <X />
+          <p>
+            {isUserCanceled
+              ? intl.formatMessage(
+                  { id: messages["page.lessons.lesson.canceled.by.you"] },
+                  { date: canceledAt, since: canceledSince }
+                )
+              : isMemberCanceled
+                ? intl.formatMessage(
+                    { id: messages["page.lessons.lesson.canceled.by.other"] },
+                    {
+                      name: canceller?.name.ar || "",
+                      date: canceledAt,
+                      since: canceledSince,
+                    }
+                  )
+                : intl.formatMessage({
+                    id: messages["page.lessons.lesson.canceled"],
+                  })}
+          </p>
+        </div>
+      ) : null}
+
+      {call.recordingStatus !== ICall.RecordingStatus.Idle &&
+      call.recordingStatus !== ICall.RecordingStatus.Processed ? (
+        <div
+          className={cn("flex flex-row items-center gap-2 mt-2", {
+            "text-destructive-600":
+              call.recordingStatus === ICall.RecordingStatus.ProcessingFailed,
+            "text-foreground-light":
+              call.recordingStatus !== ICall.RecordingStatus.ProcessingFailed,
+            "text-warning-600/80":
+              call.recordingStatus === ICall.RecordingStatus.Recording ||
+              call.recordingStatus === ICall.RecordingStatus.Processing ||
+              call.recordingStatus === ICall.RecordingStatus.Queued,
+          })}
+        >
+          <Video />
+          <p>{recordingStatusText}</p>
+        </div>
+      ) : null}
+
+      <div className="mt-4">
+        <Button size={ButtonSize.Small} onClick={watch.show}>
           {intl.formatMessage({ id: messages["global.labels.watch.lesson"] })}
         </Button>
       </div>
 
       <WatchLesson
-        // open={watch.open}
         open={watch.open}
         close={watch.hide}
-        // callId={call.id}
-        callId={1}
+        callId={call.id}
         title={title}
       />
     </Card>

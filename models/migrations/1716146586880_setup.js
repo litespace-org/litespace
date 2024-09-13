@@ -147,6 +147,7 @@ exports.up = (pgm) => {
     id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
     call_id: { type: "SERIAL", notNull: true },
     canceled_by: { type: "INT", references: "users(id)" },
+    canceled_at: { type: "TIMESTAMP" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

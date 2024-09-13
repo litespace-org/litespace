@@ -25,6 +25,7 @@ export class Lessons {
       id: this.columns.lessons("id"),
       call_id: this.columns.lessons("call_id"),
       canceled_by: this.columns.lessons("canceled_by"),
+      canceled_at: this.columns.lessons("canceled_at"),
       created_at: this.columns.lessons("created_at"),
       updated_at: this.columns.lessons("updated_at"),
     },
@@ -73,8 +74,9 @@ export class Lessons {
     canceledBy: number,
     tx: Knex.Transaction
   ): Promise<void> {
+    const now = dayjs.utc().toDate();
     await this.builder(tx)
-      .lessons.update({ canceled_by: canceledBy })
+      .lessons.update({ canceled_by: canceledBy, canceled_at: now })
       .where("id", id);
   }
 
@@ -166,6 +168,7 @@ export class Lessons {
       id: row.id,
       callId: row.call_id,
       canceledBy: row.canceled_by,
+      canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

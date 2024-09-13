@@ -229,18 +229,22 @@ async function main(): Promise<void> {
       );
 
       if (sample([0, 1]))
-        await calls.update([call.id], {
-          recordingStatus: sample([
-            ICall.RecordingStatus.Empty,
-            ICall.RecordingStatus.Idle,
-            ICall.RecordingStatus.Processed,
-            ICall.RecordingStatus.Processing,
-            ICall.RecordingStatus.ProcessingFailed,
-            ICall.RecordingStatus.Queued,
-            ICall.RecordingStatus.Recorded,
-            ICall.RecordingStatus.Recording,
-          ])!,
-        });
+        await calls.update(
+          [call.id],
+          {
+            recordingStatus: sample([
+              ICall.RecordingStatus.Empty,
+              ICall.RecordingStatus.Idle,
+              ICall.RecordingStatus.Processed,
+              ICall.RecordingStatus.Processing,
+              ICall.RecordingStatus.ProcessingFailed,
+              ICall.RecordingStatus.Queued,
+              ICall.RecordingStatus.Recorded,
+              ICall.RecordingStatus.Recording,
+            ])!,
+          },
+          tx
+        );
 
       const { lesson } = await lessons.create(
         {

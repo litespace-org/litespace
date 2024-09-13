@@ -4,6 +4,7 @@ export type Row = {
   id: number;
   call_id: number;
   canceled_by: number | null;
+  canceled_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -12,6 +13,7 @@ export type Self = {
   id: number;
   callId: number;
   canceledBy: number | null;
+  canceledAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
