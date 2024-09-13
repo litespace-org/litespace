@@ -39,11 +39,13 @@ const Lessons: React.FC = () => {
 
   const queryKey = useMemo(() => ["get-user-lessons", page.toString()], [page]);
 
+  const findUserLessons = useCallback(() => {
+    if (!profile) return { list: [], total: 0 };
+    return atlas.lesson.findUserLessons(profile.id, { page, size: 10 });
+  }, [page, profile]);
+
   const lessons = useQuery({
-    queryFn: async (): Promise<ILesson.FindUserLessonsApiResponse> => {
-      if (!profile) return { list: [], total: 0 };
-      return atlas.lesson.findUserLessons(profile.id, { page, size: 10 });
-    },
+    queryFn: findUserLessons,
     onSuccess,
     queryKey,
     enabled: !!profile,

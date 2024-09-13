@@ -2,13 +2,22 @@ import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import { useIntl } from "react-intl";
-import { Avatar, Button, ButtonSize, Card, messages } from "@litespace/luna";
+import {
+  Avatar,
+  Button,
+  ButtonSize,
+  ButtonType,
+  Card,
+  messages,
+} from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
 import WatchLesson from "./WatchLesson";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";
-import { Calendar, Video, X } from "react-feather";
+import { Calendar, Clock, Video, X } from "react-feather";
+import { Link } from "react-router-dom";
+import { Route } from "@/types/routes";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -41,6 +50,19 @@ const Lesson: React.FC<
     if (!lesson.canceledAt) return "";
     return dayjs(lesson.canceledAt).fromNow();
   }, [lesson.canceledAt]);
+
+  const upcoming = useMemo(() => {
+    const end = dayjs(call.start).add(call.duration, "minutes");
+    const now = dayjs();
+    return !lesson.canceledBy && end.isAfter(now);
+  }, [call.duration, call.start, lesson.canceledBy]);
+
+  const inprogress = useMemo(() => {
+    const start = dayjs(call.start);
+    const end = start.add(call.duration, "minutes");
+    const now = dayjs();
+    return !lesson.canceledBy && now.isBetween(start, end, "seconds", "[]");
+  }, [call.duration, call.start, lesson.canceledBy]);
 
   const title = useMemo(() => {
     return intl.formatMessage(
@@ -80,11 +102,7 @@ const Lesson: React.FC<
   }, [call.recordingStatus, intl]);
 
   return (
-    <Card
-      className={cn("w-[900px]", {
-        "opacity-70": canceledAt,
-      })}
-    >
+    <Card className={cn("w-full lg:w-2/3")}>
       <div className="flex flex-row items-center justify-start gap-2 mb-2">
         <div className="w-12 h-12 rounded-full overflow-hidden">
           <Avatar
@@ -117,9 +135,56 @@ const Lesson: React.FC<
         </p>
       </div>
 
+      {upcoming ? (
+        <div className="flex flex-row items-center gap-2 mt-2 text-foreground-light">
+          <div>
+            <Clock />
+          </div>
+          <p>
+            {inprogress
+              ? intl.formatMessage(
+                  { id: messages["page.lessons.lesson.join.inprogress"] },
+                  {
+                    duration: dayjs().to(call.start, true),
+                    link: (
+                      <Link
+                        to={Route.Call.replace(":id", call.id.toString())}
+                        className="text-brand underline"
+                      >
+                        {intl.formatMessage({
+                          id: messages[
+                            "page.lessons.lesson.join.inprogress.link.label"
+                          ],
+                        })}
+                      </Link>
+                    ),
+                  }
+                )
+              : intl.formatMessage(
+                  { id: messages["page.lessons.lesson.join"] },
+                  {
+                    duration: dayjs().to(call.start, true),
+                    link: (
+                      <Link
+                        to={Route.Call.replace(":id", call.id.toString())}
+                        className="text-brand underline"
+                      >
+                        {intl.formatMessage({
+                          id: messages["page.lessons.lesson.join.link.label"],
+                        })}
+                      </Link>
+                    ),
+                  }
+                )}
+          </p>
+        </div>
+      ) : null}
+
       {lesson.canceledBy ? (
-        <div className="flex flex-row gap-2 mt-2 text-foreground-light">
-          <X />
+        <div className="flex flex-row items-center gap-2 mt-2 text-foreground-light">
+          <div>
+            <X />
+          </div>
           <p>
             {isUserCanceled
               ? intl.formatMessage(
@@ -156,14 +221,32 @@ const Lesson: React.FC<
               call.recordingStatus === ICall.RecordingStatus.Queued,
           })}
         >
-          <Video />
+          <div>
+            <Video />
+          </div>
           <p>{recordingStatusText}</p>
         </div>
       ) : null}
 
-      <div className="mt-4">
-        <Button size={ButtonSize.Small} onClick={watch.show}>
-          {intl.formatMessage({ id: messages["global.labels.watch.lesson"] })}
+      <div className="flex flex-row items-center gap-2 mt-4">
+        {call.recordingStatus === ICall.RecordingStatus.Processed ? (
+          <Button size={ButtonSize.Small} onClick={watch.show}>
+            {intl.formatMessage({ id: messages["global.labels.watch.lesson"] })}
+          </Button>
+        ) : null}
+
+        {!upcoming ? (
+          <Button size={ButtonSize.Small}>
+            {intl.formatMessage({
+              id: messages["page.lessons.lesson.reschedule"],
+            })}
+          </Button>
+        ) : null}
+
+        <Button size={ButtonSize.Small} type={ButtonType.Error}>
+          {intl.formatMessage({
+            id: messages["global.labels.block.or.ban"],
+          })}
         </Button>
       </div>
 

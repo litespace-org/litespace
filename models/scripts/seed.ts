@@ -210,20 +210,23 @@ async function main(): Promise<void> {
 
   for (const tutorId of map(addedTutors, "id")) {
     await knex.transaction(async (tx: Knex.Transaction) => {
+      const activeLesson = tutorId === 10;
       const { call } = await calls.create(
         {
           duration: sample([ILesson.Duration.Short, ILesson.Duration.Long])!,
           hostId: tutorId,
           memberIds: [student.id],
           ruleId: 1, // todo: pick valid rule id
-          start: dayjs
-            .utc()
-            .subtract(50, "days")
-            .add(sample(range(1, 100))!, "days")
-            .set("hours", sample(range(0, 24))!)
-            .set("minutes", sample([0, 15, 30, 45])!)
-            .startOf("minutes")
-            .toISOString(),
+          start: activeLesson
+            ? dayjs.utc().add(1, "minute").toISOString()
+            : dayjs
+                .utc()
+                .subtract(50, "hours")
+                .add(sample(range(1, 100))!, "hours")
+                .set("hours", sample(range(0, 24))!)
+                .set("minutes", sample([0, 15, 30, 45])!)
+                .startOf("minutes")
+                .toISOString(),
         },
         tx
       );
@@ -255,7 +258,7 @@ async function main(): Promise<void> {
         tx
       );
 
-      if (sample([0, 1])) {
+      if (sample([0, 1]) && !activeLesson) {
         await calls.cancel(call.id, sample([tutorId, student.id])!, tx);
         await lessons.cancel(lesson.id, sample([tutorId, student.id])!, tx);
       }
