@@ -41,11 +41,7 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, me]);
 
   return (
-    <div
-      className={cn(
-        "min-h-screen max-w-screen-xl mx-auto text-foreground flex flex-row"
-      )}
-    >
+    <div className={cn("min-h-screen text-foreground flex flex-row")}>
       <Outlet />
       <Toaster />
     </div>

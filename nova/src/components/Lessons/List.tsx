@@ -9,7 +9,7 @@ const List: React.FC<{
   user: IUser.Self;
 }> = ({ list, user }) => {
   const timeline = useMemo((): TimelineItem[] => {
-    return list.map(
+    const lessons = list.map(
       ({ call, lesson, members }): TimelineItem => ({
         id: lesson.id,
         children: (
@@ -18,10 +18,11 @@ const List: React.FC<{
         icon: <Hash />,
       })
     );
+    return lessons;
   }, [list, user]);
 
   return (
-    <div className="mt-20 w-full">
+    <div className="w-full">
       <Timeline timeline={timeline} />
     </div>
   );

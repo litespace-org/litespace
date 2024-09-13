@@ -8,7 +8,7 @@ export const Card: React.FC<{
   return (
     <div
       className={cn(
-        "bg-surface-100 px-6 py-4 border border-border rounded h-full",
+        "bg-surface-100 px-6 py-4 border border-border rounded",
         className
       )}
     >

@@ -83,6 +83,11 @@
   "page.schedule.list.actions.activate": "تفعيل",
   "page.schedule.list.actions.deactivate": "إلغاء",
   "page.lessons.watch.dialog.title": "شاهد حصتك مع {name}",
+  "page.lessons.empty.title": "لا يوجد لديك سجل حصص بعد",
+  "page.lessons.empty.tutor.description": "إبدا بانشاء وتفعيل جدولك الخاص حتي يتمكن طلابك من حجز الحصص معك",
+  "page.lessons.empty.student.description": "احجز حصتك الان مع معلمك المفضل",
+  "page.lessons.empty.tutor.action": "إضافة جدول حصص",
+  "page.lessons.empty.student.action": "إحجز حصة",
   "sidebar.home": "الصفحة الئسية",
   "sidebar.profile": "الحساب الشخصي",
   "sidebar.settings": "الإعدادات",
@@ -101,6 +106,7 @@
   "global.labels.go": "انطلق",
   "global.labels.cancel": "الغاء",
   "global.labels.skip": "تخطي",
+  "global.labels.more": "المزيد",
   "global.labels.logout": "تسجيل خروج",
   "global.labels.edit": "تعديل",
   "global.labels.update": "تحديث",
@@ -189,5 +195,6 @@
   "error.schedule.time": "الموعد غير مناسب",
   "error.schedule.duration": "أقل مده هي 30 دقيقة",
   "error.tutors.list.error": "حدثت مشكلة أثناء تحصيل قائمة المعلمين، الرجاء المحاولة لاحقاً",
-  "error.tutors.list.empty": "يبدو أنه لا يوجد معلمين متاحين الان. الرجاء المحاولة لاحقاً"
+  "error.tutors.list.empty": "يبدو أنه لا يوجد معلمين متاحين الان، الرجاء المحاولة لاحقاً",
+  "error.unexpected": "حدث خطاء غير متوقع، الرجاء المحاولة لاحقاً"
 }
