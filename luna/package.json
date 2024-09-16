@@ -45,6 +45,7 @@
     "storybook:build:css": "tailwindcss -m -i src/tailwind.css -o src/index.css"
   },
   "peerDependencies": {
+    "@reduxjs/toolkit": "^2.2.5",
     "framer-motion": "^11.2.6",
     "lodash": "^4.17.21",
     "react": "^18.2.0",

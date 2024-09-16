@@ -1,6 +1,4 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import user from "@/redux/user";
-import chat from "@/redux/chat";
 import { useDispatch, useSelector } from "react-redux";
 import {
   persistReducer,
@@ -13,10 +11,11 @@ import {
   REGISTER,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
+import user from "@/redux/user";
 
 const reducer = persistReducer(
-  { key: "litespace", storage },
-  combineReducers({ user, chat })
+  { key: "dashboard", storage },
+  combineReducers({ user })
 );
 
 export const store = configureStore({

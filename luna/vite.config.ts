@@ -43,6 +43,7 @@ export default defineConfig({
           "react-intl": "reactIntl",
           lodash: "lodash",
           "react-toastify": "react-toastify",
+          "@reduxjs/toolkit": "redux",
         },
       },
     },
