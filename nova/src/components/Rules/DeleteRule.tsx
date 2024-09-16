@@ -6,7 +6,7 @@ import { Alert, Dialog, messages, toaster } from "@litespace/luna";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 
 const DeleteRule: React.FC<{
   open?: boolean;
@@ -18,7 +18,7 @@ const DeleteRule: React.FC<{
   const profile = useAppSelector(profileSelector);
 
   const onSuccess = useCallback(() => {
-    if (profile) dispatch(findUserRules(profile.id));
+    if (profile) dispatch(findUserRules.call(profile.id));
     toaster.success({
       title: intl.formatMessage({
         id: messages["global.notify.schedule.update.success"],
@@ -52,11 +52,11 @@ const DeleteRule: React.FC<{
       label: intl.formatMessage({
         id: messages["page.schedule.delete.dialog.alert.button.label"],
       }),
-      disabled: mutation.isLoading,
-      loading: mutation.isLoading,
+      disabled: mutation.isPending,
+      loading: mutation.isPending,
       onClick: mutation.mutate,
     }),
-    [intl, mutation.isLoading, mutation.mutate]
+    [intl, mutation.isPending, mutation.mutate]
   );
 
   return (

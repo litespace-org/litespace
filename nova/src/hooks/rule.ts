@@ -5,7 +5,7 @@ import { setUserRules } from "@/redux/user/schedule";
 import { messages, toaster } from "@litespace/luna";
 import { useCallback } from "react";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export function useActivateRule(ruleId: number) {
   const intl = useIntl();

@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
@@ -55,25 +55,23 @@ const Register: React.FC = () => {
     if (!isValidRole) return navigate(Route.Root);
   }, [isValidRole, navigate]);
 
-  const mutation = useMutation(
-    async (payload: IUser.CreateApiPayload): Promise<IUser.Self> =>
+  const mutation = useMutation({
+    mutationFn: async (payload: IUser.CreateApiPayload): Promise<IUser.Self> =>
       await atlas.user.create(payload),
-    {
-      async onSuccess(user: IUser.Self) {
-        toaster.success({
-          title: intl.formatMessage({ id: messages["page.register.success"] }),
-        });
-        dispatch(setUserProfile(user));
-        navigate(Route.Root);
-      },
-      onError(error) {
-        toaster.error({
-          title: intl.formatMessage({ id: messages["page.register.failed"] }),
-          description: error instanceof Error ? error.message : undefined,
-        });
-      },
-    }
-  );
+    async onSuccess(user: IUser.Self) {
+      toaster.success({
+        title: intl.formatMessage({ id: messages["page.register.success"] }),
+      });
+      dispatch(setUserProfile(user));
+      navigate(Route.Root);
+    },
+    onError(error) {
+      toaster.error({
+        title: intl.formatMessage({ id: messages["page.register.failed"] }),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+  });
 
   const onSubmit = useMemo(
     () =>
@@ -119,7 +117,7 @@ const Register: React.FC = () => {
                     register={register("email", validation.email)}
                     error={errors["email"]?.message}
                     autoComplete="off"
-                    disabled={mutation.isLoading}
+                    disabled={mutation.isPending}
                   />
                 }
               />
@@ -138,14 +136,14 @@ const Register: React.FC = () => {
                     register={register("password", validation.password)}
                     type={InputType.Password}
                     error={errors["password"]?.message}
-                    disabled={mutation.isLoading}
+                    disabled={mutation.isPending}
                     autoComplete="off"
                   />
                 }
               />
 
               <Button
-                loading={mutation.isLoading}
+                loading={mutation.isPending}
                 htmlType="submit"
                 className="w-full mt-8"
               >

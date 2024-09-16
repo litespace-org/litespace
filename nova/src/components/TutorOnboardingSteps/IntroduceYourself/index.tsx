@@ -16,7 +16,7 @@ import {
 import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 
 type IForm = {
   bio: string;
@@ -66,7 +66,7 @@ const IntorduceYourself: React.FC = () => {
         }),
       });
     },
-    mutationKey: "update-tutor-info",
+    mutationKey: ["update-tutor-info"],
   });
 
   const onSubmit = useMemo(
@@ -75,8 +75,8 @@ const IntorduceYourself: React.FC = () => {
   );
 
   const disabled = useMemo(
-    () => mutation.isLoading || !profile,
-    [mutation.isLoading, profile]
+    () => mutation.isPending || !profile,
+    [mutation.isPending, profile]
   );
 
   return (
@@ -137,7 +137,7 @@ const IntorduceYourself: React.FC = () => {
         <div className="mt-6 w-fit min-w-[130px]">
           <Button
             htmlType="submit"
-            loading={mutation.isLoading}
+            loading={mutation.isPending}
             disabled={disabled}
           >
             {intl.formatMessage({

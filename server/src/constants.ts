@@ -22,6 +22,11 @@ const schema = {
   number: zod.coerce.number().nonnegative(),
 } as const;
 
+export const paginationDefaults = {
+  page: 1,
+  size: 10,
+} as const;
+
 export const databaseConnection = {
   user: schema.string.parse(process.env.PG_USER),
   password: schema.string.parse(process.env.PG_PASSWORD),

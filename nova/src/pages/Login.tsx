@@ -12,7 +12,7 @@ import {
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { atlas } from "@/lib/atlas";

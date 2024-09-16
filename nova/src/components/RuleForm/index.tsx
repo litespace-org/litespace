@@ -26,7 +26,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
 import { Duration, Schedule, Time } from "@litespace/sol";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";

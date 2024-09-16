@@ -12,7 +12,7 @@ import {
 import React, { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 
 const PassedInterview: React.FC<{
   feedback: string | null;
@@ -33,12 +33,12 @@ const PassedInterview: React.FC<{
 
   const next = useMutation({
     mutationFn: (feedback: string) => share(feedback),
-    mutationKey: "submit-feedback",
+    mutationKey: ["submit-feedback"],
   });
 
   const skip = useMutation({
     mutationFn: () => share(""),
-    mutationKey: "skip-feedback",
+    mutationKey: ["skip-feedback"],
   });
 
   const {
@@ -106,7 +106,7 @@ const PassedInterview: React.FC<{
               render={({ field }) => (
                 <TextEditor
                   onChange={field.onChange}
-                  disabled={next.isLoading}
+                  disabled={next.isPending}
                   error={errors["feedback"]?.message}
                 />
               )}
@@ -117,8 +117,8 @@ const PassedInterview: React.FC<{
         <div className="flex flex-row gap-3 mt-6">
           <Button
             htmlType="submit"
-            loading={next.isLoading}
-            disabled={next.isLoading}
+            loading={next.isPending}
+            disabled={next.isPending}
           >
             {intl.formatMessage({
               id: messages["global.labels.next"],
@@ -127,8 +127,8 @@ const PassedInterview: React.FC<{
           <Button
             onClick={() => skip.mutate()}
             type={ButtonType.Secondary}
-            loading={skip.isLoading}
-            disabled={skip.isLoading}
+            loading={skip.isPending}
+            disabled={skip.isPending}
           >
             {intl.formatMessage({
               id: messages["global.labels.skip"],

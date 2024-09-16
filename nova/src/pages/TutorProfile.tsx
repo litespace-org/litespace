@@ -3,7 +3,7 @@ import { asAssetUrl } from "@litespace/atlas";
 import { Button, ButtonType, messages } from "@litespace/luna";
 import React from "react";
 import { useIntl } from "react-intl";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import dayjs from "@/lib/dayjs";
 
@@ -11,13 +11,13 @@ const TutorProfile: React.FC = () => {
   const intl = useIntl();
   const { id } = useParams<{ id: string }>();
   const tutor = useQuery({
-    queryKey: "tutor-profile",
+    queryKey: ["tutor-profile"],
     queryFn: () => atlas.tutor.findById(Number(id)),
     retry: false,
   });
 
   const ratings = useQuery({
-    queryKey: "tutor-rating",
+    queryKey: ["tutor-rating"],
     queryFn: async () => {
       if (!tutor.data?.id) return [];
       return await atlas.rating.findRateeRatings(tutor.data.id);

@@ -12,8 +12,7 @@ import { Calendar, Clock, MessageCircle, User } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 import Update, { Status } from "@/components/Interviews/Update";
-import RawHtml from "../TutorOnboardingSteps/RawHtml";
-import Feedback from "./Feedback";
+import Feedback from "@/components/Interviews/Feedback";
 
 const Interview: React.FC<{
   interview: IInterview.Self;

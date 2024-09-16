@@ -32,7 +32,7 @@ import cn from "classnames";
 import { useForm } from "react-hook-form";
 import { Events, IMessage, IRoom } from "@litespace/types";
 import { useIntl } from "react-intl";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
@@ -89,6 +89,7 @@ const Call: React.FC = () => {
       return await atlas.call.findById(callId);
     },
     enabled: !!callId,
+    queryKey: ["find-call"],
   });
 
   const callRoomId = useMemo(() => {
@@ -110,7 +111,7 @@ const Call: React.FC = () => {
       if (!callRoomId) return [];
       return await atlas.chat.findRoomMessages(callRoomId);
     },
-    queryKey: "room-messages",
+    queryKey: ["room-messages"],
     enabled: !!callRoomId,
   });
 
@@ -247,7 +248,7 @@ const Call: React.FC = () => {
         throw new Error("Other user id not defined; should never happen.");
       return await atlas.chat.createRoom(otherUserId);
     }, [otherUserId]),
-    mutationKey: "create-room",
+    mutationKey: ["create-room"],
     onSuccess() {
       if (!profile) throw new Error("Profile not found; should never happen.");
       dispath(findRooms.call(profile.id));
@@ -350,7 +351,7 @@ const Call: React.FC = () => {
           <div className="flex items-center justify-center h-full">
             <div>
               <Button
-                loading={createRoom.isLoading}
+                loading={createRoom.isPending}
                 onClick={() => createRoom.mutate()}
                 className="min-w-[200px]"
               >

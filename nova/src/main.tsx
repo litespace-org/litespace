@@ -3,7 +3,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { Dir, RadixDirection, Spinner, locales } from "@litespace/luna";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "@/App";
 

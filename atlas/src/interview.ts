@@ -1,5 +1,5 @@
 import { Base } from "@/base";
-import { IInterview } from "@litespace/types";
+import { IFilter, IInterview } from "@litespace/types";
 
 export class Interview extends Base {
   public async create(
@@ -16,9 +16,10 @@ export class Interview extends Base {
   }
 
   public async findInterviews(
-    userId: number
+    userId: number,
+    pagination?: IFilter.Pagination
   ): Promise<IInterview.FindInterviewsApiResponse> {
-    return this.get(`/api/v1/interview/list/${userId}`);
+    return this.get(`/api/v1/interview/list/${userId}`, null, pagination);
   }
 
   public async findInterviewById(id: number): Promise<IInterview.Self> {

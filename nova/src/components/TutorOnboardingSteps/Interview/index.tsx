@@ -2,7 +2,7 @@ import { atlas } from "@/lib/atlas";
 import { Spinner } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { useQuery, UseQueryResult } from "react-query";
+import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { marked } from "marked";
 import markdown from "@/markdown/tutorOnboarding/interview.md?raw";
 import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
@@ -18,12 +18,12 @@ const Interview: React.FC<{
       if (!currentInterview) return null;
       return await atlas.call.findById(currentInterview.ids.call);
     },
-    queryKey: "find-interview-call",
+    queryKey: ["find-interview-call"],
     enabled: !!currentInterview,
   });
 
   const interviewer = useQuery({
-    queryKey: "select-interviewer",
+    queryKey: ["select-interviewer"],
     queryFn: () => atlas.user.selectInterviewer(),
     retry: false,
   });

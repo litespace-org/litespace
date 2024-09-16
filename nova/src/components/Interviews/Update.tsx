@@ -17,7 +17,7 @@ import React, { useCallback, useMemo } from "react";
 import { Check, Info, X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 
 export type Status = Exclude<
   IInterview.Status,
@@ -255,8 +255,8 @@ const Update: React.FC<{
 
         <Button
           type={passed ? ButtonType.Primary : ButtonType.Error}
-          loading={mutation.isLoading}
-          disabled={mutation.isLoading}
+          loading={mutation.isPending}
+          disabled={mutation.isPending}
           className="text-foreground"
         >
           {intl.formatMessage({

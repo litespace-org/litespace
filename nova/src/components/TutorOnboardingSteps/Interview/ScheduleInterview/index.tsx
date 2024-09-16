@@ -1,7 +1,7 @@
 import { IInterview, IRule, IUser } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
-import { useMutation, useQuery } from "react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "@/lib/dayjs";
 import { asAssetUrl } from "@litespace/atlas";
 import { atlas, backend } from "@/lib/atlas";
@@ -33,7 +33,7 @@ const ScheduleInterview: React.FC<{
   const end = useMemo(() => start.add(WINDOW, "days"), [start]);
 
   const rules = useQuery({
-    queryKey: "interviewer-slots",
+    queryKey: ["interviewer-slots"],
     queryFn: async () => {
       return atlas.rule.findUnpackedUserRules(
         interviewer.id,
@@ -102,7 +102,7 @@ const ScheduleInterview: React.FC<{
           max={end.subtract(1, "day")}
           selected={date}
           onSelect={(date) => setDate(dayjs(date.format("YYYY-MM-DD")))}
-          disable={mutation.isLoading || rules.isLoading}
+          disable={mutation.isPending || rules.isLoading}
         />
 
         <div className="flex flex-col w-[300px]">
@@ -131,7 +131,7 @@ const ScheduleInterview: React.FC<{
                           ? ButtonType.Primary
                           : ButtonType.Secondary
                       }
-                      disabled={mutation.isLoading || rules.isFetching}
+                      disabled={mutation.isPending || rules.isFetching}
                     >
                       {dayjs(event.start).format("hh:mm a")}
                     </Button>
@@ -147,11 +147,12 @@ const ScheduleInterview: React.FC<{
             if (!selectedRule) return;
             mutation.mutate({
               interviewerId: interviewer.id,
-              call: { ruleId: selectedRule.id, start: selectedRule.start },
+              ruleId: selectedRule.id,
+              start: selectedRule.start,
             });
           }}
-          disabled={!selectedRule || mutation.isLoading}
-          loading={mutation.isLoading}
+          disabled={!selectedRule || mutation.isPending}
+          loading={mutation.isPending}
         >
           <span className="truncate">
             {intl.formatMessage(

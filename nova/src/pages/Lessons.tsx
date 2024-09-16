@@ -1,7 +1,7 @@
 import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
-import { useQuery } from "react-query";
+import { useQuery, UseQueryOptions } from "@tanstack/react-query";
 import React, { useCallback, useMemo, useState } from "react";
 import { ILesson } from "@litespace/types";
 import List from "@/components/Lessons/List";
@@ -19,6 +19,7 @@ const Lessons: React.FC = () => {
     null
   );
 
+  // onSuccess is removed from query
   const onSuccess = useCallback(
     (response: ILesson.FindUserLessonsApiResponse) => {
       if (!data) return setData(response);
@@ -46,7 +47,7 @@ const Lessons: React.FC = () => {
 
   const lessons = useQuery({
     queryFn: findUserLessons,
-    onSuccess,
+    // onSuccess,
     queryKey,
     enabled: !!profile,
   });

@@ -1,12 +1,12 @@
 import TutorList from "@/components/Tutors/List";
 import { atlas } from "@/lib/atlas";
 import React from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 const Tutors: React.FC = () => {
   const tutors = useQuery({
     queryFn: async () => await atlas.user.findAvailableTutors(),
-    queryKey: "find-available-tutors",
+    queryKey: ["find-available-tutors"],
   });
 
   return (

@@ -3,7 +3,7 @@ import { messages, Stepper } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
@@ -48,6 +48,7 @@ const TutorOnboarding: React.FC = () => {
       return await atlas.interview.findInterviews(profile.id);
     },
     enabled: !!profile,
+    queryKey: ["find-interviews"],
   });
 
   const currentInterview = useMemo(() => {

@@ -14,7 +14,7 @@ import { entries, flattenDeep, groupBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 
 const BookLesson: React.FC<{
@@ -137,7 +137,7 @@ const BookLesson: React.FC<{
                 <li key={event.start} className="px-6">
                   <Button
                     onClick={() => setSelectedEvent(event)}
-                    disabled={mutation.isLoading}
+                    disabled={mutation.isPending}
                     type={
                       selectedEvent?.start === event.start
                         ? ButtonType.Primary
@@ -154,8 +154,8 @@ const BookLesson: React.FC<{
       </ul>
 
       <Button
-        disabled={!selectedEvent || mutation.isLoading}
-        loading={mutation.isLoading}
+        disabled={!selectedEvent || mutation.isPending}
+        loading={mutation.isPending}
         onClick={() => mutation.mutate()}
         className="mt-4"
       >

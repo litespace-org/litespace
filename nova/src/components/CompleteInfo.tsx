@@ -18,7 +18,7 @@ import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
 type IForm = {
@@ -73,12 +73,12 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    mutationKey: "update-user",
+    mutationKey: ["update-user"],
   });
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(({ email, password, birthYear, gender, name }) => {
+      handleSubmit(({ email, password, birthYear, name }) => {
         mutation.mutate({
           password: !isEmpty(password) ? password : undefined,
           email: !isEmpty(email) ? email : undefined,
@@ -139,7 +139,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 register={register("email", validation.email)}
                 error={errors["email"]?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -161,7 +161,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Password}
                 error={errors["password"]?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -188,7 +188,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Text}
                 error={errors["name"]?.ar?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -215,7 +215,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Text}
                 error={errors["name"]?.en?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -242,7 +242,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Text}
                 error={errors["phoneNumber"]?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -269,7 +269,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Text}
                 error={errors["birthYear"]?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
@@ -291,14 +291,14 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
                 type={InputType.Text}
                 error={errors["gender"]?.message}
                 autoComplete="off"
-                disabled={mutation.isLoading}
+                disabled={mutation.isPending}
               />
             }
           />
         ) : null}
         <Button
-          disabled={mutation.isLoading || disabled}
-          loading={mutation.isLoading}
+          disabled={mutation.isPending || disabled}
+          loading={mutation.isPending}
           htmlType="submit"
           className="mt-8"
         >

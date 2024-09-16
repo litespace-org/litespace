@@ -1,14 +1,14 @@
 import { atlas } from "@/lib/atlas";
 import { IInterview } from "@litespace/types";
 import { useMemo } from "react";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export function useInterviews(userId: number) {
   return useQuery({
     queryFn: async () => {
       return await atlas.interview.findInterviews(userId);
     },
-    queryKey: "get-tutuor-interviews",
+    queryKey: ["get-tutuor-interviews"],
   });
 }
 
