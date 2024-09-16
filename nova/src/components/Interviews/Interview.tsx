@@ -11,17 +11,18 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Calendar, Clock, MessageCircle, User } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
-import { useRender } from "@/hooks/render";
 import Update, { Status } from "@/components/Interviews/Update";
+import RawHtml from "../TutorOnboardingSteps/RawHtml";
+import Feedback from "./Feedback";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
   call: ICall.Self;
   tutor: ICall.PopuldatedMember;
-}> = ({ call, interview, tutor }) => {
+  onUpdate: () => void;
+}> = ({ call, interview, tutor, onUpdate }) => {
   const intl = useIntl();
   const [status, setStatus] = useState<Status | null>(null);
-  const update = useRender();
   const upcoming = useMemo(() => {
     const now = dayjs();
     const start = dayjs(call.start);
@@ -85,23 +86,47 @@ const Interview: React.FC<{
   return (
     <Card>
       <div className="flex flex-row justify-between gap-2">
-        <ul className="flex flex-col gap-3">
-          <li className="flex flex-row gap-2">
-            <User />
-            <p>{tutor.name.ar}</p>
-          </li>
-          <li className="flex flex-row gap-2">
-            <Calendar />
-            <p>
-              {dayjs(call.start).format("dddd، DD MMMM، YYYY")} (
-              {dayjs(call.start).fromNow()})
-            </p>
-          </li>
-          <li className="flex flex-row gap-2">
-            <Clock />
-            <p>{dayjs(call.start).format("h:mm a")}</p>
-          </li>
-        </ul>
+        <div className="w-full">
+          <ul className="flex flex-col gap-3">
+            <li className="flex flex-row gap-2">
+              <User />
+              <p>{tutor.name.ar}</p>
+            </li>
+            <li className="flex flex-row gap-2">
+              <Calendar />
+              <p>
+                {dayjs(call.start).format("dddd، DD MMMM، YYYY")} (
+                {dayjs(call.start).fromNow()})
+              </p>
+            </li>
+            <li className="flex flex-row gap-2">
+              <Clock />
+              <p>{dayjs(call.start).format("h:mm a")}</p>
+            </li>
+          </ul>
+
+          {interview.feedback.interviewer ? (
+            <div className="mt-3">
+              <Feedback
+                title={intl.formatMessage({
+                  id: messages["page.interviews.interviewer.feedback"],
+                })}
+                feedback={interview.feedback.interviewer}
+              />
+            </div>
+          ) : null}
+
+          {interview.feedback.interviewee ? (
+            <div className="mt-3">
+              <Feedback
+                title={intl.formatMessage({
+                  id: messages["page.interviews.tutor.feedback"],
+                })}
+                feedback={interview.feedback.interviewee}
+              />
+            </div>
+          ) : null}
+        </div>
 
         <div>
           <ActionsMenu actions={actions} />
@@ -135,6 +160,7 @@ const Interview: React.FC<{
           status={status}
           tutor={tutor.name.ar || ""}
           interview={interview.ids.self}
+          onUpdate={onUpdate}
         />
       ) : null}
     </Card>

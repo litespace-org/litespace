@@ -123,6 +123,8 @@
   "page.interviews.update.form.level.label": "مستوي المعلم",
   "page.interviews.update.error": "لديك مشكلة في تحديث بيانات المقابلة",
   "page.interviews.update.success": "تم تحديث بيانات المبقالة بنجاح",
+  "page.interviews.interviewer.feedback": "تقيمك/رسالتك للمعلم",
+  "page.interviews.tutor.feedback": "رسالة من المعلم",
   "sidebar.home": "الصفحة الئسية",
   "sidebar.profile": "الحساب الشخصي",
   "sidebar.settings": "الإعدادات",

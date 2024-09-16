@@ -3,9 +3,25 @@ import { column, countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
+import { calls } from "@/calls";
 
 export class Interviews {
   readonly table = "interviews" as const;
+
+  readonly columns: Record<keyof IInterview.Row, string> = {
+    id: this.column("id"),
+    interviewer_id: this.column("interviewer_id"),
+    interviewee_id: this.column("interviewee_id"),
+    call_id: this.column("call_id"),
+    interviewer_feedback: this.column("interviewer_feedback"),
+    interviewee_feedback: this.column("interviewee_feedback"),
+    note: this.column("note"),
+    level: this.column("level"),
+    status: this.column("status"),
+    signer: this.column("signer"),
+    created_at: this.column("created_at"),
+    updated_at: this.column("updated_at"),
+  };
 
   async create(
     payload: IInterview.CreatePayload,
@@ -90,7 +106,17 @@ export class Interviews {
       .where(this.column("interviewer_id"), id)
       .orWhere(this.column("interviewee_id"), id);
     const total = await countRows(builder.clone());
-    const rows = await withPagination(builder.clone(), pagination).then();
+
+    const main = builder
+      .clone()
+      .join(
+        calls.tables.calls,
+        this.column("call_id"),
+        calls.columns.calls("id")
+      )
+      .select(this.columns)
+      .orderBy(calls.columns.calls("start"), "desc");
+    const rows = await withPagination(main, pagination).then();
     return { interviews: rows.map((row) => this.from(row)), total };
   }
 

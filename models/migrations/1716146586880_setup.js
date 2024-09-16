@@ -174,7 +174,7 @@ exports.up = (pgm) => {
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },
-    signed_by: { type: "INT", references: "users(id)" },
+    signer: { type: "INT", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

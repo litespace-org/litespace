@@ -1,6 +1,8 @@
+import { useInterviewStatus } from "@/hooks/interview";
 import { atlas } from "@/lib/atlas";
 import {
   Button,
+  ButtonType,
   Dialog,
   Field,
   Form,
@@ -81,9 +83,11 @@ const Update: React.FC<{
   status: Status;
   open: boolean;
   close: () => void;
+  onUpdate: () => void;
   tutor: string;
   interview: number;
-}> = ({ open, close, tutor, status, interview }) => {
+}> = ({ open, close, onUpdate, tutor, status, interview }) => {
+  const { passed, rejected } = useInterviewStatus(status);
   const intl = useIntl();
   const form = useForm<IForm>({
     defaultValues: { level: 1 },
@@ -102,7 +106,8 @@ const Update: React.FC<{
       }),
     });
     close();
-  }, [close, intl]);
+    onUpdate();
+  }, [close, intl, onUpdate]);
 
   const onError = useCallback(
     (error: unknown) => {
@@ -248,9 +253,18 @@ const Update: React.FC<{
           }
         />
 
-        <Button loading={mutation.isLoading} disabled={mutation.isLoading}>
+        <Button
+          type={passed ? ButtonType.Primary : ButtonType.Error}
+          loading={mutation.isLoading}
+          disabled={mutation.isLoading}
+          className="text-foreground"
+        >
           {intl.formatMessage({
-            id: messages["global.labels.update"],
+            id: passed
+              ? messages["page.interviews.actions.pass"]
+              : rejected
+                ? messages["page.interviews.actions.reject"]
+                : messages["page.interviews.actions.cancel"],
           })}
         </Button>
       </Form>

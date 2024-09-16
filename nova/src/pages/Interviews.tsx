@@ -19,6 +19,10 @@ const Interviews: React.FC = () => {
     enabled: !!profile,
   });
 
+  const onUpdate = useCallback(() => {
+    interviews.refetch();
+  }, [interviews]);
+
   return (
     <div className="max-w-screen-2xl mx-auto w-full px-6 py-10">
       {interviews.isLoading ? (
@@ -28,7 +32,7 @@ const Interviews: React.FC = () => {
       ) : null}
 
       {interviews.data && profile ? (
-        <List list={interviews.data.list} user={profile} />
+        <List list={interviews.data.list} user={profile} onUpdate={onUpdate} />
       ) : null}
     </div>
   );
