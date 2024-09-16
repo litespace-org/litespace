@@ -14,9 +14,11 @@ import WatchLesson from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";
-import { Calendar, Clock, Video, X } from "react-feather";
+import { Calendar, Clock, X } from "react-feather";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
+import TimelineListText from "@/components/Common/TimelineListText";
+import Status from "@/components/Call/Status";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -118,36 +120,6 @@ const Lesson: React.FC<
     return list;
   }, [call.recordingStatus, intl, watch.show]);
 
-  const recordingStatusText = useMemo(() => {
-    if (call.recordingStatus === ICall.RecordingStatus.Empty)
-      return intl.formatMessage({
-        id: messages["page.lessons.lesson.status.empty"],
-      });
-
-    if (call.recordingStatus === ICall.RecordingStatus.Recording)
-      return intl.formatMessage({
-        id: messages["page.lessons.lesson.status.recording"],
-      });
-
-    if (call.recordingStatus === ICall.RecordingStatus.Recorded)
-      return intl.formatMessage({
-        id: messages["page.lessons.lesson.status.recorded"],
-      });
-
-    if (
-      call.recordingStatus === ICall.RecordingStatus.Processing ||
-      call.recordingStatus === ICall.RecordingStatus.Queued
-    )
-      return intl.formatMessage({
-        id: messages["page.lessons.lesson.status.processing"],
-      });
-
-    if (call.recordingStatus === ICall.RecordingStatus.ProcessingFailed)
-      return intl.formatMessage({
-        id: messages["page.lessons.lesson.status.processing.failed"],
-      });
-  }, [call.recordingStatus, intl]);
-
   return (
     <Card className={cn("w-full lg:w-2/3")}>
       <div className="flex flex-row justify-between items-center">
@@ -173,9 +145,8 @@ const Lesson: React.FC<
         <ActionsMenu actions={actions} />
       </div>
 
-      <div className="flex flex-row items-center gap-2 mt-4 text-foreground-light">
-        <Calendar />
-        <p>
+      <ul className="text-foreground-light flex flex-col gap-3">
+        <TimelineListText Icon={Calendar}>
           {intl.formatMessage(
             { id: messages["page.lessons.lesson.start.with.duration"] },
             {
@@ -183,8 +154,31 @@ const Lesson: React.FC<
               duration: call.duration,
             }
           )}
-        </p>
-      </div>
+        </TimelineListText>
+        {lesson.canceledBy ? (
+          <TimelineListText Icon={X}>
+            {isUserCanceled
+              ? intl.formatMessage(
+                  { id: messages["page.lessons.lesson.canceled.by.you"] },
+                  { date: canceledAt, since: canceledSince }
+                )
+              : isMemberCanceled
+                ? intl.formatMessage(
+                    { id: messages["page.lessons.lesson.canceled.by.other"] },
+                    {
+                      name: canceller?.name.ar || "",
+                      date: canceledAt,
+                      since: canceledSince,
+                    }
+                  )
+                : intl.formatMessage({
+                    id: messages["page.lessons.lesson.canceled"],
+                  })}
+          </TimelineListText>
+        ) : null}
+
+        <Status status={call.recordingStatus} />
+      </ul>
 
       {upcoming ? (
         <div className="flex flex-row items-center gap-2 mt-2 text-foreground-light">
@@ -228,54 +222,6 @@ const Lesson: React.FC<
                   }
                 )}
           </p>
-        </div>
-      ) : null}
-
-      {lesson.canceledBy ? (
-        <div className="flex flex-row items-center gap-2 mt-2 text-foreground-light">
-          <div>
-            <X />
-          </div>
-          <p>
-            {isUserCanceled
-              ? intl.formatMessage(
-                  { id: messages["page.lessons.lesson.canceled.by.you"] },
-                  { date: canceledAt, since: canceledSince }
-                )
-              : isMemberCanceled
-                ? intl.formatMessage(
-                    { id: messages["page.lessons.lesson.canceled.by.other"] },
-                    {
-                      name: canceller?.name.ar || "",
-                      date: canceledAt,
-                      since: canceledSince,
-                    }
-                  )
-                : intl.formatMessage({
-                    id: messages["page.lessons.lesson.canceled"],
-                  })}
-          </p>
-        </div>
-      ) : null}
-
-      {call.recordingStatus !== ICall.RecordingStatus.Idle &&
-      call.recordingStatus !== ICall.RecordingStatus.Processed ? (
-        <div
-          className={cn("flex flex-row items-center gap-2 mt-2", {
-            "text-destructive-600":
-              call.recordingStatus === ICall.RecordingStatus.ProcessingFailed,
-            "text-foreground-light":
-              call.recordingStatus !== ICall.RecordingStatus.ProcessingFailed,
-            "text-warning-600/80":
-              call.recordingStatus === ICall.RecordingStatus.Recording ||
-              call.recordingStatus === ICall.RecordingStatus.Processing ||
-              call.recordingStatus === ICall.RecordingStatus.Queued,
-          })}
-        >
-          <div>
-            <Video />
-          </div>
-          <p>{recordingStatusText}</p>
         </div>
       ) : null}
 
