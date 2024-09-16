@@ -5,6 +5,7 @@ import {
   ISubscription,
   IDate,
   StringLiteral,
+  IInterview,
   ILesson,
 } from "@litespace/types";
 import zod from "zod";
@@ -89,6 +90,12 @@ export const subscriptionPeriod = zod.enum([
   ISubscription.Period.Month,
   ISubscription.Period.Quarter,
   ISubscription.Period.Year,
+]);
+
+export const interviewStatus = zod.enum([
+  IInterview.Status.Pending,
+  IInterview.Status.Passed,
+  IInterview.Status.Canceled,
 ]);
 
 export const identityObject = zod.object({ id });

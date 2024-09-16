@@ -32,6 +32,7 @@ exports.up = (pgm) => {
   pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
   pgm.createType("token_type", ["forgot-password", "verify-email"]);
+  pgm.createType("interview_status", ["pending", "passed", "canceled"]);
 
   // tables
   pgm.createTable("sessions", {
@@ -164,15 +165,11 @@ exports.up = (pgm) => {
     interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
     interviewer_feedback: { type: "TEXT", default: null },
-    interviewee_feedback: { type: "VARCHAR(1000)", default: null },
-    interviewer_note: { type: "TEXT", default: null },
+    interviewee_feedback: { type: "TEXT", default: null },
+    note: { type: "TEXT", default: null },
     score: { type: "INT", default: null },
-    passed: { type: "BOOLEAN", default: null },
-    passed_at: { type: "TIMESTAMP", default: null },
-    approved: { type: "BOOLEAN", default: null },
-    approved_at: { type: "TIMESTAMP", default: null },
-    approved_by: { type: "INT", default: null },
-    canceled_by: { type: "SERIAL", references: "users(id)" },
+    status: { type: "interview_status", default: "pending" },
+    signed_by: { type: "INT", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

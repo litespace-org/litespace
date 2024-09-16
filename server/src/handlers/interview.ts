@@ -6,17 +6,18 @@ import {
   boolean,
   datetime,
   id,
+  interviewStatus,
   number,
   pagination,
   string,
   withNamedId,
 } from "@/validation/utils";
-import { Element, IInterview } from "@litespace/types";
+import { Element, IInterview, IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import zod from "zod";
 import { authorizer } from "@litespace/auth";
-import { isEmpty } from "lodash";
+import { isEmpty, isUndefined } from "lodash";
 
 const INTERVIEW_DURATION = 30;
 
@@ -34,9 +35,8 @@ const updateInterviewPayload = zod.object({
   ),
   interviewerNote: zod.optional(string),
   score: zod.optional(number),
-  passed: zod.optional(boolean),
-  approved: zod.optional(boolean),
-  approvedBy: zod.optional(id),
+  status: zod.optional(interviewStatus),
+  sign: zod.optional(boolean),
 });
 
 async function createInterview(
@@ -157,22 +157,62 @@ async function updateInterview(
   res: Response,
   next: NextFunction
 ) {
+  const allowed = authorizer()
+    .superAdmin()
+    .interviewer()
+    .tutor()
+    .check(req.user);
+  if (!allowed) return next(forbidden());
+
   const { interviewId } = withNamedId("interviewId").parse(req.params);
-  const payload: IInterview.UpdatePayload = updateInterviewPayload.parse(
+  const payload: IInterview.UpdateApiPayload = updateInterviewPayload.parse(
     req.body
   );
   const interview = await interviews.findById(interviewId);
   if (!interview) return next(notfound.base());
 
-  const allowed = enforceRequest(
-    req,
-    [interview.ids.interviewer, interview.ids.interviewee].includes(
-      req.user?.id
-    )
-  );
-  if (!allowed) return next(forbidden());
+  const eligible = authorizer()
+    .member(interview.ids.interviewer, interview.ids.interviewee)
+    .superAdmin()
+    .check(req.user);
+  if (!eligible) return next(forbidden());
 
-  const updated = await interviews.update(interviewId, payload);
+  // Tutor can only update the feedback of the interview
+  const isPermissionedInterviewee =
+    req.user.role === IUser.Role.Tutor &&
+    !isUndefined(payload.feedback?.interviewee);
+
+  const isPermissionedInterviewer =
+    req.user.role === IUser.Role.Interviewer &&
+    (!isUndefined(payload.feedback?.interviewer) ||
+      !isUndefined(payload.note) ||
+      !isUndefined(payload.score) ||
+      !isUndefined(payload.status));
+
+  const isPermissionedAdmin =
+    req.user.role === IUser.Role.SuperAdmin && !isUndefined(payload.sign);
+
+  if (
+    !isPermissionedInterviewee ||
+    !isPermissionedInterviewer ||
+    !isPermissionedAdmin
+  )
+    return next(forbidden());
+
+  const signer =
+    payload.sign === true // sign
+      ? req.user.id
+      : payload.sign === false // unsign
+        ? null
+        : undefined; // no-update
+
+  const updated = await interviews.update(interviewId, {
+    feedback: payload.feedback,
+    note: payload.note,
+    score: payload.score,
+    status: payload.status,
+    signer,
+  });
   res.status(200).json(updated);
 }
 

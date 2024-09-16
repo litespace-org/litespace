@@ -1,5 +1,11 @@
 import { ICall } from ".";
 
+export enum Status {
+  Pending = "pending",
+  Passed = "passed",
+  Canceled = "canceled",
+}
+
 export type Self = {
   ids: {
     self: number;
@@ -8,13 +14,10 @@ export type Self = {
     call: number;
   };
   feedback: { interviewer: string | null; interviewee: string | null };
-  interviewerNote: string | null;
+  note: string | null;
   score: number | null;
-  passed: boolean | null;
-  passedAt: string | null;
-  approved: boolean | null;
-  approvedAt: string | null;
-  approvedBy: number | null;
+  status: Status;
+  signer: number | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -26,13 +29,10 @@ export type Row = {
   call_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
-  interviewer_note: string | null;
+  note: string | null;
   score: number | null;
-  passed: boolean | null;
-  passed_at: Date | null;
-  approved: boolean | null;
-  approved_at: Date | null;
-  approved_by: number | null;
+  status: Status;
+  signer: number | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -63,9 +63,16 @@ export type FindInterviewsApiResponse = {
 
 export type UpdatePayload = {
   feedback?: { interviewer?: string; interviewee?: string };
-  interviewerNote?: string;
+  note?: string;
   score?: number;
-  passed?: boolean;
-  approved?: boolean;
-  approvedBy?: number;
+  status?: Status;
+  signer?: number | null;
+};
+
+export type UpdateApiPayload = {
+  feedback?: { interviewer?: string; interviewee?: string };
+  note?: string;
+  score?: number;
+  status?: Status;
+  sign?: boolean;
 };

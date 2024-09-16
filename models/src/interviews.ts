@@ -37,13 +37,11 @@ export class Interviews {
       .update({
         interviewer_feedback: payload.feedback?.interviewer,
         interviewee_feedback: payload.feedback?.interviewee,
-        interviewer_note: payload.interviewerNote,
+        note: payload.note,
         score: payload.score,
-        passed: payload.passed,
-        passed_at: payload.passed !== undefined ? now : undefined,
-        approved: payload.approved,
-        approved_at: payload.approved !== undefined ? now : undefined,
-        approved_by: payload.approvedBy,
+        signer: payload.signer,
+        status: payload.status,
+        updated_at: now,
       })
       .where("id", id)
       .returning("*");
@@ -108,13 +106,10 @@ export class Interviews {
         interviewer: row.interviewer_feedback,
         interviewee: row.interviewee_feedback,
       },
-      interviewerNote: row.interviewer_note,
+      note: row.note,
       score: row.score,
-      passed: row.passed,
-      passedAt: row.passed_at ? row.passed_at.toISOString() : null,
-      approved: row.approved,
-      approvedAt: row.approved_at ? row.approved_at.toISOString() : null,
-      approvedBy: row.approved_by,
+      status: row.status,
+      signer: row.signer,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
