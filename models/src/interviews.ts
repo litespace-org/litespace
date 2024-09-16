@@ -1,5 +1,5 @@
 import { IFilter, IInterview } from "@litespace/types";
-import { column, knex, withPagination } from "@/query";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
@@ -91,15 +91,9 @@ export class Interviews {
     const builder = this.builder(tx)
       .where(this.column("interviewer_id"), id)
       .orWhere(this.column("interviewee_id"), id);
-
-    const count = await builder
-      .clone()
-      .count(this.column("id"), { as: "count" });
-
-    console.log({ count });
-
+    const total = await countRows(builder.clone());
     const rows = await withPagination(builder.clone(), pagination).then();
-    return { interviews: rows.map((row) => this.from(row)), total: 1 };
+    return { interviews: rows.map((row) => this.from(row)), total };
   }
 
   from(row: IInterview.Row): IInterview.Self {

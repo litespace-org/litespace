@@ -1,7 +1,7 @@
 import { Pool } from "pg";
 import init, { Knex } from "knex";
 import zod from "zod";
-import { IFilter } from "@litespace/types";
+import { IFilter, NumericString } from "@litespace/types";
 
 const connection = {
   user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),
@@ -110,6 +110,13 @@ export async function count(table: string): Promise<number> {
     .count("id AS count")
     .first<{ count: string }>();
   return zod.coerce.number().parse(count);
+}
+
+export async function countRows<T extends Knex.QueryBuilder>(
+  builder: T
+): Promise<number> {
+  const row: { count: NumericString } = await builder.count().first();
+  return row ? zod.coerce.number().parse(row.count) : 0;
 }
 
 export function column<T>(value: keyof T, table: string | null = null): string {

@@ -13,6 +13,7 @@ import {
   messages,
   rooms,
   lessons,
+  interviews,
 } from "@/index";
 import { ICall, ILesson, IUser } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -208,6 +209,17 @@ async function main(): Promise<void> {
     );
   });
 
+  function randomStart(): string {
+    return dayjs
+      .utc()
+      .subtract(50, "hours")
+      .add(sample(range(1, 100))!, "hours")
+      .set("hours", sample(range(0, 24))!)
+      .set("minutes", sample([0, 15, 30, 45])!)
+      .startOf("minutes")
+      .toISOString();
+  }
+
   for (const tutorId of map(addedTutors, "id")) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const activeLesson = tutorId === 10;
@@ -219,14 +231,7 @@ async function main(): Promise<void> {
           ruleId: 1, // todo: pick valid rule id
           start: activeLesson
             ? dayjs.utc().add(1, "minute").toISOString()
-            : dayjs
-                .utc()
-                .subtract(50, "hours")
-                .add(sample(range(1, 100))!, "hours")
-                .set("hours", sample(range(0, 24))!)
-                .set("minutes", sample([0, 15, 30, 45])!)
-                .startOf("minutes")
-                .toISOString(),
+            : randomStart(),
         },
         tx
       );
@@ -262,6 +267,30 @@ async function main(): Promise<void> {
         await calls.cancel(call.id, sample([tutorId, student.id])!, tx);
         await lessons.cancel(lesson.id, sample([tutorId, student.id])!, tx);
       }
+    });
+  }
+
+  for (const tutor of addedTutors) {
+    await knex.transaction(async (tx: Knex.Transaction) => {
+      const { call } = await calls.create(
+        {
+          duration: 30,
+          hostId: interviewer.id,
+          memberIds: [tutor.id],
+          ruleId: rule.id,
+          start: randomStart(),
+        },
+        tx
+      );
+
+      const interview = await interviews.create(
+        {
+          call: call.id,
+          interviewee: tutor.id,
+          interviewer: interviewer.id,
+        },
+        tx
+      );
     });
   }
 

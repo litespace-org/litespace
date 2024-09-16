@@ -109,7 +109,7 @@ exports.up = (pgm) => {
     rule_id: { type: "SERIAL", notNull: true, references: "rules(id)" },
     start: { type: "TIMESTAMP", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
-    canceled_by: { type: "SERIAL", references: "users(id)" },
+    canceled_by: { type: "INT", references: "users(id)" },
     canceled_at: { type: "TIMESTAMP" },
     recording_status: {
       type: "call_recording_status",
