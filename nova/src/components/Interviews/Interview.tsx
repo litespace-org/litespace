@@ -5,6 +5,7 @@ import {
   Card,
   MenuAction,
   messages,
+  useMediaQueries,
 } from "@litespace/luna";
 import { ICall, IInterview } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
@@ -18,6 +19,8 @@ import { Route } from "@/types/routes";
 import WatchCall from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import Status from "@/components/Call/Status";
+import TimelineListText from "@/components/Common/TimelineListText";
+import cn from "classnames";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
@@ -71,29 +74,21 @@ const Interview: React.FC<{
     ];
   }, [interview.status, intl, watch.show]);
 
-  console.log(call.recordingStatus);
+  const { sm } = useMediaQueries();
 
   return (
-    <Card>
+    <Card className="w-full lg:w-2/3">
       <div className="flex flex-row justify-between gap-2">
         <div className="w-full">
           <ul className="flex flex-col gap-3">
-            <li className="flex flex-row gap-2">
-              <User />
-              <p>{tutor.name.ar}</p>
-            </li>
-            <li className="flex flex-row gap-2">
-              <Calendar />
-              <p>
-                {dayjs(call.start).format("dddd، DD MMMM، YYYY")} (
-                {dayjs(call.start).fromNow()})
-              </p>
-            </li>
-            <li className="flex flex-row gap-2">
-              <Clock />
-              <p>{dayjs(call.start).format("h:mm a")}</p>
-            </li>
-
+            <TimelineListText Icon={User}>{tutor.name.ar}</TimelineListText>
+            <TimelineListText Icon={Calendar}>
+              {dayjs(call.start).format("dddd، DD MMMM، YYYY")} (
+              {dayjs(call.start).fromNow()})
+            </TimelineListText>
+            <TimelineListText Icon={Clock}>
+              {dayjs(call.start).format("h:mm a")}
+            </TimelineListText>
             <Status status={call.recordingStatus} interview />
           </ul>
 
@@ -128,7 +123,7 @@ const Interview: React.FC<{
       <div className="mt-4 flex flex-row gap-2">
         {upcoming ? (
           <Link to={Route.Call.replace(":id", call.id.toString())}>
-            <Button size={ButtonSize.Small}>
+            <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
               {!started
                 ? intl.formatMessage(
                     { id: messages["page.interviews.join.future"] },
@@ -142,8 +137,14 @@ const Interview: React.FC<{
           </Link>
         ) : null}
 
-        <Button size={ButtonSize.Small} disabled>
-          <MessageCircle />
+        <Button
+          className={cn({
+            "!w-[26px]": !sm,
+          })}
+          size={sm ? ButtonSize.Small : ButtonSize.Tiny}
+          disabled
+        >
+          <MessageCircle className="w-[20px] h-[20px] md:w-auto md:h-auto" />
         </Button>
       </div>
 

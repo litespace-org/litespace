@@ -5,6 +5,7 @@ import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
 import cn from "classnames";
 import { Video } from "react-feather";
+import TimelineListText from "@/components/Common/TimelineListText";
 
 const Status: React.FC<{
   status: ICall.RecordingStatus;
@@ -71,16 +72,13 @@ const Status: React.FC<{
 
   return (
     <li
-      className={cn("flex flex-row items-center gap-2", {
+      className={cn({
         "text-destructive-600": processingFailed,
         "text-foreground-light": !processingFailed,
         "text-warning-600/80": recording || processing || queued,
       })}
     >
-      <div>
-        <Video />
-      </div>
-      <p>{recordingStatusText}</p>
+      <TimelineListText Icon={Video}>{recordingStatusText}</TimelineListText>
     </li>
   );
 };

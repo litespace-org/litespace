@@ -40,7 +40,7 @@ const Interviews: React.FC = () => {
   }, [interviews]);
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full px-6 py-10">
+    <div className="max-w-screen-2xl mx-auto w-full px-8 py-10">
       {interviews.isLoading ? (
         <div className="flex items-center justify-center mt-32">
           <Spinner />
