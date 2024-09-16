@@ -2,7 +2,7 @@ import { asFullCallRecordingUrl } from "@/lib/atlas";
 import { Dialog, VideoPlayer } from "@litespace/luna";
 import React from "react";
 
-const WatchLesson: React.FC<{
+const WatchCall: React.FC<{
   open: boolean;
   close: () => void;
   title: string;
@@ -17,4 +17,4 @@ const WatchLesson: React.FC<{
   );
 };
 
-export default WatchLesson;
+export default WatchCall;

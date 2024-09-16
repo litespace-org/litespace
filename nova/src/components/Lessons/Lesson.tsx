@@ -10,7 +10,7 @@ import {
   messages,
 } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
-import WatchLesson from "./WatchLesson";
+import WatchLesson from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";

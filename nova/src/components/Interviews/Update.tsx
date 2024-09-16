@@ -2,6 +2,7 @@ import { useInterviewStatus } from "@/hooks/interview";
 import { atlas } from "@/lib/atlas";
 import {
   Button,
+  ButtonSize,
   ButtonType,
   Dialog,
   Field,
@@ -18,52 +19,54 @@ import { Check, Info, X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
+import { isEmpty } from "lodash";
 
-export type Status = Exclude<
-  IInterview.Status,
-  typeof IInterview.Status.Pending
->;
-
-const Description: React.FC<{ status: Status }> = ({ status }) => {
+const Description: React.FC<{ status: IInterview.Status }> = ({ status }) => {
   const intl = useIntl();
-  const passed = useMemo(() => status === IInterview.Status.Passed, [status]);
-  const rejected = useMemo(
-    () => status === IInterview.Status.Rejected,
-    [status]
-  );
-  const canceled = useMemo(
-    () => status === IInterview.Status.Canceled,
-    [status]
-  );
+  const { passed, rejected, canceled } = useInterviewStatus(status);
 
   const title = useMemo(() => {
-    if (passed) return messages["page.interviews.actions.pass.desc.header"];
-    if (canceled) return messages["page.interviews.actions.cancel.desc.header"];
-    return messages["page.interviews.actions.reject.desc.header"];
-  }, [canceled, passed]);
+    if (passed) return messages["page.interviews.status.passed.desc.header"];
+    if (canceled)
+      return messages["page.interviews.status.canceled.desc.header"];
+    if (rejected)
+      return messages["page.interviews.status.rejected.desc.header"];
+    return null;
+  }, [canceled, passed, rejected]);
 
   const description = useMemo(() => {
-    const list = [
-      messages["page.interviews.actions.pass.desc.1"],
-      messages["page.interviews.actions.pass.desc.2"],
-      messages["page.interviews.actions.pass.desc.3"],
-      messages["page.interviews.actions.pass.desc.4"],
-    ];
-    if (passed || rejected) return list;
-    return [
-      messages["page.interviews.actions.cancel.desc.1"],
-      messages["page.interviews.actions.cancel.desc.2"],
-    ];
-  }, [passed, rejected]);
+    if (passed)
+      return [
+        messages["page.interviews.status.passed.desc.1"],
+        messages["page.interviews.status.passed.desc.2"],
+        messages["page.interviews.status.passed.desc.3"],
+        messages["page.interviews.status.passed.desc.4"],
+      ];
+
+    if (rejected)
+      return [
+        messages["page.interviews.status.rejected.desc.1"],
+        messages["page.interviews.status.rejected.desc.2"],
+        messages["page.interviews.status.rejected.desc.3"],
+      ];
+    if (canceled)
+      return [
+        messages["page.interviews.status.canceled.desc.1"],
+        messages["page.interviews.status.canceled.desc.2"],
+      ];
+    return [];
+  }, [canceled, passed, rejected]);
+
+  if (!title || isEmpty(description)) return null;
 
   return (
     <div>
-      <h3 className="mb-3 text-foreground text-base">
+      <h3 className="mb-3 text-foreground-light text-base">
         {intl.formatMessage({ id: title })}
       </h3>
-      <ul className="text-foreground-light flex flex-col gap-2">
+      <ul className="text-foreground-lighter flex flex-col gap-2 text-sm">
         {description.map((id) => (
-          <li key={id} className="flex flex-row gap-2">
+          <li key={id} className="flex flex-row gap-2 items-center">
             {passed ? <Check /> : rejected ? <X /> : <Info />}
             <p>{intl.formatMessage({ id })}</p>
           </li>
@@ -74,24 +77,26 @@ const Description: React.FC<{ status: Status }> = ({ status }) => {
 };
 
 type IForm = {
+  status?: IInterview.Status;
   feedback?: string;
   note?: string;
   level?: number;
 };
 
 const Update: React.FC<{
-  status: Status;
+  status: IInterview.Status;
   open: boolean;
   close: () => void;
   onUpdate: () => void;
   tutor: string;
   interview: number;
-}> = ({ open, close, onUpdate, tutor, status, interview }) => {
-  const { passed, rejected } = useInterviewStatus(status);
+}> = ({ open, close, onUpdate, tutor, interview }) => {
   const intl = useIntl();
   const form = useForm<IForm>({
-    defaultValues: { level: 1 },
+    defaultValues: { level: 1, status: IInterview.Status.Passed },
   });
+  const status = form.watch("status") || IInterview.Status.Passed;
+  const { passed, rejected } = useInterviewStatus(status);
   const update = useCallback(
     async (payload: IInterview.UpdateApiPayload) => {
       return atlas.interview.update(interview, payload);
@@ -165,6 +170,29 @@ const Update: React.FC<{
     ];
   }, [intl]);
 
+  const options = useMemo(() => {
+    return [
+      {
+        label: intl.formatMessage({
+          id: messages["page.interviews.status.passed"],
+        }),
+        value: IInterview.Status.Passed,
+      },
+      {
+        label: intl.formatMessage({
+          id: messages["page.interviews.status.rejected"],
+        }),
+        value: IInterview.Status.Rejected,
+      },
+      {
+        label: intl.formatMessage({
+          id: messages["page.interviews.status.canceled"],
+        }),
+        value: IInterview.Status.Canceled,
+      },
+    ];
+  }, [intl]);
+
   return (
     <Dialog
       open={open}
@@ -175,9 +203,36 @@ const Update: React.FC<{
       )}
       className="w-full md:max-w-[700px]"
     >
-      <Description status={status} />
-
       <Form onSubmit={onSubmit} className="mt-5 mb-3 flex flex-col gap-4 ">
+        <div>
+          <Field
+            label={
+              <Label>
+                {intl.formatMessage({
+                  id: messages["page.interviews.update.form.status.label"],
+                })}
+              </Label>
+            }
+            field={
+              <Controller
+                name="status"
+                control={form.control}
+                render={({ field }) => (
+                  <Select
+                    options={options}
+                    onChange={field.onChange}
+                    value={form.watch("status")}
+                  />
+                )}
+              />
+            }
+          />
+
+          <div className="mt-3">
+            <Description status={status} />
+          </div>
+        </div>
+
         <Field
           label={
             <Label>
@@ -255,16 +310,17 @@ const Update: React.FC<{
 
         <Button
           type={passed ? ButtonType.Primary : ButtonType.Error}
+          size={ButtonSize.Small}
           loading={mutation.isPending}
           disabled={mutation.isPending}
           className="text-foreground"
         >
           {intl.formatMessage({
             id: passed
-              ? messages["page.interviews.actions.pass"]
+              ? messages["page.interviews.status.passed"]
               : rejected
-                ? messages["page.interviews.actions.reject"]
-                : messages["page.interviews.actions.cancel"],
+                ? messages["page.interviews.status.rejected"]
+                : messages["page.interviews.status.canceled"],
           })}
         </Button>
       </Form>

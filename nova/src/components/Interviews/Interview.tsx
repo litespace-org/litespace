@@ -11,8 +11,12 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Calendar, Clock, MessageCircle, User } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
-import Update, { Status } from "@/components/Interviews/Update";
+import Update from "@/components/Interviews/Update";
 import Feedback from "@/components/Interviews/Feedback";
+import { Link } from "react-router-dom";
+import { Route } from "@/types/routes";
+import WatchCall from "../Call/WatchCall";
+import { useRender } from "@/hooks/render";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
@@ -21,7 +25,8 @@ const Interview: React.FC<{
   onUpdate: () => void;
 }> = ({ call, interview, tutor, onUpdate }) => {
   const intl = useIntl();
-  const [status, setStatus] = useState<Status | null>(null);
+  const watch = useRender();
+  const [status, setStatus] = useState<IInterview.Status | null>(null);
   const upcoming = useMemo(() => {
     const now = dayjs();
     const start = dayjs(call.start);
@@ -44,7 +49,7 @@ const Interview: React.FC<{
       {
         id: 1,
         label: intl.formatMessage({
-          id: messages["page.interviews.actions.pass"],
+          id: messages["page.interviews.actions.edit"],
         }),
         onClick: () => setStatus(IInterview.Status.Passed),
         disabled: interview.status === IInterview.Status.Passed,
@@ -52,35 +57,18 @@ const Interview: React.FC<{
       {
         id: 2,
         label: intl.formatMessage({
-          id: messages["global.labels.watch.lesson"],
+          id: messages["page.interviews.actions.watch"],
         }),
+        onClick: watch.show,
       },
       {
         id: 3,
         label: intl.formatMessage({
-          id: messages["global.labels.download.lesson"],
+          id: messages["page.interviews.actions.download"],
         }),
-      },
-      {
-        id: 4,
-        label: intl.formatMessage({
-          id: messages["page.interviews.actions.reject"],
-        }),
-        onClick: () => setStatus(IInterview.Status.Rejected),
-        disabled: interview.status === IInterview.Status.Rejected,
-        danger: true,
-      },
-      {
-        id: 5,
-        label: intl.formatMessage({
-          id: messages["page.interviews.actions.cancel"],
-        }),
-        onClick: () => setStatus(IInterview.Status.Canceled),
-        disabled: interview.status === IInterview.Status.Canceled,
-        danger: true,
       },
     ];
-  }, [interview.status, intl]);
+  }, [interview.status, intl, watch.show]);
 
   return (
     <Card>
@@ -134,17 +122,19 @@ const Interview: React.FC<{
 
       <div className="mt-4 flex flex-row gap-2">
         {upcoming ? (
-          <Button size={ButtonSize.Small}>
-            {!started
-              ? intl.formatMessage(
-                  { id: messages["page.interviews.join.future"] },
-                  { duration: dayjs(call.start).fromNow(true) }
-                )
-              : intl.formatMessage(
-                  { id: messages["page.interviews.join.past"] },
-                  { duration: dayjs(call.start).fromNow(true) }
-                )}
-          </Button>
+          <Link to={Route.Call.replace(":id", call.id.toString())}>
+            <Button size={ButtonSize.Small}>
+              {!started
+                ? intl.formatMessage(
+                    { id: messages["page.interviews.join.future"] },
+                    { duration: dayjs(call.start).fromNow(true) }
+                  )
+                : intl.formatMessage(
+                    { id: messages["page.interviews.join.past"] },
+                    { duration: dayjs(call.start).fromNow(true) }
+                  )}
+            </Button>
+          </Link>
         ) : null}
 
         <Button size={ButtonSize.Small} disabled>
@@ -162,6 +152,16 @@ const Interview: React.FC<{
           onUpdate={onUpdate}
         />
       ) : null}
+
+      <WatchCall
+        callId={call.id}
+        close={watch.hide}
+        open={watch.open}
+        title={intl.formatMessage(
+          { id: messages["page.interviews.watch.interview"] },
+          { name: tutor.name.ar }
+        )}
+      />
     </Card>
   );
 };
