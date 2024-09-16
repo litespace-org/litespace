@@ -1,4 +1,4 @@
-import { badRequest, forbidden, notfound } from "@/lib/error";
+import { badRequest, forbidden, notfound, unexpected } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import { enforceRequest } from "@/middleware/accessControl";
 import { calls, interviews, rules, users, knex } from "@litespace/models";
@@ -7,13 +7,16 @@ import {
   datetime,
   id,
   number,
+  pagination,
   string,
   withNamedId,
 } from "@/validation/utils";
-import { IInterview } from "@litespace/types";
+import { Element, IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import zod from "zod";
+import { authorizer } from "@litespace/auth";
+import { isEmpty } from "lodash";
 
 const INTERVIEW_DURATION = 30;
 
@@ -94,11 +97,39 @@ async function createInterview(
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
+  const allowed = authorizer().admin().tutor().interviewer().check(req.user);
   if (!allowed) return next(forbidden());
   const { userId } = withNamedId("userId").parse(req.params);
-  const list = await interviews.findByUser(userId);
-  res.status(200).json(list);
+  const query = pagination.parse(req.query);
+  const { interviews: userInterviews, total } = await interviews.findByUser(
+    userId,
+    query
+  );
+  const callIds = userInterviews.map((interview) => interview.ids.call);
+  const [interviewCalls, callMembers] = await Promise.all([
+    calls.findByIds(callIds),
+    calls.findCallMembers(callIds),
+  ]);
+
+  const result: IInterview.FindInterviewsApiResponse = {
+    list: userInterviews.map(
+      (interview): Element<IInterview.FindInterviewsApiResponse["list"]> => {
+        const call = interviewCalls.find(
+          (call) => call.id === interview.ids.call
+        );
+
+        const members = callMembers.filter(
+          (member) => member.callId === interview.ids.call
+        );
+
+        if (!call || isEmpty(members)) throw unexpected();
+        return { interview, call, members };
+      }
+    ),
+    total,
+  };
+
+  res.status(200).json(result);
 }
 
 async function findInterviewById(

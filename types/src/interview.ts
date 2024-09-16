@@ -1,3 +1,5 @@
+import { ICall } from ".";
+
 export type Self = {
   ids: {
     self: number;
@@ -48,6 +50,15 @@ export type CreateApiPayload = {
    */
   start: string;
   ruleId: number;
+};
+
+export type FindInterviewsApiResponse = {
+  list: Array<{
+    interview: Self;
+    call: ICall.Self;
+    members: ICall.PopuldatedMember[];
+  }>;
+  total: number;
 };
 
 export type UpdatePayload = {

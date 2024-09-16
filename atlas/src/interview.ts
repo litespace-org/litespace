@@ -15,7 +15,9 @@ export class Interview extends Base {
     return await this.put(`/api/v1/interview/${id}`, payload);
   }
 
-  public async findInterviews(userId: number): Promise<IInterview.Self[]> {
+  public async findInterviews(
+    userId: number
+  ): Promise<IInterview.FindInterviewsApiResponse> {
     return this.get(`/api/v1/interview/list/${userId}`);
   }
 

@@ -1,5 +1,5 @@
-import { IInterview } from "@litespace/types";
-import { knex } from "@/query";
+import { IFilter, IInterview } from "@litespace/types";
+import { column, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
@@ -83,12 +83,23 @@ export class Interviews {
     return await this.findManyBy("interviewer_id", id);
   }
 
-  async findByUser(id: number): Promise<IInterview.Self[]> {
-    const rows = await knex<IInterview.Row>(this.table)
-      .select("*")
-      .where("interviewer_id", id)
-      .orWhere("interviewee_id", id);
-    return rows.map((row) => this.from(row));
+  async findByUser(
+    id: number,
+    pagination?: IFilter.Pagination,
+    tx?: Knex.Transaction
+  ): Promise<{ total: number; interviews: IInterview.Self[] }> {
+    const builder = this.builder(tx)
+      .where(this.column("interviewer_id"), id)
+      .orWhere(this.column("interviewee_id"), id);
+
+    const count = await builder
+      .clone()
+      .count(this.column("id"), { as: "count" });
+
+    console.log({ count });
+
+    const rows = await withPagination(builder.clone(), pagination).then();
+    return { interviews: rows.map((row) => this.from(row)), total: 1 };
   }
 
   from(row: IInterview.Row): IInterview.Self {
@@ -119,6 +130,10 @@ export class Interviews {
     return tx
       ? tx<IInterview.Row>(this.table).clone()
       : knex<IInterview.Row>(this.table).clone();
+  }
+
+  column(value: keyof IInterview.Row): string {
+    return column(value, this.table);
   }
 }
 
