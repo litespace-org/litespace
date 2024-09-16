@@ -220,6 +220,19 @@ async function main(): Promise<void> {
       .toISOString();
   }
 
+  function randomCallRecordingStatus(): ICall.RecordingStatus {
+    return sample([
+      ICall.RecordingStatus.Empty,
+      ICall.RecordingStatus.Idle,
+      ICall.RecordingStatus.Processed,
+      ICall.RecordingStatus.Processing,
+      ICall.RecordingStatus.ProcessingFailed,
+      ICall.RecordingStatus.Queued,
+      ICall.RecordingStatus.Recorded,
+      ICall.RecordingStatus.Recording,
+    ])!;
+  }
+
   for (const tutorId of map(addedTutors, "id")) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const activeLesson = tutorId === 10;
@@ -239,18 +252,7 @@ async function main(): Promise<void> {
       if (sample([0, 1]))
         await calls.update(
           [call.id],
-          {
-            recordingStatus: sample([
-              ICall.RecordingStatus.Empty,
-              ICall.RecordingStatus.Idle,
-              ICall.RecordingStatus.Processed,
-              ICall.RecordingStatus.Processing,
-              ICall.RecordingStatus.ProcessingFailed,
-              ICall.RecordingStatus.Queued,
-              ICall.RecordingStatus.Recorded,
-              ICall.RecordingStatus.Recording,
-            ])!,
-          },
+          { recordingStatus: randomCallRecordingStatus() },
           tx
         );
 
@@ -291,6 +293,15 @@ async function main(): Promise<void> {
         },
         tx
       );
+
+      if (sample([0, 1]))
+        await calls.update(
+          [call.id],
+          {
+            recordingStatus: randomCallRecordingStatus(),
+          },
+          tx
+        );
     });
   }
 

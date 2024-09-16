@@ -17,6 +17,7 @@ import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
 import WatchCall from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
+import Status from "@/components/Call/Status";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
@@ -70,6 +71,8 @@ const Interview: React.FC<{
     ];
   }, [interview.status, intl, watch.show]);
 
+  console.log(call.recordingStatus);
+
   return (
     <Card>
       <div className="flex flex-row justify-between gap-2">
@@ -90,6 +93,8 @@ const Interview: React.FC<{
               <Clock />
               <p>{dayjs(call.start).format("h:mm a")}</p>
             </li>
+
+            <Status status={call.recordingStatus} interview />
           </ul>
 
           {interview.feedback.interviewer ? (

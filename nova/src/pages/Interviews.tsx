@@ -4,11 +4,11 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { Button, messages, Spinner } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
-import { flatten, isEmpty, sum } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import { isEmpty } from "lodash";
+import React, { useCallback } from "react";
 import { useIntl } from "react-intl";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import Empty from "@/components/Interviews/Empty";
+import { usePaginationQuery } from "@/hooks/common";
 
 const Interviews: React.FC = () => {
   const profile = useAppSelector(profileSelector);
@@ -16,7 +16,7 @@ const Interviews: React.FC = () => {
 
   const findInterviews = useCallback(
     async ({
-      pageParam = 1,
+      pageParam,
     }: {
       pageParam: number;
     }): Promise<IInterview.FindInterviewsApiResponse> => {
@@ -29,38 +29,14 @@ const Interviews: React.FC = () => {
     [profile]
   );
 
-  const getNextPageParam = useCallback(
-    (
-      last: IInterview.FindInterviewsApiResponse,
-      all: IInterview.FindInterviewsApiResponse[],
-      lastPageParam: number
-    ) => {
-      const page = lastPageParam;
-      const total = sum(all.map((page) => page.list.length));
-      if (total >= last.total) return null;
-      return page + 1;
-    },
-    []
-  );
-
-  const interviews = useInfiniteQuery({
-    queryFn: findInterviews,
-    queryKey: ["find-interviews"],
-    initialPageParam: 1,
-    getNextPageParam,
-  });
-
-  const list = useMemo(() => {
-    if (!interviews.data) return null;
-    return flatten(interviews.data.pages.map((page) => page.list));
-  }, [interviews.data]);
+  const {
+    query: interviews,
+    list,
+    more,
+  } = usePaginationQuery(findInterviews, ["find-interviews"]);
 
   const onUpdate = useCallback(() => {
     interviews.refetch();
-  }, [interviews]);
-
-  const more = useCallback(() => {
-    interviews.fetchNextPage();
   }, [interviews]);
 
   return (
@@ -71,7 +47,7 @@ const Interviews: React.FC = () => {
         </div>
       ) : null}
 
-      {isEmpty(list) ? (
+      {Array.isArray(list) && isEmpty(list) ? (
         <div className="flex items-center justify-center mt-10">
           <Empty />
         </div>

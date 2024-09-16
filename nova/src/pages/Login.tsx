@@ -9,7 +9,7 @@ import {
   InputType,
   toaster,
 } from "@litespace/luna";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
@@ -45,23 +45,26 @@ const Login: React.FC = () => {
   const email = watch("email");
   const password = watch("password");
 
-  const mutation = useMutation(
+  const login = useCallback(
     async (credentials: IUser.Credentials) => {
       const profile = await atlas.auth.password(credentials);
       dispatch(setUserProfile(profile));
     },
-    {
-      onSuccess() {
-        return navigate(Route.Root);
-      },
-      onError(error) {
-        toaster.error({
-          title: intl.formatMessage({ id: messages["page.login.failed"] }),
-          description: error instanceof Error ? error.message : undefined,
-        });
-      },
-    }
+    [dispatch]
   );
+
+  const mutation = useMutation({
+    mutationFn: login,
+    onSuccess() {
+      return navigate(Route.Root);
+    },
+    onError(error) {
+      toaster.error({
+        title: intl.formatMessage({ id: messages["page.login.failed"] }),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+  });
 
   const onSubmit = useMemo(
     () =>
@@ -101,7 +104,7 @@ const Login: React.FC = () => {
                     })}
                     autoComplete="off"
                     error={errors["email"]?.message}
-                    disabled={mutation.isLoading}
+                    disabled={mutation.isPending}
                   />
                 }
               />
@@ -121,12 +124,12 @@ const Login: React.FC = () => {
                     value={password}
                     register={register("password", validation.password)}
                     error={errors["password"]?.message}
-                    disabled={mutation.isLoading}
+                    disabled={mutation.isPending}
                   />
                 }
               />
 
-              <Button loading={mutation.isLoading}>
+              <Button loading={mutation.isPending}>
                 {intl.formatMessage({
                   id: messages["page.login.form.button.submit.label"],
                 })}
