@@ -186,18 +186,17 @@ async function updateInterview(
     req.user.role === IUser.Role.Interviewer &&
     (!isUndefined(payload.feedback?.interviewer) ||
       !isUndefined(payload.note) ||
-      !isUndefined(payload.score) ||
+      !isUndefined(payload.level) ||
       !isUndefined(payload.status));
 
   const isPermissionedAdmin =
     req.user.role === IUser.Role.SuperAdmin && !isUndefined(payload.sign);
 
-  if (
-    !isPermissionedInterviewee ||
-    !isPermissionedInterviewer ||
-    !isPermissionedAdmin
-  )
-    return next(forbidden());
+  const isPermissioned =
+    isPermissionedInterviewee ||
+    isPermissionedInterviewer ||
+    isPermissionedAdmin;
+  if (!isPermissioned) return next(forbidden());
 
   const signer =
     payload.sign === true // sign
@@ -209,7 +208,7 @@ async function updateInterview(
   const updated = await interviews.update(interviewId, {
     feedback: payload.feedback,
     note: payload.note,
-    score: payload.score,
+    level: payload.level,
     status: payload.status,
     signer,
   });

@@ -7,10 +7,12 @@ import {
   messages,
 } from "@litespace/luna";
 import { ICall, IInterview } from "@litespace/types";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Calendar, Clock, MessageCircle, User } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
+import { useRender } from "@/hooks/render";
+import Update, { Status } from "@/components/Interviews/Update";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
@@ -18,6 +20,8 @@ const Interview: React.FC<{
   tutor: ICall.PopuldatedMember;
 }> = ({ call, interview, tutor }) => {
   const intl = useIntl();
+  const [status, setStatus] = useState<Status | null>(null);
+  const update = useRender();
   const upcoming = useMemo(() => {
     const now = dayjs();
     const start = dayjs(call.start);
@@ -31,13 +35,19 @@ const Interview: React.FC<{
     return now.isBetween(start, end, "minutes", "[]");
   }, [call.duration, call.start]);
 
+  const reset = useCallback(() => {
+    setStatus(null);
+  }, []);
+
   const actions = useMemo((): MenuAction[] => {
     return [
       {
         id: 1,
         label: intl.formatMessage({
-          id: messages["page.interviews.actions.approve"],
+          id: messages["page.interviews.actions.pass"],
         }),
+        onClick: () => setStatus(IInterview.Status.Passed),
+        disabled: interview.status === IInterview.Status.Passed,
       },
       {
         id: 2,
@@ -56,6 +66,8 @@ const Interview: React.FC<{
         label: intl.formatMessage({
           id: messages["page.interviews.actions.reject"],
         }),
+        onClick: () => setStatus(IInterview.Status.Rejected),
+        disabled: interview.status === IInterview.Status.Rejected,
         danger: true,
       },
       {
@@ -63,10 +75,12 @@ const Interview: React.FC<{
         label: intl.formatMessage({
           id: messages["page.interviews.actions.cancel"],
         }),
+        onClick: () => setStatus(IInterview.Status.Canceled),
+        disabled: interview.status === IInterview.Status.Canceled,
         danger: true,
       },
     ];
-  }, [intl]);
+  }, [interview.status, intl]);
 
   return (
     <Card>
@@ -113,6 +127,16 @@ const Interview: React.FC<{
           <MessageCircle />
         </Button>
       </div>
+
+      {status ? (
+        <Update
+          open
+          close={reset}
+          status={status}
+          tutor={tutor.name.ar || ""}
+          interview={interview.ids.self}
+        />
+      ) : null}
     </Card>
   );
 };

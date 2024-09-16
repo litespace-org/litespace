@@ -36,11 +36,12 @@ export const TextEditor: React.FC<{
             <Button
               htmlType="button"
               type={ButtonType.Text}
-              size={ButtonSize.Small}
+              size={ButtonSize.Tiny}
               disabled={disabled}
               onClick={onClick}
+              className="!w-[30px] !h-[30px]"
             >
-              {<Icon className="w-[20px] h-[20px]" />}
+              {<Icon className="w-[20px] h-[20px] text-foreground" />}
             </Button>
           </div>
         ))}

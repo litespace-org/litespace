@@ -95,6 +95,7 @@ export const subscriptionPeriod = zod.enum([
 export const interviewStatus = zod.enum([
   IInterview.Status.Pending,
   IInterview.Status.Passed,
+  IInterview.Status.Rejected,
   IInterview.Status.Canceled,
 ]);
 

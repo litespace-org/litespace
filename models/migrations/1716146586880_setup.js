@@ -32,7 +32,12 @@ exports.up = (pgm) => {
   pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
   pgm.createType("token_type", ["forgot-password", "verify-email"]);
-  pgm.createType("interview_status", ["pending", "passed", "canceled"]);
+  pgm.createType("interview_status", [
+    "pending",
+    "passed",
+    "rejected",
+    "canceled",
+  ]);
 
   // tables
   pgm.createTable("sessions", {
@@ -167,7 +172,7 @@ exports.up = (pgm) => {
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
     note: { type: "TEXT", default: null },
-    score: { type: "INT", default: null },
+    level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },
     signed_by: { type: "INT", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
@@ -383,5 +388,6 @@ exports.down = (pgm) => {
   pgm.dropType("user_gender", { ifExists: true });
   pgm.dropType("plan_cycle", { ifExists: true });
   pgm.dropType("call_event", { ifExists: true });
+  pgm.dropType("interview_status", { ifExists: true });
   pgm.dropType("call_recording_status", { ifExists: true });
 };

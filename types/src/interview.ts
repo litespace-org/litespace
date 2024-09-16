@@ -3,6 +3,7 @@ import { ICall } from ".";
 export enum Status {
   Pending = "pending",
   Passed = "passed",
+  Rejected = "rejected",
   Canceled = "canceled",
 }
 
@@ -15,7 +16,7 @@ export type Self = {
   };
   feedback: { interviewer: string | null; interviewee: string | null };
   note: string | null;
-  score: number | null;
+  level: number | null;
   status: Status;
   signer: number | null;
   createdAt: string;
@@ -30,7 +31,7 @@ export type Row = {
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
   note: string | null;
-  score: number | null;
+  level: number | null;
   status: Status;
   signer: number | null;
   created_at: Date;
@@ -64,7 +65,7 @@ export type FindInterviewsApiResponse = {
 export type UpdatePayload = {
   feedback?: { interviewer?: string; interviewee?: string };
   note?: string;
-  score?: number;
+  level?: number;
   status?: Status;
   signer?: number | null;
 };
@@ -72,7 +73,7 @@ export type UpdatePayload = {
 export type UpdateApiPayload = {
   feedback?: { interviewer?: string; interviewee?: string };
   note?: string;
-  score?: number;
+  level?: number;
   status?: Status;
   sign?: boolean;
 };

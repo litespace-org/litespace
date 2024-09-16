@@ -7,9 +7,8 @@ export function canBeInterviewed(interviews: IInterview.Self[]) {
     dayjs(interview.createdAt).unix()
   );
   if (!recent) return true;
-  if (recent.passed) return false;
-  return (
-    !recent.passed &&
-    dayjs.utc(recent.createdAt).isBefore(dayjs.utc().subtract(6, "months"))
-  );
+  if (recent.status === IInterview.Status.Passed) return false;
+  return dayjs
+    .utc(recent.createdAt)
+    .isBefore(dayjs.utc().subtract(6, "months"));
 }
