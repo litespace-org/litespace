@@ -38,6 +38,16 @@ exports.up = (pgm) => {
     "rejected",
     "canceled",
   ]);
+  pgm.createType("withdraw_method", ["wallet", "bank", "instapay"]);
+  pgm.createType("invoice_status", [
+    "pending",
+    "updated_by_receiver",
+    "canceled_by_receiver",
+    "canceled_by_admin",
+    "cancellation_approved_by_admin",
+    "fulfilled",
+    "rejected",
+  ]);
 
   // tables
   pgm.createTable("sessions", {
@@ -315,6 +325,34 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
+  pgm.createTable("withdraw_methods", {
+    type: {
+      type: "withdraw_method",
+      primaryKey: true,
+      unique: true,
+      notNull: true,
+    },
+    min: { type: "INT", notNull: true },
+    max: { type: "INT", notNull: true },
+    enabled: { type: "BOOLEAN", notNull: true, default: false },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable("invoices", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    user_id: { type: "INT", references: "users(id)", notNull: true },
+    amount: { type: "INT", notNull: true },
+    receiver: { type: "VARCHAR(255)", notNull: true },
+    bank: { type: "VARCHAR(5)", notNull: true },
+    method: { type: "withdraw_method", notNull: true },
+    status: { type: "invoice_status", notNull: true, default: "pending" },
+    attachment: { type: "VARCHAR(255)", notNull: true },
+    addressed_by: { type: "INT", references: "users(id)" },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMeSTAMP", notNull: true },
+  });
+
   // indexes
   pgm.createIndex("calls", "id");
   pgm.createIndex("lessons", "id");
@@ -332,6 +370,7 @@ exports.up = (pgm) => {
   pgm.createIndex("gifts", "id");
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
+  pgm.createIndex("invoices", "id");
 };
 
 /**
@@ -341,6 +380,7 @@ exports.up = (pgm) => {
  */
 exports.down = (pgm) => {
   // indexes
+  pgm.dropIndex("invoices", "id", { ifExists: true });
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
   pgm.dropIndex("plans", "id", { ifExists: true });
@@ -359,6 +399,8 @@ exports.down = (pgm) => {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("withdraw_methods", { ifExists: true });
+  pgm.dropTable("invoices", { ifExists: true });
   pgm.dropTable("messages", { ifExists: true });
   pgm.dropTable("room_members", { ifExists: true });
   pgm.dropTable("rooms", { ifExists: true });
@@ -390,4 +432,6 @@ exports.down = (pgm) => {
   pgm.dropType("call_event", { ifExists: true });
   pgm.dropType("interview_status", { ifExists: true });
   pgm.dropType("call_recording_status", { ifExists: true });
+  pgm.dropType("withdraw_method", { ifExists: true });
+  pgm.dropType("invoice_status", { ifExists: true });
 };
