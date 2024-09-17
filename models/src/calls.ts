@@ -207,19 +207,20 @@ export class Calls {
    * Canceled calls or calls that user didn't attend will not be added.
    *
    * todo: ignore calls that the user didn't attend
+   *
+   * todo: Ignore interviews
    */
-  async sumCalls({
-    include = { canceled: true, future: true },
+  async sum({
+    canceled = true,
+    future = true,
     users,
     tx,
   }: {
     users?: number[];
-    include?: {
-      canceled?: boolean;
-      future?: boolean;
-    };
+    canceled?: boolean;
+    future?: boolean;
     tx?: Knex.Transaction;
-  }) {
+  }): Promise<number> {
     const builder = this.builder(tx)
       .members.join(
         this.tables.calls,
@@ -230,10 +231,9 @@ export class Calls {
 
     if (users) builder.whereIn(this.columns.members("user_id"), users);
 
-    if (!include.canceled)
-      builder.where(this.columns.calls("canceled_by"), "<>", null);
+    if (!canceled) builder.where(this.columns.calls("canceled_by"), "IS", null);
 
-    if (!include.future)
+    if (!future)
       builder.where(
         addSqlMinutes(
           this.columns.calls("start"),
@@ -244,6 +244,7 @@ export class Calls {
       );
 
     const row: { duration: string } | undefined = await builder.first().then();
+
     return row ? zod.coerce.number().parse(row.duration) : 0;
   }
 

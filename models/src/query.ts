@@ -132,7 +132,7 @@ function asSqlInterval<Row extends object>(
   value: number | string,
   unit: string
 ): Knex.Raw<Row> {
-  return knex.raw("CONCAT(??:TEXT, ' ', ??:TEXT)", [value, unit]);
+  return knex.raw("CONCAT(??::TEXT, ' ', ?::TEXT)::INTERVAL", [value, unit]);
 }
 
 export function addSqlMinutes<Row extends object>(

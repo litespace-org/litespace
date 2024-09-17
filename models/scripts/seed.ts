@@ -413,6 +413,7 @@ async function main(): Promise<void> {
       })
     );
   }
+
   const plan = await plans.create({
     alias: "Basic",
     weeklyMinutes: 2.5 * 60,
@@ -478,6 +479,13 @@ async function main(): Promise<void> {
   const interviewerRooms = await rooms.findMemberRooms(interviewer.id);
   const tutorRooms = await rooms.findMemberRooms(tutor.id);
   const roomMembers = await rooms.findRoomMembers([roomId]);
+
+  const total = await calls.sum({});
+  const notCanceled = await calls.sum({ canceled: false });
+  const past = await calls.sum({ future: false });
+  console.log("Total sum for all calls in minutes", total);
+  console.log("Total sum for all not canceled calls in minutes ", notCanceled);
+  console.log("Total sum for all past calls in minutes ", past);
 }
 
 main()
