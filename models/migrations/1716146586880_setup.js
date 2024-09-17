@@ -348,7 +348,7 @@ exports.up = (pgm) => {
     amount: { type: "INT", notNull: true },
     update: { type: "JSONB", default: null },
     status: { type: "invoice_status", notNull: true, default: "pending" },
-    attachment: { type: "VARCHAR(255)", notNull: true },
+    attachment: { type: "VARCHAR(255)", default: null },
     addressed_by: { type: "INT", references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMeSTAMP", notNull: true },

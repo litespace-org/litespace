@@ -80,7 +80,9 @@ export class Invoices {
     const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
       .update({
-        update: payload.updateRequest ? JSON.stringify(updateRequest) : null,
+        update: payload.updateRequest
+          ? JSON.stringify(payload.updateRequest)
+          : null,
         method: payload.method,
         receiver: payload.receiver,
         bank: payload.bank,
@@ -153,7 +155,7 @@ export class Invoices {
 
   from(row: IInvoice.Row): IInvoice.Self {
     const update: IInvoice.Self["update"] =
-      row.update !== null ? updateRequest.parse(JSON.parse(row.update)) : null;
+      row.update !== null ? updateRequest.parse(row.update) : null;
 
     return {
       id: row.id,
@@ -171,3 +173,5 @@ export class Invoices {
     };
   }
 }
+
+export const invoices = new Invoices();

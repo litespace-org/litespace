@@ -21,6 +21,7 @@
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-typescript": "^11.1.6",
+    "colors": "^1.4.0",
     "env-cmd": "^10.1.0",
     "esbuild-runner": "^2.2.2",
     "knex": "^3.1.0",
