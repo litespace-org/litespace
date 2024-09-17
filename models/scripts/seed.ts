@@ -16,6 +16,7 @@ import {
   interviews,
   withdrawMethods,
   invoices,
+  hashPassword,
 } from "@/index";
 import {
   ICall,
@@ -27,14 +28,12 @@ import {
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
-import { first, map, random, range, sample } from "lodash";
-import crypto from "node:crypto";
+import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
+import Aripsum from "aripsum";
 import "colors";
 
-export function hashPassword(password: string): string {
-  return crypto.createHash("sha256").update(password).digest("hex");
-}
+const aripsum = new Aripsum("regular");
 
 async function main(): Promise<void> {
   const password = hashPassword("LiteSpace432%^&");
@@ -124,12 +123,8 @@ async function main(): Promise<void> {
           tutor.id,
           {
             video: "test.mp4",
-            about: [
-              "محمد بن الحسن بن الحسن بن الهيثم أبو علي البصري 965-1039، لقب بالبصري نسبة إلى مدينة البصرة. ابن الهيثم هو عالم عربي في الرياضيات والبصريات والهندسة له العديد من المؤلفات والمكتشفات العلمية التي أكدها العلم الحديث.",
-              "درس ابن الهيثم ظواهر إنكسار الضوء وانعكاسه بشكل مفصّل، وخالف الآراء القديمة كنظريات بطليموس، فنفى أن الرؤية تتم بواسطة أشعة تنبعث من العين ، كما أرسى أساسيات علم العدسات وشرّح العين تشريحا كاملا .",
-              'يعتبر كتاب المناظر Optics المرجع الأهم الذي استند عليه علماء العصر الحديث في تطوير التقانة الضوئية، وهو تاريخياً أول من قام بتجارب الكاميرا وهو الاسم المشتق من الكلمة العربية : " قُمرة " وتعني الغرفة المظلمة بشباك صغير.',
-            ].join("\n"),
-            bio: "أحب الحياة البسيطة",
+            about: aripsum.generateParagraph(20, 50),
+            bio: aripsum.generateSentence(5, 10),
             activated: true,
             activatedBy: admin.id,
             mediaProviderId: mediaProvider.id,
@@ -382,6 +377,7 @@ async function main(): Promise<void> {
           await invoices.update(invoice.id, {
             status: IInvoice.Status.Fulfilled,
             addressedBy: admin.id,
+            note: aripsum.generateParagraph(20, 50),
           });
         }
 
@@ -395,6 +391,7 @@ async function main(): Promise<void> {
           await invoices.update(invoice.id, {
             status: IInvoice.Status.CanceledByAdmin,
             addressedBy: admin.id,
+            note: aripsum.generateParagraph(20, 50),
           });
         }
 
@@ -402,6 +399,7 @@ async function main(): Promise<void> {
           await invoices.update(invoice.id, {
             status: IInvoice.Status.CancellationApprovedByAdmin,
             addressedBy: admin.id,
+            note: aripsum.generateParagraph(20, 50),
           });
         }
 
@@ -409,6 +407,7 @@ async function main(): Promise<void> {
           await invoices.update(invoice.id, {
             status: IInvoice.Status.Rejected,
             addressedBy: admin.id,
+            note: aripsum.generateParagraph(20, 50),
           });
         }
       })

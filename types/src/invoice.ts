@@ -26,6 +26,7 @@ export type Self = {
   amount: number;
   update: UpdateRequest | null;
   status: Status;
+  note: string | null;
   attachment: string | null;
   addressedBy: number | null;
   createdAt: string;
@@ -41,6 +42,7 @@ export type Row = {
   amount: number;
   update: string | null;
   status: Status;
+  note: string | null;
   attachment: string | null;
   addressed_by: number | null;
   created_at: Date;
@@ -62,6 +64,7 @@ export type UpdatePayload = {
   bank?: string | null;
   amount?: number;
   status?: Status;
+  note?: string | null;
   attachment?: string | null;
   addressedBy?: number | null;
 };
@@ -69,5 +72,6 @@ export type UpdatePayload = {
 export type UpdateApiPayload = {
   updatedRequest?: UpdateRequest;
   status?: Status;
+  note?: string | null;
   addressed?: boolean;
 };
