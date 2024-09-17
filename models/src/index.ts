@@ -13,5 +13,6 @@ export { tokens } from "@/tokens";
 export { tutors } from "@/tutors";
 export { users } from "@/users";
 export { rooms } from "@/rooms";
+export { withdrawMethods } from "@/withdrawMethods";
 export { knex, pool, count } from "@/query";
 export { hashPassword, isSamePassword } from "@/lib/password";

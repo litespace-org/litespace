@@ -94,10 +94,10 @@ export function withFilter<T extends Knex.QueryBuilder>({
   return builder;
 }
 
-export function withPagination<T extends Knex.QueryBuilder>(
-  builder: T,
+export function withPagination<Row extends object, Result = Row[]>(
+  builder: Knex.QueryBuilder<Row, Result>,
   pagination: IFilter.Pagination = {}
-): T {
+): Knex.QueryBuilder<Row, Result> {
   const page = pagination.page || 1;
   const size = pagination.size || 10;
   const offset = size * (page - 1);
