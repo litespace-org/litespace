@@ -57,6 +57,8 @@ export type CreatePayload = {
   amount: number;
 };
 
+export type CreateApiPayload = Omit<CreatePayload, "userId">;
+
 export type UpdatePayload = {
   updateRequest?: UpdateRequest | null;
   method?: WithdrawMethod;

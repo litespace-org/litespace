@@ -127,3 +127,20 @@ export function column<T>(value: keyof T, table: string | null = null): string {
 export function aggArrayOrder(column: string) {
   return `array_agg(${column} order by ${column}) = ?` as const;
 }
+
+function asSqlInterval<Row extends object>(
+  value: number | string,
+  unit: string
+): Knex.Raw<Row> {
+  return knex.raw("CONCAT(??:TEXT, ' ', ??:TEXT)", [value, unit]);
+}
+
+export function addSqlMinutes<Row extends object>(
+  start: string,
+  minutes: string
+): Knex.Raw<Row> {
+  return knex.raw("DATE_ADD(??, ??)", [
+    start,
+    asSqlInterval(minutes, "minutes"),
+  ]);
+}

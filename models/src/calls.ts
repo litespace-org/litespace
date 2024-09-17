@@ -1,9 +1,10 @@
-import { aggArrayOrder, column, knex } from "@/query";
+import { addSqlMinutes, aggArrayOrder, column, knex } from "@/query";
 import { concat, first, merge, now, omit, sortBy } from "lodash";
 import { ICall } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
+import zod from "zod";
 
 export class Calls {
   tables = { calls: "calls", members: "call_members" } as const;
@@ -200,6 +201,50 @@ export class Calls {
 
     const rows = await builder.then();
     return rows.map((row) => this.from(row));
+  }
+
+  /**
+   * Canceled calls or calls that user didn't attend will not be added.
+   *
+   * todo: ignore calls that the user didn't attend
+   */
+  async sumCalls({
+    include = { canceled: true, future: true },
+    users,
+    tx,
+  }: {
+    users?: number[];
+    include?: {
+      canceled?: boolean;
+      future?: boolean;
+    };
+    tx?: Knex.Transaction;
+  }) {
+    const builder = this.builder(tx)
+      .members.join(
+        this.tables.calls,
+        this.columns.calls("id"),
+        this.columns.members("call_id")
+      )
+      .sum(this.columns.calls("duration"), { as: "duration" });
+
+    if (users) builder.whereIn(this.columns.members("user_id"), users);
+
+    if (!include.canceled)
+      builder.where(this.columns.calls("canceled_by"), "<>", null);
+
+    if (!include.future)
+      builder.where(
+        addSqlMinutes(
+          this.columns.calls("start"),
+          this.columns.calls("duration")
+        ),
+        "<=",
+        dayjs.utc().toDate()
+      );
+
+    const row: { duration: string } | undefined = await builder.first().then();
+    return row ? zod.coerce.number().parse(row.duration) : 0;
   }
 
   async findByRuleId(

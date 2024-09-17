@@ -7,6 +7,7 @@ import {
   StringLiteral,
   IInterview,
   ILesson,
+  IWithdrawMethod,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -97,6 +98,12 @@ export const interviewStatus = zod.enum([
   IInterview.Status.Passed,
   IInterview.Status.Rejected,
   IInterview.Status.Canceled,
+]);
+
+export const withdrawMethod = zod.enum([
+  IWithdrawMethod.Type.Wallet,
+  IWithdrawMethod.Type.Bank,
+  IWithdrawMethod.Type.Instapay,
 ]);
 
 export const identityObject = zod.object({ id });
