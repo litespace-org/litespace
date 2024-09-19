@@ -1,8 +1,6 @@
-import "colors";
-
 type Loggable = string | number | object;
 
-function json<T>(value: Loggable) {
+function json(value: Loggable) {
   if (typeof value === "string" || typeof value === "number") return value;
   return JSON.stringify(value, null, 2);
 }
@@ -18,19 +16,19 @@ export function logger(...prefixs: string[]) {
 
   return {
     log: (...value: Loggable[]) => {
-      console.log(message(value).bold);
+      console.log(message(value));
     },
     error: (...value: Loggable[]) => {
-      console.log(message(value).red.bold);
+      console.log(message(value));
     },
     info: (...value: Loggable[]) => {
-      console.log(message(value).gray.bold);
+      console.log(message(value));
     },
     warning: (...value: Loggable[]) => {
-      console.log(message(value).yellow.bold);
+      console.log(message(value));
     },
     success: (...value: Loggable[]) => {
-      console.log(message(value).green.bold);
+      console.log(message(value));
     },
   };
 }
