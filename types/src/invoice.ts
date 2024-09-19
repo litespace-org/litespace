@@ -1,5 +1,6 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
 import { Paginated } from "@/utils";
+import { IFilter } from ".";
 
 export enum Status {
   Pending = "pending",
@@ -107,3 +108,5 @@ export type StatsApiResponse = {
 export type CancelApiPayload = {
   note?: string;
 };
+
+export type FindInvoicesParams = IFilter.Pagination & { userId?: number };
