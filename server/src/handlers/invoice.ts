@@ -3,8 +3,14 @@ import { bad, forbidden, notfound } from "@/lib/error";
 import { isValidInvoice } from "@/lib/invoice";
 import { uploadSingle } from "@/lib/media";
 import { ApiContext } from "@/types/api";
-import { invoiceStatus, withdrawMethod, withNamedId } from "@/validation/utils";
-import { authorizer } from "@litespace/auth";
+import {
+  id,
+  invoiceStatus,
+  pagination,
+  withdrawMethod,
+  withNamedId,
+} from "@/validation/utils";
+import { admin, authorizer, tutor } from "@litespace/auth";
 import { invoices, lessons } from "@litespace/models";
 import { IInvoice } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
@@ -30,6 +36,8 @@ const updateByReceiverPayload = zod.object({
   updateRequest: zod.optional(createPayload),
   cancel: zod.optional(zod.boolean()),
 });
+
+const findPayload = zod.object({ userId: zod.optional(id) });
 
 async function stats(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
@@ -134,7 +142,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(invoice);
 }
 
-async function updateByReceiver(context: ApiContext) {
+function updateByReceiver(context: ApiContext) {
   return safe(async (req: Request, res: Response, next: NextFunction) => {
     const allowed = authorizer().tutor().check(req.user);
     if (!allowed) return next(forbidden());
@@ -229,9 +237,65 @@ export function updateByAdmin(context: ApiContext) {
   });
 }
 
+async function find(req: Request, res: Response, next: NextFunction) {
+  const allowed = authorizer().admin().tutor().check(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { userId } = findPayload.parse(req.query);
+  const { page, size } = pagination.parse(req.query);
+  const role = req.user.role;
+  const isTutor = tutor(role);
+  const isAdmin = admin(role);
+  const isPermissionedTutor = isTutor && userId && req.user.id === userId;
+  const isPermissionedAdmin = isAdmin;
+  const isPermissioned = isPermissionedAdmin || isPermissionedTutor;
+  if (!isPermissioned) return next(forbidden());
+
+  const { list, total } = userId
+    ? await invoices.findByUser(userId, { page, size })
+    : await invoices.find({ page, size });
+
+  // attachement is a private field.
+  const masked = isTutor
+    ? list.map((invoice): IInvoice.Self => ({ ...invoice, attachment: null }))
+    : list;
+
+  const response: IInvoice.FindInvoicesApiResponse = {
+    list: masked,
+    total,
+  };
+
+  res.status(200).json(response);
+}
+
+export async function cancel(req: Request, res: Response, next: NextFunction) {
+  const allowed = authorizer().tutor().check(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { id: invoiceId } = withNamedId("id").parse(req.params);
+  const invoice = await invoices.findById(invoiceId);
+  if (!invoice) return next(notfound.base());
+
+  if (invoice.userId !== req.user.id) return next(forbidden());
+
+  const cancelable = [
+    IInvoice.Status.Pending,
+    IInvoice.Status.UpdatedByReceiver,
+  ];
+  if (!cancelable) return next(bad());
+
+  await invoices.update(invoice.id, {
+    status: IInvoice.Status.CanceledByReceiver,
+  });
+
+  res.status(200).json();
+}
+
 export default {
   create: safe(create),
   stats: safe(stats),
+  find: safe(find),
+  cancel: safe(cancel),
   updateByAdmin,
   updateByReceiver,
 };

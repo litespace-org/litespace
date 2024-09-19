@@ -1,4 +1,5 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
+import { Paginated } from "@/utils";
 
 export enum Status {
   Pending = "pending",
@@ -87,6 +88,8 @@ export type UpdateByAdminApiPayload = {
   note?: string;
 };
 
+export type FindInvoicesApiResponse = Paginated<Self>;
+
 export type StatsApiResponse = {
   income: {
     total: number;
@@ -99,4 +102,8 @@ export type StatsApiResponse = {
     pending: number;
   };
   spendable: number;
+};
+
+export type CancelApiPayload = {
+  note?: string;
 };
