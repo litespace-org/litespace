@@ -72,8 +72,31 @@ export type UpdatePayload = {
 };
 
 export type UpdateApiPayload = {
-  updatedRequest?: UpdateRequest;
+  updateRequest?: UpdateRequest;
   status?: Status;
   note?: string | null;
-  addressed?: boolean;
+};
+
+export type UpdateByReceiverApiPayload = {
+  updateRequest?: UpdateRequest;
+  cancel?: boolean;
+};
+
+export type UpdateByAdminApiPayload = {
+  status?: Status;
+  note?: string;
+};
+
+export type StatsApiResponse = {
+  income: {
+    total: number;
+    future: number;
+    past: number;
+  };
+  invoices: {
+    total: number;
+    fulfilled: number;
+    pending: number;
+  };
+  spendable: number;
 };

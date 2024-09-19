@@ -1,3 +1,4 @@
+import { price } from "@litespace/sol";
 import zod from "zod";
 
 export enum Environment {
@@ -121,3 +122,10 @@ export const emailConfig = {
     .string({ message: "Missing or invalid password" })
     .parse(process.env.EMAIL_PASSWORD),
 } as const;
+
+export const platformConfig = {
+  /**
+   * Tutor hourly rate scaled in EGP price.
+   */
+  tutorHourlyRate: price.scale(100),
+};

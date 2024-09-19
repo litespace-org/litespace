@@ -130,6 +130,28 @@ export class Invoices {
     return this.from(row);
   }
 
+  async sumAmounts({
+    pending = true,
+    users,
+    tx,
+  }: {
+    users?: number[];
+    pending?: boolean;
+    tx?: Knex.Transaction;
+  }): Promise<number> {
+    const status: IInvoice.Status[] = [IInvoice.Status.Fulfilled];
+    if (pending) status.push(IInvoice.Status.Pending);
+
+    const builder = this.builder(tx)
+      .sum<{ amount: string }>(this.column("amount"), { as: "amount" })
+      .whereIn(this.column("status"), status);
+
+    if (users) builder.whereIn(this.column("user_id"), users);
+
+    const row = await builder.first();
+    return row ? zod.coerce.number().parse(row.amount) : 0;
+  }
+
   async find(
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction

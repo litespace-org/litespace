@@ -3,6 +3,7 @@ import { ICall, IUser, Paginated } from "@/index";
 export type Row = {
   id: number;
   call_id: number;
+  price: number;
   canceled_by: number | null;
   canceled_at: Date | null;
   created_at: Date;
@@ -12,6 +13,7 @@ export type Row = {
 export type Self = {
   id: number;
   callId: number;
+  price: number;
   canceledBy: number | null;
   canceledAt: string | null;
   createdAt: string;
@@ -59,6 +61,7 @@ export type CreatePayload = {
   callId: number;
   hostId: number;
   members: number[];
+  price: number;
 };
 
 export type CreateApiPayload = {

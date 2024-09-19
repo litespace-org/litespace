@@ -1,9 +1,9 @@
 import "colors";
 
-type Loggable = { toString(): string };
+type Loggable = string | number | object;
 
-function json<T extends Loggable>(value: T) {
-  if (typeof value === "string") return value;
+function json<T>(value: Loggable) {
+  if (typeof value === "string" || typeof value === "number") return value;
   return JSON.stringify(value, null, 2);
 }
 
@@ -13,23 +13,23 @@ export function logger(...prefixs: string[]) {
     .map((prefix) => `[${prefix}]`)
     .join(" ");
 
-  const message = <T extends Loggable>(...value: T[]) =>
+  const message = (value: Loggable[]) =>
     `${prefix} ${value.map(json).join(" ")}`;
 
   return {
-    log: <T extends Loggable>(...value: T[]) => {
+    log: (...value: Loggable[]) => {
       console.log(message(value).bold);
     },
-    error: <T extends Loggable>(...value: T[]) => {
+    error: (...value: Loggable[]) => {
       console.log(message(value).red.bold);
     },
-    info: <T extends Loggable>(...value: T[]) => {
+    info: (...value: Loggable[]) => {
       console.log(message(value).gray.bold);
     },
-    warning: <T extends Loggable>(...value: T[]) => {
+    warning: (...value: Loggable[]) => {
       console.log(message(value).yellow.bold);
     },
-    success: <T extends Loggable>(...value: T[]) => {
+    success: (...value: Loggable[]) => {
       console.log(message(value).green.bold);
     },
   };

@@ -94,3 +94,23 @@ export class Authorizer {
 export function authorizer() {
   return new Authorizer();
 }
+
+export function tutor(role: IUser.Role): boolean {
+  return role === IUser.Role.Tutor;
+}
+
+export function admin(role: IUser.Role): boolean {
+  return role === IUser.Role.SuperAdmin || role === IUser.Role.RegularAdmin;
+}
+
+export function interviewer(role: IUser.Role): boolean {
+  return role === IUser.Role.Interviewer;
+}
+
+export function mediaProvider(role: IUser.Role): boolean {
+  return role === IUser.Role.MediaProvider;
+}
+
+export function student(role: IUser.Role): boolean {
+  return role === IUser.Role.Student;
+}

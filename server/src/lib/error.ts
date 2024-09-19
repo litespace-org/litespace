@@ -83,6 +83,7 @@ export default class ResponseError extends Error {
 
 export const forbidden = () => new ResponseError(errors.fobidden, 401);
 export const badRequest = () => new ResponseError(errors.badRequest, 400);
+export const bad = badRequest;
 export const roomExists = () => new ResponseError(errors.roomExists, 400);
 export const userExists = () => new ResponseError(errors.userExists, 400);
 export const userAlreadyTyped = () =>

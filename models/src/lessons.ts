@@ -3,8 +3,15 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
 import { users } from "@/users";
-import { aggArrayOrder, knex, column, withPagination } from "@/query";
+import {
+  aggArrayOrder,
+  knex,
+  column,
+  withPagination,
+  addSqlMinutes,
+} from "@/query";
 import { calls } from "@/calls";
+import zod from "zod";
 
 export class Lessons {
   table = {
@@ -24,6 +31,7 @@ export class Lessons {
     lesson: {
       id: this.columns.lessons("id"),
       call_id: this.columns.lessons("call_id"),
+      price: this.columns.lessons("price"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
       created_at: this.columns.lessons("created_at"),
@@ -45,6 +53,7 @@ export class Lessons {
     const lessons = await builder.lessons
       .insert({
         call_id: payload.callId,
+        price: payload.price,
         created_at: now,
         updated_at: now,
       })
@@ -107,7 +116,7 @@ export class Lessons {
       updatedAt: users.column("updated_at"),
     };
 
-    const rows = await users
+    const rows: ILesson.PopuldatedMemberRow[] = await users
       .builder(tx)
       .select<ILesson.PopuldatedMemberRow[]>(fields)
       .join(
@@ -163,9 +172,59 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
+  async sumPrice({
+    canceled = true,
+    future = true,
+    users,
+    tx,
+  }: {
+    users?: number[];
+    canceled?: boolean;
+    future?: boolean;
+    tx?: Knex.Transaction;
+  }): Promise<number> {
+    const builder = this.builder(tx)
+      .lessons.join(
+        calls.tables.calls,
+        calls.columns.calls("id"),
+        this.columns.lessons("call_id")
+      )
+      .sum(this.columns.lessons("price"), { as: "price" });
+
+    //! Because of the one-to-many relationship between the lesson and its
+    //! members. We should only perform the join in case the `users` param is
+    //! provider. We will get duplicated rows if we did this by default which
+    //! will douple the total sum for the prices.
+    if (users)
+      builder
+        .join(
+          this.table.members,
+          this.columns.members("lesson_id"),
+          this.columns.lessons("id")
+        )
+        .whereIn(this.columns.members("user_id"), users);
+
+    if (!canceled)
+      builder.where(this.columns.lessons("canceled_by"), "IS", null);
+
+    if (!future)
+      builder.where(
+        addSqlMinutes(
+          calls.columns.calls("start"),
+          calls.columns.calls("duration")
+        ),
+        "<=",
+        dayjs.utc().toDate()
+      );
+
+    const row: { price: string } | undefined = await builder.first().then();
+    return row ? zod.coerce.number().parse(row.price) : 0;
+  }
+
   from(row: ILesson.Row): ILesson.Self {
     return {
       id: row.id,
+      price: row.price,
       callId: row.call_id,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,

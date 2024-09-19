@@ -62,6 +62,18 @@ export class WithdrawMethods {
     return rows.map((row) => this.from(row));
   }
 
+  async findByType(
+    type: IWithdrawMethod.Type,
+    tx?: Knex.Transaction
+  ): Promise<IWithdrawMethod.Self | null> {
+    const row = await this.builder(tx)
+      .select(this.columns)
+      .where(this.column("type"), type)
+      .first();
+    if (!row) return null;
+    return this.from(row);
+  }
+
   builder(tx?: Knex.Transaction) {
     return tx
       ? tx<IWithdrawMethod.Row>(this.table)

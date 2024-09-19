@@ -151,7 +151,7 @@ export class Calls {
 
   async findCallByMembers(members: number[], tx?: Knex.Transaction) {
     // todo: add other call attrs
-    const rows = await this.builder(tx)
+    const rows: Pick<ICall.MemberRow, "call_id">[] = await this.builder(tx)
       .members.select("call_id")
       .groupBy("call_id")
       .havingRaw(aggArrayOrder(this.columns.members("user_id")), [
@@ -221,15 +221,21 @@ export class Calls {
     future?: boolean;
     tx?: Knex.Transaction;
   }): Promise<number> {
-    const builder = this.builder(tx)
-      .members.join(
-        this.tables.calls,
-        this.columns.calls("id"),
-        this.columns.members("call_id")
-      )
-      .sum(this.columns.calls("duration"), { as: "duration" });
+    const builder = this.builder(tx).calls.sum(this.columns.calls("duration"), {
+      as: "duration",
+    });
 
-    if (users) builder.whereIn(this.columns.members("user_id"), users);
+    //! Becuase of the one-to-many relationship between call and its member we
+    //! should perform the join incase the `users` param is provided not to mess
+    //! up the calculations.
+    if (users)
+      builder
+        .join(
+          this.tables.members,
+          this.columns.members("call_id"),
+          this.columns.calls("id")
+        )
+        .whereIn(this.columns.members("user_id"), users);
 
     if (!canceled) builder.where(this.columns.calls("canceled_by"), "IS", null);
 

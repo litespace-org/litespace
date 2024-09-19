@@ -19,4 +19,12 @@ declare module "http" {
 export { onlyForHandshake, authorizeSocket } from "@/wss";
 export { initSession } from "@/session";
 export { initPassport } from "@/passport";
-export { authenticated, authorizer } from "@/authorization";
+export {
+  authenticated,
+  authorizer,
+  admin,
+  interviewer,
+  mediaProvider,
+  student,
+  tutor,
+} from "@/authorization";

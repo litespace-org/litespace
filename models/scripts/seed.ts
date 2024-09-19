@@ -26,7 +26,7 @@ import {
   IWithdrawMethod,
 } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
-import { Time } from "@litespace/sol";
+import { calculateLessonPrice, price, Time, logger } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
 import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
@@ -36,6 +36,7 @@ import "colors";
 const aripsum = new Aripsum("regular");
 
 async function main(): Promise<void> {
+  const stdout = logger("seed");
   const password = hashPassword("LiteSpace432%^&");
   const birthYear = 2001;
 
@@ -263,7 +264,7 @@ async function main(): Promise<void> {
 
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
-      const activeLesson = tutor.id === 10;
+      const activeLesson: boolean = tutor.id === 10;
       const { call } = await calls.create(
         {
           duration: sample([ILesson.Duration.Short, ILesson.Duration.Long])!,
@@ -289,6 +290,7 @@ async function main(): Promise<void> {
           callId: call.id,
           hostId: tutor.id,
           members: [student.id],
+          price: calculateLessonPrice(price.scale(100), call.duration),
         },
         tx
       );
@@ -362,9 +364,9 @@ async function main(): Promise<void> {
                 : Math.random().toString(36).slice(2),
         });
 
-        console.log(`Tutor ${tutor.id}, invoice ${invoice.id}`.gray);
+        stdout.info(`Tutor ${tutor.id}, invoice ${invoice.id}`.gray);
 
-        const seed = sample([0, 1, 2, 3, 4, 5]);
+        const seed = sample([0, 1, 2, 3, 4, 5, 6]);
         if (seed === 0) {
           const { method, amount, bank, receiver } = randomWithdrawMethod();
           await invoices.update(invoice.id, {
@@ -483,9 +485,29 @@ async function main(): Promise<void> {
   const total = await calls.sum({});
   const notCanceled = await calls.sum({ canceled: false });
   const past = await calls.sum({ future: false });
-  console.log("Total sum for all calls in minutes", total);
-  console.log("Total sum for all not canceled calls in minutes ", notCanceled);
-  console.log("Total sum for all past calls in minutes ", past);
+  stdout.info("Total sum for all calls in minutes", total);
+  stdout.info("Total sum for all not canceled calls in minutes ", notCanceled);
+  stdout.info("Total sum for all past calls in minutes ", past);
+
+  const lessonsTotal = await lessons.sumPrice({});
+  const lessonsNotCanceled = await lessons.sumPrice({ canceled: false });
+  const pastLessonsOnly = await lessons.sumPrice({ future: false });
+  stdout.info("Total sum for all lessons in egp", lessonsTotal / 100);
+  stdout.info(
+    "Total sum for all not canceled lessons in egp",
+    lessonsNotCanceled / 100
+  );
+  stdout.info("Total sum for all past lessons in egp ", pastLessonsOnly / 100);
+
+  const invoicesSum = await invoices.sumAmounts({});
+  const fulfilledInvoices = await invoices.sumAmounts({ pending: false });
+  const pendingInvoices = invoicesSum - fulfilledInvoices;
+  stdout.info("Total sum for all invoices in egp", invoicesSum / 100);
+  stdout.info(
+    "Total sum for fulfilled invoices in egp",
+    fulfilledInvoices / 100
+  );
+  stdout.info("Total sum for pending invoices in egp", pendingInvoices / 100);
 }
 
 main()

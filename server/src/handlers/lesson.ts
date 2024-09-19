@@ -15,9 +15,10 @@ import asyncHandler from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
-import { Schedule, unpackRules } from "@litespace/sol";
+import { Schedule, unpackRules, calculateLessonPrice } from "@litespace/sol";
 import { map } from "lodash";
 import { authorizer } from "@litespace/auth";
+import { platformConfig } from "@/constants";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -43,6 +44,11 @@ function create(context: ApiContext) {
       const rule = await rules.findById(payload.ruleId);
       if (!rule) return next(notfound.base());
 
+      const price = calculateLessonPrice(
+        platformConfig.tutorHourlyRate,
+        payload.duration
+      );
+
       // todo: check if a tutor has the time for the lesson
       // todo: update the global available tutors cache
 
@@ -64,6 +70,7 @@ function create(context: ApiContext) {
               callId: call.id,
               hostId: payload.tutorId,
               members: [userId],
+              price,
             },
             tx
           );
