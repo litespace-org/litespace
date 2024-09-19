@@ -1,9 +1,21 @@
 import { Base } from "@/base";
+import { IWithdrawMethod } from "@litespace/types";
 
 export class WithdrawMethod extends Base {
-  async create() {}
+  async create(
+    payload: IWithdrawMethod.CreatePayload
+  ): Promise<IWithdrawMethod.Self> {
+    return this.post("/api/v1/withdraw-method", payload);
+  }
 
-  async update() {}
+  async update(
+    type: IWithdrawMethod.Type,
+    payload: IWithdrawMethod.UpdatePayload
+  ): Promise<void> {
+    return this.put(`/api/v1/withdraw-method/${type}`, payload);
+  }
 
-  async find() {}
+  async find(): Promise<IWithdrawMethod.Self[]> {
+    return this.get(`/api/v1/withdraw-method/list`);
+  }
 }

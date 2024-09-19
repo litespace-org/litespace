@@ -16,11 +16,13 @@ import asset from "@/routes/asset";
 import rule from "@/routes/rule";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
+import withdrawMethod from "@/routes/withdrawMethod";
 
 export default {
   user,
   lesson,
   invoice,
+  withdrawMethod,
   tutor,
   student,
   call,
