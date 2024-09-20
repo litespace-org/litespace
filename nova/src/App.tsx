@@ -23,6 +23,7 @@ import Lessons from "@/pages/Lessons";
 import { findUserRules } from "@/redux/user/schedule";
 import Tutors from "@/pages/Tutors";
 import Interviews from "@/pages/Interviews";
+import Invoices from "@/pages/Invoices";
 
 const router = createBrowserRouter([
   { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
@@ -43,6 +44,7 @@ const router = createBrowserRouter([
       { path: Route.Tutors, element: <Tutors /> },
       { path: Route.Lessons, element: <Lessons /> },
       { path: Route.Interviews, element: <Interviews /> },
+      { path: Route.Invoices, element: <Invoices /> },
     ],
     errorElement: <ErrorPage />,
   },

@@ -7,7 +7,7 @@ export class Invoice extends Base {
   }
 
   async stats(userId: number): Promise<IInvoice.StatsApiResponse> {
-    return await this.get(`/api/v1/invoice/status/${userId}`);
+    return await this.get(`/api/v1/invoice/stats/${userId}`);
   }
 
   async updateByReceiver(

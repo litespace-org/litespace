@@ -1,6 +1,6 @@
 import ar from "@/locales/ar-eg.json" assert { type: "json" };
 
-type LocalMap = Record<keyof typeof ar, keyof typeof ar>;
+export type LocalMap = Record<keyof typeof ar, keyof typeof ar>;
 
 function makeMessages(): LocalMap {
   const map: Partial<LocalMap> = {};

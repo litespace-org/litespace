@@ -23,7 +23,7 @@ export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";
 export { TextEditor } from "@/components/TextEditor";
 export { ErrorPage } from "@/components/ErrorPage";
-export { messages, locales } from "@/locales";
+export { messages, locales, type LocalMap } from "@/locales";
 export {
   useRequired,
   useValidation,
@@ -41,5 +41,6 @@ export {
   fetcher,
   initial,
 } from "@/lib/redux";
+export * from "@/lib/format";
 export * from "@/components/Icons";
 export * from "@/constants/labels";

@@ -37,7 +37,7 @@ export class Atlas {
   public readonly interview: Interview;
   public readonly rule: Rule;
   public readonly lesson: Lesson;
-  public readonly WithdrawMethod: WithdrawMethod;
+  public readonly withdrawMethod: WithdrawMethod;
   public readonly invoice: Invoice;
 
   constructor(backend: Backend) {
@@ -58,7 +58,7 @@ export class Atlas {
     this.interview = new Interview(backend);
     this.rule = new Rule(backend);
     this.lesson = new Lesson(backend);
-    this.WithdrawMethod = new WithdrawMethod(backend);
+    this.withdrawMethod = new WithdrawMethod(backend);
     this.invoice = new Invoice(backend);
   }
 }
