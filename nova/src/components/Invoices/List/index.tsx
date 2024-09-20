@@ -40,8 +40,6 @@ const List: React.FC = () => {
 
   const { query, list, more } = usePaginationQuery(findInvoices, ["invoices"]);
 
-  console.log({ list });
-
   const timeline = useMemo((): TimelineItem[] => {
     if (!list) return [];
     return list.map((invoice) => ({

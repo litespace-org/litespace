@@ -149,8 +149,10 @@ const Invoice: React.FC<{
     canceledByReceiver,
     cancellationApprovedByAdmin,
     updatedByReceiver,
+    fulfilled,
+    pending,
   } = useInvoiceStatus(invoice.status);
-  const { bank, instapay } = useWithdrawMethod(invoice.method);
+  const { bank, instapay, wallet } = useWithdrawMethod(invoice.method);
 
   const method = useMemo(() => {
     return intl.formatMessage({
@@ -162,23 +164,24 @@ const Invoice: React.FC<{
     });
   }, [bank, instapay, intl]);
 
-  const receiver = useMemo(() => {
-    if (invoice.bank) return `${invoice.receiver} (${invoice.bank})`;
-    return invoice.receiver;
-  }, [invoice.bank, invoice.receiver]);
-
   const ids = useMemo((): Array<keyof LocalMap> => {
-    return [
+    const ids: Array<keyof LocalMap> = [
       "page.invoices.id",
       "page.invoices.method",
       "page.invoices.amount",
-      "page.invoices.receiver",
-      "page.invoices.date",
     ];
-  }, []);
+
+    if (bank) ids.push("page.invoices.account");
+    if (instapay) ids.push("page.invoices.username");
+    if (wallet) ids.push("page.invoices.phone");
+    if (invoice.bank) ids.push("page.invoices.bank");
+
+    ids.push("page.invoices.date");
+    return ids;
+  }, [bank, instapay, invoice.bank, wallet]);
 
   const values = useMemo(() => {
-    return [
+    const values = [
       { id: 1, value: `#${invoice.id}` },
       { id: 2, value: method },
       {
@@ -189,15 +192,28 @@ const Invoice: React.FC<{
           </span>
         ),
       },
-      { id: 4, value: receiver },
-      {
-        id: 5,
-        value:
-          dayjs(invoice.createdAt).format("dddd، DD MMMM، YYYY") +
-          ` (${dayjs(invoice.createdAt).fromNow()})`,
-      },
+      { id: 4, value: <Receiver receiver={invoice.receiver} /> },
     ];
-  }, [invoice.amount, invoice.createdAt, invoice.id, method, receiver]);
+
+    if (invoice.bank)
+      values.push({ id: 5, value: <Bank bank={invoice.bank} /> });
+
+    values.push({
+      id: 6,
+      value:
+        dayjs(invoice.createdAt).format("dddd، DD MMMM، YYYY") +
+        ` (${dayjs(invoice.createdAt).fromNow()})`,
+    });
+
+    return values;
+  }, [
+    invoice.amount,
+    invoice.bank,
+    invoice.createdAt,
+    invoice.id,
+    invoice.receiver,
+    method,
+  ]);
 
   return (
     <Card className="flex flex-col gap-4">
@@ -205,17 +221,6 @@ const Invoice: React.FC<{
         <Labels ids={ids} />
         <Values values={values} />
       </ul>
-
-      {invoice.note ? (
-        <div className="border border-control rounded-md">
-          <div className="w-full bg-surface-300 px-2 py-1.5">
-            <p>{intl.formatMessage({ id: messages["page.invoices.note"] })}</p>
-          </div>
-          <div className="px-2 py-3">
-            <RawHtml html={invoice.note} />
-          </div>
-        </div>
-      ) : null}
 
       {rejected ||
       canceledByAdmin ||
@@ -257,6 +262,61 @@ const Invoice: React.FC<{
 
           <InvoiceUpdates invoice={invoice} />
         </Alert>
+      ) : null}
+
+      {fulfilled ? (
+        <Alert
+          type={AlertType.Success}
+          title={intl.formatMessage({
+            id: messages["page.invoices.status.fulfilled"],
+          })}
+        >
+          <div className="flex flex-col gap-1">
+            <p>
+              {intl.formatMessage({
+                id: messages["page.invoices.status.fulfilled.note"],
+              })}
+            </p>
+            <p>
+              {intl.formatMessage({
+                id: messages["page.invoices.unexpected.status.note"],
+              })}
+            </p>
+          </div>
+        </Alert>
+      ) : null}
+
+      {pending ? (
+        <Alert
+          type={AlertType.Info}
+          title={intl.formatMessage({
+            id: messages["page.invoices.status.pending"],
+          })}
+        >
+          <div className="flex flex-col gap-1">
+            <p>
+              {intl.formatMessage({
+                id: messages["page.invoices.status.pending.note"],
+              })}
+            </p>
+            <p>
+              {intl.formatMessage({
+                id: messages["page.invoices.unexpected.status.note"],
+              })}
+            </p>
+          </div>
+        </Alert>
+      ) : null}
+
+      {invoice.note ? (
+        <div className="border border-control rounded-md">
+          <div className="w-full bg-surface-300 px-2 py-1.5">
+            <p>{intl.formatMessage({ id: messages["page.invoices.note"] })}</p>
+          </div>
+          <div className="px-2 py-3">
+            <RawHtml html={invoice.note} />
+          </div>
+        </div>
       ) : null}
     </Card>
   );

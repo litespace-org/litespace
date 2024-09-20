@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
-import { AlertCircle, AlertTriangle } from "react-feather";
+import { AlertCircle, AlertTriangle, CheckCircle, Info } from "react-feather";
 import { AlertType } from "@/components/Alert/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
@@ -15,10 +15,12 @@ export const Alert: React.FC<{
     loading?: boolean;
   };
 }> = ({ title, children, action, type = AlertType.Error }) => {
-  const { error, warning } = useMemo(() => {
+  const { error, warning, success, info } = useMemo(() => {
     return {
       error: type === AlertType.Error,
       warning: type === AlertType.Warning,
+      success: type === AlertType.Success,
+      info: type === AlertType.Info,
     };
   }, [type]);
 
@@ -30,6 +32,8 @@ export const Alert: React.FC<{
         {
           "border-destructive-400 bg-destructive-200": error,
           "border-warning-400 bg-warning-200": warning,
+          "border-[var(--colors-green8)] bg-[var(--colors-green4)]": success,
+          "border-[var(--colors-blue8)] bg-[var(--colors-blue4)]": info,
         }
       )}
     >
@@ -38,6 +42,10 @@ export const Alert: React.FC<{
           <AlertCircle className="text-destructive-600" />
         ) : warning ? (
           <AlertTriangle className="text-warning-600" />
+        ) : success ? (
+          <CheckCircle className="text-[var(--colors-green9)]" />
+        ) : info ? (
+          <Info className="text-[var(--colors-blue9)]" />
         ) : null}
       </div>
       <div className="flex flex-col items-start justify-center">

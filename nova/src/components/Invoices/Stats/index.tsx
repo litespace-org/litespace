@@ -1,12 +1,20 @@
 import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
-import { LocalMap, Spinner } from "@litespace/luna";
+import {
+  Button,
+  ButtonSize,
+  LocalMap,
+  messages,
+  Spinner,
+} from "@litespace/luna";
 import { useQuery } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 import Stat from "./Stat";
+import { useIntl } from "react-intl";
 
 const Stats: React.FC = () => {
+  const intl = useIntl();
   const profile = useAppSelector(profileSelector);
   const stats = useQuery({
     queryFn: async () => {
@@ -39,6 +47,20 @@ const Stats: React.FC = () => {
 
   return (
     <div>
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-3xl">
+          {intl.formatMessage({
+            id: messages["page.invoices.stats.title"],
+          })}
+        </h3>
+
+        <Button size={ButtonSize.Small}>
+          {intl.formatMessage({
+            id: messages["page.invoices.stats.create.invoice"],
+          })}
+        </Button>
+      </div>
+
       {stats.isLoading ? (
         <div className="flex items-center justify-center h-[20vh]">
           <Spinner />

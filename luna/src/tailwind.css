@@ -790,7 +790,6 @@ input[type="range"]:focus::-moz-range-thumb {
   --colors-scaleA12: var(--colors-slateA12);
 }
 
-/* [data-theme*="dark"] { */
 .dark:root {
   --colors-amber1: #1f1300;
   --colors-amber2: #271700;
