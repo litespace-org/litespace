@@ -46,10 +46,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   res.status(200).json();
 }
 
-async function find(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().check(req.user);
-  if (!allowed) return next(forbidden());
-
+async function find(_req: Request, res: Response) {
   const methods = await withdrawMethods.find();
   res.status(200).json(methods);
 }

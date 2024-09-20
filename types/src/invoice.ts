@@ -1,6 +1,11 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
 import { Paginated } from "@/utils";
-import { IFilter } from ".";
+import { IFilter } from "@/index";
+
+export enum Bank {
+  Cib = "cib",
+  Alex = "alex",
+}
 
 export enum Status {
   Pending = "pending",

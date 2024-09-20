@@ -12,9 +12,12 @@ import { useQuery } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 import Stat from "./Stat";
 import { useIntl } from "react-intl";
+import CreateInvoice from "../List/Create";
+import { useRender } from "@/hooks/render";
 
 const Stats: React.FC = () => {
   const intl = useIntl();
+  const create = useRender();
   const profile = useAppSelector(profileSelector);
   const stats = useQuery({
     queryFn: async () => {
@@ -76,6 +79,8 @@ const Stats: React.FC = () => {
           ))}
         </div>
       ) : null}
+
+      <CreateInvoice open={true} close={create.hide} />
     </div>
   );
 };

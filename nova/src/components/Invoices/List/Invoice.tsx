@@ -167,7 +167,7 @@ const Invoice: React.FC<{
   const ids = useMemo((): Array<keyof LocalMap> => {
     const ids: Array<keyof LocalMap> = [
       "page.invoices.id",
-      "page.invoices.method",
+      "invoices.method",
       "page.invoices.amount",
     ];
 

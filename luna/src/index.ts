@@ -45,6 +45,7 @@ export {
   getWithdrawMethodIntlId,
   destructureWithdrawMethod,
 } from "@/components/utils/withdraw";
+export { useFormatMessage } from "@/hooks/intl";
 export * from "@/lib/format";
 export * from "@/components/Icons";
 export * from "@/constants/labels";

@@ -1,4 +1,4 @@
-import { messages } from "@/locales";
+import { LocalMap, messages } from "@/locales";
 import { IWithdrawMethod } from "@litespace/types";
 
 export function destructureWithdrawMethod(method: IWithdrawMethod.Type) {
@@ -9,7 +9,9 @@ export function destructureWithdrawMethod(method: IWithdrawMethod.Type) {
   };
 }
 
-export function getWithdrawMethodIntlId(method: IWithdrawMethod.Type) {
+export function getWithdrawMethodIntlId(
+  method: IWithdrawMethod.Type
+): keyof LocalMap {
   const { bank, instapay } = destructureWithdrawMethod(method);
   return instapay
     ? messages["global.withdraw.methods.instapay"]
