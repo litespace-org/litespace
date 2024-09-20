@@ -15,15 +15,15 @@ const Price: React.FC<{
       id: messages["global.currency.egp"],
     });
     const formatted = new Intl.NumberFormat().format(main);
-
     return [formatted, decimal.toFixed(2).split(".")[1], currency];
   }, [intl, value]);
 
-  console.log(new Intl.NumberFormat().format(price.unscale(value)));
   return (
     <>
-      <span className="change">{decimal}.</span>
-      <span className="main">{main}&nbsp;</span>
+      <span dir="ltr">
+        <span className="main">&nbsp;{main}</span>
+        <span className="change">.{decimal}</span>
+      </span>
       <span className="currency">{currency}</span>
     </>
   );

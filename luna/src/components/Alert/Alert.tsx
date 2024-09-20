@@ -1,27 +1,44 @@
-import React from "react";
+import React, { useMemo } from "react";
 import cn from "classnames";
-import { AlertCircle } from "react-feather";
+import { AlertCircle, AlertTriangle } from "react-feather";
+import { AlertType } from "@/components/Alert/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
 export const Alert: React.FC<{
   title?: string;
   children?: React.ReactNode;
+  type?: AlertType;
   action?: {
     label: string;
     onClick?: () => void;
     disabled?: boolean;
     loading?: boolean;
   };
-}> = ({ title, children, action }) => {
+}> = ({ title, children, action, type = AlertType.Error }) => {
+  const { error, warning } = useMemo(() => {
+    return {
+      error: type === AlertType.Error,
+      warning: type === AlertType.Warning,
+    };
+  }, [type]);
+
   return (
     <div
       className={cn(
-        "border border-destructive-400 bg-destructive-200 p-4 text-base rounded-lg",
-        "w-full flex flex-row gap-2"
+        "border  p-4 text-base rounded-lg",
+        "w-full flex flex-row gap-2",
+        {
+          "border-destructive-400 bg-destructive-200": error,
+          "border-warning-400 bg-warning-200": warning,
+        }
       )}
     >
       <div>
-        <AlertCircle className="text-destructive-600" />
+        {error ? (
+          <AlertCircle className="text-destructive-600" />
+        ) : warning ? (
+          <AlertTriangle className="text-warning-600" />
+        ) : null}
       </div>
       <div className="flex flex-col items-start justify-center">
         {title ? (
@@ -49,7 +66,11 @@ export const Alert: React.FC<{
               htmlType="button"
               onClick={action.onClick}
               size={ButtonSize.Small}
-              type={ButtonType.Error}
+              type={
+                type === AlertType.Error
+                  ? ButtonType.Error
+                  : ButtonType.Secondary
+              }
               disabled={action.disabled}
               loading={action.loading}
             >

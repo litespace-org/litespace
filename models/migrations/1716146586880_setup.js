@@ -41,10 +41,10 @@ exports.up = (pgm) => {
   pgm.createType("withdraw_method", ["wallet", "bank", "instapay"]);
   pgm.createType("invoice_status", [
     "pending",
-    "updated_by_receiver",
-    "canceled_by_receiver",
-    "canceled_by_admin",
-    "cancellation_approved_by_admin",
+    "updated-by-receiver",
+    "canceled-by-receiver",
+    "canceled-by-admin",
+    "cancellation-approved-by-admin",
     "fulfilled",
     "rejected",
   ]);

@@ -107,7 +107,7 @@ export class Invoices {
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
   ): Promise<Paginated<IInvoice.Self>> {
-    const builder = this.builder(tx).where(this.column("id"), userId);
+    const builder = this.builder(tx).where(this.column("user_id"), userId);
     const total = await countRows(builder.clone());
     const query = builder
       .clone()

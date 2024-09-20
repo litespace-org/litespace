@@ -4,10 +4,10 @@ import { IFilter } from ".";
 
 export enum Status {
   Pending = "pending",
-  UpdatedByReceiver = "updated_by_receiver",
-  CanceledByReceiver = "canceled_by_receiver",
-  CanceledByAdmin = "canceled_by_admin",
-  CancellationApprovedByAdmin = "cancellation_approved_by_admin",
+  UpdatedByReceiver = "updated-by-receiver",
+  CanceledByReceiver = "canceled-by-receiver",
+  CanceledByAdmin = "canceled-by-admin",
+  CancellationApprovedByAdmin = "cancellation-approved-by-admin",
   Fulfilled = "fulfilled",
   Rejected = "rejected",
 }

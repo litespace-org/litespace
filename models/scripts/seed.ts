@@ -345,75 +345,73 @@ async function main(): Promise<void> {
   }
 
   for (const tutor of addedTutors) {
-    await Promise.all(
-      range(1, 51).map(async () => {
-        const method = sample(methods)!;
-        const invoice = await invoices.create({
-          userId: tutor.id,
-          amount: random(1000_00, 100_000_00),
-          bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
-          method,
-          receiver:
-            method === IWithdrawMethod.Type.Bank
-              ? random(1_000_000_000, 5_000_000_000).toString()
-              : method === IWithdrawMethod.Type.Wallet
-                ? [
-                    sample(["015", "010", "011"])!,
-                    random(1_000_000_0, 9_999_999_9),
-                  ].join("")
-                : Math.random().toString(36).slice(2),
+    for (const _ of range(1, 51)) {
+      const method = sample(methods)!;
+      const invoice = await invoices.create({
+        userId: tutor.id,
+        amount: random(1000_00, 100_000_00),
+        bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
+        method,
+        receiver:
+          method === IWithdrawMethod.Type.Bank
+            ? random(1_000_000_000, 5_000_000_000).toString()
+            : method === IWithdrawMethod.Type.Wallet
+              ? [
+                  sample(["015", "010", "011"])!,
+                  random(1_000_000_0, 9_999_999_9),
+                ].join("")
+              : Math.random().toString(36).slice(2),
+      });
+
+      stdout.info(`Tutor ${tutor.id}, invoice ${invoice.id}`.gray);
+
+      const seed = sample([0, 1, 2, 3, 4, 5, 6]);
+      if (seed === 0) {
+        const { method, amount, bank, receiver } = randomWithdrawMethod();
+        await invoices.update(invoice.id, {
+          updateRequest: { method, amount, bank, receiver },
+          status: IInvoice.Status.UpdatedByReceiver,
         });
+      }
 
-        stdout.info(`Tutor ${tutor.id}, invoice ${invoice.id}`.gray);
+      if (seed === 1) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.Fulfilled,
+          addressedBy: admin.id,
+          note: aripsum.generateParagraph(20, 50),
+        });
+      }
 
-        const seed = sample([0, 1, 2, 3, 4, 5, 6]);
-        if (seed === 0) {
-          const { method, amount, bank, receiver } = randomWithdrawMethod();
-          await invoices.update(invoice.id, {
-            updateRequest: { method, amount, bank, receiver },
-            status: IInvoice.Status.UpdatedByReceiver,
-          });
-        }
+      if (seed === 2) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.CanceledByReceiver,
+        });
+      }
 
-        if (seed === 1) {
-          await invoices.update(invoice.id, {
-            status: IInvoice.Status.Fulfilled,
-            addressedBy: admin.id,
-            note: aripsum.generateParagraph(20, 50),
-          });
-        }
+      if (seed === 3) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.CanceledByAdmin,
+          addressedBy: admin.id,
+          note: aripsum.generateParagraph(20, 50),
+        });
+      }
 
-        if (seed === 2) {
-          await invoices.update(invoice.id, {
-            status: IInvoice.Status.CanceledByReceiver,
-          });
-        }
+      if (seed === 4) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.CancellationApprovedByAdmin,
+          addressedBy: admin.id,
+          note: aripsum.generateParagraph(20, 50),
+        });
+      }
 
-        if (seed === 3) {
-          await invoices.update(invoice.id, {
-            status: IInvoice.Status.CanceledByAdmin,
-            addressedBy: admin.id,
-            note: aripsum.generateParagraph(20, 50),
-          });
-        }
-
-        if (seed === 4) {
-          await invoices.update(invoice.id, {
-            status: IInvoice.Status.CancellationApprovedByAdmin,
-            addressedBy: admin.id,
-            note: aripsum.generateParagraph(20, 50),
-          });
-        }
-
-        if (seed === 5) {
-          await invoices.update(invoice.id, {
-            status: IInvoice.Status.Rejected,
-            addressedBy: admin.id,
-            note: aripsum.generateParagraph(20, 50),
-          });
-        }
-      })
-    );
+      if (seed === 5) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.Rejected,
+          addressedBy: admin.id,
+          note: aripsum.generateParagraph(20, 50),
+        });
+      }
+    }
   }
 
   const plan = await plans.create({
