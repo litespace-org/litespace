@@ -14,6 +14,7 @@ import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
 import { useInvoiceStatus } from "@/hooks/invoice";
 import ManageInvoice from "@/components/Invoices/List/Manage";
+import Cancel from "@/components/Invoices/List/Cancel";
 
 const Invoice: React.FC<{
   invoice: IInvoice.Self;
@@ -21,6 +22,7 @@ const Invoice: React.FC<{
 }> = ({ invoice, refresh }) => {
   const intl = useFormatMessage();
   const edit = useRender();
+  const cancel = useRender();
   const {
     rejected,
     canceledByAdmin,
@@ -97,11 +99,12 @@ const Invoice: React.FC<{
       {
         id: 2,
         label: intl("global.labels.cancel"),
+        onClick: cancel.show,
         danger: true,
         disabled,
       },
     ];
-  }, [intl, pending, updatedByReceiver]);
+  }, [cancel.show, edit.show, intl, pending, updatedByReceiver]);
 
   return (
     <Card className="flex flex-col gap-4">
@@ -168,6 +171,13 @@ const Invoice: React.FC<{
         open={edit.open}
         close={edit.hide}
         invoice={invoice}
+      />
+
+      <Cancel
+        open={cancel.open}
+        close={cancel.hide}
+        id={invoice.id}
+        refresh={refresh}
       />
     </Card>
   );

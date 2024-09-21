@@ -292,8 +292,8 @@ const ManageInvoice: React.FC<{
         <div className="mt-4">
           <Button
             size={ButtonSize.Small}
-            disabled={create.isPending || disabled}
-            loading={create.isPending}
+            disabled={create.isPending || update.isPending || disabled}
+            loading={create.isPending || update.isPending}
           >
             {intl(invoice ? "global.labels.edit" : "global.labels.confirm")}
           </Button>
