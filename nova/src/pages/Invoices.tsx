@@ -47,10 +47,12 @@ const Invoices: React.FC = () => {
   return (
     <div className="max-w-screen-2xl mx-auto w-full p-6 flex flex-col gap-6">
       <Stats
-        refresh={refresh}
+        refreshAll={refresh}
+        refresh={stats.refetch}
         stats={stats.data}
         loading={stats.isLoading}
         fetching={stats.isFetching}
+        error={stats.error}
       />
       <List
         list={invoices.list}
@@ -58,7 +60,9 @@ const Invoices: React.FC = () => {
         fetching={invoices.query.isFetching}
         withMore={invoices.query.hasNextPage}
         more={invoices.more}
-        refresh={refresh}
+        refresh={invoices.query.refetch}
+        refreshAll={refresh}
+        error={invoices.query.error}
       />
     </div>
   );

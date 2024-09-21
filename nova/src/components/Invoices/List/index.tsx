@@ -12,28 +12,40 @@ import { Hash } from "react-feather";
 import { useIntl } from "react-intl";
 import Invoice from "@/components/Invoices/List/Invoice";
 import { isEmpty } from "lodash";
+import Error from "./Error";
 
 const List: React.FC<{
-  refresh?: () => void;
+  refreshAll: () => void;
+  refresh: () => void;
   list: IInvoice.Self[] | null;
   loading: boolean;
   fetching: boolean;
   withMore: boolean;
   more: () => void;
-}> = ({ refresh, list, loading, fetching, withMore, more }) => {
+  error: Error | null;
+}> = ({
+  refresh,
+  refreshAll,
+  list,
+  loading,
+  fetching,
+  withMore,
+  more,
+  error,
+}) => {
   const intl = useIntl();
   const timeline = useMemo((): TimelineItem[] => {
     if (!list) return [];
     return list.map((invoice) => ({
       id: invoice.id,
       icon: <Hash />,
-      children: <Invoice refresh={refresh} invoice={invoice} />,
+      children: <Invoice refresh={refreshAll} invoice={invoice} />,
     }));
-  }, [list, refresh]);
+  }, [list, refreshAll]);
 
   return (
     <div>
-      <div className="flex flex-row items-center gap-2">
+      <div className="flex flex-row items-center gap-2 mb-6">
         <h3 className="text-3xl">
           {intl.formatMessage({
             id: messages["invoices.title"],
@@ -48,8 +60,16 @@ const List: React.FC<{
         </div>
       ) : null}
 
+      {error ? (
+        <Error
+          refetch={refresh}
+          loading={fetching || loading}
+          disabled={fetching || loading}
+        />
+      ) : null}
+
       {list && !isEmpty(list) ? (
-        <div className="my-6">
+        <div>
           <Timeline timeline={timeline} />
           <Button
             loading={loading || fetching}

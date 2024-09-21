@@ -9,6 +9,7 @@ import {
   ILesson,
   IWithdrawMethod,
   IInvoice,
+  banks,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -110,14 +111,13 @@ export const withdrawMethod = zod.enum([
 export const invoiceStatus = zod.enum([
   IInvoice.Status.Pending,
   IInvoice.Status.CanceledByReceiver,
-  IInvoice.Status.CanceledByAdmin,
   IInvoice.Status.CancellationApprovedByAdmin,
   IInvoice.Status.Fulfilled,
   IInvoice.Status.Rejected,
   IInvoice.Status.UpdatedByReceiver,
 ]);
 
-export const bank = zod.enum([IInvoice.Bank.Cib, IInvoice.Bank.Alex]);
+export const bank = zod.enum(banks);
 
 export const identityObject = zod.object({ id });
 

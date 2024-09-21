@@ -7,11 +7,12 @@ export enum Bank {
   Alex = "alex",
 }
 
+export const banks = [Bank.Cib, Bank.Alex] as const;
+
 export enum Status {
   Pending = "pending",
   UpdatedByReceiver = "updated-by-receiver",
   CanceledByReceiver = "canceled-by-receiver",
-  CanceledByAdmin = "canceled-by-admin",
   CancellationApprovedByAdmin = "cancellation-approved-by-admin",
   Fulfilled = "fulfilled",
   Rejected = "rejected",
@@ -45,7 +46,7 @@ export type Row = {
   user_id: number;
   method: WithdrawMethod;
   receiver: string;
-  bank: string | null;
+  bank: Bank | null;
   amount: number;
   update: string | null;
   status: Status;
@@ -70,7 +71,7 @@ export type UpdatePayload = {
   updateRequest?: UpdateRequest | null;
   method?: WithdrawMethod;
   receiver?: string;
-  bank?: string | null;
+  bank?: Bank | null;
   amount?: number;
   status?: Status;
   note?: string | null;

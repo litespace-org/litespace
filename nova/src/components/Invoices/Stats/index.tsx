@@ -10,13 +10,16 @@ import { useRender } from "@/hooks/render";
 import ManageInvoice from "@/components/Invoices/List/Manage";
 import Stat from "@/components/Invoices/Stats/Stat";
 import { IInvoice } from "@litespace/types";
+import Error from "@/components/Invoices/Stats/Error";
 
 const Stats: React.FC<{
-  refresh?: () => void;
+  refreshAll: () => void;
+  refresh: () => void;
   stats?: IInvoice.StatsApiResponse | null;
   loading: boolean;
   fetching: boolean;
-}> = ({ refresh, stats, loading, fetching }) => {
+  error: Error | null;
+}> = ({ refresh, refreshAll, stats, loading, fetching, error }) => {
   const intl = useFormatMessage();
   const create = useRender();
 
@@ -64,6 +67,14 @@ const Stats: React.FC<{
         </div>
       ) : null}
 
+      {error ? (
+        <Error
+          refetch={refresh}
+          disabled={loading || fetching}
+          loading={loading || fetching}
+        />
+      ) : null}
+
       {data ? (
         <div className="grid grid-cols-12 gap-4">
           {data.map(({ id, value }) => (
@@ -74,7 +85,11 @@ const Stats: React.FC<{
         </div>
       ) : null}
 
-      <ManageInvoice open={create.open} close={create.hide} refresh={refresh} />
+      <ManageInvoice
+        open={create.open}
+        close={create.hide}
+        refresh={refreshAll}
+      />
     </div>
   );
 };

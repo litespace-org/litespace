@@ -3,6 +3,7 @@ import {
   IInvoice,
   IWithdrawMethod,
   Paginated,
+  banks,
 } from "@litespace/types";
 import { column, countRows, knex, withPagination } from "@/query";
 import { Knex } from "knex";
@@ -10,25 +11,14 @@ import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
 
-export const updateRequest: zod.ZodObject<{
-  method: zod.ZodEnum<
-    [
-      typeof IWithdrawMethod.Type.Wallet,
-      typeof IWithdrawMethod.Type.Bank,
-      typeof IWithdrawMethod.Type.Instapay,
-    ]
-  >;
-  receiver: zod.ZodString;
-  bank: zod.ZodUnion<[zod.ZodString, zod.ZodNull]>;
-  amount: zod.ZodNumber;
-}> = zod.object({
+export const updateRequest = zod.object({
   method: zod.enum([
     IWithdrawMethod.Type.Wallet,
     IWithdrawMethod.Type.Bank,
     IWithdrawMethod.Type.Instapay,
   ]),
   receiver: zod.string(),
-  bank: zod.union([zod.string(), zod.null()]),
+  bank: zod.union([zod.enum(banks), zod.null()]),
   amount: zod.coerce.number().int().positive(),
 });
 
