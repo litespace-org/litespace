@@ -53,7 +53,7 @@ const List: React.FC = () => {
     <div>
       <h3 className="text-3xl">
         {intl.formatMessage({
-          id: messages["page.invoices.title"],
+          id: messages["invoices.title"],
         })}
       </h3>
 

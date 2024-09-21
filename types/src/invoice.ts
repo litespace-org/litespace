@@ -91,7 +91,7 @@ export type UpdateByReceiverApiPayload = {
 
 export type UpdateByAdminApiPayload = {
   status?: Status;
-  note?: string;
+  note?: string | null;
 };
 
 export type FindInvoicesApiResponse = Paginated<Self>;

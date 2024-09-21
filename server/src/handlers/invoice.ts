@@ -29,7 +29,7 @@ const createPayload = invoicePayload;
 
 const updateByAdminPayload = zod.object({
   status: zod.optional(invoiceStatus),
-  note: zod.string(),
+  note: zod.optional(zod.union([zod.string(), zod.null()])),
 });
 
 const updateByReceiverPayload = zod.object({
@@ -225,11 +225,26 @@ export function updateByAdmin(context: ApiContext) {
       ? await uploadSingle(file, FileType.Image)
       : undefined;
 
+    const approveUpdate =
+      payload.status === IInvoice.Status.Pending &&
+      invoice.status === IInvoice.Status.UpdatedByReceiver &&
+      invoice.update;
+
+    const amount = approveUpdate ? invoice.update?.amount : undefined;
+    const method = approveUpdate ? invoice.update?.method : undefined;
+    const bank = approveUpdate ? invoice.update?.bank : undefined;
+    const receiver = approveUpdate ? invoice.update?.receiver : undefined;
+
     await invoices.update(invoice.id, {
       attachment,
       note: payload.note,
       status: payload.status,
       addressedBy: req.user.id,
+      amount,
+      method,
+      bank,
+      receiver,
+      updateRequest: null, // reset the update request if any
     });
 
     res.status(200).json();

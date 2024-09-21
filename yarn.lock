@@ -3361,6 +3361,7 @@ __metadata:
     vite-plugin-static-copy: "npm:^1.0.6"
   peerDependencies:
     "@reduxjs/toolkit": ^2.2.5
+    "@tanstack/react-query": ^5.56.2
     framer-motion: ^11.2.6
     lodash: ^4.17.21
     react: ^18.2.0

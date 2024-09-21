@@ -157,7 +157,7 @@ export class Invoices {
     tx?: Knex.Transaction
   ): Promise<Paginated<IInvoice.Self>> {
     const builder = this.builder(tx);
-    const total = await countRows(builder);
+    const total = await countRows(builder.clone());
     const query = builder
       .clone()
       .select(this.columns)

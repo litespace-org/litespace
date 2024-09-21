@@ -4,7 +4,7 @@ import { Outlet } from "react-router-dom";
 
 const Root: React.FC = () => {
   return (
-    <main>
+    <main className="min-h-screen text-foreground flex overflow-y-hidden">
       <Outlet />
       <Toaster />
     </main>

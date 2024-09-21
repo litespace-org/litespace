@@ -34,15 +34,15 @@ const Stats: React.FC = () => {
     if (!stats.data) return [];
     return [
       {
-        id: "page.invoices.stats.total.earnings",
+        id: "invoices.stats.total.earnings",
         value: stats.data.income.past,
       },
       {
-        id: "page.invoices.stats.pending",
+        id: "invoices.stats.pending",
         value: stats.data.invoices.pending,
       },
       {
-        id: "page.invoices.stats.withdrawn",
+        id: "invoices.stats.withdrawn",
         value: stats.data.invoices.fulfilled,
       },
     ];
@@ -53,13 +53,13 @@ const Stats: React.FC = () => {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-3xl">
           {intl.formatMessage({
-            id: messages["page.invoices.stats.title"],
+            id: messages["invoices.stats.title"],
           })}
         </h3>
 
         <Button size={ButtonSize.Small}>
           {intl.formatMessage({
-            id: messages["page.invoices.stats.create.invoice"],
+            id: messages["invoices.stats.create.invoice"],
           })}
         </Button>
       </div>

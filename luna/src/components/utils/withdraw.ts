@@ -14,8 +14,8 @@ export function getWithdrawMethodIntlId(
 ): keyof LocalMap {
   const { bank, instapay } = destructureWithdrawMethod(method);
   return instapay
-    ? messages["global.withdraw.methods.instapay"]
+    ? messages["withdraw.methods.instapay"]
     : bank
-      ? messages["global.withdraw.methods.bank"]
-      : messages["global.withdraw.methods.wallet"];
+      ? messages["withdraw.methods.bank"]
+      : messages["withdraw.methods.wallet"];
 }

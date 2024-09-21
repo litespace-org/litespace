@@ -106,7 +106,7 @@ const CreateInvoice: React.FC<{
 
   return (
     <Dialog
-      title={intl("page.invoices.create.title")}
+      title={intl("invoices.create.title")}
       open={open}
       close={close}
       className="w-full md:max-w-[700px]"

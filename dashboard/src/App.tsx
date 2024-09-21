@@ -5,13 +5,14 @@ import { ErrorPage } from "@litespace/luna";
 import { useAppDispatch } from "@/redux/store";
 import { useEffect } from "react";
 import { findProfile } from "./redux/user/profile";
+import Invoices from "@/pages/Invoices";
 
 const router = createBrowserRouter([
   {
     path: Route.Root,
     element: <Root />,
     errorElement: <ErrorPage />,
-    children: [],
+    children: [{ path: Route.Invoices, element: <Invoices /> }],
   },
 ]);
 

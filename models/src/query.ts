@@ -101,7 +101,6 @@ export function withPagination<Row extends object, Result = Row[]>(
   const page = pagination.page || 1;
   const size = pagination.size || 10;
   const offset = size * (page - 1);
-  console.log({ page, size, offset });
   builder.offset(offset).limit(size);
   return builder;
 }

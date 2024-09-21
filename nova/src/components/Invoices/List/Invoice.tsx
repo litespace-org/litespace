@@ -4,6 +4,7 @@ import {
   AlertType,
   Card,
   getWithdrawMethodIntlId,
+  Invoices,
   LocalMap,
   messages,
 } from "@litespace/luna";
@@ -11,7 +12,6 @@ import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
-import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
 import { useInvoiceStatus } from "@/hooks/invoice";
 import Price from "@/components/Common/Price";
 import { Edit3 } from "react-feather";
@@ -157,26 +157,26 @@ const Invoice: React.FC<{
   const method = useMemo(() => {
     return intl.formatMessage({
       id: bank
-        ? messages["global.withdraw.methods.bank"]
+        ? messages["withdraw.methods.bank"]
         : instapay
-          ? messages["global.withdraw.methods.instapay"]
-          : messages["global.withdraw.methods.wallet"],
+          ? messages["withdraw.methods.instapay"]
+          : messages["withdraw.methods.wallet"],
     });
   }, [bank, instapay, intl]);
 
   const ids = useMemo((): Array<keyof LocalMap> => {
     const ids: Array<keyof LocalMap> = [
-      "page.invoices.id",
+      "invoices.id",
       "invoices.method",
-      "page.invoices.amount",
+      "invoices.amount",
     ];
 
-    if (bank) ids.push("page.invoices.account");
-    if (instapay) ids.push("page.invoices.username");
-    if (wallet) ids.push("page.invoices.phone");
-    if (invoice.bank) ids.push("page.invoices.bank");
+    if (bank) ids.push("invoices.account");
+    if (instapay) ids.push("invoices.username");
+    if (wallet) ids.push("invoices.phone");
+    if (invoice.bank) ids.push("invoices.bank");
 
-    ids.push("page.invoices.date");
+    ids.push("invoices.date.created");
     return ids;
   }, [bank, instapay, invoice.bank, wallet]);
 
@@ -186,11 +186,7 @@ const Invoice: React.FC<{
       { id: 2, value: method },
       {
         id: 3,
-        value: (
-          <span className="[&_.change]:text-xs">
-            <Price value={invoice.amount} />
-          </span>
-        ),
+        value: <Invoices.Amount amount={invoice.amount} />,
       },
       { id: 4, value: <Receiver receiver={invoice.receiver} /> },
     ];
@@ -229,19 +225,17 @@ const Invoice: React.FC<{
         <Alert
           title={intl.formatMessage({
             id: rejected
-              ? messages["page.invoices.status.rejected"]
+              ? messages["invoices.status.rejected"]
               : canceledByAdmin
-                ? messages["page.invoices.status.canceledByAdmin"]
+                ? messages["invoices.status.canceledByAdmin"]
                 : canceledByReceiver
-                  ? messages["page.invoices.status.canceledByReceiver"]
-                  : messages[
-                      "page.invoices.status.cancellationApprovedByAdmin"
-                    ],
+                  ? messages["invoices.status.canceledByReceiver"]
+                  : messages["invoices.status.cancellationApprovedByAdmin"],
           })}
         >
           <p>
             {intl.formatMessage({
-              id: messages["page.invoices.unexpected.status.note"],
+              id: messages["invoices.unexpected.status.note"],
             })}
           </p>
         </Alert>
@@ -251,12 +245,12 @@ const Invoice: React.FC<{
         <Alert
           type={AlertType.Warning}
           title={intl.formatMessage({
-            id: messages["page.invoices.status.updatedByReceiver"],
+            id: messages["invoices.status.updatedByReceiver"],
           })}
         >
           <p>
             {intl.formatMessage({
-              id: messages["page.invoices.status.updatedByReceiver.note"],
+              id: messages["invoices.status.updatedByReceiver.note"],
             })}
           </p>
 
@@ -268,18 +262,18 @@ const Invoice: React.FC<{
         <Alert
           type={AlertType.Success}
           title={intl.formatMessage({
-            id: messages["page.invoices.status.fulfilled"],
+            id: messages["invoices.status.fulfilled"],
           })}
         >
           <div className="flex flex-col gap-1">
             <p>
               {intl.formatMessage({
-                id: messages["page.invoices.status.fulfilled.note"],
+                id: messages["invoices.status.fulfilled.note"],
               })}
             </p>
             <p>
               {intl.formatMessage({
-                id: messages["page.invoices.unexpected.status.note"],
+                id: messages["invoices.unexpected.status.note"],
               })}
             </p>
           </div>
@@ -290,34 +284,25 @@ const Invoice: React.FC<{
         <Alert
           type={AlertType.Info}
           title={intl.formatMessage({
-            id: messages["page.invoices.status.pending"],
+            id: messages["invoices.status.pending"],
           })}
         >
           <div className="flex flex-col gap-1">
             <p>
               {intl.formatMessage({
-                id: messages["page.invoices.status.pending.note"],
+                id: messages["invoices.status.pending.note"],
               })}
             </p>
             <p>
               {intl.formatMessage({
-                id: messages["page.invoices.unexpected.status.note"],
+                id: messages["invoices.unexpected.status.note"],
               })}
             </p>
           </div>
         </Alert>
       ) : null}
 
-      {invoice.note ? (
-        <div className="border border-control rounded-md">
-          <div className="w-full bg-surface-300 px-2 py-1.5">
-            <p>{intl.formatMessage({ id: messages["page.invoices.note"] })}</p>
-          </div>
-          <div className="px-2 py-3">
-            <RawHtml html={invoice.note} />
-          </div>
-        </div>
-      ) : null}
+      <Invoices.Note note={invoice.note} />
     </Card>
   );
 };
