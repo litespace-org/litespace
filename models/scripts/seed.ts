@@ -22,6 +22,7 @@ import {
   ICall,
   IInvoice,
   ILesson,
+  ITutor,
   IUser,
   IWithdrawMethod,
 } from "@litespace/types";
@@ -92,9 +93,9 @@ async function main(): Promise<void> {
     birthYear,
   });
 
-  const addedTutors = await knex.transaction(async (tx) => {
+  const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
     return await Promise.all(
-      range(1, 101).map(async (idx) => {
+      range(1, 11).map(async (idx) => {
         const email = `tutor${idx}@litespace.org`;
         const tutor = await users.create(
           {
@@ -262,7 +263,7 @@ async function main(): Promise<void> {
     };
   }
 
-  for (const tutor of addedTutors) {
+  async function createRandomLesson(tutor: IUser.Self) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const activeLesson: boolean = tutor.id === 10;
       const { call } = await calls.create(
@@ -303,6 +304,16 @@ async function main(): Promise<void> {
   }
 
   for (const tutor of addedTutors) {
+    for (const _ of range(1, 100)) {
+      await createRandomLesson(tutor);
+    }
+
+    stdout.log(
+      `created 100 lesson for tutor with id "${tutor.id}" and email "${tutor.email}" `
+    );
+  }
+
+  for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const { call } = await calls.create(
         {
@@ -338,81 +349,81 @@ async function main(): Promise<void> {
   for (const method of methods) {
     await withdrawMethods.create({
       type: method,
-      min: 1000_00,
+      min: 10_00,
       max: 50000_00,
       enabled: true,
     });
   }
 
-  for (const tutor of addedTutors) {
-    for (const _ of range(1, 51)) {
-      const method = sample(methods)!;
-      const invoice = await invoices.create({
-        userId: tutor.id,
-        amount: random(1000_00, 100_000_00),
-        bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
-        method,
-        receiver:
-          method === IWithdrawMethod.Type.Bank
-            ? random(1_000_000_000, 5_000_000_000).toString()
-            : method === IWithdrawMethod.Type.Wallet
-              ? [
-                  sample(["015", "010", "011"])!,
-                  random(1_000_000_0, 9_999_999_9),
-                ].join("")
-              : Math.random().toString(36).slice(2),
-      });
+  // for (const tutor of addedTutors) {
+  //   for (const _ of range(1, 51)) {
+  //     const method = sample(methods)!;
+  //     const invoice = await invoices.create({
+  //       userId: tutor.id,
+  //       amount: random(1000_00, 100_000_00),
+  //       bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
+  //       method,
+  //       receiver:
+  //         method === IWithdrawMethod.Type.Bank
+  //           ? random(1_000_000_000, 5_000_000_000).toString()
+  //           : method === IWithdrawMethod.Type.Wallet
+  //             ? [
+  //                 sample(["015", "010", "011"])!,
+  //                 random(1_000_000_0, 9_999_999_9),
+  //               ].join("")
+  //             : Math.random().toString(36).slice(2),
+  //     });
 
-      stdout.info(`Tutor ${tutor.id}, invoice ${invoice.id}`.gray);
+  //     const seed = sample([0, 1, 2, 3, 4, 5, 6]);
+  //     if (seed === 0) {
+  //       const { method, amount, bank, receiver } = randomWithdrawMethod();
+  //       await invoices.update(invoice.id, {
+  //         updateRequest: { method, amount, bank, receiver },
+  //         status: IInvoice.Status.UpdatedByReceiver,
+  //       });
+  //     }
 
-      const seed = sample([0, 1, 2, 3, 4, 5, 6]);
-      if (seed === 0) {
-        const { method, amount, bank, receiver } = randomWithdrawMethod();
-        await invoices.update(invoice.id, {
-          updateRequest: { method, amount, bank, receiver },
-          status: IInvoice.Status.UpdatedByReceiver,
-        });
-      }
+  //     if (seed === 1) {
+  //       await invoices.update(invoice.id, {
+  //         status: IInvoice.Status.Fulfilled,
+  //         addressedBy: admin.id,
+  //         note: aripsum.generateParagraph(20, 50),
+  //       });
+  //     }
 
-      if (seed === 1) {
-        await invoices.update(invoice.id, {
-          status: IInvoice.Status.Fulfilled,
-          addressedBy: admin.id,
-          note: aripsum.generateParagraph(20, 50),
-        });
-      }
+  //     if (seed === 2) {
+  //       await invoices.update(invoice.id, {
+  //         status: IInvoice.Status.CanceledByReceiver,
+  //       });
+  //     }
 
-      if (seed === 2) {
-        await invoices.update(invoice.id, {
-          status: IInvoice.Status.CanceledByReceiver,
-        });
-      }
+  //     if (seed === 3) {
+  //       await invoices.update(invoice.id, {
+  //         status: IInvoice.Status.CanceledByAdmin,
+  //         addressedBy: admin.id,
+  //         note: aripsum.generateParagraph(20, 50),
+  //       });
+  //     }
 
-      if (seed === 3) {
-        await invoices.update(invoice.id, {
-          status: IInvoice.Status.CanceledByAdmin,
-          addressedBy: admin.id,
-          note: aripsum.generateParagraph(20, 50),
-        });
-      }
+  //     if (seed === 4) {
+  //       await invoices.update(invoice.id, {
+  //         status: IInvoice.Status.CancellationApprovedByAdmin,
+  //         addressedBy: admin.id,
+  //         note: aripsum.generateParagraph(20, 50),
+  //       });
+  //     }
 
-      if (seed === 4) {
-        await invoices.update(invoice.id, {
-          status: IInvoice.Status.CancellationApprovedByAdmin,
-          addressedBy: admin.id,
-          note: aripsum.generateParagraph(20, 50),
-        });
-      }
+  //     if (seed === 5) {
+  //       await invoices.update(invoice.id, {
+  //         status: IInvoice.Status.Rejected,
+  //         addressedBy: admin.id,
+  //         note: aripsum.generateParagraph(20, 50),
+  //       });
+  //     }
+  //   }
+  // }
 
-      if (seed === 5) {
-        await invoices.update(invoice.id, {
-          status: IInvoice.Status.Rejected,
-          addressedBy: admin.id,
-          note: aripsum.generateParagraph(20, 50),
-        });
-      }
-    }
-  }
+  // stdout.log("Created 50 invoice for each of the 100 tutors.");
 
   const plan = await plans.create({
     alias: "Basic",

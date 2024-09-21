@@ -1,76 +1,70 @@
-import { atlas } from "@/lib/atlas";
-import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
 import {
   Button,
   ButtonSize,
-  LocalMap,
-  messages,
+  LocalId,
   Spinner,
+  useFormatMessage,
 } from "@litespace/luna";
-import { useQuery } from "@tanstack/react-query";
 import React, { useMemo } from "react";
-import Stat from "./Stat";
-import { useIntl } from "react-intl";
-import CreateInvoice from "../List/Create";
 import { useRender } from "@/hooks/render";
+import ManageInvoice from "@/components/Invoices/List/Manage";
+import Stat from "@/components/Invoices/Stats/Stat";
+import { IInvoice } from "@litespace/types";
 
-const Stats: React.FC = () => {
-  const intl = useIntl();
+const Stats: React.FC<{
+  refresh?: () => void;
+  stats?: IInvoice.StatsApiResponse | null;
+  loading: boolean;
+  fetching: boolean;
+}> = ({ refresh, stats, loading, fetching }) => {
+  const intl = useFormatMessage();
   const create = useRender();
-  const profile = useAppSelector(profileSelector);
-  const stats = useQuery({
-    queryFn: async () => {
-      if (!profile) return null;
-      return await atlas.invoice.stats(profile.id);
-    },
-    queryKey: ["tutor-invoice-stats"],
-  });
 
   const data = useMemo((): Array<{
-    id: keyof LocalMap;
+    id: LocalId;
     value: number;
   }> => {
-    if (!stats.data) return [];
+    if (!stats) return [];
     return [
       {
         id: "invoices.stats.total.earnings",
-        value: stats.data.income.past,
+        value: stats.income.past,
+      },
+      {
+        id: "invoices.stats.spendable",
+        value: stats.spendable,
       },
       {
         id: "invoices.stats.pending",
-        value: stats.data.invoices.pending,
+        value: stats.invoices.pending,
       },
       {
         id: "invoices.stats.withdrawn",
-        value: stats.data.invoices.fulfilled,
+        value: stats.invoices.fulfilled,
       },
     ];
-  }, [stats.data]);
+  }, [stats]);
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-3xl">
-          {intl.formatMessage({
-            id: messages["invoices.stats.title"],
-          })}
-        </h3>
+        <div className="flex flex-row items-center gap-2">
+          <h3 className="text-3xl">{intl("invoices.stats.title")}</h3>
+          {fetching && !loading ? <Spinner /> : null}
+        </div>
 
-        <Button size={ButtonSize.Small}>
-          {intl.formatMessage({
-            id: messages["invoices.stats.create.invoice"],
-          })}
+        <Button onClick={create.show} size={ButtonSize.Small}>
+          {intl("invoices.stats.create.invoice")}
         </Button>
       </div>
 
-      {stats.isLoading ? (
+      {loading ? (
         <div className="flex items-center justify-center h-[20vh]">
           <Spinner />
         </div>
       ) : null}
 
-      {stats.data ? (
+      {data ? (
         <div className="grid grid-cols-12 gap-4">
           {data.map(({ id, value }) => (
             <div key={id} className="col-span-12 md:col-span-6 lg:col-span-4">
@@ -80,7 +74,7 @@ const Stats: React.FC = () => {
         </div>
       ) : null}
 
-      <CreateInvoice open={true} close={create.hide} />
+      <ManageInvoice open={create.open} close={create.hide} refresh={refresh} />
     </div>
   );
 };

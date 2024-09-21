@@ -10,7 +10,7 @@ import { IInvoice } from "@litespace/types";
 async function getPastIncome(userId: number) {
   return await lessons.sumPrice({
     users: [userId],
-    canceled: true,
+    canceled: false,
     future: false,
   });
 }

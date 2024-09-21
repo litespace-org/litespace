@@ -4,6 +4,7 @@ import { isValidInvoice } from "@/lib/invoice";
 import { uploadSingle } from "@/lib/media";
 import { ApiContext } from "@/types/api";
 import {
+  bank,
   id,
   invoiceStatus,
   pagination,
@@ -21,7 +22,7 @@ import zod from "zod";
 const invoicePayload = zod.object({
   method: withdrawMethod,
   receiver: zod.string(),
-  bank: zod.union([zod.string(), zod.null()]),
+  bank: zod.union([bank, zod.null()]),
   amount: zod.coerce.number().int().positive(),
 });
 
@@ -153,17 +154,15 @@ function updateByReceiver(context: ApiContext) {
     const invoice = await invoices.findById(invoiceId);
     if (!invoice) return next(notfound.base());
 
-    const owner = invoice.userId !== req.user.id;
+    const owner = invoice.userId === req.user.id;
     if (!owner) return next(forbidden());
 
     // user cannot perform an update request and cancel the request at the same
-    // time.
-    const invalid =
-      !!payload.updateRequest ||
-      payload.cancel === true ||
-      // empty request is not valid
-      (isUndefined(payload.updateRequest) &&
-        isUndefined(payload.updateRequest));
+    // time. Also cannot submit an empty request.
+    const empty =
+      isUndefined(payload.updateRequest) && isUndefined(payload.cancel);
+    const full = !!payload.updateRequest && payload.cancel === true;
+    const invalid = empty || full;
     if (invalid) return next(bad());
 
     const end = () => {

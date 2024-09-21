@@ -117,6 +117,8 @@ export const invoiceStatus = zod.enum([
   IInvoice.Status.UpdatedByReceiver,
 ]);
 
+export const bank = zod.enum([IInvoice.Bank.Cib, IInvoice.Bank.Alex]);
+
 export const identityObject = zod.object({ id });
 
 export function withNamedId<T>(key: StringLiteral<T>) {

@@ -1,7 +1,3 @@
-import { usePaginationQuery } from "@/hooks/common";
-import { atlas } from "@/lib/atlas";
-import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
 import {
   Button,
   ButtonSize,
@@ -10,65 +6,54 @@ import {
   Timeline,
   TimelineItem,
 } from "@litespace/luna";
-import { IInvoice, Paginated } from "@litespace/types";
-import React, { useCallback, useMemo } from "react";
+import { IInvoice } from "@litespace/types";
+import React, { useMemo } from "react";
 import { Hash } from "react-feather";
 import { useIntl } from "react-intl";
-import Invoice from "./Invoice";
+import Invoice from "@/components/Invoices/List/Invoice";
+import { isEmpty } from "lodash";
 
-const List: React.FC = () => {
+const List: React.FC<{
+  refresh?: () => void;
+  list: IInvoice.Self[] | null;
+  loading: boolean;
+  fetching: boolean;
+  withMore: boolean;
+  more: () => void;
+}> = ({ refresh, list, loading, fetching, withMore, more }) => {
   const intl = useIntl();
-  const profile = useAppSelector(profileSelector);
-
-  const findInvoices = useCallback(
-    async ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }): Promise<Paginated<IInvoice.Self>> => {
-      if (!profile) return { list: [], total: 0 };
-      const res = await atlas.invoice.find({
-        userId: profile.id,
-        page: pageParam,
-        size: 10,
-      });
-      console.log({ res });
-      return res;
-    },
-    [profile]
-  );
-
-  const { query, list, more } = usePaginationQuery(findInvoices, ["invoices"]);
-
   const timeline = useMemo((): TimelineItem[] => {
     if (!list) return [];
     return list.map((invoice) => ({
       id: invoice.id,
       icon: <Hash />,
-      children: <Invoice invoice={invoice} />,
+      children: <Invoice refresh={refresh} invoice={invoice} />,
     }));
-  }, [list]);
+  }, [list, refresh]);
 
   return (
     <div>
-      <h3 className="text-3xl">
-        {intl.formatMessage({
-          id: messages["invoices.title"],
-        })}
-      </h3>
+      <div className="flex flex-row items-center gap-2">
+        <h3 className="text-3xl">
+          {intl.formatMessage({
+            id: messages["invoices.title"],
+          })}
+        </h3>
+        {fetching && !loading ? <Spinner /> : null}
+      </div>
 
-      {query.isLoading ? (
+      {loading ? (
         <div className="flex items-center justify-center h-[20vh]">
           <Spinner />
         </div>
       ) : null}
 
-      {list ? (
+      {list && !isEmpty(list) ? (
         <div className="my-6">
           <Timeline timeline={timeline} />
           <Button
-            loading={query.isLoading || query.isFetching}
-            disabled={query.isLoading || query.isFetching || !query.hasNextPage}
+            loading={loading || fetching}
+            disabled={loading || fetching || !withMore}
             size={ButtonSize.Small}
             onClick={more}
           >

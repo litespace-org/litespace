@@ -20,7 +20,7 @@ export enum Status {
 export type UpdateRequest = {
   method: WithdrawMethod;
   receiver: string;
-  bank: string | null;
+  bank: Bank | null;
   amount: number;
 };
 
@@ -29,7 +29,7 @@ export type Self = {
   userId: number;
   method: WithdrawMethod;
   receiver: string;
-  bank: string | null;
+  bank: Bank | null;
   amount: number;
   update: UpdateRequest | null;
   status: Status;
@@ -60,7 +60,7 @@ export type CreatePayload = {
   userId: number;
   method: WithdrawMethod;
   receiver: string;
-  bank: string | null;
+  bank: Bank | null;
   amount: number;
 };
 

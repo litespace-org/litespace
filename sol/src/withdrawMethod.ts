@@ -4,5 +4,5 @@ export function isValidWithdrawMethod(
   amount: number,
   method: IWithdrawMethod.Self
 ): boolean {
-  return amount > method.min && amount < method.max && method.enabled;
+  return amount >= method.min && amount <= method.max && method.enabled;
 }
