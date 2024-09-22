@@ -14,7 +14,7 @@ const Root: React.FC = () => {
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
-  const { toggle } = useTheme();
+  const { toggle, theme } = useTheme();
 
   useEffect(() => {
     const profile = me.value;
@@ -44,7 +44,7 @@ const Root: React.FC = () => {
 
   return (
     <div className={cn("min-h-screen text-foreground flex flex-col")}>
-      <Navbar toggleTheme={toggle} />
+      <Navbar toggleTheme={toggle} theme={theme} />
       <Outlet />
       <Toaster />
     </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-enum Theme {
+export enum Theme {
   Light = "light",
   Dark = "dark",
 }

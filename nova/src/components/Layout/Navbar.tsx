@@ -6,6 +6,7 @@ import {
   Discord,
   SidebarNav,
   Switch,
+  Theme,
   toaster,
   useFormatMessage,
 } from "@litespace/luna";
@@ -21,7 +22,8 @@ import { resetTutorMeta } from "@/redux/user/tutor";
 
 const Navbar: React.FC<{
   toggleTheme: () => void;
-}> = ({ toggleTheme }) => {
+  theme: Theme | null;
+}> = ({ toggleTheme, theme }) => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelector);
   const location = useLocation();
@@ -162,7 +164,7 @@ const Navbar: React.FC<{
       </ul>
 
       <div className="mr-auto">
-        <Switch onChange={toggleTheme} />
+        <Switch checked={theme === Theme.Dark} onChange={toggleTheme} />
       </div>
     </nav>
   );
