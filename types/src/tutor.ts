@@ -1,6 +1,6 @@
 import * as User from "@/user";
 import { Name } from "@/user";
-import { IRule } from ".";
+import { IRule, Paginated } from "@/index";
 
 export type Self = {
   id: number;
@@ -81,3 +81,15 @@ export type FindAvailableTutorsApiResponse = {
   tutors: Cache["tutors"];
   rules: Cache["unpackedRules"];
 };
+
+export type PublicTutorFieldsForMediaProvider = {
+  id: number;
+  email: string | null;
+  name: string | null;
+  photo: string | null;
+  video: string | null;
+  createdAt: string;
+};
+
+export type FindTutorsForMediaProviderApiResponse =
+  Paginated<PublicTutorFieldsForMediaProvider>;

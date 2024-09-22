@@ -72,4 +72,8 @@ export class User extends Base {
   ): Promise<ITutor.FindAvailableTutorsApiResponse> {
     return await this.get(`/api/v1/user/tutor/list/available`, null, params);
   }
+
+  async findTutorsForMediaProvider(): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
+    return this.get(`/api/v1/user/media-provider/tutors`);
+  }
 }

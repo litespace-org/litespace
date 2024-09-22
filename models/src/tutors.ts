@@ -1,6 +1,6 @@
-import { column, knex, withFilter } from "@/query";
+import { column, countRows, knex, withFilter, withPagination } from "@/query";
 import { first, isEmpty, merge, omit } from "lodash";
-import { IUser, ITutor, IFilter } from "@litespace/types";
+import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 
@@ -148,6 +148,34 @@ export class Tutors {
       },
       filter,
     }).then();
+  }
+
+  async findForMediaProvider(
+    pagination?: IFilter.Pagination,
+    tx?: Knex.Transaction
+  ): Promise<Paginated<ITutor.PublicTutorFieldsForMediaProvider>> {
+    const columns: Record<
+      keyof ITutor.PublicTutorFieldsForMediaProvider,
+      string
+    > = {
+      id: this.column("id"),
+      email: users.column("email"),
+      name: users.column("name_ar"),
+      photo: users.column("photo"),
+      video: this.column("video"),
+      createdAt: this.column("created_at"),
+    } as const;
+    const builder = this.builder(tx).join(
+      users.table,
+      this.column("id"),
+      users.column("id")
+    );
+    const total = await countRows(builder.clone());
+    const main = builder
+      .clone()
+      .select<ITutor.PublicTutorFieldsForMediaProvider[]>(columns);
+    const list = await withPagination(main, pagination);
+    return { list, total };
   }
 
   async findSelfById(id: number): Promise<ITutor.Self | null> {

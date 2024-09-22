@@ -5,7 +5,7 @@ import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
+import safe from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import {
   email,
@@ -14,6 +14,7 @@ import {
   password,
   name,
   id,
+  pagination,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
@@ -27,6 +28,7 @@ import { availableTutorsCache } from "@/redis/tutor";
 import { cacheAvailableTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { Schedule } from "@litespace/sol";
+import { authorizer } from "@litespace/auth";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -87,114 +89,112 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 }
 
 function update(context: ApiContext) {
-  return asyncHandler(
-    async (req: Request, res: Response, next: NextFunction) => {
-      const { id } = identityObject.parse(req.params);
+  return safe(async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = identityObject.parse(req.params);
 
-      const allowed = enforceRequest(req, id === req.user?.id);
-      if (!allowed) return next(forbidden());
+    const allowed = enforceRequest(req, id === req.user?.id);
+    if (!allowed) return next(forbidden());
 
-      const currentUser = req.user;
-      const targetUser = await users.findById(id);
-      if (!targetUser) return next(notfound.user());
+    const currentUser = req.user;
+    const targetUser = await users.findById(id);
+    if (!targetUser) return next(notfound.user());
 
-      const { email, name, password, gender, birthYear, drop, bio, about } =
-        updateUserPayload.parse(req.body);
+    const { email, name, password, gender, birthYear, drop, bio, about } =
+      updateUserPayload.parse(req.body);
 
-      const files = {
-        image: {
-          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
-          type: FileType.Image,
+    const files = {
+      image: {
+        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
+        type: FileType.Image,
+      },
+      video: {
+        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
+        type: FileType.Video,
+      },
+    };
+
+    // Only media provider can update tutor media files (images and videos)
+    // Tutor cannot upload it for himself.
+    const isUpdatingTutorMedia =
+      (files.image.file || files.video.file) &&
+      targetUser.role === IUser.Role.Tutor;
+    const isEligibleUser = [
+      IUser.Role.SuperAdmin,
+      IUser.Role.RegularAdmin,
+      IUser.Role.MediaProvider,
+    ].includes(currentUser.role);
+    if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
+
+    // Only media providers can upload videos.
+    // e.g., students/interviewers cannot try to upload videos
+    if (files.video.file && !isEligibleUser) return next(forbidden());
+
+    const [photo, video] = await Promise.all(
+      [
+        { file: req.files?.photo, type: FileType.Image },
+        { file: req.files?.video, type: FileType.Video },
+      ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
+    );
+
+    const user = await knex.transaction(async (tx: Knex.Transaction) => {
+      const user = await users.update(
+        id,
+        {
+          name,
+          email,
+          gender,
+          birthYear,
+          photo: drop?.photo === true ? null : photo,
+          password: password ? hashPassword(password) : undefined,
         },
-        video: {
-          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
-          type: FileType.Video,
-        },
-      };
-
-      // Only media provider can update tutor media files (images and videos)
-      // Tutor cannot upload it for himself.
-      const isUpdatingTutorMedia =
-        (files.image.file || files.video.file) &&
-        targetUser.role === IUser.Role.Tutor;
-      const isEligibleUser = [
-        IUser.Role.SuperAdmin,
-        IUser.Role.RegularAdmin,
-        IUser.Role.MediaProvider,
-      ].includes(currentUser.role);
-      if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
-
-      // Only media providers can upload videos.
-      // e.g., students/interviewers cannot try to upload videos
-      if (files.video.file && !isEligibleUser) return next(forbidden());
-
-      const [photo, video] = await Promise.all(
-        [
-          { file: req.files?.photo, type: FileType.Image },
-          { file: req.files?.video, type: FileType.Video },
-        ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
+        tx
       );
 
-      const user = await knex.transaction(async (tx: Knex.Transaction) => {
-        const user = await users.update(
-          id,
-          {
-            name,
-            email,
-            gender,
-            birthYear,
-            photo: drop?.photo === true ? null : photo,
-            password: password ? hashPassword(password) : undefined,
-          },
+      if (bio || about || video || drop?.video)
+        await tutors.update(
+          targetUser.id,
+          { bio, about, video: drop?.video ? null : video },
           tx
         );
 
-        if (bio || about || video || drop?.video)
-          await tutors.update(
-            targetUser.id,
-            { bio, about, video: drop?.video ? null : video },
-            tx
-          );
+      return user;
+    });
 
-        return user;
-      });
+    const end = () => {
+      res.status(200).json(user);
+    };
 
-      const end = () => {
-        res.status(200).json(user);
-      };
+    // handle available tutors cache
+    const isTutor = user.role === IUser.Role.Tutor;
+    if (!isTutor) return end();
 
-      // handle available tutors cache
-      const isTutor = user.role === IUser.Role.Tutor;
-      if (!isTutor) return end();
-
-      const start = dayjs.utc().startOf("day");
-      const exists = await availableTutorsCache.exists();
-      const dates = await availableTutorsCache.getDates();
-      if (
-        !exists ||
-        !dates.start ||
-        !dates.end ||
-        !start.isBetween(dates.start, dates.end, "day", "[]")
-      ) {
-        await cacheAvailableTutors(start);
-        context.io.sockets.emit("update");
-        return end();
-      }
-
-      // todo: handle deactivated tutors
-      const tutor = await tutors.findById(targetUser.id);
-      if (!tutor) return next(notfound.tutor());
-      if (!tutor.activated) return end();
-
-      const list = await availableTutorsCache.getTutors();
-      const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
-      const updated = concat(filtered, tutor);
-      await availableTutorsCache.setTutors(updated);
-      // ideally, we will emit the event to a sepecial room
+    const start = dayjs.utc().startOf("day");
+    const exists = await availableTutorsCache.exists();
+    const dates = await availableTutorsCache.getDates();
+    if (
+      !exists ||
+      !dates.start ||
+      !dates.end ||
+      !start.isBetween(dates.start, dates.end, "day", "[]")
+    ) {
+      await cacheAvailableTutors(start);
       context.io.sockets.emit("update");
       return end();
     }
-  );
+
+    // todo: handle deactivated tutors
+    const tutor = await tutors.findById(targetUser.id);
+    if (!tutor) return next(notfound.tutor());
+    if (!tutor.activated) return end();
+
+    const list = await availableTutorsCache.getTutors();
+    const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
+    const updated = concat(filtered, tutor);
+    await availableTutorsCache.setTutors(updated);
+    // ideally, we will emit the event to a sepecial room
+    context.io.sockets.emit("update");
+    return end();
+  });
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
@@ -382,14 +382,29 @@ async function findAvailableTutors(
   res.status(200).json({ total, tutors: paginated, rules });
 }
 
+async function findTutorsForMediaProvider(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed = authorizer().admin().mediaProvider().check(req.user);
+  if (!allowed) return next(forbidden());
+
+  const query = pagination.parse(req.query);
+  const list: ITutor.FindTutorsForMediaProviderApiResponse =
+    await tutors.findForMediaProvider(query);
+  res.status(200).json(list);
+}
+
 export default {
-  create: asyncHandler(create),
+  create: safe(create),
   update,
-  findById: asyncHandler(findById),
-  findUsers: asyncHandler(findUsers),
-  findMe: asyncHandler(findMe),
-  returnUser: asyncHandler(returnUser),
-  selectInterviewer: asyncHandler(selectInterviewer),
-  findTutorMeta: asyncHandler(findTutorMeta),
-  findAvailableTutors: asyncHandler(findAvailableTutors),
+  findById: safe(findById),
+  findUsers: safe(findUsers),
+  findMe: safe(findMe),
+  returnUser: safe(returnUser),
+  selectInterviewer: safe(selectInterviewer),
+  findTutorMeta: safe(findTutorMeta),
+  findAvailableTutors: safe(findAvailableTutors),
+  findTutorsForMediaProvider: safe(findTutorsForMediaProvider),
 };

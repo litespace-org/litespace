@@ -21,6 +21,7 @@ export default function router(context: ApiContext) {
   router.put("/:id", user.update(context));
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/list/available", user.findAvailableTutors);
+  router.get("/media-provider/tutors", user.findTutorsForMediaProvider);
 
   return router;
 }
