@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Toaster } from "@litespace/luna";
+import { Toaster, useTheme } from "@litespace/luna";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import cn from "classnames";
 import { useAppSelector } from "@/redux/store";
@@ -14,6 +14,7 @@ const Root: React.FC = () => {
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
+  const { toggle } = useTheme();
 
   useEffect(() => {
     const profile = me.value;
@@ -43,7 +44,7 @@ const Root: React.FC = () => {
 
   return (
     <div className={cn("min-h-screen text-foreground flex flex-col")}>
-      <Navbar />
+      <Navbar toggleTheme={toggle} />
       <Outlet />
       <Toaster />
     </div>

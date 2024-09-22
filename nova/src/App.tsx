@@ -26,9 +26,6 @@ import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 
 const router = createBrowserRouter([
-  { path: Route.Login, element: <Login />, errorElement: <ErrorPage /> },
-  { path: Route.Register, element: <Register />, errorElement: <ErrorPage /> },
-  { path: Route.Complete, element: <Complete />, errorElement: <ErrorPage /> },
   {
     path: Route.Root,
     element: <Root />,
@@ -45,6 +42,9 @@ const router = createBrowserRouter([
       { path: Route.Lessons, element: <Lessons /> },
       { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Invoices, element: <Invoices /> },
+      { path: Route.Login, element: <Login /> },
+      { path: Route.Register, element: <Register /> },
+      { path: Route.Complete, element: <Complete /> },
     ],
     errorElement: <ErrorPage />,
   },

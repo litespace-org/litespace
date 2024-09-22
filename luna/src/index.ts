@@ -26,6 +26,7 @@ export { ErrorPage } from "@/components/ErrorPage";
 export { Loading } from "@/components/Loading";
 export { RawHtml } from "@/components/RawHtml";
 export { Price } from "@/components/Price";
+export { SidebarNav } from "@/components/SidebarNav";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
 export * as Invoices from "@/components/Invoices";
 export {

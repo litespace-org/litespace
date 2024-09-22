@@ -14,7 +14,6 @@ export function destructureInvoiceStatus(status: IInvoice.Status) {
   return {
     pending: status === IInvoice.Status.Pending,
     canceledByReceiver: status === IInvoice.Status.CanceledByReceiver,
-    canceledByAdmin: status === IInvoice.Status.CanceledByAdmin,
     cancellationApprovedByAdmin:
       status === IInvoice.Status.CancellationApprovedByAdmin,
     fulfilled: status === IInvoice.Status.Fulfilled,
