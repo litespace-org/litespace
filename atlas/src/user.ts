@@ -1,6 +1,7 @@
 import { Base } from "@/base";
 import {
   FindMeResponse,
+  IFilter,
   ITutor,
   IUser,
   Paginated,
@@ -73,7 +74,9 @@ export class User extends Base {
     return await this.get(`/api/v1/user/tutor/list/available`, null, params);
   }
 
-  async findTutorsForMediaProvider(): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
-    return this.get(`/api/v1/user/media-provider/tutors`);
+  async findTutorsForMediaProvider(
+    pagination?: IFilter.Pagination
+  ): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
+    return this.get(`/api/v1/user/media-provider/tutors`, null, pagination);
   }
 }

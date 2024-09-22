@@ -111,7 +111,7 @@ function update(context: ApiContext) {
         file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
         type: FileType.Video,
       },
-    };
+    } as const;
 
     // Only media provider can update tutor media files (images and videos)
     // Tutor cannot upload it for himself.

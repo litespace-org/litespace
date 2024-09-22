@@ -3,6 +3,7 @@ import { first, isEmpty, merge, omit } from "lodash";
 import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
+import dayjs from "@/lib/dayjs";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMediaRow, string>;
 type FullTutorFields = ITutor.FullTutorRow;
@@ -72,7 +73,7 @@ export class Tutors {
   };
 
   async create(id: number, tx?: Knex.Transaction): Promise<ITutor.Self> {
-    const now = new Date();
+    const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
       .insert({
         id,
@@ -90,6 +91,7 @@ export class Tutors {
     tutor: ITutor.UpdatePayload,
     tx?: Knex.Transaction
   ): Promise<void> {
+    const now = dayjs().utc().toDate();
     await this.builder(tx)
       .update({
         bio: tutor.bio,
@@ -99,7 +101,7 @@ export class Tutors {
         activated_by: tutor.activatedBy,
         media_provider_id: tutor.mediaProviderId,
         passed_interview: tutor.passedInterview,
-        updated_at: new Date(),
+        updated_at: now,
       })
       .where("id", id);
   }
@@ -173,7 +175,11 @@ export class Tutors {
     const total = await countRows(builder.clone());
     const main = builder
       .clone()
-      .select<ITutor.PublicTutorFieldsForMediaProvider[]>(columns);
+      .select<ITutor.PublicTutorFieldsForMediaProvider[]>(columns)
+      .orderBy([
+        { column: this.column("created_at"), order: "desc" },
+        { column: this.column("id"), order: "asc" },
+      ]);
     const list = await withPagination(main, pagination);
     return { list, total };
   }
