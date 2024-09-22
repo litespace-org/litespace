@@ -10,7 +10,7 @@ const Tutors: React.FC = () => {
   });
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full my-10">
+    <div className="max-w-screen-2xl mx-auto w-full p-6">
       <TutorList tutors={tutors} />
     </div>
   );

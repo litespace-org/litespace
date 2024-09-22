@@ -7,6 +7,7 @@ import { Route, RoutePatterns } from "@/types/routes";
 import UrlPattern from "url-pattern";
 import { IUser } from "@litespace/types";
 import { tutorMetaSelector } from "@/redux/user/tutor";
+import Navbar from "@/components/Layout/Navbar";
 
 const Root: React.FC = () => {
   const me = useAppSelector((state) => state.user.me);
@@ -41,7 +42,8 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, me]);
 
   return (
-    <div className={cn("min-h-screen text-foreground flex flex-row")}>
+    <div className={cn("min-h-screen text-foreground flex flex-col")}>
+      <Navbar />
       <Outlet />
       <Toaster />
     </div>
