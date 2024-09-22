@@ -219,6 +219,7 @@
   "invoices.process.submit.approveUpdateRequest": "قبول تحديث بيانات طلب السحب",
   "invoices.process.success": "تم تحديث بيانات طلب السحب بنجاح",
   "invoices.process.error": "لديك مشكلة في تحديث بيانات طلب السحب",
+  "editor.link.title": "إضافة رابط",
   "media.title": "لائحة المعلمين",
   "media.no.video": "لا يوجد فيديو",
   "media.no.image": "لا توجد صورة",

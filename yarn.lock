@@ -3333,6 +3333,7 @@ __metadata:
     "@storybook/test": "npm:^8.1.5"
     "@types/react": "npm:^18.2.66"
     "@types/react-dom": "npm:^18.2.22"
+    "@types/sanitize-html": "npm:^2"
     "@typescript-eslint/eslint-plugin": "npm:^7.2.0"
     "@typescript-eslint/parser": "npm:^7.2.0"
     "@vidstack/react": "npm:^1.12.9"
@@ -3347,10 +3348,12 @@ __metadata:
     framer-motion: "npm:^11.2.6"
     media-icons: "npm:^1.1.5"
     react: "npm:^18.2.0"
+    react-contenteditable: "npm:^3.3.7"
     react-dom: "npm:^18.2.0"
     react-feather: "npm:^2.0.10"
     react-hook-form: "npm:^7.51.5"
     react-intl: "npm:^6.6.8"
+    sanitize-html: "npm:^2.13.0"
     storybook: "npm:^8.1.5"
     tailwind-scrollbar: "npm:^3.1.0"
     tailwindcss: "npm:^3.4.3"
@@ -7476,6 +7479,15 @@ __metadata:
   version: 1.20.6
   resolution: "@types/resolve@npm:1.20.6"
   checksum: 10c0/a9b0549d816ff2c353077365d865a33655a141d066d0f5a3ba6fd4b28bc2f4188a510079f7c1f715b3e7af505a27374adce2a5140a3ece2a059aab3d6e1a4244
+  languageName: node
+  linkType: hard
+
+"@types/sanitize-html@npm:^2":
+  version: 2.13.0
+  resolution: "@types/sanitize-html@npm:2.13.0"
+  dependencies:
+    htmlparser2: "npm:^8.0.0"
+  checksum: 10c0/c6614b38f67dd6fb3a94c9163a55fa43b9aa81a845fe9584d9ffbd5da0e00e0ac8162ede9f4bde095840b2ef9db12265f5fcc40b707f48a420405c6aa7c3ff51
   languageName: node
   linkType: hard
 
@@ -19283,7 +19295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.0.0, prop-types@npm:^15.6.1, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
+"prop-types@npm:^15.0.0, prop-types@npm:^15.6.1, prop-types@npm:^15.7.1, prop-types@npm:^15.7.2, prop-types@npm:^15.8.1":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -20033,6 +20045,18 @@ __metadata:
   peerDependencies:
     react: ^16.3.0 || ^17.0.1 || ^18.0.0
   checksum: 10c0/5b4eb23eef564695f6db1d25b294ed31d5fa21ff4092c6a38e641f85cd10e3e0b50014366e3ac0f7cf772e73faaecd14614e5b11a5531336fa769dda8068ab59
+  languageName: node
+  linkType: hard
+
+"react-contenteditable@npm:^3.3.7":
+  version: 3.3.7
+  resolution: "react-contenteditable@npm:3.3.7"
+  dependencies:
+    fast-deep-equal: "npm:^3.1.3"
+    prop-types: "npm:^15.7.1"
+  peerDependencies:
+    react: ">=16.3"
+  checksum: 10c0/4ecb445d4354a26b212540951335b52813506d758e9d5fbf2a3dc80d5e52bb71f295498ddc876f19dd26243f28da62a9f5fcba3ff6261c35425bb1f00e9dea48
   languageName: node
   linkType: hard
 
@@ -21393,7 +21417,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sanitize-html@npm:^2.11.0":
+"sanitize-html@npm:^2.11.0, sanitize-html@npm:^2.13.0":
   version: 2.13.0
   resolution: "sanitize-html@npm:2.13.0"
   dependencies:

@@ -68,6 +68,7 @@
     "@storybook/test": "^8.1.5",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
+    "@types/sanitize-html": "^2",
     "@typescript-eslint/eslint-plugin": "^7.2.0",
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
@@ -97,7 +98,9 @@
     "classnames": "^2.5.1",
     "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
     "media-icons": "^1.1.5",
+    "react-contenteditable": "^3.3.7",
     "react-feather": "^2.0.10",
+    "sanitize-html": "^2.13.0",
     "tailwind-scrollbar": "^3.1.0",
     "vercel": "^34.2.7",
     "vite-plugin-static-copy": "^1.0.6"

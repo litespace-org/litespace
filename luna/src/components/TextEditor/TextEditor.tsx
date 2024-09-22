@@ -3,20 +3,25 @@ import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import cn from "classnames";
 import { Bold, Italic, Underline, List } from "react-feather";
 import { InputError } from "@/components/Input/Input";
+import Editable, { ContentEditableEvent } from "react-contenteditable";
+import { RawHtml } from "@/components/RawHtml";
+import sanitizeHtml from "sanitize-html";
+import { AnimatePresence } from "framer-motion";
+import { HeadingIcon } from "@radix-ui/react-icons";
+
+const sanitizeConf = {
+  allowedTags: ["b", "i", "em", "strong", "p", "h3"],
+};
 
 export const TextEditor: React.FC<{
-  onChange?: (value: string) => void;
+  value: string;
+  setValue: (value: string) => void;
   error?: string;
   disabled?: boolean;
-}> = ({ onChange, error, disabled }) => {
-  const editorRef = useRef<HTMLDivElement>(null);
-  const onInput = useCallback(() => {
-    if (!editorRef || !editorRef.current) return;
-    onChange && onChange(editorRef.current.innerHTML);
-  }, [onChange]);
-
-  const execCommand = useCallback((command: string) => {
-    document.execCommand(command, false);
+}> = ({ error, disabled, value, setValue }) => {
+  const text = useRef("");
+  const execCommand = useCallback((command: string, arg?: string) => {
+    document.execCommand(command, false, arg);
   }, []);
 
   const actions = useMemo(() => {
@@ -25,11 +30,32 @@ export const TextEditor: React.FC<{
       { Icon: Italic, onClick: () => execCommand("italic") },
       { Icon: Underline, onClick: () => execCommand("underline") },
       { Icon: List, onClick: () => execCommand("insertUnorderedList") },
+      {
+        Icon: HeadingIcon,
+        onClick: () => {
+          const selection = window.getSelection()?.toString();
+          if (!selection) return;
+          execCommand("insertHTML", `<h3>${selection}</h3>`);
+        },
+      },
     ];
   }, [execCommand]);
 
+  const onChange = useCallback(
+    (event: ContentEditableEvent) => {
+      const value = event.target.value;
+      text.current = value;
+      setValue(value);
+    },
+    [setValue]
+  );
+
+  const onBlur = useCallback(() => {
+    setValue(sanitizeHtml(text.current, sanitizeConf));
+  }, [setValue]);
+
   return (
-    <div className="w-full flex-1">
+    <div>
       <div className="flex gap-3 mb-2">
         {actions.map(({ Icon, onClick }, idx) => (
           <div key={idx}>
@@ -46,32 +72,33 @@ export const TextEditor: React.FC<{
           </div>
         ))}
       </div>
-      <div
-        dir="rtl"
-        className={cn(
-          "w-full min-h-40 max-h-80 overflow-y-auto",
-          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
-          "font-cairo block box-border w-full rounded-md shadow-sm transition-all autofill:!bg-red-900",
-          "text-foreground focus-visible:shadow-md outline-none",
-          "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
-          "focus-visible:ring-background-control placeholder-foreground-muted group",
-          "border border-control text-sm px-4 py-4",
-          "aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
-          {
-            "bg-foreground/[.026]": !error,
-            "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
-              !!error,
-          },
-          "[&_ul]:list-disc [&_ul]:list-inside [&_ul_li]:mb-2 [&_ul]:pr-4",
-          "[&_div]:leading-loose"
-        )}
-        contentEditable={!disabled}
-        aria-disabled={disabled}
-        ref={editorRef}
-        onInput={onInput}
-      />
+      <RawHtml>
+        <Editable
+          html={value}
+          onChange={onChange}
+          disabled={disabled}
+          onBlur={onBlur}
+          className={cn(
+            "w-full min-h-40 max-h-80 overflow-y-auto",
+            "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
+            "font-cairo block box-border w-full rounded-md shadow-sm transition-all autofill:!bg-red-900",
+            "text-foreground focus-visible:shadow-md outline-none",
+            "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
+            "focus-visible:ring-background-control placeholder-foreground-muted group",
+            "border border-control text-sm px-4 py-4",
+            "aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
+            {
+              "bg-foreground/[.026]": !error,
+              "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
+                !!error,
+            }
+          )}
+        />
+      </RawHtml>
 
-      {error && <InputError message={error} />}
+      <AnimatePresence mode="wait" initial={false}>
+        {error ? <InputError message={error} /> : null}
+      </AnimatePresence>
     </div>
   );
 };
