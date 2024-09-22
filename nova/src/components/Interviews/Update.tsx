@@ -247,7 +247,8 @@ const Update: React.FC<{
               control={form.control}
               render={({ field }) => (
                 <TextEditor
-                  onChange={field.onChange}
+                  setValue={field.onChange}
+                  value={form.watch("feedback") || ""}
                   error={form.formState.errors.feedback?.message}
                 />
               )}
@@ -270,7 +271,8 @@ const Update: React.FC<{
                 control={form.control}
                 render={({ field }) => (
                   <TextEditor
-                    onChange={field.onChange}
+                    setValue={field.onChange}
+                    value={form.watch("note") || ""}
                     error={form.formState.errors.note?.message}
                   />
                 )}

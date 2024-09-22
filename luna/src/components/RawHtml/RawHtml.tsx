@@ -14,7 +14,6 @@ export const RawHtml: React.FC<{
     <div
       dir="auto"
       className={cn(
-        "mb-5 max-w-screen-md",
         "[&_h3]:text-xl [&_h3]:text-foreground [&_h3]:pb-2",
         "[&_p]:text-foreground-light [&_p]:mb-4 [&_p]:text-base [&_p]:leading-loose",
         "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:pr-4",

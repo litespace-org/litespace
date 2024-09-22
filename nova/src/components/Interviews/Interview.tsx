@@ -2,24 +2,23 @@ import {
   ActionsMenu,
   Button,
   ButtonSize,
+  Calls,
   Card,
+  Interviews,
   MenuAction,
   messages,
   useMediaQueries,
 } from "@litespace/luna";
 import { ICall, IInterview } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
-import { Calendar, Clock, MessageCircle, User } from "react-feather";
+import { MessageCircle } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 import Update from "@/components/Interviews/Update";
-import Feedback from "@/components/Interviews/Feedback";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
 import WatchCall from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
-import Status from "@/components/Call/Status";
-import TimelineListText from "@/components/Common/TimelineListText";
 import cn from "classnames";
 
 const Interview: React.FC<{
@@ -80,39 +79,22 @@ const Interview: React.FC<{
     <Card className="w-full lg:w-2/3">
       <div className="flex flex-row justify-between gap-2">
         <div className="w-full">
-          <ul className="flex flex-col gap-3">
-            <TimelineListText Icon={User}>{tutor.name.ar}</TimelineListText>
-            <TimelineListText Icon={Calendar}>
-              {dayjs(call.start).format("dddd، DD MMMM، YYYY")} (
-              {dayjs(call.start).fromNow()})
-            </TimelineListText>
-            <TimelineListText Icon={Clock}>
-              {dayjs(call.start).format("h:mm a")}
-            </TimelineListText>
-            <Status status={call.recordingStatus} interview />
-          </ul>
+          <Interviews.List>
+            <Interviews.User name={tutor.name.ar} />
+            <Interviews.Date start={call.start} />
+            <Interviews.Time start={call.start} />
+            <Calls.Status status={call.recordingStatus} interview />
+          </Interviews.List>
 
-          {interview.feedback.interviewer ? (
-            <div className="mt-3">
-              <Feedback
-                title={intl.formatMessage({
-                  id: messages["page.interviews.interviewer.feedback"],
-                })}
-                feedback={interview.feedback.interviewer}
-              />
-            </div>
-          ) : null}
+          <Interviews.Feedback
+            feedback={interview.feedback.interviewer}
+            tutor={false}
+          />
 
-          {interview.feedback.interviewee ? (
-            <div className="mt-3">
-              <Feedback
-                title={intl.formatMessage({
-                  id: messages["page.interviews.tutor.feedback"],
-                })}
-                feedback={interview.feedback.interviewee}
-              />
-            </div>
-          ) : null}
+          <Interviews.Feedback
+            feedback={interview.feedback.interviewee}
+            tutor={true}
+          />
         </div>
 
         <div>

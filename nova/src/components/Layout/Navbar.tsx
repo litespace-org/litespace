@@ -59,6 +59,7 @@ const Navbar: React.FC<{
     const role = profile?.role;
     const student = role === IUser.Role.Student;
     const tutor = role === IUser.Role.Tutor;
+    const interviewer = role === IUser.Role.Interviewer;
 
     const logoutOption = {
       label: intl("navbar.logout"),
@@ -102,6 +103,19 @@ const Navbar: React.FC<{
         {
           label: intl("navbar.invoices"),
           route: Route.Invoices,
+        },
+        {
+          label: intl("navbar.settings"),
+          route: Route.Settings,
+        },
+        logoutOption,
+      ];
+
+    if (interviewer)
+      return [
+        {
+          label: intl("navbar.interviews"),
+          route: Route.Interviews,
         },
         {
           label: intl("navbar.settings"),

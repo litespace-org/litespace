@@ -31,7 +31,7 @@ export const Dialog: React.FC<{
       onClick={onClose}
       className={cn(
         "fixed inset-0 w-screen h-screen bg-transparent backdrop-blur-sm p-6",
-        " hidden open:flex items-center justify-center z-[999]"
+        "hidden open:flex items-center justify-center z-[999]"
       )}
     >
       <div className="relative h-full w-full">

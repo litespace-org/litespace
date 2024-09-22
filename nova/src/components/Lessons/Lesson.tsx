@@ -5,6 +5,7 @@ import { useIntl } from "react-intl";
 import {
   ActionsMenu,
   Avatar,
+  Calls,
   Card,
   MenuAction,
   messages,
@@ -18,7 +19,6 @@ import { Calendar, Clock, X } from "react-feather";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
 import TimelineListText from "@/components/Common/TimelineListText";
-import Status from "@/components/Call/Status";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -177,7 +177,7 @@ const Lesson: React.FC<
           </TimelineListText>
         ) : null}
 
-        <Status status={call.recordingStatus} />
+        <Calls.Status status={call.recordingStatus} />
       </ul>
 
       {upcoming ? (
