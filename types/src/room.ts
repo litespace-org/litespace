@@ -24,8 +24,7 @@ export type PopulatedMemberRow = {
   id: IUser.Row["id"];
   roomId: Row["id"];
   email: IUser.Row["email"];
-  arabicName: IUser.Row["name_ar"];
-  englishName: IUser.Row["name_en"];
+  name: IUser.Name["ar"];
   photo: IUser.Row["photo"];
   role: IUser.Row["role"];
   online: IUser.Row["online"];
@@ -37,7 +36,7 @@ export type PopulatedMember = {
   id: IUser.Self["id"];
   roomId: Self["id"];
   email: IUser.Self["email"];
-  name: IUser.Self["name"];
+  name: string | null;
   photo: IUser.Self["photo"];
   role: IUser.Self["role"];
   online: IUser.Self["online"];

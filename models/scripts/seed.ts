@@ -304,6 +304,9 @@ async function main(): Promise<void> {
   }
 
   for (const tutor of addedTutors) {
+    // create chat room tutor-student
+    await rooms.create([tutor.id, student.id]);
+
     for (const _ of range(1, 100)) {
       await createRandomLesson(tutor);
     }

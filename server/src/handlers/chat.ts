@@ -22,7 +22,10 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
 async function findUserRooms(req: Request, res: Response) {
   const { userId } = zod.object({ userId: id }).parse(req.params);
   const userRooms = await rooms.findMemberRooms(userId);
-  const members = await rooms.findRoomMembers(userRooms);
+  const members = await rooms.findRoomMembers({
+    roomIds: userRooms,
+    excludeUsers: [userId],
+  });
   const grouped = groupBy(members, "roomId");
   res.status(200).json(grouped);
 }

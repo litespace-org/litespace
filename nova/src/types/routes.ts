@@ -20,6 +20,7 @@ export enum Route {
   Lessons = "/lessons",
   Interviews = "/interviews",
   Invoices = "/invoices",
+  Chat = "/chat",
 }
 
 export enum RoutePatterns {

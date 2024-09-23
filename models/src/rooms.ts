@@ -46,27 +46,36 @@ export class Rooms {
     return this.asRoom(row);
   }
 
-  async findRoomMembers(roomIds: number[]): Promise<IRoom.PopulatedMember[]> {
-    const rows = await knex<IUser.Row>(users.table)
-      .select<IRoom.PopulatedMemberRow[]>({
-        id: users.column("id"),
-        roomId: this.column.members("room_id"),
-        email: users.column("email"),
-        arabicName: users.column("name_ar"),
-        englishName: users.column("name_en"),
-        photo: users.column("photo"),
-        role: users.column("role"),
-        online: users.column("online"),
-        createdAt: users.column("created_at"),
-        updatedAt: users.column("updated_at"),
-      })
-      .join(
-        this.tables.members,
-        column<IRoom.MemberRow>("user_id", this.tables.members),
-        column<IUser.Row>("id", users.table)
-      )
-      .whereIn("room_id", roomIds);
+  async findRoomMembers({
+    roomIds,
+    excludeUsers,
+    tx,
+  }: {
+    roomIds: number[];
+    excludeUsers?: number[];
+    tx?: Knex.Transaction;
+  }): Promise<IRoom.PopulatedMember[]> {
+    const cols: Record<keyof IRoom.PopulatedMemberRow, string> = {
+      id: users.column("id"),
+      roomId: this.column.members("room_id"),
+      email: users.column("email"),
+      name: users.column("name_ar"),
+      photo: users.column("photo"),
+      role: users.column("role"),
+      online: users.column("online"),
+      createdAt: users.column("created_at"),
+      updatedAt: users.column("updated_at"),
+    };
 
+    const builder = this.builder(tx)
+      .members.select<IRoom.PopulatedMemberRow[]>(cols)
+      .join(users.table, users.column("id"), this.column.members("user_id"))
+      .whereIn(this.column.members("room_id"), roomIds);
+
+    if (excludeUsers)
+      builder.whereNotIn(this.column.members("user_id"), excludeUsers);
+
+    const rows = await builder.then();
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
@@ -93,6 +102,14 @@ export class Rooms {
     return rows.map((row) => row.roomId);
   }
 
+  builder(tx?: Knex.Transaction) {
+    const fn = tx || knex;
+    return {
+      rooms: fn(this.tables.rooms),
+      members: fn(this.tables.members),
+    };
+  }
+
   asRoom(row: IRoom.Row): IRoom.Self {
     return {
       id: row.id,
@@ -108,14 +125,10 @@ export class Rooms {
   }
 
   asPopulatedMember(row: IRoom.PopulatedMemberRow): IRoom.PopulatedMember {
-    return merge(
-      omit(row, "arabicName", "englishName", "createdAt", "updatedAt"),
-      {
-        name: { ar: row.arabicName, en: row.englishName },
-        createdAt: row.createdAt.toISOString(),
-        updatedAt: row.updatedAt.toISOString(),
-      }
-    );
+    return merge(omit(row, "createdAt", "updatedAt"), {
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    });
   }
 }
 

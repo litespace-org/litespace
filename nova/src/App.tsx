@@ -24,6 +24,7 @@ import { findUserRules } from "@/redux/user/schedule";
 import Tutors from "@/pages/Tutors";
 import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
+import Chat from "@/pages/Chat";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,7 @@ const router = createBrowserRouter([
       { path: Route.Lessons, element: <Lessons /> },
       { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Invoices, element: <Invoices /> },
+      { path: Route.Chat, element: <Chat /> },
       { path: Route.Login, element: <Login /> },
       { path: Route.Register, element: <Register /> },
       { path: Route.Complete, element: <Complete /> },

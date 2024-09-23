@@ -68,7 +68,7 @@ export class WssHandler {
         `New message from ${this.user.name.en} (${roomId}): ${text}`.yellow
       );
 
-      const members = await rooms.findRoomMembers([roomId]);
+      const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       if (!members) throw Error("Room not found");
 
       const member = members.map((member) => member.id).includes(userId);
