@@ -10,7 +10,7 @@ import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
 
 const sanitizeConf = {
-  allowedTags: ["b", "i", "em", "strong", "p", "h3"],
+  allowedTags: ["b", "i", "em", "strong", "p", "h3", "ul", "li", "br"],
 };
 
 export const TextEditor: React.FC<{
@@ -18,7 +18,8 @@ export const TextEditor: React.FC<{
   setValue: (value: string) => void;
   error?: string;
   disabled?: boolean;
-}> = ({ error, disabled, value, setValue }) => {
+  className?: string;
+}> = ({ error, disabled, className, value, setValue }) => {
   const text = useRef("");
   const execCommand = useCallback((command: string, arg?: string) => {
     document.execCommand(command, false, arg);
@@ -72,7 +73,7 @@ export const TextEditor: React.FC<{
           </div>
         ))}
       </div>
-      <RawHtml>
+      <RawHtml editor>
         <Editable
           html={value}
           onChange={onChange}
@@ -91,7 +92,8 @@ export const TextEditor: React.FC<{
               "bg-foreground/[.026]": !error,
               "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
-            }
+            },
+            className
           )}
         />
       </RawHtml>

@@ -130,7 +130,7 @@ const Navbar: React.FC<{
   }, [intl, logout, profile?.role]);
 
   return (
-    <nav className="px-6 py-4 flex flex-row items-center gap-6 border-b border-border-overlay">
+    <nav className="px-6 flex flex-row items-center gap-6 border-b border-border-overlay h-16">
       <div
         data-empty={links.length === 0}
         className="block data-[empty=true]:hidden md:hidden"

@@ -1,7 +1,7 @@
-import { Paginated } from "@litespace/types";
+import { Paginated, Void } from "@litespace/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { flatten, sum } from "lodash";
-import { useCallback, useState, useMemo } from "react";
+import { first, flatten, sum } from "lodash";
+import { useCallback, useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useReload() {
@@ -53,4 +53,31 @@ export function useRender() {
     hide,
     toggle,
   };
+}
+
+export function useInfinteScroll<T extends HTMLElement = HTMLElement>(
+  more: Void
+) {
+  const target = useRef<T>(null);
+
+  const observer = useMemo(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = first(entries);
+        if (entry?.isIntersecting) more();
+      },
+      { threshold: 1 }
+    );
+    if (target.current) observer.observe(target.current);
+    return observer;
+  }, [more]);
+
+  useEffect(() => {
+    const ref = target.current;
+    return () => {
+      if (ref) return observer.unobserve(ref);
+    };
+  }, [observer]);
+
+  return { target };
 }

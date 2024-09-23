@@ -492,7 +492,7 @@ async function main(): Promise<void> {
 
   const interviewerRooms = await rooms.findMemberRooms(interviewer.id);
   const tutorRooms = await rooms.findMemberRooms(tutor.id);
-  const roomMembers = await rooms.findRoomMembers([roomId]);
+  const roomMembers = await rooms.findRoomMembers({ roomIds: [roomId] });
 
   const total = await calls.sum({});
   const notCanceled = await calls.sum({ canceled: false });

@@ -11,7 +11,7 @@ export function useReload() {
 
 export function usePaginationQuery<T>(
   handler: ({ pageParam }: { pageParam: number }) => Promise<Paginated<T>>,
-  key: string[]
+  key: (string | number | null)[]
 ) {
   const getNextPageParam = useCallback(
     (last: Paginated<T>, all: Paginated<T>[], lastPageParam: number) => {

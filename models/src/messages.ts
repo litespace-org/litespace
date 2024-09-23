@@ -1,7 +1,8 @@
-import { knex } from "@/query";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
-import { IMessage } from "@litespace/types";
+import { IFilter, IMessage, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
+import { Knex } from "knex";
 
 export class Messages {
   table = "messages" as const;
@@ -50,17 +51,43 @@ export class Messages {
 
   async findManyBy<T extends keyof IMessage.Row>(
     key: T,
-    value: IMessage.Row[T]
+    value: IMessage.Row[T],
+    tx?: Knex.Transaction
   ): Promise<IMessage.Self[]> {
-    const rows = await knex<IMessage.Row>(this.table)
-      .select("*")
-      .where(key, value);
-
+    const rows = await this.builder(tx).select("*").where(key, value);
     return rows.map((row) => this.from(row));
   }
 
-  async findRoomMessages(roomId: number): Promise<IMessage.Self[]> {
-    return await this.findManyBy("room_id", roomId);
+  async findRoomMessages({
+    room,
+    tx,
+    page,
+    size,
+  }: {
+    room: number;
+    tx?: Knex.Transaction;
+  } & IFilter.Pagination): Promise<Paginated<IMessage.Self>> {
+    const builder = this.builder(tx).where(this.column("room_id"), room);
+    const total = await countRows(builder.clone());
+    const query = builder
+      .clone()
+      .select()
+      .orderBy([
+        { column: this.column("created_at"), order: "asc" },
+        { column: this.column("id"), order: "asc" },
+      ]);
+
+    const rows = await withPagination(query, { page, size });
+    return { list: rows.map((row) => this.from(row)), total };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    const fn = tx || knex;
+    return fn<IMessage.Row>(this.table);
+  }
+
+  column(value: keyof IMessage.Row): string {
+    return column(value, this.table);
   }
 
   from(row: IMessage.Row): IMessage.Self {

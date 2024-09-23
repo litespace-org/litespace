@@ -1,3 +1,5 @@
+import { Paginated } from "@/utils";
+
 export type Self = {
   id: number;
   userId: number;
@@ -23,3 +25,5 @@ export type CreatePayload = {
   roomId: number;
   text: string;
 };
+
+export type FindRoomMessagesApiResponse = Paginated<Self>;
