@@ -28,37 +28,23 @@ const Messages: React.FC<{
   const messagesRef = useRef<HTMLDivElement>(null);
   const [freshMessages, setFreshMessages] = useState<IMessage.Self[]>([]);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
-  const queryClient = useQueryClient();
 
   const findRoomMessages = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
-      if (!room) return { list: [], total: 0 };
-      return await atlas.chat.findRoomMessages(room, { page: pageParam });
+    async (id: number, pagination?: IFilter.Pagination) => {
+      return await atlas.chat.findRoomMessages(id, pagination);
     },
-    [room]
+    []
   );
-
-  const { list, query, more } = usePaginationQuery(findRoomMessages, [
-    "find-room-messages",
-    room,
-  ]);
-
-  const messages = useMemo(() => {
-    if (!list) return freshMessages;
-    return orderBy(
-      concat(list, freshMessages),
-      (message) => dayjs(message.createdAt).unix(),
-      "asc"
-    );
-  }, [freshMessages, list]);
+  const { messages, loading, target } = useMessages<HTMLDivElement>(
+    findRoomMessages,
+    room
+  );
 
   const onMessage: OnMessage = useCallback((message) => {
     setFreshMessages((prev) => [...prev, message]);
     if (messagesRef.current)
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, []);
-
-  const { target } = useInfinteScroll<HTMLDivElement>(more, true);
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -99,6 +85,16 @@ const Messages: React.FC<{
     [members, profile]
   );
 
+  // reset
+  // useEffect(() => {
+  //   return () => {
+  //     if (!room) return;
+  //     resetScroll();
+  //     setFreshMessages([]);
+  //     queryClient.invalidateQueries({ queryKey: ["find-room-messages", room] });
+  //   };
+  // }, [queryClient, resetScroll, room]);
+
   const assignGroup = useCallback(
     (user: number | null, messages: IMessage.Self[]): MessageGroup | null => {
       if (isEmpty(messages)) return null;
@@ -115,16 +111,6 @@ const Messages: React.FC<{
     },
     [asSender]
   );
-
-  // reset
-  useEffect(() => {
-    return () => {
-      if (!room) return;
-      resetScroll();
-      setFreshMessages([]);
-      queryClient.invalidateQueries({ queryKey: ["find-room-messages", room] });
-    };
-  }, [queryClient, resetScroll, room]);
 
   const messageGroups = useMemo(() => {
     const groups: MessageGroup[] = [];
@@ -153,15 +139,6 @@ const Messages: React.FC<{
     return groups;
   }, [assignGroup, messages]);
 
-  const findRoomMessages_ = useCallback(
-    async (id: number, pagination?: IFilter.Pagination) => {
-      return await atlas.chat.findRoomMessages(id, pagination);
-    },
-    []
-  );
-  const { messages: msgs } = useMessages(findRoomMessages_, room);
-  console.log(msgs);
-
   return (
     <div
       className={cn(
@@ -169,7 +146,7 @@ const Messages: React.FC<{
         "flex flex-col"
       )}
     >
-      <Loading show={query.isLoading} className="h-full" />
+      <Loading show={loading} className="h-full" />
 
       {room === null ? <NoSelection /> : null}
 
