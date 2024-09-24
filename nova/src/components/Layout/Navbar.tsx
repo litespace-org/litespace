@@ -130,41 +130,48 @@ const Navbar: React.FC<{
   }, [intl, logout, profile?.role]);
 
   return (
-    <nav className="px-6 flex flex-row items-center gap-6 border-b border-border-overlay h-16">
+    <nav className="border-b border-border-overlay h-16">
       <div
-        data-empty={links.length === 0}
-        className="block data-[empty=true]:hidden md:hidden"
+        className={cn(
+          "px-6 flex flex-row items-center gap-6 h-full",
+          "max-w-screen-2xl mx-auto w-full"
+        )}
       >
-        <SidebarNav options={links} />
-      </div>
+        <div
+          data-empty={links.length === 0}
+          className="block data-[empty=true]:hidden md:hidden"
+        >
+          <SidebarNav options={links} />
+        </div>
 
-      <Discord className="fill-foreground h-6 w-6" />
+        <Discord className="fill-foreground h-6 w-6" />
 
-      <ul className="hidden md:flex flex-row gap-4">
-        {links.map((link) => {
-          return (
-            <li key={link.label}>
-              <Link to={link.route}>
-                <Button
-                  onClick={link.onClick}
-                  loading={link.loading}
-                  disabled={link.disabled}
-                  className={cn(
-                    location.pathname === link.route && "bg-surface-200"
-                  )}
-                  size={ButtonSize.Small}
-                  type={ButtonType.Text}
-                >
-                  {link.label}
-                </Button>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
+        <ul className="hidden md:flex flex-row gap-4">
+          {links.map((link) => {
+            return (
+              <li key={link.label}>
+                <Link to={link.route}>
+                  <Button
+                    onClick={link.onClick}
+                    loading={link.loading}
+                    disabled={link.disabled}
+                    className={cn(
+                      location.pathname === link.route && "bg-surface-200"
+                    )}
+                    size={ButtonSize.Small}
+                    type={ButtonType.Text}
+                  >
+                    {link.label}
+                  </Button>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
 
-      <div className="mr-auto">
-        <Switch checked={theme === Theme.Dark} onChange={toggleTheme} />
+        <div className="mr-auto">
+          <Switch checked={theme === Theme.Dark} onChange={toggleTheme} />
+        </div>
       </div>
     </nav>
   );

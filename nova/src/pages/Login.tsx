@@ -8,6 +8,7 @@ import {
   useValidation,
   InputType,
   toaster,
+  ButtonSize,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -129,7 +130,11 @@ const Login: React.FC = () => {
                 }
               />
 
-              <Button loading={mutation.isPending}>
+              <Button
+                size={ButtonSize.Small}
+                disabled={mutation.isPending}
+                loading={mutation.isPending}
+              >
                 {intl.formatMessage({
                   id: messages["page.login.form.button.submit.label"],
                 })}

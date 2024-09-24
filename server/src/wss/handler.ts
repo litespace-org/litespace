@@ -36,7 +36,7 @@ export class WssHandler {
   }
 
   async joinRooms() {
-    const list = await rooms.findMemberRooms(this.user.id);
+    const { list } = await rooms.findMemberRooms({ userId: this.user.id });
     const ids = list.map((room) => room.toString());
     this.socket.join(ids);
     // private channel

@@ -7,14 +7,12 @@ export function TextEditor<T extends FieldValues>({
   value,
   error,
   className,
-  heading = true,
 }: {
   control: Control<T>;
   name: Path<T>;
   value: string;
   error?: string;
   className?: string;
-  heading?: boolean;
 }) {
   return (
     <Controller
@@ -26,7 +24,6 @@ export function TextEditor<T extends FieldValues>({
           value={value}
           error={error}
           className={className}
-          heading={heading}
         />
       )}
     />

@@ -1,4 +1,4 @@
-import { IUser } from ".";
+import { IUser, Paginated } from ".";
 
 export type Self = {
   id: number;
@@ -45,3 +45,5 @@ export type PopulatedMember = {
 };
 
 export type RoomMap = Record<number, PopulatedMember[]>;
+
+export type FindUserRoomsApiResponse = Paginated<PopulatedMember[]>;

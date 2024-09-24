@@ -1,29 +1,31 @@
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
-import { useIntl } from "react-intl";
 import {
   ActionsMenu,
   Avatar,
+  Button,
+  ButtonSize,
   Calls,
   Card,
+  IconField,
   MenuAction,
-  messages,
+  useFormatMessage,
+  useMediaQueries,
 } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
-import WatchLesson from "../Call/WatchCall";
+import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";
-import { Calendar, Clock, X } from "react-feather";
+import { Calendar, MessageCircle, X } from "react-feather";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
-import TimelineListText from "@/components/Common/TimelineListText";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
 > = ({ lesson, call, members, user }) => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const watch = useRender();
   const otherMember = useMemo(() => {
     return members.find((member) => member.userId !== user.id);
@@ -66,19 +68,16 @@ const Lesson: React.FC<
   }, [call.duration, call.start, lesson.canceledBy]);
 
   const title = useMemo(() => {
-    return intl.formatMessage(
-      { id: messages["page.lessons.watch.dialog.title"] },
-      { name: otherMember?.name.ar || "" }
-    );
+    return intl("page.lessons.watch.dialog.title", {
+      name: otherMember?.name.ar || "",
+    });
   }, [intl, otherMember?.name.ar]);
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [
       {
         id: 1,
-        label: intl.formatMessage({
-          id: messages["page.lessons.lesson.reschedule"],
-        }),
+        label: intl("page.lessons.lesson.reschedule"),
         onClick() {
           alert("show schedule lesson dialog");
         },
@@ -89,16 +88,12 @@ const Lesson: React.FC<
       list.push(
         {
           id: 2,
-          label: intl.formatMessage({
-            id: messages["global.labels.watch.lesson"],
-          }),
+          label: intl("global.labels.watch.lesson"),
           onClick: watch.show,
         },
         {
           id: 3,
-          label: intl.formatMessage({
-            id: messages["global.labels.download.lesson"],
-          }),
+          label: intl("global.labels.download.lesson"),
           onClick: () => {
             alert("download");
           },
@@ -108,9 +103,7 @@ const Lesson: React.FC<
 
     list.push({
       id: 4,
-      label: intl.formatMessage({
-        id: messages["global.labels.block.or.ban"],
-      }),
+      label: intl("global.labels.block.or.ban"),
       danger: true,
       onClick() {
         alert("show block or ban dialog");
@@ -119,6 +112,8 @@ const Lesson: React.FC<
 
     return list;
   }, [call.recordingStatus, intl, watch.show]);
+
+  const { sm } = useMediaQueries();
 
   return (
     <Card className={cn("w-full lg:w-2/3")}>
@@ -146,86 +141,60 @@ const Lesson: React.FC<
       </div>
 
       <ul className="text-foreground-light flex flex-col gap-3">
-        <TimelineListText Icon={Calendar}>
-          {intl.formatMessage(
-            { id: messages["page.lessons.lesson.start.with.duration"] },
-            {
-              start: dayjs(call.start).format("h:mm a"),
-              duration: call.duration,
-            }
-          )}
-        </TimelineListText>
-        {lesson.canceledBy ? (
-          <TimelineListText Icon={X}>
-            {isUserCanceled
-              ? intl.formatMessage(
-                  { id: messages["page.lessons.lesson.canceled.by.you"] },
-                  { date: canceledAt, since: canceledSince }
-                )
-              : isMemberCanceled
-                ? intl.formatMessage(
-                    { id: messages["page.lessons.lesson.canceled.by.other"] },
-                    {
-                      name: canceller?.name.ar || "",
-                      date: canceledAt,
-                      since: canceledSince,
-                    }
-                  )
-                : intl.formatMessage({
-                    id: messages["page.lessons.lesson.canceled"],
-                  })}
-          </TimelineListText>
-        ) : null}
+        <IconField Icon={Calendar}>
+          {intl("page.lessons.lesson.start.with.duration", {
+            start: dayjs(call.start).format("h:mm a"),
+            duration: call.duration,
+          })}
+        </IconField>
 
+        {lesson.canceledBy ? (
+          <IconField Icon={X}>
+            {isUserCanceled
+              ? intl("page.lessons.lesson.canceled.by.you", {
+                  date: canceledAt,
+                  since: canceledSince,
+                })
+              : isMemberCanceled
+                ? intl("page.lessons.lesson.canceled.by.other", {
+                    name: canceller?.name.ar || "",
+                    date: canceledAt,
+                    since: canceledSince,
+                  })
+                : intl("page.lessons.lesson.canceled")}
+          </IconField>
+        ) : null}
         <Calls.Status status={call.recordingStatus} />
       </ul>
 
-      {upcoming ? (
-        <div className="flex flex-row items-center gap-2 mt-2 text-foreground-light">
-          <div>
-            <Clock />
-          </div>
-          <p>
-            {inprogress
-              ? intl.formatMessage(
-                  { id: messages["page.lessons.lesson.join.inprogress"] },
-                  {
+      <div className="mt-4 flex flex-row gap-2">
+        {upcoming ? (
+          <Link to={Route.Call.replace(":id", call.id.toString())}>
+            <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
+              {inprogress
+                ? intl("page.lessons.lesson.join.inprogress", {
                     duration: dayjs().to(call.start, true),
-                    link: (
-                      <Link
-                        to={Route.Call.replace(":id", call.id.toString())}
-                        className="text-brand underline"
-                      >
-                        {intl.formatMessage({
-                          id: messages[
-                            "page.lessons.lesson.join.inprogress.link.label"
-                          ],
-                        })}
-                      </Link>
-                    ),
-                  }
-                )
-              : intl.formatMessage(
-                  { id: messages["page.lessons.lesson.join"] },
-                  {
+                  })
+                : intl("page.lessons.lesson.join", {
                     duration: dayjs().to(call.start, true),
-                    link: (
-                      <Link
-                        to={Route.Call.replace(":id", call.id.toString())}
-                        className="text-brand underline"
-                      >
-                        {intl.formatMessage({
-                          id: messages["page.lessons.lesson.join.link.label"],
-                        })}
-                      </Link>
-                    ),
-                  }
-                )}
-          </p>
-        </div>
-      ) : null}
+                  })}
+            </Button>
+          </Link>
+        ) : null}
 
-      <WatchLesson
+        <Link to={Route.Chat}>
+          <Button
+            className={cn({
+              "!w-[26px]": !sm,
+            })}
+            size={sm ? ButtonSize.Small : ButtonSize.Tiny}
+          >
+            <MessageCircle className="w-[20px] h-[20px] md:w-auto md:h-auto" />
+          </Button>
+        </Link>
+      </div>
+
+      <WatchCall
         open={watch.open}
         close={watch.hide}
         callId={call.id}

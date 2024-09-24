@@ -56,7 +56,8 @@ export function useRender() {
 }
 
 export function useInfinteScroll<T extends HTMLElement = HTMLElement>(
-  more: Void
+  more: Void,
+  enabled: boolean
 ) {
   const target = useRef<T>(null);
 
@@ -64,13 +65,13 @@ export function useInfinteScroll<T extends HTMLElement = HTMLElement>(
     const observer = new IntersectionObserver(
       (entries) => {
         const entry = first(entries);
-        if (entry?.isIntersecting) more();
+        if (entry?.isIntersecting && enabled) more();
       },
       { threshold: 1 }
     );
     if (target.current) observer.observe(target.current);
     return observer;
-  }, [more]);
+  }, [enabled, more]);
 
   useEffect(() => {
     const ref = target.current;

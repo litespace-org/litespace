@@ -28,6 +28,7 @@ export { RawHtml } from "@/components/RawHtml";
 export { Price } from "@/components/Price";
 export { SidebarNav } from "@/components/SidebarNav";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
+export { IconField } from "@/components/IconField";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
 export * as Calls from "@/components/Calls";

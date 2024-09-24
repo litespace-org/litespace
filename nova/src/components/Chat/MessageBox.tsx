@@ -56,7 +56,6 @@ const MessageBox: React.FC<{
         value={form.watch("message")}
         error={form.formState.errors.message?.message}
         className="min-h-20"
-        heading={false}
       />
       <Button
         disabled={!form.watch("message") || !room}

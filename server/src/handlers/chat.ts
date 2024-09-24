@@ -1,12 +1,12 @@
 import { messages, rooms } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safe from "express-async-handler";
-import { groupBy, isEmpty } from "lodash";
+import { isEmpty } from "lodash";
 import zod from "zod";
 import { id, pagination, withNamedId } from "@/validation/utils";
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { authorizer } from "@litespace/auth";
-import { IMessage } from "@litespace/types";
+import { IMessage, IRoom } from "@litespace/types";
 
 const createRoomPayload = zod.object({ userId: id });
 
@@ -22,14 +22,27 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
 }
 
 async function findUserRooms(req: Request, res: Response) {
-  const { userId } = zod.object({ userId: id }).parse(req.params);
-  const userRooms = await rooms.findMemberRooms(userId);
+  const { userId } = withNamedId("userId").parse(req.params);
+  const query = pagination.parse(req.query);
+  const { list: userRooms, total } = await rooms.findMemberRooms({
+    pagination: query,
+    userId,
+  });
   const members = await rooms.findRoomMembers({
     roomIds: userRooms,
     excludeUsers: [userId],
   });
-  const grouped = groupBy(members, "roomId");
-  res.status(200).json(grouped);
+
+  // group room members while maintaining the order.
+  const grouped: IRoom.PopulatedMember[][] = [];
+  for (const room of userRooms) {
+    const roomMembers = members.filter((member) => member.roomId === room);
+    if (isEmpty(roomMembers)) continue;
+    grouped.push(roomMembers);
+  }
+
+  const response: IRoom.FindUserRoomsApiResponse = { list: grouped, total };
+  res.status(200).json(response);
 }
 
 async function findRoomMessages(

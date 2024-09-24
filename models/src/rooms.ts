@@ -1,9 +1,10 @@
-import { column, knex } from "@/query";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first, merge, omit, orderBy } from "lodash";
-import { IRoom, IUser } from "@litespace/types";
+import { IFilter, IRoom, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { users } from "@/users";
+import { messages } from "@/messages";
 
 export class Rooms {
   tables = {
@@ -37,7 +38,7 @@ export class Rooms {
   }
 
   async findById(id: number): Promise<IRoom.Self | null> {
-    const rows = await knex<IRoom.Row>(this.tables.rooms)
+    const rows: IRoom.Row[] = await knex<IRoom.Row>(this.tables.rooms)
       .select("*")
       .where("id", id);
 
@@ -93,13 +94,58 @@ export class Rooms {
     return row.room_id;
   }
 
-  async findMemberRooms(userId: number): Promise<number[]> {
-    const rows = await knex<IUser.Row>("users")
-      .select<Array<{ roomId: number }>>({ roomId: "rooms.id" })
-      .join(this.tables.members, "room_members.user_id", "users.id")
-      .join(this.tables.rooms, "rooms.id", "room_members.room_id")
-      .where("users.id", userId);
-    return rows.map((row) => row.roomId);
+  async findMemberRooms({
+    tx,
+    userId,
+    pagination,
+  }: {
+    userId: number;
+    tx?: Knex.Transaction;
+    pagination?: IFilter.Pagination;
+  }): Promise<Paginated<number>> {
+    const base = this.builder(tx)
+      .members.join(
+        this.tables.rooms,
+        this.column.rooms("id"),
+        this.column.members("room_id")
+      )
+      .where(this.column.members("user_id"), userId);
+
+    const subquery = messages
+      .builder(tx)
+      .select(
+        knex.raw(
+          `
+      (
+        CASE
+            WHEN max(updated_at) IS NULL THEN to_timestamp(0)
+            ELSE max(updated_at)
+        END
+      )
+      `
+        )
+      )
+      .where(
+        messages.column("room_id"),
+        knex.ref(this.column.members("room_id"))
+      );
+
+    const query = base
+      .clone()
+      .select<Array<{ roomId: number }>>({
+        roomId: this.column.members("room_id"),
+      })
+      .orderBy([
+        { column: subquery, order: "DESC" },
+        { column: this.column.rooms("created_at"), order: "DESC" },
+      ]);
+
+    const total = await countRows(base.clone());
+    const rows = pagination
+      ? await withPagination(query, pagination)
+      : await query.then();
+
+    return { list: rows.map((row) => row.roomId), total };
   }
 
   builder(tx?: Knex.Transaction) {
