@@ -1,17 +1,23 @@
 import Messages from "@/components/Chat/Messages";
-import Rooms from "@/components/Chat/Rooms";
-import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import Rooms, { SelectedRoom } from "@/components/Chat/Rooms";
 import React, { useState } from "react";
+import cn from "classnames";
 
 const Chat: React.FC = () => {
-  const profile = useAppSelector(profileSelector);
-  const [room, setRoom] = useState<number | null>(null);
+  const [selected, setRoom] = useState<SelectedRoom>({
+    room: null,
+    members: [],
+  });
 
   return (
-    <div className="flex flex-row h-[calc(100vh-4rem)] overflow-hidden">
-      <Rooms room={room} setRoom={setRoom} />
-      <Messages room={room} userId={profile?.id} />
+    <div
+      className={cn(
+        "flex flex-row h-[calc(100vh-4rem)] md:h-[calc(100vh-6rem)] overflow-hidden",
+        "max-w-screen-2xl mx-auto w-full md:my-4 md:border md:border-border-strong md:shadow-2xl md:rounded-md"
+      )}
+    >
+      <Rooms room={selected.room} setRoom={setRoom} />
+      <Messages room={selected.room} members={selected.members} />
     </div>
   );
 };

@@ -36,7 +36,7 @@ const Room: React.FC<{
   return (
     <button
       className={cn(
-        "flex flex-row gap-2 items-center px-6 py-3 mr-1 cursor-pointer",
+        "flex flex-row gap-2 items-center px-4 py-2 md:px-6 md:py-3 mr-1 cursor-pointer",
         "border-b border-border-strong",
         {
           "bg-background-selection": active,
@@ -46,7 +46,7 @@ const Room: React.FC<{
       onClick={select}
     >
       <div className="relative">
-        <div className="w-14 h-14 overflow-hidden rounded-full">
+        <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full">
           <img
             className="object-cover w-full h-full"
             src={member.photo ? asFullAssetUrl(member.photo) : "/avatar-1.png"}
@@ -55,7 +55,7 @@ const Room: React.FC<{
 
         <span
           className={cn(
-            "w-3 h-3 inline-block absolute z-10 bottom-0.5 left-0.5 rounded-full shadow-md",
+            "w-3 h-3 inline-block absolute z-10 bottom-0 left-0 md:bottom-0.5 md:left-0.5 rounded-full shadow-md",
             {
               "hidden bg-transparent": status === Status.InActive,
               "bg-amber-700 dark:bg-amber-900": status === Status.WasActive,
@@ -64,7 +64,7 @@ const Room: React.FC<{
           )}
         />
       </div>
-      <div className="flex flex-col items-start">
+      <div className="hidden md:flex flex-col items-start">
         <p>{member.name}</p>
         <span className="text-foreground-light text-sm">
           {status === Status.Active

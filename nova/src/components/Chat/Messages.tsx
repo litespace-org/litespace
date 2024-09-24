@@ -1,4 +1,4 @@
-import { IMessage } from "@litespace/types";
+import { IFilter, IMessage, IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -8,20 +8,23 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import Message from "./Message";
+import Message, { Sender, MessageGroup } from "@/components/Chat/Message";
 import { OnMessage } from "@/hooks/chat";
 import { atlas } from "@/lib/atlas";
 import { usePaginationQuery } from "@/hooks/common";
-import { concat, orderBy, reverse } from "lodash";
+import { concat, isEmpty, maxBy, orderBy } from "lodash";
 import { Loading, useInfinteScroll, useMessages } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
 import { useQueryClient } from "@tanstack/react-query";
 import dayjs from "@/lib/dayjs";
+import { useAppSelector } from "@/redux/store";
+import { profileSelector } from "@/redux/user/me";
 
 const Messages: React.FC<{
   room: number | null;
-  userId?: number;
-}> = ({ room, userId }) => {
+  members: IRoom.PopulatedMember[];
+}> = ({ room, members }) => {
+  const profile = useAppSelector(profileSelector);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [freshMessages, setFreshMessages] = useState<IMessage.Self[]>([]);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
@@ -55,7 +58,7 @@ const Messages: React.FC<{
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, []);
 
-  const { target } = useInfinteScroll<HTMLDivElement>(more);
+  const { target } = useInfinteScroll<HTMLDivElement>(more, true);
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -75,6 +78,44 @@ const Messages: React.FC<{
     if (!userScrolled) resetScroll();
   }, [messages, resetScroll, userScrolled]);
 
+  const asSender = useCallback(
+    (user: number | null): Sender | null => {
+      if (!user || !profile) return null;
+      if (user === profile.id)
+        return {
+          id: profile.id,
+          name: profile.name.ar,
+          photo: profile.photo,
+        };
+
+      const member = members.find((member) => member.id === user);
+      if (!member) return null;
+      return {
+        id: member.id,
+        name: member.name,
+        photo: member.photo,
+      };
+    },
+    [members, profile]
+  );
+
+  const assignGroup = useCallback(
+    (user: number | null, messages: IMessage.Self[]): MessageGroup | null => {
+      if (isEmpty(messages)) return null;
+      const sender = asSender(user);
+      if (!sender) return null;
+
+      const latest = maxBy(messages, (message) =>
+        dayjs(message.updatedAt).unix()
+      );
+      if (!latest) return null;
+
+      const id = messages.map((message) => message.id).join("-");
+      return { id, sender, messages, date: latest.updatedAt };
+    },
+    [asSender]
+  );
+
   // reset
   useEffect(() => {
     return () => {
@@ -84,6 +125,42 @@ const Messages: React.FC<{
       queryClient.invalidateQueries({ queryKey: ["find-room-messages", room] });
     };
   }, [queryClient, resetScroll, room]);
+
+  const messageGroups = useMemo(() => {
+    const groups: MessageGroup[] = [];
+
+    let user: number | null = null;
+    let group: IMessage.Self[] = [];
+    for (const message of messages) {
+      if (!user && isEmpty(group)) user = message.userId;
+
+      // message from the same user, push to the same group
+      if (message.userId === user) {
+        group.push(message);
+      } else {
+        const assignedGroup = assignGroup(user, group);
+        if (!assignedGroup) continue;
+        // append previous group
+        groups.push(assignedGroup);
+        // create new group
+        group = [message];
+        user = message.userId;
+      }
+    }
+
+    const lastGroup = assignGroup(user, group);
+    if (lastGroup) groups.push(lastGroup);
+    return groups;
+  }, [assignGroup, messages]);
+
+  const findRoomMessages_ = useCallback(
+    async (id: number, pagination?: IFilter.Pagination) => {
+      return await atlas.chat.findRoomMessages(id, pagination);
+    },
+    []
+  );
+  const { messages: msgs } = useMessages(findRoomMessages_, room);
+  console.log(msgs);
 
   return (
     <div
@@ -104,28 +181,11 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <div ref={target} />
-            {messages ? (
-              <ul>
-                {messages.map((message, idx) => {
-                  const prevMessage: IMessage.Self | undefined =
-                    messages[idx - 1];
-                  const nextMessage: IMessage.Self | undefined =
-                    messages[idx + 1];
-                  const owner = message.userId === userId;
-                  const ownPrev = prevMessage?.userId === message.userId;
-                  const ownNext = nextMessage?.userId === message.userId;
-                  return (
-                    <Message
-                      key={message.id}
-                      message={message}
-                      owner={owner}
-                      ownPrev={ownPrev}
-                      ownNext={ownNext}
-                    />
-                  );
-                })}
-              </ul>
-            ) : null}
+            <ul className="flex flex-col gap-4">
+              {messageGroups.map((group) => (
+                <Message key={group.id} group={group} />
+              ))}
+            </ul>
           </div>
           <div className="pb-6 px-4 pt-2">
             <MessageBox room={room} onMessage={onMessage} />

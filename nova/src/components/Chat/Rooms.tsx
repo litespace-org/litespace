@@ -6,23 +6,26 @@ import { profileSelector } from "@/redux/user/me";
 import { atlas } from "@/lib/atlas";
 import { Loading, useInfinteScroll, usePaginationQuery } from "@litespace/luna";
 import cn from "classnames";
+import { IRoom } from "@litespace/types";
+
+export type SelectedRoom = {
+  room: number | null;
+  members: IRoom.PopulatedMember[];
+};
 
 const Rooms: React.FC<{
   room: number | null;
-  setRoom: (id: number) => void;
+  setRoom: (room: SelectedRoom) => void;
 }> = ({ setRoom, room }) => {
   const profile = useAppSelector(profileSelector);
 
   const findUserRooms = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (!profile) return { list: [], total: 0 };
-      const res = await atlas.chat.findRooms(profile.id, {
+      return await atlas.chat.findRooms(profile.id, {
         page: pageParam,
         size: 20,
       });
-
-      console.log(res.list.map((l) => l[0].roomId));
-      return res;
     },
     [profile]
   );
@@ -43,7 +46,7 @@ const Rooms: React.FC<{
     <div
       className={cn(
         "flex flex-col bg-background-200 overflow-auto main-scrollbar mb-1",
-        "w-[300px]"
+        "md:w-[300px]"
       )}
     >
       {rooms?.map((members) => {
@@ -52,7 +55,7 @@ const Rooms: React.FC<{
         return (
           <Room
             key={member.roomId}
-            select={() => setRoom(member.roomId)}
+            select={() => setRoom({ room: member.roomId, members })}
             active={member.roomId === room}
             members={members}
           />

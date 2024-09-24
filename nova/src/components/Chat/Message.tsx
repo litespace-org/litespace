@@ -3,41 +3,53 @@ import cn from "classnames";
 import { IMessage } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { RawHtml } from "@litespace/luna";
+import { asFullAssetUrl } from "@/lib/atlas";
+
+export type Sender = {
+  id: number;
+  photo: string | null;
+  name: string | null;
+};
+
+export type MessageGroup = {
+  id: string;
+  sender: Sender;
+  messages: IMessage.Self[];
+  date: string;
+};
 
 const Message: React.FC<{
-  message: IMessage.Self;
-  owner: boolean;
-  ownPrev: boolean;
-  ownNext: boolean;
-}> = ({ message, owner, ownPrev, ownNext }) => {
+  group: MessageGroup;
+}> = ({ group: { sender, messages, date } }) => {
   return (
-    <li
-      className={cn(
-        "pr-4 pl-6 py-2 w-fit min-w-[200px] border",
-        "transition-colors duration-200 rounded-l-3xl",
-        owner
-          ? "bg-brand-button border-brand/30 hover:border-brand"
-          : "bg-selection border-border-strong hover:border-border-stronger",
-        {
-          "mt-1": ownPrev,
-          "rounded-l-3xl rounded-tr-xl": ownPrev && !ownNext,
-          "rounded-r-xl": ownNext && ownPrev,
-          "rounded-r-3xl rounded-br-xl mt-4": ownNext && !ownPrev,
-          "mt-4 rounded-tr-3xl": !ownNext && !ownPrev,
-        }
-      )}
-    >
-      <div className="mb-1">
-        <RawHtml html={message.text} />
+    <li className={cn("flex flex-row gap-2")}>
+      <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full">
+        <img
+          className="object-cover w-full h-full"
+          src={sender.photo ? asFullAssetUrl(sender.photo) : "/avatar-1.png"}
+        />
       </div>
-      <span
-        className={cn(
-          "text-xs",
-          owner ? "text-foreground-light" : "text-foreground-lighter"
-        )}
-      >
-        {dayjs(message.createdAt).format("HH:mm a")}
-      </span>
+      <div>
+        <div className="flex flex-row gap-2 items-center">
+          <p className="font-bold text-foreground text-xs md:text-base">
+            {sender.name}
+          </p>{" "}
+          &mdash;
+          <p className="text-foreground-muted dark:text-foreground-light text-xs md:text-base leading-none">
+            {dayjs(date).fromNow()}
+          </p>
+        </div>
+
+        <div className="text-foreground mt-1.5">
+          {messages.map((message) => {
+            return (
+              <div className="mt-1" key={message.id}>
+                <RawHtml html={message.text} />
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </li>
   );
 };
