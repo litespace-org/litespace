@@ -7,6 +7,7 @@ import {
   useFormatMessage,
   useKeys,
 } from "@litespace/luna";
+import { sanitizeMessage } from "@litespace/sol";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
@@ -24,9 +25,13 @@ const MessageBox: React.FC<{
 
   const send = useCallback(
     (message: string) => {
-      if (!message || !room) return;
+      const sanitized = sanitizeMessage(message);
+      if (!sanitized || !room) return;
       form.reset();
-      sendMessage({ roomId: room, message });
+      sendMessage({
+        roomId: room,
+        message: sanitized,
+      });
     },
     [form, room, sendMessage]
   );
@@ -58,7 +63,7 @@ const MessageBox: React.FC<{
         className="min-h-20"
       />
       <Button
-        disabled={!form.watch("message") || !room}
+        disabled={!sanitizeMessage(form.watch("message")) || !room}
         size={ButtonSize.Small}
       >
         {intl("global.labels.send")}

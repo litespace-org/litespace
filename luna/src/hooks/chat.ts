@@ -18,6 +18,7 @@ type State = {
    */
   roomTotalMessages: Record<number, number>;
   loading: boolean;
+  fetching: boolean;
   error: unknown | null;
 };
 
@@ -27,6 +28,7 @@ const initial: State = {
   roomMessages: {},
   roomTotalMessages: {},
   loading: false,
+  fetching: false,
   error: null,
 };
 
@@ -35,9 +37,8 @@ enum ActionType {
   setTotalMessages,
   SetPage,
   SetLoading,
+  SetFetching,
   SetError,
-  // test
-  SetLoadingPage,
 }
 
 type Action =
@@ -62,14 +63,9 @@ type Action =
     }
   | {
       type: ActionType.SetError;
-      error: unknown | null;
+      error: string | null;
     }
-  | {
-      type: ActionType.SetLoadingPage;
-      loading: boolean;
-      page: number;
-      room: number;
-    };
+  | { type: ActionType.SetFetching; fetching: boolean };
 
 function reducer(state: State, action: Action) {
   const mutate = (incoming?: Partial<State>): State =>
@@ -95,14 +91,11 @@ function reducer(state: State, action: Action) {
     return mutate({ roomPage });
   }
 
-  if (action.type === ActionType.SetLoadingPage) {
-    const roomPage = structuredClone(state.roomPage);
-    roomPage[action.room] = action.page;
-    return mutate({ roomPage, loading: action.loading });
-  }
-
   if (action.type === ActionType.SetLoading)
     return mutate({ loading: action.loading });
+
+  if (action.type === ActionType.SetFetching)
+    return mutate({ fetching: action.fetching });
 
   if (action.type === ActionType.SetError)
     return mutate({ error: action.error });
@@ -134,24 +127,41 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
       if (!room) return;
       const full = isFull(room);
       const done = state.roomPage[room] === page;
-      if (full || done || state.loading || state.error) return;
+      if (full || done || state.loading || state.error || state.fetching)
+        return;
 
       try {
-        dispatch({ type: ActionType.SetLoading, loading: true });
+        dispatch({
+          type: ActionType.SetLoading,
+          loading: !state.roomMessages[room],
+        });
         dispatch({ type: ActionType.SetPage, page, room });
+        dispatch({ type: ActionType.SetFetching, fetching: true });
         const { list: messages, total } = await finder(room, { page });
         dispatch({ type: ActionType.setTotalMessages, total, room });
         dispatch({ type: ActionType.AppendRoomMessages, messages, room });
         dispatch({ type: ActionType.SetError, error: null });
       } catch (error) {
-        dispatch({ type: ActionType.SetError, error });
+        dispatch({
+          type: ActionType.SetError,
+          error: error instanceof Error ? error.message : "unkown",
+        });
       }
       dispatch({ type: ActionType.SetLoading, loading: false });
+      dispatch({ type: ActionType.SetFetching, fetching: false });
     },
-    [finder, isFull, state.error, state.loading, state.roomPage]
+    [
+      finder,
+      isFull,
+      state.error,
+      state.fetching,
+      state.loading,
+      state.roomMessages,
+      state.roomPage,
+    ]
   );
 
-  // error should be specific to the room
+  // todo: error should be specific to the room
   const enabled = useMemo(() => {
     return !!room && !!state.roomPage[room] && !state.loading && !state.error;
   }, [room, state.error, state.loading, state.roomPage]);
@@ -165,13 +175,22 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
 
   useEffect(() => {
     const page = 1;
-    console.log({
-      do: !!room && !state.roomPage[room] && !state.loading && !state.error,
-    });
-
-    if (!!room && !state.roomPage[room] && !state.loading && !state.error)
+    if (
+      !!room &&
+      !state.roomPage[room] &&
+      !state.roomMessages[room] &&
+      !state.loading &&
+      !state.error
+    )
       fetcher(room, page);
-  }, [fetcher, room, state.error, state.loading, state.roomPage]);
+  }, [
+    fetcher,
+    room,
+    state.error,
+    state.loading,
+    state.roomMessages,
+    state.roomPage,
+  ]);
 
   const { target } = useInfinteScroll<T>(more, enabled);
 
@@ -180,5 +199,10 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
     return state.roomMessages[room] || [];
   }, [room, state.roomMessages]);
 
-  return { messages, loading: state.loading, target };
+  return {
+    messages,
+    loading: state.loading,
+    fetching: state.fetching,
+    target,
+  };
 }

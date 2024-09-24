@@ -1,14 +1,16 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
 
+const startBreaks = /^(<div><br><\/div>|<br>)+/;
+const endBreaks = /(<div><br><\/div>|<br>)+$/;
+
 export const RawHtml: React.FC<{
   html?: string;
   children?: React.ReactNode;
-  editor?: boolean;
-}> = ({ html, children, editor }) => {
+}> = ({ html, children }) => {
   const innerHtml = useMemo(() => {
     if (!html) return;
-    return { __html: html };
+    return { __html: html.replace(startBreaks, "").replace(endBreaks, "") };
   }, [html]);
 
   return (
@@ -19,8 +21,7 @@ export const RawHtml: React.FC<{
         "[&_p]:text-foreground-light [&_p]:mb-4 [&_p]:text-base [&_p]:leading-loose",
         "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:pr-4",
         "[&_ul_li]:text-foreground-light [&_ul_li]:mb-2",
-        "[&_font]:text-foreground [&_li]:!text-foreground",
-        !editor && "[&_br]:hidden"
+        "[&_font]:text-foreground [&_li]:!text-foreground"
       )}
       dangerouslySetInnerHTML={innerHtml}
     >

@@ -5,13 +5,8 @@ import { Bold, Italic, Underline, List } from "react-feather";
 import { InputError } from "@/components/Input/Input";
 import Editable, { ContentEditableEvent } from "react-contenteditable";
 import { RawHtml } from "@/components/RawHtml";
-import sanitizeHtml from "sanitize-html";
 import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
-
-const sanitizeConf = {
-  allowedTags: ["b", "i", "em", "strong", "p", "h3", "ul", "li", "br"],
-};
 
 export const TextEditor: React.FC<{
   value: string;
@@ -34,9 +29,8 @@ export const TextEditor: React.FC<{
       {
         Icon: HeadingIcon,
         onClick: () => {
-          const selection = window.getSelection()?.toString();
-          if (!selection) return;
-          execCommand("insertHTML", `<h3>${selection}</h3>`);
+          const selection = window.getSelection()?.toString() || "";
+          execCommand("insertHTML", `<div><h3>${selection}</h3></div>`);
         },
       },
     ];
@@ -50,10 +44,6 @@ export const TextEditor: React.FC<{
     },
     [setValue]
   );
-
-  const onBlur = useCallback(() => {
-    setValue(sanitizeHtml(text.current, sanitizeConf));
-  }, [setValue]);
 
   return (
     <div>
@@ -73,12 +63,11 @@ export const TextEditor: React.FC<{
           </div>
         ))}
       </div>
-      <RawHtml editor>
+      <RawHtml>
         <Editable
           html={value}
           onChange={onChange}
           disabled={disabled}
-          onBlur={onBlur}
           className={cn(
             "w-full min-h-40 max-h-80 overflow-y-auto",
             "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",

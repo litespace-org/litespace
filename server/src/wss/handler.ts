@@ -5,9 +5,10 @@ import { Socket } from "socket.io";
 import { Events } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
-import "colors";
 import { id, string } from "@/validation/utils";
 import { isEmpty, map } from "lodash";
+import { sanitizeMessage } from "@litespace/sol";
+import "colors";
 
 const peerPayload = zod.object({
   callId: id,
@@ -74,7 +75,14 @@ export class WssHandler {
       const member = members.map((member) => member.id).includes(userId);
       if (!member) throw new Error("Unauthorized");
 
-      const message = await messages.create({ userId, roomId, text });
+      const sanitized = sanitizeMessage(text);
+      if (!sanitized) return; // empty message
+      console.log("safe: ", sanitized);
+      const message = await messages.create({
+        text: sanitized,
+        userId,
+        roomId,
+      });
 
       this.socket.emit(Events.Server.RoomMessage, message);
 

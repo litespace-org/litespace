@@ -1,22 +1,9 @@
 import React from "react";
 import cn from "classnames";
-import { IMessage } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { RawHtml } from "@litespace/luna";
 import { asFullAssetUrl } from "@/lib/atlas";
-
-export type Sender = {
-  id: number;
-  photo: string | null;
-  name: string | null;
-};
-
-export type MessageGroup = {
-  id: string;
-  sender: Sender;
-  messages: IMessage.Self[];
-  date: string;
-};
+import { MessageGroup } from "@litespace/luna";
 
 const Message: React.FC<{
   group: MessageGroup;

@@ -8,17 +8,14 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import Message, { Sender, MessageGroup } from "@/components/Chat/Message";
+import Message from "@/components/Chat/Message";
 import { OnMessage } from "@/hooks/chat";
 import { atlas } from "@/lib/atlas";
-import { usePaginationQuery } from "@/hooks/common";
-import { concat, isEmpty, maxBy, orderBy } from "lodash";
-import { Loading, useInfinteScroll, useMessages } from "@litespace/luna";
+import { asMessageGroups, Loading, useMessages } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
-import { useQueryClient } from "@tanstack/react-query";
-import dayjs from "@/lib/dayjs";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
+import { isEmpty } from "lodash";
 
 const Messages: React.FC<{
   room: number | null;
@@ -35,7 +32,7 @@ const Messages: React.FC<{
     },
     []
   );
-  const { messages, loading, target } = useMessages<HTMLDivElement>(
+  const { messages, loading, fetching, target } = useMessages<HTMLDivElement>(
     findRoomMessages,
     room
   );
@@ -64,80 +61,14 @@ const Messages: React.FC<{
     if (!userScrolled) resetScroll();
   }, [messages, resetScroll, userScrolled]);
 
-  const asSender = useCallback(
-    (user: number | null): Sender | null => {
-      if (!user || !profile) return null;
-      if (user === profile.id)
-        return {
-          id: profile.id,
-          name: profile.name.ar,
-          photo: profile.photo,
-        };
-
-      const member = members.find((member) => member.id === user);
-      if (!member) return null;
-      return {
-        id: member.id,
-        name: member.name,
-        photo: member.photo,
-      };
-    },
-    [members, profile]
-  );
-
-  // reset
-  // useEffect(() => {
-  //   return () => {
-  //     if (!room) return;
-  //     resetScroll();
-  //     setFreshMessages([]);
-  //     queryClient.invalidateQueries({ queryKey: ["find-room-messages", room] });
-  //   };
-  // }, [queryClient, resetScroll, room]);
-
-  const assignGroup = useCallback(
-    (user: number | null, messages: IMessage.Self[]): MessageGroup | null => {
-      if (isEmpty(messages)) return null;
-      const sender = asSender(user);
-      if (!sender) return null;
-
-      const latest = maxBy(messages, (message) =>
-        dayjs(message.updatedAt).unix()
-      );
-      if (!latest) return null;
-
-      const id = messages.map((message) => message.id).join("-");
-      return { id, sender, messages, date: latest.updatedAt };
-    },
-    [asSender]
-  );
-
   const messageGroups = useMemo(() => {
-    const groups: MessageGroup[] = [];
-
-    let user: number | null = null;
-    let group: IMessage.Self[] = [];
-    for (const message of messages) {
-      if (!user && isEmpty(group)) user = message.userId;
-
-      // message from the same user, push to the same group
-      if (message.userId === user) {
-        group.push(message);
-      } else {
-        const assignedGroup = assignGroup(user, group);
-        if (!assignedGroup) continue;
-        // append previous group
-        groups.push(assignedGroup);
-        // create new group
-        group = [message];
-        user = message.userId;
-      }
-    }
-
-    const lastGroup = assignGroup(user, group);
-    if (lastGroup) groups.push(lastGroup);
-    return groups;
-  }, [assignGroup, messages]);
+    if (!profile) return [];
+    return asMessageGroups({
+      currentUser: profile,
+      messages,
+      members,
+    });
+  }, [members, messages, profile]);
 
   return (
     <div
@@ -146,8 +77,6 @@ const Messages: React.FC<{
         "flex flex-col"
       )}
     >
-      <Loading show={loading} className="h-full" />
-
       {room === null ? <NoSelection /> : null}
 
       {room ? (
@@ -158,12 +87,20 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <div ref={target} />
-            <ul className="flex flex-col gap-4">
-              {messageGroups.map((group) => (
-                <Message key={group.id} group={group} />
-              ))}
-            </ul>
+            <Loading
+              show={loading || fetching}
+              className={cn({ "h-12 shrink-0": fetching, "h-full": loading })}
+            />
+
+            {!loading ? (
+              <ul className="flex flex-col gap-4">
+                {messageGroups.map((group) => (
+                  <Message key={group.id} group={group} />
+                ))}
+              </ul>
+            ) : null}
           </div>
+
           <div className="pb-6 px-4 pt-2">
             <MessageBox room={room} onMessage={onMessage} />
           </div>
