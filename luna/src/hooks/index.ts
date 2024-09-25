@@ -11,4 +11,9 @@ export {
 export { useClosableRef } from "@/hooks/dom";
 export { useCallRecordingStatus } from "@/hooks/call";
 export { useKeys } from "@/hooks/keys";
-export { useMessages } from "@/hooks/chat";
+export {
+  useMessages,
+  useSelectedRoom,
+  type SelectRoom,
+  type SelectedRoom,
+} from "@/hooks/chat";

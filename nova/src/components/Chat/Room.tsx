@@ -36,7 +36,7 @@ const Room: React.FC<{
   return (
     <button
       className={cn(
-        "flex flex-row gap-2 items-center px-4 py-2 md:px-6 md:py-3 mr-1 cursor-pointer",
+        "flex flex-row gap-2 items-center justify-center md:justify-start px-4 py-2 md:px-6 md:py-3 mr-1 cursor-pointer",
         "border-b border-border-strong",
         {
           "bg-background-selection": active,
@@ -45,7 +45,7 @@ const Room: React.FC<{
       )}
       onClick={select}
     >
-      <div className="relative">
+      <div className="relative flex items-center justify-center">
         <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full">
           <img
             className="object-cover w-full h-full"

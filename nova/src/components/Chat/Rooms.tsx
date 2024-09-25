@@ -4,19 +4,18 @@ import Room from "./Room";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { atlas } from "@/lib/atlas";
-import { Loading, useInfinteScroll, usePaginationQuery } from "@litespace/luna";
+import {
+  Loading,
+  SelectRoom,
+  useInfinteScroll,
+  usePaginationQuery,
+} from "@litespace/luna";
 import cn from "classnames";
-import { IRoom } from "@litespace/types";
-
-export type SelectedRoom = {
-  room: number | null;
-  members: IRoom.PopulatedMember[];
-};
 
 const Rooms: React.FC<{
   room: number | null;
-  setRoom: (room: SelectedRoom) => void;
-}> = ({ setRoom, room }) => {
+  select: SelectRoom;
+}> = ({ select, room }) => {
   const profile = useAppSelector(profileSelector);
 
   const findUserRooms = useCallback(
@@ -46,7 +45,7 @@ const Rooms: React.FC<{
     <div
       className={cn(
         "flex flex-col bg-background-200 overflow-auto main-scrollbar mb-1",
-        "md:w-[300px]"
+        "w-20 md:w-80"
       )}
     >
       {rooms?.map((members) => {
@@ -55,7 +54,7 @@ const Rooms: React.FC<{
         return (
           <Room
             key={member.roomId}
-            select={() => setRoom({ room: member.roomId, members })}
+            select={() => select({ room: member.roomId, members })}
             active={member.roomId === room}
             members={members}
           />

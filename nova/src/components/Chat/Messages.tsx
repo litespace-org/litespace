@@ -1,4 +1,4 @@
-import { IFilter, IMessage, IRoom } from "@litespace/types";
+import { IFilter, IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -15,7 +15,6 @@ import { asMessageGroups, Loading, useMessages } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
-import { isEmpty } from "lodash";
 
 const Messages: React.FC<{
   room: number | null;
@@ -23,7 +22,6 @@ const Messages: React.FC<{
 }> = ({ room, members }) => {
   const profile = useAppSelector(profileSelector);
   const messagesRef = useRef<HTMLDivElement>(null);
-  const [freshMessages, setFreshMessages] = useState<IMessage.Self[]>([]);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
 
   const findRoomMessages = useCallback(
@@ -32,16 +30,21 @@ const Messages: React.FC<{
     },
     []
   );
-  const { messages, loading, fetching, target } = useMessages<HTMLDivElement>(
-    findRoomMessages,
-    room
-  );
+  const { messages, loading, fetching, target, addMessage } =
+    useMessages<HTMLDivElement>(findRoomMessages, room);
 
-  const onMessage: OnMessage = useCallback((message) => {
-    setFreshMessages((prev) => [...prev, message]);
+  const scrollDown = useCallback(() => {
     if (messagesRef.current)
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, []);
+
+  const onMessage: OnMessage = useCallback(
+    (message) => {
+      scrollDown();
+      addMessage(message);
+    },
+    [addMessage, scrollDown]
+  );
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -87,9 +90,12 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <div ref={target} />
+
             <Loading
               show={loading || fetching}
-              className={cn({ "h-12 shrink-0": fetching, "h-full": loading })}
+              className={cn(
+                loading ? "h-full" : fetching ? "h-12 shrink-0" : ""
+              )}
             />
 
             {!loading ? (
