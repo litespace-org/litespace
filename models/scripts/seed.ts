@@ -117,7 +117,6 @@ async function main(): Promise<void> {
           {
             photo: "test.jpg",
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
-            online: sample([true, false]),
           },
           tx
         );

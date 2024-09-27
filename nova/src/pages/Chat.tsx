@@ -9,7 +9,7 @@ const Chat: React.FC = () => {
 
   return (
     <div className={cn("flex flex-row h-[calc(100vh-4rem)] overflow-hidden")}>
-      <Rooms room={selected.room} select={select} />
+      <Rooms selected={selected} select={select} />
       <Messages room={selected.room} members={selected.members} />
     </div>
   );

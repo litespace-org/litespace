@@ -1,4 +1,3 @@
-import { isDev } from "@/constants";
 import { calls, messages, rooms, users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { Socket } from "socket.io";
@@ -10,16 +9,8 @@ import { isEmpty, map } from "lodash";
 import { logger, safe, sanitizeMessage } from "@litespace/sol";
 import "colors";
 
-const peerPayload = zod.object({
-  callId: id,
-  peerId: string,
-});
-
-const updateMessagePayload = zod.object({
-  text: string,
-  id,
-});
-
+const peerPayload = zod.object({ callId: id, peerId: string });
+const updateMessagePayload = zod.object({ text: string, id });
 const stdout = logger("wss");
 
 export class WssHandler {
@@ -33,44 +24,46 @@ export class WssHandler {
   }
 
   async initialize() {
-    await Promise.all([this.setUserStatus(true), this.joinRooms()]);
+    this.connect();
     this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
     this.socket.on(Events.Client.UpdateMessage, this.updateMessage.bind(this));
     this.socket.on(Events.Client.DeleteMessage, this.deleteMessage.bind(this));
     this.socket.on(Events.Client.PeerOpened, this.peerOpened.bind(this));
-
-    this.socket.on("disconnect", async () => {
-      if (isDev) console.log(`${this.user.name.en} is disconnected`.yellow);
-      await this.setUserStatus(false);
-    });
+    this.socket.on(Events.Client.Disconnect, this.disconnect.bind(this));
   }
 
   async joinRooms() {
-    const { list } = await rooms.findMemberRooms({ userId: this.user.id });
-    const ids = list.map((room) => room.toString());
-    this.socket.join(ids);
-    // private channel
-    this.socket.join(this.user.id.toString());
+    const error = await safe(async () => {
+      const { list } = await rooms.findMemberRooms({ userId: this.user.id });
+      const ids = list.map((room) => room.toString());
+      this.socket.join(ids);
+      // private channel
+      this.socket.join(this.user.id.toString());
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
   }
 
   async peerOpened(ids: unknown) {
-    // todo: add error handling
-    const { callId, peerId } = peerPayload.parse(ids);
+    const error = await safe(async () => {
+      const { callId, peerId } = peerPayload.parse(ids);
 
-    const members = await calls.findCallMembers([callId]);
-    if (isEmpty(members)) return;
+      const members = await calls.findCallMembers([callId]);
+      if (isEmpty(members)) return;
 
-    const isMember = map(members, "userId").includes(this.user.id);
-    if (!isMember) return;
+      const isMember = map(members, "userId").includes(this.user.id);
+      if (!isMember) return;
 
-    this.socket.join(callId.toString());
-    this.socket
-      .to(callId.toString())
-      .emit(Events.Server.UserJoinedCall, peerId);
+      this.socket.join(callId.toString());
+      this.socket
+        .to(callId.toString())
+        .emit(Events.Server.UserJoinedCall, peerId);
+    });
+    if (error instanceof Error) stdout.error(error.message);
   }
 
   async sendMessage(data: unknown) {
-    try {
+    const error = safe(async () => {
       const { roomId, text } = wss.message.send.parse(data);
       const userId = this.user.id;
 
@@ -88,14 +81,10 @@ export class WssHandler {
         roomId,
       });
 
-      this.socket.emit(Events.Server.RoomMessage, message);
+      this.boradcast(Events.Server.RoomMessage, roomId.toString(), message);
+    });
 
-      this.socket.broadcast
-        .to(roomId.toString())
-        .emit(Events.Server.RoomMessage, message);
-    } catch (error) {
-      console.log(error);
-    }
+    if (error instanceof Error) stdout.error(error);
   }
 
   async updateMessage(data: unknown) {
@@ -125,7 +114,7 @@ export class WssHandler {
 
   async deleteMessage(data: unknown) {
     const error = safe(async () => {
-      const { id } = withNamedId("id").parse(data);
+      const { id }: { id: number } = withNamedId("id").parse(data);
 
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
@@ -171,28 +160,39 @@ export class WssHandler {
     }
   }
 
-  // async callHost(data: unknown) {
-  //   try {
-  //     const { offer, hostId } = schema.wss.call.callHost.parse(data);
+  async connect() {
+    const error = safe(async () => {
+      await this.online();
+      await this.joinRooms();
+    });
+    if (error instanceof Error) stdout.error(error.message);
+  }
 
-  //     this.socket.to(hostId.toString()).emit(Events.Server.CallMade, {
-  //       offer,
-  //       userId: this.user.id,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }
+  async disconnect() {
+    const error = safe(async () => {
+      await this.offline();
+    });
+    if (error instanceof Error) stdout.error(error.message);
+  }
 
-  // async makeAnswer(data: {
-  //   answer: RTCSessionDescriptionInit;
-  //   hostId: number;
-  // }) {
-  //   this.socket.to(data.hostId.toString()).emit("answerMade", data);
-  // }
+  async online() {
+    const user = await users.update(this.user.id, { online: true });
+    this.announceStatus(user);
+  }
 
-  async setUserStatus(online: boolean) {
-    await users.update(this.user.id, { online });
+  async offline() {
+    const user = await users.update(this.user.id, { online: false });
+    this.announceStatus(user);
+  }
+
+  async announceStatus(user: IUser.Self) {
+    const userRooms = await rooms.findMemberFullRoomIds(user.id);
+
+    for (const room of userRooms) {
+      this.boradcast(Events.Server.UserStatusChanged, room.toString(), {
+        online: user.online,
+      });
+    }
   }
 }
 

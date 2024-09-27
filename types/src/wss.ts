@@ -9,6 +9,7 @@ export enum Client {
   MarkAsRead = "MarkAsRead",
   PeerOpened = "PeerOpened",
   UserSharingScreen = "UserSharingScreen",
+  Disconnect = "disconnect",
 }
 /**
  * Events emitted by the server
@@ -21,4 +22,5 @@ export enum Server {
   MessageRead = "MessageRead",
   UserJoinedCall = "UserJoinedCall",
   UserSharedScreen = "UserSharedScreen",
+  UserStatusChanged = "UserStatusChanged",
 }

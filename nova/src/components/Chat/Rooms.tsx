@@ -1,11 +1,12 @@
-import { first } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import { first, isEmpty } from "lodash";
+import React, { useCallback, useEffect, useMemo } from "react";
 import Room from "./Room";
 import { useAppSelector } from "@/redux/store";
 import { profileSelector } from "@/redux/user/me";
 import { atlas } from "@/lib/atlas";
 import {
   Loading,
+  SelectedRoom,
   SelectRoom,
   useInfinteScroll,
   usePaginationQuery,
@@ -13,9 +14,9 @@ import {
 import cn from "classnames";
 
 const Rooms: React.FC<{
-  room: number | null;
+  selected: SelectedRoom;
   select: SelectRoom;
-}> = ({ select, room }) => {
+}> = ({ select, selected: { room, members } }) => {
   const profile = useAppSelector(profileSelector);
 
   const findUserRooms = useCallback(
@@ -40,6 +41,18 @@ const Rooms: React.FC<{
     [query.hasNextPage, query.isFetching, query.isLoading]
   );
   const { target } = useInfinteScroll<HTMLDivElement>(more, enabled);
+
+  useEffect(() => {
+    // handle the case if a room is preselected but without members.
+    if (room && isEmpty(members) && rooms) {
+      const roomMembers = rooms.find((members) => {
+        const member = first(members);
+        return member?.roomId === room;
+      });
+      if (!roomMembers) return;
+      select({ room, members: roomMembers });
+    }
+  }, [members, room, rooms, select]);
 
   return (
     <div

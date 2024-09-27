@@ -46,7 +46,7 @@ const Room: React.FC<{
       onClick={select}
     >
       <div className="relative flex items-center justify-center">
-        <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full">
+        <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full ring ring-dash-sidebar">
           <img
             className="object-cover w-full h-full"
             src={member.photo ? asFullAssetUrl(member.photo) : "/avatar-1.png"}
@@ -55,7 +55,7 @@ const Room: React.FC<{
 
         <span
           className={cn(
-            "w-3 h-3 inline-block absolute z-10 bottom-0 left-0 md:bottom-0.5 md:left-0.5 rounded-full shadow-md",
+            "w-3 h-3 inline-block absolute z-10 bottom-0 left-0 md:bottom-0.5 md:left-0.5 rounded-full shadow-md ring ring-dash-sidebar",
             {
               "hidden bg-transparent": status === Status.InActive,
               "bg-amber-700 dark:bg-amber-900": status === Status.WasActive,

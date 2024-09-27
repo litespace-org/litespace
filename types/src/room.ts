@@ -51,3 +51,8 @@ export type FindUserRoomsApiResponse = Paginated<PopulatedMember[]>;
 export type FindRoomByMembersApiResponse = { room: number };
 
 export type FindRoomMembersApiResponse = PopulatedMember[];
+
+export type FindCallRoomApiResponse = {
+  room: number;
+  members: PopulatedMember[];
+};

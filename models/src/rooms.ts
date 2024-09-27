@@ -148,6 +148,18 @@ export class Rooms {
     return { list: rows.map((row) => row.roomId), total };
   }
 
+  async findMemberFullRoomIds(
+    user: number,
+    tx?: Knex.Transaction
+  ): Promise<number[]> {
+    return this.builder(tx)
+      .members.select<Array<{ room: number }>>({
+        room: this.column.members("room_id"),
+      })
+      .where(this.column.members("user_id"), user)
+      .then((data) => data.map(({ room }) => room));
+  }
+
   builder(tx?: Knex.Transaction) {
     const fn = tx || knex;
     return {

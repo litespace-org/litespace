@@ -307,7 +307,6 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
     ]
   );
 
-  // todo: error should be specific to the room
   const enabled = useMemo(() => {
     return (
       !!room &&

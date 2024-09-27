@@ -35,4 +35,8 @@ export class Chat extends Base {
   ): Promise<IRoom.FindRoomMembersApiResponse> {
     return await this.get(`/api/v1/chat/room/members/${room}`);
   }
+
+  async findCallRoom(call: number): Promise<IRoom.FindCallRoomApiResponse> {
+    return await this.get(`/api/v1/chat/room/call/${call}`);
+  }
 }

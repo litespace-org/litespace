@@ -1,4 +1,4 @@
-import { messages, rooms } from "@litespace/models";
+import { calls, messages, rooms } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safe from "express-async-handler";
 import { isEmpty } from "lodash";
@@ -82,6 +82,37 @@ async function findRoomByMembers(
   res.status(200).json({ room });
 }
 
+async function findCallRoom(req: Request, res: Response, next: NextFunction) {
+  const allowed = authorizer()
+    .admin()
+    .tutor()
+    .student()
+    .interviewer()
+    .check(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { call } = withNamedId("call").parse(req.params);
+  const userCall = await calls.findById(call);
+  if (!userCall) return next(notfound.base());
+
+  const callMembers = await calls.findCallMembers([userCall.id]);
+  if (isEmpty(callMembers)) return next(notfound.base());
+
+  const memberIds = callMembers.map((member) => member.userId);
+  const room = await rooms.findRoomByMembers(memberIds);
+  if (!room) return next(notfound.base());
+
+  const roomMembers = await rooms.findRoomMembers({ roomIds: [room] });
+  if (isEmpty(roomMembers)) return next(notfound.base());
+
+  const response: IRoom.FindCallRoomApiResponse = {
+    room,
+    members: roomMembers,
+  } as const;
+
+  res.status(200).json(response);
+}
+
 // todo: add auth
 async function findRoomMembers(
   req: Request,
@@ -103,4 +134,5 @@ export default {
   findUserRooms: safe(findUserRooms),
   findRoomByMembers: safe(findRoomByMembers),
   findRoomMembers: safe(findRoomMembers),
+  findCallRoom: safe(findCallRoom),
 };

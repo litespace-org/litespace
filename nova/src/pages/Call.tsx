@@ -1,53 +1,19 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { sockets } from "@/lib/wss";
 import { MediaConnection } from "peerjs";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  Form,
-  Input,
-  messages,
-  useValidation,
-  Spinner,
-  toaster,
-} from "@litespace/luna";
-import {
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-  PhoneOff,
-  Monitor,
-  Send,
-} from "react-feather";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna";
+import { Mic, MicOff, Video, VideoOff, PhoneOff, Monitor } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
-import { useForm } from "react-hook-form";
-import { Events, IMessage, IRoom } from "@litespace/types";
-import { useIntl } from "react-intl";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Events } from "@litespace/types";
+import { useQuery } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
-import dayjs from "dayjs";
-import { findRooms, roomsSelector } from "@/redux/chat/rooms";
-import { entries, first, isEqual, map, sortBy } from "lodash";
-import { useChat } from "@/hooks/chat";
 import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
 import Media from "@/components/Call/Media";
 import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
 
 const Call: React.FC = () => {
-  const dispath = useAppDispatch();
-  const profile = useAppSelector(profileSelector);
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
@@ -74,24 +40,6 @@ const Call: React.FC = () => {
   }, [id]);
 
   const shareScreen = useShareScreen(callId, mediaConnection?.peer || null);
-
-  const call = useQuery({
-    queryFn: async () => {
-      if (!callId) throw new Error("missing/invalid call id");
-      return await atlas.call.findById(callId);
-    },
-    enabled: !!callId,
-    queryKey: ["find-call"],
-  });
-
-  // const roomMessages = useQuery({
-  //   queryFn: async () => {
-  //     if (!callRoomId) return [];
-  //     return await atlas.chat.findRoomMessages(callRoomId);
-  //   },
-  //   queryKey: ["room-messages"],
-  //   enabled: !!callRoomId,
-  // });
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
@@ -164,45 +112,14 @@ const Call: React.FC = () => {
     if (callId && userMediaStream) startRecording(userMediaStream, callId);
   }, [callId, startRecording, userMediaStream]);
 
-  // const createRoom = useMutation({
-  //   mutationFn: useCallback(async () => {
-  //     if (!otherUserId)
-  //       throw new Error("Other user id not defined; should never happen.");
-  //     return await atlas.chat.createRoom(otherUserId);
-  //   }, [otherUserId]),
-  //   mutationKey: ["create-room"],
-  //   onSuccess() {
-  //     if (!profile) throw new Error("Profile not found; should never happen.");
-  //     dispath(findRooms.call(profile.id));
-  //   },
-  //   onError(error) {
-  //     toaster.error({
-  //       title: intl.formatMessage({
-  //         id: messages["page.call.start.chat.now.error"],
-  //       }),
-  //       description: error instanceof Error ? error.message : undefined,
-  //     });
-  //   },
-  // });
+  const findCallRoom = useCallback(async () => {
+    if (!callId) return null;
+    return await atlas.chat.findCallRoom(callId);
+  }, [callId]);
 
-  const room = useQuery({
-    queryFn: async () => {
-      if (!call.data) return null;
-      return atlas.chat.findRoomByMembers(
-        call.data.members.map((member) => member.userId)
-      );
-    },
-    queryKey: ["q1"],
-    enabled: !!call.data,
-  });
-
-  const members = useQuery({
-    queryFn: async () => {
-      if (!room.data) return [];
-      return await atlas.chat.findRoomMembers(room.data.room);
-    },
-    queryKey: ["q2"],
-    enabled: !!room.data,
+  const callRoom = useQuery({
+    queryFn: findCallRoom,
+    queryKey: ["find-call-room"],
   });
 
   return (
@@ -210,8 +127,7 @@ const Call: React.FC = () => {
       <div
         className={cn(
           "flex flex-col w-full h-full",
-          "bg-surface-100 transition-all duration-300",
-          "border border-border-strong hover:border-border-stronger"
+          "transition-all duration-300"
         )}
       >
         <div
@@ -278,15 +194,9 @@ const Call: React.FC = () => {
         </div>
       </div>
 
-      <div
-        className={cn(
-          "min-w-[450px] bg-surface-300",
-          "border border-border-strong hover:border-border-stronger",
-          "flex flex-col"
-        )}
-      >
-        {room.data && members.data ? (
-          <Messages room={room.data.room} members={members.data} />
+      <div className={cn("min-w-[450px]", "flex flex-col")}>
+        {callRoom.data ? (
+          <Messages room={callRoom.data.room} members={callRoom.data.members} />
         ) : null}
       </div>
     </div>
