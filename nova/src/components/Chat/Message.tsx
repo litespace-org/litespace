@@ -11,9 +11,9 @@ import React, { useCallback, useMemo, useRef, useState } from "react";
 
 const Message: React.FC<{
   message: IMessage.Self;
-  editMessage: Void;
-  deleteMessage: Void;
-}> = ({ message, editMessage, deleteMessage }) => {
+  onUpdateMessage: Void;
+  onDeleteMessage: Void;
+}> = ({ message, onUpdateMessage, onDeleteMessage }) => {
   const ref = useRef<HTMLDivElement>(null);
   const intl = useFormatMessage();
   const menu = useRender();
@@ -24,16 +24,16 @@ const Message: React.FC<{
       {
         id: 1,
         label: intl("chat.message.edit"),
-        onClick: editMessage,
+        onClick: onUpdateMessage,
       },
       {
         id: 2,
         label: intl("chat.message.delete"),
-        onClick: deleteMessage,
+        onClick: onDeleteMessage,
         danger: true,
       },
     ];
-  }, [deleteMessage, editMessage, intl]);
+  }, [intl, onDeleteMessage, onUpdateMessage]);
 
   const hide = useCallback(() => {
     // hide the actions menu incase it is not opened.

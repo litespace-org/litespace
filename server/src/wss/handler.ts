@@ -102,7 +102,7 @@ export class WssHandler {
     const error = await safe(async () => {
       const { id, text } = updateMessagePayload.parse(data);
       const message = await messages.findById(id);
-      if (!message) throw new Error("Message not found");
+      if (!message || message.deleted) throw new Error("Message not found");
 
       const owner = message.userId === this.user.id;
       if (!owner) throw new Error("Forbidden");
@@ -128,7 +128,7 @@ export class WssHandler {
       const { id } = withNamedId("id").parse(data);
 
       const message = await messages.findById(id);
-      if (!message) throw new Error("Message not found");
+      if (!message || message.deleted) throw new Error("Message not found");
 
       const owner = message.userId === this.user.id;
       if (!owner) throw new Error("Forbidden");
@@ -138,7 +138,7 @@ export class WssHandler {
       this.boradcast(
         Events.Server.RoomMessageDeleted,
         message.roomId.toString(),
-        { id }
+        { roomId: message.roomId, messageId: message.id }
       );
     });
 

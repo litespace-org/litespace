@@ -1,5 +1,5 @@
 import { IFilter, IMessage, IRoom } from "@litespace/types";
-import { concat, merge } from "lodash";
+import { cloneDeep, concat, merge } from "lodash";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
 import { useInfinteScroll } from "@/hooks/common";
 import { useSearchParams } from "react-router-dom";
@@ -68,7 +68,7 @@ export enum MessageStream {
 export type MessageStreamAction =
   | { type: MessageStream.Add; message: IMessage.Self }
   | { type: MessageStream.Update; message: IMessage.Self }
-  | { type: MessageStream.Delete; id: number };
+  | { type: MessageStream.Delete; messageId: number; roomId: number };
 
 type Action =
   | {
@@ -124,8 +124,10 @@ function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
 }
 
 function reducer(state: State, action: Action) {
-  const mutate = (incoming?: Partial<State>): State =>
-    merge(structuredClone(state), incoming);
+  const mutate = (incoming: Partial<State> = {}): State => ({
+    ...structuredClone(state),
+    ...incoming,
+  });
 
   if (action.type === ActionType.AppendRoomMessages) {
     const messages = structuredClone(state.messages);
@@ -224,7 +226,19 @@ function reducer(state: State, action: Action) {
     const roomMessages = messages[room] || [];
     messages[room] = replaceMessage(action.message, roomMessages);
     if (fresh) return mutate({ freshMessages: messages });
-    console.log({ messages });
+    return mutate({ messages });
+  }
+
+  if (action.type === MessageStream.Delete) {
+    const room = action.roomId;
+    const messageId = action.messageId;
+    const fresh = isFreshMessage(messageId, state.freshMessages[room] || []);
+    const messages = fresh
+      ? structuredClone(state.freshMessages)
+      : structuredClone(state.messages);
+    const roomMessages = messages[room] || [];
+    messages[room] = roomMessages.filter((message) => message.id !== messageId);
+    if (fresh) return mutate({ freshMessages: messages });
     return mutate({ messages });
   }
 
@@ -311,7 +325,6 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
   }, [fetcher, isFull, room, state.pages]);
 
   const onMessage = useCallback((action: MessageStreamAction) => {
-    console.log({ action });
     dispatch(action);
   }, []);
 

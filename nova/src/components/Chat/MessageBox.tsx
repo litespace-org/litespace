@@ -1,4 +1,3 @@
-import { OnMessage, useChat } from "@/hooks/chat";
 import {
   Button,
   ButtonSize,
@@ -9,7 +8,7 @@ import {
   useKeys,
 } from "@litespace/luna";
 import { sanitizeMessage } from "@litespace/sol";
-import { IMessage, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
@@ -18,36 +17,34 @@ type IForm = {
 };
 
 const MessageBox: React.FC<{
-  room: number | null;
-  onMessage: OnMessage;
-  cancel: Void;
-  edit: IMessage.Self | null;
-}> = ({ room, onMessage, cancel, edit }) => {
+  defaultMessage: string;
+  update: boolean;
+  submit: (message: string) => void;
+  discard: Void;
+}> = ({ defaultMessage, update, submit, discard }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({ defaultValues: { message: "" } });
   const message = form.watch("message");
-  const { sendMessage, updateMessage } = useChat(onMessage);
+  const sanitizedMessage = useMemo(() => sanitizeMessage(message), [message]);
+  // const { sendMessage, updateMessage } = useChat(onMessage);
 
   const send = useCallback(
     (message: string) => {
       const sanitized = sanitizeMessage(message);
-      if (!sanitized || !room) return;
+      if (!sanitized) return;
       form.reset();
+      return submit(sanitized);
 
-      if (edit) return updateMessage({ id: edit.id, text: sanitized });
-      return sendMessage({ roomId: room, text: sanitized });
+      // if (edit) return updateMessage({ id: edit.id, text: sanitized });
+      // return sendMessage({ roomId: room, text: sanitized });
     },
-    [edit, form, room, sendMessage, updateMessage]
+    [form, submit]
   );
 
   const onSubmit = useMemo(
     () => form.handleSubmit(({ message }) => send(message)),
     [form, send]
   );
-
-  useEffect(() => {
-    if (room) form.reset();
-  }, [form, room]);
 
   useKeys(
     useCallback(() => {
@@ -58,13 +55,13 @@ const MessageBox: React.FC<{
   );
 
   useEffect(() => {
-    if (edit) form.setValue("message", edit.text);
-  }, [edit, form]);
+    if (defaultMessage) form.setValue("message", defaultMessage);
+  }, [defaultMessage, form]);
 
-  const discard = useCallback(() => {
-    cancel();
+  const cancel = useCallback(() => {
+    discard();
     form.reset();
-  }, [cancel, form]);
+  }, [discard, form]);
 
   return (
     <Form onSubmit={onSubmit} className="flex flex-col gap-2.5">
@@ -77,14 +74,14 @@ const MessageBox: React.FC<{
       />
       <div className="flex flex-row gap-2">
         <Button
-          disabled={!sanitizeMessage(message) || !room}
+          disabled={!sanitizedMessage || sanitizedMessage === defaultMessage}
           size={ButtonSize.Small}
         >
-          {intl(edit ? "global.labels.edit" : "global.labels.send")}
+          {intl(update ? "global.labels.edit" : "global.labels.send")}
         </Button>
-        {edit ? (
+        {update ? (
           <Button
-            onClick={discard}
+            onClick={cancel}
             size={ButtonSize.Small}
             type={ButtonType.Error}
           >

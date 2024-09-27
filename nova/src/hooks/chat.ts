@@ -47,9 +47,9 @@ export function useChat(onMessage?: OnMessage) {
   );
 
   const onDeleteMessage = useCallback(
-    ({ id }: { id: number }) => {
+    ({ roomId, messageId }: { roomId: number; messageId: number }) => {
       if (!onMessage) return;
-      return onMessage({ type: MessageStream.Delete, id });
+      return onMessage({ type: MessageStream.Delete, roomId, messageId });
     },
     [onMessage]
   );

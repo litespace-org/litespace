@@ -9,7 +9,7 @@ export class Messages {
 
   async create(payload: IMessage.CreatePayload): Promise<IMessage.Self> {
     const now = dayjs.utc().toDate();
-    const rows = await knex<IMessage.Row>(this.table)
+    const rows: IMessage.Row[] = await knex<IMessage.Row>(this.table)
       .insert({
         user_id: payload.userId,
         room_id: payload.roomId,
@@ -77,16 +77,24 @@ export class Messages {
     return rows.map((row) => this.from(row));
   }
 
+  /**
+   *  @param deleted {boolean} a flat to include or exclude deleted messages.
+   *  Default is `false` (deleted messages are not included by default)
+   */
   async findRoomMessages({
     room,
+    deleted = false,
     tx,
     page,
     size,
   }: {
     room: number;
+    deleted?: boolean;
     tx?: Knex.Transaction;
   } & IFilter.Pagination): Promise<Paginated<IMessage.Self>> {
     const builder = this.builder(tx).where(this.column("room_id"), room);
+    if (!deleted) builder.andWhere(this.column("deleted"), false);
+
     const total = await countRows(builder.clone());
     const query = builder
       .clone()

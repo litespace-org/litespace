@@ -9,7 +9,7 @@ import React, {
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
 import MessageGroup from "@/components/Chat/MessageGroup";
-import { OnMessage } from "@/hooks/chat";
+import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@/lib/atlas";
 import { asMessageGroups, Loading, useMessages } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
@@ -23,7 +23,8 @@ const Messages: React.FC<{
   const profile = useAppSelector(profileSelector);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
-  const [edit, setEdit] = useState<IMessage.Self | null>(null);
+  const [updatableMessage, setUpdatableMessage] =
+    useState<IMessage.Self | null>(null);
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
@@ -52,6 +53,32 @@ const Messages: React.FC<{
     [onMessages, scrollDown]
   );
 
+  const { sendMessage, updateMessage, deleteMessage } = useChat(onMessage);
+  const discard = useCallback(() => setUpdatableMessage(null), []);
+
+  const submit = useCallback(
+    (text: string) => {
+      if (!room) return;
+      if (updatableMessage) {
+        setUpdatableMessage(null);
+        return updateMessage({ id: updatableMessage.id, text });
+      }
+      return sendMessage({ roomId: room, text });
+    },
+    [room, sendMessage, updatableMessage, updateMessage]
+  );
+  const onUpdateMessage = useCallback(
+    (message: IMessage.Self) => setUpdatableMessage(message),
+    []
+  );
+
+  const onDeleteMessage = useCallback(
+    (message: IMessage.Self) => {
+      return deleteMessage(message.id);
+    },
+    [deleteMessage]
+  );
+
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
     if (!el) return;
@@ -78,18 +105,6 @@ const Messages: React.FC<{
       members,
     });
   }, [members, messages, profile]);
-
-  const editMessage = useCallback((message: IMessage.Self) => {
-    setEdit(message);
-  }, []);
-
-  const cancel = useCallback(() => {
-    setEdit(null);
-  }, []);
-
-  const deleteMessage = useCallback((message: IMessage.Self) => {
-    console.log(message);
-  }, []);
 
   return (
     <div
@@ -122,8 +137,8 @@ const Messages: React.FC<{
                   <MessageGroup
                     key={group.id}
                     group={group}
-                    editMessage={editMessage}
-                    deleteMessage={deleteMessage}
+                    onUpdateMessage={onUpdateMessage}
+                    onDeleteMessage={onDeleteMessage}
                   />
                 ))}
               </ul>
@@ -132,10 +147,10 @@ const Messages: React.FC<{
 
           <div className="pb-6 px-4 pt-2">
             <MessageBox
-              edit={edit}
-              room={room}
-              cancel={cancel}
-              onMessage={onMessage}
+              discard={discard}
+              submit={submit}
+              defaultMessage={updatableMessage ? updatableMessage.text : ""}
+              update={updatableMessage !== null}
             />
           </div>
         </>
