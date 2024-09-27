@@ -322,6 +322,7 @@ exports.up = (pgm) => {
     room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
     text: { type: "VARCHAR(1000)", notNull: true },
     read: { type: "BOOLEAN", notNull: true, default: false },
+    deleted: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

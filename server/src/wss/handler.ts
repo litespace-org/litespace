@@ -5,15 +5,22 @@ import { Socket } from "socket.io";
 import { Events } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
-import { id, string } from "@/validation/utils";
+import { id, string, withNamedId } from "@/validation/utils";
 import { isEmpty, map } from "lodash";
-import { sanitizeMessage } from "@litespace/sol";
+import { logger, safe, sanitizeMessage } from "@litespace/sol";
 import "colors";
 
 const peerPayload = zod.object({
   callId: id,
   peerId: string,
 });
+
+const updateMessagePayload = zod.object({
+  text: string,
+  id,
+});
+
+const stdout = logger("wss");
 
 export class WssHandler {
   socket: Socket;
@@ -28,6 +35,8 @@ export class WssHandler {
   async initialize() {
     await Promise.all([this.setUserStatus(true), this.joinRooms()]);
     this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
+    this.socket.on(Events.Client.UpdateMessage, this.updateMessage.bind(this));
+    this.socket.on(Events.Client.DeleteMessage, this.deleteMessage.bind(this));
     this.socket.on(Events.Client.PeerOpened, this.peerOpened.bind(this));
 
     this.socket.on("disconnect", async () => {
@@ -65,10 +74,6 @@ export class WssHandler {
       const { roomId, text } = wss.message.send.parse(data);
       const userId = this.user.id;
 
-      console.log(
-        `New message from ${this.user.name.en} (${roomId}): ${text}`.yellow
-      );
-
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       if (!members) throw Error("Room not found");
 
@@ -77,7 +82,6 @@ export class WssHandler {
 
       const sanitized = sanitizeMessage(text);
       if (!sanitized) return; // empty message
-      console.log("safe: ", sanitized);
       const message = await messages.create({
         text: sanitized,
         userId,
@@ -92,6 +96,58 @@ export class WssHandler {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async updateMessage(data: unknown) {
+    const error = await safe(async () => {
+      const { id, text } = updateMessagePayload.parse(data);
+      const message = await messages.findById(id);
+      if (!message) throw new Error("Message not found");
+
+      const owner = message.userId === this.user.id;
+      if (!owner) throw new Error("Forbidden");
+
+      const sanitized = sanitizeMessage(text);
+      if (!sanitized) throw new Error("Invalid message");
+
+      const updated = await messages.update(id, { text: sanitized });
+      if (!updated) throw new Error("Mesasge not update; should never happen.");
+
+      this.boradcast(
+        Events.Server.RoomMessageUpdated,
+        message.roomId.toString(),
+        updated
+      );
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async deleteMessage(data: unknown) {
+    const error = safe(async () => {
+      const { id } = withNamedId("id").parse(data);
+
+      const message = await messages.findById(id);
+      if (!message) throw new Error("Message not found");
+
+      const owner = message.userId === this.user.id;
+      if (!owner) throw new Error("Forbidden");
+
+      await messages.markAsDeleted(id);
+
+      this.boradcast(
+        Events.Server.RoomMessageDeleted,
+        message.roomId.toString(),
+        { id }
+      );
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async boradcast<T>(event: Events.Server, room: string, data: T) {
+    this.socket.emit(event, data);
+    this.socket.broadcast.to(room).emit(event, data);
   }
 
   async markMessageAsRead(data: unknown) {

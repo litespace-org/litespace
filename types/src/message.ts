@@ -6,6 +6,7 @@ export type Self = {
   roomId: number;
   text: string;
   read: boolean;
+  deleted: boolean;
   createdAt: string;
   updatedAt: string;
 };
@@ -16,6 +17,7 @@ export type Row = {
   room_id: number;
   text: string;
   read: boolean;
+  deleted: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -24,6 +26,10 @@ export type CreatePayload = {
   userId: number;
   roomId: number;
   text: string;
+};
+
+export type UpdatePayload = {
+  text?: string;
 };
 
 export type FindRoomMessagesApiResponse = Paginated<Self>;

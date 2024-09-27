@@ -43,23 +43,16 @@ import { useChat } from "@/hooks/chat";
 import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
 import Media from "@/components/Call/Media";
 import peer from "@/lib/peer";
-
-type IForm = {
-  message: string;
-};
+import Messages from "@/components/Chat/Messages";
 
 const Call: React.FC = () => {
-  const intl = useIntl();
-  const validation = useValidation();
   const dispath = useAppDispatch();
   const profile = useAppSelector(profileSelector);
-  const rooms = useAppSelector(roomsSelector);
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
   const [remoteScreenStream, setRemoteScreenStream] =
     useState<MediaStream | null>(null);
-  const messagesRef = useRef<HTMLDivElement>(null);
   const { start: startRecording } = useCallRecorder();
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
@@ -73,7 +66,6 @@ const Call: React.FC = () => {
     cameraOff,
     muteded,
   } = useUserMedia();
-  const [userScrolled, setUserScolled] = useState<boolean>(false);
 
   const callId = useMemo(() => {
     const call = Number(id);
@@ -92,28 +84,14 @@ const Call: React.FC = () => {
     queryKey: ["find-call"],
   });
 
-  const callRoomId = useMemo(() => {
-    if (!call.data || !rooms.value) return null;
-    const room = entries<IRoom.PopulatedMember[]>(rooms.value).find(
-      ([_, members]) => {
-        const roomMemberIds = map(members, "id");
-        const callMemberIds = map(call.data.members, "userId");
-        return isEqual(sortBy(roomMemberIds), sortBy(callMemberIds));
-      }
-    );
-    const roomId = first(room);
-    if (!roomId) return null;
-    return Number(roomId);
-  }, [call.data, rooms]);
-
-  const roomMessages = useQuery({
-    queryFn: async () => {
-      if (!callRoomId) return [];
-      return await atlas.chat.findRoomMessages(callRoomId);
-    },
-    queryKey: ["room-messages"],
-    enabled: !!callRoomId,
-  });
+  // const roomMessages = useQuery({
+  //   queryFn: async () => {
+  //     if (!callRoomId) return [];
+  //     return await atlas.chat.findRoomMessages(callRoomId);
+  //   },
+  //   queryKey: ["room-messages"],
+  //   enabled: !!callRoomId,
+  // });
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
@@ -186,85 +164,49 @@ const Call: React.FC = () => {
     if (callId && userMediaStream) startRecording(userMediaStream, callId);
   }, [callId, startRecording, userMediaStream]);
 
-  useEffect(() => {
-    if (messagesRef.current && !userScrolled)
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, [roomMessages.data, userScrolled]);
+  // const createRoom = useMutation({
+  //   mutationFn: useCallback(async () => {
+  //     if (!otherUserId)
+  //       throw new Error("Other user id not defined; should never happen.");
+  //     return await atlas.chat.createRoom(otherUserId);
+  //   }, [otherUserId]),
+  //   mutationKey: ["create-room"],
+  //   onSuccess() {
+  //     if (!profile) throw new Error("Profile not found; should never happen.");
+  //     dispath(findRooms.call(profile.id));
+  //   },
+  //   onError(error) {
+  //     toaster.error({
+  //       title: intl.formatMessage({
+  //         id: messages["page.call.start.chat.now.error"],
+  //       }),
+  //       description: error instanceof Error ? error.message : undefined,
+  //     });
+  //   },
+  // });
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    formState: { errors },
-  } = useForm<IForm>({
-    defaultValues: { message: "" },
+  const room = useQuery({
+    queryFn: async () => {
+      if (!call.data) return null;
+      return atlas.chat.findRoomByMembers(
+        call.data.members.map((member) => member.userId)
+      );
+    },
+    queryKey: ["q1"],
+    enabled: !!call.data,
   });
 
-  const onMessage = useCallback(
-    (_message: IMessage.Self) => {
-      roomMessages.refetch();
+  const members = useQuery({
+    queryFn: async () => {
+      if (!room.data) return [];
+      return await atlas.chat.findRoomMembers(room.data.room);
     },
-    [roomMessages]
-  );
-
-  const chat = useChat(onMessage);
-
-  const onScroll = useCallback(() => {
-    const el = messagesRef.current;
-    if (!el) return;
-    const scrollTop = el.scrollTop + 100;
-    const diff = el.scrollHeight - el.offsetHeight;
-    const scrolled = scrollTop < diff;
-    setUserScolled(scrolled);
-  }, []);
-
-  const sendMessage = useMemo(
-    () =>
-      handleSubmit(({ message }) => {
-        if (!callRoomId) return;
-
-        reset();
-        chat.sendMessage({ roomId: callRoomId, message });
-
-        if (messagesRef.current)
-          messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-      }),
-    [handleSubmit, callRoomId, chat, reset]
-  );
-
-  const otherUserId = useMemo(() => {
-    if (!call.data || !profile) return null;
-    const otherMembers = call.data.members.filter(
-      (member) => member.userId !== profile.id
-    );
-    const otherMember = first(otherMembers);
-    return otherMember?.userId || null;
-  }, [call.data, profile]);
-
-  const createRoom = useMutation({
-    mutationFn: useCallback(async () => {
-      if (!otherUserId)
-        throw new Error("Other user id not defined; should never happen.");
-      return await atlas.chat.createRoom(otherUserId);
-    }, [otherUserId]),
-    mutationKey: ["create-room"],
-    onSuccess() {
-      if (!profile) throw new Error("Profile not found; should never happen.");
-      dispath(findRooms.call(profile.id));
-    },
-    onError(error) {
-      toaster.error({
-        title: intl.formatMessage({
-          id: messages["page.call.start.chat.now.error"],
-        }),
-        description: error instanceof Error ? error.message : undefined,
-      });
-    },
+    queryKey: ["q2"],
+    enabled: !!room.data,
   });
 
   return (
-    <div className="flex h-screen overflow-hidden w-full">
+    <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
       <div
         className={cn(
           "flex flex-col w-full h-full",
@@ -343,125 +285,9 @@ const Call: React.FC = () => {
           "flex flex-col"
         )}
       >
-        {rooms.loading || call.isLoading ? (
-          <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
-            <Spinner />
-          </div>
-        ) : !callRoomId ? (
-          <div className="flex items-center justify-center h-full">
-            <div>
-              <Button
-                loading={createRoom.isPending}
-                onClick={() => createRoom.mutate()}
-                className="min-w-[200px]"
-              >
-                {intl.formatMessage({
-                  id: messages["page.call.start.chat.now"],
-                })}
-              </Button>
-            </div>
-          </div>
-        ) : (
-          <>
-            <div
-              className={cn(
-                "h-full overflow-auto pt-4 pb-6 px-4",
-                "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
-              )}
-              ref={messagesRef}
-              onScroll={onScroll}
-            >
-              {roomMessages.isLoading ? (
-                <div className="h-full w-full flex-1 flex items-center justify-center mt-10">
-                  <Spinner />
-                </div>
-              ) : roomMessages.data && profile ? (
-                <div className="mt-10">
-                  <ul className="flex flex-col">
-                    {roomMessages.data.map((message, idx) => {
-                      const prevMessage: IMessage.Self | undefined =
-                        roomMessages.data[idx - 1];
-
-                      const nextMessage: IMessage.Self | undefined =
-                        roomMessages.data[idx + 1];
-
-                      const ownMessage = message.userId === profile.id;
-                      const ownPrevMessage =
-                        prevMessage?.userId === message.userId;
-                      const ownNextMessage =
-                        nextMessage?.userId === message.userId;
-
-                      return (
-                        <li
-                          key={message.id}
-                          className={cn(
-                            "pr-4 pl-6 py-2 w-fit min-w-[200px] border",
-                            "transition-colors duration-200 rounded-l-3xl",
-                            ownMessage
-                              ? "bg-brand-button border-brand/30 hover:border-brand"
-                              : "bg-selection border-border-strong hover:border-border-stronger",
-                            {
-                              "mt-1": ownPrevMessage,
-                              "rounded-l-3xl rounded-tr-xl":
-                                ownPrevMessage && !ownNextMessage,
-                              "rounded-r-xl": ownNextMessage && ownPrevMessage,
-                              "rounded-r-3xl rounded-br-xl mt-4":
-                                ownNextMessage && !ownPrevMessage,
-                              "mt-4 rounded-tr-3xl":
-                                !ownNextMessage && !ownPrevMessage,
-                            }
-                          )}
-                        >
-                          <p className="mb-1">{message.text}</p>
-                          <span
-                            className={cn(
-                              "text-xs",
-                              ownMessage
-                                ? "text-foreground-light"
-                                : "text-foreground-lighter"
-                            )}
-                          >
-                            {dayjs(message.createdAt).format("HH:mm a")}
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                </div>
-              ) : null}
-            </div>
-            <Form
-              onSubmit={sendMessage}
-              className="flex flex-row gap-3 px-4 mb-10 mt-4"
-            >
-              <Input
-                value={watch("message")}
-                register={register("message", validation.message)}
-                placeholder={intl.formatMessage({
-                  id: messages["global.chat.input.placeholder"],
-                })}
-                error={errors["message"]?.message}
-                autoComplete="off"
-                disabled={roomMessages.isLoading}
-              />
-              <div>
-                <Button
-                  disabled={
-                    !watch("message") ||
-                    roomMessages.isLoading ||
-                    rooms.loading ||
-                    callRoomId === null
-                  }
-                  htmlType="submit"
-                  size={ButtonSize.Small}
-                  className="h-[37px]"
-                >
-                  <Send className="w-[20px] h-[20px]" />
-                </Button>
-              </div>
-            </Form>
-          </>
-        )}
+        {room.data && members.data ? (
+          <Messages room={room.data.room} members={members.data} />
+        ) : null}
       </div>
     </div>
   );

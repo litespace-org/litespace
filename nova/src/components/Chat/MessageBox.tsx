@@ -2,12 +2,14 @@ import { OnMessage, useChat } from "@/hooks/chat";
 import {
   Button,
   ButtonSize,
+  ButtonType,
   Controller,
   Form,
   useFormatMessage,
   useKeys,
 } from "@litespace/luna";
 import { sanitizeMessage } from "@litespace/sol";
+import { IMessage, Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
@@ -18,22 +20,24 @@ type IForm = {
 const MessageBox: React.FC<{
   room: number | null;
   onMessage: OnMessage;
-}> = ({ room, onMessage }) => {
+  cancel: Void;
+  edit: IMessage.Self | null;
+}> = ({ room, onMessage, cancel, edit }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({ defaultValues: { message: "" } });
-  const { sendMessage } = useChat(onMessage);
+  const message = form.watch("message");
+  const { sendMessage, updateMessage } = useChat(onMessage);
 
   const send = useCallback(
     (message: string) => {
       const sanitized = sanitizeMessage(message);
       if (!sanitized || !room) return;
       form.reset();
-      sendMessage({
-        roomId: room,
-        message: sanitized,
-      });
+
+      if (edit) return updateMessage({ id: edit.id, text: sanitized });
+      return sendMessage({ roomId: room, text: sanitized });
     },
-    [form, room, sendMessage]
+    [edit, form, room, sendMessage, updateMessage]
   );
 
   const onSubmit = useMemo(
@@ -53,6 +57,15 @@ const MessageBox: React.FC<{
     "Ctrl+Enter"
   );
 
+  useEffect(() => {
+    if (edit) form.setValue("message", edit.text);
+  }, [edit, form]);
+
+  const discard = useCallback(() => {
+    cancel();
+    form.reset();
+  }, [cancel, form]);
+
   return (
     <Form onSubmit={onSubmit} className="flex flex-col gap-2.5">
       <Controller.TextEditor
@@ -62,12 +75,23 @@ const MessageBox: React.FC<{
         error={form.formState.errors.message?.message}
         className="min-h-20"
       />
-      <Button
-        disabled={!sanitizeMessage(form.watch("message")) || !room}
-        size={ButtonSize.Small}
-      >
-        {intl("global.labels.send")}
-      </Button>
+      <div className="flex flex-row gap-2">
+        <Button
+          disabled={!sanitizeMessage(message) || !room}
+          size={ButtonSize.Small}
+        >
+          {intl(edit ? "global.labels.edit" : "global.labels.send")}
+        </Button>
+        {edit ? (
+          <Button
+            onClick={discard}
+            size={ButtonSize.Small}
+            type={ButtonType.Error}
+          >
+            {intl("global.labels.cancel")}
+          </Button>
+        ) : null}
+      </div>
     </Form>
   );
 };

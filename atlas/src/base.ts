@@ -31,7 +31,7 @@ export class Base {
     params?: P
   ): Promise<R> {
     return this.client
-      .get<R>(route, { data: payload, params })
+      .get<R>(route, { data: JSON.stringify(payload), params })
       .then((response) => response.data);
   }
 }

@@ -4,6 +4,8 @@
 export enum Client {
   JoinRooms = "JoinRooms",
   SendMessage = "SendMessage",
+  UpdateMessage = "UpdateMessage",
+  DeleteMessage = "DeleteMessage",
   MarkAsRead = "MarkAsRead",
   PeerOpened = "PeerOpened",
   UserSharingScreen = "UserSharingScreen",
@@ -13,6 +15,8 @@ export enum Client {
  */
 export enum Server {
   RoomMessage = "RoomMessage",
+  RoomMessageUpdated = "RoomMessageUpdated",
+  RoomMessageDeleted = "RoomMessageDeleted",
   JoinedRooms = "JoinedRooms",
   MessageRead = "MessageRead",
   UserJoinedCall = "UserJoinedCall",

@@ -1,4 +1,4 @@
-import { IFilter, IRoom } from "@litespace/types";
+import { IFilter, IMessage, IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import Message from "@/components/Chat/Message";
+import MessageGroup from "@/components/Chat/MessageGroup";
 import { OnMessage } from "@/hooks/chat";
 import { atlas } from "@/lib/atlas";
 import { asMessageGroups, Loading, useMessages } from "@litespace/luna";
@@ -23,6 +23,7 @@ const Messages: React.FC<{
   const profile = useAppSelector(profileSelector);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
+  const [edit, setEdit] = useState<IMessage.Self | null>(null);
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
@@ -30,8 +31,13 @@ const Messages: React.FC<{
     },
     []
   );
-  const { messages, loading, fetching, target, addMessage } =
-    useMessages<HTMLDivElement>(findRoomMessages, room);
+  const {
+    messages,
+    loading,
+    fetching,
+    target,
+    onMessage: onMessages,
+  } = useMessages<HTMLDivElement>(findRoomMessages, room);
 
   const scrollDown = useCallback(() => {
     if (messagesRef.current)
@@ -39,11 +45,11 @@ const Messages: React.FC<{
   }, []);
 
   const onMessage: OnMessage = useCallback(
-    (message) => {
+    (action) => {
       scrollDown();
-      addMessage(message);
+      onMessages(action);
     },
-    [addMessage, scrollDown]
+    [onMessages, scrollDown]
   );
 
   const onScroll = useCallback(() => {
@@ -73,6 +79,18 @@ const Messages: React.FC<{
     });
   }, [members, messages, profile]);
 
+  const editMessage = useCallback((message: IMessage.Self) => {
+    setEdit(message);
+  }, []);
+
+  const cancel = useCallback(() => {
+    setEdit(null);
+  }, []);
+
+  const deleteMessage = useCallback((message: IMessage.Self) => {
+    console.log(message);
+  }, []);
+
   return (
     <div
       className={cn(
@@ -85,7 +103,7 @@ const Messages: React.FC<{
       {room ? (
         <>
           <div
-            className="h-full overflow-auto main-scrollbar px-4 pt-4 pb-6"
+            className="h-full overflow-x-hidden overflow-y-auto main-scrollbar px-4 pt-4 pb-6"
             ref={messagesRef}
             onScroll={onScroll}
           >
@@ -101,14 +119,24 @@ const Messages: React.FC<{
             {!loading ? (
               <ul className="flex flex-col gap-4">
                 {messageGroups.map((group) => (
-                  <Message key={group.id} group={group} />
+                  <MessageGroup
+                    key={group.id}
+                    group={group}
+                    editMessage={editMessage}
+                    deleteMessage={deleteMessage}
+                  />
                 ))}
               </ul>
             ) : null}
           </div>
 
           <div className="pb-6 px-4 pt-2">
-            <MessageBox room={room} onMessage={onMessage} />
+            <MessageBox
+              edit={edit}
+              room={room}
+              cancel={cancel}
+              onMessage={onMessage}
+            />
           </div>
         </>
       ) : null}

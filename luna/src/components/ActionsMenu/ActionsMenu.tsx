@@ -10,11 +10,21 @@ export const ActionsMenu: React.FC<{
   actions: MenuAction[];
   placement?: Placement;
   children?: React.ReactNode;
-}> = ({ actions, children, placement = "bottom" }) => {
+  onToggle?: (open: boolean) => void;
+}> = ({ actions, children, placement = "bottom", onToggle }) => {
   const [open, setOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const hide = useCallback(() => setOpen(false), []);
-  const toggle = useCallback(() => setOpen(!open), [open]);
+
+  const hide = useCallback(() => {
+    setOpen(false);
+    if (onToggle) onToggle(false);
+  }, [onToggle]);
+
+  const toggle = useCallback(() => {
+    const next = !open;
+    setOpen(next);
+    if (onToggle) onToggle(next);
+  }, [onToggle, open]);
 
   const onClickOutside = useCallback(
     (event: MouseEvent) => {

@@ -131,12 +131,7 @@ const Navbar: React.FC<{
 
   return (
     <nav className="border-b border-border-overlay h-16">
-      <div
-        className={cn(
-          "px-6 flex flex-row items-center gap-6 h-full",
-          "max-w-screen-2xl mx-auto w-full"
-        )}
-      >
+      <div className={cn("px-6 flex flex-row items-center gap-6 h-full")}>
         <div
           data-empty={links.length === 0}
           className="block data-[empty=true]:hidden md:hidden"

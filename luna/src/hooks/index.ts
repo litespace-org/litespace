@@ -14,6 +14,8 @@ export { useKeys } from "@/hooks/keys";
 export {
   useMessages,
   useSelectedRoom,
+  MessageStream,
+  type MessageStreamAction,
   type SelectRoom,
   type SelectedRoom,
 } from "@/hooks/chat";

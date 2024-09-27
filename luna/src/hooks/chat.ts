@@ -54,8 +54,21 @@ enum ActionType {
   PreCall,
   PostCall,
   PostCallError,
-  AppendMessage,
+  AddMessage,
+  UpdateMessage,
+  DeleteMessage,
 }
+
+export enum MessageStream {
+  Add = "add",
+  Update = "update",
+  Delete = "delete",
+}
+
+export type MessageStreamAction =
+  | { type: MessageStream.Add; message: IMessage.Self }
+  | { type: MessageStream.Update; message: IMessage.Self }
+  | { type: MessageStream.Delete; id: number };
 
 type Action =
   | {
@@ -97,7 +110,18 @@ type Action =
       room: number;
       total: number;
     }
-  | { type: ActionType.AppendMessage; message: IMessage.Self };
+  | MessageStreamAction;
+
+function isFreshMessage(id: number, messages: IMessage.Self[]): boolean {
+  return !!messages.find((message) => message.id === id);
+}
+
+function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
+  const index = messages.findIndex((message) => message.id === incoming.id);
+  if (index === -1) return;
+  messages.splice(index, 1, incoming);
+  return messages;
+}
 
 function reducer(state: State, action: Action) {
   const mutate = (incoming?: Partial<State>): State =>
@@ -180,13 +204,28 @@ function reducer(state: State, action: Action) {
     return mutate({ totals, messages, errors, fetching, loading });
   }
 
-  if (action.type === ActionType.AppendMessage) {
+  if (action.type === MessageStream.Add) {
     const room = action.message.roomId;
     const freshMessages = structuredClone(state.freshMessages);
     const roomMessages = freshMessages[room];
     if (!roomMessages) freshMessages[room] = [action.message];
     else roomMessages.push(action.message);
     return mutate({ freshMessages });
+  }
+
+  if (action.type === MessageStream.Update) {
+    const room = action.message.roomId;
+    const messageId = action.message.id;
+    const fresh = isFreshMessage(messageId, state.freshMessages[room] || []);
+    const messages = fresh
+      ? structuredClone(state.freshMessages)
+      : structuredClone(state.messages);
+
+    const roomMessages = messages[room] || [];
+    messages[room] = replaceMessage(action.message, roomMessages);
+    if (fresh) return mutate({ freshMessages: messages });
+    console.log({ messages });
+    return mutate({ messages });
   }
 
   return mutate();
@@ -271,8 +310,9 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
     return fetcher(room, page + 1);
   }, [fetcher, isFull, room, state.pages]);
 
-  const addMessage = useCallback((message: IMessage.Self) => {
-    dispatch({ type: ActionType.AppendMessage, message });
+  const onMessage = useCallback((action: MessageStreamAction) => {
+    console.log({ action });
+    dispatch(action);
   }, []);
 
   useEffect(() => {
@@ -302,9 +342,9 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
       loading: room ? state.loading[room] : false,
       fetching: room ? state.fetching[room] : false,
       target,
-      addMessage,
+      onMessage,
     };
-  }, [addMessage, messages, room, state.fetching, state.loading, target]);
+  }, [messages, onMessage, room, state.fetching, state.loading, target]);
 }
 
 export type SelectedRoom = {

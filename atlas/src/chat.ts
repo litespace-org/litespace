@@ -23,4 +23,16 @@ export class Chat extends Base {
       pagination
     );
   }
+
+  async findRoomByMembers(
+    members: number[]
+  ): Promise<IRoom.FindRoomByMembersApiResponse> {
+    return await this.get("/api/v1/chat/room/by/members", null, { members });
+  }
+
+  async findRoomMembers(
+    room: number
+  ): Promise<IRoom.FindRoomMembersApiResponse> {
+    return await this.get(`/api/v1/chat/room/members/${room}`);
+  }
 }

@@ -9,6 +9,7 @@ import { authorizer } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
 
 const createRoomPayload = zod.object({ userId: id });
+const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
 
 async function createRoom(req: Request, res: Response, next: NextFunction) {
   const { userId } = createRoomPayload.parse(req.params);
@@ -69,8 +70,37 @@ async function findRoomMessages(
   res.status(200).json(list);
 }
 
+// todo: add auth
+async function findRoomByMembers(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { members } = findRoomByMembersPayload.parse(req.query);
+  const room = await rooms.findRoomByMembers(members);
+  if (!room) return next(notfound.base());
+  res.status(200).json({ room });
+}
+
+// todo: add auth
+async function findRoomMembers(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { roomId } = withNamedId("roomId").parse(req.params);
+  const members = await rooms.findRoomMembers({
+    roomIds: [roomId],
+    excludeUsers: [req.user.id],
+  });
+  if (isEmpty(members)) return next(notfound.base());
+  res.status(200).json(members);
+}
+
 export default {
   createRoom: safe(createRoom),
   findRoomMessages: safe(findRoomMessages),
   findUserRooms: safe(findUserRooms),
+  findRoomByMembers: safe(findRoomByMembers),
+  findRoomMembers: safe(findRoomMembers),
 };

@@ -1,43 +1,67 @@
-import React from "react";
+import {
+  ActionsMenu,
+  MenuAction,
+  RawHtml,
+  useFormatMessage,
+  useRender,
+} from "@litespace/luna";
+import { IMessage, Void } from "@litespace/types";
 import cn from "classnames";
-import dayjs from "@/lib/dayjs";
-import { RawHtml } from "@litespace/luna";
-import { asFullAssetUrl } from "@/lib/atlas";
-import { MessageGroup } from "@litespace/luna";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 const Message: React.FC<{
-  group: MessageGroup;
-}> = ({ group: { sender, messages, date } }) => {
-  return (
-    <li className={cn("flex flex-row gap-2")}>
-      <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full">
-        <img
-          className="object-cover w-full h-full"
-          src={sender.photo ? asFullAssetUrl(sender.photo) : "/avatar-1.png"}
-        />
-      </div>
-      <div>
-        <div className="flex flex-row gap-2 items-center">
-          <p className="font-bold text-foreground text-xs md:text-base">
-            {sender.name}
-          </p>{" "}
-          &mdash;
-          <p className="text-foreground-muted dark:text-foreground-light text-xs md:text-base leading-none">
-            {dayjs(date).fromNow()}
-          </p>
-        </div>
+  message: IMessage.Self;
+  editMessage: Void;
+  deleteMessage: Void;
+}> = ({ message, editMessage, deleteMessage }) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const intl = useFormatMessage();
+  const menu = useRender();
+  const [open, setOpen] = useState<boolean>(false);
 
-        <div className="text-foreground mt-1.5">
-          {messages.map((message) => {
-            return (
-              <div className="mt-1" key={message.id}>
-                <RawHtml html={message.text} />
-              </div>
-            );
-          })}
-        </div>
+  const actions = useMemo((): MenuAction[] => {
+    return [
+      {
+        id: 1,
+        label: intl("chat.message.edit"),
+        onClick: editMessage,
+      },
+      {
+        id: 2,
+        label: intl("chat.message.delete"),
+        onClick: deleteMessage,
+        danger: true,
+      },
+    ];
+  }, [deleteMessage, editMessage, intl]);
+
+  const hide = useCallback(() => {
+    // hide the actions menu incase it is not opened.
+    if (!open) menu.hide();
+  }, [menu, open]);
+
+  const onToggle = useCallback((open: boolean) => {
+    setOpen(open);
+  }, []);
+
+  return (
+    <div
+      ref={ref}
+      className="relative"
+      onMouseEnter={menu.show}
+      onMouseLeave={hide}
+    >
+      <RawHtml html={message.text} />
+      <div
+        data-open={menu.open}
+        className={cn(
+          "absolute top-0 left-0 -translate-y-[20%]",
+          "hidden data-[open=true]:block"
+        )}
+      >
+        <ActionsMenu actions={actions} onToggle={onToggle} />
       </div>
-    </li>
+    </div>
   );
 };
 

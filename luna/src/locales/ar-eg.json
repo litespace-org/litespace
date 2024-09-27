@@ -219,6 +219,8 @@
   "invoices.process.error": "لديك مشكلة في تحديث بيانات طلب السحب",
   "chat.no": "إطرح جميع إسئلتك علي معلمك المفضل",
   "chat.active": "نشط الأن",
+  "chat.message.edit": "تعديل",
+  "chat.message.delete": "حذف",
   "editor.link.title": "إضافة رابط",
   "media.title": "لائحة المعلمين",
   "media.no.video": "لا يوجد فيديو",

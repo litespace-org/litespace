@@ -33,8 +33,27 @@ export class Messages {
       .where("id", id);
   }
 
+  async update(
+    id: number,
+    payload: IMessage.UpdatePayload,
+    tx?: Knex.Transaction
+  ): Promise<IMessage.Self | null> {
+    const now = dayjs.utc().toDate();
+    const rows = await this.builder(tx)
+      .update({ text: payload.text, updated_at: now })
+      .where(this.column("id"), id)
+      .returning("*");
+
+    const row = first(rows);
+    return row ? this.from(row) : null;
+  }
+
   async markAsRead(id: number): Promise<void> {
     return this.updateBy(id, "read", true);
+  }
+
+  async markAsDeleted(id: number): Promise<void> {
+    return this.updateBy(id, "deleted", true);
   }
 
   async findById(id: number): Promise<IMessage.Self | null> {
@@ -97,6 +116,7 @@ export class Messages {
       roomId: row.room_id,
       text: row.text,
       read: row.read,
+      deleted: row.deleted,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
