@@ -38,6 +38,7 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "lodash": "^4.17.21",
     "rrule": "^2.8.1",
     "xss": "^1.0.15"
   }

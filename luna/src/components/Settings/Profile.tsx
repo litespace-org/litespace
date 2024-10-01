@@ -139,7 +139,12 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
           }
         />
 
-        <Button size={ButtonSize.Small} className="mt-4">
+        <Button
+          loading={mutation.isPending}
+          disabled={mutation.isPending}
+          size={ButtonSize.Small}
+          className="mt-4"
+        >
           {intl("global.labels.edit")}
         </Button>
       </Form>
