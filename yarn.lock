@@ -3354,6 +3354,7 @@ __metadata:
     react-feather: "npm:^2.0.10"
     react-hook-form: "npm:^7.51.5"
     react-intl: "npm:^6.6.8"
+    react-number-format: "npm:^5.4.2"
     sanitize-html: "npm:^2.13.0"
     storybook: "npm:^8.1.5"
     tailwind-scrollbar: "npm:^3.1.0"
@@ -20363,6 +20364,16 @@ __metadata:
     "@types/react": ">=16"
     react: ">=16"
   checksum: 10c0/016617fbd2f4c03c5ae017fe39e89202f2ff536b4921dc1a5f7283d4b9d5157f20797adda75a8c59a06787ad0bc8841e2e437915aec645ce528e0a04a6d450ac
+  languageName: node
+  linkType: hard
+
+"react-number-format@npm:^5.4.2":
+  version: 5.4.2
+  resolution: "react-number-format@npm:5.4.2"
+  peerDependencies:
+    react: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^0.14 || ^15.0.0 || ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/5e0500156added2f4dc5ecc72bee0b59545bc1f2c05a059a3a321a014b9e6519a5b4b8b0fa32dfede240ce4b501c1c742deeb0f02d1bfb534b46269d2faae50a
   languageName: node
   linkType: hard
 

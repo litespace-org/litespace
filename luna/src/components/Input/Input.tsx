@@ -6,7 +6,6 @@ import { Dir } from "@/components/Direction";
 import OpenedEye from "@/icons/OpenedEye";
 import ClosedEye from "@/icons/ClosedEye";
 import { InputType, InputAction } from "@/components/Input/types";
-import { UseFormRegisterReturn } from "react-hook-form";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
 // const arabic =
@@ -27,102 +26,82 @@ const passwordPlaceholder = "••••••••";
 // auto resize text input, used for chat box
 // https://www.youtube.com/watch?v=sOnPz_GMa38
 
-export const Input: React.FC<{
-  placeholder?: string;
-  autoComplete?: string;
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: InputType;
-  error?: string | null;
-  value?: string;
-  register?: UseFormRegisterReturn;
-  disabled?: boolean;
-  onFocus?: () => void;
-  onBlur?: () => void;
-  onChange?: (value: string) => void;
   actions?: Array<InputAction>;
-}> = ({
-  type,
-  placeholder,
-  autoComplete,
-  error,
-  value,
-  register,
-  disabled,
-  actions = [],
-  onFocus,
-  onBlur,
-  onChange,
-}) => {
-  const [show, setShow] = useState<boolean>(false);
-  const [kind, setKind] = useState<InputType>(type || InputType.Text);
+  error?: string | null;
+}
 
-  const dir: Dir | undefined = useMemo(() => {
-    if (!value) return undefined;
-    if (type === InputType.Password) return Dir.LTR;
-    if (arabicv4.test(value)) return Dir.RTL;
-    return Dir.LTR;
-  }, [type, value]);
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+  (
+    { type, error, value, disabled, placeholder, name, actions = [], ...attrs },
+    ref
+  ) => {
+    const [show, setShow] = useState<boolean>(false);
+    const [kind, setKind] = useState<InputType>(type || InputType.Text);
 
-  useEffect(() => {
-    setKind(type || InputType.Text);
-  }, [type]);
+    const dir: Dir | undefined = useMemo(() => {
+      if (!value) return undefined;
+      if (type === InputType.Password) return Dir.LTR;
+      if (arabicv4.test(value.toString())) return Dir.RTL;
+      return Dir.LTR;
+    }, [type, value]);
 
-  const onEyeClick = useCallback((shouldShow: boolean) => {
-    setShow(shouldShow);
-    setKind(shouldShow ? InputType.Text : InputType.Password);
-  }, []);
+    useEffect(() => {
+      setKind(type || InputType.Text);
+    }, [type]);
 
-  return (
-    <div className="flex flex-col w-full">
-      <div className="w-full relative">
-        <input
-          dir={dir}
-          id={register?.name}
-          type={kind}
-          value={value}
-          autoComplete={autoComplete}
-          disabled={disabled}
-          onFocus={onFocus}
-          onBlur={onBlur}
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) =>
-            onChange && onChange(event.target.value)
-          }
-          {...register}
-          className={cn(
-            "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
-            "text-foreground focus-visible:shadow-md outline-none",
-            "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
-            "focus-visible:ring-background-control placeholder-foreground-muted group",
-            "border border-control text-sm px-4 py-2",
-            "disabled:opacity-50 disabled:cursor-not-allowed",
-            "text-right", // align all text to the right
-            {
-              "bg-foreground/[.026]": !error,
-              "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
-                !!error,
+    const onEyeClick = useCallback((shouldShow: boolean) => {
+      setShow(shouldShow);
+      setKind(shouldShow ? InputType.Text : InputType.Password);
+    }, []);
+
+    return (
+      <div className="flex flex-col w-full">
+        <div className="w-full relative">
+          <input
+            dir={dir}
+            type={kind}
+            {...attrs}
+            className={cn(
+              "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
+              "text-foreground focus-visible:shadow-md outline-none",
+              "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
+              "focus-visible:ring-background-control placeholder-foreground-muted group",
+              "border border-control text-sm px-4 py-2",
+              "disabled:opacity-50 disabled:cursor-not-allowed",
+              "text-right", // align all text to the right
+              {
+                "bg-foreground/[.026]": !error,
+                "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
+                  !!error,
+              }
+            )}
+            placeholder={
+              type === InputType.Password
+                ? placeholder || passwordPlaceholder
+                : placeholder
             }
-          )}
-          placeholder={
-            type === InputType.Password
-              ? placeholder || passwordPlaceholder
-              : placeholder
-          }
-        />
+            ref={ref}
+          />
 
-        <Actions
-          show={show}
-          error={!!error}
-          onEyeClick={onEyeClick}
-          password={type === InputType.Password}
-          disabled={disabled}
-          actions={actions}
-        />
+          <Actions
+            show={show}
+            error={!!error}
+            onEyeClick={onEyeClick}
+            password={type === InputType.Password}
+            disabled={disabled}
+            actions={actions}
+          />
+        </div>
+        <AnimatePresence mode="wait" initial={false}>
+          {error ? <InputError message={error} key={name} /> : null}
+        </AnimatePresence>
       </div>
-      <AnimatePresence mode="wait" initial={false}>
-        {error ? <InputError message={error} key={register?.name} /> : null}
-      </AnimatePresence>
-    </div>
-  );
-};
+    );
+  }
+);
 
 const framer = {
   initial: { opacity: 0, y: 10 },
