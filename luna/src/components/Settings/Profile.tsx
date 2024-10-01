@@ -7,14 +7,14 @@ import { ITutor, IUser } from "@litespace/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { Controller } from "@/components/Form";
 import { useForm } from "react-hook-form";
-import { useValidateName } from "@/hooks/user";
+import { useValidateBirthYear, useValidateName } from "@/hooks/user";
 
 type IForm = {
   name: string;
   gender?: IUser.Gender;
-  birthYear?: number;
-  bio?: string;
-  about?: string;
+  birthYear?: string;
+  bio: string;
+  about: string;
 };
 
 const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
@@ -25,15 +25,16 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
   const form = useForm<IForm>({
     defaultValues: {
       name: profile.name || "",
-      birthYear: profile.birthYear || undefined,
+      birthYear: profile.birthYear ? profile.birthYear.toString() : "",
       gender: profile.gender || undefined,
-      bio: tutor?.bio || undefined,
-      about: tutor?.about || undefined,
+      bio: tutor?.bio || "",
+      about: tutor?.about || "",
     },
   });
 
   const mutation = useUpdateUser();
   const validateName = useValidateName();
+  const validateBirthYear = useValidateBirthYear();
 
   const onSubmit = useMemo(
     () =>
@@ -41,11 +42,11 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
         mutation.mutate({
           id: profile.id,
           payload: {
-            about: data.about,
-            bio: data.bio,
-            birthYear: data.birthYear,
+            birthYear: data.birthYear ? Number(data.birthYear) : undefined,
             gender: data.gender,
+            about: data.about,
             name: data.name,
+            bio: data.bio,
           },
         });
       }),
@@ -59,13 +60,12 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
         <Field
           label={intl("labels.name")}
           field={
-            <Input
+            <Controller.Input
               placeholder={intl("labels.name.placeholder")}
-              register={form.register("name", {
-                validate: validateName,
-              })}
-              error={form.formState.errors.name?.message}
+              rules={{ validate: validateName }}
+              control={form.control}
               autoComplete="off"
+              name="name"
             />
           }
         />
@@ -77,6 +77,7 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
               <Input
                 placeholder={intl("labels.email.placeholder")}
                 value={profile.email}
+                readOnly
                 disabled
               />
               <Button
@@ -94,7 +95,7 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
           label={intl("labels.password")}
           field={
             <div className="flex flex-row gap-2 items-center justify-center">
-              <Input type={InputType.Password} disabled />
+              <Input type={InputType.Password} disabled autoComplete="off" />
               <Button
                 htmlType="button"
                 type={ButtonType.Text}
@@ -108,22 +109,38 @@ const Profile: React.FC<{ profile: IUser.Self; tutor: ITutor.Self | null }> = ({
 
         <Field
           label={intl("labels.birthYear")}
-          field={<Input placeholder={intl("labels.birthYear.placeholder")} />}
+          field={
+            <Controller.NumericInput
+              control={form.control}
+              name="birthYear"
+              rules={{ validate: validateBirthYear.validate }}
+              placeholder={intl("labels.birthYear.placeholder")}
+              min={validateBirthYear.min}
+              max={validateBirthYear.max}
+              allowNegative={false}
+              decimalScale={0}
+            />
+          }
         />
 
         <Field
           label={intl("labels.bio")}
-          field={<Input placeholder={intl("labels.bio.placeholder")} />}
+          field={
+            <Controller.Input
+              control={form.control}
+              placeholder={intl("labels.bio.placeholder")}
+              name="bio"
+            />
+          }
         />
 
         <Field
           label={intl("labels.about")}
           field={
             <Controller.TextEditor
+              value={form.watch("about")}
               control={form.control}
               name="about"
-              value={form.watch("about") || ""}
-              error={form.formState.errors.about?.message}
             />
           }
         />

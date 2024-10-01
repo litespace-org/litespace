@@ -63,6 +63,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <input
             dir={dir}
             type={kind}
+            value={value}
             {...attrs}
             className={cn(
               "font-cairo block box-border w-full rounded-md shadow-sm transition-all",

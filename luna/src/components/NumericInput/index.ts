@@ -1,1 +1,4 @@
-export { default as NumericInput } from "@/components/NumericInput/NumericInput";
+export {
+  default as NumericInput,
+  type NumericInputProps,
+} from "@/components/NumericInput/NumericInput";
