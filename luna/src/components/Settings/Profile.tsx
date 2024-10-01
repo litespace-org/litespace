@@ -99,7 +99,7 @@ const Profile: React.FC<{
         />
       </div>
 
-      <div className="flex flex-row gap-4 md:!gap-8">
+      <div className="flex flex-col sm:!flex-row gap-4 md:!gap-8">
         <Media
           displayOnly={displayOnly}
           refresh={refresh}
