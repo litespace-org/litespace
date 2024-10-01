@@ -9,7 +9,9 @@ const Image: React.FC<{
   image?: string | null;
   user?: number;
   refresh: RefreshUser;
-}> = ({ image, user, refresh }) => {
+  displayOnly?: boolean;
+  className?: string;
+}> = ({ image, user, displayOnly, refresh, className }) => {
   const ref = useRef<HTMLInputElement>(null);
 
   const open = useCallback(() => {
@@ -32,11 +34,13 @@ const Image: React.FC<{
     <button
       type="button"
       onClick={open}
+      disabled={displayOnly}
       className={cn(
         "relative",
-        "rounded-full w-full h-full aspect-square overflow-hidden",
+        "rounded-full aspect-square overflow-hidden",
         "ring-4 ring-background-selection bg-background-selection",
-        "focus:outline-none focus:ring-brand focus:ring-2"
+        "focus:outline-none focus:ring-brand focus:ring-2",
+        className
       )}
     >
       <div
@@ -63,11 +67,12 @@ const Image: React.FC<{
       />
 
       <div
+        data-show={!displayOnly}
         className={cn(
           "absolute bottom-0 left-0 w-full h-10 z-10",
           "bg-white/40 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/50",
           "transition-colors duration-300 ease-linear",
-          "flex items-center justify-center",
+          "hidden data-[show=true]:flex items-center justify-center",
           "focus:outline-none focus:ring-2 focus:ring-brand disabled:opacity-50"
         )}
       >

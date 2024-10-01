@@ -10,7 +10,7 @@ import { useValidateBirthYear, useValidateName } from "@/hooks/user";
 import { diff } from "@litespace/sol";
 import Spinner from "@/icons/Spinner";
 import { isEmpty } from "lodash";
-import Image from "@/components/Settings/Image";
+import Media from "@/components/Settings/Media";
 
 type IForm = {
   name: string;
@@ -84,6 +84,11 @@ const Profile: React.FC<{
     [fetching, loading, mutation.isPending]
   );
 
+  const displayOnly = useMemo(
+    () => disabled || !profile || profile.role === IUser.Role.Tutor,
+    [disabled, profile]
+  );
+
   return (
     <div>
       <div className="flex flex-row items-center gap-2 mb-4">
@@ -94,126 +99,136 @@ const Profile: React.FC<{
         />
       </div>
 
-      <div className="mb-4">
-        <Image refresh={refresh} user={profile?.id} image={profile?.image} />
-      </div>
-
-      <Form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <Field
-          label={intl("labels.name")}
-          field={
-            <Controller.Input
-              placeholder={intl("labels.name.placeholder")}
-              rules={{ validate: validateName }}
-              control={form.control}
-              autoComplete="off"
-              name="name"
-              disabled={disabled}
-            />
-          }
+      <div className="flex flex-row gap-4 md:!gap-8">
+        <Media
+          displayOnly={displayOnly}
+          refresh={refresh}
+          user={profile?.id}
+          image={profile?.image}
+          video={tutor?.video}
+          name={profile?.name}
         />
 
-        <Field
-          label={intl("labels.email")}
-          field={
-            <div className="flex flex-row gap-2 items-center justify-center">
-              <Input
-                placeholder={intl("labels.email.placeholder")}
-                value={profile?.email}
-                readOnly
-                disabled
-              />
-              <Button
-                htmlType="button"
-                type={ButtonType.Text}
-                size={ButtonSize.Small}
-                disabled={disabled}
-              >
-                {intl("global.labels.edit")}
-              </Button>
-            </div>
-          }
-        />
-
-        <Field
-          label={intl("labels.password")}
-          field={
-            <div className="flex flex-row gap-2 items-center justify-center">
-              <Input type={InputType.Password} disabled autoComplete="off" />
-              <Button
-                htmlType="button"
-                type={ButtonType.Text}
-                size={ButtonSize.Small}
-                disabled={disabled}
-              >
-                {intl("global.labels.edit")}
-              </Button>
-            </div>
-          }
-        />
-
-        <Field
-          label={intl("labels.birthYear")}
-          field={
-            <Controller.NumericInput
-              control={form.control}
-              name="birthYear"
-              rules={{ validate: validateBirthYear.validate }}
-              placeholder={intl("labels.birthYear.placeholder")}
-              min={validateBirthYear.min}
-              max={validateBirthYear.max}
-              allowNegative={false}
-              decimalScale={0}
-              disabled={disabled}
-            />
-          }
-        />
-
-        <Field
-          label={intl("labels.bio")}
-          field={
-            <Controller.Input
-              control={form.control}
-              placeholder={intl("labels.bio.placeholder")}
-              disabled={disabled}
-              name="bio"
-            />
-          }
-        />
-
-        <Field
-          label={intl("labels.about")}
-          field={
-            <Controller.TextEditor
-              value={form.watch("about")}
-              control={form.control}
-              disabled={disabled}
-              name="about"
-            />
-          }
-        />
-
-        <Field
-          label={intl("labels.gender")}
-          field={
-            <Controller.Gender
-              value={form.watch("gender")}
-              control={form.control}
-              disabled={disabled}
-              name="gender"
-            />
-          }
-        />
-
-        <Button
-          loading={mutation.isPending}
-          disabled={disabled}
-          size={ButtonSize.Small}
-          className="mt-4"
+        <Form
+          onSubmit={onSubmit}
+          className="flex flex-col gap-4 md:w-full lg:w-[500px]"
         >
-          {intl("global.labels.edit")}
-        </Button>
-      </Form>
+          <Field
+            label={intl("labels.name")}
+            field={
+              <Controller.Input
+                placeholder={intl("labels.name.placeholder")}
+                rules={{ validate: validateName }}
+                control={form.control}
+                autoComplete="off"
+                name="name"
+                disabled={disabled}
+              />
+            }
+          />
+
+          <Field
+            label={intl("labels.email")}
+            field={
+              <div className="flex flex-row gap-2 items-center justify-center">
+                <Input
+                  placeholder={intl("labels.email.placeholder")}
+                  value={profile?.email}
+                  readOnly
+                  disabled
+                />
+                <Button
+                  htmlType="button"
+                  type={ButtonType.Text}
+                  size={ButtonSize.Small}
+                  disabled={disabled}
+                >
+                  {intl("global.labels.edit")}
+                </Button>
+              </div>
+            }
+          />
+
+          <Field
+            label={intl("labels.password")}
+            field={
+              <div className="flex flex-row gap-2 items-center justify-center">
+                <Input type={InputType.Password} disabled autoComplete="off" />
+                <Button
+                  htmlType="button"
+                  type={ButtonType.Text}
+                  size={ButtonSize.Small}
+                  disabled={disabled}
+                >
+                  {intl("global.labels.edit")}
+                </Button>
+              </div>
+            }
+          />
+
+          <Field
+            label={intl("labels.birthYear")}
+            field={
+              <Controller.NumericInput
+                control={form.control}
+                name="birthYear"
+                rules={{ validate: validateBirthYear.validate }}
+                placeholder={intl("labels.birthYear.placeholder")}
+                min={validateBirthYear.min}
+                max={validateBirthYear.max}
+                allowNegative={false}
+                decimalScale={0}
+                disabled={disabled}
+              />
+            }
+          />
+
+          <Field
+            label={intl("labels.bio")}
+            field={
+              <Controller.Input
+                control={form.control}
+                placeholder={intl("labels.bio.placeholder")}
+                disabled={disabled}
+                name="bio"
+              />
+            }
+          />
+
+          <Field
+            label={intl("labels.about")}
+            field={
+              <Controller.TextEditor
+                value={form.watch("about")}
+                control={form.control}
+                disabled={disabled}
+                name="about"
+              />
+            }
+          />
+
+          <Field
+            label={intl("labels.gender")}
+            field={
+              <Controller.Gender
+                value={form.watch("gender")}
+                control={form.control}
+                disabled={disabled}
+                name="gender"
+              />
+            }
+          />
+
+          <Button
+            loading={mutation.isPending}
+            disabled={disabled}
+            size={ButtonSize.Small}
+            className="mt-4"
+          >
+            {intl("global.labels.edit")}
+          </Button>
+        </Form>
+      </div>
     </div>
   );
 };
