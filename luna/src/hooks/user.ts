@@ -8,8 +8,33 @@ import { validateText } from "@/lib/validate";
 import dayjs from "@/lib/dayjs";
 import { MIN_AGE, MAX_AGE } from "@litespace/sol";
 
-export function useUpdateUser() {
+export type RefreshUser = (user?: IUser.Self) => void;
+
+function useUpdate(refresh: RefreshUser) {
   const intl = useFormatMessage();
+  const onSuccess = useCallback(
+    (user?: IUser.Self) => {
+      refresh(user);
+      toaster.success({ title: intl("profile.update.success") });
+    },
+    [intl, refresh]
+  );
+
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("profile.update.error"),
+        description: error.message,
+      });
+    },
+    [intl]
+  );
+
+  return { onSuccess, onError };
+}
+
+export function useUpdateUser(refresh: RefreshUser) {
+  const { onSuccess, onError } = useUpdate(refresh);
   const update = useCallback(
     async ({
       id,
@@ -23,28 +48,32 @@ export function useUpdateUser() {
     []
   );
 
-  const onSuccess = useCallback(() => {
-    toaster.success({
-      title: intl("profile.update.success"),
-    });
-  }, [intl]);
-
-  const onError = useCallback(
-    (error: Error) => {
-      toaster.error({
-        title: intl("profile.update.error"),
-        description: error.message,
-      });
-    },
-    [intl]
-  );
-
   return useMutation({
     mutationFn: update,
     mutationKey: ["update-user"],
     onSuccess,
     onError,
   });
+}
+
+export function useUpdateProfileMedia(refresh: RefreshUser, user?: number) {
+  const { onSuccess, onError } = useUpdate(refresh);
+  const update = useCallback(
+    async (payload: IUser.UpdateMediaPayload) => {
+      if (!user) return;
+      return await atlas.user.updateMedia(user, payload);
+    },
+    [user]
+  );
+
+  const mutation = useMutation({
+    mutationFn: update,
+    mutationKey: ["update-user-media"],
+    onSuccess,
+    onError,
+  });
+
+  return mutation;
 }
 
 const nameRegex = /^[\u0600-\u06FF\s]+$/;

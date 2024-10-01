@@ -127,11 +127,10 @@ function update(context: ApiContext) {
     // e.g., students/interviewers cannot try to upload videos
     if (files.video.file && !isEligibleUser) return next(forbidden());
 
-    const [photo, video] = await Promise.all(
-      [
-        { file: req.files?.photo, type: FileType.Image },
-        { file: req.files?.video, type: FileType.Video },
-      ].map(({ file, type }) => (file ? uploadSingle(file, type) : undefined))
+    const [image, video] = await Promise.all(
+      [files.image, files.video].map(({ file, type }) =>
+        file ? uploadSingle(file, type) : undefined
+      )
     );
 
     const user = await knex.transaction(async (tx: Knex.Transaction) => {
@@ -142,7 +141,7 @@ function update(context: ApiContext) {
           email,
           gender,
           birthYear,
-          image: drop?.image === true ? null : photo,
+          image: drop?.image === true ? null : image,
           password: password ? hashPassword(password) : undefined,
         },
         tx

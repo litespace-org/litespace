@@ -91,3 +91,8 @@ export type CreateApiPayload = {
   email: string;
   password: string;
 };
+
+export type UpdateMediaPayload =
+  | { image: File }
+  | { video: File }
+  | { image: File; video: File };

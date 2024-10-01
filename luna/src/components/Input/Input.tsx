@@ -35,7 +35,7 @@ export interface InputProps
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { type, error, value, disabled, placeholder, name, actions = [], ...attrs },
+    { type, error, value, disabled, placeholder, name, actions = [], ...props },
     ref
   ) => {
     const [show, setShow] = useState<boolean>(false);
@@ -64,7 +64,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             dir={dir}
             type={kind}
             value={value}
-            {...attrs}
+            disabled={disabled}
             className={cn(
               "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
               "text-foreground focus-visible:shadow-md outline-none",
@@ -85,6 +85,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 : placeholder
             }
             ref={ref}
+            {...props}
           />
 
           <Actions

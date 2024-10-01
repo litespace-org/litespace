@@ -2,17 +2,21 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
-import { fetcher, initial, LoadableState } from "@/redux/fetcher";
-import { createThunk } from "../thunk";
+import { fetcher, initial, LoadableState, createThunk } from "@litespace/luna";
 
 type State = LoadableState<IUser.Self>;
 
 const initialState: State = initial();
 
+export const profileSelectors = {
+  value: (state: RootState) => state.user.me.value,
+  full: (state: RootState) => state.user.me,
+};
+
 export const findProfile = createThunk(
   "user/profile/me/thunk",
   () => atlas.user.findMe(),
-  (state) => state.user.me
+  profileSelectors.full
 );
 
 export const slice = createSlice({

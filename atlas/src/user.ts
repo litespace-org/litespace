@@ -41,19 +41,22 @@ export class User extends Base {
 
   async updateMedia(
     id: number,
-    { photo, video }: { photo?: File; video?: File }
+    payload: IUser.UpdateMediaPayload
   ): Promise<IUser.Self> {
-    if (!photo && !video)
-      throw new Error("At least one media must be provided");
-
     const formData = new FormData();
-    if (photo) formData.append(IUser.UpdateMediaFilesApiKeys.Photo, photo);
-    if (video) formData.append(IUser.UpdateMediaFilesApiKeys.Video, video);
+    if ("image" in payload)
+      formData.append(IUser.UpdateMediaFilesApiKeys.Image, payload.image);
+    if ("video" in payload)
+      formData.append(IUser.UpdateMediaFilesApiKeys.Video, payload.video);
+
+    const config = {
+      headers: { "Content-Type": "multipart/form-data" },
+    } as const;
 
     const { data } = await this.client.put<IUser.Self>(
       `/api/v1/user/${id}`,
       formData,
-      { headers: { "Content-Type": "multipart/form-data" } }
+      config
     );
     return data;
   }

@@ -7,12 +7,14 @@ const Option: React.FC<{
   image: string;
   active: boolean;
   select: Void;
-}> = ({ image, select, active }) => {
+  disabled?: boolean;
+}> = ({ image, select, active, disabled }) => {
   return (
     <button
       type="button"
+      disabled={disabled}
       onClick={select}
-      className="focus:outline-none focus:ring focus:ring-blue-800 rounded"
+      className="focus:outline-none focus:ring focus:ring-blue-800 rounded disabled:opacity-50"
     >
       <Card
         className={cn(
@@ -28,8 +30,9 @@ const Option: React.FC<{
 
 const Gender: React.FC<{
   gender?: IUser.Gender;
+  disabled?: boolean;
   setGender: (gender: IUser.Gender) => void;
-}> = ({ gender, setGender }) => {
+}> = ({ gender, disabled, setGender }) => {
   const images = useMemo(
     () => [
       { image: "/avatar-1.png", gender: IUser.Gender.Male },
@@ -44,6 +47,7 @@ const Gender: React.FC<{
         <Option
           key={image}
           image={image}
+          disabled={disabled}
           active={gender === option}
           select={() => setGender(option)}
         />

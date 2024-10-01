@@ -76,6 +76,7 @@ export function fetcher<RootState, R, A = null>(
     })
     .addCase(thunk.fulfilled, (state, { payload }) => {
       state.loading = false;
+      state.fetching = false;
       state.error = null;
       state.value = payload;
     })

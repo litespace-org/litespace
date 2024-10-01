@@ -13,7 +13,6 @@ import logger from "morgan";
 import connectPostgres from "connect-pg-simple";
 import { pool } from "@litespace/models";
 import { onlyForHandshake } from "@/middleware/common";
-import fileupload from "express-fileupload";
 import { capitalize } from "lodash";
 import { client } from "@/redis/client";
 import { ApiContext } from "@/types/api";
@@ -68,12 +67,6 @@ app.use(
   })
 );
 app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
-app.use(
-  fileupload({
-    debug: !isProduction,
-    createParentPath: true,
-  })
-);
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(sessionMiddleware);

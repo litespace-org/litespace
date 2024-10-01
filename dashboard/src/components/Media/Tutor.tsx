@@ -17,7 +17,7 @@ const Tutor: React.FC<{
   tutor: ITutor.PublicTutorFieldsForMediaProvider;
   refresh: () => void;
 }> = ({ tutor, refresh }) => {
-  const [image, setImage] = useState<string | File | null>(tutor.photo);
+  const [image, setImage] = useState<string | File | null>(tutor.image);
   const [video, setVideo] = useState<string | File | null>(tutor.video);
 
   const intl = useFormatMessage();
@@ -37,7 +37,7 @@ const Tutor: React.FC<{
 
   const update = useCallback(async () => {
     if (image === null || video === null)
-      await drop({ photo: image === null, video: video === null });
+      await drop({ image: image === null, video: video === null });
 
     if (image instanceof File || video instanceof File)
       await upload({
@@ -109,7 +109,7 @@ const Tutor: React.FC<{
       <Button
         onClick={confirm}
         disabled={
-          mutation.isPending || (tutor.photo === image && tutor.video === video)
+          mutation.isPending || (tutor.image === image && tutor.video === video)
         }
         loading={mutation.isPending}
         size={ButtonSize.Small}
