@@ -19,3 +19,4 @@ export {
   type SelectRoom,
   type SelectedRoom,
 } from "@/hooks/chat";
+export { useUpdateUser } from "@/hooks/user";

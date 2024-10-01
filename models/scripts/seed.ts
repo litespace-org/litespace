@@ -43,7 +43,7 @@ async function main(): Promise<void> {
 
   const admin = await users.create({
     email: "admin@litespace.org",
-    name: { en: "LiteSpace Admin", ar: "أحمد عبدالله" },
+    name: "أحمد عبدالله",
     role: IUser.Role.SuperAdmin,
     password,
     birthYear,
@@ -54,14 +54,14 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Interviewer,
         email: "interviewer@litespace.org",
-        name: { en: "LiteSpace Interviewer", ar: "محمد جلال ابو إسماعيل" },
+        name: "محمد جلال ابو إسماعيل",
         password,
         birthYear,
       },
       tx
     );
 
-    await users.update(interviewer.id, { photo: "interviewer.jpg" }, tx);
+    await users.update(interviewer.id, { image: "interviewer.jpg" }, tx);
     return interviewer;
   });
 
@@ -70,7 +70,7 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Student,
         email: "student@litespace.org",
-        name: { en: "LiteSpace Student", ar: "إبراهيم ياسين" },
+        name: "إبراهيم ياسين",
         password,
         birthYear,
       },
@@ -79,7 +79,7 @@ async function main(): Promise<void> {
 
     await users.update(
       student.id,
-      { photo: "student.png", gender: IUser.Gender.Male },
+      { image: "student.png", gender: IUser.Gender.Male },
       tx
     );
     return student;
@@ -88,7 +88,7 @@ async function main(): Promise<void> {
   const mediaProvider = await users.create({
     role: IUser.Role.MediaProvider,
     email: "media@litespace.org",
-    name: { en: "LiteSpace Media Provider", ar: "يلا استب" },
+    name: "يلا استب",
     password,
     birthYear,
   });
@@ -101,10 +101,7 @@ async function main(): Promise<void> {
           {
             role: IUser.Role.Tutor,
             email,
-            name: {
-              en: `LiteSpace Tutor #${idx}`,
-              ar: `أيمن عبدالعزيز (${idx})`,
-            },
+            name: `أيمن عبدالعزيز (${idx})`,
             password,
             birthYear,
           },
@@ -115,7 +112,7 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
-            photo: "test.jpg",
+            image: "test.jpg",
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
           },
           tx

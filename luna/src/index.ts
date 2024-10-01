@@ -32,6 +32,7 @@ export { IconField } from "@/components/IconField";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
 export * as Calls from "@/components/Calls";
+export * as Settings from "@/components/Settings";
 export {
   useRequired,
   useValidation,

@@ -12,9 +12,9 @@ import {
   gender,
   identityObject,
   password,
-  name,
   id,
   pagination,
+  string,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
@@ -33,14 +33,12 @@ import { authorizer } from "@litespace/auth";
 const updateUserPayload = zod.object({
   email: zod.optional(email),
   password: zod.optional(password),
-  name: zod.optional(
-    zod.object({ ar: zod.optional(name), en: zod.optional(name) })
-  ),
+  name: zod.optional(string),
   gender: zod.optional(gender),
   birthYear: zod.optional(zod.number().positive()),
   drop: zod.optional(
     zod.object({
-      photo: zod.optional(zod.boolean()),
+      image: zod.optional(zod.boolean()),
       video: zod.optional(zod.boolean()),
     })
   ),
@@ -104,7 +102,7 @@ function update(context: ApiContext) {
 
     const files = {
       image: {
-        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Photo],
+        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Image],
         type: FileType.Image,
       },
       video: {
@@ -144,7 +142,7 @@ function update(context: ApiContext) {
           email,
           gender,
           birthYear,
-          photo: drop?.photo === true ? null : photo,
+          image: drop?.image === true ? null : photo,
           password: password ? hashPassword(password) : undefined,
         },
         tx
