@@ -125,9 +125,8 @@ export class Calls {
       callId: this.columns.members("call_id"),
       host: this.columns.members("host"),
       email: users.column("email"),
-      arabicName: users.column("name_ar"),
-      englishName: users.column("name_en"),
-      photo: users.column("photo"),
+      name: users.column("name"),
+      image: users.column("image"),
       role: users.column("role"),
       note: this.columns.members("note"),
       feedback: this.columns.members("feedback"),
@@ -294,14 +293,10 @@ export class Calls {
   }
 
   asPopulatedMember(row: ICall.PopuldatedMemberRow): ICall.PopuldatedMember {
-    return merge(
-      omit(row, "arabicName", "englishName", "createdAt", "updatedAt"),
-      {
-        name: { ar: row.arabicName, en: row.englishName },
-        createdAt: row.createdAt.toISOString(),
-        updatedAt: row.updatedAt.toISOString(),
-      }
-    );
+    return merge(omit(row, "createdAt", "updatedAt"), {
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    });
   }
 
   builder(tx?: Knex.Transaction) {

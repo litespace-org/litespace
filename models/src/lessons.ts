@@ -108,9 +108,8 @@ export class Lessons {
       lessonId: this.columns.members("lesson_id"),
       host: this.columns.members("host"),
       email: users.column("email"),
-      arabicName: users.column("name_ar"),
-      englishName: users.column("name_en"),
-      photo: users.column("photo"),
+      name: users.column("name"),
+      image: users.column("image"),
       role: users.column("role"),
       createdAt: users.column("created_at"),
       updatedAt: users.column("updated_at"),
@@ -244,14 +243,10 @@ export class Lessons {
   asPopulatedMember(
     row: ILesson.PopuldatedMemberRow
   ): ILesson.PopuldatedMember {
-    return merge(
-      omit(row, "arabicName", "englishName", "createdAt", "updatedAt"),
-      {
-        name: { ar: row.arabicName, en: row.englishName },
-        createdAt: row.createdAt.toISOString(),
-        updatedAt: row.updatedAt.toISOString(),
-      }
-    );
+    return merge(omit(row, "createdAt", "updatedAt"), {
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    });
   }
 
   builder(tx?: Knex.Transaction) {

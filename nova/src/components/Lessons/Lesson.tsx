@@ -69,9 +69,9 @@ const Lesson: React.FC<
 
   const title = useMemo(() => {
     return intl("page.lessons.watch.dialog.title", {
-      name: otherMember?.name.ar || "",
+      name: otherMember?.name || "",
     });
-  }, [intl, otherMember?.name.ar]);
+  }, [intl, otherMember?.name]);
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [
@@ -122,14 +122,14 @@ const Lesson: React.FC<
           <div className="w-12 h-12 rounded-full overflow-hidden">
             <Avatar
               src={
-                otherMember?.photo
-                  ? asFullAssetUrl(otherMember.photo)
+                otherMember?.image
+                  ? asFullAssetUrl(otherMember.image)
                   : "/avatar-1.png"
               }
             />
           </div>
           <div>
-            <p>{otherMember?.name.ar}</p>
+            <p>{otherMember?.name}</p>
             <p className="text-sm text-foreground-lighter">
               {dayjs(call.start).format("dddd D MMMM YYYY")} (
               {dayjs(call.start).fromNow()})
@@ -157,7 +157,7 @@ const Lesson: React.FC<
                 })
               : isMemberCanceled
                 ? intl("page.lessons.lesson.canceled.by.other", {
-                    name: canceller?.name.ar || "",
+                    name: canceller?.name || "",
                     date: canceledAt,
                     since: canceledSince,
                   })

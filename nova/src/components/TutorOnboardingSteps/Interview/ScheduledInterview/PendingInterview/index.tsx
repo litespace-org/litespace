@@ -18,11 +18,11 @@ const PendingInterview: React.FC<{
       <div className="flex flex-row bg-surface-100 w-fit rounded-3xl overflow-hidden border border-border-strong hover:border-border-stronger shadow-2xl">
         <div className="flex flex-col w-[300px]">
           <div className="overflow-hidden">
-            {interviewer.photo && (
+            {interviewer.image && (
               <img
                 className="w-full h-full"
-                src={asAssetUrl(backend, interviewer.photo)}
-                alt={interviewer.name.ar || "Interviewer"}
+                src={asAssetUrl(backend, interviewer.image)}
+                alt={interviewer.name || "Interviewer"}
               />
             )}
           </div>
@@ -36,7 +36,7 @@ const PendingInterview: React.FC<{
                 ],
               },
               {
-                interviewer: <strong> {interviewer.name.ar} </strong>,
+                interviewer: <strong> {interviewer.name} </strong>,
                 day: <strong>{dayjs(call.start).format("dddd")}</strong>,
                 date: (
                   <strong>{dayjs(call.start).format("DD MMMM, YYYY")}</strong>

@@ -34,10 +34,10 @@ const Interview: React.FC<{
 
   const html = useMemo(() => {
     return marked.parse(
-      markdown.replace(/{interviewer}/gi, interviewer.data?.name.ar || ""),
+      markdown.replace(/{interviewer}/gi, interviewer.data?.name || ""),
       { async: false }
     );
-  }, [interviewer.data?.name.ar]);
+  }, [interviewer.data?.name]);
 
   const finalDecision = useMemo(
     () =>

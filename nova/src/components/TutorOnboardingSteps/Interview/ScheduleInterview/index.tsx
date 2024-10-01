@@ -3,8 +3,7 @@ import { Dayjs } from "dayjs";
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "@/lib/dayjs";
-import { asAssetUrl } from "@litespace/atlas";
-import { atlas, backend } from "@/lib/atlas";
+import { asFullAssetUrl, atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonType,
@@ -81,19 +80,17 @@ const ScheduleInterview: React.FC<{
       <div className="flex flex-row gap-12 mt-5">
         <div className="flex flex-col gap-3 w-[300px]">
           <div className="rounded-3xl overflow-hidden">
-            {interviewer.photo && (
+            {interviewer.image && (
               <img
                 className="w-full h-full"
-                src={asAssetUrl(backend, interviewer.photo)}
-                alt={interviewer.name.ar || "Interviewer"}
+                src={asFullAssetUrl(interviewer.image)}
+                alt={interviewer.name || "Interviewer"}
               />
             )}
           </div>
 
           <div>
-            <p className="font-cairo font-bold text-2xl">
-              {interviewer.name.ar}
-            </p>
+            <p className="font-cairo font-bold text-2xl">{interviewer.name}</p>
           </div>
         </div>
 
@@ -161,7 +158,7 @@ const ScheduleInterview: React.FC<{
                   "page.tutor.onboarding.book.interview.button.label"
                 ],
               },
-              { name: interviewer.name.ar }
+              { name: interviewer.name }
             )}
           </span>
         </Button>

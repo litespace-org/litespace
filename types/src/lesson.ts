@@ -36,10 +36,9 @@ export type PopuldatedMemberRow = {
   userId: number;
   lessonId: number;
   host: boolean;
-  email: string | null;
-  arabicName: string | null;
-  englishName: string | null;
-  photo: string | null;
+  email: IUser.Row["email"];
+  name: IUser.Row["name"];
+  image: IUser.Row["image"];
   role: IUser.Role;
   createdAt: Date;
   updatedAt: Date;
@@ -49,9 +48,9 @@ export type PopuldatedMember = {
   userId: number;
   lessonId: number;
   host: boolean;
-  email: string | null;
-  name: IUser.Name;
-  photo: string | null;
+  email: IUser.Self["email"];
+  name: IUser.Self["name"];
+  image: IUser.Self["image"];
   role: IUser.Role;
   createdAt: string;
   updatedAt: string;

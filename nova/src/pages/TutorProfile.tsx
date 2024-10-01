@@ -98,11 +98,11 @@ const TutorProfile: React.FC = () => {
                       <div className="w-[90px] h-[90px] rounded-full shadow-2xl">
                         <img
                           className="w-full h-full object-cover"
-                          src={asAssetUrl(backend, rating.rater.photo!)}
+                          src={asAssetUrl(backend, rating.rater.image!)}
                         />
                       </div>
                       <div>
-                        <p className="text-2xl">{rating.rater.name.ar}</p>
+                        <p className="text-2xl">{rating.rater.name}</p>
                         <p>{dayjs(rating.createdAt).fromNow()}</p>
                       </div>
                     </div>

@@ -1,12 +1,6 @@
-import { backend } from "@/lib/atlas";
-import { asAssetUrl } from "@litespace/atlas";
-import { Button, ButtonType, messages } from "@litespace/luna";
 import { ICall, IInterview, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
-import dayjs from "@/lib/dayjs";
-import { Link } from "react-router-dom";
-import { Route } from "@/types/routes";
 import PendingInterview from "./PendingInterview";
 import PassedInterview from "./PassedInterview";
 
@@ -36,7 +30,7 @@ const ScheduledInterview: React.FC<{
       ) : success ? (
         <PassedInterview
           feedback={interview.feedback.interviewer}
-          interviewer={interviewer.name.ar}
+          interviewer={interviewer.name}
           interviewId={interview.ids.self}
         />
       ) : null}

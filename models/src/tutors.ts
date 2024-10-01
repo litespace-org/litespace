@@ -14,9 +14,8 @@ const tutorColumn = (key: keyof ITutor.Row) => column(key, "tutors");
 const fullTutorFields: FullTutorFieldsMap = {
   id: users.column("id"),
   email: users.column("email"),
-  arabicName: users.column("name_ar"),
-  englishName: users.column("name_en"),
-  photo: users.column("photo"),
+  name: users.column("name"),
+  image: users.column("image"),
   role: users.column("role"),
   password: users.column("password"),
   birthYear: users.column("birth_year"),
@@ -40,9 +39,8 @@ const fullTutorFields: FullTutorFieldsMap = {
 const tutorMediaFields: TutorMediaFieldsMap = {
   id: users.column("id"),
   email: users.column("email"),
-  arabicName: users.column("name_ar"),
-  englishName: users.column("name_en"),
-  photo: users.column("photo"),
+  name: users.column("name"),
+  image: users.column("image"),
   video: tutorColumn("video"),
 } as const;
 
@@ -162,8 +160,8 @@ export class Tutors {
     > = {
       id: this.column("id"),
       email: users.column("email"),
-      name: users.column("name_ar"),
-      photo: users.column("photo"),
+      name: users.column("name"),
+      image: users.column("image"),
       video: this.column("video"),
       createdAt: this.column("created_at"),
     } as const;
@@ -193,7 +191,7 @@ export class Tutors {
 
   async findTutorsMedia(filter?: IFilter.Self): Promise<ITutor.TutorMedia[]> {
     const builder = knex<IUser.Row>(users.table)
-      .select<ITutor.TutorMediaRow[]>(this.columns.tutorMediaFields.map)
+      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
       .innerJoin(this.table, users.column("id"), this.column("id"));
 
     const rows = await withFilter({
@@ -204,18 +202,17 @@ export class Tutors {
       },
     });
 
-    return rows.map((row) => this.asTutorMedia(row));
+    return rows;
   }
 
   async findTutorMediaById(id: number): Promise<ITutor.TutorMedia | null> {
-    const rows = await knex<IUser.Row>(users.table)
-      .select<ITutor.TutorMediaRow[]>(this.columns.tutorMediaFields.map)
+    const row = await knex<IUser.Row>(users.table)
+      .select<ITutor.TutorMedia[]>(this.columns.tutorMediaFields.map)
       .innerJoin(this.table, users.column("id"), this.column("id"))
-      .where(users.column("id"), id);
+      .where(users.column("id"), id)
+      .first();
 
-    const row = first(rows);
-    if (!row) return null;
-    return this.asTutorMedia(row);
+    return row || null;
   }
 
   async findActivatedTutors(
@@ -253,15 +250,8 @@ export class Tutors {
   }
 
   asFullTutor(row: ITutor.FullTutorRow): ITutor.FullTutor {
-    return merge(omit(row, "arabicName", "englishName"), {
-      name: { ar: row.arabicName, en: row.englishName },
+    return merge(omit(row), {
       password: row.password !== null,
-    });
-  }
-
-  asTutorMedia(row: ITutor.TutorMediaRow): ITutor.TutorMedia {
-    return merge(omit(row, "arabicName", "englishName"), {
-      name: { ar: row.arabicName, en: row.englishName },
     });
   }
 

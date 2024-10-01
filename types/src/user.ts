@@ -7,13 +7,6 @@ export enum Role {
   MediaProvider = "media-provider",
 }
 
-export type TutorOrStudent = Role.Tutor | Role.Student;
-
-export type Name = {
-  ar: string | null;
-  en: string | null;
-};
-
 export enum Gender {
   Male = "male",
   Female = "female",
@@ -23,8 +16,8 @@ export type Self = {
   id: number;
   email: string;
   password: boolean;
-  name: Name;
-  photo: string | null;
+  name: string | null;
+  image: string | null;
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
@@ -39,9 +32,8 @@ export type Row = {
   id: number;
   email: string;
   password: string | null;
-  name_ar: string | null;
-  name_en: string | null;
-  photo: string | null;
+  name: string | null;
+  image: string | null;
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
@@ -61,7 +53,7 @@ export type CreatePayload = {
   role?: Role;
   email?: string;
   password?: string;
-  name?: Partial<Name>;
+  name?: string;
   birthYear?: number;
   gender?: Gender;
 };
@@ -69,8 +61,8 @@ export type CreatePayload = {
 export type UpdatePayload = {
   email?: string;
   password?: string;
-  name?: Partial<Name>;
-  photo?: string | null;
+  name?: string;
+  image?: string | null;
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
@@ -81,16 +73,16 @@ export type UpdatePayload = {
 export type UpdateApiPayload = {
   email?: string;
   password?: string;
-  name?: Partial<Name>;
+  name?: string;
   gender?: Gender;
   birthYear?: number;
-  drop?: { photo?: boolean; video?: boolean };
+  drop?: { image?: boolean; video?: boolean };
   bio?: string;
   about?: string;
 };
 
 export enum UpdateMediaFilesApiKeys {
-  Photo = "photo",
+  Image = "image",
   Video = "video",
 }
 

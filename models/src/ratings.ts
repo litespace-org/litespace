@@ -1,13 +1,21 @@
 import { first } from "lodash";
-import { knex } from "@/query";
-import { IRating } from "@litespace/types";
+import { column, knex } from "@/query";
+import { IRating, IUser } from "@litespace/types";
 
 export class Ratings {
-  name = "ratings";
+  table = "ratings";
+  rater = "rater";
+  ratee = "ratee";
+
+  column = {
+    ratings: (value: keyof IRating.Row) => column(value, this.table),
+    rater: (value: keyof IUser.Row) => column(value, this.rater),
+    ratee: (value: keyof IUser.Row) => column(value, this.ratee),
+  };
 
   async create(rating: IRating.CreatePayload): Promise<IRating.Self> {
     const now = new Date();
-    const rows = await knex<IRating.Row>(this.name).insert(
+    const rows = await knex<IRating.Row>(this.table).insert(
       {
         rater_id: rating.raterId,
         ratee_id: rating.rateeId,
@@ -28,7 +36,7 @@ export class Ratings {
     id: number,
     payload: IRating.UpdatePayload
   ): Promise<IRating.Self> {
-    const rows = await knex<IRating.Row>(this.name)
+    const rows = await knex<IRating.Row>(this.table)
       .update(payload, "*")
       .where("id", id);
 
@@ -38,7 +46,7 @@ export class Ratings {
   }
 
   async delete(id: number): Promise<IRating.Self> {
-    const rows = await knex<IRating.Row>(this.name)
+    const rows = await knex<IRating.Row>(this.table)
       .where("id", id)
       .delete()
       .returning("*");
@@ -52,24 +60,32 @@ export class Ratings {
     key: T,
     value: IRating.Row[T]
   ): Promise<IRating.Populated[]> {
-    const rows = await knex<IRating.Row>(this.name)
-      .select<IRating.PopulatedRow[]>({
-        id: "ratings.id",
-        raterId: "rater.id",
-        raterArabicName: "rater.name_ar",
-        raterEnglishName: "rater.name_en",
-        raterPhoto: "rater.photo",
-        rateeId: "ratee.id",
-        rateeArabicName: "ratee.name_ar",
-        rateeEnglishName: "ratee.name_en",
-        rateePhoto: "ratee.photo",
-        value: "ratings.value",
-        feedback: "ratings.feedback",
-        createdAt: "ratings.created_at",
-        updatedAt: "ratings.updated_at",
-      })
-      .innerJoin("users AS rater", "rater.id", "ratings.rater_id")
-      .innerJoin("users AS ratee", "ratee.id", "ratings.ratee_id")
+    const select: Record<keyof IRating.PopulatedRow, string> = {
+      id: this.column.ratings("id"),
+      raterId: this.column.rater("id"),
+      raterName: this.column.rater("name"),
+      raterImage: this.column.rater("image"),
+      rateeId: this.column.ratee("id"),
+      rateeName: this.column.ratee("name"),
+      rateeImage: this.column.ratee("image"),
+      value: this.column.ratings("value"),
+      feedback: this.column.ratings("feedback"),
+      createdAt: this.column.ratings("created_at"),
+      updatedAt: this.column.ratings("updated_at"),
+    };
+
+    const rows = await knex<IRating.Row>(this.table)
+      .select<IRating.PopulatedRow[]>(select)
+      .innerJoin(
+        "users AS rater",
+        this.column.rater("id"),
+        this.column.ratings("rater_id")
+      )
+      .innerJoin(
+        "users AS ratee",
+        this.column.ratee("id"),
+        this.column.ratings("ratee_id")
+      )
       .where(key, value);
     return rows.map((row) => this.asPopulated(row));
   }
@@ -97,7 +113,7 @@ export class Ratings {
   }
 
   async findAll(): Promise<IRating.Self[]> {
-    const rows = await knex<IRating.Row>(this.name).select("*");
+    const rows = await knex<IRating.Row>(this.table).select("*");
     return rows.map((row) => this.from(row));
   }
 
@@ -105,7 +121,7 @@ export class Ratings {
     rater: number;
     ratee: number;
   }): Promise<IRating.Self | null> {
-    const rows = await knex<IRating.Row>(this.name)
+    const rows = await knex<IRating.Row>(this.table)
       .select("*")
       .where("rater_id", ids.rater)
       .orWhere("ratee_id", ids.ratee);
@@ -133,16 +149,8 @@ export class Ratings {
   asPopulated(row: IRating.PopulatedRow): IRating.Populated {
     return {
       id: row.id,
-      rater: {
-        id: row.raterId,
-        name: { ar: row.raterArabicName, en: row.raterEnglishName },
-        photo: row.raterPhoto,
-      },
-      ratee: {
-        id: row.rateeId,
-        name: { ar: row.rateeArabicName, en: row.rateeEnglishName },
-        photo: row.rateePhoto,
-      },
+      rater: { id: row.raterId, name: row.raterName, image: row.raterImage },
+      ratee: { id: row.rateeId, name: row.rateeName, image: row.rateeImage },
       value: row.value,
       feedback: row.feedback,
       createdAt: row.createdAt.toISOString(),

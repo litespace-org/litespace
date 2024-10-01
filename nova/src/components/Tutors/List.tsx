@@ -17,7 +17,7 @@ const TutorList: React.FC<{
   const select = useCallback((tutor: ITutor.FullTutor) => setTutor(tutor), []);
   const deselect = useCallback(() => setTutor(null), []);
 
-  const name = useMemo(() => tutor?.name.ar, [tutor?.name.ar]);
+  const name = useMemo(() => tutor?.name, [tutor?.name]);
   const tutorId = useMemo(() => tutor?.id, [tutor?.id]);
 
   const rules = useMemo(() => {

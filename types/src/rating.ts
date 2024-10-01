@@ -12,8 +12,8 @@ export type Self = {
 
 export type Populated = {
   id: number;
-  rater: { id: number; name: IUser.Name; photo: string | null };
-  ratee: { id: number; name: IUser.Name; photo: string | null };
+  rater: { id: number; name: IUser.Self["name"]; image: IUser.Self["image"] };
+  ratee: { id: number; name: IUser.Self["name"]; image: IUser.Self["image"] };
   value: number;
   feedback: string | null;
   createdAt: string;
@@ -23,13 +23,11 @@ export type Populated = {
 export type PopulatedRow = {
   id: number;
   raterId: number;
-  raterArabicName: string | null;
-  raterEnglishName: string | null;
-  raterPhoto: string | null;
+  raterName: IUser.Row["name"];
+  raterImage: string | null;
   rateeId: number;
-  rateeArabicName: string | null;
-  rateeEnglishName: string | null;
-  rateePhoto: string | null;
+  rateeName: IUser.Row["name"];
+  rateeImage: string | null;
   value: number;
   feedback: string | null;
   createdAt: Date;

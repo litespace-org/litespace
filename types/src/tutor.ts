@@ -1,5 +1,4 @@
-import * as User from "@/user";
-import { Name } from "@/user";
+import { IUser } from "@/index";
 import { IRule, Paginated } from "@/index";
 
 export type Self = {
@@ -16,11 +15,8 @@ export type Self = {
   updatedAt: string;
 };
 
-export type FullTutor = User.Self & Self & { metaUpdatedAt: string };
-export type FullTutorRow = Omit<FullTutor, "name"> & {
-  arabicName: string | null;
-  englishName: string | null;
-};
+export type FullTutor = IUser.Self & Self & { metaUpdatedAt: string };
+export type FullTutorRow = FullTutor;
 
 export type Row = {
   id: number;
@@ -38,19 +34,10 @@ export type Row = {
 
 export type TutorMedia = {
   id: number;
-  email: string;
-  name: Name;
-  photo: string | null;
-  video: string | null;
-};
-
-export type TutorMediaRow = {
-  id: number;
-  email: string;
-  arabicName: string | null;
-  englishName: string | null;
-  photo: string | null;
-  video: string | null;
+  email: IUser.Self["email"];
+  name: IUser.Self["name"];
+  image: IUser.Self["image"];
+  video: Self["video"];
 };
 
 export type UpdatePayload = {
@@ -63,7 +50,7 @@ export type UpdatePayload = {
   mediaProviderId?: number;
 };
 
-export type CreateApiPayload = User.Credentials & { name: string };
+export type CreateApiPayload = IUser.Credentials & { name: string };
 export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropPhoto?: boolean;
   dropVideo?: boolean;
@@ -84,10 +71,10 @@ export type FindAvailableTutorsApiResponse = {
 
 export type PublicTutorFieldsForMediaProvider = {
   id: number;
-  email: string | null;
-  name: string | null;
-  photo: string | null;
-  video: string | null;
+  email: IUser.Self["email"];
+  name: IUser.Self["name"];
+  image: IUser.Self["image"];
+  video: Self["video"];
   createdAt: string;
 };
 

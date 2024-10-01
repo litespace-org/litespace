@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom";
 type IForm = {
   email: string;
   password: string;
-  name: { ar: string; en: string };
+  name: string;
   birthYear: NumericString | "";
   phoneNumber: string;
   gender: string;
@@ -45,7 +45,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
     defaultValues: {
       email: profile.email || "",
       password: "",
-      name: { ar: profile.name.ar || "", en: profile.name.en || "" },
+      name: profile.name || "",
       birthYear: "",
       gender: "",
       phoneNumber: "",
@@ -92,7 +92,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
   const fields: IForm = {
     email: watch("email"),
     password: watch("password"),
-    name: { ar: watch("name.ar"), en: watch("name.en") },
+    name: watch("name"),
     birthYear: watch("birthYear"),
     gender: watch("gender"),
     phoneNumber: watch("phoneNumber"),
@@ -102,8 +102,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
     if (
       profile.email &&
       profile.password &&
-      profile.name.ar &&
-      profile.name.en &&
+      profile.name &&
       !fields.birthYear &&
       !fields.gender
     )
@@ -113,8 +112,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
     fields.birthYear,
     fields.gender,
     profile.email,
-    profile.name.ar,
-    profile.name.en,
+    profile.name,
     profile.password,
   ]);
 
@@ -167,53 +165,24 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
           />
         ) : null}
 
-        {profile.name.ar === null ? (
+        {profile.name === null ? (
           <Field
             label={
               <Label>
                 {intl.formatMessage({
-                  id: messages["page.complete.profile.form.name.ar.label"],
+                  id: messages["page.complete.profile.form.name.label"],
                 })}
               </Label>
             }
             field={
               <Input
                 placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.complete.profile.form.name.ar.placeholder"
-                  ],
+                  id: messages["page.complete.profile.form.name.placeholder"],
                 })}
-                value={fields.name.ar}
-                register={register("name.ar", validation.name.ar)}
+                value={fields.name}
+                register={register("name", validation.name.ar)}
                 type={InputType.Text}
-                error={errors["name"]?.ar?.message}
-                autoComplete="off"
-                disabled={mutation.isPending}
-              />
-            }
-          />
-        ) : null}
-
-        {profile.name.en === null ? (
-          <Field
-            label={
-              <Label>
-                {intl.formatMessage({
-                  id: messages["page.complete.profile.form.name.en.label"],
-                })}
-              </Label>
-            }
-            field={
-              <Input
-                placeholder={intl.formatMessage({
-                  id: messages[
-                    "page.complete.profile.form.name.en.placeholder"
-                  ],
-                })}
-                value={fields.name.en}
-                register={register("name.en", validation.name.en)}
-                type={InputType.Text}
-                error={errors["name"]?.en?.message}
+                error={errors["name"]?.message}
                 autoComplete="off"
                 disabled={mutation.isPending}
               />

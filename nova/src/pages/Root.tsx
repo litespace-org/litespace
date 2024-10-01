@@ -22,11 +22,7 @@ const Root: React.FC = () => {
 
     if (!me.value && !me.loading) return navigate(Route.Login);
 
-    if (
-      [profile?.email, profile?.name.ar, profile?.name.en].some(
-        (value) => value === null
-      )
-    )
+    if ([profile?.email, profile?.name].some((value) => value === null))
       return navigate(Route.Complete);
 
     if (
@@ -36,7 +32,7 @@ const Root: React.FC = () => {
       tutorMeta &&
       (tutorMeta.bio === null ||
         tutorMeta.about === null ||
-        profile.photo === null ||
+        profile.image === null ||
         tutorMeta.video === null)
     )
       return navigate(Route.TutorOnboarding);

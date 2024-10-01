@@ -80,7 +80,7 @@ const Interview: React.FC<{
       <div className="flex flex-row justify-between gap-2">
         <div className="w-full">
           <Interviews.List>
-            <Interviews.User name={tutor.name.ar} />
+            <Interviews.User name={tutor.name} />
             <Interviews.Date start={call.start} />
             <Interviews.Time start={call.start} />
             <Calls.Status status={call.recordingStatus} interview />
@@ -135,7 +135,7 @@ const Interview: React.FC<{
           open
           close={reset}
           status={status}
-          tutor={tutor.name.ar || ""}
+          tutor={tutor.name || ""}
           interview={interview.ids.self}
           onUpdate={onUpdate}
         />
@@ -147,7 +147,7 @@ const Interview: React.FC<{
         open={watch.open}
         title={intl.formatMessage(
           { id: messages["page.interviews.watch.interview"] },
-          { name: tutor.name.ar }
+          { name: tutor.name }
         )}
       />
     </Card>

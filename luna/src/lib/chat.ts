@@ -28,8 +28,8 @@ function asSender({
   if (senderId === currentUser.id)
     return {
       id: currentUser.id,
-      name: currentUser.name.ar,
-      photo: currentUser.photo,
+      name: currentUser.name,
+      photo: currentUser.image,
     };
 
   const member = members.find((member) => member.id === senderId);

@@ -23,14 +23,14 @@ const TutorCard: React.FC<{
       <div className="h-[300px] md:h-[400px]">
         <img
           className="w-full h-full object-cover"
-          src={asAssetUrl(backend, tutor.photo!)}
-          alt={tutor.name.ar!}
+          src={asAssetUrl(backend, tutor.image!)}
+          alt={tutor.name!}
         />
       </div>
 
       <div className="flex flex-row justify-between items-center p-4">
         <div className="">
-          <h6 className="text-foreground mb-1">{tutor.name.ar}</h6>
+          <h6 className="text-foreground mb-1">{tutor.name}</h6>
           <p className="text-sm text-foreground-light">{tutor.bio}</p>
         </div>
 
