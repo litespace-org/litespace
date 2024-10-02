@@ -105,6 +105,8 @@ const Profile: React.FC<{
     [disabled, profile]
   );
 
+  console.log({ displayOnly });
+
   const editDisabled = useMemo(() => {
     if (!profile) return true;
     const payload = diff<IUser.UpdateApiPayload>(
@@ -140,6 +142,11 @@ const Profile: React.FC<{
     tutor?.about,
     tutor?.bio,
   ]);
+
+  const isTutor = useMemo(
+    () => profile?.role === IUser.Role.Tutor,
+    [profile?.role]
+  );
 
   return (
     <div>
@@ -216,29 +223,33 @@ const Profile: React.FC<{
             }
           />
 
-          <Field
-            label={intl("labels.bio")}
-            field={
-              <Controller.Input
-                control={form.control}
-                placeholder={intl("labels.bio.placeholder")}
-                disabled={disabled}
-                name="bio"
+          {isTutor ? (
+            <React.Fragment>
+              <Field
+                label={intl("labels.bio")}
+                field={
+                  <Controller.Input
+                    control={form.control}
+                    placeholder={intl("labels.bio.placeholder")}
+                    disabled={disabled}
+                    name="bio"
+                  />
+                }
               />
-            }
-          />
 
-          <Field
-            label={intl("labels.about")}
-            field={
-              <Controller.TextEditor
-                value={form.watch("about")}
-                control={form.control}
-                disabled={disabled}
-                name="about"
+              <Field
+                label={intl("labels.about")}
+                field={
+                  <Controller.TextEditor
+                    value={form.watch("about")}
+                    control={form.control}
+                    disabled={disabled}
+                    name="about"
+                  />
+                }
               />
-            }
-          />
+            </React.Fragment>
+          ) : null}
 
           <Field
             label={intl("labels.gender")}

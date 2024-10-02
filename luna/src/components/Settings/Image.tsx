@@ -65,21 +65,24 @@ const Image: React.FC<{
           src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
         />
       </div>
-      <div className="tw-absolute tw-bottom-6 tw-right-4">
-        <Button
-          disabled={displayOnly}
-          onClick={open}
-          className="tw-flex-row"
-          htmlType="button"
-          type={ButtonType.Secondary}
-          size={ButtonSize.Small}
-        >
-          <div className="tw-flex tw-flex-row tw-items-center tw-gap-1">
-            <Edit3 className="tw-text-white/80 tw-w-5 tw-h-5" />
-            <p>{intl("global.labels.edit")}</p>
-          </div>
-        </Button>
-      </div>
+      {!displayOnly ? (
+        <div className="tw-absolute tw-bottom-6 tw-right-4">
+          <Button
+            disabled={mutation.isPending}
+            loading={mutation.isPending}
+            onClick={open}
+            className="disabled:!tw-opacity-90"
+            htmlType="button"
+            type={ButtonType.Secondary}
+            size={ButtonSize.Small}
+          >
+            <div className="tw-flex tw-flex-row tw-items-center tw-gap-1">
+              <Edit3 className="tw-text-white/80 tw-w-5 tw-h-5" />
+              <p>{intl("global.labels.edit")}</p>
+            </div>
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 };
