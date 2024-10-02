@@ -11,3 +11,4 @@ export * from "@/chat";
 export * from "@/error";
 export * from "@/diff";
 export * from "@/constants";
+export * from "@/utils";

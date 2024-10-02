@@ -71,9 +71,9 @@ export const Button: React.FC<{
           })}
         />
       </span>
-      <span className={cn(loading ? "tw-opacity-0" : "tw-opacity-100")}>
+      <div className={cn(loading ? "tw-opacity-0" : "tw-opacity-100")}>
         {children}
-      </span>
+      </div>
     </button>
   );
 };

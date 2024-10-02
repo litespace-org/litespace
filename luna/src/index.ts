@@ -57,3 +57,4 @@ export * from "@/components/Icons";
 export * from "@/constants/labels";
 export * from "@/components/utils";
 export * from "@/lib";
+export * from "@/icons";

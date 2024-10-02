@@ -3,12 +3,12 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  Discord,
   SidebarNav,
   Switch,
   Theme,
   toaster,
   useFormatMessage,
+  LiteSpace,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector, resetUserProfile } from "@/redux/user/me";
@@ -139,7 +139,9 @@ const Navbar: React.FC<{
           <SidebarNav options={links} />
         </div>
 
-        <Discord className="fill-foreground h-6 w-6" />
+        <div>
+          <LiteSpace className="h-10 w-10" />
+        </div>
 
         <ul className="hidden md:flex flex-row gap-4">
           {links.map((link) => {

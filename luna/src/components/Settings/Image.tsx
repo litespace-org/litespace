@@ -1,9 +1,10 @@
 import { asFullAssetUrl } from "@/lib/atlas";
 import React, { useCallback, useRef } from "react";
 import cn from "classnames";
-import { Camera } from "react-feather";
+import { Edit3 } from "react-feather";
 import Spinner from "@/icons/Spinner";
-import { RefreshUser, useUpdateProfileMedia } from "@/hooks";
+import { RefreshUser, useFormatMessage, useUpdateProfileMedia } from "@/hooks";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 
 const Image: React.FC<{
   image?: string | null;
@@ -13,6 +14,7 @@ const Image: React.FC<{
   className?: string;
 }> = ({ image, user, displayOnly, refresh, className }) => {
   const ref = useRef<HTMLInputElement>(null);
+  const intl = useFormatMessage();
 
   const open = useCallback(() => {
     if (!ref.current) return;
@@ -31,54 +33,54 @@ const Image: React.FC<{
   );
 
   return (
-    <button
-      type="button"
-      onClick={open}
-      disabled={displayOnly}
-      className={cn(
-        "tw-relative",
-        "tw-rounded-full tw-aspect-square tw-overflow-hidden",
-        "tw-ring-4 tw-ring-background-selection tw-bg-background-selection",
-        "tw-focus:outline-none focus:tw-ring-brand focus:tw-ring-2",
-        className
-      )}
-    >
+    <div className="tw-relative">
       <div
-        data-show={mutation.isPending}
         className={cn(
-          "tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2",
-          "tw-hidden data-[show=true]:tw-block"
+          "tw-relative",
+          "tw-rounded-full tw-aspect-square tw-overflow-hidden",
+          "tw-ring-4 tw-ring-background-selection tw-bg-background-selection",
+          className
         )}
       >
-        <Spinner className="tw-text-foreground" />
+        <div
+          data-show={mutation.isPending}
+          className={cn(
+            "tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2",
+            "tw-hidden data-[show=true]:tw-block"
+          )}
+        >
+          <Spinner className="tw-text-foreground" />
+        </div>
+        <input
+          accept="image/png, image/jpeg"
+          onChange={onChange}
+          className="tw-hidden"
+          name="image"
+          type="file"
+          id="image"
+          ref={ref}
+        />
+        <img
+          className={cn("tw-inline-block tw-object-cover tw-w-full tw-h-full")}
+          src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
+        />
       </div>
-      <input
-        accept="image/png, image/jpeg"
-        onChange={onChange}
-        className="tw-hidden"
-        name="image"
-        type="file"
-        id="image"
-        ref={ref}
-      />
-      <img
-        className={cn("tw-inline-block tw-object-cover tw-w-full tw-h-full")}
-        src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
-      />
-
-      <div
-        data-show={!displayOnly}
-        className={cn(
-          "tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-10 tw-z-10",
-          "tw-bg-white/40 hover:tw-bg-white/50 dark:tw-bg-black/40 dark:hover:tw-bg-black/50",
-          "tw-transition-colors tw-duration-300 tw-ease-linear",
-          "tw-hidden data-[show=true]:tw-flex tw-items-center tw-justify-center",
-          "focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-brand disabled:tw-opacity-50"
-        )}
-      >
-        <Camera className="tw-text-white/80" />
+      <div className="tw-absolute tw-bottom-6 tw-right-4">
+        <Button
+          disabled={displayOnly}
+          onClick={open}
+          className="tw-flex-row"
+          htmlType="button"
+          type={ButtonType.Secondary}
+          size={ButtonSize.Small}
+        >
+          <div className="tw-flex tw-flex-row tw-items-center tw-gap-1">
+            <Edit3 className="tw-text-white/80 tw-w-5 tw-h-5" />
+            <p>{intl("global.labels.edit")}</p>
+          </div>
+        </Button>
       </div>
-    </button>
+    </div>
   );
 };
 

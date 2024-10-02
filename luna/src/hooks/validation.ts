@@ -3,6 +3,43 @@ import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
 import { Duration, Time } from "@litespace/sol";
+import { useFormatMessage } from "./intl";
+
+export function useRequired() {
+  const intl = useFormatMessage();
+  return useMemo(
+    () => ({
+      value: true,
+      message: intl("error.required"),
+    }),
+    [intl]
+  );
+}
+
+export function useValidatePassword() {
+  const intl = useFormatMessage();
+
+  return {
+    pattern: {
+      value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
+      message: intl("error.password.invlaid"),
+    },
+  };
+}
+
+export function useValidateEmail() {
+  const intl = useFormatMessage();
+
+  return useMemo(
+    () => ({
+      pattern: {
+        value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
+        message: intl("error.email.invlaid"),
+      },
+    }),
+    [intl]
+  );
+}
 
 const arabicRegExp = /^[\u0600-\u06FF\s]+$/;
 const englishRegExp = /^[a-zA-Z\s]+$/;
@@ -210,17 +247,6 @@ export function useValidation() {
   );
 
   return validation;
-}
-
-export function useRequired() {
-  const intl = useIntl();
-  return useMemo(
-    () => ({
-      value: true,
-      message: intl.formatMessage({ id: messages["error.required"] }),
-    }),
-    [intl]
-  );
 }
 
 export function useValidateDuration() {
