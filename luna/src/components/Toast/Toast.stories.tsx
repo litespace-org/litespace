@@ -1,11 +1,9 @@
-import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { Toaster } from "@/components/Toast/Toast";
 import { toaster } from "@/components/Toast/toaster";
 import { Button, ButtonType } from "@/components/Button";
-import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import "react-toastify/dist/ReactToastify.min.css";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type Component = typeof Button;
 
@@ -13,18 +11,7 @@ const meta: Meta<Component> = {
   title: "Toast",
   component: Button,
   parameters: { layout: "centered" },
-  decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="font-cairo text-foreground bg-dash-sidebar w-[100vw] min-h-screen flex items-center justify-center">
-          <div>
-            <Story />
-            <Toaster />
-          </div>
-        </div>
-      </Direction>
-    ),
-  ],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Success: StoryObj<Component> = {

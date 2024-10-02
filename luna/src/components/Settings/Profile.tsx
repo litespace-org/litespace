@@ -91,15 +91,17 @@ const Profile: React.FC<{
 
   return (
     <div>
-      <div className="flex flex-row items-center gap-2 mb-4">
-        <h3 className="text-2xl">{intl("settings.profile.title")}</h3>
+      <div className="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-mb-6 tw-pb-3 tw-border-b tw-border-border-stronger">
+        <h3 className="tw-text-2xl lg:tw-text-3xl">
+          {intl("settings.profile.title")}
+        </h3>
         <Spinner
           data-show={loading || fetching}
           className="hidden data-[show=true]:block"
         />
       </div>
 
-      <div className="flex flex-col sm:!flex-row gap-4 md:!gap-8">
+      <div className="tw-flex tw-flex-col sm:tw-flex-row tw-gap-4 md:tw-gap-8">
         <Media
           displayOnly={displayOnly}
           refresh={refresh}
@@ -111,7 +113,7 @@ const Profile: React.FC<{
 
         <Form
           onSubmit={onSubmit}
-          className="flex flex-col gap-4 md:w-full lg:w-[500px]"
+          className="tw-flex tw-flex-col tw-gap-4 md:tw-w-full lg:tw-w-[500px]"
         >
           <Field
             label={intl("labels.name")}
@@ -130,7 +132,7 @@ const Profile: React.FC<{
           <Field
             label={intl("labels.email")}
             field={
-              <div className="flex flex-row gap-2 items-center justify-center">
+              <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center tw-justify-center">
                 <Input
                   placeholder={intl("labels.email.placeholder")}
                   value={profile?.email}
@@ -152,7 +154,7 @@ const Profile: React.FC<{
           <Field
             label={intl("labels.password")}
             field={
-              <div className="flex flex-row gap-2 items-center justify-center">
+              <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center tw-justify-center">
                 <Input type={InputType.Password} disabled autoComplete="off" />
                 <Button
                   htmlType="button"
@@ -223,7 +225,7 @@ const Profile: React.FC<{
             loading={mutation.isPending}
             disabled={disabled}
             size={ButtonSize.Small}
-            className="mt-4"
+            className="tw-mt-4"
           >
             {intl("global.labels.edit")}
           </Button>

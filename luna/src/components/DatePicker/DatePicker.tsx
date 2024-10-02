@@ -77,11 +77,11 @@ export const DatePicker: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="flex flex-col items-center text-foreground relative">
+    <div className="tw-flex tw-flex-col tw-items-center tw-text-foreground tw-relative">
       <div
         className={cn(
-          "flex flex-row items-center justify-between mb-5",
-          compact ? "gap-2 text-xs" : "gap-10 w-[300px] "
+          "tw-flex tw-flex-row tw-items-center tw-justify-between tw-mb-5",
+          compact ? "tw-gap-2 tw-text-xs" : "tw-gap-10 tw-w-[300px] "
         )}
       >
         <div>
@@ -91,12 +91,14 @@ export const DatePicker: React.FC<{
             onClick={prevMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
-            className={cn(compact && "!p-1 !h-auto")}
+            className={cn(compact && "!tw-p-1 !tw-h-auto")}
           >
-            <ChevronRight className={cn(compact && "w-[15px] h-[15px]")} />
+            <ChevronRight
+              className={cn(compact && "tw-w-[15px] tw-h-[15px]")}
+            />
           </Button>
         </div>
-        <p className="flex-1 flex items-center justify-center text-center">
+        <p className="tw-flex-1 tw-flex tw-items-center tw-justify-center tw-text-center">
           {date.format("MMMM")} {year}
         </p>
         <div>
@@ -106,18 +108,18 @@ export const DatePicker: React.FC<{
             onClick={nextMonth}
             size={ButtonSize.Small}
             type={ButtonType.Secondary}
-            className={cn(compact ? "!p-1 !h-auto" : "")}
+            className={cn(compact ? "!tw-p-1 !tw-h-auto" : "")}
           >
-            <ChevronLeft className={cn(compact && "w-[15px] h-[15px]")} />
+            <ChevronLeft className={cn(compact && "tw-w-[15px] tw-h-[15px]")} />
           </Button>
         </div>
         {todayLabel ? (
-          <div className="absolute top-0 right-1">
+          <div className="tw-absolute tw-top-0 tw-right-1">
             <Button
               onClick={reset}
               size={ButtonSize.Tiny}
               type={ButtonType.Secondary}
-              className={cn(compact && "!p-1 !h-[25px] text-xs")}
+              className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-xs")}
               disabled={disable || isDateDisabled(dayjs())}
             >
               {todayLabel}
@@ -126,11 +128,19 @@ export const DatePicker: React.FC<{
         ) : null}
       </div>
 
-      <ul className={cn("grid grid-cols-7", compact ? "gap-1.5" : "gap-4")}>
+      <ul
+        className={cn(
+          "tw-grid tw-grid-cols-7",
+          compact ? "tw-gap-1.5" : "tw-gap-4"
+        )}
+      >
         {days.map((day) => (
           <li
             key={day}
-            className={cn("text-center", compact ? "text-xs" : "text-sm")}
+            className={cn(
+              "tw-text-center",
+              compact ? "tw-text-xs" : "tw-text-sm"
+            )}
           >
             {day}
           </li>
@@ -147,10 +157,10 @@ export const DatePicker: React.FC<{
                 disable
               }
               className={cn(
-                "text-center relative",
-                today.isSame(day, "day") && "ring ring-surface-300",
-                compact && "!p-1 !h-auto",
-                !isCurrentMonth && "opacity-40"
+                "tw-text-center tw-relative tw-w-full",
+                today.isSame(day, "day") && "tw-ring tw-ring-surface-300",
+                compact && "!tw-p-1 !tw-h-auto",
+                !isCurrentMonth && "tw-opacity-40"
               )}
               type={
                 selected && selected.isSame(day, "day")

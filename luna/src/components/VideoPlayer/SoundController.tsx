@@ -26,14 +26,14 @@ const SoundController: React.FC<{
     <div
       tabIndex={0}
       className={cn(
-        "flex items-center flex-row-reverse gap-2 px-2 group focus:outline-none",
-        "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+        "tw-flex tw-items-center tw-flex-row-reverse tw-gap-2 tw-px-2 tw-group focus:tw-outline-none",
+        "focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
       )}
     >
       <button
         className={cn(
-          "focus:outline-none flex items-center justify-center p-1",
-          "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+          "focus:tw-outline-none tw-flex tw-items-center tw-justify-center tw-p-1",
+          "focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
         )}
         onClick={toggle}
       >

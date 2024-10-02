@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ActivityGrid, ActivityMap } from "@/components/ActivityGrid";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { GridDay } from "@/components/ActivityGrid/types";
 import dayjs from "@/lib/dayjs";
-import { GridDay } from "./types";
 
 type Component = typeof ActivityGrid;
 

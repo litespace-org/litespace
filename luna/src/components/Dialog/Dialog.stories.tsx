@@ -10,7 +10,7 @@ const meta: Meta<typeof Dialog> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <div className="font-cairo text-foreground bg-dash-sidebar w-full min-h-screen px-10 py-10">
+        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-w-full tw-min-h-screen tw-px-10 tw-py-10">
           <Story />
         </div>
       </Direction>
@@ -21,12 +21,12 @@ const meta: Meta<typeof Dialog> = {
 export const Primary: StoryObj<typeof Dialog> = {
   args: {
     trigger: (
-      <div className="w-20">
+      <div className="tw-w-20">
         <Button> {ar["global.labels.edit"]} </Button>{" "}
       </div>
     ),
     children: (
-      <div className="text-foreground-light">
+      <div className="tw-text-foreground-light">
         {ar["error.tutor.bio.arabic.only"]}
       </div>
     ),

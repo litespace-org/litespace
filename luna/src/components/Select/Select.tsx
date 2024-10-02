@@ -58,15 +58,15 @@ export const Select = <T extends string | number>({
   }, [options, value]);
 
   return (
-    <div ref={wrapperRef} className="text-foreground relative">
+    <div ref={wrapperRef} className="tw-text-foreground tw-relative">
       {children ? (
         <div
           tabIndex={0}
           onMouseDown={toggle}
           onFocus={show}
           className={cn(
-            "cursor-pointer w-full outline-none text-foreground ",
-            "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
+            "tw-cursor-pointer tw-w-full tw-outline-none tw-text-foreground tw-",
+            "focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
           )}
         >
           {children}
@@ -75,23 +75,25 @@ export const Select = <T extends string | number>({
         <div
           tabIndex={0}
           className={cn(
-            "w-full outline-none text-foreground focus:ring-background-control focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control",
-            "border border-control text-sm px-4 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
-            "flex justify-between items-center cursor-pointer"
+            "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
+            "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md tw-h-[38px]",
+            "tw-flex tw-justify-between tw-items-center tw-cursor-pointer"
           )}
           onMouseDown={toggle}
           onFocus={show}
         >
           {label ? (
-            <p className="text-foreground">{label}</p>
+            <p className="tw-text-foreground">{label}</p>
           ) : (
-            <p className="text-foreground-muted select-none">{placeholder}</p>
+            <p className="tw-text-foreground-muted tw-select-none">
+              {placeholder}
+            </p>
           )}
 
           <div
             data-open={open}
             className={cn(
-              "data-[open=true]:rotate-180 transition-transform duration-300"
+              "data-[open=true]:tw-rotate-180 tw-transition-transform tw-duration-300"
             )}
           >
             <ChevronDownIcon />
@@ -102,15 +104,15 @@ export const Select = <T extends string | number>({
       <ul
         data-open={open}
         className={cn(
-          "bg-background-overlay border border-control rounded-md z-[1]",
-          "flex flex-col gap-2 shadow-2xl w-full",
-          "absolute whitespace-nowrap overflow-hidden px-1 py-2",
-          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300  invisible data-[open=true]:visible",
-          "min-w-[100px]",
+          "tw-bg-background-overlay tw-border tw-border-control tw-rounded-md tw-z-[1]",
+          "tw-flex tw-flex-col tw-gap-2 tw-shadow-2xl tw-w-full",
+          "tw-absolute tw-whitespace-nowrap tw-overflow-hidden tw-px-1 tw-py-2",
+          "tw-opacity-0 data-[open=true]:tw-opacity-100 tw-transition-all tw-duration-300 invisible data-[open=true]:tw-visible",
+          "tw-min-w-[100px]",
           {
-            "bottom-[calc(100%+5px)] left-1/2 -translate-x-1/2 data-[open=true]:bottom-[calc(100%+10px)]":
+            "tw-bottom-[calc(100%+5px)] tw-left-1/2 -tw-translate-x-1/2 data-[open=true]:tw-bottom-[calc(100%+10px)]":
               placement === "top",
-            "top-[calc(100%+5px)] left-1/2 -translate-x-1/2 data-[open=true]:top-[calc(100%+10px)]":
+            "tw-top-[calc(100%+5px)] tw-left-1/2 -tw-translate-x-1/2 data-[open=true]:tw-top-[calc(100%+10px)]":
               placement === "bottom",
           }
         )}
@@ -120,15 +122,15 @@ export const Select = <T extends string | number>({
             tabIndex={0}
             key={option.value}
             className={cn(
-              "hover:bg-background-overlay-hover cursor-pointer text-sm px-3 py-2",
-              "transition-colors duration-300 rounded-md focus:outline-none focus:ring focus:ring-background-selection",
-              "flex flex-row items-center justify-between"
+              "hover:tw-bg-background-overlay-hover tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2",
+              "tw-transition-colors tw-duration-300 tw-rounded-md focus:tw-outline-none focus:tw-ring focus:tw-ring-background-selection",
+              "tw-flex tw-flex-row tw-items-center tw-justify-between"
             )}
             onClick={() => onOptionClick(option.value)}
           >
             <p>{option.label}</p>
             {value === option.value ? (
-              <CheckIcon className="text-foreground" />
+              <CheckIcon className="tw-text-foreground" />
             ) : null}
           </li>
         ))}

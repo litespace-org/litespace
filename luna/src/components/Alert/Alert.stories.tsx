@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Alert } from "@/components/Alert";
 import ar from "@/locales/ar-eg.json";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type Component = typeof Alert;
 

@@ -17,7 +17,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="bg-background-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl md">
+          <div className="tw-bg-background-200 tw-w-[30rem] tw-h-[30rem] tw-px-12 tw-flex tw-items-center tw-justify-center tw-shadow-xl tw-md">
             <Story />
           </div>
         </Direction>
@@ -79,7 +79,7 @@ export const Password: StoryObj<Component> = {
       <Input
         type={InputType.Password}
         value={watch("password")}
-        register={register("password")}
+        {...register("password")}
       />
     );
   },
@@ -95,8 +95,8 @@ export const PasswordError: StoryObj<Component> = {
       <Input
         type={InputType.Password}
         value={watch("password")}
-        register={register("password")}
-        error={ar["error.password.invlaid"]}
+        error={ar["error.invalid"]}
+        {...register("password")}
       />
     );
   },
@@ -112,7 +112,7 @@ export const InputEnglish: StoryObj<Component> = {
         type={InputType.Text}
         placeholder={ar["global.form.email.placeholder"]}
         value={watch("email")}
-        register={register("email")}
+        {...register("email")}
       />
     );
   },
@@ -127,7 +127,7 @@ export const WithActions: StoryObj<Component> = {
       <Input
         placeholder={ar["global.form.email.placeholder"]}
         value={watch("date")}
-        register={register("date")}
+        {...register("date")}
         actions={[
           {
             id: 1,

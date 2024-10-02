@@ -26,7 +26,7 @@ const meta: Meta<IForm> = {
 export const Primary: StoryObj<IForm> = {
   args: {
     children: (
-      <div className="ui-w-[40rem]">
+      <div className="tw-ui-w-[40rem]">
         <Field
           label={<Label id="name">{ar["global.form.email.label"]}</Label>}
           field={

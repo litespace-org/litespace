@@ -9,16 +9,16 @@ export const Rating: React.FC<{
   onChange?: (value: number) => void;
 }> = ({ value, onChange }) => {
   return (
-    <div className="ui-flex ui-gap-2">
+    <div className="tw-flex tw-gap-2">
       {ratings.map((rate) => (
         <span
           onClick={() => onChange && onChange(rate)}
           className={cn(
-            "ui-bg-gray-100 hover:ui-bg-gray-200 ui-inline-block ui-cursor-pointer ui-font-cairo",
-            "ui-w-10 ui-h-10 ui-rounded-full ui-flex ui-items-center ui-justify-center",
-            "ui-transition-all hover:ui-scale-110 ui-duration-200",
-            "ui-shadow-lg ui-font-bold",
-            rate === value && "ui-ring-2 ui-ring-blue-normal"
+            "tw-bg-gray-100 hover:tw-bg-gray-200 tw-inline-block tw-cursor-pointer tw-font-cairo",
+            "tw-w-10 tw-h-10 tw-rounded-full tw-flex tw-items-center tw-justify-center",
+            "tw-transition-all hover:tw-scale-110 tw-duration-200",
+            "tw-shadow-lg tw-font-bold",
+            rate === value && "tw-ring-2 tw-ring-blue-normal"
           )}
         >
           {rate}

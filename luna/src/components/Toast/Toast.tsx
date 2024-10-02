@@ -19,10 +19,11 @@ export const Toast: React.FC<ToastProps> = ({ title, description }) => {
 };
 
 const Icon: React.FC<IconProps> = ({ type }) => {
-  if (type === "success") return <Check className="text-brand" />;
-  if (type === "error") return <AlertCircle className="text-destructive" />;
+  if (type === "success") return <Check className="tw-text-brand" />;
+  if (type === "error") return <AlertCircle className="tw-text-destructive" />;
   if (type === "info") return <Info />;
-  if (type === "warning") return <AlertTriangle className="text-amber-900" />;
+  if (type === "warning")
+    return <AlertTriangle className="tw-text-amber-900" />;
   return <Check />;
 };
 
@@ -31,22 +32,22 @@ export const Toaster: React.FC = () => {
     <>
       {createPortal(
         <ToastContainer
-          className="w-[350px] ml-2"
+          className="tw-w-[350px] tw-ml-2"
           toastClassName={cn(
-            "flex px-3 pb-3 pt-2 md:rounded-lg ",
-            "border border-border-strong hover-border-border-stronger !bg-background-overlay",
-            "[&>button]:mt-2.5 [&>button]:pl-[6px] !text-foreground"
+            "tw-flex tw-px-3 tw-pb-3 tw-pt-2 md:tw-rounded-lg ",
+            "tw-border tw-border-border-strong hover:tw-border-border-stronger !tw-bg-background-overlay",
+            "[&>button]:tw-mt-2.5 [&>button]:tw-pl-[6px] !tw-text-foreground"
           )}
-          bodyClassName="!items-start gap-2 font-cairo !pl-3 [&_.Toastify\_\_toast-icon]:mt-[2px]"
+          bodyClassName="!tw-items-start tw-gap-2 tw-font-cairo !tw-pl-3 [&_.Toastify\_\_toast-icon]:tw-mt-[2px]"
           closeButton={({ closeToast }) => (
-            <div className="mt-1.5">
+            <div className="tw-mt-1.5">
               <Button
                 onClick={closeToast}
                 size={ButtonSize.Tiny}
                 type={ButtonType.Text}
-                className="w-[25px] h-[25px] flex items-center justify-center !p-1"
+                className="tw-w-[25px] tw-h-[25px] tw-flex tw-items-center tw-justify-center !tw-p-1"
               >
-                <X className="w-[20px] h-[20px]" />
+                <X className="tw-w-[20px] tw-h-[20px]" />
               </Button>
             </div>
           )}

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Popover } from "@/components/Popover";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { Button } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
-import { Button } from "../Button";
 
 type Component = typeof Popover;
 
@@ -17,7 +17,7 @@ export const Primary: StoryObj<Component> = {
   args: {
     children: <Button>{ar["global.labels.go"]}</Button>,
     content: (
-      <p className="w-full">
+      <p className="tw-w-full">
         {ar["page.tutor.onboarding.book.interview.success.title"]}
       </p>
     ),

@@ -4,6 +4,7 @@ import plugin from "tailwindcss/plugin";
 export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
+  prefix: "tw-",
   theme: {
     fontFamily: {
       cairo: ["Cairo", "sans-serif"],

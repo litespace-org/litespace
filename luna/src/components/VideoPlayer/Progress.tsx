@@ -7,7 +7,7 @@ const Progress: React.FC<{
   set: (time: number) => void;
 }> = ({ current, duration, set }) => {
   return (
-    <div className="px-3" dir="ltr">
+    <div className="tw-px-3" dir="ltr">
       <Slider min={0} max={duration} value={current} onValueChange={set} />
     </div>
   );

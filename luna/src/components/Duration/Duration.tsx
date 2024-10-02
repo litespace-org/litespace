@@ -19,9 +19,10 @@ export const DurationInput: React.FC<{
 
   return (
     <Input
-      onChange={(raw) => {
-        if (onChange) onChange(Duration.from(raw));
-        setRawValue(raw);
+      onChange={(event) => {
+        const value = event.target.value;
+        if (onChange) onChange(Duration.from(value));
+        setRawValue(value);
       }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}

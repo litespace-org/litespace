@@ -17,11 +17,11 @@ export const RawHtml: React.FC<{
     <div
       dir="auto"
       className={cn(
-        "[&_h3]:text-xl [&_h3]:text-foreground [&_h3]:pb-2",
-        "[&_p]:text-foreground-light [&_p]:mb-4 [&_p]:text-base [&_p]:leading-loose",
-        "[&_ul]:list-disc [&_ul]:list-inside [&_ul]:pr-4",
-        "[&_ul_li]:text-foreground-light [&_ul_li]:mb-2",
-        "[&_font]:text-foreground [&_li]:!text-foreground"
+        "[&_h3]:tw-text-xl [&_h3]:tw-text-foreground [&_h3]:tw-pb-2",
+        "[&_p]:tw-text-foreground-light [&_p]:tw-mb-4 [&_p]:tw-text-base [&_p]:tw-leading-loose",
+        "[&_ul]:tw-list-disc [&_ul]:tw-list-inside [&_ul]:tw-pr-4",
+        "[&_ul_li]:tw-text-foreground-light [&_ul_li]:tw-mb-2",
+        "[&_font]:tw-text-foreground [&_li]:!tw-text-foreground"
       )}
       dangerouslySetInnerHTML={innerHtml}
     >

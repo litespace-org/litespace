@@ -14,12 +14,13 @@ const Option: React.FC<{
       type="button"
       disabled={disabled}
       onClick={select}
-      className="focus:outline-none focus:ring focus:ring-blue-800 rounded disabled:opacity-50"
+      className="focus:tw-outline-none focus:tw-ring focus:tw-ring-blue-800 tw-rounded disabled:tw-opacity-50"
     >
       <Card
         className={cn(
-          "aspect-square hover:bg-surface-300 transition-colors duration-300",
-          active && "bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900"
+          "tw-aspect-square hover:tw-bg-surface-300 tw-transition-colors tw-duration-300",
+          active &&
+            "tw-bg-gradient-to-br tw-from-blue-700 tw-via-blue-800 tw-to-blue-900"
         )}
       >
         <img src={image} />
@@ -42,7 +43,7 @@ const Gender: React.FC<{
   );
 
   return (
-    <div className="flex flex-row gap-4">
+    <div className="tw-flex tw-flex-row tw-gap-4">
       {images.map(({ image, gender: option }) => (
         <Option
           key={image}

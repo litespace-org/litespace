@@ -58,24 +58,24 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     }, []);
 
     return (
-      <div className="flex flex-col w-full">
-        <div className="w-full relative">
+      <div className="tw-flex tw-flex-col tw-w-full">
+        <div className="tw-w-full tw-relative">
           <input
             dir={dir}
             type={kind}
             value={value}
             disabled={disabled}
             className={cn(
-              "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
-              "text-foreground focus-visible:shadow-md outline-none",
-              "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
-              "focus-visible:ring-background-control placeholder-foreground-muted group",
-              "border border-control text-sm px-4 py-2",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "text-right", // align all text to the right
+              "tw-font-cairo tw-block tw-box-border tw-w-full tw-rounded-md tw-shadow-sm tw-transition-all",
+              "tw-text-foreground focus-visible:tw-shadow-md tw-outline-none",
+              "focus:tw-ring-current focus:tw-ring-2 focus-visible:tw-border-foreground-muted",
+              "focus-visible:tw-ring-background-control tw-placeholder-foreground-muted group",
+              "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2",
+              "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
+              "tw-text-right", // align all text to the right
               {
-                "bg-foreground/[.026]": !error,
-                "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
+                "tw-bg-foreground/[.026]": !error,
+                "tw-bg-destructive-200 tw-border tw-border-destructive-400 focus:tw-ring-destructive-400 placeholder:tw-text-destructive-400":
                   !!error,
               }
             )}
@@ -114,7 +114,10 @@ const framer = {
 
 export const InputError: React.FC<{ message: string }> = ({ message }) => {
   return (
-    <motion.p className="font-cairo text-sm text-red-900 mt-2" {...framer}>
+    <motion.p
+      className="tw-font-cairo tw-text-sm tw-text-red-900 tw-mt-2"
+      {...framer}
+    >
       {message}
     </motion.p>
   );
@@ -126,7 +129,7 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
       {error ? (
         <motion.div
           className={cn(
-            "flex items-center justify-center pl-2 pr-2 text-red-900"
+            "tw-flex tw-items-center tw-justify-center tw-pl-2 tw-pr-2 tw-text-red-900"
           )}
           {...framer}
         >
@@ -151,11 +154,11 @@ const EyeIcon: React.FC<{
         onClick={() => toggle(!show)}
         disabled={disabled}
       >
-        <span className="text-foreground-muted">
+        <span className="tw-text-foreground-muted">
           {show ? (
-            <OpenedEye className="w-[14px] h-[14px]" />
+            <OpenedEye className="tw-w-[14px] tw-h-[14px]" />
           ) : (
-            <ClosedEye className="w-[14px] h-[14px]" />
+            <ClosedEye className="tw-w-[14px] tw-h-[14px]" />
           )}
         </span>
       </Button>
@@ -172,7 +175,7 @@ const Actions: React.FC<{
   actions: InputAction[];
 }> = ({ error, password, show, disabled, actions, onEyeClick }) => {
   return (
-    <div className="absolute inset-y-0 left-0 pr-3 pl-1 flex space-x-1 items-center">
+    <div className="tw-absolute tw-inset-y-0 tw-left-0 tw-pr-3 tw-pl-1 tw-flex tw-space-x-1 tw-items-center">
       <ErrorIcon error={error} />
       {password && (
         <EyeIcon disabled={disabled} show={show} toggle={onEyeClick} />
@@ -187,7 +190,7 @@ const Actions: React.FC<{
           disabled={disabled}
           onClick={onClick}
         >
-          {<Icon className="w-[14px] h-[14px]" />}
+          {<Icon className="tw-w-[14px] tw-h-[14px]" />}
         </Button>
       ))}
     </div>

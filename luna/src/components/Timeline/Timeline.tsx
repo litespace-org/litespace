@@ -5,11 +5,11 @@ export const Timeline: React.FC<{
   timeline: TimelineItem[];
 }> = ({ timeline }) => {
   return (
-    <ol className="border-r border-r-border-strong relative">
+    <ol className="tw-border-r tw-border-r-border-strong tw-relative">
       {timeline.map(({ id, children, icon }) => {
         return (
-          <li key={id} className="mb-10 ms-6">
-            <span className="absolute flex items-center justify-center w-6 h-6 rounded-full -start-3 ring-8 ring-dash-sidebar text-foreground bg-dash-sidebar">
+          <li key={id} className="tw-mb-10 tw-ms-6">
+            <span className="tw-absolute tw-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-rounded-full -tw-start-3 tw-ring-8 tw-ring-dash-sidebar tw-text-foreground tw-bg-dash-sidebar">
               {icon}
             </span>
 

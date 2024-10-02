@@ -1,24 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Select, SelectList } from "@/components/Select";
-import { Direction } from "@/components/Direction";
-import React from "react";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type ISelect = typeof Select;
 
 const meta: Meta<ISelect> = {
   title: "Select",
   component: Select,
-  decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="bg-dash-sidebar w-full min-h-screen flex justify-center items-center font-cairo">
-          <div className="w-[500px]">
-            <Story />
-          </div>
-        </div>
-      </Direction>
-    ),
-  ],
+  decorators: [DarkStoryWrapper],
 };
 
 const options: SelectList<string> = [

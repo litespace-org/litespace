@@ -36,47 +36,47 @@ const Image: React.FC<{
       onClick={open}
       disabled={displayOnly}
       className={cn(
-        "relative",
-        "rounded-full aspect-square overflow-hidden",
-        "ring-4 ring-background-selection bg-background-selection",
-        "focus:outline-none focus:ring-brand focus:ring-2",
+        "tw-relative",
+        "tw-rounded-full tw-aspect-square tw-overflow-hidden",
+        "tw-ring-4 tw-ring-background-selection tw-bg-background-selection",
+        "tw-focus:outline-none focus:tw-ring-brand focus:tw-ring-2",
         className
       )}
     >
       <div
         data-show={mutation.isPending}
         className={cn(
-          "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
-          "hidden data-[show=true]:block"
+          "tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2",
+          "tw-hidden data-[show=true]:tw-block"
         )}
       >
-        <Spinner className="text-foreground" />
+        <Spinner className="tw-text-foreground" />
       </div>
       <input
         accept="image/png, image/jpeg"
         onChange={onChange}
-        className="hidden"
+        className="tw-hidden"
         name="image"
         type="file"
         id="image"
         ref={ref}
       />
       <img
-        className={cn("inline-block object-cover w-full h-full")}
+        className={cn("tw-inline-block tw-object-cover tw-w-full tw-h-full")}
         src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
       />
 
       <div
         data-show={!displayOnly}
         className={cn(
-          "absolute bottom-0 left-0 w-full h-10 z-10",
-          "bg-white/40 hover:bg-white/50 dark:bg-black/40 dark:hover:bg-black/50",
-          "transition-colors duration-300 ease-linear",
-          "hidden data-[show=true]:flex items-center justify-center",
-          "focus:outline-none focus:ring-2 focus:ring-brand disabled:opacity-50"
+          "tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-10 tw-z-10",
+          "tw-bg-white/40 hover:tw-bg-white/50 dark:tw-bg-black/40 dark:hover:tw-bg-black/50",
+          "tw-transition-colors tw-duration-300 tw-ease-linear",
+          "tw-hidden data-[show=true]:tw-flex tw-items-center tw-justify-center",
+          "focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-brand disabled:tw-opacity-50"
         )}
       >
-        <Camera className="text-white/80" />
+        <Camera className="tw-text-white/80" />
       </div>
     </button>
   );

@@ -28,7 +28,7 @@ export const PrimaryInteractive: StoryObj<Component> = {
 
     return (
       <Direction>
-        <Form onSubmit={handleSubmit(() => {})} className="ui-w-[50rem]">
+        <Form onSubmit={handleSubmit(() => {})} className="tw-ui-w-[50rem]">
           <Field
             label={<Label>{ar["global.add.to.favorites"]}</Label>}
             field={

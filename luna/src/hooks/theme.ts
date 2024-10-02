@@ -6,6 +6,7 @@ export enum Theme {
 }
 
 const KEY = "litespace::theme";
+const CLASSNAMES = ["dark", "tw-dark"];
 
 function getCurrentTheme(): Theme {
   const theme = localStorage.getItem(KEY);
@@ -26,8 +27,9 @@ export function useTheme() {
   }, [theme]);
 
   useEffect(() => {
-    if (theme === Theme.Dark) document.documentElement.classList.add("dark");
-    else document.documentElement.classList.remove("dark");
+    if (theme === Theme.Dark)
+      document.documentElement.classList.add(...CLASSNAMES);
+    else document.documentElement.classList.remove(...CLASSNAMES);
   }, [theme]);
 
   useEffect(() => {

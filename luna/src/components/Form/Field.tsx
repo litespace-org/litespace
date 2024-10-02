@@ -7,7 +7,7 @@ export const Field: React.FC<{
   field?: React.ReactNode;
 }> = ({ className, label, field }) => {
   return (
-    <div className={cn("flex flex-col gap-2 w-full", className)}>
+    <div className={cn("tw-flex tw-flex-col tw-gap-2 tw-w-full", className)}>
       {label}
       {field}
     </div>

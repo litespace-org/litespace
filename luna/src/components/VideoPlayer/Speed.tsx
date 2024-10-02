@@ -27,14 +27,14 @@ const Speed: React.FC<{ set: (rate: number) => void; rate: number }> = ({
 
   return (
     <div>
-      <div className="text-foreground">
+      <div className="tw-text-foreground">
         <Select
           onChange={onChange}
           options={options}
           placement="top"
           value={rate}
         >
-          <span className="text-white inline-block px-2">{rate}x</span>
+          <span className="tw-text-white tw-inline-block tw-px-2">{rate}x</span>
         </Select>
       </div>
     </div>

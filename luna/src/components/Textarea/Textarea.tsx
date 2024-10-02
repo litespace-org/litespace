@@ -23,8 +23,8 @@ export const Textarea: React.FC<{
   }, [value]);
 
   return (
-    <div className="ui-flex ui-flex-col ui-w-full">
-      <div className="ui-w-full ui-relative">
+    <div className="tw-flex tw-flex-col tw-w-full">
+      <div className="tw-w-full tw-relative">
         <textarea
           dir={dir}
           id={register?.name}
@@ -32,16 +32,16 @@ export const Textarea: React.FC<{
           autoComplete={autoComplete}
           {...register}
           className={cn(
-            "ui-w-full ui-bg-inputbg ui-py-[20px] ui-px-[18px] ui-rounded-2xl  ui-h-[72px] ui-font-cairo",
-            "placeholder:ui-text-arxl placeholder:ui-font-medium ui-leading-8 placeholder:ui-text-right",
-            "ui-text-arxl ui-font-bold ui-leading-normal ui-border focus:ui-outline-none focus:ui-border-blue-normal",
-            "ui-min-h-[150px] ui-max-h-[300px]",
+            "tw-w-full tw-bg-inputbg tw-py-[20px] tw-px-[18px] tw-rounded-2xl  tw-h-[72px] tw-font-cairo",
+            "placeholder:tw-text-arxl placeholder:tw-font-medium tw-leading-8 placeholder:tw-text-right",
+            "tw-text-arxl tw-font-bold tw-leading-normal tw-border focus:tw-outline-none focus:tw-border-blue-normal",
+            "tw-min-h-[150px] tw-max-h-[300px]",
             {
-              "ui-bg-red-light ui-border-red-border focus:ui-border-red-border":
+              "tw-bg-red-light tw-border-red-border focus:tw-border-red-border":
                 !!error,
-              "ui-border-transparent": !error,
-              "ui-text-right focus:ui-text-left": dir === Dir.LTR,
-              "focus:ui-text-right": dir === Dir.LTR,
+              "tw-border-transparent": !error,
+              "tw-text-right focus:tw-text-left": dir === Dir.LTR,
+              "focus:tw-text-right": dir === Dir.LTR,
             },
             className
           )}
@@ -68,7 +68,7 @@ function framerError(y: string | number) {
 const InputError: React.FC<{ message: string }> = ({ message }) => {
   const framer = useMemo(() => framerError(0), []);
   return (
-    <motion.p className="ui-text-arsm ui-text-red-400" {...framer}>
+    <motion.p className="tw-text-arsm tw-text-red-400" {...framer}>
       {message}
     </motion.p>
   );
@@ -80,7 +80,7 @@ const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
     <AnimatePresence mode="wait" initial={false}>
       {error ? (
         <motion.div
-          className="ui-absolute ui-top-[40px] ui-left-lg ui-transform -ui-translate-y-1/2"
+          className="tw-absolute tw-top-[40px] tw-left-lg tw-transform -tw-translate-y-1/2"
           {...framer}
         >
           <ErrorOutlined />

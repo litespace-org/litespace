@@ -1,6 +1,6 @@
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DateInput } from "@/components/DateInput";
-import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { useState } from "react";
@@ -8,23 +8,15 @@ import dayjs from "@/lib/dayjs";
 
 type Component = typeof DateInput;
 
-const meta: Meta<Comment> = {
+const meta: Meta<Component> = {
   title: "Date Input",
   component: DateInput,
-  decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="font-cairo text-foreground bg-dash-sidebar flex items-center justify-center w-full min-h-screen px-10 py-10">
-          <div className="w-[400px]">
-            <Story />
-          </div>
-        </div>
-      </Direction>
-    ),
-  ],
+  parameters: { layout: "centered" },
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {
+  args: {},
   render() {
     const [value, setValue] = useState("");
     return (
@@ -40,10 +32,11 @@ export const Primary: StoryObj<Component> = {
 };
 
 export const Small: StoryObj<Component> = {
+  args: {},
   render() {
     const [value, setValue] = useState("");
     return (
-      <Form className="w-[200px]">
+      <Form className="tw-w-[200px]">
         <DateInput
           placeholder={ar["global.form.email.placeholder"]}
           value={value}
@@ -55,6 +48,7 @@ export const Small: StoryObj<Component> = {
 };
 
 export const Bounded: StoryObj<Component> = {
+  args: {},
   render() {
     const [value, setValue] = useState("");
     return (

@@ -23,7 +23,7 @@ const Settings: React.FC = () => {
   );
 
   return (
-    <div className="p-6">
+    <div className="p-6 max-w-screen-2xl mx-auto">
       <Components.Profile
         profile={profile.value}
         refresh={refresh}

@@ -133,16 +133,16 @@ export const Calendar: React.FC<{
   );
 
   return (
-    <div className="flex flex-col">
-      <div className="py-4 flex justify-start items-center gap-4">
-        <div className="flex items-center justify-center flex-row gap-4">
+    <div className="tw-flex tw-flex-col">
+      <div className="tw-py-4 tw-flex tw-justify-start tw-items-center tw-gap-4">
+        <div className="tw-flex tw-items-center tw-justify-center tw-flex-row tw-gap-4">
           <Button
             disabled={disabled || loading || !canGoStartOfCurrentWeek}
             onClick={startOfCurrentWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
-            <RotateCcw className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
+            <RotateCcw className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>
           <Button
             disabled={disabled || loading || !canGoBack}
@@ -150,7 +150,7 @@ export const Calendar: React.FC<{
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
-            <ChevronRight className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
+            <ChevronRight className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>
           <Button
             disabled={disabled || loading || !canGoNext}
@@ -158,28 +158,28 @@ export const Calendar: React.FC<{
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
             type={ButtonType.Secondary}
           >
-            <ChevronLeft className="w-[15px] h-[15px] xl:w-[20px] xl:h-[20px]" />
+            <ChevronLeft className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>
         </div>
-        <p className="text-sm xl:text-base">
+        <p className="tw-text-sm xl:tw-text-base">
           {date.format("MMMM")} {year}
         </p>
       </div>
       <div
         className={cn(
-          "overflow-auto w-fit relative",
-          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
-          loading && "opacity-70",
+          "tw-overflow-auto tw-w-fit tw-relative",
+          "tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300",
+          loading && "tw-opacity-70",
           className
         )}
       >
         {loading ? <Overlay /> : null}
-        <ul className="flex flex-row flex-1 items-center w-fit">
+        <ul className="tw-flex tw-flex-row tw-flex-1 tw-items-center tw-w-fit">
           <li
             className={cn(
-              "border-l border-t border-border-strong bg-surface-100 border-b",
-              "w-[40px] min-w-[40px] 2xl:w-[70px] 2xl:min-w-[70px] h-[50px]",
-              "sm:h-[60px] md:h-[60px] lg:h-[80px] 2xl:h-[90px]"
+              "tw-border-l tw-border-t tw-border-border-strong tw-bg-surface-100 tw-border-b",
+              "tw-w-[40px] tw-min-w-[40px] 2xl:tw-w-[70px] 2xl:tw-min-w-[70px] tw-h-[50px]",
+              "sm:tw-h-[60px] md:tw-h-[60px] lg:tw-h-[80px] 2xl:tw-h-[90px]"
             )}
           />
           {days.map((day, idx) => {
@@ -189,21 +189,22 @@ export const Calendar: React.FC<{
               <li
                 key={day}
                 className={cn(
-                  "flex flex-col justify-center items-center gap-1",
-                  "w-[70px] h-[50px] p-1",
-                  "sm:w-[80px] sm:min-w-[80px] sm:h-[60px]",
-                  "md:w-[100px] md:min-w-[100px] md:h-[60px]",
-                  "lg:w-[130px] lg:min-w-[130px] lg:h-[80px]",
-                  "xl:w-[170px] xl:min-w-[170px] xl:h-[80px]",
-                  "2xl:w-[205px] 2xl:min-w-[205px] 2xl:h-[90px]",
-                  "border-l border-t border-border-strong bg-surface-100 border-b"
+                  "tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-1",
+                  "tw-w-[70px] tw-h-[50px] tw-p-1",
+                  "sm:tw-w-[80px] sm:tw-min-w-[80px] sm:tw-h-[60px]",
+                  "md:tw-w-[100px] md:tw-min-w-[100px] md:tw-h-[60px]",
+                  "lg:tw-w-[130px] lg:tw-min-w-[130px] lg:tw-h-[80px]",
+                  "xl:tw-w-[170px] xl:tw-min-w-[170px] xl:tw-h-[80px]",
+                  "2xl:tw-w-[205px] 2xl:tw-min-w-[205px] 2xl:tw-h-[90px]",
+                  "tw-border-l tw-border-t tw-border-border-strong tw-bg-surface-100 tw-border-b"
                 )}
               >
-                <p className={cn("text-xs md:!text-base")}>{day}</p>
+                <p className={cn("tw-text-xs md:!tw-text-base")}>{day}</p>
                 <p
                   className={cn(
-                    "w-5 h-5 md:w-7 md:h-7 lg:h-10 lg:w-10 rounded-full flex items-center justify-center text-xs md:!text-base lg:!text-lg",
-                    isToday ? "bg-selection" : "bg-transparent"
+                    "tw-w-5 tw-h-5 md:tw-w-7 md:tw-h-7 lg:tw-h-10 lg:tw-w-10",
+                    "tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-xs md:!tw-text-base lg:!tw-text-lg",
+                    isToday ? "tw-bg-selection" : "tw-bg-transparent"
                   )}
                 >
                   {dayDate.get("date")}
@@ -212,15 +213,15 @@ export const Calendar: React.FC<{
             );
           })}
         </ul>
-        <div className="flex items-start relative">
-          <ul className="w-[40px] 2xl:w-[70px]">
+        <div className="tw-flex tw-items-start tw-relative">
+          <ul className="tw-w-[40px] 2xl:tw-w-[70px]">
             {dayHours.map((hour) => {
               return (
                 <li
                   key={hour.toDate().toISOString()}
                   className={cn(
-                    "h-[50px] w-[40px] 2xl:w-[70px] text-center text-xs p-1",
-                    "sm:h-[60px] md:h-[90px] lg:h-[90px]"
+                    "tw-h-[50px] tw-w-[40px] 2xl:tw-w-[70px] tw-text-center tw-text-xs tw-p-1",
+                    "sm:tw-h-[60px] md:tw-h-[90px] lg:tw-h-[90px]"
                   )}
                 >
                   {hour.format("h a")}
@@ -228,7 +229,7 @@ export const Calendar: React.FC<{
               );
             })}
           </ul>
-          <div className="flex items-start w-full relative">
+          <div className="tw-flex tw-items-start tw-w-full tw-relative">
             {weekHours.map((day, dayIndex) => {
               return (
                 <ul key={`d-${dayIndex}`}>
@@ -243,13 +244,13 @@ export const Calendar: React.FC<{
                         data-time={time}
                         key={time}
                         className={cn(
-                          "border border-muted relative",
-                          "w-[70px] h-[50px]",
-                          "sm:w-[80px] sm:h-[60px]",
-                          "md:w-[100px] md:h-[90px]",
-                          "lg:w-[130px] md:h-[90px]",
-                          "xl:w-[170px] md:h-[90px]",
-                          "2xl:w-[205px] 2xl:h-[90px]"
+                          "tw-border tw-border-muted tw-relative",
+                          "tw-w-[70px] tw-h-[50px]",
+                          "sm:tw-w-[80px] sm:tw-h-[60px]",
+                          "md:tw-w-[100px] md:tw-h-[90px]",
+                          "lg:tw-w-[130px] md:tw-h-[90px]",
+                          "xl:tw-w-[170px] md:tw-h-[90px]",
+                          "2xl:tw-w-[205px] 2xl:tw-h-[90px]"
                         )}
                       />
                     );

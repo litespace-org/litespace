@@ -1,27 +1,17 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Duration as DurationInput } from "@/components/Duration";
-import { Direction } from "@/components/Direction";
 import { Duration } from "@litespace/sol";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { Controller, useForm } from "react-hook-form";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
-type Component = typeof Duration;
+type Component = typeof DurationInput;
 
-const meta: Meta<Comment> = {
+const meta: Meta<Component> = {
   title: "Duration",
-  component: Duration,
-  decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="font-cairo text-foreground bg-dash-sidebar flex items-center justify-center w-full min-h-screen px-10 py-10">
-          <div className="w-[400px]">
-            <Story />
-          </div>
-        </div>
-      </Direction>
-    ),
-  ],
+  component: DurationInput,
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {

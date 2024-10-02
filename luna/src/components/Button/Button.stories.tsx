@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type Component = typeof Button;
 

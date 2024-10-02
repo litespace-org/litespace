@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type Component = typeof VideoPlayer;
 

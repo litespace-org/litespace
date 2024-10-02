@@ -11,14 +11,14 @@ const Media: React.FC<{
   video?: string | null;
   name?: string | null;
 }> = ({ refresh, displayOnly, user, name, video, image }) => {
+  console.log({ video, name });
   return (
-    <div className="flex flex-col gap-4 w-full sm:w-40 md:w-80 shrink-0">
+    <div className="tw-flex tw-flex-col tw-gap-4 tw-w-full tw-max-w-[20rem] mx-auto sm:tw-max-w-none sm:tw-w-52 md:tw-w-80 tw-shrink-0">
       <Image
         refresh={refresh}
         displayOnly={displayOnly}
         user={user}
         image={image}
-        className=""
       />
 
       <Video video={video} name={name} />

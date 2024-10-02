@@ -69,13 +69,11 @@ const Picker: React.FC<{
   }, [hours, meridiems, minutes]);
 
   return (
-    <div className="pb-2">
+    <div className="tw-pb-2">
       <div
-        className={cn(
-          "max-h-[250px] overflow-y-auto overflow-x-hidden",
-          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
-          "flex flex-row pt-2 pb-2 h-full"
-        )}
+        className={cn("tw-max-h-[250px] tw-overflow-y-auto tw-overflow-x-hidden",
+"tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300",
+"tw-flex tw-flex-row tw-pt-2 tw-pb-2 tw-h-full")}
       >
         {cols.map((col, idx) => {
           return (

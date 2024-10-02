@@ -30,30 +30,32 @@ export const Dialog: React.FC<{
       open={open}
       onClick={onClose}
       className={cn(
-        "fixed inset-0 w-screen h-screen bg-transparent backdrop-blur-sm p-6",
-        "hidden open:flex items-center justify-center z-[999]"
+        "tw-fixed tw-inset-0 tw-w-screen tw-h-screen tw-bg-transparent tw-backdrop-blur-sm tw-p-6",
+        "tw-hidden open:tw-flex tw-items-center tw-justify-center tw-z-[999]"
       )}
     >
-      <div className="relative h-full w-full">
+      <div className="tw-relative tw-h-full tw-w-full">
         <div
           ref={contentRef}
           className={cn(
-            "bg-background-dialog border border-border-strong rounded-md px-5 py-4 shadow-lg",
-            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2",
+            "tw-bg-background-dialog tw-border tw-border-border-strong tw-rounded-md tw-px-5 tw-py-4 tw-shadow-lg",
+            "tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2",
             className
           )}
         >
-          <div className="flex justify-between items-center pb-4">
-            <p className="text-foreground font-medium text-base">{title}</p>
+          <div className="tw-flex tw-justify-between tw-items-center tw-pb-4">
+            <p className="tw-text-foreground tw-font-medium tw-text-base">
+              {title}
+            </p>
 
             <div>
               <Button
                 onClick={close}
                 size={ButtonSize.Tiny}
                 type={ButtonType.Text}
-                className="w-[25px] h-[25px] flex items-center justify-center !p-1"
+                className="tw-w-[25px] tw-h-[25px] tw-flex tw-items-center tw-justify-center !tw-p-1"
               >
-                <X className="w-[20px] h-[20px] text-foreground" />
+                <X className="tw-w-[20px] tw-h-[20px] tw-text-foreground" />
               </Button>
             </div>
           </div>

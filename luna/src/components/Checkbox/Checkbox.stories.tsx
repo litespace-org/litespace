@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Checkbox } from "@/components/Checkbox";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 
 type Component = typeof Checkbox;

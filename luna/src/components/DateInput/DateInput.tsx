@@ -52,7 +52,7 @@ export const DateInput: React.FC<{
   }, [hide]);
 
   return (
-    <div className="w-full relative" ref={inputRef}>
+    <div className="tw-w-full tw-relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
         error={error}
@@ -66,7 +66,7 @@ export const DateInput: React.FC<{
       />
       {show ? (
         <div
-          className="absolute z-10 border border-control p-3 rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl w-max"
+          className="tw-absolute tw-z-10 tw-border tw-border-control tw-p-3 tw-rounded-md tw-top-[40px] tw-right-0 tw-bg-surface-100 tw-shadow-2xl tw-w-max"
           ref={dateRef}
         >
           <DatePicker

@@ -48,9 +48,9 @@ export const Slider: React.FC<{
       onChange={onChange}
       value={value}
       className={cn(
-        "focus:outline-none",
-        "w-full appearance-none h-1 bg-white/30",
-        "disabled:opacity-50"
+        "focus:tw-outline-none",
+        "tw-w-full tw-appearance-none tw-h-1 tw-bg-white/30",
+        "disabled:tw-opacity-50"
       )}
       disabled={disabled}
       type="range"

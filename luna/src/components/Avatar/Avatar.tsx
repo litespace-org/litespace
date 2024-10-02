@@ -24,10 +24,13 @@ export const Avatar: React.FC<{
   }, []);
 
   return (
-    <div className="relative bg-surface-100 w-full h-full rounded-md overflow-hidden">
+    <div className="tw-relative tw-bg-surface-100 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
       <img
         data-status={status}
-        className="opacity-0 transition-opacity duration-300 ease-linear data-[status=loaded]:opacity-100 object-cover"
+        className={cn(
+          "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear",
+          "data-[status=loaded]:tw-opacity-100 tw-object-cover"
+        )}
         src={src}
         alt={alt}
         onLoad={onLoad}
@@ -37,21 +40,22 @@ export const Avatar: React.FC<{
       <div
         data-status={status}
         className={cn(
-          "absolute inset-0 w-full h-full flex items-center justify-center bg-destructive-200",
-          "opacity-0 data-[status=error]:opacity-100 transition-opacity duration-300"
+          "tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-bg-destructive-200",
+          "tw-opacity-0 data-[status=error]:tw-opacity-100 tw-transition-opacity tw-duration-300"
         )}
       >
-        <AlertCircle className="text-destructive-600" />
+        <AlertCircle className="tw-text-destructive-600" />
       </div>
 
       <span
         data-status={status}
         className={cn(
-          "opacity-100 transition-opacity duration-300 data-[status=loaded]:opacity-0 data-[status=error]:opacity-0",
-          "absolute z-[1] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+          "tw-opacity-100 tw-transition-opacity tw-duration-300",
+          "data-[status=loaded]:tw-opacity-0 data-[status=error]:tw-opacity-0",
+          "tw-absolute tw-z-[1] tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
         )}
       >
-        <Spinner className="text-foreground" />
+        <Spinner className="tw-text-foreground" />
       </span>
     </div>
   );

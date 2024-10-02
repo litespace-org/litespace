@@ -1,5 +1,5 @@
 import React from "react";
-import { VideoPlayer } from "../VideoPlayer";
+import { VideoPlayer } from "@/components/VideoPlayer";
 import { asFullAssetUrl } from "@/lib/atlas";
 
 const Video: React.FC<{
@@ -8,7 +8,7 @@ const Video: React.FC<{
 }> = ({ video, name }) => {
   if (!video || !name) return;
   return (
-    <div className="aspect-[9/16]">
+    <div className="tw-aspect-[9/16]">
       <VideoPlayer src={asFullAssetUrl(video)} />
     </div>
   );

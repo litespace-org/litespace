@@ -6,7 +6,7 @@ export const Label: React.FC<{
   children?: ReactNode;
 }> = ({ id, children }) => {
   return (
-    <label htmlFor={id} className={cn("block text-foreground-light text-sm")}>
+    <label htmlFor={id} className={cn("tw-block tw-text-foreground-light tw-text-sm")}>
       {children}
     </label>
   );

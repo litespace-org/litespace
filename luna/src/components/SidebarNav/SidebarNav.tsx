@@ -23,15 +23,15 @@ const SidebarNav: React.FC<{
   );
 
   return (
-    <nav className="relative">
+    <nav className="tw-relative">
       <div ref={button}>
         <Button
           onClick={toggle}
           size={ButtonSize.Small}
           type={ButtonType.Text}
-          className="!p-2"
+          className="!tw-p-2"
         >
-          <Sidebar className="w-6 h-6" />
+          <Sidebar className="tw-w-6 tw-h-6" />
         </Button>
       </div>
 
@@ -39,25 +39,25 @@ const SidebarNav: React.FC<{
         {open ? (
           <div
             className={cn(
-              "fixed right-0 top-0 h-screen w-screen backdrop-blur-sm z-[1000]"
+              "tw-fixed tw-right-0 tw-top-0 tw-h-screen tw-w-screen tw-backdrop-blur-sm tw-z-[1000]"
             )}
           >
             <motion.ul
               {...framerSidebarBackground}
               className={cn(
-                "flex flex-row gap-4 bg-background-dialog h-full w-96",
-                "border-l border-border-overlay rounded-l-md shadow-lg",
-                "flex flex-col items-center p-6"
+                "tw-flex tw-flex-row tw-gap-4 tw-bg-background-dialog tw-h-full tw-w-96",
+                "tw-border-l tw-border-border-overlay tw-rounded-l-md tw-shadow-lg",
+                "tw-flex tw-flex-col tw-items-center tw-p-6"
               )}
               ref={ref}
             >
               {options.map((option) => {
                 return (
-                  <li key={option.label} className="w-full">
+                  <li key={option.label} className="tw-w-full">
                     <Link
                       to={option.route}
                       onClick={toggle}
-                      className="w-full inline-block"
+                      className="tw-w-full tw-inline-block"
                     >
                       <Button
                         onClick={option.onClick}

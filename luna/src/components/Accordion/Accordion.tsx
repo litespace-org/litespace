@@ -20,19 +20,19 @@ export const Accordion: React.FC<{
   );
 
   return (
-    <div className="w-full">
-      <ul className="w-full border border-border rounded">
+    <div className="tw-w-full">
+      <ul className="tw-w-full tw-border tw-border-border tw-rounded">
         {items.map((item) => (
           <li key={item.id}>
             <div
               onClick={() => toggle(item.id)}
-              className="flex items-center justify-between h-[45px] px-4 py-2 border-b border-border hover:bg-selection cursor-pointer"
+              className="tw-flex tw-items-center tw-justify-between tw-h-[45px] tw-px-4 tw-py-2 tw-border-b tw-border-border hover:tw-bg-selection tw-cursor-pointer"
             >
               <div>{item.trigger}</div>
               <div
                 data-open={item.id === open}
                 className={cn(
-                  "data-[open=true]:rotate-180 transition-transform duration-300"
+                  "data-[open=true]:tw-rotate-180 tw-transition-transform tw-duration-300"
                 )}
               >
                 <ChevronDownIcon />
@@ -41,13 +41,13 @@ export const Accordion: React.FC<{
             <div
               data-open={item.id === open}
               className={cn(
-                "text-foreground-light",
-                "data-[open=true]:border-b data-[open=true]:border-border-strong",
-                "grid grid-rows-[0fr] data-[open=true]:grid-rows-[1fr]",
-                "transition-[grid-template-rows] duration-300 ease-in px-4 data-[open=true]:py-2"
+                "tw-text-foreground-light",
+                "data-[open=true]:tw-border-b data-[open=true]:tw-border-border-strong",
+                "tw-grid tw-grid-rows-[0fr] data-[open=true]:tw-grid-rows-[1fr]",
+                "tw-transition-[grid-template-rows] tw-duration-200 tw-ease-in tw-px-4 data-[open=true]:tw-py-2"
               )}
             >
-              <div className="w-full overflow-hidden">{item.content}</div>
+              <div className="tw-w-full tw-overflow-hidden">{item.content}</div>
             </div>
           </li>
         ))}

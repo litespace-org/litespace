@@ -58,15 +58,15 @@ export const ActionsMenu: React.FC<{
           <button
             disabled={disabled}
             className={cn(
-              "text-center font-normal transition-all ease-out duration-200",
-              "w-9 h-9 rounded-full flex items-center justify-center",
-              "disabled:opacity-50 disabled:cursor-not-allowed",
-              "outline-none transition-all outline-0 focus-visible:outline-2 focus-visible:outline-offset-1",
-              "bg-background-alternative hover:bg-background-selection dark:bg-muted",
-              "border border-border-strong hover:border-border-stronger focus-visible:outline-brand-600 text-foreground"
+              "tw-text-center tw-font-normal tw-transition-all tw-ease-out tw-duration-200",
+              "tw-w-9 tw-h-9 tw-rounded-full tw-flex tw-items-center tw-justify-center",
+              "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
+              "tw-outline-none tw-transition-all tw-outline-0 focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1",
+              "tw-bg-background-alternative hover:tw-bg-background-selection dark:tw-bg-muted",
+              "tw-border tw-border-border-strong hover:tw-border-border-stronger focus-visible:tw-outline-brand-600 tw-text-foreground"
             )}
           >
-            <MoreVertical className="w-5 h-5" />
+            <MoreVertical className="tw-w-5 tw-h-5" />
           </button>
         )}
       </Trigger>
@@ -74,7 +74,7 @@ export const ActionsMenu: React.FC<{
       <Portal>
         <Content
           className={cn(
-            "min-w-56 bg-background-overlay border border-border-overlay rounded-md p-[5px]"
+            "tw-min-w-56 tw-bg-background-overlay tw-border tw-border-border-overlay tw-rounded-md tw-p-[5px]"
           )}
           sideOffset={5}
         >
@@ -82,9 +82,9 @@ export const ActionsMenu: React.FC<{
             <Item
               key={action.id}
               className={cn(
-                "px-2.5 py-1.5 h-[30px] text-sm !leading-none cursor-pointer",
-                "ontline-none hover:outline-background-selection",
-                action.danger && "text-destructive-600"
+                "tw-px-2.5 tw-py-1.5 tw-h-[30px] tw-text-sm !tw-leading-none tw-cursor-pointer",
+                "tw-ontline-none hover:tw-outline-background-selection",
+                action.danger && "twtext-destructive-600"
               )}
             >
               {action.label}
@@ -93,9 +93,9 @@ export const ActionsMenu: React.FC<{
         </Content>
       </Portal>
     </Root>
-    // <div className="relative w-fit" ref={menuRef}>
+    // <div className="tw-relative tw-w-fit" ref={menuRef}>
     //   {children ? (
-    //     <div onClick={toggle} className="cursor-pointer">
+    //     <div onClick={toggle} className="tw-cursor-pointer">
     //       {children}
     //     </div>
     //   ) : (
@@ -103,9 +103,9 @@ export const ActionsMenu: React.FC<{
     //       onClick={toggle}
     //       size={ButtonSize.Tiny}
     //       type={ButtonType.Text}
-    //       className="!p-0 !h-[40px] !w-[40px] !rounded-full"
+    //       className="!tw-p-0 !tw-h-[40px] !tw-w-[40px] !tw-rounded-full"
     //     >
-    //       <MoreVertical className="w-[20px] h-[20px]" />
+    //       <MoreVertical className="tw-w-[20px] tw-h-[20px]" />
     //     </Button>
     //   )}
 

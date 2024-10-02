@@ -6,7 +6,7 @@ import React from "react";
 const List: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
-  return <ul className="flex flex-col gap-1 shrink-0">{children}</ul>;
+  return <ul className="tw-flex tw-flex-col tw-gap-1 tw-shrink-0">{children}</ul>;
 };
 
 export const Labels: React.FC<{ ids: Array<LocalId> }> = ({ ids }) => {
@@ -14,7 +14,7 @@ export const Labels: React.FC<{ ids: Array<LocalId> }> = ({ ids }) => {
   return (
     <List>
       {ids.map((id) => (
-        <li key={id} className="text-foreground-light">
+        <li key={id} className="tw-text-foreground-light">
           <p>{intl(id)}:</p>
         </li>
       ))}
@@ -30,7 +30,7 @@ export const Values: React.FC<{
   return (
     <List>
       {values.map(({ id, value }) => (
-        <li key={id} className="text-foreground">
+        <li key={id} className="tw-text-foreground">
           <p>{value}</p>
         </li>
       ))}
@@ -40,7 +40,7 @@ export const Values: React.FC<{
 
 export const Actions: React.FC<{ actions: MenuAction[] }> = ({ actions }) => {
   return (
-    <div className="mr-auto">
+    <div className="tw-mr-auto">
       <ActionsMenu actions={actions} />
     </div>
   );
@@ -49,5 +49,5 @@ export const Actions: React.FC<{ actions: MenuAction[] }> = ({ actions }) => {
 export const Columns: React.FC<{ children?: React.ReactNode }> = ({
   children,
 }) => {
-  return <div className="flex flex-row gap-2">{children}</div>;
+  return <div className="tw-flex tw-flex-row tw-gap-2">{children}</div>;
 };

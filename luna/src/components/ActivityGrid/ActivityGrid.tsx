@@ -52,8 +52,8 @@ export const ActivityGrid = <T,>({
   }, [map, today]);
 
   return (
-    <Card className="!pt-9 !pb-5 px-8">
-      <ul className="flex flex-row gap-1">
+    <Card className="!tw-pt-9 !tw-pb-5 tw-px-8">
+      <ul className="tw-flex tw-flex-row tw-gap-1">
         {grid.map((week, idx) => {
           const current = first(week)?.date;
           const previous = first(grid[idx - 1])?.date;
@@ -69,19 +69,19 @@ export const ActivityGrid = <T,>({
           const middle = current && previous && next;
 
           return (
-            <li className="relative" key={idx}>
+            <li className="tw-relative" key={idx}>
               {anotherMonth ? (
                 <span
-                  className={cn("absolute text-xs -top-6", {
-                    "left-1/2 -translate-x-1/2": middle,
-                    "right-0": start,
-                    "left-0": end,
+                  className={cn("tw-absolute tw-text-xs -tw-top-6", {
+                    "tw-left-1/2 -tw-translate-x-1/2": middle,
+                    "tw-right-0": start,
+                    "tw-left-0": end,
                   })}
                 >
                   {anotherMonth}
                 </span>
               ) : null}
-              <ul className="flex flex-col gap-1">
+              <ul className="tw-flex tw-flex-col tw-gap-1">
                 {week.map((day) => {
                   const score = day.value?.score || 0;
                   return (
@@ -90,16 +90,16 @@ export const ActivityGrid = <T,>({
                       content={tooltip(day)}
                     >
                       <li
-                        className={cn("w-[12px] h-[12px] rounded-sm", {
-                          "bg-background-selection border border-border-control":
+                        className={cn("tw-w-[12px] tw-h-[12px] tw-rounded-sm", {
+                          "tw-bg-background-selection tw-border tw-border-border-control":
                             score === 0,
-                          "bg-calendar-day-level-1 border border-calendar-day-border-level-1":
+                          "tw-bg-calendar-day-level-1 tw-border tw-border-calendar-day-border-level-1":
                             score === 1,
-                          "bg-calendar-day-level-2 border border-calendar-day-border-level-2":
+                          "tw-bg-calendar-day-level-2 tw-border tw-border-calendar-day-border-level-2":
                             score === 2,
-                          "bg-calendar-day-level-3 border border-calendar-day-border-level-3":
+                          "tw-bg-calendar-day-level-3 tw-border tw-border-calendar-day-border-level-3":
                             score === 3,
-                          "bg-calendar-day-level-4 border border-calendar-day-border-level-4":
+                          "tw-bg-calendar-day-level-4 tw-border tw-border-calendar-day-border-level-4":
                             score >= 4,
                         })}
                       />

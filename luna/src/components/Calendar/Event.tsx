@@ -93,16 +93,16 @@ const EventCard: React.FC<{
   return (
     <div
       className={cn(
-        "absolute bg-surface-200 shadow-xl",
-        "border border-border-control hover:border-border-stronger transition-colors duration-200",
-        "flex items-start justify-start",
+        "tw-absolute tw-bg-surface-200 tw-shadow-xl",
+        "tw-border tw-border-border-control hover:tw-border-border-stronger tw-transition-colors tw-duration-200",
+        "tw-flex tw-items-start tw-justify-start",
         length <= 30
-          ? "text-[0.5rem] px-1 lg:text-xs lg:px-2 lg:py-0.5"
-          : "text-[0.6rem] px-1 lg:text-sm py-1 lg:px-2 lg:py-1"
+          ? "tw-text-[0.5rem] tw-px-1 lg:tw-text-xs lg:tw-px-2 lg:tw-py-0.5"
+          : "tw-text-[0.6rem] tw-px-1 lg:tw-text-sm tw-py-1 lg:tw-px-2 lg:tw-py-1"
       )}
       style={style}
     >
-      <p className="truncate">
+      <p className="tw-truncate">
         {event.title}, {dayjs(event.start).format("h:mm a")}
       </p>
     </div>

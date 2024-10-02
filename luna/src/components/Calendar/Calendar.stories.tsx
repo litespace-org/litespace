@@ -14,7 +14,7 @@ const meta: Meta<Component> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <div className="font-cairo text-foreground bg-dash-sidebar w-full min-h-screen flex text-center justify-center">
+        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-w-full tw-min-h-screen tw-flex tw-text-center tw-justify-center">
           <Story />
         </div>
       </Direction>
@@ -26,14 +26,14 @@ const events: IEvent[] = [
   {
     id: 0,
     wrapper: false,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    title: ar["banks.labels.cib"],
     start: dayjs().startOf("day").add(1, "hour").toISOString(),
     end: dayjs().startOf("day").add(5, "hours").toISOString(),
   },
   {
     id: 1,
     wrapper: false,
-    title: ar["page.complete.profile.form.name.ar.placeholder"],
+    title: ar["banks.labels.alex"],
     start: dayjs().add(1, "day").startOf("day").add(10, "hour").toISOString(),
     end: dayjs().add(1, "day").startOf("day").add(15, "hours").toISOString(),
   },

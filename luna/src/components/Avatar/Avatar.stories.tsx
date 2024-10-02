@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Avatar } from "@/components/Avatar";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import React from "react";
 
 type Component = typeof Avatar;
@@ -18,7 +18,7 @@ const meta: Meta<Component> = {
   decorators: [
     (Story: React.FC) =>
       DarkStoryWrapper(() => (
-        <div className="w-[400px] h-[400px]">
+        <div className="tw-w-[400px] tw-h-[400px]">
           <Story />
         </div>
       )),
