@@ -111,10 +111,10 @@ const Call: React.FC = () => {
     };
   }, [onJoinCall]);
 
-  useEffect(() => {
-    // todo: disable recording in case call is not recordable
-    if (callId && userMediaStream) startRecording(userMediaStream, callId);
-  }, [callId, startRecording, userMediaStream]);
+  // useEffect(() => {
+  // todo: disable recording in case call is not recordable
+  //   if (callId && userMediaStream) startRecording(userMediaStream, callId);
+  // }, [callId, startRecording, userMediaStream]);
 
   const findCallRoom = useCallback(async () => {
     if (!callId) return null;
@@ -151,6 +151,8 @@ const Call: React.FC = () => {
             remoteScreenStream={remoteScreenStream}
             userName={orUndefined(profile?.name)}
             mateName={orUndefined(mate?.name)}
+            userVideo={!cameraOff}
+            userAudio={!muteded}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">

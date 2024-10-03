@@ -11,6 +11,8 @@ const Media: React.FC<{
   remoteScreenStream: MediaStream | null;
   userName?: string;
   mateName?: string;
+  userVideo?: boolean;
+  userAudio?: boolean;
 }> = ({
   userMediaStream,
   remoteMediaStream,
@@ -18,9 +20,13 @@ const Media: React.FC<{
   remoteScreenStream,
   userName,
   mateName,
+  userAudio,
+  userVideo,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { md } = useMediaQueries();
+
+  console.log({ userVideo, userAudio });
 
   const screen = useMemo(() => {
     const userStream = {
@@ -79,7 +85,13 @@ const Media: React.FC<{
       ) : null}
 
       {userMediaStream && !remoteMediaStream && !screen ? (
-        <UserMedia stream={userMediaStream} muted name={userName} />
+        <UserMedia
+          stream={userMediaStream}
+          name={userName}
+          video={userVideo}
+          audio={userAudio}
+          muted
+        />
       ) : null}
 
       {twoMembersOnly && userMediaStream && md ? (
@@ -87,12 +99,20 @@ const Media: React.FC<{
           stream={userMediaStream}
           container={containerRef}
           name={userName}
+          video={userVideo}
+          audio={userAudio}
           muted
         />
       ) : null}
 
       {twoMembersOnly && userMediaStream && !md ? (
-        <UserMedia stream={userMediaStream} muted name={userName} />
+        <UserMedia
+          stream={userMediaStream}
+          name={userName}
+          video={userVideo}
+          audio={userAudio}
+          muted
+        />
       ) : null}
 
       {screen ? <Screen {...screen} containerRef={containerRef} /> : null}

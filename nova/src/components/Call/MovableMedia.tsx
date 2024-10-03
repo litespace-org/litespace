@@ -9,7 +9,9 @@ const MovableMedia: React.FC<{
   muted?: boolean;
   name?: string;
   screen?: boolean;
-}> = ({ container, stream, muted, name, screen }) => {
+  video?: boolean;
+  audio?: boolean;
+}> = ({ container, stream, muted, name, screen, video, audio }) => {
   return (
     <motion.div
       id={stream.id}
@@ -23,7 +25,14 @@ const MovableMedia: React.FC<{
         "rounded-xl overflow-hidden absolute bottom-10 right-10 z-10 cursor-pointer w-[300px] shadow-lg border-b-0"
       )}
     >
-      <UserMedia stream={stream} muted={muted} name={name} screen={screen} />
+      <UserMedia
+        stream={stream}
+        muted={muted}
+        name={name}
+        screen={screen}
+        audio={audio}
+        video={video}
+      />
     </motion.div>
   );
 };

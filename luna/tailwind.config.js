@@ -10,6 +10,11 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      containers: {
+        "2xs": "16rem",
+        "3xs": "12rem",
+        "4xs": "9rem",
+      },
       colors: {
         dash: {
           sidebar: "hsl(var(--background-dash-sidebar))",
@@ -163,6 +168,7 @@ export default {
   },
   plugins: [
     require("tailwind-scrollbar"),
+    require("@tailwindcss/container-queries"),
     plugin(({ addVariant }) => {
       addVariant("webkit-slider-thumb", "&::-webkit-slider-thumb");
       addVariant("moz-slider-thumb", "&::-moz-range-thumb");

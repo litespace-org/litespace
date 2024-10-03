@@ -42,7 +42,7 @@ const Screen: React.FC<{
       ) : null}
 
       {many ? (
-        <div className="flex flex-row justify-center gap-4 items-center lg:h-[300px]">
+        <div className="flex flex-row justify-center gap-4 items-center lg:h-[300px] w-full">
           {activeStreams.map(({ stream, name, screen }) => {
             if (!stream) return null;
             return (
