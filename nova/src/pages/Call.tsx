@@ -12,8 +12,12 @@ import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
 import Media from "@/components/Call/Media";
 import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
+import { useAppSelector } from "@/redux/store";
+import { profileSelectors } from "@/redux/user/me";
+import { orUndefined } from "@litespace/sol";
 
 const Call: React.FC = () => {
+  const profile = useAppSelector(profileSelectors.value);
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
@@ -122,6 +126,11 @@ const Call: React.FC = () => {
     queryKey: ["find-call-room"],
   });
 
+  const mate = useMemo(() => {
+    if (!callRoom.data) return;
+    return callRoom.data.members.find((member) => member.id !== profile?.id);
+  }, [callRoom.data, profile?.id]);
+
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
       <div
@@ -140,6 +149,8 @@ const Call: React.FC = () => {
             remoteMediaStream={remoteMediaStream}
             userScreenStream={shareScreen.stream}
             remoteScreenStream={remoteScreenStream}
+            userName={orUndefined(profile?.name)}
+            mateName={orUndefined(mate?.name)}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
@@ -194,7 +205,11 @@ const Call: React.FC = () => {
         </div>
       </div>
 
-      <div className={cn("min-w-[450px]", "flex flex-col")}>
+      <div
+        className={cn(
+          "hidden lg:flex lg:flex-col lg:min-w-[350px] xl:min-w-[450px]"
+        )}
+      >
         {callRoom.data ? (
           <Messages room={callRoom.data.room} members={callRoom.data.members} />
         ) : null}

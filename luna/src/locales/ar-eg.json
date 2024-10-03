@@ -302,6 +302,7 @@
   "global.labels.booked.at": "تم الحجز {date}",
   "global.labels.send": "إرسال",
   "global.labels.block.or.ban": "إبلاغ/حظر",
+  "global.labels.screen.of": "شاشة {name}",
   "global.schedule.freq.daily": "بشكل يومي",
   "global.schedule.freq.weekly": "بشكل اسبوعي",
   "global.schedule.freq.monthly": "بشكل شهري",
