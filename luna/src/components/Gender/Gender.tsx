@@ -2,13 +2,14 @@ import React, { useMemo } from "react";
 import { Card } from "@/components/Card";
 import { IUser, Void } from "@litespace/types";
 import cn from "classnames";
+import { Tutor } from "@/icons";
 
 const Option: React.FC<{
   image: string;
   active: boolean;
   select: Void;
   disabled?: boolean;
-}> = ({ image, select, active, disabled }) => {
+}> = ({ select, active, disabled }) => {
   return (
     <button
       type="button"
@@ -19,11 +20,11 @@ const Option: React.FC<{
       <Card
         className={cn(
           "tw-aspect-square hover:tw-bg-surface-300 tw-transition-colors tw-duration-300",
-          active &&
-            "tw-bg-gradient-to-br tw-from-blue-700 tw-via-blue-800 tw-to-blue-900"
+          active && "!tw-bg-background-selection"
         )}
       >
-        <img src={image} />
+        <Tutor.Light className="tw-w-full tw-h-full tw-block dark:tw-hidden" />
+        <Tutor.Dark className="tw-w-full tw-h-full tw-hidden dark:tw-block" />
       </Card>
     </button>
   );

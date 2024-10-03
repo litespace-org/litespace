@@ -77,7 +77,7 @@ const Image: React.FC<{
             size={ButtonSize.Small}
           >
             <div className="tw-flex tw-flex-row tw-items-center tw-gap-1">
-              <Edit3 className="tw-text-white/80 tw-w-5 tw-h-5" />
+              <Edit3 className="tw-text-foreground tw-w-5 tw-h-5" />
               <p>{intl("global.labels.edit")}</p>
             </div>
           </Button>
