@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { sockets } from "@/lib/wss";
+import server, { sockets } from "@/lib/wss";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
-import { ICall } from "@litespace/types";
+import { Events, ICall } from "@litespace/types";
 import hark from "hark";
 
 export function useCallRecorder(screen: boolean = false) {
@@ -134,8 +134,8 @@ export function useUserMedia() {
   const [error, setError] = useState<Error | null>(null);
   const [mic, setMic] = useState<boolean>(false);
   const [camera, setCamera] = useState<boolean>(false);
-  const [muteded, setMuteded] = useState<boolean>(false);
-  const [cameraOff, setCameraOff] = useState<boolean>(false);
+  const [audio, setAudio] = useState<boolean>(false);
+  const [video, setVideo] = useState<boolean>(false);
 
   const start = useCallback(async () => {
     setLoading(true);
@@ -160,8 +160,14 @@ export function useUserMedia() {
       const videoTracks = stream.getVideoTracks();
       const audioTracks = stream.getAudioTracks();
 
-      if (videoTracks.length !== 0) setCamera(true);
-      if (audioTracks.length !== 0) setMic(true);
+      if (videoTracks.length !== 0) {
+        setCamera(true);
+        setVideo(true);
+      }
+      if (audioTracks.length !== 0) {
+        setMic(true);
+        setAudio(true);
+      }
 
       videoTracks.forEach((track) => {
         track.addEventListener("ended", () => {
@@ -192,7 +198,7 @@ export function useUserMedia() {
     if (!stream) return;
     stream.getAudioTracks().forEach((track) => {
       track.enabled = !track.enabled;
-      setMuteded(!track.enabled);
+      setAudio(track.enabled);
     });
   }, [stream]);
 
@@ -200,7 +206,7 @@ export function useUserMedia() {
     if (!stream) return;
     stream.getVideoTracks().forEach((track) => {
       track.enabled = !track.enabled;
-      setCameraOff(!track.enabled);
+      setVideo(track.enabled);
     });
   }, [stream]);
 
@@ -211,10 +217,10 @@ export function useUserMedia() {
     start,
     stop,
     toggleSound,
-    muteded,
+    audio,
     mic,
     toggleCamera,
-    cameraOff,
+    video,
     camera,
   };
 }
@@ -249,4 +255,79 @@ export function useSpeech(stream: MediaStream | null) {
   }, [onSpeaking, onStopSpeaking, stream]);
 
   return { speaking };
+}
+
+function useStreamState(stream: MediaStream | null) {
+  const [video, setVideo] = useState<boolean>(false);
+  const [audio, setAduio] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!stream) return;
+    setVideo(stream.getVideoTracks().some((track) => track.enabled));
+    setAduio(stream.getAudioTracks().some((track) => track.enabled));
+  }, [stream]);
+
+  return { video, audio };
+}
+
+export function useCallEvents(
+  stream: MediaStream | null,
+  call: number | null,
+  mate?: number
+) {
+  const [mateVideo, setMateVideo] = useState<boolean>(false);
+  const [mateAudio, setMateAudio] = useState<boolean>(false);
+  const streamState = useStreamState(stream);
+
+  const notifyCameraToggle = useCallback(
+    (camera: boolean) => {
+      if (!call) return;
+      sockets.server.emit(Events.Client.ToggleCamera, { call, camera });
+    },
+    [call]
+  );
+
+  const notifyMicToggle = useCallback(
+    (mic: boolean) => {
+      if (!call) return;
+      sockets.server.emit(Events.Client.ToggleMic, { call, mic });
+    },
+    [call]
+  );
+
+  const onCameraToggle = useCallback(
+    ({ camera, user }: { camera: boolean; user: number }) => {
+      if (user === mate) setMateVideo(camera);
+    },
+    [mate]
+  );
+
+  const onMicToggle = useCallback(
+    ({ mic, user }: { mic: boolean; user: number }) => {
+      if (user === mate) setMateAudio(mic);
+    },
+    [mate]
+  );
+
+  useEffect(() => {
+    sockets.server.on(Events.Server.CameraToggled, onCameraToggle);
+    sockets.server.on(Events.Server.MicToggled, onMicToggle);
+
+    return () => {
+      sockets.server.off(Events.Server.CameraToggled, onCameraToggle);
+      sockets.server.off(Events.Server.MicToggled, onMicToggle);
+    };
+  }, [onCameraToggle, onMicToggle]);
+
+  useEffect(() => {
+    setMateVideo(streamState.video);
+    setMateAudio(streamState.audio);
+  }, [streamState.audio, streamState.video]);
+
+  return {
+    notifyCameraToggle,
+    notifyMicToggle,
+    mateAudio,
+    mateVideo,
+  };
 }

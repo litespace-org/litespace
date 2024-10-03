@@ -9,8 +9,11 @@ export enum Client {
   MarkAsRead = "MarkAsRead",
   PeerOpened = "PeerOpened",
   UserSharingScreen = "UserSharingScreen",
+  ToggleCamera = "ToggleCamera",
+  ToggleMic = "ToggleMic",
   Disconnect = "disconnect",
 }
+
 /**
  * Events emitted by the server
  */
@@ -23,4 +26,6 @@ export enum Server {
   UserJoinedCall = "UserJoinedCall",
   UserSharedScreen = "UserSharedScreen",
   UserStatusChanged = "UserStatusChanged",
+  CameraToggled = "CameraToggle",
+  MicToggled = "MicToggled",
 }

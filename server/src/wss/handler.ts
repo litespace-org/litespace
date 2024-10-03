@@ -4,13 +4,15 @@ import { Socket } from "socket.io";
 import { Events } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
-import { id, string, withNamedId } from "@/validation/utils";
+import { boolean, id, string, withNamedId } from "@/validation/utils";
 import { isEmpty, map } from "lodash";
 import { logger, safe, sanitizeMessage } from "@litespace/sol";
 import "colors";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
+const toggleCameraPayload = zod.object({ call: id, camera: boolean });
+const toggleMicPayload = zod.object({ call: id, mic: boolean });
 const stdout = logger("wss");
 
 export class WssHandler {
@@ -30,6 +32,8 @@ export class WssHandler {
     this.socket.on(Events.Client.DeleteMessage, this.deleteMessage.bind(this));
     this.socket.on(Events.Client.PeerOpened, this.peerOpened.bind(this));
     this.socket.on(Events.Client.Disconnect, this.disconnect.bind(this));
+    this.socket.on(Events.Client.ToggleCamera, this.toggleCamera.bind(this));
+    this.socket.on(Events.Client.ToggleMic, this.toggleMic.bind(this));
   }
 
   async joinRooms() {
@@ -129,6 +133,32 @@ export class WssHandler {
         message.roomId.toString(),
         { roomId: message.roomId, messageId: message.id }
       );
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async toggleCamera(data: unknown) {
+    const error = safe(async () => {
+      const { call, camera } = toggleCameraPayload.parse(data);
+      // todo: add validation
+      this.boradcast(Events.Server.CameraToggled, call.toString(), {
+        user: this.user.id,
+        camera,
+      });
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async toggleMic(data: unknown) {
+    const error = safe(async () => {
+      const { call, mic } = toggleMicPayload.parse(data);
+      // todo: add validation
+      this.boradcast(Events.Server.MicToggled, call.toString(), {
+        user: this.user.id,
+        mic,
+      });
     });
 
     if (error instanceof Error) stdout.error(error.message);

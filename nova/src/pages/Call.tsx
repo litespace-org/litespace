@@ -25,6 +25,7 @@ import { Events } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import {
+  useCallEvents,
   useCallRecorder,
   useShareScreen,
   useSpeech,
@@ -57,8 +58,8 @@ const Call: React.FC = () => {
     toggleCamera,
     mic,
     camera,
-    cameraOff,
-    muteded,
+    video: userVideo,
+    audio: userAudio,
   } = useUserMedia();
 
   const callId = useMemo(() => {
@@ -155,6 +156,9 @@ const Call: React.FC = () => {
     return callRoom.data.members.find((member) => member.id !== profile?.id);
   }, [callRoom.data, profile?.id]);
 
+  const { notifyCameraToggle, notifyMicToggle, mateAudio, mateVideo } =
+    useCallEvents(remoteMediaStream, callId, mate?.id);
+
   const { speaking: userSpeaking } = useSpeech(userMediaStream);
   const { speaking: mateSpeaking } = useSpeech(remoteMediaStream);
 
@@ -165,6 +169,16 @@ const Call: React.FC = () => {
       ) : null,
     [callRoom.data]
   );
+
+  const onToggleCamera = useCallback(() => {
+    toggleCamera();
+    notifyCameraToggle(!userVideo);
+  }, [notifyCameraToggle, toggleCamera, userVideo]);
+
+  const onToggleMic = useCallback(() => {
+    toggleSound();
+    notifyMicToggle(!userAudio);
+  }, [notifyMicToggle, toggleSound, userAudio]);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
@@ -190,8 +204,10 @@ const Call: React.FC = () => {
             mateImage={orUndefined(mate?.image)}
             userSpeaking={userSpeaking}
             mateSpeaking={mateSpeaking}
-            userVideo={!cameraOff}
-            userAudio={!muteded}
+            userVideo={userVideo}
+            userAudio={userAudio}
+            mateVideo={mateVideo}
+            mateAudio={mateAudio}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
@@ -220,28 +236,28 @@ const Call: React.FC = () => {
           </Button>
 
           <Button
-            onClick={toggleCamera}
+            onClick={onToggleCamera}
             disabled={!camera}
             size={ButtonSize.Small}
-            type={cameraOff ? ButtonType.Error : ButtonType.Secondary}
+            type={userVideo ? ButtonType.Secondary : ButtonType.Error}
           >
-            {cameraOff ? (
-              <VideoOff className="w-[20px] h-[20px]" />
-            ) : (
+            {userVideo ? (
               <Video className="w-[20px] h-[20px]" />
+            ) : (
+              <VideoOff className="w-[20px] h-[20px]" />
             )}
           </Button>
 
           <Button
-            onClick={toggleSound}
+            onClick={onToggleMic}
             disabled={!mic}
             size={ButtonSize.Small}
-            type={muteded ? ButtonType.Error : ButtonType.Secondary}
+            type={userAudio ? ButtonType.Secondary : ButtonType.Error}
           >
-            {muteded ? (
-              <MicOff className="w-[20px] h-[20px]" />
-            ) : (
+            {userAudio ? (
               <Mic className="w-[20px] h-[20px]" />
+            ) : (
+              <MicOff className="w-[20px] h-[20px]" />
             )}
           </Button>
         </div>

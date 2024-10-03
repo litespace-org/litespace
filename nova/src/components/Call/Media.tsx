@@ -17,6 +17,8 @@ const Media: React.FC<{
   mateSpeaking?: boolean;
   userVideo?: boolean;
   userAudio?: boolean;
+  mateVideo?: boolean;
+  mateAudio?: boolean;
 }> = ({
   userMediaStream,
   remoteMediaStream,
@@ -30,6 +32,8 @@ const Media: React.FC<{
   mateSpeaking,
   userAudio,
   userVideo,
+  mateAudio,
+  mateVideo,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { md } = useMediaQueries();
@@ -49,6 +53,8 @@ const Media: React.FC<{
       name: mateName,
       screen: false,
       image: mateImage,
+      video: mateVideo,
+      audio: mateAudio,
     };
 
     const userScreen = {
@@ -57,6 +63,7 @@ const Media: React.FC<{
       screen: true,
       image: userImage,
     };
+
     const mateScreen = {
       stream: remoteScreenStream,
       name: mateName,
@@ -76,8 +83,10 @@ const Media: React.FC<{
         others: [userStream, mateStream, mateScreen],
       };
   }, [
+    mateAudio,
     mateImage,
     mateName,
+    mateVideo,
     remoteMediaStream,
     remoteScreenStream,
     userAudio,
@@ -104,6 +113,8 @@ const Media: React.FC<{
           name={mateName}
           image={mateImage}
           speaking={mateSpeaking}
+          video={mateVideo}
+          audio={mateAudio}
         />
       ) : null}
 
