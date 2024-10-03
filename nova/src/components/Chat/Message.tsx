@@ -51,7 +51,9 @@ const Message: React.FC<{
       onMouseEnter={menu.show}
       onMouseLeave={hide}
     >
-      <RawHtml html={message.text} />
+      <div className="max-w-screen-sm">
+        <RawHtml html={message.text} />
+      </div>
       <div
         data-open={menu.open}
         className={cn(

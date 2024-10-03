@@ -45,6 +45,15 @@ export const TextEditor: React.FC<{
     [setValue]
   );
 
+  const onPast = useCallback(
+    async (event: React.ClipboardEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      const text = await navigator.clipboard.readText();
+      return execCommand("insertText", text);
+    },
+    [execCommand]
+  );
+
   return (
     <div>
       <div className="tw-flex tw-gap-3 tw-mb-2">
@@ -84,6 +93,8 @@ export const TextEditor: React.FC<{
             },
             className
           )}
+          dir="auto"
+          onPaste={onPast}
         />
       </RawHtml>
 

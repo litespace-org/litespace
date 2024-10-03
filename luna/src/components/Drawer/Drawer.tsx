@@ -19,8 +19,13 @@ const Drawer: React.FC<{
     >
       <div className="tw-flex tw-items-center tw-justify-between tw-h-10 px-2 pt-2">
         <h3 className="tw-mr-3 tw-text-2xl">{title}</h3>
-        <Button onClick={close} size={ButtonSize.Small} type={ButtonType.Text}>
-          <X />
+        <Button
+          onClick={close}
+          size={ButtonSize.Tiny}
+          type={ButtonType.Text}
+          className="!tw-px-1"
+        >
+          <X className="tw-w-5 tw-h-5" />
         </Button>
       </div>
       <div className="tw-h-[calc(100vh-2.5rem)]">{children}</div>

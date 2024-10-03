@@ -16,6 +16,8 @@ import { Gender as BaseGender } from "@/components/Gender";
 import { Duration as BaseDuration } from "@/components/Duration";
 import { Duration as IDuration } from "@litespace/sol";
 import { useDurationUnitMap } from "@/hooks/duration";
+import { Textarea as BaseTextarea } from "@/components/Textarea";
+import { TextareaProps } from "../Textarea/Textarea";
 
 export function TextEditor<T extends FieldValues>({
   control,
@@ -153,6 +155,32 @@ export function Duration<T extends FieldValues>({
           value={value}
           placeholder={placeholder}
           error={formState.errors[name]?.message as string}
+        />
+      )}
+    />
+  );
+}
+
+export function Textarea<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & TextareaProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field, formState }) => (
+        <BaseTextarea
+          error={formState.errors[name]?.message as string}
+          {...field}
+          {...props}
         />
       )}
     />

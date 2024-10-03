@@ -10,6 +10,7 @@ const sanitizeConf: IFilterXSSOptions = {
     li: [],
     br: [],
     div: [],
+    h3: [],
   },
   singleQuotedAttributeValue: true,
 };

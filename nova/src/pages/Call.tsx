@@ -15,9 +15,9 @@ import {
   MicOff,
   Video,
   VideoOff,
-  PhoneOff,
   Monitor,
   MessageCircle,
+  Phone,
 } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
@@ -141,6 +141,10 @@ const Call: React.FC = () => {
   //   if (callId && userMediaStream) startRecording(userMediaStream, callId);
   // }, [callId, startRecording, userMediaStream]);
 
+  const onLeaveCall = useCallback(() => {
+    peer.destroy();
+  }, []);
+
   const findCallRoom = useCallback(async () => {
     if (!callId) return null;
     return await atlas.chat.findCallRoom(callId);
@@ -211,8 +215,12 @@ const Call: React.FC = () => {
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
-          <Button size={ButtonSize.Small} type={ButtonType.Error}>
-            <PhoneOff className="w-[20px] h-[20px]" />
+          <Button
+            onClick={onLeaveCall}
+            size={ButtonSize.Small}
+            type={ButtonType.Error}
+          >
+            <Phone className="w-[20px] h-[20px]" />
           </Button>
 
           {!mediaQueries.lg ? (
@@ -265,7 +273,7 @@ const Call: React.FC = () => {
 
       <div
         className={cn(
-          "hidden lg:flex lg:flex-col lg:max-w-[350px] xl:max-w-[450px]"
+          "hidden w-full lg:flex lg:flex-col lg:max-w-[350px] xl:max-w-[450px]"
         )}
       >
         {messages}

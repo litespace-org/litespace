@@ -252,6 +252,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --foreground-muted: 0deg 0% 30.2%;
   --foreground-lighter: 0deg 0% 53.7%;
   --foreground-light: 0deg 0% 70.6%;
+  --foreground-semi-light: 0deg 0% 80%;
   --foreground-default: 0deg 0% 98%;
   --border-button-hover: var(--colors-gray-dark-800);
   --border-button-default: var(--colors-gray-dark-700);
@@ -313,6 +314,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --foreground-muted: 0deg 0% 69.8%; /* ✅ */
   --foreground-lighter: 0deg 0% 43.9%; /* ✅ */
   --foreground-light: 0deg 0% 32.2%; /* ✅ */
+  --foreground-semi-light: 0deg 0% 20%; /* ✅ */
   --foreground-default: var(--colors-gray-light-1200); /* ✅ */
   --border-button-hover: var(--colors-gray-light-700); /* ✅ */
   --border-button-default: var(--colors-gray-light-600); /* ✅ */

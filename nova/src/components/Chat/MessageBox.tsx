@@ -26,7 +26,6 @@ const MessageBox: React.FC<{
   const form = useForm<IForm>({ defaultValues: { message: "" } });
   const message = form.watch("message");
   const sanitizedMessage = useMemo(() => sanitizeMessage(message), [message]);
-  // const { sendMessage, updateMessage } = useChat(onMessage);
 
   const send = useCallback(
     (message: string) => {
@@ -34,9 +33,6 @@ const MessageBox: React.FC<{
       if (!sanitized) return;
       form.reset();
       return submit(sanitized);
-
-      // if (edit) return updateMessage({ id: edit.id, text: sanitized });
-      // return sendMessage({ roomId: room, text: sanitized });
     },
     [form, submit]
   );
@@ -69,7 +65,6 @@ const MessageBox: React.FC<{
         control={form.control}
         name="message"
         value={form.watch("message")}
-        error={form.formState.errors.message?.message}
         className="min-h-20"
       />
       <div className="flex flex-row gap-2">

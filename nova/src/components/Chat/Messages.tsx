@@ -119,7 +119,7 @@ const Messages: React.FC<{
         <>
           <div
             className={cn(
-              "h-full overflow-x-hidden overflow-y-auto px-4 pt-4 pb-6",
+              "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
               "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
             )}
             ref={messagesRef}

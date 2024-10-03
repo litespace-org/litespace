@@ -22,8 +22,8 @@ const MessageGroup: React.FC<{
   onDeleteMessage,
 }) => {
   return (
-    <li className={cn("flex flex-row gap-2")}>
-      <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full shrink-0">
+    <li className={cn("flex flex-row gap-2 @container")}>
+      <div className="w-8 h-8 @sm:w-10 @sm:h-10 @md:w-12 @md:h-12  overflow-hidden rounded-full shrink-0">
         <img
           className="object-cover w-full h-full"
           src={sender.photo ? asFullAssetUrl(sender.photo) : "/avatar-1.png"}
@@ -31,11 +31,11 @@ const MessageGroup: React.FC<{
       </div>
       <div className="w-full">
         <div className="flex flex-row gap-2 items-center">
-          <p className="font-bold text-foreground text-xs md:text-base">
+          <p className="font-bold text-foreground text-xs @sm:text-[14px] @md:text-base">
             {sender.name}
           </p>
-          &mdash;
-          <p className="text-foreground-muted dark:text-foreground-light text-xs md:text-base leading-none">
+          <p className="text-foreground-muted dark:text-foreground-light text-xs @sm:text-[14px] @md:text-base leading-none">
+            &mdash; &nbsp;
             {dayjs(date).fromNow()}
           </p>
         </div>

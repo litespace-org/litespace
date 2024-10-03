@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import server, { sockets } from "@/lib/wss";
+import { sockets } from "@/lib/wss";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
