@@ -190,8 +190,8 @@ const RuleForm: React.FC<{
   );
 
   const disabled = useMemo(
-    () => create.isLoading || update.isLoading,
-    [create.isLoading, update.isLoading]
+    () => create.isPending || update.isPending,
+    [create.isPending, update.isPending]
   );
 
   const text = useMemo(() => {

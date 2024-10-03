@@ -5,7 +5,7 @@ import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
 
-type TutorMediaFieldsMap = Record<keyof ITutor.TutorMediaRow, string>;
+type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFields = ITutor.FullTutorRow;
 type FullTutorFieldsMap = Record<keyof FullTutorFields, string>;
 
@@ -29,11 +29,9 @@ const fullTutorFields: FullTutorFieldsMap = {
   bio: tutorColumn("bio"),
   about: tutorColumn("about"),
   video: tutorColumn("video"),
+  notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
   activatedBy: tutorColumn("activated_by"),
-  passedInterview: tutorColumn("passed_interview"),
-  interviewUrl: tutorColumn("interview_url"),
-  mediaProviderId: tutorColumn("media_provider_id"),
 } as const;
 
 const tutorMediaFields: TutorMediaFieldsMap = {
@@ -86,19 +84,18 @@ export class Tutors {
 
   async update(
     id: number,
-    tutor: ITutor.UpdatePayload,
+    payload: ITutor.UpdatePayload,
     tx?: Knex.Transaction
   ): Promise<void> {
     const now = dayjs().utc().toDate();
     await this.builder(tx)
       .update({
-        bio: tutor.bio,
-        about: tutor.about,
-        video: tutor.video,
-        activated: tutor.activated,
-        activated_by: tutor.activatedBy,
-        media_provider_id: tutor.mediaProviderId,
-        passed_interview: tutor.passedInterview,
+        bio: payload.bio,
+        about: payload.about,
+        video: payload.video,
+        notice: payload.notice,
+        activated: payload.activated,
+        activated_by: payload.activatedBy,
         updated_at: now,
       })
       .where("id", id);
@@ -238,12 +235,10 @@ export class Tutors {
       id: row.id,
       bio: row.bio,
       about: row.about,
+      video: row.video,
+      notice: row.notice,
       activated: row.activated,
       activatedBy: row.activated_by,
-      interviewUrl: row.interview_url,
-      mediaProviderId: row.media_provider_id,
-      passedInterview: row.passed_interview,
-      video: row.video,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

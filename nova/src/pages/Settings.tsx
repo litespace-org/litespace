@@ -2,13 +2,13 @@ import React, { useCallback } from "react";
 import { Settings as Components } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findProfile, profileSelectors, setUserProfile } from "@/redux/user/me";
-import { findTutorMeta, tutorMetaSelector } from "@/redux/user/tutor";
+import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
 import { RefreshUser } from "@litespace/luna";
 import { IUser } from "@litespace/types";
 
 const Settings: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
-  const tutor = useAppSelector(tutorMetaSelector);
+  const tutor = useAppSelector(tutorMetaSelectors.full);
   const dispatch = useAppDispatch();
 
   const refresh: RefreshUser = useCallback(
@@ -23,14 +23,23 @@ const Settings: React.FC = () => {
   );
 
   return (
-    <div className="p-6 max-w-screen-2xl mx-auto w-full sm:w-fit">
+    <div className="p-6 max-w-screen-2xl mx-auto w-full sm:w-fit pb-32">
       <Components.Profile
         profile={profile.value}
         refresh={refresh}
-        tutor={tutor}
+        tutor={tutor.value}
         loading={profile.loading}
         fetching={profile.fetching}
       />
+
+      {tutor.value ? (
+        <Components.Notice
+          notice={tutor.value.notice}
+          fetching={tutor.fetching}
+          user={tutor.value.id}
+          refresh={refresh}
+        />
+      ) : null}
     </div>
   );
 };

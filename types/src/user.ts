@@ -75,6 +75,7 @@ export type UpdateApiPayload = {
   password?: string;
   name?: string;
   gender?: Gender;
+  notice?: number;
   birthYear?: number;
   drop?: { image?: boolean; video?: boolean };
   bio?: string;

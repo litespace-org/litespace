@@ -35,6 +35,7 @@ const updateUserPayload = zod.object({
   password: zod.optional(password),
   name: zod.optional(string),
   gender: zod.optional(gender),
+  notice: zod.optional(zod.number().positive().int()),
   birthYear: zod.optional(zod.number().positive()),
   drop: zod.optional(
     zod.object({
@@ -97,8 +98,17 @@ function update(context: ApiContext) {
     const targetUser = await users.findById(id);
     if (!targetUser) return next(notfound.user());
 
-    const { email, name, password, gender, birthYear, drop, bio, about } =
-      updateUserPayload.parse(req.body);
+    const {
+      email,
+      name,
+      password,
+      gender,
+      birthYear,
+      drop,
+      bio,
+      about,
+      notice,
+    }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
     const files = {
       image: {
@@ -111,7 +121,7 @@ function update(context: ApiContext) {
       },
     } as const;
 
-    // Only media provider can update tutor media files (images and videos)
+    // Only media provider and admins can update tutor media files (images and videos)
     // Tutor cannot upload it for himself.
     const isUpdatingTutorMedia =
       (files.image.file || files.video.file) &&
@@ -123,8 +133,8 @@ function update(context: ApiContext) {
     ].includes(currentUser.role);
     if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
 
-    // Only media providers can upload videos.
-    // e.g., students/interviewers cannot try to upload videos
+    // Only media providers and admins can upload videos.
+    // e.g., students/interviewers cannot upload videos
     if (files.video.file && !isEligibleUser) return next(forbidden());
 
     const [image, video] = await Promise.all(
@@ -147,10 +157,11 @@ function update(context: ApiContext) {
         tx
       );
 
-      if (bio || about || video || drop?.video)
+      const tutorData = bio || about || video || drop?.video || notice;
+      if (targetUser.role === IUser.Role.Tutor && tutorData)
         await tutors.update(
           targetUser.id,
-          { bio, about, video: drop?.video ? null : video },
+          { bio, about, video: drop?.video ? null : video, notice },
           tx
         );
 

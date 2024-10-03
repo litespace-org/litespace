@@ -47,7 +47,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
             : messages["page.schedule.list.actions.activate"],
         }),
         onClick: rule.activated ? deactivateRule.show : activate.mutate,
-        disabled: activate.isLoading,
+        disabled: activate.isPending,
         danger: rule.activated,
       },
       {
@@ -61,7 +61,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
     ];
     return list;
   }, [
-    activate.isLoading,
+    activate.isPending,
     activate.mutate,
     deactivateRule.show,
     deleteRule.show,

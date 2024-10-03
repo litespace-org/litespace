@@ -13,6 +13,9 @@ import {
 } from "@/components/NumericInput";
 import { IUser } from "@litespace/types";
 import { Gender as BaseGender } from "@/components/Gender";
+import { Duration as BaseDuration } from "@/components/Duration";
+import { Duration as IDuration } from "@litespace/sol";
+import { useDurationUnitMap } from "@/hooks/duration";
 
 export function TextEditor<T extends FieldValues>({
   control,
@@ -118,6 +121,38 @@ export function Gender<T extends FieldValues>({
           disabled={disabled}
           setGender={field.onChange}
           gender={value}
+        />
+      )}
+    />
+  );
+}
+
+export function Duration<T extends FieldValues>({
+  control,
+  name,
+  value,
+  disabled,
+  placeholder,
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  value?: IDuration;
+  disabled?: boolean;
+  placeholder?: string;
+}) {
+  const labels = useDurationUnitMap();
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field, formState }) => (
+        <BaseDuration
+          labels={labels}
+          disabled={disabled}
+          onChange={field.onChange}
+          value={value}
+          placeholder={placeholder}
+          error={formState.errors[name]?.message as string}
         />
       )}
     />

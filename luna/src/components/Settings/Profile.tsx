@@ -149,7 +149,7 @@ const Profile: React.FC<{
   );
 
   return (
-    <div>
+    <div className="tw-mb-8">
       <div className="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-mb-6 tw-pb-3 tw-border-b tw-border-border-stronger">
         <h3 className="tw-text-2xl lg:tw-text-3xl">
           {intl("settings.profile.title")}
