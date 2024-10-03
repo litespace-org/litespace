@@ -1,14 +1,35 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { sockets } from "@/lib/wss";
 import { MediaConnection } from "peerjs";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna";
-import { Mic, MicOff, Video, VideoOff, PhoneOff, Monitor } from "react-feather";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  Drawer,
+  useFormatMessage,
+  useMediaQueries,
+  useRender,
+} from "@litespace/luna";
+import {
+  Mic,
+  MicOff,
+  Video,
+  VideoOff,
+  PhoneOff,
+  Monitor,
+  MessageCircle,
+} from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { Events } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
-import { useCallRecorder, useShareScreen, useUserMedia } from "@/hooks/call";
+import {
+  useCallRecorder,
+  useShareScreen,
+  useSpeech,
+  useUserMedia,
+} from "@/hooks/call";
 import Media from "@/components/Call/Media";
 import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
@@ -18,6 +39,9 @@ import { orUndefined } from "@litespace/sol";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.value);
+  const chat = useRender();
+  const intl = useFormatMessage();
+  const mediaQueries = useMediaQueries();
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
@@ -131,6 +155,17 @@ const Call: React.FC = () => {
     return callRoom.data.members.find((member) => member.id !== profile?.id);
   }, [callRoom.data, profile?.id]);
 
+  const { speaking: userSpeaking } = useSpeech(userMediaStream);
+  const { speaking: mateSpeaking } = useSpeech(remoteMediaStream);
+
+  const messages = useMemo(
+    () =>
+      callRoom.data ? (
+        <Messages room={callRoom.data.room} members={callRoom.data.members} />
+      ) : null,
+    [callRoom.data]
+  );
+
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
       <div
@@ -153,71 +188,80 @@ const Call: React.FC = () => {
             mateName={orUndefined(mate?.name)}
             userImage={orUndefined(profile?.image)}
             mateImage={orUndefined(mate?.image)}
+            userSpeaking={userSpeaking}
+            mateSpeaking={mateSpeaking}
             userVideo={!cameraOff}
             userAudio={!muteded}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">
-          <div>
-            <Button size={ButtonSize.Small} type={ButtonType.Error}>
-              <PhoneOff className="w-[20px] h-[20px]" />
-            </Button>
-          </div>
-          <div>
+          <Button size={ButtonSize.Small} type={ButtonType.Error}>
+            <PhoneOff className="w-[20px] h-[20px]" />
+          </Button>
+
+          {!mediaQueries.lg ? (
             <Button
-              onClick={
-                shareScreen.stream ? shareScreen.stop : shareScreen.start
-              }
-              loading={shareScreen.loading}
-              disabled={shareScreen.loading}
+              onClick={chat.show}
               size={ButtonSize.Small}
-              type={
-                shareScreen.stream ? ButtonType.Error : ButtonType.Secondary
-              }
+              type={ButtonType.Secondary}
             >
-              <Monitor className="w-[20px] h-[20px]" />
+              <MessageCircle />
             </Button>
-          </div>
-          <div>
-            <Button
-              onClick={toggleCamera}
-              disabled={!camera}
-              size={ButtonSize.Small}
-              type={cameraOff ? ButtonType.Error : ButtonType.Secondary}
-            >
-              {cameraOff ? (
-                <VideoOff className="w-[20px] h-[20px]" />
-              ) : (
-                <Video className="w-[20px] h-[20px]" />
-              )}
-            </Button>
-          </div>
-          <div>
-            <Button
-              onClick={toggleSound}
-              disabled={!mic}
-              size={ButtonSize.Small}
-              type={muteded ? ButtonType.Error : ButtonType.Secondary}
-            >
-              {muteded ? (
-                <MicOff className="w-[20px] h-[20px]" />
-              ) : (
-                <Mic className="w-[20px] h-[20px]" />
-              )}
-            </Button>
-          </div>
+          ) : null}
+
+          <Button
+            onClick={shareScreen.stream ? shareScreen.stop : shareScreen.start}
+            loading={shareScreen.loading}
+            disabled={shareScreen.loading}
+            size={ButtonSize.Small}
+            type={shareScreen.stream ? ButtonType.Error : ButtonType.Secondary}
+          >
+            <Monitor className="w-[20px] h-[20px]" />
+          </Button>
+
+          <Button
+            onClick={toggleCamera}
+            disabled={!camera}
+            size={ButtonSize.Small}
+            type={cameraOff ? ButtonType.Error : ButtonType.Secondary}
+          >
+            {cameraOff ? (
+              <VideoOff className="w-[20px] h-[20px]" />
+            ) : (
+              <Video className="w-[20px] h-[20px]" />
+            )}
+          </Button>
+
+          <Button
+            onClick={toggleSound}
+            disabled={!mic}
+            size={ButtonSize.Small}
+            type={muteded ? ButtonType.Error : ButtonType.Secondary}
+          >
+            {muteded ? (
+              <MicOff className="w-[20px] h-[20px]" />
+            ) : (
+              <Mic className="w-[20px] h-[20px]" />
+            )}
+          </Button>
         </div>
       </div>
 
       <div
         className={cn(
-          "hidden lg:flex lg:flex-col lg:min-w-[350px] xl:min-w-[450px]"
+          "hidden lg:flex lg:flex-col lg:max-w-[350px] xl:max-w-[450px]"
         )}
       >
-        {callRoom.data ? (
-          <Messages room={callRoom.data.room} members={callRoom.data.members} />
-        ) : null}
+        {messages}
       </div>
+
+      <Drawer
+        title={intl("global.labels.chat")}
+        open={chat.open && !mediaQueries.lg}
+        close={chat.hide}
+      >
+        {messages}
+      </Drawer>
     </div>
   );
 };

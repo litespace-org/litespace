@@ -5,6 +5,7 @@ import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
 import { ICall } from "@litespace/types";
+import hark from "hark";
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
@@ -232,4 +233,20 @@ export function useCallRecordingStatus(status: ICall.RecordingStatus) {
     }),
     [status]
   );
+}
+
+export function useSpeech(stream: MediaStream | null) {
+  const [speaking, setSpeaking] = useState<boolean>(false);
+
+  const onSpeaking = useCallback(() => setSpeaking(true), []);
+  const onStopSpeaking = useCallback(() => setSpeaking(false), []);
+
+  useEffect(() => {
+    if (!stream) return;
+    const speech = hark(stream);
+    speech.on("speaking", onSpeaking);
+    speech.on("stopped_speaking", onStopSpeaking);
+  }, [onSpeaking, onStopSpeaking, stream]);
+
+  return { speaking };
 }

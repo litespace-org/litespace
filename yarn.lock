@@ -3440,6 +3440,7 @@ __metadata:
     "@reduxjs/toolkit": "npm:^2.2.5"
     "@tanstack/react-query": "npm:^5.56.2"
     "@tauri-apps/cli": "npm:^1.6.0"
+    "@types/hark": "npm:^1"
     "@types/react": "npm:^18.2.66"
     "@types/react-dom": "npm:^18.2.22"
     "@types/react-redux": "npm:^7.1.33"
@@ -3454,7 +3455,9 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.0"
     eslint-plugin-react-refresh: "npm:^0.4.6"
     framer-motion: "npm:^11.2.6"
+    hark: "npm:^1.2.3"
     lodash: "npm:^4.17.21"
+    lottie-react: "npm:^2.4.0"
     marked: "npm:^14.0.0"
     peerjs: "npm:^1.5.4"
     postcss: "npm:^8.4.38"
@@ -7124,6 +7127,13 @@ __metadata:
   dependencies:
     "@types/node": "npm:*"
   checksum: 10c0/235d2fc69741448e853333b7c3d1180a966dd2b8972c8cbcd6b2a0c6cd7f8d582ab2b8e58219dbc62cce8f1b40aa317ff78ea2201cdd8249da5025adebed6f0b
+  languageName: node
+  linkType: hard
+
+"@types/hark@npm:^1":
+  version: 1.2.5
+  resolution: "@types/hark@npm:1.2.5"
+  checksum: 10c0/2cf991ed991041a63d34ecce4aedfd5262abfc6c690f489ba4801937afab147b133d7b8a7fe6b9d3fda431256a8d127ba51acd0aedb10cc87198d9e6d594c11e
   languageName: node
   linkType: hard
 
@@ -13948,6 +13958,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"hark@npm:^1.2.3":
+  version: 1.2.3
+  resolution: "hark@npm:1.2.3"
+  dependencies:
+    wildemitter: "npm:^1.2.0"
+  checksum: 10c0/237f787eed9422501dc3297b98467a3db7b95dbbb7400df9ee70bcf3df087121e637a588dedc85ac8abfbb9a983c61f586725bb27ff8568e6957ebdafae18e43
+  languageName: node
+  linkType: hard
+
 "has-bigints@npm:^1.0.1, has-bigints@npm:^1.0.2":
   version: 1.0.2
   resolution: "has-bigints@npm:1.0.2"
@@ -16346,6 +16365,25 @@ __metadata:
   bin:
     loose-envify: cli.js
   checksum: 10c0/655d110220983c1a4b9c0c679a2e8016d4b67f6e9c7b5435ff5979ecdb20d0813f4dec0a08674fcbdd4846a3f07edbb50a36811fd37930b94aaa0d9daceb017e
+  languageName: node
+  linkType: hard
+
+"lottie-react@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "lottie-react@npm:2.4.0"
+  dependencies:
+    lottie-web: "npm:^5.10.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10c0/5c0ef3f1832b21232fe6826cc021cd90bb0e3c9d63f1047031ce77a0992092f8712b6f3a6aeeaa0f410d918ca557df160b1c776399f69b498c560273767befe0
+  languageName: node
+  linkType: hard
+
+"lottie-web@npm:^5.10.2":
+  version: 5.12.2
+  resolution: "lottie-web@npm:5.12.2"
+  checksum: 10c0/0aeaf631b10a76afd025df70c2a1486543530708e07a316946c08e55891dac483ffbaf2bf3648ae0b9c54c733118a0a086fd150aa76f7848606214c67ad72c30
   languageName: node
   linkType: hard
 
@@ -24544,6 +24582,13 @@ __metadata:
   dependencies:
     string-width: "npm:^4.0.0"
   checksum: 10c0/b1e623adcfb9df35350dd7fc61295d6d4a1eaa65a406ba39c4b8360045b614af95ad10e05abf704936ed022569be438c4bfa02d6d031863c4166a238c301119f
+  languageName: node
+  linkType: hard
+
+"wildemitter@npm:^1.2.0":
+  version: 1.2.1
+  resolution: "wildemitter@npm:1.2.1"
+  checksum: 10c0/614b1ff678b9114326963254994d0145d47aad6b816c0ee2b6f231ba2d245e25bb052ddd276190592e9c04ca154c3b8cd321ace404c4dbb7118e86fd512d65d4
   languageName: node
   linkType: hard
 

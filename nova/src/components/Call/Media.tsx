@@ -13,6 +13,8 @@ const Media: React.FC<{
   mateName?: string;
   userImage?: string;
   mateImage?: string;
+  userSpeaking?: boolean;
+  mateSpeaking?: boolean;
   userVideo?: boolean;
   userAudio?: boolean;
 }> = ({
@@ -24,6 +26,8 @@ const Media: React.FC<{
   mateName,
   userImage,
   mateImage,
+  userSpeaking,
+  mateSpeaking,
   userAudio,
   userVideo,
 }) => {
@@ -99,6 +103,7 @@ const Media: React.FC<{
           stream={remoteMediaStream}
           name={mateName}
           image={mateImage}
+          speaking={mateSpeaking}
         />
       ) : null}
 
@@ -109,6 +114,7 @@ const Media: React.FC<{
           video={userVideo}
           audio={userAudio}
           image={userImage}
+          speaking={userSpeaking}
           muted
         />
       ) : null}
@@ -121,6 +127,7 @@ const Media: React.FC<{
           video={userVideo}
           audio={userAudio}
           image={userImage}
+          speaking={userSpeaking}
           muted
         />
       ) : null}
@@ -132,6 +139,7 @@ const Media: React.FC<{
           video={userVideo}
           audio={userAudio}
           image={userImage}
+          speaking={userSpeaking}
           muted
         />
       ) : null}

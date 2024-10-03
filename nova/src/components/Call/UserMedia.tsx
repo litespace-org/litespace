@@ -4,6 +4,9 @@ import { useFormatMessage } from "@litespace/luna";
 import { MicOff } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
 import { asFullAssetUrl } from "@/lib/atlas";
+import Lottie from "lottie-react";
+import dark from "@/animations/speaking-dark.json";
+import light from "@/animations/speaking-light.json";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -19,6 +22,7 @@ const UserMedia: React.FC<{
   video?: boolean;
   audio?: boolean;
   image?: string;
+  speaking?: boolean;
 }> = ({
   stream,
   name,
@@ -27,6 +31,7 @@ const UserMedia: React.FC<{
   screen = false,
   video = true,
   audio = true,
+  speaking = false,
   image,
 }) => {
   const intl = useFormatMessage();
@@ -87,10 +92,34 @@ const UserMedia: React.FC<{
       </AnimatePresence>
 
       {name ? (
-        <p className="absolute bottom-1 right-2 z-[2] text-white text-[0.6rem] @4xs:text-xs @xs:text-sm">
+        <p
+          className={cn(
+            "absolute bottom-1 right-2 z-[2] text-[0.6rem] @4xs:text-xs @xs:text-sm",
+            video ? "text-white" : "text-foreground"
+          )}
+        >
           {screen ? intl("global.labels.screen.of", { name }) : name}
         </p>
       ) : null}
+
+      <AnimatePresence>
+        {speaking ? (
+          <motion.div
+            variants={variants}
+            initial="hidden"
+            animate="visible"
+            exit="hidden"
+            className="absolute bottom-0 left-0 z-[2] w-20"
+          >
+            <div className="hidden dark:block">
+              <Lottie animationData={dark} />
+            </div>
+            <div className="block dark:hidden">
+              <Lottie animationData={light} />
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
     </div>
   );
 };

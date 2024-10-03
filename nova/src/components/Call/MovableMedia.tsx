@@ -12,7 +12,18 @@ const MovableMedia: React.FC<{
   video?: boolean;
   audio?: boolean;
   image?: string;
-}> = ({ container, stream, muted, name, screen, video, audio, image }) => {
+  speaking?: boolean;
+}> = ({
+  container,
+  stream,
+  muted,
+  name,
+  screen,
+  video,
+  audio,
+  image,
+  speaking,
+}) => {
   return (
     <motion.div
       id={stream.id}
@@ -34,6 +45,7 @@ const MovableMedia: React.FC<{
         audio={audio}
         video={video}
         image={image}
+        speaking={speaking}
       />
     </motion.div>
   );

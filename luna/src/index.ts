@@ -15,6 +15,7 @@ export { Card } from "@/components/Card";
 export { Accordion, type AccordionItem } from "@/components/Accordion";
 export { ActionsMenu, type MenuAction } from "@/components/ActionsMenu";
 export { Dialog } from "@/components/Dialog";
+export { Drawer } from "@/components/Drawer";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";
 export { VideoPlayer } from "@/components/VideoPlayer";
