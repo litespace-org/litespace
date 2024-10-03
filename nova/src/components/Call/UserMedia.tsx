@@ -3,6 +3,7 @@ import cn from "classnames";
 import { useFormatMessage } from "@litespace/luna";
 import { MicOff } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
+import { asFullAssetUrl } from "@/lib/atlas";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -17,14 +18,16 @@ const UserMedia: React.FC<{
   screen?: boolean;
   video?: boolean;
   audio?: boolean;
+  image?: string;
 }> = ({
   stream,
-  muted = false,
   name,
   mode = "cover",
+  muted = false,
   screen = false,
   video = true,
   audio = true,
+  image,
 }) => {
   const intl = useFormatMessage();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -49,18 +52,23 @@ const UserMedia: React.FC<{
 
       <AnimatePresence>
         {!video ? (
-          <motion.img
+          <motion.div
             variants={variants}
             initial="hidden"
             animate="visible"
             exit="hidden"
-            data-show={!video}
-            src="/avatar-1.png"
-            className={cn("absolute z-[1] top-0 left-0 w-full h-full", {
-              "object-contain": mode === "contain",
-              "object-cover": mode === "cover",
-            })}
-          />
+            className={cn(
+              "absolute z-[1] top-0 left-0 w-full h-full",
+              "flex items-center justify-center"
+            )}
+          >
+            <div className="w-16 h-16 @3xs:w-[5rem] @3xs:h-[5rem] @2xs:w-24 @2xs:h-24 @xs:w-32 @xs:h-32 @sm:w-44 @sm:h-44 @lg:w-60 @lg:h-60  @xl:w-64 @xl:h-64 rounded-full ring-4 ring-border-strong overflow-hidden">
+              <img
+                className="w-full h-full object-cover"
+                src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
+              />
+            </div>
+          </motion.div>
         ) : null}
       </AnimatePresence>
 

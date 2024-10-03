@@ -11,6 +11,8 @@ const Media: React.FC<{
   remoteScreenStream: MediaStream | null;
   userName?: string;
   mateName?: string;
+  userImage?: string;
+  mateImage?: string;
   userVideo?: boolean;
   userAudio?: boolean;
 }> = ({
@@ -20,34 +22,42 @@ const Media: React.FC<{
   remoteScreenStream,
   userName,
   mateName,
+  userImage,
+  mateImage,
   userAudio,
   userVideo,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { md } = useMediaQueries();
 
-  console.log({ userVideo, userAudio });
-
   const screen = useMemo(() => {
     const userStream = {
       stream: userMediaStream,
       name: userName,
       screen: false,
+      image: userImage,
+      video: userVideo,
+      audio: userAudio,
     };
+
     const mateStream = {
       stream: remoteMediaStream,
       name: mateName,
       screen: false,
+      image: mateImage,
     };
+
     const userScreen = {
       stream: userScreenStream,
       name: userName,
       screen: true,
+      image: userImage,
     };
     const mateScreen = {
       stream: remoteScreenStream,
       name: mateName,
       screen: true,
+      image: mateImage,
     };
 
     if (remoteScreenStream)
@@ -62,12 +72,16 @@ const Media: React.FC<{
         others: [userStream, mateStream, mateScreen],
       };
   }, [
+    mateImage,
     mateName,
     remoteMediaStream,
     remoteScreenStream,
+    userAudio,
+    userImage,
     userMediaStream,
     userName,
     userScreenStream,
+    userVideo,
   ]);
 
   const twoMembersOnly = useMemo(
@@ -81,7 +95,11 @@ const Media: React.FC<{
       ref={containerRef}
     >
       {remoteMediaStream && !screen ? (
-        <UserMedia stream={remoteMediaStream} name={mateName} />
+        <UserMedia
+          stream={remoteMediaStream}
+          name={mateName}
+          image={mateImage}
+        />
       ) : null}
 
       {userMediaStream && !remoteMediaStream && !screen ? (
@@ -90,6 +108,7 @@ const Media: React.FC<{
           name={userName}
           video={userVideo}
           audio={userAudio}
+          image={userImage}
           muted
         />
       ) : null}
@@ -101,6 +120,7 @@ const Media: React.FC<{
           name={userName}
           video={userVideo}
           audio={userAudio}
+          image={userImage}
           muted
         />
       ) : null}
@@ -111,6 +131,7 @@ const Media: React.FC<{
           name={userName}
           video={userVideo}
           audio={userAudio}
+          image={userImage}
           muted
         />
       ) : null}

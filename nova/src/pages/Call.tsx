@@ -151,6 +151,8 @@ const Call: React.FC = () => {
             remoteScreenStream={remoteScreenStream}
             userName={orUndefined(profile?.name)}
             mateName={orUndefined(mate?.name)}
+            userImage={orUndefined(profile?.image)}
+            mateImage={orUndefined(mate?.image)}
             userVideo={!cameraOff}
             userAudio={!muteded}
           />

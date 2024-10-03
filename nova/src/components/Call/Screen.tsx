@@ -6,7 +6,14 @@ import { first } from "lodash";
 
 const Screen: React.FC<{
   screen: { stream: MediaStream; name?: string };
-  others: Array<{ stream: MediaStream | null; name?: string; screen: boolean }>;
+  others: Array<{
+    stream: MediaStream | null;
+    name?: string;
+    screen: boolean;
+    video?: boolean;
+    audio?: boolean;
+    image?: string;
+  }>;
   containerRef: React.RefObject<HTMLDivElement>;
   userName?: string;
   mateName?: string;
@@ -43,18 +50,23 @@ const Screen: React.FC<{
 
       {many ? (
         <div className="flex flex-row justify-center gap-4 items-center lg:h-[300px] w-full">
-          {activeStreams.map(({ stream, name, screen }) => {
-            if (!stream) return null;
-            return (
-              <UserMedia
-                key={stream.id}
-                stream={stream}
-                mode="cover"
-                name={name}
-                screen={screen}
-              />
-            );
-          })}
+          {activeStreams.map(
+            ({ stream, name, screen, audio, image, video }) => {
+              if (!stream) return null;
+              return (
+                <UserMedia
+                  key={stream.id}
+                  stream={stream}
+                  mode="cover"
+                  name={name}
+                  screen={screen}
+                  video={video}
+                  audio={audio}
+                  image={image}
+                />
+              );
+            }
+          )}
         </div>
       ) : null}
     </div>
