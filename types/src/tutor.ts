@@ -75,3 +75,16 @@ export type PublicTutorFieldsForMediaProvider = {
 
 export type FindTutorsForMediaProviderApiResponse =
   Paginated<PublicTutorFieldsForMediaProvider>;
+
+export type FindTutorStatsApiResponse = {
+  lessonCount: number;
+  studentCount: number;
+  totalMinutes: number;
+};
+
+/**
+ * Map from ISO Date (YYYY-MM-DD) to the activity score
+ */
+export type ActivityScoreMap = Record<string, number>;
+
+export type FindTutorActivityScores = ActivityScoreMap;

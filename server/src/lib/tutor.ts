@@ -81,3 +81,15 @@ export async function cacheAvailableTutors(
   await availableTutorsCache.set(cache);
   return cache;
 }
+
+export function isPublicTutor(
+  tutor?: ITutor.FullTutor | null
+): tutor is ITutor.FullTutor & { image: string; video: string } {
+  return (
+    !!tutor &&
+    !!tutor.activated &&
+    !!tutor.activatedBy &&
+    !!tutor.image &&
+    !!tutor.video
+  );
+}

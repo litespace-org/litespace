@@ -1,5 +1,5 @@
 import { tutors, users, count, knex, lessons } from "@litespace/models";
-import { ITutor, IUser } from "@litespace/types";
+import { ILesson, ITutor, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
@@ -21,14 +21,23 @@ import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
-import { concat, drop, entries, first, orderBy, reduce, sample } from "lodash";
+import {
+  concat,
+  drop,
+  entries,
+  first,
+  groupBy,
+  orderBy,
+  reduce,
+  sample,
+} from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
-import { cacheAvailableTutors } from "@/lib/tutor";
+import { cacheAvailableTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { Schedule } from "@litespace/sol";
+import { asIsoDate, Schedule } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
 
 const updateUserPayload = zod.object({
@@ -409,21 +418,66 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
 
   const tutor = await tutors.findById(id);
-  if (!tutor || !tutor.activated || !tutor.image || !tutor.video)
-    return next(notfound.tutor());
+  if (!isPublicTutor(tutor)) return next(notfound.tutor());
 
-  // const k = lessons.s
+  // only include "past" "uncanceled" lessons
+  const flags = { future: false, canceled: false } as const;
+
+  const [lessonCount, studentCount, totalMinutes] = await Promise.all([
+    lessons.countLessons({ users: [id], ...flags }),
+    lessons.countTutorStudents({ tutor: id, ...flags }),
+    lessons.sumDuration({ users: [id], ...flags }),
+  ]);
+
+  const response: ITutor.FindTutorStatsApiResponse = {
+    lessonCount,
+    studentCount,
+    totalMinutes,
+  };
+
+  res.status(200).json(response);
+}
+
+async function findTutorActivityScores(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { tutor: id } = withNamedId("tutor").parse(req.params);
+  const tutor = await tutors.findById(id);
+  if (!isPublicTutor(tutor)) return next(notfound.tutor());
+
+  const lessonDays = await lessons.findLessonDays({
+    user: id,
+    canceled: false,
+    future: false,
+  });
+
+  const lessonDayMap = groupBy(lessonDays, ({ start }) => asIsoDate(start));
+  const activityScoreMap: ITutor.ActivityScoreMap = {};
+
+  for (const [day, lessonDays] of entries(lessonDayMap)) {
+    activityScoreMap[day] = lessonDays.reduce((total, lessonDay) => {
+      const score = lessonDay.duration === ILesson.Duration.Long ? 2 : 1;
+      return total + score;
+    }, 0);
+  }
+
+  const response: ITutor.FindTutorActivityScores = activityScoreMap;
+  res.status(200).json(response);
 }
 
 export default {
-  create: safe(create),
   update,
+  create: safe(create),
+  findMe: safe(findMe),
   findById: safe(findById),
   findUsers: safe(findUsers),
-  findMe: safe(findMe),
   returnUser: safe(returnUser),
-  selectInterviewer: safe(selectInterviewer),
   findTutorMeta: safe(findTutorMeta),
+  findTutorStats: safe(findTutorStats),
+  selectInterviewer: safe(selectInterviewer),
   findAvailableTutors: safe(findAvailableTutors),
+  findTutorActivityScores: safe(findTutorActivityScores),
   findTutorsForMediaProvider: safe(findTutorsForMediaProvider),
 };

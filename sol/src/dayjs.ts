@@ -7,5 +7,9 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
 
-export { dayjs };
+function asIsoDate(date: string | Dayjs): string {
+  return dayjs(date).format("YYYY-MM-DD");
+}
+
+export { dayjs, asIsoDate };
 export type { Dayjs };

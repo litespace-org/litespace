@@ -240,11 +240,6 @@ export class Lessons {
     return this.count({ ...params, column, distinct: true });
   }
 
-  async countStudents(params: Omit<AggregateParams, "column">) {
-    const column = this.columns.members("user_id");
-    return this.count({ ...params, column, distinct: true });
-  }
-
   async count({
     tx,
     column,
