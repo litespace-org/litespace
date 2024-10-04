@@ -69,10 +69,15 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
   });
 }
 
+type LessonReturn = {
+  lesson: { self: ILesson.Self; members: ILesson.Member[] };
+  call: { self: ICall.Self; members: ICall.Member[] };
+};
+
 export async function lesson(payload?: {
   call?: Partial<ICall.CreatePayload>;
   lesson?: Partial<ILesson.CreatePayload>;
-}) {
+}): Promise<LessonReturn> {
   return await knex.transaction(async (tx: Knex.Transaction) => {
     const { call, members: callMembers } = await calls.create(
       {
@@ -161,6 +166,19 @@ async function makeLesson({
   return { lesson: lesson_, tutor, student, rule };
 }
 
+export type MakeLessonsReturn = Array<{
+  future: LessonReturn[];
+  past: LessonReturn[];
+  canceled: {
+    future: LessonReturn[];
+    past: LessonReturn[];
+  };
+  uncanceled: {
+    future: LessonReturn[];
+    past: LessonReturn[];
+  };
+}>;
+
 async function makeLessons({
   tutor,
   students,
@@ -180,7 +198,9 @@ async function makeLessons({
     future: number[];
     past: number[];
   };
-}) {
+}): Promise<MakeLessonsReturn> {
+  const lessons: MakeLessonsReturn = [];
+
   for (const [key, student] of entries(students)) {
     const index = Number(key);
     const futureLessonCount = future[index];
@@ -224,31 +244,62 @@ async function makeLessons({
     );
 
     // cancel future lessons
-    await Promise.all(
-      range(0, canceledFutureLessonCount).map((i) => {
+    const canceledFutureLessons = await Promise.all(
+      range(0, canceledFutureLessonCount).map(async (i) => {
         const lesson = futureLessons[i];
-        if (!lesson) return;
-        return cancelLesson({
+        if (!lesson) throw new Error("invalid future lesson index");
+        await cancelLesson({
           lesson: lesson.lesson.self.id,
           call: lesson.call.self.id,
           user: tutor,
         });
+        return lesson;
       })
     );
 
     // cancel past lessons
-    await Promise.all(
-      range(0, canceledPastLessonCount).map((i) => {
+    const canceledPastLessons = await Promise.all(
+      range(0, canceledPastLessonCount).map(async (i) => {
         const lesson = pastLessons[i];
-        if (!lesson) return;
-        return cancelLesson({
+        if (!lesson) throw new Error("invalid past lesson index");
+        await cancelLesson({
           lesson: lesson.lesson.self.id,
           call: lesson.call.self.id,
           user: tutor,
         });
+        return lesson;
       })
     );
+
+    const canceledFutureLessonIds = canceledFutureLessons.map(
+      (future) => future.lesson.self.id
+    );
+    const canceledPastLessonIds = canceledPastLessons.map(
+      (past) => past.lesson.self.id
+    );
+    // filter out canceled future lessons
+    const uncanceledFutureLessons = futureLessons.filter(
+      (future) => !canceledFutureLessonIds.includes(future.lesson.self.id)
+    );
+    // filter out canceled past lessons
+    const uncanceledPastLessons = pastLessons.filter(
+      (past) => !canceledPastLessonIds.includes(past.lesson.self.id)
+    );
+    lessons.push({
+      future: futureLessons,
+      past: pastLessons,
+      canceled: {
+        future: canceledFutureLessons,
+        past: canceledPastLessons,
+      },
+      uncanceled: {
+        future: uncanceledFutureLessons,
+        past: uncanceledPastLessons,
+      },
+    });
   }
+
+  return lessons;
 }
 
 export default {

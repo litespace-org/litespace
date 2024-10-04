@@ -85,3 +85,16 @@ export enum Duration {
   Short = 15,
   Long = 30,
 }
+
+export type LessonDayRow = {
+  start: Date;
+  duration: Duration;
+};
+
+export type LessonDay = {
+  start: string;
+  duration: Duration;
+};
+
+export type LessonDayRows = LessonDayRow[];
+export type LessonDays = LessonDay[];

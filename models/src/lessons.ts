@@ -324,6 +324,48 @@ export class Lessons {
     return count;
   }
 
+  /**
+   * Return the days that the user had a lesson at and the lesson duration.
+   *
+   * @param user the user id
+   * @param future flag to include or exclude future lessons
+   * @param canceled flag to include or exclude canceled lessons
+   */
+  async findLessonDays({
+    user,
+    future,
+    canceled,
+    tx,
+  }: {
+    user: number;
+    future?: boolean;
+    canceled?: boolean;
+    tx?: Knex.Transaction;
+  }): Promise<ILesson.LessonDays> {
+    const base = this.builder(tx)
+      .lessons.join(
+        calls.tables.calls,
+        calls.columns.calls("id"),
+        this.columns.lessons("call_id")
+      )
+      .select<ILesson.LessonDayRows>({
+        start: calls.columns.calls("start"),
+        duration: calls.columns.calls("duration"),
+      });
+
+    const query = this.applySearchFilter(base, {
+      users: [user],
+      future,
+      canceled,
+    });
+
+    const rows = await query.then();
+    return rows.map(({ start, duration }) => ({
+      start: start.toISOString(),
+      duration,
+    }));
+  }
+
   applySearchFilter<T>(
     builder: Knex.QueryBuilder<ILesson.Row, T>,
     { canceled = true, future = true, users }: SearchFilter

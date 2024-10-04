@@ -1,11 +1,10 @@
-import { calls, knex, lessons, users } from "@/index";
+import { lessons } from "@/index";
 import { expect } from "chai";
-import fixtures from "@fixtures/db";
+import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
-import dayjs from "@/lib/dayjs";
 import { nameof } from "@litespace/sol";
-import { Knex } from "knex";
-import { range, entries } from "lodash";
+import { concat, flatten, orderBy } from "lodash";
+import dayjs from "@/lib/dayjs";
 
 describe("Lessons", () => {
   beforeAll(async () => {
@@ -127,6 +126,7 @@ describe("Lessons", () => {
 
   describe("Lessons Duration Sum & Lessons Count", () => {
     let tutor: IUser.Self;
+    let tutorLessons: MakeLessonsReturn;
     const futureLessons = 8;
     const pastLessons = 13;
     const canceledFutureLessons = 3;
@@ -144,7 +144,7 @@ describe("Lessons", () => {
        * - 3 future canceled lessons
        * - 2 past canceled lessons
        */
-      await fixtures.make.lessons({
+      tutorLessons = await fixtures.make.lessons({
         tutor: tutor.id,
         students: students.map((student) => student.id),
         duration,
@@ -257,6 +257,97 @@ describe("Lessons", () => {
             canceled: false,
           })
         ).to.be.eq(totalLessons);
+      });
+    });
+
+    describe(nameof(lessons.findLessonDays), () => {
+      it("should return empty result if not lessons", async () => {
+        const tutor = await fixtures.tutor();
+        expect(await lessons.findLessonDays({ user: tutor.id })).to.be.empty;
+      });
+
+      it("should include future and canceled lessons by default", async () => {
+        const test = tutorLessons.reduce(
+          (list: ILesson.LessonDay[], lessons) => {
+            const current = concat(lessons.past, lessons.future).map(
+              ({ call }) => ({
+                start: call.self.start,
+                duration: call.self.duration,
+              })
+            );
+            return concat(list, current);
+          },
+          []
+        );
+        const data = await lessons.findLessonDays({ user: tutor.id });
+        expect(data).to.be.of.length(futureLessons + pastLessons);
+        expect(data).to.include.deep.members(test);
+      });
+
+      it("should ignore future lessons", async () => {
+        const test = tutorLessons.reduce(
+          (list: ILesson.LessonDay[], lessons) => {
+            const current = concat(lessons.past).map(({ call }) => ({
+              start: call.self.start,
+              duration: call.self.duration,
+            }));
+            return concat(list, current);
+          },
+          []
+        );
+        const data = await lessons.findLessonDays({
+          user: tutor.id,
+          future: false,
+        });
+        expect(data).to.be.of.length(pastLessons);
+        expect(data).to.include.deep.members(test);
+      });
+
+      it("should ignore canceled lessons", async () => {
+        const test = tutorLessons.reduce(
+          (list: ILesson.LessonDay[], lessons) => {
+            const current = concat(
+              lessons.uncanceled.future,
+              lessons.uncanceled.past
+            ).map(({ call }) => ({
+              start: call.self.start,
+              duration: call.self.duration,
+            }));
+            return concat(list, current);
+          },
+          []
+        );
+        const data = await lessons.findLessonDays({
+          user: tutor.id,
+          canceled: false,
+        });
+        expect(data).to.be.of.length(
+          futureLessons +
+            pastLessons -
+            canceledFutureLessons -
+            canceledPastLessons
+        );
+        expect(data).to.include.deep.members(test);
+      });
+
+      it("should ignore future and canceled lessons", async () => {
+        const test = tutorLessons.reduce(
+          (list: ILesson.LessonDay[], lessons) => {
+            const current = concat(lessons.uncanceled.past).map(({ call }) => ({
+              start: call.self.start,
+              duration: call.self.duration,
+            }));
+            return concat(list, current);
+          },
+          []
+        );
+        const data = await lessons.findLessonDays({
+          user: tutor.id,
+          future: false,
+          canceled: false,
+        });
+        expect(data).to.be.of.length(pastLessons - canceledPastLessons);
+        expect(data).to.include.deep.members(test);
       });
     });
   });
