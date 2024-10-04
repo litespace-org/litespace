@@ -7,120 +7,6 @@ import { nameof } from "@litespace/sol";
 import { Knex } from "knex";
 import { range, entries } from "lodash";
 
-async function makeLesson({
-  future,
-  canceled,
-}: {
-  future?: boolean;
-  canceled?: boolean;
-}) {
-  const tutor = await fixtures.user(IUser.Role.Tutor);
-  const student = await fixtures.user(IUser.Role.Student);
-  const rule = await fixtures.rule({ userId: tutor.id });
-  const now = dayjs.utc();
-  const start = future ? now.add(1, "week") : now.subtract(1, "week");
-  const { lesson, call } = await fixtures.lesson({
-    call: {
-      host: tutor.id,
-      members: [student.id],
-      rule: rule.id,
-      start: start.toISOString(),
-    },
-    lesson: { host: tutor.id, members: [student.id] },
-  });
-
-  if (canceled) {
-    await knex.transaction(async (tx: Knex.Transaction) => {
-      await calls.cancel(call.self.id, tutor.id, tx);
-      await lessons.cancel(lesson.self.id, tutor.id, tx);
-    });
-  }
-
-  return { lesson, tutor, student, rule };
-}
-
-async function makeLessons({
-  tutor,
-  students,
-  rule,
-  future,
-  past,
-  canceled,
-}: {
-  tutor: number;
-  students: number[];
-  future: number[];
-  past: number[];
-  rule: number;
-  canceled: {
-    future: number[];
-    past: number[];
-  };
-}) {
-  for (const [key, student] of entries(students)) {
-    const index = Number(key);
-    const futureLessonCount = future[index];
-    const pastLessonCount = past[index];
-    const canceledFutureLessonCount = canceled.future[index];
-    const canceledPastLessonCount = canceled.past[index];
-
-    const create = async (start: string) => {
-      return await fixtures.lesson({
-        call: { host: tutor, members: [student], rule: rule, start },
-        lesson: { host: tutor, members: [student] },
-      });
-    };
-
-    const futureLessons = await Promise.all(
-      range(0, futureLessonCount).map((i) =>
-        create(
-          dayjs
-            .utc()
-            .add(i + 1, "days")
-            .toISOString()
-        )
-      )
-    );
-
-    const pastLessons = await Promise.all(
-      range(0, pastLessonCount).map((i) =>
-        create(
-          dayjs
-            .utc()
-            .subtract(i + 1, "days")
-            .toISOString()
-        )
-      )
-    );
-
-    // cancel future lessons
-    await Promise.all(
-      range(0, canceledFutureLessonCount).map((i) => {
-        const lesson = futureLessons[i];
-        if (!lesson) return;
-        return fixtures.cancel.lesson({
-          lesson: lesson.lesson.self.id,
-          call: lesson.call.self.id,
-          user: tutor,
-        });
-      })
-    );
-
-    // cancel past lessons
-    await Promise.all(
-      range(0, canceledPastLessonCount).map((i) => {
-        const lesson = pastLessons[i];
-        if (!lesson) return;
-        return fixtures.cancel.lesson({
-          lesson: lesson.lesson.self.id,
-          call: lesson.call.self.id,
-          user: tutor,
-        });
-      })
-    );
-  }
-}
-
 describe("Lessons", () => {
   beforeAll(async () => {
     await fixtures.flush();
@@ -133,7 +19,7 @@ describe("Lessons", () => {
   describe(nameof(lessons.countTutorStudents), () => {
     describe("Simple (one student)", () => {
       it("Should count one unique student for the tutor", async () => {
-        const { tutor } = await makeLesson({
+        const { tutor } = await fixtures.make.lesson({
           future: false,
           canceled: false,
         });
@@ -148,7 +34,10 @@ describe("Lessons", () => {
       });
 
       it("Should count no student if the lesson will happen in the future", async () => {
-        const { tutor } = await makeLesson({ future: true, canceled: false });
+        const { tutor } = await fixtures.make.lesson({
+          future: true,
+          canceled: false,
+        });
         const count = await lessons.countTutorStudents({
           canceled: false,
           future: false,
@@ -158,7 +47,10 @@ describe("Lessons", () => {
       });
 
       it("Should count future students when the `future` flag is enabled", async () => {
-        const { tutor } = await makeLesson({ future: true, canceled: false });
+        const { tutor } = await fixtures.make.lesson({
+          future: true,
+          canceled: false,
+        });
         const count = await lessons.countTutorStudents({
           canceled: false,
           future: true,
@@ -168,7 +60,10 @@ describe("Lessons", () => {
       });
 
       it("Should count canceled students when the `canceled` flag is enabled", async () => {
-        const { tutor } = await makeLesson({ future: false, canceled: true });
+        const { tutor } = await fixtures.make.lesson({
+          future: false,
+          canceled: true,
+        });
         const count = await lessons.countTutorStudents({
           canceled: true,
           future: true,
@@ -191,7 +86,7 @@ describe("Lessons", () => {
          * Second student: 2 future lessons (1 canceled), 2 past lessons (1 canceled)
          * Third student: 3 future lessons (2 canceled), 1 past lesson  (canceled)
          */
-        await makeLessons({
+        await fixtures.make.lessons({
           tutor: tutor.id,
           students: students.map((student) => student.id),
           future: [1, 2, 3],
@@ -226,6 +121,142 @@ describe("Lessons", () => {
             canceled: false,
           })
         ).to.be.eq(3);
+      });
+    });
+  });
+
+  describe("Lessons Duration Sum & Lessons Count", () => {
+    let tutor: IUser.Self;
+    const futureLessons = 8;
+    const pastLessons = 13;
+    const canceledFutureLessons = 3;
+    const canceledPastLessons = 2;
+    const duration = ILesson.Duration.Long;
+
+    beforeEach(async () => {
+      tutor = await fixtures.tutor();
+      const students = await fixtures.students(5);
+      const rule = await fixtures.rule({ userId: tutor.id });
+      /**
+       * - 5 students
+       * - 8 future lessons
+       * - 13 past lessons
+       * - 3 future canceled lessons
+       * - 2 past canceled lessons
+       */
+      await fixtures.make.lessons({
+        tutor: tutor.id,
+        students: students.map((student) => student.id),
+        duration,
+        future: [2, 2, 2, 1, 1],
+        past: [3, 3, 3, 2, 2],
+        canceled: {
+          future: [1, 1, 1, 0, 0],
+          past: [0, 0, 0, 1, 1],
+        },
+        rule: rule.id,
+      });
+    });
+
+    describe(nameof(lessons.sumDuration), () => {
+      it("should return zero in case no lesson", async () => {
+        // fresh tutor with no lessons
+        const t2 = await fixtures.tutor();
+        expect(
+          await lessons.sumDuration({
+            users: [t2.id],
+          })
+        ).to.be.eq(0);
+      });
+
+      it("should include future and canceled lessons by default", async () => {
+        const total = (pastLessons + futureLessons) * duration;
+        expect(
+          await lessons.sumDuration({
+            users: [tutor.id],
+          })
+        ).to.be.eq(total);
+      });
+
+      it("should ignore future lessons", async () => {
+        expect(
+          await lessons.sumDuration({
+            users: [tutor.id],
+            future: false,
+          })
+        ).to.be.eq(pastLessons * duration);
+      });
+
+      it("should ignore canceled lessons", async () => {
+        const totalLessons =
+          futureLessons +
+          pastLessons -
+          canceledFutureLessons -
+          canceledPastLessons;
+        const totalDuration = totalLessons * duration;
+
+        expect(
+          await lessons.sumDuration({
+            users: [tutor.id],
+            canceled: false,
+          })
+        ).to.be.eq(totalDuration);
+      });
+
+      it("should ignore future and canceled lessons", async () => {
+        const totalLessons = pastLessons - canceledPastLessons;
+        const totalDuration = totalLessons * duration;
+        expect(
+          await lessons.sumDuration({
+            users: [tutor.id],
+            future: false,
+            canceled: false,
+          })
+        ).to.be.eq(totalDuration);
+      });
+    });
+
+    describe(nameof(lessons.countLessons), () => {
+      it("should return zero in case no lesson", async () => {
+        // fresh tutor with no lessons
+        const t2 = await fixtures.tutor();
+        expect(await lessons.countLessons({ users: [t2.id] })).to.be.eq(0);
+      });
+
+      it("should include future and canceled lessons by default", async () => {
+        const total = pastLessons + futureLessons;
+        expect(await lessons.countLessons({ users: [tutor.id] })).to.be.eq(
+          total
+        );
+      });
+
+      it("should ignore future lessons", async () => {
+        expect(
+          await lessons.countLessons({ users: [tutor.id], future: false })
+        ).to.be.eq(pastLessons);
+      });
+
+      it("should ignore canceled lessons", async () => {
+        const totalLessons =
+          futureLessons +
+          pastLessons -
+          canceledFutureLessons -
+          canceledPastLessons;
+
+        expect(
+          await lessons.countLessons({ users: [tutor.id], canceled: false })
+        ).to.be.eq(totalLessons);
+      });
+
+      it("should ignore future and canceled lessons", async () => {
+        const totalLessons = pastLessons - canceledPastLessons;
+        expect(
+          await lessons.countLessons({
+            users: [tutor.id],
+            future: false,
+            canceled: false,
+          })
+        ).to.be.eq(totalLessons);
       });
     });
   });

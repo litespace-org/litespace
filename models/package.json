@@ -14,7 +14,7 @@
     "migrate:test": "env-cmd -f .env.test node-pg-migrate",
     "seed": "env-cmd esr scripts/seed.ts",
     "reseed": "yarn migrate down && yarn migrate up && yarn seed",
-    "test": "env-cmd -f .env.test jest -i"
+    "test": "env-cmd -f .env.test jest -i --detectOpenHandles"
   },
   "packageManager": "yarn@4.2.2",
   "devDependencies": {

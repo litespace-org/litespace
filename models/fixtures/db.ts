@@ -1,7 +1,7 @@
 import { calls, knex, lessons, rules, users } from "@/index";
 import { ICall, ILesson, IRule, IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
-import { range, sample } from "lodash";
+import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol";
@@ -129,6 +129,128 @@ async function students(count: number) {
   return await Promise.all(range(0, count).map(() => student()));
 }
 
+async function makeLesson({
+  future,
+  canceled,
+}: {
+  future?: boolean;
+  canceled?: boolean;
+}) {
+  const tutor = await user(IUser.Role.Tutor);
+  const student = await user(IUser.Role.Student);
+  const rule_ = await rule({ userId: tutor.id });
+  const now = dayjs.utc();
+  const start = future ? now.add(1, "week") : now.subtract(1, "week");
+  const { lesson: lesson_, call } = await lesson({
+    call: {
+      host: tutor.id,
+      members: [student.id],
+      rule: rule_.id,
+      start: start.toISOString(),
+    },
+    lesson: { host: tutor.id, members: [student.id] },
+  });
+
+  if (canceled) {
+    await knex.transaction(async (tx: Knex.Transaction) => {
+      await calls.cancel(call.self.id, tutor.id, tx);
+      await lessons.cancel(lesson_.self.id, tutor.id, tx);
+    });
+  }
+
+  return { lesson: lesson_, tutor, student, rule };
+}
+
+async function makeLessons({
+  tutor,
+  students,
+  rule,
+  future,
+  past,
+  canceled,
+  duration,
+}: {
+  tutor: number;
+  students: number[];
+  future: number[];
+  past: number[];
+  rule: number;
+  duration?: ILesson.Duration;
+  canceled: {
+    future: number[];
+    past: number[];
+  };
+}) {
+  for (const [key, student] of entries(students)) {
+    const index = Number(key);
+    const futureLessonCount = future[index];
+    const pastLessonCount = past[index];
+    const canceledFutureLessonCount = canceled.future[index];
+    const canceledPastLessonCount = canceled.past[index];
+
+    const create = async (start: string) => {
+      return await lesson({
+        call: {
+          host: tutor,
+          members: [student],
+          rule: rule,
+          start,
+          duration,
+        },
+        lesson: { host: tutor, members: [student] },
+      });
+    };
+
+    const futureLessons = await Promise.all(
+      range(0, futureLessonCount).map((i) =>
+        create(
+          dayjs
+            .utc()
+            .add(i + 1, "days")
+            .toISOString()
+        )
+      )
+    );
+
+    const pastLessons = await Promise.all(
+      range(0, pastLessonCount).map((i) =>
+        create(
+          dayjs
+            .utc()
+            .subtract(i + 1, "days")
+            .toISOString()
+        )
+      )
+    );
+
+    // cancel future lessons
+    await Promise.all(
+      range(0, canceledFutureLessonCount).map((i) => {
+        const lesson = futureLessons[i];
+        if (!lesson) return;
+        return cancelLesson({
+          lesson: lesson.lesson.self.id,
+          call: lesson.call.self.id,
+          user: tutor,
+        });
+      })
+    );
+
+    // cancel past lessons
+    await Promise.all(
+      range(0, canceledPastLessonCount).map((i) => {
+        const lesson = pastLessons[i];
+        if (!lesson) return;
+        return cancelLesson({
+          lesson: lesson.lesson.self.id,
+          call: lesson.call.self.id,
+          user: tutor,
+        });
+      })
+    );
+  }
+}
+
 export default {
   user,
   tutor,
@@ -137,6 +259,10 @@ export default {
   lesson,
   flush,
   rule,
+  make: {
+    lesson: makeLesson,
+    lessons: makeLessons,
+  },
   cancel: {
     lesson: cancelLesson,
   },

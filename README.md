@@ -24,3 +24,4 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
     - Stream Processing — Real-time noise cancellation.
 - https://stackoverflow.com/questions/62702721/how-to-get-microphone-volume-using-audioworklet
 - Audio Volume Meter: https://codepen.io/forgived/pen/ZEQrWeW
+- https://github.com/google-ai-edge/mediapipe <--- AI on medai streams
