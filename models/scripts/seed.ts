@@ -125,8 +125,6 @@ async function main(): Promise<void> {
             bio: aripsum.generateSentence(5, 10),
             activated: true,
             activatedBy: admin.id,
-            mediaProviderId: mediaProvider.id,
-            passedInterview: true,
           },
           tx
         );

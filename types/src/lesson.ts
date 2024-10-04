@@ -57,8 +57,8 @@ export type PopuldatedMember = {
 };
 
 export type CreatePayload = {
-  callId: number;
-  hostId: number;
+  call: number;
+  host: number;
   members: number[];
   price: number;
 };

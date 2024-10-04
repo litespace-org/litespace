@@ -90,11 +90,11 @@ export type PopuldatedMember = {
 };
 
 export type CreatePayload = {
-  ruleId: number;
+  rule: number;
   start: string;
   duration: number;
-  memberIds: number[];
-  hostId: number;
+  members: number[];
+  host: number;
 };
 
 export type UpdatePayload = {

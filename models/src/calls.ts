@@ -37,7 +37,7 @@ export class Calls {
     const builder = this.builder(tx);
     const calls = await builder.calls
       .insert({
-        rule_id: payload.ruleId,
+        rule_id: payload.rule,
         start: dayjs.utc(payload.start).toDate(),
         duration: payload.duration,
         created_at: now,
@@ -50,9 +50,9 @@ export class Calls {
 
     const members = await builder.members
       .insert(
-        concat(payload.memberIds, payload.hostId).map((userId) => ({
-          host: userId === payload.hostId,
-          user_id: userId,
+        concat(payload.members, payload.host).map((user) => ({
+          host: user === payload.host,
+          user_id: user,
           call_id: call.id,
           created_at: now,
           updated_at: now,

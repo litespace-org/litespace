@@ -1,5 +1,5 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
-module.exports = {
+export default {
   testEnvironment: "node",
   transformIgnorePatterns: ["<rootDir>/node_modules/"],
   transform: {
@@ -8,5 +8,8 @@ module.exports = {
   },
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
+    "^@fixtures/(.*)$": "<rootDir>/fixtures/$1",
   },
+  globalSetup: "<rootDir>/fixtures/setup.ts",
+  globalTeardown: "<rootDir>/fixtures/teardown.ts",
 };

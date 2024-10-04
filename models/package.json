@@ -11,12 +11,14 @@
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
     "migrate": "env-cmd node-pg-migrate",
+    "migrate:test": "env-cmd -f .env.test node-pg-migrate",
     "seed": "env-cmd esr scripts/seed.ts",
     "reseed": "yarn migrate down && yarn migrate up && yarn seed",
-    "test": "jest"
+    "test": "env-cmd -f .env.test jest -i"
   },
   "packageManager": "yarn@4.2.2",
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@jest/globals": "^29.7.0",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.8",

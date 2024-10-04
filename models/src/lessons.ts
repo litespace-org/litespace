@@ -82,7 +82,7 @@ export class Lessons {
 
     const lessons = await builder.lessons
       .insert({
-        call_id: payload.callId,
+        call_id: payload.call,
         price: payload.price,
         created_at: now,
         updated_at: now,
@@ -94,10 +94,10 @@ export class Lessons {
 
     const members = await builder.members
       .insert(
-        concat(payload.members, payload.hostId).map((userId) => ({
+        concat(payload.members, payload.host).map((userId) => ({
           user_id: userId,
           lesson_id: lesson.id,
-          host: userId === payload.hostId,
+          host: userId === payload.host,
         }))
       )
       .returning("*");
@@ -275,7 +275,7 @@ export class Lessons {
   }: {
     tutor: number;
     future?: boolean;
-    canceled: boolean;
+    canceled?: boolean;
     tx?: Knex.Transaction;
   }) {
     /**
@@ -297,16 +297,26 @@ export class Lessons {
      *      AND lesson_members.user_id != 5;
      * ```
      */
-    const subquery = this.applySearchFilter(
+    const subquery: Knex.QueryBuilder<ILesson.Row> = this.applySearchFilter(
       this.builder(tx).lessons.select(this.columns.lessons("id")),
       { canceled, future, users: [tutor] }
     );
 
     const query = this.builder(tx)
-      .members.whereIn(this.columns.members("lesson_id"), subquery)
+      .lessons.join(
+        this.table.members,
+        this.columns.members("lesson_id"),
+        this.columns.lessons("id")
+      )
+      .join(
+        calls.tables.calls,
+        calls.columns.calls("id"),
+        this.columns.lessons("call_id")
+      )
+      .whereIn(this.columns.members("lesson_id"), subquery)
       .andWhere(this.columns.members("user_id"), "!=", tutor); // execlude the tutor
 
-    const count = await countRows(query, {
+    const count: number = await countRows(query, {
       column: this.columns.members("user_id"),
       distinct: true,
     });
