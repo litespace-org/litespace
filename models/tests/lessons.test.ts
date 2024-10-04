@@ -2,7 +2,7 @@ import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
-import { nameof } from "@litespace/sol";
+import { nameof, price } from "@litespace/sol";
 import { concat, flatten, orderBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 
@@ -124,7 +124,7 @@ describe("Lessons", () => {
     });
   });
 
-  describe("Lessons Duration Sum & Lessons Count", () => {
+  describe("Lessons Duration Sum, Lessons Count, Lesson Days, and Price", () => {
     let tutor: IUser.Self;
     let tutorLessons: MakeLessonsReturn;
     const futureLessons = 8;
@@ -132,6 +132,7 @@ describe("Lessons", () => {
     const canceledFutureLessons = 3;
     const canceledPastLessons = 2;
     const duration = ILesson.Duration.Long;
+    const lessonPrice = price.scale(100);
 
     beforeEach(async () => {
       tutor = await fixtures.tutor();
@@ -148,6 +149,7 @@ describe("Lessons", () => {
         tutor: tutor.id,
         students: students.map((student) => student.id),
         duration,
+        price: lessonPrice,
         future: [2, 2, 2, 1, 1],
         past: [3, 3, 3, 2, 2],
         canceled: {
@@ -155,6 +157,51 @@ describe("Lessons", () => {
           past: [0, 0, 0, 1, 1],
         },
         rule: rule.id,
+      });
+    });
+
+    describe(nameof(lessons.sumPrice), () => {
+      it("should return empty result if not lessons", async () => {
+        const tutor = await fixtures.tutor();
+        expect(await lessons.sumPrice({ users: [tutor.id] })).to.be.eq(0);
+      });
+
+      it("should include future and canceled lessons by default", async () => {
+        const total = (futureLessons + pastLessons) * lessonPrice;
+        expect(await lessons.sumPrice({ users: [tutor.id] })).to.be.eq(total);
+      });
+
+      it("should ignore future lessons", async () => {
+        const total = pastLessons * lessonPrice;
+        expect(
+          await lessons.sumPrice({ users: [tutor.id], future: false })
+        ).to.be.eq(total);
+      });
+
+      it("should ignore canceled lessons", async () => {
+        const total =
+          (futureLessons +
+            pastLessons -
+            canceledFutureLessons -
+            canceledPastLessons) *
+          lessonPrice;
+        expect(
+          await lessons.sumPrice({
+            users: [tutor.id],
+            canceled: false,
+          })
+        ).to.be.eq(total);
+      });
+
+      it("should ignore canceled and future lessons (past uncanceled)", async () => {
+        const total = (pastLessons - canceledPastLessons) * lessonPrice;
+        expect(
+          await lessons.sumPrice({
+            users: [tutor.id],
+            future: false,
+            canceled: false,
+          })
+        ).to.be.eq(total);
       });
     });
 

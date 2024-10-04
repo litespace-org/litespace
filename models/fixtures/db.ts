@@ -187,6 +187,7 @@ async function makeLessons({
   past,
   canceled,
   duration,
+  price,
 }: {
   tutor: number;
   students: number[];
@@ -194,6 +195,7 @@ async function makeLessons({
   past: number[];
   rule: number;
   duration?: ILesson.Duration;
+  price?: number;
   canceled: {
     future: number[];
     past: number[];
@@ -217,7 +219,7 @@ async function makeLessons({
           start,
           duration,
         },
-        lesson: { host: tutor, members: [student] },
+        lesson: { host: tutor, members: [student], price },
       });
     };
 
