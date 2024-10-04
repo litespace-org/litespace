@@ -113,9 +113,19 @@ export async function count(table: string): Promise<number> {
 }
 
 export async function countRows<T extends Knex.QueryBuilder>(
-  builder: T
+  builder: T,
+  options?: {
+    column?: string;
+    distinct?: boolean;
+  }
 ): Promise<number> {
-  const row: { count: NumericString } = await builder.count().first();
+  // apply options
+  if (options?.column && options.distinct)
+    builder.countDistinct(options.column);
+  else if (options?.column) builder.count({ count: options.column });
+  else builder.count();
+
+  const row: { count: NumericString } = await builder.first();
   return row ? zod.coerce.number().parse(row.count) : 0;
 }
 

@@ -1,4 +1,4 @@
-import { IFilter, ILesson } from "@litespace/types";
+import { IFilter, ILesson, NumericString } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
@@ -9,9 +9,39 @@ import {
   column,
   withPagination,
   addSqlMinutes,
+  countRows,
 } from "@/query";
 import { calls } from "@/calls";
 import zod from "zod";
+
+type SearchFilter = {
+  /**
+   * User IDs to be included in the search
+   */
+  users?: number[];
+  /**
+   * Flag to include or execlude canceled lessons
+   *
+   * @default true (included)
+   */
+  canceled?: boolean;
+  /**
+   * Flag to include or execlude future lessons
+   *
+   * @default true (included)
+   */
+  future?: boolean;
+};
+
+type AggregateParams = SearchFilter & {
+  column: string;
+  tx?: Knex.Transaction;
+};
+
+type Builder = {
+  lessons: Knex.QueryBuilder<ILesson.Row, ILesson.Row[]>;
+  members: Knex.QueryBuilder<ILesson.MemberRow, ILesson.MemberRow[]>;
+};
 
 export class Lessons {
   table = {
@@ -132,7 +162,7 @@ export class Lessons {
     members: number[],
     tx?: Knex.Transaction
   ): Promise<ILesson.Self[]> {
-    const rows = await this.builder(tx)
+    const rows: ILesson.Row[] = await this.builder(tx)
       .members.join(
         this.table.lessons,
         this.columns.lessons("id"),
@@ -171,28 +201,126 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async sumPrice({
+  async sumPrice(params: Omit<AggregateParams, "column">): Promise<number> {
+    const column = this.columns.lessons("price");
+    return await this.sum({ ...params, column });
+  }
+
+  async sumDuration(params: Omit<AggregateParams, "column">) {
+    const column = calls.columns.calls("duration");
+    return await this.sum({ ...params, column });
+  }
+
+  async sum({
     canceled = true,
     future = true,
     users,
+    column,
     tx,
-  }: {
-    users?: number[];
-    canceled?: boolean;
-    future?: boolean;
-    tx?: Knex.Transaction;
-  }): Promise<number> {
-    const builder = this.builder(tx)
+  }: AggregateParams) {
+    const base = this.builder(tx)
       .lessons.join(
         calls.tables.calls,
         calls.columns.calls("id"),
         this.columns.lessons("call_id")
       )
-      .sum(this.columns.lessons("price"), { as: "price" });
+      .sum(column, { as: "total" });
 
+    const filter: SearchFilter = { users, canceled, future };
+    const builder = this.applySearchFilter(base, filter);
+    const row: { total: NumericString } | undefined = await builder
+      .first()
+      .then();
+
+    return row ? zod.coerce.number().parse(row.total) : 0;
+  }
+
+  async countLessons(params: Omit<AggregateParams, "column">) {
+    const column = this.columns.lessons("id");
+    return this.count({ ...params, column, distinct: true });
+  }
+
+  async countStudents(params: Omit<AggregateParams, "column">) {
+    const column = this.columns.members("user_id");
+    return this.count({ ...params, column, distinct: true });
+  }
+
+  async count({
+    tx,
+    column,
+    distinct = false,
+    ...filter
+  }: AggregateParams & { distinct?: boolean }) {
+    const base = this.builder(tx).lessons.join(
+      calls.tables.calls,
+      calls.columns.calls("id"),
+      this.columns.lessons("call_id")
+    );
+    return await countRows(this.applySearchFilter(base, filter), {
+      column,
+      distinct,
+    });
+  }
+
+  /**
+   * @param tutor tutor id
+   * @param future include future lessons (default is `true`)
+   * @param canceled include canceled lessons (default is `true`)
+   */
+  async countTutorStudents({
+    canceled = true,
+    future = true,
+    tutor,
+    tx,
+  }: {
+    tutor: number;
+    future?: boolean;
+    canceled: boolean;
+    tx?: Knex.Transaction;
+  }) {
+    /**
+     * Query Example:
+     *
+     * ```sql
+     *  SELECT COUNT(
+     *          DISTINCT lesson_members.user_id
+     *      ) as count
+     *  FROM "lesson_members"
+     *  WHERE
+     *      lesson_members.lesson_id in (
+     *          SELECT lessons.id
+     *          FROM "lessons"
+     *              JOIN "lesson_members" ON lesson_members.lesson_id = lessons.id
+     *          WHERE
+     *              lesson_members.user_id = 5
+     *      )
+     *      AND lesson_members.user_id != 5;
+     * ```
+     */
+    const subquery = this.applySearchFilter(
+      this.builder(tx).lessons.select(this.columns.lessons("id")),
+      { canceled, future, users: [tutor] }
+    );
+
+    const query = this.builder(tx)
+      .members.whereIn(this.columns.members("lesson_id"), subquery)
+      .andWhere(this.columns.members("user_id"), "!=", tutor); // execlude the tutor
+
+    const count = await countRows(query, {
+      column: this.columns.members("user_id"),
+      distinct: true,
+    });
+
+    return count;
+  }
+
+  applySearchFilter<T>(
+    builder: Knex.QueryBuilder<ILesson.Row, T>,
+    { canceled = true, future = true, users }: SearchFilter
+  ): Knex.QueryBuilder<ILesson.Row, T> {
     //! Because of the one-to-many relationship between the lesson and its
     //! members. We should only perform the join in case the `users` param is
-    //! provider. We will get duplicated rows if we did this by default which
+    //! providered. We will get duplicated rows if we did this by default which
     //! will douple the total sum for the prices.
     if (users)
       builder
@@ -216,8 +344,7 @@ export class Lessons {
         dayjs.utc().toDate()
       );
 
-    const row: { price: string } | undefined = await builder.first().then();
-    return row ? zod.coerce.number().parse(row.price) : 0;
+    return builder;
   }
 
   from(row: ILesson.Row): ILesson.Self {
@@ -249,7 +376,7 @@ export class Lessons {
     });
   }
 
-  builder(tx?: Knex.Transaction) {
+  builder(tx?: Knex.Transaction): Builder {
     return {
       lessons: tx
         ? tx<ILesson.Row>(this.table.lessons)

@@ -1,4 +1,4 @@
-import { tutors, users, count, knex } from "@litespace/models";
+import { tutors, users, count, knex, lessons } from "@litespace/models";
 import { ITutor, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
@@ -15,6 +15,7 @@ import {
   id,
   pagination,
   string,
+  withNamedId,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
@@ -402,6 +403,16 @@ async function findTutorsForMediaProvider(
   const list: ITutor.FindTutorsForMediaProviderApiResponse =
     await tutors.findForMediaProvider(query);
   res.status(200).json(list);
+}
+
+async function findTutorStats(req: Request, res: Response, next: NextFunction) {
+  const { tutor: id } = withNamedId("tutor").parse(req.params);
+
+  const tutor = await tutors.findById(id);
+  if (!tutor || !tutor.activated || !tutor.image || !tutor.video)
+    return next(notfound.tutor());
+
+  // const k = lessons.s
 }
 
 export default {
