@@ -1,0 +1,85 @@
+{
+  "tailwindCSS.experimental.classRegex": [["cn\\(([^)]+)\\)", "'([^']*)'"]],
+  "restoreTerminals.terminals": [
+    {
+      "splitTerminals": [
+        {
+          "name": "docker",
+          "commands": ["cd server/", "sudo docker compose up"]
+        },
+        {
+          "name": "server",
+          "commands": ["cd server/", "nvm use", "yarn start"]
+        },
+        {
+          "name": "nova",
+          "commands": ["cd nova/", "nvm use", "yarn dev"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "atlas",
+          "commands": ["cd atlas/", "nvm use", "yarn build -w"]
+        },
+        {
+          "name": "types",
+          "commands": ["cd types/", "nvm use", "yarn build -w"]
+        },
+        {
+          "name": "luna",
+          "commands": ["cd luna/", "nvm use", "yarn watch:build"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "storybook",
+          "commands": ["cd luna/", "nvm use"]
+        },
+        {
+          "name": "orbit",
+          "commands": ["cd dashboard/", "nvm use", "yarn dev"]
+        },
+        {
+          "name": "sol",
+          "commands": ["cd sol/", "nvm use", "yarn build -w"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "peer",
+          "commands": ["nvm use", "peerjs -p 3002"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "Recorder",
+          "commands": ["cd recorder/", "nvm use", "yarn start"]
+        },
+        {
+          "name": "Models",
+          "commands": ["cd models/", "nvm use", "yarn build -w"]
+        },
+        {
+          "name": "Auth",
+          "commands": ["cd auth/", "nvm use", "yarn build -w"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
+        {
+          "name": "Root",
+          "commands": ["nvm use"]
+        }
+      ]
+    }
+  ]
+}
