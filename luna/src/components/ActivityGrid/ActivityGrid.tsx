@@ -52,10 +52,10 @@ export const ActivityGrid = <T,>({
   }, [map, today]);
 
   return (
-    <Card className={cn("!tw-p-0 tw-px-1 ")}>
+    <Card className={cn("!tw-p-0 tw-px-1")}>
       <div
         className={cn(
-          "tw-overflow-x-auto tw-pt-9 tw-pb-5 tw-pr-4 ",
+          "tw-overflow-x-auto tw-pt-9 tw-pb-5 tw-pr-4",
           "tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300"
         )}
       >

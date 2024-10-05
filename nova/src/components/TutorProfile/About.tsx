@@ -7,7 +7,7 @@ const About: React.FC<{ about: string | null }> = ({ about }) => {
   return (
     <div>
       <Title id={"labels.about.short"} />
-      <div>
+      <div className="max-w-screen-sm">
         <RawHtml html={about} />
       </div>
     </div>

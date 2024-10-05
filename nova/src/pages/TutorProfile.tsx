@@ -7,7 +7,6 @@ import { Image, Video } from "@/components/TutorProfile/Media";
 import Stats from "@/components/TutorProfile/Stats";
 import About from "@/components/TutorProfile/About";
 import ActivitiesOverview from "@/components/TutorProfile/ActivitiesOverview";
-import { IRating } from "@litespace/types";
 import Ratings from "@/components/TutorProfile/Ratings";
 
 const TutorProfile: React.FC = () => {
@@ -69,27 +68,27 @@ const TutorProfile: React.FC = () => {
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;
 
   return (
-    <div className="max-w-screen-xl mx-auto w-full p-6 mb-12 flex flex-col gap-5">
-      <div className="flex flex-col items-center justify-center text-center gap-5">
-        <Image
-          image={tutor.data.image}
-          status={asOnlineStatus(tutor.data.online, tutor.data.updatedAt)}
-        />
+    <div className="max-w-screen-sm lg:max-w-screen-3xl mx-auto w-full p-6 mb-12">
+      <div className="flex flex-col lg:flex-row gap-5">
+        <div className="flex flex-col items-center justify-center lg:justify-start text-center gap-5">
+          <Image
+            image={tutor.data.image}
+            status={asOnlineStatus(tutor.data.online, tutor.data.updatedAt)}
+          />
+          <div>
+            <h3 className="text-2xl leading-relaxed">{tutor.data.name}</h3>
+            <p className="text-foreground-light">{tutor.data.bio}</p>
+          </div>
+          <Video video={tutor.data.video} />
+        </div>
 
-        <div>
-          <h3 className="text-2xl leading-relaxed">{tutor.data.name}</h3>
-          <p className="text-foreground-light">{tutor.data.bio}</p>
+        <div className="flex flex-col gap-5">
+          <Stats query={stats} />
+          <About about={tutor.data.about} />
+          <ActivitiesOverview query={activity} />
+          <Ratings query={ratings} />
         </div>
       </div>
-
-      <div>
-        <Video video={tutor.data.video} />
-      </div>
-
-      <Stats query={stats} />
-      <About about={tutor.data.about} />
-      <ActivitiesOverview query={activity} />
-      <Ratings query={ratings} />
     </div>
   );
 };

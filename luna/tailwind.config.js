@@ -10,6 +10,9 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      screens: {
+        "3xl": "1600px",
+      },
       containers: {
         "2xs": "16rem",
         "3xs": "12rem",

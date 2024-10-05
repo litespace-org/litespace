@@ -15,7 +15,7 @@ type StatProps = { id: LocalId; value: React.ReactNode };
 const Stat: React.FC<StatProps> = ({ id, value }) => {
   const intl = useFormatMessage();
   return (
-    <Card>
+    <Card className="w-full h-full">
       <h3 className="font-semibold text-xl mb-1 text-foreground-light">
         {intl(id)}
       </h3>
@@ -52,7 +52,7 @@ const Stats: React.FC<{
   return (
     <div className="grid grid-cols-12 gap-4">
       {stats.map((stat) => (
-        <div className="col-span-12" key={stat.id}>
+        <div className="col-span-12 lg:col-span-6 h-full" key={stat.id}>
           <Stat {...stat} />
         </div>
       ))}

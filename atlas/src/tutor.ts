@@ -55,8 +55,8 @@ export class Tutor extends Base {
 
     const formData = new FormData();
 
-    if (photo) formData.append(IUser.UpdateMediaFilesApiKeys.Photo, photo);
-    if (video) formData.append("video", video);
+    if (photo) formData.append(IUser.UpdateMediaFilesApiKeys.Image, photo);
+    if (video) formData.append(IUser.UpdateMediaFilesApiKeys.Video, video);
 
     await this.client.put(`/api/v1/tutor/${id}`, formData, {
       headers: { "Content-Type": "multipart/form-data" },
