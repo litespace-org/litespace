@@ -49,7 +49,7 @@ const Room: React.FC<{
         <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full ring ring-dash-sidebar">
           <img
             className="object-cover w-full h-full"
-            src={member.photo ? asFullAssetUrl(member.photo) : "/avatar-1.png"}
+            src={member.image ? asFullAssetUrl(member.image) : "/avatar-1.png"}
           />
         </div>
 

@@ -457,10 +457,12 @@ async function findTutorActivityScores(
   const activityScoreMap: ITutor.ActivityScoreMap = {};
 
   for (const [day, lessonDays] of entries(lessonDayMap)) {
-    activityScoreMap[day] = lessonDays.reduce((total, lessonDay) => {
+    const score = lessonDays.reduce((total, lessonDay) => {
       const score = lessonDay.duration === ILesson.Duration.Long ? 2 : 1;
       return total + score;
     }, 0);
+
+    activityScoreMap[day] = { score, lessonCount: lessonDays.length };
   }
 
   const response: ITutor.FindTutorActivityScores = activityScoreMap;

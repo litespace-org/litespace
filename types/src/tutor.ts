@@ -85,6 +85,9 @@ export type FindTutorStatsApiResponse = {
 /**
  * Map from ISO Date (YYYY-MM-DD) to the activity score
  */
-export type ActivityScoreMap = Record<string, number>;
+export type ActivityScoreMap = Record<
+  string,
+  { score: number; lessonCount: number }
+>;
 
 export type FindTutorActivityScores = ActivityScoreMap;

@@ -14,6 +14,11 @@ export { Calendar, type Event } from "@/components/Calendar";
 export { Card } from "@/components/Card";
 export { Accordion, type AccordionItem } from "@/components/Accordion";
 export { ActionsMenu, type MenuAction } from "@/components/ActionsMenu";
+export {
+  ActivityGrid,
+  type ActivityMap,
+  type GridDay,
+} from "@/components/ActivityGrid";
 export { Dialog } from "@/components/Dialog";
 export { Drawer } from "@/components/Drawer";
 export { Select, type SelectList } from "@/components/Select";
@@ -29,6 +34,7 @@ export { Loading } from "@/components/Loading";
 export { RawHtml } from "@/components/RawHtml";
 export { Price } from "@/components/Price";
 export { SidebarNav } from "@/components/SidebarNav";
+export { OnlineStatus, UserOnlineStatus } from "@/components/OnlineStatus";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
 export { IconField } from "@/components/IconField";
 export { default as Icons } from "@/icons";

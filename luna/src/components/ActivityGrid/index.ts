@@ -1,2 +1,5 @@
 export { ActivityGrid } from "@/components/ActivityGrid/ActivityGrid";
-export { type ActivityMap } from "@/components/ActivityGrid/types";
+export {
+  type ActivityMap,
+  type GridDay,
+} from "@/components/ActivityGrid/types";

@@ -25,3 +25,4 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 - https://stackoverflow.com/questions/62702721/how-to-get-microphone-volume-using-audioworklet
 - Audio Volume Meter: https://codepen.io/forgived/pen/ZEQrWeW
 - https://github.com/google-ai-edge/mediapipe <--- AI on medai streams
+- TODO: Use `humanize-duration` to handle durations

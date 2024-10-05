@@ -23,6 +23,7 @@
     "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
     "framer-motion": "^11.2.6",
     "hark": "^1.2.3",
+    "humanize-duration": "^3.32.1",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
     "marked": "^14.0.0",
@@ -45,6 +46,7 @@
   "devDependencies": {
     "@tauri-apps/cli": "^1.6.0",
     "@types/hark": "^1",
+    "@types/humanize-duration": "^3",
     "@types/react": "^18.2.66",
     "@types/react-dom": "^18.2.22",
     "@types/react-redux": "^7.1.33",
