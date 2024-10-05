@@ -20,7 +20,7 @@
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-query": "^5.56.2",
     "axios": "^1.7.2",
-    "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
+    "dayjs": "^1.11.13",
     "framer-motion": "^11.2.6",
     "hark": "^1.2.3",
     "humanize-duration": "^3.32.1",

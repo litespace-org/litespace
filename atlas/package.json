@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@litespace/types": "1.0.0",
-    "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
+    "dayjs": "^1.11.13",
     "zod": "^3.23.8"
   },
   "peerDependencies": {

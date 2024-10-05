@@ -104,7 +104,7 @@
     "@tailwindcss/container-queries": "^0.1.1",
     "@vidstack/react": "^1.12.9",
     "classnames": "^2.5.1",
-    "dayjs": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
+    "dayjs": "^1.11.13",
     "media-icons": "^1.1.5",
     "react-contenteditable": "^3.3.7",
     "react-feather": "^2.0.10",

@@ -49,10 +49,5 @@
   },
   "dependencies": {
     "commander": "^12.1.0"
-  },
-  "resolutions": {
-    "dayjs@npm:^1.10.7": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
-    "dayjs@npm:^1.11.10": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch",
-    "dayjs@npm:^1.11.11": "patch:dayjs@npm%3A1.11.12#~/.yarn/patches/dayjs-npm-1.11.12-ce23245b6e.patch"
   }
 }

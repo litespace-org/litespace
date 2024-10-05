@@ -28,4 +28,6 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 - TODO: Use `humanize-duration` to handle durations
 - https://blog.expo.dev/running-expo-in-windows-subsystem-for-linux-wsl2-425f6fd7838e
 - https://docs.expo.dev/get-started/set-up-your-environment/?platform=android&device=simulated&mode=development-build
-- https://www.youtube.com/watch?v=as26dS-KbHw
+- https://github.com/expo/config-plugins/tree/main/packages/react-native-webrtc
+- https://reactnative.directory/
+- https://github.com/byCedric/expo-monorepo-example
