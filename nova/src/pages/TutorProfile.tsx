@@ -1,52 +1,69 @@
 import { atlas } from "@/lib/atlas";
 import { asOnlineStatus, Loading } from "@litespace/luna";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Image, Video } from "@/components/TutorProfile/Media";
 import Stats from "@/components/TutorProfile/Stats";
 import About from "@/components/TutorProfile/About";
 import ActivitiesOverview from "@/components/TutorProfile/ActivitiesOverview";
+import { IRating } from "@litespace/types";
+import Ratings from "@/components/TutorProfile/Ratings";
 
 const TutorProfile: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const params = useParams<{ id: string }>();
+
+  const id = useMemo(() => {
+    const id = Number(params.id);
+    if (Number.isNaN(id)) return null;
+    return id;
+  }, [params.id]);
+
+  const findTutoById = useCallback(() => {
+    if (!id) return null;
+    return atlas.tutor.findById(id);
+  }, [id]);
+
   const tutor = useQuery({
-    queryKey: ["tutor-profile"],
-    queryFn: () => atlas.tutor.findById(Number(id)),
+    queryKey: ["tutor-profile", id],
+    queryFn: findTutoById,
     retry: false,
+    enabled: !!id,
   });
 
   const findTutorStats = useCallback(() => {
-    if (!tutor.data) return null;
-    return atlas.user.findTutorStats(tutor.data.id);
-  }, [tutor.data]);
-
-  const findTutorAcivityScores = useCallback(() => {
-    if (!tutor.data) return null;
-    return atlas.user.findTutorActivityScores(tutor.data.id);
-  }, [tutor.data]);
+    if (!id) return null;
+    return atlas.user.findTutorStats(id);
+  }, [id]);
 
   const stats = useQuery({
     queryFn: findTutorStats,
-    queryKey: ["tutor-stats"],
-    enabled: !!tutor.data,
+    queryKey: ["tutor-stats", id],
+    enabled: !!id,
   });
+
+  const findTutorAcivityScores = useCallback(() => {
+    if (!id) return null;
+    return atlas.user.findTutorActivityScores(id);
+  }, [id]);
 
   const activity = useQuery({
     queryFn: findTutorAcivityScores,
-    queryKey: ["tutor-acivity"],
-    enabled: !!tutor.data,
+    queryKey: ["tutor-acivity", id],
+    enabled: !!id,
   });
 
-  // const ratings = useQuery({
-  //   queryKey: ["tutor-rating"],
-  //   queryFn: async () => {
-  //     if (!tutor.data?.id) return [];
-  //     return await atlas.rating.findRateeRatings(tutor.data.id);
-  //   },
-  //   enabled: !!tutor.data,
-  //   retry: false,
-  // });
+  const findRateeRatings = useCallback(async () => {
+    if (!id) return [];
+    return atlas.rating.findRateeRatings(id);
+  }, [id]);
+
+  const ratings = useQuery({
+    queryKey: ["tutor-rating", id],
+    queryFn: findRateeRatings,
+    enabled: !!id,
+    retry: false,
+  });
 
   if (tutor.isLoading) return <Loading className="h-[40vh]" />;
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;
@@ -72,6 +89,7 @@ const TutorProfile: React.FC = () => {
       <Stats query={stats} />
       <About about={tutor.data.about} />
       <ActivitiesOverview query={activity} />
+      <Ratings query={ratings} />
     </div>
   );
 };

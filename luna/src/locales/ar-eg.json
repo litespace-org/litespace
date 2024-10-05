@@ -261,6 +261,7 @@
   "labels.activity.lesson": "أعطي حصة واحدة",
   "labels.activity.two.lessons": "أعطي حصتينj",
   "labels.activity.many.lessons": "أعطي {count} حصص",
+  "labels.ratings": "التقييمات والآراء",
   "labels.name": "الإسم",
   "labels.name.placeholder": "محمد",
   "labels.email": "الإيميل",
