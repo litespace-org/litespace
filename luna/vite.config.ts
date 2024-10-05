@@ -25,6 +25,7 @@ export default defineConfig({
       targets: [
         { src: "tailwind.config.js", dest: "." },
         { src: "src/tailwind.css", dest: "." },
+        { src: "src/svg.d.ts", dest: "." },
       ],
     }),
   ],

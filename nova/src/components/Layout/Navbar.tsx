@@ -8,7 +8,8 @@ import {
   Theme,
   toaster,
   useFormatMessage,
-  LiteSpace,
+  // LiteSpace,
+  Icons,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelector, resetUserProfile } from "@/redux/user/me";
@@ -19,6 +20,8 @@ import cn from "classnames";
 import { useMutation } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import { resetTutorMeta } from "@/redux/user/tutor";
+
+console.log(Icons);
 
 const Navbar: React.FC<{
   toggleTheme: () => void;
@@ -140,7 +143,7 @@ const Navbar: React.FC<{
         </div>
 
         <div>
-          <LiteSpace className="h-10 w-10" />
+          <Icons.LiteSpace className="h-10 w-10" />
         </div>
 
         <ul className="hidden md:flex flex-row gap-4">

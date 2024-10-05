@@ -22,6 +22,10 @@
     "./tailwind.css": {
       "require": "./dist/tailwind.css",
       "default": "./dist/tailwind.css"
+    },
+    "./svg": {
+      "require": "./dist/svg.d.ts",
+      "default": "./dist/svg.d.ts"
     }
   },
   "files": [

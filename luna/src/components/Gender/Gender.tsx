@@ -2,9 +2,7 @@ import React, { useMemo } from "react";
 import { Card } from "@/components/Card";
 import { IUser, Void } from "@litespace/types";
 import cn from "classnames";
-import { TutorDark, TutorLight, SVG } from "@/icons";
-import StudentDark from "@/icons/student-dark.svg";
-import StudentLight from "@/icons/student-light.svg";
+import Icons, { SVG } from "@/icons";
 
 type Image = {
   Light: SVG;
@@ -46,10 +44,10 @@ const Gender: React.FC<{
   const Image: Image = useMemo(
     () =>
       student
-        ? { Dark: StudentDark, Light: StudentLight }
+        ? { Dark: Icons.StudentDark, Light: Icons.StudentLight }
         : {
-            Dark: TutorDark,
-            Light: TutorLight,
+            Dark: Icons.TutorDark,
+            Light: Icons.TutorLight,
           },
     [student]
   );
