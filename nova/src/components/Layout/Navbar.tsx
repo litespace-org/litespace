@@ -21,8 +21,6 @@ import { useMutation } from "@tanstack/react-query";
 import { atlas } from "@/lib/atlas";
 import { resetTutorMeta } from "@/redux/user/tutor";
 
-console.log(Icons);
-
 const Navbar: React.FC<{
   toggleTheme: () => void;
   theme: Theme | null;

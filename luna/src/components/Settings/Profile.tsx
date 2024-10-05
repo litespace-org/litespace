@@ -105,8 +105,6 @@ const Profile: React.FC<{
     [disabled, profile]
   );
 
-  console.log({ displayOnly });
-
   const editDisabled = useMemo(() => {
     if (!profile) return true;
     const payload = diff<IUser.UpdateApiPayload>(

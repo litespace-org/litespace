@@ -82,4 +82,16 @@ export class User extends Base {
   ): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
     return this.get(`/api/v1/user/media-provider/tutors`, null, pagination);
   }
+
+  async findTutorStats(
+    tutor: number
+  ): Promise<ITutor.FindTutorStatsApiResponse> {
+    return await this.get(`/api/v1/user/tutor/stats/${tutor}`);
+  }
+
+  async findTutorActivityScores(
+    tutor: number
+  ): Promise<ITutor.FindTutorActivityScores> {
+    return await this.get(`/api/v1/user/tutor/activity/${tutor}`);
+  }
 }
