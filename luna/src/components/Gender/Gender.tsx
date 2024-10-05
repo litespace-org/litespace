@@ -2,14 +2,21 @@ import React, { useMemo } from "react";
 import { Card } from "@/components/Card";
 import { IUser, Void } from "@litespace/types";
 import cn from "classnames";
-import { Tutor } from "@/icons";
+import { TutorDark, TutorLight, SVG } from "@/icons";
+import StudentDark from "@/icons/student-dark.svg";
+import StudentLight from "@/icons/student-light.svg";
+
+type Image = {
+  Light: SVG;
+  Dark: SVG;
+};
 
 const Option: React.FC<{
-  image: string;
+  Image: Image;
   active: boolean;
   select: Void;
   disabled?: boolean;
-}> = ({ select, active, disabled }) => {
+}> = ({ select, Image, active, disabled }) => {
   return (
     <button
       type="button"
@@ -23,8 +30,8 @@ const Option: React.FC<{
           active && "!tw-bg-background-selection"
         )}
       >
-        <Tutor.Light className="tw-w-full tw-h-full tw-block dark:tw-hidden" />
-        <Tutor.Dark className="tw-w-full tw-h-full tw-hidden dark:tw-block" />
+        <Image.Light className="tw-w-full tw-h-full tw-block dark:tw-hidden" />
+        <Image.Dark className="tw-w-full tw-h-full tw-hidden dark:tw-block" />
       </Card>
     </button>
   );
@@ -34,21 +41,33 @@ const Gender: React.FC<{
   gender?: IUser.Gender;
   disabled?: boolean;
   setGender: (gender: IUser.Gender) => void;
-}> = ({ gender, disabled, setGender }) => {
+  student: boolean;
+}> = ({ gender, disabled, student, setGender }) => {
+  const Image: Image = useMemo(
+    () =>
+      student
+        ? { Dark: StudentDark, Light: StudentLight }
+        : {
+            Dark: TutorDark,
+            Light: TutorLight,
+          },
+    [student]
+  );
+
   const images = useMemo(
     () => [
-      { image: "/avatar-1.png", gender: IUser.Gender.Male },
-      { image: "/avatar-2.png", gender: IUser.Gender.Female },
+      { Image, gender: IUser.Gender.Male },
+      { Image, gender: IUser.Gender.Female },
     ],
-    []
+    [Image]
   );
 
   return (
     <div className="tw-flex tw-flex-row tw-gap-4">
-      {images.map(({ image, gender: option }) => (
+      {images.map(({ Image, gender: option }) => (
         <Option
-          key={image}
-          image={image}
+          key={option}
+          Image={Image}
           disabled={disabled}
           active={gender === option}
           select={() => setGender(option)}

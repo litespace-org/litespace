@@ -258,6 +258,7 @@ const Profile: React.FC<{
                 value={form.watch("gender")}
                 control={form.control}
                 disabled={disabled}
+                student={profile?.role === IUser.Role.Student}
                 name="gender"
               />
             }

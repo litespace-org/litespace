@@ -57,9 +57,9 @@ function create(context: ApiContext) {
           const { call } = await calls.create(
             {
               duration: payload.duration,
-              hostId: payload.tutorId,
-              memberIds: [userId],
-              ruleId: payload.ruleId,
+              host: payload.tutorId,
+              members: [userId],
+              rule: payload.ruleId,
               start: payload.start,
             },
             tx
@@ -67,8 +67,8 @@ function create(context: ApiContext) {
 
           const lesson = await lessons.create(
             {
-              callId: call.id,
-              hostId: payload.tutorId,
+              call: call.id,
+              host: payload.tutorId,
               members: [userId],
               price,
             },

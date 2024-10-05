@@ -108,11 +108,13 @@ export function Gender<T extends FieldValues>({
   name,
   value,
   disabled,
+  student,
 }: {
   control: Control<T>;
   name: Path<T>;
   value?: IUser.Gender;
   disabled?: boolean;
+  student: boolean;
 }) {
   return (
     <Controller
@@ -123,6 +125,7 @@ export function Gender<T extends FieldValues>({
           disabled={disabled}
           setGender={field.onChange}
           gender={value}
+          student={student}
         />
       )}
     />

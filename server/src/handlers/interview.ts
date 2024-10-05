@@ -72,9 +72,9 @@ async function createInterview(
   const [interview, call] = await knex.transaction(async (tx) => {
     const { call } = await calls.create(
       {
-        ruleId,
-        hostId: interviewerId,
-        memberIds: [intervieweeId],
+        rule: ruleId,
+        host: interviewerId,
+        members: [intervieweeId],
         start: start,
         duration: INTERVIEW_DURATION,
       },

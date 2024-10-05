@@ -2,6 +2,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
+import svgr from "vite-plugin-svgr";
 import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
 
@@ -9,9 +10,17 @@ import path from "node:path";
 export default defineConfig({
   plugins: [
     react(),
-    dts({
-      exclude: ["**/*.stories.tsx"],
+    svgr({
+      // svgr options: https://react-svgr.com/docs/options/
+      svgrOptions: {
+        exportType: "default",
+        ref: true,
+        svgo: false,
+        titleProp: true,
+      },
+      include: "**/*.svg",
     }),
+    dts({ exclude: ["**/*.stories.tsx"] }),
     viteStaticCopy({
       targets: [
         { src: "tailwind.config.js", dest: "." },

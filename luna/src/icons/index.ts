@@ -1,3 +1,6 @@
-export { default as LiteSpace } from "@/icons/LiteSpace";
+export { default as LiteSpace } from "@/icons/logo.svg";
 export * as Tutor from "@/icons/Tutor";
-export type SVG = (props: React.SVGProps<SVGSVGElement>) => JSX.Element;
+export * as Student from "@/icons/Student";
+export { default as TutorLight } from "@/icons/tutor-light.svg";
+export { default as TutorDark } from "@/icons/tutor-dark.svg";
+export type SVG = React.FC<React.SVGProps<SVGSVGElement>>;
