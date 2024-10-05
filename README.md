@@ -26,3 +26,6 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 - Audio Volume Meter: https://codepen.io/forgived/pen/ZEQrWeW
 - https://github.com/google-ai-edge/mediapipe <--- AI on medai streams
 - TODO: Use `humanize-duration` to handle durations
+- https://blog.expo.dev/running-expo-in-windows-subsystem-for-linux-wsl2-425f6fd7838e
+- https://docs.expo.dev/get-started/set-up-your-environment/?platform=android&device=simulated&mode=development-build
+- https://www.youtube.com/watch?v=as26dS-KbHw

@@ -65,7 +65,7 @@ const ActivitiesOverview: React.FC<{
   return (
     <div>
       <Title id="labels.activity" />
-      <div className="sm:max-w-2xl xl:max-w-fit">
+      <div className="lg:max-w-[42rem] xl:max-w-fit">
         <ActivityGrid map={activityMap} tooltip={tooltip} />
       </div>
     </div>

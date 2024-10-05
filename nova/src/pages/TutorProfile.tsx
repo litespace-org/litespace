@@ -68,7 +68,7 @@ const TutorProfile: React.FC = () => {
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;
 
   return (
-    <div className="max-w-screen-sm lg:max-w-screen-3xl mx-auto w-full p-6 mb-12">
+    <div className="max-w-screen-sm lg:max-w-screen-2xl mx-auto w-full p-6 mb-12">
       <div className="flex flex-col lg:flex-row gap-5">
         <div className="flex flex-col items-center justify-center lg:justify-start text-center gap-5">
           <Image

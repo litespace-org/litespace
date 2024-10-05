@@ -36,7 +36,8 @@
       "types",
       "nova",
       "nebula",
-      "sol"
+      "sol",
+      "app"
     ]
   },
   "packageManager": "yarn@4.2.2",
