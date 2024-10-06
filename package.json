@@ -1,8 +1,7 @@
 {
   "name": "litespace",
   "version": "1.0.0",
-  "description": "Online English classes",
-  "main": "index.js",
+  "description": "LiteSpace Monorepo",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -22,25 +21,6 @@
     "vercel": "env-cmd ts-node scripts/vercel.ts",
     "vercel:ci": "ts-node scripts/vercel.ts"
   },
-  "workspaces": {
-    "packages": [
-      "recorder",
-      "dashboard",
-      "models",
-      "server",
-      "emails",
-      "luna",
-      "auth",
-      "orbit",
-      "atlas",
-      "types",
-      "nova",
-      "nebula",
-      "sol",
-      "app"
-    ]
-  },
-  "packageManager": "yarn@4.2.2",
   "devDependencies": {
     "env-cmd": "^10.1.0",
     "rimraf": "^5.0.7",

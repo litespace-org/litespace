@@ -1,0 +1,32 @@
+{
+  "name": "@litespace/atlas",
+  "description": "LiteSpace API SDK",
+  "version": "1.0.0",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "rollup -c --bundleConfigAsCjs"
+  },
+  "devDependencies": {
+    "@rollup/plugin-alias": "^5.1.0",
+    "@rollup/plugin-commonjs": "^25.0.8",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "rollup": "^4.18.0",
+    "rollup-plugin-dts": "^6.1.1",
+    "typescript": "^5.4.5"
+  },
+  "dependencies": {
+    "@litespace/types": "workspace:^",
+    "dayjs": "^1.11.13",
+    "zod": "^3.23.8"
+  },
+  "peerDependencies": {
+    "axios": "^1.7.2"
+  }
+}

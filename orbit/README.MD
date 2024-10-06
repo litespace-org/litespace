@@ -1,3 +1,0 @@
-# Orbit
-
-LiteSpace Admin dashboard
