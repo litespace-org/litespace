@@ -49,6 +49,38 @@ Enable `pnpm`
 corepack enable pnpm
 ```
 
+## Run the server
+
+1. Run docker compose
+
+   ```bash
+   # from services/server/
+   sudo docker compose up -d
+   ```
+
+   **note:** if you want to remove the containers and flush the data use `sudo docker compose down`
+
+2. Setup your environment variables
+
+   ```bash
+   # from services/server
+   cp .env.example .env
+   ```
+
+   Make changes if needed.
+
+3. Setup database
+
+   1. Setup environment variables to be able to apply the database migrations.
+
+      ```bash
+          # from packages/models/
+          cp .env.example .env
+      ```
+
+   2. Apply the migrations by running `pnpm migrate up` from `packages/models/`
+   3. To undo the migrations run `pnpm migrate down`
+
 Verify pnpm installation by running `pnpm -v`. You should see no errors.
 
 ### Docker
