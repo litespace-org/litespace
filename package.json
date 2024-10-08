@@ -31,7 +31,8 @@
     "deploy:luna:vercel": "yarn workspace @litespace/luna deploy:vercel",
     "deploy:nebula:vercel": "yarn workspace @litespace/nebula deploy:vercel",
     "vercel": "env-cmd ts-node scripts/vercel.ts",
-    "vercel:ci": "ts-node scripts/vercel.ts"
+    "vercel:ci": "ts-node scripts/vercel.ts",
+    "cleandep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",

@@ -4,11 +4,11 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/index.js",
+    "start": "pnpm build && env-cmd ts-node -r tsconfig-paths/register dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc",
     "migrate": "env-cmd node-pg-migrate",
-    "seed": "yarn build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/seed.js",
+    "seed": "pnpm build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/seed.js",
     "test": "env-cmd -f .env.test jest"
   },
   "devDependencies": {
