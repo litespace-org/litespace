@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "@/components/Dialog";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
-import { Button } from "@/components/Button";
 
 const meta: Meta<typeof Dialog> = {
   title: "Dialog",
@@ -20,11 +19,6 @@ const meta: Meta<typeof Dialog> = {
 
 export const Primary: StoryObj<typeof Dialog> = {
   args: {
-    trigger: (
-      <div className="tw-w-20">
-        <Button> {ar["global.labels.edit"]} </Button>{" "}
-      </div>
-    ),
     children: (
       <div className="tw-text-foreground-light">
         {ar["error.tutor.bio.arabic.only"]}

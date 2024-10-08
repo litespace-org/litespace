@@ -35,10 +35,8 @@ export const PrimaryInteractive: StoryObj<Component> = {
               <Textarea
                 value={watch("feedback")}
                 placeholder={ar["global.start.chating"]}
-                register={register("feedback", {
-                  required: { value: true, message: ar["error.required"] },
-                })}
                 error={errors["feedback"]?.message}
+                {...register("feedback")}
               />
             }
           />

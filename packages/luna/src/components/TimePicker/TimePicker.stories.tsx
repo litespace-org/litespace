@@ -8,7 +8,7 @@ import { Time } from "@litespace/sol";
 
 type Component = typeof TimePicker;
 
-const meta: Meta<Comment> = {
+const meta: Meta<Component> = {
   title: "TimePicker",
   component: TimePicker,
   decorators: [

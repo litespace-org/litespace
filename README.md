@@ -6,6 +6,55 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 
 ![Database Schema](./schema.png)
 
+# Run
+
+### nvm
+
+1. Install NVM (node version manager)
+
+   ```bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+   ```
+
+2. Configure NVM
+
+   ```bash
+   export NVM_DIR="$HOME/.nvm"
+   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+   [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+   ```
+
+3. Verify NVM installation by running `nvm -v`. You should see no errors.
+
+4. Install the current project node version.
+
+   ```bash
+   # from the project root
+   nvm install
+   ```
+
+5. Use the project node version.
+
+   ```bash
+   nvm use
+   ```
+
+### pnpm
+
+Enable `pnpm`
+
+```bash
+corepack enable pnpm
+```
+
+Verify pnpm installation by running `pnpm -v`. You should see no errors.
+
+### Install project dependencies
+
+```bash
+pnpm install
+```
+
 # Tools
 
 - [`pg`](https://node-postgres.com/)

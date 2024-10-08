@@ -14,6 +14,7 @@
     "build:pkg:models": "pnpm --filter @litespace/models build",
     "build:pkg:sol": "pnpm --filter @litespace/models build",
     "build:pkg:types": "pnpm --filter @litespace/types build",
+    "build:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:email && pnpm build:pkg:atlas && pnpm build:pkg:auth && pnpm build:pkg:luna && pnpm build:pkg:models",
     "watch:atlas": "pnpm build:pkg:atlas -w",
     "watch:auth": "pnpm build:pkg:auth -w",
     "watch:email": "pnpm build:pkg:email -w",
