@@ -5,6 +5,7 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-litespace}
+      POSTGRES_DB: litespace
       PGDATA: /data/postgres
     volumes:
       - postgres:/data/postgres

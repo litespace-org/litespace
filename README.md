@@ -6,7 +6,9 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 
 ![Database Schema](./schema.png)
 
-# Run
+# Project Setup
+
+## Tools
 
 ### nvm
 
@@ -49,11 +51,9 @@ corepack enable pnpm
 
 Verify pnpm installation by running `pnpm -v`. You should see no errors.
 
-### Install project dependencies
+### Docker
 
-```bash
-pnpm install
-```
+Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker.com/engine/install/ubuntu/) (recommended but feel free to use any linux distro)
 
 # Tools
 
