@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:vercel": "yarn vercel build",
-    "deploy:vercel": "yarn vercel deploy --prebuilt",
+    "build:vercel": "pnpm vercel build",
+    "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "start": "next start",
     "lint": "next lint"
   },

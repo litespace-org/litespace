@@ -49,9 +49,9 @@ async function findProject(name: string, token?: string): Promise<Project> {
 async function createProject({
   name,
   framework = "vite",
-  buildCommand = "yarn build",
+  buildCommand = "pnpm build",
   outputDirectory = "dist",
-  installCommand = "yarn",
+  installCommand = "pnpm install",
   token,
 }: {
   name: string;

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TextEditor } from "@/components/TextEditor";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 import { Controller, useForm } from "react-hook-form";
 

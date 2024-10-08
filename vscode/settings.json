@@ -5,15 +5,15 @@
       "splitTerminals": [
         {
           "name": "docker",
-          "commands": ["cd server/", "sudo docker compose up"]
+          "commands": ["cd services/server/", "sudo docker compose up"]
         },
         {
           "name": "server",
-          "commands": ["cd server/", "nvm use", "yarn start"]
+          "commands": ["cd services/server/", "nvm use", "pnpm start"]
         },
         {
           "name": "nova",
-          "commands": ["cd nova/", "nvm use", "yarn dev"]
+          "commands": ["cd apps/nova/", "nvm use", "pnpm dev"]
         }
       ]
     },
@@ -21,15 +21,15 @@
       "splitTerminals": [
         {
           "name": "atlas",
-          "commands": ["cd atlas/", "nvm use", "yarn build -w"]
+          "commands": ["cd packages/atlas/", "nvm use", "pnpm build -w"]
         },
         {
           "name": "types",
-          "commands": ["cd types/", "nvm use", "yarn build -w"]
+          "commands": ["cd packages/types/", "nvm use", "pnpm build -w"]
         },
         {
           "name": "luna",
-          "commands": ["cd luna/", "nvm use", "yarn watch:build"]
+          "commands": ["cd packages/luna/", "nvm use", "pnpm watch:build"]
         }
       ]
     },
@@ -37,15 +37,15 @@
       "splitTerminals": [
         {
           "name": "storybook",
-          "commands": ["cd luna/", "nvm use"]
+          "commands": ["cd packages/luna/", "nvm use"]
         },
         {
-          "name": "orbit",
-          "commands": ["cd dashboard/", "nvm use", "yarn dev"]
+          "name": "dashboard",
+          "commands": ["cd apps/dashboard/", "nvm use", "pnpm dev"]
         },
         {
           "name": "sol",
-          "commands": ["cd sol/", "nvm use", "yarn build -w"]
+          "commands": ["cd packages/sol/", "nvm use", "pnpm build -w"]
         }
       ]
     },
@@ -61,15 +61,15 @@
       "splitTerminals": [
         {
           "name": "Recorder",
-          "commands": ["cd recorder/", "nvm use", "yarn start"]
+          "commands": ["cd services/recorder/", "nvm use", "pnpm start"]
         },
         {
           "name": "Models",
-          "commands": ["cd models/", "nvm use", "yarn build -w"]
+          "commands": ["cd packages/models/", "nvm use", "pnpm build -w"]
         },
         {
           "name": "Auth",
-          "commands": ["cd auth/", "nvm use", "yarn build -w"]
+          "commands": ["cd packages/auth/", "nvm use", "pnpm build -w"]
         }
       ]
     },

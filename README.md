@@ -31,3 +31,6 @@ Check [DrawSQL](https://drawsql.app/teams/no-sim/diagrams/space)
 - https://github.com/expo/config-plugins/tree/main/packages/react-native-webrtc
 - https://reactnative.directory/
 - https://github.com/byCedric/expo-monorepo-example
+- https://medium.com/locastic/react-native-cookie-based-authentication-80ee18f4c71b
+- https://medium.com/swlh/custom-tab-navigator-using-react-navigation-svg-b659b395a7c4
+- https://medium.com/@malikchohra/build-for-scale-how-to-use-svgs-in-react-native-5f49ad4a7715

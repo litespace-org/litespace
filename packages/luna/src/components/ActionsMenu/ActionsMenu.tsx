@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { MoreVertical } from "react-feather";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { MenuAction } from "@/components/ActionsMenu/types";
 import cn from "classnames";
 import {
@@ -33,6 +32,8 @@ export const ActionsMenu: React.FC<{
     setOpen(next);
     if (onToggle) onToggle(next);
   }, [onToggle, open]);
+
+  console.log({toggle, placement})
 
   const onClickOutside = useCallback(
     (event: MouseEvent) => {

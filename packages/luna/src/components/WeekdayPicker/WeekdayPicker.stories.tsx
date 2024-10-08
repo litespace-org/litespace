@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { WeekdayPicker } from "@/components/WeekdayPicker";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
 import { Controller, useForm } from "react-hook-form";

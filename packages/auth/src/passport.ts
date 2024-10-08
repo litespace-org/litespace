@@ -30,10 +30,8 @@ async function password(req: Request, done: VerifiedCallback) {
 }
 
 function logout(req: Request, res: Response, next: NextFunction) {
-  req.logout((error) => {
-    if (error) return next(error);
+  req.logout();
     res.status(200).send();
-  });
 }
 
 async function user(req: Request, res: Response, next: NextFunction) {

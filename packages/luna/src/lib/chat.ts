@@ -37,7 +37,7 @@ function asSender({
   return {
     id: member.id,
     name: member.name,
-    photo: member.photo,
+    photo: member.image,
   };
 }
 

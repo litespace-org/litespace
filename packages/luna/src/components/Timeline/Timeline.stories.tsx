@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Timeline } from "@/components/Timeline";
-import { DarkStoryWrapper } from "@/Internal/DarkWrapper";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { Cpu, HardDrive, Mic, User } from "react-feather";
 import { Button } from "@/components/Button";
 

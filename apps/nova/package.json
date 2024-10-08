@@ -6,8 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "build:vercel": "env-cmd -f .env.staging yarn vercel build",
-    "deploy:vercel": "yarn vercel deploy --prebuilt",
+    "build:vercel": "env-cmd -f .env.staging pnpm vercel build",
+    "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },

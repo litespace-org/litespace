@@ -10,10 +10,10 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
-    "migrate": "env-cmd node-pg-migrate",
+    "migrate": "env-cmd -f .env node-pg-migrate",
     "migrate:test": "env-cmd -f .env.test node-pg-migrate",
-    "seed": "env-cmd esr scripts/seed.ts",
-    "reseed": "yarn migrate down && yarn migrate up && yarn seed",
+    "seed": "env-cmd -f .env esr scripts/seed.ts",
+    "reseed": "pnpm migrate down && pnpm migrate up && pnpm seed",
     "test": "env-cmd -f .env.test jest -i --detectOpenHandles"
   },
   "devDependencies": {

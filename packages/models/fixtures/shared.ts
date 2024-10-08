@@ -11,9 +11,9 @@ async function execute(command: string): Promise<string> {
 }
 
 export async function down() {
-  await execute("yarn migrate:test down");
+  await execute("pnpm migrate:test down");
 }
 
 export async function up() {
-  await execute("yarn migrate:test up");
+  await execute("pnpm migrate:test up");
 }

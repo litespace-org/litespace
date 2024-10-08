@@ -48,12 +48,13 @@ export default defineConfig({
         globals: {
           react: "React",
           "react-dom": "ReactDOM",
-          "react-hook-form": "reactHookForm",
-          "framer-motion": "framerMotion",
-          "react-intl": "reactIntl",
+          "react-hook-form": "react-hook-form",
+          "framer-motion": "framer-motion",
+          "react-intl": "react-intl",
           lodash: "lodash",
           "react-toastify": "react-toastify",
           "@reduxjs/toolkit": "redux",
+          "@tanstack/react-query": "react-query"
         },
       },
     },

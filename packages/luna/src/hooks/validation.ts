@@ -84,8 +84,8 @@ export function useValidation() {
           errors: {
             match: intl.formatMessage({
               id: english
-                ? messages["error.name.english"]
-                : messages["error.name.arabic"],
+                ? 'remove me'  
+                : 'remove me too',
             }),
             min: intl.formatMessage({
               id: messages["error.name.length.short"],

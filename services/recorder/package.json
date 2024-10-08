@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "yarn build && env-cmd node dist/index.js",
+    "start": "pnpm build && env-cmd node dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "test": "env-cmd -f .env.test jest",
@@ -41,6 +41,7 @@
   },
   "dependencies": {
     "@litespace/auth": "workspace:^",
+    "@litespace/types": "workspace:^",
     "@litespace/models": "workspace:^",
     "body-parser": "^1.20.2",
     "colors": "^1.4.0",
