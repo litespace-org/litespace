@@ -193,10 +193,10 @@ async function main(): Promise<void> {
   await knex.transaction(async (tx) => {
     const { call } = await calls.create(
       {
-        hostId: interviewer.id,
-        memberIds: [tutor.id],
+        host: interviewer.id,
+        members: [tutor.id],
         duration: 30,
-        ruleId: rule.id,
+        rule: rule.id,
         start: dayjs.utc().toISOString(),
       },
       tx
@@ -249,11 +249,11 @@ async function main(): Promise<void> {
         method === IWithdrawMethod.Type.Bank
           ? random(1_000_000_000, 5_000_000_000).toString()
           : method === IWithdrawMethod.Type.Wallet
-            ? [
-                sample(["015", "010", "011"])!,
-                random(1_000_000_0, 9_999_999_9),
-              ].join("")
-            : Math.random().toString(36).slice(2),
+          ? [
+              sample(["015", "010", "011"])!,
+              random(1_000_000_0, 9_999_999_9),
+            ].join("")
+          : Math.random().toString(36).slice(2),
     };
   }
 
@@ -263,9 +263,9 @@ async function main(): Promise<void> {
       const { call } = await calls.create(
         {
           duration: sample([ILesson.Duration.Short, ILesson.Duration.Long])!,
-          hostId: tutor.id,
-          memberIds: [student.id],
-          ruleId: 1, // todo: pick valid rule id
+          host: tutor.id,
+          members: [student.id],
+          rule: 1, // todo: pick valid rule id
           start: activeLesson
             ? dayjs.utc().add(1, "minute").toISOString()
             : randomStart(),
@@ -282,8 +282,8 @@ async function main(): Promise<void> {
 
       const { lesson } = await lessons.create(
         {
-          callId: call.id,
-          hostId: tutor.id,
+          call: call.id,
+          host: tutor.id,
           members: [student.id],
           price: calculateLessonPrice(price.scale(100), call.duration),
         },
@@ -315,9 +315,9 @@ async function main(): Promise<void> {
       const { call } = await calls.create(
         {
           duration: 30,
-          hostId: interviewer.id,
-          memberIds: [tutor.id],
-          ruleId: rule.id,
+          host: interviewer.id,
+          members: [tutor.id],
+          rule: rule.id,
           start: randomStart(),
         },
         tx
