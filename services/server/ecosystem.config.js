@@ -3,7 +3,6 @@ module.exports = {
     {
       script: "pnpm start",
       name: "main-server",
-      watch: ".",
     },
   ],
   deploy: {
@@ -13,10 +12,6 @@ module.exports = {
       ref: "origin/master",
       repo: "GIT_REPOSITORY",
       path: "DESTINATION_PATH",
-      "pre-deploy-local": "",
-      "post-deploy":
-        "npm install && pm2 reload ecosystem.config.js --env production",
-      "pre-setup": "",
     },
   },
 };
