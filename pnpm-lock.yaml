@@ -771,6 +771,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@litespace/sol':
+        specifier: workspace:^
+        version: link:../sol
       '@rollup/plugin-alias':
         specifier: ^5.1.0
         version: 5.1.1(rollup@4.24.0)

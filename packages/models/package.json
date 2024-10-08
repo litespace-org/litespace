@@ -17,6 +17,7 @@
     "test": "env-cmd -f .env.test jest -i --detectOpenHandles"
   },
   "devDependencies": {
+    "@litespace/sol": "workspace:^",
     "@faker-js/faker": "^9.0.3",
     "@jest/globals": "^29.7.0",
     "@rollup/plugin-alias": "^5.1.0",

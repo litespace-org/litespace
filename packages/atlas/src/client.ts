@@ -4,26 +4,26 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 export const sockets = {
   recorder: {
     [Backend.Local]: `ws://localhost:9090`,
-    [Backend.Staging]: "wss://moon.litespace.com",
-    [Backend.Production]: "wss://mars.litespace.com",
+    [Backend.Staging]: "wss://recorder.staging.litespace.com",
+    [Backend.Production]: "wss://recorder.litespace.com",
   },
   main: {
     [Backend.Local]: `ws://localhost:8080`,
-    [Backend.Staging]: "wss://moon.litespace.com",
-    [Backend.Production]: "wss://mars.litespace.com",
+    [Backend.Staging]: "wss://api.litespace.com",
+    [Backend.Production]: "wss://api.staging.litespace.com",
   },
 } as const;
 
 export const backends = {
   main: {
     [Backend.Local]: "http://localhost:8080",
-    [Backend.Staging]: "https://moon.litespace.org",
-    [Backend.Production]: "https://mars.litespace.org",
+    [Backend.Staging]: "https://api.stagin.litespace.org",
+    [Backend.Production]: "https://api.litespace.org",
   },
   recorder: {
     [Backend.Local]: `http://localhost:9090`,
-    [Backend.Staging]: "https://moon.litespace.com",
-    [Backend.Production]: "https://mars.litespace.com",
+    [Backend.Staging]: "https://recorder.staging.litespace.com",
+    [Backend.Production]: "https://recorder.litespace.com",
   },
 };
 
