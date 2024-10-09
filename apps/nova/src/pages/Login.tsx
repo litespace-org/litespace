@@ -49,7 +49,7 @@ const Login: React.FC = () => {
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
       const profile = await atlas.auth.password(credentials);
-      dispatch(setUserProfile(profile.user));
+      dispatch(setUserProfile(profile));
       saveToken(profile.token);
     },
     [dispatch]

@@ -1,14 +1,14 @@
 import List from "@/components/Invoices/List";
 import Stats from "@/components/Invoices/Stats";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { usePaginationQuery, atlas } from "@litespace/luna";
 import { IInvoice, Paginated } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback } from "react";
 
 const Invoices: React.FC = () => {
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const findInvoices = useCallback(
     async ({
       pageParam,

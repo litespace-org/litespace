@@ -25,17 +25,20 @@ export function TextEditor<T extends FieldValues>({
   value,
   className,
   disabled,
+  rules,
 }: {
   control: Control<T>;
   name: Path<T>;
   value: string;
   className?: string;
   disabled?: boolean;
+  rules?: ControllerProps<T>["rules"];
 }) {
   return (
     <Controller
       control={control}
       name={name}
+      rules={rules}
       render={({ field, formState }) => (
         <BaseTextEditor
           error={formState.errors[name]?.message as string}

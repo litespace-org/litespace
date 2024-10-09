@@ -13,13 +13,13 @@ import { OnMessage, useChat } from "@/hooks/chat";
 import { asMessageGroups, Loading, useMessages, atlas } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 
 const Messages: React.FC<{
   room: number | null;
   members: IRoom.PopulatedMember[];
 }> = ({ room, members }) => {
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] =

@@ -6,7 +6,7 @@ import Register from "@/pages/Register";
 import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findProfile, profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";
@@ -55,11 +55,8 @@ const router = createBrowserRouter([
 
 function App(): React.JSX.Element {
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(profileSelector);
-
-  useEffect(() => {
-    dispatch(findProfile.call(null));
-  }, [dispatch]);
+  const profile = useAppSelector(profileSelectors.user);
+  const token = useAppSelector(profileSelectors.token);
 
   useEffect(() => {
     if (!profile) return;
@@ -71,7 +68,7 @@ function App(): React.JSX.Element {
   }, [dispatch, profile]);
 
   return (
-    <SocketProvider token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzI4NDU0NTMyLCJleHAiOjE3MjkwNTkzMzJ9.OQlHNkIwTjIHYU_gcIBq2ZlXMZwU4GBYCLqS8df9BFg">
+    <SocketProvider token={token}>
       <RouterProvider router={router} />
     </SocketProvider>
   );

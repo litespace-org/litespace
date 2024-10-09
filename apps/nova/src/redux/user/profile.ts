@@ -1,42 +1,35 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
-import {
-  fetcher,
-  initial,
-  LoadableState,
-  createThunk,
-  atlas,
-} from "@litespace/luna";
+import { initial, LoadableState } from "@litespace/luna";
 
-type State = LoadableState<IUser.Self>;
+type State = LoadableState<{ user: IUser.Self; token: string | null }>;
 
 const initialState: State = initial();
 
 export const profileSelectors = {
+  user: (state: RootState) => state.user.me.value?.user || null,
+  token: (state: RootState) => state.user.me.value?.token || null,
   value: (state: RootState) => state.user.me.value,
   full: (state: RootState) => state.user.me,
 };
-
-export const findProfile = createThunk(
-  "user/profile/me/thunk",
-  () => atlas.user.findMe(),
-  profileSelectors.full
-);
 
 export const slice = createSlice({
   name: "user/me/profile",
   initialState,
   reducers: {
     resetUserProfile: () => initialState,
-    setUserProfile: (state, { payload }: PayloadAction<IUser.Self | null>) => {
+    setUserProfile: (
+      state,
+      { payload }: PayloadAction<{ user: IUser.Self; token?: string }>
+    ) => {
       state.loading = false;
       state.error = null;
-      state.value = payload;
+      state.value = {
+        user: payload.user,
+        token: payload.token || null,
+      };
     },
-  },
-  extraReducers(builder) {
-    fetcher(builder, findProfile);
   },
 });
 

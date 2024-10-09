@@ -12,11 +12,12 @@ const SocketsContext = createContext<Sockets | null>(null);
 
 export const SocketProvider: React.FC<{
   children?: React.ReactNode;
-  token: string;
+  token: string | null;
 }> = ({ children, token }) => {
   const [sockets, setSockets] = useState<Sockets | null>(null);
 
   useEffect(() => {
+    if (!token) return;
     const api = io(urls.main[backend], {
       extraHeaders: {
         Authorization: `Bearer ${token}`,

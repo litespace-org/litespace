@@ -60,11 +60,11 @@ const Register: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user, token }: IUser.RegisterApiResponse) => {
       toaster.success({ title: intl("page.register.success") });
-      dispatch(setUserProfile(user));
+      dispatch(setUserProfile({ user, token }));
       navigate(Route.Root);
       saveToken(token);
     },
-    []
+    [dispatch, intl, navigate]
   );
 
   const mutation = useMutation({

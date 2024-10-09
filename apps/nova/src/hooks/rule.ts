@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { setUserRules } from "@/redux/user/schedule";
 import { messages, toaster, atlas } from "@litespace/luna";
 import { useCallback } from "react";
@@ -9,7 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 export function useActivateRule(ruleId: number) {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
 
   const onError = useCallback(
     (error: unknown) => {

@@ -63,7 +63,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
           id: messages["page.complete.profile.form.success"],
         }),
       });
-      dispatch(setUserProfile(user));
+      dispatch(setUserProfile({ user }));
       navigate(Route.Root);
     },
     onError(error) {

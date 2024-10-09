@@ -2,7 +2,7 @@ import { first, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo } from "react";
 import Room from "@/components/Chat/Room";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import {
   Loading,
   SelectedRoom,
@@ -17,7 +17,7 @@ const Rooms: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
 }> = ({ select, selected: { room, members } }) => {
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
 
   const findUserRooms = useCallback(
     async ({ pageParam }: { pageParam: number }) => {

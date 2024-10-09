@@ -12,7 +12,7 @@ import {
   atlas,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector, resetUserProfile } from "@/redux/user/profile";
+import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
 import { IUser, Void } from "@litespace/types";
 import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
@@ -25,7 +25,7 @@ const Navbar: React.FC<{
   theme: Theme | null;
 }> = ({ toggleTheme, theme }) => {
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const location = useLocation();
   const dispatch = useAppDispatch();
 

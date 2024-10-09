@@ -1,5 +1,5 @@
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import React, { useCallback } from "react";
 import { ILesson } from "@litespace/types";
 import List from "@/components/Lessons/List";
@@ -12,7 +12,7 @@ import { usePaginationQuery } from "@/hooks/common";
 
 const Lessons: React.FC = () => {
   const intl = useIntl();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
 
   const findUserLessons = useCallback(
     async ({

@@ -1,6 +1,6 @@
 import List from "@/components/Interviews/List";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { Button, messages, Spinner, atlas } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import { isEmpty } from "lodash";
@@ -10,7 +10,7 @@ import Empty from "@/components/Interviews/Empty";
 import { usePaginationQuery } from "@/hooks/common";
 
 const Interviews: React.FC = () => {
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const intl = useIntl();
 
   const findInterviews = useCallback(

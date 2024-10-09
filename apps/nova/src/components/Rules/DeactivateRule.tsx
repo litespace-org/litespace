@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
 import { Alert, Dialog, messages, toaster, atlas } from "@litespace/luna";
 import { IRule } from "@litespace/types";
@@ -14,7 +14,7 @@ const DeactivateRule: React.FC<{
 }> = ({ open, close, rule }) => {
   const intl = useIntl();
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
 
   const onSuccess = useCallback(() => {
     if (profile) dispatch(findUserRules.call(profile.id));

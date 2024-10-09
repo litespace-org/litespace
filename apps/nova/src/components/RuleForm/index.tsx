@@ -30,7 +30,7 @@ import { Duration, Schedule, Time } from "@litespace/sol";
 import { useMutation } from "@tanstack/react-query";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import RuleAlert from "@/components/Rules/RuleAlert";
 
 type IForm = {
@@ -56,7 +56,7 @@ const RuleForm: React.FC<{
   const weekdayMap = useWeekdayMap();
   const ruleFormatterMap = useRuleFormatterMap();
   const validateDuration = useValidateDuration();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const dispatch = useAppDispatch();
 
   const defaultValues = useMemo((): Partial<IForm> => {
@@ -493,8 +493,8 @@ const RuleForm: React.FC<{
         ) : null}
 
         <Button
-          loading={create.isLoading || update.isLoading}
-          disabled={create.isLoading || update.isLoading}
+          loading={create.isPending || update.isPending}
+          disabled={create.isPending || update.isPending}
           htmlType="submit"
           className="mt-4"
         >

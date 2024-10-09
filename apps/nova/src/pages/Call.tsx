@@ -39,7 +39,7 @@ import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
 
 const Call: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.value);
+  const profile = useAppSelector(profileSelectors.user);
   const chat = useRender();
   const intl = useFormatMessage();
   const mediaQueries = useMediaQueries();

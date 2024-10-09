@@ -1,21 +1,19 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { findTutorMeta } from "@/redux/user/tutor";
 import {
   Button,
   Field,
   Form,
-  Input,
   Label,
-  messages,
-  TextEditor,
   toaster,
   useValidation,
   atlas,
+  Controller,
+  useFormatMessage,
 } from "@litespace/luna";
 import React, { useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { useIntl } from "react-intl";
+import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 
 type IForm = {
@@ -24,12 +22,11 @@ type IForm = {
 };
 
 const IntorduceYourself: React.FC = () => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const validation = useValidation();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const {
-    register,
     watch,
     formState: { errors },
     control,
@@ -53,17 +50,13 @@ const IntorduceYourself: React.FC = () => {
     onSuccess() {
       reset();
       toaster.success({
-        title: intl.formatMessage({
-          id: messages["global.notify.update.data"],
-        }),
+        title: intl("global.notify.update.data"),
       });
       if (profile) dispatch(findTutorMeta.call(profile.id));
     },
     onError() {
       toaster.error({
-        title: intl.formatMessage({
-          id: messages["error.update.data"],
-        }),
+        title: intl("error.update.data"),
       });
     },
     mutationKey: ["update-tutor-info"],
@@ -85,22 +78,19 @@ const IntorduceYourself: React.FC = () => {
         <Field
           label={
             <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.label"
-                ],
-              })}
+              {intl(
+                "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.label"
+              )}
             </Label>
           }
           field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages[
-                  "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.placeholder"
-                ],
-              })}
+            <Controller.Input
+              control={control}
+              name="bio"
+              placeholder={intl(
+                "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.placeholder"
+              )}
               value={watch("bio")}
-              register={register("bio", validation.bio)}
               error={errors["bio"]?.message}
               disabled={disabled}
               autoComplete="off"
@@ -111,25 +101,17 @@ const IntorduceYourself: React.FC = () => {
         <Field
           label={
             <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.tutor.onboarding.steps.third.introduce.yourself.form.about.label"
-                ],
-              })}
+              {intl(
+                "page.tutor.onboarding.steps.third.introduce.yourself.form.about.label"
+              )}
             </Label>
           }
           field={
-            <Controller
-              name="about"
-              control={control}
+            <Controller.TextEditor
               rules={validation.about}
-              render={({ field }) => (
-                <TextEditor
-                  onChange={field.onChange}
-                  error={errors["about"]?.message}
-                  disabled={disabled}
-                />
-              )}
+              value={watch("about")}
+              control={control}
+              name="about"
             />
           }
         />
@@ -140,9 +122,7 @@ const IntorduceYourself: React.FC = () => {
             loading={mutation.isPending}
             disabled={disabled}
           >
-            {intl.formatMessage({
-              id: messages["global.labels.next"],
-            })}
+            {intl("global.labels.next")}
           </Button>
         </div>
       </Form>
