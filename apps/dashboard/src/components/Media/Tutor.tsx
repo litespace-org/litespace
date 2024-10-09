@@ -4,13 +4,13 @@ import {
   Card,
   toaster,
   useFormatMessage,
+  atlas,
 } from "@litespace/luna";
 import { ITutor, IUser } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { AtSign, User } from "react-feather";
 import Media from "@/components/Media/Media";
 import { MediaType } from "@/components/Media/types";
-import { atlas } from "@/lib/atlas";
 import { useMutation } from "@tanstack/react-query";
 
 const Tutor: React.FC<{
