@@ -1,5 +1,4 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { sockets } from "@/lib/wss";
 import { MediaConnection } from "peerjs";
 import {
   Button,
@@ -10,6 +9,7 @@ import {
   useMediaQueries,
   useRender,
   atlas,
+  useSockets,
 } from "@litespace/luna";
 import {
   Mic,
@@ -51,6 +51,7 @@ const Call: React.FC = () => {
   const { start: startRecording } = useCallRecorder();
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
+  const sockets = useSockets();
   const {
     start: getUserMedia,
     stream: userMediaStream,
@@ -72,10 +73,10 @@ const Call: React.FC = () => {
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
-      if (!callId) return;
-      sockets.server.emit(Events.Client.PeerOpened, { peerId, callId });
+      if (!callId || !sockets?.api) return;
+      sockets.api.emit(Events.Client.PeerOpened, { peerId, callId });
     },
-    [callId]
+    [callId, sockets?.api]
   );
 
   // executed on the receiver side
@@ -130,16 +131,16 @@ const Call: React.FC = () => {
   }, [getUserMedia]);
 
   useEffect(() => {
-    sockets.server.on(Events.Server.UserJoinedCall, onJoinCall);
+    if (!sockets?.api) return;
+    sockets.api.on(Events.Server.UserJoinedCall, onJoinCall);
     return () => {
-      sockets.server.off(Events.Server.UserJoinedCall, onJoinCall);
+      sockets.api.off(Events.Server.UserJoinedCall, onJoinCall);
     };
-  }, [onJoinCall]);
+  }, [onJoinCall, sockets?.api]);
 
-  // useEffect(() => {
-  // todo: disable recording in case call is not recordable
-  //   if (callId && userMediaStream) startRecording(userMediaStream, callId);
-  // }, [callId, startRecording, userMediaStream]);
+  useEffect(() => {
+    if (callId && userMediaStream) startRecording(userMediaStream, callId);
+  }, [callId, startRecording, userMediaStream]);
 
   const onLeaveCall = useCallback(() => {
     peer.destroy();

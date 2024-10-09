@@ -18,8 +18,6 @@ export function authMiddleware(secret: string) {
     const id = decodeJwt(token, secret);
     const user = await users.findById(id);
 
-    console.log({ user });
-
     if (user === null) {
       res.status(404).json({ message: "User not found" });
       return;

@@ -1,20 +1,21 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { sockets } from "@/lib/wss";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
 import { Events, ICall } from "@litespace/types";
 import hark from "hark";
+import { useSockets } from "@litespace/luna";
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
+  const sockets = useSockets();
 
   const onDataAvailable = useCallback(
     (call: number, timestamp: number) => async (event: BlobEvent) => {
       if (event.data.size === 0) return;
       console.debug(`Processing chunk (${event.data.size})`);
-      sockets.recorder.emit("chunk", {
+      sockets?.recorder.emit("chunk", {
         chunk: event.data,
         timestamp,
         screen,
@@ -278,19 +279,20 @@ export function useCallEvents(
   const [mateVideo, setMateVideo] = useState<boolean>(false);
   const [mateAudio, setMateAudio] = useState<boolean>(false);
   const streamState = useStreamState(stream);
+  const sockets = useSockets();
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
-      if (!call) return;
-      sockets.server.emit(Events.Client.ToggleCamera, { call, camera });
+      if (!call || !sockets) return;
+      sockets.api.emit(Events.Client.ToggleCamera, { call, camera });
     },
     [call]
   );
 
   const notifyMicToggle = useCallback(
     (mic: boolean) => {
-      if (!call) return;
-      sockets.server.emit(Events.Client.ToggleMic, { call, mic });
+      if (!call || !sockets) return;
+      sockets.api.emit(Events.Client.ToggleMic, { call, mic });
     },
     [call]
   );
@@ -310,12 +312,13 @@ export function useCallEvents(
   );
 
   useEffect(() => {
-    sockets.server.on(Events.Server.CameraToggled, onCameraToggle);
-    sockets.server.on(Events.Server.MicToggled, onMicToggle);
+    if (!sockets) return;
+    sockets.api.on(Events.Server.CameraToggled, onCameraToggle);
+    sockets.api.on(Events.Server.MicToggled, onMicToggle);
 
     return () => {
-      sockets.server.off(Events.Server.CameraToggled, onCameraToggle);
-      sockets.server.off(Events.Server.MicToggled, onMicToggle);
+      sockets.api.off(Events.Server.CameraToggled, onCameraToggle);
+      sockets.api.off(Events.Server.MicToggled, onMicToggle);
     };
   }, [onCameraToggle, onMicToggle]);
 

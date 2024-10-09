@@ -18,14 +18,7 @@ import {
   invoices,
   hashPassword,
 } from "@/index";
-import {
-  ICall,
-  IInvoice,
-  ILesson,
-  ITutor,
-  IUser,
-  IWithdrawMethod,
-} from "@litespace/types";
+import { ICall, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { calculateLessonPrice, price, Time, logger } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
@@ -61,7 +54,6 @@ async function main(): Promise<void> {
       tx
     );
 
-    await users.update(interviewer.id, { image: "interviewer.jpg" }, tx);
     return interviewer;
   });
 
@@ -77,11 +69,7 @@ async function main(): Promise<void> {
       tx
     );
 
-    await users.update(
-      student.id,
-      { image: "student.png", gender: IUser.Gender.Male },
-      tx
-    );
+    await users.update(student.id, { gender: IUser.Gender.Male }, tx);
     return student;
   });
 
@@ -112,7 +100,6 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
-            image: "test.jpg",
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
           },
           tx

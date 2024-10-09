@@ -40,10 +40,7 @@
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
-    "express-session": "^1.18.0",
-    "jsonwebtoken": "^9.0.2",
-    "passport": "^0.7.0",
-    "passport-custom": "^1.1.1"
+    "jsonwebtoken": "^9.0.2"
   },
   "peerDependencies": {
     "express-async-handler": "^1.2.0",

@@ -42,7 +42,6 @@ export function createClient(
   client.interceptors.request.use((config) => {
     const token = getToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
-    console.log({ token, config });
     return config;
   });
 

@@ -17,8 +17,6 @@ declare module "http" {
 }
 
 export { onlyForHandshake, authorizeSocket } from "@/wss";
-export { initSession } from "@/session";
-export { initPassport, AuthStrategy } from "@/passport";
 export {
   authenticated,
   authorizer,

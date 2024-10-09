@@ -25,6 +25,7 @@ import Tutors from "@/pages/Tutors";
 import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
+import { SocketProvider } from "@litespace/luna";
 
 const router = createBrowserRouter([
   {
@@ -69,7 +70,11 @@ function App(): React.JSX.Element {
     if (tutor || interviewer) dispatch(findUserRules.call(profile.id));
   }, [dispatch, profile]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <SocketProvider token="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzI4NDU0NTMyLCJleHAiOjE3MjkwNTkzMzJ9.OQlHNkIwTjIHYU_gcIBq2ZlXMZwU4GBYCLqS8df9BFg">
+      <RouterProvider router={router} />
+    </SocketProvider>
+  );
 }
 
 export default App;
