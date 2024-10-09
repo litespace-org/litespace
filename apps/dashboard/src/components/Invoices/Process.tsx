@@ -9,13 +9,13 @@ import {
   TextEditor,
   toaster,
   useFormatMessage,
+  atlas,
 } from "@litespace/luna";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 
 type IForm = {
   note?: string;
