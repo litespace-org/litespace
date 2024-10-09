@@ -30,3 +30,4 @@ export {
   is,
   Authorizer,
 } from "@/authorization";
+export { encodeJwt } from "@/jwt";

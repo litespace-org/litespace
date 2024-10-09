@@ -5,7 +5,6 @@ import call from "@/routes/call";
 import interview from "@/routes/interview";
 import rating from "@/routes/rating";
 import subscription from "@/routes/subscription";
-import authorization from "@/routes/authorization";
 import chat from "@/routes/chat";
 import plan from "@/routes/plan";
 import coupon from "@/routes/coupon";
@@ -34,7 +33,6 @@ export default {
   report,
   reportReply,
   subscription,
-  authorization,
   interview,
   asset,
   rule,

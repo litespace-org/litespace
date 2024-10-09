@@ -39,6 +39,7 @@ import { cacheAvailableTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { asIsoDate, Schedule } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
+import { generateJwtToken } from "@/lib/auth";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -94,7 +95,11 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     origin,
   });
 
-  next(); // Next handler should be the "Local Auth" from passport.
+  const response: IUser.RegisterApiResponse = {
+    user,
+    token: generateJwtToken(user.id),
+  };
+  res.status(200).json(response);
 }
 
 function update(context: ApiContext) {

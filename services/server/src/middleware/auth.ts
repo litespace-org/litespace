@@ -3,7 +3,6 @@ import { schema } from "@/validation";
 import { users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { forbidden } from "@/lib/error";
-import { decodeAuthorizationToken } from "@/lib/auth";
 import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
 import { enforce, Method } from "@/middleware/accessControl";
@@ -45,33 +44,3 @@ export const authorized = asyncHandler(
     return next();
   }
 );
-
-export async function jwtAuthorization(req: Request, done: VerifiedCallback) {
-  try {
-    const token = req.query.token;
-    if (!token || typeof token !== "string")
-      throw new Error("Missing jwt authorization token");
-
-    const id = decodeAuthorizationToken(token);
-    const user = await users.findById(id);
-
-    if (!user) return done(new Error("User not found"));
-    return done(null, user);
-  } catch (error) {
-    done(error);
-  }
-}
-
-export async function localAuthorization(req: Request, done: VerifiedCallback) {
-  try {
-    const credentials = schema.http.auth.localAuthorization.parse(req.body);
-    const user = await users.findByCredentials({
-      email: credentials.email,
-      password: hashPassword(credentials.password),
-    });
-    if (!user) return done(new Error("Invalid email or password"));
-    return done(null, user);
-  } catch (error) {
-    done(error);
-  }
-}

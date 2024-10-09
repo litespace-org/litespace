@@ -5,7 +5,7 @@ import { Strategy as Custom, VerifiedCallback } from "passport-custom";
 import { NextFunction, Request, Response, Router } from "express";
 import asyncHandler from "express-async-handler";
 import { safe } from "@litespace/sol";
-import jwt from "jsonwebtoken";
+import { decodeJwt, encodeJwt } from "@/jwt";
 import zod from "zod";
 
 export enum AuthStrategy {
@@ -43,12 +43,12 @@ function bearer(secret: string) {
       if (!header) throw new Error("No authorization header");
       if (typeof header !== "string")
         throw new Error("Invalid authorization header");
+
       const [bearer, token] = header.split(" ");
       if (bearer !== "Bearer")
         throw new Error("Invalid bearer authorization header");
 
-      const decoded = jwt.verify(token, secret);
-      const { id } = jwtPayload.parse(decoded);
+      const id = decodeJwt(token, secret);
       const user = await users.findById(id);
       if (user === null) throw new Error("User not found");
       return user;
@@ -60,13 +60,23 @@ function bearer(secret: string) {
 }
 
 function logout(req: Request, res: Response, next: NextFunction) {
-  req.logout();
-  res.status(200).send();
+  req.logout((error) => {
+    const status = error ? 400 : 200;
+    res.status(status).send();
+  });
 }
 
-async function user(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) return res.status(401);
-  res.status(200).json(req.user);
+function login(secret: string) {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!req.user) return res.status(401).send();
+
+    const response: IUser.LoginApiResponse = {
+      user: req.user,
+      token: encodeJwt(req.user.id, secret),
+    };
+
+    res.status(200).json(response);
+  };
 }
 
 function serializeUser(
@@ -93,14 +103,11 @@ export function initPassport({ secret }: { secret: string }) {
   passport.use(AuthStrategy.Password, new Custom(password));
   passport.use(AuthStrategy.JWT, new Custom(bearer(secret)));
   const jwt = asyncHandler(passport.authenticate(AuthStrategy.JWT));
+  const pass = asyncHandler(passport.authenticate(AuthStrategy.Password));
 
   // auth routes
   const router = Router();
-  router.post(
-    "/password",
-    asyncHandler(passport.authenticate(AuthStrategy.Password)),
-    user
-  );
+  router.post("/password", pass, login(secret));
   router.post("/logout", asyncHandler(logout));
   return { router, passport, jwt };
 }

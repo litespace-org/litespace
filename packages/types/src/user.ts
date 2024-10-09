@@ -97,3 +97,10 @@ export type UpdateMediaPayload =
   | { image: File }
   | { video: File }
   | { image: File; video: File };
+
+export type LoginApiResponse = {
+  user: Self;
+  token: string;
+};
+
+export type RegisterApiResponse = LoginApiResponse;
