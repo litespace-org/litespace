@@ -7,6 +7,7 @@ import {
   messages,
   Select,
   toaster,
+  atlas,
 } from "@litespace/luna";
 import { Schedule, splitRuleEvent } from "@litespace/sol";
 import { ILesson, IRule } from "@litespace/types";
@@ -15,7 +16,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 
 const BookLesson: React.FC<{
   open: boolean;

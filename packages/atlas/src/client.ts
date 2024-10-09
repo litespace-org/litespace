@@ -1,9 +1,11 @@
 import { Backend } from "@litespace/types";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
+export type GetToken = () => string | null;
+
 export const sockets = {
   recorder: {
-    [Backend.Local]: `ws://localhost:9090`,
+    [Backend.Local]: "ws://localhost:9090",
     [Backend.Staging]: "wss://recorder.staging.litespace.com",
     [Backend.Production]: "wss://recorder.litespace.com",
   },
@@ -21,17 +23,27 @@ export const backends = {
     [Backend.Production]: "https://api.litespace.org",
   },
   recorder: {
-    [Backend.Local]: `http://localhost:9090`,
+    [Backend.Local]: "http://localhost:9090",
     [Backend.Staging]: "https://recorder.staging.litespace.com",
     [Backend.Production]: "https://recorder.litespace.com",
   },
 };
 
-export function createClient(backend: Backend): AxiosInstance {
+export function createClient(
+  backend: Backend,
+  getToken: GetToken
+): AxiosInstance {
   const client = axios.create({
     baseURL: backends.main[backend],
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
+  });
+
+  client.interceptors.request.use((config) => {
+    const token = getToken();
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+    console.log({ token, config });
+    return config;
   });
 
   client.interceptors.response.use(undefined, (error: AxiosError) => {

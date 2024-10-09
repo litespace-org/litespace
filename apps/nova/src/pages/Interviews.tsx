@@ -1,8 +1,7 @@
 import List from "@/components/Interviews/List";
-import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
-import { Button, messages, Spinner } from "@litespace/luna";
+import { profileSelector } from "@/redux/user/profile";
+import { Button, messages, Spinner, atlas } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";

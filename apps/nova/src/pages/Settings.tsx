@@ -1,7 +1,11 @@
 import React, { useCallback } from "react";
 import { Settings as Components } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findProfile, profileSelectors, setUserProfile } from "@/redux/user/me";
+import {
+  findProfile,
+  profileSelectors,
+  setUserProfile,
+} from "@/redux/user/profile";
 import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
 import { RefreshUser } from "@litespace/luna";
 import { IUser } from "@litespace/types";

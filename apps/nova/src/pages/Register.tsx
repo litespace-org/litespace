@@ -1,25 +1,24 @@
 import {
-  Input,
   Form,
   Button,
-  messages,
   Field,
   Label,
-  useValidation,
   InputType,
   toaster,
+  useFormatMessage,
+  Controller,
+  atlas,
 } from "@litespace/luna";
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { FormattedMessage, useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { atlas } from "@/lib/atlas";
 import { merge } from "lodash";
-import { setUserProfile } from "@/redux/user/me";
+import { setUserProfile } from "@/redux/user/profile";
+import { saveToken } from "@/lib/cache";
 
 interface IForm {
   email: string;
@@ -31,16 +30,15 @@ type Role = (typeof roles)[number];
 const roles = [IUser.Role.Tutor, IUser.Role.Student] as const;
 
 const Register: React.FC = () => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const validation = useValidation();
   const { role } = useParams<{ role: Role }>();
   const {
-    register,
     watch,
     handleSubmit,
     formState: { errors },
+    control,
   } = useForm<IForm>({
     defaultValues: {
       email: "me@ahmedibrahim.dev",
@@ -55,19 +53,26 @@ const Register: React.FC = () => {
     if (!isValidRole) return navigate(Route.Root);
   }, [isValidRole, navigate]);
 
-  const mutation = useMutation({
-    mutationFn: async (payload: IUser.CreateApiPayload): Promise<IUser.Self> =>
-      await atlas.user.create(payload),
-    async onSuccess(user: IUser.Self) {
-      toaster.success({
-        title: intl.formatMessage({ id: messages["page.register.success"] }),
-      });
+  const createUser = useCallback(async (payload: IUser.CreateApiPayload) => {
+    return atlas.user.create(payload);
+  }, []);
+
+  const onSuccess = useCallback(
+    async ({ user, token }: IUser.RegisterApiResponse) => {
+      toaster.success({ title: intl("page.register.success") });
       dispatch(setUserProfile(user));
       navigate(Route.Root);
+      saveToken(token);
     },
+    []
+  );
+
+  const mutation = useMutation({
+    mutationFn: createUser,
+    onSuccess,
     onError(error) {
       toaster.error({
-        title: intl.formatMessage({ id: messages["page.register.failed"] }),
+        title: intl("page.register.failed"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -88,33 +93,24 @@ const Register: React.FC = () => {
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
             <h1 className="text-3xl font-simi-bold text-center">
-              <FormattedMessage
-                id={
-                  tutor
-                    ? messages["page.register.tutor.title"]
-                    : messages["page.register.student.title"]
-                }
-              />
+              {intl(
+                tutor
+                  ? "page.register.tutor.title"
+                  : "page.register.student.title"
+              )}
             </h1>
           </div>
 
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-4">
               <Field
-                label={
-                  <Label>
-                    {intl.formatMessage({
-                      id: messages["global.form.email.label"],
-                    })}
-                  </Label>
-                }
+                label={<Label>{intl("global.form.email.label")}</Label>}
                 field={
-                  <Input
-                    placeholder={intl.formatMessage({
-                      id: messages["global.form.email.placeholder"],
-                    })}
+                  <Controller.Input
+                    control={control}
+                    name="email"
+                    placeholder={intl("global.form.email.placeholder")}
                     value={watch("email")}
-                    register={register("email", validation.email)}
                     error={errors["email"]?.message}
                     autoComplete="off"
                     disabled={mutation.isPending}
@@ -123,17 +119,12 @@ const Register: React.FC = () => {
               />
 
               <Field
-                label={
-                  <Label>
-                    {intl.formatMessage({
-                      id: messages["global.form.password.label"],
-                    })}
-                  </Label>
-                }
+                label={<Label>{intl("global.form.password.label")}</Label>}
                 field={
-                  <Input
+                  <Controller.Input
+                    control={control}
+                    name="password"
                     value={watch("password")}
-                    register={register("password", validation.password)}
                     type={InputType.Password}
                     error={errors["password"]?.message}
                     disabled={mutation.isPending}
@@ -147,9 +138,7 @@ const Register: React.FC = () => {
                 htmlType="submit"
                 className="w-full mt-8"
               >
-                {intl.formatMessage({
-                  id: messages["page.register.form.button.submit.label"],
-                })}
+                {intl("page.register.form.button.submit.label")}
               </Button>
             </div>
           </Form>
@@ -158,9 +147,7 @@ const Register: React.FC = () => {
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
         <div className="flex flex-col gap-4 items-center justify-center">
           <p className="text-4xl">LiteSpace</p>
-          <p className="text-lg">
-            {intl.formatMessage({ id: messages["page.login.slogan"] })}
-          </p>
+          <p className="text-lg">{intl("page.login.slogan")}</p>
         </div>
       </aside>
     </div>

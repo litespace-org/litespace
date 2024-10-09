@@ -1,5 +1,4 @@
-import { atlas } from "@/lib/atlas";
-import { asOnlineStatus, Loading } from "@litespace/luna";
+import { asOnlineStatus, Loading, atlas } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";

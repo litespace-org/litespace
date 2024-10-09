@@ -1,8 +1,7 @@
-import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
-import { Alert, Dialog, messages, toaster } from "@litespace/luna";
+import { Alert, Dialog, messages, toaster, atlas } from "@litespace/luna";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";

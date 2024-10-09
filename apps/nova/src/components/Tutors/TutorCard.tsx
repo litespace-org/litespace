@@ -1,6 +1,4 @@
-import { backend } from "@/lib/atlas";
-import { asAssetUrl } from "@litespace/atlas";
-import { Button, ButtonSize, messages } from "@litespace/luna";
+import { Button, ButtonSize, messages, asFullAssetUrl } from "@litespace/luna";
 import { ITutor } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
@@ -23,7 +21,7 @@ const TutorCard: React.FC<{
       <div className="h-[300px] md:h-[400px]">
         <img
           className="w-full h-full object-cover"
-          src={asAssetUrl(backend, tutor.image!)}
+          src={asFullAssetUrl(tutor.image!)}
           alt={tutor.name!}
         />
       </div>

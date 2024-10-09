@@ -19,6 +19,7 @@ import {
   useWeekdayMap,
   Card,
   useRuleFormatterMap,
+  atlas,
 } from "@litespace/luna";
 import { IDate, IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
@@ -27,10 +28,9 @@ import { useIntl } from "react-intl";
 import dayjs from "@/lib/dayjs";
 import { Duration, Schedule, Time } from "@litespace/sol";
 import { useMutation } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import RuleAlert from "@/components/Rules/RuleAlert";
 
 type IForm = {

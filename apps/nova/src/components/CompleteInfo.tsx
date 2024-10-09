@@ -1,6 +1,5 @@
-import { atlas } from "@/lib/atlas";
 import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/me";
+import { setUserProfile } from "@/redux/user/profile";
 import { Route } from "@/types/routes";
 import {
   Button,
@@ -12,6 +11,8 @@ import {
   messages,
   toaster,
   useValidation,
+  atlas,
+  Controller,
 } from "@litespace/luna";
 import { IUser, NumericString } from "@litespace/types";
 import { isEmpty } from "lodash";
@@ -129,7 +130,7 @@ const CompleteInfo: React.FC<{ profile: IUser.Self }> = ({ profile }) => {
               </Label>
             }
             field={
-              <Input
+              <Controller.Input
                 placeholder={intl.formatMessage({
                   id: messages["global.form.email.placeholder"],
                 })}

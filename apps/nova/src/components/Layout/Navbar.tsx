@@ -8,17 +8,16 @@ import {
   Theme,
   toaster,
   useFormatMessage,
-  // LiteSpace,
   Icons,
+  atlas,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector, resetUserProfile } from "@/redux/user/me";
+import { profileSelector, resetUserProfile } from "@/redux/user/profile";
 import { IUser, Void } from "@litespace/types";
 import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { useMutation } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 import { resetTutorMeta } from "@/redux/user/tutor";
 
 const Navbar: React.FC<{

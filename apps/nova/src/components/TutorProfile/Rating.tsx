@@ -1,5 +1,4 @@
-import { asFullAssetUrl } from "@/lib/atlas";
-import { Card } from "@litespace/luna";
+import { Card, asFullAssetUrl } from "@litespace/luna";
 import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";

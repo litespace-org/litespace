@@ -1,8 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
-import { asFullAssetUrl } from "@/lib/atlas";
-import { MessageGroup as IMessageGroup } from "@litespace/luna";
+import { MessageGroup as IMessageGroup, asFullAssetUrl } from "@litespace/luna";
 import Message from "@/components/Chat/Message";
 import { IMessage } from "@litespace/types";
 import { AnimatePresence, motion } from "framer-motion";

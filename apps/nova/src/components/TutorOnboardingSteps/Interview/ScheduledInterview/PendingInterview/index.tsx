@@ -1,5 +1,4 @@
-import { backend } from "@/lib/atlas";
-import { asAssetUrl } from "@litespace/atlas";
+import { asFullAssetUrl } from "@litespace/luna";
 import { Button, ButtonType, messages } from "@litespace/luna";
 import { ICall, IUser } from "@litespace/types";
 import React from "react";
@@ -21,7 +20,7 @@ const PendingInterview: React.FC<{
             {interviewer.image && (
               <img
                 className="w-full h-full"
-                src={asAssetUrl(backend, interviewer.image)}
+                src={asFullAssetUrl(interviewer.image)}
                 alt={interviewer.name || "Interviewer"}
               />
             )}

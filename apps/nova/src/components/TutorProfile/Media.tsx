@@ -1,5 +1,9 @@
-import { asFullAssetUrl } from "@/lib/atlas";
-import { OnlineStatus, UserOnlineStatus, VideoPlayer } from "@litespace/luna";
+import {
+  OnlineStatus,
+  UserOnlineStatus,
+  VideoPlayer,
+  asFullAssetUrl,
+} from "@litespace/luna";
 import React from "react";
 
 export const Image: React.FC<{

@@ -6,7 +6,7 @@ import Register from "@/pages/Register";
 import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { findProfile, profileSelector } from "@/redux/user/me";
+import { findProfile, profileSelector } from "@/redux/user/profile";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";

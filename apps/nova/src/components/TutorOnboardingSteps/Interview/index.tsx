@@ -1,5 +1,4 @@
-import { atlas } from "@/lib/atlas";
-import { Spinner } from "@litespace/luna";
+import { Spinner, atlas } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";

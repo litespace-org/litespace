@@ -18,11 +18,8 @@ const credentials = zod.object({
   password: zod.string(),
 });
 
-const jwtPayload = zod.object({
-  id: zod.number().int().positive(),
-});
-
 async function password(req: Request, done: VerifiedCallback) {
+  console.log("PASSWORD");
   try {
     const { email, password } = credentials.parse(req.body);
     const user = await users.findByCredentials({
@@ -38,9 +35,11 @@ async function password(req: Request, done: VerifiedCallback) {
 
 function bearer(secret: string) {
   return async (req: Request, done: VerifiedCallback) => {
+    console.log("BEARER");
     const result = await safe(async () => {
       const header = req.headers["Authorization"];
-      if (!header) throw new Error("No authorization header");
+      console.log(header);
+      if (!header) return false; // unauthorized
       if (typeof header !== "string")
         throw new Error("Invalid authorization header");
 
@@ -55,6 +54,7 @@ function bearer(secret: string) {
     });
 
     if (result instanceof Error) return done(result);
+    console.log({ result });
     return done(null, result);
   };
 }
@@ -68,6 +68,7 @@ function logout(req: Request, res: Response, next: NextFunction) {
 
 function login(secret: string) {
   return (req: Request, res: Response, next: NextFunction) => {
+    console.log("LOGIN");
     if (!req.user) return res.status(401).send();
 
     const response: IUser.LoginApiResponse = {
@@ -83,10 +84,12 @@ function serializeUser(
   user: IUser.Self,
   done: (error: Error | null, id?: number) => void
 ) {
+  console.log({ user });
   done(null, user.id);
 }
 
 async function deserializeUser(id: number, done: VerifiedCallback) {
+  console.log({ id });
   const result = await safe(async () => {
     const user = await users.findById(id);
     if (!user) throw new Error("User not found");

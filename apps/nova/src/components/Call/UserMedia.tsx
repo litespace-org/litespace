@@ -1,9 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import cn from "classnames";
-import { useFormatMessage } from "@litespace/luna";
+import { useFormatMessage, asFullAssetUrl } from "@litespace/luna";
 import { MicOff } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
-import { asFullAssetUrl } from "@/lib/atlas";
 import Lottie from "lottie-react";
 import dark from "@/animations/speaking-dark.json";
 import light from "@/animations/speaking-light.json";

@@ -1,8 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
-import { fetcher, initial, LoadableState, createThunk } from "@litespace/luna";
+import {
+  fetcher,
+  initial,
+  LoadableState,
+  createThunk,
+  atlas,
+} from "@litespace/luna";
 
 type State = LoadableState<IUser.Self>;
 

@@ -1,32 +1,11 @@
 import { Base } from "@/base";
-import { asFullUrl } from "@/utils";
-import { Backend, IUser } from "@litespace/types";
-import { backends } from "@/client";
-
-type AuthorizationUrls = {
-  google: string;
-  facebook: string;
-  discord: string;
-};
+import { IUser } from "@litespace/types";
 
 export class Auth extends Base {
-  public readonly authorization: AuthorizationUrls;
-
-  constructor(backend: Backend) {
-    super(backend);
-
-    const api = backends.main[backend];
-    this.authorization = {
-      google: asFullUrl(api, "/api/v1/auth/google"),
-      facebook: asFullUrl(api, "/api/v1/auth/facebook"),
-      discord: asFullUrl(api, "/api/v1/auth/discord"),
-    };
-  }
-
   async password(
     credentials: IUser.Credentials
   ): Promise<IUser.LoginApiResponse> {
-    return this.client.post("/api/v1/auth/password", credentials);
+    return this.post("/api/v1/auth/password", credentials);
   }
 
   async forgotPassword(email: string): Promise<void> {
@@ -56,6 +35,6 @@ export class Auth extends Base {
   }
 
   async logout(): Promise<void> {
-    await this.client.post("/api/v1/auth/logout");
+    return this.post("/api/v1/auth/logout");
   }
 }

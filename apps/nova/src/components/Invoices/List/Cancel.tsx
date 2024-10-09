@@ -1,10 +1,10 @@
-import { atlas } from "@/lib/atlas";
 import {
   Alert,
   AlertType,
   Dialog,
   toaster,
   useFormatMessage,
+  atlas,
 } from "@litespace/luna";
 import { useMutation } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";

@@ -1,5 +1,4 @@
 import { useWithdrawMethod } from "@/hooks/withdraw";
-import { atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonSize,
@@ -13,6 +12,7 @@ import {
   Select,
   toaster,
   useFormatMessage,
+  atlas,
 } from "@litespace/luna";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";

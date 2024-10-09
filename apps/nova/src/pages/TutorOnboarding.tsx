@@ -1,12 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { messages, Stepper } from "@litespace/luna";
+import { messages, Stepper, atlas } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
 import { useQuery } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import { selectCurrentInterview } from "@/lib/interview";
 import { tutorMetaSelector } from "@/redux/user/tutor";
 import { useNavigate } from "react-router-dom";

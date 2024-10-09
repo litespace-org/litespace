@@ -1,6 +1,6 @@
 import { sockets as urls } from "@litespace/atlas";
 import { io } from "socket.io-client";
-import { backend } from "@/lib/atlas";
+import { backend } from "@litespace/luna";
 
 const server = io(urls.main[backend], {
   autoConnect: true,

@@ -31,3 +31,5 @@ export {
   Authorizer,
 } from "@/authorization";
 export { encodeJwt } from "@/jwt";
+export { authMiddleware } from "@/middleware";
+export { router } from "@/route";

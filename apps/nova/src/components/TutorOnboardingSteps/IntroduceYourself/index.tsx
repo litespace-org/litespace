@@ -1,6 +1,5 @@
-import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import { findTutorMeta } from "@/redux/user/tutor";
 import {
   Button,
@@ -12,6 +11,7 @@ import {
   TextEditor,
   toaster,
   useValidation,
+  atlas,
 } from "@litespace/luna";
 import React, { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -57,7 +57,7 @@ const IntorduceYourself: React.FC = () => {
           id: messages["global.notify.update.data"],
         }),
       });
-      if (profile) dispatch(findTutorMeta(profile.id));
+      if (profile) dispatch(findTutorMeta.call(profile.id));
     },
     onError() {
       toaster.error({

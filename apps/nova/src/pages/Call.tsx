@@ -9,6 +9,7 @@ import {
   useFormatMessage,
   useMediaQueries,
   useRender,
+  atlas,
 } from "@litespace/luna";
 import {
   Mic,
@@ -23,7 +24,6 @@ import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { Events } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
-import { atlas } from "@/lib/atlas";
 import {
   useCallEvents,
   useCallRecorder,
@@ -35,7 +35,7 @@ import Media from "@/components/Call/Media";
 import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/me";
+import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
 
 const Call: React.FC = () => {

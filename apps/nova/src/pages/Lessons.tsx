@@ -1,10 +1,9 @@
-import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import React, { useCallback } from "react";
 import { ILesson } from "@litespace/types";
 import List from "@/components/Lessons/List";
-import { Button, messages, Spinner } from "@litespace/luna";
+import { Button, messages, Spinner, atlas } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { isEmpty } from "lodash";
 import Empty from "@/components/Lessons/Empty";

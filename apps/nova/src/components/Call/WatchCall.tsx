@@ -1,5 +1,4 @@
-import { asFullCallRecordingUrl } from "@/lib/atlas";
-import { Dialog, VideoPlayer } from "@litespace/luna";
+import { Dialog, VideoPlayer, asFullCallRecordingUrl } from "@litespace/luna";
 import React from "react";
 
 const WatchCall: React.FC<{

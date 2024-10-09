@@ -1,8 +1,7 @@
-import { atlas } from "@/lib/atlas";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 import { setUserRules } from "@/redux/user/schedule";
-import { messages, toaster } from "@litespace/luna";
+import { messages, toaster, atlas } from "@litespace/luna";
 import { useCallback } from "react";
 import { useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";

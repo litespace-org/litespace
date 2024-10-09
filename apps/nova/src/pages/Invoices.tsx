@@ -1,9 +1,8 @@
 import List from "@/components/Invoices/List";
 import Stats from "@/components/Invoices/Stats";
-import { atlas } from "@/lib/atlas";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
-import { usePaginationQuery } from "@litespace/luna";
+import { profileSelector } from "@/redux/user/profile";
+import { usePaginationQuery, atlas } from "@litespace/luna";
 import { IInvoice, Paginated } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
 import React, { useCallback } from "react";

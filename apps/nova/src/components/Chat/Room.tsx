@@ -1,10 +1,9 @@
-import { asFullAssetUrl } from "@/lib/atlas";
 import { IRoom, Void } from "@litespace/types";
 import { first } from "lodash";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { useFormatMessage } from "@litespace/luna";
+import { useFormatMessage, asFullAssetUrl } from "@litespace/luna";
 
 enum Status {
   Active,

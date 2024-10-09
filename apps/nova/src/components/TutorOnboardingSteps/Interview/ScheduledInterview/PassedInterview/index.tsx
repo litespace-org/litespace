@@ -1,4 +1,3 @@
-import { atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonType,
@@ -8,6 +7,7 @@ import {
   messages,
   TextEditor,
   useValidation,
+  atlas,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";

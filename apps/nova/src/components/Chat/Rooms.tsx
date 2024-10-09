@@ -1,15 +1,15 @@
 import { first, isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo } from "react";
-import Room from "./Room";
+import Room from "@/components/Chat/Room";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
-import { atlas } from "@/lib/atlas";
+import { profileSelector } from "@/redux/user/profile";
 import {
   Loading,
   SelectedRoom,
   SelectRoom,
   useInfinteScroll,
   usePaginationQuery,
+  atlas,
 } from "@litespace/luna";
 import cn from "classnames";
 

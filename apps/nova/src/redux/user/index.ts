@@ -1,4 +1,4 @@
-import me from "@/redux/user/me";
+import me from "@/redux/user/profile";
 import tutor from "@/redux/user/tutor";
 import schedule from "@/redux/user/schedule";
 import { combineReducers } from "@reduxjs/toolkit";

@@ -11,9 +11,9 @@ import {
   IconField,
   MenuAction,
   useFormatMessage,
+  asFullAssetUrl,
   useMediaQueries,
 } from "@litespace/luna";
-import { asFullAssetUrl } from "@/lib/atlas";
 import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
@@ -156,12 +156,12 @@ const Lesson: React.FC<
                   since: canceledSince,
                 })
               : isMemberCanceled
-                ? intl("page.lessons.lesson.canceled.by.other", {
-                    name: canceller?.name || "",
-                    date: canceledAt,
-                    since: canceledSince,
-                  })
-                : intl("page.lessons.lesson.canceled")}
+              ? intl("page.lessons.lesson.canceled.by.other", {
+                  name: canceller?.name || "",
+                  date: canceledAt,
+                  since: canceledSince,
+                })
+              : intl("page.lessons.lesson.canceled")}
           </IconField>
         ) : null}
         <Calls.Status status={call.recordingStatus} />

@@ -10,11 +10,10 @@ import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
 import MessageGroup from "@/components/Chat/MessageGroup";
 import { OnMessage, useChat } from "@/hooks/chat";
-import { atlas } from "@/lib/atlas";
-import { asMessageGroups, Loading, useMessages } from "@litespace/luna";
+import { asMessageGroups, Loading, useMessages, atlas } from "@litespace/luna";
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/me";
+import { profileSelector } from "@/redux/user/profile";
 
 const Messages: React.FC<{
   room: number | null;

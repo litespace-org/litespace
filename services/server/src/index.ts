@@ -19,7 +19,11 @@ import { ApiContext } from "@/types/api";
 import "colors";
 import { safe } from "@litespace/sol";
 import { authorizeSocket } from "@litespace/auth";
-import { initPassport } from "@litespace/auth";
+import {
+  initPassport,
+  authMiddleware,
+  router as authRouter,
+} from "@litespace/auth";
 
 // connect to the redis server
 safe(async () => client.connect());
@@ -65,13 +69,13 @@ app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(sessionMiddleware);
-app.use(passport.initialize());
+// app.use(passport.initialize());
 // app.use(passport.session());
-app.use(jwt);
+app.use(authMiddleware("jwt_secret"));
 
 app.use("/assets/", express.static(serverConfig.media.directory));
 // app.use("/api/v1/auth", routes.authorization);
-app.use("/api/v1/auth", auth);
+app.use("/api/v1/auth", authRouter("jwt_secret"));
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule);
 app.use("/api/v1/tutor", routes.tutor);

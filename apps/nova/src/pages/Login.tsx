@@ -9,6 +9,7 @@ import {
   ButtonSize,
   Controller,
   useFormatMessage,
+  atlas,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -16,10 +17,10 @@ import { FormattedMessage } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
-import { atlas } from "@/lib/atlas";
 import { IUser } from "@litespace/types";
 import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/me";
+import { setUserProfile } from "@/redux/user/profile";
+import { saveToken } from "@/lib/cache";
 
 interface IForm {
   email: string;
@@ -48,7 +49,8 @@ const Login: React.FC = () => {
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
       const profile = await atlas.auth.password(credentials);
-      dispatch(setUserProfile(profile));
+      dispatch(setUserProfile(profile.user));
+      saveToken(profile.token);
     },
     [dispatch]
   );

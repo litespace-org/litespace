@@ -1,5 +1,4 @@
 import { useInterviewStatus } from "@/hooks/interview";
-import { atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonSize,
@@ -12,6 +11,7 @@ import {
   Select,
   TextEditor,
   toaster,
+  asFullAssetUrl,
 } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
@@ -321,8 +321,8 @@ const Update: React.FC<{
             id: passed
               ? messages["page.interviews.status.passed"]
               : rejected
-                ? messages["page.interviews.status.rejected"]
-                : messages["page.interviews.status.canceled"],
+              ? messages["page.interviews.status.rejected"]
+              : messages["page.interviews.status.canceled"],
           })}
         </Button>
       </Form>
