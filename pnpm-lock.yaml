@@ -470,18 +470,9 @@ importers:
       express-async-handler:
         specifier: ^1.2.0
         version: 1.2.0
-      express-session:
-        specifier: ^1.18.0
-        version: 1.18.0
       jsonwebtoken:
         specifier: ^9.0.2
         version: 9.0.2
-      passport:
-        specifier: ^0.7.0
-        version: 0.7.0
-      passport-custom:
-        specifier: ^1.1.1
-        version: 1.1.1
       zod:
         specifier: ^3.23.8
         version: 3.23.8
@@ -846,6 +837,9 @@ importers:
 
   packages/sol:
     dependencies:
+      '@litespace/models':
+        specifier: workspace:^
+        version: link:../models
       '@litespace/types':
         specifier: workspace:^
         version: link:../types

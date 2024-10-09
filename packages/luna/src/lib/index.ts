@@ -5,3 +5,4 @@ export {
   atlas,
   backend,
 } from "@/lib/atlas";
+export { cache, getToken, saveToken } from "@/lib/cache";
