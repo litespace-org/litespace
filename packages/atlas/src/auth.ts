@@ -23,12 +23,10 @@ export class Auth extends Base {
     };
   }
 
-  async password(credentials: IUser.Credentials): Promise<IUser.Self> {
-    const { data } = await this.client.post<IUser.Self>(
-      "/api/v1/auth/password",
-      JSON.stringify(credentials)
-    );
-    return data;
+  async password(
+    credentials: IUser.Credentials
+  ): Promise<IUser.LoginApiResponse> {
+    return this.client.post("/api/v1/auth/password", credentials);
   }
 
   async forgotPassword(email: string): Promise<void> {

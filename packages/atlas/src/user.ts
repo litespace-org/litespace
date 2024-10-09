@@ -9,12 +9,10 @@ import {
 } from "@litespace/types";
 
 export class User extends Base {
-  async create(payload: IUser.CreateApiPayload): Promise<IUser.Self> {
-    const { data } = await this.client.post<IUser.Self>(
-      "/api/v1/user/",
-      JSON.stringify(payload)
-    );
-    return data;
+  async create(
+    payload: IUser.CreateApiPayload
+  ): Promise<IUser.RegisterApiResponse> {
+    return this.post("/api/v1/user/", payload);
   }
 
   async findById(id: number | string): Promise<IUser.Self> {
