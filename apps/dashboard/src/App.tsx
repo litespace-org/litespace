@@ -2,11 +2,9 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Route } from "@/lib/route";
 import Root from "@/pages/Root";
 import { ErrorPage } from "@litespace/luna";
-import { useAppDispatch } from "@/redux/store";
-import { useEffect } from "react";
-import { findProfile } from "./redux/user/profile";
 import Invoices from "@/pages/Invoices";
 import Media from "@/pages/Media";
+import Login from "@/pages/Login";
 
 const router = createBrowserRouter([
   {
@@ -16,17 +14,12 @@ const router = createBrowserRouter([
     children: [
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Media, element: <Media /> },
+      { path: Route.Login, element: <Login /> },
     ],
   },
 ]);
 
 function App() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(findProfile.call(null));
-  }, [dispatch]);
-
   return <RouterProvider router={router} />;
 }
 

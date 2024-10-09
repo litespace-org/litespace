@@ -7,8 +7,8 @@ import {
   ButtonType,
   useFormatMessage,
   VideoPlayer,
+  asFullAssetUrl,
 } from "@litespace/luna";
-import { asFullAssetUrl } from "@/lib/atlas";
 import { Upload, X } from "react-feather";
 import cn from "classnames";
 
