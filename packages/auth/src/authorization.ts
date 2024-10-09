@@ -114,3 +114,11 @@ export function mediaProvider(role: IUser.Role): boolean {
 export function student(role: IUser.Role): boolean {
   return role === IUser.Role.Student;
 }
+
+export const is = {
+  tutor,
+  admin,
+  interviewer,
+  mediaProvider,
+  student,
+} as const;

@@ -1,7 +1,10 @@
 import { Backend } from "@litespace/types";
 import { Atlas, asAssetUrl, asCallRecordingUrl } from "@litespace/atlas";
+import zod from "zod";
 
-export const backend = Backend.Local;
+export const backend = zod
+  .enum([Backend.Local, Backend.Production, Backend.Staging])
+  .parse(import.meta.env.VITE_BACKEND);
 
 export function asFullAssetUrl(name: string) {
   return asAssetUrl(backend, name);

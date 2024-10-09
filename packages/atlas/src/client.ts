@@ -17,7 +17,7 @@ export const sockets = {
 export const backends = {
   main: {
     [Backend.Local]: "http://localhost:8080",
-    [Backend.Staging]: "https://api.stagin.litespace.org",
+    [Backend.Staging]: "https://api.staging.litespace.org",
     [Backend.Production]: "https://api.litespace.org",
   },
   recorder: {

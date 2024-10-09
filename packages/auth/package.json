@@ -40,13 +40,15 @@
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
-    "express-async-handler": "^1.2.0",
     "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-custom": "^1.1.1"
   },
   "peerDependencies": {
+    "express-async-handler": "^1.2.0",
     "@litespace/models": "workspace:^",
+    "@litespace/sol": "workspace:^",
     "connect-pg-simple": "^9.0.1",
     "express": "^4.19.2",
     "zod": "^3.23.8"
