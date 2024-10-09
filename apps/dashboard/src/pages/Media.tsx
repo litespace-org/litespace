@@ -1,5 +1,4 @@
 import List from "@/components/Media/List";
-import { atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonSize,
@@ -7,6 +6,7 @@ import {
   Spinner,
   useFormatMessage,
   usePaginationQuery,
+  atlas,
 } from "@litespace/luna";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";

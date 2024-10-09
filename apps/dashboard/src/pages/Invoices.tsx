@@ -1,11 +1,11 @@
 import List from "@/components/Invoices/List";
-import { atlas } from "@/lib/atlas";
 import {
   Button,
   ButtonSize,
   Loading,
   useFormatMessage,
   usePaginationQuery,
+  atlas,
 } from "@litespace/luna";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
