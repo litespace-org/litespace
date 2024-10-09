@@ -38,7 +38,7 @@ const Login: React.FC = () => {
     formState: { errors },
   } = useForm<IForm>({
     defaultValues: {
-      email: "student@litespace.org",
+      email: "admin@litespace.org",
       password: "LiteSpace432%^&",
     },
   });
