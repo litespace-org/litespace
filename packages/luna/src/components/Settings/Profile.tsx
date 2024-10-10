@@ -13,9 +13,9 @@ import { Controller } from "@/components/Form";
 import { useForm } from "react-hook-form";
 import { useValidateBirthYear, useValidateName } from "@/hooks/user";
 import { diff, orUndefined } from "@litespace/sol";
-import Spinner from "@/icons/Spinner";
 import { isEmpty } from "lodash";
 import Media from "@/components/Settings/Media";
+import Title from "@/components/Settings/Title";
 
 type IForm = {
   name: string;
@@ -33,7 +33,8 @@ const Profile: React.FC<{
   refresh: Void;
   loading: boolean;
   fetching: boolean;
-}> = ({ profile, tutor, loading, fetching, refresh }) => {
+  first?: boolean;
+}> = ({ profile, tutor, loading, fetching, refresh, first }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
     defaultValues: { name: "", birthYear: "", bio: "", about: "", email: "" },
@@ -148,15 +149,12 @@ const Profile: React.FC<{
 
   return (
     <div className="tw-mb-8">
-      <div className="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-mb-6 tw-pb-3 tw-border-b tw-border-border-stronger">
-        <h3 className="tw-text-2xl lg:tw-text-3xl">
-          {intl("settings.profile.title")}
-        </h3>
-        <Spinner
-          data-show={loading || fetching}
-          className="hidden data-[show=true]:block"
-        />
-      </div>
+      <Title
+        loading={loading || fetching}
+        title={
+          first ? "settings.profile.title.first" : "settings.profile.title"
+        }
+      />
 
       <div className="tw-flex tw-flex-col-reverse sm:tw-flex-row tw-gap-4 md:tw-gap-8 lg:tw-gap-16">
         <Form

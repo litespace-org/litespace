@@ -8,6 +8,7 @@ import {
   useFormatMessage,
   Controller,
   atlas,
+  ButtonSize,
 } from "@litespace/luna";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -92,7 +93,7 @@ const Register: React.FC = () => {
       <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
-            <h1 className="text-3xl font-simi-bold text-center">
+            <h1 className="text-3xl font-simi-bold">
               {intl(
                 tutor
                   ? "page.register.tutor.title"
@@ -102,7 +103,7 @@ const Register: React.FC = () => {
           </div>
 
           <Form onSubmit={onSubmit}>
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col justify-start items-start gap-4">
               <Field
                 label={<Label>{intl("global.form.email.label")}</Label>}
                 field={
@@ -133,13 +134,16 @@ const Register: React.FC = () => {
                 }
               />
 
-              <Button
-                loading={mutation.isPending}
-                htmlType="submit"
-                className="w-full mt-8"
-              >
-                {intl("page.register.form.button.submit.label")}
-              </Button>
+              <div>
+                <Button
+                  loading={mutation.isPending}
+                  htmlType="submit"
+                  className="w-full mt-2"
+                  size={ButtonSize.Small}
+                >
+                  {intl("page.register.form.button.submit.label")}
+                </Button>
+              </div>
             </div>
           </Form>
         </div>

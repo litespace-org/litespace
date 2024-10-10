@@ -223,6 +223,7 @@
   "chat.message.edit": "تعديل",
   "chat.message.delete": "حذف",
   "settings.profile.title": "حسابك",
+  "settings.profile.title.first": "أكمل بياناتك",
   "settings.profile.change.password.title": "تغير كلمة السر",
   "settings.profile.change.email.title": "تغير الإيميل",
   "profile.update.success": "تم تحديث بياناتك بنجاح",

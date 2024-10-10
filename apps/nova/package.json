@@ -9,7 +9,8 @@
     "build:vercel": "env-cmd -f .env.staging pnpm vercel build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "check": "tsc --noEmit"
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
