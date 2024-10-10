@@ -147,6 +147,14 @@ const Profile: React.FC<{
     [profile?.role]
   );
 
+  const showPassword = useMemo(() => {
+    return (first && profile?.password === false) || !first;
+  }, [first, profile?.password]);
+
+  const showEamil = useMemo(() => {
+    return (first && profile?.email === null) || !first;
+  }, [first, profile?.email]);
+
   return (
     <div className="tw-mb-8">
       <Title
@@ -175,32 +183,36 @@ const Profile: React.FC<{
             }
           />
 
-          <Field
-            label={intl("labels.email")}
-            field={
-              <Controller.Input
-                placeholder={intl("labels.email.placeholder")}
-                control={form.control}
-                rules={validateEmail}
-                disabled={disabled}
-                name="email"
-              />
-            }
-          />
+          {showEamil ? (
+            <Field
+              label={intl("labels.email")}
+              field={
+                <Controller.Input
+                  placeholder={intl("labels.email.placeholder")}
+                  control={form.control}
+                  rules={validateEmail}
+                  disabled={disabled}
+                  name="email"
+                />
+              }
+            />
+          ) : null}
 
-          <Field
-            label={intl("labels.password")}
-            field={
-              <Controller.Input
-                type={InputType.Password}
-                control={form.control}
-                name="password"
-                autoComplete="off"
-                disabled={disabled}
-                rules={validatePassword}
-              />
-            }
-          />
+          {showPassword ? (
+            <Field
+              label={intl("labels.password")}
+              field={
+                <Controller.Input
+                  type={InputType.Password}
+                  control={form.control}
+                  name="password"
+                  autoComplete="off"
+                  disabled={disabled}
+                  rules={validatePassword}
+                />
+              }
+            />
+          ) : null}
 
           <Field
             label={intl("labels.birthYear")}
@@ -219,7 +231,7 @@ const Profile: React.FC<{
             }
           />
 
-          {isTutor ? (
+          {isTutor && !first ? (
             <React.Fragment>
               <Field
                 label={intl("labels.bio")}

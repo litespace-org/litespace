@@ -8,6 +8,7 @@ import UrlPattern from "url-pattern";
 import { tutorMetaSelector } from "@/redux/user/tutor";
 import Navbar from "@/components/Layout/Navbar";
 import { profileSelectors } from "@/redux/user/profile";
+import { IUser } from "@litespace/types";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -17,7 +18,7 @@ const Root: React.FC = () => {
   const { toggle, theme } = useTheme();
 
   useEffect(() => {
-    // const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
+    const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
     const register = new UrlPattern(RoutePatterns.Register).match(
       location.pathname
     );
@@ -29,17 +30,18 @@ const Root: React.FC = () => {
     if ([user?.email, user?.name].some((value) => value === null))
       return navigate(Route.Complete);
 
-    // if (
-    //   !call &&
-    //   user &&
-    //   user.role === IUser.Role.Tutor &&
-    //   tutorMeta &&
-    //   (tutorMeta.bio === null ||
-    //     tutorMeta.about === null ||
-    //     user.image === null ||
-    //     tutorMeta.video === null)
-    // )
-    //   return navigate(Route.TutorOnboarding);
+    if (
+      !call &&
+      !register &&
+      user &&
+      user.role === IUser.Role.Tutor &&
+      tutorMeta &&
+      (tutorMeta.bio === null ||
+        tutorMeta.about === null ||
+        user.image === null ||
+        tutorMeta.video === null)
+    )
+      return navigate(Route.TutorOnboarding);
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
   const show = useMemo(() => {
