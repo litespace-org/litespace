@@ -41,23 +41,34 @@ const Gender: React.FC<{
   setGender: (gender: IUser.Gender) => void;
   student: boolean;
 }> = ({ gender, disabled, student, setGender }) => {
-  const Image: Image = useMemo(
-    () =>
-      student
-        ? { Dark: Icons.StudentDark, Light: Icons.StudentLight }
-        : {
-            Dark: Icons.TutorDark,
-            Light: Icons.TutorLight,
-          },
-    [student]
-  );
-
   const images = useMemo(
     () => [
-      { Image, gender: IUser.Gender.Male },
-      { Image, gender: IUser.Gender.Female },
+      {
+        Image: student
+          ? {
+              Dark: Icons.StudentMaleDark,
+              Light: Icons.StudentMaleLight,
+            }
+          : {
+              Dark: Icons.TutorMaleDark,
+              Light: Icons.TutorMaleLight,
+            },
+        gender: IUser.Gender.Male,
+      },
+      {
+        Image: student
+          ? {
+              Dark: Icons.StudentFemaleDark,
+              Light: Icons.StudentFemaleLight,
+            }
+          : {
+              Dark: Icons.TutorFemaleDark,
+              Light: Icons.TutorFemaleLight,
+            },
+        gender: IUser.Gender.Female,
+      },
     ],
-    [Image]
+    [student]
   );
 
   return (

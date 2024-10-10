@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 453.96 488.93">
   <defs>
-    <linearGradient id="linear-gradient" x1="129.45" y1="-72.02" x2="130.87" y2="469.26" gradientUnits="userSpaceOnUse">
+    <linearGradient id="tutor-male-light" x1="129.45" y1="-72.02" x2="130.87" y2="469.26" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff"/>
       <stop offset="1" stop-color="#cceaff"/>
     </linearGradient>
-    <linearGradient id="linear-gradient-2" x1="125.51" y1="145.75" x2="125.55" y2="157.54" xlink:href="#linear-gradient"/>
+    <linearGradient id="tutor-male-light-2" x1="125.51" y1="145.75" x2="125.55" y2="157.54" xlink:href="#tutor-male-light"/>
   </defs>
   <g>
     <g>
       <path d="M314.33,27.61c7.45,0,13.49,6.03,13.49,13.48s-6.05,13.49-13.49,13.49-13.48-6.05-13.48-13.49,6.03-13.48,13.48-13.48Z" style="fill: #4aaf56;"/>
       <path d="M242.42,135.32v11.8c0,8.38-6.79,15.17-15.17,15.17s-15.16-6.79-15.16-15.17v-11.8c0-8.37,6.79-15.16,15.16-15.16,4.19,0,7.99,1.69,10.73,4.44s4.44,6.54,4.44,10.72Z" style="fill: #203467;"/>
       <path d="M160.6,135.32v11.8c0,8.38-6.79,15.17-15.16,15.17s-15.17-6.79-15.17-15.17v-11.8c0-8.37,6.79-15.16,15.17-15.16,4.19,0,7.97,1.69,10.72,4.44s4.44,6.54,4.44,10.72Z" style="fill: #203467;"/>
-      <path d="M125.57,151.66c.66,13.64,3.85,26.66,9.09,38.53-5.98-10.82-8.71-24.1-9.14-39.22,0,.16.02.33.03.49.02.07.02.13.02.2Z" style="fill: url(#linear-gradient);"/>
+      <path d="M125.57,151.66c.66,13.64,3.85,26.66,9.09,38.53-5.98-10.82-8.71-24.1-9.14-39.22,0,.16.02.33.03.49.02.07.02.13.02.2Z" style="fill: url(#tutor-male-light);"/>
       <path d="M127.44,126.35c-1.12,7.96-1.76,16.54-1.97,22.77.02.49.03,1,.05,1.5-.02.13-.02.25,0,.36-.64-7.69.46-16.77,1.92-24.62Z" style="fill: #fff;"/>
-      <path d="M125.55,151.46c-.02-.16-.03-.33-.03-.49-.02-.12-.02-.23,0-.36.02.28.03.58.03.85Z" style="fill: url(#linear-gradient-2);"/>
+      <path d="M125.55,151.46c-.02-.16-.03-.33-.03-.49-.02-.12-.02-.23,0-.36.02.28.03.58.03.85Z" style="fill: url(#tutor-male-light-2);"/>
     </g>
     <g>
       <path d="M296.17,368.6c-.33-.23-.67-.49-1.04-.76" style="fill: none; stroke: #12121e; stroke-linecap: round; stroke-miterlimit: 10;"/>
