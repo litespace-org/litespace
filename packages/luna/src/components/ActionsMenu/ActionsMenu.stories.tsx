@@ -12,34 +12,38 @@ const meta: Meta<Component> = {
   decorators: [DarkStoryWrapper],
 };
 
-export const Primary: StoryObj<Component> = {
-  args: {
-    actions: [
-      {
-        id: 1,
-        label: ar["page.login.form.button.submit.label"],
-        onClick() {
-          alert("Button clicked!!");
-        },
-      },
-      {
-        id: 2,
-        label: ar["page.register.form.button.submit.label"],
-        onClick() {
-          alert("Button clicked!!");
-        },
-        disabled: true,
-      },
-      {
-        id: 3,
-        label: ar["global.labels.go"],
-        onClick() {
-          alert("Button clicked!!");
-        },
-        danger: true,
-      },
-    ],
+const actions = [
+  {
+    id: 1,
+    label: ar["page.login.form.button.submit.label"],
+    onClick() {
+      alert("Clicked 1!!");
+    },
   },
+  {
+    id: 2,
+    label: ar["page.register.form.button.submit.label"],
+    onClick() {
+      alert("Clicked 2!!");
+    },
+    disabled: true,
+  },
+  {
+    id: 3,
+    label: ar["global.labels.go"],
+    onClick() {
+      alert("Clicked 3!!");
+    },
+    danger: true,
+  },
+];
+
+export const Primary: StoryObj<Component> = {
+  args: { actions },
+};
+
+export const Small: StoryObj<Component> = {
+  args: { actions, small: true },
 };
 
 export default meta;

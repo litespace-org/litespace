@@ -6,7 +6,9 @@ import React from "react";
 const List: React.FC<{
   children?: React.ReactNode;
 }> = ({ children }) => {
-  return <ul className="tw-flex tw-flex-col tw-gap-1 tw-shrink-0">{children}</ul>;
+  return (
+    <ul className="tw-flex tw-flex-col tw-gap-1 tw-shrink-0">{children}</ul>
+  );
 };
 
 export const Labels: React.FC<{ ids: Array<LocalId> }> = ({ ids }) => {
