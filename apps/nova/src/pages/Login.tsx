@@ -21,6 +21,8 @@ import { IUser } from "@litespace/types";
 import { useAppDispatch } from "@/redux/store";
 import { setUserProfile } from "@/redux/user/profile";
 import { saveToken } from "@/lib/cache";
+import { resetTutorMeta } from "@/redux/user/tutor";
+import { resetUserRules } from "@/redux/user/schedule";
 
 interface IForm {
   email: string;
@@ -51,6 +53,8 @@ const Login: React.FC = () => {
       const profile = await atlas.auth.password(credentials);
       dispatch(setUserProfile(profile));
       saveToken(profile.token);
+      dispatch(resetTutorMeta());
+      dispatch(resetUserRules());
     },
     [dispatch]
   );

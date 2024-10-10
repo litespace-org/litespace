@@ -6,10 +6,9 @@ import {
   SidebarNav,
   Switch,
   Theme,
-  toaster,
   useFormatMessage,
   Icons,
-  atlas,
+  removeToken,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
@@ -17,7 +16,6 @@ import { IUser, Void } from "@litespace/types";
 import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
-import { useMutation } from "@tanstack/react-query";
 import { resetTutorMeta } from "@/redux/user/tutor";
 
 const Navbar: React.FC<{
@@ -29,27 +27,11 @@ const Navbar: React.FC<{
   const location = useLocation();
   const dispatch = useAppDispatch();
 
-  const onSuccess = useCallback(() => {
+  const logout = useCallback(() => {
+    removeToken();
     dispatch(resetUserProfile());
     dispatch(resetTutorMeta());
   }, [dispatch]);
-
-  const onError = useCallback(
-    (error: Error | null) => {
-      toaster.error({
-        title: intl("error.logout.failed"),
-        description: error?.message,
-      });
-    },
-    [intl]
-  );
-
-  const logout = useMutation({
-    mutationFn: () => atlas.auth.logout(),
-    mutationKey: ["logout"],
-    onSuccess,
-    onError,
-  });
 
   const links = useMemo((): Array<{
     label: string;
@@ -66,9 +48,7 @@ const Navbar: React.FC<{
     const logoutOption = {
       label: intl("navbar.logout"),
       route: "",
-      onClick: () => logout.mutate(),
-      loading: logout.isPending,
-      disabled: logout.isPending,
+      onClick: logout,
     };
 
     if (student)

@@ -10,12 +10,20 @@ function save<T>(key: CacheKey, value: T): void {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+function remove(key: CacheKey): void {
+  localStorage.removeItem(key);
+}
+
 export function saveToken(token: string) {
   return save(CacheKey.AuthToken, token);
 }
 
 export function getToken(): string | null {
   return load(CacheKey.AuthToken);
+}
+
+export function removeToken() {
+  return remove(CacheKey.AuthToken);
 }
 
 export const cache = { save, load };
