@@ -4,7 +4,7 @@ import { schema } from "@/validation";
 import { identityObject } from "@/validation/utils";
 import { IPlan } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
+import safeRequest from "express-async-handler";
 
 async function create(req: Request, res: Response) {
   const payload: IPlan.CreateApiPayload = schema.http.plan.create.body.parse(
@@ -42,9 +42,9 @@ async function findAll(req: Request, res: Response) {
 }
 
 export default {
-  create: asyncHandler(create),
-  update: asyncHandler(update),
-  delete: asyncHandler(delete_),
-  findById: asyncHandler(findById),
-  findAll: asyncHandler(findAll),
+  create: safeRequest(create),
+  update: safeRequest(update),
+  delete: safeRequest(delete_),
+  findById: safeRequest(findById),
+  findAll: safeRequest(findAll),
 };
