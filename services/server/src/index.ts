@@ -12,10 +12,11 @@ import { onlyForHandshake } from "@/middleware/common";
 import { capitalize } from "lodash";
 import { client } from "@/redis/client";
 import { ApiContext } from "@/types/api";
-import "colors";
 import { safe } from "@litespace/sol";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, router as authRouter } from "@litespace/auth";
+import { peer } from "@/lib/peer";
+import "colors";
 
 // connect to the redis server
 safe(async () => client.connect());
@@ -50,6 +51,7 @@ app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware("jwt_secret"));
+app.use("/peer", peer(server));
 app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", authRouter("jwt_secret"));
 app.use("/api/v1/user", routes.user(context));
