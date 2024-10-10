@@ -10,6 +10,7 @@ import {
   Controller,
   useFormatMessage,
   atlas,
+  Icons,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -137,6 +138,10 @@ const Login: React.FC = () => {
         <div className="flex flex-col gap-4 items-center justify-center">
           <p className="text-4xl">LiteSpace</p>
           <p className="text-lg">{intl("page.login.slogan")}</p>
+        </div>
+
+        <div className="lg:w-3/4 p-6">
+          <Icons.LoginLight />
         </div>
       </aside>
     </div>

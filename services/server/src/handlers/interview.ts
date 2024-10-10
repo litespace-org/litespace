@@ -99,6 +99,7 @@ async function createInterview(
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
   const allowed = authorizer().admin().tutor().interviewer().check(req.user);
   if (!allowed) return next(forbidden());
+
   const { userId } = withNamedId("userId").parse(req.params);
   const query = pagination.parse(req.query);
   const { interviews: userInterviews, total } = await interviews.findByUser(
@@ -202,8 +203,8 @@ async function updateInterview(
     payload.sign === true // sign
       ? req.user.id
       : payload.sign === false // unsign
-        ? null
-        : undefined; // no-update
+      ? null
+      : undefined; // no-update
 
   const updated = await interviews.update(interviewId, {
     feedback: payload.feedback,
