@@ -90,7 +90,7 @@ const Register: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row flex-1 min-h-screen h-full">
+    <div className="flex flex-row flex-1 h-full">
       <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
@@ -150,12 +150,15 @@ const Register: React.FC = () => {
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 text-center">
-          <p className="text-4xl">LiteSpace</p>
-          <p className="text-lg">{intl("page.login.slogan")}</p>
+        <div className="flex flex-col gap-4 text-center mb-14">
+          <p className="text-7xl">LiteSpace</p>
+          <p className="text-3xl text-foreground-light">
+            {intl("page.login.slogan")}
+          </p>
         </div>
         <div className="w-3/4 p-6">
-          <Icons.RegisterLight className="w-full" />
+          <Icons.RegisterLight className="block dark:hidden" />
+          <Icons.RegisterDark className="hidden dark:block" />
         </div>
       </aside>
     </div>

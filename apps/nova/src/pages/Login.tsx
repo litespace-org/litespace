@@ -135,9 +135,11 @@ const Login: React.FC = () => {
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 items-center justify-center">
-          <p className="text-4xl">LiteSpace</p>
-          <p className="text-lg">{intl("page.login.slogan")}</p>
+        <div className="flex flex-col gap-4 items-center justify-center mb-14">
+          <p className="text-7xl">LiteSpace</p>
+          <p className="text-3xl text-foreground-light">
+            {intl("page.login.slogan")}
+          </p>
         </div>
 
         <div className="lg:w-3/4 p-6">
