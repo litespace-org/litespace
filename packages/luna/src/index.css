@@ -918,6 +918,10 @@ video {
   height: 100vh;
 }
 
+.tw-h-4{
+  height: 1rem;
+}
+
 .tw-max-h-80{
   max-height: 20rem;
 }
@@ -1066,6 +1070,10 @@ video {
 
 .tw-w-screen{
   width: 100vw;
+}
+
+.tw-w-4{
+  width: 1rem;
 }
 
 .tw-min-w-56{
@@ -3451,6 +3459,10 @@ input[type="range"]:focus::-moz-range-thumb {
 }
 
 .aria-disabled\:tw-opacity-50[aria-disabled="true"]{
+  opacity: 0.5;
+}
+
+.aria-\[disabled\=true\]\:tw-opacity-50[aria-disabled="true"]{
   opacity: 0.5;
 }
 

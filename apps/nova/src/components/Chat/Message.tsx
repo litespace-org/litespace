@@ -61,7 +61,7 @@ const Message: React.FC<{
           "hidden data-[open=true]:block"
         )}
       >
-        <ActionsMenu actions={actions} onToggle={onToggle} />
+        <ActionsMenu actions={actions} onOpenChange={onToggle} />
       </div>
     </div>
   );
