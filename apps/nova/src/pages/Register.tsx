@@ -9,6 +9,7 @@ import {
   Controller,
   atlas,
   ButtonSize,
+  Icons,
 } from "@litespace/luna";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -149,9 +150,12 @@ const Register: React.FC = () => {
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 items-center justify-center">
+        <div className="flex flex-col gap-4 text-center">
           <p className="text-4xl">LiteSpace</p>
           <p className="text-lg">{intl("page.login.slogan")}</p>
+        </div>
+        <div className="w-3/4 p-6">
+          <Icons.RegisterLight className="w-full" />
         </div>
       </aside>
     </div>

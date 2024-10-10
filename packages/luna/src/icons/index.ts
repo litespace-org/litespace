@@ -7,6 +7,8 @@ import StudentMaleLight from "@/icons/student-male-light.svg";
 import StudentMaleDark from "@/icons/student-male-dark.svg";
 import StudentFemaleLight from "@/icons/student-female-light.svg";
 import StudentFemaleDark from "@/icons/student-female-dark.svg";
+import RegisterLight from "@/icons/register-light.svg";
+import LoginLight from "@/icons/login-light.svg";
 
 export type SVG = React.FC<React.SVGProps<SVGSVGElement>>;
 
@@ -20,6 +22,8 @@ const icons = {
   StudentFemaleDark,
   StudentMaleLight,
   StudentMaleDark,
+  RegisterLight,
+  LoginLight,
 } as const satisfies Record<string, SVG>;
 
 export default icons;
