@@ -1,29 +1,28 @@
-import { IInterview, IRule, IUser } from "@litespace/types";
+import { IInterview, IRule } from "@litespace/types";
 import { Dayjs } from "dayjs";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "@/lib/dayjs";
 import {
   Button,
   ButtonType,
   DatePicker,
-  messages,
   toaster,
   asFullAssetUrl,
   atlas,
+  useFormatMessage,
+  Loading,
 } from "@litespace/luna";
 import cn from "classnames";
-import { useIntl } from "react-intl";
 import { flatten } from "lodash";
 import { splitRuleEvent } from "@litespace/sol";
 
 const WINDOW = 30;
 
 const ScheduleInterview: React.FC<{
-  interviewer: IUser.Self;
   onSuccess(): void;
-}> = ({ interviewer, onSuccess }) => {
-  const intl = useIntl();
+}> = ({ onSuccess }) => {
+  const intl = useFormatMessage();
   const [date, setDate] = useState<Dayjs>(dayjs());
   const [selectedRule, setSelectedRule] = useState<IRule.RuleEvent | null>(
     null
@@ -32,15 +31,28 @@ const ScheduleInterview: React.FC<{
   const start = useMemo(() => dayjs(), []);
   const end = useMemo(() => start.add(WINDOW, "days"), [start]);
 
+  const selectInterviewer = useCallback(async () => {
+    return atlas.user.selectInterviewer();
+  }, []);
+
+  const interviewer = useQuery({
+    queryFn: selectInterviewer,
+    queryKey: ["select-interviewer"],
+  });
+
+  const findUnpackedUserRoles = useCallback(async () => {
+    if (!interviewer.data) return;
+    return atlas.rule.findUnpackedUserRules(
+      interviewer.data.id,
+      start.utc().format("YYYY-MM-DD"),
+      end.utc().format("YYYY-MM-DD")
+    );
+  }, [end, interviewer.data, start]);
+
   const rules = useQuery({
+    queryFn: findUnpackedUserRoles,
     queryKey: ["interviewer-slots"],
-    queryFn: async () => {
-      return atlas.rule.findUnpackedUserRules(
-        interviewer.id,
-        start.utc().format("YYYY-MM-DD"),
-        end.utc().format("YYYY-MM-DD")
-      );
-    },
+    enabled: !!interviewer.data,
   });
 
   const dayRules: IRule.RuleEvent[] = useMemo(() => {
@@ -50,23 +62,25 @@ const ScheduleInterview: React.FC<{
     );
   }, [date, rules.data]);
 
+  const createInterview = useCallback(
+    async (payload: IInterview.CreateApiPayload) => {
+      return atlas.interview.create(payload);
+    },
+    []
+  );
+
   const mutation = useMutation({
-    mutationFn: (payload: IInterview.CreateApiPayload) =>
-      atlas.interview.create(payload),
+    mutationFn: createInterview,
     onSuccess() {
       onSuccess();
       rules.refetch();
       toaster.success({
-        title: intl.formatMessage({
-          id: messages["page.tutor.onboarding.book.interview.success.title"],
-        }),
+        title: intl("page.tutor.onboarding.book.interview.success.title"),
       });
     },
     onError(error) {
       toaster.error({
-        title: intl.formatMessage({
-          id: messages["page.tutor.onboarding.book.interview.fail.title"],
-        }),
+        title: intl("page.tutor.onboarding.book.interview.fail.title"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -76,22 +90,33 @@ const ScheduleInterview: React.FC<{
     return flatten(dayRules.map((rule) => splitRuleEvent(rule, 30)));
   }, [dayRules]);
 
+  if (interviewer.isLoading || rules.isLoading)
+    return <Loading className="h-[30vh]" />;
+
+  // todo: ui required
+  if (interviewer.error || rules.error) return <h1>Error!!</h1>;
+  if (!interviewer.data) return null;
+
   return (
     <div>
       <div className="flex flex-row gap-12 mt-5">
         <div className="flex flex-col gap-3 w-[300px]">
           <div className="rounded-3xl overflow-hidden">
-            {interviewer.image && (
-              <img
-                className="w-full h-full"
-                src={asFullAssetUrl(interviewer.image)}
-                alt={interviewer.name || "Interviewer"}
-              />
-            )}
+            <img
+              className="w-full h-full"
+              src={
+                interviewer.data.image
+                  ? asFullAssetUrl(interviewer.data.image)
+                  : "/avatar-1.png"
+              }
+              alt={interviewer.data.name || "Interviewer"}
+            />
           </div>
 
           <div>
-            <p className="font-cairo font-bold text-2xl">{interviewer.name}</p>
+            <p className="font-cairo font-bold text-2xl">
+              {interviewer.data.name}
+            </p>
           </div>
         </div>
 
@@ -139,12 +164,12 @@ const ScheduleInterview: React.FC<{
           </ul>
         </div>
       </div>
-      <div className="w-[250px] mt-12">
+      <div className="w-[250px] mt-4">
         <Button
           onClick={() => {
             if (!selectedRule) return;
             mutation.mutate({
-              interviewerId: interviewer.id,
+              interviewerId: interviewer.data.id,
               ruleId: selectedRule.id,
               start: selectedRule.start,
             });
@@ -153,17 +178,10 @@ const ScheduleInterview: React.FC<{
           loading={mutation.isPending}
         >
           <span className="truncate">
-            {intl.formatMessage(
-              {
-                id: messages[
-                  "page.tutor.onboarding.book.interview.button.label"
-                ],
-              },
-              { name: interviewer.name }
-            )}
+            {intl("page.tutor.onboarding.book.interview.button.label")}
           </span>
         </Button>
-      </div>{" "}
+      </div>
     </div>
   );
 };
