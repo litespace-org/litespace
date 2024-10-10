@@ -29,11 +29,11 @@ const Interview: React.FC<{
     );
   }, [interviewer?.name]);
 
-  console.log(interviews.data);
-
   return (
     <div className="pb-10 flex flex-col w-full">
       <RawHtml html={html} />
+
+      <ScheduleInterview onSuccess={onScheduleSuccess} />
 
       {/* {currentInterview && interviewCall.data && interviewer.data ? (
         <ScheduledInterview
