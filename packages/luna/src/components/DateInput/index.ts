@@ -1,1 +1,4 @@
-export { DateInput } from "@/components/DateInput/DateInput";
+export {
+  DateInput,
+  type DateInputProps,
+} from "@/components/DateInput/DateInput";

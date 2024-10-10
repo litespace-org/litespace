@@ -100,6 +100,10 @@ const Navbar: React.FC<{
           route: Route.Interviews,
         },
         {
+          label: intl("navbar.schedule"),
+          route: Route.Schedule,
+        },
+        {
           label: intl("navbar.settings"),
           route: Route.Settings,
         },

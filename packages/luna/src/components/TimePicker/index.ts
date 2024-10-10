@@ -1,1 +1,4 @@
-export { TimePicker } from "@/components/TimePicker/TimePicker";
+export {
+  TimePicker,
+  type TimePickerProps,
+} from "@/components/TimePicker/TimePicker";

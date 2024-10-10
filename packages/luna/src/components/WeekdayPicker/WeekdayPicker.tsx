@@ -29,14 +29,21 @@ export type WeekdayMap = {
   reset: string;
 };
 
-const DISPLAY_DAY_COUNT = 2;
-
-export const WeekdayPicker: React.FC<{
+export type WeekdayPickerProps = {
   placeholder?: string;
   weekdayMap: WeekdayMap;
   weekdays?: IDate.Weekday[];
   onChange?: (weekdays: IDate.Weekday[]) => void;
-}> = ({ weekdayMap, placeholder, weekdays = [], onChange }) => {
+};
+
+const DISPLAY_DAY_COUNT = 2;
+
+export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
+  weekdayMap,
+  placeholder,
+  weekdays = [],
+  onChange,
+}) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 

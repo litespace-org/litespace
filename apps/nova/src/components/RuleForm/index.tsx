@@ -4,27 +4,21 @@ import {
   Dialog,
   Field,
   Form,
-  Input,
   Label,
-  messages,
-  Select,
-  TimePicker,
   toaster,
   useTimeFormatterMap,
   useValidation,
   useValidateDuration,
-  useDurationUnitMap,
-  Duration as DurationInput,
-  WeekdayPicker,
   useWeekdayMap,
   Card,
   useRuleFormatterMap,
   atlas,
+  useFormatMessage,
+  Controller,
 } from "@litespace/luna";
 import { IDate, IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
-import { useIntl } from "react-intl";
+import { useForm, Controller as FormController } from "react-hook-form";
 import dayjs from "@/lib/dayjs";
 import { Duration, Schedule, Time } from "@litespace/sol";
 import { useMutation } from "@tanstack/react-query";
@@ -49,10 +43,9 @@ const RuleForm: React.FC<{
   open: boolean;
   close: () => void;
 }> = ({ rule, open, close }) => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const validate = useValidation();
   const formatterMap = useTimeFormatterMap();
-  const durationMap = useDurationUnitMap();
   const weekdayMap = useWeekdayMap();
   const ruleFormatterMap = useRuleFormatterMap();
   const validateDuration = useValidateDuration();
@@ -77,9 +70,7 @@ const RuleForm: React.FC<{
   const onSuccess = useCallback(() => {
     if (profile) dispatch(findUserRules.call(profile.id));
     toaster.success({
-      title: intl.formatMessage({
-        id: messages["global.notify.schedule.update.success"],
-      }),
+      title: intl("global.notify.schedule.update.success"),
     });
     form.reset();
     close();
@@ -88,9 +79,7 @@ const RuleForm: React.FC<{
   const onError = useCallback(
     (error: unknown) => {
       toaster.error({
-        title: intl.formatMessage({
-          id: messages["global.notify.schedule.update.error"],
-        }),
+        title: intl("global.notify.schedule.update.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -138,21 +127,15 @@ const RuleForm: React.FC<{
   const frequencyOptions = useMemo(
     () => [
       {
-        label: intl.formatMessage({
-          id: messages["global.schedule.freq.daily"],
-        }),
+        label: intl("global.schedule.freq.daily"),
         value: IRule.Frequency.Daily,
       },
       {
-        label: intl.formatMessage({
-          id: messages["global.schedule.freq.weekly"],
-        }),
+        label: intl("global.schedule.freq.weekly"),
         value: IRule.Frequency.Weekly,
       },
       {
-        label: intl.formatMessage({
-          id: messages["global.schedule.freq.monthly"],
-        }),
+        label: intl("global.schedule.freq.monthly"),
         value: IRule.Frequency.Monthly,
       },
     ],
@@ -161,12 +144,8 @@ const RuleForm: React.FC<{
 
   const meridiem = useMemo(
     () => ({
-      am: intl.formatMessage({
-        id: messages["global.labels.am"],
-      }),
-      pm: intl.formatMessage({
-        id: messages["global.labels.pm"],
-      }),
+      am: intl("global.labels.am"),
+      pm: intl("global.labels.pm"),
     }),
     [intl]
   );
@@ -212,21 +191,16 @@ const RuleForm: React.FC<{
 
   const title = useMemo(
     () =>
-      intl.formatMessage({
-        id: rule
-          ? messages["page.schedule.update.dialog.title"]
-          : messages["page.schedule.add.dialog.title"],
-      }),
+      intl(
+        rule
+          ? "page.schedule.update.dialog.title"
+          : "page.schedule.add.dialog.title"
+      ),
     [intl, rule]
   );
 
   const buttonLabel = useMemo(
-    () =>
-      intl.formatMessage({
-        id: rule
-          ? messages["global.labels.update"]
-          : messages["global.labels.confirm"],
-      }),
+    () => intl(rule ? "global.labels.update" : "global.labels.confirm"),
     [intl, rule]
   );
 
@@ -241,22 +215,16 @@ const RuleForm: React.FC<{
         <Field
           label={
             <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.schedule.add.dialog.form.fields.title.label"
-                ],
-              })}
+              {intl("page.schedule.add.dialog.form.fields.title.label")}
             </Label>
           }
           field={
-            <Input
-              placeholder={intl.formatMessage({
-                id: messages[
-                  "page.schedule.add.dialog.form.fields.title.placeholder"
-                ],
-              })}
-              register={form.register("title", validate.slotTitle)}
-              error={form.formState.errors["title"]?.message}
+            <Controller.Input
+              control={form.control}
+              name="title"
+              placeholder={intl(
+                "page.schedule.add.dialog.form.fields.title.placeholder"
+              )}
               disabled={disabled}
             />
           }
@@ -266,15 +234,11 @@ const RuleForm: React.FC<{
           <Field
             label={
               <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.add.dialog.form.fields.start-date.label"
-                  ],
-                })}
+                {intl("page.schedule.add.dialog.form.fields.start-date.label")}
               </Label>
             }
             field={
-              <Controller
+              <FormController
                 control={form.control}
                 rules={date.start}
                 name="start"
@@ -283,11 +247,9 @@ const RuleForm: React.FC<{
                   const end = form.watch("end");
                   return (
                     <DateInput
-                      placeholder={intl.formatMessage({
-                        id: messages[
-                          "page.schedule.add.dialog.form.fields.start-date.placeholder"
-                        ],
-                      })}
+                      placeholder={intl(
+                        "page.schedule.add.dialog.form.fields.start-date.placeholder"
+                      )}
                       error={form.formState.errors["start"]?.message}
                       min={dayjs().startOf("day")}
                       onChange={(value: string) => {
@@ -296,9 +258,7 @@ const RuleForm: React.FC<{
                         if (end) form.trigger("end");
                       }}
                       value={start}
-                      today={intl.formatMessage({
-                        id: messages["global.labels.today"],
-                      })}
+                      today={intl("global.labels.today")}
                       disabled={disabled}
                     />
                   );
@@ -310,15 +270,11 @@ const RuleForm: React.FC<{
           <Field
             label={
               <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.add.dialog.form.fields.end-date.label"
-                  ],
-                })}
+                {intl("page.schedule.add.dialog.form.fields.end-date.label")}
               </Label>
             }
             field={
-              <Controller
+              <FormController
                 control={form.control}
                 rules={date.end}
                 name="end"
@@ -328,11 +284,9 @@ const RuleForm: React.FC<{
 
                   return (
                     <DateInput
-                      placeholder={intl.formatMessage({
-                        id: messages[
-                          "page.schedule.add.dialog.form.fields.end-date.placeholder"
-                        ],
-                      })}
+                      placeholder={intl(
+                        "page.schedule.add.dialog.form.fields.end-date.placeholder"
+                      )}
                       error={form.formState.errors["end"]?.message}
                       onChange={(value: string) => {
                         field.onChange(value);
@@ -341,9 +295,7 @@ const RuleForm: React.FC<{
                       }}
                       min={start ? dayjs(start) : undefined}
                       value={end || ""}
-                      today={intl.formatMessage({
-                        id: messages["global.labels.today"],
-                      })}
+                      today={intl("global.labels.today")}
                       disabled={disabled}
                     />
                   );
@@ -356,35 +308,18 @@ const RuleForm: React.FC<{
           <Field
             label={
               <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.add.dialog.form.fields.start-time.label"
-                  ],
-                })}
+                {intl("page.schedule.add.dialog.form.fields.start-time.label")}
               </Label>
             }
             field={
-              <Controller
+              <Controller.TimePicker
                 control={form.control}
                 name="time"
                 rules={{ required: validate.required }}
-                render={({ field }) => {
-                  return (
-                    <TimePicker
-                      placeholder={intl.formatMessage({
-                        id: messages[
-                          "page.schedule.add.dialog.form.fields.start-time.placeholder"
-                        ],
-                      })}
-                      error={form.formState.errors["time"]?.message}
-                      onChange={field.onChange}
-                      labels={meridiem}
-                      time={form.watch("time")}
-                      formatterMap={formatterMap}
-                      disabled={disabled}
-                    />
-                  );
-                }}
+                labels={meridiem}
+                time={form.watch("time")}
+                formatterMap={formatterMap}
+                disabled={disabled}
               />
             }
           />
@@ -392,34 +327,20 @@ const RuleForm: React.FC<{
           <Field
             label={
               <Label>
-                {intl.formatMessage({
-                  id: messages[
-                    "page.schedule.add.dialog.form.fields.duration.label"
-                  ],
-                })}
+                {intl("page.schedule.add.dialog.form.fields.duration.label")}
               </Label>
             }
             field={
-              <Controller
+              <Controller.Duration
                 control={form.control}
                 name="duration"
-                rules={validateDuration}
-                render={({ field }) => {
-                  return (
-                    <DurationInput
-                      placeholder={intl.formatMessage({
-                        id: messages[
-                          "page.schedule.add.dialog.form.fields.duration.placeholder"
-                        ],
-                      })}
-                      error={form.formState.errors["duration"]?.message}
-                      onChange={field.onChange}
-                      labels={durationMap}
-                      value={form.watch("duration")}
-                      disabled={disabled}
-                    />
-                  );
+                rules={{
+                  ...validateDuration,
+                  validate: (_, form) =>
+                    validateDuration.validate(form.duration),
                 }}
+                value={form.watch("duration")}
+                disabled={disabled}
               />
             }
           />
@@ -428,28 +349,17 @@ const RuleForm: React.FC<{
         <Field
           label={
             <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.schedule.add.dialog.form.fields.weekdays.label"
-                ],
-              })}
+              {intl("page.schedule.add.dialog.form.fields.weekdays.label")}
             </Label>
           }
           field={
-            <Controller
+            <Controller.WeekdayPicker
               control={form.control}
               name="weekdays"
-              render={({ field }) => (
-                <WeekdayPicker
-                  weekdays={form.watch("weekdays")}
-                  onChange={field.onChange}
-                  weekdayMap={weekdayMap}
-                  placeholder={intl.formatMessage({
-                    id: messages[
-                      "page.schedule.add.dialog.form.fields.weekdays.placeholder"
-                    ],
-                  })}
-                />
+              weekdays={form.watch("weekdays")}
+              weekdayMap={weekdayMap}
+              placeholder={intl(
+                "page.schedule.add.dialog.form.fields.weekdays.placeholder"
               )}
             />
           }
@@ -458,24 +368,15 @@ const RuleForm: React.FC<{
         <Field
           label={
             <Label>
-              {intl.formatMessage({
-                id: messages[
-                  "page.schedule.add.dialog.form.fields.repeat.label"
-                ],
-              })}
+              {intl("page.schedule.add.dialog.form.fields.repeat.label")}
             </Label>
           }
           field={
-            <Controller
+            <Controller.Select
               control={form.control}
               name="frequency"
-              render={({ field }) => (
-                <Select
-                  value={form.watch("frequency")}
-                  onChange={field.onChange}
-                  options={frequencyOptions}
-                />
-              )}
+              value={form.watch("frequency")}
+              options={frequencyOptions}
             />
           }
         />

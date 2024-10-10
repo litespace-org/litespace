@@ -11,7 +11,7 @@ import { Clock } from "react-feather";
 import { FormatterMap, Time } from "@litespace/sol";
 import cn from "classnames";
 
-export const TimePicker: React.FC<{
+export type TimePickerProps = {
   placeholder?: string;
   error?: string | null;
   time?: Time;
@@ -19,7 +19,9 @@ export const TimePicker: React.FC<{
   disabled?: boolean;
   labels: { am: string; pm: string };
   onChange?: (time: Time) => void;
-}> = ({
+};
+
+export const TimePicker: React.FC<TimePickerProps> = ({
   time,
   error,
   labels,

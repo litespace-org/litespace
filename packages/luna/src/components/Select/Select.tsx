@@ -9,6 +9,15 @@ import cn from "classnames";
 import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
 import { SelectList, SelectPlacement } from "@/components/Select/types";
 
+export type SelectProps<T extends string | number> = {
+  placeholder?: string;
+  options?: SelectList<T>;
+  value?: T;
+  onChange?: (value: T) => void;
+  placement?: SelectPlacement;
+  children?: React.ReactNode;
+};
+
 export const Select = <T extends string | number>({
   value,
   placeholder,
@@ -16,14 +25,7 @@ export const Select = <T extends string | number>({
   placement = "bottom",
   children,
   onChange,
-}: {
-  placeholder?: string;
-  options?: SelectList<T>;
-  value?: T;
-  onChange?: (value: T) => void;
-  placement?: SelectPlacement;
-  children?: React.ReactNode;
-}) => {
+}: SelectProps<T>) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState<boolean>(false);
 

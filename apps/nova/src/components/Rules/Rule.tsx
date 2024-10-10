@@ -72,7 +72,9 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   ]);
 
   return (
-    <Card className={cn("flex flex-col", !rule.activated && "opacity-75")}>
+    <Card
+      className={cn("flex flex-col h-full", !rule.activated && "opacity-75")}
+    >
       <div className="flex flex-row items-center justify-between mb-4">
         <h3 className="text-xl text-foreground ">{rule.title}</h3>
         <ActionsMenu actions={actions} />

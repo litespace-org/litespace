@@ -11,7 +11,7 @@ import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
 import { Calendar } from "react-feather";
 
-export const DateInput: React.FC<{
+export type DateInputProps = {
   placeholder?: string;
   error?: string | null;
   value?: string;
@@ -20,7 +20,18 @@ export const DateInput: React.FC<{
   min?: Dayjs;
   max?: Dayjs;
   today?: string;
-}> = ({ placeholder, error, value, disabled, min, max, today, onChange }) => {
+};
+
+export const DateInput: React.FC<DateInputProps> = ({
+  placeholder,
+  error,
+  value,
+  disabled,
+  min,
+  max,
+  today,
+  onChange,
+}) => {
   const inputRef = useRef<HTMLDivElement>(null);
   const dateRef = useRef<HTMLDivElement>(null);
   const [show, setShow] = useState<boolean>(false);
