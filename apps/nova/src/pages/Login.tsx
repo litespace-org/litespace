@@ -83,7 +83,7 @@ const Login: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row flex-1 min-h-screen text-foreground">
+    <div className="flex flex-row flex-1 text-foreground">
       <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
@@ -142,8 +142,9 @@ const Login: React.FC = () => {
           </p>
         </div>
 
-        <div className="lg:w-3/4 p-6">
-          <Icons.LoginLight />
+        <div className="lg:w-3/4 p-6 mt-12">
+          <Icons.LoginLight className="block dark:hidden" />
+          <Icons.LoginDark className="hidden dark:block" />
         </div>
       </aside>
     </div>
