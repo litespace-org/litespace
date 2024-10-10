@@ -1,19 +1,20 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { messages, Stepper, atlas } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
 import { useQuery } from "@tanstack/react-query";
 import { useAppSelector } from "@/redux/store";
-import { profileSelector } from "@/redux/user/profile";
+import { profileSelectors } from "@/redux/user/profile";
 import { selectCurrentInterview } from "@/lib/interview";
 import { tutorMetaSelector } from "@/redux/user/tutor";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
+import { IInterview } from "@litespace/types";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useIntl();
-  const profile = useAppSelector(profileSelector);
+  const profile = useAppSelector(profileSelectors.user);
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const [step, setStep] = useState<number>(-1);
@@ -41,33 +42,41 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
+  const findInterviews = useCallback(async () => {
+    if (!profile) return { list: [], total: 0 };
+    return await atlas.interview.findInterviews(profile.id);
+  }, [profile]);
+
   const interviews = useQuery({
-    queryFn: async () => {
-      if (!profile) return [];
-      return await atlas.interview.findInterviews(profile.id);
-    },
+    queryFn: findInterviews,
     enabled: !!profile,
     queryKey: ["find-interviews"],
   });
 
   const currentInterview = useMemo(() => {
     if (!interviews.data) return null;
-    return selectCurrentInterview(interviews.data);
+    return selectCurrentInterview(
+      interviews.data.list.map((item) => item.interview)
+    );
   }, [interviews.data]);
 
   useEffect(() => {
+    const pending = currentInterview?.status === IInterview.Status.Pending;
+    const passed = currentInterview?.status === IInterview.Status.Passed;
+    const rejected = currentInterview?.status === IInterview.Status.Rejected;
+    const canceled = currentInterview?.status === IInterview.Status.Canceled;
+    const signed = !!currentInterview?.signer;
+
     if (
       interviews.data &&
-      (!currentInterview ||
-        currentInterview.approved == null ||
-        currentInterview.passed === null)
+      (!currentInterview || pending || rejected || canceled || !signed)
     )
       return setStep(TutorOnboardingStep.Interview);
 
     if (
       profile &&
       tutorMeta &&
-      (tutorMeta.video === null || profile?.photo === null)
+      (tutorMeta.video === null || profile?.image === null)
     )
       return setStep(TutorOnboardingStep.Media);
 
@@ -77,13 +86,13 @@ const TutorOnboarding: React.FC = () => {
     if (
       interviews.data &&
       currentInterview &&
-      currentInterview.passed &&
-      currentInterview.approved &&
+      passed &&
+      signed &&
       profile &&
       tutorMeta &&
       tutorMeta.bio &&
       tutorMeta.about &&
-      profile.photo &&
+      profile.image &&
       tutorMeta.video
     )
       return navigate(Route.Root);

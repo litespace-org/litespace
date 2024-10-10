@@ -1,17 +1,31 @@
-import CompleteInfo from "@/components/CompleteInfo";
-import { useAppSelector } from "@/redux/store";
+import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { profileSelectors, setUserProfile } from "@/redux/user/profile";
+import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
 import { Route } from "@/types/routes";
-import { Spinner } from "@litespace/luna";
-import React, { useEffect } from "react";
+import { RefreshUser, Settings, Spinner } from "@litespace/luna";
+import { IUser } from "@litespace/types";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Complete: React.FC = () => {
-  const profile = useAppSelector((state) => state.user.me);
   const navigate = useNavigate();
+  const profile = useAppSelector(profileSelectors.full);
+  const tutor = useAppSelector(tutorMetaSelectors.full);
+  const dispatch = useAppDispatch();
+
+  const refresh: RefreshUser = useCallback(
+    (user?: IUser.Self) => {
+      if (user) dispatch(setUserProfile({ user }));
+
+      if (user?.role === IUser.Role.Tutor)
+        dispatch(findTutorMeta.call(user.id));
+    },
+    [dispatch]
+  );
 
   useEffect(() => {
     if (profile.loading) return;
-    const user = profile.value;
+    const user = profile.value?.user;
 
     if (
       user === null ||
@@ -21,18 +35,25 @@ const Complete: React.FC = () => {
         user?.password,
         user?.birthYear,
         user?.gender,
-        user?.photo,
+        user?.image,
       ].every((field) => field !== null && field !== undefined)
     )
       navigate(Route.Root);
   }, [navigate, profile.loading, profile.value]);
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="max-w-screen-2xl mx-auto p-6">
       {profile.loading ? (
         <Spinner className="text-foreground-lighter" />
       ) : profile.value ? (
-        <CompleteInfo profile={profile.value} />
+        <Settings.Profile
+          fetching={profile.fetching || tutor.fetching}
+          loading={profile.loading || tutor.loading}
+          profile={profile.value.user || null}
+          tutor={tutor.value}
+          refresh={refresh}
+          first
+        />
       ) : null}
     </div>
   );

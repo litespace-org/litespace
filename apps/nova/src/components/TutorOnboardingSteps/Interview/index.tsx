@@ -57,7 +57,7 @@ const Interview: React.FC<{
     <div className="pb-10 flex flex-col w-full">
       {!finalDecision ? <RawHtml html={html} /> : null}
 
-      {currentInterview && interviewCall.data && interviewer.data ? (
+      {/* {currentInterview && interviewCall.data && interviewer.data ? (
         <ScheduledInterview
           interviewer={interviewer.data}
           interview={currentInterview}
@@ -68,7 +68,7 @@ const Interview: React.FC<{
           interviewer={interviewer.data}
           onSuccess={onScheduleSuccess}
         />
-      ) : null}
+      ) : null} */}
     </div>
   );
 };
