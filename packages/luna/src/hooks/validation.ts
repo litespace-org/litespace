@@ -83,9 +83,7 @@ export function useValidation() {
           length: { min: 3, max: 50 },
           errors: {
             match: intl.formatMessage({
-              id: english
-                ? 'remove me'  
-                : 'remove me too',
+              id: english ? "remove me" : "remove me too",
             }),
             min: intl.formatMessage({
               id: messages["error.name.length.short"],
@@ -242,7 +240,7 @@ export function useValidation() {
             });
           },
         },
-      }) as const,
+      } as const),
     [intl, required, validateDate, validateName, validateTime]
   );
 
@@ -253,14 +251,17 @@ export function useValidateDuration() {
   const intl = useIntl();
   const required = useRequired();
 
-  return {
-    required,
-    validate(duration: Duration) {
-      if (duration.minutes() < 30)
-        return intl.formatMessage({
-          id: messages["error.schedule.duration"],
-        });
-      return true;
-    },
-  };
+  return useMemo(
+    () => ({
+      required,
+      validate(duration: Duration) {
+        if (duration.minutes() < 30)
+          return intl.formatMessage({
+            id: messages["error.schedule.duration"],
+          });
+        return true;
+      },
+    }),
+    [intl, required]
+  );
 }

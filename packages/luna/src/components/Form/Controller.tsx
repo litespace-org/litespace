@@ -17,7 +17,21 @@ import { Duration as BaseDuration } from "@/components/Duration";
 import { Duration as IDuration } from "@litespace/sol";
 import { useDurationUnitMap } from "@/hooks/duration";
 import { Textarea as BaseTextarea } from "@/components/Textarea";
-import { TextareaProps } from "../Textarea/Textarea";
+import { TextareaProps } from "@/components/Textarea/Textarea";
+import {
+  DateInput as BaseDateInput,
+  DateInputProps,
+} from "@/components/DateInput";
+import { Select as BaseSelect, SelectProps } from "@/components/Select";
+
+import {
+  TimePicker as BaseTimePicker,
+  TimePickerProps,
+} from "@/components/TimePicker";
+import {
+  WeekdayPicker as BaseWeekdayPicker,
+  WeekdayPickerProps,
+} from "@/components/WeekdayPicker";
 
 export function TextEditor<T extends FieldValues>({
   control,
@@ -106,6 +120,106 @@ export function NumericInput<T extends FieldValues>({
   );
 }
 
+export function DateInput<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & DateInputProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field, formState }) => {
+        return (
+          <BaseDateInput
+            {...props}
+            {...field}
+            error={formState.errors[name]?.message as string}
+          />
+        );
+      }}
+    />
+  );
+}
+
+export function TimePicker<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & TimePickerProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field, formState }) => {
+        return (
+          <BaseTimePicker
+            {...props}
+            {...field}
+            error={formState.errors[name]?.message as string}
+          />
+        );
+      }}
+    />
+  );
+}
+
+export function WeekdayPicker<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & WeekdayPickerProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => {
+        return <BaseWeekdayPicker {...props} {...field} />;
+      }}
+    />
+  );
+}
+
+export function Select<T extends FieldValues, P extends string | number>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & SelectProps<P>) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => {
+        return <BaseSelect {...props} {...field} />;
+      }}
+    />
+  );
+}
+
 export function Gender<T extends FieldValues>({
   control,
   name,
@@ -141,18 +255,21 @@ export function Duration<T extends FieldValues>({
   value,
   disabled,
   placeholder,
+  rules,
 }: {
   control: Control<T>;
   name: Path<T>;
   value?: IDuration;
   disabled?: boolean;
   placeholder?: string;
+  rules?: ControllerProps<T>["rules"];
 }) {
   const labels = useDurationUnitMap();
   return (
     <Controller
       control={control}
       name={name}
+      rules={rules}
       render={({ field, formState }) => (
         <BaseDuration
           labels={labels}

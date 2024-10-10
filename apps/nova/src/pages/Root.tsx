@@ -18,12 +18,14 @@ const Root: React.FC = () => {
   const { toggle, theme } = useTheme();
 
   useEffect(() => {
-    const call = new UrlPattern(RoutePatterns.Call).match(location.pathname);
-    const register = new UrlPattern(RoutePatterns.Register).match(
-      location.pathname
+    const call = new UrlPattern(RoutePatterns.Call);
+    const login = new UrlPattern(RoutePatterns.Login);
+    const register = new UrlPattern(RoutePatterns.Register);
+    const ignore = [call, login, register].some((patten) =>
+      patten.match(location.pathname)
     );
 
-    if (!profile.value && !profile.loading && !register)
+    if (!profile.value && !profile.loading && !ignore)
       return navigate(Route.Login);
     const user = profile.value?.user;
 
@@ -31,8 +33,7 @@ const Root: React.FC = () => {
       return navigate(Route.Complete);
 
     if (
-      !call &&
-      !register &&
+      !ignore &&
       user &&
       user.role === IUser.Role.Tutor &&
       tutorMeta &&
