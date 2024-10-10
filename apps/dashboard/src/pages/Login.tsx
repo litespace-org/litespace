@@ -3,7 +3,6 @@ import {
   Label,
   Field,
   Button,
-  messages,
   InputType,
   toaster,
   ButtonSize,
@@ -14,7 +13,6 @@ import {
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { FormattedMessage } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/lib/route";
@@ -80,10 +78,10 @@ const Login: React.FC = () => {
   return (
     <div className="flex flex-row flex-1 min-h-screen text-foreground">
       <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
-        <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
+        <div className="flex-1 flex flex-col justify-center w-full max-w-sm">
           <div className="mb-4">
             <h1 className="text-3xl font-simi-bold text-right">
-              <FormattedMessage id={messages["page.login.form.title"]} />
+              {intl("page.login.form.title")}
             </h1>
           </div>
 
@@ -129,12 +127,6 @@ const Login: React.FC = () => {
           </Form>
         </div>
       </main>
-      <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 items-center justify-center">
-          <p className="text-4xl">LiteSpace</p>
-          <p className="text-lg">{intl("page.login.slogan")}</p>
-        </div>
-      </aside>
     </div>
   );
 };
