@@ -11,8 +11,6 @@ export type OnMessage = (action: MessageStreamAction) => void;
 export function useChat(onMessage?: OnMessage) {
   const sockets = useSockets();
 
-  console.log({ sockets });
-
   const sendMessage = useCallback(
     ({ roomId, text }: { roomId: number; text: string }) => {
       sockets?.api.emit(Events.Client.SendMessage, { roomId, text });
