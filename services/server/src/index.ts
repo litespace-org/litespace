@@ -16,6 +16,7 @@ import { safe } from "@litespace/sol";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, router as authRouter } from "@litespace/auth";
 import { peer } from "@/lib/peer";
+import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
 
 // connect to the redis server
@@ -24,7 +25,7 @@ safe(async () => client.connect());
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
-  cors: { credentials: true, origin: [...serverConfig.origin] },
+  cors: { credentials: true, origin: isAllowedOrigin },
 });
 const context: ApiContext = { io };
 
@@ -47,7 +48,7 @@ app.use(
     ].join(" ");
   })
 );
-app.use(cors({ credentials: true, origin: [...serverConfig.origin] }));
+app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware("jwt_secret"));
