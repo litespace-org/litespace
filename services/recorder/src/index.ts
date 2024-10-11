@@ -16,7 +16,10 @@ import { initWorker } from "@/workers";
 
 const corsOptions: CorsOptions = {
   credentials: true,
-  origin: [...serverConfig.origin],
+  origin: (origin, callback) => {
+    // allow all origins for now
+    callback(null, true);
+  },
 };
 
 initWorker("ffmpeg.js");
