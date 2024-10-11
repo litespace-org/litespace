@@ -19,8 +19,21 @@ jobs:
           node-version: "20.11.1"
       - name: Enable PNPM
         run: corepack enable pnpm
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
+      - name: Setup staging environment variables for Luna (must be done before build)
+        run: cp packages/luna/.env.staging packages/luna/.env
       - name: Build packages
         run: pnpm build:pkgs
       # Nova Deployment
@@ -33,8 +46,6 @@ jobs:
       # Luna Deployment
       - name: Pull Luna from Vercel
         run: yarn vercel:ci pull "luna" "packages/luna/" --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Setup staging environment variables for Luna
-        run: cp packages/luna/.env.staging packages/luna/.env
       - name: Build Luna using Vercel
         run: yarn build:luna:vercel
       - name: Deploy Luna to Vercel
