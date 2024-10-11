@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
-    "build:vercel": "env-cmd -f .env.staging pnpm vercel build",
+    "build:vercel": "pnpm vercel build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
