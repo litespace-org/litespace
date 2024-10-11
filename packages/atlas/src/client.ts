@@ -38,7 +38,7 @@ export const peers = {
     path: "/ls",
   },
   [Backend.Staging]: {
-    host: "peer.staing.litespace.org",
+    host: "peer.staging.litespace.org",
     port: 443,
     secure: true,
     key: "peer",
