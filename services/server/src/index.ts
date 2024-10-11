@@ -15,7 +15,6 @@ import { ApiContext } from "@/types/api";
 import { safe } from "@litespace/sol";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, router as authRouter } from "@litespace/auth";
-import { peer } from "@/lib/peer";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
 
@@ -52,7 +51,6 @@ app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware("jwt_secret"));
-app.use("/peer", peer(server));
 app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", authRouter("jwt_secret"));
 app.use("/api/v1/user", routes.user(context));
