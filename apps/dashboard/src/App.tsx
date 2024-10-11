@@ -5,6 +5,7 @@ import { ErrorPage } from "@litespace/luna";
 import Invoices from "@/pages/Invoices";
 import Media from "@/pages/Media";
 import Login from "@/pages/Login";
+import Plans from "./pages/Plans";
 
 const router = createBrowserRouter([
   {
@@ -15,6 +16,7 @@ const router = createBrowserRouter([
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Media, element: <Media /> },
       { path: Route.Login, element: <Login /> },
+      { path: Route.Plans, element: <Plans /> },
     ],
   },
 ]);

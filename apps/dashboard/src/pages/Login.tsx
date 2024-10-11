@@ -54,7 +54,7 @@ const Login: React.FC = () => {
   const mutation = useMutation({
     mutationFn: login,
     onSuccess() {
-      return navigate(Route.Root);
+      return navigate(Route.Plans);
     },
     onError(error) {
       toaster.error({
