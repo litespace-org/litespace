@@ -4,16 +4,17 @@ dist/
 .vscode/
 .yarn/
 *storybook.log
+vercel-urls.json
 
 # luna 
 luna/src/index.css
 storybook-static/
 
 # server 
-server/*.pem
-server/uploads/
+services/server/*.pem
+services/server/uploads/
 .vercel
 
 # recorder
-recorder/assets/
-recorder/artifacts/
+services/recorder/assets/
+services/recorder/artifacts/

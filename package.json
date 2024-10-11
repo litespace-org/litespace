@@ -30,9 +30,11 @@
     "deploy:nebula:vercel": "pnpm --filter @litespace/nebula deploy:vercel",
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",
+    "telegram": "vite-node scripts/telegram.ts",
     "cleandep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
   },
   "devDependencies": {
+    "axios": "^1.7.7",
     "concurrently": "^8.2.2",
     "env-cmd": "^10.1.0",
     "rimraf": "^5.0.7",
