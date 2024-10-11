@@ -3,4 +3,5 @@ export enum Route {
   Invoices = "/invoices",
   Media = "/media",
   Login = "/login",
+  Plans = "/plans",
 }
