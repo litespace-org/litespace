@@ -29,6 +29,30 @@ export const backends = {
   },
 };
 
+export const peers = {
+  [Backend.Local]: {
+    host: "localhost",
+    port: 7070,
+    secure: false,
+    key: "peer",
+    path: "/ls",
+  },
+  [Backend.Staging]: {
+    host: "peer.staing.litespace.org",
+    port: 443,
+    secure: true,
+    key: "peer",
+    path: "/ls",
+  },
+  [Backend.Production]: {
+    host: "peer.litespace.org",
+    port: 443,
+    secure: true,
+    key: "peer",
+    path: "/ls",
+  },
+} as const;
+
 export function createClient(
   backend: Backend,
   getToken: GetToken
