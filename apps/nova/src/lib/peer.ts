@@ -26,6 +26,7 @@ const peer = new Peer({
    *  3 Prints all logs.
    */
   debug: 3,
+  key: "peerjs",
 });
 
 export default peer;
