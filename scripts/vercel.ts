@@ -18,6 +18,14 @@ type Project = {
   rootDirectory: string | null;
   directoryListing: string | null;
   nodeVersion: string | null;
+  targets: {
+    production?: {
+      url: string;
+    };
+    preview?: {
+      url: string;
+    };
+  };
 };
 
 async function safe<T>(callback: () => Promise<T>): Promise<T | Error> {
@@ -74,6 +82,10 @@ async function createProject({
 
 function asVercelDirectory(workspace: string) {
   return path.join(workspace, ".vercel");
+}
+
+function saveJson<T extends object>(file: string, data: T) {
+  fs.writeFileSync(file, JSON.stringify(data, null, 2));
 }
 
 function saveProject(vercel: string, project: Project) {
@@ -145,9 +157,32 @@ const pull = new Command()
 
     const project = await safe(() => findProject(name, options.token));
     if (project instanceof Error) throw project;
-
     saveProject(vercel, project);
   });
+
+const urls = new Command()
+  .name("urls")
+  .argument("<names>", "Project names (comma separated values)")
+  .option("-t, --token <token>", "Vercel token")
+  .option("-o, --output <path>", "Output file path", "vercel-urls.json")
+  .action(
+    async (names: string, options: { token?: string; output: string }) => {
+      const values = names.split(",").map((name) => name.trim());
+      const projects = await Promise.all(
+        values.map((name) => findProject(name, options.token))
+      );
+
+      const urls: Record<string, string | null> = projects.reduce(
+        (map, project) => {
+          map[project.name] = project.targets.preview?.url || null;
+          return map;
+        },
+        {}
+      );
+
+      saveJson(options.output, urls);
+    }
+  );
 
 new Command()
   .name("vercel")
@@ -155,4 +190,5 @@ new Command()
   .version("1.0.0")
   .addCommand(create)
   .addCommand(pull)
+  .addCommand(urls)
   .parse();

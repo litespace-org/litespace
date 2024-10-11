@@ -1,4 +1,6 @@
 name: Deploy
+env:
+  TELEGRAM_API_TOKEN: ${{ secrets.TELEGRAM_API_TOKEN }}
 
 on:
   push:
@@ -57,3 +59,7 @@ jobs:
         run: yarn build:nebula:vercel
       - name: Deploy Nebula to Vercel
         run: yarn deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Pull latest deployment urls from Vercel
+        run: pnpm vercel:ci urls "nova,luna,nebula" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Send latest deployment urls to Telegram
+        run: pnpm telegram send-vercel-urls
