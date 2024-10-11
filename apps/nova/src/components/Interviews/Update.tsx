@@ -11,7 +11,7 @@ import {
   Select,
   TextEditor,
   toaster,
-  asFullAssetUrl,
+  atlas,
 } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";

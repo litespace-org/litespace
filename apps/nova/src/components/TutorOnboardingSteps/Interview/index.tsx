@@ -5,7 +5,7 @@ import { marked } from "marked";
 import markdown from "@/markdown/tutorOnboarding/interview.md?raw";
 import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
 import ScheduleInterview from "@/components/TutorOnboardingSteps/Interview/ScheduleInterview";
-import ScheduledInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview";
+// import ScheduledInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview";
 
 const Interview: React.FC<{
   interviews: UseQueryResult<IInterview.FindInterviewsApiResponse, unknown>;

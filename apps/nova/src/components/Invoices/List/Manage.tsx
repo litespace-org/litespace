@@ -7,17 +7,16 @@ import {
   Field,
   Form,
   getWithdrawMethodIntlId,
-  Input,
   Label,
-  Select,
   toaster,
   useFormatMessage,
   atlas,
+  Controller,
 } from "@litespace/luna";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 
 type IForm = {
   method: IWithdrawMethod.Type;
@@ -206,16 +205,11 @@ const ManageInvoice: React.FC<{
         <Field
           label={<Label>{intl("invoices.method")}</Label>}
           field={
-            <Controller
+            <Controller.Select
               control={form.control}
               name="method"
-              render={({ field }) => (
-                <Select
-                  options={methodOptions}
-                  value={form.watch("method")}
-                  onChange={field.onChange}
-                />
-              )}
+              options={methodOptions}
+              value={form.watch("method")}
             />
           }
         />
@@ -224,17 +218,12 @@ const ManageInvoice: React.FC<{
           <Field
             label={<Label>{intl("invoices.create.form.bank")}</Label>}
             field={
-              <Controller
+              <Controller.Select
                 control={form.control}
                 name="bank"
-                render={({ field }) => (
-                  <Select
-                    options={banks}
-                    onChange={field.onChange}
-                    placeholder={intl("invoices.create.form.bank.placeholder")}
-                    value={form.watch("bank")}
-                  />
-                )}
+                options={banks}
+                placeholder={intl("invoices.create.form.bank.placeholder")}
+                value={form.watch("bank") || ""}
               />
             }
           />
@@ -243,7 +232,9 @@ const ManageInvoice: React.FC<{
         {bank ? (
           <Field
             label={<Label>{intl("invoices.create.form.accountNumber")}</Label>}
-            field={<Input />}
+            field={
+              <Controller.Input control={form.control} name="accountNumber" />
+            }
           />
         ) : null}
 
@@ -251,7 +242,9 @@ const ManageInvoice: React.FC<{
           <Field
             label={<Label>{intl("invoices.create.form.phoneNumber")}</Label>}
             field={
-              <Input
+              <Controller.Input
+                control={form.control}
+                name="phoneNumber"
                 placeholder={intl(
                   "invoices.create.form.phoneNumber.placeholder"
                 )}
@@ -265,10 +258,11 @@ const ManageInvoice: React.FC<{
           <Field
             label={<Label>{intl("invoices.create.form.username")}</Label>}
             field={
-              <Input
+              <Controller.Input
+                control={form.control}
+                name="username"
                 placeholder={intl("invoices.create.form.username.placeholder")}
                 value={form.watch("username")}
-                register={form.register("username")}
                 error={form.formState.errors.username?.message}
                 autoComplete="off"
               />
@@ -279,9 +273,10 @@ const ManageInvoice: React.FC<{
         <Field
           label={<Label>{intl("invoices.create.form.amount")}</Label>}
           field={
-            <Input
+            <Controller.Input
+              control={form.control}
+              name="amount"
               placeholder={intl("invoices.create.form.amount.placeholder")}
-              register={form.register("amount")}
               value={form.watch("amount").toString()}
               error={form.formState.errors.amount?.message}
               autoComplete="off"

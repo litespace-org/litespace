@@ -5,8 +5,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "install:clean": "yarn workspaces foreach -A run rimraf node_modules && yarn install",
-    "build:orbit": "yarn workspace @litespace/orbit build",
     "build:pkg:atlas": "pnpm --filter @litespace/atlas build",
     "build:pkg:auth": "pnpm --filter @litespace/auth build",
     "build:pkg:emails": "pnpm --filter @litespace/emails build",
@@ -23,16 +21,15 @@
     "watch:sol": "pnpm build:pkg:sol -w",
     "watch:types": "pnpm build:pkg:types -w",
     "watch:pkgs": "concurrently --names \"types,sol,atlas,auth,email,luna,models\" \"pnpm watch:types\" \"pnpm watch:sol\"  \"pnpm watch:atlas\" \"pnpm watch:auth\" \"pnpm watch:emails\" \"pnpm watch:luna\" \"pnpm watch:models\"",
-    "build:orbit:vercel": "yarn workspace @litespace/orbit build:vercel",
-    "build:nova:vercel": "yarn workspace @litespace/nova build:vercel",
-    "build:luna:vercel": "yarn workspace @litespace/luna build:vercel",
-    "build:nebula:vercel": "yarn workspace @litespace/nebula build:vercel",
-    "deploy:orbit:vercel": "yarn workspace @litespace/orbit deploy:vercel",
-    "deploy:nova:vercel": "yarn workspace @litespace/nova deploy:vercel",
-    "deploy:luna:vercel": "yarn workspace @litespace/luna deploy:vercel",
-    "deploy:nebula:vercel": "yarn workspace @litespace/nebula deploy:vercel",
-    "vercel": "env-cmd ts-node scripts/vercel.ts",
-    "vercel:ci": "ts-node scripts/vercel.ts",
+    "build:nova:vercel": "pnpm --filter @litespace/nova build:vercel",
+    "build:luna:vercel": "pnpm --filter @litespace/luna build:vercel",
+    "build:nebula:vercel": "pnpm --filter @litespace/nebula build:vercel",
+    "deploy:orbit:vercel": "pnpm --filter @litespace/orbit deploy:vercel",
+    "deploy:nova:vercel": "pnpm --filter @litespace/nova deploy:vercel",
+    "deploy:luna:vercel": "pnpm --filter @litespace/luna deploy:vercel",
+    "deploy:nebula:vercel": "pnpm --filter @litespace/nebula deploy:vercel",
+    "vercel": "env-cmd vite-node scripts/vercel.ts",
+    "vercel:ci": "vite-node scripts/vercel.ts",
     "cleandep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
   },
   "devDependencies": {
@@ -40,7 +37,8 @@
     "env-cmd": "^10.1.0",
     "rimraf": "^5.0.7",
     "ts-node": "^10.9.2",
-    "vercel": "^34.2.7"
+    "vercel": "^34.2.7",
+    "vite-node": "^2.1.2"
   },
   "dependencies": {
     "commander": "^12.1.0"
