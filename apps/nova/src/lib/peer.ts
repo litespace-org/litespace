@@ -2,15 +2,6 @@ import { Peer } from "peerjs";
 import { backend } from "@litespace/luna";
 import { peers } from "@litespace/atlas";
 
-// const secure = backend === Backend.Production || backend === Backend.Staging;
-// const url = new URL(backends.main[backend]);
-// const port =
-//   url.hostname === "localhost"
-//     ? Number(url.port)
-//     : url.protocol === "https:"
-//     ? 443 // https
-//     : 80; // http
-
 const peerServer = peers[backend];
 
 const peer = new Peer({
