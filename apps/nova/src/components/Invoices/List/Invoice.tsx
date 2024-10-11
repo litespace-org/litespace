@@ -25,7 +25,6 @@ const Invoice: React.FC<{
   const cancel = useRender();
   const {
     rejected,
-    canceledByAdmin,
     canceledByReceiver,
     cancellationApprovedByAdmin,
     updatedByReceiver,
@@ -114,19 +113,14 @@ const Invoice: React.FC<{
         <Invoices.Actions actions={actions} />
       </Invoices.Columns>
 
-      {rejected ||
-      canceledByAdmin ||
-      canceledByReceiver ||
-      cancellationApprovedByAdmin ? (
+      {rejected || canceledByReceiver || cancellationApprovedByAdmin ? (
         <Alert
           title={intl(
             rejected
               ? "invoices.status.rejected"
-              : canceledByAdmin
-                ? "invoices.status.canceledByAdmin"
-                : canceledByReceiver
-                  ? "invoices.status.canceledByReceiver"
-                  : "invoices.status.cancellationApprovedByAdmin"
+              : canceledByReceiver
+              ? "invoices.status.canceledByReceiver"
+              : "invoices.status.cancellationApprovedByAdmin"
           )}
         >
           <p>{intl("invoices.unexpected.status.note")}</p>

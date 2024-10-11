@@ -17,41 +17,32 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20.11.1"
-      # - name: Enable Yarn
-      #   run: corepack enable
-      # - name: Install dependencies
-      #   run: yarn
-      # - name: Build types
-      #   run: yarn build:types
-      # - name: Build Atlas (API SDK)
-      #   run: yarn build:atlas
-      # - name: Build Nova (Desgin System & Storybooks)
-      #   run: yarn build:luna
-      # # Orbit Deployment
-      # - name: Pull Orbit from Vercel
-      #   run: yarn vercel:ci pull "orbit" "orbit/" --token=${{ secrets.VERCEL_TOKEN }}
-      # - name: Build Orbit using Vercel
-      #   run: yarn build:orbit:vercel
-      # - name: Deploy Orbit to Vercel
-      #   run: yarn deploy:orbit:vercel --token=${{ secrets.VERCEL_TOKEN }}
-      # # Nova Deployment
-      # - name: Pull Nova from Vercel
-      #   run: yarn vercel:ci pull "nova" "nova/" --token=${{ secrets.VERCEL_TOKEN }}
-      # - name: Build Nova using Vercel
-      #   run: yarn build:nova:vercel
-      # - name: Deploy Nova to Vercel
-      #   run: yarn deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}
-      # # Luna Deployment
-      # - name: Pull Luna from Vercel
-      #   run: yarn vercel:ci pull "luna" "luna/" --token=${{ secrets.VERCEL_TOKEN }}
-      # - name: Build Luna using Vercel
-      #   run: yarn build:luna:vercel --prod
-      # - name: Deploy Luna to Vercel
-      #   run: yarn deploy:luna:vercel --prod --token=${{ secrets.VERCEL_TOKEN }}
-      # # Nebula Deployment
-      # - name: Pull Nebula from Vercel
-      #   run: yarn vercel:ci pull "nebula" "nebula/" --token=${{ secrets.VERCEL_TOKEN }}
-      # - name: Build Nebula using Vercel
-      #   run: yarn build:nebula:vercel
-      # - name: Deploy Nebula to Vercel
-      #   run: yarn deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Enable PNPM
+        run: corepack enable pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build packages
+        run: pnpm build:pkgs
+      # Nova Deployment
+      - name: Pull Nova from Vercel
+        run: yarn vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Nova using Vercel
+        run: yarn build:nova:vercel
+      - name: Deploy Nova to Vercel
+        run: yarn deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Luna Deployment
+      - name: Pull Luna from Vercel
+        run: yarn vercel:ci pull "luna" "packages/luna/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for Luna
+        run: cp packages/luna/.env.staging packages/luna/.env
+      - name: Build Luna using Vercel
+        run: yarn build:luna:vercel
+      - name: Deploy Luna to Vercel
+        run: yarn deploy:luna:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Nebula Deployment
+      - name: Pull Nebula from Vercel
+        run: yarn vercel:ci pull "nebula" "apps/nebula/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Nebula using Vercel
+        run: yarn build:nebula:vercel
+      - name: Deploy Nebula to Vercel
+        run: yarn deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}

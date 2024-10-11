@@ -5,12 +5,12 @@ import {
   Form,
   Label,
   messages,
-  TextEditor,
   useValidation,
   atlas,
+  Controller,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
 
@@ -41,11 +41,7 @@ const PassedInterview: React.FC<{
     mutationKey: ["skip-feedback"],
   });
 
-  const {
-    control,
-    formState: { errors },
-    handleSubmit,
-  } = useForm({
+  const { control, handleSubmit, watch } = useForm({
     defaultValues: {
       feedback: "",
     },
@@ -99,17 +95,12 @@ const PassedInterview: React.FC<{
             </Label>
           }
           field={
-            <Controller
+            <Controller.TextEditor
               control={control}
               name="feedback"
               rules={{ required: validation.required }}
-              render={({ field }) => (
-                <TextEditor
-                  onChange={field.onChange}
-                  disabled={next.isPending}
-                  error={errors["feedback"]?.message}
-                />
-              )}
+              disabled={next.isPending}
+              value={watch("feedback")}
             />
           }
         />

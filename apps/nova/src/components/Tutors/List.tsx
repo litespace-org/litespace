@@ -3,7 +3,7 @@ import { ITutor } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { useIntl } from "react-intl";
-import { UseQueryResult } from "react-query";
+import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TutorCard from "@/components/Tutors/TutorCard";
 import BookLesson from "./BookLesson";

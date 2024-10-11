@@ -172,7 +172,6 @@
   "invoices.date.updated": "أخر تحديث",
   "invoices.note": "ملحوظة من المسؤل",
   "invoices.status.rejected": "لقد تم رفض طلب السحب",
-  "invoices.status.canceledByAdmin": "لقد تم إلغاء طلب السحب بواسطة أحد المسؤلين.",
   "invoices.status.canceledByReceiver": "لقد ألغيت طلب السحب، جاري تاكيد طلب الإلغاء.",
   "invoices.status.canceledByReceiver.note": "سوف يتعين علي أحد المسؤلين قبول طلب الإلغاء أولا.",
   "invoices.status.cancellationApprovedByAdmin": "لقد تم إلغاء طلب السحب",
