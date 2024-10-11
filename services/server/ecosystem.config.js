@@ -4,6 +4,10 @@ module.exports = {
       script: "pnpm start",
       name: "main-server",
     },
+    {
+      script: "pnpm peer",
+      name: "peer",
+    },
   ],
   deploy: {
     production: {
