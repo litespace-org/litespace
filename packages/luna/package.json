@@ -45,7 +45,7 @@
     "storybook": "concurrently 'pnpm storybook:css' 'pnpm storybook:dev'",
     "storybook:dev": "storybook dev -p 6006",
     "storybook:css": "tailwindcss -w -i src/tailwind.css -o src/index.css",
-    "storybook:build:all": "concurrently 'pnpm storybook:build:css' 'pnpm storybook:build'",
+    "storybook:build:all": "concurrently --names \"css,pkg\" \"pnpm storybook:build:css\" \"pnpm storybook:build\"",
     "storybook:build": "storybook build",
     "storybook:build:css": "tailwindcss -m -i src/tailwind.css -o src/index.css"
   },
