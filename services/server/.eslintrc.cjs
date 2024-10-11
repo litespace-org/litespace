@@ -12,6 +12,7 @@ module.exports = {
     "jest.config.js",
     "babel.config.js",
     "migrations/*.js",
+    "ecosystem.config.js",
   ],
   parser: "@typescript-eslint/parser",
   plugins: ["react-refresh"],
