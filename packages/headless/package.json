@@ -4,6 +4,10 @@
   "description": "LiteSpace react hooks, utils and components logic",
   "main": "index.js",
   "type": "module",
+  "exports": {
+    "./plans": "./dist/plans.js",
+    "./atlas": "./dist/atlas/index.js"
+  },
   "scripts": {
     "watch:build": "pnpm watch build",
     "build": "tsc && tsc-alias",
