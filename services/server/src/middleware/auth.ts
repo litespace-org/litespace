@@ -1,12 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { schema } from "@/validation";
-import { users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { forbidden } from "@/lib/error";
-import { hashPassword } from "@/lib/user";
 import asyncHandler from "express-async-handler";
 import { enforce, Method } from "@/middleware/accessControl";
-import { VerifiedCallback } from "passport-custom";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

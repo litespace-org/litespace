@@ -4,72 +4,24 @@
     {
       "splitTerminals": [
         {
-          "name": "docker",
-          "commands": ["cd services/server/", "sudo docker compose up"]
-        },
+          "name": "packages",
+          "commands": ["nvm use", "pnpm watch:pkgs"]
+        }
+      ]
+    },
+    {
+      "splitTerminals": [
         {
           "name": "server",
           "commands": ["cd services/server/", "nvm use", "pnpm start"]
         },
         {
-          "name": "nova",
-          "commands": ["cd apps/nova/", "nvm use", "pnpm dev"]
-        }
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
-          "name": "atlas",
-          "commands": ["cd packages/atlas/", "nvm use", "pnpm build -w"]
-        },
-        {
-          "name": "types",
-          "commands": ["cd packages/types/", "nvm use", "pnpm build -w"]
-        },
-        {
-          "name": "luna",
-          "commands": ["cd packages/luna/", "nvm use", "pnpm watch:build"]
-        }
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
-          "name": "storybook",
-          "commands": ["cd packages/luna/", "nvm use"]
-        },
-        {
-          "name": "dashboard",
-          "commands": ["cd apps/dashboard/", "nvm use", "pnpm dev"]
-        },
-        {
-          "name": "sol",
-          "commands": ["cd packages/sol/", "nvm use", "pnpm build -w"]
-        }
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
-          "name": "peer",
-          "commands": ["nvm use", "peerjs -p 3002"]
-        }
-      ]
-    },
-    {
-      "splitTerminals": [
-        {
-          "name": "Recorder",
+          "name": "recorder",
           "commands": ["cd services/recorder/", "nvm use", "pnpm start"]
         },
         {
-          "name": "Models",
-          "commands": ["cd packages/models/", "nvm use", "pnpm build -w"]
-        },
-        {
-          "name": "Auth",
-          "commands": ["cd packages/auth/", "nvm use", "pnpm build -w"]
+          "name": "peer",
+          "commands": ["nvm use", "cd services/server/", "pnpm peer"]
         }
       ]
     },
