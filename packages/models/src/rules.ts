@@ -105,8 +105,20 @@ export class Rules {
     return rows.map((row) => this.from(row));
   }
 
-  async findByUserId(id: number): Promise<IRule.Self[]> {
-    return this.findManyBy("user_id", id);
+  async findByUserId({
+    user,
+    deleted = true,
+    tx,
+  }: {
+    user: number;
+    deleted?: boolean;
+    tx?: Knex.Transaction;
+  }): Promise<IRule.Self[]> {
+    const rows = await this.builder(tx)
+      .select("*")
+      .where(this.column("user_id"), user)
+      .andWhere(this.column("deleted"), deleted);
+    return rows.map((row) => this.from(row));
   }
 
   from(row: IRule.Row): IRule.Self {
@@ -123,8 +135,8 @@ export class Rules {
         typeof row.weekdays === "string"
           ? JSON.parse(row.weekdays)
           : Array.isArray(row.weekdays)
-            ? row.weekdays
-            : [],
+          ? row.weekdays
+          : [],
       monthday: row.monthday,
       activated: row.activated,
       deleted: row.deleted,
