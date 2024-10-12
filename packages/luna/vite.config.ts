@@ -6,8 +6,6 @@ import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
 import svgr from "vite-plugin-svgr";
 
-console.log(svgr);
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
