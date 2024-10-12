@@ -26,7 +26,7 @@ const SoundController: React.FC<{
     <div
       tabIndex={0}
       className={cn(
-        "tw-flex tw-items-center tw-flex-row-reverse tw-gap-2 tw-px-2 tw-group focus:tw-outline-none",
+        "tw-flex tw-items-center tw-flex-row-reverse tw-gap-1 @lg:tw-gap2 @lg:tw-px-2 tw-group focus:tw-outline-none",
         "focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
       )}
     >
@@ -37,7 +37,7 @@ const SoundController: React.FC<{
         )}
         onClick={toggle}
       >
-        <Icon />
+        <Icon className="tw-w-4 tw-h-4 @lg:tw-w-5 @lg:tw-h-5" />
       </button>
 
       <Slider
