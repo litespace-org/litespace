@@ -10,7 +10,6 @@ import {
   Controller,
   useFormatMessage,
   atlas,
-  Icons,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -24,6 +23,8 @@ import { setUserProfile } from "@/redux/user/profile";
 import { saveToken } from "@/lib/cache";
 import { resetTutorMeta } from "@/redux/user/tutor";
 import { resetUserRules } from "@/redux/user/schedule";
+import LoginLight from "@litespace/assets/login-light.svg";
+import LoginDark from "@litespace/assets/login-dark.svg";
 
 interface IForm {
   email: string;
@@ -143,8 +144,8 @@ const Login: React.FC = () => {
         </div>
 
         <div className="lg:w-3/4 p-6 mt-12">
-          <Icons.LoginLight className="block dark:hidden" />
-          <Icons.LoginDark className="hidden dark:block" />
+          <LoginLight className="block dark:hidden" />
+          <LoginDark className="hidden dark:block" />
         </div>
       </aside>
     </div>

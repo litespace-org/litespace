@@ -4,10 +4,28 @@
   "description": "LiteSpace static assets collection",
   "private": true,
   "exports": {
-    "/*": "./assets/*"
+    "./login-dark.svg": "./assets/login-dark.svg",
+    "./login-light.svg": "./assets/login-light.svg",
+    "./logo.svg": "./assets/logo.svg",
+    "./register-dark.svg": "./assets/register-dark.svg",
+    "./register-light.svg": "./assets/register-light.svg",
+    "./student-female-dark.svg": "./assets/student-female-dark.svg",
+    "./student-female-light.svg": "./assets/student-female-light.svg",
+    "./student-male-dark.svg": "./assets/student-male-dark.svg",
+    "./student-male-light.svg": "./assets/student-male-light.svg",
+    "./tutor-female-dark.svg": "./assets/tutor-female-dark.svg",
+    "./tutor-female-light.svg": "./assets/tutor-female-light.svg",
+    "./tutor-male-dark.svg": "./assets/tutor-male-dark.svg",
+    "./tutor-male-light.svg": "./assets/tutor-male-light.svg"
   },
-  "scripts": {},
+  "scripts": {
+    "exports": "vite-node scripts/exports.ts"
+  },
   "keywords": [],
   "author": "LiteSpace",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "glob": "^11.0.0",
+    "vite-node": "^2.1.2"
+  }
 }

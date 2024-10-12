@@ -2,7 +2,16 @@ import React, { useMemo } from "react";
 import { Card } from "@/components/Card";
 import { IUser, Void } from "@litespace/types";
 import cn from "classnames";
-import Icons, { SVG } from "@/icons";
+import StudentMaleLight from "@litespace/assets/student-male-light.svg";
+import StudentMaleDark from "@litespace/assets/student-male-dark.svg";
+import StudentFemaleLight from "@litespace/assets/student-female-light.svg";
+import StudentFemaleDark from "@litespace/assets/student-female-dark.svg";
+import TutorMaleLight from "@litespace/assets/tutor-male-light.svg";
+import TutorMaleDark from "@litespace/assets/tutor-male-dark.svg";
+import TutorFemaleLight from "@litespace/assets/tutor-female-light.svg";
+import TutorFemaleDark from "@litespace/assets/tutor-female-dark.svg";
+
+type SVG = React.FC<React.SVGProps<SVGSVGElement>>;
 
 type Image = {
   Light: SVG;
@@ -46,24 +55,24 @@ const Gender: React.FC<{
       {
         Image: student
           ? {
-              Dark: Icons.StudentMaleDark,
-              Light: Icons.StudentMaleLight,
+              Dark: StudentMaleDark,
+              Light: StudentMaleLight,
             }
           : {
-              Dark: Icons.TutorMaleDark,
-              Light: Icons.TutorMaleLight,
+              Dark: TutorMaleDark,
+              Light: TutorMaleLight,
             },
         gender: IUser.Gender.Male,
       },
       {
         Image: student
           ? {
-              Dark: Icons.StudentFemaleDark,
-              Light: Icons.StudentFemaleLight,
+              Dark: StudentFemaleDark,
+              Light: StudentFemaleLight,
             }
           : {
-              Dark: Icons.TutorFemaleDark,
-              Light: Icons.TutorFemaleLight,
+              Dark: TutorFemaleDark,
+              Light: TutorFemaleLight,
             },
         gender: IUser.Gender.Female,
       },

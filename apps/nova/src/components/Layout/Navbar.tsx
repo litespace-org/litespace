@@ -7,7 +7,6 @@ import {
   Switch,
   Theme,
   useFormatMessage,
-  Icons,
   removeToken,
 } from "@litespace/luna";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
@@ -17,6 +16,7 @@ import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { resetTutorMeta } from "@/redux/user/tutor";
+import Logo from "@litespace/assets/logo.svg";
 
 const Navbar: React.FC<{
   toggleTheme: () => void;
@@ -124,7 +124,7 @@ const Navbar: React.FC<{
         </div>
 
         <div>
-          <Icons.LiteSpace className="h-10 w-10" />
+          <Logo className="h-10 w-10" />
         </div>
 
         <ul className="hidden md:flex flex-row gap-4">

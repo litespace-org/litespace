@@ -9,7 +9,6 @@ import {
   Controller,
   atlas,
   ButtonSize,
-  Icons,
 } from "@litespace/luna";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -21,6 +20,8 @@ import { IUser } from "@litespace/types";
 import { merge } from "lodash";
 import { setUserProfile } from "@/redux/user/profile";
 import { saveToken } from "@/lib/cache";
+import RegisterLight from "@litespace/assets/register-light.svg";
+import RegisterDark from "@litespace/assets/register-dark.svg";
 
 interface IForm {
   email: string;
@@ -157,8 +158,8 @@ const Register: React.FC = () => {
           </p>
         </div>
         <div className="w-3/4 p-6">
-          <Icons.RegisterLight className="block dark:hidden" />
-          <Icons.RegisterDark className="hidden dark:block" />
+          <RegisterLight className="block dark:hidden" />
+          <RegisterDark className="hidden dark:block" />
         </div>
       </aside>
     </div>
