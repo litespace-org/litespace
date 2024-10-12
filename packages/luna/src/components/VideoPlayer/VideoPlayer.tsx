@@ -5,7 +5,7 @@ import { AlertCircle, Pause, Play, Maximize, Minimize } from "react-feather";
 import SoundController from "@/components/VideoPlayer/SoundController";
 import Time from "@/components/VideoPlayer/Time";
 import Speed from "@/components/VideoPlayer/Speed";
-import { CONTAINER_ID, useVideo } from "@/components/VideoPlayer/video";
+import { CONTAINER_ID, Status, useVideo } from "@/components/VideoPlayer/video";
 import Progress from "@/components/VideoPlayer/Progress";
 import Overlay from "./Overlay";
 
@@ -44,16 +44,18 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       ref={containerRef}
       id={CONTAINER_ID}
       className={cn(
-        "tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-flex-1 tw-rounded-md tw-overflow-hidden"
+        "tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-flex-1 tw-rounded-md tw-overflow-hidden tw-@container"
       )}
     >
       <span
-        data-loading={readyState <= 1}
+        data-loading={readyState <= 1 && status !== Status.Error}
         className="tw-hidden tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-z-[1] tw-text-white data-[loading=true]:tw-block"
       >
         <Spinner />
       </span>
-      <Overlay onClick={togglePlay} />
+
+      {status === Status.Loaded ? <Overlay onClick={togglePlay} /> : null}
+
       <div
         data-status={status}
         className={cn(
@@ -86,7 +88,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             current={currentTime}
             duration={duration}
           />
-          <div className="tw-flex tw-flex-row-reverse tw-items-center tw-justify-between tw-gap-4 tw-text-white tw-px-4">
+          <div className="tw-flex tw-flex-row-reverse tw-items-center tw-justify-between tw-gap-2 tw-text-white tw-px-2">
             <div className="tw-flex tw-flex-row-reverse tw-gap-2">
               <button
                 className={cn(
@@ -95,7 +97,11 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
                 )}
                 onClick={togglePlay}
               >
-                {paused ? <Play /> : <Pause />}
+                {paused ? (
+                  <Play className="tw-w-4 tw-h-4 @lg:tw-w-5 @lg:tw-h-5" />
+                ) : (
+                  <Pause className="tw-w-4 tw-h-4 @lg:tw-w-5 @lg:tw-h-5" />
+                )}
               </button>
 
               <SoundController
@@ -106,7 +112,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
               />
             </div>
 
-            <div className="tw-flex tw-items-center tw-justify-center tw-flex-row-reverse tw-gap-4">
+            <div className="tw-flex tw-items-center tw-justify-center tw-flex-row-reverse tw-gap-2 tw-flex-shrink-0">
               <Time total={duration} current={currentTime} />
               <Speed set={setPlaybackRate} rate={playbackRate} />
               <button
@@ -115,7 +121,11 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
                   "focus:tw-outline-none focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
                 )}
               >
-                {fullscreen ? <Minimize /> : <Maximize />}
+                {fullscreen ? (
+                  <Minimize className="tw-w-5 tw-h-5" />
+                ) : (
+                  <Maximize className="tw-w-5 tw-h-5" />
+                )}
               </button>
             </div>
           </div>
@@ -125,11 +135,11 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       <div
         data-status={status}
         className={cn(
-          "tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-bg-destructive-300",
+          "tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center",
           "tw-opacity-0 -tw-z-[1] data-[status=error]:tw-opacity-100 data-[status=error]:tw-z-[2] tw-transition-opacity tw-duration-300"
         )}
       >
-        <AlertCircle className="tw-text-destructive-600" />
+        <AlertCircle className="tw-w-9 tw-h-9" />
       </div>
 
       <span

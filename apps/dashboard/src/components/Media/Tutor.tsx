@@ -5,6 +5,7 @@ import {
   toaster,
   useFormatMessage,
   atlas,
+  ButtonType,
 } from "@litespace/luna";
 import { ITutor, IUser } from "@litespace/types";
 import React, { useCallback, useState } from "react";
@@ -84,6 +85,11 @@ const Tutor: React.FC<{
     return mutation.mutate();
   }, [mutation]);
 
+  const reset = useCallback(() => {
+    setImage(tutor.image);
+    setVideo(tutor.video);
+  }, [tutor.image, tutor.video]);
+
   return (
     <Card className="flex flex-col gap-4">
       <ul className="flex flex-col gap-2">
@@ -116,16 +122,31 @@ const Tutor: React.FC<{
         />
       </div>
 
-      <Button
-        onClick={confirm}
-        disabled={
-          mutation.isPending || (tutor.image === image && tutor.video === video)
-        }
-        loading={mutation.isPending}
-        size={ButtonSize.Small}
-      >
-        {intl("global.labels.confirm")}
-      </Button>
+      <div className="flex flex-row gap-2">
+        <Button
+          onClick={confirm}
+          disabled={
+            mutation.isPending ||
+            (tutor.image === image && tutor.video === video)
+          }
+          loading={mutation.isPending}
+          size={ButtonSize.Small}
+        >
+          {intl("global.labels.confirm")}
+        </Button>
+        <Button
+          onClick={reset}
+          disabled={
+            mutation.isPending ||
+            (tutor.image === image && tutor.video === video)
+          }
+          loading={mutation.isPending}
+          size={ButtonSize.Small}
+          type={ButtonType.Secondary}
+        >
+          {intl("global.labels.cancel")}
+        </Button>
+      </div>
     </Card>
   );
 };

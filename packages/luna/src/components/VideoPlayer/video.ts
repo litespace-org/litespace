@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 
-enum Status {
+export enum Status {
   Loading = "loading",
   Loaded = "loaded",
   Error = "error",

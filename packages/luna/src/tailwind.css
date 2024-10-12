@@ -27,12 +27,20 @@ input[type="range"]::-moz-range-track {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  height: 12px;
-  width: 12px;
+  height: 8px !important;
+  width: 8px !important;
   background-color: #fff;
   border-radius: 50%;
   border: none;
   transition: 0.2s ease-in-out;
+}
+
+@container (min-width: 32rem) {
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 12px !important;
+    width: 12px !important;
+  }
 }
 
 input[type="range"]::-moz-range-thumb {
