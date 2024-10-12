@@ -1,16 +1,21 @@
+import Price from "@/components/Plans/Price";
+import Table from "@/components/Plans/Table";
+import BooleanField from "@/components/common/BooleanField";
+import DateField from "@/components/common/DateField";
 import { ActionsMenu, Loading } from "@litespace/luna";
 import { IPlan } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
-import React, { useMemo } from "react";
-import Table from "@/components/Plans/Table";
-import Price from "@/components/Plans/Price";
-import BooleanField from "@/components/common/BooleanField";
-import DateField from "@/components/common/DateField";
+import React, { useMemo, useState, useCallback } from "react";
+import PlanForm from "./PlanForm";
 
 const List: React.FC<{
   query: UseQueryResult<IPlan.MappedAttributes[], Error>;
 }> = ({ query }) => {
+  const [plan, setPlan] = useState<IPlan.MappedAttributes | null>(null);
+  const close = useCallback(() => {
+    setPlan(null);
+  }, []);
   const columnHelper = createColumnHelper<IPlan.MappedAttributes>();
   const columns = useMemo(
     () => [
@@ -97,14 +102,14 @@ const List: React.FC<{
       }),
       columnHelper.display({
         id: "actions",
-        cell: () => (
+        cell: (info) => (
           <ActionsMenu
             actions={[
               {
                 id: 1,
                 label: "Edit",
                 onClick() {
-                  alert("Edit plan !!!");
+                  setPlan(info.row.original);
                 },
               },
               {
@@ -127,7 +132,10 @@ const List: React.FC<{
   if (!query.data) return null;
   return (
     <div>
-      <Table columns={columns} data={[...query.data, ...query.data]} />
+      <Table columns={columns} data={query.data} />
+      {plan ? (
+        <PlanForm plan={plan} open close={close} refresh={query.refetch} />
+      ) : null}
     </div>
   );
 };
