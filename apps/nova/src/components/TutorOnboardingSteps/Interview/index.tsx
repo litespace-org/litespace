@@ -5,6 +5,7 @@ import { marked } from "marked";
 import markdown from "@/markdown/tutorOnboarding/interview.md?raw";
 import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
 import ScheduleInterview from "@/components/TutorOnboardingSteps/Interview/ScheduleInterview";
+import ScheduledInterview from "./ScheduledInterview";
 // import ScheduledInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview";
 
 const Interview: React.FC<{
@@ -33,20 +34,15 @@ const Interview: React.FC<{
     <div className="pb-10 flex flex-col w-full">
       <RawHtml html={html} />
 
-      <ScheduleInterview onSuccess={onScheduleSuccess} />
-
-      {/* {currentInterview && interviewCall.data && interviewer.data ? (
+      {current ? (
         <ScheduledInterview
-          interviewer={interviewer.data}
-          interview={currentInterview}
-          call={interviewCall.data}
+          interview={current.interview}
+          call={current.call}
+          members={current.members}
         />
-      ) : interviewer.data ? (
-        <ScheduleInterview
-          interviewer={interviewer.data}
-          onSuccess={onScheduleSuccess}
-        />
-      ) : null} */}
+      ) : (
+        <ScheduleInterview onSuccess={onScheduleSuccess} />
+      )}
     </div>
   );
 };

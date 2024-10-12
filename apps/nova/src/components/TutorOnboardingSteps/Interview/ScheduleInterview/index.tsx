@@ -12,6 +12,7 @@ import {
   atlas,
   useFormatMessage,
   Loading,
+  ButtonSize,
 } from "@litespace/luna";
 import cn from "classnames";
 import { flatten } from "lodash";
@@ -135,7 +136,7 @@ const ScheduleInterview: React.FC<{
 
           <ul
             className={cn(
-              "w-full flex flex-col gap-3 h-[400px] overflow-y-scroll relative pl-4 pb-4",
+              "w-full flex flex-col gap-3 h-full max-h-[400px] overflow-y-scroll relative pl-4 pb-4",
               "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
             )}
           >
@@ -147,6 +148,7 @@ const ScheduleInterview: React.FC<{
                 return (
                   <li key={event.start}>
                     <Button
+                      size={ButtonSize.Small}
                       onClick={() => setSelectedRule(event)}
                       type={
                         selectedRule &&
@@ -164,24 +166,25 @@ const ScheduleInterview: React.FC<{
           </ul>
         </div>
       </div>
-      <div className="w-[250px] mt-4">
-        <Button
-          onClick={() => {
-            if (!selectedRule) return;
-            mutation.mutate({
-              interviewerId: interviewer.data.id,
-              ruleId: selectedRule.id,
-              start: selectedRule.start,
-            });
-          }}
-          disabled={!selectedRule || mutation.isPending}
-          loading={mutation.isPending}
-        >
-          <span className="truncate">
-            {intl("page.tutor.onboarding.book.interview.button.label")}
-          </span>
-        </Button>
-      </div>
+
+      <Button
+        className="mt-5"
+        onClick={() => {
+          if (!selectedRule) return;
+          mutation.mutate({
+            interviewerId: interviewer.data.id,
+            ruleId: selectedRule.id,
+            start: selectedRule.start,
+          });
+        }}
+        disabled={!selectedRule || mutation.isPending}
+        loading={mutation.isPending}
+        size={ButtonSize.Small}
+      >
+        <span className="truncate">
+          {intl("page.tutor.onboarding.book.interview.button.label")}
+        </span>
+      </Button>
     </div>
   );
 };

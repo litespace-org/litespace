@@ -1,37 +1,38 @@
-import { ICall, IInterview, IUser } from "@litespace/types";
-import React from "react";
+import { destructureInterviewStatus } from "@litespace/sol";
+import { ICall, IInterview } from "@litespace/types";
+import React, { useMemo } from "react";
+import PendingInterview from "./PendingInterview";
+import PassedInterview from "./PassedInterview";
 
 const ScheduledInterview: React.FC<{
-  interviewer: IUser.Self;
   interview: IInterview.Self;
   call: ICall.Self;
-}> = () => {
-  // const intl = useIntl();
+  members: ICall.PopuldatedMember[];
+}> = ({ interview, call, members }) => {
+  // todo: handle canceled and rejected
+  const { pending, passed } = useMemo(
+    () => destructureInterviewStatus(interview.status),
+    [interview.status]
+  );
 
-  // const pending = useMemo(() => {
-  //   return !interview.approved || !interview.passed;
-  // }, [interview.approved, interview.passed]);
-
-  // const success = useMemo(() => {
-  //   return interview.approved && interview.passed;
-  // }, [interview.approved, interview.passed]);
-
-  // const failed = useMemo(() => {
-  //   return interview.approved === false || interview.passed === false;
-  // }, [interview]);
+  const interviewer = useMemo(() => {
+    return (
+      members.find((member) => member.userId === interview.ids.interviewer) ||
+      null
+    );
+  }, [interview.ids.interviewer, members]);
 
   return (
     <div>
-      UI REQUIRED
-      {/* {pending ? (
+      {pending && interviewer ? (
         <PendingInterview interviewer={interviewer} call={call} />
-      ) : success ? (
+      ) : passed && interviewer ? (
         <PassedInterview
           feedback={interview.feedback.interviewer}
           interviewer={interviewer.name}
           interviewId={interview.ids.self}
         />
-      ) : null} */}
+      ) : null}
     </div>
   );
 };

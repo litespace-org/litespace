@@ -26,6 +26,7 @@ const createInterviewPayload = zod.object({
   start: datetime,
   ruleId: id,
 });
+
 const updateInterviewPayload = zod.object({
   feedback: zod.optional(
     zod.object({

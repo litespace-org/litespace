@@ -15,6 +15,7 @@ import {
   atlas,
   useFormatMessage,
   Controller,
+  ButtonSize,
 } from "@litespace/luna";
 import { IDate, IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
@@ -394,10 +395,11 @@ const RuleForm: React.FC<{
         ) : null}
 
         <Button
+          size={ButtonSize.Small}
           loading={create.isPending || update.isPending}
           disabled={create.isPending || update.isPending}
           htmlType="submit"
-          className="mt-4"
+          className="mt-2"
         >
           {buttonLabel}
         </Button>

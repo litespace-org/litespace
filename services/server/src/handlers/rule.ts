@@ -51,7 +51,10 @@ async function createRule(req: Request, res: Response, next: NextFunction) {
   if (!eligible || !userId) return next(forbidden());
 
   const payload: IRule.CreateApiPayload = createRulePayload.parse(req.body);
-  const existingRules = await rules.findByUserId(userId);
+  const existingRules = await rules.findByUserId({
+    user: userId,
+    deleted: false, // skip deleted rules
+  });
   const incomingRule: Rule = asRule(payload);
 
   for (const rule of existingRules) {
@@ -67,7 +70,10 @@ async function findUserRules(req: Request, res: Response, next: NextFunction) {
   if (!currentUserId) return next(forbidden());
 
   const { userId: targetUserId } = findUserRulesPayload.parse(req.params);
-  const userRules = await rules.findByUserId(targetUserId);
+  const userRules = await rules.findByUserId({
+    user: targetUserId,
+    deleted: false, // skip deleted rules
+  });
   res.status(200).json(userRules);
 }
 
@@ -85,7 +91,7 @@ async function findUnpackedUserRules(
   const { start, end } = findUnpackedUserRulesQuery.parse(req.query);
 
   const [userRules, userCalls] = await Promise.all([
-    rules.findByUserId(targetUserId),
+    rules.findByUserId({ user: targetUserId, deleted: false }),
     calls.findMemberCalls({
       userIds: [targetUserId],
       between: { start, end },
@@ -119,7 +125,10 @@ async function updateRule(req: Request, res: Response, next: NextFunction) {
   if (!owner) return next(forbidden());
 
   const withUpdates: IRule.Self = { ...rule, ...payload };
-  const existingRules = await rules.findByUserId(userId);
+  const existingRules = await rules.findByUserId({
+    user: userId,
+    deleted: false, // ignore deleted rules
+  });
   const otherRules = existingRules.filter((rule) => rule.id !== withUpdates.id);
   for (const rule of otherRules) {
     if (Schedule.from(asRule(rule)).intersecting(asRule(withUpdates)))
