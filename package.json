@@ -12,7 +12,8 @@
     "build:pkg:models": "pnpm --filter @litespace/models build",
     "build:pkg:sol": "pnpm --filter @litespace/sol build",
     "build:pkg:types": "pnpm --filter @litespace/types build",
-    "build:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:atlas && pnpm build:pkg:auth && pnpm build:pkg:luna && pnpm build:pkg:models",
+    "build:pkg:headless": "pnpm --filter @litespace/headless build",
+    "build:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:atlas && pnpm build:pkg:headless && pnpm build:pkg:auth &&  pnpm build:pkg:luna && pnpm build:pkg:models",
     "watch:atlas": "pnpm build:pkg:atlas -w",
     "watch:auth": "pnpm build:pkg:auth -w",
     "watch:emails": "pnpm build:pkg:emails -w",
@@ -20,7 +21,8 @@
     "watch:models": "pnpm build:pkg:models -w",
     "watch:sol": "pnpm build:pkg:sol -w",
     "watch:types": "pnpm build:pkg:types -w",
-    "watch:pkgs": "concurrently --names \"types,sol,atlas,auth,email,luna,models\" \"pnpm watch:types\" \"pnpm watch:sol\"  \"pnpm watch:atlas\" \"pnpm watch:auth\" \"pnpm watch:emails\" \"pnpm watch:luna\" \"pnpm watch:models\"",
+    "watch:headless": "pnpm --filter @litespace/headless watch:build",
+    "watch:pkgs": "concurrently --names \"types,sol,atlas,headless,auth,email,luna,models\" \"pnpm watch:types\" \"pnpm watch:sol\"  \"pnpm watch:atlas\" \"pnpm watch:headless\" \"pnpm watch:auth\" \"pnpm watch:emails\" \"pnpm watch:luna\" \"pnpm watch:models\"",
     "build:nova:vercel": "pnpm --filter @litespace/nova build:vercel",
     "build:luna:vercel": "pnpm --filter @litespace/luna build:vercel",
     "build:nebula:vercel": "pnpm --filter @litespace/nebula build:vercel",
@@ -34,6 +36,7 @@
     "cleandep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
   },
   "devDependencies": {
+    "@types/node": "^22.7.5",
     "axios": "^1.7.7",
     "concurrently": "^8.2.2",
     "env-cmd": "^10.1.0",

@@ -1,0 +1,47 @@
+{
+  "name": "@litespace/headless",
+  "version": "1.0.0",
+  "description": "LiteSpace react hooks, utils and components logic",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "watch:build": "pnpm watch build",
+    "build": "tsc && tsc-alias",
+    "watch": "npm-watch",
+    "lint": "eslint ."
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx",
+      "quiet": false
+    }
+  },
+  "dependencies": {
+    "@litespace/atlas": "workspace:^",
+    "@litespace/types": "workspace:^"
+  },
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.56.2",
+    "react": "18.2.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@types/node": "^22.7.5",
+    "@types/react": "^18.3.3",
+    "eslint": "^8.0.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.6",
+    "globals": "^15.9.0",
+    "nodemon": "^3.1.0",
+    "npm-watch": "^0.13.0",
+    "tsc-alias": "^1.8.10",
+    "typescript": "^5.4.5",
+    "typescript-eslint": "^8.0.1"
+  },
+  "keywords": [],
+  "author": "LiteSpace",
+  "license": "ISC"
+}
