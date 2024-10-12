@@ -37,7 +37,6 @@ export { SidebarNav } from "@/components/SidebarNav";
 export { OnlineStatus, UserOnlineStatus } from "@/components/OnlineStatus";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
 export { IconField } from "@/components/IconField";
-export { default as Icons } from "@/icons";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
 export * as Calls from "@/components/Calls";

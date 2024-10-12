@@ -93,12 +93,15 @@
     "typescript": "^5.4.5",
     "vite": "^5.2.0",
     "vite-plugin-dts": "^3.9.1",
+    "vercel": "^34.2.7",
+    "vite-plugin-static-copy": "^1.0.6",
     "vite-plugin-svgr": "^4.2.0"
   },
   "dependencies": {
     "@litespace/sol": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/atlas": "workspace:^",
+    "@litespace/assets": "workspace:^",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
@@ -113,8 +116,6 @@
     "react-feather": "^2.0.10",
     "react-number-format": "^5.4.2",
     "sanitize-html": "^2.13.0",
-    "tailwind-scrollbar": "^3.1.0",
-    "vercel": "^34.2.7",
-    "vite-plugin-static-copy": "^1.0.6"
+    "tailwind-scrollbar": "^3.1.0"
   }
 }
