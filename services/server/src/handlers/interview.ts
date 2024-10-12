@@ -200,12 +200,14 @@ async function updateInterview(
     isPermissionedAdmin;
   if (!isPermissioned) return next(forbidden());
 
+  //! temp: sign by the interviewer for now
   const signer =
-    payload.sign === true // sign
-      ? req.user.id
-      : payload.sign === false // unsign
-      ? null
-      : undefined; // no-update
+    payload.status === IInterview.Status.Passed ? req.user.id : undefined;
+  // payload.sign === true // sign
+  //   ? req.user.id
+  //   : payload.sign === false // unsign
+  //   ? null
+  //   : undefined; // no-update
 
   const updated = await interviews.update(interviewId, {
     feedback: payload.feedback,

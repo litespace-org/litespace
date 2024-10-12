@@ -1,7 +1,7 @@
 import List from "@/components/Interviews/List";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { Button, messages, Spinner, atlas } from "@litespace/luna";
+import { Button, messages, Spinner, atlas, ButtonSize } from "@litespace/luna";
 import { IInterview } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
@@ -57,6 +57,7 @@ const Interviews: React.FC = () => {
           <List list={list} user={profile} onUpdate={onUpdate} />
           <div className="mr-6">
             <Button
+              size={ButtonSize.Small}
               loading={interviews.isLoading || interviews.isFetching}
               disabled={
                 interviews.isLoading ||
