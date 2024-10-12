@@ -2,6 +2,7 @@ import { ThemedView } from "@/components/ThemedView";
 import React, { useMemo } from "react";
 import { View, TextInput, Button, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
+import { OnError, OnSuccess, useLogin } from "@litespace/headless/login";
 
 type IForm = {
   email: string;
@@ -11,10 +12,24 @@ type IForm = {
 const Login = () => {
   const { control, handleSubmit } = useForm<IForm>();
 
+  const payload: { onSuccess: OnSuccess; onError: OnError } = useMemo(
+    () => ({
+      onSuccess: (user) => {
+        console.log(user);
+      },
+      onError: (error) => {
+        console.log(error);
+      },
+    }),
+    []
+  );
+
+  const login = useLogin(payload);
+
   const onSubmit = useMemo(
     () =>
       handleSubmit((data) => {
-        console.log(data);
+        login.mutate(data);
       }),
     []
   );
