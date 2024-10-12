@@ -10,7 +10,7 @@ const ScheduledInterview: React.FC<{
   members: ICall.PopuldatedMember[];
 }> = ({ interview, call, members }) => {
   // todo: handle canceled and rejected
-  const { pending, passed } = useMemo(
+  const { pending, passed, rejected, canceled } = useMemo(
     () => destructureInterviewStatus(interview.status),
     [interview.status]
   );
@@ -33,6 +33,9 @@ const ScheduledInterview: React.FC<{
           interviewId={interview.ids.self}
         />
       ) : null}
+
+      {rejected ? <h1>You got rejected - UI REQUIRED</h1> : null}
+      {canceled ? <h1>Interview got canceled - UI REQUIRED</h1> : null}
     </div>
   );
 };

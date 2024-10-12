@@ -102,7 +102,6 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
 
 const Video: React.FC<Viewer> = ({ media, onDrop, onUpdate, disabled }) => {
   const url = useMediaUrl(media);
-  console.log("", url);
   return (
     <div className="w-full aspect-[9/16]">
       {url ? <VideoPlayer src={url} /> : <Empty type={MediaType.Video} />}

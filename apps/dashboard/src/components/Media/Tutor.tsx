@@ -29,27 +29,37 @@ const Tutor: React.FC<{
   );
 
   const upload = useCallback(
-    (payload: { photo?: File; video?: File }) => {
+    ({ image, video }: { image?: File; video?: File }) => {
+      const payload: IUser.UpdateMediaPayload | null =
+        image && video
+          ? { image, video }
+          : image
+          ? { image }
+          : video
+          ? { video }
+          : null;
+
+      if (!payload) return;
       return atlas.user.updateMedia(tutor.id, payload);
     },
     [tutor.id]
   );
 
   const update = useCallback(async () => {
-    if (image === null || video === null)
+    const dropImage = image === null && image !== tutor.image;
+    const dropVideo = video === null && video !== tutor.video;
+    if (dropImage || dropVideo)
       await drop({ image: image === null, video: video === null });
 
     if (image instanceof File || video instanceof File)
       await upload({
-        photo: image instanceof File ? image : undefined,
+        image: image instanceof File ? image : undefined,
         video: video instanceof File ? video : undefined,
       });
-  }, [drop, image, upload, video]);
+  }, [drop, image, tutor.image, tutor.video, upload, video]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({
-      title: intl("media.update.success"),
-    });
+    toaster.success({ title: intl("media.update.success") });
     refresh();
   }, [intl, refresh]);
 

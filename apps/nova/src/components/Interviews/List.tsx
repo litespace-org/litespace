@@ -3,6 +3,7 @@ import { IInterview, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { CheckCircle, Hash, HelpCircle, X } from "react-feather";
 import Interview from "@/components/Interviews/Interview";
+import { destructureInterviewStatus } from "@litespace/sol";
 
 const List: React.FC<{
   list: IInterview.FindInterviewsApiResponse["list"];
@@ -16,10 +17,9 @@ const List: React.FC<{
           const tutor = members.find((member) => member.userId !== user.id);
           if (!tutor) return null;
 
-          const passed = interview.status === IInterview.Status.Passed;
-          const pending = interview.status === IInterview.Status.Pending;
-          const rejected = interview.status === IInterview.Status.Rejected;
-          const canceled = interview.status === IInterview.Status.Canceled;
+          const { pending, passed, rejected, canceled } =
+            destructureInterviewStatus(interview.status);
+
           return {
             id: interview.ids.self,
             children: (
