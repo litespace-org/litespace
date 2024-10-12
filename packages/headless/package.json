@@ -2,11 +2,19 @@
   "name": "@litespace/headless",
   "version": "1.0.0",
   "description": "LiteSpace react hooks, utils and components logic",
-  "main": "index.js",
   "type": "module",
+  "files": [
+    "dist/**"
+  ],
   "exports": {
     "./plans": "./dist/plans.js",
-    "./atlas": "./dist/atlas/index.js"
+    "./atlas": "./dist/atlas/index.js",
+    "./login": "./dist/login.js"
+  },
+  "react-native": {
+    "./plans": "./dist/plans.js",
+    "./atlas": "./dist/atlas/index.js",
+    "./login": "./dist/login.js"
   },
   "scripts": {
     "watch:build": "pnpm watch build",

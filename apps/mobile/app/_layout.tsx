@@ -7,13 +7,17 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
-import "react-native-reanimated";
 import { Slot } from "expo-router";
-
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { AtlasProvider } from "@litespace/headless/atlas";
+import { Backend } from "@litespace/types";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
+import "react-native-reanimated";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
+
+const client = new QueryClient();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -31,12 +35,16 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      {/* <Stack> */}
-      {/* <Stack.Screen name="login" /> */}
-      {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <QueryClientProvider client={client}>
+        <AtlasProvider backend={Backend.Staging} getToken={() => ""}>
+          {/* <Stack> */}
+          {/* <Stack.Screen name="login" /> */}
+          {/* <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" /> */}
-      {/* </Stack> */}
-      <Slot />
+          {/* </Stack> */}
+          <Slot />
+        </AtlasProvider>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

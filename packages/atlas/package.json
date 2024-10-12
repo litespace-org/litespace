@@ -4,12 +4,15 @@
   "version": "1.0.0",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
+  "types": "dist/index.d.ts",
+  "react-native": "dist/esm/index.js",
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
   "scripts": {
-    "build": "rollup -c --bundleConfigAsCjs"
+    "build": "rollup -c --bundleConfigAsCjs",
+    "build:ts": "tsc",
+    "clean": "rm -rf dist/"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.0",
