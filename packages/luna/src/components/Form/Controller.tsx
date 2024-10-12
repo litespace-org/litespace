@@ -3,6 +3,7 @@ import {
   Control,
   Controller,
   ControllerProps,
+  FieldPath,
   FieldValues,
   Path,
 } from "react-hook-form";
@@ -23,6 +24,7 @@ import {
   DateInputProps,
 } from "@/components/DateInput";
 import { Select as BaseSelect, SelectProps } from "@/components/Select";
+import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
 
 import {
   TimePicker as BaseTimePicker,
@@ -92,14 +94,14 @@ export function Input<T extends FieldValues>({
   );
 }
 
-export function NumericInput<T extends FieldValues>({
+export function NumericInput<T extends FieldValues, N extends FieldPath<T>>({
   control,
   name,
   rules,
   ...props
 }: {
   control: Control<T>;
-  name: Path<T>;
+  name: N;
   rules?: ControllerProps<T>["rules"];
 } & NumericInputProps) {
   return (
@@ -111,7 +113,7 @@ export function NumericInput<T extends FieldValues>({
         return (
           <BaseNumericInput
             {...props}
-            {...field}
+            onValueChange={(value) => field.onChange(value.floatValue)}
             error={formState.errors[name]?.message as string}
           />
         );
@@ -306,6 +308,34 @@ export function Textarea<T extends FieldValues>({
           {...props}
         />
       )}
+    />
+  );
+}
+
+export function Switch<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & SwitchProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => {
+        return (
+          <BaseSwitch
+            onChange={field.onChange}
+            checked={field.value}
+            {...props}
+          />
+        );
+      }}
     />
   );
 }

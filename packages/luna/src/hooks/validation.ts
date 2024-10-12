@@ -44,7 +44,7 @@ export function useValidateEmail() {
 const arabicRegExp = /^[\u0600-\u06FF\s]+$/;
 const englishRegExp = /^[a-zA-Z\s]+$/;
 
-function validateText({
+export function validateText({
   regex,
   value,
   length,
@@ -58,7 +58,7 @@ function validateText({
   const match = regex.test(value);
   if (!match) return errors.match;
   if (value.length < length.min) return errors.min;
-  if (value.length > length.max) return errors.match;
+  if (value.length > length.max) return errors.max;
   return true;
 }
 
@@ -263,5 +263,77 @@ export function useValidateDuration() {
       },
     }),
     [intl, required]
+  );
+}
+
+export function useValidatePlanAlias() {
+  const intl = useFormatMessage();
+  const required = useRequired();
+
+  return useMemo(
+    () => ({
+      required,
+      validate: <T extends { toString(): string }>(value: T) => {
+        return validateText({
+          regex: arabicRegExp,
+          value: value.toString(),
+          errors: {
+            match: intl("error.plan.title.invalid"),
+            min: intl("error.plan.title.short"),
+            max: intl("error.plan.title.long"),
+          },
+          length: { min: 3, max: 50 },
+        });
+      },
+    }),
+    [intl, required]
+  );
+}
+
+export function useValidatePlanWeeklyMinutes() {
+  const intl = useFormatMessage();
+  const required = useRequired();
+  return useMemo(
+    () => ({
+      required,
+      validate: <T>(duration: T) => {
+        if (typeof duration !== "number" || duration <= 0)
+          return intl("error.required");
+        return true;
+      },
+    }),
+    [intl, required]
+  );
+}
+
+export function useValidatePrice() {
+  const intl = useFormatMessage();
+  const required = useRequired();
+  return useMemo(
+    () => ({
+      required,
+      validate: <T>(value: T) => {
+        if (typeof value !== "number" || value <= 0)
+          return intl("error.plan.price.absent");
+        return true;
+      },
+    }),
+    [intl, required]
+  );
+}
+
+export function useValidateDiscount() {
+  const intl = useFormatMessage();
+
+  return useMemo(
+    () => ({
+      validate: <T>(value: T) => {
+        if (typeof value !== "number" || value < 0 || value > 100) {
+          return intl("error.form.invalid");
+        }
+        return true;
+      },
+    }),
+    [intl]
   );
 }

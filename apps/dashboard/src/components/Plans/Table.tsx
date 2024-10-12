@@ -24,9 +24,10 @@ export default function Table({
   return (
     <div
       className={cn(
-        "relative overflow-x-auto",
-        "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
-        "rounded-md border border-border-strong "
+        "relative",
+        "rounded-md border border-border-strong",
+        "overflow-x-auto",
+        "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
       )}
     >
       <table className="text-sm text-center">
@@ -53,9 +54,9 @@ export default function Table({
         </thead>
         <tbody className=" bg-background-control border-b">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b">
+            <tr key={row.id} className="border-b border-border-strong">
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="px-6 py-4">
+                <td key={cell.id} className="px-4 py-2">
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
