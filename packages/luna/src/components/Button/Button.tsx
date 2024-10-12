@@ -44,7 +44,7 @@ export const Button: React.FC<{
             type === ButtonType.Secondary,
           "hover:tw-bg-surface-300 tw-shadow-none tw-border tw-border-transparent focus-visible:tw-outline-border-strong focus-visible:tw-border-border-stronger":
             type === ButtonType.Text,
-          "tw-bg-destructive-300 dark:tw-bg-destructive-400 hover:tw-bg-destructive-400 dark:hover:tw-bg-destructive/50 tw-border tw-border-destructive-500 hover:tw-border-destructive focus-visible:tw-outline-amber-700":
+          "tw-bg-destructive-300 dark:tw-bg-destructive-400 hover:tw-bg-destructive-400 dark:hover:tw-bg-destructive/50 tw-border tw-border-destructive-500 hover:tw-border-destructive focus-visible:tw-outline-amber-700 tw-text-foreground":
             type === ButtonType.Error,
           "tw-text-xs tw-px-2.5 tw-py-1 tw-h-[26px]": size === ButtonSize.Tiny,
           "tw-text-sm tw-leading-4 tw-px-3 tw-py-2 tw-h-[34px]":
