@@ -1,0 +1,13 @@
+{
+  "name": "@litespace/assets",
+  "version": "1.0.0",
+  "description": "LiteSpace static assets collection",
+  "private": true,
+  "exports": {
+    "/*": "./assets/*"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "LiteSpace",
+  "license": "ISC"
+}
