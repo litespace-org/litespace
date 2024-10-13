@@ -15,14 +15,14 @@ import {
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
 } from "@litespace/luna";
-import { percentage, price } from "@litespace/sol";
+import { Duration, percentage, price } from "@litespace/sol";
 import { IPlan, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 
 type IForm = {
   alias: string;
-  weeklyMinutes: number;
+  weeklyMinutes: Duration;
   fullMonthPrice: number;
   fullMonthDiscount: number;
   fullQuarterPrice: number;
@@ -51,7 +51,7 @@ const PlanForm: React.FC<{
   const form = useForm<IForm>({
     defaultValues: {
       alias: plan ? plan.alias : "",
-      weeklyMinutes: plan ? plan.weeklyMinutes : 0,
+      weeklyMinutes: Duration.from(plan ? plan.weeklyMinutes.toString() : "0"),
       fullMonthPrice: plan ? plan.fullMonthPrice : 0,
       fullMonthDiscount: plan ? plan.fullMonthDiscount : 0,
       fullQuarterPrice: plan ? plan.fullQuarterPrice : 0,
@@ -87,7 +87,6 @@ const PlanForm: React.FC<{
   );
 
   const createPlan = useCreatePlan({ onSuccess, onError });
-  // TODO: const updatePlan = useUpdatePlan({ onSuccess, onError })
   const aliasRules = useValidatePlanAlias();
   const weeklyMinutesRules = useValidatePlanWeeklyMinutes();
   const priceRules = useValidatePrice();
@@ -98,7 +97,7 @@ const PlanForm: React.FC<{
       createPlan.mutate({
         alias: data.alias,
         active: data.active,
-        weeklyMinutes: data.weeklyMinutes,
+        weeklyMinutes: data.weeklyMinutes.minutes(),
         forInvitesOnly: data.forInvitesOnly,
         fullMonthPrice: price.scale(data.fullMonthPrice),
         fullMonthDiscount: percentage.scale(data.fullMonthDiscount),
@@ -122,7 +121,7 @@ const PlanForm: React.FC<{
     >
       <Form
         onSubmit={form.handleSubmit(onSubmit)}
-        className="min-w-96 max-h-[32rem]  overflow-y-auto scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+        className="min-w-96 max-h-[32rem] overflow-y-auto scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
       >
         <div>
           <Field
@@ -141,12 +140,10 @@ const PlanForm: React.FC<{
             className="mb-1"
             label={<Label>{intl("dashboard.plan.weeklyMinutes")}</Label>}
             field={
-              <Controller.NumericInput
+              <Controller.Duration
                 control={form.control}
                 name="weeklyMinutes"
                 value={form.watch("weeklyMinutes")}
-                allowNegative={false}
-                decimalScale={0}
                 rules={weeklyMinutesRules}
               />
             }

@@ -273,10 +273,10 @@ export function useValidatePlanAlias() {
   return useMemo(
     () => ({
       required,
-      validate: <T extends { toString(): string }>(value: T) => {
+      validate: <T>(value: T) => {
         return validateText({
           regex: arabicRegExp,
-          value: value.toString(),
+          value: typeof value === "string" ? value.toString() : "",
           errors: {
             match: intl("error.plan.title.invalid"),
             min: intl("error.plan.title.short"),
@@ -297,9 +297,8 @@ export function useValidatePlanWeeklyMinutes() {
     () => ({
       required,
       validate: <T>(duration: T) => {
-        if (typeof duration !== "number" || duration <= 0)
-          return intl("error.required");
-        return true;
+        if (duration instanceof Duration && duration.minutes() > 0) return true;
+        return intl("error.required");
       },
     }),
     [intl, required]
