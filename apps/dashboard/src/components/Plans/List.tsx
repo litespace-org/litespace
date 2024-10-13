@@ -1,39 +1,38 @@
+import React, { useMemo, useState, useCallback } from "react";
+import { ActionsMenu, Loading, useFormatMessage } from "@litespace/luna";
+import { IPlan } from "@litespace/types";
+import { UseQueryResult } from "@tanstack/react-query";
+import { createColumnHelper } from "@tanstack/react-table";
 import Price from "@/components/Plans/Price";
 import Table from "@/components/Plans/Table";
 import BooleanField from "@/components/common/BooleanField";
 import DateField from "@/components/common/DateField";
-import { ActionsMenu, Loading } from "@litespace/luna";
-import { IPlan } from "@litespace/types";
-import { UseQueryResult } from "@tanstack/react-query";
-import { createColumnHelper } from "@tanstack/react-table";
-import React, { useMemo, useState, useCallback } from "react";
-import PlanForm from "./PlanForm";
+import PlanForm from "@/components/Plans/PlanForm";
 
 const List: React.FC<{
   query: UseQueryResult<IPlan.MappedAttributes[], Error>;
 }> = ({ query }) => {
+  const intl = useFormatMessage();
   const [plan, setPlan] = useState<IPlan.MappedAttributes | null>(null);
-  const close = useCallback(() => {
-    setPlan(null);
-  }, []);
+  const close = useCallback(() => setPlan(null), []);
   const columnHelper = createColumnHelper<IPlan.MappedAttributes>();
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: "id",
+        header: intl("dashboard.plans.id.header"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("alias", {
-        header: "plan name",
+        header: intl("dashboard.plans.alias.header"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("weeklyMinutes", {
-        header: "weeklyMinutes",
+        header: intl("dashboard.plan.weeklyMinutes"),
         cell: (info) => info.getValue(),
       }),
 
       columnHelper.accessor("fullMonthPrice", {
-        header: "fullMonthPrice",
+        header: intl("dashboard.plan.fullMonthPrice"),
         cell: (info) => {
           return (
             <Price
@@ -44,7 +43,7 @@ const List: React.FC<{
         },
       }),
       columnHelper.accessor("fullQuarterPrice", {
-        header: "fullQuarterPrice",
+        header: intl("dashboard.plan.fullQuarterPrice"),
         cell: (info) => {
           return (
             <Price
@@ -55,7 +54,7 @@ const List: React.FC<{
         },
       }),
       columnHelper.accessor("halfYearPrice", {
-        header: "halfYearPrice",
+        header: intl("dashboard.plan.halfYearPrice"),
         cell: (info) => {
           return (
             <Price
@@ -66,7 +65,7 @@ const List: React.FC<{
         },
       }),
       columnHelper.accessor("fullYearPrice", {
-        header: "fullYearPrice",
+        header: intl("dashboard.plan.fullYearPrice"),
         cell: (info) => {
           return (
             <Price
@@ -77,25 +76,25 @@ const List: React.FC<{
         },
       }),
       columnHelper.accessor("forInvitesOnly", {
-        header: "forInvitesOnly",
+        header: intl("dashboard.plan.forInvitesOnly"),
         cell: (info) => {
           return <BooleanField checked={info.getValue()} />;
         },
       }),
       columnHelper.accessor("active", {
-        header: "active",
+        header: intl("dashboard.plan.active"),
         cell: (info) => {
           return <BooleanField checked={info.getValue()} />;
         },
       }),
       columnHelper.accessor("createdAt", {
-        header: "createdAt",
+        header: intl("dashboard.plans.createdAt.header"),
         cell: (info) => {
           return <DateField date={info.getValue()} />;
         },
       }),
       columnHelper.accessor("updatedAt", {
-        header: "updatedAt",
+        header: intl("dashboard.plans.updatedAt.header"),
         cell: (info) => {
           return <DateField date={info.getValue()} />;
         },
@@ -125,7 +124,7 @@ const List: React.FC<{
         ),
       }),
     ],
-    [columnHelper]
+    [columnHelper, intl]
   );
 
   if (query.isLoading) return <Loading className="h-1/4" />;

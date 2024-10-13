@@ -5,7 +5,7 @@ import { ErrorPage } from "@litespace/luna";
 import Invoices from "@/pages/Invoices";
 import Media from "@/pages/Media";
 import Login from "@/pages/Login";
-import Plans from "./pages/Plans";
+import Plans from "@/pages/Plans";
 
 const router = createBrowserRouter([
   {
