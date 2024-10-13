@@ -14,6 +14,7 @@
     "@litespace/luna": "workspace:^",
     "@litespace/types": "workspace:^",
     "@litespace/headless": "workspace:^",
+    "@litespace/sol": "workspace:^",
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-query": "^5.56.2",
     "@tanstack/react-table": "^8.20.5",
@@ -29,8 +30,7 @@
     "react-router-dom": "^6.23.1",
     "react-toastify": "^10.0.5",
     "redux-persist": "^6.0.0",
-    "tailwind-scrollbar": "^3.1.0",
-    "@litespace/sol": "workspace:^"
+    "tailwind-scrollbar": "^3.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
