@@ -1,30 +1,29 @@
-import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
 import {
-  Control,
-  Controller,
-  ControllerProps,
-  FieldPath,
-  FieldValues,
-  Path,
-} from "react-hook-form";
+  DateInput as BaseDateInput,
+  DateInputProps,
+} from "@/components/DateInput";
+import { Duration as BaseDuration } from "@/components/Duration";
+import { Gender as BaseGender } from "@/components/Gender";
 import { Input as BaseInput, InputProps } from "@/components/Input/Input";
 import {
   NumericInput as BaseNumericInput,
   NumericInputProps,
 } from "@/components/NumericInput";
-import { IUser } from "@litespace/types";
-import { Gender as BaseGender } from "@/components/Gender";
-import { Duration as BaseDuration } from "@/components/Duration";
-import { Duration as IDuration } from "@litespace/sol";
-import { useDurationUnitMap } from "@/hooks/duration";
-import { Textarea as BaseTextarea } from "@/components/Textarea";
-import { TextareaProps } from "@/components/Textarea/Textarea";
-import {
-  DateInput as BaseDateInput,
-  DateInputProps,
-} from "@/components/DateInput";
 import { Select as BaseSelect, SelectProps } from "@/components/Select";
 import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
+import { Textarea as BaseTextarea } from "@/components/Textarea";
+import { TextareaProps } from "@/components/Textarea/Textarea";
+import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
+import { useDurationUnitMap } from "@/hooks/duration";
+import { Duration as IDuration } from "@litespace/sol";
+import { IUser } from "@litespace/types";
+import {
+  Control,
+  Controller,
+  ControllerProps,
+  FieldValues,
+  Path,
+} from "react-hook-form";
 
 import {
   TimePicker as BaseTimePicker,
@@ -94,14 +93,14 @@ export function Input<T extends FieldValues>({
   );
 }
 
-export function NumericInput<T extends FieldValues, N extends FieldPath<T>>({
+export function NumericInput<T extends FieldValues>({
   control,
   name,
   rules,
   ...props
 }: {
   control: Control<T>;
-  name: N;
+  name: Path<T>;
   rules?: ControllerProps<T>["rules"];
 } & NumericInputProps) {
   return (

@@ -12,4 +12,5 @@ export {
   formatNumber,
   formatPercentage,
   formatCurrency,
+  formatMinutes,
 } from "@/components/utils/format";

@@ -1,3 +1,5 @@
+import humanize from "humanize-duration";
+
 export function formatNumber(value: number) {
   return new Intl.NumberFormat("en").format(value);
 }
@@ -20,4 +22,11 @@ export function formatCurrency(value: number): string {
     currency: "EGP",
     maximumFractionDigits: 2,
   }).format(value);
+}
+
+export function formatMinutes(value: number): string {
+  return humanize(value * 60 * 1000, {
+    language: "ar",
+    digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  });
 }
