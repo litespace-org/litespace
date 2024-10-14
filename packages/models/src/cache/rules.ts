@@ -52,6 +52,11 @@ export class Rules extends CacheBase {
     return rules;
   }
 
+  async exists(): Promise<boolean> {
+    const output = await this.client.exists(this.key);
+    return !!output;
+  }
+
   asField({ tutor, rule }: { tutor: number; rule: number }): string {
     return `${tutor}:${rule}`;
   }
