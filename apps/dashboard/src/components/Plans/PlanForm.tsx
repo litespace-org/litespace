@@ -82,7 +82,7 @@ const PlanForm: React.FC<{
     });
     refresh();
     onClose();
-  }, [intl, onClose, refresh]);
+  }, [intl, onClose, plan, refresh]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -95,11 +95,11 @@ const PlanForm: React.FC<{
         description: error.message,
       });
     },
-    [intl]
+    [intl, plan]
   );
 
   const createPlan = useCreatePlan({ onSuccess, onError });
-  const updatePlan = useUpdatePlan({ id: plan?.id, onSuccess, onError });
+  const updatePlan = useUpdatePlan({ onSuccess, onError });
   const aliasRules = useValidatePlanAlias();
   const weeklyMinutesRules = useValidatePlanWeeklyMinutes();
   const priceRules = useValidatePrice();
@@ -121,11 +121,11 @@ const PlanForm: React.FC<{
         fullYearPrice: price.scale(data.fullYearPrice),
         fullYearDiscount: percentage.scale(data.fullYearDiscount),
       };
-      if (plan) updatePlan?.mutate(payload);
+      if (plan) updatePlan.mutate({ id: plan.id, payload });
       else createPlan.mutate(payload);
       form.reset();
     },
-    [createPlan, form]
+    [createPlan, form, plan, updatePlan]
   );
   return (
     <Dialog

@@ -28,7 +28,7 @@ export const Plans: React.FC = () => {
           {intl("dashboard.plans.createPlanBtn")}
         </Button>
       </header>
-      <List query={plans} />
+      <List query={plans} refresh={plans.refetch} />
       <PlanForm open={form.open} close={form.hide} refresh={plans.refetch} />
     </div>
   );

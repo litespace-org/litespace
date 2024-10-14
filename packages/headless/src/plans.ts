@@ -33,43 +33,43 @@ export function useCreatePlan({
 }
 
 export function useUpdatePlan({
-  id,
   onSuccess,
   onError,
 }: {
-  id: number;
   onSuccess?: Void;
   onError?(error: Error): void;
 }) {
   const atlas = useAtlas();
   const updatePlan = useCallback(
-    (payload: IPlan.UpdateApiPayload) => atlas.plan.update(id, payload),
+    ({ id, payload }: { id: number; payload: IPlan.UpdateApiPayload }) =>
+      atlas.plan.update(id, payload),
     [atlas.plan]
   );
 
   return useMutation({
     mutationFn: updatePlan,
-    mutationKey: ["update-plan", id],
+    mutationKey: ["update-plan"],
     onSuccess,
     onError,
   });
 }
 
 export function useDeletePlan({
-  id,
   onSuccess,
   onError,
 }: {
-  id: number;
   onSuccess?: Void;
-  onError?(error: Error): Void;
+  onError?: (error: Error) => void;
 }) {
   const atlas = useAtlas();
-  const deletePlan = useCallback(() => atlas.plan.delete(id), [atlas.plan]);
+  const deletePlan = useCallback(
+    (id: number) => atlas.plan.delete(id),
+    [atlas.plan]
+  );
 
   return useMutation({
     mutationFn: deletePlan,
-    mutationKey: ["delete-plan", id],
+    mutationKey: ["delete-plan"],
     onSuccess,
     onError,
   });
