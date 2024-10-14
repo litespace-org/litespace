@@ -1,8 +1,7 @@
-import { Alert, messages, Spinner } from "@litespace/luna";
+import { Alert, Spinner, useFormatMessage } from "@litespace/luna";
 import { ITutor } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
-import { useIntl } from "react-intl";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TutorCard from "@/components/Tutors/TutorCard";
@@ -11,14 +10,11 @@ import BookLesson from "./BookLesson";
 const TutorList: React.FC<{
   tutors: UseQueryResult<ITutor.FindAvailableTutorsApiResponse, unknown>;
 }> = ({ tutors }) => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const navigate = useNavigate();
   const [tutor, setTutor] = useState<ITutor.FullTutor | null>(null);
   const select = useCallback((tutor: ITutor.FullTutor) => setTutor(tutor), []);
   const deselect = useCallback(() => setTutor(null), []);
-
-  const name = useMemo(() => tutor?.name, [tutor?.name]);
-  const tutorId = useMemo(() => tutor?.id, [tutor?.id]);
 
   const rules = useMemo(() => {
     if (!tutor?.id) return [];
@@ -27,9 +23,7 @@ const TutorList: React.FC<{
 
   const reload = useMemo(() => {
     return {
-      label: intl.formatMessage({
-        id: messages["global.labels.reload.page"],
-      }),
+      label: intl("global.labels.reload.page"),
       onClick() {
         navigate(0);
       },
@@ -45,23 +39,14 @@ const TutorList: React.FC<{
 
   if (tutors.isError)
     return (
-      <Alert
-        title={intl.formatMessage({
-          id: messages["error.tutors.list.error"],
-        })}
-        action={reload}
-      >
+      <Alert title={intl("error.tutors.list.error")} action={reload}>
         {tutors.error instanceof Error ? tutors.error.message : null}
       </Alert>
     );
 
   // todo: show empty search list with a nice image
   if (!tutors.data || isEmpty(tutors.data.tutors))
-    return (
-      <Alert
-        title={intl.formatMessage({ id: messages["error.tutors.list.empty"] })}
-      />
-    );
+    return <Alert title={intl("error.tutors.list.empty")} />;
 
   return (
     <div className="grid grid-cols-12 gap-6">
@@ -74,13 +59,14 @@ const TutorList: React.FC<{
         </div>
       ))}
 
-      {!!name && !!tutorId ? (
+      {tutor && tutor.name ? (
         <BookLesson
           open={!!tutor}
           close={deselect}
-          name={name}
+          name={tutor.name}
           rules={rules}
-          tutorId={tutorId}
+          tutorId={tutor.id}
+          notice={tutor.notice}
         />
       ) : null}
     </div>

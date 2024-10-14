@@ -25,6 +25,8 @@
     "watch:pkgs": "concurrently --names \"types,sol,atlas,headless,auth,email,luna,models\" \"pnpm watch:types\" \"pnpm watch:sol\"  \"pnpm watch:atlas\" \"pnpm watch:headless\" \"pnpm watch:auth\" \"pnpm watch:emails\" \"pnpm watch:luna\" \"pnpm watch:models\"",
     "dev:nova": "pnpm --filter @litespace/nova dev",
     "dev:dash": "pnpm --filter @litespace/dashboard dev",
+    "docker": "pnpm --filter @litespace/server docker",
+    "reseed": "pnpm --filter @litespace/models reseed",
     "build:nova:vercel": "pnpm --filter @litespace/nova build:vercel",
     "build:luna:vercel": "pnpm --filter @litespace/luna build:vercel",
     "build:nebula:vercel": "pnpm --filter @litespace/nebula build:vercel",

@@ -1,14 +1,18 @@
-import { Button, ButtonSize, messages, asFullAssetUrl } from "@litespace/luna";
+import {
+  Button,
+  ButtonSize,
+  asFullAssetUrl,
+  useFormatMessage,
+} from "@litespace/luna";
 import { ITutor } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
-import { useIntl } from "react-intl";
 
 const TutorCard: React.FC<{
   tutor: ITutor.FullTutor;
   select: () => void;
 }> = ({ tutor, select }) => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
 
   return (
     <div
@@ -21,20 +25,20 @@ const TutorCard: React.FC<{
       <div className="h-[300px] md:h-[400px]">
         <img
           className="w-full h-full object-cover"
-          src={asFullAssetUrl(tutor.image!)}
+          src={tutor.image ? asFullAssetUrl(tutor.image) : "/avatar-1.png"}
           alt={tutor.name!}
         />
       </div>
 
       <div className="flex flex-row justify-between items-center p-4">
-        <div className="">
+        <div className="w-3/4">
           <h6 className="text-foreground mb-1">{tutor.name}</h6>
-          <p className="text-sm text-foreground-light">{tutor.bio}</p>
+          <p className="text-sm text-foreground-light truncate">{tutor.bio}</p>
         </div>
 
         <div>
           <Button onClick={select} size={ButtonSize.Small}>
-            {intl.formatMessage({ id: messages["global.book.lesson.label"] })}
+            {intl("global.book.lesson.label")}
           </Button>
         </div>
       </div>

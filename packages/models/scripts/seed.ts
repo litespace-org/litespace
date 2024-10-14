@@ -107,7 +107,6 @@ async function main(): Promise<void> {
         await tutors.update(
           tutor.id,
           {
-            video: "test.mp4",
             about: aripsum.generateParagraph(20, 50),
             bio: aripsum.generateSentence(5, 10),
             activated: true,
