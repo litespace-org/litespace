@@ -4,17 +4,17 @@ import {
   Dialog,
   Field,
   Label,
-  messages,
   Select,
   toaster,
   atlas,
+  useFormatMessage,
+  ButtonSize,
 } from "@litespace/luna";
 import { Schedule, splitRuleEvent } from "@litespace/sol";
 import { ILesson, IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
-import { useIntl } from "react-intl";
 import { useMutation } from "@tanstack/react-query";
 
 const BookLesson: React.FC<{
@@ -23,8 +23,9 @@ const BookLesson: React.FC<{
   tutorId: number;
   name: string;
   rules: IRule.RuleEvent[];
-}> = ({ open, close, tutorId, name, rules }) => {
-  const intl = useIntl();
+  notice: number;
+}> = ({ open, close, tutorId, name, rules, notice }) => {
+  const intl = useFormatMessage();
   const [duration, setDuration] = useState<ILesson.Duration>(
     ILesson.Duration.Long
   );
@@ -34,7 +35,9 @@ const BookLesson: React.FC<{
 
   const events = useMemo(() => {
     const events = Schedule.order(
-      flattenDeep(rules.map((rule) => splitRuleEvent(rule, duration))),
+      flattenDeep(rules.map((rule) => splitRuleEvent(rule, duration))).filter(
+        (event) => dayjs(event.start).isAfter(dayjs().add(notice, "minutes"))
+      ),
       "asc"
     );
 
@@ -43,7 +46,7 @@ const BookLesson: React.FC<{
     );
 
     return entries(map);
-  }, [duration, rules]);
+  }, [duration, notice, rules]);
 
   const onClose = useCallback(() => {
     setSelectedEvent(null);
@@ -52,10 +55,7 @@ const BookLesson: React.FC<{
 
   const onSuccess = useCallback(() => {
     toaster.success({
-      title: intl.formatMessage(
-        { id: messages["page.tutors.book.lesson.success"] },
-        { tutor: name }
-      ),
+      title: intl("page.tutors.book.lesson.success", { tutor: name }),
     });
 
     onClose();
@@ -64,9 +64,7 @@ const BookLesson: React.FC<{
   const onError = useCallback(
     (error: unknown) => {
       toaster.error({
-        title: intl.formatMessage({
-          id: messages["page.tutors.book.lesson.error"],
-        }),
+        title: intl("page.tutors.book.lesson.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -90,15 +88,11 @@ const BookLesson: React.FC<{
   const options = useMemo(() => {
     return [
       {
-        label: intl.formatMessage({
-          id: messages["global.lesson.duration.15"],
-        }),
+        label: intl("global.lesson.duration.15"),
         value: 15,
       },
       {
-        label: intl.formatMessage({
-          id: messages["global.lesson.duration.30"],
-        }),
+        label: intl("global.lesson.duration.30"),
         value: 30,
       },
     ];
@@ -106,19 +100,15 @@ const BookLesson: React.FC<{
 
   return (
     <Dialog
-      title={intl.formatMessage(
-        { id: messages["page.tutors.book.lesson.dialog.title"] },
-        { name }
-      )}
+      title={intl("page.tutors.book.lesson.dialog.title", { name })}
       open={open}
       close={onClose}
+      className="w-full md:w-3/4 max-w-[40rem]"
     >
       <Field
         label={
           <Label>
-            {intl.formatMessage({
-              id: messages["page.tutors.book.lesson.dialog.lesson.duration"],
-            })}
+            {intl("page.tutors.book.lesson.dialog.lesson.duration")}
           </Label>
         }
         field={
@@ -126,15 +116,15 @@ const BookLesson: React.FC<{
         }
       />
 
-      <ul className="h-[500px] overflow-y-auto main-scrollbar flex flex-col gap-3 pb-4 mt-4">
+      <ul className="h-[500px] overflow-y-auto scrollbar-thin flex flex-col gap-3 pb-4 pl-1.5 mt-4 ">
         {events.map(([date, list]) => (
           <li key={date} className="text-foreground">
             <h3 className="text-base font-semibold mb-3">
               {dayjs(date).format("dddd, DD MMMM")}
             </h3>
-            <ul className="flex flex-col gap-3">
+            <ul className="grid grid-cols-12 gap-4">
               {list.map((event) => (
-                <li key={event.start} className="px-6">
+                <li key={event.start} className="col-span-3">
                   <Button
                     onClick={() => setSelectedEvent(event)}
                     disabled={mutation.isPending}
@@ -143,6 +133,7 @@ const BookLesson: React.FC<{
                         ? ButtonType.Primary
                         : ButtonType.Secondary
                     }
+                    className="w-full"
                   >
                     {dayjs(event.start).format("h:mm a")}
                   </Button>
@@ -158,10 +149,9 @@ const BookLesson: React.FC<{
         loading={mutation.isPending}
         onClick={() => mutation.mutate()}
         className="mt-4"
+        size={ButtonSize.Small}
       >
-        {intl.formatMessage({
-          id: messages["global.labels.confirm"],
-        })}
+        {intl("global.labels.confirm")}
       </Button>
     </Dialog>
   );

@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
-import { initial, LoadableState } from "@litespace/luna";
+import { initial, LoadableState, saveToken } from "@litespace/luna";
 
 type State = LoadableState<{ user: IUser.Self; token: string | null }>;
 
@@ -29,6 +29,7 @@ export const slice = createSlice({
         user: payload.user,
         token: payload.token || null,
       };
+      if (payload.token) saveToken(payload.token);
     },
   },
 });
