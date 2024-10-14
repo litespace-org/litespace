@@ -17,3 +17,4 @@ export { withdrawMethods } from "@/withdrawMethods";
 export { invoices } from "@/invoices";
 export { knex, pool, count } from "@/query";
 export { hashPassword, isSamePassword } from "@/lib/password";
+export { Cache } from "@/cache";
