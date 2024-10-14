@@ -41,6 +41,8 @@ jobs:
       # Nova Deployment
       - name: Pull Nova from Vercel
         run: yarn vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for Nova
+        run: cp apps/nova/.env.staging apps/nova/.env
       - name: Build Nova using Vercel
         run: yarn build:nova:vercel
       - name: Deploy Nova to Vercel
