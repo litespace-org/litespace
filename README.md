@@ -117,3 +117,5 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 - https://medium.com/@malikchohra/build-for-scale-how-to-use-svgs-in-react-native-5f49ad4a7715
 - https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-20-04#step-5-setting-up-virtual-hosts-recommended
 - https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04
+- https://vercel.com/guides/how-to-enable-cors
+- https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy

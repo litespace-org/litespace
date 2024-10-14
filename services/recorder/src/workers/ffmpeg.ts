@@ -87,7 +87,7 @@ async function main() {
         const empty = isEmpty(artifacts) || isEmpty(files);
 
         if (empty) {
-          log(`"${call}" has no artifacts, will be marked as empty`);
+          log(`"${call.id}" has no artifacts, will be marked as empty`);
           await calls.update([call.id], {
             recordingStatus: ICall.RecordingStatus.Empty,
           });

@@ -10,6 +10,7 @@
   "page.login.form.button.submit.label": "تسجيل الدخول",
   "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
   "page.login.failed": "لديك مشكلة في تسجيل الدخول",
+  "page.login.with.google": "تسجل الدخول باستخدام حساب جوجل",
   "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
   "page.tutor.onboarding.steps.first.booked.interview.description": "عندك انترفيو مع {interviewer} يوم {day} الموافق {date} بداء من الساعه {start} الي تمام الساعه {end}.",
   "page.tutor.onboarding.steps.first.booked.interview.note.1": "بامكانك تلغي الانترفيو وتجدد موعدها بشرط ان يكون باقي علي معادها مش أقل من 24 ساعة.",

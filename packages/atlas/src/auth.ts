@@ -8,6 +8,13 @@ export class Auth extends Base {
     return this.post("/api/v1/auth/password", credentials);
   }
 
+  async google(
+    token: string,
+    role?: typeof IUser.Role.Student | typeof IUser.Role.Tutor
+  ): Promise<IUser.LoginApiResponse> {
+    return this.post("/api/v1/auth/google", { token, role });
+  }
+
   async forgotPassword(email: string): Promise<void> {
     await this.client.post(
       "/api/v1/auth/password/forgot",

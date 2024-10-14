@@ -24,6 +24,7 @@ const Root: React.FC = () => {
     const login = new UrlPattern(RoutePatterns.Login);
     const register = new UrlPattern(RoutePatterns.Register);
     const root = location.pathname === "/";
+    const complete = location.pathname === Route.Complete;
     const ignore = [call, login, register].some((patten) =>
       patten.match(location.pathname)
     );
@@ -32,8 +33,18 @@ const Root: React.FC = () => {
       return navigate(Route.Login);
     const user = profile.value?.user;
 
-    if ([user?.email, user?.name].some((value) => value === null))
-      return navigate(Route.Complete);
+    // redirect the user to complete his profile
+    // redirect student in case of missing: name, age
+    // redirect tutor in case of missing: name, age, gender
+    const redirectStudent =
+      user &&
+      user.role === IUser.Role.Student &&
+      [user.name, user.birthYear].some((value) => value === null);
+    const redirectTutor =
+      user &&
+      user.role === IUser.Role.Tutor &&
+      [user.name, user.birthYear, user.gender].some((value) => value === null);
+    if (redirectStudent || redirectTutor) return navigate(Route.Complete);
 
     if (
       !ignore &&
@@ -47,7 +58,7 @@ const Root: React.FC = () => {
     )
       return navigate(Route.TutorOnboarding);
 
-    if (!profile.value || !root) return;
+    if (!profile.value || (!root && !complete)) return;
     const { tutor, student, interviewer } = destructureRole(
       profile.value.user.role
     );
