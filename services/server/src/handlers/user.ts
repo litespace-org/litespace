@@ -26,6 +26,7 @@ import {
   drop,
   entries,
   first,
+  flatten,
   groupBy,
   orderBy,
   reduce,
@@ -35,11 +36,12 @@ import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { availableTutorsCache } from "@/redis/tutor";
-import { cacheAvailableTutors, isPublicTutor } from "@/lib/tutor";
+import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { asIsoDate, Schedule } from "@litespace/sol";
+import { asIsoDate, Schedule, unpackRules } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
 import { generateJwtToken } from "@/lib/auth";
+import { cache } from "@/lib/cache";
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
@@ -204,7 +206,7 @@ function update(context: ApiContext) {
       !dates.end ||
       !start.isBetween(dates.start, dates.end, "day", "[]")
     ) {
-      await cacheAvailableTutors(start);
+      await cacheTutors(start);
       context.io.sockets.emit("update");
       return end();
     }
@@ -334,79 +336,80 @@ async function findAvailableTutors(
   res: Response,
   next: NextFunction
 ) {
-  const userId = req.user?.id;
-  const allowedRole = req.user?.role === IUser.Role.Student;
-  if (!userId || !allowedRole) return next(forbidden());
-
   const query = findAvailableTutorsQuery.parse(req.query);
-  const start = dayjs.utc().startOf("day");
-  const [dates, exists] = await Promise.all([
-    availableTutorsCache.getDates(),
-    availableTutorsCache.exists(),
+  const now = dayjs.utc();
+  const start = now.startOf("day");
+
+  const [isTutorsCached, isRulesCached] = await Promise.all([
+    cache.tutors.exists(),
+    cache.rules.exists(),
   ]);
 
-  const validCache =
-    exists &&
-    dates.start &&
-    dates.end &&
-    start.isBetween(dates.start, dates.end, "day", "[]");
+  const validCacheState = isTutorsCached && isRulesCached;
 
-  const cache = validCache
+  const { tutors, rules } = validCacheState
     ? {
-        tutors: await availableTutorsCache.getTutors(),
-        unpackedRules: await availableTutorsCache.getRules(),
+        tutors: await cache.tutors.getAll(),
+        rules: await cache.rules.getAll(),
       }
-    : await cacheAvailableTutors(start);
+    : await cacheTutors(start);
 
-  if (!cache.tutors || !cache.unpackedRules) return next(badRequest()); // should send "ServerError"
-
-  // filter old rules and create a new map
-  const unpackedRules = reduce(
-    entries(cache.unpackedRules),
-    (acc: ITutor.Cache["unpackedRules"], [tutorId, rules]) => {
-      acc[tutorId] = Schedule.order(
-        rules.filter((rule) => dayjs.utc(rule.end).isAfter(dayjs.utc())),
-        "asc"
-      );
-      return acc;
-    },
-    {}
-  );
+  const selectRuleEvents = (tutor: ITutor.FullTutor) => {
+    const tutorRules = rules.filter((rule) => rule.tutor === tutor.id);
+    const events = flatten(tutorRules.map((rule) => rule.events)).filter(
+      (event) => {
+        const adjustedNow = now.add(tutor.notice, "minutes");
+        const start = dayjs.utc(event.start);
+        const same = start.isSame(adjustedNow);
+        const after = start.isAfter(adjustedNow);
+        const between = adjustedNow.isBetween(
+          event.start,
+          // rule should have some time suitable for booking at least one small lesson.
+          dayjs.utc(event.end).subtract(ILesson.Duration.Short, "minutes"),
+          "minute",
+          "[]"
+        );
+        return same || after || between;
+      }
+    );
+    return events;
+  };
 
   const iteratees = [
     // sort in ascending order by the first availablity
     (tutor: ITutor.FullTutor) => {
-      const rules = unpackedRules[tutor.id.toString()];
-      const rule = first(rules);
-      if (!rule) return Infinity;
-      return dayjs.utc(rule.start).unix();
+      const events = selectRuleEvents(tutor);
+      const event = first(events);
+      if (!event) return Infinity;
+      return dayjs.utc(event.start).unix();
     },
     (tutor: ITutor.FullTutor) => {
-      if (!req.user.gender) return 0; // disable ordering by gender if user gener is unkown.
+      if (!req.user?.gender) return 0; // disable ordering by gender if user gener is unkown.
       if (!tutor.gender) return Infinity;
       const same = req.user.gender === tutor.gender;
       return same ? 0 : 1;
     },
     "online",
+    "notice",
   ];
-  const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc"];
-  const tutors = orderBy(cache.tutors, iteratees, orders);
+  const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
+  const ordered = orderBy(tutors, iteratees, orders);
   const page = query.page || 1;
   const size = query.size || 10;
   const offset = (page - 1) * size;
-  const total = tutors.length;
-  const paginated = drop(tutors, offset).slice(0, size);
-  const rules = reduce(
-    paginated,
-    (acc: ITutor.Cache["unpackedRules"], tutor) => {
-      const id = tutor.id.toString();
-      acc[id] = unpackedRules[id] || [];
-      return acc;
-    },
-    {}
-  );
+  const total = ordered.length;
+  const paginated = drop(ordered, offset).slice(0, size);
+  const list = paginated.map((tutor) => ({
+    ...tutor,
+    rules: selectRuleEvents(tutor),
+  }));
 
-  res.status(200).json({ total, tutors: paginated, rules });
+  const response: ITutor.FindAvailableTutorsApiResponse = {
+    list,
+    total,
+  };
+
+  res.status(200).json(response);
 }
 
 async function findTutorsForMediaProvider(

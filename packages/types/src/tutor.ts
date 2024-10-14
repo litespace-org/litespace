@@ -51,17 +51,9 @@ export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropVideo?: boolean;
 };
 
-export type Cache = {
-  start: string;
-  end: string;
-  tutors: FullTutor[];
-  unpackedRules: Record<string, Array<IRule.RuleEvent>>;
-};
-
 export type FindAvailableTutorsApiResponse = {
   total: number;
-  tutors: Cache["tutors"];
-  rules: Cache["unpackedRules"];
+  list: Array<FullTutor & { rules: IRule.RuleEvent[] }>;
 };
 
 export type PublicTutorFieldsForMediaProvider = {
