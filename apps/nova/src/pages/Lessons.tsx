@@ -54,19 +54,23 @@ const Lessons: React.FC = () => {
       {lessons && list && profile ? (
         <div>
           <List list={list} user={profile} />
-          <div className="mr-6">
-            <Button
-              loading={lessons.isLoading || lessons.isFetching}
-              disabled={
-                lessons.isLoading || lessons.isFetching || !lessons.hasNextPage
-              }
-              onClick={more}
-            >
-              {intl.formatMessage({
-                id: messages["global.labels.more"],
-              })}
-            </Button>
-          </div>
+          {!isEmpty(list) ? (
+            <div className="mr-6">
+              <Button
+                loading={lessons.isLoading || lessons.isFetching}
+                disabled={
+                  lessons.isLoading ||
+                  lessons.isFetching ||
+                  !lessons.hasNextPage
+                }
+                onClick={more}
+              >
+                {intl.formatMessage({
+                  id: messages["global.labels.more"],
+                })}
+              </Button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

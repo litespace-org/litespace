@@ -9,7 +9,6 @@ import {
   Controller,
   useFormatMessage,
   atlas,
-  saveToken,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -48,7 +47,6 @@ const Login: React.FC = () => {
     async (credentials: IUser.Credentials) => {
       const profile = await atlas.auth.password(credentials);
       dispatch(setUserProfile(profile));
-      saveToken(profile.token);
     },
     [dispatch]
   );

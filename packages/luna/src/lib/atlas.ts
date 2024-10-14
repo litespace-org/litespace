@@ -3,8 +3,6 @@ import { Atlas, asAssetUrl, asCallRecordingUrl } from "@litespace/atlas";
 import { getToken } from "@/lib/cache";
 import zod from "zod";
 
-console.log("here...");
-
 export const backend = zod
   .enum([Backend.Local, Backend.Production, Backend.Staging])
   .parse(import.meta.env.VITE_BACKEND);

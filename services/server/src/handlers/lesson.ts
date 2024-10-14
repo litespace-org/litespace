@@ -117,7 +117,6 @@ async function findUserLessons(
   next: NextFunction
 ) {
   const { id } = withNamedId("id").parse(req.params);
-  console.log(req.user);
   const allowed = authorizer().admin().owner(id).check(req.user);
   if (!allowed) return next(forbidden());
 

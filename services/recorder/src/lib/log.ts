@@ -13,7 +13,7 @@ export function logger(...prefixs: string[]) {
     .map((prefix) => `[${prefix}]`)
     .join(" ");
 
-  const message = <T extends Loggable>(...value: T[]) =>
+  const message = <T extends Loggable>(value: T[]) =>
     `${prefix} ${value.map(json).join(" ")}`;
 
   return {

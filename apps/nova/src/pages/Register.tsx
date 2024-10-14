@@ -19,9 +19,9 @@ import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { merge } from "lodash";
 import { setUserProfile } from "@/redux/user/profile";
-import { saveToken } from "@/lib/cache";
 import RegisterLight from "@litespace/assets/register-light.svg";
 import RegisterDark from "@litespace/assets/register-dark.svg";
+import GoogleAuth from "@/components/Common/GoogleAuth";
 
 interface IForm {
   email: string;
@@ -65,7 +65,6 @@ const Register: React.FC = () => {
       toaster.success({ title: intl("page.register.success") });
       dispatch(setUserProfile({ user, token }));
       navigate(Route.Root);
-      saveToken(token);
     },
     [dispatch, intl, navigate]
   );
@@ -136,18 +135,19 @@ const Register: React.FC = () => {
                 }
               />
 
-              <div>
-                <Button
-                  loading={mutation.isPending}
-                  htmlType="submit"
-                  className="w-full mt-2"
-                  size={ButtonSize.Small}
-                >
-                  {intl("page.register.form.button.submit.label")}
-                </Button>
-              </div>
+              <Button
+                loading={mutation.isPending}
+                htmlType="submit"
+                className="w-full mt-2"
+                size={ButtonSize.Small}
+              >
+                {intl("page.register.form.button.submit.label")}
+              </Button>
             </div>
           </Form>
+          <div className="mt-4">
+            <GoogleAuth purpose="register" role={role} />
+          </div>
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">

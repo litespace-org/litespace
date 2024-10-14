@@ -5,6 +5,8 @@ import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistGate } from "redux-persist/integration/react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { GOOGLE_CLIENT_ID } from "@/constants/auth";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -19,19 +21,21 @@ createRoot(document.getElementById("root")!).render(
     locale="ar-EG"
     defaultLocale="ar-EG"
   >
-    <QueryClientProvider client={queryClient}>
-      <ReduxProvider store={store}>
-        <PersistGate
-          loading={
-            <div className="w-screen h-screen flex items-center justify-center">
-              <Spinner />
-            </div>
-          }
-          persistor={persistor}
-        >
-          <App />
-        </PersistGate>
-      </ReduxProvider>
-    </QueryClientProvider>
+    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <QueryClientProvider client={queryClient}>
+        <ReduxProvider store={store}>
+          <PersistGate
+            loading={
+              <div className="w-screen h-screen flex items-center justify-center">
+                <Spinner />
+              </div>
+            }
+            persistor={persistor}
+          >
+            <App />
+          </PersistGate>
+        </ReduxProvider>
+      </QueryClientProvider>
+    </GoogleOAuthProvider>
   </IntlProvider>
 );

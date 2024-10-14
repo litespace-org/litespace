@@ -72,7 +72,7 @@ export const serverConfig = {
 export const passwordRegex =
   /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
 
-export const authorizationSecret = zod
+export const jwtSecret = zod
   .string({ message: "Missing JWT Scret" })
   .parse(process.env.JWT_SECRET)
   .trim();
@@ -82,34 +82,6 @@ export const googleConfig = {
     .string({ message: "Missing or invalid google client id" })
     .trim()
     .parse(process.env.GOOGLE_CLIENT_ID),
-  clientSecret: zod
-    .string({ message: "Missing or invalid google client secret" })
-    .trim()
-    .parse(process.env.GOOGLE_CLIENT_SECRET),
-} as const;
-
-export const facebookConfig = {
-  appId: zod
-    .string({ message: "Missing or invalid facebook app id" })
-    .trim()
-    .parse(process.env.FACEBOOK_APP_ID),
-  appSecret: zod
-    .string({ message: "Missing or invalid facebook app secret" })
-    .trim()
-    .parse(process.env.FACEBOOK_APP_SECRET),
-} as const;
-
-export const discordConfig = {
-  clientId: zod
-    .string({ message: "Missing or invalid discord client id" })
-    .trim()
-    .parse(process.env.DISCORD_CLIENT_ID),
-  clientSecret: zod
-    .string({ message: "Missing or invalid discord client secret" })
-    .trim()
-    .parse(process.env.DISCORD_CLIENT_SECRET),
-  tokenApi: "https://discord.com/api/v10/oauth2/token",
-  api: "https://discord.com/api/v10",
 } as const;
 
 export const emailConfig = {

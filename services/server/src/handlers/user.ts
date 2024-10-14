@@ -106,7 +106,11 @@ function update(context: ApiContext) {
   return safe(async (req: Request, res: Response, next: NextFunction) => {
     const { id } = identityObject.parse(req.params);
 
-    const allowed = enforceRequest(req, id === req.user?.id);
+    const allowed = authorizer()
+      .admin()
+      .superAdmin()
+      .authenticated()
+      .check(req.user);
     if (!allowed) return next(forbidden());
 
     const currentUser = req.user;

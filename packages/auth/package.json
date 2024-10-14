@@ -40,14 +40,15 @@
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
+    "google-auth-library": "^9.14.2",
     "jsonwebtoken": "^9.0.2"
   },
   "peerDependencies": {
-    "express-async-handler": "^1.2.0",
     "@litespace/models": "workspace:^",
     "@litespace/sol": "workspace:^",
     "connect-pg-simple": "^9.0.1",
     "express": "^4.19.2",
+    "express-async-handler": "^1.2.0",
     "zod": "^3.23.8"
   }
 }

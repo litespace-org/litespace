@@ -20,11 +20,11 @@ import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { useAppDispatch } from "@/redux/store";
 import { setUserProfile } from "@/redux/user/profile";
-import { saveToken } from "@/lib/cache";
 import { resetTutorMeta } from "@/redux/user/tutor";
 import { resetUserRules } from "@/redux/user/schedule";
 import LoginLight from "@litespace/assets/login-light.svg";
 import LoginDark from "@litespace/assets/login-dark.svg";
+import GoogleAuth from "@/components/Common/GoogleAuth";
 
 interface IForm {
   email: string;
@@ -54,7 +54,6 @@ const Login: React.FC = () => {
     async (credentials: IUser.Credentials) => {
       const profile = await atlas.auth.password(credentials);
       dispatch(setUserProfile(profile));
-      saveToken(profile.token);
       dispatch(resetTutorMeta());
       dispatch(resetUserRules());
     },
@@ -92,7 +91,6 @@ const Login: React.FC = () => {
               <FormattedMessage id={messages["page.login.form.title"]} />
             </h1>
           </div>
-
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-4">
               <Field
@@ -128,11 +126,16 @@ const Login: React.FC = () => {
                 size={ButtonSize.Small}
                 disabled={mutation.isPending}
                 loading={mutation.isPending}
+                className="w-full"
               >
                 {intl("page.login.form.button.submit.label")}
               </Button>
             </div>
           </Form>
+
+          <div className="mt-4">
+            <GoogleAuth purpose="login" />
+          </div>
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">

@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { serverConfig } from "@/constants";
+import { googleConfig, jwtSecret, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { wssHandler } from "@/wss";
 import bodyParser from "body-parser";
@@ -50,9 +50,12 @@ app.use(
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authMiddleware("jwt_secret"));
+app.use(authMiddleware(jwtSecret));
 app.use("/assets/", express.static(serverConfig.media.directory));
-app.use("/api/v1/auth", authRouter("jwt_secret"));
+app.use(
+  "/api/v1/auth",
+  authRouter({ jwtSecret: jwtSecret, clientId: googleConfig.clientId })
+);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule);
 app.use("/api/v1/tutor", routes.tutor);

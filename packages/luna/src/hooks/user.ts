@@ -7,6 +7,7 @@ import { useFormatMessage } from "@/hooks/intl";
 import { validateText } from "@/lib/validate";
 import dayjs from "@/lib/dayjs";
 import { MIN_AGE, MAX_AGE } from "@litespace/sol";
+import { useRequired } from "@/hooks/validation";
 
 export type RefreshUser = (user?: IUser.Self) => void;
 
@@ -98,6 +99,7 @@ export function useValidateName() {
 
 export function useValidateBirthYear() {
   const intl = useFormatMessage();
+  const required = useRequired();
 
   const max = useMemo(() => dayjs().year() - MIN_AGE, []);
   const min = useMemo(() => dayjs().year() - MAX_AGE, []);
@@ -113,5 +115,5 @@ export function useValidateBirthYear() {
     [intl, max, min]
   );
 
-  return { min, max, validate };
+  return { min, max, validate, required };
 }

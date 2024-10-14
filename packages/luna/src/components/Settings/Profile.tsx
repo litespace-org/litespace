@@ -37,7 +37,14 @@ const Profile: React.FC<{
 }> = ({ profile, tutor, loading, fetching, refresh, first }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
-    defaultValues: { name: "", birthYear: "", bio: "", about: "", email: "" },
+    defaultValues: {
+      name: "",
+      birthYear: "",
+      bio: "",
+      about: "",
+      email: "",
+      password: "",
+    },
   });
 
   const data = form.watch();
@@ -220,7 +227,10 @@ const Profile: React.FC<{
               <Controller.NumericInput
                 control={form.control}
                 name="birthYear"
-                rules={{ validate: validateBirthYear.validate }}
+                rules={{
+                  validate: validateBirthYear.validate,
+                  required: validateBirthYear.required,
+                }}
                 placeholder={intl("labels.birthYear.placeholder")}
                 min={validateBirthYear.min}
                 max={validateBirthYear.max}
