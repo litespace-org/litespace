@@ -14,6 +14,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo, useState } from "react";
 import Error from "@/components/common/Error";
+import { useDeletePlan } from "@litespace/headless/plans";
 
 const List: React.FC<{
   query: UseQueryResult<IPlan.MappedAttributes[], Error>;
@@ -121,7 +122,7 @@ const List: React.FC<{
                 label: "Delete",
                 danger: true,
                 onClick() {
-                  alert("Delete plan !!!");
+                  deletePlan(info.row.original.id);
                 },
               },
             ]}
@@ -130,6 +131,15 @@ const List: React.FC<{
       }),
     ],
     [columnHelper, intl]
+  );
+
+  const deletePlan = useCallback(
+    (id: number) => {
+      if (!plan) return;
+      const deleteFn = useDeletePlan({ id });
+      deleteFn.mutate();
+    },
+    [plan]
   );
 
   if (query.isLoading) return <Loading className="h-1/4" />;
