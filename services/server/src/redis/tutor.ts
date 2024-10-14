@@ -21,7 +21,6 @@ export const availableTutorsCache = {
     await client
       .multi()
       .set(CacheKey.TutorListCacheStart, start, { EX: ttl })
-
       .set(CacheKey.TutorListCacheEnd, end, { EX: ttl })
       .set(CacheKey.TutorList, JSON.stringify(tutors), { EX: ttl })
       .set(CacheKey.TutorListUnpackedRules, JSON.stringify(unpackedRules), {

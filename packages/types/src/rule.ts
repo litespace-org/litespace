@@ -88,3 +88,9 @@ export type FindUnpackedUserRulesResponse = {
   rules: Self[];
   unpacked: RuleEvent[];
 };
+
+export type Cache = {
+  tutor: number;
+  rule: number;
+  events: RuleEvent[];
+};
