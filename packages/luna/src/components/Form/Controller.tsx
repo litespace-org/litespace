@@ -23,6 +23,7 @@ import {
   DateInputProps,
 } from "@/components/DateInput";
 import { Select as BaseSelect, SelectProps } from "@/components/Select";
+import { Rating as BaseRating } from "@/components/Rating";
 
 import {
   TimePicker as BaseTimePicker,
@@ -305,6 +306,29 @@ export function Textarea<T extends FieldValues>({
           {...field}
           {...props}
         />
+      )}
+    />
+  );
+}
+
+export function Rating<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  value,
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+  value: number;
+}) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => (
+        <BaseRating onChange={field.onChange} value={value} />
       )}
     />
   );
