@@ -89,7 +89,6 @@ const TutorProfile: React.FC = () => {
           <About about={tutor.data.about} />
           <ActivitiesOverview query={activity} />
           <Ratings query={ratings} />
-          {/* New Component to rate tutor */}
           <RateForm tutor={tutor.data.id} />
         </div>
       </div>
