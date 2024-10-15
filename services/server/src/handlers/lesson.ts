@@ -120,6 +120,7 @@ async function findUserLessons(
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
+  // todo: should be fixed. Don't cound the entire table rows.
   const total = await count(lessons.table.lessons);
   const userLessons = await lessons.findMemberLessons([id], query);
   const lessonMembers = await lessons.findLessonMembers(map(userLessons, "id"));
