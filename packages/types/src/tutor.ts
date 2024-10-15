@@ -51,7 +51,7 @@ export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropVideo?: boolean;
 };
 
-export type FindAvailableTutorsApiResponse = {
+export type FindOnboardedTutorsApiResponse = {
   total: number;
   list: Array<FullTutor & { rules: IRule.RuleEvent[] }>;
 };

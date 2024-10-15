@@ -5,7 +5,7 @@ import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
-import safe from "express-async-handler";
+import safeRequest from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
 import {
   email,
@@ -34,7 +34,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { asIsoDate } from "@litespace/sol";
+import { asIsoDate, safe } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
 import { generateJwtToken } from "@/lib/auth";
 import { cache } from "@/lib/cache";
@@ -57,11 +57,6 @@ const updateUserPayload = zod.object({
 });
 
 const findTutorMetaParams = zod.object({ tutorId: id });
-
-const findAvailableTutorsQuery = zod.object({
-  page: zod.optional(zod.coerce.number().min(1)),
-  size: zod.optional(zod.coerce.number().max(50)),
-});
 
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, role } = schema.http.user.create.parse(req.body);
@@ -101,127 +96,106 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 }
 
 function update(context: ApiContext) {
-  return safe(async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = identityObject.parse(req.params);
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { id } = identityObject.parse(req.params);
 
-    const allowed = authorizer()
-      .admin()
-      .superAdmin()
-      .authenticated()
-      .check(req.user);
-    if (!allowed) return next(forbidden());
+      const allowed = authorizer()
+        .admin()
+        .superAdmin()
+        .authenticated()
+        .check(req.user);
+      if (!allowed) return next(forbidden());
 
-    const currentUser = req.user;
-    const targetUser = await users.findById(id);
-    if (!targetUser) return next(notfound.user());
+      const currentUser = req.user;
+      const targetUser = await users.findById(id);
+      if (!targetUser) return next(notfound.user());
 
-    const {
-      email,
-      name,
-      password,
-      gender,
-      birthYear,
-      drop,
-      bio,
-      about,
-      notice,
-    }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
+      const {
+        email,
+        name,
+        password,
+        gender,
+        birthYear,
+        drop,
+        bio,
+        about,
+        notice,
+      }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-    const files = {
-      image: {
-        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Image],
-        type: FileType.Image,
-      },
-      video: {
-        file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
-        type: FileType.Video,
-      },
-    } as const;
-
-    // Only media provider and admins can update tutor media files (images and videos)
-    // Tutor cannot upload it for himself.
-    const isUpdatingTutorMedia =
-      (files.image.file || files.video.file) &&
-      targetUser.role === IUser.Role.Tutor;
-    const isEligibleUser = [
-      IUser.Role.SuperAdmin,
-      IUser.Role.RegularAdmin,
-      IUser.Role.MediaProvider,
-    ].includes(currentUser.role);
-    if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
-
-    // Only media providers and admins can upload videos.
-    // e.g., students/interviewers cannot upload videos
-    if (files.video.file && !isEligibleUser) return next(forbidden());
-
-    const [image, video] = await Promise.all(
-      [files.image, files.video].map(({ file, type }) =>
-        file ? uploadSingle(file, type) : undefined
-      )
-    );
-
-    const user = await knex.transaction(async (tx: Knex.Transaction) => {
-      const user = await users.update(
-        id,
-        {
-          name,
-          email,
-          gender,
-          birthYear,
-          image: drop?.image === true ? null : image,
-          password: password ? hashPassword(password) : undefined,
+      const files = {
+        image: {
+          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Image],
+          type: FileType.Image,
         },
-        tx
+        video: {
+          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
+          type: FileType.Video,
+        },
+      } as const;
+
+      // Only media provider and admins can update tutor media files (images and videos)
+      // Tutor cannot upload it for himself.
+      const isUpdatingTutorMedia =
+        (files.image.file || files.video.file) &&
+        targetUser.role === IUser.Role.Tutor;
+      const isEligibleUser = [
+        IUser.Role.SuperAdmin,
+        IUser.Role.RegularAdmin,
+        IUser.Role.MediaProvider,
+      ].includes(currentUser.role);
+      if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
+
+      // Only media providers and admins can upload videos.
+      // e.g., students/interviewers cannot upload videos
+      if (files.video.file && !isEligibleUser) return next(forbidden());
+
+      const [image, video] = await Promise.all(
+        [files.image, files.video].map(({ file, type }) =>
+          file ? uploadSingle(file, type) : undefined
+        )
       );
 
-      const tutorData = bio || about || video || drop?.video || notice;
-      if (targetUser.role === IUser.Role.Tutor && tutorData)
-        await tutors.update(
-          targetUser.id,
-          { bio, about, video: drop?.video ? null : video, notice },
+      const user = await knex.transaction(async (tx: Knex.Transaction) => {
+        const user = await users.update(
+          id,
+          {
+            name,
+            email,
+            gender,
+            birthYear,
+            image: drop?.image === true ? null : image,
+            password: password ? hashPassword(password) : undefined,
+          },
           tx
         );
 
-      return user;
-    });
+        const tutorData = bio || about || video || drop?.video || notice;
+        if (targetUser.role === IUser.Role.Tutor && tutorData)
+          await tutors.update(
+            targetUser.id,
+            { bio, about, video: drop?.video ? null : video, notice },
+            tx
+          );
 
-    const end = () => {
+        return user;
+      });
+
+      // todo: remove the tutor from the case incase tutor is no longer fully onboarded
       res.status(200).json(user);
-    };
+      const isTutor = user.role === IUser.Role.Tutor;
+      if (!isTutor) return;
 
-    // handle available tutors cache
-    const isTutor = user.role === IUser.Role.Tutor;
-    if (!isTutor) return end();
-    if (context) return end();
+      const error = await safe(async () => {
+        const tutor = await tutors.findById(user.id);
+        if (!tutor) return;
+        await cache.tutors.setOne(tutor);
+        context.io.sockets.emit("update");
+      });
 
-    // const start = dayjs.utc().startOf("day");
-    // const exists = await availableTutorsCache.exists();
-    // const dates = await availableTutorsCache.getDates();
-    // if (
-    //   !exists ||
-    //   !dates.start ||
-    //   !dates.end ||
-    //   !start.isBetween(dates.start, dates.end, "day", "[]")
-    // ) {
-    //   await cacheTutors(start);
-    //   context.io.sockets.emit("update");
-    //   return end();
-    // }
-
-    // // todo: handle deactivated tutors
-    // const tutor = await tutors.findById(targetUser.id);
-    // if (!tutor) return next(notfound.tutor());
-    // if (!tutor.activated) return end();
-
-    // todo: disable caching for now
-    // const list = await availableTutorsCache.getTutors();
-    // const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
-    // const updated = concat(filtered, tutor);
-    // await availableTutorsCache.setTutors(updated);
-    // // ideally, we will emit the event to a sepecial room
-    // context.io.sockets.emit("update");
-    return end();
-  });
+      if (error instanceof Error) console.error(error);
+    }
+  );
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
@@ -285,49 +259,8 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(meta);
 }
 
-/**
- * Tutors selection algorithm:
- * 1. First available tutors (1st order).
- * 2. Same gender as user (2nd order)
- * 3. Online (3rd order)
- * 4. Rate (4th order) (not implemented)
- *
- * Best candidate will be: available in the nerest time, same gender as the user
- * and online.
- *
- *
- * To be able to sort tutors by their availablity we should have access to their
- * schedule (rules) and their upcoming lessons. It is an expensive operation to
- * do for all of our tutors **on each request**. That's why we will do this
- * operation once and cache it (using Redis). It should be shared between all
- * students.
- *
- *
- * ### When to updated the cache?
- * - When the tutor info is updated (e.g., status, bio, about, ...).
- * - When the tutor schedule (rules) is modified (CRUD).
- * - When a new lesson is canceled or registered.
- *
- * ### Notify cache updates
- * On updating the cache, specific event will be emitted to specific **shared
- * room** (e.g., available_tutors) at which all active students will be there.
- * The event will trigger the client to refetch the available tutors cache.
- *
- * ### Date size & Cache TTL (time to live)
- *
- * At the worse case, student should have access to the tutors' shcedules for
- * the next 30 days (in case he just got subscribed today). Other students will
- * be some where in their monthly subscription.
- *
- * - We will unpack all tutors rules in next 30 days.
- * - We will keep the cache for 15 days and then rebuild it again.
- *
- * This mean that at first day from the cache, studnets has access to 30 days of
- * data. At the last day of the cache they will have access 15 days of
- * information.
- */
-async function findAvailableTutors(req: Request, res: Response) {
-  const query = findAvailableTutorsQuery.parse(req.query);
+async function findOnboardedTutors(req: Request, res: Response) {
+  const query = pagination.parse(req.query);
   const now = dayjs.utc();
   const start = now.startOf("day");
 
@@ -384,7 +317,8 @@ async function findAvailableTutors(req: Request, res: Response) {
     "notice",
   ];
   const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
-  const ordered = orderBy(tutors, iteratees, orders);
+  const filtered = tutors.filter((tutor) => isPublicTutor(tutor));
+  const ordered = orderBy(filtered, iteratees, orders);
   const page = query.page || 1;
   const size = query.size || 10;
   const offset = (page - 1) * size;
@@ -395,7 +329,7 @@ async function findAvailableTutors(req: Request, res: Response) {
     rules: selectRuleEvents(tutor),
   }));
 
-  const response: ITutor.FindAvailableTutorsApiResponse = {
+  const response: ITutor.FindOnboardedTutorsApiResponse = {
     list,
     total,
   };
@@ -474,15 +408,15 @@ async function findTutorActivityScores(
 
 export default {
   update,
-  create: safe(create),
-  findMe: safe(findMe),
-  findById: safe(findById),
-  findUsers: safe(findUsers),
-  returnUser: safe(returnUser),
-  findTutorMeta: safe(findTutorMeta),
-  findTutorStats: safe(findTutorStats),
-  selectInterviewer: safe(selectInterviewer),
-  findAvailableTutors: safe(findAvailableTutors),
-  findTutorActivityScores: safe(findTutorActivityScores),
-  findTutorsForMediaProvider: safe(findTutorsForMediaProvider),
+  create: safeRequest(create),
+  findMe: safeRequest(findMe),
+  findById: safeRequest(findById),
+  findUsers: safeRequest(findUsers),
+  returnUser: safeRequest(returnUser),
+  findTutorMeta: safeRequest(findTutorMeta),
+  findTutorStats: safeRequest(findTutorStats),
+  selectInterviewer: safeRequest(selectInterviewer),
+  findOnboardedTutors: safeRequest(findOnboardedTutors),
+  findTutorActivityScores: safeRequest(findTutorActivityScores),
+  findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
 };
