@@ -18,6 +18,7 @@
     "@litespace/luna": "workspace:^",
     "@litespace/sol": "workspace:^",
     "@litespace/types": "workspace:^",
+    "@litespace/headless": "workspace:^",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-query": "^5.56.2",
