@@ -10,16 +10,11 @@ import cors from "cors";
 import logger from "morgan";
 import { onlyForHandshake } from "@/middleware/common";
 import { capitalize } from "lodash";
-import { client } from "@/redis/client";
 import { ApiContext } from "@/types/api";
-import { safe } from "@litespace/sol";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, router as authRouter } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
-
-// connect to the redis server
-safe(async () => client.connect());
 
 const app = express();
 const server = createServer(app);

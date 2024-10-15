@@ -22,23 +22,20 @@ import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
 import { httpQueryFilter } from "@/validation/http";
 import {
-  concat,
   drop,
   entries,
   first,
   flatten,
   groupBy,
   orderBy,
-  reduce,
   sample,
 } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { availableTutorsCache } from "@/redis/tutor";
 import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { asIsoDate, Schedule, unpackRules } from "@litespace/sol";
+import { asIsoDate } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
 import { generateJwtToken } from "@/lib/auth";
 import { cache } from "@/lib/cache";
@@ -196,32 +193,34 @@ function update(context: ApiContext) {
     // handle available tutors cache
     const isTutor = user.role === IUser.Role.Tutor;
     if (!isTutor) return end();
+    if (context) return end();
 
-    const start = dayjs.utc().startOf("day");
-    const exists = await availableTutorsCache.exists();
-    const dates = await availableTutorsCache.getDates();
-    if (
-      !exists ||
-      !dates.start ||
-      !dates.end ||
-      !start.isBetween(dates.start, dates.end, "day", "[]")
-    ) {
-      await cacheTutors(start);
-      context.io.sockets.emit("update");
-      return end();
-    }
+    // const start = dayjs.utc().startOf("day");
+    // const exists = await availableTutorsCache.exists();
+    // const dates = await availableTutorsCache.getDates();
+    // if (
+    //   !exists ||
+    //   !dates.start ||
+    //   !dates.end ||
+    //   !start.isBetween(dates.start, dates.end, "day", "[]")
+    // ) {
+    //   await cacheTutors(start);
+    //   context.io.sockets.emit("update");
+    //   return end();
+    // }
 
-    // todo: handle deactivated tutors
-    const tutor = await tutors.findById(targetUser.id);
-    if (!tutor) return next(notfound.tutor());
-    if (!tutor.activated) return end();
+    // // todo: handle deactivated tutors
+    // const tutor = await tutors.findById(targetUser.id);
+    // if (!tutor) return next(notfound.tutor());
+    // if (!tutor.activated) return end();
 
-    const list = await availableTutorsCache.getTutors();
-    const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
-    const updated = concat(filtered, tutor);
-    await availableTutorsCache.setTutors(updated);
-    // ideally, we will emit the event to a sepecial room
-    context.io.sockets.emit("update");
+    // todo: disable caching for now
+    // const list = await availableTutorsCache.getTutors();
+    // const filtered = list ? list.filter((t) => t.id !== tutor.id) : [];
+    // const updated = concat(filtered, tutor);
+    // await availableTutorsCache.setTutors(updated);
+    // // ideally, we will emit the event to a sepecial room
+    // context.io.sockets.emit("update");
     return end();
   });
 }
@@ -331,11 +330,7 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
  * data. At the last day of the cache they will have access 15 days of
  * information.
  */
-async function findAvailableTutors(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
+async function findAvailableTutors(req: Request, res: Response) {
   const query = findAvailableTutorsQuery.parse(req.query);
   const now = dayjs.utc();
   const start = now.startOf("day");

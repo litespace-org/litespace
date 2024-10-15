@@ -8,14 +8,12 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { forbidden, notfound, unexpected } from "@/lib/error";
-import { ILesson, IRule, IUser } from "@litespace/types";
+import { ILesson, IUser } from "@litespace/types";
 import { calls, lessons, rules, users, knex, count } from "@litespace/models";
 import { Knex } from "knex";
 import asyncHandler from "express-async-handler";
 import { ApiContext } from "@/types/api";
-import dayjs from "@/lib/dayjs";
-import { availableTutorsCache } from "@/redis/tutor";
-import { Schedule, unpackRules, calculateLessonPrice } from "@litespace/sol";
+import { calculateLessonPrice } from "@litespace/sol";
 import { map } from "lodash";
 import { authorizer } from "@litespace/auth";
 import { platformConfig } from "@/constants";
@@ -80,33 +78,34 @@ function create(context: ApiContext) {
       );
 
       res.status(200).json({ call, lesson });
+      if (context) return;
 
-      const dates = await availableTutorsCache.getDates();
-      const rulesMap = await availableTutorsCache.getRules();
-      if (!rulesMap || !dates.start || !dates.end) return;
+      // const dates = await availableTutorsCache.getDates();
+      // const rulesMap = await availableTutorsCache.getRules();
+      // if (!rulesMap || !dates.start || !dates.end) return;
 
-      const start = payload.start;
-      const end = dayjs.utc(start).add(payload.duration, "minutes");
-      const tutorId = payload.tutorId.toString();
-      const lessonEvent = Schedule.event(start, end);
-      const tutorRules = rulesMap[tutorId] || [];
-      const ruleSlotIndex = tutorRules.findIndex((rule) =>
-        Schedule.isContained(rule, lessonEvent)
-      );
-      if (ruleSlotIndex === -1) return;
+      // const start = payload.start;
+      // const end = dayjs.utc(start).add(payload.duration, "minutes");
+      // const tutorId = payload.tutorId.toString();
+      // const lessonEvent = Schedule.event(start, end);
+      // const tutorRules = rulesMap[tutorId] || [];
+      // const ruleSlotIndex = tutorRules.findIndex((rule) =>
+      //   Schedule.isContained(rule, lessonEvent)
+      // );
+      // if (ruleSlotIndex === -1) return;
 
-      const target = tutorRules[ruleSlotIndex];
-      const mask = [lessonEvent];
-      const events: IRule.RuleEvent[] = Schedule.splitBy(target, mask).map(
-        (event) => ({ id: target.id, ...event })
-      );
+      // const target = tutorRules[ruleSlotIndex];
+      // const mask = [lessonEvent];
+      // const events: IRule.RuleEvent[] = Schedule.splitBy(target, mask).map(
+      //   (event) => ({ id: target.id, ...event })
+      // );
 
-      // replace old rule events with the new events
-      const updatedRules = tutorRules.splice(ruleSlotIndex, 1, ...events);
-      rulesMap[tutorId] = updatedRules;
-      await availableTutorsCache.setRules(rulesMap);
-      // notify client about the updated cache
-      context.io.emit("updated"); // todo
+      // // replace old rule events with the new events
+      // const updatedRules = tutorRules.splice(ruleSlotIndex, 1, ...events);
+      // rulesMap[tutorId] = updatedRules;
+      // await availableTutorsCache.setRules(rulesMap);
+      // // notify client about the updated cache
+      // context.io.emit("updated"); // todo
     }
   );
 }
@@ -163,36 +162,37 @@ function cancel(context: ApiContext) {
       });
 
       res.status(200).send();
+      if (context) return;
 
       // revert the cache
-      const dates = await availableTutorsCache.getDates();
-      const cachedRules = await availableTutorsCache.getRules();
-      const tutorId = members.find((member) => member.host)?.userId;
-      if (!cachedRules || !dates.start || !dates.end || !tutorId) return;
+      // const dates = await availableTutorsCache.getDates();
+      // const cachedRules = await availableTutorsCache.getRules();
+      // const tutorId = members.find((member) => member.host)?.userId;
+      // if (!cachedRules || !dates.start || !dates.end || !tutorId) return;
 
-      const start = dates.start.toISOString();
-      const end = dates.start.toISOString();
-      const tutorCalls = await calls.findMemberCalls({
-        userIds: [tutorId],
-        ignoreCanceled: true,
-        between: { start, end },
-      });
+      // const start = dates.start.toISOString();
+      // const end = dates.start.toISOString();
+      // const tutorCalls = await calls.findMemberCalls({
+      //   userIds: [tutorId],
+      //   ignoreCanceled: true,
+      //   between: { start, end },
+      // });
 
-      const tutorRules = await rules.findActivatedRules(
-        [tutorId],
-        dates.start.toISOString()
-      );
+      // const tutorRules = await rules.findActivatedRules(
+      //   [tutorId],
+      //   dates.start.toISOString()
+      // );
 
-      const unpackedRules = unpackRules({
-        rules: tutorRules,
-        calls: tutorCalls,
-        start,
-        end,
-      });
+      // const unpackedRules = unpackRules({
+      //   rules: tutorRules,
+      //   calls: tutorCalls,
+      //   start,
+      //   end,
+      // });
 
-      cachedRules[tutorId.toString()] = unpackedRules;
-      await availableTutorsCache.setRules(cachedRules);
-      context.io.emit("updated"); // todo
+      // cachedRules[tutorId.toString()] = unpackedRules;
+      // await availableTutorsCache.setRules(cachedRules);
+      // context.io.emit("updated"); // todo
     }
   );
 }
