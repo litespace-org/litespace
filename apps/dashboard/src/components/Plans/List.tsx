@@ -2,7 +2,7 @@ import BooleanField from "@/components/common/BooleanField";
 import DateField from "@/components/common/DateField";
 import PlanForm from "@/components/Plans/PlanForm";
 import Price from "@/components/Plans/Price";
-import Table from "@/components/Plans/Table";
+import { Table } from "@/components/common/Table";
 import {
   ActionsMenu,
   formatMinutes,
@@ -44,7 +44,7 @@ const List: React.FC<{
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
-        header: intl("dashboard.plan.id"),
+        header: intl("global.labels.id"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("alias", {
@@ -163,7 +163,17 @@ const List: React.FC<{
   if (!query.data) return null;
   return (
     <div>
-      <Table columns={columns} data={query.data} />
+      <Table
+        columns={columns}
+        data={query.data}
+        goto={() => {}}
+        prev={() => {}}
+        next={() => {}}
+        totalPages={0}
+        fetching={false}
+        loading={false}
+        page={1}
+      />
       {plan ? (
         <PlanForm plan={plan} open close={close} refresh={query.refetch} />
       ) : null}
