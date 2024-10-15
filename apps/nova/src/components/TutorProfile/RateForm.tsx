@@ -73,10 +73,10 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
         field={
           <Controller.Textarea
             rules={{
-              minLength: { value: 20, message: "must be above 20 characters" },
+              minLength: { value: 10, message: "must be above 10 characters" },
               maxLength: {
-                value: 50,
-                message: "must be less than 50 characters",
+                value: 1000,
+                message: "must be less than 1000 characters",
               },
             }}
             control={form.control}
