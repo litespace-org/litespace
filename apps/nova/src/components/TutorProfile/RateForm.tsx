@@ -1,5 +1,5 @@
 import React, { useCallback } from "react";
-import { useRateTutor } from "@litespace/headless/rating";
+import { useEditRateTutor, useRateTutor } from "@litespace/headless/rating";
 import {
   Button,
   ButtonSize,
@@ -12,7 +12,7 @@ import {
   useFormatMessage,
 } from "@litespace/luna";
 import { useForm } from "react-hook-form";
-import { IRating } from "@litespace/types";
+import { IRating, Void } from "@litespace/types";
 import { useQueryClient } from "@tanstack/react-query";
 
 type IForm = {
@@ -23,14 +23,18 @@ type IForm = {
 type RateFormProps = {
   tutor: number;
   rate?: IRating.Populated;
+  close?: Void;
 };
 
-const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
+const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const intl = useFormatMessage();
   const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["tutor-rating", tutor] });
     toaster.success({ title: intl("tutor.rate.succes") });
+    if (rate && close) {
+      close();
+    }
     form.reset();
   }, []);
   const onError = useCallback((error: Error) => {
@@ -38,8 +42,17 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
       title: intl("tutor.rate.error"),
       description: error.message,
     });
+    if (rate && close) {
+      close();
+    }
   }, []);
   const rateTutor = useRateTutor({ onSuccess, onError });
+
+  const editRateTutor = useEditRateTutor({
+    id: rate?.id || 0,
+    onSuccess,
+    onError,
+  });
 
   // Create new tutor hook to edit rating
 
@@ -49,7 +62,11 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
 
   const onSubmit = useCallback((data: IForm) => {
     if (rate) {
-      // TODO: invoke updateRating mutate
+      editRateTutor.mutate({
+        feedback: data.feedback,
+        value: data.rating,
+      });
+
       return;
     }
     rateTutor.mutate({
@@ -91,8 +108,8 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
       {/* handle different cases of editing or creating  */}
       <Button
         type={ButtonType.Primary}
-        disabled={rateTutor.isPending}
-        loading={rateTutor.isPending}
+        disabled={rateTutor.isPending || editRateTutor.isPending}
+        loading={rateTutor.isPending || editRateTutor.isPending}
         size={ButtonSize.Small}
       >
         {intl(rate ? "global.labels.update" : "global.labels.confirm")}
