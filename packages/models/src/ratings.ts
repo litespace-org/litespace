@@ -3,9 +3,9 @@ import { column, knex } from "@/query";
 import { IRating, IUser } from "@litespace/types";
 
 export class Ratings {
-  table = "ratings";
-  rater = "rater";
-  ratee = "ratee";
+  table = "ratings" as const;
+  rater = "rater" as const;
+  ratee = "ratee" as const;
 
   column = {
     ratings: (value: keyof IRating.Row) => column(value, this.table),
@@ -104,6 +104,16 @@ export class Ratings {
     return await this.findOneBy("id", id);
   }
 
+  async findSelfById(id: number): Promise<IRating.Self | null> {
+    const row = await knex<IRating.Row>(this.table)
+      .select("*")
+      .where(this.column.ratings("id"), id)
+      .first();
+
+    if (!row) return null;
+    return this.from(row);
+  }
+
   async findByRaterId(id: number): Promise<IRating.Populated[] | null> {
     return await this.findManyBy("rater_id", id);
   }
@@ -123,8 +133,8 @@ export class Ratings {
   }): Promise<IRating.Self | null> {
     const rows = await knex<IRating.Row>(this.table)
       .select("*")
-      .where("rater_id", ids.rater)
-      .orWhere("ratee_id", ids.ratee);
+      .where(this.column.ratings("rater_id"), ids.rater)
+      .andWhere(this.column.ratings("ratee_id"), ids.ratee);
 
     if (rows.length > 1)
       throw new Error("too many ratings found; expecting one");

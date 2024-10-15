@@ -38,6 +38,7 @@ const TutorProfile: React.FC = () => {
     queryFn: findTutorStats,
     queryKey: ["tutor-stats", id],
     enabled: !!id,
+    retry: false,
   });
 
   const findTutorAcivityScores = useCallback(() => {
@@ -49,6 +50,7 @@ const TutorProfile: React.FC = () => {
     queryFn: findTutorAcivityScores,
     queryKey: ["tutor-acivity", id],
     enabled: !!id,
+    retry: false,
   });
 
   const findRateeRatings = useCallback(async () => {

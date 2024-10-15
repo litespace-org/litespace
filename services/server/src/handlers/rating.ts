@@ -49,12 +49,13 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
 }
 
 async function updateRating(req: Request, res: Response, next: NextFunction) {
+  // todo: add auth
   const { id } = identityObject.parse(req.params);
   const payload = schema.http.rating.update.body.parse(req.body);
-  const rating = await ratings.findById(id);
+  const rating = await ratings.findSelfById(id);
 
   if (!rating) return next(notfound.rating());
-  if (rating.rater.id !== req.user.id) return next(forbidden());
+  if (rating.raterId !== req.user.id) return next(forbidden());
 
   await ratings.update(id, payload);
   res.status(200).send();
@@ -63,11 +64,9 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
 async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const { id } = identityObject.parse(req.params);
 
-  const rating = await ratings.findById(id);
+  const rating = await ratings.findSelfById(id);
   if (!rating) return next(notfound.rating());
-
-  const allowed = enforceRequest(req, rating.rater.id === req.user.id);
-  if (!allowed) return next(forbidden());
+  if (rating.raterId !== req.user.id) return next(forbidden());
 
   await ratings.delete(id);
   res.status(200).send();
