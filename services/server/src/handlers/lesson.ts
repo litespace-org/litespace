@@ -13,10 +13,12 @@ import { calls, lessons, rules, users, knex, count } from "@litespace/models";
 import { Knex } from "knex";
 import asyncHandler from "express-async-handler";
 import { ApiContext } from "@/types/api";
-import { calculateLessonPrice } from "@litespace/sol";
+import { calculateLessonPrice, safe, unpackRules } from "@litespace/sol";
 import { map } from "lodash";
 import { authorizer } from "@litespace/auth";
 import { platformConfig } from "@/constants";
+import { cache } from "@/lib/cache";
+import dayjs from "@/lib/dayjs";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -78,34 +80,24 @@ function create(context: ApiContext) {
       );
 
       res.status(200).json({ call, lesson });
-      if (context) return;
 
-      // const dates = await availableTutorsCache.getDates();
-      // const rulesMap = await availableTutorsCache.getRules();
-      // if (!rulesMap || !dates.start || !dates.end) return;
+      const error = await safe(async () => {
+        const ruleCalls = await calls.findByRuleId(rule.id);
+        const today = dayjs.utc().startOf("day");
+        await cache.rules.setOne({
+          tutor: tutor.id,
+          rule: rule.id,
+          events: unpackRules({
+            rules: [rule],
+            calls: ruleCalls,
+            start: today.toISOString(),
+            end: today.add(30, "days").toISOString(),
+          }),
+        });
 
-      // const start = payload.start;
-      // const end = dayjs.utc(start).add(payload.duration, "minutes");
-      // const tutorId = payload.tutorId.toString();
-      // const lessonEvent = Schedule.event(start, end);
-      // const tutorRules = rulesMap[tutorId] || [];
-      // const ruleSlotIndex = tutorRules.findIndex((rule) =>
-      //   Schedule.isContained(rule, lessonEvent)
-      // );
-      // if (ruleSlotIndex === -1) return;
-
-      // const target = tutorRules[ruleSlotIndex];
-      // const mask = [lessonEvent];
-      // const events: IRule.RuleEvent[] = Schedule.splitBy(target, mask).map(
-      //   (event) => ({ id: target.id, ...event })
-      // );
-
-      // // replace old rule events with the new events
-      // const updatedRules = tutorRules.splice(ruleSlotIndex, 1, ...events);
-      // rulesMap[tutorId] = updatedRules;
-      // await availableTutorsCache.setRules(rulesMap);
-      // // notify client about the updated cache
-      // context.io.emit("updated"); // todo
+        context.io.emit("update");
+      });
+      if (error instanceof Error) console.error(error);
     }
   );
 }
@@ -153,6 +145,9 @@ function cancel(context: ApiContext) {
       const lesson = await lessons.findById(lessonId);
       if (!lesson) return next(notfound.base());
 
+      const call = await calls.findById(lesson.callId);
+      if (!call) return next(notfound.base());
+
       const members = await lessons.findLessonMembers([lessonId]);
       const member = map(members, "userId").includes(userId);
       if (!member) return next(forbidden());
@@ -163,37 +158,30 @@ function cancel(context: ApiContext) {
       });
 
       res.status(200).send();
-      if (context) return;
 
-      // revert the cache
-      // const dates = await availableTutorsCache.getDates();
-      // const cachedRules = await availableTutorsCache.getRules();
-      // const tutorId = members.find((member) => member.host)?.userId;
-      // if (!cachedRules || !dates.start || !dates.end || !tutorId) return;
+      const error = await safe(async () => {
+        const ruleCalls = await calls.findByRuleId(call.ruleId);
+        const host = members.find((member) => member.host);
+        if (!host) throw new Error("Unxpected error; lesson has no host");
 
-      // const start = dates.start.toISOString();
-      // const end = dates.start.toISOString();
-      // const tutorCalls = await calls.findMemberCalls({
-      //   userIds: [tutorId],
-      //   ignoreCanceled: true,
-      //   between: { start, end },
-      // });
+        const rule = await rules.findById(call.ruleId);
+        if (!rule) throw new Error("Rule not found; should never happen");
 
-      // const tutorRules = await rules.findActivatedRules(
-      //   [tutorId],
-      //   dates.start.toISOString()
-      // );
+        const today = dayjs.utc().startOf("day");
+        await cache.rules.setOne({
+          tutor: host.userId,
+          rule: call.ruleId,
+          events: unpackRules({
+            rules: [rule],
+            calls: ruleCalls,
+            start: today.toISOString(),
+            end: today.add(30, "days").toISOString(),
+          }),
+        });
 
-      // const unpackedRules = unpackRules({
-      //   rules: tutorRules,
-      //   calls: tutorCalls,
-      //   start,
-      //   end,
-      // });
-
-      // cachedRules[tutorId.toString()] = unpackedRules;
-      // await availableTutorsCache.setRules(cachedRules);
-      // context.io.emit("updated"); // todo
+        context.io.emit("update");
+      });
+      if (error instanceof Error) console.error(error);
     }
   );
 }

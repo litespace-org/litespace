@@ -45,13 +45,13 @@
   "dependencies": {
     "@litespace/types": "workspace:^",
     "aripsum": "^0.2.0",
-    "dayjs": "^1.11.13",
-    "redis": "^4.7.0"
+    "dayjs": "^1.11.13"
   },
   "peerDependencies": {
     "knex": "^3.1.0",
     "lodash": "^4.17.21",
     "pg": "^8.11.5",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "redis": "^4.7.0"
   }
 }

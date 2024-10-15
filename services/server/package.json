@@ -12,7 +12,7 @@
     "test": "env-cmd -f .env.test jest",
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 7070 --key peer --path /ls",
-    "docker": "sudo docker compose up -d"
+    "docker": "docker compose up -d"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
