@@ -1,4 +1,4 @@
-import { tutors, users, count, knex, lessons } from "@litespace/models";
+import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
@@ -20,7 +20,6 @@ import {
 import { uploadSingle } from "@/lib/media";
 import { FileType } from "@/constants";
 import { enforceRequest } from "@/middleware/accessControl";
-import { httpQueryFilter } from "@/validation/http";
 import {
   drop,
   entries,
@@ -239,17 +238,14 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function findUsers(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
+  const allowed = authorizer().admin().superAdmin().check(req.user);
   if (!allowed) return next(forbidden());
 
-  const filter = httpQueryFilter(users.columns.filterable, req.query);
+  const query = pagination.parse(req.query);
+  const result = await users.find({ pagination: query });
+  const response: IUser.FindUsersApiResponse = result;
 
-  const [list, total] = await Promise.all([
-    users.find(filter),
-    count(users.table),
-  ]);
-
-  res.status(200).json({ list, total });
+  res.status(200).json(response);
 }
 
 async function findMe(req: Request, res: Response, next: NextFunction) {

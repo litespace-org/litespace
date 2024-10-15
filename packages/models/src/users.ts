@@ -1,6 +1,6 @@
-import { column, knex, withFilter } from "@/query";
+import { column, countRows, knex, withFilter, withPagination } from "@/query";
 import { first, isEmpty } from "lodash";
-import { IFilter, IUser } from "@litespace/types";
+import { IFilter, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 
@@ -110,13 +110,18 @@ export class Users {
     return !isEmpty(rows);
   }
 
-  async find(filter?: IFilter.Self): Promise<IUser.Self[]> {
-    const rows = await withFilter({
-      builder: knex<IUser.Row>(this.table),
-      filter,
-    }).then();
-
-    return rows.map((row) => this.from(row));
+  async find({
+    pagination,
+    tx,
+  }: {
+    pagination?: IFilter.Pagination;
+    tx?: Knex.Transaction;
+  }): Promise<Paginated<IUser.Self>> {
+    const base = this.builder(tx).select();
+    const total = await countRows(base.clone());
+    const rows = await withPagination(base.clone(), pagination);
+    const users = rows.map((row) => this.from(row));
+    return { list: users, total };
   }
 
   async findByCredentials({

@@ -1,3 +1,5 @@
+import { Paginated } from "@/utils";
+
 export enum Role {
   SuperAdmin = "super-admin",
   RegularAdmin = "reg-admin",
@@ -104,3 +106,5 @@ export type LoginApiResponse = {
 };
 
 export type RegisterApiResponse = LoginApiResponse;
+
+export type FindUsersApiResponse = Paginated<Self>;

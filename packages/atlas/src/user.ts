@@ -26,8 +26,10 @@ export class User extends Base {
       .then((response) => response.data);
   }
 
-  async find(): Promise<Paginated<IUser.Self>> {
-    return this.get(`/api/v1/user/list`);
+  async find(
+    pagination: IFilter.Pagination
+  ): Promise<IUser.FindUsersApiResponse> {
+    return this.get(`/api/v1/user/list`, null, pagination);
   }
 
   async update(
