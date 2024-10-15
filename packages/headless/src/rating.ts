@@ -5,8 +5,6 @@ import { useCallback } from "react";
 
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
-
-// custom hook to "create" the rating for each tutor
 export function useRateTutor({
   onSuccess,
   onError,
@@ -27,5 +25,30 @@ export function useRateTutor({
     onError,
     mutationFn: rate,
     mutationKey: ["create-rate"],
+  });
+}
+
+export function useEditRateTutor({
+  id,
+  onSuccess,
+  onError,
+}: {
+  id: number;
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+  const editRate = useCallback(
+    async (payload: IRating.UpdateApiPayload) => {
+      return atlas.rating.update(id, payload);
+    },
+    [atlas.rating, id]
+  );
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: editRate,
+    mutationKey: ["edit-rate", id],
   });
 }
