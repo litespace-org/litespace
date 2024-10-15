@@ -7,6 +7,7 @@ import Stats from "@/components/TutorProfile/Stats";
 import About from "@/components/TutorProfile/About";
 import ActivitiesOverview from "@/components/TutorProfile/ActivitiesOverview";
 import Ratings from "@/components/TutorProfile/Ratings";
+import RateForm from "@/components/TutorProfile/RateForm";
 
 const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -69,9 +70,9 @@ const TutorProfile: React.FC = () => {
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;
 
   return (
-    <div className="max-w-screen-sm lg:max-w-screen-2xl mx-auto w-full p-6 mb-12">
-      <div className="flex flex-col lg:flex-row gap-5">
-        <div className="flex flex-col items-center justify-center lg:justify-start text-center gap-5">
+    <div className="w-full max-w-screen-sm p-6 mx-auto mb-12 lg:max-w-screen-2xl">
+      <div className="flex flex-col gap-5 lg:flex-row">
+        <div className="flex flex-col items-center justify-center gap-5 text-center lg:justify-start">
           <Image
             image={tutor.data.image}
             status={asOnlineStatus(tutor.data.online, tutor.data.updatedAt)}
@@ -88,6 +89,8 @@ const TutorProfile: React.FC = () => {
           <About about={tutor.data.about} />
           <ActivitiesOverview query={activity} />
           <Ratings query={ratings} />
+          {/* New Component to rate tutor */}
+          <RateForm tutor={tutor.data.id} />
         </div>
       </div>
     </div>
