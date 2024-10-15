@@ -5,6 +5,8 @@ import { useCallback } from "react";
 
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
+
+// custom hook to "create" the rating for each tutor
 export function useRateTutor({
   onSuccess,
   onError,
