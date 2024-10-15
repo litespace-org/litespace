@@ -13,6 +13,7 @@ import {
 } from "@litespace/luna";
 import { useForm } from "react-hook-form";
 import { IRating } from "@litespace/types";
+import { useQueryClient } from "@tanstack/react-query";
 
 type IForm = {
   feedback?: string;
@@ -26,13 +27,15 @@ type RateFormProps = {
 
 const RateForm: React.FC<RateFormProps> = ({ tutor, rate }) => {
   const intl = useFormatMessage();
-
+  const queryClient = useQueryClient();
   const onSuccess = useCallback(() => {
-    toaster.success({ title: "Ratings successful" });
+    queryClient.invalidateQueries({ queryKey: ["tutor-rating", tutor] });
+    toaster.success({ title: intl("tutor.rate.succes") });
+    form.reset();
   }, []);
   const onError = useCallback((error: Error) => {
     toaster.error({
-      title: "An error has occured",
+      title: intl("tutor.rate.error"),
       description: error.message,
     });
   }, []);
