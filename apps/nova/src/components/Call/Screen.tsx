@@ -13,6 +13,7 @@ const Screen: React.FC<{
     video?: boolean;
     audio?: boolean;
     image?: string;
+    isCurrentUser?: boolean;
   }>;
   containerRef: React.RefObject<HTMLDivElement>;
   userName?: string;
@@ -51,7 +52,7 @@ const Screen: React.FC<{
       {many ? (
         <div className="flex flex-row justify-center gap-4 items-center lg:h-[300px] w-full">
           {activeStreams.map(
-            ({ stream, name, screen, audio, image, video }) => {
+            ({ stream, name, screen, audio, image, video, isCurrentUser }) => {
               if (!stream) return null;
               return (
                 <UserMedia
@@ -63,6 +64,7 @@ const Screen: React.FC<{
                   video={video}
                   audio={audio}
                   image={image}
+                  muted={isCurrentUser}
                 />
               );
             }
