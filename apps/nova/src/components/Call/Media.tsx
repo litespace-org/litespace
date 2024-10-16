@@ -2,13 +2,14 @@ import React, { useMemo, useRef } from "react";
 import MovableMedia from "@/components/Call/MovableMedia";
 import UserMedia from "@/components/Call/UserMedia";
 import Screen from "@/components/Call/Screen";
-import { useMediaQueries } from "@litespace/luna";
+import { Loading, useFormatMessage, useMediaQueries } from "@litespace/luna";
 
 const Media: React.FC<{
   userMediaStream: MediaStream | null;
   remoteMediaStream: MediaStream | null;
   userScreenStream: MediaStream | null;
   remoteScreenStream: MediaStream | null;
+  loadingUserStream: boolean;
   userName?: string;
   mateName?: string;
   userImage?: string;
@@ -19,11 +20,13 @@ const Media: React.FC<{
   userAudio?: boolean;
   mateVideo?: boolean;
   mateAudio?: boolean;
+  userDenided: boolean;
 }> = ({
   userMediaStream,
   remoteMediaStream,
   userScreenStream,
   remoteScreenStream,
+  loadingUserStream,
   userName,
   mateName,
   userImage,
@@ -34,9 +37,11 @@ const Media: React.FC<{
   userVideo,
   mateAudio,
   mateVideo,
+  userDenided,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { md } = useMediaQueries();
+  const intl = useFormatMessage();
 
   const screen = useMemo(() => {
     const userStream = {
@@ -109,6 +114,14 @@ const Media: React.FC<{
       className="relative flex flex-col gap-4 justify-center flex-1 w-full h-full"
       ref={containerRef}
     >
+      {loadingUserStream ? (
+        <Loading />
+      ) : userDenided ? (
+        <p className="text-center">{intl("call.user.denided")}</p>
+      ) : !userMediaStream ? (
+        <p className="text-center">{intl("call.no.user.stream")}</p>
+      ) : null}
+
       {remoteMediaStream && !screen ? (
         <UserMedia
           stream={remoteMediaStream}

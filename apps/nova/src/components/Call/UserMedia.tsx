@@ -41,7 +41,12 @@ const UserMedia: React.FC<{
   }, [stream]);
 
   return (
-    <div className="relative w-full h-full rounded-md overflow-hidden bg-surface-100 border border-border-strong @container">
+    <div
+      className={cn(
+        "relative w-full h-full rounded-md overflow-hidden bg-surface-100 border border-border-strong @container",
+        speaking && "ring ring-blue-1000/90"
+      )}
+    >
       <video
         autoPlay
         playsInline
