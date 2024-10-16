@@ -4,9 +4,10 @@ import React from "react";
 import { useQuery } from "@tanstack/react-query";
 
 const Tutors: React.FC = () => {
+  // todo: impl. pagination
   const tutors = useQuery({
-    queryFn: async () => await atlas.user.findAvailableTutors(),
-    queryKey: ["find-available-tutors"],
+    queryFn: async () => await atlas.user.findOnboardedTutors(),
+    queryKey: ["find-onboarded-tutors"],
   });
 
   return (

@@ -16,8 +16,9 @@ export function errorHandler(
   error: Error | DatabaseError | ResponseError | ZodError | AxiosError,
   _req: Request,
   res: Response,
-  _next: NextFunction
+  next: NextFunction
 ) {
+  console.log(error);
   if (!isProduction) console.error(error);
 
   let statusCode = 400;

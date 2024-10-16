@@ -3,7 +3,7 @@ import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
-import { Events, ICall } from "@litespace/types";
+import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
 import { useSockets } from "@litespace/luna";
 
@@ -284,17 +284,17 @@ export function useCallEvents(
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
       if (!call || !sockets) return;
-      sockets.api.emit(Events.Client.ToggleCamera, { call, camera });
+      sockets.api.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
     },
-    [call]
+    [call, sockets]
   );
 
   const notifyMicToggle = useCallback(
     (mic: boolean) => {
       if (!call || !sockets) return;
-      sockets.api.emit(Events.Client.ToggleMic, { call, mic });
+      sockets.api.emit(Wss.ClientEvent.ToggleMic, { call, mic });
     },
-    [call]
+    [call, sockets]
   );
 
   const onCameraToggle = useCallback(
@@ -313,14 +313,14 @@ export function useCallEvents(
 
   useEffect(() => {
     if (!sockets) return;
-    sockets.api.on(Events.Server.CameraToggled, onCameraToggle);
-    sockets.api.on(Events.Server.MicToggled, onMicToggle);
+    sockets.api.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
+    sockets.api.on(Wss.ServerEvent.MicToggled, onMicToggle);
 
     return () => {
-      sockets.api.off(Events.Server.CameraToggled, onCameraToggle);
-      sockets.api.off(Events.Server.MicToggled, onMicToggle);
+      sockets.api.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
+      sockets.api.off(Wss.ServerEvent.MicToggled, onMicToggle);
     };
-  }, [onCameraToggle, onMicToggle]);
+  }, [onCameraToggle, onMicToggle, sockets]);
 
   useEffect(() => {
     setMateVideo(streamState.video);

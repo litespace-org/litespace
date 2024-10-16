@@ -1,7 +1,7 @@
 /**
  * Events emitted by the client
  */
-export enum Client {
+export enum ClientEvent {
   JoinRooms = "JoinRooms",
   SendMessage = "SendMessage",
   UpdateMessage = "UpdateMessage",
@@ -17,7 +17,7 @@ export enum Client {
 /**
  * Events emitted by the server
  */
-export enum Server {
+export enum ServerEvent {
   RoomMessage = "RoomMessage",
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
@@ -28,4 +28,12 @@ export enum Server {
   UserStatusChanged = "UserStatusChanged",
   CameraToggled = "CameraToggle",
   MicToggled = "MicToggled",
+  TutorsCacheUpdated = "TutorsCacheUpdated",
+  LessonBooked = "LessonBooked",
+  LessonCanceled = "LessonCanceled",
+  TutorUpdated = "TutorUpdated",
+}
+
+export enum Room {
+  TutorsCache = "TutorsCache",
 }

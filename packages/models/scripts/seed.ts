@@ -17,17 +17,21 @@ import {
   withdrawMethods,
   invoices,
   hashPassword,
-} from "@/index";
+} from "@litespace/models";
 import { ICall, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
-import dayjs from "@/lib/dayjs";
+import dayjs from "dayjs";
 import { calculateLessonPrice, price, Time, logger } from "@litespace/sol";
 import { IDate, IRule } from "@litespace/types";
 import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
 import Aripsum from "aripsum";
+import utc from "dayjs/plugin/utc";
 import "colors";
 
+dayjs.extend(utc);
+
 const aripsum = new Aripsum("regular");
+const verbose = process.argv[2] === "--verbose";
 
 async function main(): Promise<void> {
   const stdout = logger("seed");
@@ -244,7 +248,7 @@ async function main(): Promise<void> {
   }
 
   async function createRandomLesson(tutor: IUser.Self) {
-    await knex.transaction(async (tx: Knex.Transaction) => {
+    return await knex.transaction(async (tx: Knex.Transaction) => {
       const activeLesson: boolean = tutor.id === 10;
       const { call } = await calls.create(
         {
@@ -280,6 +284,7 @@ async function main(): Promise<void> {
         await calls.cancel(call.id, sample([tutor.id, student.id])!, tx);
         await lessons.cancel(lesson.id, sample([tutor.id, student.id])!, tx);
       }
+      return lesson;
     });
   }
 
@@ -288,7 +293,9 @@ async function main(): Promise<void> {
     await rooms.create([tutor.id, student.id]);
 
     for (const _ of range(1, 100)) {
-      await createRandomLesson(tutor);
+      const lesson = await createRandomLesson(tutor);
+      if (verbose)
+        console.log(`Created lesson ${lesson.id} for tutor ${tutor.id}`);
     }
 
     stdout.log(

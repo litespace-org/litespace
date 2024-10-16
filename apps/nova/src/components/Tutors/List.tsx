@@ -1,25 +1,23 @@
-import { Alert, Spinner, useFormatMessage } from "@litespace/luna";
-import { ITutor } from "@litespace/types";
+import { Alert, Spinner, useFormatMessage, useSockets } from "@litespace/luna";
+import { Element, ITutor, Wss } from "@litespace/types";
 import { isEmpty } from "lodash";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TutorCard from "@/components/Tutors/TutorCard";
-import BookLesson from "./BookLesson";
+import BookLesson from "@/components/Tutors/BookLesson";
+
+type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
 const TutorList: React.FC<{
-  tutors: UseQueryResult<ITutor.FindAvailableTutorsApiResponse, unknown>;
+  tutors: UseQueryResult<ITutor.FindOnboardedTutorsApiResponse, unknown>;
 }> = ({ tutors }) => {
+  const sockets = useSockets();
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const [tutor, setTutor] = useState<ITutor.FullTutor | null>(null);
-  const select = useCallback((tutor: ITutor.FullTutor) => setTutor(tutor), []);
+  const [tutor, setTutor] = useState<Tutor | null>(null);
+  const select = useCallback((tutor: Tutor) => setTutor(tutor), []);
   const deselect = useCallback(() => setTutor(null), []);
-
-  const rules = useMemo(() => {
-    if (!tutor?.id) return [];
-    return tutors.data?.rules[tutor.id.toString()] || [];
-  }, [tutor?.id, tutors.data?.rules]);
 
   const reload = useMemo(() => {
     return {
@@ -29,6 +27,22 @@ const TutorList: React.FC<{
       },
     };
   }, [intl, navigate]);
+
+  const onUpdate = useCallback(() => {
+    console.log("here!!!");
+    tutors.refetch();
+  }, [tutors]);
+
+  useEffect(() => {
+    if (!sockets?.api) return;
+
+    sockets.api.on(Wss.ServerEvent.LessonBooked, onUpdate);
+    sockets.api.on(Wss.ServerEvent.LessonCanceled, onUpdate);
+    return () => {
+      sockets.api.off(Wss.ServerEvent.LessonBooked, onUpdate);
+      sockets.api.off(Wss.ServerEvent.LessonCanceled, onUpdate);
+    };
+  }, [onUpdate, sockets?.api]);
 
   if (tutors.isLoading)
     return (
@@ -45,12 +59,12 @@ const TutorList: React.FC<{
     );
 
   // todo: show empty search list with a nice image
-  if (!tutors.data || isEmpty(tutors.data.tutors))
+  if (!tutors.data || isEmpty(tutors.data.list))
     return <Alert title={intl("error.tutors.list.empty")} />;
 
   return (
     <div className="grid grid-cols-12 gap-6">
-      {tutors.data.tutors.map((tutor) => (
+      {tutors.data.list.map((tutor) => (
         <div
           key={tutor.id}
           className="col-span-12 md:col-span-6 lg:col-span-4 2xl:col-span-3"
@@ -64,7 +78,7 @@ const TutorList: React.FC<{
           open={!!tutor}
           close={deselect}
           name={tutor.name}
-          rules={rules}
+          rules={tutor.rules}
           tutorId={tutor.id}
           notice={tutor.notice}
         />

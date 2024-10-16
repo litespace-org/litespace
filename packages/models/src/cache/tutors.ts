@@ -1,5 +1,6 @@
 import { CacheBase } from "@/cache/base";
 import { ITutor } from "@litespace/types";
+import { isEmpty } from "lodash";
 
 const ttl = 60 * 60 * 24; // 24 hours
 
@@ -28,6 +29,7 @@ export class Tutors extends CacheBase {
       cache[this.asField(tutor.id)] = this.encode(tutor);
     }
 
+    if (isEmpty(cache)) return;
     await this.client.hSet(this.key, cache);
   }
 

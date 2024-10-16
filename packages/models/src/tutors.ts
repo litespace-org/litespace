@@ -215,16 +215,17 @@ export class Tutors {
   async findOnboardedTutors(
     tx?: Knex.Transaction
   ): Promise<ITutor.FullTutor[]> {
-    const rows = await this.fullTutorQuery(tx)
-      .where(this.column("activated"), true)
-      .andWhereNot(this.column("video"), null)
-      .andWhereNot(this.column("bio"), null)
-      .andWhereNot(this.column("about"), null)
-      .andWhereNot(users.column("image"), null)
-      .andWhereNot(users.column("birth_year"), null)
-      .andWhereNot(users.column("name"), null)
-      .andWhereNot(users.column("gender"), null)
-      .andWhere(users.column("verified"), true);
+    const rows = await this.fullTutorQuery(tx);
+    //! temp: disable it for now
+    // .where(this.column("activated"), true)
+    // .andWhereNot(this.column("video"), null)
+    // .andWhereNot(this.column("bio"), null)
+    // .andWhereNot(this.column("about"), null)
+    // .andWhereNot(users.column("image"), null)
+    // .andWhereNot(users.column("birth_year"), null)
+    // .andWhereNot(users.column("name"), null)
+    // .andWhereNot(users.column("gender"), null)
+    // .andWhere(users.column("verified"), true);
     return rows.map((row) => this.asFullTutor(row));
   }
 

@@ -22,7 +22,7 @@ import {
 } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
-import { Events } from "@litespace/types";
+import { Wss } from "@litespace/types";
 import { useQuery } from "@tanstack/react-query";
 import {
   useCallEvents,
@@ -74,7 +74,7 @@ const Call: React.FC = () => {
   const acknowledgePeer = useCallback(
     (peerId: string) => {
       if (!callId || !sockets?.api) return;
-      sockets.api.emit(Events.Client.PeerOpened, { peerId, callId });
+      sockets.api.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
     },
     [callId, sockets?.api]
   );
@@ -132,9 +132,9 @@ const Call: React.FC = () => {
 
   useEffect(() => {
     if (!sockets?.api) return;
-    sockets.api.on(Events.Server.UserJoinedCall, onJoinCall);
+    sockets.api.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     return () => {
-      sockets.api.off(Events.Server.UserJoinedCall, onJoinCall);
+      sockets.api.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     };
   }, [onJoinCall, sockets?.api]);
 
