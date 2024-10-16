@@ -46,6 +46,7 @@ const Media: React.FC<{
       image: userImage,
       video: userVideo,
       audio: userAudio,
+      isCurrentUser: true,
     };
 
     const mateStream = {
@@ -55,6 +56,7 @@ const Media: React.FC<{
       image: mateImage,
       video: mateVideo,
       audio: mateAudio,
+      isCurrentUser: false,
     };
 
     const userScreen = {
