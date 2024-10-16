@@ -1,3 +1,4 @@
+import { Route } from "@/types/routes";
 import {
   Button,
   ButtonSize,
@@ -7,6 +8,7 @@ import {
 import { ITutor } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
+import { Link } from "react-router-dom";
 
 const TutorCard: React.FC<{
   tutor: ITutor.FullTutor;
@@ -32,7 +34,12 @@ const TutorCard: React.FC<{
 
       <div className="flex flex-row justify-between items-center p-4">
         <div className="w-3/4">
-          <h6 className="text-foreground mb-1">{tutor.name}</h6>
+          <Link
+            to={Route.TutorProfile.replace(":id", tutor.id.toString())}
+            className="text-brand-link underline"
+          >
+            <h6 className="mb-1">{tutor.name}</h6>
+          </Link>
           <p className="text-sm text-foreground-light truncate">{tutor.bio}</p>
         </div>
 
