@@ -17,6 +17,7 @@ export const SocketProvider: React.FC<{
   const [sockets, setSockets] = useState<Sockets | null>(null);
 
   useEffect(() => {
+    console.log({ token });
     if (!token) return;
     const api = io(urls.main[backend], {
       extraHeaders: {

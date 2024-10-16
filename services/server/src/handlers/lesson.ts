@@ -9,7 +9,15 @@ import {
 } from "@/validation/utils";
 import { forbidden, notfound, unexpected } from "@/lib/error";
 import { ILesson, IUser, Wss } from "@litespace/types";
-import { calls, lessons, rules, users, knex, count } from "@litespace/models";
+import {
+  calls,
+  lessons,
+  rules,
+  users,
+  knex,
+  count,
+  rooms,
+} from "@litespace/models";
 import { Knex } from "knex";
 import asyncHandler from "express-async-handler";
 import { ApiContext } from "@/types/api";
@@ -48,6 +56,10 @@ function create(context: ApiContext) {
         platformConfig.tutorHourlyRate,
         payload.duration
       );
+
+      const roomMembers = [userId, tutor.id];
+      const room = await rooms.findRoomByMembers(roomMembers);
+      if (!room) await rooms.create(roomMembers);
 
       // todo: check if a tutor has the time for the lesson
       // todo: update the global available tutors cache

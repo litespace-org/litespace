@@ -63,8 +63,8 @@ const Room: React.FC<{
           )}
         />
       </div>
-      <div className="hidden md:flex flex-col items-start">
-        <p>{member.name}</p>
+      <div className="hidden md:flex flex-col items-start w-full">
+        <p className="truncate w-4/5">{member.name}</p>
         <span className="text-foreground-light text-sm">
           {status === Status.Active
             ? intl("chat.active")
