@@ -61,6 +61,8 @@ const Call: React.FC = () => {
     camera,
     video: userVideo,
     audio: userAudio,
+    loading,
+    denied,
   } = useUserMedia();
 
   const callId = useMemo(() => {
@@ -207,12 +209,14 @@ const Call: React.FC = () => {
             mateName={orUndefined(mate?.name)}
             userImage={orUndefined(profile?.image)}
             mateImage={orUndefined(mate?.image)}
+            loadingUserStream={loading}
             userSpeaking={userSpeaking}
             mateSpeaking={mateSpeaking}
             userVideo={userVideo}
             userAudio={userAudio}
             mateVideo={mateVideo}
             mateAudio={mateAudio}
+            userDenided={denied}
           />
         </div>
         <div className="flex items-center justify-center my-10 gap-4">

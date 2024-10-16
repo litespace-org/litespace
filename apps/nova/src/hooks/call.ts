@@ -6,6 +6,7 @@ import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
 import { useSockets } from "@litespace/luna";
+import { isEmpty } from "lodash";
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
@@ -22,7 +23,7 @@ export function useCallRecorder(screen: boolean = false) {
         call,
       });
     },
-    [screen]
+    [screen, sockets?.recorder]
   );
 
   const start = useCallback(
@@ -137,16 +138,33 @@ export function useUserMedia() {
   const [camera, setCamera] = useState<boolean>(false);
   const [audio, setAudio] = useState<boolean>(false);
   const [video, setVideo] = useState<boolean>(false);
+  const [denied, setUserDenied] = useState<boolean>(false);
+
+  const getUserMedia = useCallback(
+    async ({ video, audio }: { video: boolean; audio: boolean }) => {
+      return await safe(
+        async () => await navigator.mediaDevices.getUserMedia({ video, audio })
+      );
+    },
+    []
+  );
+
+  const getUserStream = useCallback(async () => {
+    // request both audio and video stream
+    const combinedStream = await getUserMedia({ video: true, audio: true });
+    if (combinedStream instanceof MediaStream) return combinedStream;
+    // try to get audio stream only to check if the user has mic and no camera.
+    const audioStreamOnly = await getUserMedia({ video: false, audio: true });
+    if (audioStreamOnly instanceof MediaStream) return audioStreamOnly;
+    // try to get video stream only incase the user only has camera and no mic.
+    const videoStreamOnly = await getUserMedia({ video: true, audio: false });
+    if (videoStreamOnly instanceof MediaStream) return videoStreamOnly;
+    return videoStreamOnly;
+  }, [getUserMedia]);
 
   const start = useCallback(async () => {
     setLoading(true);
-    const stream = await safe(
-      async () =>
-        await navigator.mediaDevices.getUserMedia({
-          video: true,
-          audio: true,
-        })
-    );
+    const stream = await getUserStream();
     setLoading(false);
     const error = stream instanceof Error;
     const denied = error ? isPermissionDenied(stream) : false;
@@ -154,6 +172,7 @@ export function useUserMedia() {
     // user canceled the process.
     if (denied) {
       setError(null);
+      setUserDenied(true);
       return setStream(null);
     }
 
@@ -165,6 +184,7 @@ export function useUserMedia() {
         setCamera(true);
         setVideo(true);
       }
+
       if (audioTracks.length !== 0) {
         setMic(true);
         setAudio(true);
@@ -187,7 +207,7 @@ export function useUserMedia() {
 
     if (!error) setError(error ? stream : null);
     setStream(error ? null : stream);
-  }, []);
+  }, [getUserStream]);
 
   const stop = useCallback(() => {
     if (!stream) return;
@@ -223,6 +243,7 @@ export function useUserMedia() {
     toggleCamera,
     video,
     camera,
+    denied,
   };
 }
 
@@ -250,6 +271,8 @@ export function useSpeech(stream: MediaStream | null) {
 
   useEffect(() => {
     if (!stream) return;
+    const audioTracks = stream.getAudioTracks();
+    if (isEmpty(audioTracks)) return setSpeaking(false);
     const speech = hark(stream);
     speech.on("speaking", onSpeaking);
     speech.on("stopped_speaking", onStopSpeaking);
