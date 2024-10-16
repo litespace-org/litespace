@@ -21,6 +21,7 @@ export default {
   user,
   lesson,
   invoice,
+  rule,
   withdrawMethod,
   tutor,
   student,
@@ -35,5 +36,4 @@ export default {
   subscription,
   interview,
   asset,
-  rule,
 };

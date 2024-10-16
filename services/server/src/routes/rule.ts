@@ -1,12 +1,14 @@
 import { Router } from "express";
 import rule from "@/handlers/rule";
+import { ApiContext } from "@/types/api";
 
-const router = Router();
+export default function router(context: ApiContext) {
+  const router = Router();
 
-router.post("/", rule.createRule);
-router.put("/:ruleId", rule.updateRule);
-router.delete("/:ruleId", rule.deleteRule);
-router.get("/list/:userId", rule.findUserRules);
-router.get("/list/unpacked/:userId", rule.findUnpackedUserRules);
-
-export default router;
+  router.post("/", rule.createRule(context));
+  router.put("/:ruleId", rule.updateRule(context));
+  router.delete("/:ruleId", rule.deleteRule(context));
+  router.get("/list/:userId", rule.findUserRules);
+  router.get("/list/unpacked/:userId", rule.findUnpackedUserRules);
+  return router;
+}

@@ -55,7 +55,7 @@ const RuleForm: React.FC<{
 
   const defaultValues = useMemo((): Partial<IForm> => {
     return {
-      title: rule?.title,
+      title: rule?.title || "",
       frequency: rule?.frequency || IRule.Frequency.Daily,
       start: dayjs(rule?.start).format("YYYY-MM-DD"),
       end: rule?.end ? dayjs(rule.end).format("YYYY-MM-DD") : undefined,

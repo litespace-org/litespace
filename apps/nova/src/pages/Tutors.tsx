@@ -8,6 +8,7 @@ const Tutors: React.FC = () => {
   const tutors = useQuery({
     queryFn: async () => await atlas.user.findOnboardedTutors(),
     queryKey: ["find-onboarded-tutors"],
+    retry: false,
   });
 
   return (

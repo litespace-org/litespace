@@ -52,7 +52,7 @@ app.use(
   authRouter({ jwtSecret: jwtSecret, clientId: googleConfig.clientId })
 );
 app.use("/api/v1/user", routes.user(context));
-app.use("/api/v1/rule", routes.rule);
+app.use("/api/v1/rule", routes.rule(context));
 app.use("/api/v1/tutor", routes.tutor);
 app.use("/api/v1/student", routes.student);
 app.use("/api/v1/call", routes.call);
