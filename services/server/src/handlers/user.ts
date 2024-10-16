@@ -34,7 +34,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { asIsoDate, safe } from "@litespace/sol";
+import { asIsoDate, safe, Schedule } from "@litespace/sol";
 import { authorizer } from "@litespace/auth";
 import { generateJwtToken } from "@/lib/auth";
 import { cache } from "@/lib/cache";
@@ -292,7 +292,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
         const after = start.isAfter(adjustedNow);
         const between = adjustedNow.isBetween(
           event.start,
-          // rule should have some time suitable for booking at least one small lesson.
+          // rule should have some time suitable for booking at least one short lesson.
           dayjs.utc(event.end).subtract(ILesson.Duration.Short, "minutes"),
           "minute",
           "[]"
@@ -300,7 +300,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
         return same || after || between;
       }
     );
-    return events;
+    return Schedule.order(events, "asc");
   };
 
   const iteratees = [
