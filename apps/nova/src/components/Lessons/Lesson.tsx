@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import {
@@ -13,6 +13,8 @@ import {
   useFormatMessage,
   asFullAssetUrl,
   useMediaQueries,
+  ButtonType,
+  atlas,
 } from "@litespace/luna";
 import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
@@ -21,6 +23,7 @@ import cn from "classnames";
 import { Calendar, MessageCircle, X } from "react-feather";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
+import { useMutation } from "@tanstack/react-query";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -72,6 +75,15 @@ const Lesson: React.FC<
       name: otherMember?.name || "",
     });
   }, [intl, otherMember?.name]);
+
+  const cancel = useCallback(() => {
+    return atlas.lesson.cancel(lesson.id);
+  }, [lesson.id]);
+
+  const cancelLesson = useMutation({
+    mutationFn: cancel,
+    mutationKey: ["cancel-lesson"],
+  });
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [
@@ -192,6 +204,16 @@ const Lesson: React.FC<
             <MessageCircle className="w-[20px] h-[20px] md:w-auto md:h-auto" />
           </Button>
         </Link>
+
+        <Button
+          loading={cancelLesson.isPending}
+          disabled={cancelLesson.isPending || !!lesson.canceledBy}
+          onClick={() => cancelLesson.mutate()}
+          type={ButtonType.Error}
+          size={ButtonSize.Small}
+        >
+          {intl("global.labels.cancel")}
+        </Button>
       </div>
 
       <WatchCall

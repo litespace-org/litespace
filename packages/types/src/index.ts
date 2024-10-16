@@ -14,7 +14,7 @@ export * as IReportReply from "@/reportReply";
 export * as IToken from "@/token";
 export * as IFilter from "@/filter";
 export * as IInterview from "@/interview";
-export * as Events from "@/wss";
+export * as Wss from "@/wss";
 export * as IRule from "@/rule";
 export * as IDate from "@/date";
 export * as ILesson from "@/lesson";

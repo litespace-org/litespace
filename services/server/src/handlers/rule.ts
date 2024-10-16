@@ -160,7 +160,7 @@ async function deleteRule(req: Request, res: Response, next: NextFunction) {
   const owner = rule.userId === userId;
   if (!owner) return next(forbidden());
 
-  const ruleCalls = await calls.findByRuleId(ruleId);
+  const ruleCalls = await calls.findByRuleId({ rule: ruleId });
   const deletable = isEmpty(ruleCalls);
 
   const deletedRule = deletable

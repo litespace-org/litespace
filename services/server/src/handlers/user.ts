@@ -1,5 +1,5 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
 import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
@@ -189,8 +189,12 @@ function update(context: ApiContext) {
       const error = await safe(async () => {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
+        // update tutor cache
         await cache.tutors.setOne(tutor);
-        context.io.sockets.emit("update");
+        // notify clients
+        context.io
+          .to(Wss.Room.TutorsCache)
+          .emit(Wss.ServerEvent.TutorUpdated, tutor);
       });
 
       if (error instanceof Error) console.error(error);

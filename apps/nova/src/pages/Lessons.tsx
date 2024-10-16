@@ -3,7 +3,7 @@ import { profileSelectors } from "@/redux/user/profile";
 import React, { useCallback } from "react";
 import { ILesson } from "@litespace/types";
 import List from "@/components/Lessons/List";
-import { Button, messages, Spinner, atlas } from "@litespace/luna";
+import { Button, messages, Spinner, atlas, ButtonSize } from "@litespace/luna";
 import { useIntl } from "react-intl";
 import { isEmpty } from "lodash";
 import Empty from "@/components/Lessons/Empty";
@@ -57,6 +57,7 @@ const Lessons: React.FC = () => {
           {!isEmpty(list) ? (
             <div className="mr-6">
               <Button
+                size={ButtonSize.Small}
                 loading={lessons.isLoading || lessons.isFetching}
                 disabled={
                   lessons.isLoading ||

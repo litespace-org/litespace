@@ -253,14 +253,22 @@ export class Calls {
     return row ? zod.coerce.number().parse(row.duration) : 0;
   }
 
-  async findByRuleId(
-    ruleId: number,
-    tx?: Knex.Transaction
-  ): Promise<ICall.Self[]> {
-    const rows = await this.builder(tx)
-      .calls.select("*")
-      .where("rule_id", ruleId);
+  async findByRuleId({
+    canceled = true,
+    rule,
+    tx,
+  }: {
+    rule: number;
+    canceled?: boolean;
+    tx?: Knex.Transaction;
+  }): Promise<ICall.Self[]> {
+    const builder = this.builder(tx)
+      .calls.select()
+      .where(this.columns.calls("rule_id"), rule);
 
+    if (!canceled) builder.andWhere(this.columns.calls("canceled_by"), null);
+
+    const rows = await builder.then();
     return rows.map((row) => this.from(row));
   }
 

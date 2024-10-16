@@ -8,7 +8,7 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { forbidden, notfound, unexpected } from "@/lib/error";
-import { ILesson, IUser } from "@litespace/types";
+import { ILesson, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, count } from "@litespace/models";
 import { Knex } from "knex";
 import asyncHandler from "express-async-handler";
@@ -82,9 +82,12 @@ function create(context: ApiContext) {
       res.status(200).json({ call, lesson });
 
       const error = await safe(async () => {
-        const ruleCalls = await calls.findByRuleId(rule.id);
+        const ruleCalls = await calls.findByRuleId({
+          rule: rule.id,
+          canceled: false, // ignore canceled calls
+        });
         const today = dayjs.utc().startOf("day");
-        await cache.rules.setOne({
+        const payload = {
           tutor: tutor.id,
           rule: rule.id,
           events: unpackRules({
@@ -93,9 +96,13 @@ function create(context: ApiContext) {
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
           }),
-        });
+        };
 
-        context.io.emit("update");
+        await cache.rules.setOne(payload);
+
+        context.io.sockets
+          .in(Wss.Room.TutorsCache)
+          .emit(Wss.ServerEvent.LessonBooked, payload);
       });
       if (error instanceof Error) console.error(error);
     }
@@ -160,7 +167,10 @@ function cancel(context: ApiContext) {
       res.status(200).send();
 
       const error = await safe(async () => {
-        const ruleCalls = await calls.findByRuleId(call.ruleId);
+        const ruleCalls = await calls.findByRuleId({
+          rule: call.ruleId,
+          canceled: false, // ignore canceled calls
+        });
         const host = members.find((member) => member.host);
         if (!host) throw new Error("Unxpected error; lesson has no host");
 
@@ -168,7 +178,7 @@ function cancel(context: ApiContext) {
         if (!rule) throw new Error("Rule not found; should never happen");
 
         const today = dayjs.utc().startOf("day");
-        await cache.rules.setOne({
+        const payload = {
           tutor: host.userId,
           rule: call.ruleId,
           events: unpackRules({
@@ -177,9 +187,13 @@ function cancel(context: ApiContext) {
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
           }),
-        });
-
-        context.io.emit("update");
+        };
+        // update tutor rules cache
+        await cache.rules.setOne(payload);
+        // notify client
+        context.io.sockets
+          .to(Wss.Room.TutorsCache)
+          .emit(Wss.ServerEvent.LessonCanceled, payload);
       });
       if (error instanceof Error) console.error(error);
     }

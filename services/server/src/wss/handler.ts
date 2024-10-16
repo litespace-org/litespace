@@ -1,7 +1,7 @@
 import { calls, messages, rooms, users } from "@litespace/models";
 import { IUser } from "@litespace/types";
 import { Socket } from "socket.io";
-import { Events } from "@litespace/types";
+import { Wss } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
 import { boolean, id, string, withNamedId } from "@/validation/utils";
@@ -27,13 +27,19 @@ export class WssHandler {
 
   async initialize() {
     this.connect();
-    this.socket.on(Events.Client.SendMessage, this.sendMessage.bind(this));
-    this.socket.on(Events.Client.UpdateMessage, this.updateMessage.bind(this));
-    this.socket.on(Events.Client.DeleteMessage, this.deleteMessage.bind(this));
-    this.socket.on(Events.Client.PeerOpened, this.peerOpened.bind(this));
-    this.socket.on(Events.Client.Disconnect, this.disconnect.bind(this));
-    this.socket.on(Events.Client.ToggleCamera, this.toggleCamera.bind(this));
-    this.socket.on(Events.Client.ToggleMic, this.toggleMic.bind(this));
+    this.socket.on(Wss.ClientEvent.SendMessage, this.sendMessage.bind(this));
+    this.socket.on(
+      Wss.ClientEvent.UpdateMessage,
+      this.updateMessage.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.DeleteMessage,
+      this.deleteMessage.bind(this)
+    );
+    this.socket.on(Wss.ClientEvent.PeerOpened, this.peerOpened.bind(this));
+    this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
+    this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
+    this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
   }
 
   async joinRooms() {
@@ -43,6 +49,9 @@ export class WssHandler {
       this.socket.join(ids);
       // private channel
       this.socket.join(this.user.id.toString());
+
+      const student = this.user.role === IUser.Role.Student;
+      if (student) this.socket.join(Wss.Room.TutorsCache);
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -61,7 +70,7 @@ export class WssHandler {
       this.socket.join(callId.toString());
       this.socket
         .to(callId.toString())
-        .emit(Events.Server.UserJoinedCall, peerId);
+        .emit(Wss.ServerEvent.UserJoinedCall, peerId);
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -85,7 +94,7 @@ export class WssHandler {
         roomId,
       });
 
-      this.boradcast(Events.Server.RoomMessage, roomId.toString(), message);
+      this.boradcast(Wss.ServerEvent.RoomMessage, roomId.toString(), message);
     });
 
     if (error instanceof Error) stdout.error(error);
@@ -107,7 +116,7 @@ export class WssHandler {
       if (!updated) throw new Error("Mesasge not update; should never happen.");
 
       this.boradcast(
-        Events.Server.RoomMessageUpdated,
+        Wss.ServerEvent.RoomMessageUpdated,
         message.roomId.toString(),
         updated
       );
@@ -129,9 +138,12 @@ export class WssHandler {
       await messages.markAsDeleted(id);
 
       this.boradcast(
-        Events.Server.RoomMessageDeleted,
+        Wss.ServerEvent.RoomMessageDeleted,
         message.roomId.toString(),
-        { roomId: message.roomId, messageId: message.id }
+        {
+          roomId: message.roomId,
+          messageId: message.id,
+        }
       );
     });
 
@@ -142,7 +154,7 @@ export class WssHandler {
     const error = safe(async () => {
       const { call, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.boradcast(Events.Server.CameraToggled, call.toString(), {
+      this.boradcast(Wss.ServerEvent.CameraToggled, call.toString(), {
         user: this.user.id,
         camera,
       });
@@ -155,7 +167,7 @@ export class WssHandler {
     const error = safe(async () => {
       const { call, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.boradcast(Events.Server.MicToggled, call.toString(), {
+      this.boradcast(Wss.ServerEvent.MicToggled, call.toString(), {
         user: this.user.id,
         mic,
       });
@@ -164,7 +176,7 @@ export class WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async boradcast<T>(event: Events.Server, room: string, data: T) {
+  async boradcast<T>(event: Wss.ServerEvent, room: string, data: T) {
     this.socket.emit(event, data);
     this.socket.broadcast.to(room).emit(event, data);
   }
@@ -184,7 +196,7 @@ export class WssHandler {
 
       this.socket.broadcast
         .to(message.roomId.toString())
-        .emit(Events.Server.MessageRead, messageId);
+        .emit(Wss.ServerEvent.MessageRead, messageId);
     } catch (error) {
       console.log(error);
     }
@@ -219,7 +231,7 @@ export class WssHandler {
     const userRooms = await rooms.findMemberFullRoomIds(user.id);
 
     for (const room of userRooms) {
-      this.boradcast(Events.Server.UserStatusChanged, room.toString(), {
+      this.boradcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
         online: user.online,
       });
     }

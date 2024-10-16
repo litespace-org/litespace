@@ -1,5 +1,6 @@
 import { CacheBase } from "@/cache/base";
 import { IRule } from "@litespace/types";
+import { isEmpty } from "lodash";
 
 export class Rules extends CacheBase {
   readonly key = "rules";
@@ -33,6 +34,7 @@ export class Rules extends CacheBase {
       cache[this.asField({ tutor, rule })] = this.encode(events);
     }
 
+    if (isEmpty(cache)) return;
     await this.client.hSet(this.key, cache);
   }
 
