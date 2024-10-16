@@ -1,5 +1,8 @@
 import React, { useCallback } from "react";
-import { useEditRateTutor, useRateTutor } from "@litespace/headless/rating";
+import {
+  useEditRatingTutor,
+  useCreateRatingTutor,
+} from "@litespace/headless/rating";
 import {
   Button,
   ButtonSize,
@@ -13,8 +16,8 @@ import {
 } from "@litespace/luna";
 import { useForm } from "react-hook-form";
 import { IRating, Void } from "@litespace/types";
-import { useQueryClient } from "@tanstack/react-query";
-
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKeys } from "@litespace/headless/constants";
 type IForm = {
   feedback?: string;
   rating: number;
@@ -28,15 +31,15 @@ type RateFormProps = {
 
 const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const intl = useFormatMessage();
-  const queryClient = useQueryClient();
+  const invalidateRatings = useInvalidateQuery();
+
   const onSuccess = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: ["tutor-rating", tutor] });
+    invalidateRatings([QueryKeys.FindTutorRating, tutor]);
     toaster.success({ title: intl("tutor.rate.succes") });
-    if (rate && close) {
-      close();
-    }
+    if (rate && close) close();
     form.reset();
   }, []);
+
   const onError = useCallback((error: Error) => {
     toaster.error({
       title: intl("tutor.rate.error"),
@@ -44,9 +47,10 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
     });
     if (rate && close) close();
   }, []);
-  const rateTutor = useRateTutor({ onSuccess, onError });
 
-  const editRateTutor = useEditRateTutor({
+  const rateTutor = useCreateRatingTutor({ onSuccess, onError });
+
+  const editRateTutor = useEditRatingTutor({
     id: rate?.id || 0,
     onSuccess,
     onError,

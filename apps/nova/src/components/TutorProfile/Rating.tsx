@@ -11,8 +11,9 @@ import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
 import { useRender } from "@/hooks/render";
 import EditRating from "@/components/TutorProfile/EditRating";
-import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
+import DeleteRating from "@/components/TutorProfile/DeleteRating";
+import { useAppSelector } from "@/redux/store";
 
 const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
   const profile = useAppSelector(profileSelectors.user);
@@ -66,12 +67,22 @@ const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
           )}
         </div>
         <p>{rating.feedback}</p>
+      </div>
+      {profile?.id === rating.rater.id && (
         <EditRating
           open={editRating.open}
           close={editRating.hide}
           rate={rating}
         />
-      </div>
+      )}
+      {profile?.id === rating.rater.id && (
+        <DeleteRating
+          tutorId={rating.ratee.id}
+          open={deleteRating.open}
+          close={deleteRating.hide}
+          id={rating.id}
+        />
+      )}
     </Card>
   );
 };

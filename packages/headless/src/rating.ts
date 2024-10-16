@@ -1,11 +1,28 @@
 import { useAtlas } from "@/atlas/index";
 import { IRating, Void } from "@litespace/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { QueryKeys } from "@/constants";
 
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
-export function useRateTutor({
+
+export function useFindRatingTutor(id: number | null) {
+  const atlas = useAtlas();
+  const findRateeRatings = useCallback(async () => {
+    if (!id) return [];
+    return atlas.rating.findRateeRatings(id);
+  }, [id]);
+
+  return useQuery({
+    queryKey: [QueryKeys.FindTutorRating, id],
+    queryFn: findRateeRatings,
+    enabled: !!id,
+    retry: false,
+  });
+}
+
+export function useCreateRatingTutor({
   onSuccess,
   onError,
 }: {
@@ -28,12 +45,11 @@ export function useRateTutor({
   });
 }
 
-export function useEditRateTutor({
+export function useEditRatingTutor({
   id,
   onSuccess,
   onError,
 }: {
-  // id is rating id
   id: number;
   onSuccess: OnSuccess;
   onError: OnError;
@@ -51,5 +67,27 @@ export function useEditRateTutor({
     onError,
     mutationFn: editRate,
     mutationKey: ["edit-rate", id],
+  });
+}
+
+export function useDeleteRatingTutor({
+  id,
+  onSuccess,
+  onError,
+}: {
+  id: number;
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+  const deleteRate = useCallback(async () => {
+    return atlas.rating.delete(id);
+  }, [atlas.rating, id]);
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: deleteRate,
+    mutationKey: ["delete-rate", id],
   });
 }
