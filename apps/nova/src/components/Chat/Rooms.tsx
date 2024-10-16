@@ -76,7 +76,7 @@ const Rooms: React.FC<{
 
       <Loading
         show={query.isFetching || query.isLoading}
-        className={cn("inline-block shrink-0", {
+        className={cn("shrink-0", {
           "h-full": query.isLoading,
           "h-10": query.isFetching,
         })}

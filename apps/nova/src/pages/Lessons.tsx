@@ -3,15 +3,20 @@ import { profileSelectors } from "@/redux/user/profile";
 import React, { useCallback } from "react";
 import { ILesson } from "@litespace/types";
 import List from "@/components/Lessons/List";
-import { Button, messages, Spinner, atlas, ButtonSize } from "@litespace/luna";
-import { useIntl } from "react-intl";
+import {
+  Button,
+  Spinner,
+  atlas,
+  ButtonSize,
+  useFormatMessage,
+} from "@litespace/luna";
 import { isEmpty } from "lodash";
 import Empty from "@/components/Lessons/Empty";
 import Error from "@/components/Lessons/Error";
 import { usePaginationQuery } from "@/hooks/common";
 
 const Lessons: React.FC = () => {
-  const intl = useIntl();
+  const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.user);
 
   const findUserLessons = useCallback(
@@ -66,9 +71,7 @@ const Lessons: React.FC = () => {
                 }
                 onClick={more}
               >
-                {intl.formatMessage({
-                  id: messages["global.labels.more"],
-                })}
+                {intl("global.labels.more")}
               </Button>
             </div>
           ) : null}

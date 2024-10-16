@@ -80,6 +80,8 @@ export class WssHandler {
       const { roomId, text } = wss.message.send.parse(data);
       const userId = this.user.id;
 
+      console.log(`u:${userId} is send a message to r:${roomId}`);
+
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       if (!members) throw Error("Room not found");
 

@@ -1,7 +1,14 @@
 import { badRequest, forbidden, notfound, unexpected } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import { enforceRequest } from "@/middleware/accessControl";
-import { calls, interviews, rules, users, knex } from "@litespace/models";
+import {
+  calls,
+  interviews,
+  rules,
+  users,
+  knex,
+  rooms,
+} from "@litespace/models";
 import {
   boolean,
   datetime,
@@ -69,6 +76,10 @@ async function createInterview(
   //   slot,
   // });
   // if (!enough) return next(badRequest());
+
+  const members = [interviewer.id, intervieweeId];
+  const room = await rooms.findRoomByMembers(members);
+  if (!room) await rooms.create(members);
 
   const [interview, call] = await knex.transaction(async (tx) => {
     const { call } = await calls.create(
