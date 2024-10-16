@@ -7,9 +7,16 @@ export class Tutors extends CacheBase {
   readonly ttl = 60 * 60 * 24; // 24 hours
 
   async setOne(tutor: ITutor.FullTutor) {
+    const exists = await this.exists();
+    const key = this.key;
+    const filed = this.asField(tutor.id);
+    const value = this.encode(tutor);
+
+    if (exists) return await this.client.hSet(key, filed, value);
+
     await this.client
       .multi()
-      .hSet(this.key, this.asField(tutor.id), this.encode(tutor))
+      .hSet(key, filed, value)
       .expire(this.key, this.ttl)
       .exec();
   }
