@@ -2,23 +2,21 @@ import { CacheBase } from "@/cache/base";
 import { ITutor } from "@litespace/types";
 import { isEmpty } from "lodash";
 
-const ttl = 60 * 60 * 24; // 24 hours
-
 export class Tutors extends CacheBase {
   readonly key = "tutors";
+  readonly ttl = 60 * 60 * 24; // 24 hours
 
   async setOne(tutor: ITutor.FullTutor) {
-    await this.client.hSet(
-      this.key,
-      this.asField(tutor.id),
-      this.encode(tutor)
-    );
+    await this.client
+      .multi()
+      .hSet(this.key, this.asField(tutor.id), this.encode(tutor))
+      .expire(this.key, this.ttl)
+      .exec();
   }
 
   async getOne(id: number): Promise<ITutor.FullTutor | null> {
     const result = await this.client.hGet(this.key, this.asField(id));
     if (!result) return null;
-    // todo: validate the result schema using zod.
     return this.decode(result);
   }
 
@@ -30,7 +28,11 @@ export class Tutors extends CacheBase {
     }
 
     if (isEmpty(cache)) return;
-    await this.client.hSet(this.key, cache);
+    await this.client
+      .multi()
+      .hSet(this.key, cache)
+      .expire(this.key, this.ttl)
+      .exec();
   }
 
   async getAll(): Promise<ITutor.FullTutor[]> {

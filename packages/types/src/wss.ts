@@ -32,6 +32,9 @@ export enum ServerEvent {
   LessonBooked = "LessonBooked",
   LessonCanceled = "LessonCanceled",
   TutorUpdated = "TutorUpdated",
+  RuleDeleted = "RuleDeleted",
+  RuleUpdated = "RuleUpdated",
+  RuleCreated = "RuleCreated",
 }
 
 export enum Room {

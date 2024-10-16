@@ -28,19 +28,29 @@ const TutorList: React.FC<{
     };
   }, [intl, navigate]);
 
-  const onUpdate = useCallback(() => {
-    console.log("here!!!");
-    tutors.refetch();
-  }, [tutors]);
+  const onUpdate = useCallback(async () => {
+    const { data } = await tutors.refetch();
+    if (!data || !tutor) return;
+    const updated = data.list.find((t) => t.id === tutor.id);
+    setTutor(updated || null);
+  }, [tutor, tutors]);
 
   useEffect(() => {
     if (!sockets?.api) return;
 
+    sockets.api.on(Wss.ServerEvent.TutorUpdated, onUpdate);
     sockets.api.on(Wss.ServerEvent.LessonBooked, onUpdate);
     sockets.api.on(Wss.ServerEvent.LessonCanceled, onUpdate);
+    sockets.api.on(Wss.ServerEvent.RuleCreated, onUpdate);
+    sockets.api.on(Wss.ServerEvent.RuleUpdated, onUpdate);
+    sockets.api.on(Wss.ServerEvent.RuleDeleted, onUpdate);
     return () => {
+      sockets.api.off(Wss.ServerEvent.TutorUpdated, onUpdate);
       sockets.api.off(Wss.ServerEvent.LessonBooked, onUpdate);
       sockets.api.off(Wss.ServerEvent.LessonCanceled, onUpdate);
+      sockets.api.off(Wss.ServerEvent.RuleCreated, onUpdate);
+      sockets.api.off(Wss.ServerEvent.RuleUpdated, onUpdate);
+      sockets.api.off(Wss.ServerEvent.RuleDeleted, onUpdate);
     };
   }, [onUpdate, sockets?.api]);
 

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
+import safeRequest from "express-async-handler";
 import zod from "zod";
 import {
   date,
@@ -10,11 +10,14 @@ import {
   string,
   weekday,
 } from "@/validation/utils";
-import { IRule, IUser } from "@litespace/types";
+import { IRule, IUser, Wss } from "@litespace/types";
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { calls, rules } from "@litespace/models";
-import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol";
+import { Rule, Schedule, asRule, safe, unpackRules } from "@litespace/sol";
 import { isEmpty } from "lodash";
+import { ApiContext } from "@/types/api";
+import { cache } from "@/lib/cache";
+import dayjs from "@/lib/dayjs";
 
 const title = zod.string().min(5).max(255);
 const createRulePayload = zod.object({
@@ -44,25 +47,46 @@ const updateRulePayload = zod.object({
   activated: zod.optional(zod.boolean()),
 });
 
-async function createRule(req: Request, res: Response, next: NextFunction) {
-  const userId = req.user.id;
-  const role = req.user?.role;
-  const eligible = role === IUser.Role.Interviewer || role === IUser.Role.Tutor;
-  if (!eligible || !userId) return next(forbidden());
+function createRule(context: ApiContext) {
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const userId = req.user.id;
+      const role = req.user?.role;
+      const eligible =
+        role === IUser.Role.Interviewer || role === IUser.Role.Tutor;
+      if (!eligible || !userId) return next(forbidden());
 
-  const payload: IRule.CreateApiPayload = createRulePayload.parse(req.body);
-  const existingRules = await rules.findByUserId({
-    user: userId,
-    deleted: false, // skip deleted rules
-  });
-  const incomingRule: Rule = asRule(payload);
+      const payload: IRule.CreateApiPayload = createRulePayload.parse(req.body);
+      const existingRules = await rules.findByUserId({
+        user: userId,
+        deleted: false, // skip deleted rules
+      });
+      const incomingRule: Rule = asRule(payload);
 
-  for (const rule of existingRules) {
-    if (Schedule.from(asRule(rule)).intersecting(incomingRule))
-      return next(badRequest());
-  }
-  const rule = await rules.create({ ...payload, userId });
-  res.status(201).json(rule);
+      for (const rule of existingRules) {
+        if (Schedule.from(asRule(rule)).intersecting(incomingRule))
+          return next(badRequest());
+      }
+      const rule = await rules.create({ ...payload, userId });
+      res.status(201).json(rule);
+
+      const error = await safe(async () => {
+        const today = dayjs.utc().startOf("day");
+        await cache.rules.setOne({
+          tutor: rule.userId,
+          rule: rule.id,
+          events: unpackRules({
+            rules: [rule],
+            calls: [],
+            start: today.toISOString(),
+            end: today.add(30, "days").toISOString(),
+          }),
+        });
+        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleCreated);
+      });
+      if (error instanceof Error) console.log(error);
+    }
+  );
 }
 
 async function findUserRules(req: Request, res: Response, next: NextFunction) {
@@ -112,68 +136,104 @@ async function findUnpackedUserRules(
   });
 }
 
-async function updateRule(req: Request, res: Response, next: NextFunction) {
-  const payload: IRule.UpdateApiPayload = updateRulePayload.parse(req.body);
-  const { ruleId } = updateRuleParams.parse(req.params);
-  const userId = req.user?.id;
-  if (!userId) return next(forbidden());
+function updateRule(context: ApiContext) {
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const payload: IRule.UpdateApiPayload = updateRulePayload.parse(req.body);
+      const { ruleId } = updateRuleParams.parse(req.params);
+      const userId = req.user?.id;
+      if (!userId) return next(forbidden());
 
-  const rule = await rules.findById(ruleId);
-  if (!rule || rule.deleted) return next(notfound.base());
+      const rule = await rules.findById(ruleId);
+      if (!rule || rule.deleted) return next(notfound.base());
 
-  const owner = rule.userId === userId;
-  if (!owner) return next(forbidden());
+      const owner = rule.userId === userId;
+      if (!owner) return next(forbidden());
 
-  const withUpdates: IRule.Self = { ...rule, ...payload };
-  const existingRules = await rules.findByUserId({
-    user: userId,
-    deleted: false, // ignore deleted rules
-  });
-  const otherRules = existingRules.filter((rule) => rule.id !== withUpdates.id);
-  for (const rule of otherRules) {
-    if (Schedule.from(asRule(rule)).intersecting(asRule(withUpdates)))
-      return next(badRequest());
-  }
+      const withUpdates: IRule.Self = { ...rule, ...payload };
+      const existingRules = await rules.findByUserId({
+        user: userId,
+        deleted: false, // ignore deleted rules
+      });
+      const otherRules = existingRules.filter(
+        (rule) => rule.id !== withUpdates.id
+      );
+      for (const rule of otherRules) {
+        if (Schedule.from(asRule(rule)).intersecting(asRule(withUpdates)))
+          return next(badRequest());
+      }
 
-  const updatedRule = await rules.update(ruleId, {
-    title: payload.title,
-    frequency: payload.frequency,
-    start: payload.start,
-    end: payload.end,
-    time: payload.time,
-    duration: payload.duration,
-    weekdays: payload.weekdays,
-    monthday: payload.monthday,
-    activated: payload.activated,
-  });
-  res.status(200).json(updatedRule);
+      const updatedRule = await rules.update(ruleId, {
+        title: payload.title,
+        frequency: payload.frequency,
+        start: payload.start,
+        end: payload.end,
+        time: payload.time,
+        duration: payload.duration,
+        weekdays: payload.weekdays,
+        monthday: payload.monthday,
+        activated: payload.activated,
+      });
+      res.status(200).json(updatedRule);
+
+      const error = await safe(async () => {
+        const today = dayjs.utc().startOf("day");
+        const ruleCalls = await calls.findByRuleId({
+          rule: rule.id,
+          canceled: false, // ignore canceled calls
+        });
+        await cache.rules.setOne({
+          tutor: rule.userId,
+          rule: rule.id,
+          events: unpackRules({
+            rules: [rule],
+            calls: ruleCalls,
+            start: today.toISOString(),
+            end: today.add(30, "days").toISOString(),
+          }),
+        });
+        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleUpdated);
+      });
+      if (error instanceof Error) console.log(error);
+    }
+  );
 }
 
-async function deleteRule(req: Request, res: Response, next: NextFunction) {
-  const { ruleId } = deleteRuleParams.parse(req.params);
-  const userId = req.user?.id;
-  if (!userId) return next(forbidden());
+function deleteRule(context: ApiContext) {
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const { ruleId } = deleteRuleParams.parse(req.params);
+      const userId = req.user?.id;
+      if (!userId) return next(forbidden());
 
-  const rule = await rules.findById(ruleId);
-  if (!rule) return next(notfound.base());
+      const rule = await rules.findById(ruleId);
+      if (!rule) return next(notfound.base());
 
-  const owner = rule.userId === userId;
-  if (!owner) return next(forbidden());
+      const owner = rule.userId === userId;
+      if (!owner) return next(forbidden());
 
-  const ruleCalls = await calls.findByRuleId({ rule: ruleId });
-  const deletable = isEmpty(ruleCalls);
+      const ruleCalls = await calls.findByRuleId({ rule: ruleId });
+      const deletable = isEmpty(ruleCalls);
 
-  const deletedRule = deletable
-    ? await rules.delete(ruleId)
-    : await rules.update(ruleId, { deleted: true });
+      const deletedRule = deletable
+        ? await rules.delete(ruleId)
+        : await rules.update(ruleId, { deleted: true });
 
-  res.status(204).json(deletedRule);
+      res.status(204).json(deletedRule);
+
+      const error = await safe(async () => {
+        await cache.rules.deleteOne({ tutor: rule.userId, rule: rule.id });
+        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleDeleted);
+      });
+      if (error instanceof Error) console.log(error);
+    }
+  );
 }
 
 export default {
-  createRule: asyncHandler(createRule),
-  findUserRules: asyncHandler(findUserRules),
-  findUnpackedUserRules: asyncHandler(findUnpackedUserRules),
-  updateRule: asyncHandler(updateRule),
-  deleteRule: asyncHandler(deleteRule),
+  findUnpackedUserRules: safeRequest(findUnpackedUserRules),
+  findUserRules: safeRequest(findUserRules),
+  createRule,
+  updateRule,
+  deleteRule,
 };
