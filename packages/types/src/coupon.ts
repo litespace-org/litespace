@@ -1,4 +1,4 @@
-import { RecordAttributes, MappedRecordAttributes } from "@/utils";
+import { RecordAttributes, MappedRecordAttributes, Paginated } from "@/utils";
 
 export type Row = {
   id: number;
@@ -63,3 +63,5 @@ export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
 export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
 
 export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
+
+export type FindCouponsApiResponse = Paginated<Self>;

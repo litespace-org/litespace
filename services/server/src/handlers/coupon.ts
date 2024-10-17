@@ -1,68 +1,138 @@
-import { notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error";
 import { coupons } from "@litespace/models";
-import http from "@/validation/http";
-import { identityObject } from "@/validation/utils";
+import {
+  datetime,
+  number,
+  pagination,
+  string,
+  withNamedId,
+} from "@/validation/utils";
 import { ICoupon } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
-import { merge } from "lodash";
+import safeRequest from "express-async-handler";
+import zod from "zod";
+import { isAdmin } from "@litespace/auth";
 
-async function create(req: Request, res: Response) {
-  const payload: ICoupon.CreateApiPayload = http.coupon.create.body.parse(
-    req.body
-  );
+const createCouponPayload = zod.object({
+  code: string,
+  planId: number,
+  fullMonthDiscount: number,
+  fullQuarterDiscount: number,
+  halfYearDiscount: number,
+  fullYearDiscount: number,
+  expiresAt: datetime,
+});
 
-  const coupon = await coupons.create(
-    merge(payload, { createdBy: req.user.id })
-  );
+const updateCouponPayload = zod.object({
+  code: zod.optional(string),
+  planId: zod.optional(number),
+  fullMonthDiscount: zod.optional(number),
+  fullQuarterDiscount: zod.optional(number),
+  halfYearDiscount: zod.optional(number),
+  fullYearDiscount: zod.optional(number),
+  expiresAt: zod.optional(datetime),
+});
+
+const findByCodeParams = zod.object({
+  code: string,
+});
+
+async function create(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const {
+    code,
+    expiresAt,
+    fullMonthDiscount,
+    fullQuarterDiscount,
+    fullYearDiscount,
+    halfYearDiscount,
+    planId,
+  }: ICoupon.CreateApiPayload = createCouponPayload.parse(req.body);
+
+  const coupon = await coupons.create({
+    createdBy: user.id,
+    fullMonthDiscount,
+    fullQuarterDiscount,
+    fullYearDiscount,
+    halfYearDiscount,
+    expiresAt,
+    planId,
+    code,
+  });
 
   res.status(200).json(coupon);
 }
 
-async function update(req: Request, res: Response) {
-  const { id } = identityObject.parse(req.params);
-  const payload: ICoupon.UpdateApiPayload = http.coupon.update.body.parse(
-    req.body
-  );
+async function update(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
 
-  const coupon = await coupons.update(
-    id,
-    merge(payload, { updatedBy: req.user.id })
-  );
+  const { id } = withNamedId("id").parse(req.params);
+  const {
+    code,
+    planId,
+    expiresAt,
+    fullMonthDiscount,
+    fullQuarterDiscount,
+    fullYearDiscount,
+    halfYearDiscount,
+  }: ICoupon.UpdateApiPayload = updateCouponPayload.parse(req.body);
+
+  const coupon = await coupons.update(id, {
+    code,
+    planId,
+    expiresAt,
+    updatedBy: user.id,
+    fullMonthDiscount,
+    fullQuarterDiscount,
+    fullYearDiscount,
+    halfYearDiscount,
+  });
 
   res.status(200).json(coupon);
 }
 
-async function delete_(req: Request, res: Response) {
-  const { id } = identityObject.parse(req.params);
+async function delete_(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return next(forbidden());
+  const { id } = withNamedId("id").parse(req.params);
   await coupons.delete(id);
   res.status(200).send();
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
-  const { id } = identityObject.parse(req.params);
+  const { id } = withNamedId("id").parse(req.params);
   const coupon = await coupons.findById(id);
   if (!coupon) return next(notfound.coupon());
   res.status(200).json(coupon);
 }
 
 async function findByCode(req: Request, res: Response, next: NextFunction) {
-  const { code } = http.coupon.findByCode.params.parse(req.params);
+  const { code } = findByCodeParams.parse(req.params);
   const coupon = await coupons.findByCode(code);
   if (!coupon) return next(notfound.coupon());
   res.status(200).json(coupon);
 }
 
-async function findAll(req: Request, res: Response) {
-  const list = await coupons.findAll();
-  res.status(200).json(list);
+async function findAll(req: Request, res: Response, next: NextFunction) {
+  const allowed = isAdmin(req.user);
+  if (!allowed) return next(forbidden());
+  const query = pagination.parse(req.query);
+  const list = await coupons.find(query);
+  const response: ICoupon.FindCouponsApiResponse = list;
+  res.status(200).json(response);
 }
 
 export default {
-  create: asyncHandler(create),
-  update: asyncHandler(update),
-  delete: asyncHandler(delete_),
-  findById: asyncHandler(findById),
-  findByCode: asyncHandler(findByCode),
-  findAll: asyncHandler(findAll),
+  create: safeRequest(create),
+  update: safeRequest(update),
+  delete: safeRequest(delete_),
+  findById: safeRequest(findById),
+  findByCode: safeRequest(findByCode),
+  findAll: safeRequest(findAll),
 };
