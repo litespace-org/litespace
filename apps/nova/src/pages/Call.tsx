@@ -19,7 +19,7 @@ import {
   MessageCircle,
   Phone,
 } from "react-feather";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import cn from "classnames";
 import { Wss } from "@litespace/types";
 import {
@@ -36,11 +36,13 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
 import { useFindCallRoomById } from "@litespace/headless/calls";
+import { Route } from "@/types/routes";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
   const chat = useRender();
   const intl = useFormatMessage();
+  const navigate = useNavigate();
   const mediaQueries = useMediaQueries();
   const { id } = useParams<{ id: string }>();
   const [remoteMediaStream, setRemoteMediaStream] =
@@ -57,6 +59,7 @@ const Call: React.FC = () => {
     toggleSound,
     toggleCamera,
     mic,
+    stop,
     camera,
     video: userVideo,
     audio: userAudio,
@@ -144,7 +147,10 @@ const Call: React.FC = () => {
   }, [callId, startRecording, userMediaStream]);
 
   const onLeaveCall = useCallback(() => {
+    // TODO: This didn't stop the camera and needs further investigations
+    stop();
     peer.destroy();
+    if (id) navigate(Route.CallFeedback.replace(":id", id));
   }, []);
 
   const callRoom = useFindCallRoomById(callId);
