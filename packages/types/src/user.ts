@@ -108,3 +108,7 @@ export type LoginApiResponse = {
 export type RegisterApiResponse = LoginApiResponse;
 
 export type FindUsersApiResponse = Paginated<Self>;
+
+export type ResetPasswordApiResponse = LoginApiResponse;
+
+export type LoginWithAuthTokenApiResponse = LoginApiResponse;

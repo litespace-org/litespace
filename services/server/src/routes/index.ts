@@ -16,6 +16,7 @@ import rule from "@/routes/rule";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
 import withdrawMethod from "@/routes/withdrawMethod";
+import auth from "@/routes/auth";
 
 export default {
   user,
@@ -36,4 +37,5 @@ export default {
   subscription,
   interview,
   asset,
+  auth,
 };
