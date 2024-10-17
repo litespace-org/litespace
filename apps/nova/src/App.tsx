@@ -26,6 +26,7 @@ import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import { SocketProvider } from "@litespace/luna";
+import CallFeedback from "@/pages/Callfeedback";
 
 const router = createBrowserRouter([
   {
@@ -35,6 +36,7 @@ const router = createBrowserRouter([
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
       { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Call, element: <Call /> },
+      { path: Route.CallFeedback, element: <CallFeedback /> },
       { path: Route.Dashboard, element: <Dashboard /> },
       { path: Route.Schedule, element: <Schedule /> },
       { path: Route.EditSchedule, element: <EditSchedule /> },
