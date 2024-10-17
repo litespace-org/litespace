@@ -7,20 +7,39 @@ import {
   ActionsMenu,
   formatMinutes,
   Loading,
+  toaster,
   useFormatMessage,
 } from "@litespace/luna";
-import { IPlan } from "@litespace/types";
+import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useCallback, useMemo, useState } from "react";
 import Error from "@/components/common/Error";
+import { useDeletePlan } from "@litespace/headless/plans";
 
 const List: React.FC<{
   query: UseQueryResult<IPlan.MappedAttributes[], Error>;
-}> = ({ query }) => {
+  refresh: Void;
+}> = ({ query, refresh }) => {
   const intl = useFormatMessage();
   const [plan, setPlan] = useState<IPlan.MappedAttributes | null>(null);
   const close = useCallback(() => setPlan(null), []);
+
+  const onSuccess = useCallback(() => {
+    toaster.success({ title: intl("dashboard.plan.delete.success") });
+    refresh();
+  }, [intl, refresh]);
+
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("dashboard.plan.delete.error"),
+        description: error.message,
+      });
+    },
+    [intl]
+  );
+  const deletePlan = useDeletePlan({ onSuccess, onError });
   const columnHelper = createColumnHelper<IPlan.MappedAttributes>();
   const columns = useMemo(
     () => [
@@ -111,17 +130,17 @@ const List: React.FC<{
             actions={[
               {
                 id: 1,
-                label: "Edit",
+                label: intl("global.labels.edit"),
                 onClick() {
                   setPlan(info.row.original);
                 },
               },
               {
                 id: 2,
-                label: "Delete",
+                label: intl("global.labels.delete"),
                 danger: true,
-                onClick() {
-                  alert("Delete plan !!!");
+                onClick: () => {
+                  deletePlan.mutate(info.row.original.id);
                 },
               },
             ]}
@@ -129,7 +148,7 @@ const List: React.FC<{
         ),
       }),
     ],
-    [columnHelper, intl]
+    [columnHelper, deletePlan, intl]
   );
 
   if (query.isLoading) return <Loading className="h-1/4" />;

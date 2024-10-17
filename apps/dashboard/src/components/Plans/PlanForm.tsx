@@ -1,4 +1,4 @@
-import { useCreatePlan } from "@litespace/headless/plans";
+import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
 import {
   Button,
   ButtonSize,
@@ -15,7 +15,7 @@ import {
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
 } from "@litespace/luna";
-import { Duration, percentage, price } from "@litespace/sol";
+import { percentage, price, Duration } from "@litespace/sol";
 import { IPlan, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -52,14 +52,16 @@ const PlanForm: React.FC<{
     defaultValues: {
       alias: plan ? plan.alias : "",
       weeklyMinutes: Duration.from(plan ? plan.weeklyMinutes.toString() : "0"),
-      fullMonthPrice: plan ? plan.fullMonthPrice : 0,
-      fullMonthDiscount: plan ? plan.fullMonthDiscount : 0,
-      fullQuarterPrice: plan ? plan.fullQuarterPrice : 0,
-      fullQuarterDiscount: plan ? plan.fullQuarterDiscount : 0,
-      halfYearPrice: plan ? plan.halfYearPrice : 0,
-      halfYearDiscount: plan ? plan.halfYearDiscount : 0,
-      fullYearPrice: plan ? plan.fullYearPrice : 0,
-      fullYearDiscount: plan ? plan.fullYearDiscount : 0,
+      fullMonthPrice: plan ? price.unscale(plan.fullMonthPrice) : 0,
+      fullMonthDiscount: plan ? percentage.unscale(plan.fullMonthDiscount) : 0,
+      fullQuarterPrice: plan ? price.unscale(plan.fullQuarterPrice) : 0,
+      fullQuarterDiscount: plan
+        ? percentage.unscale(plan.fullQuarterDiscount)
+        : 0,
+      halfYearPrice: plan ? price.unscale(plan.halfYearPrice) : 0,
+      halfYearDiscount: plan ? percentage.unscale(plan.halfYearDiscount) : 0,
+      fullYearPrice: plan ? price.unscale(plan.fullYearPrice) : 0,
+      fullYearDiscount: plan ? percentage.unscale(plan.fullYearDiscount) : 0,
       forInvitesOnly: plan ? plan.forInvitesOnly : false,
       active: plan ? plan.active : false,
     },
@@ -71,22 +73,33 @@ const PlanForm: React.FC<{
   }, [close, form]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("dashboard.plan.form.create.success") });
+    toaster.success({
+      title: intl(
+        plan
+          ? "dashboard.plan.form.update.success"
+          : "dashboard.plan.form.create.success"
+      ),
+    });
     refresh();
     onClose();
-  }, [intl, onClose, refresh]);
+  }, [intl, onClose, plan, refresh]);
 
   const onError = useCallback(
     (error: Error) => {
       toaster.error({
-        title: intl("dashboard.plan.form.create.error"),
+        title: intl(
+          plan
+            ? "dashboard.plan.form.update.error"
+            : "dashboard.plan.form.create.error"
+        ),
         description: error.message,
       });
     },
-    [intl]
+    [intl, plan]
   );
 
   const createPlan = useCreatePlan({ onSuccess, onError });
+  const updatePlan = useUpdatePlan({ onSuccess, onError });
   const aliasRules = useValidatePlanAlias();
   const weeklyMinutesRules = useValidatePlanWeeklyMinutes();
   const priceRules = useValidatePrice();
@@ -94,7 +107,7 @@ const PlanForm: React.FC<{
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      createPlan.mutate({
+      const payload = {
         alias: data.alias,
         active: data.active,
         weeklyMinutes: data.weeklyMinutes.minutes(),
@@ -107,12 +120,13 @@ const PlanForm: React.FC<{
         halfYearDiscount: percentage.scale(data.halfYearDiscount),
         fullYearPrice: price.scale(data.fullYearPrice),
         fullYearDiscount: percentage.scale(data.fullYearDiscount),
-      });
+      };
+      if (plan) updatePlan.mutate({ id: plan.id, payload });
+      else createPlan.mutate(payload);
       form.reset();
     },
-    [createPlan, form]
+    [createPlan, form, plan, updatePlan]
   );
-
   return (
     <Dialog
       open={open}
@@ -312,7 +326,7 @@ const PlanForm: React.FC<{
             disabled={createPlan.isPending}
             htmlType="submit"
           >
-            {intl("labels.create")}
+            {intl(plan ? "labels.update" : "labels.create")}
           </Button>
         </div>
       </Form>
