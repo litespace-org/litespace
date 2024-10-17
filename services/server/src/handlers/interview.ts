@@ -1,6 +1,5 @@
 import { badRequest, forbidden, notfound, unexpected } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
-import { enforceRequest } from "@/middleware/accessControl";
 import {
   calls,
   interviews,
@@ -21,10 +20,11 @@ import {
 } from "@/validation/utils";
 import { Element, IInterview, IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
+import safeRequest from "express-async-handler";
 import zod from "zod";
-import { authorizer } from "@litespace/auth";
+import { isAdmin, isInterviewer, isTutor } from "@litespace/auth";
 import { isEmpty, isUndefined } from "lodash";
+import { canBook } from "@/lib/call";
 
 const INTERVIEW_DURATION = 30;
 
@@ -47,20 +47,24 @@ const updateInterviewPayload = zod.object({
   sign: zod.optional(boolean),
 });
 
+const findInterviewsQuery = zod.object({ user: zod.optional(id) });
+
 async function createInterview(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const allowed = enforceRequest(req);
+  const user = req.user;
+  const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
-  const intervieweeId = req.user.id;
+  const intervieweeId = user.id;
   const { interviewerId, start, ruleId }: IInterview.CreateApiPayload =
     createInterviewPayload.parse(req.body);
 
   const interviewer = await users.findById(interviewerId);
   if (!interviewer) return next(notfound.user());
+  if (!isInterviewer(interviewer)) return next(badRequest());
 
   const list = await interviews.findByInterviewee(intervieweeId);
   const interviewable = canBeInterviewed(list);
@@ -69,13 +73,17 @@ async function createInterview(
   const rule = await rules.findById(ruleId);
   if (!rule) return next(notfound.base());
 
-  // const bookedCalls = await calls.findBySlotId(call.ruleId);
-  // const enough = hasEnoughTime({
-  //   call: { start: call.start, duration: INTERVIEW_DURATION },
-  //   calls: bookedCalls,
-  //   slot,
-  // });
-  // if (!enough) return next(badRequest());
+  const ruleCalls = await calls.findByRuleId({
+    rule: rule.id,
+    canceled: false, // ignore canceled calls
+  });
+
+  const canBookInterview = canBook({
+    rule,
+    calls: ruleCalls,
+    call: { start, duration: INTERVIEW_DURATION },
+  });
+  if (!canBookInterview) return next(badRequest());
 
   const members = [interviewer.id, intervieweeId];
   const room = await rooms.findRoomByMembers(members);
@@ -109,15 +117,19 @@ async function createInterview(
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().tutor().interviewer().check(req.user);
+  const currentUser = req.user;
+  const { user } = findInterviewsQuery.parse(req.query);
+  const owner = isTutor(currentUser) && currentUser.id === user;
+  const allowed = owner || isAdmin(currentUser) || isInterviewer(currentUser);
   if (!allowed) return next(forbidden());
 
-  const { userId } = withNamedId("userId").parse(req.params);
-  const query = pagination.parse(req.query);
-  const { interviews: userInterviews, total } = await interviews.findByUser(
-    userId,
-    query
-  );
+  const { page, size } = pagination.parse(req.query);
+  const { interviews: userInterviews, total } = await interviews.find({
+    users: user ? [user] : undefined,
+    page,
+    size,
+  });
+
   const callIds = userInterviews.map((interview) => interview.ids.call);
   const [interviewCalls, callMembers] = await Promise.all([
     calls.findByIds(callIds),
@@ -150,17 +162,19 @@ async function findInterviewById(
   res: Response,
   next: NextFunction
 ) {
+  const user = req.user;
+  const allowed = isTutor(user) || isAdmin(user) || isInterviewer(user);
+  if (!allowed) return next(forbidden());
+
   const { interviewId } = withNamedId("interviewId").parse(req.params);
   const interview = await interviews.findById(interviewId);
   if (!interview) return next(notfound.base());
 
-  const allowed = enforceRequest(
-    req,
-    [interview.ids.interviewer, interview.ids.interviewee].includes(
-      req.user?.id
-    )
-  );
-  if (!allowed) return next(forbidden());
+  if (
+    (isTutor(user) && user.id !== interview.ids.interviewee) ||
+    (isInterviewer(user) && user.id !== interview.ids.interviewer)
+  )
+    return next(forbidden());
 
   res.status(200).json(interview);
 }
@@ -170,11 +184,8 @@ async function updateInterview(
   res: Response,
   next: NextFunction
 ) {
-  const allowed = authorizer()
-    .superAdmin()
-    .interviewer()
-    .tutor()
-    .check(req.user);
+  const user = req.user;
+  const allowed = isAdmin(user) || isInterviewer(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
@@ -184,26 +195,26 @@ async function updateInterview(
   const interview = await interviews.findById(interviewId);
   if (!interview) return next(notfound.base());
 
-  const eligible = authorizer()
-    .member(interview.ids.interviewer, interview.ids.interviewee)
-    .superAdmin()
-    .check(req.user);
-  if (!eligible) return next(forbidden());
+  if (
+    (isTutor(user) && user.id !== interview.ids.interviewee) ||
+    (isInterviewer(user) && user.id !== interview.ids.interviewer)
+  )
+    return next(forbidden());
 
   // Tutor can only update the feedback of the interview
   const isPermissionedInterviewee =
-    req.user.role === IUser.Role.Tutor &&
+    user.role === IUser.Role.Tutor &&
     !isUndefined(payload.feedback?.interviewee);
 
   const isPermissionedInterviewer =
-    req.user.role === IUser.Role.Interviewer &&
+    user.role === IUser.Role.Interviewer &&
     (!isUndefined(payload.feedback?.interviewer) ||
       !isUndefined(payload.note) ||
       !isUndefined(payload.level) ||
       !isUndefined(payload.status));
 
   const isPermissionedAdmin =
-    req.user.role === IUser.Role.SuperAdmin && !isUndefined(payload.sign);
+    user.role === IUser.Role.SuperAdmin && !isUndefined(payload.sign);
 
   const isPermissioned =
     isPermissionedInterviewee ||
@@ -213,7 +224,7 @@ async function updateInterview(
 
   //! temp: sign by the interviewer for now
   const signer =
-    payload.status === IInterview.Status.Passed ? req.user.id : undefined;
+    payload.status === IInterview.Status.Passed ? user.id : undefined;
   // payload.sign === true // sign
   //   ? req.user.id
   //   : payload.sign === false // unsign
@@ -231,8 +242,8 @@ async function updateInterview(
 }
 
 export default {
-  createInterview: asyncHandler(createInterview),
-  findInterviews: asyncHandler(findInterviews),
-  updateInterview: asyncHandler(updateInterview),
-  findInterviewById: asyncHandler(findInterviewById),
+  createInterview: safeRequest(createInterview),
+  findInterviews: safeRequest(findInterviews),
+  updateInterview: safeRequest(updateInterview),
+  findInterviewById: safeRequest(findInterviewById),
 };

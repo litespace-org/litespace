@@ -1,3 +1,5 @@
+import { Paginated } from "@/utils";
+
 export type Row = {
   id: number;
   alias: string;
@@ -87,3 +89,5 @@ export type UpdatePayload = Partial<Omit<CreatePayload, "createdBy">> & {
 export type CreateApiPayload = Omit<CreatePayload, "createdBy">;
 
 export type UpdateApiPayload = Omit<UpdatePayload, "updatedBy">;
+
+export type FindPlansApiResponse = Paginated<Self>;

@@ -1,42 +1,35 @@
 import { serverConfig } from "@/constants";
-import { badRequest, forbidden, notfound } from "@/lib/error";
-import { enforceRequest } from "@/middleware/accessControl";
+import { forbidden, notfound } from "@/lib/error";
 import { NextFunction, Request, Response } from "express";
-import asyncHandler from "express-async-handler";
-import { isArray } from "lodash";
+import safeRequest from "express-async-handler";
 import path from "node:path";
 import fs from "node:fs/promises";
-import http from "@/validation/http";
+import { isAdmin } from "@litespace/auth";
+import zod from "zod";
+import { pagination, string } from "@/validation/utils";
+import { drop } from "lodash";
+import { IAsset } from "@litespace/types";
 
-async function upload(req: Request, res: Response, next: NextFunction) {
-  const media = req.files?.media;
-  if (!media) return next(badRequest());
-
-  const files = isArray(media) ? media : [media];
-
-  const filenames = await Promise.all(
-    files.map(async (file) => {
-      const filename = Date.now() + "-" + file.name;
-      await file.mv(path.join(serverConfig.media.directory, filename));
-      return filename;
-    })
-  );
-
-  res.status(200).json({ filenames });
-}
+const removeAssetsParams = zod.object({ name: string });
 
 async function viewAssets(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
+  const user = req.user;
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
+  const { page, size } = pagination.parse(req.params);
   const assets = await fs.readdir(serverConfig.media.directory);
-  res.status(200).json(assets);
+  const offset = (page - 1) * size;
+  const list = drop(assets, offset).slice(0, size);
+  const response: IAsset.FindAssetsApiResponse = { list, total: assets.length };
+  res.status(200).json(response);
 }
 
 async function removeAsset(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
+  const user = req.user;
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { name } = http.assets.remove.params.parse(req.params);
+  const { name } = removeAssetsParams.parse(req.params);
   const asset = path.join(serverConfig.media.directory, name);
   const exists = await fs
     .access(asset)
@@ -49,7 +42,6 @@ async function removeAsset(req: Request, res: Response, next: NextFunction) {
 }
 
 export default {
-  upload: asyncHandler(upload),
-  viewAssets: asyncHandler(viewAssets),
-  removeAsset: asyncHandler(removeAsset),
+  viewAssets: safeRequest(viewAssets),
+  removeAsset: safeRequest(removeAsset),
 };

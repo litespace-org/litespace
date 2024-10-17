@@ -2,7 +2,7 @@ import { createServer } from "node:http";
 import { Server } from "socket.io";
 import express, { json } from "express";
 import routes from "@/routes";
-import { googleConfig, jwtSecret, serverConfig } from "@/constants";
+import { jwtSecret, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
 import { wssHandler } from "@/wss";
 import bodyParser from "body-parser";
@@ -12,7 +12,7 @@ import { onlyForHandshake } from "@/middleware/common";
 import { capitalize } from "lodash";
 import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
-import { authMiddleware, router as authRouter } from "@litespace/auth";
+import { authMiddleware } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
 
@@ -47,10 +47,7 @@ app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware(jwtSecret));
 app.use("/assets/", express.static(serverConfig.media.directory));
-app.use(
-  "/api/v1/auth",
-  authRouter({ jwtSecret: jwtSecret, clientId: googleConfig.clientId })
-);
+app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
 app.use("/api/v1/tutor", routes.tutor);
