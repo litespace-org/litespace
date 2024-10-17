@@ -32,6 +32,11 @@
   "page.tutors.book.lesson.dialog.lesson.duration": "مدة الحصة",
   "page.tutors.book.lesson.success": "تم حجز حصصتك مع {tutor} بنجاح",
   "page.tutors.book.lesson.error": "حدثت مشكلة أثناء حجز حصتك، الرجاء المحاولة لاحقاً",
+  "tutor.rate.succes": "تم تقييم المعلم بنجاح",
+  "tutor.rate.error": "حدث خطأ أثناء تقييم المعلم، برجاء المحاولة مرة أخرى",
+  "tutor.rate.editmessage": "تعديل تقييم المعلم",
+  "rating.form.rule.feedback.less": "يجب ألا يقل التقييم عن 10 حروف",
+  "rating.form.rule.feedback.more": "لا ينبغى أن يزيد التقييم عن 1000 حرف",
   "call.no.user.stream": "لديك مشكلة في الميك أو الكاميرا",
   "call.user.denided": "الرجاء قبول طلب الوصول للمايك والكاميرا",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
@@ -402,8 +407,5 @@
   "error.schedule.duration": "أقل مده هي 30 دقيقة",
   "error.tutors.list.error": "حدثت مشكلة أثناء تحصيل قائمة المعلمين، الرجاء المحاولة لاحقاً",
   "error.tutors.list.empty": "يبدو أنه لا يوجد معلمين متاحين الان، الرجاء المحاولة لاحقاً",
-  "error.unexpected": "حدث خطاء غير متوقع، الرجاء المحاولة لاحقاً",
-  "tutor.rate.succes": "تم تقييم المعلم بنجاح",
-  "tutor.rate.error": "حدث خطأ أثناء تقييم المعلم، برجاء المحاولة مرة أخرى",
-  "tutor.rate.editmessage": "تعديل تقييم المعلم"
+  "error.unexpected": "حدث خطاء غير متوقع، الرجاء المحاولة لاحقاً"
 }

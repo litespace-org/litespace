@@ -42,9 +42,7 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
       title: intl("tutor.rate.error"),
       description: error.message,
     });
-    if (rate && close) {
-      close();
-    }
+    if (rate && close) close();
   }, []);
   const rateTutor = useRateTutor({ onSuccess, onError });
 
@@ -61,14 +59,12 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   });
 
   const onSubmit = useCallback((data: IForm) => {
-    if (rate) {
-      editRateTutor.mutate({
+    if (rate)
+      return editRateTutor.mutate({
         feedback: data.feedback,
         value: data.rating,
       });
 
-      return;
-    }
     rateTutor.mutate({
       feedback: data.feedback || null,
       value: data.rating,
@@ -93,10 +89,13 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
         field={
           <Controller.Textarea
             rules={{
-              minLength: { value: 10, message: "must be above 10 characters" },
+              minLength: {
+                value: 10,
+                message: intl("rating.form.rule.feedback.less"),
+              },
               maxLength: {
                 value: 1000,
-                message: "must be less than 1000 characters",
+                message: intl("rating.form.rule.feedback.more"),
               },
             }}
             control={form.control}
@@ -105,7 +104,6 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
           />
         }
       />
-      {/* handle different cases of editing or creating  */}
       <Button
         type={ButtonType.Primary}
         disabled={rateTutor.isPending || editRateTutor.isPending}

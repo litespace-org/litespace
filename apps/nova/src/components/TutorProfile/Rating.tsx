@@ -4,21 +4,21 @@ import {
   ButtonType,
   Card,
   asFullAssetUrl,
-  useFormatMessage,
 } from "@litespace/luna";
 import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
 import { useRender } from "@/hooks/render";
-import EditRating from "./EditRating";
+import EditRating from "@/components/TutorProfile/EditRating";
+import { useAppSelector } from "@/redux/store";
+import { profileSelectors } from "@/redux/user/profile";
 
 const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
-  const edit = useRender();
+  const profile = useAppSelector(profileSelectors.user);
+  const editRating = useRender();
   const deleteRating = useRender();
-  const intl = useFormatMessage();
-  const showEditDialog = ()=> edit.show();
-  const showDeleteDialog = () => deleteRating.show()
+
   return (
     <Card>
       <div className="flex flex-col gap-3">
@@ -46,21 +46,30 @@ const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
               <p>{dayjs(rating.createdAt).fromNow()}</p>
             </p>
           </div>
-          <div className="flex gap-3">
-            <Button onClick={showEditDialog} size={ButtonSize.Tiny} type={ButtonType.Primary}>
-              <Edit className="w-4 text-white" />
-            </Button>
-            <Button onClick={showDeleteDialog} size={ButtonSize.Tiny} type={ButtonType.Primary}>
-              <Trash2 className="w-4 text-white" />
-            </Button>
-          </div>
+          {profile?.id === rating.rater.id && (
+            <div className="flex gap-3">
+              <Button
+                onClick={editRating.show}
+                size={ButtonSize.Tiny}
+                type={ButtonType.Primary}
+              >
+                <Edit className="w-4 text-white" />
+              </Button>
+              <Button
+                onClick={deleteRating.show}
+                size={ButtonSize.Tiny}
+                type={ButtonType.Primary}
+              >
+                <Trash2 className="w-4 text-white" />
+              </Button>
+            </div>
+          )}
         </div>
         <p>{rating.feedback}</p>
         <EditRating
-          open={edit.open}
-          close={edit.hide}
+          open={editRating.open}
+          close={editRating.hide}
           rate={rating}
-          title={intl("tutor.rate.editmessage")}
         />
       </div>
     </Card>
