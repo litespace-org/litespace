@@ -1,4 +1,22 @@
+import {
+  DateInput as BaseDateInput,
+  DateInputProps,
+} from "@/components/DateInput";
+import { Duration as BaseDuration } from "@/components/Duration";
+import { Gender as BaseGender } from "@/components/Gender";
+import { Input as BaseInput, InputProps } from "@/components/Input/Input";
+import {
+  NumericInput as BaseNumericInput,
+  NumericInputProps,
+} from "@/components/NumericInput";
+import { Select as BaseSelect, SelectProps } from "@/components/Select";
+import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
+import { Textarea as BaseTextarea } from "@/components/Textarea";
+import { TextareaProps } from "@/components/Textarea/Textarea";
 import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
+import { useDurationUnitMap } from "@/hooks/duration";
+import { Duration as IDuration } from "@litespace/sol";
+import { IUser } from "@litespace/types";
 import {
   Control,
   Controller,
@@ -6,23 +24,6 @@ import {
   FieldValues,
   Path,
 } from "react-hook-form";
-import { Input as BaseInput, InputProps } from "@/components/Input/Input";
-import {
-  NumericInput as BaseNumericInput,
-  NumericInputProps,
-} from "@/components/NumericInput";
-import { IUser } from "@litespace/types";
-import { Gender as BaseGender } from "@/components/Gender";
-import { Duration as BaseDuration } from "@/components/Duration";
-import { Duration as IDuration } from "@litespace/sol";
-import { useDurationUnitMap } from "@/hooks/duration";
-import { Textarea as BaseTextarea } from "@/components/Textarea";
-import { TextareaProps } from "@/components/Textarea/Textarea";
-import {
-  DateInput as BaseDateInput,
-  DateInputProps,
-} from "@/components/DateInput";
-import { Select as BaseSelect, SelectProps } from "@/components/Select";
 
 import {
   TimePicker as BaseTimePicker,
@@ -111,7 +112,7 @@ export function NumericInput<T extends FieldValues>({
         return (
           <BaseNumericInput
             {...props}
-            {...field}
+            onValueChange={(value) => field.onChange(value.floatValue)}
             error={formState.errors[name]?.message as string}
           />
         );
@@ -306,6 +307,34 @@ export function Textarea<T extends FieldValues>({
           {...props}
         />
       )}
+    />
+  );
+}
+
+export function Switch<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & SwitchProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => {
+        return (
+          <BaseSwitch
+            onChange={field.onChange}
+            checked={field.value}
+            {...props}
+          />
+        );
+      }}
     />
   );
 }

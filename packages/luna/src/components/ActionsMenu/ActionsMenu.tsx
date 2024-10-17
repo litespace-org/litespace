@@ -52,7 +52,7 @@ export const ActionsMenu: React.FC<{
       <Portal>
         <Content
           className={cn(
-            "tw-min-w-56 tw-bg-background-overlay tw-border tw-border-border-overlay tw-rounded-md tw-p-[5px]"
+            "tw-bg-background-overlay tw-border tw-border-border-overlay tw-rounded-md tw-p-[5px]"
           )}
           sideOffset={5}
           side={side}
@@ -63,7 +63,7 @@ export const ActionsMenu: React.FC<{
               key={action.id}
               disabled={action.disabled}
               className={cn(
-                "tw-px-2.5 tw-py-1.5 tw-h-[30px] tw-text-sm !tw-leading-none tw-cursor-pointer",
+                "tw-px-4 tw-py-1.5 tw-h-[30px] tw-text-sm !tw-leading-none tw-cursor-pointer",
                 "tw-ontline-none hover:tw-outline-background-selection",
                 action.disabled && "aria-[disabled=true]:tw-opacity-50",
                 action.danger && "tw-text-destructive-600"

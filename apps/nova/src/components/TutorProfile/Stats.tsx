@@ -35,7 +35,7 @@ const Stats: React.FC<{
         // todo: move to luna
         value: humanize(query.data.totalMinutes * 60 * 1000, {
           language: "ar",
-          digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "8"],
+          digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
         }),
       },
       {

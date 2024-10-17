@@ -48,6 +48,9 @@ importers:
       '@litespace/luna':
         specifier: workspace:^
         version: link:../../packages/luna
+      '@litespace/sol':
+        specifier: workspace:^
+        version: link:../../packages/sol
       '@litespace/types':
         specifier: workspace:^
         version: link:../../packages/types
@@ -57,12 +60,18 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.56.2
         version: 5.59.0(react@18.2.0)
+      '@tanstack/react-table':
+        specifier: ^8.20.5
+        version: 8.20.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       dayjs:
         specifier: ^1.11.13
         version: 1.11.13
       framer-motion:
         specifier: ^11.2.6
         version: 11.11.1(@emotion/is-prop-valid@0.8.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      humanize-duration:
+        specifier: ^3.32.1
+        version: 3.32.1
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -4606,6 +4615,17 @@ packages:
     resolution: {integrity: sha512-YDXp3OORbYR+8HNQx+lf4F73NoiCmCcSvZvgxE29OifmQFk0sBlO26NWLHpcNERo92tVk3w+JQ53/vkcRUY1hA==}
     peerDependencies:
       react: ^18 || ^19
+
+  '@tanstack/react-table@8.20.5':
+    resolution: {integrity: sha512-WEHopKw3znbUZ61s9i0+i9g8drmDo6asTWbrQh8Us63DAk/M0FkmIqERew6P71HI75ksZ2Pxyuf4vvKh9rAkiA==}
+    engines: {node: '>=12'}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+
+  '@tanstack/table-core@8.20.5':
+    resolution: {integrity: sha512-P9dF7XbibHph2PFRz8gfBKEXEY/HJPOhym8CHmjF8y3q5mWpKx9xtZapXQUWCgkqvsK0R46Azuz+VaxD4Xl+Tg==}
+    engines: {node: '>=12'}
 
   '@tauri-apps/cli-darwin-arm64@1.6.2':
     resolution: {integrity: sha512-6mdRyf9DaLqlZvj8kZB09U3rwY+dOHSGzTZ7+GDg665GJb17f4cb30e8dExj6/aghcsOie9EGpgiURcDUvLNSQ==}
@@ -15694,6 +15714,14 @@ snapshots:
     dependencies:
       '@tanstack/query-core': 5.59.0
       react: 18.2.0
+
+  '@tanstack/react-table@8.20.5(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
+    dependencies:
+      '@tanstack/table-core': 8.20.5
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+
+  '@tanstack/table-core@8.20.5': {}
 
   '@tauri-apps/cli-darwin-arm64@1.6.2':
     optional: true

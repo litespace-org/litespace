@@ -8,4 +8,9 @@ export {
 } from "@/components/utils/withdraw";
 
 export { asOnlineStatus } from "@/components/utils/onlineStatus";
-export { formatNumber } from "@/components/utils/format";
+export {
+  formatNumber,
+  formatPercentage,
+  formatCurrency,
+  formatMinutes,
+} from "@/components/utils/format";

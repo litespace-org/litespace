@@ -2,12 +2,19 @@ import React from "react";
 import { Root, Thumb } from "@radix-ui/react-switch";
 import cn from "classnames";
 
-export const Switch: React.FC<{
+export type SwitchProps = {
   id?: string;
   checked?: boolean;
   onChange?: (checked: boolean) => void;
   disabled?: boolean;
-}> = ({ id, checked, onChange, disabled }) => {
+};
+
+export const Switch: React.FC<SwitchProps> = ({
+  id,
+  checked,
+  onChange,
+  disabled,
+}) => {
   return (
     <Root
       className={cn(
