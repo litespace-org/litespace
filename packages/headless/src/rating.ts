@@ -46,48 +46,53 @@ export function useCreateRatingTutor({
 }
 
 export function useEditRatingTutor({
-  id,
   onSuccess,
   onError,
 }: {
-  id: number;
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
   const atlas = useAtlas();
   const editRate = useCallback(
-    async (payload: IRating.UpdateApiPayload) => {
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: IRating.UpdateApiPayload;
+    }) => {
       return atlas.rating.update(id, payload);
     },
-    [atlas.rating, id]
+    [atlas.rating]
   );
 
   return useMutation({
     onSuccess,
     onError,
     mutationFn: editRate,
-    mutationKey: ["edit-rate", id],
+    mutationKey: ["edit-rate"],
   });
 }
 
 export function useDeleteRatingTutor({
-  id,
   onSuccess,
   onError,
 }: {
-  id: number;
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
   const atlas = useAtlas();
-  const deleteRate = useCallback(async () => {
-    return atlas.rating.delete(id);
-  }, [atlas.rating, id]);
+  const deleteRate = useCallback(
+    async (id: number) => {
+      return atlas.rating.delete(id);
+    },
+    [atlas.rating]
+  );
 
   return useMutation({
     onSuccess,
     onError,
     mutationFn: deleteRate,
-    mutationKey: ["delete-rate", id],
+    mutationKey: ["delete-rate"],
   });
 }

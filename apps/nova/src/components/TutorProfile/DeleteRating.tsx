@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import {
   Alert,
   AlertType,
@@ -6,12 +6,14 @@ import {
   toaster,
   useFormatMessage,
 } from "@litespace/luna";
-import { useQueryClient } from "@tanstack/react-query";
 import { useDeleteRatingTutor } from "@litespace/headless/rating";
+import { Void } from "@litespace/types";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKeys } from "@litespace/headless/constants";
 
 type DeleteRatingProps = {
   open: boolean;
-  close: () => void;
+  close: Void;
   id: number;
   tutorId: number;
 };
@@ -22,27 +24,28 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
   open,
   close,
 }) => {
-  const queryClient = useQueryClient();
+  const invalidate = useInvalidateQuery();
   const intl = useFormatMessage();
-  const onSuccess = () => {
+
+  const onSuccess = useCallback(() => {
     toaster.success({ title: intl("tutor.rate.delete.success") });
-    queryClient.invalidateQueries({ queryKey: ["tutor-rating", tutorId] });
+    invalidate([QueryKeys.FindTutorRating, tutorId]);
     close();
-  };
-  const onError = (error: Error) => {
+  }, []);
+  const onError = useCallback((error: Error) => {
     toaster.error({
       title: intl("tutor.rate.delete.error"),
       description: error.message,
     });
     close();
-  };
+  }, []);
 
-  const deleteRating = useDeleteRatingTutor({ onSuccess, onError, id });
+  const deleteRating = useDeleteRatingTutor({ onSuccess, onError });
 
   const action = useMemo(() => {
     return {
       label: intl("global.labels.confirm"),
-      onClick: () => deleteRating.mutate(),
+      onClick: () => deleteRating.mutate(id),
       disabled: deleteRating.isPending,
       loading: deleteRating.isPending,
     };

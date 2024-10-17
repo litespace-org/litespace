@@ -51,12 +51,9 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const rateTutor = useCreateRatingTutor({ onSuccess, onError });
 
   const editRateTutor = useEditRatingTutor({
-    id: rate?.id || 0,
     onSuccess,
     onError,
   });
-
-  // Create new tutor hook to edit rating
 
   const form = useForm<IForm>({
     defaultValues: { feedback: rate?.feedback || "", rating: rate?.value || 5 },
@@ -65,8 +62,11 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const onSubmit = useCallback((data: IForm) => {
     if (rate)
       return editRateTutor.mutate({
-        feedback: data.feedback,
-        value: data.rating,
+        payload: {
+          feedback: data.feedback,
+          value: data.rating,
+        },
+        id: rate.id,
       });
 
     rateTutor.mutate({
