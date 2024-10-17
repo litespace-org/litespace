@@ -19,7 +19,7 @@ export class Interview extends Base {
     userId: number,
     pagination?: IFilter.Pagination
   ): Promise<IInterview.FindInterviewsApiResponse> {
-    return this.get(`/api/v1/interview/list/${userId}`, null, pagination);
+    return this.get(`/api/v1/interview/list/?user=${userId}`, null, pagination);
   }
 
   public async findInterviewById(id: number): Promise<IInterview.Self> {
