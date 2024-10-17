@@ -4,10 +4,9 @@ import {
   Dialog,
   toaster,
   useFormatMessage,
-  atlas,
 } from "@litespace/luna";
-import { useMutation } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";
+import { useCancelInvoiceById } from "@litespace/headless/invoices";
 
 const Cancel: React.FC<{
   open: boolean;
@@ -16,12 +15,6 @@ const Cancel: React.FC<{
   refresh?: () => void;
 }> = ({ open, id, close, refresh }) => {
   const intl = useFormatMessage();
-
-  const cancel = useCallback(async () => {
-    return await atlas.invoice.updateByReceiver(id, {
-      cancel: true,
-    });
-  }, [id]);
 
   const onSuccess = useCallback(() => {
     toaster.success({
@@ -41,12 +34,7 @@ const Cancel: React.FC<{
     [intl]
   );
 
-  const mutation = useMutation({
-    mutationFn: cancel,
-    mutationKey: ["cancel-invoice"],
-    onSuccess,
-    onError,
-  });
+  const mutation = useCancelInvoiceById({ id, onSuccess, onError });
 
   const action = useMemo(() => {
     return {
