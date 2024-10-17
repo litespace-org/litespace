@@ -1,8 +1,7 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Stepper, atlas, useFormatMessage } from "@litespace/luna";
+import React, { useEffect, useMemo, useState } from "react";
+import { Stepper, useFormatMessage } from "@litespace/luna";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
-import { useQuery } from "@tanstack/react-query";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { tutorMetaSelector } from "@/redux/user/tutor";
@@ -11,6 +10,7 @@ import { Route } from "@/types/routes";
 import { IInterview } from "@litespace/types";
 import { maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
+import { useFindInterviews } from "@litespace/headless/interviews";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useFormatMessage();
@@ -36,16 +36,7 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
-  const findInterviews = useCallback(async () => {
-    if (!profile) return { list: [], total: 0 };
-    return await atlas.interview.findInterviews(profile.id);
-  }, [profile]);
-
-  const interviews = useQuery({
-    queryFn: findInterviews,
-    enabled: !!profile,
-    queryKey: ["find-interviews"],
-  });
+  const interviews = useFindInterviews(profile);
 
   const current = useMemo(() => {
     if (!interviews.data) return null;
@@ -94,7 +85,7 @@ const TutorOnboarding: React.FC = () => {
   }, [current, interviews.data, navigate, profile, tutorMeta]);
 
   return (
-    <div className="max-w-screen-2xl px-8 mx-auto w-full py-12">
+    <div className="w-full px-8 py-12 mx-auto max-w-screen-2xl">
       <div className="mb-10">
         <Stepper steps={steps} value={step} />
       </div>

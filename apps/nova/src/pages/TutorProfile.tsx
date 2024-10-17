@@ -1,6 +1,5 @@
-import { asOnlineStatus, Loading, atlas } from "@litespace/luna";
-import React, { useCallback, useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { asOnlineStatus, Loading } from "@litespace/luna";
+import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Image, Video } from "@/components/TutorProfile/Media";
 import Stats from "@/components/TutorProfile/Stats";
@@ -9,7 +8,11 @@ import ActivitiesOverview from "@/components/TutorProfile/ActivitiesOverview";
 import Ratings from "@/components/TutorProfile/Ratings";
 import RateForm from "@/components/TutorProfile/RateForm";
 import { useFindRatingTutor } from "@litespace/headless/rating";
-
+import {
+  useFindTutorActivityScore,
+  useFindTutorById,
+  useFindTutorStats,
+} from "@litespace/headless/tutor";
 const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
 
@@ -19,41 +22,11 @@ const TutorProfile: React.FC = () => {
     return id;
   }, [params.id]);
 
-  const findTutoById = useCallback(() => {
-    if (!id) return null;
-    return atlas.tutor.findById(id);
-  }, [id]);
+  const tutor = useFindTutorById(id);
 
-  const tutor = useQuery({
-    queryKey: ["tutor-profile", id],
-    queryFn: findTutoById,
-    retry: false,
-    enabled: !!id,
-  });
+  const stats = useFindTutorStats(id);
 
-  const findTutorStats = useCallback(() => {
-    if (!id) return null;
-    return atlas.user.findTutorStats(id);
-  }, [id]);
-
-  const stats = useQuery({
-    queryFn: findTutorStats,
-    queryKey: ["tutor-stats", id],
-    enabled: !!id,
-    retry: false,
-  });
-
-  const findTutorAcivityScores = useCallback(() => {
-    if (!id) return null;
-    return atlas.user.findTutorActivityScores(id);
-  }, [id]);
-
-  const activity = useQuery({
-    queryFn: findTutorAcivityScores,
-    queryKey: ["tutor-acivity", id],
-    enabled: !!id,
-    retry: false,
-  });
+  const activity = useFindTutorActivityScore(id);
 
   const ratings = useFindRatingTutor(tutor.data?.id!);
 
