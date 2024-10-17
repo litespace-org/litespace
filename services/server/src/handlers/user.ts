@@ -1,6 +1,5 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
-import { isAdmin } from "@/lib/common";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { schema } from "@/validation";
@@ -12,14 +11,12 @@ import {
   gender,
   identityObject,
   password,
-  id,
   pagination,
   string,
   withNamedId,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
-import { FileType } from "@/constants";
-import { enforceRequest } from "@/middleware/accessControl";
+import { FileType, jwtSecret } from "@/constants";
 import {
   drop,
   entries,
@@ -35,8 +32,14 @@ import dayjs from "@/lib/dayjs";
 import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { asIsoDate, safe, Schedule } from "@litespace/sol";
-import { authorizer } from "@litespace/auth";
-import { generateJwtToken } from "@/lib/auth";
+import {
+  authorizer,
+  encodeAuthJwt,
+  isAdmin,
+  isMedaiProvider,
+  isTutor,
+  isUser,
+} from "@litespace/auth";
 import { cache } from "@/lib/cache";
 
 const updateUserPayload = zod.object({
@@ -56,13 +59,10 @@ const updateUserPayload = zod.object({
   about: zod.optional(zod.string().trim()),
 });
 
-const findTutorMetaParams = zod.object({ tutorId: id });
-
 export async function create(req: Request, res: Response, next: NextFunction) {
   const { email, password, role } = schema.http.user.create.parse(req.body);
 
-  const creatorRole = req.user?.role;
-  const admin = isAdmin(creatorRole);
+  const admin = isAdmin(req.user);
   const publicRole = [IUser.Role.Tutor, IUser.Role.Student].includes(role);
   if (!publicRole && !admin) return next(forbidden());
 
@@ -82,6 +82,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const origin = req.get("origin");
   if (!origin) return next(badRequest());
 
+  // todo: emails should be handled by specific worker not to block the main thread or delay the response
   await sendUserVerificationEmail({
     userId: user.id,
     email: user.email,
@@ -90,7 +91,7 @@ export async function create(req: Request, res: Response, next: NextFunction) {
 
   const response: IUser.RegisterApiResponse = {
     user,
-    token: generateJwtToken(user.id),
+    token: encodeAuthJwt(user.id, jwtSecret),
   };
   res.status(200).json(response);
 }
@@ -100,14 +101,10 @@ function update(context: ApiContext) {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = identityObject.parse(req.params);
 
-      const allowed = authorizer()
-        .admin()
-        .superAdmin()
-        .authenticated()
-        .check(req.user);
+      const currentUser = req.user;
+      const allowed = isAdmin(currentUser) || isUser(currentUser);
       if (!allowed) return next(forbidden());
 
-      const currentUser = req.user;
       const targetUser = await users.findById(id);
       if (!targetUser) return next(notfound.user());
 
@@ -183,6 +180,7 @@ function update(context: ApiContext) {
 
       // todo: remove the tutor from the case incase tutor is no longer fully onboarded
       res.status(200).json(user);
+      // todo: handle cache update using a specific worker
       const isTutor = user.role === IUser.Role.Tutor;
       if (!isTutor) return;
 
@@ -203,15 +201,14 @@ function update(context: ApiContext) {
 }
 
 async function findById(req: Request, res: Response, next: NextFunction) {
-  const id = schema.http.user.findById.params.parse(req.params).id;
+  const currentUser = req.user;
+  const allowed = isAdmin(currentUser);
+  if (!allowed) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
 
-  const owner = user.id === req.user.id;
-  const admin = isAdmin(req.user.role);
-  const interviewer = req.user.role === IUser.Role.Interviewer;
-  const eligible = owner || admin || interviewer;
-  if (!eligible) return next(forbidden());
   res.status(200).json(user);
 }
 
@@ -226,14 +223,14 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findMe(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
+async function findCurrentUser(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isUser(user);
   if (!allowed) return next(forbidden());
-  res.status(200).json(req.user);
-}
-
-async function returnUser(req: Request, res: Response, next: NextFunction) {
-  if (!req.user) return next(notfound.user());
   res.status(200).json(req.user);
 }
 
@@ -242,11 +239,13 @@ async function selectInterviewer(
   res: Response,
   next: NextFunction
 ) {
-  // const allowed = enforceRequest(req);
-  // console.log({ allowed });
-  // if (!allowed) return next(forbidden());
+  // only tutors can select interviewers
+  const user = req.user;
+  const allowed = isTutor(user);
+  if (!allowed) return next(forbidden());
 
   const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
+  // todo: select best interviewer based on his sechudle
   const interviewer = sample(interviewers);
   if (!interviewer) return next(notfound.user());
 
@@ -254,13 +253,11 @@ async function selectInterviewer(
 }
 
 async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
-  const allowed = enforceRequest(req);
-  if (!allowed) return next(forbidden());
-
-  const { tutorId } = findTutorMetaParams.parse(req.params);
-  const meta = await tutors.findSelfById(tutorId);
-  if (!meta) return next(notfound.tutor());
-  res.status(200).json(meta);
+  const { tutorId } = withNamedId("tutorId").parse(req.params);
+  const tutor = await tutors.findSelfById(tutorId);
+  if (!tutor) return next(notfound.tutor());
+  const response: ITutor.FindTutorMetaApiResponse = tutor;
+  res.status(200).json(response);
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {
@@ -346,13 +343,13 @@ async function findTutorsForMediaProvider(
   res: Response,
   next: NextFunction
 ) {
-  const allowed = authorizer().admin().mediaProvider().check(req.user);
+  const allowed = isAdmin(req.user) || isMedaiProvider(req.user);
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
-  const list: ITutor.FindTutorsForMediaProviderApiResponse =
+  const result: ITutor.FindTutorsForMediaProviderApiResponse =
     await tutors.findForMediaProvider(query);
-  res.status(200).json(list);
+  res.status(200).json(result);
 }
 
 async function findTutorStats(req: Request, res: Response, next: NextFunction) {
@@ -413,12 +410,11 @@ async function findTutorActivityScores(
 export default {
   update,
   create: safeRequest(create),
-  findMe: safeRequest(findMe),
   findById: safeRequest(findById),
   findUsers: safeRequest(findUsers),
-  returnUser: safeRequest(returnUser),
   findTutorMeta: safeRequest(findTutorMeta),
   findTutorStats: safeRequest(findTutorStats),
+  findCurrentUser: safeRequest(findCurrentUser),
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),

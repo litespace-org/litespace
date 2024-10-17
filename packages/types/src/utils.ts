@@ -12,6 +12,8 @@ export type StringLiteral<T> = T extends `${string & T}` ? T : never;
 
 export type Void = () => void;
 
+export type EmptyObject = {};
+
 export type Element<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 

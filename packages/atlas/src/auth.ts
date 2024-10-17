@@ -15,10 +15,10 @@ export class Auth extends Base {
     return this.post("/api/v1/auth/google", { token, role });
   }
 
-  async forgotPassword(email: string): Promise<void> {
+  async forgotPassword(email: string, callback: string): Promise<void> {
     await this.client.post(
       "/api/v1/auth/password/forgot",
-      JSON.stringify({ email })
+      JSON.stringify({ email, callback })
     );
   }
 
@@ -28,20 +28,14 @@ export class Auth extends Base {
   }: {
     token: string;
     password: string;
-  }): Promise<void> {
-    await this.client.put(
+  }): Promise<IUser.ResetPasswordApiResponse> {
+    return await this.put(
       "/api/v1/auth/password/reset",
       JSON.stringify({ token, password })
     );
   }
 
   async token(token: string) {
-    await this.client.post("/api/v1/auth/token", null, {
-      params: { token },
-    });
-  }
-
-  async logout(): Promise<void> {
-    return this.post("/api/v1/auth/logout");
+    await this.post("/api/v1/auth/token", { token });
   }
 }

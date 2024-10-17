@@ -83,3 +83,5 @@ export type ActivityScoreMap = Record<
 >;
 
 export type FindTutorActivityScores = ActivityScoreMap;
+
+export type FindTutorMetaApiResponse = Self;
