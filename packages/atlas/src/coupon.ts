@@ -3,39 +3,29 @@ import { ICoupon } from "@litespace/types";
 
 export class Coupon extends Base {
   async create(payload: ICoupon.CreateApiPayload): Promise<ICoupon.Self> {
-    return this.client
-      .post<ICoupon.Self>(`/api/v1/coupon`, JSON.stringify(payload))
-      .then((response) => response.data);
+    return this.post(`/api/v1/coupon`, payload);
   }
 
   async update(
     id: number,
     payload: ICoupon.UpdateApiPayload
   ): Promise<ICoupon.Self> {
-    return this.client
-      .put<ICoupon.Self>(`/api/v1/coupon/${id}`, JSON.stringify(payload))
-      .then((response) => response.data);
+    return this.put(`/api/v1/coupon/${id}`, payload);
   }
 
   async delete(id: number): Promise<void> {
-    await this.client.delete(`/api/v1/coupon/${id}`);
+    await this.del(`/api/v1/coupon/${id}`);
   }
 
-  async findById(id: number): Promise<ICoupon.MappedAttributes> {
-    return this.client
-      .get<ICoupon.MappedAttributes>(`/api/v1/coupon/${id}`)
-      .then((response) => response.data);
+  async findById(id: number): Promise<ICoupon.Self> {
+    return this.get(`/api/v1/coupon/${id}`);
   }
 
-  async findByCode(code: string): Promise<ICoupon.MappedAttributes> {
-    return this.client
-      .get<ICoupon.MappedAttributes>(`/api/v1/coupon/code/${code}`)
-      .then((response) => response.data);
+  async findByCode(code: string): Promise<ICoupon.Self> {
+    return this.get(`/api/v1/coupon/code/${code}`);
   }
 
-  async findAll(): Promise<ICoupon.MappedAttributes[]> {
-    return this.client
-      .get<ICoupon.MappedAttributes[]>(`/api/v1/coupon/list`)
-      .then((response) => response.data);
+  async find(): Promise<ICoupon.FindCouponsApiResponse> {
+    return this.get(`/api/v1/coupon/list`);
   }
 }
