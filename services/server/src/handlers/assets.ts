@@ -4,7 +4,7 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import path from "node:path";
 import fs from "node:fs/promises";
-import { authorizer } from "@litespace/auth";
+import { isAdmin } from "@litespace/auth";
 import zod from "zod";
 import { pagination, string } from "@/validation/utils";
 import { drop } from "lodash";
@@ -14,7 +14,7 @@ const removeAssetsParams = zod.object({ name: string });
 
 async function viewAssets(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = authorizer().admin().check(user);
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
   const { page, size } = pagination.parse(req.params);
   const assets = await fs.readdir(serverConfig.media.directory);
@@ -26,7 +26,7 @@ async function viewAssets(req: Request, res: Response, next: NextFunction) {
 
 async function removeAsset(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = authorizer().admin().check(user);
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const { name } = removeAssetsParams.parse(req.params);
