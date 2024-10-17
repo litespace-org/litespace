@@ -1,9 +1,12 @@
-import { IPlan } from "@litespace/types";
-import { knex } from "@/query";
+import { IFilter, IPlan, Paginated } from "@litespace/types";
+import { countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
+import { Knex } from "knex";
 
 export class Plans {
+  table = "plans" as const;
+
   async create(payload: IPlan.CreatePayload): Promise<IPlan.Self> {
     const now = new Date();
     const rows = await knex<IPlan.Row>("plans").insert(
@@ -73,8 +76,22 @@ export class Plans {
     return first(plans) || null;
   }
 
-  async findAll(): Promise<IPlan.MappedAttributes[]> {
-    return this.mapAttributesQuery(await this.getAttributesQuery());
+  async find({
+    tx,
+    page,
+    size,
+  }: { tx?: Knex.Transaction } & IFilter.Pagination): Promise<
+    Paginated<IPlan.Self>
+  > {
+    const total = await countRows(this.builder(tx));
+    const rows = await withPagination(this.builder(tx).select(), {
+      page,
+      size,
+    });
+    return {
+      list: rows.map((row) => this.from(row)),
+      total,
+    };
   }
 
   getAttributesQuery() {
@@ -119,6 +136,10 @@ export class Plans {
       updatedAt: row.updated_at.toISOString(),
       updatedBy: row.updated_by,
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<IPlan.Row>(this.table) : knex<IPlan.Row>(this.table);
   }
 }
 

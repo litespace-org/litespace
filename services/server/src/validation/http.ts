@@ -156,41 +156,6 @@ const chat = {
   },
 } as const;
 
-const plan = {
-  create: {
-    body: zod.object({
-      alias: string,
-      weeklyMinutes: number,
-      fullMonthPrice: number,
-      fullQuarterPrice: number,
-      halfYearPrice: number,
-      fullYearPrice: number,
-      fullMonthDiscount: number,
-      fullQuarterDiscount: number,
-      halfYearDiscount: number,
-      fullYearDiscount: number,
-      forInvitesOnly: boolean,
-      active: boolean,
-    }),
-  },
-  update: {
-    params: identityObject,
-    body: zod.object({
-      weeklyMinutes: zod.optional(number),
-      fullMonthPrice: zod.optional(number),
-      fullQuarterPrice: zod.optional(number),
-      halfYearPrice: zod.optional(number),
-      fullYearPrice: zod.optional(number),
-      fullMonthDiscount: zod.optional(number),
-      fullQuarterDiscount: zod.optional(number),
-      halfYearDiscount: zod.optional(number),
-      fullYearDiscount: zod.optional(number),
-      forInvitesOnly: zod.optional(boolean),
-      active: zod.optional(boolean),
-    }),
-  },
-} as const;
-
 const invite = {
   create: {
     body: zod.object({
@@ -292,7 +257,6 @@ export default {
   rating: ratings,
   subscription,
   chat,
-  plan,
   invite,
   report,
   reportReply,
