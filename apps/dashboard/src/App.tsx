@@ -6,6 +6,7 @@ import Invoices from "@/pages/Invoices";
 import Media from "@/pages/Media";
 import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
+import Users from "@/pages/Users";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,7 @@ const router = createBrowserRouter([
       { path: Route.Media, element: <Media /> },
       { path: Route.Login, element: <Login /> },
       { path: Route.Plans, element: <Plans /> },
+      { path: Route.Users, element: <Users /> },
     ],
   },
 ]);

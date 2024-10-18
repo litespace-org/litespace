@@ -9,11 +9,13 @@
   "exports": {
     "./plans": "./dist/plans.js",
     "./atlas": "./dist/atlas/index.js",
-    "./login": "./dist/login.js"
+    "./login": "./dist/login.js",
+    "./users": "./dist/users.js"
   },
   "react-native": {
     "./plans": "./dist/plans.js",
     "./atlas": "./dist/atlas/index.js",
+    "./users": "./dist/users.js",
     "./login": "./dist/login.js"
   },
   "scripts": {
