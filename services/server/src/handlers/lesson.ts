@@ -7,26 +7,19 @@ import {
   pagination,
   withNamedId,
 } from "@/validation/utils";
-import { forbidden, notfound, unexpected } from "@/lib/error";
+import { bad, forbidden, notfound, unexpected } from "@/lib/error";
 import { ILesson, IUser, Wss } from "@litespace/types";
-import {
-  calls,
-  lessons,
-  rules,
-  users,
-  knex,
-  count,
-  rooms,
-} from "@litespace/models";
+import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
-import asyncHandler from "express-async-handler";
+import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice, safe, unpackRules } from "@litespace/sol";
 import { map } from "lodash";
-import { authorizer } from "@litespace/auth";
+import { isAdmin, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
+import { canBook } from "@/lib/call";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -36,7 +29,7 @@ const createLessonPayload = zod.object({
 });
 
 function create(context: ApiContext) {
-  return asyncHandler(
+  return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const userId = req.user?.id;
       const role = req.user?.role;
@@ -61,8 +54,20 @@ function create(context: ApiContext) {
       const room = await rooms.findRoomByMembers(roomMembers);
       if (!room) await rooms.create(roomMembers);
 
-      // todo: check if a tutor has the time for the lesson
-      // todo: update the global available tutors cache
+      const ruleCalls = await calls.findByRuleId({
+        rule: rule.id,
+        canceled: false, // ignore canceled calls
+      });
+
+      const canBookLesson = canBook({
+        rule,
+        calls: ruleCalls,
+        call: {
+          start: payload.start,
+          duration: payload.duration,
+        },
+      });
+      if (!canBookLesson) return next(bad());
 
       const { call, lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
@@ -127,13 +132,15 @@ async function findUserLessons(
   next: NextFunction
 ) {
   const { id } = withNamedId("id").parse(req.params);
-  const allowed = authorizer().admin().owner(id).check(req.user);
+  const user = req.user;
+  const allowed = (isUser(user) && user.id === id) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
-  // todo: should be fixed. Don't cound the entire table rows.
-  const total = await count(lessons.table.lessons);
-  const userLessons = await lessons.findMemberLessons([id], query);
+  const { list: userLessons, total } = await lessons.findMemberLessons(
+    [id],
+    query
+  );
   const lessonMembers = await lessons.findLessonMembers(map(userLessons, "id"));
   const lessonCalls = await calls.findByIds(map(userLessons, "callId"));
 
@@ -155,10 +162,11 @@ async function findUserLessons(
 }
 
 function cancel(context: ApiContext) {
-  return asyncHandler(
+  return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId = req.user?.id;
-      if (!userId) return next(forbidden());
+      const user = req.user;
+      const allowed = isUser(user);
+      if (!allowed) return next(forbidden());
 
       const { lessonId } = withNamedId("lessonId").parse(req.params);
       const lesson = await lessons.findById(lessonId);
@@ -168,12 +176,12 @@ function cancel(context: ApiContext) {
       if (!call) return next(notfound.base());
 
       const members = await lessons.findLessonMembers([lessonId]);
-      const member = map(members, "userId").includes(userId);
+      const member = members.map((member) => member.userId).includes(user.id);
       if (!member) return next(forbidden());
 
       await knex.transaction(async (tx: Knex.Transaction) => {
-        await lessons.cancel(lessonId, userId, tx);
-        await calls.cancel(lesson.callId, userId, tx);
+        await lessons.cancel(lessonId, user.id, tx);
+        await calls.cancel(lesson.callId, user.id, tx);
       });
 
       res.status(200).send();
@@ -215,5 +223,5 @@ function cancel(context: ApiContext) {
 export default {
   create,
   cancel,
-  findUserLessons: asyncHandler(findUserLessons),
+  findUserLessons: safeRequest(findUserLessons),
 };
