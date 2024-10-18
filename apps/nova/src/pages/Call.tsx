@@ -18,6 +18,8 @@ import {
   Monitor,
   MessageCircle,
   Phone,
+  Maximize,
+  Minimize,
 } from "react-feather";
 import { useNavigate, useParams } from "react-router-dom";
 import cn from "classnames";
@@ -25,6 +27,7 @@ import { Wss } from "@litespace/types";
 import {
   useCallEvents,
   useCallRecorder,
+  useFullScreen,
   useShareScreen,
   useSpeech,
   useUserMedia,
@@ -66,6 +69,8 @@ const Call: React.FC = () => {
     loading,
     denied,
   } = useUserMedia();
+
+  const { isFullScreen, toggleFullScreen } = useFullScreen();
 
   const callId = useMemo(() => {
     const call = Number(id);
@@ -234,7 +239,17 @@ const Call: React.FC = () => {
               <MessageCircle />
             </Button>
           ) : null}
-
+          <Button
+            type={ButtonType.Secondary}
+            size={ButtonSize.Small}
+            onClick={toggleFullScreen}
+          >
+            {isFullScreen ? (
+              <Minimize className="w-[20px] h-[20px]" />
+            ) : (
+              <Maximize className="w-[20px] h-[20px]" />
+            )}
+          </Button>
           <Button
             onClick={shareScreen.stream ? shareScreen.stop : shareScreen.start}
             loading={shareScreen.loading}

@@ -357,3 +357,47 @@ export function useCallEvents(
     mateVideo,
   };
 }
+
+export function useFullScreen() {
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  const startFullScreen = useCallback(async () => {
+    try {
+      setIsFullScreen(true);
+      await document.body.requestFullscreen();
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(async () => {
+    setIsFullScreen(false);
+    await document.exitFullscreen();
+  }, []);
+
+  const toggleFullScreen = useCallback(async () => {
+    if (!document.fullscreenElement) {
+      startFullScreen();
+    } else {
+      exitFullscreen();
+    }
+  }, []);
+
+  const toggleFullScreenByKeyboard = useCallback((e: KeyboardEvent) => {
+    if (e.code === "F11") {
+      // I want to control full screen myself to expose the state for UI purposes
+      e.preventDefault();
+      toggleFullScreen();
+    }
+    if (e.code === "Escape") {
+      exitFullscreen();
+    }
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", toggleFullScreenByKeyboard);
+    return () =>
+      document.removeEventListener("keydown", toggleFullScreenByKeyboard);
+  }, []);
+  return { isFullScreen, toggleFullScreen };
+}
