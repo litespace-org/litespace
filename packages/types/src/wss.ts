@@ -35,8 +35,10 @@ export enum ServerEvent {
   RuleDeleted = "RuleDeleted",
   RuleUpdated = "RuleUpdated",
   RuleCreated = "RuleCreated",
+  InvoiceUpdated = "InvoiceUpdated",
 }
 
 export enum Room {
   TutorsCache = "TutorsCache",
+  AdminInvoices = "AdminInvoices",
 }

@@ -1,6 +1,6 @@
 import { calls, messages, rooms, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import safe from "express-async-handler";
+import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
 import zod from "zod";
 import { id, pagination, withNamedId } from "@/validation/utils";
@@ -169,10 +169,10 @@ async function findRoomMembers(
 }
 
 export default {
-  createRoom: safe(createRoom),
-  findRoomMessages: safe(findRoomMessages),
-  findUserRooms: safe(findUserRooms),
-  findRoomByMembers: safe(findRoomByMembers),
-  findRoomMembers: safe(findRoomMembers),
-  findCallRoom: safe(findCallRoom),
+  createRoom: safeRequest(createRoom),
+  findRoomMessages: safeRequest(findRoomMessages),
+  findUserRooms: safeRequest(findUserRooms),
+  findRoomByMembers: safeRequest(findRoomByMembers),
+  findRoomMembers: safeRequest(findRoomMembers),
+  findCallRoom: safeRequest(findCallRoom),
 };
