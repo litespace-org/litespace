@@ -1,47 +1,21 @@
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import React, { useCallback } from "react";
-import { ILesson } from "@litespace/types";
+import React from "react";
 import List from "@/components/Lessons/List";
-import {
-  Button,
-  Spinner,
-  atlas,
-  ButtonSize,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Button, Spinner, ButtonSize, useFormatMessage } from "@litespace/luna";
 import { isEmpty } from "lodash";
 import Empty from "@/components/Lessons/Empty";
 import Error from "@/components/Lessons/Error";
-import { usePaginationQuery } from "@/hooks/common";
+import { useFindUserLessons } from "@litespace/headless/lessons";
 
 const Lessons: React.FC = () => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.user);
 
-  const findUserLessons = useCallback(
-    async ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }): Promise<ILesson.FindUserLessonsApiResponse> => {
-      if (!profile) return { list: [], total: 0 };
-      return atlas.lesson.findUserLessons(profile.id, {
-        page: pageParam,
-        size: 10,
-      });
-    },
-    [profile]
-  );
-
-  const {
-    query: lessons,
-    list,
-    more,
-  } = usePaginationQuery(findUserLessons, ["find-lessons"]);
+  const { query: lessons, list, more } = useFindUserLessons(profile);
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto px-8 py-10">
+    <div className="w-full px-8 py-10 mx-auto max-w-screen-2xl">
       {profile && list && isEmpty(list) ? (
         <div className="mb-4">
           <Empty role={profile.role} />

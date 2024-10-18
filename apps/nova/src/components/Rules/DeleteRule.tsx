@@ -1,16 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
-import {
-  Alert,
-  Dialog,
-  toaster,
-  atlas,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Alert, Dialog, toaster, useFormatMessage } from "@litespace/luna";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useDeleteRule } from "@litespace/headless/rule";
 
 const DeleteRule: React.FC<{
   open?: boolean;
@@ -39,13 +33,7 @@ const DeleteRule: React.FC<{
     [intl]
   );
 
-  const mutation = useMutation({
-    mutationFn: useCallback(async () => {
-      return await atlas.rule.delete(rule.id);
-    }, [rule.id]),
-    onSuccess,
-    onError,
-  });
+  const mutation = useDeleteRule({ rule, onSuccess, onError });
 
   const action = useMemo(
     () => ({
@@ -71,7 +59,7 @@ const DeleteRule: React.FC<{
         action={action}
       >
         <p>{intl("page.schedule.delete.dialog.alert.description.0")}</p>
-        <ul className="list-disc list-inside flex flex-col gap-1">
+        <ul className="flex flex-col gap-1 list-disc list-inside">
           <li>{intl("page.schedule.delete.dialog.alert.description.1")}</li>
           <li>{intl("page.schedule.delete.dialog.alert.description.2")}</li>
         </ul>

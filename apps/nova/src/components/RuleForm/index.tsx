@@ -12,7 +12,6 @@ import {
   useWeekdayMap,
   Card,
   useRuleFormatterMap,
-  atlas,
   useFormatMessage,
   Controller,
   ButtonSize,
@@ -22,11 +21,11 @@ import React, { useCallback, useMemo } from "react";
 import { useForm, Controller as FormController } from "react-hook-form";
 import dayjs from "@/lib/dayjs";
 import { Duration, Schedule, Time } from "@litespace/sol";
-import { useMutation } from "@tanstack/react-query";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
 import { profileSelectors } from "@/redux/user/profile";
 import RuleAlert from "@/components/Rules/RuleAlert";
+import { useCreateRule, useEditRule } from "@litespace/headless/rule";
 
 type IForm = {
   title: string;
@@ -87,25 +86,9 @@ const RuleForm: React.FC<{
     [intl]
   );
 
-  const create = useMutation({
-    mutationFn: useCallback(async (payload: IRule.CreateApiPayload) => {
-      return await atlas.rule.create(payload);
-    }, []),
-    onSuccess,
-    onError,
-  });
+  const create = useCreateRule({ onSuccess, onError });
 
-  const update = useMutation({
-    mutationFn: useCallback(
-      async (payload: IRule.UpdateApiPayload) => {
-        if (!rule) return;
-        return await atlas.rule.update(rule.id, payload);
-      },
-      [rule]
-    ),
-    onSuccess,
-    onError,
-  });
+  const update = useEditRule({ onSuccess, onError, rule });
 
   const onSubmit = useMemo(
     () =>

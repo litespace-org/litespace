@@ -8,7 +8,6 @@ import {
   useFormatMessage,
   useMediaQueries,
   useRender,
-  atlas,
   useSockets,
 } from "@litespace/luna";
 import {
@@ -23,7 +22,6 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 import { Wss } from "@litespace/types";
-import { useQuery } from "@tanstack/react-query";
 import {
   useCallEvents,
   useCallRecorder,
@@ -37,6 +35,7 @@ import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
+import { useFindCallRoomById } from "@litespace/headless/calls";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -148,15 +147,7 @@ const Call: React.FC = () => {
     peer.destroy();
   }, []);
 
-  const findCallRoom = useCallback(async () => {
-    if (!callId) return null;
-    return await atlas.chat.findCallRoom(callId);
-  }, [callId]);
-
-  const callRoom = useQuery({
-    queryFn: findCallRoom,
-    queryKey: ["find-call-room"],
-  });
+  const callRoom = useFindCallRoomById(callId);
 
   const mate = useMemo(() => {
     if (!callRoom.data) return;
@@ -219,7 +210,7 @@ const Call: React.FC = () => {
             userDenided={denied}
           />
         </div>
-        <div className="flex items-center justify-center my-10 gap-4">
+        <div className="flex items-center justify-center gap-4 my-10">
           <Button
             onClick={onLeaveCall}
             size={ButtonSize.Small}
