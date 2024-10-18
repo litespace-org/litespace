@@ -1,4 +1,4 @@
-import { IFilter, ILesson, NumericString } from "@litespace/types";
+import { IFilter, ILesson, NumericString, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
@@ -181,7 +181,7 @@ export class Lessons {
     members: number[],
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
-  ): Promise<ILesson.Self[]> {
+  ): Promise<Paginated<ILesson.Self>> {
     const builder = this.builder(tx)
       .members.join(
         this.table.lessons,
@@ -197,8 +197,9 @@ export class Lessons {
       .orderBy(calls.columns.calls("start"), "desc")
       .whereIn(this.columns.members("user_id"), members);
 
-    const rows = await withPagination(builder, pagination).then();
-    return rows.map((row) => this.from(row));
+    const total = await countRows(builder.clone());
+    const rows = await withPagination(builder.clone(), pagination).then();
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   async sumPrice(params: Omit<AggregateParams, "column">): Promise<number> {
