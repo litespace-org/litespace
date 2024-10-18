@@ -20,6 +20,7 @@ export * as IDate from "@/date";
 export * as ILesson from "@/lesson";
 export * as IWithdrawMethod from "@/withdrawMethod";
 export * as IInvoice from "@/invoice";
+export * as IAsset from "@/asset";
 export * from "@/utils";
 export * from "@/api";
 export * from "@/lib";

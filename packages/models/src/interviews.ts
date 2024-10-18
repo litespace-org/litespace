@@ -97,14 +97,25 @@ export class Interviews {
     return await this.findManyBy("interviewer_id", id);
   }
 
-  async findByUser(
-    id: number,
-    pagination?: IFilter.Pagination,
-    tx?: Knex.Transaction
-  ): Promise<{ total: number; interviews: IInterview.Self[] }> {
-    const builder = this.builder(tx)
-      .where(this.column("interviewer_id"), id)
-      .orWhere(this.column("interviewee_id"), id);
+  async find({
+    users,
+    page,
+    size,
+    tx,
+  }: {
+    users?: number[];
+    tx?: Knex.Transaction;
+  } & IFilter.Pagination): Promise<{
+    total: number;
+    interviews: IInterview.Self[];
+  }> {
+    const builder = this.builder(tx);
+
+    if (users)
+      builder
+        .whereIn(this.column("interviewer_id"), users)
+        .orWhereIn(this.column("interviewee_id"), users);
+
     const total = await countRows(builder.clone());
 
     const main = builder
@@ -116,7 +127,7 @@ export class Interviews {
       )
       .select(this.columns)
       .orderBy(calls.columns.calls("start"), "desc");
-    const rows = await withPagination(main, pagination).then();
+    const rows = await withPagination(main, { page, size }).then();
     return { interviews: rows.map((row) => this.from(row)), total };
   }
 

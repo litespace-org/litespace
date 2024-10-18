@@ -1,6 +1,7 @@
 import { first } from "lodash";
-import { column, knex } from "@/query";
-import { IRating, IUser } from "@litespace/types";
+import { column, countRows, knex, withPagination } from "@/query";
+import { IFilter, IRating, IUser, Paginated } from "@litespace/types";
+import { Knex } from "knex";
 
 export class Ratings {
   table = "ratings" as const;
@@ -58,8 +59,9 @@ export class Ratings {
 
   async findManyBy<T extends keyof IRating.Row>(
     key: T,
-    value: IRating.Row[T]
-  ): Promise<IRating.Populated[]> {
+    value: IRating.Row[T],
+    pagination?: IFilter.Pagination
+  ): Promise<Paginated<IRating.Populated>> {
     const select: Record<keyof IRating.PopulatedRow, string> = {
       id: this.column.ratings("id"),
       raterId: this.column.rater("id"),
@@ -74,7 +76,7 @@ export class Ratings {
       updatedAt: this.column.ratings("updated_at"),
     };
 
-    const rows = await knex<IRating.Row>(this.table)
+    const query = this.builder()
       .select<IRating.PopulatedRow[]>(select)
       .innerJoin(
         "users AS rater",
@@ -87,7 +89,10 @@ export class Ratings {
         this.column.ratings("ratee_id")
       )
       .where(key, value);
-    return rows.map((row) => this.asPopulated(row));
+
+    const total = await countRows(query.clone());
+    const rows = await withPagination(query.clone(), pagination);
+    return { list: rows.map((row) => this.asPopulated(row)), total };
   }
 
   async findOneBy<T extends keyof IRating.Row>(
@@ -95,9 +100,9 @@ export class Ratings {
     value: IRating.Row[T]
   ): Promise<IRating.Populated | null> {
     const ratings = await this.findManyBy(key, value);
-    if (ratings.length > 1)
+    if (ratings.list.length > 1)
       throw new Error("too many ratings found; expecting one");
-    return first(ratings) || null;
+    return first(ratings.list) || null;
   }
 
   async findById(id: number): Promise<IRating.Populated | null> {
@@ -114,17 +119,25 @@ export class Ratings {
     return this.from(row);
   }
 
-  async findByRaterId(id: number): Promise<IRating.Populated[] | null> {
+  async findByRaterId(id: number): Promise<Paginated<IRating.Populated>> {
     return await this.findManyBy("rater_id", id);
   }
 
-  async findByRateeId(id: number): Promise<IRating.Populated[] | null> {
+  async findByRateeId(id: number): Promise<Paginated<IRating.Populated>> {
     return await this.findManyBy("ratee_id", id);
   }
 
-  async findAll(): Promise<IRating.Self[]> {
-    const rows = await knex<IRating.Row>(this.table).select("*");
-    return rows.map((row) => this.from(row));
+  async find({
+    page,
+    size,
+    tx,
+  }: { tx?: Knex.Transaction } & IFilter.Pagination): Promise<
+    Paginated<IRating.Self>
+  > {
+    const builder = this.builder(tx);
+    const total = await countRows(builder.clone());
+    const rows = await withPagination(builder.clone().select(), { page, size });
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   async findByEntities(ids: {
@@ -166,6 +179,10 @@ export class Ratings {
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<IRating.Row>(this.table) : knex<IRating.Row>(this.table);
   }
 }
 

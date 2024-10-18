@@ -43,8 +43,6 @@ const user = {
     }),
   },
   delete: { query: zod.object({ id }) },
-  findById: { params: zod.object({ id }) },
-  login: { body: zod.object({ email, password }) },
 } as const;
 
 const auth = {
@@ -55,9 +53,6 @@ const auth = {
       .trim(),
   }),
   localAuthorization: zod.object({ email, password }),
-  forgotPassword: { body: zod.object({ email }) },
-  resetPassword: { body: zod.object({ token: string, password }) },
-  verifyEmail: { body: zod.object({ token: string }) },
 } as const;
 
 const slot = {
@@ -158,69 +153,6 @@ const subscription = {
 const chat = {
   create: {
     body: zod.object({ tutorId: id }),
-  },
-} as const;
-
-const plan = {
-  create: {
-    body: zod.object({
-      alias: string,
-      weeklyMinutes: number,
-      fullMonthPrice: number,
-      fullQuarterPrice: number,
-      halfYearPrice: number,
-      fullYearPrice: number,
-      fullMonthDiscount: number,
-      fullQuarterDiscount: number,
-      halfYearDiscount: number,
-      fullYearDiscount: number,
-      forInvitesOnly: boolean,
-      active: boolean,
-    }),
-  },
-  update: {
-    params: identityObject,
-    body: zod.object({
-      weeklyMinutes: zod.optional(number),
-      fullMonthPrice: zod.optional(number),
-      fullQuarterPrice: zod.optional(number),
-      halfYearPrice: zod.optional(number),
-      fullYearPrice: zod.optional(number),
-      fullMonthDiscount: zod.optional(number),
-      fullQuarterDiscount: zod.optional(number),
-      halfYearDiscount: zod.optional(number),
-      fullYearDiscount: zod.optional(number),
-      forInvitesOnly: zod.optional(boolean),
-      active: zod.optional(boolean),
-    }),
-  },
-} as const;
-
-const coupon = {
-  create: {
-    body: zod.object({
-      code: string,
-      planId: number,
-      fullMonthDiscount: number,
-      fullQuarterDiscount: number,
-      halfYearDiscount: number,
-      fullYearDiscount: number,
-      expiresAt: datetime,
-    }),
-  },
-  update: {
-    body: zod.object({
-      code: zod.optional(string),
-      planId: zod.optional(number),
-      fullMonthDiscount: zod.optional(number),
-      fullQuarterDiscount: zod.optional(number),
-      halfYearDiscount: zod.optional(number),
-      fullYearDiscount: zod.optional(number),
-      expiresAt: zod.optional(datetime),
-    }),
-  },
-  findByCode: {
-    params: zod.object({ code: string }),
   },
 } as const;
 
@@ -325,8 +257,6 @@ export default {
   rating: ratings,
   subscription,
   chat,
-  plan,
-  coupon,
   invite,
   report,
   reportReply,
