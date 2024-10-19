@@ -1,6 +1,7 @@
 import { useAtlas } from "@/atlas";
 import { usePaginate, UsePaginateResult } from "@/pagination";
-import { IFilter, IUser } from "@litespace/types";
+import { IFilter, IUser, Void } from "@litespace/types";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 
 export function useUsers(): UsePaginateResult<IUser.Self> {
@@ -12,4 +13,25 @@ export function useUsers(): UsePaginateResult<IUser.Self> {
   );
 
   return usePaginate(findUsers, ["find-users"]);
+}
+
+export function useCreateUser({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: Void;
+  onError: (error: Error) => void;
+}) {
+  const atlas = useAtlas();
+  const createUser = useCallback(
+    (payload: IUser.CreateApiPayload) => atlas.user.create(payload),
+    [atlas.user]
+  );
+
+  return useMutation({
+    mutationFn: createUser,
+    mutationKey: ["create-user"],
+    onSuccess,
+    onError,
+  });
 }

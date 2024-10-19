@@ -112,13 +112,13 @@ const List: React.FC<{
         },
       }),
       columnHelper.accessor("createdAt", {
-        header: intl("dashboard.plan.createdAt"),
+        header: intl("dashboard.plan.created-at"),
         cell: (info) => {
           return <DateField date={info.getValue()} />;
         },
       }),
       columnHelper.accessor("updatedAt", {
-        header: intl("dashboard.plan.updatedAt"),
+        header: intl("dashboard.plan.updated-at"),
         cell: (info) => {
           return <DateField date={info.getValue()} />;
         },
