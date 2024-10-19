@@ -13,7 +13,15 @@
     "./users": "./dist/users.js",
     "./rating": "./dist/rating.js",
     "./query": "./dist/query.js",
-    "./constants": "./dist/constants/index.js"
+    "./constants": "./dist/constants/index.js",
+    "./calls": "./dist/calls.js",
+    "./invoices": "./dist/invoices.js",
+    "./lessons": "./dist/lessons.js",
+    "./interviews": "./dist/interviews.js",
+    "./messageRooms": "./dist/messageRooms.js",
+    "./tutor": "./dist/tutor.js",
+    "./rule": "./dist/rule.js",
+    "./user": "./dist/user.js"
   },
   "react-native": {
     "./plans": "./dist/plans.js",
@@ -22,7 +30,15 @@
     "./login": "./dist/login.js",
     "./rating": "./dist/rating.js",
     "./query": "./dist/query.js",
-    "./constants": "./dist/constants/index.js"
+    "./constants": "./dist/constants/index.js",
+    "./calls": "./dist/calls.js",
+    "./interviews": "./dist/interviews.js",
+    "./invoices": "./dist/invoices.js",
+    "./lessons": "./dist/lessons.js",
+    "./messageRooms": "./dist/messageRooms.js",
+    "./tutor": "./dist/tutor.js",
+    "./rule": "./dist/rule.js",
+    "./user": "./dist/user.js"
   },
   "scripts": {
     "watch:build": "pnpm watch build",

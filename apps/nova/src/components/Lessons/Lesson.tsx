@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import {
@@ -14,7 +14,6 @@ import {
   asFullAssetUrl,
   useMediaQueries,
   ButtonType,
-  atlas,
 } from "@litespace/luna";
 import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
@@ -23,7 +22,7 @@ import cn from "classnames";
 import { Calendar, MessageCircle, X } from "react-feather";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
-import { useMutation } from "@tanstack/react-query";
+import { useCancelLesson } from "@litespace/headless/lessons";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
@@ -76,14 +75,7 @@ const Lesson: React.FC<
     });
   }, [intl, otherMember?.name]);
 
-  const cancel = useCallback(() => {
-    return atlas.lesson.cancel(lesson.id);
-  }, [lesson.id]);
-
-  const cancelLesson = useMutation({
-    mutationFn: cancel,
-    mutationKey: ["cancel-lesson"],
-  });
+  const cancelLesson = useCancelLesson();
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [
@@ -129,9 +121,9 @@ const Lesson: React.FC<
 
   return (
     <Card className={cn("w-full lg:w-2/3")}>
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-row items-center justify-between">
         <div className="flex flex-row items-center justify-start gap-2 mb-2">
-          <div className="w-12 h-12 rounded-full overflow-hidden">
+          <div className="w-12 h-12 overflow-hidden rounded-full">
             <Avatar
               src={
                 otherMember?.image
@@ -152,7 +144,7 @@ const Lesson: React.FC<
         <ActionsMenu actions={actions} />
       </div>
 
-      <ul className="text-foreground-light flex flex-col gap-3">
+      <ul className="flex flex-col gap-3 text-foreground-light">
         <IconField Icon={Calendar}>
           {intl("page.lessons.lesson.start.with.duration", {
             start: dayjs(call.start).format("h:mm a"),
@@ -179,7 +171,7 @@ const Lesson: React.FC<
         <Calls.Status status={call.recordingStatus} />
       </ul>
 
-      <div className="mt-4 flex flex-row gap-2">
+      <div className="flex flex-row gap-2 mt-4">
         {upcoming ? (
           <Link to={Route.Call.replace(":id", call.id.toString())}>
             <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
@@ -208,7 +200,7 @@ const Lesson: React.FC<
         <Button
           loading={cancelLesson.isPending}
           disabled={cancelLesson.isPending || !!lesson.canceledBy}
-          onClick={() => cancelLesson.mutate()}
+          onClick={() => cancelLesson.mutate(lesson.id)}
           type={ButtonType.Error}
           size={ButtonSize.Small}
         >

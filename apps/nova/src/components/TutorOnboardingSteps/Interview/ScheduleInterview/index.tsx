@@ -1,7 +1,6 @@
-import { IInterview, IRule } from "@litespace/types";
+import { IRule } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import React, { useCallback, useMemo, useState } from "react";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import dayjs from "@/lib/dayjs";
 import {
   Button,
@@ -9,7 +8,6 @@ import {
   DatePicker,
   toaster,
   asFullAssetUrl,
-  atlas,
   useFormatMessage,
   Loading,
   ButtonSize,
@@ -17,6 +15,11 @@ import {
 import cn from "classnames";
 import { flatten } from "lodash";
 import { splitRuleEvent } from "@litespace/sol";
+import {
+  useCreateInterview,
+  useSelectInterviewer,
+} from "@litespace/headless/interviews";
+import { useFindUnpackedTutorRoles } from "@litespace/headless/tutor";
 
 const WINDOW = 30;
 
@@ -32,28 +35,12 @@ const ScheduleInterview: React.FC<{
   const start = useMemo(() => dayjs(), []);
   const end = useMemo(() => start.add(WINDOW, "days"), [start]);
 
-  const selectInterviewer = useCallback(async () => {
-    return atlas.user.selectInterviewer();
-  }, []);
+  const interviewer = useSelectInterviewer();
 
-  const interviewer = useQuery({
-    queryFn: selectInterviewer,
-    queryKey: ["select-interviewer"],
-  });
-
-  const findUnpackedUserRoles = useCallback(async () => {
-    if (!interviewer.data) return;
-    return atlas.rule.findUnpackedUserRules(
-      interviewer.data.id,
-      start.utc().format("YYYY-MM-DD"),
-      end.utc().format("YYYY-MM-DD")
-    );
-  }, [end, interviewer.data, start]);
-
-  const rules = useQuery({
-    queryFn: findUnpackedUserRoles,
-    queryKey: ["interviewer-slots"],
-    enabled: !!interviewer.data,
+  const rules = useFindUnpackedTutorRoles({
+    interviewer: interviewer.data,
+    start,
+    end,
   });
 
   const dayRules: IRule.RuleEvent[] = useMemo(() => {
@@ -63,28 +50,22 @@ const ScheduleInterview: React.FC<{
     );
   }, [date, rules.data]);
 
-  const createInterview = useCallback(
-    async (payload: IInterview.CreateApiPayload) => {
-      return atlas.interview.create(payload);
-    },
-    []
-  );
-
-  const mutation = useMutation({
-    mutationFn: createInterview,
-    onSuccess() {
-      onSuccess();
-      rules.refetch();
-      toaster.success({
-        title: intl("page.tutor.onboarding.book.interview.success.title"),
-      });
-    },
-    onError(error) {
-      toaster.error({
-        title: intl("page.tutor.onboarding.book.interview.fail.title"),
-        description: error instanceof Error ? error.message : undefined,
-      });
-    },
+  const onCreateSuccess = useCallback(() => {
+    onSuccess();
+    rules.refetch();
+    toaster.success({
+      title: intl("page.tutor.onboarding.book.interview.success.title"),
+    });
+  }, []);
+  const onCreateError = useCallback((error: Error) => {
+    toaster.error({
+      title: intl("page.tutor.onboarding.book.interview.fail.title"),
+      description: error instanceof Error ? error.message : undefined,
+    });
+  }, []);
+  const mutation = useCreateInterview({
+    onSuccess: onCreateSuccess,
+    onError: onCreateError,
   });
 
   const selectableEvents: IRule.RuleEvent[] = useMemo(() => {
@@ -102,7 +83,7 @@ const ScheduleInterview: React.FC<{
     <div>
       <div className="flex flex-row gap-12 mt-5">
         <div className="flex flex-col gap-3 w-[300px]">
-          <div className="rounded-3xl overflow-hidden">
+          <div className="overflow-hidden rounded-3xl">
             <img
               className="w-full h-full"
               src={
@@ -115,7 +96,7 @@ const ScheduleInterview: React.FC<{
           </div>
 
           <div>
-            <p className="font-cairo font-bold text-2xl">
+            <p className="text-2xl font-bold font-cairo">
               {interviewer.data.name}
             </p>
           </div>

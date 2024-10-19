@@ -6,13 +6,12 @@ import {
   Label,
   messages,
   useValidation,
-  atlas,
   Controller,
 } from "@litespace/luna";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "@tanstack/react-query";
+import { useShareFeedback } from "@litespace/headless/tutor";
 
 const PassedInterview: React.FC<{
   feedback: string | null;
@@ -22,24 +21,9 @@ const PassedInterview: React.FC<{
   const intl = useIntl();
   const validation = useValidation();
 
-  const share = useCallback(
-    async (feedback: string) => {
-      return await atlas.interview.update(interviewId, {
-        feedback: { interviewee: feedback },
-      });
-    },
-    [interviewId]
-  );
+  const next = useShareFeedback(interviewId);
 
-  const next = useMutation({
-    mutationFn: (feedback: string) => share(feedback),
-    mutationKey: ["submit-feedback"],
-  });
-
-  const skip = useMutation({
-    mutationFn: () => share(""),
-    mutationKey: ["skip-feedback"],
-  });
+  const skip = useShareFeedback(interviewId);
 
   const { control, handleSubmit, watch } = useForm({
     defaultValues: {
@@ -55,7 +39,7 @@ const PassedInterview: React.FC<{
   return (
     <div className="max-w-screen-md">
       <div>
-        <h3 className="text-4xl text-brand mb-4">
+        <h3 className="mb-4 text-4xl text-brand">
           {intl.formatMessage({
             id: messages[
               "page.tutor.onboarding.steps.first.booked.interview.passed.title"
@@ -65,7 +49,7 @@ const PassedInterview: React.FC<{
 
         <div className="flex flex-col gap-2">
           {interviewer ? (
-            <p className="text-foreground-light text-sm">
+            <p className="text-sm text-foreground-light">
               {intl.formatMessage(
                 {
                   id: messages[
@@ -77,7 +61,7 @@ const PassedInterview: React.FC<{
             </p>
           ) : null}
 
-          <p className="bg-selection leading-loose text-base px-4 py-2 rounded-md border border-border-strong hover:border-border-stronger">
+          <p className="px-4 py-2 text-base leading-loose border rounded-md bg-selection border-border-strong hover:border-border-stronger">
             {feedback}
           </p>
         </div>
@@ -116,7 +100,7 @@ const PassedInterview: React.FC<{
             })}
           </Button>
           <Button
-            onClick={() => skip.mutate()}
+            onClick={() => skip.mutate("")}
             type={ButtonType.Secondary}
             loading={skip.isPending}
             disabled={skip.isPending}

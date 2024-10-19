@@ -1,16 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
-import {
-  Alert,
-  Dialog,
-  toaster,
-  atlas,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Alert, Dialog, toaster, useFormatMessage } from "@litespace/luna";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useDeactivateRule } from "@litespace/headless/rule";
 
 const DeactivateRule: React.FC<{
   open?: boolean;
@@ -39,13 +33,7 @@ const DeactivateRule: React.FC<{
     [intl]
   );
 
-  const mutation = useMutation({
-    mutationFn: useCallback(async () => {
-      return await atlas.rule.update(rule.id, { activated: false });
-    }, [rule.id]),
-    onSuccess,
-    onError,
-  });
+  const mutation = useDeactivateRule({ rule, onSuccess, onError });
 
   const action = useMemo(
     () => ({
@@ -69,7 +57,7 @@ const DeactivateRule: React.FC<{
         })}
         action={action}
       >
-        <ul className="list-disc list-inside flex flex-col gap-1 mb-1">
+        <ul className="flex flex-col gap-1 mb-1 list-disc list-inside">
           <li>{intl("page.schedule.deactivate.alert.description.1")}</li>
           <li>{intl("page.schedule.deactivate.alert.description.2")}</li>
         </ul>
