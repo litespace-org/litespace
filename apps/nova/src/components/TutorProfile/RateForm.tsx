@@ -31,10 +31,10 @@ type RateFormProps = {
 
 const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const intl = useFormatMessage();
-  const invalidateRatings = useInvalidateQuery();
+  const invalidate = useInvalidateQuery();
 
   const onSuccess = useCallback(() => {
-    invalidateRatings([QueryKeys.FindTutorRating, tutor]);
+    invalidate([QueryKeys.FindTutorRating, tutor]);
     toaster.success({ title: intl("tutor.rate.succes") });
     if (rate && close) close();
     form.reset();

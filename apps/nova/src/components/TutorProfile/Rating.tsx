@@ -9,16 +9,22 @@ import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
-import { useRender } from "@/hooks/render";
-import EditRating from "@/components/TutorProfile/EditRating";
 import { profileSelectors } from "@/redux/user/profile";
-import DeleteRating from "@/components/TutorProfile/DeleteRating";
 import { useAppSelector } from "@/redux/store";
 
-const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
+const Rating: React.FC<{
+  rating: IRating.Populated;
+
+  onEdit: (rating: IRating.Populated) => void;
+  onDelete: ({
+    ratingId,
+    tutorId,
+  }: {
+    ratingId: number;
+    tutorId: number;
+  }) => void;
+}> = ({ rating, onEdit, onDelete }) => {
   const profile = useAppSelector(profileSelectors.user);
-  const editRating = useRender();
-  const deleteRating = useRender();
 
   return (
     <Card>
@@ -50,14 +56,19 @@ const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
           {profile?.id === rating.rater.id ? (
             <div className="flex gap-3">
               <Button
-                onClick={editRating.show}
+                onClick={() => onEdit(rating)}
                 size={ButtonSize.Tiny}
                 type={ButtonType.Primary}
               >
                 <Edit className="w-4 text-white" />
               </Button>
               <Button
-                onClick={deleteRating.show}
+                onClick={() =>
+                  onDelete({
+                    ratingId: rating.id,
+                    tutorId: rating.ratee.id,
+                  })
+                }
                 size={ButtonSize.Tiny}
                 type={ButtonType.Primary}
               >
@@ -68,21 +79,6 @@ const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
         </div>
         <p>{rating.feedback}</p>
       </div>
-      {profile?.id === rating.rater.id ? (
-        <EditRating
-          open={editRating.open}
-          close={editRating.hide}
-          rate={rating}
-        />
-      ) : null}
-      {profile?.id === rating.rater.id ? (
-        <DeleteRating
-          tutorId={rating.ratee.id}
-          open={deleteRating.open}
-          close={deleteRating.hide}
-          id={rating.id}
-        />
-      ) : null}
     </Card>
   );
 };

@@ -28,18 +28,21 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
   const intl = useFormatMessage();
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("tutor.rate.delete.success") });
     invalidate([QueryKeys.FindTutorRating, tutorId]);
+    toaster.success({ title: intl("tutor.rate.delete.success") });
     close();
-  }, []);
+  }, [tutorId, id]);
 
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("tutor.rate.delete.error"),
-      description: error.message,
-    });
-    close();
-  }, []);
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("tutor.rate.delete.error"),
+        description: error.message,
+      });
+      close();
+    },
+    [tutorId, id]
+  );
 
   const deleteRating = useDeleteRatingTutor({ onSuccess, onError });
 
