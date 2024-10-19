@@ -2,7 +2,6 @@ import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
 import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
-import { schema } from "@/validation";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { sendUserVerificationEmail } from "@/lib/email";
@@ -14,6 +13,7 @@ import {
   pagination,
   string,
   withNamedId,
+  role,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType, jwtSecret } from "@/constants";
@@ -42,6 +42,12 @@ import {
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
 
+const createUserPayload = zod.object({
+  role,
+  email,
+  password,
+});
+
 const updateUserPayload = zod.object({
   email: zod.optional(email),
   password: zod.optional(password),
@@ -60,22 +66,27 @@ const updateUserPayload = zod.object({
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
-  const { email, password, role } = schema.http.user.create.parse(req.body);
-
+  const payload = createUserPayload.parse(req.body);
   const admin = isAdmin(req.user);
-  const publicRole = [IUser.Role.Tutor, IUser.Role.Student].includes(role);
+  const publicRole = [IUser.Role.Tutor, IUser.Role.Student].includes(
+    payload.role
+  );
   if (!publicRole && !admin) return next(forbidden());
 
-  const exists = await users.findByEmail(email);
+  const exists = await users.findByEmail(payload.email);
   if (exists) return next(userExists());
 
   const user = await knex.transaction(async (tx) => {
     const user = await users.create(
-      { role, email, password: hashPassword(password) },
+      {
+        role: payload.role,
+        email: payload.email,
+        password: hashPassword(payload.password),
+      },
       tx
     );
 
-    if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
+    if (payload.role === IUser.Role.Tutor) await tutors.create(user.id, tx);
     return user;
   });
 

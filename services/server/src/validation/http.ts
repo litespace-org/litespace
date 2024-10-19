@@ -1,7 +1,6 @@
 import zod from "zod";
 import {
   optionalString,
-  rating,
   id,
   password,
   email,
@@ -11,7 +10,6 @@ import {
   date,
   repeat,
   url,
-  datetime,
   string,
   subscriptionPeriod,
   gender,
@@ -115,24 +113,6 @@ const call = {
   get: { params: identityObject },
 };
 
-const ratings = {
-  create: {
-    body: zod.object({
-      rateeId: id,
-      value: rating,
-      feedback: zod.optional(string),
-    }),
-  },
-  update: {
-    body: zod.object({
-      value: zod.optional(rating),
-      feedback: zod.optional(string),
-    }),
-  },
-  get: { query: zod.object({ tutorId: id }) },
-  delete: { query: zod.object({ id }) },
-} as const;
-
 const subscription = {
   create: {
     body: zod.object({
@@ -152,23 +132,6 @@ const subscription = {
 const chat = {
   create: {
     body: zod.object({ tutorId: id }),
-  },
-} as const;
-
-const invite = {
-  create: {
-    body: zod.object({
-      email: email,
-      planId: id,
-      expiresAt: datetime,
-    }),
-  },
-  update: {
-    body: zod.object({
-      email: zod.optional(email),
-      planId: zod.optional(id),
-      expiresAt: zod.optional(datetime),
-    }),
   },
 } as const;
 
@@ -235,10 +198,8 @@ export default {
   student,
   tutor,
   call,
-  rating: ratings,
   subscription,
   chat,
-  invite,
   reportReply,
   assets,
 };

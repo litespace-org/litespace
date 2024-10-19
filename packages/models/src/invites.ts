@@ -1,9 +1,12 @@
-import { IInvite } from "@litespace/types";
-import { knex } from "@/query";
+import { IFilter, IInvite, Paginated } from "@litespace/types";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first, omit } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
+import { Knex } from "knex";
 
 export class Invites {
+  table = "invites" as const;
+
   async create(payload: IInvite.CreatePayload): Promise<IInvite.Self> {
     const now = new Date();
     const rows = await knex<IInvite.Row>("invites").insert(
@@ -60,8 +63,28 @@ export class Invites {
     return first(list) || null;
   }
 
-  async findAll(): Promise<IInvite.MappedAttributes[]> {
-    return this.mapAttributesQuery(await this.getAttributesQuery());
+  async findByEmail(
+    email: string,
+    tx?: Knex.Transaction
+  ): Promise<IInvite.Self | null> {
+    const row = await this.builder(tx)
+      .select()
+      .where(this.column("email"), email)
+      .first();
+    return row ? this.from(row) : null;
+  }
+
+  async find({
+    tx,
+    page,
+    size,
+  }: { tx?: Knex.Transaction } & IFilter.Pagination): Promise<
+    Paginated<IInvite.Self>
+  > {
+    const builder = this.builder(tx);
+    const total = await countRows(builder.clone());
+    const rows = await withPagination(builder.clone(), { page, size });
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   getAttributesQuery() {
@@ -93,6 +116,14 @@ export class Invites {
       updatedAt: row.updated_at.toISOString(),
       updatedBy: row.updated_by,
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<IInvite.Row>(this.table) : knex<IInvite.Row>(this.table);
+  }
+
+  column(value: keyof IInvite.Row) {
+    return column(value, this.table);
   }
 }
 

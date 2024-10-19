@@ -1,10 +1,15 @@
 import { ratings, users } from "@litespace/models";
 import { alreadyRated, bad, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
-import { schema } from "@/validation";
 import { NextFunction } from "express";
 import safeRequest from "express-async-handler";
-import { pagination, withNamedId } from "@/validation/utils";
+import {
+  id,
+  pagination,
+  rating,
+  string,
+  withNamedId,
+} from "@/validation/utils";
 import { IRating } from "@litespace/types";
 import {
   isAdmin,
@@ -13,19 +18,25 @@ import {
   isTutor,
   isUser,
 } from "@litespace/auth";
+import zod from "zod";
+
+const createRatingPayload = zod.object({
+  rateeId: id,
+  value: rating,
+  feedback: zod.optional(string),
+});
+
+const updateRatingPayload = zod.object({
+  value: zod.optional(rating),
+  feedback: zod.optional(string),
+});
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
-  // const raterId = req.user.id;
-  // const isTutor = req.user.role === IUser.Role.Tutor;
-  // const isStudent = req.user.role === IUser.Role.Student;
-  const { rateeId, value, feedback } = schema.http.rating.create.body.parse(
-    req.body
-  );
-
+  const { rateeId, value, feedback } = createRatingPayload.parse(req.body);
   const ratee = await users.findById(rateeId);
   if (!ratee) return next(notfound.rating());
 
@@ -57,8 +68,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const { id } = withNamedId("id").parse(req.params);
-  const payload = schema.http.rating.update.body.parse(req.body);
-
+  const payload = updateRatingPayload.parse(req.body);
   const rating = await ratings.findSelfById(id);
   if (!rating) return next(notfound.rating());
 
