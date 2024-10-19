@@ -9,6 +9,7 @@ import {
   NumericInput as BaseNumericInput,
   NumericInputProps,
 } from "@/components/NumericInput";
+import { Rating as BaseRating } from "@/components/Rating";
 import { Select as BaseSelect, SelectProps } from "@/components/Select";
 import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
 import { Textarea as BaseTextarea } from "@/components/Textarea";
@@ -24,7 +25,6 @@ import {
   FieldValues,
   Path,
 } from "react-hook-form";
-
 import {
   TimePicker as BaseTimePicker,
   TimePickerProps,
@@ -307,6 +307,32 @@ export function Textarea<T extends FieldValues>({
           {...props}
         />
       )}
+    />
+  );
+}
+
+export function Rating<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  value,
+  ...props
+}: {
+  control: Control<T>;
+  value: number;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+}) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field }) => {
+        return (
+          <BaseRating onChange={field.onChange} value={value} {...props} />
+        );
+      }}
     />
   );
 }
