@@ -10,7 +10,7 @@ import {
   string,
   weekday,
 } from "@/validation/utils";
-import { IRule, IUser, Wss } from "@litespace/types";
+import { IRule, Wss } from "@litespace/types";
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { calls, rules } from "@litespace/models";
 import { Rule, Schedule, asRule, safe, unpackRules } from "@litespace/sol";
@@ -18,6 +18,7 @@ import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
+import { isInterviewer, isTutor, isUser } from "@litespace/auth";
 
 const title = zod.string().min(5).max(255);
 const createRulePayload = zod.object({
@@ -50,15 +51,13 @@ const updateRulePayload = zod.object({
 function createRule(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId = req.user.id;
-      const role = req.user?.role;
-      const eligible =
-        role === IUser.Role.Interviewer || role === IUser.Role.Tutor;
-      if (!eligible || !userId) return next(forbidden());
+      const user = req.user;
+      const allowed = isTutor(user) || isInterviewer(user);
+      if (!allowed) return next(forbidden());
 
       const payload: IRule.CreateApiPayload = createRulePayload.parse(req.body);
       const existingRules = await rules.findByUserId({
-        user: userId,
+        user: user.id,
         deleted: false, // skip deleted rules
       });
       const incomingRule: Rule = asRule(payload);
@@ -67,7 +66,7 @@ function createRule(context: ApiContext) {
         if (Schedule.from(asRule(rule)).intersecting(incomingRule))
           return next(badRequest());
       }
-      const rule = await rules.create({ ...payload, userId });
+      const rule = await rules.create({ ...payload, userId: user.id });
       res.status(201).json(rule);
 
       const error = await safe(async () => {
@@ -90,12 +89,12 @@ function createRule(context: ApiContext) {
 }
 
 async function findUserRules(req: Request, res: Response, next: NextFunction) {
-  const currentUserId = req.user?.id;
-  if (!currentUserId) return next(forbidden());
+  const allowed = isUser(req.user);
+  if (!allowed) return next(forbidden());
 
-  const { userId: targetUserId } = findUserRulesPayload.parse(req.params);
+  const { userId } = findUserRulesPayload.parse(req.params);
   const userRules = await rules.findByUserId({
-    user: targetUserId,
+    user: userId,
     deleted: false, // skip deleted rules
   });
   res.status(200).json(userRules);
@@ -106,18 +105,16 @@ async function findUnpackedUserRules(
   res: Response,
   next: NextFunction
 ) {
-  const currentUserId = req.user?.id;
-  if (!currentUserId) return next(forbidden());
+  const allowed = isUser(req.user);
+  if (!allowed) return next(forbidden());
 
-  const { userId: targetUserId } = findUnpackedUserRulesParams.parse(
-    req.params
-  );
+  const { userId } = findUnpackedUserRulesParams.parse(req.params);
   const { start, end } = findUnpackedUserRulesQuery.parse(req.query);
 
   const [userRules, userCalls] = await Promise.all([
-    rules.findByUserId({ user: targetUserId, deleted: false }),
+    rules.findByUserId({ user: userId, deleted: false }),
     calls.findMemberCalls({
-      userIds: [targetUserId],
+      userIds: [userId],
       between: { start, end },
       ignoreCanceled: true,
     }),
@@ -139,20 +136,21 @@ async function findUnpackedUserRules(
 function updateRule(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isUser(user);
+      if (!allowed) return next(forbidden());
+
       const payload: IRule.UpdateApiPayload = updateRulePayload.parse(req.body);
       const { ruleId } = updateRuleParams.parse(req.params);
-      const userId = req.user?.id;
-      if (!userId) return next(forbidden());
-
       const rule = await rules.findById(ruleId);
       if (!rule || rule.deleted) return next(notfound.base());
 
-      const owner = rule.userId === userId;
+      const owner = rule.userId === user.id;
       if (!owner) return next(forbidden());
 
       const withUpdates: IRule.Self = { ...rule, ...payload };
       const existingRules = await rules.findByUserId({
-        user: userId,
+        user: user.id,
         deleted: false, // ignore deleted rules
       });
       const otherRules = existingRules.filter(
@@ -202,14 +200,15 @@ function updateRule(context: ApiContext) {
 function deleteRule(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isUser(user);
+      if (!allowed) return next(forbidden());
       const { ruleId } = deleteRuleParams.parse(req.params);
-      const userId = req.user?.id;
-      if (!userId) return next(forbidden());
 
       const rule = await rules.findById(ruleId);
       if (!rule) return next(notfound.base());
 
-      const owner = rule.userId === userId;
+      const owner = rule.userId === user.id;
       if (!owner) return next(forbidden());
 
       const ruleCalls = await calls.findByRuleId({ rule: ruleId });

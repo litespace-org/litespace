@@ -1,10 +1,10 @@
 import { forbidden, notfound } from "@/lib/error";
 import { withdrawMethod } from "@/validation/utils";
-import { authorizer } from "@litespace/auth";
+import { isAdmin } from "@litespace/auth";
 import { withdrawMethods } from "@litespace/models";
 import { IWithdrawMethod } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import safe from "express-async-handler";
+import safeRequest from "express-async-handler";
 import zod from "zod";
 
 const number = zod.coerce.number().int().positive();
@@ -24,7 +24,8 @@ const updatePayload = zod.object({
 });
 
 async function create(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().check(req.user);
+  const user = req.user;
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const payload: IWithdrawMethod.CreatePayload = createPayload.parse(req.body);
@@ -33,7 +34,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
 }
 
 async function update(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().check(req.user);
+  const allowed = isAdmin(req.user);
   if (!allowed) return next(forbidden());
 
   const { type } = updateParams.parse(req.params);
@@ -52,7 +53,7 @@ async function find(_req: Request, res: Response) {
 }
 
 export default {
-  create: safe(create),
-  update: safe(update),
-  find: safe(find),
+  create: safeRequest(create),
+  update: safeRequest(update),
+  find: safeRequest(find),
 };
