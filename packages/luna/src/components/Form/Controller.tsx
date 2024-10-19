@@ -215,7 +215,7 @@ export function Select<T extends FieldValues, P extends string | number>({
       name={name}
       rules={rules}
       render={({ field }) => {
-        return <BaseSelect {...props} {...field} />;
+        return <BaseSelect onChange={field.onChange} {...props} />;
       }}
     />
   );

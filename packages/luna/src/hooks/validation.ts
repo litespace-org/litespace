@@ -16,19 +16,22 @@ export function useRequired() {
   );
 }
 
-export function useValidatePassword() {
+export function useValidatePassword(create: boolean = false) {
   const intl = useFormatMessage();
+  const required = useRequired();
 
   return {
     pattern: {
       value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
       message: intl("error.password.invlaid"),
     },
+    required: create ? required : false,
   };
 }
 
-export function useValidateEmail() {
+export function useValidateEmail(create: boolean = false) {
   const intl = useFormatMessage();
+  const required = useRequired();
 
   return useMemo(
     () => ({
@@ -36,8 +39,9 @@ export function useValidateEmail() {
         value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
         message: intl("error.email.invlaid"),
       },
+      required: create ? required : false,
     }),
-    [intl]
+    [create, intl, required]
   );
 }
 

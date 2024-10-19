@@ -123,9 +123,8 @@ const PlanForm: React.FC<{
       };
       if (plan) updatePlan.mutate({ id: plan.id, payload });
       else createPlan.mutate(payload);
-      form.reset();
     },
-    [createPlan, form, plan, updatePlan]
+    [createPlan, plan, updatePlan]
   );
   return (
     <Dialog
