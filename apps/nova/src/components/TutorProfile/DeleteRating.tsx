@@ -9,7 +9,7 @@ import {
 import { useDeleteRatingTutor } from "@litespace/headless/rating";
 import { Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { QueryKeys } from "@litespace/headless/constants";
+import { QueryKey } from "@litespace/headless/constants";
 
 type DeleteRatingProps = {
   open: boolean;
@@ -28,7 +28,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
   const intl = useFormatMessage();
 
   const onSuccess = useCallback(() => {
-    invalidate([QueryKeys.FindTutorRating, tutorId]);
+    invalidate([QueryKey.FindTutorRating, tutorId]);
     toaster.success({ title: intl("tutor.rate.delete.success") });
     close();
   }, [tutorId, id]);

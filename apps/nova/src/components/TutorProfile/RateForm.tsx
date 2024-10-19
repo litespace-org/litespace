@@ -17,7 +17,7 @@ import {
 import { useForm } from "react-hook-form";
 import { IRating, Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { QueryKeys } from "@litespace/headless/constants";
+import { QueryKey } from "@litespace/headless/constants";
 type IForm = {
   feedback?: string;
   rating: number;
@@ -34,7 +34,7 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const invalidate = useInvalidateQuery();
 
   const onSuccess = useCallback(() => {
-    invalidate([QueryKeys.FindTutorRating, tutor]);
+    invalidate([QueryKey.FindTutorRating, tutor]);
     toaster.success({ title: intl("tutor.rate.succes") });
     if (rate && close) close();
     form.reset();

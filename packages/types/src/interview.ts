@@ -1,4 +1,5 @@
-import { ICall } from ".";
+import { ICall, IInterview, Paginated } from ".";
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 export enum Status {
   Pending = "pending",
@@ -76,4 +77,26 @@ export type UpdateApiPayload = {
   level?: number;
   status?: Status;
   sign?: boolean;
+};
+
+export type FindPagedInterviewsProps = {
+  query: UseInfiniteQueryResult<
+    InfiniteData<
+      Paginated<{
+        interview: IInterview.Self;
+        call: ICall.Self;
+        members: ICall.PopuldatedMember[];
+      }>,
+      unknown
+    >,
+    Error
+  >;
+  list:
+    | {
+        interview: IInterview.Self;
+        call: ICall.Self;
+        members: ICall.PopuldatedMember[];
+      }[]
+    | null;
+  more: () => void;
 };

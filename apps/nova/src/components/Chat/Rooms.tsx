@@ -1,5 +1,5 @@
 import { first, isEmpty } from "lodash";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import Room from "@/components/Chat/Room";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
@@ -8,10 +8,9 @@ import {
   SelectedRoom,
   SelectRoom,
   useInfinteScroll,
-  usePaginationQuery,
-  atlas,
 } from "@litespace/luna";
 import cn from "classnames";
+import { useFindUserRooms } from "@litespace/headless/messageRooms";
 
 const Rooms: React.FC<{
   selected: SelectedRoom;
@@ -19,22 +18,7 @@ const Rooms: React.FC<{
 }> = ({ select, selected: { room, members } }) => {
   const profile = useAppSelector(profileSelectors.user);
 
-  const findUserRooms = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
-      if (!profile) return { list: [], total: 0 };
-      return await atlas.chat.findRooms(profile.id, {
-        page: pageParam,
-        size: 20,
-      });
-    },
-    [profile]
-  );
-
-  const {
-    list: rooms,
-    query,
-    more,
-  } = usePaginationQuery(findUserRooms, ["find-user-rooms"]);
+  const { list: rooms, query, more } = useFindUserRooms(profile);
 
   const enabled = useMemo(
     () => query.hasNextPage && !query.isLoading && !query.isFetching,
