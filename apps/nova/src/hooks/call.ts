@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
-import { useSockets } from "@litespace/luna";
+import { toaster, useFormatMessage, useSockets } from "@litespace/luna";
 import { isEmpty } from "lodash";
 
 export function useCallRecorder(screen: boolean = false) {
@@ -356,4 +356,49 @@ export function useCallEvents(
     mateAudio,
     mateVideo,
   };
+}
+
+export function useFullScreen() {
+  const intl = useFormatMessage();
+  const ref = useRef<HTMLDivElement>(null);
+  const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
+
+  const onFullScreen = useCallback(() => {
+    const fullScreen = document.fullscreenElement?.id === ref.current?.id;
+    setIsFullScreen(fullScreen);
+  }, []);
+
+  const startFullScreen = useCallback(async () => {
+    const result = await safe(async () => {
+      if (!ref.current) return;
+      await ref.current.requestFullscreen();
+    });
+    if (result instanceof Error)
+      toaster.error({ title: intl("error.unexpected") });
+  }, []);
+
+  const exitFullscreen = useCallback(async () => {
+    if (ref.current) await document.exitFullscreen();
+  }, []);
+
+  const toggleFullScreen = useCallback(async () => {
+    if (!document.fullscreenElement) return startFullScreen();
+    return exitFullscreen();
+  }, []);
+
+  const toggleFullScreenByKeyboard = useCallback((e: KeyboardEvent) => {
+    e.preventDefault();
+    if (e.code === "F11") return toggleFullScreen();
+    if (e.code === "Escape") return exitFullscreen();
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("keydown", toggleFullScreenByKeyboard);
+    document.addEventListener("fullscreenchange", onFullScreen);
+    return () => {
+      document.removeEventListener("keydown", toggleFullScreenByKeyboard);
+      document.removeEventListener("fullscreenchange", onFullScreen);
+    };
+  }, []);
+  return { isFullScreen, toggleFullScreen, ref };
 }
