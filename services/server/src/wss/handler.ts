@@ -19,9 +19,9 @@ export class WssHandler {
   socket: Socket;
   user: IUser.Self;
 
-  constructor(socket: Socket) {
+  constructor(socket: Socket, user: IUser.Self) {
     this.socket = socket;
-    this.user = socket.request.user;
+    this.user = user;
     this.initialize();
   }
 
@@ -241,5 +241,7 @@ export class WssHandler {
 }
 
 export function wssHandler(socket: Socket) {
-  return new WssHandler(socket);
+  const user = socket.request.user;
+  if (!user) return;
+  return new WssHandler(socket, user);
 }
