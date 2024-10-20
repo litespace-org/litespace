@@ -38,7 +38,7 @@ const TutorOnboarding: React.FC = () => {
 
   const findInterviews = useCallback(async () => {
     if (!profile) return { list: [], total: 0 };
-    return await atlas.interview.findInterviews(profile.id);
+    return await atlas.interview.findInterviews({ user: profile.id });
   }, [profile]);
 
   const interviews = useQuery({
