@@ -1,14 +1,12 @@
 {
   "name": "@litespace/server",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "pnpm build && env-cmd ts-node -r tsconfig-paths/register dist/index.js",
+    "start": "pnpm build && env-cmd ts-node dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
-    "build": "tsc",
-    "migrate": "env-cmd node-pg-migrate",
-    "seed": "pnpm build && env-cmd ts-node -r tsconfig-paths/register dist/scripts/seed.js",
+    "build": "tsc && tsc-alias",
     "test": "env-cmd -f .env.test jest",
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 7070 --key peer --path /ls",
@@ -41,6 +39,7 @@
     "nodemon": "^3.1.0",
     "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5"
   },

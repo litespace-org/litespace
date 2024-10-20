@@ -1,87 +1,159 @@
-import asyncHandler from "express-async-handler";
-import { randomBytes, sha256 } from "@/lib/crypto";
-import { notfound } from "@/lib/error";
-import { tokens, users, knex } from "@litespace/models";
-import http from "@/validation/http";
-import dayjs from "@/lib/dayjs";
+import safeRequest from "express-async-handler";
+import { badRequest, notfound } from "@/lib/error";
+import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { emailer } from "@/lib/email";
-import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
 import { IToken, IUser } from "@litespace/types";
-import { isValidToken } from "@/lib/token";
+import { email, id, password, string, url } from "@/validation/utils";
+import { googleConfig, jwtSecret } from "@/constants";
+import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
+import { OAuth2Client } from "google-auth-library";
+import zod from "zod";
+import jwt from "jsonwebtoken";
+import { sendBackgroundMessage } from "@/workers";
+import { WorkerMessageType } from "@/workers/messages";
 
-async function forgotPassword(req: Request, res: Response, next: NextFunction) {
-  const { email } = http.auth.forgotPassword.body.parse(req.body);
-  const user = await users.findByEmail(email);
+const credentials = zod.object({
+  email: zod.string().email(),
+  password: zod.string(),
+});
+
+const authGooglePayload = zod.object({
+  token: zod.string(),
+  role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
+});
+
+const forgotPasswordPayload = zod.object({
+  email,
+  callbackUrl: url,
+});
+
+const loginWithAuthTokenPayload = zod.object({ token: string });
+
+const resetPasswordPayload = zod.object({
+  token: string,
+  password,
+});
+
+const foregetPasswordJwtPayload = zod.object({
+  type: zod.literal(IToken.Type.ForgotPassword),
+  user: id,
+});
+
+async function loginWithPassword(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  //! note: here you can catch if the user owns multiple accounts.
+  const { email, password } = credentials.parse(req.body);
+  const hashed = hashPassword(password);
+  const user = await users.findByCredentials({ email, password: hashed });
   if (!user) return next(notfound.user());
+  const token = encodeAuthJwt(user.id, jwtSecret);
+  const response: IUser.LoginApiResponse = { user, token };
+  res.status(200).json(response);
+}
 
-  const token = randomBytes();
-  const hash = sha256(token);
-  const expiresAt = dayjs.utc().add(10, "minutes").toDate();
+async function loginWithGoogle(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const client = new OAuth2Client();
+  // register user in case the `role` field is provided
+  const { token, role } = authGooglePayload.parse(req.body);
 
-  await tokens.create({
-    type: IToken.Type.ForgotPassword,
-    userId: user.id,
-    expiresAt,
-    hash,
+  const ticket = await client.verifyIdToken({
+    idToken: token,
+    audience: googleConfig.clientId,
   });
 
-  await emailer.send({
-    to: user.email,
-    template: EmailTemplate.ForgetPassword,
-    props: { url: `http://localhost:3001/reset-password?token=${token}` },
-  });
+  const payload = ticket.getPayload();
+  if (!payload || !payload.email) return next(badRequest());
+
+  const success = (user: IUser.Self) => {
+    const token = encodeAuthJwt(user.id, jwtSecret);
+    const response: IUser.LoginApiResponse = { user, token };
+    res.status(200).json(response);
+  };
+
+  const user = await users.findByEmail(payload.email);
+  if (user && (!role || role === user.role)) return success(user);
+  if (user && role && role !== user.role) return next(badRequest());
+
+  if (role) {
+    const freshUser = await knex.transaction(async (tx) => {
+      const user = await users.create({ email: payload.email, role }, tx);
+      if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
+      return user;
+    });
+    return success(freshUser);
+  }
+
+  return next(notfound.user());
+}
+
+async function loginWithAuthToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const { token } = loginWithAuthTokenPayload.parse(req.body);
+  const id = decodeAuthJwt(token, jwtSecret);
+  const user = await users.findById(id);
+  if (!user) return next(notfound.base());
+
+  const response: IUser.LoginWithAuthTokenApiResponse = {
+    user,
+    token: encodeAuthJwt(id, jwtSecret),
+  };
+
+  res.status(200).json(response);
+}
+
+async function forgotPassword(req: Request, res: Response) {
+  const { email, callbackUrl }: IUser.ForegetPasswordApiPayload =
+    forgotPasswordPayload.parse(req.body);
+  const user = await users.findByEmail(email);
+
+  if (user) {
+    sendBackgroundMessage({
+      type: WorkerMessageType.SendForgetPasswordEmail,
+      email: user.email,
+      user: user.id,
+      callbackUrl,
+    });
+  }
 
   res.status(200).send();
 }
 
-export async function resetPassword(
-  req: Request,
-  done: (error: Error | null, user?: IUser.Self) => void
-) {
-  const payload = http.auth.resetPassword.body.parse(req.body);
-  const hash = sha256(payload.token);
-  const token = await tokens.findByHash(hash);
-  if (!isValidToken(token, IToken.Type.ForgotPassword))
-    return done(new Error("Invalid token"));
+async function resetPassword(req: Request, res: Response, next: NextFunction) {
+  const { password, token } = resetPasswordPayload.parse(req.body);
+  const jwtPayload = jwt.verify(token, jwtSecret);
+  const { type, user: id } = foregetPasswordJwtPayload.parse(jwtPayload);
+  if (type !== IToken.Type.ForgotPassword) return next(badRequest());
 
-  await knex.transaction(async (tx) => {
-    await tokens.makeAsUsed(token.id, tx);
-    await users.update(
-      token.userId,
-      { password: hashPassword(payload.password) },
-      tx
-    );
+  const user = await users.findById(id);
+  if (!user) return next(notfound.user());
+
+  const updated = await users.update(id, {
+    password: hashPassword(password),
   });
 
-  const user = await users.findById(token.userId);
-  if (!user) return done(notfound.user());
-  return done(null, user);
-}
+  const response: IUser.ResetPasswordApiResponse = {
+    user: updated,
+    token: encodeAuthJwt(id, jwtSecret),
+  };
 
-// todo: test this handler. What will happen to "passport" if the hendler throws an error.
-export async function verifyEmail(
-  req: Request,
-  done: (error: Error | null, user?: IUser.Self) => void
-) {
-  const body = http.auth.verifyEmail.body.parse(req.body);
-  const hash = sha256(body.token);
-  const token = await tokens.findByHash(hash);
-
-  if (!isValidToken(token, IToken.Type.VerifyEmail))
-    return done(new Error("Invalid token"));
-
-  await knex.transaction(async (tx) => {
-    await tokens.makeAsUsed(token.id, tx);
-    await users.update(token.userId, { verified: true }, tx);
-  });
-
-  const user = await users.findById(token.userId);
-  if (!user) return done(notfound.user());
-  return done(null, user);
+  res.status(200).json(response);
 }
 
 export default {
-  forgotPassword: asyncHandler(forgotPassword),
+  loginWithGoogle: safeRequest(loginWithGoogle),
+  loginWithPassword: safeRequest(loginWithPassword),
+  loginWithAuthToken: safeRequest(loginWithAuthToken),
+  forgotPassword: safeRequest(forgotPassword),
+  resetPassword: safeRequest(resetPassword),
 };

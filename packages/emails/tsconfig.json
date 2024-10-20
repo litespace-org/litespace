@@ -6,7 +6,7 @@
     "strict": true,
     "skipLibCheck": true,
     "jsx": "react",
-    "module": "ESNext",
+    "module": "CommonJS",
     "declaration": true,
     "declarationDir": "dist/types",
     "sourceMap": true,

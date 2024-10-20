@@ -1,9 +1,12 @@
-import { ICoupon } from "@litespace/types";
-import { knex } from "@/query";
+import { ICoupon, IFilter, Paginated } from "@litespace/types";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
+import { Knex } from "knex";
 
 export class Coupons {
+  table = "coupons" as const;
+
   async create(payload: ICoupon.CreatePayload): Promise<ICoupon.Self> {
     const now = new Date();
     const rows = await knex<ICoupon.Row>("coupons").insert(
@@ -60,22 +63,43 @@ export class Coupons {
     await knex<ICoupon.Row>("coupons").delete().where("id", id);
   }
 
-  async findById(id: number): Promise<ICoupon.MappedAttributes | null> {
-    const coupons = this.mapAttributesQuery(
-      await this.getAttributesQuery().where("coupons.id", id)
-    );
-    return first(coupons) || null;
+  async findById(
+    id: number,
+    tx?: Knex.Transaction
+  ): Promise<ICoupon.Self | null> {
+    const coupon = await this.builder(tx)
+      .select()
+      .where(this.column("id"), id)
+      .first();
+    if (!coupon) return null;
+    return this.from(coupon);
   }
 
-  async findByCode(code: string): Promise<ICoupon.MappedAttributes | null> {
-    const coupons = this.mapAttributesQuery(
-      await this.getAttributesQuery().where("coupons.code", code)
-    );
-    return first(coupons) || null;
+  async findByCode(
+    code: string,
+    tx?: Knex.Transaction
+  ): Promise<ICoupon.Self | null> {
+    const coupon = await this.builder(tx)
+      .select()
+      .where(this.column("code"), code)
+      .first();
+    if (!coupon) return null;
+    return this.from(coupon);
   }
 
-  async findAll(): Promise<ICoupon.MappedAttributes[]> {
-    return this.mapAttributesQuery(await this.getAttributesQuery());
+  async find({
+    page,
+    size,
+    tx,
+  }: IFilter.Pagination & { tx?: Knex.Transaction }): Promise<
+    Paginated<ICoupon.Self>
+  > {
+    const total = await countRows(this.builder(tx));
+    const rows = await withPagination(this.builder(tx).select(), {
+      page,
+      size,
+    });
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   getAttributesQuery() {
@@ -112,6 +136,14 @@ export class Coupons {
       updatedAt: row.updated_at.toISOString(),
       updatedBy: row.updated_by,
     };
+  }
+
+  builder(tx?: Knex.Transaction) {
+    return tx ? tx<ICoupon.Row>(this.table) : knex<ICoupon.Row>(this.table);
+  }
+
+  column(value: keyof ICoupon.Row) {
+    return column(value, this.table);
   }
 }
 

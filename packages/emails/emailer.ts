@@ -8,6 +8,9 @@ function makeTransporter(user: string, pass: string): nodemailer.Transporter {
     port: 465,
     secure: true,
     auth: { user, pass },
+    tls: {
+      rejectUnauthorized: false,
+    },
   });
 }
 

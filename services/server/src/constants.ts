@@ -67,6 +67,7 @@ export const serverConfig = {
       [FileType.Video]: ["video/webm", "video/mp4"],
     },
   },
+  build: __dirname,
 } as const;
 
 export const passwordRegex =

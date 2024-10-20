@@ -3,10 +3,10 @@ import { IInterview } from "@litespace/types";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-export function useInterviews(userId: number) {
+export function useInterviews(user: number) {
   return useQuery({
     queryFn: async () => {
-      return await atlas.interview.findInterviews(userId);
+      return await atlas.interview.findInterviews({ user });
     },
     queryKey: ["get-tutuor-interviews"],
   });

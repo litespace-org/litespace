@@ -15,11 +15,13 @@ export class Interview extends Base {
     return await this.put(`/api/v1/interview/${id}`, payload);
   }
 
-  public async findInterviews(
-    userId: number,
-    pagination?: IFilter.Pagination
-  ): Promise<IInterview.FindInterviewsApiResponse> {
-    return this.get(`/api/v1/interview/list/${userId}`, null, pagination);
+  public async findInterviews({
+    user,
+    ...pagination
+  }: {
+    user: number;
+  } & IFilter.Pagination): Promise<IInterview.FindInterviewsApiResponse> {
+    return this.get(`/api/v1/interview/list/?user=${user}`, null, pagination);
   }
 
   public async findInterviewById(id: number): Promise<IInterview.Self> {
