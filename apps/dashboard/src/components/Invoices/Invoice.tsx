@@ -22,7 +22,6 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
     pending,
     rejected,
     fulfilled,
-    canceledByAdmin,
     canceledByReceiver,
     cancellationApprovedByAdmin,
     updatedByReceiver,
@@ -132,7 +131,6 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
         show={canceledByReceiver}
         onAccept={() => setAction(Action.ApproveCancelRequest)}
       />
-      <Invoices.Admin.CanceledByAdmin show={canceledByAdmin} />
       <Invoices.Admin.UpdateRequest
         show={updatedByReceiver}
         invoice={invoice}

@@ -62,7 +62,10 @@ const UserForm: React.FC<{
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      createUser.mutate(data);
+      createUser.mutate({
+        ...data,
+        callbackUrl: "http://localhost:5173/verify-email",
+      });
     },
     [createUser]
   );
