@@ -182,23 +182,31 @@ export class Lessons {
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
   ): Promise<Paginated<ILesson.Self>> {
-    const builder = this.builder(tx)
+    const baseBuilder = this.builder(tx)
       .members.join(
         this.table.lessons,
         this.columns.lessons("id"),
         this.columns.members("lesson_id")
       )
-      .join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
-      .select<ILesson.Row[]>(this.rows.lesson)
-      .orderBy(calls.columns.calls("start"), "desc")
       .whereIn(this.columns.members("user_id"), members);
 
-    const total = await countRows(builder.clone());
-    const rows = await withPagination(builder.clone(), pagination).then();
+    const total = await countRows(
+      baseBuilder.clone().groupBy(this.columns.lessons("id")),
+      { column: this.columns.lessons("id") }
+    );
+
+    const rows = await withPagination(
+      baseBuilder
+        .clone()
+        .select(this.rows.lesson)
+        .join(
+          calls.tables.calls,
+          calls.columns.calls("id"),
+          this.columns.lessons("call_id")
+        )
+        .orderBy(calls.columns.calls("start"), "desc"),
+      pagination
+    ).then();
     return { list: rows.map((row) => this.from(row)), total };
   }
 
