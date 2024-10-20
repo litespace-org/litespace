@@ -8,12 +8,18 @@ import {
   Label,
   toaster,
   useFormatMessage,
+  useValidatePassword,
 } from "@litespace/luna";
-import { useCallback, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@litespace/headless/auth";
 import { Form, useNavigate, useSearchParams } from "react-router-dom";
 import { Route } from "@/types/routes";
+import { IUser } from "@litespace/types";
+import { useAppDispatch } from "@/redux/store";
+import { setUserProfile } from "@/redux/user/profile";
+import { resetTutorMeta } from "@/redux/user/tutor";
+import { resetUserRules } from "@/redux/user/schedule";
 
 interface IForm {
   password: string;
@@ -23,13 +29,19 @@ interface IForm {
 const ResetPassword = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const params = useSearchParams();
-  const token = params[0].get("token");
+  const passwordRules = useValidatePassword();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!token) return navigate(Route.Login);
-  }, []);
+    if (token) return;
+    const searchParamToken = searchParams.get("token");
+    if (!searchParamToken) return navigate(Route.Root);
 
+    setToken(searchParamToken);
+    setSearchParams({});
+  }, []);
   const { control, watch, formState, handleSubmit } = useForm<IForm>({
     mode: "onSubmit",
     defaultValues: {
@@ -37,13 +49,17 @@ const ResetPassword = () => {
       newPassword: "",
     },
   });
+  const dispatch = useAppDispatch();
 
   const password = watch("password");
   const newPassword = watch("newPassword");
 
-  const onSuccess = useCallback(() => {
+  const onSuccess = useCallback((profile: IUser.ResetPasswordApiResponse) => {
     toaster.success({ title: intl("page.login.forget.password.compelete") });
-    navigate("/login");
+    dispatch(setUserProfile(profile));
+    dispatch(resetTutorMeta());
+    dispatch(resetUserRules());
+    return navigate(Route.Root);
   }, []);
 
   const onError = useCallback((error: Error) => {
@@ -52,16 +68,13 @@ const ResetPassword = () => {
       description: error.message,
     });
   }, []);
+
   const mutation = useResetPassword({ onSuccess, onError });
 
   const onSubmit = useMemo(() => {
     return handleSubmit(() => {
-      if (password !== newPassword) {
-        return toaster.error({ title: intl("error.passowrd.unequal") });
-      }
-      if (token && password.trim() !== "") {
-        mutation.mutate({ token, password });
-      }
+      if (password !== newPassword || !token) return;
+      mutation.mutate({ token, password });
     });
   }, [password, newPassword]);
 
@@ -81,6 +94,7 @@ const ResetPassword = () => {
               value={password}
               id="new-password"
               control={control}
+              rules={passwordRules}
               placeholder={intl("labels.password")}
               autoComplete="off"
               error={formState.errors["password"]?.message}
@@ -100,6 +114,17 @@ const ResetPassword = () => {
               required={true}
               type={InputType.Password}
               value={newPassword}
+              rules={{
+                required: {
+                  value: true,
+                  message: intl("page.login.forget.password.missing"),
+                },
+                validate(value, formData) {
+                  if (!value || value !== formData.password)
+                    return intl("page.login.forget.password.mismatch");
+                  return true;
+                },
+              }}
               id="repeat-new-password"
               control={control}
               placeholder={intl("labels.new.password")}

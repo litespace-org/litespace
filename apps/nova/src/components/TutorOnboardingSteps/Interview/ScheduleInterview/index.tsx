@@ -19,7 +19,7 @@ import {
   useCreateInterview,
   useSelectInterviewer,
 } from "@litespace/headless/interviews";
-import { useFindUnpackedTutorRoles } from "@litespace/headless/tutor";
+import { useFindUnpackedTutorRules } from "@litespace/headless/tutor";
 
 const WINDOW = 30;
 
@@ -37,7 +37,7 @@ const ScheduleInterview: React.FC<{
 
   const interviewer = useSelectInterviewer();
 
-  const rules = useFindUnpackedTutorRoles({
+  const rules = useFindUnpackedTutorRules({
     interviewer: interviewer.data,
     start,
     end,
