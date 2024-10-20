@@ -17,7 +17,6 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { merge } from "lodash";
 import { setUserProfile } from "@/redux/user/profile";
 import RegisterLight from "@litespace/assets/register-light.svg";
 import RegisterDark from "@litespace/assets/register-dark.svg";
@@ -84,7 +83,11 @@ const Register: React.FC = () => {
     () =>
       handleSubmit((payload: IForm) => {
         if (!isValidRole || !role) return;
-        return mutation.mutate(merge(payload, { role }));
+        return mutation.mutate({
+          ...payload,
+          role,
+          callbackUrl: "http://localhost:5173/verify-email", // todo: should be dynamic
+        });
       }),
     [handleSubmit, isValidRole, mutation, role]
   );
