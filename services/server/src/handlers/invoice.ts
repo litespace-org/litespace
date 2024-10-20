@@ -257,7 +257,7 @@ export function updateByAdmin(context: ApiContext) {
       });
 
       res.status(200).json();
-      context.io.emit("invocie-updated");
+      context.io.emit(Wss.ServerEvent.InvoiceDeleted);
     }
   );
 }
