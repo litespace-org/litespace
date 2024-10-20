@@ -5,7 +5,7 @@ import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
-import { useSockets } from "@litespace/luna";
+import { useSockets } from "@litespace/headless/atlas";
 import { isEmpty } from "lodash";
 
 export function useCallRecorder(screen: boolean = false) {
