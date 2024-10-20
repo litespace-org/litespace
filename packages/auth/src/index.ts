@@ -1,18 +1,17 @@
-import { IUser } from "@litespace/types";
+import { EmptyObject, IUser } from "@litespace/types";
 
 declare global {
   namespace Express {
     interface Request {
       _query: { sid: string | undefined };
+      user: undefined | IUser.Self;
     }
-
-    interface User extends IUser.Self {}
   }
 }
 
 declare module "http" {
   interface IncomingMessage {
-    user: IUser.Self;
+    user: undefined | IUser.Self;
   }
 }
 
@@ -27,7 +26,14 @@ export {
   tutor,
   is,
   Authorizer,
+  isAdmin,
+  isRegAdmin,
+  isSuperAdmin,
+  isInterviewer,
+  isMedaiProvider,
+  isTutor,
+  isStudent,
+  isUser,
 } from "@/authorization";
-export { encodeJwt } from "@/jwt";
+export { encodeAuthJwt, decodeAuthJwt } from "@/jwt";
 export { authMiddleware } from "@/middleware";
-export { router } from "@/route";

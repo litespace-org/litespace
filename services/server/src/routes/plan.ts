@@ -1,12 +1,12 @@
-import handlers from "@/handlers";
+import plan from "@/handlers/plan";
 import { Router } from "express";
 
 const router = Router();
 
-router.post("/", handlers.plan.create);
-router.get("/list", handlers.plan.findAll);
-router.get("/:id", handlers.plan.findById);
-router.put("/:id", handlers.plan.update);
-router.delete("/:id", handlers.plan.delete);
+router.post("/", plan.create);
+router.get("/list", plan.find);
+router.get("/:id", plan.findById);
+router.put("/:id", plan.update);
+router.delete("/:id", plan.delete);
 
 export default router;

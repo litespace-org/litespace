@@ -1,7 +1,6 @@
 import zod from "zod";
 import {
   optionalString,
-  rating,
   id,
   password,
   email,
@@ -11,12 +10,10 @@ import {
   date,
   repeat,
   url,
-  datetime,
   string,
   subscriptionPeriod,
   gender,
   identityObject,
-  number,
   boolean,
   role,
   jsonBoolean,
@@ -43,8 +40,6 @@ const user = {
     }),
   },
   delete: { query: zod.object({ id }) },
-  findById: { params: zod.object({ id }) },
-  login: { body: zod.object({ email, password }) },
 } as const;
 
 const auth = {
@@ -55,9 +50,6 @@ const auth = {
       .trim(),
   }),
   localAuthorization: zod.object({ email, password }),
-  forgotPassword: { body: zod.object({ email }) },
-  resetPassword: { body: zod.object({ token: string, password }) },
-  verifyEmail: { body: zod.object({ token: string }) },
 } as const;
 
 const slot = {
@@ -121,24 +113,6 @@ const call = {
   get: { params: identityObject },
 };
 
-const ratings = {
-  create: {
-    body: zod.object({
-      rateeId: id,
-      value: rating,
-      feedback: zod.optional(string),
-    }),
-  },
-  update: {
-    body: zod.object({
-      value: zod.optional(rating),
-      feedback: zod.optional(string),
-    }),
-  },
-  get: { query: zod.object({ tutorId: id }) },
-  delete: { query: zod.object({ id }) },
-} as const;
-
 const subscription = {
   create: {
     body: zod.object({
@@ -158,104 +132,6 @@ const subscription = {
 const chat = {
   create: {
     body: zod.object({ tutorId: id }),
-  },
-} as const;
-
-const plan = {
-  create: {
-    body: zod.object({
-      alias: string,
-      weeklyMinutes: number,
-      fullMonthPrice: number,
-      fullQuarterPrice: number,
-      halfYearPrice: number,
-      fullYearPrice: number,
-      fullMonthDiscount: number,
-      fullQuarterDiscount: number,
-      halfYearDiscount: number,
-      fullYearDiscount: number,
-      forInvitesOnly: boolean,
-      active: boolean,
-    }),
-  },
-  update: {
-    params: identityObject,
-    body: zod.object({
-      weeklyMinutes: zod.optional(number),
-      fullMonthPrice: zod.optional(number),
-      fullQuarterPrice: zod.optional(number),
-      halfYearPrice: zod.optional(number),
-      fullYearPrice: zod.optional(number),
-      fullMonthDiscount: zod.optional(number),
-      fullQuarterDiscount: zod.optional(number),
-      halfYearDiscount: zod.optional(number),
-      fullYearDiscount: zod.optional(number),
-      forInvitesOnly: zod.optional(boolean),
-      active: zod.optional(boolean),
-    }),
-  },
-} as const;
-
-const coupon = {
-  create: {
-    body: zod.object({
-      code: string,
-      planId: number,
-      fullMonthDiscount: number,
-      fullQuarterDiscount: number,
-      halfYearDiscount: number,
-      fullYearDiscount: number,
-      expiresAt: datetime,
-    }),
-  },
-  update: {
-    body: zod.object({
-      code: zod.optional(string),
-      planId: zod.optional(number),
-      fullMonthDiscount: zod.optional(number),
-      fullQuarterDiscount: zod.optional(number),
-      halfYearDiscount: zod.optional(number),
-      fullYearDiscount: zod.optional(number),
-      expiresAt: zod.optional(datetime),
-    }),
-  },
-  findByCode: {
-    params: zod.object({ code: string }),
-  },
-} as const;
-
-const invite = {
-  create: {
-    body: zod.object({
-      email: email,
-      planId: id,
-      expiresAt: datetime,
-    }),
-  },
-  update: {
-    body: zod.object({
-      email: zod.optional(email),
-      planId: zod.optional(id),
-      expiresAt: zod.optional(datetime),
-    }),
-  },
-} as const;
-
-const report = {
-  create: {
-    body: zod.object({
-      title: string.max(255),
-      description: string.max(1000),
-      category: string.max(255),
-    }),
-  },
-  update: {
-    body: zod.object({
-      title: zod.optional(string.max(255)),
-      description: zod.optional(string.max(1000)),
-      category: zod.optional(string.max(255)),
-      resolved: zod.optional(boolean),
-    }),
   },
 } as const;
 
@@ -322,13 +198,8 @@ export default {
   student,
   tutor,
   call,
-  rating: ratings,
   subscription,
   chat,
-  plan,
-  coupon,
-  invite,
-  report,
   reportReply,
   assets,
 };

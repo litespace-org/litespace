@@ -1,28 +1,26 @@
 import { Base } from "@/base";
-import { IPlan } from "@litespace/types";
+import { IFilter, IPlan } from "@litespace/types";
 
 export class Plan extends Base {
   async create(payload: IPlan.CreateApiPayload): Promise<void> {
-    await this.client.post("/api/v1/plan", JSON.stringify(payload));
+    await this.post("/api/v1/plan", payload);
   }
 
   async update(id: number, payload: IPlan.UpdateApiPayload) {
-    await this.client.put(`/api/v1/plan/${id}`, JSON.stringify(payload));
+    await this.put(`/api/v1/plan/${id}`, payload);
   }
 
   async delete(id: number) {
-    await this.client.delete(`/api/v1/plan/${id}`);
+    await this.del(`/api/v1/plan/${id}`);
   }
 
-  async findById(id: number): Promise<IPlan.MappedAttributes> {
-    return this.client
-      .get<IPlan.MappedAttributes>(`/api/v1/plan/${id}`)
-      .then((response) => response.data);
+  async findById(id: number): Promise<IPlan.Self> {
+    return this.get(`/api/v1/plan/${id}`);
   }
 
-  async findAll(): Promise<IPlan.MappedAttributes[]> {
-    return this.client
-      .get<IPlan.MappedAttributes[]>(`/api/v1/plan/list`)
-      .then((response) => response.data);
+  async find(
+    pagination?: IFilter.Pagination
+  ): Promise<IPlan.FindPlansApiResponse> {
+    return this.get(`/api/v1/plan/list`, null, pagination);
   }
 }

@@ -2,7 +2,7 @@ import { IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 
 export function authenticated(req: Request, res: Response, next: NextFunction) {
-  if (req.isAuthenticated()) return next();
+  if (req.user) return next();
   return res.status(401).send();
 }
 
@@ -89,6 +89,38 @@ export class Authorizer {
       checkAuth
     );
   }
+}
+
+export function isUser(user: unknown): user is IUser.Self {
+  return !!user && typeof user === "object" && "id" in user;
+}
+
+export function isSuperAdmin(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.SuperAdmin;
+}
+
+export function isRegAdmin(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.RegularAdmin;
+}
+
+export function isAdmin(user: unknown): user is IUser.Self {
+  return isRegAdmin(user) || isSuperAdmin(user);
+}
+
+export function isTutor(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.Tutor;
+}
+
+export function isStudent(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.Student;
+}
+
+export function isMedaiProvider(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.MediaProvider;
+}
+
+export function isInterviewer(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.Interviewer;
 }
 
 export function authorizer() {

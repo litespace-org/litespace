@@ -11,11 +11,11 @@ import {
   withdrawMethod,
   withNamedId,
 } from "@/validation/utils";
-import { admin, authorizer, tutor } from "@litespace/auth";
+import { isAdmin, isTutor } from "@litespace/auth";
 import { invoices, lessons } from "@litespace/models";
-import { IInvoice } from "@litespace/types";
+import { IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import safe from "express-async-handler";
+import safeRequest from "express-async-handler";
 import { isUndefined } from "lodash";
 import zod from "zod";
 
@@ -42,7 +42,8 @@ const findPayload = zod.object({ userId: zod.optional(id) });
 
 async function stats(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
-  const allowed = authorizer().admin().owner(tutorId).check(req.user);
+  const user = req.user;
+  const allowed = (isTutor(user) && user.id === tutorId) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
   const users: number[] = [tutorId];
@@ -124,16 +125,16 @@ async function stats(req: Request, res: Response, next: NextFunction) {
 }
 
 async function create(req: Request, res: Response, next: NextFunction) {
-  // only tutor can create invoices.
-  const allowed = authorizer().tutor().check(req.user);
+  const user = req.user;
+  const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
   const payload: IInvoice.CreateApiPayload = createPayload.parse(req.body);
-  const valid = await isValidInvoice({ payload, userId: req.user.id });
+  const valid = await isValidInvoice({ payload, userId: user.id });
   if (!valid) return next(bad());
 
   const invoice = await invoices.create({
-    userId: req.user.id,
+    userId: user.id,
     method: payload.method,
     receiver: payload.receiver,
     bank: payload.bank,
@@ -144,133 +145,136 @@ async function create(req: Request, res: Response, next: NextFunction) {
 }
 
 function updateByReceiver(context: ApiContext) {
-  return safe(async (req: Request, res: Response, next: NextFunction) => {
-    const allowed = authorizer().tutor().check(req.user);
-    if (!allowed) return next(forbidden());
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isTutor(user);
+      if (!allowed) return next(forbidden());
 
-    const { invoiceId } = withNamedId("invoiceId").parse(req.params);
-    const payload = updateByReceiverPayload.parse(req.body);
+      const { invoiceId } = withNamedId("invoiceId").parse(req.params);
+      const payload = updateByReceiverPayload.parse(req.body);
 
-    const invoice = await invoices.findById(invoiceId);
-    if (!invoice) return next(notfound.base());
+      const invoice = await invoices.findById(invoiceId);
+      if (!invoice) return next(notfound.base());
 
-    const owner = invoice.userId === req.user.id;
-    if (!owner) return next(forbidden());
+      const owner = invoice.userId === user.id;
+      if (!owner) return next(forbidden());
 
-    // user cannot perform an update request and cancel the request at the same
-    // time. Also cannot submit an empty request.
-    const empty =
-      isUndefined(payload.updateRequest) && isUndefined(payload.cancel);
-    const full = !!payload.updateRequest && payload.cancel === true;
-    const invalid = empty || full;
-    if (invalid) return next(bad());
+      // user cannot perform an update request and cancel the request at the same
+      // time. Also cannot submit an empty request.
+      const empty =
+        isUndefined(payload.updateRequest) && isUndefined(payload.cancel);
+      const full = !!payload.updateRequest && payload.cancel === true;
+      const invalid = empty || full;
+      if (invalid) return next(bad());
 
-    const end = () => {
-      context.io.emit("invoice-updated");
-      res.status(200).json();
-    };
+      const end = () => {
+        // notify the admin that an invoice just got updated.
+        context.io.sockets
+          .to(Wss.Room.AdminInvoices)
+          .emit(Wss.ServerEvent.InvoiceUpdated);
+        res.status(200).json();
+      };
 
-    // only invoices in "pending" and "updated" status can be edited by the
-    // tutor.
-    const updatable = [
-      IInvoice.Status.Pending,
-      IInvoice.Status.UpdatedByReceiver,
-    ].includes(invoice.status);
-    if (!updatable) return next(bad());
+      // only invoices in "pending" and "updated" status can be edited by the
+      // tutor.
+      const updatable = [
+        IInvoice.Status.Pending,
+        IInvoice.Status.UpdatedByReceiver,
+      ].includes(invoice.status);
+      if (!updatable) return next(bad());
 
-    // 1. handle invoice cancellation by the receiver
-    if (payload.cancel) {
+      // 1. handle invoice cancellation by the receiver
+      if (payload.cancel) {
+        await invoices.update(invoice.id, {
+          status: IInvoice.Status.CanceledByReceiver,
+        });
+        return end();
+      }
+
+      // 2. handle update request by the receiver
+      if (!payload.updateRequest) return next(bad());
+      const valid = await isValidInvoice({
+        payload: payload.updateRequest,
+        userId: invoice.userId,
+        change: invoice.amount,
+      });
+      if (!valid) return next(bad());
+
       await invoices.update(invoice.id, {
-        status: IInvoice.Status.CanceledByReceiver,
+        updateRequest: payload.updateRequest,
+        status: IInvoice.Status.UpdatedByReceiver,
       });
       return end();
     }
-
-    // 2. handle update request by the receiver
-    if (!payload.updateRequest) return next(bad());
-    const valid = await isValidInvoice({
-      payload: payload.updateRequest,
-      userId: invoice.userId,
-      change: invoice.amount,
-    });
-    if (!valid) return next(bad());
-
-    await invoices.update(invoice.id, {
-      updateRequest: payload.updateRequest,
-      status: IInvoice.Status.UpdatedByReceiver,
-    });
-    return end();
-  });
+  );
 }
 
 export function updateByAdmin(context: ApiContext) {
-  return safe(async (req: Request, res: Response, next: NextFunction) => {
-    const allowed = authorizer().admin().check(req.user);
-    if (!allowed) return next(forbidden());
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isAdmin(user);
+      if (!allowed) return next(forbidden());
 
-    const file = req.files?.attachment;
-    const { invoiceId } = withNamedId("invoiceId").parse(req.params);
-    const payload: IInvoice.UpdateByAdminApiPayload =
-      updateByAdminPayload.parse(req.body);
+      const file = req.files?.attachment;
+      const { invoiceId } = withNamedId("invoiceId").parse(req.params);
+      const payload: IInvoice.UpdateByAdminApiPayload =
+        updateByAdminPayload.parse(req.body);
 
-    const invoice = await invoices.findById(invoiceId);
-    if (!invoice) return next(notfound.base());
+      const invoice = await invoices.findById(invoiceId);
+      if (!invoice) return next(notfound.base());
 
-    const validStatus =
-      !payload.status || payload.status !== IInvoice.Status.CanceledByReceiver;
-    if (!validStatus) return next(bad());
+      const validStatus =
+        !payload.status ||
+        payload.status !== IInvoice.Status.CanceledByReceiver;
+      if (!validStatus) return next(bad());
 
-    const attachment = file
-      ? await uploadSingle(file, FileType.Image)
-      : undefined;
+      const attachment = file
+        ? await uploadSingle(file, FileType.Image)
+        : undefined;
 
-    const approveUpdate =
-      payload.status === IInvoice.Status.Pending &&
-      invoice.status === IInvoice.Status.UpdatedByReceiver &&
-      invoice.update;
+      const approveUpdate =
+        payload.status === IInvoice.Status.Pending &&
+        invoice.status === IInvoice.Status.UpdatedByReceiver &&
+        invoice.update;
 
-    const amount = approveUpdate ? invoice.update?.amount : undefined;
-    const method = approveUpdate ? invoice.update?.method : undefined;
-    const bank = approveUpdate ? invoice.update?.bank : undefined;
-    const receiver = approveUpdate ? invoice.update?.receiver : undefined;
+      const amount = approveUpdate ? invoice.update?.amount : undefined;
+      const method = approveUpdate ? invoice.update?.method : undefined;
+      const bank = approveUpdate ? invoice.update?.bank : undefined;
+      const receiver = approveUpdate ? invoice.update?.receiver : undefined;
 
-    await invoices.update(invoice.id, {
-      attachment,
-      note: payload.note,
-      status: payload.status,
-      addressedBy: req.user.id,
-      amount,
-      method,
-      bank,
-      receiver,
-      updateRequest: null, // reset the update request if any
-    });
+      await invoices.update(invoice.id, {
+        attachment,
+        note: payload.note,
+        status: payload.status,
+        addressedBy: user.id,
+        amount,
+        method,
+        bank,
+        receiver,
+        updateRequest: null, // reset the update request if any
+      });
 
-    res.status(200).json();
-    context.io.emit("invocie-updated");
-  });
+      res.status(200).json();
+      context.io.emit("invocie-updated");
+    }
+  );
 }
 
 async function find(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().tutor().check(req.user);
-  if (!allowed) return next(forbidden());
-
+  const user = req.user;
   const { userId } = findPayload.parse(req.query);
   const { page, size } = pagination.parse(req.query);
-  const role = req.user.role;
-  const isTutor = tutor(role);
-  const isAdmin = admin(role);
-  const isPermissionedTutor = isTutor && userId && req.user.id === userId;
-  const isPermissionedAdmin = isAdmin;
-  const isPermissioned = isPermissionedAdmin || isPermissionedTutor;
-  if (!isPermissioned) return next(forbidden());
+  const allowed = (isTutor(user) && user.id === userId) || isAdmin(user);
+  if (!allowed) return next(forbidden());
 
   const { list, total } = userId
     ? await invoices.findByUser(userId, { page, size })
     : await invoices.find({ page, size });
 
   // attachement is a private field.
-  const masked = isTutor
+  const masked = isTutor(user)
     ? list.map((invoice): IInvoice.Self => ({ ...invoice, attachment: null }))
     : list;
 
@@ -283,14 +287,15 @@ async function find(req: Request, res: Response, next: NextFunction) {
 }
 
 export async function cancel(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().tutor().check(req.user);
+  const user = req.user;
+  const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
   const { id: invoiceId } = withNamedId("id").parse(req.params);
   const invoice = await invoices.findById(invoiceId);
   if (!invoice) return next(notfound.base());
 
-  if (invoice.userId !== req.user.id) return next(forbidden());
+  if (invoice.userId !== user.id) return next(forbidden());
 
   const cancelable = [
     IInvoice.Status.Pending,
@@ -306,10 +311,10 @@ export async function cancel(req: Request, res: Response, next: NextFunction) {
 }
 
 export default {
-  create: safe(create),
-  stats: safe(stats),
-  find: safe(find),
-  cancel: safe(cancel),
+  create: safeRequest(create),
+  stats: safeRequest(stats),
+  find: safeRequest(find),
+  cancel: safeRequest(cancel),
   updateByAdmin,
   updateByReceiver,
 };

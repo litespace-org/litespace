@@ -20,7 +20,8 @@ const Interviews: React.FC = () => {
       pageParam: number;
     }): Promise<IInterview.FindInterviewsApiResponse> => {
       if (!profile) return { list: [], total: 0 };
-      return atlas.interview.findInterviews(profile.id, {
+      return atlas.interview.findInterviews({
+        user: profile.id,
         page: pageParam,
         size: 10,
       });
