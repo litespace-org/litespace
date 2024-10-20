@@ -9,7 +9,6 @@ import {
   useMediaQueries,
   useRender,
   atlas,
-  useSockets,
 } from "@litespace/luna";
 import {
   Mic,
@@ -19,6 +18,8 @@ import {
   Monitor,
   MessageCircle,
   Phone,
+  Maximize,
+  Minimize,
 } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
@@ -27,6 +28,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   useCallEvents,
   useCallRecorder,
+  useFullScreen,
   useShareScreen,
   useSpeech,
   useUserMedia,
@@ -37,6 +39,7 @@ import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
+import { useSockets } from "@litespace/headless/atlas";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -64,6 +67,8 @@ const Call: React.FC = () => {
     loading,
     denied,
   } = useUserMedia();
+
+  const { isFullScreen, toggleFullScreen, ref } = useFullScreen();
 
   const callId = useMemo(() => {
     const call = Number(id);
@@ -99,7 +104,7 @@ const Call: React.FC = () => {
   );
 
   const onJoinCall = useCallback(
-    (peerId: string) => {
+    ({ peerId }: { peerId: string }) => {
       console.log(`${peerId} joined the call`);
       setTimeout(() => {
         if (!userMediaStream) return;
@@ -190,6 +195,8 @@ const Call: React.FC = () => {
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
       <div
+        id="call-page"
+        ref={ref}
         className={cn(
           "flex flex-col w-full h-full",
           "transition-all duration-300"
@@ -219,7 +226,7 @@ const Call: React.FC = () => {
             userDenided={denied}
           />
         </div>
-        <div className="flex items-center justify-center my-10 gap-4">
+        <div className="flex items-center justify-center gap-4 my-10">
           <Button
             onClick={onLeaveCall}
             size={ButtonSize.Small}
@@ -237,7 +244,17 @@ const Call: React.FC = () => {
               <MessageCircle />
             </Button>
           ) : null}
-
+          <Button
+            type={ButtonType.Secondary}
+            size={ButtonSize.Small}
+            onClick={toggleFullScreen}
+          >
+            {isFullScreen ? (
+              <Minimize className="w-[20px] h-[20px]" />
+            ) : (
+              <Maximize className="w-[20px] h-[20px]" />
+            )}
+          </Button>
           <Button
             onClick={shareScreen.stream ? shareScreen.stop : shareScreen.start}
             loading={shareScreen.loading}

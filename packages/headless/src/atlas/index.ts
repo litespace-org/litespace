@@ -1,2 +1,2 @@
-export { useAtlas, useBackend } from "@/atlas/context";
+export { useAtlas, useBackend, useSockets } from "@/atlas/context";
 export { AtlasProvider } from "@/atlas/provider";

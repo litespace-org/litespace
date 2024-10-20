@@ -1,4 +1,4 @@
-import { Alert, Spinner, useFormatMessage, useSockets } from "@litespace/luna";
+import { Alert, Spinner, useFormatMessage } from "@litespace/luna";
 import { Element, ITutor, Wss } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -6,6 +6,7 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TutorCard from "@/components/Tutors/TutorCard";
 import BookLesson from "@/components/Tutors/BookLesson";
+import { useSockets } from "@litespace/headless/atlas";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
