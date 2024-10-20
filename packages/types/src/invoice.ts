@@ -116,3 +116,9 @@ export type CancelApiPayload = {
 };
 
 export type FindInvoicesParams = IFilter.Pagination & { userId?: number };
+
+export enum RecivingMethod {
+  Wallet = "wallet",
+  Bank = "bank",
+  Instapay = "instapay",
+}
