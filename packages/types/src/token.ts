@@ -31,3 +31,8 @@ export type CreatePayload = {
   hash: string;
   type: Type;
 };
+
+export type AuthTokenEmail = {
+  type: Type.VerifyEmail | Type.ForgotPassword;
+  user: number;
+};

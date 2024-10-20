@@ -9,12 +9,11 @@ declare global {
   }
 }
 
-// declare module "http" {
-//   interface IncomingMessage {
-//     // user: IUser.Self;
-//     user: EmptyObject;
-//   }
-// }
+declare module "http" {
+  interface IncomingMessage {
+    user: undefined | IUser.Self;
+  }
+}
 
 export { onlyForHandshake, authorizeSocket } from "@/wss";
 export {
