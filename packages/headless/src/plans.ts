@@ -5,7 +5,7 @@ import { useCallback } from "react";
 
 export function usePlans(): UseQueryResult<IPlan.MappedAttributes[], Error> {
   const atlas = useAtlas();
-  const findPlans = useCallback(() => atlas.plan.findAll(), [atlas.plan]);
+  const findPlans = useCallback(() => atlas.plan.find(), [atlas.plan]);
   return useQuery({
     queryFn: findPlans,
     queryKey: ["find-all-plans"],

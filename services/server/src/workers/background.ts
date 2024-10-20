@@ -5,7 +5,7 @@ import { EmailTemplate } from "@litespace/emails";
 import { IToken } from "@litespace/types";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "@/constants";
-import { safe } from "@litespace/sol";
+import { nameof, safe } from "@litespace/sol";
 
 async function sendAuthTokenEmail({
   email,
@@ -34,7 +34,7 @@ async function sendAuthTokenEmail({
     });
   });
 
-  if (error instanceof Error) console.error(error);
+  if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
 }
 
 parentPort?.on("message", async (message: WorkerMessage) => {

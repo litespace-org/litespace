@@ -1,6 +1,6 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
-import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
+import { forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -92,9 +92,6 @@ export async function create(req: Request, res: Response, next: NextFunction) {
     if (payload.role === IUser.Role.Tutor) await tutors.create(user.id, tx);
     return user;
   });
-
-  const origin = req.get("origin");
-  if (!origin) return next(badRequest());
 
   sendBackgroundMessage({
     type: WorkerMessageType.SendUserVerificationEmail,

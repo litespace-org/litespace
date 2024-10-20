@@ -15,9 +15,6 @@ import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
-import { background } from "./workers";
-
-background.postMessage({ email: "me@litespace.org" });
 
 const app = express();
 const server = createServer(app);

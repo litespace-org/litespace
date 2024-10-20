@@ -93,6 +93,7 @@ export type CreateApiPayload = {
   role: Role;
   email: string;
   password: string;
+  callbackUrl: string;
 };
 
 export type UpdateMediaPayload =
@@ -112,3 +113,13 @@ export type FindUsersApiResponse = Paginated<Self>;
 export type ResetPasswordApiResponse = LoginApiResponse;
 
 export type LoginWithAuthTokenApiResponse = LoginApiResponse;
+
+export type ForegetPasswordApiPayload = {
+  email: string;
+  callbackUrl: string;
+};
+
+export type ResetPasswordApiPayload = {
+  token: string;
+  password: string;
+};
