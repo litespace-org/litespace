@@ -138,7 +138,7 @@ const Login: React.FC = () => {
           <div className="mt-6">
             <Button
               size={ButtonSize.Small}
-              type={ButtonType.Secondary}
+              type={ButtonType.Text}
               onClick={forgetPassword.show}
               className="w-full"
             >

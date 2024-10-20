@@ -25,8 +25,8 @@ import Tutors from "@/pages/Tutors";
 import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
-import { SocketProvider } from "@litespace/luna";
 import ResetPassword from "@/pages/ResetPassword";
+import { SocketProvider } from "@litespace/luna";
 
 const router = createBrowserRouter([
   {

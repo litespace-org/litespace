@@ -10,10 +10,11 @@ import {
   ButtonType,
   ButtonSize,
 } from "@litespace/luna";
-import { IUser, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useForgetPassword } from "@litespace/headless/auth";
+import { Route } from "@/types/routes";
 
 type ForgetPasswordProps = {
   open: boolean;
@@ -22,8 +23,9 @@ type ForgetPasswordProps = {
 
 interface IForm {
   email: string;
-  callbackUrl: string;
 }
+const origin = location.origin;
+const callbackUrl = origin.concat(Route.ResetPassword);
 
 const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   const intl = useFormatMessage();
@@ -31,7 +33,6 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   const { control, watch, formState, handleSubmit, reset } = useForm<IForm>({
     mode: "onSubmit",
     defaultValues: {
-      callbackUrl: "http:/localhost:5173/reset-password",
       email: "",
     },
   });
@@ -58,11 +59,12 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(
-        async (forgetPasswordCredentials: IUser.ForegetPasswordApiPayload) => {
-          await mutation.mutateAsync(forgetPasswordCredentials);
-        }
-      ),
+      handleSubmit(async (data: IForm) => {
+        await mutation.mutateAsync({
+          email: data.email,
+          callbackUrl,
+        });
+      }),
     []
   );
 
