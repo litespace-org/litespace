@@ -1,10 +1,7 @@
-import {
-  MessageStream,
-  MessageStreamAction,
-  useSockets,
-} from "@litespace/luna";
+import { MessageStream, MessageStreamAction } from "@litespace/luna";
 import { Wss, IMessage } from "@litespace/types";
 import { useCallback, useEffect } from "react";
+import { useSockets } from "@litespace/headless/atlas";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 

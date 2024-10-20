@@ -55,7 +55,7 @@ export type ClientEventsMap = {
   [ClientEvent.SendMessage]: EventCallback<{ roomId: number; text: string }>;
   [ClientEvent.UpdateMessage]: EventCallback<{ id: number; text: string }>;
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
-  [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: number }>;
+  [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: string }>;
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
 };
