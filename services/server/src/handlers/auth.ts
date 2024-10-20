@@ -147,6 +147,22 @@ async function resetPassword(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
+async function verifyEmail(req: Request, res: Response, next: NextFunction) {
+  const { token } = verifyEmailPayload.parse(req.body);
+  const jwtPayload = jwt.verify(token, jwtSecret);
+
+  const { type, user: id }: IToken.VerifyEmailJwtPayload =
+    verifyEmailJwtPayload.parse(jwtPayload);
+  if (type !== IToken.Type.VerifyEmail) return next(badRequest());
+
+  const user = await users.findById(id);
+  if (!user) return next(notfound.user());
+  if (user.verified) return next(bad());
+
+  await users.update(id, { verified: true });
+  res.status(200).send();
+}
+
 export default {
   loginWithGoogle: safeRequest(loginWithGoogle),
   loginWithPassword: safeRequest(loginWithPassword),
