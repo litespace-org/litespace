@@ -7,5 +7,6 @@ router.post("/password", auth.loginWithPassword);
 router.post("/google", auth.loginWithGoogle);
 router.post("/password/foreget", auth.forgotPassword);
 router.put("/password/reset", auth.forgotPassword);
+router.put("/verify-email", auth.verifyEmail);
 
 export default router;
