@@ -9,7 +9,6 @@ import {
   useMediaQueries,
   useRender,
   atlas,
-  useSockets,
 } from "@litespace/luna";
 import {
   Mic,
@@ -37,6 +36,7 @@ import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
+import { useSockets } from "@litespace/headless/atlas";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -99,7 +99,7 @@ const Call: React.FC = () => {
   );
 
   const onJoinCall = useCallback(
-    (peerId: string) => {
+    ({ peerId }: { peerId: string }) => {
       console.log(`${peerId} joined the call`);
       setTimeout(() => {
         if (!userMediaStream) return;

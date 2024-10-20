@@ -16,7 +16,7 @@ const toggleMicPayload = zod.object({ call: id, mic: boolean });
 const stdout = logger("wss");
 
 export class WssHandler {
-  socket: Socket;
+  socket: Socket<Wss.ClientEventsMap, Wss.ServerEventsMap>;
   user: IUser.Self;
 
   constructor(socket: Socket, user: IUser.Self) {
@@ -70,7 +70,7 @@ export class WssHandler {
       this.socket.join(callId.toString());
       this.socket
         .to(callId.toString())
-        .emit(Wss.ServerEvent.UserJoinedCall, peerId);
+        .emit(Wss.ServerEvent.UserJoinedCall, { peerId });
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -178,9 +178,13 @@ export class WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async boradcast<T>(event: Wss.ServerEvent, room: string, data: T) {
-    this.socket.emit(event, data);
-    this.socket.broadcast.to(room).emit(event, data);
+  async boradcast<T extends keyof Wss.ServerEventsMap>(
+    event: T,
+    room: string,
+    ...data: Parameters<Wss.ServerEventsMap[T]>
+  ) {
+    this.socket.emit(event, ...data);
+    this.socket.broadcast.to(room).emit(event, ...data);
   }
 
   async markMessageAsRead(data: unknown) {
@@ -198,7 +202,7 @@ export class WssHandler {
 
       this.socket.broadcast
         .to(message.roomId.toString())
-        .emit(Wss.ServerEvent.MessageRead, messageId);
+        .emit(Wss.ServerEvent.MessageRead, { messageId });
     } catch (error) {
       console.log(error);
     }
