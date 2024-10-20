@@ -125,11 +125,12 @@ const UserForm: React.FC<{
                 },
               ]}
               control={form.control}
-              name="role"
               value={form.watch("role")}
+              name="role"
             />
           }
         />
+
         <Button
           disabled={createUser.isPending}
           loading={createUser.isPending}

@@ -34,4 +34,15 @@ export const WithDefaultValueSelected: StoryObj<ISelect> = {
   },
 };
 
+export const ManyOptions: StoryObj<ISelect> = {
+  args: {
+    options: new Array(100)
+      .fill(0)
+      .map((_, idx) => ({ label: `Option ${idx + 1}`, value: idx })),
+    value: "3",
+    placeholder: "ادخل سنه ميلادك",
+    onChange: (value) => console.log(value),
+  },
+};
+
 export default meta;
