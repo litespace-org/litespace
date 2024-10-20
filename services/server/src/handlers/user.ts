@@ -4,7 +4,6 @@ import { badRequest, forbidden, notfound, userExists } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { sendUserVerificationEmail } from "@/lib/email";
 import {
   email,
   gender,
@@ -14,6 +13,7 @@ import {
   string,
   withNamedId,
   role,
+  url,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
 import { FileType, jwtSecret } from "@/constants";
@@ -41,11 +41,14 @@ import {
   isUser,
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
+import { sendBackgroundMessage } from "@/workers";
+import { WorkerMessageType } from "@/workers/messages";
 
 const createUserPayload = zod.object({
   role,
   email,
   password,
+  callbackUrl: url,
 });
 
 const updateUserPayload = zod.object({
@@ -93,17 +96,15 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const origin = req.get("origin");
   if (!origin) return next(badRequest());
 
-  // todo: emails should be handled by specific worker not to block the main thread or delay the response
-  await sendUserVerificationEmail({
-    userId: user.id,
+  sendBackgroundMessage({
+    type: WorkerMessageType.SendUserVerificationEmail,
+    callbackUrl: payload.callbackUrl,
     email: user.email,
-    origin,
+    user: user.id,
   });
 
-  const response: IUser.RegisterApiResponse = {
-    user,
-    token: encodeAuthJwt(user.id, jwtSecret),
-  };
+  const token = encodeAuthJwt(user.id, jwtSecret);
+  const response: IUser.RegisterApiResponse = { user, token };
   res.status(200).json(response);
 }
 

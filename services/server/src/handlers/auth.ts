@@ -2,16 +2,16 @@ import safeRequest from "express-async-handler";
 import { badRequest, notfound } from "@/lib/error";
 import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { emailer } from "@/lib/email";
-import { EmailTemplate } from "@litespace/emails";
 import { hashPassword } from "@/lib/user";
 import { IToken, IUser } from "@litespace/types";
-import { email, id, password, string } from "@/validation/utils";
+import { email, id, password, string, url } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
 import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
 import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
 import jwt from "jsonwebtoken";
+import { sendBackgroundMessage } from "@/workers";
+import { WorkerMessageType } from "@/workers/messages";
 
 const credentials = zod.object({
   email: zod.string().email(),
@@ -25,7 +25,7 @@ const authGooglePayload = zod.object({
 
 const forgotPasswordPayload = zod.object({
   email,
-  callback: zod.string().url(),
+  callbackUrl: url,
 });
 
 const loginWithAuthTokenPayload = zod.object({ token: string });
@@ -45,7 +45,7 @@ async function loginWithPassword(
   res: Response,
   next: NextFunction
 ) {
-  //! note: here you can catch if the user owns multipe accounts.
+  //! note: here you can catch if the user owns multiple accounts.
   const { email, password } = credentials.parse(req.body);
   const hashed = hashPassword(password);
   const user = await users.findByCredentials({ email, password: hashed });
@@ -61,7 +61,7 @@ async function loginWithGoogle(
   next: NextFunction
 ) {
   const client = new OAuth2Client();
-  // register user in case the `role` filed is provided
+  // register user in case the `role` field is provided
   const { token, role } = authGooglePayload.parse(req.body);
 
   const ticket = await client.verifyIdToken({
@@ -112,22 +112,19 @@ async function loginWithAuthToken(
   res.status(200).json(response);
 }
 
-async function forgotPassword(req: Request, res: Response, next: NextFunction) {
-  const { email, callback } = forgotPasswordPayload.parse(req.body);
+async function forgotPassword(req: Request, res: Response) {
+  const { email, callbackUrl }: IUser.ForegetPasswordApiPayload =
+    forgotPasswordPayload.parse(req.body);
   const user = await users.findByEmail(email);
-  if (!user) return next(notfound.user());
 
-  const payload = { type: IToken.Type.ForgotPassword, user: user.id };
-  const token = jwt.sign(payload, jwtSecret, { expiresIn: "30m" });
-  const url = new URL(callback);
-  url.searchParams.set("token", token);
-
-  // the worker should handle sending the email.
-  await emailer.send({
-    to: user.email,
-    template: EmailTemplate.ForgetPassword,
-    props: { url: url.toString() },
-  });
+  if (user) {
+    sendBackgroundMessage({
+      type: WorkerMessageType.SendForgetPasswordEmail,
+      email: user.email,
+      user: user.id,
+      callbackUrl,
+    });
+  }
 
   res.status(200).send();
 }

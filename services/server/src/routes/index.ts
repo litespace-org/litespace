@@ -1,10 +1,7 @@
 import user from "@/routes/user";
-import tutor from "@/routes/tutor";
-import student from "@/routes/student";
 import call from "@/routes/call";
 import interview from "@/routes/interview";
 import rating from "@/routes/rating";
-import subscription from "@/routes/subscription";
 import chat from "@/routes/chat";
 import plan from "@/routes/plan";
 import coupon from "@/routes/coupon";
@@ -24,8 +21,6 @@ export default {
   invoice,
   rule,
   withdrawMethod,
-  tutor,
-  student,
   call,
   plan,
   chat,
@@ -34,7 +29,6 @@ export default {
   invite,
   report,
   reportReply,
-  subscription,
   interview,
   asset,
   auth,

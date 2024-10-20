@@ -15,6 +15,9 @@ import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
+import { background } from "./workers";
+
+background.postMessage({ email: "me@litespace.org" });
 
 const app = express();
 const server = createServer(app);
@@ -50,13 +53,10 @@ app.use("/assets/", express.static(serverConfig.media.directory));
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
-app.use("/api/v1/tutor", routes.tutor);
-app.use("/api/v1/student", routes.student);
 app.use("/api/v1/call", routes.call);
 app.use("/api/v1/lesson", routes.lesson(context));
 app.use("/api/v1/interview", routes.interview);
 app.use("/api/v1/rating", routes.rating);
-app.use("/api/v1/subscription", routes.subscription);
 app.use("/api/v1/chat", routes.chat);
 app.use("/api/v1/plan", routes.plan);
 app.use("/api/v1/coupon", routes.coupon);
