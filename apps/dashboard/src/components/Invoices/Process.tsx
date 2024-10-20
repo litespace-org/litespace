@@ -6,19 +6,19 @@ import {
   Field,
   Form,
   Label,
-  TextEditor,
   toaster,
   useFormatMessage,
   atlas,
+  Controller,
 } from "@litespace/luna";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
 
 type IForm = {
-  note?: string;
+  note: string;
 };
 
 const Process: React.FC<{
@@ -32,7 +32,9 @@ const Process: React.FC<{
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
-    defaultValues: {},
+    defaultValues: {
+      note: "",
+    },
   });
 
   const onSuccess = useCallback(() => {
@@ -155,10 +157,10 @@ const Process: React.FC<{
         <Field
           label={<Label>{intl("invoices.process.note.label")}</Label>}
           field={
-            <Controller
+            <Controller.TextEditor
               control={form.control}
+              value={form.watch("note")}
               name="note"
-              render={({ field }) => <TextEditor onChange={field.onChange} />}
             />
           }
         />
