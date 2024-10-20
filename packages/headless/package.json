@@ -9,6 +9,7 @@
   "exports": {
     "./plans": "./dist/plans.js",
     "./atlas": "./dist/atlas/index.js",
+    "./auth": "./dist/auth.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
     "./rating": "./dist/rating.js",
@@ -24,6 +25,7 @@
     "./user": "./dist/user.js"
   },
   "react-native": {
+    "./auth": "./dist/auth.js",
     "./plans": "./dist/plans.js",
     "./atlas": "./dist/atlas/index.js",
     "./users": "./dist/users.js",
