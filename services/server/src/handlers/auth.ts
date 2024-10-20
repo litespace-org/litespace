@@ -1,5 +1,5 @@
 import safeRequest from "express-async-handler";
-import { badRequest, notfound } from "@/lib/error";
+import { bad, badRequest, notfound } from "@/lib/error";
 import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword } from "@/lib/user";
@@ -23,16 +23,13 @@ const authGooglePayload = zod.object({
   role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
 });
 
-const forgotPasswordPayload = zod.object({
-  email,
-  callbackUrl: url,
-});
-
+const forgotPasswordPayload = zod.object({ email, callbackUrl: url });
 const loginWithAuthTokenPayload = zod.object({ token: string });
-
-const resetPasswordPayload = zod.object({
-  token: string,
-  password,
+const resetPasswordPayload = zod.object({ token: string, password });
+const verifyEmailPayload = zod.object({ token: string });
+const verifyEmailJwtPayload = zod.object({
+  type: zod.literal(IToken.Type.VerifyEmail),
+  user: id,
 });
 
 const foregetPasswordJwtPayload = zod.object({
@@ -156,4 +153,5 @@ export default {
   loginWithAuthToken: safeRequest(loginWithAuthToken),
   forgotPassword: safeRequest(forgotPassword),
   resetPassword: safeRequest(resetPassword),
+  verifyEmail: safeRequest(verifyEmail),
 };
