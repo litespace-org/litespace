@@ -10,13 +10,16 @@ import {
   Label,
   toaster,
   useFormatMessage,
-  atlas,
   Controller,
 } from "@litespace/luna";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import {
+  useCreateInvoice,
+  useEditUserInvoice,
+  useFindWithdrawalMethods,
+} from "@litespace/headless/invoices";
 
 type IForm = {
   method: IWithdrawMethod.Type;
@@ -49,10 +52,7 @@ const ManageInvoice: React.FC<{
   const { bank, instapay, wallet } = useWithdrawMethod(formData.method);
 
   const intl = useFormatMessage();
-  const methods = useQuery({
-    queryFn: async () => await atlas.withdrawMethod.find(),
-    queryKey: ["withdraw-methods"],
-  });
+  const methods = useFindWithdrawalMethods();
 
   const methodOptions = useMemo(() => {
     if (!methods.data) return [];
@@ -92,39 +92,9 @@ const ManageInvoice: React.FC<{
     [intl, invoice]
   );
 
-  const createUserInvoice = useCallback(
-    async (payload: IInvoice.CreateApiPayload) => {
-      return await atlas.invoice.create(payload);
-    },
-    []
-  );
+  const create = useCreateInvoice({ onSuccess, onError });
 
-  const create = useMutation({
-    mutationFn: createUserInvoice,
-    mutationKey: ["create-invoice"],
-    onSuccess,
-    onError,
-  });
-
-  const updateUserInvoice = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IInvoice.UpdateByReceiverApiPayload;
-    }) => {
-      return await atlas.invoice.updateByReceiver(id, payload);
-    },
-    []
-  );
-
-  const update = useMutation({
-    mutationFn: updateUserInvoice,
-    mutationKey: ["update-invoice"],
-    onSuccess,
-    onError,
-  });
+  const update = useEditUserInvoice({ onSuccess, onError });
 
   const constructReceiver = useCallback((fields: IForm) => {
     const { bank, wallet, instapay } = destructureWithdrawMethod(fields.method);

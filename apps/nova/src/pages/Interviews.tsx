@@ -1,46 +1,25 @@
 import List from "@/components/Interviews/List";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { Button, messages, Spinner, atlas, ButtonSize } from "@litespace/luna";
-import { IInterview } from "@litespace/types";
+import { Button, messages, Spinner, ButtonSize } from "@litespace/luna";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import { useIntl } from "react-intl";
 import Empty from "@/components/Interviews/Empty";
-import { usePaginationQuery } from "@/hooks/common";
+import { useFindInterviews } from "@litespace/headless/interviews";
 
 const Interviews: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
   const intl = useIntl();
 
-  const findInterviews = useCallback(
-    async ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }): Promise<IInterview.FindInterviewsApiResponse> => {
-      if (!profile) return { list: [], total: 0 };
-      return atlas.interview.findInterviews({
-        user: profile.id,
-        page: pageParam,
-        size: 10,
-      });
-    },
-    [profile]
-  );
-
-  const {
-    query: interviews,
-    list,
-    more,
-  } = usePaginationQuery(findInterviews, ["find-interviews"]);
+  const { query: interviews, list, more } = useFindInterviews(profile?.id);
 
   const onUpdate = useCallback(() => {
     interviews.refetch();
   }, [interviews]);
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full px-8 py-10">
+    <div className="w-full px-8 py-10 mx-auto max-w-screen-2xl">
       {interviews.isLoading ? (
         <div className="flex items-center justify-center mt-32">
           <Spinner />

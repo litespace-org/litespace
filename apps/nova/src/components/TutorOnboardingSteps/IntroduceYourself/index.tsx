@@ -8,13 +8,12 @@ import {
   Label,
   toaster,
   useValidation,
-  atlas,
   Controller,
   useFormatMessage,
 } from "@litespace/luna";
-import React, { useMemo } from "react";
+import React, { useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { useIntroduceTutor } from "@litespace/headless/tutor";
 
 type IForm = {
   bio: string;
@@ -39,27 +38,23 @@ const IntorduceYourself: React.FC = () => {
     },
   });
 
-  const mutation = useMutation({
-    mutationFn: async (fields: IForm) => {
-      if (!profile) return;
-      return await atlas.tutor.update(profile.id, {
-        bio: fields.bio,
-        about: fields.about,
-      });
-    },
-    onSuccess() {
-      reset();
-      toaster.success({
-        title: intl("global.notify.update.data"),
-      });
-      if (profile) dispatch(findTutorMeta.call(profile.id));
-    },
-    onError() {
-      toaster.error({
-        title: intl("error.update.data"),
-      });
-    },
-    mutationKey: ["update-tutor-info"],
+  const onCreateSucces = useCallback(() => {
+    reset();
+    toaster.success({
+      title: intl("global.notify.update.data"),
+    });
+    if (profile) dispatch(findTutorMeta.call(profile.id));
+  }, []);
+  const onCreateError = useCallback(() => {
+    toaster.error({
+      title: intl("error.update.data"),
+    });
+  }, []);
+
+  const mutation = useIntroduceTutor({
+    profile,
+    onSuccess: onCreateSucces,
+    onError: onCreateError,
   });
 
   const onSubmit = useMemo(
@@ -74,7 +69,7 @@ const IntorduceYourself: React.FC = () => {
 
   return (
     <div>
-      <Form onSubmit={onSubmit} className="flex flex-col gap-6 max-w-lg">
+      <Form onSubmit={onSubmit} className="flex flex-col max-w-lg gap-6">
         <Field
           label={
             <Label>

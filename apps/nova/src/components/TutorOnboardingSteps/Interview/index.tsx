@@ -1,6 +1,5 @@
 import { Element, IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
-import { UseQueryResult } from "@tanstack/react-query";
 import { marked } from "marked";
 import markdown from "@/markdown/tutorOnboarding/interview.md?raw";
 import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
@@ -9,11 +8,11 @@ import ScheduledInterview from "./ScheduledInterview";
 // import ScheduledInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview";
 
 const Interview: React.FC<{
-  interviews: UseQueryResult<IInterview.FindInterviewsApiResponse, unknown>;
+  interviews: IInterview.FindPagedInterviewsProps;
   current: Element<IInterview.FindInterviewsApiResponse["list"]> | null;
 }> = ({ interviews, current }) => {
   const onScheduleSuccess = useCallback(() => {
-    interviews.refetch();
+    interviews.query.refetch();
   }, [interviews]);
 
   const interviewer = useMemo(() => {
@@ -31,7 +30,7 @@ const Interview: React.FC<{
   }, [interviewer?.name]);
 
   return (
-    <div className="pb-10 flex flex-col w-full">
+    <div className="flex flex-col w-full pb-10">
       <RawHtml html={html} />
 
       {current ? (

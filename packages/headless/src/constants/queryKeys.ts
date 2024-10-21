@@ -1,3 +1,15 @@
-export enum QueryKeys {
-  FindTutorRating = "tutor-rating",
+export enum QueryKey {
+  FindTutorRating = "find-tutor-rating",
+  FindInvoicesByUser = "find-invoices-by-user",
+  FindInvoiceStats = "find-invoice-stats",
+  FindInterviewsPaged = "find-interviews-paged",
+  FindInterviews = "find-interviews",
+  FindLesson = "find-lessons",
+  FindTutors = "find-onboarded-tutors",
+  FindTutorById = "find-tutor",
+  FindTutorStats = "find-tutor-stats",
+  FindTutorActivity = "find-tutor-acivity",
+  FindWithdrawalMethods = "find-withdrawal-methods",
+  FindInterviewer = "select-interviewer",
+  FindInterviewSlots = "interviewer-slots",
 }
