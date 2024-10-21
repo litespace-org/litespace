@@ -3,6 +3,7 @@ import React, { useMemo } from "react";
 import { View, TextInput, Button, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { OnError, OnSuccess, useLogin } from "@litespace/headless/login";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type IForm = {
   email: string;
@@ -15,10 +16,11 @@ const Login = () => {
   const payload: { onSuccess: OnSuccess; onError: OnError } = useMemo(
     () => ({
       onSuccess: (user) => {
+        AsyncStorage.setItem("token", user.token);
         console.log(user);
       },
       onError: (error) => {
-        console.log(error);
+        console.log(error.message);
       },
     }),
     []

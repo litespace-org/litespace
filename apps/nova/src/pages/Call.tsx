@@ -79,6 +79,7 @@ const Call: React.FC = () => {
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
+      console.log(peerId);
       if (!callId || !sockets?.api) return;
       sockets.api.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
     },
