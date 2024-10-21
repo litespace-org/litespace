@@ -11,6 +11,9 @@ const Home: React.FC = () => {
         <Pressable>
           <Link href="/login">Login</Link>
         </Pressable>
+        <Pressable>
+          <Link href="/call">Call</Link>
+        </Pressable>
       </ThemedView>
     </ThemedView>
   );

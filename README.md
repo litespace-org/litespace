@@ -119,3 +119,4 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 - https://www.digitalocean.com/community/tutorials/how-to-use-apache-as-a-reverse-proxy-with-mod_proxy-on-ubuntu-16-04
 - https://vercel.com/guides/how-to-enable-cors
 - https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy
+- https://www.youtube.com/watch?v=FdjczjkwQKE
