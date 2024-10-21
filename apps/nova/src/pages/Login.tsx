@@ -9,12 +9,10 @@ import {
   ButtonSize,
   Controller,
   useFormatMessage,
-  atlas,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
-import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
@@ -25,6 +23,7 @@ import { resetUserRules } from "@/redux/user/schedule";
 import LoginLight from "@litespace/assets/login-light.svg";
 import LoginDark from "@litespace/assets/login-dark.svg";
 import GoogleAuth from "@/components/Common/GoogleAuth";
+import { useLoginUser } from "@litespace/headless/user";
 
 interface IForm {
   email: string;
@@ -50,28 +49,23 @@ const Login: React.FC = () => {
   const email = watch("email");
   const password = watch("password");
 
-  const login = useCallback(
-    async (credentials: IUser.Credentials) => {
-      const profile = await atlas.auth.password(credentials);
-      dispatch(setUserProfile(profile));
-      dispatch(resetTutorMeta());
-      dispatch(resetUserRules());
-    },
-    [dispatch]
-  );
+  const onSuccess = useCallback(() => {
+    return navigate(Route.Root);
+  }, []);
+  const onError = useCallback((error: Error) => {
+    toaster.error({
+      title: intl("page.login.failed"),
+      description: error instanceof Error ? error.message : undefined,
+    });
+  }, []);
 
-  const mutation = useMutation({
-    mutationFn: login,
-    onSuccess() {
-      return navigate(Route.Root);
-    },
-    onError(error) {
-      toaster.error({
-        title: intl("page.login.failed"),
-        description: error instanceof Error ? error.message : undefined,
-      });
-    },
-  });
+  const dispatchFn = (profile: IUser.LoginApiResponse) => {
+    dispatch(setUserProfile(profile));
+    dispatch(resetTutorMeta());
+    dispatch(resetUserRules());
+  };
+
+  const mutation = useLoginUser({ dispatchFn, onSuccess, onError });
 
   const onSubmit = useMemo(
     () =>
@@ -84,10 +78,10 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex flex-row flex-1 text-foreground">
-      <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
+      <main className="flex flex-col items-center flex-1 flex-shrink-0 px-5 pt-16 pb-8 text-right border-l shadow-lg bg-studio border-border">
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
-            <h1 className="text-3xl font-simi-bold text-right">
+            <h1 className="text-3xl text-right font-simi-bold">
               <FormattedMessage id={messages["page.login.form.title"]} />
             </h1>
           </div>
@@ -139,14 +133,14 @@ const Login: React.FC = () => {
         </div>
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 items-center justify-center mb-14">
+        <div className="flex flex-col items-center justify-center gap-4 mb-14">
           <p className="text-7xl">LiteSpace</p>
           <p className="text-3xl text-foreground-light">
             {intl("page.login.slogan")}
           </p>
         </div>
 
-        <div className="lg:w-3/4 p-6 mt-12">
+        <div className="p-6 mt-12 lg:w-3/4">
           <LoginLight className="block dark:hidden" />
           <LoginDark className="hidden dark:block" />
         </div>

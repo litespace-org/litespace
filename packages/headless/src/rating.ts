@@ -2,7 +2,7 @@ import { useAtlas } from "@/atlas/index";
 import { IRating, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { QueryKeys } from "@/constants";
+import { QueryKey } from "@/constants";
 
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
@@ -15,7 +15,7 @@ export function useFindRatingTutor(id: number | null) {
   }, [id]);
 
   return useQuery({
-    queryKey: [QueryKeys.FindTutorRating, id],
+    queryKey: [QueryKey.FindTutorRating, id],
     queryFn: findRateeRatings,
     enabled: !!id,
     retry: false,

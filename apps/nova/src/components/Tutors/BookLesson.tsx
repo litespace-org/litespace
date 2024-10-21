@@ -6,7 +6,6 @@ import {
   Label,
   Select,
   toaster,
-  atlas,
   useFormatMessage,
   ButtonSize,
 } from "@litespace/luna";
@@ -15,7 +14,7 @@ import { ILesson, IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
-import { useMutation } from "@tanstack/react-query";
+import { useCreateLesson } from "@litespace/headless/lessons";
 
 const BookLesson: React.FC<{
   open: boolean;
@@ -71,16 +70,10 @@ const BookLesson: React.FC<{
     [intl]
   );
 
-  const mutation = useMutation({
-    mutationFn: useCallback(async () => {
-      if (!selectedEvent) return;
-      return await atlas.lesson.create({
-        tutorId,
-        duration,
-        ruleId: selectedEvent.id,
-        start: selectedEvent.start,
-      });
-    }, [duration, selectedEvent, tutorId]),
+  const mutation = useCreateLesson({
+    selectedEvent,
+    tutorId,
+    duration,
     onSuccess,
     onError,
   });
@@ -119,7 +112,7 @@ const BookLesson: React.FC<{
       <ul className="h-[500px] overflow-y-auto scrollbar-thin flex flex-col gap-3 pb-4 pl-1.5 mt-4 ">
         {events.map(([date, list]) => (
           <li key={date} className="text-foreground">
-            <h3 className="text-base font-semibold mb-3">
+            <h3 className="mb-3 text-base font-semibold">
               {dayjs(date).format("dddd, DD MMMM")}
             </h3>
             <ul className="grid grid-cols-12 gap-4">
