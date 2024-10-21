@@ -9,15 +9,22 @@ import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
-import { useRender } from "@/hooks/render";
-import EditRating from "@/components/TutorProfile/EditRating";
-import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
+import { useAppSelector } from "@/redux/store";
 
-const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
+const Rating: React.FC<{
+  rating: IRating.Populated;
+
+  onEdit: (rating: IRating.Populated) => void;
+  onDelete: ({
+    ratingId,
+    tutorId,
+  }: {
+    ratingId: number;
+    tutorId: number;
+  }) => void;
+}> = ({ rating, onEdit, onDelete }) => {
   const profile = useAppSelector(profileSelectors.user);
-  const editRating = useRender();
-  const deleteRating = useRender();
 
   return (
     <Card>
@@ -46,31 +53,31 @@ const Rating: React.FC<{ rating: IRating.Populated }> = ({ rating }) => {
               <p>{dayjs(rating.createdAt).fromNow()}</p>
             </p>
           </div>
-          {profile?.id === rating.rater.id && (
+          {profile?.id === rating.rater.id ? (
             <div className="flex gap-3">
               <Button
-                onClick={editRating.show}
+                onClick={() => onEdit(rating)}
                 size={ButtonSize.Tiny}
                 type={ButtonType.Primary}
               >
                 <Edit className="w-4 text-white" />
               </Button>
               <Button
-                onClick={deleteRating.show}
+                onClick={() =>
+                  onDelete({
+                    ratingId: rating.id,
+                    tutorId: rating.ratee.id,
+                  })
+                }
                 size={ButtonSize.Tiny}
                 type={ButtonType.Primary}
               >
                 <Trash2 className="w-4 text-white" />
               </Button>
             </div>
-          )}
+          ) : null}
         </div>
         <p>{rating.feedback}</p>
-        <EditRating
-          open={editRating.open}
-          close={editRating.hide}
-          rate={rating}
-        />
       </div>
     </Card>
   );
