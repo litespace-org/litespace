@@ -6,6 +6,8 @@
   "page.register.form.button.submit.label": "انشاء حساب جدبد",
   "page.register.success": "تم إنشاء حسابك بنجاح",
   "page.register.failed": "لديك مشكلة في إنشاء الحساب",
+  "page.verify.email.success": "تم تأكيد حسابك بنجاح",
+  "page.verify.email.failure": "حدث خطأ أثناء تأكيد حسابك، برجاء المحاولة مرة أخرى",
   "page.login.form.title": "تسجيل الدخول",
   "page.login.form.button.submit.label": "تسجيل الدخول",
   "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",

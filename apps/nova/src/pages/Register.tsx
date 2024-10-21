@@ -15,7 +15,7 @@ import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
-import { Route } from "@/types/routes";
+import { BackendPath, Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { setUserProfile } from "@/redux/user/profile";
 import RegisterLight from "@litespace/assets/register-light.svg";
@@ -86,7 +86,8 @@ const Register: React.FC = () => {
         return mutation.mutate({
           ...payload,
           role,
-          callbackUrl: "http://localhost:5173/verify-email", // todo: should be dynamic
+          callbackUrl:
+            BackendPath[import.meta.env.VITE_BACKEND] + Route.VerifyEmail,
         });
       }),
     [handleSubmit, isValidRole, mutation, role]
@@ -94,7 +95,7 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex flex-row flex-1 h-full">
-      <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
+      <main className="flex flex-col items-center flex-1 flex-shrink-0 px-5 pt-16 pb-8 text-right border-l shadow-lg bg-studio border-border">
         <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
           <div className="mb-4">
             <h1 className="text-3xl font-simi-bold">
@@ -107,7 +108,7 @@ const Register: React.FC = () => {
           </div>
 
           <Form onSubmit={onSubmit}>
-            <div className="flex flex-col justify-start items-start gap-4">
+            <div className="flex flex-col items-start justify-start gap-4">
               <Field
                 label={<Label>{intl("global.form.email.label")}</Label>}
                 field={
