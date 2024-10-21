@@ -1,7 +1,7 @@
 import { Backend } from "@litespace/types";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
-export type GetToken = () => string | null;
+export type GetToken = () => Promise<string | null> | string | null;
 
 export const sockets = {
   recorder: {
@@ -63,8 +63,8 @@ export function createClient(
     headers: { "Content-Type": "application/json" },
   });
 
-  client.interceptors.request.use((config) => {
-    const token = getToken();
+  client.interceptors.request.use(async (config) => {
+    const token = await getToken();
     if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
   });

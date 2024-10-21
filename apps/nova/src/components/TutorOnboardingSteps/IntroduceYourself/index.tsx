@@ -42,7 +42,7 @@ const IntorduceYourself: React.FC = () => {
   const mutation = useMutation({
     mutationFn: async (fields: IForm) => {
       if (!profile) return;
-      return await atlas.tutor.update(profile.id, {
+      return await atlas.user.update(profile.id, {
         bio: fields.bio,
         about: fields.about,
       });
