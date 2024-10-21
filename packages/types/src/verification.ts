@@ -1,0 +1,15 @@
+export enum FieldError {
+  InvalidEmail = "invalid-email",
+  PasswordTooShort = "password-too-short",
+  PasswordMissingLetters = "password-missing-letters",
+  PasswordMissingNumbers = "password-missing-numbers",
+  InvalidUserName = "invalid-user-name",
+  TutorTooOld = "tutor-too-old",
+  TutorTooYoung = "tutor-too-young",
+  TutorBioEmpty = "tutor-bio-empty",
+  TutorBioTooLong = "tutor-bio-too-long",
+  TutorAboutEmpty = "tutor-about-empty",
+  TutorAboutTooLong = "tutor-about-empty",
+  RuleTitleTooShort = "rule-title-too-short",
+  RuleTitleTooLong = "rule-title-too-long",
+}
