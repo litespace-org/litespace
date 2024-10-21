@@ -8,6 +8,7 @@ import About from "@/components/TutorProfile/About";
 import ActivitiesOverview from "@/components/TutorProfile/ActivitiesOverview";
 import Ratings from "@/components/TutorProfile/Ratings";
 import RateForm from "@/components/TutorProfile/RateForm";
+import { useFindRatingTutor } from "@litespace/headless/rating";
 
 const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -54,17 +55,7 @@ const TutorProfile: React.FC = () => {
     retry: false,
   });
 
-  const findRateeRatings = useCallback(async () => {
-    if (!id) return [];
-    return atlas.rating.findRateeRatings(id);
-  }, [id]);
-
-  const ratings = useQuery({
-    queryKey: ["tutor-rating", id],
-    queryFn: findRateeRatings,
-    enabled: !!id,
-    retry: false,
-  });
+  const ratings = useFindRatingTutor(tutor.data?.id!);
 
   if (tutor.isLoading) return <Loading className="h-[40vh]" />;
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;

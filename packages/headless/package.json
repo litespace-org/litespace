@@ -11,14 +11,18 @@
     "./atlas": "./dist/atlas/index.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
-    "./rating": "./dist/rating.js"
+    "./rating": "./dist/rating.js",
+    "./query": "./dist/query.js",
+    "./constants": "./dist/constants/index.js"
   },
   "react-native": {
     "./plans": "./dist/plans.js",
     "./atlas": "./dist/atlas/index.js",
     "./users": "./dist/users.js",
     "./login": "./dist/login.js",
-    "./rating": "./dist/rating.js"
+    "./rating": "./dist/rating.js",
+    "./query": "./dist/query.js",
+    "./constants": "./dist/constants/index.js"
   },
   "scripts": {
     "watch:build": "pnpm watch build",

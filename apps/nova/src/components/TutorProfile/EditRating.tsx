@@ -1,6 +1,6 @@
 import { Dialog, useFormatMessage } from "@litespace/luna";
 import React from "react";
-import RateForm from "./RateForm";
+import RateForm from "@/components/TutorProfile/RateForm";
 import { IRating, Void } from "@litespace/types";
 
 type EditRatingProps = {
