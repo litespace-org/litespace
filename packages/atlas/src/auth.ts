@@ -30,4 +30,8 @@ export class Auth extends Base {
   async token(token: string) {
     await this.post("/api/v1/auth/token", { token });
   }
+
+  async verifyEmail(token: string): Promise<void> {
+    await this.post("/api/v1/auth/verify-email", { token });
+  }
 }

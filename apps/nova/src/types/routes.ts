@@ -21,6 +21,7 @@ export enum Route {
   Interviews = "/interviews",
   Invoices = "/invoices",
   Chat = "/chat",
+  VerifyEmail = "/verify-email",
 }
 
 export enum RoutePatterns {
@@ -33,4 +34,11 @@ export enum RoutePatterns {
   Settings = "(/)settings(/)",
   Profile = "(/)profile(/)",
   Payments = "(/)payments(/)",
+  VerifyEmail = "(/)verify-email(/)",
+}
+
+export enum BackendPath {
+  local = "http://localhost:5173",
+  staging = "https://staging.litespace.org/api/v1",
+  production = "https://app.litespace.org",
 }

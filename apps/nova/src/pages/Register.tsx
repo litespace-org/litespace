@@ -13,7 +13,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAppDispatch } from "@/redux/store";
-import { Route } from "@/types/routes";
+import { BackendPath, Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { setUserProfile } from "@/redux/user/profile";
 import RegisterLight from "@litespace/assets/register-light.svg";
@@ -78,7 +78,8 @@ const Register: React.FC = () => {
         return mutation.mutate({
           ...payload,
           role,
-          callbackUrl: "http://localhost:5173/verify-email", // todo: should be dynamic
+          callbackUrl:
+            BackendPath[import.meta.env.VITE_BACKEND] + Route.VerifyEmail,
         });
       }),
     [handleSubmit, isValidRole, mutation, role]
