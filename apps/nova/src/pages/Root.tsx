@@ -24,10 +24,11 @@ const Root: React.FC = () => {
     const login = new UrlPattern(RoutePatterns.Login);
     const register = new UrlPattern(RoutePatterns.Register);
     const resetPassword = new UrlPattern(RoutePatterns.ResetPassword);
+    const verifyEmail = new UrlPattern(RoutePatterns.VerifyEmail);
     const root = location.pathname === "/";
     const complete = location.pathname === Route.Complete;
-    const ignore = [call, login, register, resetPassword].some((patten) =>
-      patten.match(location.pathname)
+    const ignore = [call, login, register, resetPassword, verifyEmail].some(
+      (patten) => patten.match(location.pathname)
     );
 
     if (!profile.value && !profile.loading && !ignore)

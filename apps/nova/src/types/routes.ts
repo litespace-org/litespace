@@ -22,6 +22,7 @@ export enum Route {
   Interviews = "/interviews",
   Invoices = "/invoices",
   Chat = "/chat",
+  VerifyEmail = "/verify-email",
 }
 
 export enum RoutePatterns {
@@ -35,4 +36,5 @@ export enum RoutePatterns {
   Profile = "(/)profile(/)",
   Payments = "(/)payments(/)",
   ResetPassword = "(/)reset-password(/)",
+  VerifyEmail = "(/)verify-email(/)",
 }
