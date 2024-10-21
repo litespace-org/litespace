@@ -28,6 +28,8 @@ const Register: React.FC = () => {
   const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const origin = location.origin;
+  const callbackUrl = origin.concat(Route.VerifyEmail);
   const { role } = useParams<{ role: Role }>();
   const {
     watch,
@@ -72,7 +74,7 @@ const Register: React.FC = () => {
         return mutation.mutate({
           ...payload,
           role,
-          callbackUrl: "http://localhost:5173/verify-email", // todo: should be dynamic
+          callbackUrl,
         });
       }),
     [handleSubmit, isValidRole, mutation, role]
