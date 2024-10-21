@@ -9,6 +9,7 @@ import {
   ButtonSize,
   Controller,
   useFormatMessage,
+  ButtonType,
 } from "@litespace/luna";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -24,6 +25,8 @@ import LoginLight from "@litespace/assets/login-light.svg";
 import LoginDark from "@litespace/assets/login-dark.svg";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useLoginUser } from "@litespace/headless/user";
+import { useRender } from "@/hooks/render";
+import ForgetPassword from "@/components/Common/ForgetPassword";
 
 interface IForm {
   email: string;
@@ -48,6 +51,8 @@ const Login: React.FC = () => {
 
   const email = watch("email");
   const password = watch("password");
+
+  const forgetPassword = useRender();
 
   const onSuccess = useCallback(() => {
     return navigate(Route.Root);
@@ -130,7 +135,21 @@ const Login: React.FC = () => {
           <div className="mt-4">
             <GoogleAuth purpose="login" />
           </div>
+          <div className="mt-6">
+            <Button
+              size={ButtonSize.Small}
+              type={ButtonType.Text}
+              onClick={forgetPassword.show}
+              className="w-full"
+            >
+              {intl("page.login.forget.password")}
+            </Button>
+          </div>
         </div>
+        <ForgetPassword
+          open={forgetPassword.open}
+          close={forgetPassword.hide}
+        />
       </main>
       <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
         <div className="flex flex-col items-center justify-center gap-4 mb-14">

@@ -23,9 +23,10 @@ const Root: React.FC = () => {
     const call = new UrlPattern(RoutePatterns.Call);
     const login = new UrlPattern(RoutePatterns.Login);
     const register = new UrlPattern(RoutePatterns.Register);
+    const resetPassword = new UrlPattern(RoutePatterns.ResetPassword);
     const root = location.pathname === "/";
     const complete = location.pathname === Route.Complete;
-    const ignore = [call, login, register].some((patten) =>
+    const ignore = [call, login, register, resetPassword].some((patten) =>
       patten.match(location.pathname)
     );
 

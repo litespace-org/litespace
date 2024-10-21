@@ -1,5 +1,6 @@
 export enum Route {
   Root = "/",
+  ResetPassword = "/reset-password",
   Dashboard = "/dashboard",
   Schedule = "/schedule",
   EditSchedule = "/schedule/edit",
@@ -33,4 +34,5 @@ export enum RoutePatterns {
   Settings = "(/)settings(/)",
   Profile = "(/)profile(/)",
   Payments = "(/)payments(/)",
+  ResetPassword = "(/)reset-password(/)",
 }

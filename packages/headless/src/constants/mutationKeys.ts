@@ -4,4 +4,6 @@ export enum MutationKey {
   CancelInvoice = "cancel-invoice",
   CancelLesson = "cancel-lesson",
   ShareFeedback = "share-feedback",
+  ResetPassword = "reset-password",
+  ForgetPassword = "forget-password",
 }
