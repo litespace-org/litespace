@@ -11,6 +11,12 @@
   "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
   "page.login.failed": "لديك مشكلة في تسجيل الدخول",
   "page.login.with.google": "تسجل الدخول باستخدام حساب جوجل",
+  "page.login.forget.password": "هل نسيت كلمة السر؟",
+  "page.login.forget.password.button.submit": "إعادة تعيين كلمة السر",
+  "page.login.forget.password.title": "تغيير كلمة السر",
+  "page.login.forget.password.success": "سوف يتم إرسال بريد الكترونى إلي حسابك لتعيين كلمة سر جديدة، برجاء التأكد منه",
+  "page.login.forget.password.compelete": "تم تغيير كلمة السر بنجاح، أهلا بك!",
+  "page.login.forget.password.mismatch": "كلمتى السر غير متطابقتين",
   "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
   "page.tutor.onboarding.steps.first.booked.interview.description": "عندك انترفيو مع {interviewer} يوم {day} الموافق {date} بداء من الساعه {start} الي تمام الساعه {end}.",
   "page.tutor.onboarding.steps.first.booked.interview.note.1": "بامكانك تلغي الانترفيو وتجدد موعدها بشرط ان يكون باقي علي معادها مش أقل من 24 ساعة.",
@@ -328,6 +334,8 @@
   "labels.about.placeholder": "طالب جامعي محب للغة الانجليزية منذ الصغر...",
   "labels.create": "إنشاء",
   "labels.update": "تعديل",
+  "labels.new.password": "كلمة السر الجديدة",
+  "labels.repeat.new.password": "أعد كتابة كلمة السر الجديدة",
   "global.invoice.update.method": "تم تعديل وسيلة السحب من \"{from}\" الي \"{to}\".",
   "global.invoice.update.amount": "تم تعديل المبلغ من \"{from}\" الي \"{to}\".",
   "global.invoice.update.receiver": "تم تعديل المستقبل من \"{from}\" الي \"{to}\".",
@@ -467,5 +475,6 @@
   "error.plan.title.short": "عنوان قصير جدا",
   "error.plan.title.long": "عنوان طويل جدا",
   "error.plan.weeklyMinutes.absent": "لابد من تحديد عدد الدقائق خلال الأسبوع",
-  "error.plan.price.absent": "لابد من تحديد السعر"
+  "error.plan.price.absent": "لابد من تحديد السعر",
+  "error.passowrd.unequal": "كلمتى السر غير متطابقة"
 }
