@@ -4,7 +4,7 @@ import { IUser, Void } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 import { MutationKey } from "./constants";
 
-export type OnForgetPasswordSuccess = Void;
+export type OnSuccess = Void;
 export type OnResetPasswordSuccess = (
   response: IUser.ResetPasswordApiResponse
 ) => void;
@@ -14,7 +14,7 @@ export function useForgetPassword({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnForgetPasswordSuccess;
+  onSuccess: OnSuccess;
   onError: OnError;
 }) {
   const atlas = useAtlas();
@@ -54,5 +54,28 @@ export function useResetPassword({
     onError,
     mutationFn: resetPassword,
     mutationKey: [MutationKey.ResetPassword],
+  });
+}
+
+export function useVerifyEmail({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+  const verifyEmail = useCallback(
+    (token: string) => {
+      return atlas.auth.verifyEmail(token);
+    },
+    [atlas.auth, onSuccess, onError]
+  );
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: verifyEmail,
+    mutationKey: [MutationKey.VerifyEmail],
   });
 }

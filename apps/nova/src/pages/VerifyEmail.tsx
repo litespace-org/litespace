@@ -1,5 +1,7 @@
 import { Route } from "@/types/routes";
-import { toaster, useFormatMessage, useVerifyEmail } from "@litespace/luna";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useVerifyEmail } from "@litespace/headless/auth";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -28,6 +30,7 @@ const VerifyEmail = () => {
   }, []);
 
   const mutation = useVerifyEmail({ onSuccess, onError });
+
   useEffect(() => {
     if (!token || mutation.isPending) return;
     mutation.mutate(token);
