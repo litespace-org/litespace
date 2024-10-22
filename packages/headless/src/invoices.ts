@@ -41,7 +41,7 @@ export function useFindInvoicesByUser(
         size: 10,
       });
     },
-    [profile]
+    [atlas.invoice, profile]
   );
   return usePaginationQuery(findInvoices, [QueryKey.FindInvoicesByUser]);
 }
@@ -55,10 +55,11 @@ export function useFindInvoiceStats(
   profile: IUser.Self | null
 ): useFindInvoiceStatsProps {
   const atlas = useAtlas();
+
   const findStats = useCallback(async () => {
     if (!profile) return null;
     return await atlas.invoice.stats(profile.id);
-  }, [profile]);
+  }, [atlas.invoice, profile]);
 
   return useQuery({
     queryFn: findStats,
@@ -72,7 +73,7 @@ export function useFindWithdrawalMethods() {
 
   const findWithdrawalMethods = useCallback(() => {
     return atlas.withdrawMethod.find();
-  }, []);
+  }, [atlas.withdrawMethod]);
 
   return useQuery({
     queryFn: findWithdrawalMethods,
@@ -93,12 +94,14 @@ export function useCreateInvoice({
   unknown
 > {
   const atlas = useAtlas();
+
   const createUserInvoice = useCallback(
     async (payload: IInvoice.CreateApiPayload) => {
       return await atlas.invoice.create(payload);
     },
-    []
+    [atlas.invoice]
   );
+
   return useMutation({
     mutationFn: createUserInvoice,
     mutationKey: [MutationKey.CreateInvoice],
@@ -125,7 +128,7 @@ export function useEditUserInvoice({
     }) => {
       return await atlas.invoice.updateByReceiver(id, payload);
     },
-    []
+    [atlas.invoice]
   );
   return useMutation({
     mutationFn: updateUserInvoice,
@@ -145,11 +148,13 @@ export function useCancelInvoiceById({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const cancel = useCallback(async () => {
     return await atlas.invoice.updateByReceiver(id, {
       cancel: true,
     });
-  }, [id]);
+  }, [atlas.invoice, id]);
+
   return useMutation({
     mutationFn: cancel,
     mutationKey: [MutationKey.CancelInvoice],
