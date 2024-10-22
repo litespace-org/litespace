@@ -41,11 +41,15 @@ const Root: React.FC = () => {
     const redirectStudent =
       user &&
       user.role === IUser.Role.Student &&
-      [user.name, user.birthYear].some((value) => value === null);
+      [user.name, user.birthYear].some((value) => value === null) &&
+      user.verified;
     const redirectTutor =
       user &&
       user.role === IUser.Role.Tutor &&
-      [user.name, user.birthYear, user.gender].some((value) => value === null);
+      [user.name, user.birthYear, user.gender].some(
+        (value) => value === null
+      ) &&
+      user.verified;
     if (redirectStudent || redirectTutor) return navigate(Route.Complete);
 
     if (
