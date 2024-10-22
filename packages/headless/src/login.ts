@@ -3,14 +3,14 @@ import { useAtlas } from "@/atlas/index";
 import { IUser } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 
-export type OnSuccess = (response: IUser.LoginApiResponse) => void;
+export type OnLoginSuccess = (response: IUser.LoginApiResponse) => void;
 export type OnError = (error: Error) => void;
 
 export function useLogin({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
+  onSuccess: OnLoginSuccess;
   onError: OnError;
 }) {
   const atlas = useAtlas();
