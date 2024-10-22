@@ -24,12 +24,13 @@ type Role = (typeof roles)[number];
 
 const roles = [IUser.Role.Tutor, IUser.Role.Student] as const;
 
+const origin = location.origin;
+const callbackUrl = origin.concat(Route.VerifyEmail);
+
 const Register: React.FC = () => {
   const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-  const origin = location.origin;
-  const callbackUrl = origin.concat(Route.VerifyEmail);
   const { role } = useParams<{ role: Role }>();
   const {
     watch,

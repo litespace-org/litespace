@@ -6,4 +6,5 @@ export enum MutationKey {
   ShareFeedback = "share-feedback",
   ResetPassword = "reset-password",
   ForgetPassword = "forget-password",
+  VerifyEmail = "verify-email",
 }

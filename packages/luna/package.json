@@ -154,7 +154,6 @@
     "@litespace/atlas": "workspace:^",
     "@litespace/sol": "workspace:^",
     "@litespace/types": "workspace:^",
-    "@litespace/headless": "workspace:^",
     "@radix-ui/colors": "^3.0.0",
     "@radix-ui/react-dropdown-menu": "^2.1.1",
     "@radix-ui/react-select": "^2.1.2",
