@@ -12,7 +12,7 @@ const Lessons: React.FC = () => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.user);
 
-  const { query: lessons, list, more } = useFindUserLessons(profile);
+  const { query: lessons, list, more } = useFindUserLessons(profile?.id);
 
   return (
     <div className="w-full px-8 py-10 mx-auto max-w-screen-2xl">

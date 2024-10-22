@@ -11,7 +11,7 @@ const List: React.FC<{
   onUpdate: () => void;
 }> = ({ list, user, onUpdate }) => {
   const timeline = useMemo(
-    (): TimelineItem[] =>
+    () =>
       list
         .map(({ members, interview, call }) => {
           const tutor = members.find((member) => member.userId !== user.id);
@@ -47,7 +47,7 @@ const List: React.FC<{
 
   return (
     <div>
-      <Timeline timeline={timeline} />
+      <Timeline timeline={timeline as TimelineItem[]} />
     </div>
   );
 };
