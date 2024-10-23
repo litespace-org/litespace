@@ -13,7 +13,7 @@
     "build:pkg:sol": "pnpm --filter @litespace/sol build",
     "build:pkg:types": "pnpm --filter @litespace/types build",
     "build:pkg:headless": "pnpm --filter @litespace/headless build",
-    "build:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:models && pnpm build:pkg:atlas && pnpm build:pkg:headless && pnpm build:pkg:auth &&  pnpm build:pkg:luna ",
+    "build:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:models && pnpm build:pkg:atlas && pnpm build:pkg:headless && pnpm build:pkg:auth &&  pnpm build:pkg:luna",
     "watch:atlas": "pnpm build:pkg:atlas -w",
     "watch:auth": "pnpm build:pkg:auth -w",
     "watch:emails": "pnpm build:pkg:emails -w",
@@ -39,7 +39,9 @@
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",
     "telegram": "vite-node scripts/telegram.ts",
-    "cleandep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules"
+    "github": "vite-node scripts/github.ts",
+    "clean:dep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules",
+    "clean:dist": "pnpm -r exec rm -rf dist"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

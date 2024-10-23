@@ -3,7 +3,7 @@ env:
   TELEGRAM_API_TOKEN: ${{ secrets.TELEGRAM_API_TOKEN }}
 
 on:
-  push:
+  pull_request:
     branches: ["master"]
 
   # Allows you to run this workflow manually from the Actions tab
@@ -19,7 +19,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20.11.1"
-      - name: Enable PNPM
+      - name: Enable pnpm
         run: corepack enable pnpm
       - name: Get pnpm store directory
         shell: bash
@@ -64,4 +64,6 @@ jobs:
       - name: Pull latest deployment urls from Vercel
         run: pnpm vercel:ci urls "nova,luna,nebula" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Send latest deployment urls to Telegram
-        run: pnpm telegram send-vercel-urls
+        run: pnpm telegram send-vercel-urls -p ${{ github.event.number }} -b ${{ github.head_ref }}
+      - name: Make GitHub comment with Vercel URLs
+        run: pnpm github comment -p ${{ github.event.number }} -t ${{ secrets.AUTH_GITHUB_TOKEN }}
