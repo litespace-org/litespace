@@ -38,22 +38,23 @@ const IntorduceYourself: React.FC = () => {
     },
   });
 
-  const onCreateSucces = useCallback(() => {
+  const onCreateSuccess = useCallback(() => {
     reset();
     toaster.success({
       title: intl("global.notify.update.data"),
     });
     if (profile) dispatch(findTutorMeta.call(profile.id));
-  }, []);
+  }, [dispatch, intl, profile, reset]);
+
   const onCreateError = useCallback(() => {
     toaster.error({
       title: intl("error.update.data"),
     });
-  }, []);
+  }, [intl]);
 
   const mutation = useIntroduceTutor({
     profile,
-    onSuccess: onCreateSucces,
+    onSuccess: onCreateSuccess,
     onError: onCreateError,
   });
 
