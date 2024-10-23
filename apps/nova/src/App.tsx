@@ -26,6 +26,7 @@ import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
+import VerifyEmail from "@/pages/VerifyEmail";
 import { SocketProvider } from "@litespace/luna";
 
 const router = createBrowserRouter([
@@ -50,6 +51,7 @@ const router = createBrowserRouter([
       { path: Route.Register, element: <Register /> },
       { path: Route.Complete, element: <Complete /> },
       { path: Route.ResetPassword, element: <ResetPassword /> },
+      { path: Route.VerifyEmail, element: <VerifyEmail /> },
     ],
     errorElement: <ErrorPage />,
   },
