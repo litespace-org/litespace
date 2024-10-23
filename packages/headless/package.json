@@ -46,7 +46,8 @@
     "watch:build": "pnpm watch build",
     "build": "tsc && tsc-alias",
     "watch": "npm-watch",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "clean": "rm -rf dist/"
   },
   "watch": {
     "build": {
