@@ -25,11 +25,11 @@ describe("Duration", () => {
     expect(Duration.from("-1.2").minutes()).to.be.eq(0);
   });
 
-  it("should format durations to AR", () => {
-    expect(Duration.from("").format("ar")).to.be.eq("0 دقيقة");
+  it("should format durations in Arabic", () => {
+    expect(Duration.from("").format("ar")).to.be.eq("");
     expect(Duration.from("2").format("ar")).to.be.eq("دقيقتان");
     expect(Duration.from("2min").format("ar")).to.be.eq("دقيقتان");
-    expect(Duration.from("0 mins").format("ar")).to.be.eq("0 دقيقة");
+    expect(Duration.from("0 mins").format("ar")).to.be.eq("");
     expect(Duration.from("mins").format("ar")).to.be.eq("1 دقيقة");
     expect(Duration.from("د").format("ar")).to.be.eq("1 دقيقة");
     expect(Duration.from("1hr 30min").format("ar")).to.be.eq(
@@ -41,11 +41,11 @@ describe("Duration", () => {
     expect(Duration.from(".5hr").format("ar")).to.be.eq("30 دقيقة");
   });
 
-  it("should format durations to EN", () => {
-    expect(Duration.from("").format("en")).to.be.eq("0 minutes");
+  it("should format durations in English", () => {
+    expect(Duration.from("").format("en")).to.be.eq("");
     expect(Duration.from("2").format("en")).to.be.eq("2 minutes");
     expect(Duration.from("2min").format("en")).to.be.eq("2 minutes");
-    expect(Duration.from("0 mins").format("en")).to.be.eq("0 minutes");
+    expect(Duration.from("0 mins").format("en")).to.be.eq("");
     expect(Duration.from("mins").format("en")).to.be.eq("1 minute");
     expect(Duration.from("د").format("en")).to.be.eq("1 minute");
     expect(Duration.from("1hr 30min").format("en")).to.be.eq(
