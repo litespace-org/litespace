@@ -47,7 +47,6 @@ export {
   useValidation,
   useValidateDuration,
 } from "@/hooks/validation";
-export { useDurationUnitMap } from "@/hooks/duration";
 export { useTimeFormatterMap, useWeekdayMap } from "@/hooks/datetime";
 export { useRuleFormatterMap } from "@/hooks/rule";
 export { useMediaQueries } from "@/hooks/media";

@@ -28,7 +28,7 @@ export class Duration {
     });
   }
 
-  format(locale: string): string {
+  format(locale: string = "en"): string {
     return humanizeDuration(this.durationInMS, {
       units: ["h", "m"],
       language: locale,
