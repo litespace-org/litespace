@@ -1,5 +1,5 @@
 import { asDiscreteSlot, splitSlot, unpackSlots } from "@/slots";
-import { ICall, ISlot } from "@litespace/types";
+import { ISlot } from "@litespace/types";
 import { expect } from "chai";
 import { dayjs } from "@/dayjs";
 import { Time } from "@/time";
