@@ -1,5 +1,5 @@
 import { asDiscreteSlot, splitSlot, unpackSlots } from "@/slots";
-import { ICall, ISlot } from "@litespace/types";
+import { ISlot } from "@litespace/types";
 import { expect } from "chai";
 import { dayjs } from "@/dayjs";
 import { Time } from "@/time";
@@ -21,7 +21,6 @@ const sharedSlot = {
 
 const sharedCall = {
   id: 1,
-  type: ICall.Type.Interview,
   hostId: 1,
   attendeeId: 1,
   slotId: 1,
