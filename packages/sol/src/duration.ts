@@ -18,17 +18,24 @@ export class Duration {
   }
 
   minutes() {
-    return humanizeDuration(this.durationInMS, { units: ["m"], round: true });
+    return Math.floor(this.durationInMS / MINUTE_TO_MS);
   }
 
   hours() {
-    return humanizeDuration(this.durationInMS, { units: ["h"], round: true });
+    return humanizeDuration(this.durationInMS, {
+      units: ["h"],
+      round: true,
+    });
   }
 
   format(locale: string): string {
     return humanizeDuration(this.durationInMS, {
       units: ["h", "m"],
       language: locale,
+      digitReplacements:
+        locale === "ar"
+          ? ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
+          : undefined,
     });
   }
 
