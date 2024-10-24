@@ -7,10 +7,11 @@ export function useFindCallRoomById(
   callId: number | null
 ): UseQueryResult<IRoom.FindCallRoomApiResponse | null, Error> {
   const atlas = useAtlas();
+
   const findCallRoom = useCallback(async () => {
     if (!callId) return null;
     return await atlas.chat.findCallRoom(callId);
-  }, [callId]);
+  }, [atlas.chat, callId]);
 
   return useQuery({
     queryFn: findCallRoom,

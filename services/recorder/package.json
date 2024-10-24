@@ -9,7 +9,8 @@
     "build": "tsc -p tsconfig.build.json && tsc-alias",
     "test": "env-cmd -f .env.test jest",
     "clean": "rm -rf dist/",
-    "ffmpeg": "ts-node scripts/ffmpeg.ts"
+    "ffmpeg": "ts-node scripts/ffmpeg.ts",
+    "run:puppeteer": "ts-node scripts/puppeteer.ts"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
@@ -41,8 +42,8 @@
   },
   "dependencies": {
     "@litespace/auth": "workspace:^",
-    "@litespace/types": "workspace:^",
     "@litespace/models": "workspace:^",
+    "@litespace/types": "workspace:^",
     "body-parser": "^1.20.2",
     "colors": "^1.4.0",
     "connect-pg-simple": "^9.0.1",
@@ -57,6 +58,8 @@
     "lodash": "^4.17.21",
     "multer": "^1.4.5-lts.1",
     "pg": "^8.11.5",
+    "puppeteer": "^23.6.0",
+    "puppeteer-stream": "^3.0.19",
     "redis": "^4.7.0",
     "socket.io": "^4.7.5",
     "zod": "^3.23.8"
