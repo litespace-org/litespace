@@ -28,7 +28,8 @@ export class Duration {
     });
   }
 
-  format(locale: string): string {
+  format(locale: string = "en"): string {
+    if (this.durationInMS === 0) return "";
     return humanizeDuration(this.durationInMS, {
       units: ["h", "m"],
       language: locale,

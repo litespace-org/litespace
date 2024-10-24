@@ -15,7 +15,6 @@ import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
 import { Textarea as BaseTextarea } from "@/components/Textarea";
 import { TextareaProps } from "@/components/Textarea/Textarea";
 import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
-import { useDurationUnitMap } from "@/hooks/duration";
 import { Duration as IDuration } from "@litespace/sol/duration";
 import { IUser } from "@litespace/types";
 import {
@@ -265,7 +264,6 @@ export function Duration<T extends FieldValues>({
   placeholder?: string;
   rules?: ControllerProps<T>["rules"];
 }) {
-  const labels = useDurationUnitMap();
   return (
     <Controller
       control={control}
@@ -273,7 +271,6 @@ export function Duration<T extends FieldValues>({
       rules={rules}
       render={({ field, formState }) => (
         <BaseDuration
-          labels={labels}
           disabled={disabled}
           onChange={field.onChange}
           value={value}
