@@ -1,4 +1,4 @@
-import { IInvoice, IUser, Paginated, Void } from "@litespace/types";
+import { IFilter, IInvoice, IUser, Paginated, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
 import { usePaginationQuery } from "@/query";
@@ -11,9 +11,20 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
+import { UsePaginateResult, usePaginate } from "@/pagination";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
+
+export function useFindInvoices(): UsePaginateResult<IInvoice.Self> {
+  const atlas = useAtlas();
+  const findInvoices = useCallback(
+    async ({ page, size }: IFilter.Pagination) =>
+      await atlas.invoice.find({ page, size }),
+    [atlas.invoice]
+  );
+  return usePaginate(findInvoices, [QueryKey.FindInvoices]);
+}
 
 type useFindInvoicesByUserProps = {
   query: UseInfiniteQueryResult<

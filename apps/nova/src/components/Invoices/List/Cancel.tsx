@@ -54,7 +54,7 @@ const Cancel: React.FC<{
         title={intl("invoices.cancel.warning", { id })}
         action={action}
       >
-        {intl("invoices.status.canceledByReceiver.note")}
+        {intl("invoices.status.canceled-by-receiver.note")}
       </Alert>
     </Dialog>
   );
