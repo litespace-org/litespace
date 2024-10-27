@@ -12,4 +12,5 @@ export enum QueryKey {
   FindWithdrawalMethods = "find-withdrawal-methods",
   FindInterviewer = "select-interviewer",
   FindInterviewSlots = "interviewer-slots",
+  FindInvoices = "find-invoices",
 }

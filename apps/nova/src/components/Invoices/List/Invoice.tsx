@@ -115,8 +115,8 @@ const Invoice: React.FC<{
             rejected
               ? "invoices.status.rejected"
               : canceledByReceiver
-              ? "invoices.status.canceledByReceiver"
-              : "invoices.status.cancellationApprovedByAdmin"
+              ? "invoices.status.canceled-by-receiver"
+              : "invoices.admin.status.cancellation-approved-by-admin"
           )}
         >
           <p>{intl("invoices.unexpected.status.note")}</p>
@@ -126,9 +126,9 @@ const Invoice: React.FC<{
       {updatedByReceiver && invoice.update ? (
         <Alert
           type={AlertType.Warning}
-          title={intl("invoices.status.updatedByReceiver")}
+          title={intl("invoices.status.updated-by-receiver")}
         >
-          <p>{intl("invoices.status.updatedByReceiver.note")}</p>
+          <p>{intl("invoices.status.updated-by-receiver.note")}</p>
           <Invoices.InvoiceUpdates invoice={invoice} />
         </Alert>
       ) : null}

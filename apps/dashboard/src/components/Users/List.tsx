@@ -107,11 +107,11 @@ const List: React.FC<{
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("createdAt", {
-        header: intl("dashboard.user.createdAt"),
+        header: intl("global.created-at"),
         cell: (info) => <DateField date={info.row.original.updatedAt} />,
       }),
       columnHelper.accessor("updatedAt", {
-        header: intl("dashboard.user.updatedAt"),
+        header: intl("global.updated-at"),
         cell: (info) => <DateField date={info.row.original.updatedAt} />,
       }),
       columnHelper.display({
