@@ -21,10 +21,11 @@ type IForm = {
 
 const UserForm: React.FC<{
   open: boolean;
+  user?: IUser.Self;
   close: Void;
   refresh: Void;
-  user?: IUser.Self;
-}> = ({ open, close, refresh }) => {
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ open, close, refresh, setOpen }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
     defaultValues: { email: "", password: "", role: IUser.Role.RegularAdmin },
@@ -69,6 +70,12 @@ const UserForm: React.FC<{
 
   return (
     <Dialog
+      trigger={
+        <Button size={ButtonSize.Small}>
+          {intl("dashboard.users.create")}
+        </Button>
+      }
+      setOpen={setOpen}
       open={open}
       close={onClose}
       title={intl("dashboard.user.form.create")}

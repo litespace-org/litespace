@@ -43,7 +43,8 @@ const PlanForm: React.FC<{
   close: Void;
   refresh: Void;
   plan?: IPlan.MappedAttributes;
-}> = ({ open, close, refresh, plan }) => {
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ open, plan, close, refresh, setOpen }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
     defaultValues: {
@@ -125,9 +126,14 @@ const PlanForm: React.FC<{
   );
   return (
     <Dialog
-      open={open}
+      trigger={
+        <Button size={ButtonSize.Small}>
+          {intl("dashboard.plans.createPlanBtn")}
+        </Button>
+      }
       title={intl("dashboard.plan.form.create")}
-      close={onClose}
+      open={open}
+      setOpen={setOpen}
     >
       <Form
         onSubmit={form.handleSubmit(onSubmit)}
