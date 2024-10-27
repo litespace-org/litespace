@@ -19,13 +19,14 @@ const meta: Meta<typeof Dialog> = {
 
 export const Primary: StoryObj<typeof Dialog> = {
   args: {
+    trigger: <button>trigger</button>,
     children: (
       <div className="tw-text-foreground-light">
         {ar["error.tutor.bio.arabic.only"]}
       </div>
     ),
     title: ar["error.update.data"],
-    open: true,
+    description: "hello",
   },
 };
 

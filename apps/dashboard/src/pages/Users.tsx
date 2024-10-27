@@ -22,16 +22,19 @@ export const Users: React.FC = () => {
           fetching={users.query.isFetching && !users.query.isLoading}
           count={users.query.data?.total}
         />
-        <Button onClick={form.show} size={ButtonSize.Small}>
-          {intl("dashboard.users.create")}
-        </Button>
+        <UserForm
+          open={form.open}
+          setOpen={form.setOpen}
+          close={form.hide}
+          refresh={users.query.refetch}
+        />
       </header>
       <List {...users} />
-      <UserForm
+      {/* <UserForm
         open={form.open}
         close={form.hide}
         refresh={users.query.refetch}
-      />
+      /> */}
     </div>
   );
 };

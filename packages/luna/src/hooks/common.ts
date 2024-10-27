@@ -52,6 +52,7 @@ export function useRender() {
     show,
     hide,
     toggle,
+    setOpen,
   };
 }
 
