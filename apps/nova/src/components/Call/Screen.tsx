@@ -1,13 +1,18 @@
-import React, { useMemo } from "react";
+import React, { RefObject, useMemo } from "react";
 import cn from "classnames";
 import MovableMedia from "@/components/Call/MovableMedia";
 import UserMedia from "@/components/Call/UserMedia";
 import { first } from "lodash";
 
 const Screen: React.FC<{
-  screen: { stream: MediaStream; name?: string };
+  screen: {
+    stream: MediaStream;
+    ref: RefObject<HTMLVideoElement>;
+    name?: string;
+  };
   others: Array<{
     stream: MediaStream | null;
+    ref: RefObject<HTMLVideoElement>;
     name?: string;
     screen: boolean;
     video?: boolean;
@@ -39,25 +44,41 @@ const Screen: React.FC<{
       >
         <UserMedia
           stream={screen.stream}
-          mode="contain"
+          videoRef={screen.ref}
           name={screen.name}
+          mode="contain"
           screen
         />
       </div>
 
       {one && mate && mate?.stream ? (
-        <MovableMedia stream={mate.stream} container={containerRef} muted />
+        <MovableMedia
+          stream={mate.stream}
+          videoRef={mate.ref}
+          container={containerRef}
+          muted
+        />
       ) : null}
 
       {many ? (
         <div className="flex flex-row justify-center gap-4 items-center lg:h-[300px] w-full">
           {activeStreams.map(
-            ({ stream, name, screen, audio, image, video, isCurrentUser }) => {
+            ({
+              stream,
+              name,
+              screen,
+              audio,
+              image,
+              video,
+              isCurrentUser,
+              ref,
+            }) => {
               if (!stream) return null;
               return (
                 <UserMedia
                   key={stream.id}
                   stream={stream}
+                  videoRef={ref}
                   mode="cover"
                   name={name}
                   screen={screen}

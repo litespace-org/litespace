@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { RefObject, useEffect } from "react";
 import cn from "classnames";
 import { useFormatMessage, asFullAssetUrl } from "@litespace/luna";
 import { MicOff } from "react-feather";
@@ -14,6 +14,7 @@ const variants = {
 
 const UserMedia: React.FC<{
   stream: MediaStream;
+  videoRef: RefObject<HTMLVideoElement>;
   muted?: boolean;
   mode?: "cover" | "contain";
   name?: string;
@@ -24,6 +25,7 @@ const UserMedia: React.FC<{
   speaking?: boolean;
 }> = ({
   stream,
+  videoRef,
   name,
   mode = "cover",
   muted = false,
@@ -34,11 +36,10 @@ const UserMedia: React.FC<{
   image,
 }) => {
   const intl = useFormatMessage();
-  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     if (videoRef.current) videoRef.current.srcObject = stream;
-  }, [stream]);
+  }, [stream, videoRef]);
 
   return (
     <div

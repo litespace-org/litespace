@@ -27,11 +27,13 @@ import {
   useCallEvents,
   useCallRecorder,
   useFullScreen,
+  useRecorder,
+  UseRecorderParams,
   useShareScreen,
   useSpeech,
   useUserMedia,
 } from "@/hooks/call";
-import Media from "@/components/Call/Media";
+import Media, { MediaProps } from "@/components/Call/Media";
 import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
@@ -184,8 +186,95 @@ const Call: React.FC = () => {
     notifyMicToggle(!userAudio);
   }, [notifyMicToggle, toggleSound, userAudio]);
 
+  const recorderParams = useMemo(
+    (): UseRecorderParams => ({
+      user: {
+        streams: { self: userMediaStream, screen: shareScreen.stream },
+        name: orUndefined(profile?.name),
+        image: orUndefined(profile?.image),
+        speaking: userSpeaking,
+        video: userVideo,
+        audio: userAudio,
+      },
+      mate: {
+        streams: { self: remoteMediaStream, screen: remoteScreenStream },
+        name: orUndefined(mate?.name),
+        image: orUndefined(mate?.image),
+        speaking: mateSpeaking,
+        video: mateVideo,
+        audio: mateAudio,
+      },
+    }),
+    [
+      mate?.image,
+      mate?.name,
+      mateAudio,
+      mateSpeaking,
+      mateVideo,
+      profile?.image,
+      profile?.name,
+      remoteMediaStream,
+      remoteScreenStream,
+      shareScreen.stream,
+      userAudio,
+      userMediaStream,
+      userSpeaking,
+      userVideo,
+    ]
+  );
+
+  const { refs } = useRecorder(recorderParams);
+
+  const mediaProps = useMemo(
+    (): MediaProps => ({
+      user: {
+        streams: { self: userMediaStream, screen: shareScreen.stream },
+        refs: refs.user,
+        name: orUndefined(profile?.name),
+        image: orUndefined(profile?.image),
+        speaking: userSpeaking,
+        video: userVideo,
+        audio: userAudio,
+      },
+      mate: {
+        streams: { self: remoteMediaStream, screen: remoteScreenStream },
+        refs: refs.mate,
+        name: orUndefined(mate?.name),
+        image: orUndefined(mate?.image),
+        speaking: mateSpeaking,
+        video: mateVideo,
+        audio: mateAudio,
+      },
+      userDenided: denied,
+      loadingUserStream: loading,
+    }),
+    [
+      denied,
+      loading,
+      mate?.image,
+      mate?.name,
+      mateAudio,
+      mateSpeaking,
+      mateVideo,
+      profile?.image,
+      profile?.name,
+      refs.mate,
+      refs.user,
+      remoteMediaStream,
+      remoteScreenStream,
+      shareScreen.stream,
+      userAudio,
+      userMediaStream,
+      userSpeaking,
+      userVideo,
+    ]
+  );
+
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
+      <div className="absolute top-0 left-0 w-fit h-fit z-10">
+        <canvas dir="ltr" className="_hidden" ref={refs.canvas} />
+      </div>
       <div
         id="call-page"
         ref={ref}
@@ -199,24 +288,7 @@ const Call: React.FC = () => {
             "relative flex-1 w-full max-h-[calc(100%-110px)] pt-10 px-4"
           )}
         >
-          <Media
-            userMediaStream={userMediaStream}
-            remoteMediaStream={remoteMediaStream}
-            userScreenStream={shareScreen.stream}
-            remoteScreenStream={remoteScreenStream}
-            userName={orUndefined(profile?.name)}
-            mateName={orUndefined(mate?.name)}
-            userImage={orUndefined(profile?.image)}
-            mateImage={orUndefined(mate?.image)}
-            loadingUserStream={loading}
-            userSpeaking={userSpeaking}
-            mateSpeaking={mateSpeaking}
-            userVideo={userVideo}
-            userAudio={userAudio}
-            mateVideo={mateVideo}
-            mateAudio={mateAudio}
-            userDenided={denied}
-          />
+          <Media {...mediaProps} />
         </div>
         <div className="flex items-center justify-center gap-4 my-10">
           <Button

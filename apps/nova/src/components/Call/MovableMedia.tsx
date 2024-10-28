@@ -1,10 +1,11 @@
-import React from "react";
+import React, { RefObject } from "react";
 import cn from "classnames";
 import { motion } from "framer-motion";
 import UserMedia from "@/components/Call/UserMedia";
 
 const MovableMedia: React.FC<{
-  container: React.RefObject<HTMLDivElement>;
+  container: RefObject<HTMLDivElement>;
+  videoRef: RefObject<HTMLVideoElement>;
   stream: MediaStream;
   muted?: boolean;
   name?: string;
@@ -15,6 +16,7 @@ const MovableMedia: React.FC<{
   speaking?: boolean;
 }> = ({
   container,
+  videoRef,
   stream,
   muted,
   name,
@@ -46,6 +48,7 @@ const MovableMedia: React.FC<{
         video={video}
         image={image}
         speaking={speaking}
+        videoRef={videoRef}
       />
     </motion.div>
   );

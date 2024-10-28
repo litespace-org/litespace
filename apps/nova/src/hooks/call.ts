@@ -1,4 +1,11 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+  RefObject,
+} from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
@@ -6,7 +13,7 @@ import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
 import { toaster, useFormatMessage, useSockets } from "@litespace/luna";
-import { isEmpty } from "lodash";
+import { first, isEmpty } from "lodash";
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
@@ -375,7 +382,7 @@ export function useFullScreen() {
     });
     if (result instanceof Error)
       toaster.error({ title: intl("error.unexpected") });
-  }, []);
+  }, [intl]);
 
   const exitFullscreen = useCallback(async () => {
     if (ref.current) await document.exitFullscreen();
@@ -384,13 +391,16 @@ export function useFullScreen() {
   const toggleFullScreen = useCallback(async () => {
     if (!document.fullscreenElement) return startFullScreen();
     return exitFullscreen();
-  }, []);
+  }, [exitFullscreen, startFullScreen]);
 
-  const toggleFullScreenByKeyboard = useCallback((e: KeyboardEvent) => {
-    e.preventDefault();
-    if (e.code === "F11") return toggleFullScreen();
-    if (e.code === "Escape") return exitFullscreen();
-  }, []);
+  const toggleFullScreenByKeyboard = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      if (e.code === "F11") return toggleFullScreen();
+      if (e.code === "Escape") return exitFullscreen();
+    },
+    [exitFullscreen, toggleFullScreen]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", toggleFullScreenByKeyboard);
@@ -399,6 +409,343 @@ export function useFullScreen() {
       document.removeEventListener("keydown", toggleFullScreenByKeyboard);
       document.removeEventListener("fullscreenchange", onFullScreen);
     };
-  }, []);
+  }, [onFullScreen, toggleFullScreenByKeyboard]);
+
   return { isFullScreen, toggleFullScreen, ref };
+}
+
+type UserMediaInfo = {
+  streams: {
+    self: MediaStream | null;
+    screen: MediaStream | null;
+  };
+  name?: string;
+  image?: string;
+  speaking?: boolean;
+  video?: boolean;
+  audio?: boolean;
+};
+
+export type UseRecorderParams = {
+  user: UserMediaInfo;
+  mate: UserMediaInfo;
+};
+
+export enum View {
+  /**
+   * One user
+   */
+  FullScreen,
+  /**
+   * Two users. Side by side
+   */
+  SplitScreen,
+  /**
+   * One user and one screen.
+   */
+  SoloPersenter,
+  /**
+   * Two users and one screen
+   */
+  AccompaniedPersenter,
+  /**
+   * Two users and two screens
+   */
+  MultiPersenter,
+}
+
+type VideoRef = RefObject<HTMLVideoElement>;
+
+type CurrentView =
+  | {
+      type: View.FullScreen;
+      info: UserMediaInfo;
+      ref: VideoRef;
+      stream: MediaStream;
+    }
+  | {
+      type: View.SplitScreen;
+    }
+  | {
+      type: View.SoloPersenter;
+      info: UserMediaInfo;
+      refs: { self: VideoRef; screen: VideoRef };
+    }
+  | {
+      type: View.AccompaniedPersenter;
+      persenter: UserMediaInfo;
+      other: UserMediaInfo;
+    }
+  | {
+      type: View.MultiPersenter;
+    };
+
+// Full HD
+// const VIDEO_WIDTH = 1920;
+// const VIDEO_HEIGHT = 1080;
+// HD
+const VIDEO_WIDTH = 1280;
+const VIDEO_HEIGHT = 720;
+
+function computePosition({
+  original,
+  max,
+}: {
+  original: { width: number; height: number };
+  max: { width: number; height: number };
+}) {
+  if (original.height > original.width) {
+    const width = (max.height * original.width) / original.height;
+    const padding = max.width - width;
+    return {
+      padding: { x: padding, y: 0 },
+      width,
+      height: max.height,
+    };
+  }
+
+  const width = (original.width * max.height) / original.height;
+  const padding = max.width - width;
+
+  return {
+    padding: { x: padding, y: 0 },
+    width: width,
+    height: max.height,
+  };
+}
+
+function drawRoundedRect({
+  ctx,
+  x,
+  y,
+  width,
+  height,
+  radius,
+}: {
+  ctx: CanvasRenderingContext2D;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  radius: number;
+}) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.clip();
+}
+
+/**
+ * Canvas based recorder
+ */
+export function useRecorder({ user, mate }: UseRecorderParams) {
+  const userMediaRef = useRef<HTMLVideoElement>(null);
+  const userScreenRef = useRef<HTMLVideoElement>(null);
+  const mateMediaRef = useRef<HTMLVideoElement>(null);
+  const mateScreenRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const view: CurrentView | null = useMemo(() => {
+    if (
+      user.streams.self &&
+      !user.streams.screen &&
+      !mate.streams.self &&
+      !mate.streams.screen
+    )
+      return {
+        type: View.FullScreen,
+        info: user,
+        ref: userMediaRef,
+        stream: user.streams.self,
+      };
+
+    if (
+      user.streams.self &&
+      mate.streams.self &&
+      !user.streams.screen &&
+      !mate.streams.screen
+    )
+      return { type: View.SplitScreen, left: mateMediaRef };
+
+    if (
+      user.streams.self &&
+      user.streams.screen &&
+      !mate.streams.self &&
+      !mate.streams.screen
+    )
+      return {
+        type: View.SoloPersenter,
+        info: user,
+        refs: { self: userMediaRef, screen: userScreenRef },
+      };
+
+    if (
+      user.streams.self &&
+      user.streams.screen &&
+      mate.streams.self &&
+      !mate.streams.screen
+    )
+      return { type: View.AccompaniedPersenter, persenter: user, other: mate };
+
+    if (
+      mate.streams.self &&
+      mate.streams.screen &&
+      user.streams.self &&
+      !user.streams.screen
+    )
+      return { type: View.AccompaniedPersenter, persenter: mate, other: user };
+
+    if (
+      mate.streams.self &&
+      mate.streams.screen &&
+      user.streams.self &&
+      user.streams.screen
+    )
+      return { type: View.MultiPersenter };
+
+    return null;
+  }, [mate, user]);
+
+  const asFullScreenView = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      { ref, stream }: Extract<CurrentView, { type: View.FullScreen }>
+    ) => {
+      const videoTrack = first(stream.getVideoTracks());
+      if (!videoTrack || !ref.current) return;
+
+      const settings = videoTrack.getSettings();
+      const pos = computePosition({
+        original: {
+          width: settings.width || VIDEO_WIDTH,
+          height: settings.height || VIDEO_HEIGHT,
+        },
+        max: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+      });
+
+      ctx.drawImage(
+        ref.current,
+        pos.padding.x / 2,
+        pos.padding.y / 2,
+        pos.width,
+        pos.height
+      );
+    },
+    []
+  );
+
+  const asSoloPersenterView = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      { refs, info }: Extract<CurrentView, { type: View.SoloPersenter }>
+    ) => {
+      if (
+        !refs.self.current ||
+        !refs.screen.current ||
+        !info.streams.self ||
+        !info.streams.screen
+      )
+        return;
+
+      const userVideoTrack = first(info.streams.self.getVideoTracks());
+      const screenVideoTrack = first(info.streams.screen.getVideoTracks());
+      if (!userVideoTrack || !screenVideoTrack) return;
+
+      const screenVideoSettings = userVideoTrack.getSettings();
+      const screenPosition = computePosition({
+        original: {
+          width: screenVideoSettings.width || VIDEO_WIDTH,
+          height: screenVideoSettings.height || VIDEO_HEIGHT,
+        },
+        max: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+      });
+
+      ctx.drawImage(
+        refs.screen.current,
+        screenPosition.padding.x / 2,
+        screenPosition.padding.y / 2,
+        screenPosition.width,
+        screenPosition.height
+      );
+
+      const userVideoSettings = userVideoTrack.getSettings();
+      const userVideoWidth = VIDEO_WIDTH / 4;
+      const userVideoHeight = VIDEO_HEIGHT / 4;
+      const userPosition = computePosition({
+        original: {
+          width: userVideoSettings.width || VIDEO_WIDTH,
+          height: userVideoSettings.height || VIDEO_HEIGHT,
+        },
+        max: { width: userVideoWidth, height: userVideoHeight },
+      });
+
+      const ux = VIDEO_WIDTH - userPosition.width - 5;
+      const uy = VIDEO_HEIGHT - userPosition.height - 5;
+      const uw = userPosition.width;
+      const uh = userPosition.height;
+      const radius = 8;
+
+      drawRoundedRect({ ctx, x: ux, y: uy, width: uw, height: uh, radius });
+      ctx.drawImage(refs.self.current, ux, uy, uw, uh);
+    },
+    []
+  );
+
+  const compose = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      ctx.fillStyle = "#171717";
+      ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+      if (view?.type === View.FullScreen) return asFullScreenView(ctx, view);
+      if (view?.type === View.SoloPersenter)
+        return asSoloPersenterView(ctx, view);
+    },
+    [asFullScreenView, asSoloPersenterView, view]
+  );
+
+  useEffect(() => {
+    if (!canvasRef.current) return;
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+
+    canvasRef.current.width = VIDEO_WIDTH;
+    canvasRef.current.height = VIDEO_HEIGHT;
+
+    let animationFrameId: number = 0;
+    // entry point
+    render();
+    function render() {
+      if (ctx) compose(ctx);
+      animationFrameId = window.requestAnimationFrame(render);
+    }
+
+    return () => {
+      window.cancelAnimationFrame(animationFrameId);
+    };
+  }, [compose]);
+
+  return useMemo(
+    () => ({
+      refs: {
+        user: {
+          self: userMediaRef,
+          screen: userScreenRef,
+        },
+        mate: {
+          self: mateMediaRef,
+          screen: mateScreenRef,
+        },
+        canvas: canvasRef,
+      },
+    }),
+    []
+  );
 }
