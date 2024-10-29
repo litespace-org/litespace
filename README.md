@@ -120,3 +120,4 @@ Follow the instractions on how to install [Docker on Ubuntu](https://docs.docker
 - https://vercel.com/guides/how-to-enable-cors
 - https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid#cross_origin_opener_policy
 - https://www.youtube.com/watch?v=FdjczjkwQKE
+- https://hacks.mozilla.org/2016/01/webgl-off-the-main-thread/

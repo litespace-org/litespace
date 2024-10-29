@@ -9,6 +9,7 @@ import { map } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { safe } from "@/lib/error";
 import "colors";
+import path from "node:path";
 
 const chunkData = zod.object({
   timestamp: zod.number(),
@@ -17,24 +18,32 @@ const chunkData = zod.object({
   screen: zod.optional(zod.boolean()),
 });
 
+const streamData = zod.object({
+  chunk: zod.instanceof(Buffer),
+  call: zod.coerce.number(),
+  timestamp: zod.number(),
+});
+
 type Call = {
   call: ICall.Self;
   members: ICall.PopuldatedMember[];
 };
 
 class WssHandler {
-  user: IUser.Self;
   callMap: Map<number, Call> = new Map();
 
   constructor(
     private readonly io: Server,
-    private readonly socket: Socket
+    private readonly socket: Socket,
+    private readonly user: IUser.Self
   ) {
-    this.user = socket.request.user;
     console.log(`${this.user.id} is connected`.gray);
-    this.chunk();
+    this.stream();
   }
 
+  /**
+   * @deprecated should be removed
+   */
   chunk() {
     this.socket.on("chunk", async (data: unknown) => {
       const result = await safe(async () => {
@@ -63,6 +72,23 @@ class WssHandler {
 
       if (result instanceof Error)
         console.log(`Socket error: ${result.message}`);
+    });
+  }
+
+  stream() {
+    this.socket.on("stream", async (data: unknown) => {
+      const result = await safe(async () => {
+        const { chunk, call, timestamp } = streamData.parse(data);
+        const file = path.join(
+          serverConfig.artifacts,
+          `${call}.${timestamp}.webm`
+        );
+        console.log(
+          `[stream] Processing: ${file} size: ${chunk.byteLength} bytes`.gray
+        );
+        fs.appendFileSync(file, chunk);
+      });
+      if (result instanceof Error) console.error("stream-event-error", result);
     });
   }
 
@@ -110,5 +136,9 @@ class WssHandler {
 }
 
 export function init(io: Server) {
-  io.on("connection", (socket: Socket) => new WssHandler(io, socket));
+  io.on("connection", (socket: Socket) => {
+    const user = socket.request.user;
+    if (!user) return;
+    return new WssHandler(io, socket, user);
+  });
 }

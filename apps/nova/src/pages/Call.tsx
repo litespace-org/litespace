@@ -19,10 +19,11 @@ import {
   Phone,
   Maximize,
   Minimize,
+  Triangle,
 } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
-import { Wss } from "@litespace/types";
+import { IUser, Wss } from "@litespace/types";
 import {
   useCallEvents,
   useCallRecorder,
@@ -41,10 +42,13 @@ import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol";
 import { useSockets } from "@litespace/headless/atlas";
 import { useFindCallRoomById } from "@litespace/headless/calls";
+import { CallCanvas } from "@/components/Call/Canvas";
+import { production } from "@/constants/env";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
   const chat = useRender();
+  const canvas = useRender();
   const intl = useFormatMessage();
   const mediaQueries = useMediaQueries();
   const { id } = useParams<{ id: string }>();
@@ -147,9 +151,9 @@ const Call: React.FC = () => {
     };
   }, [onJoinCall, sockets?.api]);
 
-  useEffect(() => {
-    if (callId && userMediaStream) startRecording(userMediaStream, callId);
-  }, [callId, startRecording, userMediaStream]);
+  // useEffect(() => {
+  //   if (callId && userMediaStream) startRecording(userMediaStream, callId);
+  // }, [callId, startRecording, userMediaStream]);
 
   const onLeaveCall = useCallback(() => {
     peer.destroy();
@@ -186,6 +190,10 @@ const Call: React.FC = () => {
     notifyMicToggle(!userAudio);
   }, [notifyMicToggle, toggleSound, userAudio]);
 
+  const enableRecording = useMemo(() => {
+    return profile?.role === IUser.Role.Tutor;
+  }, [profile?.role]);
+
   const recorderParams = useMemo(
     (): UseRecorderParams => ({
       user: {
@@ -204,8 +212,12 @@ const Call: React.FC = () => {
         video: mateVideo,
         audio: mateAudio,
       },
+      call: callId,
+      enabled: enableRecording,
     }),
     [
+      callId,
+      enableRecording,
       mate?.image,
       mate?.name,
       mateAudio,
@@ -223,7 +235,7 @@ const Call: React.FC = () => {
     ]
   );
 
-  const { refs } = useRecorder(recorderParams);
+  const { refs, exportRecording } = useRecorder(recorderParams);
 
   const mediaProps = useMemo(
     (): MediaProps => ({
@@ -272,9 +284,12 @@ const Call: React.FC = () => {
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
-      <div className="absolute top-0 left-0 w-fit h-fit z-10">
-        <canvas dir="ltr" className="_hidden" ref={refs.canvas} />
-      </div>
+      <CallCanvas
+        exportRecording={exportRecording}
+        ref={refs.canvas}
+        open={canvas.open}
+        close={canvas.hide}
+      />
       <div
         id="call-page"
         ref={ref}
@@ -298,6 +313,16 @@ const Call: React.FC = () => {
           >
             <Phone className="w-[20px] h-[20px]" />
           </Button>
+
+          {!production && enableRecording ? (
+            <Button
+              onClick={canvas.show}
+              size={ButtonSize.Small}
+              type={ButtonType.Secondary}
+            >
+              <Triangle />
+            </Button>
+          ) : null}
 
           {!mediaQueries.lg ? (
             <Button

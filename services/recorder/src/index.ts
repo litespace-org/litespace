@@ -13,6 +13,7 @@ import {
 } from "@litespace/auth";
 import "colors";
 import { initWorker } from "@/workers";
+import fs from "node:fs";
 
 const corsOptions: CorsOptions = {
   credentials: true,
@@ -21,6 +22,10 @@ const corsOptions: CorsOptions = {
     callback(null, true);
   },
 };
+
+// Create `artifacts` directory if needed to host uploaded streams.
+if (!fs.existsSync(serverConfig.artifacts))
+  fs.mkdirSync(serverConfig.artifacts);
 
 initWorker("ffmpeg.js");
 const app = express();

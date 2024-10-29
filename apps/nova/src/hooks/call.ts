@@ -7,13 +7,13 @@ import {
   RefObject,
 } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
-import { MediaConnection } from "peerjs";
+import { MediaConnection, StreamConnection } from "peerjs";
 import peer from "@/lib/peer";
 import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
 import { toaster, useFormatMessage, useSockets } from "@litespace/luna";
-import { first, isEmpty } from "lodash";
+import { first, isEmpty, last } from "lodash";
 
 export function useCallRecorder(screen: boolean = false) {
   const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
@@ -429,6 +429,8 @@ type UserMediaInfo = {
 export type UseRecorderParams = {
   user: UserMediaInfo;
   mate: UserMediaInfo;
+  call: number | null;
+  enabled: boolean;
 };
 
 export enum View {
@@ -490,10 +492,13 @@ const VIDEO_HEIGHT = 720;
 function computePosition({
   original,
   max,
+  fillVertically = false,
 }: {
   original: { width: number; height: number };
   max: { width: number; height: number };
+  fillVertically?: boolean;
 }) {
+  //! not final yet (will be used for mobile streams)
   if (original.height > original.width) {
     const width = (max.height * original.width) / original.height;
     const padding = max.width - width;
@@ -504,13 +509,27 @@ function computePosition({
     };
   }
 
-  const width = (original.width * max.height) / original.height;
-  const padding = max.width - width;
+  const ratio = original.width / original.height;
 
+  if (fillVertically) {
+    const height = max.height;
+    const width = height / ratio;
+    const padding = max.width - width;
+    return {
+      padding: { x: padding, y: 0 },
+      width,
+      height,
+    };
+  }
+
+  // fill horizontally
+  const width = max.width;
+  const height = width / ratio;
+  const padding = max.height - height;
   return {
-    padding: { x: padding, y: 0 },
-    width: width,
-    height: max.height,
+    padding: { x: 0, y: padding },
+    width,
+    height,
   };
 }
 
@@ -546,12 +565,15 @@ function drawRoundedRect({
 /**
  * Canvas based recorder
  */
-export function useRecorder({ user, mate }: UseRecorderParams) {
+export function useRecorder({ user, mate, call, enabled }: UseRecorderParams) {
   const userMediaRef = useRef<HTMLVideoElement>(null);
   const userScreenRef = useRef<HTMLVideoElement>(null);
   const mateMediaRef = useRef<HTMLVideoElement>(null);
   const mateScreenRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [chunks, setChunks] = useState<Blob[]>([]);
+  // todo: make sockets provider
+  const sockets = useSockets();
 
   const view: CurrentView | null = useMemo(() => {
     if (
@@ -573,7 +595,7 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
       !user.streams.screen &&
       !mate.streams.screen
     )
-      return { type: View.SplitScreen, left: mateMediaRef };
+      return { type: View.SplitScreen };
 
     if (
       user.streams.self &&
@@ -614,23 +636,75 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
     return null;
   }, [mate, user]);
 
-  const asFullScreenView = useCallback(
-    (
-      ctx: CanvasRenderingContext2D,
-      { ref, stream }: Extract<CurrentView, { type: View.FullScreen }>
-    ) => {
-      const videoTrack = first(stream.getVideoTracks());
-      if (!videoTrack || !ref.current) return;
+  const fullScreenPosition = useMemo(() => {
+    if (view?.type !== View.FullScreen) return null;
 
-      const settings = videoTrack.getSettings();
-      const pos = computePosition({
+    const videoTrack = first(view.stream.getVideoTracks());
+    if (!videoTrack) return null;
+
+    const settings = videoTrack.getSettings();
+    return computePosition({
+      original: {
+        width: settings.width || VIDEO_WIDTH,
+        height: settings.height || VIDEO_HEIGHT,
+      },
+      max: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+    });
+  }, [view]);
+
+  const splitScreenPositions = useMemo(() => {
+    if (
+      view?.type !== View.SplitScreen ||
+      !user.streams.self ||
+      !mate.streams.self
+    )
+      return null;
+
+    const userVideoTrack = first(user.streams.self.getVideoTracks());
+    const mateVideoTrack = first(mate.streams.self.getVideoTracks());
+    if (!userVideoTrack || !mateVideoTrack) return null;
+
+    const userVideoSettings = userVideoTrack.getSettings();
+    const mateVideoSettings = mateVideoTrack.getSettings();
+
+    function getPosition(settings: MediaTrackSettings) {
+      return computePosition({
         original: {
           width: settings.width || VIDEO_WIDTH,
           height: settings.height || VIDEO_HEIGHT,
         },
-        max: { width: VIDEO_WIDTH, height: VIDEO_HEIGHT },
+        max: {
+          width: VIDEO_WIDTH / 2,
+          height: VIDEO_HEIGHT,
+        },
       });
+    }
 
+    const userPosition = getPosition(userVideoSettings);
+    const ux = userPosition.padding.x / 2;
+    const uy = userPosition.padding.y / 2;
+    const uw = userPosition.width;
+    const uh = userPosition.height;
+
+    const matePosition = getPosition(mateVideoSettings);
+    const mx = uw + userPosition.padding.x / 2 + 5; // 5px offset between the two videos
+    const my = userPosition.padding.y / 2;
+    const mw = matePosition.width;
+    const mh = matePosition.height;
+
+    return {
+      user: { x: ux, y: uy, width: uw, height: uh },
+      mate: { x: mx, y: my, width: mw, height: mh },
+    };
+  }, [mate.streams.self, user.streams.self, view?.type]);
+
+  const asFullScreenView = useCallback(
+    (
+      ctx: CanvasRenderingContext2D,
+      { ref }: Extract<CurrentView, { type: View.FullScreen }>
+    ) => {
+      const pos = fullScreenPosition;
+      if (!pos || !ref.current) return;
       ctx.drawImage(
         ref.current,
         pos.padding.x / 2,
@@ -639,7 +713,38 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
         pos.height
       );
     },
-    []
+    [fullScreenPosition]
+  );
+
+  const asSplitScreenView = useCallback(
+    (ctx: CanvasRenderingContext2D) => {
+      const pos = splitScreenPositions;
+      if (!pos || !userMediaRef.current || !mateMediaRef.current) return;
+
+      const { user, mate } = pos;
+
+      ctx.drawImage(
+        userMediaRef.current,
+        user.x,
+        user.y,
+        user.width,
+        user.height
+      );
+
+      ctx.drawImage(
+        mateMediaRef.current,
+        mate.x,
+        mate.y,
+        mate.width,
+        mate.height
+      );
+
+      ctx.font = "16px Arial";
+      ctx.fillStyle = "#fff";
+      ctx.fillText("User", 10, user.y + user.height - 10);
+      ctx.fillText("Another User", mate.x + 10, mate.y + mate.height - 10);
+    },
+    [splitScreenPositions]
   );
 
   const asSoloPersenterView = useCallback(
@@ -703,16 +808,57 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
     (ctx: CanvasRenderingContext2D) => {
       ctx.fillStyle = "#171717";
       ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      ctx.imageSmoothingEnabled = false;
 
       if (view?.type === View.FullScreen) return asFullScreenView(ctx, view);
-      if (view?.type === View.SoloPersenter)
-        return asSoloPersenterView(ctx, view);
+      if (view?.type === View.SplitScreen) return asSplitScreenView(ctx);
+      //! disable other views for now
+      // if (view?.type === View.SoloPersenter)
+      //   return asSoloPersenterView(ctx, view);
     },
-    [asFullScreenView, asSoloPersenterView, view]
+    [asFullScreenView, asSplitScreenView, view]
   );
 
+  const onDataAvailable = useCallback((event: BlobEvent) => {
+    console.debug(`Processing chunk (${event.data.size})`);
+    setChunks((prev) => [...prev, event.data]);
+  }, []);
+
+  const record = useCallback(() => {
+    const atLeastOneStream =
+      userMediaRef.current ||
+      userScreenRef.current ||
+      mateMediaRef.current ||
+      mateScreenRef.current;
+    if (!canvasRef.current || !atLeastOneStream) return;
+
+    const stream = canvasRef.current.captureStream();
+    const recorder = new MediaRecorder(stream, {
+      mimeType: "video/webm", // record using `webm` format. It will be transcoded to `mp4` on the server using `ffmpg`
+    });
+
+    recorder.ondataavailable = onDataAvailable;
+    recorder.start(2000); // catch data each 2 seconds
+    return recorder;
+  }, [onDataAvailable]);
+
+  const exportRecording = useCallback(() => {
+    const blob = new Blob(chunks, {
+      type: "video/webm",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    document.body.appendChild(a);
+    a.setAttribute("style", "display: none");
+    a.href = url;
+    a.download = "test.webm";
+    a.click();
+    window.URL.revokeObjectURL(url);
+  }, [chunks]);
+
   useEffect(() => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !enabled) return;
     const ctx = canvasRef.current?.getContext("2d");
     if (!ctx) return;
 
@@ -727,10 +873,14 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
       animationFrameId = window.requestAnimationFrame(render);
     }
 
+    // start recording
+    const recorder = record();
+
     return () => {
       window.cancelAnimationFrame(animationFrameId);
+      recorder?.stop();
     };
-  }, [compose]);
+  }, [compose, enabled, record]);
 
   return useMemo(
     () => ({
@@ -745,7 +895,8 @@ export function useRecorder({ user, mate }: UseRecorderParams) {
         },
         canvas: canvasRef,
       },
+      exportRecording,
     }),
-    []
+    [exportRecording]
   );
 }
