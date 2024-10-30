@@ -8,7 +8,9 @@
   ],
   "exports": {
     "./plans": "./dist/plans.js",
+    "./backend": "./dist/backend/index.js",
     "./atlas": "./dist/atlas/index.js",
+    "./socket": "./dist/socket/index.js",
     "./auth": "./dist/auth.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
@@ -27,7 +29,9 @@
   "react-native": {
     "./auth": "./dist/auth.js",
     "./plans": "./dist/plans.js",
+    "./backend": "./dist/backend/index.js",
     "./atlas": "./dist/atlas/index.js",
+    "./socket": "./dist/socket/index.js",
     "./users": "./dist/users.js",
     "./login": "./dist/login.js",
     "./rating": "./dist/rating.js",

@@ -2,62 +2,18 @@ import { useCallback, useEffect, useMemo, useState, useRef } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
-import dayjs from "@/lib/dayjs";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
-import { toaster, useFormatMessage, useSockets } from "@litespace/luna";
+import { toaster, useFormatMessage } from "@litespace/luna";
 import { isEmpty } from "lodash";
+import { useSocket } from "@litespace/headless/socket";
 
-export function useCallRecorder(screen: boolean = false) {
-  const [recorder, setRecorder] = useState<MediaRecorder | null>(null);
-  const sockets = useSockets();
-
-  const onDataAvailable = useCallback(
-    (call: number, timestamp: number) => async (event: BlobEvent) => {
-      if (event.data.size === 0) return;
-      console.debug(`Processing chunk (${event.data.size})`);
-      sockets?.recorder.emit("chunk", {
-        chunk: event.data,
-        timestamp,
-        screen,
-        call,
-      });
-    },
-    [screen, sockets?.recorder]
-  );
-
-  const start = useCallback(
-    (stream: MediaStream, call: number) => {
-      const recorder = new MediaRecorder(stream, {
-        // mimeType: `video/mp4; codecs="avc1.424028, mp4a.40.2"`,
-        // mimeType: `video/mp4; codecs="avc1.4d002a"`,
-        // mimeType: `video/webm;codecs=h264,opus`,
-        mimeType: `video/webm`,
-      });
-      recorder.ondataavailable = onDataAvailable(call, dayjs.utc().valueOf());
-
-      recorder.start(2_000);
-      setRecorder(recorder);
-    },
-    [onDataAvailable]
-  );
-
-  return useMemo(
-    () => ({
-      start,
-      media: recorder,
-    }),
-    [recorder, start]
-  );
-}
-
-export function useShareScreen(callId: number | null, peerId: string | null) {
+export function useShareScreen(peerId: string | null) {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
-  const { start: startRecording } = useCallRecorder(true);
 
   const terminateConnection = useCallback(() => {
     if (!mediaConnection) return;
@@ -90,13 +46,11 @@ export function useShareScreen(callId: number | null, peerId: string | null) {
           setStream(null);
         });
       });
-
-      if (callId) startRecording(stream, callId);
     }
 
     if (!error) setError(error ? stream : null);
     setStream(error ? null : stream);
-  }, [callId, startRecording]);
+  }, []);
 
   const stop = useCallback(() => {
     if (!stream) return;
@@ -302,22 +256,22 @@ export function useCallEvents(
   const [mateVideo, setMateVideo] = useState<boolean>(false);
   const [mateAudio, setMateAudio] = useState<boolean>(false);
   const streamState = useStreamState(stream);
-  const sockets = useSockets();
+  const socket = useSocket();
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
-      if (!call || !sockets) return;
-      sockets.api.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
+      if (!call || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
     },
-    [call, sockets]
+    [call, socket]
   );
 
   const notifyMicToggle = useCallback(
     (mic: boolean) => {
-      if (!call || !sockets) return;
-      sockets.api.emit(Wss.ClientEvent.ToggleMic, { call, mic });
+      if (!call || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { call, mic });
     },
-    [call, sockets]
+    [call, socket]
   );
 
   const onCameraToggle = useCallback(
@@ -335,15 +289,15 @@ export function useCallEvents(
   );
 
   useEffect(() => {
-    if (!sockets) return;
-    sockets.api.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
-    sockets.api.on(Wss.ServerEvent.MicToggled, onMicToggle);
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
+    socket.on(Wss.ServerEvent.MicToggled, onMicToggle);
 
     return () => {
-      sockets.api.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
-      sockets.api.off(Wss.ServerEvent.MicToggled, onMicToggle);
+      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
+      socket.off(Wss.ServerEvent.MicToggled, onMicToggle);
     };
-  }, [onCameraToggle, onMicToggle, sockets]);
+  }, [onCameraToggle, onMicToggle, socket]);
 
   useEffect(() => {
     setMateVideo(streamState.video);
@@ -375,7 +329,7 @@ export function useFullScreen() {
     });
     if (result instanceof Error)
       toaster.error({ title: intl("error.unexpected") });
-  }, []);
+  }, [intl]);
 
   const exitFullscreen = useCallback(async () => {
     if (ref.current) await document.exitFullscreen();
@@ -384,13 +338,16 @@ export function useFullScreen() {
   const toggleFullScreen = useCallback(async () => {
     if (!document.fullscreenElement) return startFullScreen();
     return exitFullscreen();
-  }, []);
+  }, [exitFullscreen, startFullScreen]);
 
-  const toggleFullScreenByKeyboard = useCallback((e: KeyboardEvent) => {
-    e.preventDefault();
-    if (e.code === "F11") return toggleFullScreen();
-    if (e.code === "Escape") return exitFullscreen();
-  }, []);
+  const toggleFullScreenByKeyboard = useCallback(
+    (e: KeyboardEvent) => {
+      e.preventDefault();
+      if (e.code === "F11") return toggleFullScreen();
+      if (e.code === "Escape") return exitFullscreen();
+    },
+    [exitFullscreen, toggleFullScreen]
+  );
 
   useEffect(() => {
     document.addEventListener("keydown", toggleFullScreenByKeyboard);
@@ -399,6 +356,7 @@ export function useFullScreen() {
       document.removeEventListener("keydown", toggleFullScreenByKeyboard);
       document.removeEventListener("fullscreenchange", onFullScreen);
     };
-  }, []);
+  }, [onFullScreen, toggleFullScreenByKeyboard]);
+
   return { isFullScreen, toggleFullScreen, ref };
 }

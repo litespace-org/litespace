@@ -1,15 +1,19 @@
-import { Backend } from "@litespace/types";
-import { BackendContext } from "@/atlas/context";
-import { GetToken } from "@litespace/atlas";
+import React, { useMemo } from "react";
+import { AtlasContext } from "@/atlas/context";
+import { useBackend } from "@/backend";
+import { Atlas } from "@litespace/atlas";
 
-export const AtlasProvider: React.FC<{
-  backend: Backend;
-  getToken: GetToken;
-  children?: React.ReactNode;
-}> = ({ children, backend, getToken }) => {
+export const AtlasProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  const { backend, getToken } = useBackend();
+
+  const atlas = useMemo(
+    () => new Atlas(backend, getToken),
+    [backend, getToken]
+  );
+
   return (
-    <BackendContext.Provider value={{ backend, getToken }}>
-      {children}
-    </BackendContext.Provider>
+    <AtlasContext.Provider value={atlas}>{children}</AtlasContext.Provider>
   );
 };

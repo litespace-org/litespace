@@ -1,32 +1,32 @@
 import { MessageStream, MessageStreamAction } from "@litespace/luna";
 import { Wss, IMessage } from "@litespace/types";
 import { useCallback, useEffect } from "react";
-import { useSockets } from "@litespace/headless/atlas";
+import { useSocket } from "@litespace/headless/socket";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
 export function useChat(onMessage?: OnMessage) {
-  const sockets = useSockets();
+  const socket = useSocket();
 
   const sendMessage = useCallback(
     ({ roomId, text }: { roomId: number; text: string }) => {
-      sockets?.api.emit(Wss.ClientEvent.SendMessage, { roomId, text });
+      socket?.emit(Wss.ClientEvent.SendMessage, { roomId, text });
     },
-    [sockets?.api]
+    [socket]
   );
 
   const updateMessage = useCallback(
     ({ id, text }: { id: number; text: string }) => {
-      sockets?.api.emit(Wss.ClientEvent.UpdateMessage, { id, text });
+      socket?.emit(Wss.ClientEvent.UpdateMessage, { id, text });
     },
-    [sockets?.api]
+    [socket]
   );
 
   const deleteMessage = useCallback(
     (id: number) => {
-      sockets?.api.emit(Wss.ClientEvent.DeleteMessage, { id });
+      socket?.emit(Wss.ClientEvent.DeleteMessage, { id });
     },
-    [sockets?.api]
+    [socket]
   );
 
   const onRoomMessage = useCallback(
@@ -60,22 +60,16 @@ export function useChat(onMessage?: OnMessage) {
   );
 
   useEffect(() => {
-    if (!onMessage || !sockets?.api) return;
-    sockets.api.on(Wss.ServerEvent.RoomMessage, onRoomMessage);
-    sockets.api.on(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
-    sockets.api.on(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
+    if (!onMessage || !socket) return;
+    socket.on(Wss.ServerEvent.RoomMessage, onRoomMessage);
+    socket.on(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
+    socket.on(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
     return () => {
-      sockets.api.off(Wss.ServerEvent.RoomMessage, onRoomMessage);
-      sockets.api.off(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
-      sockets.api.off(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
+      socket.off(Wss.ServerEvent.RoomMessage, onRoomMessage);
+      socket.off(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
+      socket.off(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
     };
-  }, [
-    onDeleteMessage,
-    onMessage,
-    onRoomMessage,
-    onUpdateMessage,
-    sockets?.api,
-  ]);
+  }, [onDeleteMessage, onMessage, onRoomMessage, onUpdateMessage, socket]);
 
   return {
     sendMessage,
