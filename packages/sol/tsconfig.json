@@ -8,15 +8,14 @@
     "jsx": "react",
     "module": "ESNext",
     "declaration": true,
-    "declarationDir": "types",
     "sourceMap": true,
     "outDir": "dist",
+    "rootDir": "src",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "emitDeclarationOnly": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/", "tests/"]
+  "include": ["src/"]
 }

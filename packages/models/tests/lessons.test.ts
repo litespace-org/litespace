@@ -2,7 +2,8 @@ import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
-import { nameof, price } from "@litespace/sol";
+import { price } from "@litespace/sol/value";
+import { nameof } from "@litespace/sol/utils";
 import { concat, flatten, orderBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 

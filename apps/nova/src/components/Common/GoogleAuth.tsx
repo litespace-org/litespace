@@ -11,7 +11,7 @@ import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { useAppDispatch } from "@/redux/store";
 import { setUserProfile } from "@/redux/user/profile";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/sol/error";
 import { IUser } from "@litespace/types";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";

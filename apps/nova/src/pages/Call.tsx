@@ -36,7 +36,7 @@ import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { orUndefined } from "@litespace/sol";
+import { orUndefined } from "@litespace/sol/utils";
 import { useSockets } from "@litespace/headless/atlas";
 import { useFindCallRoomById } from "@litespace/headless/calls";
 

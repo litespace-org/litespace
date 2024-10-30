@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 import { Knex } from "knex";
 import { calls, rules, tutors, knex } from "@litespace/models";
 import { entries, flatten, groupBy } from "lodash";
-import { unpackRules } from "@litespace/sol";
+import { unpackRules } from "@litespace/sol/rule";
 import { cache } from "@/lib/cache";
 
 export type TutorsCache = {

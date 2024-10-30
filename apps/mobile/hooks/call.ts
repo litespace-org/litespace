@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/sol/error";
 
 export function useUserMedia() {
   const [loading, setLoading] = useState<boolean>(false);

@@ -1,5 +1,5 @@
 import { messages } from "@litespace/luna";
-import { price } from "@litespace/sol";
+import { price } from "@litespace/sol/value";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
 
