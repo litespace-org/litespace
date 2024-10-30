@@ -5,6 +5,7 @@ import { Spinner, locales, backend, getToken } from "@litespace/luna";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "@/App.tsx";
@@ -22,22 +23,24 @@ createRoot(document.getElementById("root")!).render(
       locale="ar-EG"
       defaultLocale="ar-EG"
     >
-      <AtlasProvider backend={backend} getToken={getToken}>
-        <QueryClientProvider client={queryClient}>
-          <ReduxProvider store={store}>
-            <PersistGate
-              loading={
-                <div className="w-screen h-screen flex items-center justify-center">
-                  <Spinner />
-                </div>
-              }
-              persistor={persistor}
-            >
-              <App />
-            </PersistGate>
-          </ReduxProvider>
-        </QueryClientProvider>
-      </AtlasProvider>
+      <BackendProvider backend={backend} getToken={getToken}>
+        <AtlasProvider>
+          <QueryClientProvider client={queryClient}>
+            <ReduxProvider store={store}>
+              <PersistGate
+                loading={
+                  <div className="w-screen h-screen flex items-center justify-center">
+                    <Spinner />
+                  </div>
+                }
+                persistor={persistor}
+              >
+                <App />
+              </PersistGate>
+            </ReduxProvider>
+          </QueryClientProvider>
+        </AtlasProvider>
+      </BackendProvider>
     </IntlProvider>
   </StrictMode>
 );

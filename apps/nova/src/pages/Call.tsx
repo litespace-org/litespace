@@ -25,7 +25,6 @@ import cn from "classnames";
 import { Wss } from "@litespace/types";
 import {
   useCallEvents,
-  useCallRecorder,
   useFullScreen,
   useShareScreen,
   useSpeech,
@@ -37,7 +36,7 @@ import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol/utils";
-import { useSockets } from "@litespace/headless/atlas";
+import { useSocket } from "@litespace/headless/socket";
 import { useFindCallRoomById } from "@litespace/headless/calls";
 
 const Call: React.FC = () => {
@@ -50,10 +49,9 @@ const Call: React.FC = () => {
     useState<MediaStream | null>(null);
   const [remoteScreenStream, setRemoteScreenStream] =
     useState<MediaStream | null>(null);
-  const { start: startRecording } = useCallRecorder();
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
-  const sockets = useSockets();
+  const socket = useSocket();
   const {
     start: getUserMedia,
     stream: userMediaStream,
@@ -75,15 +73,15 @@ const Call: React.FC = () => {
     return call;
   }, [id]);
 
-  const shareScreen = useShareScreen(callId, mediaConnection?.peer || null);
+  const shareScreen = useShareScreen(mediaConnection?.peer || null);
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
       console.log(peerId);
-      if (!callId || !sockets?.api) return;
-      sockets.api.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
+      if (!callId || !socket) return;
+      socket.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
     },
-    [callId, sockets?.api]
+    [callId, socket]
   );
 
   // executed on the receiver side
@@ -138,16 +136,12 @@ const Call: React.FC = () => {
   }, [getUserMedia]);
 
   useEffect(() => {
-    if (!sockets?.api) return;
-    sockets.api.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     return () => {
-      sockets.api.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+      socket.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     };
-  }, [onJoinCall, sockets?.api]);
-
-  useEffect(() => {
-    if (callId && userMediaStream) startRecording(userMediaStream, callId);
-  }, [callId, startRecording, userMediaStream]);
+  }, [onJoinCall, socket]);
 
   const onLeaveCall = useCallback(() => {
     peer.destroy();

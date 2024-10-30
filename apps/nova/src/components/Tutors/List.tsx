@@ -6,14 +6,14 @@ import { UseQueryResult } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import TutorCard from "@/components/Tutors/TutorCard";
 import BookLesson from "@/components/Tutors/BookLesson";
-import { useSockets } from "@litespace/headless/atlas";
+import { useSocket } from "@litespace/headless/socket";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
 const TutorList: React.FC<{
   tutors: UseQueryResult<ITutor.FindOnboardedTutorsApiResponse, unknown>;
 }> = ({ tutors }) => {
-  const sockets = useSockets();
+  const socket = useSocket();
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const [tutor, setTutor] = useState<Tutor | null>(null);
@@ -37,23 +37,23 @@ const TutorList: React.FC<{
   }, [tutor, tutors]);
 
   useEffect(() => {
-    if (!sockets?.api) return;
+    if (!socket) return;
 
-    sockets.api.on(Wss.ServerEvent.TutorUpdated, onUpdate);
-    sockets.api.on(Wss.ServerEvent.LessonBooked, onUpdate);
-    sockets.api.on(Wss.ServerEvent.LessonCanceled, onUpdate);
-    sockets.api.on(Wss.ServerEvent.RuleCreated, onUpdate);
-    sockets.api.on(Wss.ServerEvent.RuleUpdated, onUpdate);
-    sockets.api.on(Wss.ServerEvent.RuleDeleted, onUpdate);
+    socket.on(Wss.ServerEvent.TutorUpdated, onUpdate);
+    socket.on(Wss.ServerEvent.LessonBooked, onUpdate);
+    socket.on(Wss.ServerEvent.LessonCanceled, onUpdate);
+    socket.on(Wss.ServerEvent.RuleCreated, onUpdate);
+    socket.on(Wss.ServerEvent.RuleUpdated, onUpdate);
+    socket.on(Wss.ServerEvent.RuleDeleted, onUpdate);
     return () => {
-      sockets.api.off(Wss.ServerEvent.TutorUpdated, onUpdate);
-      sockets.api.off(Wss.ServerEvent.LessonBooked, onUpdate);
-      sockets.api.off(Wss.ServerEvent.LessonCanceled, onUpdate);
-      sockets.api.off(Wss.ServerEvent.RuleCreated, onUpdate);
-      sockets.api.off(Wss.ServerEvent.RuleUpdated, onUpdate);
-      sockets.api.off(Wss.ServerEvent.RuleDeleted, onUpdate);
+      socket.off(Wss.ServerEvent.TutorUpdated, onUpdate);
+      socket.off(Wss.ServerEvent.LessonBooked, onUpdate);
+      socket.off(Wss.ServerEvent.LessonCanceled, onUpdate);
+      socket.off(Wss.ServerEvent.RuleCreated, onUpdate);
+      socket.off(Wss.ServerEvent.RuleUpdated, onUpdate);
+      socket.off(Wss.ServerEvent.RuleDeleted, onUpdate);
     };
-  }, [onUpdate, sockets?.api]);
+  }, [onUpdate, socket]);
 
   if (tutors.isLoading)
     return (

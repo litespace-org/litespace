@@ -5,7 +5,7 @@ import peer from "@/lib/peer";
 import { RTCView } from "react-native-webrtc";
 import { useUserMedia } from "@/hooks/call";
 import { StyleSheet } from "react-native";
-import { useAtlas, useSockets } from "@litespace/headless/atlas";
+import { useSocket } from "@litespace/headless/socket";
 import { Wss } from "@litespace/types";
 import { MediaConnection } from "peerjs";
 
@@ -13,7 +13,7 @@ const callId = 1506;
 
 const Call = () => {
   const { start, stream: userMediaStream } = useUserMedia();
-  const sockets = useSockets();
+  const socket = useSocket();
   const [remoteMediaStream, setRemoteMediaStream] =
     useState<MediaStream | null>(null);
   const [remoteScreenStream, setRemoteScreenStream] =
@@ -27,11 +27,10 @@ const Call = () => {
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
-      if (!callId || !sockets?.api) return;
-      console.log({ callId, peerId });
-      sockets.api.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
+      if (!callId || !socket) return;
+      socket.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
     },
-    [callId, sockets?.api]
+    [callId, socket]
   );
 
   // executed on the receiver side
@@ -75,12 +74,12 @@ const Call = () => {
   }, [acknowledgePeer]);
 
   useEffect(() => {
-    if (!sockets?.api) return;
-    sockets.api.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     return () => {
-      sockets.api.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+      socket.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
     };
-  }, [onJoinCall, sockets?.api]);
+  }, [onJoinCall, socket]);
 
   useEffect(() => {
     // listen for calls
