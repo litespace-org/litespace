@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/Input";
-import { Duration, UnitMap, UnitMapShort } from "@litespace/sol";
+import { Duration, UnitMap, UnitMapShort } from "@litespace/sol/duration";
 
 export const DurationInput: React.FC<{
   value?: Duration;

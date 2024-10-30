@@ -21,7 +21,6 @@ const sharedSlot = {
 
 const sharedCall = {
   id: 1,
-  type: ICall.Type.Interview,
   hostId: 1,
   attendeeId: 1,
   slotId: 1,

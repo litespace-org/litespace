@@ -1,5 +1,5 @@
 import { useFormatMessage } from "@/hooks";
-import { price } from "@litespace/sol";
+import { price } from "@litespace/sol/value";
 import React, { useMemo } from "react";
 
 const Price: React.FC<{

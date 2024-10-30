@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Duration as DurationInput } from "@/components/Duration";
-import { Duration } from "@litespace/sol";
+import { Duration } from "@litespace/sol/duration";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { Controller, useForm } from "react-hook-form";

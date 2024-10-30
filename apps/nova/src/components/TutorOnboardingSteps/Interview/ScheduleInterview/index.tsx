@@ -14,7 +14,7 @@ import {
 } from "@litespace/luna";
 import cn from "classnames";
 import { flatten } from "lodash";
-import { splitRuleEvent } from "@litespace/sol";
+import { splitRuleEvent } from "@litespace/sol/rule";
 import {
   useCreateInterview,
   useSelectInterviewer,

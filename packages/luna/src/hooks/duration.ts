@@ -1,5 +1,5 @@
 import { messages } from "@/locales";
-import { UnitMap, UnitMapShort } from "@litespace/sol";
+import { UnitMap, UnitMapShort } from "@litespace/sol/duration";
 import { useMemo } from "react";
 import { useIntl } from "react-intl";
 

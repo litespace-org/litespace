@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
 import { Button, ButtonSize, ButtonType } from "../Button";
-import { Meridiem, Time } from "@litespace/sol";
+import { Meridiem, Time } from "@litespace/sol/time";
 
 const Picker: React.FC<{
   labels: { am: string; pm: string };
@@ -71,9 +71,11 @@ const Picker: React.FC<{
   return (
     <div className="tw-pb-2">
       <div
-        className={cn("tw-max-h-[250px] tw-overflow-y-auto tw-overflow-x-hidden",
-"tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300",
-"tw-flex tw-flex-row tw-pt-2 tw-pb-2 tw-h-full")}
+        className={cn(
+          "tw-max-h-[250px] tw-overflow-y-auto tw-overflow-x-hidden",
+          "tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300",
+          "tw-flex tw-flex-row tw-pt-2 tw-pb-2 tw-h-full"
+        )}
       >
         {cols.map((col, idx) => {
           return (

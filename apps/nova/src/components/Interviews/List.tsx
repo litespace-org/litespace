@@ -3,7 +3,7 @@ import { IInterview, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { CheckCircle, Hash, HelpCircle, X } from "react-feather";
 import Interview from "@/components/Interviews/Interview";
-import { destructureInterviewStatus } from "@litespace/sol";
+import { destructureInterviewStatus } from "@litespace/sol/interview";
 
 const List: React.FC<{
   list: IInterview.FindInterviewsApiResponse["list"];

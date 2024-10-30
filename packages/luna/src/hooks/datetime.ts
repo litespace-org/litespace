@@ -1,5 +1,5 @@
 import { useIntl } from "react-intl";
-import { FormatterMap } from "@litespace/sol";
+import { FormatterMap } from "@litespace/sol/time";
 import { useMemo } from "react";
 import { messages } from "@/locales";
 import { WeekdayMap } from "@/components/WeekdayPicker";

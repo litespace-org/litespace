@@ -1,5 +1,5 @@
 import { Event } from "@litespace/luna";
-import { unpackRules } from "@litespace/sol";
+import { unpackRules } from "@litespace/sol/rule";
 import { IRule } from "@litespace/types";
 import { first, groupBy } from "lodash";
 

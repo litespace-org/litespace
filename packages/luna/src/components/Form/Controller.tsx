@@ -16,7 +16,7 @@ import { Textarea as BaseTextarea } from "@/components/Textarea";
 import { TextareaProps } from "@/components/Textarea/Textarea";
 import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
 import { useDurationUnitMap } from "@/hooks/duration";
-import { Duration as IDuration } from "@litespace/sol";
+import { Duration as IDuration } from "@litespace/sol/duration";
 import { IUser } from "@litespace/types";
 import {
   Control,
