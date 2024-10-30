@@ -98,6 +98,7 @@
   },
   "types": "dist/index.d.ts",
   "devDependencies": {
+    "@faker-js/faker": "^9.0.3",
     "@jest/globals": "^29.7.0",
     "@types/chai": "^4.3.16",
     "@types/jest": "^29.5.12",
