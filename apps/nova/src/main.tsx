@@ -7,7 +7,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PersistGate } from "redux-persist/integration/react";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { GOOGLE_CLIENT_ID } from "@/constants/auth";
+import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
+import { SocketProvider } from "@litespace/headless/socket";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -24,20 +26,24 @@ createRoot(document.getElementById("root")!).render(
   >
     <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
       <QueryClientProvider client={queryClient}>
-        <AtlasProvider backend={backend} getToken={getToken}>
-          <ReduxProvider store={store}>
-            <PersistGate
-              loading={
-                <div className="flex items-center justify-center w-screen h-screen">
-                  <Spinner />
-                </div>
-              }
-              persistor={persistor}
-            >
-              <App />
-            </PersistGate>
-          </ReduxProvider>
-        </AtlasProvider>
+        <BackendProvider backend={backend} getToken={getToken}>
+          <AtlasProvider>
+            <SocketProvider>
+              <ReduxProvider store={store}>
+                <PersistGate
+                  loading={
+                    <div className="flex items-center justify-center w-screen h-screen">
+                      <Spinner />
+                    </div>
+                  }
+                  persistor={persistor}
+                >
+                  <App />
+                </PersistGate>
+              </ReduxProvider>
+            </SocketProvider>
+          </AtlasProvider>
+        </BackendProvider>
       </QueryClientProvider>
     </GoogleOAuthProvider>
   </IntlProvider>
