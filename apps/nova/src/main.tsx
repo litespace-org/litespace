@@ -10,6 +10,7 @@ import { GOOGLE_CLIENT_ID } from "@/constants/auth";
 import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { SocketProvider } from "@litespace/headless/socket";
+import { PeerProvider } from "@litespace/headless/peer";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -29,18 +30,20 @@ createRoot(document.getElementById("root")!).render(
         <BackendProvider backend={backend} getToken={getToken}>
           <AtlasProvider>
             <SocketProvider>
-              <ReduxProvider store={store}>
-                <PersistGate
-                  loading={
-                    <div className="flex items-center justify-center w-screen h-screen">
-                      <Spinner />
-                    </div>
-                  }
-                  persistor={persistor}
-                >
-                  <App />
-                </PersistGate>
-              </ReduxProvider>
+              <PeerProvider>
+                <ReduxProvider store={store}>
+                  <PersistGate
+                    loading={
+                      <div className="flex items-center justify-center w-screen h-screen">
+                        <Spinner />
+                      </div>
+                    }
+                    persistor={persistor}
+                  >
+                    <App />
+                  </PersistGate>
+                </ReduxProvider>
+              </PeerProvider>
             </SocketProvider>
           </AtlasProvider>
         </BackendProvider>

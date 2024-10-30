@@ -26,7 +26,6 @@ import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
-import { SocketProvider } from "@litespace/luna";
 
 const router = createBrowserRouter([
   {
@@ -58,7 +57,6 @@ const router = createBrowserRouter([
 function App(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(profileSelectors.user);
-  const token = useAppSelector(profileSelectors.token);
 
   useEffect(() => {
     if (!profile) return;
@@ -69,11 +67,7 @@ function App(): React.JSX.Element {
     if (tutor || interviewer) dispatch(findUserRules.call(profile.id));
   }, [dispatch, profile]);
 
-  return (
-    <SocketProvider token={token}>
-      <RouterProvider router={router} />
-    </SocketProvider>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
