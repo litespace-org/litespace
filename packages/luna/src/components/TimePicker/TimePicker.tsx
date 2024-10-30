@@ -8,7 +8,7 @@ import React, {
 import { Input } from "@/components/Input";
 import Picker from "@/components/TimePicker/Picker";
 import { Clock } from "react-feather";
-import { FormatterMap, Time } from "@litespace/sol";
+import { FormatterMap, Time } from "@litespace/sol/time";
 import cn from "classnames";
 
 export type TimePickerProps = {

@@ -1,6 +1,6 @@
 import { IRule } from "@litespace/types";
 import React, { useMemo } from "react";
-import { asRule, RuleFormatterMap, Schedule } from "@litespace/sol";
+import { asRule, RuleFormatterMap, Schedule } from "@litespace/sol/rule";
 import { Card, ActionsMenu, type MenuAction, messages } from "@litespace/luna";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
@@ -79,7 +79,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
         <h3 className="text-xl text-foreground ">{rule.title}</h3>
         <ActionsMenu actions={actions} />
       </div>
-      <p className="text-foreground-light mb-4">
+      <p className="mb-4 text-foreground-light">
         {Schedule.from(asRule(rule)).withDayjs(dayjs).format(formatterMap)}
       </p>
 

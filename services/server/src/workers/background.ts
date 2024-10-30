@@ -5,7 +5,8 @@ import { EmailTemplate } from "@litespace/emails";
 import { IToken } from "@litespace/types";
 import jwt from "jsonwebtoken";
 import { jwtSecret } from "@/constants";
-import { nameof, safe } from "@litespace/sol";
+import { safe } from "@litespace/sol/error";
+import { nameof } from "@litespace/sol/utils";
 
 async function sendAuthTokenEmail({
   email,

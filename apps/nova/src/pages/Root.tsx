@@ -9,7 +9,7 @@ import { tutorMetaSelector } from "@/redux/user/tutor";
 import Navbar from "@/components/Layout/Navbar";
 import { profileSelectors } from "@/redux/user/profile";
 import { IUser } from "@litespace/types";
-import { destructureRole } from "@litespace/sol";
+import { destructureRole } from "@litespace/sol/user";
 // import { IUser } from "@litespace/types";
 
 const Root: React.FC = () => {

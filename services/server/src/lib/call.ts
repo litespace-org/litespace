@@ -1,4 +1,4 @@
-import { unpackRules } from "@litespace/sol";
+import { unpackRules } from "@litespace/sol/rule";
 import { ICall, IRule } from "@litespace/types";
 import { isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";

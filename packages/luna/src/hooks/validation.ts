@@ -2,7 +2,8 @@ import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
 import { messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
-import { Duration, Time } from "@litespace/sol";
+import { Time } from "@litespace/sol/time";
+import { Duration } from "@litespace/sol/duration";
 import { useFormatMessage } from "./intl";
 
 export function useRequired() {

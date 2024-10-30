@@ -9,7 +9,7 @@ import {
   useFormatMessage,
   ButtonSize,
 } from "@litespace/luna";
-import { Schedule, splitRuleEvent } from "@litespace/sol";
+import { Schedule, splitRuleEvent } from "@litespace/sol/rule";
 import { ILesson, IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";

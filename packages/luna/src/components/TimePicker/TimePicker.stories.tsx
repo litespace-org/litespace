@@ -4,7 +4,7 @@ import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { Controller, useForm } from "react-hook-form";
-import { Time } from "@litespace/sol";
+import { Time } from "@litespace/sol/time";
 
 type Component = typeof TimePicker;
 

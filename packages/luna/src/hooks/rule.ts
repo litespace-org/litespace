@@ -1,4 +1,4 @@
-import { RuleFormatterMap } from "@litespace/sol";
+import { RuleFormatterMap } from "@litespace/sol/rule";
 import { useIntl } from "react-intl";
 import { useTimeFormatterMap } from "@/hooks/datetime";
 import { IDate, IRule } from "@litespace/types";

@@ -31,7 +31,9 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { cacheTutors, isPublicTutor } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { asIsoDate, safe, Schedule } from "@litespace/sol";
+import { Schedule } from "@litespace/sol/rule";
+import { safe } from "@litespace/sol/error";
+import { asIsoDate } from "@litespace/sol/dayjs";
 import {
   authorizer,
   encodeAuthJwt,

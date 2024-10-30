@@ -1,5 +1,5 @@
 import { invoices, lessons, withdrawMethods } from "@litespace/models";
-import { isValidWithdrawMethod } from "@litespace/sol";
+import { isValidWithdrawMethod } from "@litespace/sol/withdrawMethods";
 import { IInvoice } from "@litespace/types";
 
 /**

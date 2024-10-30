@@ -4,7 +4,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { Time } from "@litespace/sol";
+import { Time } from "@litespace/sol/time";
 
 export { faker } from "@faker-js/faker/locale/ar";
 

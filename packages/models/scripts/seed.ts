@@ -20,7 +20,7 @@ import {
 } from "@litespace/models";
 import { ICall, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
 import dayjs from "dayjs";
-import { calculateLessonPrice, price, Time, logger } from "@litespace/sol";
+import { calculateLessonPrice, price, Time, logger } from "@litespace/sol/time";
 import { IDate, IRule } from "@litespace/types";
 import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
