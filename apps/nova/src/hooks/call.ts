@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useMemo, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
-import { ICall, Wss } from "@litespace/types";
+import { Wss } from "@litespace/types";
 import hark from "hark";
 import { toaster } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -200,22 +200,6 @@ export function useUserMedia() {
     camera,
     denied,
   };
-}
-
-export function useCallRecordingStatus(status: ICall.RecordingStatus) {
-  return useMemo(
-    () => ({
-      empty: status === ICall.RecordingStatus.Empty,
-      recording: status === ICall.RecordingStatus.Recording,
-      recorded: status === ICall.RecordingStatus.Recorded,
-      processing: status === ICall.RecordingStatus.Processing,
-      processed: status === ICall.RecordingStatus.Processed,
-      queued: status === ICall.RecordingStatus.Queued,
-      processingFailed: status === ICall.RecordingStatus.ProcessingFailed,
-      idle: status === ICall.RecordingStatus.Idle,
-    }),
-    [status]
-  );
 }
 
 export function useSpeech(stream: MediaStream | null) {

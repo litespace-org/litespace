@@ -16,10 +16,6 @@
           "commands": ["cd services/server/", "nvm use", "pnpm start"]
         },
         {
-          "name": "recorder",
-          "commands": ["cd services/recorder/", "nvm use", "pnpm start"]
-        },
-        {
           "name": "peer",
           "commands": ["nvm use", "cd services/server/", "pnpm peer"]
         }

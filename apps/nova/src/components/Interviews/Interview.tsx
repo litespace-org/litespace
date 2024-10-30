@@ -1,11 +1,10 @@
-import { MenuAction, ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { Button, ButtonSize } from "@litespace/luna/Button";
-import * as Calls from "@litespace/luna/Calls";
+import { MenuAction, ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { Card } from "@litespace/luna/Card";
 import * as Interviews from "@litespace/luna/Interviews";
 import { messages } from "@litespace/luna/locales";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { ICall, IInterview } from "@litespace/types";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
 import React, { useCallback, useMemo, useState } from "react";
 import { MessageCircle } from "react-feather";
 import dayjs from "@/lib/dayjs";
@@ -13,7 +12,6 @@ import { useIntl } from "react-intl";
 import Update from "@/components/Interviews/Update";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
-import WatchCall from "../Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import cn from "classnames";
 
@@ -79,7 +77,6 @@ const Interview: React.FC<{
             <Interviews.User name={tutor.name} />
             <Interviews.Date start={call.start} />
             <Interviews.Time start={call.start} />
-            <Calls.Status status={call.recordingStatus} interview />
           </Interviews.List>
 
           <Interviews.Feedback
@@ -136,16 +133,6 @@ const Interview: React.FC<{
           onUpdate={onUpdate}
         />
       ) : null}
-
-      <WatchCall
-        callId={call.id}
-        close={watch.hide}
-        open={watch.open}
-        title={intl.formatMessage(
-          { id: messages["page.interviews.watch.interview"] },
-          { name: tutor.name }
-        )}
-      />
     </Card>
   );
 };
