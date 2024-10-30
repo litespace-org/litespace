@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/sol/error";
 
 export function authMiddleware(secret: string) {
   return safeRequest(

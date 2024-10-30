@@ -15,7 +15,8 @@ import {
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
 } from "@litespace/luna";
-import { percentage, price, Duration } from "@litespace/sol";
+import { Duration } from "@litespace/sol/duration";
+import { percentage, price } from "@litespace/sol/value";
 import { IPlan, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -301,7 +302,7 @@ const PlanForm: React.FC<{
               }
             />
           </div>
-          <div className="flex justify-around gap-2 mb-1 mt-3">
+          <div className="flex justify-around gap-2 mt-3 mb-1">
             <Field
               variant="row"
               label={<Label>{intl("dashboard.plan.forInvitesOnly")}</Label>}

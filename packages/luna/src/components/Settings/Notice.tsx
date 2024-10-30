@@ -4,7 +4,7 @@ import { Controller, Field, Form, Label } from "@/components/Form";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Button, ButtonSize } from "@/components/Button";
-import { Duration } from "@litespace/sol";
+import { Duration } from "@litespace/sol/duration";
 
 type IForm = {
   notice: Duration;

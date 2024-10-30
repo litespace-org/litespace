@@ -6,7 +6,7 @@ import { useCallback, useMemo } from "react";
 import { useFormatMessage } from "@/hooks/intl";
 import { validateText } from "@/lib/validate";
 import dayjs from "@/lib/dayjs";
-import { MIN_AGE, MAX_AGE } from "@litespace/sol";
+import { MIN_AGE, MAX_AGE } from "@litespace/sol/constants";
 import { useRequired } from "@/hooks/validation";
 
 export type RefreshUser = (user?: IUser.Self) => void;

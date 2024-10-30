@@ -6,7 +6,9 @@ import wss from "@/validation/wss";
 import zod from "zod";
 import { boolean, id, string, withNamedId } from "@/validation/utils";
 import { isEmpty, map } from "lodash";
-import { logger, safe, sanitizeMessage } from "@litespace/sol";
+import { logger } from "@litespace/sol/log";
+import { safe } from "@litespace/sol/error";
+import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
 
 const peerPayload = zod.object({ callId: id, peerId: string });

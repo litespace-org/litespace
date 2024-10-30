@@ -7,7 +7,7 @@ import {
   useFormatMessage,
   useKeys,
 } from "@litespace/luna";
-import { sanitizeMessage } from "@litespace/sol";
+import { sanitizeMessage } from "@litespace/sol/chat";
 import { Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";

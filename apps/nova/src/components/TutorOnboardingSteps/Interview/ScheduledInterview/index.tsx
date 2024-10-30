@@ -1,4 +1,4 @@
-import { destructureInterviewStatus } from "@litespace/sol";
+import { destructureInterviewStatus } from "@litespace/sol/interview";
 import { ICall, IInterview } from "@litespace/types";
 import React, { useMemo } from "react";
 import PendingInterview from "./PendingInterview";
