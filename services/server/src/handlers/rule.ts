@@ -13,7 +13,8 @@ import {
 import { IRule, Wss } from "@litespace/types";
 import { badRequest, forbidden, notfound } from "@/lib/error";
 import { calls, rules } from "@litespace/models";
-import { Rule, Schedule, asRule, safe, unpackRules } from "@litespace/sol/rule";
+import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
+import { safe } from "@litespace/sol/error";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
 import { cache } from "@/lib/cache";
