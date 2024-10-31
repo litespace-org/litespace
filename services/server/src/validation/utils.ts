@@ -10,6 +10,7 @@ import {
   IWithdrawMethod,
   IInvoice,
   banks,
+  IFilter,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -36,6 +37,11 @@ export const boolean = zod.boolean();
 export const jsonBoolean = zod
   .custom<"true" | "false">((value) => value === "true" || value === "false")
   .transform((value) => value === "true");
+
+export const orderDirection = zod.enum([
+  IFilter.OrderDirection.Ascending,
+  IFilter.OrderDirection.Descending,
+]);
 
 export const optionalString = zod.optional(string);
 
@@ -127,7 +133,10 @@ export function withNamedId<T>(key: StringLiteral<T>) {
   }>;
 }
 
+export const pageNumber = zod.coerce.number().positive().min(1).int();
+export const pageSize = zod.coerce.number().positive().min(1).int();
+
 export const pagination = zod.object({
-  page: zod.optional(zod.coerce.number().positive().min(1).int()).default(1),
-  size: zod.optional(zod.coerce.number().positive().min(1).int()).default(10),
+  page: zod.optional(pageNumber).default(1),
+  size: zod.optional(pageSize).default(10),
 });
