@@ -1,4 +1,5 @@
 import { Paginated } from "@/utils";
+import { IFilter } from "@/index";
 
 export enum Role {
   SuperAdmin = "super-admin",
@@ -122,4 +123,13 @@ export type ForegetPasswordApiPayload = {
 export type ResetPasswordApiPayload = {
   token: string;
   password: string;
+};
+
+export type FindUsersApiQuery = IFilter.Pagination & {
+  role?: Role;
+  verified?: boolean;
+  gender?: Gender;
+  online?: boolean;
+  orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
+  orderDirection?: IFilter.OrderDirection;
 };

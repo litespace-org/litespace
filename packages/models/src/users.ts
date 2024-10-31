@@ -111,15 +111,29 @@ export class Users {
   }
 
   async find({
-    pagination,
     tx,
-  }: {
-    pagination?: IFilter.Pagination;
+    role,
+    verified,
+    gender,
+    online,
+    page,
+    size,
+    orderBy,
+    orderDirection,
+  }: IUser.FindUsersApiQuery & {
     tx?: Knex.Transaction;
   }): Promise<Paginated<IUser.Self>> {
-    const base = this.builder(tx).select();
-    const total = await countRows(base.clone());
-    const rows = await withPagination(base.clone(), pagination);
+    const base = this.builder(tx)
+      .select()
+      .orderBy(this.column(orderBy || "created_at"), orderDirection || "desc");
+
+    if (role) base.andWhere(this.column("role"), role);
+    if (verified) base.andWhere(this.column("verified"), verified);
+    if (gender) base.andWhere(this.column("gender"), gender);
+    if (online) base.andWhere(this.column("online"), online);
+
+    const total = await countRows(base.clone().groupBy(this.column("id")));
+    const rows = await withPagination(base.clone(), { page, size });
     const users = rows.map((row) => this.from(row));
     return { list: users, total };
   }

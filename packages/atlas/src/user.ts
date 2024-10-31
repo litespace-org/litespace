@@ -27,9 +27,9 @@ export class User extends Base {
   }
 
   async find(
-    pagination: IFilter.Pagination
+    query: IUser.FindUsersApiQuery
   ): Promise<IUser.FindUsersApiResponse> {
-    return this.get(`/api/v1/user/list`, null, pagination);
+    return this.get(`/api/v1/user/list`, null, query);
   }
 
   async update(

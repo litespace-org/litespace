@@ -14,9 +14,13 @@ import {
   withNamedId,
   role,
   url,
+  pageNumber,
+  pageSize,
+  jsonBoolean,
+  orderDirection,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
-import { FileType, jwtSecret } from "@/constants";
+import { FileType, jwtSecret, paginationDefaults } from "@/constants";
 import {
   drop,
   entries,
@@ -35,7 +39,6 @@ import { Schedule } from "@litespace/sol/rule";
 import { safe } from "@litespace/sol/error";
 import { asIsoDate } from "@litespace/sol/dayjs";
 import {
-  authorizer,
   encodeAuthJwt,
   isAdmin,
   isMedaiProvider,
@@ -68,6 +71,21 @@ const updateUserPayload = zod.object({
   ),
   bio: zod.optional(zod.string().trim()),
   about: zod.optional(zod.string().trim()),
+});
+
+const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
+  IUser.FindUsersApiQuery["orderBy"]
+>;
+
+const findUsersQuery = zod.object({
+  role: zod.optional(role),
+  verified: zod.optional(jsonBoolean),
+  gender: zod.optional(gender),
+  online: zod.optional(jsonBoolean),
+  page: zod.optional(pageNumber).default(paginationDefaults.page),
+  size: zod.optional(pageSize).default(paginationDefaults.size),
+  orderBy: zod.optional(zod.enum(orderByOptions)),
+  orderDirection: zod.optional(orderDirection),
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -224,11 +242,12 @@ async function findById(req: Request, res: Response, next: NextFunction) {
 }
 
 async function findUsers(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer().admin().superAdmin().check(req.user);
+  const user = req.user;
+  const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
-  const result = await users.find({ pagination: query });
+  const query: IUser.FindUsersApiQuery = findUsersQuery.parse(req.query);
+  const result = await users.find(query);
   const response: IUser.FindUsersApiResponse = result;
 
   res.status(200).json(response);
