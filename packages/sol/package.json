@@ -2,27 +2,81 @@
   "name": "@litespace/sol",
   "description": "LiteSpace shared logic",
   "version": "1.0.0",
-  "type": "module",
   "files": [
     "dist/**"
   ],
+  "scripts": {
+    "build": "tsc && tsc-alias",
+    "build:cjs": "tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
+    "clean": "rm -rf dist/",
+    "test": "jest"
+  },
   "exports": {
-    "./chat": "./dist/chat.js",
-    "./constants": "./dist/constants.js",
-    "./dayjs": "./dist/dayjs.js",
-    "./diff": "./dist/diff.js",
-    "./duration": "./dist/duration.js",
-    "./error": "./dist/error.js",
-    "./interview": "./dist/interview.js",
-    "./lesson": "./dist/lesson.js",
-    "./log": "./dist/log.js",
-    "./rule": "./dist/rule.js",
-    "./slots": "./dist/slots.js",
-    "./time": "./dist/time.js",
-    "./user": "./dist/user.js",
-    "./utils": "./dist/utils.js",
-    "./value": "./dist/value.js",
-    "./withdrawMethods": "./dist/withdrawMethods.js"
+    "./chat": {
+      "import": "./dist/esm/chat.js",
+      "require": "./dist/cjs/chat.js"
+    },
+    "./constants": {
+      "import": "./dist/esm/constants.js",
+      "require": "./dist/cjs/constants.js"
+    },
+    "./dayjs": {
+      "import": "./dist/esm/dayjs.js",
+      "require": "./dist/cjs/dayjs.js"
+    },
+    "./diff": {
+      "import": "./dist/esm/diff.js",
+      "require": "./dist/cjs/diff.js"
+    },
+    "./duration": {
+      "import": "./dist/esm/duration.js",
+      "require": "./dist/cjs/duration.js"
+    },
+    "./error": {
+      "import": "./dist/esm/error.js",
+      "require": "./dist/cjs/error.js"
+    },
+    "./interview": {
+      "import": "./dist/esm/interview.js",
+      "require": "./dist/cjs/interview.js"
+    },
+    "./lesson": {
+      "import": "./dist/esm/lesson.js",
+      "require": "./dist/cjs/lesson.js"
+    },
+    "./log": {
+      "import": "./dist/esm/log.js",
+      "require": "./dist/cjs/log.js"
+    },
+    "./rule": {
+      "import": "./dist/esm/rule.js",
+      "require": "./dist/cjs/rule.js"
+    },
+    "./slots": {
+      "import": "./dist/esm/slots.js",
+      "require": "./dist/cjs/slots.js"
+    },
+    "./time": {
+      "import": "./dist/esm/time.js",
+      "require": "./dist/cjs/time.js"
+    },
+    "./user": {
+      "import": "./dist/esm/user.js",
+      "require": "./dist/cjs/user.js"
+    },
+    "./utils": {
+      "import": "./dist/esm/utils.js",
+      "require": "./dist/cjs/utils.js"
+    },
+    "./value": {
+      "import": "./dist/esm/value.js",
+      "require": "./dist/cjs/value.js"
+    },
+    "./withdrawMethod": {
+      "import": "./dist/esm/withdrawMethod.js",
+      "require": "./dist/cjs/withdrawMethod.js"
+    }
   },
   "react-native": {
     "./chat": "./dist/chat.js",
@@ -43,11 +97,6 @@
     "./withdrawMethods": "./dist/withdrawMethods.js"
   },
   "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc && tsc-alias",
-    "clean": "rm -rf dist/",
-    "test": "jest"
-  },
   "devDependencies": {
     "@jest/globals": "^29.7.0",
     "@types/chai": "^4.3.16",
