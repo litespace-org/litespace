@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { dayjs } from "@/lib/dayjs";
-import { Popover } from "@litespace/luna";
+import { Popover } from "@litespace/luna/components/Popover";
 
 const DateField: React.FC<{ date: string }> = ({ date }) => {
   const formatedDate = useMemo(() => dayjs(date).format("YYYY/MM/DD"), [date]);
