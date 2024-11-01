@@ -194,6 +194,7 @@ export function useCall(call: number | null) {
   const onCall = useCallback(
     (call: MediaConnection) => {
       setMediaConnection(call);
+
       call.answer(userMediaStream || undefined);
 
       call.on("stream", (stream: MediaStream) => {
@@ -274,6 +275,7 @@ export function useCall(call: number | null) {
         video,
         screen,
       },
+      mediaConnection,
     }),
     [
       audio,
