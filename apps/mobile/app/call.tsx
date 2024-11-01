@@ -11,35 +11,39 @@ declare global {
 }
 
 const Call = () => {
-  // const { mate, user } = useCall(1507);
-
-  // useEffect(() => {
-  //   user.start();
-  // }, [user.start]);
-
-  // console.log("screen", user.streams.screen);
-  const [stream, setStream] = useState<MediaStream | null>(null);
+  const { mate, user, mediaConnection } = useCall(1507);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getDisplayMedia({
-        video: true,
-        audio: true,
-      })
-      .then((stream) => {
-        setStream(stream);
-      });
-  }, []);
+    user.start();
+  }, [user.start]);
 
-  console.log(stream?._tracks);
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!mediaConnection || !mediaConnection.peerConnection) return;
+
+      const userAudioTrack = user.streams.self?.getAudioTracks()[0];
+      if (!userAudioTrack) return;
+
+      // const mateAudioTrack = mate.streams.self?.getAudioTracks()[0];
+      // if (!mateAudioTrack) return;
+
+      const stats = await mediaConnection.peerConnection.getStats(
+        userAudioTrack
+      );
+      for (const result of stats.values()) {
+        if (result.type === "media-source" && result.kind === "audio") {
+          console.log(result.audioLevel);
+        }
+      }
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [user.streams.self, mediaConnection]);
 
   return (
     <ThemedView>
-      {stream ? (
-        <RTCView style={styles.rtc} streamURL={stream.toURL()} />
-      ) : null}
-
-      {/* <ThemedView style={styles.users}>
+      <ThemedView style={styles.users}>
         {user.streams.self ? (
           <RTCView
             style={styles.rtc}
@@ -73,8 +77,7 @@ const Call = () => {
       <ThemedView>
         <Button onPress={user.toggleMic} title="Toggle Mic" />
         <Button onPress={user.toggleCamera} title="Toggle Camera" />
-        <Button onPress={user.screen.share} title="Share Screen" />
-      </ThemedView> */}
+      </ThemedView>
     </ThemedView>
   );
 };
