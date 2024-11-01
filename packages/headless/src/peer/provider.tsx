@@ -24,7 +24,7 @@ export const PeerProvider: React.FC<{ children: React.ReactNode }> = ({
        *  2 Prints errors and warnings.
        *  3 Prints all logs.
        */
-      debug: 3,
+      debug: 1,
     });
   }, [backend]);
   return <PeerContext.Provider value={peer}>{children}</PeerContext.Provider>;
