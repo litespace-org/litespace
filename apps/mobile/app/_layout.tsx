@@ -9,7 +9,10 @@ import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState } from "react";
 import { Slot } from "expo-router";
 import { useColorScheme } from "@/hooks/useColorScheme";
+import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
+import { PeerProvider } from "@litespace/headless/peer";
+import { SocketProvider } from "@litespace/headless/socket";
 import { Backend } from "@litespace/types";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import "react-native-reanimated";
@@ -40,9 +43,15 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <QueryClientProvider client={client}>
-        <AtlasProvider backend={Backend.Staging} getToken={() => token}>
-          <Slot />
-        </AtlasProvider>
+        <BackendProvider backend={Backend.Staging} getToken={() => token}>
+          <AtlasProvider>
+            <SocketProvider>
+              <PeerProvider>
+                <Slot />
+              </PeerProvider>
+            </SocketProvider>
+          </AtlasProvider>
+        </BackendProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

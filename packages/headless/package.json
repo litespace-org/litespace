@@ -2,7 +2,6 @@
   "name": "@litespace/headless",
   "version": "1.0.0",
   "description": "LiteSpace react hooks, utils and components logic",
-  "type": "module",
   "files": [
     "dist/**"
   ],
@@ -66,10 +65,12 @@
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
-    "@litespace/types": "workspace:^"
+    "@litespace/types": "workspace:^",
+    "@litespace/sol": "workspace:^"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.56.2",
+    "react-native-webrtc": "^124.0.4",
     "react": "18.2.0"
   },
   "devDependencies": {
