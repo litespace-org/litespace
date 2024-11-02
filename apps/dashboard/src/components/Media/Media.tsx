@@ -1,14 +1,14 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { MediaType } from "@/components/Media/types";
+import { Avatar } from "@litespace/luna/components/Avatar";
 import {
-  Avatar,
   Button,
   ButtonSize,
   ButtonType,
-  useFormatMessage,
-  VideoPlayer,
-  asFullAssetUrl,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Button";
+import { VideoPlayer } from "@litespace/luna/components/VideoPlayer";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { asFullAssetUrl } from "@litespace/luna/lib";
 import { Upload, X } from "react-feather";
 import cn from "classnames";
 
@@ -33,7 +33,7 @@ const useMediaUrl = (media: Viewer["media"]) => {
 const Empty: React.FC<{ type: MediaType }> = ({ type }) => {
   const intl = useFormatMessage();
   return (
-    <div className="h-full w-full flex items-center justify-center">
+    <div className="flex items-center justify-center w-full h-full">
       <p>
         {type === MediaType.Video
           ? intl("media.no.video")
@@ -70,7 +70,7 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
   );
 
   return (
-    <div className="mt-3 rounded-md flex flex-row items-center justify-center gap-2">
+    <div className="flex flex-row items-center justify-center gap-2 mt-3 rounded-md">
       <input
         className="hidden"
         type="file"

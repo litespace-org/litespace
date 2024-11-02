@@ -10,7 +10,10 @@ import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
 import MessageGroup from "@/components/Chat/MessageGroup";
 import { OnMessage, useChat } from "@/hooks/chat";
-import { asMessageGroups, Loading, useMessages, atlas } from "@litespace/luna";
+import { asMessageGroups, atlas } from "@litespace/luna/lib";
+import { useMessages } from "@litespace/luna/hooks";
+import { Loading } from "@litespace/luna/components/Loading";
+
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
@@ -147,7 +150,7 @@ const Messages: React.FC<{
             ) : null}
           </div>
 
-          <div className="pb-6 px-4 pt-2">
+          <div className="px-4 pt-2 pb-6">
             <MessageBox
               discard={discard}
               submit={submit}

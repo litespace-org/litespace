@@ -1,5 +1,5 @@
 import TutorList from "@/components/Tutors/List";
-import { atlas } from "@litespace/luna";
+import { atlas } from "@litespace/luna/lib";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -12,7 +12,7 @@ const Tutors: React.FC = () => {
   });
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full p-6">
+    <div className="w-full p-6 mx-auto max-w-screen-2xl">
       <TutorList tutors={tutors} />
     </div>
   );

@@ -2,14 +2,14 @@ import {
   Form,
   Label,
   Field,
-  Button,
-  InputType,
-  toaster,
-  ButtonSize,
   Controller,
-  useFormatMessage,
-  atlas,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Form";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { toaster } from "@litespace/luna/components/Toast";
+import { InputType } from "@litespace/luna/components/Input";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { atlas } from "@litespace/luna/lib";
+
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -75,10 +75,10 @@ const Login: React.FC = () => {
 
   return (
     <div className="flex flex-row flex-1 min-h-screen text-foreground">
-      <main className="flex flex-col items-center text-right flex-1 flex-shrink-0 px-5 pt-16 pb-8 border-l shadow-lg bg-studio border-border">
-        <div className="flex-1 flex flex-col justify-center w-full max-w-sm">
+      <main className="flex flex-col items-center flex-1 flex-shrink-0 px-5 pt-16 pb-8 text-right border-l shadow-lg bg-studio border-border">
+        <div className="flex flex-col justify-center flex-1 w-full max-w-sm">
           <div className="mb-4">
-            <h1 className="text-3xl font-simi-bold text-right">
+            <h1 className="text-3xl text-right font-simi-bold">
               {intl("page.login.form.title")}
             </h1>
           </div>

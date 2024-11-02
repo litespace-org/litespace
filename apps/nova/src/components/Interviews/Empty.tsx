@@ -1,5 +1,7 @@
 import { Route } from "@/types/routes";
-import { Button, ButtonSize, Card, messages } from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Card } from "@litespace/luna/components/Card";
+import { messages } from "@litespace/luna/locales";
 import React from "react";
 import { useIntl } from "react-intl";
 import { Link } from "react-router-dom";
@@ -7,7 +9,7 @@ import { Link } from "react-router-dom";
 const Empty: React.FC = () => {
   const intl = useIntl();
   return (
-    <Card className="flex items-center justify-center flex-col gap-2">
+    <Card className="flex flex-col items-center justify-center gap-2">
       <h3 className="text-lg text-foreground">
         {intl.formatMessage({
           id: messages["page.interviews.empty.title"],

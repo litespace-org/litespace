@@ -1,4 +1,5 @@
-import { asOnlineStatus, Loading } from "@litespace/luna";
+import { Loading } from "@litespace/luna/components/Loading";
+import { asOnlineStatus } from "@litespace/luna/components/utils";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Image, Video } from "@/components/TutorProfile/Media";

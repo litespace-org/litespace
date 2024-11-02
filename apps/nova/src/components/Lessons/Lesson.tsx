@@ -3,18 +3,20 @@ import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
 import {
   ActionsMenu,
-  Avatar,
+  MenuAction,
+} from "@litespace/luna/components/ActionsMenu";
+import { Avatar } from "@litespace/luna/components/Avatar";
+import {
   Button,
   ButtonSize,
-  Calls,
-  Card,
-  IconField,
-  MenuAction,
-  useFormatMessage,
-  asFullAssetUrl,
-  useMediaQueries,
   ButtonType,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Button";
+import Calls from "@litespace/luna/components/Calls";
+import { Card } from "@litespace/luna/components/Card";
+import { IconField } from "@litespace/luna/components/IconField";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { asFullAssetUrl } from "@litespace/luna/lib";
 import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";

@@ -1,5 +1,10 @@
-import { asFullAssetUrl, ButtonSize, useFormatMessage } from "@litespace/luna";
-import { Button, ButtonType } from "@litespace/luna";
+import {
+  Button,
+  ButtonType,
+  ButtonSize,
+} from "@litespace/luna/components/Button";
+import { asFullAssetUrl } from "@litespace/luna/lib";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ICall } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
@@ -13,7 +18,7 @@ const PendingInterview: React.FC<{
   const intl = useFormatMessage();
   return (
     <div>
-      <div className="flex flex-row bg-surface-100 w-fit rounded-3xl overflow-hidden border border-border-strong hover:border-border-stronger shadow-2xl">
+      <div className="flex flex-row overflow-hidden border shadow-2xl bg-surface-100 w-fit rounded-3xl border-border-strong hover:border-border-stronger">
         <div className="flex flex-col w-[300px]">
           <div className="overflow-hidden">
             <img

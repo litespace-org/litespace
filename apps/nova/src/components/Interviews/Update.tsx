@@ -3,16 +3,14 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  Dialog,
-  Field,
-  Form,
-  Label,
-  messages,
-  Select,
-  TextEditor,
-  toaster,
-  atlas,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Button";
+import { Dialog } from "@litespace/luna/components/Dialog";
+import { Field, Form, Label } from "@litespace/luna/components/Form";
+import { Select } from "@litespace/luna/components/Select";
+import { TextEditor } from "@litespace/luna/components/TextEditor";
+import { toaster } from "@litespace/luna/components/Toast";
+import { atlas } from "@litespace/luna/lib";
+import { messages } from "@litespace/luna/locales";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { Check, Info, X } from "react-feather";
@@ -61,12 +59,12 @@ const Description: React.FC<{ status: IInterview.Status }> = ({ status }) => {
 
   return (
     <div>
-      <h3 className="mb-3 text-foreground-light text-base">
+      <h3 className="mb-3 text-base text-foreground-light">
         {intl.formatMessage({ id: title })}
       </h3>
-      <ul className="text-foreground-lighter flex flex-col gap-2 text-sm">
+      <ul className="flex flex-col gap-2 text-sm text-foreground-lighter">
         {description.map((id) => (
-          <li key={id} className="flex flex-row gap-2 items-center">
+          <li key={id} className="flex flex-row items-center gap-2">
             {passed ? <Check /> : rejected ? <X /> : <Info />}
             <p>{intl.formatMessage({ id })}</p>
           </li>
@@ -203,7 +201,7 @@ const Update: React.FC<{
       )}
       className="w-full md:max-w-[700px]"
     >
-      <Form onSubmit={onSubmit} className="mt-5 mb-3 flex flex-col gap-4 ">
+      <Form onSubmit={onSubmit} className="flex flex-col gap-4 mt-5 mb-3 ">
         <div>
           <Field
             label={
@@ -280,7 +278,7 @@ const Update: React.FC<{
             }
           />
 
-          <p className="text-sm text-foreground-light mt-3">
+          <p className="mt-3 text-sm text-foreground-light">
             {intl.formatMessage({
               id: messages["page.interviews.update.form.note.desc"],
             })}

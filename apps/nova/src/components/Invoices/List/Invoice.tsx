@@ -1,15 +1,10 @@
 import { useWithdrawMethod } from "@/hooks/withdraw";
-import {
-  Alert,
-  AlertType,
-  Card,
-  Invoices,
-  LocalId,
-  LocalMap,
-  MenuAction,
-  useFormatMessage,
-  useRender,
-} from "@litespace/luna";
+import { Alert, AlertType } from "@litespace/luna/components/Alert";
+import { Card } from "@litespace/luna/components/Card";
+import Invoices from "@litespace/luna/components/Invoices";
+import { MenuAction } from "@litespace/luna/components/ActionsMenu";
+import { useFormatMessage, useRender } from "@litespace/luna/hooks";
+import { LocalId, LocalMap } from "@litespace/luna/locales";
 import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
 import { useInvoiceStatus } from "@/hooks/invoice";

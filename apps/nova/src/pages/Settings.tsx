@@ -1,9 +1,9 @@
 import React, { useCallback } from "react";
-import { Settings as Components } from "@litespace/luna";
+import * as Components from "@litespace/luna/components/Settings";
+import { RefreshUser } from "@litespace/luna/hooks";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, setUserProfile } from "@/redux/user/profile";
 import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
-import { RefreshUser } from "@litespace/luna";
 import { IUser } from "@litespace/types";
 
 const Settings: React.FC = () => {
@@ -22,7 +22,7 @@ const Settings: React.FC = () => {
   );
 
   return (
-    <div className="p-6 max-w-screen-2xl mx-auto w-full sm:w-fit pb-32">
+    <div className="w-full p-6 pb-32 mx-auto max-w-screen-2xl sm:w-fit">
       <Components.Profile
         profile={profile.value?.user || null}
         refresh={refresh}

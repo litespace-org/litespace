@@ -1,4 +1,4 @@
-import { messages } from "@litespace/luna";
+import { messages } from "@litespace/luna/locales";
 import { price } from "@litespace/sol/value";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";

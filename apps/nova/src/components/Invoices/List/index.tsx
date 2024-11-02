@@ -1,11 +1,7 @@
-import {
-  Button,
-  ButtonSize,
-  messages,
-  Spinner,
-  Timeline,
-  TimelineItem,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Timeline, TimelineItem } from "@litespace/luna/components/Timeline";
+import Spinner from "@litespace/luna/icons/spinner";
+import { messages } from "@litespace/luna/locales";
 import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
 import { Hash } from "react-feather";
