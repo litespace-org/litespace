@@ -2,7 +2,7 @@ import { atlas } from "@litespace/luna/lib";
 import { useFormatMessage, useTheme } from "@litespace/luna/hooks";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { toaster } from "@litespace/luna/components/Toast";
-import Spinner from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/icons/spinner";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import React, { useCallback, useState } from "react";
 import cn from "classnames";

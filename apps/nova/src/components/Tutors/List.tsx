@@ -1,5 +1,5 @@
 import { Alert } from "@litespace/luna/components/Alert";
-import Spinner from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/icons/spinner";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Element, ITutor, Wss } from "@litespace/types";
 import { isEmpty } from "lodash";

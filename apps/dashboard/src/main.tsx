@@ -1,7 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import Spinner from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/icons/spinner";
 import { locales } from "@litespace/luna/locales";
 import { backend, getToken } from "@litespace/luna/lib";
 import { IntlProvider } from "react-intl";

@@ -3,9 +3,9 @@ import {
   ActionsMenu,
 } from "@litespace/luna/components/ActionsMenu";
 import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import Calls from "@litespace/luna/components/Calls";
+import * as Calls from "@litespace/luna/components/Calls";
 import { Card } from "@litespace/luna/components/Card";
-import Interviews from "@litespace/luna/components/Interviews";
+import * as Interviews from "@litespace/luna/components/Interviews";
 import { messages } from "@litespace/luna/locales";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { ICall, IInterview } from "@litespace/types";

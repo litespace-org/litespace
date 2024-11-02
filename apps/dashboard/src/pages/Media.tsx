@@ -1,7 +1,7 @@
 import List from "@/components/Media/List";
 import { Button, ButtonSize } from "@litespace/luna/components/Button";
 import { Loading } from "@litespace/luna/components/Loading";
-import Spinner from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/icons/spinner";
 import { useFormatMessage, usePaginationQuery } from "@litespace/luna/hooks";
 import { atlas } from "@litespace/luna/lib";
 
