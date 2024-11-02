@@ -4,11 +4,11 @@ import Room from "@/components/Chat/Room";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import {
-  Loading,
   SelectedRoom,
   SelectRoom,
   useInfinteScroll,
-} from "@litespace/luna";
+} from "@litespace/luna/hooks";
+import { Loading } from "@litespace/luna/components/Loading";
 import cn from "classnames";
 import { useFindUserRooms } from "@litespace/headless/messageRooms";
 

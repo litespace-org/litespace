@@ -1,6 +1,7 @@
 import { useAppSelector } from "@/redux/store";
 import { userRulesSelector } from "@/redux/user/schedule";
-import { Spinner, useRuleFormatterMap } from "@litespace/luna";
+import { useRuleFormatterMap } from "@litespace/luna/hooks/rule";
+import Spinner from "@litespace/luna/icons/spinner";
 import Rule from "@/components/Rules/Rule";
 import React from "react";
 

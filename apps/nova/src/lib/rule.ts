@@ -1,4 +1,4 @@
-import { Event } from "@litespace/luna";
+import { Event } from "@litespace/luna/components/Calendar";
 import { unpackRules } from "@litespace/sol/rule";
 import { IRule } from "@litespace/types";
 import { first, groupBy } from "lodash";

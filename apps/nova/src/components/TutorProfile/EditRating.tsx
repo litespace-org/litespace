@@ -1,4 +1,5 @@
-import { Dialog, useFormatMessage } from "@litespace/luna";
+import { Dialog } from "@litespace/luna/components/Dialog";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 import RateForm from "@/components/TutorProfile/RateForm";
 import { IRating, Void } from "@litespace/types";

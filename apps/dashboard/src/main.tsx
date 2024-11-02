@@ -1,7 +1,9 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { Spinner, locales, backend, getToken } from "@litespace/luna";
+import  Spinner  from "@litespace/luna/icons/spinner";
+import {  locales } from "@litespace/luna/locales";
+import {   backend, getToken } from "@litespace/luna/lib";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -29,7 +31,7 @@ createRoot(document.getElementById("root")!).render(
             <ReduxProvider store={store}>
               <PersistGate
                 loading={
-                  <div className="w-screen h-screen flex items-center justify-center">
+                  <div className="flex items-center justify-center w-screen h-screen">
                     <Spinner />
                   </div>
                 }

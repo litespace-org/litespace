@@ -2,9 +2,9 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  Card,
-  asFullAssetUrl,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Button";
+import { Card } from "@litespace/luna/components/Card";
+import { asFullAssetUrl } from "@litespace/luna/lib";
 import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";

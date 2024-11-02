@@ -1,4 +1,5 @@
-import { Alert, messages } from "@litespace/luna";
+import { Alert } from "@litespace/luna/components/Alert";
+import { messages } from "@litespace/luna/locales";
 import React from "react";
 import { useIntl } from "react-intl";
 

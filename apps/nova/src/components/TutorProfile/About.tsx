@@ -1,4 +1,4 @@
-import { RawHtml } from "@litespace/luna";
+import { RawHtml } from "@litespace/luna/components/RawHtml";
 import Title from "@/components/TutorProfile/Title";
 import React from "react";
 

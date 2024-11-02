@@ -2,15 +2,15 @@ import {
   Button,
   ButtonSize,
   ButtonType,
-  Controller,
-  Field,
-  InputType,
-  Label,
-  toaster,
-  useFormatMessage,
+} from "@litespace/luna/components/Button";
+import { Field, Label, Controller } from "@litespace/luna/components/Form";
+import { InputType } from "@litespace/luna/components/Input";
+import { toaster } from "@litespace/luna/components/Toast";
+import {
   useRequired,
   useValidatePassword,
-} from "@litespace/luna";
+  useFormatMessage,
+} from "@litespace/luna/hooks";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@litespace/headless/auth";

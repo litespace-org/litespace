@@ -3,7 +3,8 @@ import { first } from "lodash";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { useFormatMessage, asFullAssetUrl } from "@litespace/luna";
+import { asFullAssetUrl } from "@litespace/luna/lib";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 enum Status {
   Active,
@@ -45,7 +46,7 @@ const Room: React.FC<{
       onClick={select}
     >
       <div className="relative flex items-center justify-center">
-        <div className="w-10 h-10 md:w-14 md:h-14 overflow-hidden rounded-full ring ring-dash-sidebar">
+        <div className="w-10 h-10 overflow-hidden rounded-full md:w-14 md:h-14 ring ring-dash-sidebar">
           <img
             className="object-cover w-full h-full"
             src={member.image ? asFullAssetUrl(member.image) : "/avatar-1.png"}
@@ -63,9 +64,9 @@ const Room: React.FC<{
           )}
         />
       </div>
-      <div className="hidden md:flex flex-col items-start w-full">
-        <p className="truncate w-4/5">{member.name}</p>
-        <span className="text-foreground-light text-sm">
+      <div className="flex-col items-start hidden w-full md:flex">
+        <p className="w-4/5 truncate">{member.name}</p>
+        <span className="text-sm text-foreground-light">
           {status === Status.Active
             ? intl("chat.active")
             : dayjs(member.updatedAt).fromNow()}

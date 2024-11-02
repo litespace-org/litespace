@@ -1,12 +1,12 @@
 import {
   Button,
-  ButtonSize,
-  Card,
-  toaster,
-  useFormatMessage,
-  atlas,
   ButtonType,
-} from "@litespace/luna";
+  ButtonSize,
+} from "@litespace/luna/components/Button";
+import { Card } from "@litespace/luna/components/Card";
+import { toaster } from "@litespace/luna/components/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { atlas } from "@litespace/luna/lib";
 import { ITutor, IUser } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { AtSign, User } from "react-feather";

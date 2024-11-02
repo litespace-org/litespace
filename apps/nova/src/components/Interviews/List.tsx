@@ -1,4 +1,4 @@
-import { Timeline, TimelineItem } from "@litespace/luna";
+import { Timeline, TimelineItem } from "@litespace/luna/components/Timeline";
 import { IInterview, IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { CheckCircle, Hash, HelpCircle, X } from "react-feather";

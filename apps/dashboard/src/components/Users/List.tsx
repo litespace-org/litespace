@@ -1,12 +1,13 @@
+import { ActionsMenu } from "@litespace/luna/components/ActionsMenu";
 import {
-  ActionsMenu,
   Button,
   ButtonSize,
   ButtonType,
-  Loading,
-  LocalId,
-  useFormatMessage,
-} from "@litespace/luna";
+} from "@litespace/luna/components/Button";
+import { Loading } from "@litespace/luna/components/Loading";
+import { LocalId } from "@litespace/luna/locales";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+
 import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";

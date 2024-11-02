@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Toaster } from "@litespace/luna";
+import { Toaster } from "@litespace/luna/components/Toast";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
@@ -22,7 +22,7 @@ const Root: React.FC = () => {
   }, [location.pathname, navigate, profile]);
 
   return (
-    <main className="min-h-screen text-foreground flex overflow-y-hidden">
+    <main className="flex min-h-screen overflow-y-hidden text-foreground">
       <Outlet />
       <Toaster />
     </main>

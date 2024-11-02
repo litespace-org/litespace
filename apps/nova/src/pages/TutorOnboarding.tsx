@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Stepper, useFormatMessage } from "@litespace/luna";
+import { Stepper } from "@litespace/luna/components/Stepper";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
 import { useAppSelector } from "@/redux/store";

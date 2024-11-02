@@ -1,12 +1,8 @@
 import List from "@/components/Invoices/List";
-import {
-  Button,
-  ButtonSize,
-  Loading,
-  useFormatMessage,
-  usePaginationQuery,
-  atlas,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Loading } from "@litespace/luna/components/Loading";
+import { atlas } from "@litespace/luna/lib";
+import { useFormatMessage, usePaginationQuery } from "@litespace/luna/hooks";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 
@@ -28,7 +24,7 @@ const Invoices: React.FC = () => {
   }, [query]);
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto p-8">
+    <div className="w-full p-8 mx-auto max-w-screen-2xl">
       <div className="mb-4">
         <h1 className="text-3xl">{intl("invoices.title")}</h1>
       </div>

@@ -1,5 +1,7 @@
 import { Route } from "@/types/routes";
-import { Button, ButtonSize, Card, messages } from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Card } from "@litespace/luna/components/Card";
+import { messages } from "@litespace/luna/locales";
 import { IUser } from "@litespace/types";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
@@ -14,13 +16,13 @@ const Empty: React.FC<{ role: IUser.Role }> = ({ role }) => {
 
   return (
     <Card className="flex flex-col items-center justify-center gap-1.5 py-8">
-      <h3 className="text-foreground text-xl font-semibold">
+      <h3 className="text-xl font-semibold text-foreground">
         {intl.formatMessage({
           id: messages["page.lessons.empty.title"],
         })}
       </h3>
 
-      <p className="text-foreground-light text-sm">
+      <p className="text-sm text-foreground-light">
         {intl.formatMessage({
           id: tutor
             ? messages["page.lessons.empty.tutor.description"]

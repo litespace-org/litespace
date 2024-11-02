@@ -1,4 +1,5 @@
-import { Button, ButtonSize, messages } from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { messages } from "@litespace/luna/locales";
 import React from "react";
 import { useIntl } from "react-intl";
 
@@ -6,14 +7,14 @@ const ErrorPage: React.FC = () => {
   const intl = useIntl();
   return (
     <div
-      className="bg-dash-sidebar text-foreground min-h-screen flex items-center justify-center relative font-cairo"
+      className="relative flex items-center justify-center min-h-screen bg-dash-sidebar text-foreground font-cairo"
       id="error-page"
     >
       <div className="select-none opacity-[5%] filter transition duration-200 blur-sm">
         <h1 className="text-[28rem]">404</h1>
       </div>
 
-      <div className="flex flex-col items-center justify-center absolute">
+      <div className="absolute flex flex-col items-center justify-center">
         <div className="flex flex-col items-center justify-center space-y-3">
           <h1 className="text-2xl">
             {intl.formatMessage({ id: messages["page.error.title"] })}

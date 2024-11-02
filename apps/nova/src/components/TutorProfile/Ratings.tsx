@@ -1,4 +1,5 @@
-import { Loading, Timeline, TimelineItem } from "@litespace/luna";
+import { Loading } from "@litespace/luna/components/Loading";
+import { Timeline, TimelineItem } from "@litespace/luna/components/Timeline";
 import { IRating } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React, { useMemo, useState, useCallback } from "react";

@@ -1,4 +1,5 @@
-import { Alert, AlertType, useFormatMessage } from "@litespace/luna";
+import { Alert, AlertType } from "@litespace/luna/components/Alert";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 
 const Error: React.FC<{

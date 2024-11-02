@@ -1,5 +1,5 @@
 import { Peer } from "peerjs";
-import { backend } from "@litespace/luna";
+import { backend } from "@litespace/luna/lib";
 import { peers } from "@litespace/atlas";
 
 const peerServer = peers[backend];
