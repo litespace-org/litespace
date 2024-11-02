@@ -1,4 +1,4 @@
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 import React from "react";
 import cn from "classnames";
 

@@ -5,7 +5,7 @@ import {
   useInvoiceStatus,
   useFormatMessage,
 } from "@litespace/luna/hooks";
-import Invoices from "@litespace/luna/components/Invoices";
+import * as Invoices from "@litespace/luna/components/Invoices";
 import { MenuAction } from "@litespace/luna/components/ActionsMenu";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";

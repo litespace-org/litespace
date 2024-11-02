@@ -11,7 +11,7 @@ import {
   ButtonSize,
   ButtonType,
 } from "@litespace/luna/components/Button";
-import Calls from "@litespace/luna/components/Calls";
+import * as Calls from "@litespace/luna/components/Calls";
 import { Card } from "@litespace/luna/components/Card";
 import { IconField } from "@litespace/luna/components/IconField";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";

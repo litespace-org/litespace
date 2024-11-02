@@ -51,7 +51,7 @@ export { useDurationUnitMap } from "@/hooks/duration";
 export { useTimeFormatterMap, useWeekdayMap } from "@/hooks/datetime";
 export { useRuleFormatterMap } from "@/hooks/rule";
 export { useMediaQueries } from "@/hooks/media";
-export { default as Spinner } from "@/icons/Spinner";
+export { Spinner } from "@/icons/Spinner";
 export {
   type LoadableState,
   type Thunk,

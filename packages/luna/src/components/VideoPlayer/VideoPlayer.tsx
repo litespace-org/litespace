@@ -1,6 +1,6 @@
 import React from "react";
 import cn from "classnames";
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 import { AlertCircle, Pause, Play, Maximize, Minimize } from "react-feather";
 import SoundController from "@/components/VideoPlayer/SoundController";
 import Time from "@/components/VideoPlayer/Time";

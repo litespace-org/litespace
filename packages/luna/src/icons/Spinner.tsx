@@ -23,4 +23,4 @@ const Spinner = (props: SVGProps<SVGSVGElement>) => (
     />
   </svg>
 );
-export default Spinner;
+export { Spinner };
