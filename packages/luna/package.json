@@ -66,33 +66,23 @@
     "./icons/spinner": "./dist/icons/spinner.js",
     "./lib": "./dist/lib/index.js",
     "./lib/redux": "./dist/lib/redux.js",
-    "./style.css": {
-      "require": "./dist/style.css",
-      "default": "./dist/style.css"
-    },
-    "./tailwind.config": {
-      "require": "./dist/tailwind.config.js",
-      "default": "./dist/tailwind.config.js"
-    },
-    "./tailwind.css": {
-      "require": "./dist/tailwind.css",
-      "default": "./dist/tailwind.css"
-    },
-    "./svg": {
-      "require": "./dist/svg.d.ts",
-      "default": "./dist/svg.d.ts"
-    }
+    "./style.css": "./dist/style.css",
+    "./tailwind.config": "./dist/tailwind.config.js",
+    "./tailwind.css": "./dist/tailwind.css",
+    "./svg": "./dist/svg.d.ts"
   },
   "files": [
-    "dist/**"
+    "dist/**/*",
+    "src/tailwind.css",
+    "tailwind.config.js"
   ],
   "scripts": {
     "dev": "vite",
     "clean": "rm -rf dist/",
-    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && tsc-alias -p tsconfig.json && pnpm run build:css",
     "watch:pkg": "vite build -w",
     "watch:build": "concurrently --names \"pkg,css\" \"pnpm watch:pkg\" \"pnpm build:css -w\"",
-    "build:css": "tailwindcss -m -i src/tailwind.css -o dist/style.css",
+    "build:css": "tailwindcss -m -i src/tailwind.css -o dist/style.css && copyfiles -u 1 src/tailwind.css tailwind.config.js dist/",
     "build:vercel": "pnpm vercel build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -134,6 +124,7 @@
     "@typescript-eslint/parser": "^7.2.0",
     "@vitejs/plugin-react": "^4.2.1",
     "concurrently": "^8.2.2",
+    "copyfiles": "^2.4.1",
     "eslint": "^8.57.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
