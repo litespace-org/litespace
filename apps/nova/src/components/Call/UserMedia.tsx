@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import cn from "classnames";
-import { useFormatMessage, asFullAssetUrl } from "@litespace/luna";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { MicOff } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
@@ -73,7 +74,7 @@ const UserMedia: React.FC<{
           >
             <div className="w-16 h-16 @3xs:w-[5rem] @3xs:h-[5rem] @2xs:w-24 @2xs:h-24 @xs:w-32 @xs:h-32 @sm:w-44 @sm:h-44 @lg:w-60 @lg:h-60  @xl:w-64 @xl:h-64 rounded-full ring-4 ring-border-strong overflow-hidden">
               <img
-                className="w-full h-full object-cover"
+                className="object-cover w-full h-full"
                 src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
               />
             </div>

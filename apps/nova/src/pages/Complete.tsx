@@ -2,7 +2,9 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, setUserProfile } from "@/redux/user/profile";
 import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
 import { Route } from "@/types/routes";
-import { RefreshUser, Settings, Spinner } from "@litespace/luna";
+import { Spinner } from "@litespace/luna/Spinner";
+import * as Settings from "@litespace/luna/Settings";
+import { RefreshUser } from "@litespace/luna/hooks/user";
 import { IUser } from "@litespace/types";
 import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,7 +44,7 @@ const Complete: React.FC = () => {
   }, [navigate, profile.loading, profile.value]);
 
   return (
-    <div className="max-w-screen-2xl mx-auto p-6">
+    <div className="p-6 mx-auto max-w-screen-2xl">
       {profile.loading ? (
         <Spinner className="text-foreground-lighter" />
       ) : profile.value ? (

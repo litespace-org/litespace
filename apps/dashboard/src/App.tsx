@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Route } from "@/lib/route";
 import Root from "@/pages/Root";
-import { ErrorPage } from "@litespace/luna";
+import { ErrorPage } from "@litespace/luna/ErrorPage";
 import Invoices from "@/pages/Invoices";
 import Media from "@/pages/Media";
 import Login from "@/pages/Login";

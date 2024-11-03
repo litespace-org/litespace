@@ -1,4 +1,5 @@
-import { Alert, useFormatMessage } from "@litespace/luna";
+import { Alert } from "@litespace/luna/Alert";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Void } from "@litespace/types";
 import React from "react";
 

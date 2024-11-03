@@ -1,10 +1,7 @@
-import {
-  Alert,
-  AlertType,
-  Dialog,
-  toaster,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Alert, AlertType } from "@litespace/luna/Alert";
+import { Dialog } from "@litespace/luna/Dialog";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useCancelInvoiceById } from "@litespace/headless/invoices";
 

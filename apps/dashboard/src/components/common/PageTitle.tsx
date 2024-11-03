@@ -1,6 +1,6 @@
 import React from "react";
 import RecordsCount from "@/components/common/RecordsCount";
-import { Spinner } from "@litespace/luna";
+import { Spinner } from "@litespace/luna/Spinner";
 
 const PageTitle: React.FC<{
   title: string;

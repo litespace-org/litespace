@@ -1,5 +1,6 @@
 import { useCalendarEvents } from "@/hooks/event";
-import { Calendar, Dialog } from "@litespace/luna";
+import { Calendar } from "@litespace/luna/Calendar";
+import { Dialog } from "@litespace/luna/Dialog";
 import { IRule } from "@litespace/types";
 import cn from "classnames";
 import React, { useMemo } from "react";

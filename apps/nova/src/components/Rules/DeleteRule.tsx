@@ -1,7 +1,10 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
-import { Alert, Dialog, toaster, useFormatMessage } from "@litespace/luna";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { toaster } from "@litespace/luna/Toast";
+import { Dialog } from "@litespace/luna/Dialog";
+import { Alert } from "@litespace/luna/Alert";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useDeleteRule } from "@litespace/headless/rule";

@@ -51,7 +51,7 @@ export { useDurationUnitMap } from "@/hooks/duration";
 export { useTimeFormatterMap, useWeekdayMap } from "@/hooks/datetime";
 export { useRuleFormatterMap } from "@/hooks/rule";
 export { useMediaQueries } from "@/hooks/media";
-export { default as Spinner } from "@/icons/Spinner";
+export { Spinner } from "@/icons/Spinner";
 export {
   type LoadableState,
   type Thunk,
@@ -61,7 +61,5 @@ export {
 } from "@/lib/redux";
 export * from "@/hooks";
 export * from "@/lib/format";
-export * from "@/components/Icons";
 export * from "@/constants/labels";
 export * from "@/components/utils";
-export * from "@/lib";

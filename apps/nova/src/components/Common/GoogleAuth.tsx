@@ -1,11 +1,8 @@
-import {
-  atlas,
-  Spinner,
-  toaster,
-  useFormatMessage,
-  useMediaQueries,
-  useTheme,
-} from "@litespace/luna";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useTheme } from "@litespace/luna/hooks/theme";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { toaster } from "@litespace/luna/Toast";
+import { Spinner } from "@litespace/luna/Spinner";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
@@ -15,6 +12,7 @@ import { safe } from "@litespace/sol/error";
 import { IUser } from "@litespace/types";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
+import { useAtlas } from "@litespace/headless/atlas";
 
 const GoogleAuth: React.FC<{
   purpose: "login" | "register";
@@ -26,6 +24,7 @@ const GoogleAuth: React.FC<{
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
+  const atlas = useAtlas();
 
   const onGoogleSuccess = useCallback(
     async (response: CredentialResponse) => {
@@ -52,7 +51,7 @@ const GoogleAuth: React.FC<{
           description: error.message,
         });
     },
-    [dispatch, intl, navigate, purpose, role]
+    [atlas.auth, dispatch, intl, navigate, purpose, role]
   );
 
   const onGoogleError = useCallback(() => {}, []);

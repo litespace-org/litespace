@@ -3,17 +3,10 @@ import {
   useEditRatingTutor,
   useCreateRatingTutor,
 } from "@litespace/headless/rating";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  Controller,
-  Field,
-  Form,
-  Label,
-  toaster,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Form, Field, Controller, Label } from "@litespace/luna/Form";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useForm } from "react-hook-form";
 import { IRating, Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";

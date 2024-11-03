@@ -1,16 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { findTutorMeta } from "@/redux/user/tutor";
-import {
-  Button,
-  Field,
-  Form,
-  Label,
-  toaster,
-  useValidation,
-  Controller,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Button } from "@litespace/luna/Button";
+import { Field, Form, Label, Controller } from "@litespace/luna/Form";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useValidation } from "@litespace/luna/hooks/validation";
 import React, { useMemo, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { useIntroduceTutor } from "@litespace/headless/tutor";

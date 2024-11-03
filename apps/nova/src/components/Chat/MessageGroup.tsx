@@ -1,7 +1,8 @@
 import React from "react";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
-import { MessageGroup as IMessageGroup, asFullAssetUrl } from "@litespace/luna";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { MessageGroup as IMessageGroup } from "@litespace/luna/chat";
 import Message from "@/components/Chat/Message";
 import { IMessage } from "@litespace/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -29,7 +30,7 @@ const MessageGroup: React.FC<{
         />
       </div>
       <div className="w-full">
-        <div className="flex flex-row gap-2 items-center">
+        <div className="flex flex-row items-center gap-2">
           <p className="font-bold text-foreground text-xs @sm:text-[14px] @md:text-base">
             {sender.name}
           </p>
@@ -48,7 +49,7 @@ const MessageGroup: React.FC<{
                   initial="hidden"
                   animate="visible"
                   exit="hidden"
-                  className="mt-1 w-full"
+                  className="w-full mt-1"
                   key={message.id}
                 >
                   <Message

@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 import { AlertCircle } from "react-feather";
 
 enum Status {

@@ -1,20 +1,15 @@
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ICall, ILesson, IUser } from "@litespace/types";
-import {
-  ActionsMenu,
-  Avatar,
-  Button,
-  ButtonSize,
-  Calls,
-  Card,
-  IconField,
-  MenuAction,
-  useFormatMessage,
-  asFullAssetUrl,
-  useMediaQueries,
-  ButtonType,
-} from "@litespace/luna";
+import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
+import { Avatar } from "@litespace/luna/Avatar";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import * as Calls from "@litespace/luna/Calls";
+import { Card } from "@litespace/luna/Card";
+import { IconField } from "@litespace/luna/IconField";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";

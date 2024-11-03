@@ -1,12 +1,7 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  Controller,
-  Form,
-  useFormatMessage,
-  useKeys,
-} from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Form, Controller } from "@litespace/luna/Form";
+import { useKeys } from "@litespace/luna/hooks/keys";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import { Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";

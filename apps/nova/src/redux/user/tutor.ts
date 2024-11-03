@@ -1,8 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { atlas } from "@litespace/luna";
+import {
+  fetcher,
+  initial,
+  LoadableState,
+  createThunk,
+} from "@litespace/luna/redux";
+import { atlas } from "@litespace/luna/backend";
 import { ITutor } from "@litespace/types";
-import { fetcher, initial, LoadableState, createThunk } from "@litespace/luna";
 
 type State = LoadableState<ITutor.Self>;
 

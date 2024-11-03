@@ -1,14 +1,10 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  SidebarNav,
-  Switch,
-  Theme,
-  useFormatMessage,
-  removeToken,
-} from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { SidebarNav } from "@litespace/luna/SidebarNav";
+import { Switch } from "@litespace/luna/Switch";
+import { Theme } from "@litespace/luna/hooks/theme";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { removeToken } from "@litespace/luna/cache";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
 import { IUser, Void } from "@litespace/types";
@@ -114,7 +110,7 @@ const Navbar: React.FC<{
   }, [intl, logout, profile?.role]);
 
   return (
-    <nav className="border-b border-border-overlay h-16">
+    <nav className="h-16 border-b border-border-overlay">
       <div className={cn("px-6 flex flex-row items-center gap-6 h-full")}>
         <div
           data-empty={links.length === 0}
@@ -124,10 +120,10 @@ const Navbar: React.FC<{
         </div>
 
         <div>
-          <Logo className="h-10 w-10" />
+          <Logo className="w-10 h-10" />
         </div>
 
-        <ul className="hidden md:flex flex-row gap-4">
+        <ul className="flex-row hidden gap-4 md:flex">
           {links.map((link) => {
             return (
               <li key={link.label}>

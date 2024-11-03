@@ -1,7 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { Spinner, locales, backend, getToken } from "@litespace/luna";
+import { Spinner } from "@litespace/luna/Spinner";
+import { locales } from "@litespace/luna/locales";
+import { backend } from "@litespace/luna/backend";
+import { getToken } from "@litespace/luna/cache";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -9,7 +12,6 @@ import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { PersistGate } from "redux-persist/integration/react";
 import App from "@/App.tsx";
-
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
 import "react-toastify/dist/ReactToastify.min.css";
@@ -29,7 +31,7 @@ createRoot(document.getElementById("root")!).render(
             <ReduxProvider store={store}>
               <PersistGate
                 loading={
-                  <div className="w-screen h-screen flex items-center justify-center">
+                  <div className="flex items-center justify-center w-screen h-screen">
                     <Spinner />
                   </div>
                 }

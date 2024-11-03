@@ -3,13 +3,12 @@ import DateField from "@/components/common/DateField";
 import PlanForm from "@/components/Plans/PlanForm";
 import Price from "@/components/Plans/Price";
 import { Table } from "@/components/common/Table";
-import {
-  ActionsMenu,
-  formatMinutes,
-  Loading,
-  toaster,
-  useFormatMessage,
-} from "@litespace/luna";
+import { ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { formatMinutes } from "@litespace/luna/utils";
+import { Loading } from "@litespace/luna/Loading";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+
 import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";

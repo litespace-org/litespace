@@ -1,7 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { ButtonSize, ButtonType } from "@/components/Button/types";
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
