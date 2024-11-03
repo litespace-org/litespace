@@ -3,12 +3,9 @@ import React, { useEffect, useMemo } from "react";
 import Room from "@/components/Chat/Room";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import {
-  Loading,
-  SelectedRoom,
-  SelectRoom,
-  useInfinteScroll,
-} from "@litespace/luna";
+import { useInfinteScroll } from "@litespace/luna/hooks/common";
+import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
+import { Loading } from "@litespace/luna/Loading";
 import cn from "classnames";
 import { useFindUserRooms } from "@litespace/headless/messageRooms";
 

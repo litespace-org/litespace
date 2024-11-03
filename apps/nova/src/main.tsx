@@ -1,6 +1,10 @@
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { Spinner, backend, getToken, locales } from "@litespace/luna";
+import { locales } from "@litespace/luna/locales";
+import { backend } from "@litespace/luna/backend";
+import { getToken } from "@litespace/luna/cache";
+import { Spinner } from "@litespace/luna/Spinner";
+
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

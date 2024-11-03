@@ -2,7 +2,9 @@ import React, { useMemo, useRef } from "react";
 import MovableMedia from "@/components/Call/MovableMedia";
 import UserMedia from "@/components/Call/UserMedia";
 import Screen from "@/components/Call/Screen";
-import { Loading, useFormatMessage, useMediaQueries } from "@litespace/luna";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { Loading } from "@litespace/luna/Loading";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Media: React.FC<{
   userMediaStream: MediaStream | null;
@@ -111,7 +113,7 @@ const Media: React.FC<{
 
   return (
     <div
-      className="relative flex flex-col gap-4 justify-center flex-1 w-full h-full"
+      className="relative flex flex-col justify-center flex-1 w-full h-full gap-4"
       ref={containerRef}
     >
       {loadingUserStream ? (

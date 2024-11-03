@@ -1,5 +1,6 @@
 import { useReload } from "@/hooks/common";
-import { Alert, messages } from "@litespace/luna";
+import { Alert } from "@litespace/luna/Alert";
+import { messages } from "@litespace/luna/locales";
 import React, { useMemo } from "react";
 import { useIntl } from "react-intl";
 

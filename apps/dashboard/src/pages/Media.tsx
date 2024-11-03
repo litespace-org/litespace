@@ -1,13 +1,11 @@
 import List from "@/components/Media/List";
-import {
-  Button,
-  ButtonSize,
-  Loading,
-  Spinner,
-  useFormatMessage,
-  usePaginationQuery,
-  atlas,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Loading } from "@litespace/luna/Loading";
+import { Spinner } from "@litespace/luna/Spinner";
+import { usePaginationQuery } from "@litespace/luna/hooks/common";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { atlas } from "@litespace/luna/backend";
+
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 
@@ -22,9 +20,9 @@ const Media: React.FC = () => {
   const media = usePaginationQuery(findTutors, ["find-tutors"]);
 
   return (
-    <div className="max-w-screen-2xl mx-auto w-full p-6">
-      <div className="flex flex-row gap-2 items-center">
-        <h1 className="text-3xl mb-4">{intl("media.title")}</h1>
+    <div className="w-full p-6 mx-auto max-w-screen-2xl">
+      <div className="flex flex-row items-center gap-2">
+        <h1 className="mb-4 text-3xl">{intl("media.title")}</h1>
         {media.query.isFetching && !media.query.isLoading ? <Spinner /> : null}
       </div>
 

@@ -1,5 +1,7 @@
 import Price from "@/components/Common/Price";
-import { Card, LocalMap, useFormatMessage } from "@litespace/luna";
+import { Card } from "@litespace/luna/Card";
+import { LocalMap } from "@litespace/luna/locales";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 
 const Stat: React.FC<{
@@ -10,7 +12,7 @@ const Stat: React.FC<{
 
   return (
     <Card>
-      <h3 className="font-semibold text-xl mb-1 text-foreground-light">
+      <h3 className="mb-1 text-xl font-semibold text-foreground-light">
         {intl(id)}
       </h3>
 

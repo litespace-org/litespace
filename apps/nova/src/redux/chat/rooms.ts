@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { atlas } from "@litespace/luna";
+import { atlas } from "@litespace/luna/backend";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
 import { IRoom } from "@litespace/types";
 import { createThunk } from "@/redux/thunk";

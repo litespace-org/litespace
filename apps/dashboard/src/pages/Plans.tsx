@@ -2,13 +2,11 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Plans/List";
 import PlanForm from "@/components/Plans/PlanForm";
 import { usePlans } from "@litespace/headless/plans";
-import {
-  Button,
-  ButtonSize,
-  useFormatMessage,
-  useRender,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useRender } from "@litespace/luna/hooks/common";
 import cn from "classnames";
+
 import React from "react";
 
 export const Plans: React.FC = () => {
@@ -18,7 +16,7 @@ export const Plans: React.FC = () => {
 
   return (
     <div className={cn("w-full flex flex-col max-w-screen-2xl mx-auto p-6")}>
-      <header className="flex justify-between items-center mb-3">
+      <header className="flex items-center justify-between mb-3">
         <PageTitle
           title={intl("dashboard.plans.title")}
           count={plans.data?.length}

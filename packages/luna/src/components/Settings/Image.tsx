@@ -1,8 +1,8 @@
-import { asFullAssetUrl } from "@/lib/atlas";
+import { asFullAssetUrl } from "@/lib/backend";
 import React, { useCallback, useRef } from "react";
 import cn from "classnames";
 import { Edit3 } from "react-feather";
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 import { RefreshUser, useFormatMessage, useUpdateProfileMedia } from "@/hooks";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 

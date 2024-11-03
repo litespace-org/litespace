@@ -1,10 +1,7 @@
 import { Route } from "@/types/routes";
-import {
-  Button,
-  ButtonSize,
-  asFullAssetUrl,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ITutor } from "@litespace/types";
 import cn from "classnames";
 import React from "react";
@@ -26,21 +23,21 @@ const TutorCard: React.FC<{
     >
       <div className="h-[300px] md:h-[400px]">
         <img
-          className="w-full h-full object-cover"
+          className="object-cover w-full h-full"
           src={tutor.image ? asFullAssetUrl(tutor.image) : "/avatar-1.png"}
           alt={tutor.name!}
         />
       </div>
 
-      <div className="flex flex-row justify-between items-center p-4">
+      <div className="flex flex-row items-center justify-between p-4">
         <div className="w-3/4">
           <Link
             to={Route.TutorProfile.replace(":id", tutor.id.toString())}
-            className="text-brand-link underline"
+            className="underline text-brand-link"
           >
             <h6 className="mb-1">{tutor.name}</h6>
           </Link>
-          <p className="text-sm text-foreground-light truncate">{tutor.bio}</p>
+          <p className="text-sm truncate text-foreground-light">{tutor.bio}</p>
         </div>
 
         <div>

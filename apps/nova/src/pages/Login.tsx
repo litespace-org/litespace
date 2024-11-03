@@ -1,16 +1,9 @@
-import {
-  Form,
-  Label,
-  Field,
-  Button,
-  messages,
-  InputType,
-  toaster,
-  ButtonSize,
-  Controller,
-  useFormatMessage,
-  ButtonType,
-} from "@litespace/luna";
+import { Form, Controller, Field, Label } from "@litespace/luna/Form";
+import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
+import { toaster } from "@litespace/luna/Toast";
+import { messages } from "@litespace/luna/locales";
+import { InputType } from "@litespace/luna/Input";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";

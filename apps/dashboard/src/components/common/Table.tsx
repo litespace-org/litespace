@@ -1,4 +1,4 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Void } from "@litespace/types";
 import {
   getCoreRowModel,
@@ -54,7 +54,7 @@ export const Table = <T extends object>({
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="truncate text-start px-4 py-3"
+                    className="px-4 py-3 truncate text-start"
                     colSpan={header.colSpan}
                     scope="col"
                   >
@@ -69,7 +69,7 @@ export const Table = <T extends object>({
               </tr>
             ))}
           </thead>
-          <tbody className="bg-surface-200 border-b">
+          <tbody className="border-b bg-surface-200">
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="border-b border-border-strong">
                 {row.getVisibleCells().map((cell) => (

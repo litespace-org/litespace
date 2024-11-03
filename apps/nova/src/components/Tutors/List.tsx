@@ -1,4 +1,6 @@
-import { Alert, Spinner, useFormatMessage } from "@litespace/luna";
+import { Alert } from "@litespace/luna/Alert";
+import { Spinner } from "@litespace/luna/Spinner";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Element, ITutor, Wss } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useCallback, useEffect, useMemo, useState } from "react";

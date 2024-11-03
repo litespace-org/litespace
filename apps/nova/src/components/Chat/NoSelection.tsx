@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/luna";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 
 const NoSelection: React.FC = () => {

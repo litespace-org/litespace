@@ -2,7 +2,7 @@ import Messages from "@/components/Chat/Messages";
 import Rooms from "@/components/Chat/Rooms";
 import React from "react";
 import cn from "classnames";
-import { useSelectedRoom } from "@litespace/luna";
+import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 
 const Chat: React.FC = () => {
   const { select, selected } = useSelectedRoom();

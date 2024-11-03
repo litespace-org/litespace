@@ -1,10 +1,7 @@
 import React, { useMemo } from "react";
-import {
-  Button,
-  ButtonSize,
-  Calendar,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Calendar } from "@litespace/luna/Calendar";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useAppSelector } from "@/redux/store";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
@@ -20,9 +17,9 @@ const Schedule: React.FC = () => {
   );
 
   return (
-    <div className="w-full max-w-screen-2xl mx-auto overflow-hidden p-6">
-      <div className="flex flex-row justify-between items-center">
-        <h1 className="text-4xl mb-5">{intl("global.labels.my-schedule")}</h1>
+    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-2xl">
+      <div className="flex flex-row items-center justify-between">
+        <h1 className="mb-5 text-4xl">{intl("global.labels.my-schedule")}</h1>
 
         <div>
           <Button

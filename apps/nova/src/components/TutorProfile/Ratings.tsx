@@ -1,4 +1,5 @@
-import { Loading, Timeline, TimelineItem } from "@litespace/luna";
+import { Loading } from "@litespace/luna/Loading";
+import { Timeline, TimelineItem } from "@litespace/luna/Timeline";
 import { IRating } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React, { useMemo, useState, useCallback } from "react";
@@ -47,7 +48,7 @@ const Ratings: React.FC<{
       ),
       icon: <Star />,
     }));
-  }, [query.data]);
+  }, [onDeleteRating, onEditRating, query.data]);
 
   if (query.isLoading) return <Loading className="h-60" />;
   if (query.isError) return <h1>Error</h1>;

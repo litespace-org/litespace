@@ -1,14 +1,9 @@
-import {
-  Button,
-  ButtonType,
-  Dialog,
-  Field,
-  Label,
-  Select,
-  toaster,
-  useFormatMessage,
-  ButtonSize,
-} from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Dialog } from "@litespace/luna/Dialog";
+import { Field, Label } from "@litespace/luna/Form";
+import { Select } from "@litespace/luna/Select";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Schedule, splitRuleEvent } from "@litespace/sol/rule";
 import { ILesson, IRule } from "@litespace/types";
 import { entries, flattenDeep, groupBy } from "lodash";

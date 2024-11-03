@@ -28,7 +28,7 @@ export default defineConfig({
     sourcemap: !!process.env.TAURI_DEBUG,
   },
   plugins: [
-    react(),
+    react({}),
     svgr({
       // svgr options: https://react-svgr.com/docs/options/
       svgrOptions: {
@@ -57,6 +57,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
   assetsInclude: ["src/markdown/**/*.md"],
+  esbuild: {
+    exclude: ["@litespace/luna/*"],
+  },
 });

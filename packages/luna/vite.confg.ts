@@ -34,29 +34,4 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  build: {
-    emptyOutDir: false,
-    lib: {
-      entry: "src/index.ts",
-      name: "ui",
-      fileName: (format) => `ui.${format}.js`,
-      formats: ["es", "cjs", "umd"],
-    },
-    rollupOptions: {
-      external: Object.keys(pkg.peerDependencies),
-      output: {
-        globals: {
-          react: "React",
-          "react-dom": "ReactDOM",
-          "react-hook-form": "react-hook-form",
-          "framer-motion": "framer-motion",
-          "react-intl": "react-intl",
-          lodash: "lodash",
-          "react-toastify": "react-toastify",
-          "@reduxjs/toolkit": "redux",
-          "@tanstack/react-query": "react-query",
-        },
-      },
-    },
-  },
 });

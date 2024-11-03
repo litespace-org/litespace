@@ -1,7 +1,9 @@
 import { IRule } from "@litespace/types";
 import React, { useMemo } from "react";
 import { asRule, RuleFormatterMap, Schedule } from "@litespace/sol/rule";
-import { Card, ActionsMenu, type MenuAction, messages } from "@litespace/luna";
+import { messages } from "@litespace/luna/locales";
+import { ActionsMenu, type MenuAction } from "@litespace/luna/ActionsMenu";
+import { Card } from "@litespace/luna/Card";
 import dayjs from "@/lib/dayjs";
 import { useIntl } from "react-intl";
 import VisualizeRule from "@/components/Rules/VisualizeRule";

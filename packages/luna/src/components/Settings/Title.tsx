@@ -1,5 +1,5 @@
 import { useFormatMessage } from "@/hooks";
-import Spinner from "@/icons/Spinner";
+import { Spinner } from "@/icons/Spinner";
 import { LocalId } from "@/locales";
 import React from "react";
 

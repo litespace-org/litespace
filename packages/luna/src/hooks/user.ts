@@ -1,5 +1,6 @@
 import { toaster } from "@/components/Toast";
-import { atlas } from "@/lib/atlas";
+// todo: should be removed
+import { atlas } from "@/lib/backend";
 import { IUser } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";

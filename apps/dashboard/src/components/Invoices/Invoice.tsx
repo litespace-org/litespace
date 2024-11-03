@@ -1,12 +1,10 @@
-import {
-  Card,
-  LocalId,
-  useWithdrawMethod,
-  Invoices,
-  useInvoiceStatus,
-  MenuAction,
-  useFormatMessage,
-} from "@litespace/luna";
+import { Card } from "@litespace/luna/Card";
+import { LocalId } from "@litespace/luna/locales";
+import { useInvoiceStatus } from "@litespace/luna/hooks/invoice";
+import { useWithdrawMethod } from "@litespace/luna/hooks/withdraw";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import * as Invoices from "@litespace/luna/Invoices";
+import { MenuAction } from "@litespace/luna/ActionsMenu";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import Process from "@/components/Invoices/Process";
@@ -119,7 +117,7 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
   }, [canceledByReceiver, fulfilled, intl, rejected, updatedByReceiver]);
 
   return (
-    <Card className="flex flex-col gap-3 w-full">
+    <Card className="flex flex-col w-full gap-3">
       <Invoices.Columns>
         <Invoices.Labels ids={ids} />
         <Invoices.Values values={values} />

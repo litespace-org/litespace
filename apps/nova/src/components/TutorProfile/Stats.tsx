@@ -1,10 +1,8 @@
-import {
-  Card,
-  formatNumber,
-  Loading,
-  LocalId,
-  useFormatMessage,
-} from "@litespace/luna";
+import { formatNumber } from "@litespace/luna/utils";
+import { Card } from "@litespace/luna/Card";
+import { Loading } from "@litespace/luna/Loading";
+import { LocalId } from "@litespace/luna/locales";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ITutor } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React, { useMemo } from "react";
@@ -16,7 +14,7 @@ const Stat: React.FC<StatProps> = ({ id, value }) => {
   const intl = useFormatMessage();
   return (
     <Card className="w-full h-full">
-      <h3 className="font-semibold text-xl mb-1 text-foreground-light">
+      <h3 className="mb-1 text-xl font-semibold text-foreground-light">
         {intl(id)}
       </h3>
       <span className="text-3xl leading-none md:text-4xl">{value}</span>
@@ -52,7 +50,7 @@ const Stats: React.FC<{
   return (
     <div className="grid grid-cols-12 gap-4">
       {stats.map((stat) => (
-        <div className="col-span-12 lg:col-span-6 h-full" key={stat.id}>
+        <div className="h-full col-span-12 lg:col-span-6" key={stat.id}>
           <Stat {...stat} />
         </div>
       ))}
