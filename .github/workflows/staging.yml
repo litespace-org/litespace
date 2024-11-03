@@ -36,6 +36,8 @@ jobs:
         run: pnpm install
       - name: Build packages
         run: pnpm build:pkgs
+      - name: Lint all workspaces
+        run: pnpm lint:all
       # Nova Deployment
       - name: Pull Nova from Vercel
         run: pnpm vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}

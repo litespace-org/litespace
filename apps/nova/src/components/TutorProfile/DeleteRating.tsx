@@ -28,7 +28,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
     invalidate([QueryKey.FindTutorRating, tutorId]);
     toaster.success({ title: intl("tutor.rate.delete.success") });
     close();
-  }, [tutorId, id]);
+  }, [invalidate, tutorId, intl, close]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -38,7 +38,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
       });
       close();
     },
-    [tutorId, id]
+    [intl, close]
   );
 
   const deleteRating = useDeleteRatingTutor({ onSuccess, onError });
@@ -50,7 +50,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
       disabled: deleteRating.isPending,
       loading: deleteRating.isPending,
     };
-  }, [intl, deleteRating]);
+  }, [intl, deleteRating, id]);
 
   return (
     <Dialog

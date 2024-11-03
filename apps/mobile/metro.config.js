@@ -1,6 +1,5 @@
 const { getDefaultConfig } = require("expo/metro-config");
 const path = require("path");
-const resolveFrom = require("resolve-from");
 
 // Find the project and workspace directories
 const projectRoot = __dirname;

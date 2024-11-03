@@ -38,7 +38,7 @@ const ResetPassword = () => {
     if (!searchParamToken) return navigate(Route.Root);
     setToken(searchParamToken);
     setSearchParams({});
-  }, []);
+  }, [navigate, searchParams, setSearchParams, token]);
 
   const { control, watch, formState, handleSubmit } = useForm<IForm>({
     mode: "onSubmit",

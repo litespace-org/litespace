@@ -36,14 +36,17 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
     toaster.success({ title: intl("page.login.forget.password.success") });
     reset();
     close();
-  }, []);
+  }, [close, intl, reset]);
 
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("error.unexpected"),
-      description: error.message,
-    });
-  }, []);
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("error.unexpected"),
+        description: error.message,
+      });
+    },
+    [intl]
+  );
 
   const mutation = useForgetPassword({
     onSuccess,
@@ -58,7 +61,7 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
           callbackUrl,
         });
       }),
-    []
+    [handleSubmit, mutation]
   );
 
   return (

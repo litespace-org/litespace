@@ -52,13 +52,18 @@ const ScheduleInterview: React.FC<{
     toaster.success({
       title: intl("page.tutor.onboarding.book.interview.success.title"),
     });
-  }, []);
-  const onCreateError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("page.tutor.onboarding.book.interview.fail.title"),
-      description: error instanceof Error ? error.message : undefined,
-    });
-  }, []);
+  }, [intl, onSuccess, rules]);
+
+  const onCreateError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("page.tutor.onboarding.book.interview.fail.title"),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+    [intl]
+  );
+
   const mutation = useCreateInterview({
     onSuccess: onCreateSuccess,
     onError: onCreateError,
