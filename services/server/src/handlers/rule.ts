@@ -11,7 +11,7 @@ import {
   weekday,
 } from "@/validation/utils";
 import { IRule, Wss } from "@litespace/types";
-import { badRequest, forbidden, notfound } from "@/lib/error";
+import { contradictingRules, forbidden, notfound } from "@/lib/error";
 import { calls, rules } from "@litespace/models";
 import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
 import { safe } from "@litespace/sol/error";
@@ -65,7 +65,7 @@ function createRule(context: ApiContext) {
 
       for (const rule of existingRules) {
         if (Schedule.from(asRule(rule)).intersecting(incomingRule))
-          return next(badRequest());
+          return next(contradictingRules());
       }
       const rule = await rules.create({ ...payload, userId: user.id });
       res.status(201).json(rule);
@@ -144,7 +144,7 @@ function updateRule(context: ApiContext) {
       const payload: IRule.UpdateApiPayload = updateRulePayload.parse(req.body);
       const { ruleId } = updateRuleParams.parse(req.params);
       const rule = await rules.findById(ruleId);
-      if (!rule || rule.deleted) return next(notfound.base());
+      if (!rule || rule.deleted) return next(notfound.rule());
 
       const owner = rule.userId === user.id;
       if (!owner) return next(forbidden());
@@ -159,7 +159,7 @@ function updateRule(context: ApiContext) {
       );
       for (const rule of otherRules) {
         if (Schedule.from(asRule(rule)).intersecting(asRule(withUpdates)))
-          return next(badRequest());
+          return next(contradictingRules());
       }
 
       const updatedRule = await rules.update(ruleId, {
@@ -207,7 +207,7 @@ function deleteRule(context: ApiContext) {
       const { ruleId } = deleteRuleParams.parse(req.params);
 
       const rule = await rules.findById(ruleId);
-      if (!rule) return next(notfound.base());
+      if (!rule) return next(notfound.rule());
 
       const owner = rule.userId === user.id;
       if (!owner) return next(forbidden());

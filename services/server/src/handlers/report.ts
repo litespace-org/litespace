@@ -60,7 +60,7 @@ async function updateReport(req: Request, res: Response, next: NextFunction) {
 async function deleteReport(req: Request, res: Response, next: NextFunction) {
   const { id } = withNamedId("id").parse(req.params);
   const report = await reports.findById(id);
-  if (!report) return next(notfound.base());
+  if (!report) return next(notfound.report());
 
   const user = req.user;
   const owner =

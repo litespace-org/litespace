@@ -1,4 +1,10 @@
-import { badRequest, forbidden, notfound, unexpected } from "@/lib/error";
+import {
+  bad,
+  busyTutorManager,
+  forbidden,
+  notfound,
+  unexpected,
+} from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import {
   calls,
@@ -64,14 +70,14 @@ async function createInterview(
 
   const interviewer = await users.findById(interviewerId);
   if (!interviewer) return next(notfound.user());
-  if (!isInterviewer(interviewer)) return next(badRequest());
+  if (!isInterviewer(interviewer)) return next(bad());
 
   const list = await interviews.findByInterviewee(intervieweeId);
   const interviewable = canBeInterviewed(list);
-  if (!interviewable) return next(badRequest());
+  if (!interviewable) return next(bad());
 
   const rule = await rules.findById(ruleId);
-  if (!rule) return next(notfound.base());
+  if (!rule) return next(notfound.rule());
 
   const ruleCalls = await calls.findByRuleId({
     rule: rule.id,
@@ -83,7 +89,7 @@ async function createInterview(
     calls: ruleCalls,
     call: { start, duration: INTERVIEW_DURATION },
   });
-  if (!canBookInterview) return next(badRequest());
+  if (!canBookInterview) return next(busyTutorManager());
 
   const members = [interviewer.id, intervieweeId];
   const room = await rooms.findRoomByMembers(members);
@@ -168,7 +174,7 @@ async function findInterviewById(
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
   const interview = await interviews.findById(interviewId);
-  if (!interview) return next(notfound.base());
+  if (!interview) return next(notfound.interview());
 
   if (
     (isTutor(user) && user.id !== interview.ids.interviewee) ||
@@ -193,7 +199,7 @@ async function updateInterview(
     req.body
   );
   const interview = await interviews.findById(interviewId);
-  if (!interview) return next(notfound.base());
+  if (!interview) return next(notfound.interview());
 
   if (
     (isTutor(user) && user.id !== interview.ids.interviewee) ||

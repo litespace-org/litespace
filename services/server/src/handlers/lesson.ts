@@ -7,7 +7,7 @@ import {
   pagination,
   withNamedId,
 } from "@/validation/utils";
-import { bad, forbidden, notfound, unexpected } from "@/lib/error";
+import { busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
 import { ILesson, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
@@ -42,10 +42,10 @@ function create(context: ApiContext) {
         req.body
       );
       const tutor = await users.findById(payload.tutorId);
-      if (!tutor) return next(notfound.base());
+      if (!tutor) return next(notfound.tutor());
 
       const rule = await rules.findById(payload.ruleId);
-      if (!rule) return next(notfound.base());
+      if (!rule) return next(notfound.rule());
 
       const price = calculateLessonPrice(
         platformConfig.tutorHourlyRate,
@@ -69,7 +69,7 @@ function create(context: ApiContext) {
           duration: payload.duration,
         },
       });
-      if (!canBookLesson) return next(bad());
+      if (!canBookLesson) return next(busyTutor());
 
       const { call, lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
@@ -172,10 +172,10 @@ function cancel(context: ApiContext) {
 
       const { lessonId } = withNamedId("lessonId").parse(req.params);
       const lesson = await lessons.findById(lessonId);
-      if (!lesson) return next(notfound.base());
+      if (!lesson) return next(notfound.lesson());
 
       const call = await calls.findById(lesson.callId);
-      if (!call) return next(notfound.base());
+      if (!call) return next(notfound.call());
 
       const members = await lessons.findLessonMembers([lessonId]);
       const member = members.map((member) => member.userId).includes(user.id);

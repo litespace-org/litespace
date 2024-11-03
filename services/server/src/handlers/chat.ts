@@ -4,7 +4,7 @@ import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
 import zod from "zod";
 import { id, pagination, withNamedId } from "@/validation/utils";
-import { badRequest, forbidden, notfound } from "@/lib/error";
+import { exists, forbidden, notfound } from "@/lib/error";
 import {
   authorizer,
   isAdmin,
@@ -42,8 +42,8 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
   if (!eligible) return next(forbidden());
 
   const members = [targetUserId, currentUser.id];
-  const exists = await rooms.findRoomByMembers(members);
-  if (exists) return next(badRequest());
+  const room = await rooms.findRoomByMembers(members);
+  if (room) return next(exists.room());
 
   const roomId = await rooms.create(members);
   res.status(200).json({ roomId });
@@ -84,16 +84,18 @@ async function findRoomMessages(
   res: Response,
   next: NextFunction
 ) {
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
   const { roomId } = withNamedId("roomId").parse(req.params);
   const members = await rooms.findRoomMembers({ roomIds: [roomId] });
-  if (isEmpty(members)) return next(notfound.base());
+  if (isEmpty(members)) return next(notfound.room());
 
   const ids = members.map((member) => member.id);
-  const allowed = authorizer()
-    .admin()
-    .member(...ids)
-    .check(req.user);
-  if (!allowed) return next(forbidden());
+  const member = isUser(user) && ids.includes(user.id);
+  const eligible = member || isAdmin(user);
+  if (!eligible) return next(forbidden());
 
   const { page, size } = pagination.parse(req.query);
   const list: IMessage.FindRoomMessagesApiResponse =
@@ -112,7 +114,7 @@ async function findRoomByMembers(
   if (!allowed) return next(forbidden());
 
   const room = await rooms.findRoomByMembers(members);
-  if (!room) return next(notfound.base());
+  if (!room) return next(notfound.room());
   res.status(200).json({ room });
 }
 
@@ -164,7 +166,7 @@ async function findRoomMembers(
     roomIds: [roomId],
     excludeUsers: [user.id],
   });
-  if (isEmpty(members)) return next(notfound.base());
+  if (isEmpty(members)) return next(notfound.room());
   res.status(200).json(members);
 }
 
