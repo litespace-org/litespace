@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/Input";
-import { Duration, UnitMap, UnitMapShort } from "@litespace/sol/duration";
+import { Duration } from "@litespace/sol/duration";
 
 export const DurationInput: React.FC<{
   value?: Duration;
   onChange?: (duration: Duration) => void;
-  labels: { short: UnitMapShort; long: UnitMap };
   placeholder?: string;
   error?: string | null;
   disabled?: boolean;
-}> = ({ value, onChange, labels, placeholder, error, disabled }) => {
+}> = ({ value, onChange, placeholder, error, disabled }) => {
   const [rawValue, setRawValue] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!focused) setRawValue(value?.formatShort(labels.short) || "");
-  }, [focused, labels.short, value]);
+    if (!focused) setRawValue(value?.format() || "");
+  }, [focused, , value]);
 
   return (
     <Input
@@ -26,7 +25,7 @@ export const DurationInput: React.FC<{
       }}
       onFocus={() => setFocused(true)}
       onBlur={() => setFocused(false)}
-      value={focused ? rawValue : value?.format(labels.long) || ""}
+      value={focused ? rawValue : value?.format() || ""}
       placeholder={placeholder}
       error={error}
       disabled={disabled}
