@@ -38,27 +38,27 @@ jobs:
         run: pnpm build:pkgs
       # Nova Deployment
       - name: Pull Nova from Vercel
-        run: yarn vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Setup staging environment variables for Nova
         run: cp apps/nova/.env.staging apps/nova/.env
       - name: Build Nova using Vercel
-        run: yarn build:nova:vercel
+        run: pnpm build:nova:vercel
       - name: Deploy Nova to Vercel
-        run: yarn deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm deploy:nova:vercel --token=${{ secrets.VERCEL_TOKEN }}
       # Luna Deployment
       - name: Pull Luna from Vercel
-        run: yarn vercel:ci pull "luna" "packages/luna/" --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm vercel:ci pull "luna" "packages/luna/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Luna using Vercel
-        run: yarn build:luna:vercel
+        run: pnpm build:luna:vercel
       - name: Deploy Luna to Vercel
-        run: yarn deploy:luna:vercel --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm deploy:luna:vercel --token=${{ secrets.VERCEL_TOKEN }}
       # Nebula Deployment
       - name: Pull Nebula from Vercel
-        run: yarn vercel:ci pull "nebula" "apps/nebula/" --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm vercel:ci pull "nebula" "apps/nebula/" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Build Nebula using Vercel
-        run: yarn build:nebula:vercel
+        run: pnpm build:nebula:vercel
       - name: Deploy Nebula to Vercel
-        run: yarn deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}
       - name: Pull latest deployment urls from Vercel
         run: pnpm vercel:ci urls "nova,luna,nebula" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Send latest deployment urls to Telegram
