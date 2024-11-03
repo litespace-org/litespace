@@ -1,16 +1,14 @@
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
-import { Element, ICall, ILesson, IUser } from "@litespace/types";
+import { Element, ILesson, IUser } from "@litespace/types";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
 import { Avatar } from "@litespace/luna/Avatar";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
-import * as Calls from "@litespace/luna/Calls";
 import { Card } from "@litespace/luna/Card";
 import { IconField } from "@litespace/luna/IconField";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import WatchCall from "@/components/Call/WatchCall";
 import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";
@@ -64,12 +62,6 @@ const Lesson: React.FC<
     return !lesson.canceledBy && now.isBetween(start, end, "seconds", "[]");
   }, [call.duration, call.start, lesson.canceledBy]);
 
-  const title = useMemo(() => {
-    return intl("page.lessons.watch.dialog.title", {
-      name: otherMember?.name || "",
-    });
-  }, [intl, otherMember?.name]);
-
   const cancelLesson = useCancelLesson();
 
   const actions = useMemo((): MenuAction[] => {
@@ -83,23 +75,6 @@ const Lesson: React.FC<
       },
     ];
 
-    if (call.recordingStatus === ICall.RecordingStatus.Processed) {
-      list.push(
-        {
-          id: 2,
-          label: intl("global.labels.watch.lesson"),
-          onClick: watch.show,
-        },
-        {
-          id: 3,
-          label: intl("global.labels.download.lesson"),
-          onClick: () => {
-            alert("download");
-          },
-        }
-      );
-    }
-
     list.push({
       id: 4,
       label: intl("global.labels.block.or.ban"),
@@ -110,7 +85,7 @@ const Lesson: React.FC<
     });
 
     return list;
-  }, [call.recordingStatus, intl, watch.show]);
+  }, [intl, watch.show]);
 
   const { sm } = useMediaQueries();
 
@@ -163,7 +138,6 @@ const Lesson: React.FC<
               : intl("page.lessons.lesson.canceled")}
           </IconField>
         ) : null}
-        <Calls.Status status={call.recordingStatus} />
       </ul>
 
       <div className="flex flex-row gap-2 mt-4">
@@ -202,13 +176,6 @@ const Lesson: React.FC<
           {intl("global.labels.cancel")}
         </Button>
       </div>
-
-      <WatchCall
-        open={watch.open}
-        close={watch.hide}
-        callId={call.id}
-        title={title}
-      />
     </Card>
   );
 };

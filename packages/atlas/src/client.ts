@@ -4,11 +4,6 @@ import axios, { AxiosError, AxiosInstance } from "axios";
 export type GetToken = () => string | null;
 
 export const sockets = {
-  recorder: {
-    [Backend.Local]: "ws://localhost:9090",
-    [Backend.Staging]: "wss://recorder.staging.litespace.org",
-    [Backend.Production]: "wss://recorder.litespace.org",
-  },
   main: {
     [Backend.Local]: `ws://localhost:8080`,
     [Backend.Staging]: "wss://api.staging.litespace.org",
@@ -21,11 +16,6 @@ export const backends = {
     [Backend.Local]: "http://localhost:8080",
     [Backend.Staging]: "https://api.staging.litespace.org",
     [Backend.Production]: "https://api.litespace.org",
-  },
-  recorder: {
-    [Backend.Local]: "http://localhost:9090",
-    [Backend.Staging]: "https://recorder.staging.litespace.org",
-    [Backend.Production]: "https://recorder.litespace.org",
   },
 };
 
