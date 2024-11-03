@@ -157,7 +157,7 @@ export function useUserMedia() {
 
 type PossibleStream = MediaStream | null;
 
-export function useCall(call: number | null) {
+export function useCall(call: number | null, mateUserId: number | null) {
   const socket = useSocket();
   const peer = usePeer();
   const [mateMediaStream, setMateMediaStream] = useState<PossibleStream>(null);
@@ -181,6 +181,10 @@ export function useCall(call: number | null) {
     video,
   } = useUserMedia();
   const screen = useShareScreen(mediaConnection?.peer);
+  const userSpeaking = useSpeaking(mediaConnection, userMediaStream);
+  const mateSpeaking = useSpeaking(mediaConnection, mateMediaStream);
+  const { mateAudio, mateVideo, notifyCameraToggle, notifyMicToggle } =
+    useCallEvents(mateMediaStream, call, mateUserId);
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
@@ -212,7 +216,6 @@ export function useCall(call: number | null) {
 
   const onJoinCall = useCallback(
     ({ peerId }: { peerId: string }) => {
-      console.log({ peerId });
       setTimeout(() => {
         if (!userMediaStream) return;
         // shared my stream with the connected peer
@@ -249,6 +252,16 @@ export function useCall(call: number | null) {
     };
   }, [onCall, peer]);
 
+  const onToggleCamera = useCallback(() => {
+    toggleCamera();
+    notifyCameraToggle(!video);
+  }, [notifyCameraToggle, toggleCamera, video]);
+
+  const onToggleMic = useCallback(() => {
+    toggleMic();
+    notifyMicToggle(!audio);
+  }, [notifyMicToggle, toggleMic, audio]);
+
   return useMemo(
     () => ({
       mate: {
@@ -256,16 +269,15 @@ export function useCall(call: number | null) {
           self: mateMediaStream,
           screen: mateScreenStream,
         },
+        speaking: mateSpeaking,
+        audio: mateAudio,
+        video: mateVideo,
       },
       user: {
         streams: {
           self: userMediaStream,
           screen: screen.stream,
         },
-        start,
-        stop,
-        toggleCamera,
-        toggleMic,
         audio,
         camera,
         denied,
@@ -274,8 +286,14 @@ export function useCall(call: number | null) {
         mic,
         video,
         screen,
+        speaking: userSpeaking,
       },
       mediaConnection,
+      start,
+      stop,
+      onToggleCamera,
+      onToggleMic,
+      peer,
     }),
     [
       audio,
@@ -371,5 +389,123 @@ export function useShareScreen(matePeerId?: string) {
     error,
     share,
     stop,
+  };
+}
+
+export function useSpeaking(
+  mediaConnection: MediaConnection | null,
+  stream: MediaStream | null,
+  threshold: number = 0.1
+) {
+  const [speaking, setSpeadking] = useState<boolean>(false);
+
+  useEffect(() => {
+    const interval = setInterval(async () => {
+      if (!mediaConnection || !mediaConnection.peerConnection || !stream)
+        return setSpeadking(false);
+
+      const audio = stream.getAudioTracks()[0];
+      if (!audio) return setSpeadking(false);
+
+      const stats = await mediaConnection.peerConnection.getStats(audio);
+      const values: Iterable<{
+        type: "media-source";
+        kind: "audio";
+        audioLevel: number;
+      }> = stats.values();
+
+      for (const result of values) {
+        if (result.type === "media-source" && result.kind === "audio") {
+          const level = result.audioLevel;
+          if (level > threshold) return setSpeadking(true);
+          else return setSpeadking(false);
+        }
+      }
+
+      return setSpeadking(false);
+    }, 1_000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
+
+  return speaking;
+}
+
+function useStreamState(stream: MediaStream | null) {
+  const [video, setVideo] = useState<boolean>(false);
+  const [audio, setAduio] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!stream) return;
+    setVideo(stream.getVideoTracks().some((track) => track.enabled));
+    setAduio(stream.getAudioTracks().some((track) => track.enabled));
+  }, [stream]);
+
+  return { video, audio };
+}
+
+export function useCallEvents(
+  mateStream: MediaStream | null,
+  call: number | null,
+  mateUserId: number | null
+) {
+  const [mateVideo, setMateVideo] = useState<boolean>(false);
+  const [mateAudio, setMateAudio] = useState<boolean>(false);
+  const streamState = useStreamState(mateStream);
+  const socket = useSocket();
+
+  const notifyCameraToggle = useCallback(
+    (camera: boolean) => {
+      if (!call || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
+    },
+    [call, socket]
+  );
+
+  const notifyMicToggle = useCallback(
+    (mic: boolean) => {
+      if (!call || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { call, mic });
+    },
+    [call, socket]
+  );
+
+  const onCameraToggle = useCallback(
+    ({ camera, user }: { camera: boolean; user: number }) => {
+      if (user === mateUserId) setMateVideo(camera);
+    },
+    [mateUserId]
+  );
+
+  const onMicToggle = useCallback(
+    ({ mic, user }: { mic: boolean; user: number }) => {
+      if (user === mateUserId) setMateAudio(mic);
+    },
+    [mateUserId]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
+    socket.on(Wss.ServerEvent.MicToggled, onMicToggle);
+
+    return () => {
+      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
+      socket.off(Wss.ServerEvent.MicToggled, onMicToggle);
+    };
+  }, [onCameraToggle, onMicToggle, socket]);
+
+  useEffect(() => {
+    setMateVideo(streamState.video);
+    setMateAudio(streamState.audio);
+  }, [streamState.audio, streamState.video]);
+
+  return {
+    notifyCameraToggle,
+    notifyMicToggle,
+    mateAudio,
+    mateVideo,
   };
 }
