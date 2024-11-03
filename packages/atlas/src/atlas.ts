@@ -1,8 +1,5 @@
 import { User } from "@/user";
-import { Tutor } from "@/tutor";
-import { Student } from "@/student";
 import { Auth } from "@/auth";
-import { Slot } from "@/slot";
 import { Backend } from "@litespace/types";
 import { Call } from "@/call";
 import { Plan } from "@/plan";
@@ -22,10 +19,7 @@ import { GetToken } from "@/client";
 
 export class Atlas {
   public readonly user: User;
-  public readonly tutor: Tutor;
-  public readonly student: Student;
   public readonly auth: Auth;
-  public readonly slot: Slot;
   public readonly call: Call;
   public readonly plan: Plan;
   public readonly coupon: Coupon;
@@ -43,10 +37,7 @@ export class Atlas {
 
   constructor(backend: Backend, getToken: GetToken) {
     this.user = new User(backend, getToken);
-    this.tutor = new Tutor(backend, getToken);
-    this.student = new Student(backend, getToken);
     this.auth = new Auth(backend, getToken);
-    this.slot = new Slot(backend, getToken);
     this.call = new Call(backend, getToken);
     this.plan = new Plan(backend, getToken);
     this.coupon = new Coupon(backend, getToken);
