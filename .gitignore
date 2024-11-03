@@ -15,6 +15,3 @@ services/server/*.pem
 services/server/uploads/
 .vercel
 
-# recorder
-services/recorder/assets/
-services/recorder/artifacts/

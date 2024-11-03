@@ -28,7 +28,6 @@
     "dev:landing": "pnpm --filter @litespace/nebula dev",
     "docker": "pnpm --filter @litespace/server docker",
     "peer": "pnpm --filter @litespace/server peer",
-    "recorder": "pnpm --filter @litespace/recorder start",
     "reseed": "pnpm --filter @litespace/models reseed",
     "build:nova:vercel": "pnpm --filter @litespace/nova build:vercel",
     "build:luna:vercel": "pnpm --filter @litespace/luna build:vercel",
