@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "build:vercel": "pnpm vercel build",
+    "deploy:vercel": "pnpm vercel deploy --prebuilt"
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
