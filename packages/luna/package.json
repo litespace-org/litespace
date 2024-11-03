@@ -67,6 +67,7 @@
     "./hooks/chat": "./dist/hooks/chat.js",
     "./hooks/invoice": "./dist/hooks/invoice.js",
     "./hooks/withdraw": "./dist/hooks/withdraw.js",
+    "./hooks/dom": "./dist/hooks/dom.js",
     "./locales": "./dist/locales/index.js",
     "./redux": "./dist/lib/redux.js",
     "./backend": "./dist/lib/backend.js",
