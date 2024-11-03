@@ -1,8 +1,8 @@
 import { NavOption } from "@/types/navbar";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Link } from "react-router-dom";
-import cn from "classnames";
 import { Void } from "@litespace/types";
+import cn from "classnames";
 
 function SideBarItem({
   option,
@@ -19,14 +19,16 @@ function SideBarItem({
           loading={option.loading}
           disabled={option.disabled}
           className={cn(
-            "!w-full [&>div]:w-full [&>div]:flex [&>div]:items-center [&>div]:gap-2 [&>div]:justify-start [&>div]:text-lg",
+            "w-full [&>div]:w-full",
             location.pathname === option.route && "bg-surface-200"
           )}
           size={ButtonSize.Small}
           type={ButtonType.Text}
         >
-          <option.icon className="w-7 h-7" />
-          {option.label}
+          <div className="flex items-center justify-start gap-2 w-full">
+            <option.icon className="w-6 h-6" />
+            <p className="truncate">{option.label}</p>
+          </div>
         </Button>
       </Link>
     </li>

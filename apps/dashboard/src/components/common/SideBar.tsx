@@ -1,16 +1,11 @@
 import React, { useRef, useCallback } from "react";
 import { Moon, Sidebar, Sun, User } from "react-feather";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  Switch,
-  Theme,
-  removeToken,
-  useFormatMessage,
-  useTheme,
-} from "@litespace/luna";
-import { useClosableRef } from "@litespace/luna";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Switch } from "@litespace/luna/Switch";
+import { removeToken } from "@litespace/luna/cache";
+import { useTheme, Theme } from "@litespace/luna/hooks/theme";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useClosableRef } from "@litespace/luna/hooks/dom";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -42,36 +37,25 @@ const SidebarNav: React.FC<{
     toggle: toggleMenu,
     open,
     ref,
+    show,
+    hide,
   } = useClosableRef<HTMLUListElement>(button.current);
 
   const logout = useCallback(() => {
     removeToken();
     dispatch(resetUserProfile());
     navigate(Route.Login);
-  }, [dispatch]);
+  }, [dispatch, navigate]);
 
   return (
     <nav className="relative">
       <div
         ref={button}
-        className="fixed flex flex-col items-center justify-between h-screen p-2 border-l"
+        className="fixed flex flex-col items-center justify-between h-screen p-2 border-l border-border-strong"
+        onMouseEnter={show}
       >
-        <Button
-          onClick={toggleMenu}
-          size={ButtonSize.Small}
-          type={ButtonType.Text}
-          className="!p-2"
-        >
-          <Sidebar className="w-8 h-8" />
-        </Button>
-        <Button type={ButtonType.Text} onClick={toggleMenu}>
-          {profile?.image ? (
-            <div className="overflow-hidden border-2 border-white rounded-full">
-              <img src={profile?.image} className="w-10 h-10 rounded-full" />
-            </div>
-          ) : (
-            <User className="w-8 h-8" />
-          )}
+        <Button onClick={toggleMenu} type={ButtonType.Text} className="!p-2">
+          <Sidebar className="w-6 h-6" />
         </Button>
       </div>
 
@@ -89,39 +73,49 @@ const SidebarNav: React.FC<{
                 "border-l border-border-overlay rounded-l-md shadow-lg",
                 "flex flex-col items-center p-6"
               )}
+              onMouseLeave={hide}
               ref={ref}
             >
-              <div className="flex items-center w-full gap-2">
+              <div className="flex items-start border border-border-strong rounded-md p-1 w-full gap-2">
                 <div>
                   {profile?.image ? (
                     <div className="overflow-hidden border-2 border-white rounded-full">
                       <img
                         src={profile.image}
-                        className="w-10 h-10 rounded-full"
+                        className="w-8 h-8 rounded-full"
                       />
                     </div>
                   ) : (
-                    <User className="w-8 h-8" />
+                    <User className="w-6 h-6" />
                   )}
                 </div>
                 <div className="grow">
                   <h3>{profile?.name}</h3>
-                  <p>{profile?.email}</p>
+                  <p className="text-foreground-light">{profile?.email}</p>
                 </div>
               </div>
 
               <div className="flex flex-col w-full gap-4 mt-6 text-3xl grow">
                 {options.map((option) => {
-                  if ("label" in option) {
-                    return <SideBarItem option={option} onClick={toggleMenu} />;
-                  } else {
+                  if ("label" in option)
                     return (
-                      <SideBarAccordion onClick={toggleMenu} item={option} />
+                      <SideBarItem
+                        key={option.label}
+                        option={option}
+                        onClick={toggleMenu}
+                      />
                     );
-                  }
+
+                  return (
+                    <SideBarAccordion
+                      key={option.title}
+                      onClick={toggleMenu}
+                      item={option}
+                    />
+                  );
                 })}
               </div>
-              <div className="flex flex-col items-center justify-center w-full gap-4">
+              <div className="flex flex-row items-center justify-center w-full gap-4">
                 <div className="flex gap-1">
                   <Sun />
                   <Switch
@@ -133,7 +127,8 @@ const SidebarNav: React.FC<{
                 <Button
                   onClick={logout}
                   className="w-full"
-                  type={ButtonType.Error}
+                  size={ButtonSize.Small}
+                  type={ButtonType.Secondary}
                 >
                   {intl("navbar.logout")}
                 </Button>
