@@ -1,12 +1,5 @@
 import { Base } from "@/base";
-import {
-  FindMeResponse,
-  IFilter,
-  ITutor,
-  IUser,
-  Paginated,
-  PagniationParams,
-} from "@litespace/types";
+import { IFilter, ITutor, IUser, PagniationParams } from "@litespace/types";
 
 export class User extends Base {
   async create(
@@ -20,10 +13,8 @@ export class User extends Base {
     return data;
   }
 
-  async findMe(): Promise<FindMeResponse> {
-    return await this.client
-      .get<FindMeResponse>("/api/v1/user/me")
-      .then((response) => response.data);
+  async findMe(): Promise<IUser.Self> {
+    return await this.get("/api/v1/user/me");
   }
 
   async find(
