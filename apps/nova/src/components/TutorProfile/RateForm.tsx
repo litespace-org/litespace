@@ -25,21 +25,27 @@ type RateFormProps = {
 const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
+  const form = useForm<IForm>({
+    defaultValues: { feedback: rate?.feedback || "", rating: rate?.value || 5 },
+  });
 
   const onSuccess = useCallback(() => {
     invalidate([QueryKey.FindTutorRating, tutor]);
     toaster.success({ title: intl("tutor.rate.succes") });
     if (rate && close) close();
     form.reset();
-  }, []);
+  }, [close, form, intl, invalidate, rate, tutor]);
 
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("tutor.rate.error"),
-      description: error.message,
-    });
-    if (rate && close) close();
-  }, []);
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("tutor.rate.error"),
+        description: error.message,
+      });
+      if (rate && close) close();
+    },
+    [close, intl, rate]
+  );
 
   const rateTutor = useCreateRatingTutor({ onSuccess, onError });
 
@@ -48,26 +54,25 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
     onError,
   });
 
-  const form = useForm<IForm>({
-    defaultValues: { feedback: rate?.feedback || "", rating: rate?.value || 5 },
-  });
+  const onSubmit = useCallback(
+    (data: IForm) => {
+      if (rate)
+        return editRateTutor.mutate({
+          payload: {
+            feedback: data.feedback,
+            value: data.rating,
+          },
+          id: rate.id,
+        });
 
-  const onSubmit = useCallback((data: IForm) => {
-    if (rate)
-      return editRateTutor.mutate({
-        payload: {
-          feedback: data.feedback,
-          value: data.rating,
-        },
-        id: rate.id,
+      rateTutor.mutate({
+        feedback: data.feedback || null,
+        value: data.rating,
+        rateeId: tutor,
       });
-
-    rateTutor.mutate({
-      feedback: data.feedback || null,
-      value: data.rating,
-      rateeId: tutor,
-    });
-  }, []);
+    },
+    [editRateTutor, rate, rateTutor, tutor]
+  );
 
   return (
     <Form onSubmit={form.handleSubmit(onSubmit)}>

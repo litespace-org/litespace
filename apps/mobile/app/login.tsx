@@ -2,7 +2,7 @@ import { ThemedView } from "@/components/ThemedView";
 import React, { useMemo } from "react";
 import { View, TextInput, Button, StyleSheet } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { OnError, OnSuccess, useLogin } from "@litespace/headless/login";
+import { OnError, OnLoginSuccess, useLogin } from "@litespace/headless/login";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type IForm = {
@@ -13,7 +13,7 @@ type IForm = {
 const Login = () => {
   const { control, handleSubmit } = useForm<IForm>();
 
-  const payload: { onSuccess: OnSuccess; onError: OnError } = useMemo(
+  const payload: { onSuccess: OnLoginSuccess; onError: OnError } = useMemo(
     () => ({
       onSuccess: (user) => {
         AsyncStorage.setItem("token", user.token);
@@ -33,7 +33,7 @@ const Login = () => {
       handleSubmit((data) => {
         login.mutate(data);
       }),
-    []
+    [handleSubmit, login]
   );
 
   return (
