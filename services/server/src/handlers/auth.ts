@@ -1,5 +1,5 @@
 import safeRequest from "express-async-handler";
-import { bad, badRequest, notfound } from "@/lib/error";
+import { bad, emailAlreadyVerified, notfound } from "@/lib/error";
 import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword } from "@/lib/user";
@@ -67,7 +67,7 @@ async function loginWithGoogle(
   });
 
   const payload = ticket.getPayload();
-  if (!payload || !payload.email) return next(badRequest());
+  if (!payload || !payload.email) return next(bad());
 
   const success = (user: IUser.Self) => {
     const token = encodeAuthJwt(user.id, jwtSecret);
@@ -77,7 +77,7 @@ async function loginWithGoogle(
 
   const user = await users.findByEmail(payload.email);
   if (user && (!role || role === user.role)) return success(user);
-  if (user && role && role !== user.role) return next(badRequest());
+  if (user && role && role !== user.role) return next(bad());
 
   if (role) {
     const freshUser = await knex.transaction(async (tx) => {
@@ -99,7 +99,7 @@ async function loginWithAuthToken(
   const { token } = loginWithAuthTokenPayload.parse(req.body);
   const id = decodeAuthJwt(token, jwtSecret);
   const user = await users.findById(id);
-  if (!user) return next(notfound.base());
+  if (!user) return next(notfound.user());
 
   const response: IUser.LoginWithAuthTokenApiResponse = {
     user,
@@ -130,7 +130,7 @@ async function resetPassword(req: Request, res: Response, next: NextFunction) {
   const { password, token } = resetPasswordPayload.parse(req.body);
   const jwtPayload = jwt.verify(token, jwtSecret);
   const { type, user: id } = foregetPasswordJwtPayload.parse(jwtPayload);
-  if (type !== IToken.Type.ForgotPassword) return next(badRequest());
+  if (type !== IToken.Type.ForgotPassword) return next(bad());
 
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
@@ -153,11 +153,11 @@ async function verifyEmail(req: Request, res: Response, next: NextFunction) {
 
   const { type, user: id }: IToken.VerifyEmailJwtPayload =
     verifyEmailJwtPayload.parse(jwtPayload);
-  if (type !== IToken.Type.VerifyEmail) return next(badRequest());
+  if (type !== IToken.Type.VerifyEmail) return next(bad());
 
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
-  if (user.verified) return next(bad());
+  if (user.verified) return next(emailAlreadyVerified());
 
   await users.update(id, { verified: true });
   res.status(200).send();

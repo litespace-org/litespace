@@ -2,7 +2,7 @@ import { calls } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { withNamedId } from "@/validation/utils";
-import { groupBy, map } from "lodash";
+import { groupBy } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import { isAdmin, isUser } from "@litespace/auth";
 
@@ -28,7 +28,8 @@ async function findCallById(req: Request, res: Response, next: NextFunction) {
 async function findCallsByUserId(req: Request, res: Response) {
   const { userId } = withNamedId("userId").parse(req.params);
   const userCalls = await calls.findMemberCalls({ userIds: [userId] });
-  const members = await calls.findCallMembers(map(userCalls, "id"));
+  const userCallIds = userCalls.map((call) => call.id);
+  const members = await calls.findCallMembers(userCallIds);
   const callMembersMap = groupBy(members, "callId");
   res.status(200).json({ calls: userCalls, members: callMembersMap });
 }

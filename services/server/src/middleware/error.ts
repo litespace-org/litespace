@@ -1,10 +1,11 @@
 import { isProduction } from "@/constants";
-import ResponseError, { ErrorCode } from "@/lib/error";
+import ResponseError from "@/lib/error";
 import { AxiosError } from "axios";
-import { NextFunction, Request, Response } from "express";
+import { Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
+import { ApiError } from "@litespace/types";
 
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
@@ -15,15 +16,13 @@ function getZodMessage(error: ZodError) {
 export function errorHandler(
   error: Error | DatabaseError | ResponseError | ZodError | AxiosError,
   _req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ) {
-  console.log(error);
   if (!isProduction) console.error(error);
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
-  let errorCode = ErrorCode.Unexpected;
+  let errorCode = ApiError.Unexpected;
 
   if (error instanceof ResponseError) {
     statusCode = error.statusCode;

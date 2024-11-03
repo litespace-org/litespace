@@ -21,9 +21,9 @@ export * as ILesson from "@/lesson";
 export * as IWithdrawMethod from "@/withdrawMethod";
 export * as IInvoice from "@/invoice";
 export * as IAsset from "@/asset";
+export * from "@/api";
 export * from "@/utils";
 export * from "@/api";
-export * from "@/lib";
 
 export { banks, type Bank } from "@/invoice";
 export { type Type as WithdrawMethod } from "@/withdrawMethod";
