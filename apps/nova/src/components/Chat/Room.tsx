@@ -3,7 +3,7 @@ import { first } from "lodash";
 import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 enum Status {

@@ -1,6 +1,6 @@
-import { asFullCallRecordingUrl } from "@litespace/luna/lib";
-import { VideoPlayer } from "@litespace/luna/components/VideoPlayer";
-import { Dialog } from "@litespace/luna/components/Dialog";
+import { asFullCallRecordingUrl } from "@litespace/luna/backend";
+import { VideoPlayer } from "@litespace/luna/VideoPlayer";
+import { Dialog } from "@litespace/luna/Dialog";
 import React from "react";
 
 const WatchCall: React.FC<{

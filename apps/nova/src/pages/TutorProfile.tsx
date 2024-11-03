@@ -1,5 +1,5 @@
-import { Loading } from "@litespace/luna/components/Loading";
-import { asOnlineStatus } from "@litespace/luna/components/utils";
+import { Loading } from "@litespace/luna/Loading";
+import { asOnlineStatus } from "@litespace/luna/utils";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { Image, Video } from "@/components/TutorProfile/Media";
@@ -29,7 +29,7 @@ const TutorProfile: React.FC = () => {
 
   const activity = useFindTutorActivityScore(id);
 
-  const ratings = useFindRatingTutor(tutor.data?.id!);
+  const ratings = useFindRatingTutor(tutor.data?.id || null);
 
   if (tutor.isLoading) return <Loading className="h-[40vh]" />;
   if (tutor.isError || !tutor.data) return <h1>Error</h1>;

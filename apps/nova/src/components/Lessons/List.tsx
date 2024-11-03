@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Element, ILesson, IUser } from "@litespace/types";
-import { Timeline, TimelineItem } from "@litespace/luna/components/Timeline";
+import { Timeline, TimelineItem } from "@litespace/luna/Timeline";
 import Lesson from "@/components/Lessons/Lesson";
 import { Hash, X } from "react-feather";
 

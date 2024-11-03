@@ -2,8 +2,9 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
-import { useFormatMessage, useRender } from "@litespace/luna/hooks";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { useRender } from "@litespace/luna/hooks/common";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 
 import cn from "classnames";
 import React from "react";

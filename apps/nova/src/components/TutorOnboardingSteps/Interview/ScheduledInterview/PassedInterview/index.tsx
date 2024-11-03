@@ -1,10 +1,5 @@
-import { Button, ButtonType } from "@litespace/luna/components/Button";
-import {
-  Controller,
-  Form,
-  Label,
-  Field,
-} from "@litespace/luna/components/Form";
+import { Button, ButtonType } from "@litespace/luna/Button";
+import { Controller, Form, Label, Field } from "@litespace/luna/Form";
 import { useValidation } from "@litespace/luna/hooks/validation";
 import { messages } from "@litespace/luna/locales";
 import React, { useMemo } from "react";

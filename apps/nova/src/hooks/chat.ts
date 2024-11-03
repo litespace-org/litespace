@@ -1,4 +1,4 @@
-import { MessageStream, MessageStreamAction } from "@litespace/luna/hooks";
+import { MessageStream, MessageStreamAction } from "@litespace/luna/hooks/chat";
 import { Wss, IMessage } from "@litespace/types";
 import { useCallback, useEffect } from "react";
 import { useSocket } from "@litespace/headless/socket";

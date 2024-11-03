@@ -1,9 +1,6 @@
-import {
-  UserOnlineStatus,
-  OnlineStatus,
-} from "@litespace/luna/components/OnlineStatus";
-import { VideoPlayer } from "@litespace/luna/components/VideoPlayer";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { UserOnlineStatus, OnlineStatus } from "@litespace/luna/OnlineStatus";
+import { VideoPlayer } from "@litespace/luna/VideoPlayer";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import React from "react";
 
 export const Image: React.FC<{

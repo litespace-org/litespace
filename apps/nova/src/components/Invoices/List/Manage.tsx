@@ -1,17 +1,12 @@
 import { useWithdrawMethod } from "@/hooks/withdraw";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import {
   destructureWithdrawMethod,
   getWithdrawMethodIntlId,
-} from "@litespace/luna/components/utils";
-import { Dialog } from "@litespace/luna/components/Dialog";
-import {
-  Form,
-  Field,
-  Label,
-  Controller,
-} from "@litespace/luna/components/Form";
-import { toaster } from "@litespace/luna/components/Toast";
+} from "@litespace/luna/utils";
+import { Dialog } from "@litespace/luna/Dialog";
+import { Form, Field, Label, Controller } from "@litespace/luna/Form";
+import { toaster } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";

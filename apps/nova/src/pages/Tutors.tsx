@@ -1,5 +1,5 @@
 import TutorList from "@/components/Tutors/List";
-import { atlas } from "@litespace/luna/lib";
+import { atlas } from "@litespace/luna/backend";
 import React from "react";
 import { useQuery } from "@tanstack/react-query";
 

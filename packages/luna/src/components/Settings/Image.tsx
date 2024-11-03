@@ -1,4 +1,4 @@
-import { asFullAssetUrl } from "@/lib/atlas";
+import { asFullAssetUrl } from "@/lib/backend";
 import React, { useCallback, useRef } from "react";
 import cn from "classnames";
 import { Edit3 } from "react-feather";

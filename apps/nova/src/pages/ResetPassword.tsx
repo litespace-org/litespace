@@ -1,16 +1,12 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-} from "@litespace/luna/components/Button";
-import { Field, Label, Controller } from "@litespace/luna/components/Form";
-import { InputType } from "@litespace/luna/components/Input";
-import { toaster } from "@litespace/luna/components/Toast";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Field, Label, Controller } from "@litespace/luna/Form";
+import { InputType } from "@litespace/luna/Input";
+import { toaster } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import {
   useRequired,
   useValidatePassword,
-  useFormatMessage,
-} from "@litespace/luna/hooks";
+} from "@litespace/luna/hooks/validation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@litespace/headless/auth";
@@ -56,20 +52,26 @@ const ResetPassword = () => {
   const password = watch("password");
   const newPassword = watch("newPassword");
 
-  const onSuccess = useCallback((profile: IUser.ResetPasswordApiResponse) => {
-    toaster.success({ title: intl("page.login.forget.password.compelete") });
-    dispatch(setUserProfile(profile));
-    dispatch(resetTutorMeta());
-    dispatch(resetUserRules());
-    return navigate(Route.Root);
-  }, []);
+  const onSuccess = useCallback(
+    (profile: IUser.ResetPasswordApiResponse) => {
+      toaster.success({ title: intl("page.login.forget.password.compelete") });
+      dispatch(setUserProfile(profile));
+      dispatch(resetTutorMeta());
+      dispatch(resetUserRules());
+      return navigate(Route.Root);
+    },
+    [dispatch, intl, navigate]
+  );
 
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("error.unexpected"),
-      description: error.message,
-    });
-  }, []);
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("error.unexpected"),
+        description: error.message,
+      });
+    },
+    [intl]
+  );
 
   const mutation = useResetPassword({ onSuccess, onError });
 
@@ -78,7 +80,7 @@ const ResetPassword = () => {
       if (password !== newPassword || !token) return;
       mutation.mutate({ token, password });
     });
-  }, [password, newPassword]);
+  }, [handleSubmit, password, newPassword, token, mutation]);
 
   return (
     <div className="flex items-center justify-center p-10">

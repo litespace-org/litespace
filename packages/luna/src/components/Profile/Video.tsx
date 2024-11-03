@@ -1,6 +1,6 @@
 import React from "react";
 import { VideoPlayer } from "@/components/VideoPlayer";
-import { asFullAssetUrl } from "@/lib/atlas";
+import { asFullAssetUrl } from "@/lib/backend";
 
 const Video: React.FC<{
   video?: string | null;

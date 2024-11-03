@@ -1,6 +1,6 @@
 import { Route } from "@/types/routes";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ITutor } from "@litespace/types";
 import cn from "classnames";

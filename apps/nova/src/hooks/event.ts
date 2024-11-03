@@ -1,5 +1,5 @@
 import { asCalendarEvents } from "@/lib/rule";
-import { Event } from "@litespace/luna/components/Calendar";
+import { Event } from "@litespace/luna/Calendar";
 import { IRule } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";

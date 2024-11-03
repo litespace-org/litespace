@@ -1,6 +1,6 @@
 import { Route } from "@/types/routes";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { Card } from "@litespace/luna/components/Card";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Card } from "@litespace/luna/Card";
 import { messages } from "@litespace/luna/locales";
 import { IUser } from "@litespace/types";
 import React, { useMemo } from "react";

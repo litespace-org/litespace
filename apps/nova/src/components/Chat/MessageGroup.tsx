@@ -1,10 +1,8 @@
 import React from "react";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
-import {
-  MessageGroup as IMessageGroup,
-  asFullAssetUrl,
-} from "@litespace/luna/lib";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { MessageGroup as IMessageGroup } from "@litespace/luna/chat";
 import Message from "@/components/Chat/Message";
 import { IMessage } from "@litespace/types";
 import { AnimatePresence, motion } from "framer-motion";

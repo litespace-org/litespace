@@ -1,9 +1,7 @@
-import { RawHtml } from "@litespace/luna/components/RawHtml";
-import {
-  MenuAction,
-  ActionsMenu,
-} from "@litespace/luna/components/ActionsMenu";
-import { useFormatMessage, useRender } from "@litespace/luna/hooks";
+import { RawHtml } from "@litespace/luna/RawHtml";
+import { MenuAction, ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { useRender } from "@litespace/luna/hooks/common";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IMessage, Void } from "@litespace/types";
 import cn from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";

@@ -1,9 +1,5 @@
-import {
-  Button,
-  ButtonType,
-  ButtonSize,
-} from "@litespace/luna/components/Button";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ICall } from "@litespace/types";
 import React from "react";
