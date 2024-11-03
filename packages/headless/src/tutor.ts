@@ -35,7 +35,7 @@ export function useFindTutorById(
 
   const findTutoById = useCallback(() => {
     if (!id) return null;
-    return atlas.tutor.findById(id);
+    return atlas.user.findTutorById(id);
   }, [id]);
 
   return useQuery({
@@ -146,7 +146,7 @@ export function useIntroduceTutor({
   const introduceTutor = useCallback(
     async (fields: IForm) => {
       if (!profile) return;
-      return await atlas.tutor.update(profile.id, {
+      return await atlas.user.update(profile.id, {
         bio: fields.bio,
         about: fields.about,
       });
