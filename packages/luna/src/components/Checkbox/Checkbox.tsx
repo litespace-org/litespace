@@ -1,6 +1,6 @@
 import React from "react";
 import { Root, Indicator } from "@radix-ui/react-checkbox";
-import { CheckIcon } from "@radix-ui/react-icons";
+// import { CheckIcon } from "@radix-ui/react-icons";
 import cn from "classnames";
 
 export const Checkbox: React.FC<{
@@ -22,7 +22,7 @@ export const Checkbox: React.FC<{
         id={id}
       >
         <Indicator className="tw-text-foreground">
-          <CheckIcon />
+          {/* <CheckIcon /> */}
         </Indicator>
       </Root>
       <label

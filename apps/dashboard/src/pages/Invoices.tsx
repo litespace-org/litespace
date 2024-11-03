@@ -2,7 +2,7 @@ import List from "@/components/Invoices/List";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
 import { atlas } from "@litespace/luna/backend";
-import { usePaginationQuery } from "@litespace/luna/common";
+import { usePaginationQuery } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";

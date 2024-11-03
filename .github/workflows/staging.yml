@@ -34,8 +34,6 @@ jobs:
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
         run: pnpm install
-      - name: Setup staging environment variables for Luna (must be done before build)
-        run: cp packages/luna/.env.staging packages/luna/.env
       - name: Build packages
         run: pnpm build:pkgs
       # Nova Deployment
