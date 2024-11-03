@@ -9,7 +9,6 @@ import { IconField } from "@litespace/luna/IconField";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { useRender } from "@/hooks/render";
 import { map } from "lodash";
 import cn from "classnames";
 import { Calendar, MessageCircle, X } from "react-feather";
@@ -21,7 +20,6 @@ const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
 > = ({ lesson, call, members, user }) => {
   const intl = useFormatMessage();
-  const watch = useRender();
   const otherMember = useMemo(() => {
     return members.find((member) => member.userId !== user.id);
   }, [members, user.id]);
@@ -85,7 +83,7 @@ const Lesson: React.FC<
     });
 
     return list;
-  }, [intl, watch.show]);
+  }, [intl]);
 
   const { sm } = useMediaQueries();
 

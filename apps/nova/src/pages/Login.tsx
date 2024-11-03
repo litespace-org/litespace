@@ -49,13 +49,17 @@ const Login: React.FC = () => {
 
   const onSuccess = useCallback(() => {
     return navigate(Route.Root);
-  }, []);
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("page.login.failed"),
-      description: error instanceof Error ? error.message : undefined,
-    });
-  }, []);
+  }, [navigate]);
+
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("page.login.failed"),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+    [intl]
+  );
 
   const dispatchFn = (profile: IUser.LoginApiResponse) => {
     dispatch(setUserProfile(profile));
