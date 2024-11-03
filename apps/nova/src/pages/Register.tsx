@@ -59,12 +59,16 @@ const Register: React.FC = () => {
     },
     [dispatch, intl, navigate]
   );
-  const onError = useCallback((error: Error) => {
-    toaster.error({
-      title: intl("page.register.failed"),
-      description: error instanceof Error ? error.message : undefined,
-    });
-  }, []);
+
+  const onError = useCallback(
+    (error: Error) => {
+      toaster.error({
+        title: intl("page.register.failed"),
+        description: error instanceof Error ? error.message : undefined,
+      });
+    },
+    [intl]
+  );
 
   const mutation = useRegisterUser({ onSuccess, onError });
 
