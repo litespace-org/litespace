@@ -1,14 +1,9 @@
-import {
-  Form,
-  Label,
-  Field,
-  Controller,
-} from "@litespace/luna/components/Form";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { toaster } from "@litespace/luna/components/Toast";
-import { InputType } from "@litespace/luna/components/Input";
+import { Form, Label, Field, Controller } from "@litespace/luna/Form";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { toaster } from "@litespace/luna/Toast";
+import { InputType } from "@litespace/luna/Input";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/lib";
+import { atlas } from "@litespace/luna/backend";
 
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";

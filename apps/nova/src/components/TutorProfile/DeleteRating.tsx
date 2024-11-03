@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
-import { toaster } from "@litespace/luna/components/Toast";
-import { Alert, AlertType } from "@litespace/luna/components/Alert";
-import { Dialog } from "@litespace/luna/components/Dialog";
+import { toaster } from "@litespace/luna/Toast";
+import { Alert, AlertType } from "@litespace/luna/Alert";
+import { Dialog } from "@litespace/luna/Dialog";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useDeleteRatingTutor } from "@litespace/headless/rating";
 import { Void } from "@litespace/types";

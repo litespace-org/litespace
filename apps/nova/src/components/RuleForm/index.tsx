@@ -1,14 +1,9 @@
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { DateInput } from "@litespace/luna/components/DateInput";
-import { Dialog } from "@litespace/luna/components/Dialog";
-import {
-  Form,
-  Field,
-  Controller,
-  Label,
-} from "@litespace/luna/components/Form";
-import { toaster } from "@litespace/luna/components/Toast";
-import { Card } from "@litespace/luna/components/Card";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { DateInput } from "@litespace/luna/DateInput";
+import { Dialog } from "@litespace/luna/Dialog";
+import { Form, Field, Controller, Label } from "@litespace/luna/Form";
+import { toaster } from "@litespace/luna/Toast";
+import { Card } from "@litespace/luna/Card";
 import {
   useValidation,
   useValidateDuration,
@@ -18,7 +13,7 @@ import {
   useWeekdayMap,
 } from "@litespace/luna/hooks/datetime";
 import { useRuleFormatterMap } from "@litespace/luna/hooks/rule";
-import { useFormatMessage } from "@litespace/luna/hooks";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IDate, IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useForm, Controller as FormController } from "react-hook-form";

@@ -4,7 +4,7 @@ import {
   ActivityGrid,
   ActivityMap,
   GridDay,
-} from "@litespace/luna/components/ActivityGrid";
+} from "@litespace/luna/ActivityGrid";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { UseQueryResult } from "@tanstack/react-query";
 import { ITutor } from "@litespace/types";

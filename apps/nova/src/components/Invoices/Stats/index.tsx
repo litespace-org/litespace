@@ -1,6 +1,6 @@
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import { LocalId } from "@litespace/luna/locales";
-import { Spinner } from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/Spinner";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useMemo } from "react";
 import { useRender } from "@/hooks/render";

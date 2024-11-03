@@ -1,14 +1,10 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { MediaType } from "@/components/Media/types";
-import { Avatar } from "@litespace/luna/components/Avatar";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-} from "@litespace/luna/components/Button";
-import { VideoPlayer } from "@litespace/luna/components/VideoPlayer";
+import { Avatar } from "@litespace/luna/Avatar";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { VideoPlayer } from "@litespace/luna/VideoPlayer";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { Upload, X } from "react-feather";
 import cn from "classnames";
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
-import * as Components from "@litespace/luna/components/Settings";
-import { RefreshUser } from "@litespace/luna/hooks";
+import * as Components from "@litespace/luna/Settings";
+import { RefreshUser } from "@litespace/luna/hooks/user";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, setUserProfile } from "@/redux/user/profile";
 import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";

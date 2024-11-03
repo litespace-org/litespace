@@ -4,7 +4,8 @@
     "target": "ES6",
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "jsx": "react-jsx",
+    // "jsx": "react-jsx",
+    "jsx": "preserve",
 
     /* Output Options */
     "rootDir": "src",
@@ -35,5 +36,6 @@
     "forceConsistentCasingInFileNames": true,
     "isolatedModules": true
   },
-  "include": ["src", ".storybook", "src/**/*.stories.tsx"]
+  "include": ["src", ".storybook", "src/**/*.stories.tsx"],
+  "exclude": ["node_modules"]
 }

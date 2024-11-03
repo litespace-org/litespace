@@ -1,4 +1,4 @@
-import { atlas } from "@litespace/luna/lib";
+import { atlas } from "@litespace/luna/backend";
 import { IInterview } from "@litespace/types";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";

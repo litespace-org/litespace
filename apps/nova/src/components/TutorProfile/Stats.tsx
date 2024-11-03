@@ -1,6 +1,6 @@
-import { formatNumber } from "@litespace/luna/components/utils";
-import { Card } from "@litespace/luna/components/Card";
-import { Loading } from "@litespace/luna/components/Loading";
+import { formatNumber } from "@litespace/luna/utils";
+import { Card } from "@litespace/luna/Card";
+import { Loading } from "@litespace/luna/Loading";
 import { LocalId } from "@litespace/luna/locales";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ITutor } from "@litespace/types";

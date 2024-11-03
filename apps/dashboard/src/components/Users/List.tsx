@@ -1,10 +1,6 @@
-import { ActionsMenu } from "@litespace/luna/components/ActionsMenu";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-} from "@litespace/luna/components/Button";
-import { Loading } from "@litespace/luna/components/Loading";
+import { ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Loading } from "@litespace/luna/Loading";
 import { LocalId } from "@litespace/luna/locales";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 

@@ -1,9 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
-import { Spinner } from "@litespace/luna/icons/spinner";
+import { Spinner } from "@litespace/luna/Spinner";
 import { locales } from "@litespace/luna/locales";
-import { backend, getToken } from "@litespace/luna/lib";
+import { backend } from "@litespace/luna/backend";
+import { getToken } from "@litespace/luna/cache";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

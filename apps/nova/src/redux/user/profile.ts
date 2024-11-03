@@ -1,8 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
-import { saveToken } from "@litespace/luna/lib";
-import { initial, LoadableState } from "@litespace/luna/lib/redux";
+import { saveToken } from "@litespace/luna/cache";
+import { initial, LoadableState } from "@litespace/luna/redux";
 
 type State = LoadableState<{ user: IUser.Self; token: string | null }>;
 

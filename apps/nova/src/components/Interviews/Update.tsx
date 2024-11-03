@@ -1,15 +1,11 @@
 import { useInterviewStatus } from "@/hooks/interview";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-} from "@litespace/luna/components/Button";
-import { Dialog } from "@litespace/luna/components/Dialog";
-import { Field, Form, Label } from "@litespace/luna/components/Form";
-import { Select } from "@litespace/luna/components/Select";
-import { TextEditor } from "@litespace/luna/components/TextEditor";
-import { toaster } from "@litespace/luna/components/Toast";
-import { atlas } from "@litespace/luna/lib";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Dialog } from "@litespace/luna/Dialog";
+import { Field, Form, Label } from "@litespace/luna/Form";
+import { Select } from "@litespace/luna/Select";
+import { TextEditor } from "@litespace/luna/TextEditor";
+import { toaster } from "@litespace/luna/Toast";
+import { atlas } from "@litespace/luna/backend";
 import { messages } from "@litespace/luna/locales";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";

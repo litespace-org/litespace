@@ -4,7 +4,7 @@ import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import { ICall, Wss } from "@litespace/types";
 import hark from "hark";
-import { toaster } from "@litespace/luna/components/Toast";
+import { toaster } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { isEmpty } from "lodash";
 import { useSocket } from "@litespace/headless/socket";

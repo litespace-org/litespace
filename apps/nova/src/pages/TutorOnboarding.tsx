@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Stepper } from "@litespace/luna/components/Stepper";
+import { Stepper } from "@litespace/luna/Stepper";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorOnboardingStep } from "@/constants/user";
 import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";

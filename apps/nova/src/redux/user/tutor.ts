@@ -5,8 +5,8 @@ import {
   initial,
   LoadableState,
   createThunk,
-} from "@litespace/luna/lib/redux";
-import { atlas } from "@litespace/luna/lib";
+} from "@litespace/luna/redux";
+import { atlas } from "@litespace/luna/backend";
 import { ITutor } from "@litespace/types";
 
 type State = LoadableState<ITutor.Self>;

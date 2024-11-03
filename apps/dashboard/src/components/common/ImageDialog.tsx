@@ -1,5 +1,5 @@
-import { Dialog } from "@litespace/luna/components/Dialog";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { Dialog } from "@litespace/luna/Dialog";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { Void } from "@litespace/types";
 import React from "react";
 

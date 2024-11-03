@@ -1,5 +1,5 @@
 import Price from "@/components/Common/Price";
-import { Card } from "@litespace/luna/components/Card";
+import { Card } from "@litespace/luna/Card";
 import { LocalMap } from "@litespace/luna/locales";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";

@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import { messages } from "@litespace/luna/locales";
 import React from "react";
 import { useIntl } from "react-intl";

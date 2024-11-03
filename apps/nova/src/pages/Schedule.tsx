@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { Calendar } from "@litespace/luna/components/Calendar";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Calendar } from "@litespace/luna/Calendar";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useAppSelector } from "@/redux/store";
 import { useNavigate } from "react-router-dom";

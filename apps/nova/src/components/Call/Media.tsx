@@ -3,7 +3,7 @@ import MovableMedia from "@/components/Call/MovableMedia";
 import UserMedia from "@/components/Call/UserMedia";
 import Screen from "@/components/Call/Screen";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
-import { Loading } from "@litespace/luna/components/Loading";
+import { Loading } from "@litespace/luna/Loading";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Media: React.FC<{

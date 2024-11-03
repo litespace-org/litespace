@@ -1,8 +1,8 @@
 import List from "@/components/Interviews/List";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
-import { Spinner } from "@litespace/luna/icons/spinner";
+import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Spinner } from "@litespace/luna/Spinner";
 import { messages } from "@litespace/luna/locales";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";

@@ -10,9 +10,10 @@ import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
 import MessageGroup from "@/components/Chat/MessageGroup";
 import { OnMessage, useChat } from "@/hooks/chat";
-import { asMessageGroups, atlas } from "@litespace/luna/lib";
-import { useMessages } from "@litespace/luna/hooks";
-import { Loading } from "@litespace/luna/components/Loading";
+import { atlas } from "@litespace/luna/backend";
+import { asMessageGroups } from "@litespace/luna/chat";
+import { useMessages } from "@litespace/luna/hooks/chat";
+import { Loading } from "@litespace/luna/Loading";
 
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";

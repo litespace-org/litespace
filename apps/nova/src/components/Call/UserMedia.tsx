@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import cn from "classnames";
-import { asFullAssetUrl } from "@litespace/luna/lib";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { MicOff } from "react-feather";
 import { AnimatePresence, motion } from "framer-motion";

@@ -28,7 +28,7 @@ export default defineConfig({
     sourcemap: !!process.env.TAURI_DEBUG,
   },
   plugins: [
-    react(),
+    react({}),
     svgr({
       // svgr options: https://react-svgr.com/docs/options/
       svgrOptions: {

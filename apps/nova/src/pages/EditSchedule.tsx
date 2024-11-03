@@ -1,7 +1,7 @@
 import RuleForm from "@/components/RuleForm";
 import Rules from "@/components/Rules";
 import { useRender } from "@/hooks/render";
-import { Button, ButtonSize } from "@litespace/luna/components/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import { messages } from "@litespace/luna/locales";
 import React from "react";
 import { useIntl } from "react-intl";
