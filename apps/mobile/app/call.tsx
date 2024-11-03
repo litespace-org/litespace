@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { RTCView } from "react-native-webrtc";
 import { StyleSheet, Button } from "react-native";
 import { useCall } from "@litespace/headless/calls";
@@ -11,35 +11,11 @@ declare global {
 }
 
 const Call = () => {
-  const { mate, user, mediaConnection } = useCall(1507);
+  const { mate, user, start, onToggleMic, onToggleCamera } = useCall(1507, 7);
 
   useEffect(() => {
-    user.start();
-  }, [user.start]);
-
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      if (!mediaConnection || !mediaConnection.peerConnection) return;
-
-      const userAudioTrack = user.streams.self?.getAudioTracks()[0];
-      if (!userAudioTrack) return;
-
-      // const mateAudioTrack = mate.streams.self?.getAudioTracks()[0];
-      // if (!mateAudioTrack) return;
-
-      const stats = await mediaConnection.peerConnection.getStats(
-        userAudioTrack
-      );
-      for (const result of stats.values()) {
-        if (result.type === "media-source" && result.kind === "audio") {
-          console.log(result.audioLevel);
-        }
-      }
-    }, 1000);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [user.streams.self, mediaConnection]);
+    start();
+  }, [start]);
 
   return (
     <ThemedView>
@@ -75,8 +51,8 @@ const Call = () => {
       </ThemedView>
 
       <ThemedView>
-        <Button onPress={user.toggleMic} title="Toggle Mic" />
-        <Button onPress={user.toggleCamera} title="Toggle Camera" />
+        <Button onPress={onToggleMic} title="Toggle Mic" />
+        <Button onPress={onToggleCamera} title="Toggle Camera" />
       </ThemedView>
     </ThemedView>
   );

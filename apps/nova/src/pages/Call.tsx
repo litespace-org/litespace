@@ -1,5 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { MediaConnection } from "peerjs";
+import React, { useCallback, useEffect, useMemo } from "react";
 import {
   Button,
   ButtonSize,
@@ -22,22 +21,13 @@ import {
 } from "react-feather";
 import { useParams } from "react-router-dom";
 import cn from "classnames";
-import { Wss } from "@litespace/types";
-import {
-  useCallEvents,
-  useFullScreen,
-  useShareScreen,
-  useSpeech,
-  useUserMedia,
-} from "@/hooks/call";
+import { useFullScreen } from "@/hooks/call";
 import Media from "@/components/Call/Media";
-import peer from "@/lib/peer";
 import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol/utils";
-import { useSocket } from "@litespace/headless/socket";
-import { useFindCallRoomById } from "@litespace/headless/calls";
+import { useCall, useFindCallRoomById } from "@litespace/headless/calls";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -45,26 +35,6 @@ const Call: React.FC = () => {
   const intl = useFormatMessage();
   const mediaQueries = useMediaQueries();
   const { id } = useParams<{ id: string }>();
-  const [remoteMediaStream, setRemoteMediaStream] =
-    useState<MediaStream | null>(null);
-  const [remoteScreenStream, setRemoteScreenStream] =
-    useState<MediaStream | null>(null);
-  const [mediaConnection, setMediaConnection] =
-    useState<MediaConnection | null>(null);
-  const socket = useSocket();
-  const {
-    start: getUserMedia,
-    stream: userMediaStream,
-    toggleSound,
-    toggleCamera,
-    mic,
-    camera,
-    video: userVideo,
-    audio: userAudio,
-    loading,
-    denied,
-  } = useUserMedia();
-
   const { isFullScreen, toggleFullScreen, ref } = useFullScreen();
 
   const callId = useMemo(() => {
@@ -73,92 +43,12 @@ const Call: React.FC = () => {
     return call;
   }, [id]);
 
-  const shareScreen = useShareScreen(mediaConnection?.peer || null);
-
-  const acknowledgePeer = useCallback(
-    (peerId: string) => {
-      console.log(peerId);
-      if (!callId || !socket) return;
-      socket.emit(Wss.ClientEvent.PeerOpened, { peerId, callId });
-    },
-    [callId, socket]
-  );
-
-  // executed on the receiver side
-  const onCall = useCallback(
-    (call: MediaConnection) => {
-      setMediaConnection(call);
-      call.answer(userMediaStream || undefined);
-      call.on("stream", (stream: MediaStream) => {
-        if (call.metadata?.screen) return setRemoteScreenStream(stream);
-        return setRemoteMediaStream(stream);
-      });
-      call.on("close", () => {
-        if (call.metadata?.screen) return setRemoteScreenStream(null);
-        return setRemoteMediaStream(null);
-      });
-    },
-    [userMediaStream]
-  );
-
-  const onJoinCall = useCallback(
-    ({ peerId }: { peerId: string }) => {
-      console.log(`${peerId} joined the call`);
-      setTimeout(() => {
-        if (!userMediaStream) return;
-        // shared my stream with the connected user
-        const call = peer.call(peerId, userMediaStream);
-        setMediaConnection(call);
-        call.on("stream", setRemoteMediaStream);
-        call.on("close", () => setRemoteMediaStream(null));
-      }, 3000);
-    },
-    [userMediaStream]
-  );
-
-  useEffect(() => {
-    peer.on("open", acknowledgePeer);
-    return () => {
-      peer.off("open", acknowledgePeer);
-    };
-  }, [acknowledgePeer]);
-
-  useEffect(() => {
-    // listen for calls
-    peer.on("call", onCall);
-    return () => {
-      peer.off("call", onCall);
-    };
-  }, [onCall]);
-
-  useEffect(() => {
-    getUserMedia();
-  }, [getUserMedia]);
-
-  useEffect(() => {
-    if (!socket) return;
-    socket.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
-    return () => {
-      socket.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
-    };
-  }, [onJoinCall, socket]);
-
-  const onLeaveCall = useCallback(() => {
-    peer.destroy();
-  }, []);
-
   const callRoom = useFindCallRoomById(callId);
 
-  const mate = useMemo(() => {
+  const mateInfo = useMemo(() => {
     if (!callRoom.data) return;
     return callRoom.data.members.find((member) => member.id !== profile?.id);
   }, [callRoom.data, profile?.id]);
-
-  const { notifyCameraToggle, notifyMicToggle, mateAudio, mateVideo } =
-    useCallEvents(remoteMediaStream, callId, mate?.id);
-
-  const { speaking: userSpeaking } = useSpeech(userMediaStream);
-  const { speaking: mateSpeaking } = useSpeech(remoteMediaStream);
 
   const messages = useMemo(
     () =>
@@ -168,15 +58,18 @@ const Call: React.FC = () => {
     [callRoom.data]
   );
 
-  const onToggleCamera = useCallback(() => {
-    toggleCamera();
-    notifyCameraToggle(!userVideo);
-  }, [notifyCameraToggle, toggleCamera, userVideo]);
+  const { user, mate, start, onToggleCamera, onToggleMic, peer } = useCall(
+    callId,
+    mateInfo?.id || null
+  );
 
-  const onToggleMic = useCallback(() => {
-    toggleSound();
-    notifyMicToggle(!userAudio);
-  }, [notifyMicToggle, toggleSound, userAudio]);
+  useEffect(() => {
+    start();
+  }, [start]);
+
+  const onLeaveCall = useCallback(() => {
+    peer.destroy();
+  }, [peer]);
 
   return (
     <div className="flex h-[calc(100vh-4rem)] overflow-hidden w-full">
@@ -185,7 +78,7 @@ const Call: React.FC = () => {
         ref={ref}
         className={cn(
           "flex flex-col w-full h-full",
-          "transition-all duration-300"
+          "transition-all duration-300 bg-dash-sidebar"
         )}
       >
         <div
@@ -194,22 +87,22 @@ const Call: React.FC = () => {
           )}
         >
           <Media
-            userMediaStream={userMediaStream}
-            remoteMediaStream={remoteMediaStream}
-            userScreenStream={shareScreen.stream}
-            remoteScreenStream={remoteScreenStream}
+            userMediaStream={user.streams.self}
+            remoteMediaStream={mate.streams.self}
+            userScreenStream={user.streams.screen}
+            remoteScreenStream={mate.streams.screen}
             userName={orUndefined(profile?.name)}
-            mateName={orUndefined(mate?.name)}
+            mateName={orUndefined(mateInfo?.name)}
             userImage={orUndefined(profile?.image)}
-            mateImage={orUndefined(mate?.image)}
-            loadingUserStream={loading}
-            userSpeaking={userSpeaking}
-            mateSpeaking={mateSpeaking}
-            userVideo={userVideo}
-            userAudio={userAudio}
-            mateVideo={mateVideo}
-            mateAudio={mateAudio}
-            userDenided={denied}
+            mateImage={orUndefined(mateInfo?.image)}
+            loadingUserStream={user.loading}
+            userSpeaking={user.speaking}
+            mateSpeaking={mate.speaking}
+            userVideo={user.video}
+            userAudio={user.audio}
+            mateVideo={mate.video}
+            mateAudio={mate.audio}
+            userDenided={user.denied}
           />
         </div>
         <div className="flex items-center justify-center gap-4 my-10">
@@ -242,22 +135,22 @@ const Call: React.FC = () => {
             )}
           </Button>
           <Button
-            onClick={shareScreen.stream ? shareScreen.stop : shareScreen.start}
-            loading={shareScreen.loading}
-            disabled={shareScreen.loading}
+            onClick={user.streams.screen ? user.screen.stop : user.screen.share}
+            loading={user.screen.loading}
+            disabled={user.screen.loading}
             size={ButtonSize.Small}
-            type={shareScreen.stream ? ButtonType.Error : ButtonType.Secondary}
+            type={user.streams.screen ? ButtonType.Error : ButtonType.Secondary}
           >
             <Monitor className="w-[20px] h-[20px]" />
           </Button>
 
           <Button
             onClick={onToggleCamera}
-            disabled={!camera}
+            disabled={!user.camera}
             size={ButtonSize.Small}
-            type={userVideo ? ButtonType.Secondary : ButtonType.Error}
+            type={user.video ? ButtonType.Secondary : ButtonType.Error}
           >
-            {userVideo ? (
+            {user.video ? (
               <Video className="w-[20px] h-[20px]" />
             ) : (
               <VideoOff className="w-[20px] h-[20px]" />
@@ -266,11 +159,11 @@ const Call: React.FC = () => {
 
           <Button
             onClick={onToggleMic}
-            disabled={!mic}
+            disabled={!user.mic}
             size={ButtonSize.Small}
-            type={userAudio ? ButtonType.Secondary : ButtonType.Error}
+            type={user.audio ? ButtonType.Secondary : ButtonType.Error}
           >
-            {userAudio ? (
+            {user.audio ? (
               <Mic className="w-[20px] h-[20px]" />
             ) : (
               <MicOff className="w-[20px] h-[20px]" />
