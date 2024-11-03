@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-} from "@litespace/luna/components/Button";
+import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Void } from "@litespace/types";
 import {
   getCoreRowModel,

@@ -1,4 +1,4 @@
-import { formatNumber } from "@litespace/luna/components/utils";
+import { formatNumber } from "@litespace/luna/utils";
 import React from "react";
 
 const RecordsCount: React.FC<{ count: number }> = ({ count }) => {

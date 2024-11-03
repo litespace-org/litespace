@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Toaster } from "@litespace/luna/components/Toast";
+import { Toaster } from "@litespace/luna/Toast";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";

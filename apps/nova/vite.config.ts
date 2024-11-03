@@ -57,6 +57,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+    dedupe: ["react", "react-dom"],
   },
   assetsInclude: ["src/markdown/**/*.md"],
+  esbuild: {
+    exclude: ["@litespace/luna/*"],
+  },
 });

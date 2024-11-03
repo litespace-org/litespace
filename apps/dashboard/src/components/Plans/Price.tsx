@@ -1,7 +1,4 @@
-import {
-  formatCurrency,
-  formatPercentage,
-} from "@litespace/luna/components/utils";
+import { formatCurrency, formatPercentage } from "@litespace/luna/utils";
 import { percentage, price as scaler } from "@litespace/sol/value";
 import React from "react";
 

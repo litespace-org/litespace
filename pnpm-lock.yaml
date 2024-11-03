@@ -919,12 +919,24 @@ importers:
       media-icons:
         specifier: ^1.1.5
         version: 1.1.5
+      react:
+        specifier: 18.2.0
+        version: 18.2.0
       react-contenteditable:
         specifier: ^3.3.7
         version: 3.3.7(react@18.2.0)
+      react-dom:
+        specifier: 18.2.0
+        version: 18.2.0(react@18.2.0)
       react-feather:
         specifier: ^2.0.10
         version: 2.0.10(react@18.2.0)
+      react-hook-form:
+        specifier: ^7.51.5
+        version: 7.53.1(react@18.2.0)
+      react-intl:
+        specifier: ^6.6.8
+        version: 6.8.4(react@18.2.0)(typescript@5.6.3)
       react-number-format:
         specifier: ^5.4.2
         version: 5.4.2(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -1010,18 +1022,6 @@ importers:
       framer-motion:
         specifier: ^11.2.6
         version: 11.11.11(@emotion/is-prop-valid@0.8.8)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      react:
-        specifier: 18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: 18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-hook-form:
-        specifier: ^7.51.5
-        version: 7.53.1(react@18.2.0)
-      react-intl:
-        specifier: ^6.6.8
-        version: 6.8.4(react@18.2.0)(typescript@5.6.3)
       storybook:
         specifier: ^8.1.5
         version: 8.4.0
