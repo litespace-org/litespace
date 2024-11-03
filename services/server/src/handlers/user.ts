@@ -1,6 +1,6 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
-import { forbidden, notfound, userExists } from "@/lib/error";
+import { exists, forbidden, notfound } from "@/lib/error";
 import { hashPassword } from "@/lib/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
@@ -96,8 +96,8 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   );
   if (!publicRole && !admin) return next(forbidden());
 
-  const exists = await users.findByEmail(payload.email);
-  if (exists) return next(userExists());
+  const userObject = await users.findByEmail(payload.email);
+  if (userObject) return next(exists.user());
 
   const user = await knex.transaction(async (tx) => {
     const user = await users.create(

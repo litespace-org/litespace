@@ -1,5 +1,5 @@
 import { FileType } from "@/constants";
-import { bad, forbidden, notfound } from "@/lib/error";
+import { bad, forbidden, illegalInvoiceUpdate, notfound } from "@/lib/error";
 import { isValidInvoice } from "@/lib/invoice";
 import { uploadSingle } from "@/lib/media";
 import { ApiContext } from "@/types/api";
@@ -130,6 +130,7 @@ async function create(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const payload: IInvoice.CreateApiPayload = createPayload.parse(req.body);
+  // todo: add verbose error response about what is wrong with the invoice
   const valid = await isValidInvoice({ payload, userId: user.id });
   if (!valid) return next(bad());
 
@@ -155,7 +156,7 @@ function updateByReceiver(context: ApiContext) {
       const payload = updateByReceiverPayload.parse(req.body);
 
       const invoice = await invoices.findById(invoiceId);
-      if (!invoice) return next(notfound.base());
+      if (!invoice) return next(notfound.invoice());
 
       const owner = invoice.userId === user.id;
       if (!owner) return next(forbidden());
@@ -182,7 +183,7 @@ function updateByReceiver(context: ApiContext) {
         IInvoice.Status.Pending,
         IInvoice.Status.UpdatedByReceiver,
       ].includes(invoice.status);
-      if (!updatable) return next(bad());
+      if (!updatable) return next(illegalInvoiceUpdate());
 
       // 1. handle invoice cancellation by the receiver
       if (payload.cancel) {

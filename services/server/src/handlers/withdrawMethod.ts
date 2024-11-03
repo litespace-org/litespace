@@ -41,7 +41,7 @@ async function update(req: Request, res: Response, next: NextFunction) {
   const payload = updatePayload.parse(req.body);
 
   const method = await withdrawMethods.findByType(type);
-  if (!method) return next(notfound.base());
+  if (!method) return next(notfound.withdrawMethod());
 
   await withdrawMethods.update(type, payload);
   res.status(200).json();

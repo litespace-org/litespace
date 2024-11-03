@@ -1,78 +1,13 @@
-export enum ErrorCode {
-  Unauthorized,
-  BadRequest,
-  RoomExists,
-  UserExists,
-  UserAlreadyTyped,
-  TutorHasNoTime,
-  Unexpected,
-  NotFound,
-  UserNotFound,
-  SlotNotFound,
-  CallNoteFound,
-  TutorNotFound,
-  LessonNotFound,
-  ratingNotFound,
-  CouponNotFound,
-  AssetNotFound,
-  InviteNotFound,
-  PlanNotFound,
-  ReportNotFound,
-  ReportReplyNotFound,
-  subscriptionNotFound,
-  AlreadyRated,
-  AlreadySubscribed,
-}
+import { ApiError, ApiErrorCode } from "@litespace/types";
 
 type CodedError = {
   message: string;
-  code: ErrorCode;
+  code: ApiErrorCode;
 };
-
-export const errors = {
-  fobidden: { message: "Unauthorized access", code: ErrorCode.Unauthorized },
-  badRequest: { message: "Bad Request", code: ErrorCode.BadRequest },
-  roomExists: { message: "Room already exist", code: ErrorCode.RoomExists },
-  userExists: { message: "User already exist", code: ErrorCode.UserExists },
-  userAlreadyTyped: {
-    message: "User already typed",
-    code: ErrorCode.UserAlreadyTyped,
-  },
-  tutorHasNotTime: {
-    message: "Tutor doesn't have the time for this lesson",
-    code: ErrorCode.TutorHasNoTime,
-  },
-  unexpected: {
-    message: "Unexpected error occurred, please retry",
-    code: ErrorCode.Unexpected,
-  },
-  notfound: {
-    base: { message: "Not found", code: ErrorCode.NotFound },
-    user: { message: "User not found", code: ErrorCode.UserNotFound },
-    slot: { message: "Slot not found", code: ErrorCode.SlotNotFound },
-    call: { message: "Call not found", code: ErrorCode.CallNoteFound },
-    tutor: { message: "Tutor not found", code: ErrorCode.TutorNotFound },
-    lesson: { message: "Lesson not found", code: ErrorCode.LessonNotFound },
-    rating: { message: "Rating not found", code: ErrorCode.ratingNotFound },
-    asset: { message: "Asset not found", code: ErrorCode.AssetNotFound },
-    subscription: {
-      message: "Subscription not found",
-      code: ErrorCode.subscriptionNotFound,
-    },
-  },
-  alreadyRated: {
-    message: "User already rated",
-    code: ErrorCode.AlreadyRated,
-  },
-  alreadySubscribed: {
-    message: "Student already subscribed",
-    code: ErrorCode.AlreadySubscribed,
-  },
-} as const;
 
 export default class ResponseError extends Error {
   statusCode: number;
-  errorCode: ErrorCode;
+  errorCode: ApiErrorCode;
 
   constructor(error: CodedError, statusCode: number) {
     super(error.message);
@@ -81,68 +16,73 @@ export default class ResponseError extends Error {
   }
 }
 
-export const forbidden = () => new ResponseError(errors.fobidden, 401);
-export const badRequest = () => new ResponseError(errors.badRequest, 400);
-export const bad = badRequest;
-export const roomExists = () => new ResponseError(errors.roomExists, 400);
-export const userExists = () => new ResponseError(errors.userExists, 400);
-export const userAlreadyTyped = () =>
-  new ResponseError(errors.userAlreadyTyped, 400);
-export const tutorHasNoTime = () =>
-  new ResponseError(errors.tutorHasNotTime, 400);
-export const alreadyRated = () => new ResponseError(errors.alreadyRated, 400);
-export const alreadySubscribed = () =>
-  new ResponseError(errors.alreadySubscribed, 400);
+const error = (code: ApiErrorCode, message: string, status: number) =>
+  new ResponseError(
+    {
+      code,
+      message,
+    },
+    status
+  );
 
-export const unexpected = () => new ResponseError(errors.unexpected, 500);
+export const forbidden = () =>
+  error(ApiError.Forbidden, "unauthorized access", 401);
+
+export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
+
+export const busyTutor = () =>
+  error(ApiError.BusyTutor, "Tutor has not time", 400);
+
+export const busyTutorManager = () =>
+  error(ApiError.BusyTutorManager, "Tutor manager has not time", 400);
+
+export const unexpected = () =>
+  error(ApiError.Unexpected, "unexpected error occurred", 500);
+
+export const illegalInvoiceUpdate = () =>
+  error(ApiError.IllegalInvoiceUpdate, "Illegal invoice update", 400);
+
+export const emailAlreadyVerified = () =>
+  error(ApiError.EmailAlreadyVerified, "Email already verified", 400);
+
+export const contradictingRules = () =>
+  error(
+    ApiError.ContradictingRules,
+    "Incomding rule is contradicting with existing ones",
+    400
+  );
+
+export const exists = {
+  room: () => error(ApiError.RoomExists, "Room already exist", 400),
+  user: () => error(ApiError.UserExists, "User already exist", 400),
+  rate: () => error(ApiError.RatingExists, "You already rated this user", 400),
+  subscription: () =>
+    error(ApiError.SubscriptionExists, "You already subscribed", 400),
+};
 
 export const notfound = {
-  base: () => new ResponseError(errors.notfound.base, 404),
-  user: () => new ResponseError(errors.notfound.user, 404),
-  slot: () => new ResponseError(errors.notfound.slot, 404),
-  tutor: () => new ResponseError(errors.notfound.tutor, 404),
-  call: () => new ResponseError(errors.notfound.call, 404),
-  rating: () => new ResponseError(errors.notfound.rating, 404),
-  subscription: () => new ResponseError(errors.notfound.subscription, 404),
-  asset: () => new ResponseError(errors.notfound.asset, 400),
-  coupon: () =>
-    new ResponseError(
-      {
-        message: "Coupon not found",
-        code: ErrorCode.CouponNotFound,
-      },
-      400
-    ),
-  invite: () =>
-    new ResponseError(
-      {
-        message: "Invite not found",
-        code: ErrorCode.InviteNotFound,
-      },
-      400
-    ),
-  plan: () =>
-    new ResponseError(
-      {
-        message: "Plan not found",
-        code: ErrorCode.PlanNotFound,
-      },
-      400
-    ),
-  report: () =>
-    new ResponseError(
-      {
-        message: "Report not found",
-        code: ErrorCode.ReportNotFound,
-      },
-      400
-    ),
+  base: () => error(ApiError.NotFound, "Resource not found", 404),
+  user: () => error(ApiError.UserNotFound, "User not found", 404),
+  rule: () => error(ApiError.RuleNotFound, "Rule not found", 404),
+  tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
+  call: () => error(ApiError.CallNotFound, "Call not found", 404),
+  lesson: () => error(ApiError.LessonNotFound, "Lesson nto found", 404),
+  room: () => error(ApiError.RoomNotFound, "Room not found", 404),
+  roomMembers: () =>
+    error(ApiError.RoomMembersNotFound, "Room members not found", 404),
+  rating: () => error(ApiError.RatingNotFound, "Rating not found", 404),
+  subscription: () =>
+    error(ApiError.SubscriptionNotFound, "Subscription not found", 404),
+  asset: () => error(ApiError.AssetNotFound, "Asset not found", 404),
+  coupon: () => error(ApiError.CouponNotFound, "Coupon not found", 404),
+  invite: () => error(ApiError.InviteNotFound, "Invite not found", 404),
+  interview: () =>
+    error(ApiError.InterviewNotFound, "Interview not found", 404),
+  invoice: () => error(ApiError.InvoiceNotFound, "Invoice not found", 404),
+  plan: () => error(ApiError.PlanNotFound, "Plan not found", 404),
+  report: () => error(ApiError.ReportNotFound, "Report not found", 404),
   reportReply: () =>
-    new ResponseError(
-      {
-        message: "Report reply not found",
-        code: ErrorCode.ReportReplyNotFound,
-      },
-      400
-    ),
+    error(ApiError.ReportReplyNotFound, "Report reply not found", 404),
+  withdrawMethod: () =>
+    error(ApiError.WidthdrawMethodNotFound, "Withdraw method not found", 404),
 } as const;

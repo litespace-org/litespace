@@ -1,5 +1,5 @@
 import { ratings, users } from "@litespace/models";
-import { alreadyRated, bad, forbidden, notfound } from "@/lib/error";
+import { exists, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { NextFunction } from "express";
 import safeRequest from "express-async-handler";
@@ -43,14 +43,14 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   const eligible =
     (isStudent(user) && isTutor(ratee)) ||
     (isTutor(user) && isMedaiProvider(ratee));
-  if (eligible) return next(bad());
+  if (eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({
     rater: user.id,
     ratee: rateeId,
   });
 
-  if (rating) return next(alreadyRated());
+  if (rating) return next(exists.rate());
 
   const data = await ratings.create({
     raterId: user.id,
