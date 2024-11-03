@@ -59,8 +59,18 @@ jobs:
         run: pnpm build:nebula:vercel
       - name: Deploy Nebula to Vercel
         run: pnpm deploy:nebula:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Dashboard Deployment
+      - name: Pull Dashboard from Vercel
+        run: pnpm vercel:ci pull "dashboard" "apps/dashboard/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for Dashboard
+        run: cp apps/dashboard/.env.staging apps/dashboard/.env
+      - name: Build Dashboard using Vercel
+        run: pnpm build:dashboard:vercel
+      - name: Deploy Dashboard to Vercel
+        run: pnpm deploy:dashboard:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Display deployment URLs as GitHub comment and Telegram message
       - name: Pull latest deployment urls from Vercel
-        run: pnpm vercel:ci urls "nova,luna,nebula" --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm vercel:ci urls "nova,luna,nebula,dashboard" --token=${{ secrets.VERCEL_TOKEN }}
       - name: Send latest deployment urls to Telegram
         run: pnpm telegram send-vercel-urls -p ${{ github.event.number }} -b ${{ github.head_ref }}
       - name: Make GitHub comment with Vercel URLs
