@@ -36,10 +36,10 @@ export const CanceledByReceiver: React.FC<{
   return (
     <Alert
       type={AlertType.Error}
-      title={intl("invoices.admin.status.canceledByReceiver")}
+      title={intl("invoices.admin.status.canceled-by-receiver")}
       action={action}
     >
-      <p>{intl("invoices.admin.status.canceledByReceiver.note")}</p>
+      <p>{intl("invoices.admin.status.canceled-by-receiver.note")}</p>
     </Alert>
   );
 };
@@ -53,7 +53,7 @@ export const CanceledByAdmin: React.FC<{
   return (
     <Alert
       type={AlertType.Error}
-      title={intl("invoices.admin.status.canceledByAdmin")}
+      title={intl("invoices.admin.status.canceled-by-admin")}
     />
   );
 };
@@ -80,10 +80,10 @@ export const UpdateRequest: React.FC<{
   return (
     <Alert
       type={AlertType.Warning}
-      title={intl("invoices.admin.status.updatedByReceiver")}
+      title={intl("invoices.admin.status.updated-by-receiver")}
       action={action}
     >
-      <p>{intl("invoices.admin.status.updatedByReceiver.note")}</p>
+      <p>{intl("invoices.admin.status.updated-by-receiver.note")}</p>
       <InvoiceUpdates invoice={invoice} />
     </Alert>
   );
@@ -119,7 +119,7 @@ export const CancellationApprovedByAdmin: React.FC<{ show?: boolean }> = ({
   return (
     <Alert
       type={AlertType.Info}
-      title={intl("invoices.admin.status.cancellationApprovedByAdmin")}
+      title={intl("invoices.admin.status.cancellation-approved-by-admin")}
     />
   );
 };

@@ -1,49 +1,42 @@
 import List from "@/components/Invoices/List";
-import { Button, ButtonSize } from "@litespace/luna/Button";
+import Error from "@/components/common/Error";
+import PageTitle from "@/components/common/PageTitle";
+import { useFindInvoices } from "@litespace/headless/invoices";
 import { Loading } from "@litespace/luna/Loading";
-import { atlas } from "@litespace/luna/backend";
-import { usePaginationQuery } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { isEmpty } from "lodash";
-import React, { useCallback } from "react";
+import React from "react";
 
 const Invoices: React.FC = () => {
   const intl = useFormatMessage();
-  const findInvoices = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
-      return await atlas.invoice.find({ page: pageParam });
-    },
-    []
-  );
+  const { query, ...pagination } = useFindInvoices();
 
-  const { list, query, more } = usePaginationQuery(findInvoices, [
-    "find-invoices",
-  ]);
-
-  const onUpdate = useCallback(() => {
-    query.refetch();
-  }, [query]);
+  if (query.error) {
+    return (
+      <Error
+        error={query.error}
+        title={intl("dashboard.error.alert.title")}
+        refetch={query.refetch}
+      />
+    );
+  }
 
   return (
     <div className="w-full p-8 mx-auto max-w-screen-2xl">
-      <div className="mb-4">
-        <h1 className="text-3xl">{intl("invoices.title")}</h1>
-      </div>
+      <header className="flex items-center justify-between mb-3">
+        <PageTitle
+          title={intl("invoices.title")}
+          fetching={query.isFetching && !query.isLoading}
+          count={query.data?.total}
+        />
+      </header>
 
-      <Loading className="h-screen" show={query.isLoading} />
-      {list && !isEmpty(list) ? (
-        <div className="w-full">
-          <List invoices={list} onUpdate={onUpdate} />
-          <Button
-            size={ButtonSize.Small}
-            onClick={more}
-            loading={query.isLoading || query.isFetching}
-            disabled={query.isLoading || query.isFetching || !query.hasNextPage}
-          >
-            {intl("global.labels.more")}
-          </Button>
-        </div>
-      ) : null}
+      <div className="w-full">
+        {query.isLoading ? (
+          <Loading className="h-screen" show={query.isLoading} />
+        ) : query.data ? (
+          <List data={query.data} query={query} {...pagination} />
+        ) : null}
+      </div>
     </div>
   );
 };
