@@ -1,5 +1,5 @@
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { IUser, Void } from "@litespace/types";
+import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -13,10 +13,11 @@ import DateField from "@/components/common/DateField";
 
 const Content: React.FC<{
   user?: IUser.Self;
+  tutor?: ITutor.Self;
   loading?: boolean;
   error: Error | null;
   refetch: Void;
-}> = ({ user, loading, error, refetch }) => {
+}> = ({ user, tutor, loading, error, refetch }) => {
   const intl = useFormatMessage();
 
   if (loading) return <Loading className="h-[40vh]" />;
@@ -65,9 +66,21 @@ const Content: React.FC<{
         </div>
       </div>
       <div className="grid gap-6 mt-4 sm:grid-cols-2">
-        <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
         <Detail label={intl("global.labels.id")}>{user.id}</Detail>
-        <Detail label={intl("dashboard.user.birthYear")}>{user.id}</Detail>
+        <Detail label={intl("dashboard.user.name")}>{user.name}</Detail>
+        <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.bio")}>{tutor?.bio}</Detail>
+        ) : null}
+        <Detail label={intl("dashboard.user.birthYear")}>
+          {user.birthYear}
+        </Detail>
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.about")}>{tutor?.about}</Detail>
+        ) : null}
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.video")}>{tutor?.video}</Detail>
+        ) : null}
         <Detail label={intl("dashboard.user.hasPassword")}>
           {intl(user.password ? "global.labels.yes" : "global.labels.no")}
         </Detail>
@@ -81,6 +94,19 @@ const Content: React.FC<{
             ? intl("global.gender.female")
             : "-"}
         </Detail>
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.activated")}>
+            {tutor?.activated}
+          </Detail>
+        ) : null}
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.activatedBy")}>
+            {tutor?.activatedBy}
+          </Detail>
+        ) : null}
+        {user.role === IUser.Role.Tutor ? (
+          <Detail label={intl("dashboard.user.notice")}>{tutor?.notice}</Detail>
+        ) : null}
         <Detail label={intl("global.created-at")}>
           <DateField date={user.createdAt} />
         </Detail>

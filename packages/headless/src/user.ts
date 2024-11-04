@@ -1,7 +1,8 @@
-import { IUser, Void } from "@litespace/types";
+import { ITutor, IUser, Void } from "@litespace/types";
 import { useAtlas } from "@/atlas";
 import { useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import { QueryKey } from "./constants";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -48,5 +49,21 @@ export function useRegisterUser({
     mutationFn: createUser,
     onSuccess,
     onError,
+  });
+}
+
+export function useFindTutorMeta(
+  id?: number
+): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
+  const atlas = useAtlas();
+  const findTutorMeta = useCallback(async () => {
+    if (!id) return null;
+    return await atlas.user.findTutorMeta(id);
+  }, [atlas.user]);
+
+  return useQuery({
+    queryFn: findTutorMeta,
+    queryKey: [QueryKey.FindTutorMeta, id],
+    enabled: !!id,
   });
 }
