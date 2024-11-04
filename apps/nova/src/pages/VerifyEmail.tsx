@@ -14,12 +14,12 @@ const VerifyEmail = () => {
   const onSuccess = useCallback(() => {
     toaster.success({ title: intl("page.verify.email.success") });
     navigate(Route.Root);
-  }, []);
+  }, [navigate, intl]);
 
   const onError = useCallback(() => {
     toaster.success({ title: intl("page.verify.email.failure") });
     navigate(Route.Root);
-  }, []);
+  }, [navigate, intl]);
 
   useEffect(() => {
     if (token) return;
@@ -27,14 +27,14 @@ const VerifyEmail = () => {
     if (!searchParamsToken) return navigate(Route.Root);
     setToken(searchParamsToken);
     setSearchParams({});
-  }, []);
+  }, [navigate, intl, searchParams, setSearchParams, token]);
 
   const mutation = useVerifyEmail({ onSuccess, onError });
 
   useEffect(() => {
     if (!token || mutation.isPending) return;
     mutation.mutate(token);
-  }, [token]);
+  }, [token, mutation]);
 
   return (
     <div className="text-4xl text-center">

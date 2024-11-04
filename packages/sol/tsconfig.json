@@ -10,12 +10,11 @@
     "declaration": true,
     "sourceMap": true,
     "outDir": "dist",
-    "rootDir": "src",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/"]
+  "include": ["src/", "tests/"]
 }

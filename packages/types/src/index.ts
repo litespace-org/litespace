@@ -24,6 +24,8 @@ export * as IAsset from "@/asset";
 export * from "@/api";
 export * from "@/utils";
 export * from "@/api";
+export * from "@/lib";
+export * from "@/verification";
 
 export { banks, type Bank } from "@/invoice";
 export { type Type as WithdrawMethod } from "@/withdrawMethod";
