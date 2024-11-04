@@ -1,24 +1,191 @@
-import { Timeline, TimelineItem } from "@litespace/luna/Timeline";
-import { IInvoice } from "@litespace/types";
-import React, { useMemo } from "react";
-import { Hash } from "react-feather";
-import Invoice from "./Invoice";
+import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
+import React, { useCallback, useState } from "react";
+import { Table } from "@/components/common/Table";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { LocalId } from "@litespace/luna/locales";
+import { formatCurrency } from "@litespace/luna/utils";
+import { ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { createColumnHelper } from "@tanstack/react-table";
+import { useMemo } from "react";
+import DateField from "@/components/common/DateField";
+import { UseQueryResult } from "@tanstack/react-query";
+import Process from "@/components/Invoices/Process";
+import { Action } from "@/components/Invoices/type";
 
-const List: React.FC<{ invoices: IInvoice.Self[]; onUpdate?: () => void }> = ({
-  invoices,
-  onUpdate,
-}) => {
-  const timeline = useMemo((): TimelineItem[] => {
-    return invoices.map((invoice) => ({
-      id: invoice.id,
-      children: <Invoice invoice={invoice} onUpdate={onUpdate} />,
-      icon: <Hash />,
-    }));
-  }, [invoices, onUpdate]);
+const withdrawMethods: Record<IWithdrawMethod.Type, LocalId> = {
+  wallet: "withdraw.methods.wallet",
+  instapay: "withdraw.methods.instapay",
+  bank: "withdraw.methods.bank",
+};
+
+const StatusDescriptions: Record<IInvoice.Status, LocalId> = {
+  [IInvoice.Status.Pending]: "invoices.admin.status.pending",
+  [IInvoice.Status.UpdatedByReceiver]:
+    "invoices.admin.status.updated-by-receiver",
+  [IInvoice.Status.CanceledByReceiver]:
+    "invoices.admin.status.canceled-by-receiver",
+  [IInvoice.Status.CancellationApprovedByAdmin]:
+    "invoices.admin.status.canceled-by-admin",
+  [IInvoice.Status.Fulfilled]: "invoices.admin.status.fulfilled",
+  [IInvoice.Status.Rejected]: "invoices.admin.status.rejected",
+};
+
+const List: React.FC<{
+  data: Paginated<IInvoice.Self>;
+  query: UseQueryResult<Paginated<IInvoice.Self>, Error>;
+  next: Void;
+  prev: Void;
+  goto: (pageNumber: number) => void;
+  page: number;
+  totalPages: number;
+}> = ({ data, query, next, prev, goto, page, totalPages }) => {
+  const intl = useFormatMessage();
+  const columnHelper = createColumnHelper<IInvoice.Self>();
+  const [action, setAction] = useState<Action | null>(null);
+  const [invoice, setInvoice] = useState<IInvoice.Self | null>(null);
+
+  const reset = useCallback(() => setAction(null), []);
+
+  const columns = useMemo(
+    () => [
+      columnHelper.accessor("id", {
+        header: intl("global.labels.id"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("userId", {
+        header: intl("dashboard.invoices.userId"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("method", {
+        header: intl("dashboard.invoices.method"),
+        cell: (info) => {
+          const status = info.getValue() as IWithdrawMethod.Type;
+          const value = withdrawMethods[status] as keyof typeof intl;
+          return intl(value);
+        },
+      }),
+      columnHelper.accessor("receiver", {
+        header: intl("dashboard.invoices.receiver"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("bank", {
+        header: intl("dashboard.invoices.bank"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("amount", {
+        header: intl("dashboard.invoices.amount"),
+        cell: (info) => formatCurrency(info.getValue()),
+      }),
+      columnHelper.accessor("status", {
+        header: intl("dashboard.invoices.status"),
+        cell: (info) => {
+          const status = info.getValue();
+          const value = StatusDescriptions[status];
+          return intl(value);
+        },
+      }),
+      columnHelper.accessor("note", {
+        header: intl("dashboard.invoices.note"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("attachment", {
+        header: intl("dashboard.invoices.attachment"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("addressedBy", {
+        header: intl("dashboard.invoices.addressedBy"),
+        cell: (info) => info.getValue(),
+      }),
+      columnHelper.accessor("createdAt", {
+        header: intl("global.created-at"),
+        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+      }),
+      columnHelper.accessor("updatedAt", {
+        header: intl("global.updated-at"),
+        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+      }),
+      columnHelper.display({
+        id: "actions",
+        cell: (info) => {
+          const status = info.row.original.status;
+          const fulfilled = status === IInvoice.Status.Fulfilled;
+          const canceledByReceiver =
+            status === IInvoice.Status.CanceledByReceiver;
+          const updatedByReceiver =
+            status === IInvoice.Status.UpdatedByReceiver;
+          const rejected = status === IInvoice.Status.Rejected;
+
+          const edit = (action: Action): void => {
+            setAction(action);
+            setInvoice(info.row.original);
+          };
+
+          return (
+            <ActionsMenu
+              actions={[
+                {
+                  id: 1,
+                  label: intl("invoices.process.actions.markAsFulfilled"),
+                  disabled: fulfilled,
+                  onClick: () => edit(Action.MarkAsFulfilled),
+                },
+                {
+                  id: 2,
+                  label: intl("invoices.process.actions.approveCancelRequest"),
+                  disabled: !canceledByReceiver,
+                  onClick: () => edit(Action.ApproveCancelRequest),
+                },
+                {
+                  id: 3,
+                  label: intl("invoices.process.actions.editNote"),
+                  onClick: () => edit(Action.EditNote),
+                },
+                {
+                  id: 4,
+                  label: intl("invoices.process.actions.approveUpdateRequest"),
+                  disabled: !updatedByReceiver,
+                  onClick: () => edit(Action.ApproveUpdateRequest),
+                },
+                {
+                  id: 5,
+                  label: intl("invoices.process.actions.markAsRejected"),
+                  danger: true,
+                  disabled: rejected,
+                  onClick: () => edit(Action.MarkAsRejected),
+                },
+              ]}
+            />
+          );
+        },
+      }),
+    ],
+    [columnHelper, intl]
+  );
 
   return (
     <div className="w-full">
-      <Timeline timeline={timeline} />
+      <Table
+        columns={columns}
+        data={data.list}
+        goto={goto}
+        prev={prev}
+        next={next}
+        fetching={query.isFetching}
+        loading={query.isLoading}
+        totalPages={totalPages}
+        page={page}
+      />
+      {action !== null && invoice ? (
+        <Process
+          open={action !== null}
+          close={reset}
+          onUpdate={query.refetch}
+          id={invoice.id}
+          status={invoice.status}
+          action={action}
+          note={invoice.note}
+        />
+      ) : null}
     </div>
   );
 };
