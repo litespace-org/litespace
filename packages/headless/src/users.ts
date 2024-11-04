@@ -5,15 +5,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { QueryKey } from "./constants";
 
-export function useUsers(): UsePaginateResult<IUser.Self> {
+export function useUsers(
+  filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">
+): UsePaginateResult<IUser.Self> {
   const atlas = useAtlas();
 
   const findUsers = useCallback(
-    ({ page, size }: IFilter.Pagination) => atlas.user.find({ page, size }),
-    [atlas.user]
+    ({ page, size }: IFilter.Pagination) =>
+      atlas.user.find({ page, size, ...filter }),
+    [atlas.user, filter]
   );
 
-  return usePaginate(findUsers, ["find-users"]);
+  return usePaginate(findUsers, ["find-users", filter]);
 }
 
 export function useFindUserById(id: number) {

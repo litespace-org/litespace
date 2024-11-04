@@ -95,7 +95,7 @@ const SidebarNav: React.FC<{
                 </div>
               </div>
 
-              <div className="flex flex-col w-full gap-4 mt-6 text-3xl grow">
+              <div className="flex flex-col w-full gap-1 mt-6 text-3xl grow">
                 {options.map((option) => {
                   if ("label" in option)
                     return (

@@ -46,4 +46,53 @@ export const Small: StoryObj<Component> = {
   args: { actions, small: true },
 };
 
+export const SubActions: StoryObj<Component> = {
+  args: {
+    actions: [
+      ...actions,
+      {
+        id: 4,
+        label: ar["invoices.bank"],
+        subActions: [
+          {
+            id: 5,
+            label: ar["banks.labels.alex"],
+            checked: false,
+          },
+          {
+            id: 6,
+            label: ar["banks.labels.cib"],
+            checked: true,
+          },
+        ],
+      },
+    ],
+  },
+};
+
+export const RadioGroup: StoryObj<Component> = {
+  args: {
+    actions: [
+      ...actions,
+      {
+        id: 4,
+        label: ar["invoices.bank"],
+        radioGroup: [
+          {
+            id: 5,
+            label: ar["banks.labels.alex"],
+            value: "alex",
+          },
+          {
+            id: 6,
+            label: ar["banks.labels.cib"],
+            value: "cib",
+          },
+        ],
+        value: "alex",
+      },
+    ],
+  },
+};
+
 export default meta;
