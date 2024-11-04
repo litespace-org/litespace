@@ -1,13 +1,11 @@
+import React from "react";
 import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Plans/List";
 import PlanForm from "@/components/Plans/PlanForm";
 import { usePlans } from "@litespace/headless/plans";
-import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useRender } from "@litespace/luna/hooks/common";
 import cn from "classnames";
-
-import React from "react";
 
 export const Plans: React.FC = () => {
   const form = useRender();
@@ -22,12 +20,14 @@ export const Plans: React.FC = () => {
           count={plans.data?.length}
           fetching={plans.isFetching && !plans.isLoading}
         />
-        <Button onClick={form.show} size={ButtonSize.Small}>
-          {intl("dashboard.plans.createPlanBtn")}
-        </Button>
+        <PlanForm
+          close={form.hide}
+          open={form.open}
+          setOpen={form.setOpen}
+          refresh={plans.refetch}
+        />
       </header>
       <List query={plans} refresh={plans.refetch} />
-      <PlanForm open={form.open} close={form.hide} refresh={plans.refetch} />
     </div>
   );
 };

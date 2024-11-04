@@ -4,8 +4,6 @@ import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
 import { useRender } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-
 import cn from "classnames";
 import React from "react";
 
@@ -22,16 +20,16 @@ export const Users: React.FC = () => {
           fetching={users.query.isFetching && !users.query.isLoading}
           count={users.query.data?.total}
         />
-        <Button onClick={form.show} size={ButtonSize.Small}>
-          {intl("dashboard.users.create")}
-        </Button>
+
+        <UserForm
+          open={form.open}
+          setOpen={form.setOpen}
+          close={form.hide}
+          refresh={users.query.refetch}
+        />
       </header>
+
       <List {...users} />
-      <UserForm
-        open={form.open}
-        close={form.hide}
-        refresh={users.query.refetch}
-      />
     </div>
   );
 };
