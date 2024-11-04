@@ -1,7 +1,7 @@
 import { isProduction } from "@/constants";
 import ResponseError from "@/lib/error";
 import { AxiosError } from "axios";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
@@ -16,7 +16,9 @@ function getZodMessage(error: ZodError) {
 export function errorHandler(
   error: Error | DatabaseError | ResponseError | ZodError | AxiosError,
   _req: Request,
-  res: Response
+  res: Response,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  _next: NextFunction
 ) {
   if (!isProduction) console.error(error);
 
