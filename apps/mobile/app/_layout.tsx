@@ -14,8 +14,8 @@ import { PeerProvider } from "@litespace/headless/peer";
 import { SocketProvider } from "@litespace/headless/socket";
 import { Backend } from "@litespace/types";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
-import "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import "react-native-reanimated";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();

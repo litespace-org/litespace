@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "@/components/Dialog";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
+import React from "react";
 
 const meta: Meta<typeof Dialog> = {
   title: "Dialog",
@@ -19,13 +20,27 @@ const meta: Meta<typeof Dialog> = {
 
 export const Primary: StoryObj<typeof Dialog> = {
   args: {
+    trigger: <button>trigger</button>,
     children: (
       <div className="tw-text-foreground-light">
         {ar["error.tutor.bio.arabic.only"]}
       </div>
     ),
     title: ar["error.update.data"],
+    description: "hello",
+  },
+};
+
+export const WithoutTrigger: StoryObj<typeof Dialog> = {
+  args: {
     open: true,
+    children: (
+      <div className="tw-text-foreground-light">
+        {ar["error.tutor.bio.arabic.only"]}
+      </div>
+    ),
+    title: ar["error.update.data"],
+    description: "hello",
   },
 };
 

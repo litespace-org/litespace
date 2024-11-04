@@ -12,6 +12,7 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
+import { InputType } from "@litespace/luna/Input";
 
 type IForm = {
   email: string;
@@ -21,10 +22,11 @@ type IForm = {
 
 const UserForm: React.FC<{
   open: boolean;
+  user?: IUser.Self;
   close: Void;
   refresh: Void;
-  user?: IUser.Self;
-}> = ({ open, close, refresh }) => {
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ open, close, refresh, setOpen }) => {
   const intl = useFormatMessage();
   const form = useForm<IForm>({
     defaultValues: { email: "", password: "", role: IUser.Role.RegularAdmin },
@@ -69,6 +71,12 @@ const UserForm: React.FC<{
 
   return (
     <Dialog
+      trigger={
+        <Button size={ButtonSize.Small}>
+          {intl("dashboard.users.create")}
+        </Button>
+      }
+      setOpen={setOpen}
       open={open}
       close={onClose}
       title={intl("dashboard.user.form.create")}
@@ -96,6 +104,7 @@ const UserForm: React.FC<{
               name="password"
               value={form.watch("password")}
               rules={passwordRules}
+              type={InputType.Password}
             />
           }
         />
