@@ -4,4 +4,9 @@ export type MenuAction = {
   disabled?: boolean;
   danger?: boolean;
   onClick?: () => void;
+  subActions?: MenuAction[];
+  checked?: boolean;
+  radioGroup?: Array<{ id: number; label: string; value: string }>;
+  value?: string;
+  onRadioValueChange?: (value: string) => void;
 };
