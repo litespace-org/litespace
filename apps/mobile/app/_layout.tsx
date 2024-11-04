@@ -26,6 +26,7 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [token, setToken] = useState<string | null>(null);
   const [loaded] = useFonts({
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
 

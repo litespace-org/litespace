@@ -27,7 +27,7 @@ const VerifyEmail = () => {
     if (!searchParamsToken) return navigate(Route.Root);
     setToken(searchParamsToken);
     setSearchParams({});
-  }, [navigate, intl, searchParams, setSearchParams, token]);
+  }, [intl, navigate, searchParams, setSearchParams, token]);
 
   const mutation = useVerifyEmail({ onSuccess, onError });
 
