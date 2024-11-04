@@ -261,7 +261,13 @@ async function findCurrentUser(
   const user = req.user;
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
-  res.status(200).json(req.user);
+
+  const response: IUser.FindCurrentUserApiResponse = {
+    user,
+    token: encodeAuthJwt(user.id, jwtSecret),
+  };
+
+  res.status(200).json(response);
 }
 
 async function selectInterviewer(

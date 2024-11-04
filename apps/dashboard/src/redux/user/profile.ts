@@ -2,9 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
 import { saveToken } from "@litespace/luna/cache";
-import { initial, LoadableState } from "@litespace/luna/redux";
+import { initial, LoadableState, createThunk } from "@litespace/luna/redux";
+import { Atlas } from "@litespace/atlas";
 
-type State = LoadableState<{ user: IUser.Self; token: string | null }>;
+type Value = { user: IUser.Self; token: string | null };
+type State = LoadableState<Value>;
 
 const initialState: State = initial();
 
@@ -14,6 +16,14 @@ export const profileSelectors = {
   full: (state: RootState) => state.user.profile,
   value: (state: RootState) => state.user.profile.value,
 } as const;
+
+export const findCurrentUser = createThunk(
+  "user/profile",
+  async (atlas: Atlas): Promise<Value> => {
+    return await atlas.user.findCurrentUser();
+  },
+  profileSelectors.full
+);
 
 export const slice = createSlice({
   name: "user/profile",
