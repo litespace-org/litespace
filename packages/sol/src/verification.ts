@@ -1,10 +1,11 @@
 import {
+  ARABIC_LETTERS_REGEX,
+  BIO_REGEX,
   COUPON_REGEX,
   EMAIL_REGEX,
   HTML_REGEX,
   HTML_TAGS_REGEX,
   INSTAPAY_REGEX,
-  LETTERS_ONLY_REGEX,
   MAX_DISCOUNT_VALUE,
   MAX_FEEDBACK_TEXT_LENGTH,
   MAX_INTERVIEW_LEVEL,
@@ -22,6 +23,7 @@ import {
   MAX_TUTOR_BIO_TEXT_LENGTH,
   MAX_TUTOR_NOTICE_DURATION,
   MAX_USER_AGE,
+  MIN_BIO_LEGNTH,
   MIN_DISCOUNT_VALUE,
   MIN_FEEDBACK_TEXT_LENGTH,
   MIN_INTERVIEW_LEVEL,
@@ -33,17 +35,20 @@ import {
   MIN_PLAN_WEEKLY_MINUTES,
   MIN_RATING_TEXT_LENGTH,
   MIN_RATING_VALUE,
+  MIN_RULE_DATE_PERIOD_HOURS,
   MIN_RULE_DURATION_MINUTES,
   MIN_RULE_TITLE_LENGTH,
   MIN_TUTOR_NOTICE_DURATION,
   MIN_USER_AGE,
   NUMBERS_ONLY_REGEX,
+  PASSWORD_LETTERS_REGEX,
   PASSWORD_REGEX,
   PHONE_NUMBER_REGEX,
   USER_NAME_REGEX,
 } from "@/constants";
 import { Bank, FieldError, WithdrawMethod } from "@litespace/types";
-import { getSafeInnerHtmlText } from "./utils";
+import { getSafeInnerHtmlText } from "@/utils";
+import { dayjs } from "@/dayjs";
 
 export function isValidEmail(email: string): FieldError.InvalidEmail | true {
   if (!EMAIL_REGEX.test(email)) return FieldError.InvalidEmail;
@@ -53,18 +58,24 @@ export function isValidEmail(email: string): FieldError.InvalidEmail | true {
 export function isValidPassword(
   password: string
 ):
-  | FieldError.PasswordTooShort
-  | FieldError.PasswordTooLong
-  | FieldError.PasswordMissingLetters
-  | FieldError.PasswordMissingNumbers
+  | FieldError.ShortPassword
+  | FieldError.LongPassword
+  | FieldError.MissingPasswordLetters
+  | FieldError.MissingPasswordNumbers
+  | FieldError.InvalidPassword
   | true {
   if (!NUMBERS_ONLY_REGEX.test(password))
-    return FieldError.PasswordMissingNumbers;
-  if (!LETTERS_ONLY_REGEX.test(password))
-    return FieldError.PasswordMissingLetters;
-  if (password.length > MAX_PASSWORD_LENGTH) return FieldError.PasswordTooShort;
-  if (password.length < MIN_PASSWORD_LENGTH) return FieldError.PasswordTooShort;
-  if (PASSWORD_REGEX.test(password)) return true;
+    return FieldError.MissingPasswordNumbers;
+
+  if (!PASSWORD_LETTERS_REGEX.test(password))
+    return FieldError.MissingPasswordLetters;
+
+  if (password.length > MAX_PASSWORD_LENGTH) return FieldError.LongPassword;
+
+  if (password.length < MIN_PASSWORD_LENGTH) return FieldError.ShortPassword;
+
+  if (!PASSWORD_REGEX.test(password)) return FieldError.InvalidPassword;
+
   return true;
 }
 
@@ -77,38 +88,38 @@ export function isValidUserName(
 
 export function isValidUserBirthYear(
   userBirthYear: number
-): FieldError.UserTooOld | FieldError.UserTooYoung | true {
+): FieldError.OldUser | FieldError.YoungUser | true {
   const currentYear = new Date().getFullYear();
   const minYear = currentYear - MAX_USER_AGE;
   const maxYear = currentYear - MIN_USER_AGE;
 
-  if (userBirthYear < minYear) return FieldError.UserTooOld;
-  if (userBirthYear > maxYear) return FieldError.UserTooYoung;
+  if (userBirthYear < minYear) return FieldError.OldUser;
+  if (userBirthYear > maxYear) return FieldError.YoungUser;
   return true;
 }
 
 export function isValidTutorBio(
   bio: string
-): FieldError.EmptyBio | FieldError.TooLongBio | true {
+):
+  | FieldError.EmptyBio
+  | FieldError.ShortBio
+  | FieldError.LongBio
+  | FieldError.InvalidBio
+  | true {
   if (!bio.length) return FieldError.EmptyBio;
-  if (bio.length > MAX_TUTOR_BIO_TEXT_LENGTH) return FieldError.TooLongBio;
-
+  if (bio.length < MIN_BIO_LEGNTH) return FieldError.ShortBio;
+  if (!BIO_REGEX.test(bio)) return FieldError.InvalidBio;
+  if (bio.length > MAX_TUTOR_BIO_TEXT_LENGTH) return FieldError.LongBio;
   return true;
 }
 
 export function isValidTutorAbout(
   about: string
-):
-  | FieldError.InvalidTutorAbout
-  | FieldError.EmptyTutorAbout
-  | FieldError.TooLongTutorAbout
-  | true {
+): FieldError.EmptyTutorAbout | FieldError.LongTutorAbout | true {
   const tutorAboutText = getSafeInnerHtmlText(about);
-
   if (!tutorAboutText.length) return FieldError.EmptyTutorAbout;
-  if (!HTML_REGEX.test(about)) return FieldError.InvalidTutorAbout;
   if (tutorAboutText.length > MAX_TUTOR_ABOUT_TEXT_LENGTH)
-    return FieldError.TooLongTutorAbout;
+    return FieldError.LongTutorAbout;
   return true;
 }
 
@@ -123,48 +134,43 @@ export function isValidTutorNotice(
 
 export function isValidRuleTitle(
   title: string
-): FieldError.TooShortRuleTitle | FieldError.TooLongRuleTitle | true {
-  if (title.length > MAX_RULE_TITLE_LENGTH) return FieldError.TooLongRuleTitle;
-  if (title.length < MIN_RULE_TITLE_LENGTH) return FieldError.TooShortRuleTitle;
+):
+  | FieldError.ShortRuleTitle
+  | FieldError.LongRuleTitle
+  | FieldError.InvalidRuleTitle
+  | true {
+  if (title.length < MIN_RULE_TITLE_LENGTH) return FieldError.ShortRuleTitle;
+  if (!ARABIC_LETTERS_REGEX.test(title)) return FieldError.InvalidRuleTitle;
+  if (title.length > MAX_RULE_TITLE_LENGTH) return FieldError.LongRuleTitle;
   return true;
 }
 
-export function isValidRuleStart(
-  ruleStart: string,
-  ruleEnd: string
+/**
+ * Validate rule start and end date
+ */
+export function isValidRuleBounds(
+  start: string,
+  end: string
 ):
-  | FieldError.ISOInvalidRuleStart
-  | FieldError.ISOInvalidRuleEnd
+  | FieldError.InvalidRuleStartFormat
+  | FieldError.InvalidRuleEndFormat
   | FieldError.RuleStartAfterEnd
   | FieldError.RuleStartDatePassed
-  | true {
-  if (!Date.parse(ruleStart)) return FieldError.ISOInvalidRuleStart;
-  if (!Date.parse(ruleEnd)) return FieldError.ISOInvalidRuleEnd;
-  if (new Date(ruleStart) > new Date(ruleEnd))
-    return FieldError.RuleStartAfterEnd;
-  if (new Date() > new Date(ruleStart)) return FieldError.RuleStartDatePassed;
-  return true;
-}
-
-export function isValidRuleEnd(
-  ruleEnd: string,
-  ruleStart: string
-):
-  | FieldError.ISOInvalidRuleEnd
-  | FieldError.ISOInvalidRuleStart
-  | FieldError.RuleEndBeforeStart
   | FieldError.RuleEndDatePassed
+  | FieldError.InvalidRuleDatePeriod
   | true {
-  const currentTime = new Date().getTime();
-  const parsedRuleEnd = Date.parse(ruleEnd);
-  const parsedRuleStart = Date.parse(ruleStart);
-  const ruleEndTime = new Date(ruleEnd).getTime();
-  const ruleStartTime = new Date(ruleStart).getTime();
+  const ruleStart = dayjs.utc(start);
+  const ruleEnd = dayjs.utc(end);
 
-  if (!parsedRuleEnd) return FieldError.ISOInvalidRuleEnd;
-  if (!parsedRuleStart) return FieldError.ISOInvalidRuleStart;
-  if (ruleEndTime < ruleStartTime) return FieldError.RuleEndBeforeStart;
-  if (ruleEndTime < currentTime) return FieldError.RuleEndDatePassed;
+  if (!ruleStart.isValid()) return FieldError.InvalidRuleStartFormat;
+  if (!ruleEnd.isValid()) return FieldError.InvalidRuleEndFormat;
+
+  if (ruleStart.isAfter(ruleEnd)) return FieldError.RuleStartAfterEnd;
+  if (dayjs.utc().isAfter(ruleStart)) return FieldError.RuleStartDatePassed;
+  if (dayjs.utc().isAfter(ruleEnd)) return FieldError.RuleEndDatePassed;
+  if (ruleStart.add(MIN_RULE_DATE_PERIOD_HOURS, "hours").isAfter(ruleEnd))
+    return FieldError.InvalidRuleDatePeriod;
+
   return true;
 }
 

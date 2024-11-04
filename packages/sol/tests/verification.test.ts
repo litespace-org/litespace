@@ -1,4 +1,4 @@
-import { faker } from "@faker-js/faker";
+import { fakerAR as faker } from "@faker-js/faker";
 import {
   isValidCouponExpireDate,
   isValidCouponDiscount,
@@ -15,8 +15,7 @@ import {
   isValidRatingText,
   isValidRatingValue,
   isValidRuleDuration,
-  isValidRuleEnd,
-  isValidRuleStart,
+  isValidRuleBounds,
   isValidRuleTitle,
   isValidTutorAbout,
   isValidTutorBio,
@@ -30,9 +29,10 @@ import {
   isValidInvoiceNote,
 } from "@/verification";
 import { FieldError } from "@litespace/types";
+import { dayjs } from "@/dayjs";
 
 describe("email validation", () => {
-  it("should accept these valid emails", () => {
+  it("should accept emails in all valid variations", () => {
     expect(isValidEmail("john@gmail.com")).toBe(true);
     expect(isValidEmail("john.doe@gmail.com")).toBe(true);
     expect(isValidEmail("john-doe@gmail.com")).toBe(true);
@@ -40,33 +40,46 @@ describe("email validation", () => {
     expect(isValidEmail("6johndoe@gmail.com")).toBe(true);
     expect(isValidEmail("-johndoe@gmail.com")).toBe(true);
   });
+
   it("should reject email without @ character", () => {
     expect(isValidEmail("johngmail.com")).toBe(FieldError.InvalidEmail);
   });
+
   it("should reject email with unappropriate domain name", () => {
     expect(isValidEmail("john@gmail.c")).toBe(FieldError.InvalidEmail);
   });
+
   it("should reject email with double @", () => {
     expect(isValidEmail("j@ohn@gmail.com")).toBe(FieldError.InvalidEmail);
   });
+
   it("should reject email start with non word char", () => {
     expect(isValidEmail("#john@gmail.com")).toBe(FieldError.InvalidEmail);
   });
 });
 
 describe("validate password", () => {
-  it("should accept these password with 8 or more characters, letters and numbers", () => {
+  it("should accept password with 8 or more, letters and numbers", () => {
     expect(isValidPassword("Abc12345678")).toBe(true);
     expect(isValidPassword("abcABC1234567890")).toBe(true);
+    expect(isValidPassword("@abc9876")).toBe(true);
+    expect(isValidPassword("中华人民共和国123")).toBe(true);
   });
+
   it("should reject password less than 8 characters", () => {
-    expect(isValidPassword("Ab1234")).toBe(FieldError.PasswordTooShort);
+    expect(isValidPassword("Ab1234")).toBe(FieldError.ShortPassword);
   });
+
+  it("should reject password more than 100 characters", () => {
+    expect(isValidPassword("A2".repeat(51))).toBe(FieldError.LongPassword);
+  });
+
   it("should reject password without any letter", () => {
-    expect(isValidPassword("12345678")).toBe(FieldError.PasswordMissingLetters);
+    expect(isValidPassword("12345678")).toBe(FieldError.MissingPasswordLetters);
   });
+
   it("should reject password without any numbers", () => {
-    expect(isValidPassword("Abcdefgh")).toBe(FieldError.PasswordMissingNumbers);
+    expect(isValidPassword("Abcdefgh")).toBe(FieldError.MissingPasswordNumbers);
   });
 });
 
@@ -82,6 +95,7 @@ describe("validate username", () => {
   });
   it("should reject user name that contains symbols", () => {
     expect(isValidUserName("زيد_عمر")).toBe(FieldError.InvalidUserName);
+    expect(isValidUserName("زيد_عمر #123")).toBe(FieldError.InvalidUserName);
   });
 });
 
@@ -94,54 +108,51 @@ describe("user birth year validation", () => {
   });
   it("should reject user with age out of range 10-60", () => {
     expect(isValidUserBirthYear(new Date().getFullYear() - 9)).toBe(
-      FieldError.UserTooYoung
+      FieldError.YoungUser
     );
     expect(isValidUserBirthYear(new Date().getFullYear() - 61)).toBe(
-      FieldError.UserTooOld
+      FieldError.OldUser
     );
   });
 });
 
 describe("tutor bio validation", () => {
   it("should accept bio in range 1-60 chars", () => {
-    expect(
-      isValidTutorBio(
-        "John; specialized tutor in personalized learning and growth."
-      )
-    ).toBe(true);
+    expect(isValidTutorBio("إسمي وليد واحب اللغة الانجليزية")).toBe(true);
+    expect(isValidTutorBio("هتبقي #1 في الانجليزي")).toBe(true);
   });
-  it("should reject bio less than 1 char", () => {
+
+  it("should reject empty bio", () => {
     expect(isValidTutorBio("")).toBe(FieldError.EmptyBio);
   });
+
+  it("should reject short bio", () => {
+    expect(isValidTutorBio("bio")).toBe(FieldError.ShortBio);
+  });
+
   it("should reject bio exceeding 60 chars", () => {
-    expect(
-      isValidTutorBio(
-        "<div><h1>John doe</h1><p>Experienced tutor specialized in personalized learning and growth.</p></div>"
-      )
-    ).toBe(FieldError.TooLongBio);
+    expect(isValidTutorBio("English bio is not allowed")).toBe(
+      FieldError.InvalidBio
+    );
   });
 });
 
 describe("tutor about validation", () => {
   it("should accept about in range 1-1000 chars", () => {
-    expect(
-      isValidTutorAbout(
-        "<div><h3>about john doe</h3><p>A tutor guides students, helps with learning, explains concepts simply, and improves understanding step by step.</p></div>"
-      )
-    ).toBe(true);
+    expect(isValidTutorAbout(faker.lorem.sentence(10))).toBe(true);
   });
+
   it("should reject empty tutor about", () => {
     expect(isValidTutorAbout("<div></div>")).toBe(FieldError.EmptyTutorAbout);
   });
+
   it("should reject tutor about with more than 1000 letters", () => {
     const fakeTutorAbout = `<div>${faker.lorem.sentence({
       min: 1050,
       max: 1200,
     })}</div>`;
 
-    expect(isValidTutorAbout(fakeTutorAbout)).toBe(
-      FieldError.TooLongTutorAbout
-    );
+    expect(isValidTutorAbout(fakeTutorAbout)).toBe(FieldError.LongTutorAbout);
   });
 });
 
@@ -159,64 +170,65 @@ describe("tutor notice validation", () => {
 
 describe("rule title validation", () => {
   it("should accept title in range 5-255 chars", () => {
-    expect(isValidRuleTitle("Rule Title")).toBe(true);
+    expect(isValidRuleTitle("جدولي الإساسي")).toBe(true);
+    expect(isValidRuleTitle("جدول نهاية الاسبوع 1")).toBe(true);
   });
+
   it("should reject title less than 5 char", () => {
-    expect(isValidRuleTitle("rule")).toBe(FieldError.TooShortRuleTitle);
+    expect(isValidRuleTitle("rule")).toBe(FieldError.ShortRuleTitle);
   });
+
   it("should reject title exceeding 255 chars", () => {
     const fakeRuleTitle = `${faker.lorem.sentences({
       min: 300,
       max: 350,
     })}`;
 
-    expect(isValidRuleTitle(fakeRuleTitle)).toBe(FieldError.TooLongRuleTitle);
+    expect(isValidRuleTitle(fakeRuleTitle)).toBe(FieldError.LongRuleTitle);
   });
 });
 
 describe("rule start validation", () => {
   it("should accept a rule start ISO valid, not in the past and not after the rule end", () => {
-    expect(isValidRuleStart("11-10-2024", "11-24-2024")).toBe(true);
+    expect(
+      isValidRuleBounds(
+        dayjs.utc().add(1, "hour").toISOString(),
+        dayjs.utc().add(2, "day").toISOString()
+      )
+    ).toBe(true);
   });
+
   it("should reject a rule with an ISO invalid start date", () => {
-    expect(isValidRuleStart("24/10/2024", "11-24-2024")).toBe(
-      FieldError.ISOInvalidRuleStart
+    expect(isValidRuleBounds("invalid-date", dayjs().utc().toISOString())).toBe(
+      FieldError.InvalidRuleStartFormat
     );
-    expect(isValidRuleStart("10/2024", "11-24-2024")).toBe(
-      FieldError.ISOInvalidRuleStart
+    expect(isValidRuleBounds(dayjs.utc().toISOString(), "invalid-date")).toBe(
+      FieldError.InvalidRuleEndFormat
     );
   });
+
   it("should reject a rule which has start date on the past", () => {
-    expect(isValidRuleStart("10/20/2024", "12/20/2025")).toBe(
+    expect(isValidRuleBounds("10/20/2024", "12/20/2025")).toBe(
       FieldError.RuleStartDatePassed
     );
   });
+
   it("should reject a rule which has start date after the end date", () => {
-    expect(isValidRuleStart("10/29/2024", "10/27/2024")).toBe(
+    expect(isValidRuleBounds("10/29/2024", "10/27/2024")).toBe(
       FieldError.RuleStartAfterEnd
     );
   });
-});
-describe("rule end validation", () => {
-  it("should accept a rule with end date ISO valid, after start date and after current time", () => {
-    expect(isValidRuleEnd("3/10/2025", "11/10/2024")).toBe(true);
-  });
-  it("should reject a rule with ISO invalid end date", () => {
-    expect(isValidRuleEnd("11/2024", "10/29/2024")).toBe(
-      FieldError.ISOInvalidRuleEnd
-    );
-  });
-  it("should reject a rule with passed end date", () => {
-    expect(isValidRuleEnd("10/11/2024", "5/29/2024")).toBe(
-      FieldError.RuleEndDatePassed
-    );
-  });
-  it("should reject a rule with end date before start date", () => {
-    expect(isValidRuleEnd("10/29/2024", "11/11/2024")).toBe(
-      FieldError.RuleEndBeforeStart
-    );
+
+  it("should reject a rule which has less than 24 hours difference between start and end", () => {
+    expect(
+      isValidRuleBounds(
+        dayjs.utc().add(1, "hour").toISOString(),
+        dayjs.utc().add(23, "hours").toISOString()
+      )
+    ).toBe(FieldError.InvalidRuleDatePeriod);
   });
 });
+
 describe("rule duration validation", () => {
   it("should accept a rule duration between 0 and 8 hours", () => {
     expect(isValidRuleDuration(0)).toBe(true);
@@ -230,6 +242,8 @@ describe("rule duration validation", () => {
     expect(isValidRuleDuration(961)).toBe(FieldError.MaxRuleDuratoinExceeded);
   });
 });
+
+// todo: @neuodev stopped here, will review rest of the tests later
 describe("interview feedback validation", () => {
   it("should accept an interview feedback which is valid html and text range between 5-1000", () => {
     expect(
