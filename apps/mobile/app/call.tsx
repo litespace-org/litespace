@@ -6,6 +6,7 @@ import { useCall } from "@litespace/headless/calls";
 import { MediaStream as NativeStream } from "react-native-webrtc";
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   interface MediaStream extends NativeStream {}
 }
 

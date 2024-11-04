@@ -3,7 +3,7 @@ export function withDevLog<T extends object>(value: T): T {
   return value;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function nameof<T extends Function>(f: T): string {
   return f.name;
 }
