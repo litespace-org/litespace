@@ -31,20 +31,18 @@ const StatusDescriptions: Record<IInvoice.Status, LocalId> = {
 };
 
 const List: React.FC<{
-  invoicesList: Paginated<IInvoice.Self>;
+  data: Paginated<IInvoice.Self>;
   query: UseQueryResult<Paginated<IInvoice.Self>, Error>;
   next: Void;
   prev: Void;
   goto: (pageNumber: number) => void;
   page: number;
   totalPages: number;
-}> = ({ invoicesList, query, next, prev, goto, page, totalPages }) => {
+}> = ({ data, query, next, prev, goto, page, totalPages }) => {
   const intl = useFormatMessage();
   const columnHelper = createColumnHelper<IInvoice.Self>();
   const [action, setAction] = useState<Action | null>(null);
-  const [activeInvoice, setActiveInvoice] = useState<IInvoice.Self | null>(
-    null
-  );
+  const [invoice, setInvoice] = useState<IInvoice.Self | null>(null);
 
   const reset = useCallback(() => setAction(null), []);
 
@@ -108,39 +106,67 @@ const List: React.FC<{
       }),
       columnHelper.display({
         id: "actions",
-        cell: () => (
-          <ActionsMenu
-            actions={[
-              {
-                id: 1,
-                label: intl("global.labels.edit"),
-                onClick() {
-                  // TODO: Dialog to edit invoice
-                  alert("edit");
+        cell: (info) => {
+          const status = info.row.original.status;
+          const fulfilled = status === IInvoice.Status.Fulfilled;
+          const canceledByReceiver =
+            status === IInvoice.Status.CanceledByReceiver;
+          const updatedByReceiver =
+            status === IInvoice.Status.UpdatedByReceiver;
+          const rejected = status === IInvoice.Status.Rejected;
+
+          const edit = (action: Action): void => {
+            setAction(action);
+            setInvoice(info.row.original);
+          };
+
+          return (
+            <ActionsMenu
+              actions={[
+                {
+                  id: 1,
+                  label: intl("invoices.process.actions.markAsFulfilled"),
+                  disabled: fulfilled,
+                  onClick: () => edit(Action.MarkAsFulfilled),
                 },
-              },
-              {
-                id: 2,
-                label: intl("global.labels.delete"),
-                danger: true,
-                onClick() {
-                  // TODO: Dialog to remove invoice
-                  alert("Delete Invoice!!!");
+                {
+                  id: 2,
+                  label: intl("invoices.process.actions.approveCancelRequest"),
+                  disabled: !canceledByReceiver,
+                  onClick: () => edit(Action.ApproveCancelRequest),
                 },
-              },
-            ]}
-          />
-        ),
+                {
+                  id: 3,
+                  label: intl("invoices.process.actions.editNote"),
+                  onClick: () => edit(Action.EditNote),
+                },
+                {
+                  id: 4,
+                  label: intl("invoices.process.actions.approveUpdateRequest"),
+                  disabled: !updatedByReceiver,
+                  onClick: () => edit(Action.ApproveUpdateRequest),
+                },
+                {
+                  id: 5,
+                  label: intl("invoices.process.actions.markAsRejected"),
+                  danger: true,
+                  disabled: rejected,
+                  onClick: () => edit(Action.MarkAsRejected),
+                },
+              ]}
+            />
+          );
+        },
       }),
     ],
-    [columnHelper, intl, invoicesList]
+    [columnHelper, intl]
   );
 
   return (
     <div className="w-full">
       <Table
         columns={columns}
-        data={invoicesList.list}
+        data={data.list}
         goto={goto}
         prev={prev}
         next={next}
@@ -149,15 +175,15 @@ const List: React.FC<{
         totalPages={totalPages}
         page={page}
       />
-      {action && activeInvoice ? (
+      {action !== null && invoice ? (
         <Process
           open={action !== null}
           close={reset}
           onUpdate={query.refetch}
-          id={activeInvoice.id}
-          status={activeInvoice.status}
+          id={invoice.id}
+          status={invoice.status}
           action={action}
-          note={activeInvoice.note}
+          note={invoice.note}
         />
       ) : null}
     </div>
