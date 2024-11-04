@@ -28,7 +28,6 @@ export const Plans: React.FC = () => {
         />
       </header>
       <List query={plans} refresh={plans.refetch} />
-      {/* <PlanForm open={form.open} close={form.hide} refresh={plans.refetch} /> */}
     </div>
   );
 };
