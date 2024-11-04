@@ -17,8 +17,8 @@ export class User extends Base {
     throw new Error("Not impelmented yet");
   }
 
-  async findMe(): Promise<IUser.Self> {
-    return await this.get("/api/v1/user/me");
+  async findCurrentUser(): Promise<IUser.FindCurrentUserApiResponse> {
+    return await this.get("/api/v1/user/current");
   }
 
   async find(

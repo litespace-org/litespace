@@ -9,7 +9,7 @@ export default function router(context: ApiContext) {
   router.route("/").post(user.create);
 
   router.get("/interviewer/select", user.selectInterviewer);
-  router.get("/me", user.findCurrentUser);
+  router.get("/current", user.findCurrentUser);
   router.get("/list", user.findUsers);
   router.get("/:id", user.findById);
   router.put("/:id", fileupload, user.update(context));

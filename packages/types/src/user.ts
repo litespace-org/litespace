@@ -115,6 +115,8 @@ export type ResetPasswordApiResponse = LoginApiResponse;
 
 export type LoginWithAuthTokenApiResponse = LoginApiResponse;
 
+export type FindCurrentUserApiResponse = LoginApiResponse;
+
 export type ForegetPasswordApiPayload = {
   email: string;
   callbackUrl: string;
