@@ -1,8 +1,9 @@
 import { useAtlas } from "@/atlas";
 import { usePaginate, UsePaginateResult } from "@/pagination";
 import { IFilter, IUser, Void } from "@litespace/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { QueryKey } from "./constants";
 
 export function useUsers(): UsePaginateResult<IUser.Self> {
   const atlas = useAtlas();
@@ -13,6 +14,20 @@ export function useUsers(): UsePaginateResult<IUser.Self> {
   );
 
   return usePaginate(findUsers, ["find-users"]);
+}
+
+export function useFindUserById(id: number) {
+  const atlas = useAtlas();
+
+  const findUserById = useCallback(
+    async () => atlas.user.findById(id),
+    [atlas.user]
+  );
+
+  return useQuery({
+    queryKey: [QueryKey.FindUserById, id],
+    queryFn: findUserById,
+  });
 }
 
 export function useCreateUser({
