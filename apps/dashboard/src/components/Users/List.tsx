@@ -13,6 +13,7 @@ import DateField from "@/components/common/DateField";
 import TruncateField from "@/components/common/TruncateField";
 import ImageDialog from "@/components/common/ImageDialog";
 import Error from "@/components/common/Error";
+import { Link } from "react-router-dom";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -30,7 +31,7 @@ const List: React.FC<{
       columnHelper.accessor("id", {
         header: intl("global.labels.id"),
         cell: (info) => {
-          return info.getValue();
+          return <Link to={`/user/${info.getValue()}`}>{info.getValue()}</Link>;
         },
       }),
       columnHelper.accessor("email", {
