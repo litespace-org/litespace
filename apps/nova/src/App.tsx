@@ -6,7 +6,7 @@ import Register from "@/pages/Register";
 import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
+import { findCurrentUser, profileSelectors } from "@/redux/user/profile";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";
@@ -27,6 +27,7 @@ import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
+import { useAtlas } from "@litespace/headless/atlas";
 
 const router = createBrowserRouter([
   {
@@ -59,6 +60,12 @@ const router = createBrowserRouter([
 function App(): React.JSX.Element {
   const dispatch = useAppDispatch();
   const profile = useAppSelector(profileSelectors.user);
+  const atlas = useAtlas();
+
+  useEffect(() => {
+    // fetch user profile on page load
+    dispatch(findCurrentUser.call(atlas));
+  }, [atlas, dispatch]);
 
   useEffect(() => {
     if (!profile) return;
