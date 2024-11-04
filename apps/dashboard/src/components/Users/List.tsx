@@ -1,9 +1,8 @@
 import { ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
-import { LocalId } from "@litespace/luna/locales";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-
+import { rolesMap } from "@/components/utils/user";
 import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -14,15 +13,6 @@ import DateField from "@/components/common/DateField";
 import TruncateField from "@/components/common/TruncateField";
 import ImageDialog from "@/components/common/ImageDialog";
 import Error from "@/components/common/Error";
-
-const rolesMap: Record<IUser.Role, LocalId> = {
-  [IUser.Role.SuperAdmin]: "global.role.super-admin",
-  [IUser.Role.RegularAdmin]: "global.role.regular-admin",
-  [IUser.Role.MediaProvider]: "global.role.media-provider",
-  [IUser.Role.Interviewer]: "global.role.interviewer",
-  [IUser.Role.Tutor]: "global.role.tutor",
-  [IUser.Role.Student]: "global.role.student",
-};
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;

@@ -13,4 +13,5 @@ export enum QueryKey {
   FindInterviewer = "select-interviewer",
   FindInterviewSlots = "interviewer-slots",
   FindInvoices = "find-invoices",
+  FindUserById = "find-user-by-id",
 }
