@@ -50,6 +50,7 @@
     "./TimePicker": "./dist/components/TimePicker/index.js",
     "./Title": "./dist/components/Title/index.js",
     "./Toast": "./dist/components/Toast/index.js",
+    "./Tooltip": "./dist/components/Tooltip/index.js",
     "./Spinner": "./dist/icons/Spinner.jsx",
     "./utils": "./dist/components/utils/index.js",
     "./VideoPlayer": "./dist/components/VideoPlayer/index.js",
