@@ -5,4 +5,5 @@ export enum Route {
   Login = "/login",
   Plans = "/plans",
   Users = "/users",
+  User = "/user/:id",
 }

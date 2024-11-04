@@ -7,6 +7,7 @@ import Media from "@/pages/Media";
 import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
 import Users from "@/pages/Users";
+import UserProfile from "./pages/UserProfile";
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
       { path: Route.Login, element: <Login /> },
       { path: Route.Plans, element: <Plans /> },
       { path: Route.Users, element: <Users /> },
+      { path: Route.User, element: <UserProfile /> },
     ],
   },
 ]);
