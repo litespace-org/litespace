@@ -1,20 +1,22 @@
 import React, { useMemo } from "react";
 import { dayjs } from "@/lib/dayjs";
-import { Popover } from "@litespace/luna/Popover";
+import { Tooltip } from "@litespace/luna/Tooltip";
 
 const DateField: React.FC<{ date: string }> = ({ date }) => {
   const formatedDate = useMemo(() => dayjs(date).format("YYYY/MM/DD"), [date]);
   return (
-    <Popover
+    <Tooltip
       content={
-        <span>
-          {dayjs(date).format("dddd D MMMM YYYY h:m a ")}&nbsp;(
-          {dayjs(date).fromNow()})
-        </span>
+        <div className="max-w-52 text-center leading-relaxed">
+          <span>
+            {dayjs(date).format("dddd D MMMM YYYY h:m a ")}&nbsp;(
+            {dayjs(date).fromNow()})
+          </span>
+        </div>
       }
     >
       <span>{formatedDate}</span>
-    </Popover>
+    </Tooltip>
   );
 };
 
