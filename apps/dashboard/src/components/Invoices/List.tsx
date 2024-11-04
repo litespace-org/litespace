@@ -11,6 +11,7 @@ import DateField from "@/components/common/DateField";
 import { UseQueryResult } from "@tanstack/react-query";
 import Process from "@/components/Invoices/Process";
 import { Action } from "@/components/Invoices/type";
+import UserPopover from "@/components/common/UserPopover";
 
 const withdrawMethods: Record<IWithdrawMethod.Type, LocalId> = {
   wallet: "withdraw.methods.wallet",
@@ -54,7 +55,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("userId", {
         header: intl("dashboard.invoices.userId"),
-        cell: (info) => info.getValue(),
+        cell: (info) => <UserPopover id={info.getValue()} />,
       }),
       columnHelper.accessor("method", {
         header: intl("dashboard.invoices.method"),
