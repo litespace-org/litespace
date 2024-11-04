@@ -215,17 +215,25 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-link: 155deg 100% 38.6%;
   --brand-button: 154.9deg 100% 19.2%;
   --brand-default: 153.1deg 60.2% 52.7%;
+  --brand-900: 151deg 61% 10%;
+  --brand-800: 151deg 61% 20%;
+  --brand-700: 151deg 62% 30%;
   --brand-600: 154.9deg 59.5% 70%;
   --brand-500: 154.9deg 100% 19.2%;
   --brand-400: 155.5deg 100% 9.6%;
   --brand-300: 155.1deg 100% 8%;
   --brand-200: 162deg 100% 2%;
   --warning-default: 38.9deg 100% 42.9%;
+  --warning-900: 45deg 100% 10%;
+  --warning-800: 45deg 100% 20%;
+  --warning-700: 45deg 100% 30%;
   --warning-600: 38.9deg 100% 42.9%;
   --warning-500: 34.8deg 90.9% 21.6%;
   --warning-400: 33.2deg 100% 14.5%;
   --warning-300: 32.3deg 100% 10.2%;
   --warning-200: 36.6deg 100% 8%;
+  --warning-100: 45deg 100% 90%;
+  --warning-50: 45deg 100% 95%;
   --destructive-default: 10.2deg 77.9% 53.9%;
   --destructive-600: 9.7deg 85.2% 62.9%;
   --destructive-500: 7.9deg 71.6% 29%;
@@ -286,26 +294,45 @@ input[type="range"]:focus::-moz-range-thumb {
   --secondary-default: 247.8deg 100% 70%; /* ✅ */
   --secondary-400: 248.3deg 54.5% 25.9%; /* ✅ */
   --secondary-200: 248deg 53.6% 11%; /* ✅ */
+  --secondary-100: 151deg 61% 90%;
+  --secondary-50: 0deg 0% 95%;
   --brand-link: 153.4deg 100% 36.7%; /* ✅ */
   --brand-button: 151.8deg 47.1% 40.8%; /* ✅ */
   --brand-default: 152.9deg 60% 52.9%; /* ✅ */
+  --brand-900: 151deg 61% 10%;
+  --brand-800: 151deg 61% 20%;
+  --brand-700: 151deg 62% 30%;
   --brand-600: 156.5deg 86.5% 26.1%; /* ✅ */
   --brand-500: 155.3deg 78.4% 40%; /* ✅ */
   --brand-400: 151.3deg 66.9% 66.9%; /* ✅ */
-  --brand-300: 147.5deg 72% 80.4%; /* ✅ */
-  --brand-200: 147.6deg 72.5% 90%; /* ✅ */
+  --brand-300: 151deg 62% 70%; /* ✅ */
+  --brand-200: 151deg 61% 80%; /* ✅ */
+  --brand-100: 151deg 61% 90%;
+  --brand-50: 154deg 62% 95%;
+  --success-900: 123deg 41% 10%;
+  --success-800: 122deg 39% 20%;
+  --success-700: 122deg 40% 30%;
   --warning-default: 38.9deg 100% 57.1%; /* ✅ */
-  --warning-600: 30.3deg 80.3% 47.8%; /* ✅ */
-  --warning-500: 36.3deg 85.7% 67.1%; /* ✅ */
-  --warning-400: 41.9deg 100% 81.8%; /* ✅ */
-  --warning-300: 44.3deg 100% 91.8%; /* ✅ */
-  --warning-200: 40deg 81.8% 97.8%; /* ✅ */
+  --warning-900: 45deg 100% 10%;
+  --warning-800: 45deg 100% 20%;
+  --warning-700: 45deg 100% 30%;
+  --warning-600: 38.9deg 100% 42.9%;
+  --warning-500: 34.8deg 90.9% 21.6%;
+  --warning-400: 33.2deg 100% 14.5%;
+  --warning-300: 45deg 100% 70%;
+  --warning-200: 45deg 100% 80%;
+  --warning-100: 45deg 100% 90%;
+  --warning-50: 45deg 100% 95%;
   --destructive-default: 10.2deg 77.9% 53.9%; /* ✅ */
+  --destructive-900: 0deg 100% 10%;
+  --destructive-800: 0deg 100% 20%;
+  --destructive-700: 0deg 100% 30%;
   --destructive-600: 9.9deg 82% 43.5%; /* ✅ */
   --destructive-500: 10.4deg 77.1% 79.4%; /* ✅ */
-  --destructive-400: 7.1deg 91.3% 91%; /* ✅ */
-  --destructive-300: 7.1deg 100% 96.7%; /* ✅ */
-  --destructive-200: 0deg 100% 99.4%; /* ✅ */
+  --destructive-400: 0deg 100% 60%; /* ✅ */
+  --destructive-300: 0deg 100% 70%; /* ✅ */
+  --destructive-200: 0deg 100% 80%; /* ✅ */
+  --destructive-50: 0deg 100% 95%; /* ✅ */
   --border-stronger: 0deg 0% 56.1%; /* ✅ */
   --border-strong: 0deg 0% 83.1%; /* ✅ */
   --border-default: 0deg 0% 87.5%; /* ✅ */
