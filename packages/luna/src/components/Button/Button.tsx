@@ -1,6 +1,10 @@
 import React from "react";
 import cn from "classnames";
-import { ButtonSize, ButtonType } from "@/components/Button/types";
+import {
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@/components/Button/types";
 import { Spinner } from "@/icons/Spinner";
 
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
@@ -11,13 +15,15 @@ export const Button: React.FC<{
   type?: ButtonType;
   size?: ButtonSize;
   disabled?: boolean;
+  variant?: string;
   className?: string;
   htmlType?: HTMLButtonElement["type"];
   loading?: boolean;
 }> = ({
   children,
-  type = ButtonType.Primary,
-  size = ButtonSize.Large,
+  variant = ButtonVariant.Primary,
+  type = ButtonType.Main,
+  size = ButtonSize.Small,
   onClick,
   disabled,
   className,
@@ -32,24 +38,32 @@ export const Button: React.FC<{
       data-type={type}
       className={cn(
         "tw-relative tw-font-cairo tw-cursor-pointer tw-font-medium",
-        "tw-text-center tw-font-normal tw-transition-all tw-ease-out tw-duration-200 tw-rounded-md",
+        "tw-text-center tw-font-normal tw-transition-all tw-ease-out tw-duration-200 tw-rounded-lg",
         "tw-outline-none tw-transition-all tw-outline-0 focus-visible:tw-outline-2 focus-visible:tw-outline-offset-1",
         "tw-w-fit tw-flex tw-items-center tw-justify-center tw-text-base",
         "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
         "tw-flex tw-items-center",
         {
-          "focus-visible:tw-outline-brand-600 tw-border tw-bg-brand-400 dark:tw-bg-brand-500 hover:tw-bg-brand/80 dark:hover:tw-bg-brand/50 tw-border-brand-500/75 dark:tw-border-brand/30 hover:tw-border-brand-600 dark:hover:tw-border-brand tw-text-foreground":
-            type === ButtonType.Primary,
-          "tw-bg-background-alternative hover:tw-bg-background-selection dark:tw-bg-muted tw-border tw-border-border-strong hover:tw-border-border-stronger focus-visible:tw-outline-brand-600 tw-text-foreground":
-            type === ButtonType.Secondary,
-          "hover:tw-bg-surface-300 tw-shadow-none tw-border tw-border-transparent focus-visible:tw-outline-border-strong focus-visible:tw-border-border-stronger":
-            type === ButtonType.Text,
-          "tw-bg-destructive-300 dark:tw-bg-destructive-400 hover:tw-bg-destructive-400 dark:hover:tw-bg-destructive/50 tw-border tw-border-destructive-500 hover:tw-border-destructive focus-visible:tw-outline-amber-700 tw-text-foreground":
-            type === ButtonType.Error,
-          "tw-text-xs tw-px-2.5 tw-py-1 tw-h-[26px]": size === ButtonSize.Tiny,
-          "tw-text-sm tw-leading-4 tw-px-3 tw-py-2 tw-h-[34px]":
+          "focus-visible:tw-bg-brand-900 tw-text-secondary-50 tw-border tw-bg-brand-700 dark:tw-bg-brand-700 hover:tw-bg-brand-800 dark:hover:tw-bg-brand/50 tw-border-brand-700/75 dark:tw-border-brand/30 hover:tw-border-brand-800 dark:hover:tw-border-brand":
+            type === ButtonType.Main && variant === ButtonVariant.Primary,
+          "focus-visible:tw-bg-brand-200 tw-border tw-text-brand-700 tw-border-brand-700 hover:tw-border-brand-700 dark:hover:tw-border-brand-700 hover:tw-bg-brand-100":
+            type === ButtonType.Main && variant === ButtonVariant.Secondary,
+          "tw-bg-success-700 hover:tw-bg-success-800 focus-visible:tw-bg-success-900 tw-text-secondary-50":
+            type === ButtonType.Success && variant === ButtonVariant.Primary,
+          "tw-bg-brand-50 hover:tw-bg-brand-200 focus-visible:tw-bg-brand-300 tw-border tw-border-brand-700 hover:tw-border-brand-800 focus-visible:tw-border-brand-900":
+            type === ButtonType.Success && variant === ButtonVariant.Secondary,
+          "tw-bg-warning-700 hover:tw-bg-warning-800 focus-visible:tw-bg-warning-900 tw-text-secondary-50":
+            type === ButtonType.Warning && variant === ButtonVariant.Primary,
+          "tw-bg-warning-50 hover:tw-bg-warning-200 focus-visible:tw-bg-warning-300 tw-text-warning-700 hover:tw-text-warning-800 focus-visible:tw-text-warning-900 tw-border tw-border-warning-700 hover:tw-border-warning-800 focus-visible:tw-border-warning-900":
+            type === ButtonType.Warning && variant === ButtonVariant.Secondary,
+          "tw-bg-destructive-700 dark:tw-bg-destructive-400 hover:tw-bg-destructive-800 dark:hover:tw-bg-destructive/50 tw-border tw-border-destructive-500 hover:tw-border-destructive focus-visible:tw-bg-destructive-900 tw-text-secondary-50":
+            type === ButtonType.Error && variant === ButtonVariant.Primary,
+          "tw-bg-desctructive-50 hover:tw-bg-destructive-200 tw-border tw-border-destructive-700 hover:tw-border-destructive-300 focus-visible:tw-border-destructive-900 focus-visible:tw-bg-destructive-300":
+            type === ButtonType.Error && variant === ButtonVariant.Secondary,
+          "tw-text-sm tw-px-4 tw-py-2 tw-h-[40px]": size === ButtonSize.Tiny,
+          "tw-text-base tw-leading-4 tw-px-6 tw-py-3 tw-h-[48px]":
             size === ButtonSize.Small,
-          "tw-px-4 tw-py-2 tw-h-[42px]": size === ButtonSize.Large,
+          "tw-text-base tw-px-8 tw-py-4 tw-h-[56px]": size === ButtonSize.Large,
         },
         className
       )}
@@ -64,8 +78,8 @@ export const Button: React.FC<{
       >
         <Spinner
           className={cn({
-            "tw-text-white": type === ButtonType.Primary,
-            "tw-text-foreground": type === ButtonType.Secondary,
+            "tw-text-white": type === ButtonType.Main,
+            "tw-text-foreground": type === ButtonType.Warning,
             "tw-text-destructive": type === ButtonType.Error,
             "tw-w-[20px] tw-h-[20px]": size === ButtonSize.Tiny,
           })}
