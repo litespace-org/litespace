@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { first, range, reverse } from "lodash";
-import { Popover } from "@/components/Popover";
+import { Tooltip } from "@/components/Tooltip";
 import {
   ActivityMap,
   FullGrid,
@@ -91,7 +91,7 @@ export const ActivityGrid = <T,>({
                   {week.map((day) => {
                     const score = day.value?.score || 0;
                     return (
-                      <Popover
+                      <Tooltip
                         key={day.date.toISOString()}
                         content={tooltip(day)}
                       >
@@ -112,7 +112,7 @@ export const ActivityGrid = <T,>({
                             }
                           )}
                         />
-                      </Popover>
+                      </Tooltip>
                     );
                   })}
                 </ul>
