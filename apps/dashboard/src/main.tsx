@@ -15,34 +15,37 @@ import App from "@/App.tsx";
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
 import "react-toastify/dist/ReactToastify.min.css";
+import { ToastProvider } from "@litespace/luna/Toast";
 
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    <IntlProvider
-      messages={locales["ar-EG"]}
-      locale="ar-EG"
-      defaultLocale="ar-EG"
-    >
-      <BackendProvider backend={backend} getToken={getToken}>
-        <AtlasProvider>
-          <QueryClientProvider client={queryClient}>
-            <ReduxProvider store={store}>
-              <PersistGate
-                loading={
-                  <div className="flex items-center justify-center w-screen h-screen">
-                    <Spinner />
-                  </div>
-                }
-                persistor={persistor}
-              >
-                <App />
-              </PersistGate>
-            </ReduxProvider>
-          </QueryClientProvider>
-        </AtlasProvider>
-      </BackendProvider>
-    </IntlProvider>
+    <ToastProvider>
+      <IntlProvider
+        messages={locales["ar-EG"]}
+        locale="ar-EG"
+        defaultLocale="ar-EG"
+      >
+        <BackendProvider backend={backend} getToken={getToken}>
+          <AtlasProvider>
+            <QueryClientProvider client={queryClient}>
+              <ReduxProvider store={store}>
+                <PersistGate
+                  loading={
+                    <div className="flex items-center justify-center w-screen h-screen">
+                      <Spinner />
+                    </div>
+                  }
+                  persistor={persistor}
+                >
+                  <App />
+                </PersistGate>
+              </ReduxProvider>
+            </QueryClientProvider>
+          </AtlasProvider>
+        </BackendProvider>
+      </IntlProvider>
+    </ToastProvider>
   </StrictMode>
 );

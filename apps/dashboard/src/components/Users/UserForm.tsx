@@ -8,7 +8,6 @@ import {
   useValidatePassword,
 } from "@litespace/luna/hooks/validation";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
@@ -47,10 +46,10 @@ const UserForm: React.FC<{
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
-        title: intl("dashboard.user.form.create.error"),
-        description: error.message,
-      });
+      // toaster.error({
+      //   title: intl("dashboard.user.form.create.error"),
+      //   description: error.message,
+      // });
     },
     [intl]
   );

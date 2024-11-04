@@ -168,6 +168,17 @@ export default {
           4: "var(--color-calendar-graph-day-L4-border)",
         },
       },
+      animation: {
+        "slide-to-right": "slide-to-right 6s linear",
+      },
+      keyframes: {
+        "slide-to-right": {
+          "0%": { transform: "translateX(-110%)" },
+          "20%": { transform: "translateX(0%)" },
+          "80%": { transform: "translateX(0%)" },
+          "100%": { transform: "translateX(-110%)" },
+        },
+      },
     },
   },
   plugins: [

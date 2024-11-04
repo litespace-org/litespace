@@ -9,7 +9,7 @@ import {
   useValidatePrice,
 } from "@litespace/luna/hooks/validation";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { toaster } from "@litespace/luna/Toast";
+import { toaster, useToast } from "@litespace/luna/Toast";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Duration } from "@litespace/sol/duration";
 import { percentage, price } from "@litespace/sol/value";
@@ -45,6 +45,7 @@ const PlanForm: React.FC<{
   plan?: IPlan.MappedAttributes;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ open, plan, close, refresh, setOpen }) => {
+  const toast = useToast();
   const intl = useFormatMessage();
   const form = useForm<IForm>({
     defaultValues: {
@@ -71,27 +72,31 @@ const PlanForm: React.FC<{
   }, [close, form]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({
-      title: intl(
-        plan
-          ? "dashboard.plan.form.update.success"
-          : "dashboard.plan.form.create.success"
-      ),
-    });
+    // toaster.success({
+    //   title: intl(
+    //     plan
+    //       ? "dashboard.plan.form.update.success"
+    //       : "dashboard.plan.form.create.success"
+    //   ),
+    // });
+    toast?.setOpen(true);
+    toast?.setTitle(intl("dashboard.plan.form.create.success"));
     refresh();
     onClose();
   }, [intl, onClose, plan, refresh]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
-        title: intl(
-          plan
-            ? "dashboard.plan.form.update.error"
-            : "dashboard.plan.form.create.error"
-        ),
-        description: error.message,
-      });
+      // toaster.error({
+      //   title: intl(
+      //     plan
+      //       ? "dashboard.plan.form.update.error"
+      //       : "dashboard.plan.form.create.error"
+      //   ),
+      //   description: error.message,
+      // });
+      toast?.setOpen(true);
+      toast?.setTitle(intl("dashboard.plan.form.create.error"));
     },
     [intl, plan]
   );

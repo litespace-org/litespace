@@ -34,7 +34,7 @@ export const Toaster: React.FC = () => {
         <ToastContainer
           className="tw-w-[350px] tw-ml-2"
           toastClassName={cn(
-            "tw-flex tw-px-3 tw-pb-3 tw-pt-2 md:tw-rounded-lg ",
+            "tw-flex tw-px-3 tw-pb-3 tw-pt-2 md:tw-rounded-lg",
             "tw-border tw-border-border-strong hover:tw-border-border-stronger !tw-bg-background-overlay",
             "[&>button]:tw-mt-2.5 [&>button]:tw-pl-[6px] !tw-text-foreground"
           )}
@@ -47,7 +47,7 @@ export const Toaster: React.FC = () => {
                 type={ButtonType.Text}
                 className="tw-w-[25px] tw-h-[25px] tw-flex tw-items-center tw-justify-center !tw-p-1"
               >
-                <X className="tw-w-[20px] tw-h-[20px]" />
+                <X className="tw-w-[20px] tw-h-[20px] tw-bg-red-500" />
               </Button>
             </div>
           )}
