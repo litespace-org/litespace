@@ -8,6 +8,10 @@ import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
 import Users from "@/pages/Users";
 import UserProfile from "./pages/UserProfile";
+import { useAtlas } from "@litespace/headless/atlas";
+import { useEffect } from "react";
+import { useAppDispatch } from "@/redux/store";
+import { findCurrentUser } from "@/redux/user/profile";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +30,13 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  const atlas = useAtlas();
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(findCurrentUser.call(atlas));
+  }, [atlas, dispatch]);
+
   return <RouterProvider router={router} />;
 }
 
