@@ -4,8 +4,6 @@ import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
 import { useRender } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-
 import cn from "classnames";
 import React from "react";
 
@@ -22,6 +20,7 @@ export const Users: React.FC = () => {
           fetching={users.query.isFetching && !users.query.isLoading}
           count={users.query.data?.total}
         />
+
         <UserForm
           open={form.open}
           setOpen={form.setOpen}
@@ -29,12 +28,8 @@ export const Users: React.FC = () => {
           refresh={users.query.refetch}
         />
       </header>
+
       <List {...users} />
-      {/* <UserForm
-        open={form.open}
-        close={form.hide}
-        refresh={users.query.refetch}
-      /> */}
     </div>
   );
 };

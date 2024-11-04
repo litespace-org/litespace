@@ -63,7 +63,7 @@ export const Select = <T extends string | number>({
         className={cn(
           "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
           "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md tw-h-[38px]",
-          "tw-flex tw-justify-between tw-items-center tw-cursor-pointer"
+          "tw-flex tw-justify-between tw-items-center tw-cursor-pointer tw-text-foreground"
         )}
       >
         <Value placeholder={placeholder} />
@@ -75,14 +75,14 @@ export const Select = <T extends string | number>({
         <Content
           position={manyOptions ? "popper" : "item-aligned"}
           className={cn(
-            "tw-bg-background-overlay tw-border tw-rounded-md tw-overflow-hidden",
+            "tw-bg-background-overlay tw-border tw-border-border-strong tw-rounded-md tw-overflow-hidden",
             manyOptions ? "tw-h-60 tw-min-w-60" : null
           )}
         >
           <ScrollUpButton className="tw-flex tw-h-[25px] tw-cursor-default tw-items-center tw-justify-center tw-bg-background-overlay tw-text-foreground hover:tw-bg-background-selection">
             <ChevronUpIcon />
           </ScrollUpButton>
-          <Viewport className="">
+          <Viewport className="focus:tw-outline-red-500">
             <Group>
               {options.map((option) => (
                 <SelectItem value={option.value.toString()} key={option.value}>
@@ -106,13 +106,13 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
       <Item
         className={cn(
           "tw-flex tw-items-center tw-justify-between",
-          "hover:tw-bg-background-overlay-hover tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2 tw-mx-0.5",
+          "hover:tw-bg-background-overlay-hover tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2 tw-mx-0.5 focus:tw-outline-surface-400",
           className
         )}
         {...props}
         ref={forwardedRef}
       >
-        <ItemText>{children}</ItemText>
+        <ItemText className="tw-text-foreground">{children}</ItemText>
         <ItemIndicator className="absolute left-0 inline-flex w-[25px] items-center justify-center">
           <CheckIcon />
         </ItemIndicator>
