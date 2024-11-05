@@ -1,6 +1,6 @@
 import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
 import { Card } from "@litespace/luna/Card";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { atlas } from "@litespace/luna/backend";
 import { ITutor, IUser } from "@litespace/types";
@@ -16,6 +16,7 @@ const Tutor: React.FC<{
 }> = ({ tutor, refresh }) => {
   const [image, setImage] = useState<string | File | null>(tutor.image);
   const [video, setVideo] = useState<string | File | null>(tutor.video);
+  const toast = useToast();
 
   const intl = useFormatMessage();
   const drop = useCallback(
@@ -56,18 +57,18 @@ const Tutor: React.FC<{
   }, [drop, image, tutor.image, tutor.video, upload, video]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("media.update.success") });
+    toast.success({ title: intl("media.update.success") });
     refresh();
-  }, [intl, refresh]);
+  }, [intl, refresh, toast]);
 
   const onError = useCallback(
     (error: Error | null) => {
-      toaster.success({
+      toast.success({
         title: intl("media.update.error"),
         description: error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useMutation({

@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { setUserRules } from "@/redux/user/schedule";
 import { messages } from "@litespace/luna/locales";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { atlas } from "@litespace/luna/backend";
 import { useCallback } from "react";
 import { useIntl } from "react-intl";
@@ -12,17 +12,18 @@ export function useActivateRule(ruleId: number) {
   const intl = useIntl();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(profileSelectors.user);
+  const toast = useToast();
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl.formatMessage({
           id: messages["global.notify.schedule.update.error"],
         }),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const onSuccess = useCallback(async () => {

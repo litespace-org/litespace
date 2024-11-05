@@ -2,7 +2,7 @@ export { Button, ButtonType, ButtonSize } from "@/components/Button";
 export { Dir } from "@/components/Direction";
 export { Input, InputType } from "@/components/Input";
 export { NumericInput } from "@/components/NumericInput";
-export { Toaster, toaster } from "@/components/Toast";
+export { Toast, ToastProvider, useToast } from "@/components/Toast";
 export { Form, Field, Label, Controller } from "@/components/Form";
 export { DatePicker } from "@/components/DatePicker";
 export { DateInput } from "@/components/DateInput";

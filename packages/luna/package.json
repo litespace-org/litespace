@@ -115,8 +115,7 @@
     "react-dom": "18.2.0",
     "react-hook-form": "^7.51.5",
     "react-intl": "^6.6.8",
-    "react-router-dom": "^6.23.1",
-    "react-toastify": "^10.0.5"
+    "react-router-dom": "^6.23.1"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^1.5.0",
@@ -164,6 +163,7 @@
     "@radix-ui/react-hover-card": "^1.1.2",
     "@radix-ui/react-select": "^2.1.2",
     "@radix-ui/react-switch": "^1.1.0",
+    "@radix-ui/react-toast": "^1.2.2",
     "@tailwindcss/container-queries": "^0.1.1",
     "@vidstack/react": "^1.12.9",
     "classnames": "^2.5.1",

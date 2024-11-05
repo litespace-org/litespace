@@ -1,7 +1,7 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useTheme } from "@litespace/luna/hooks/theme";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Spinner } from "@litespace/luna/Spinner";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import React, { useCallback, useState } from "react";
@@ -25,6 +25,7 @@ const GoogleAuth: React.FC<{
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const atlas = useAtlas();
+  const toast = useToast();
 
   const onGoogleSuccess = useCallback(
     async (response: CredentialResponse) => {
@@ -44,14 +45,14 @@ const GoogleAuth: React.FC<{
       setLoading(false);
 
       if (error)
-        toaster.error({
+        toast.error({
           title: intl(
             purpose === "login" ? "page.login.failed" : "page.register.failed"
           ),
           description: error.message,
         });
     },
-    [atlas.auth, dispatch, intl, navigate, purpose, role]
+    [atlas.auth, dispatch, intl, navigate, purpose, role, toast]
   );
 
   const onGoogleError = useCallback(() => {}, []);

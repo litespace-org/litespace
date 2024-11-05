@@ -3,7 +3,6 @@ import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
-import { useRender } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
@@ -13,7 +12,6 @@ import { rolesMap } from "@/components/utils/user";
 import { orUndefined } from "@litespace/sol/utils";
 
 export const Users: React.FC = () => {
-  const form = useRender();
   const intl = useFormatMessage();
   const [role, setRole] = useState<IUser.Role | null>(null);
   const [gender, setGender] = useState<IUser.Gender | null>(null);
@@ -238,12 +236,7 @@ export const Users: React.FC = () => {
           <ActionsMenu actions={actions} Icon={MixerHorizontalIcon} />
         </div>
 
-        <UserForm
-          open={form.open}
-          setOpen={form.setOpen}
-          close={form.hide}
-          refresh={users.query.refetch}
-        />
+        <UserForm refresh={users.query.refetch} />
       </header>
 
       <List {...users} />
