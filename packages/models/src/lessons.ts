@@ -177,36 +177,42 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findMemberLessons(
-    members: number[],
-    pagination?: IFilter.Pagination,
-    tx?: Knex.Transaction
-  ): Promise<Paginated<ILesson.Self>> {
-    const baseBuilder = this.builder(tx)
-      .members.join(
-        this.table.lessons,
-        this.columns.lessons("id"),
-        this.columns.members("lesson_id")
-      )
-      .whereIn(this.columns.members("user_id"), members);
+  async findLessons({
+    tx,
+    users,
+    page,
+    size,
+  }: {
+    users?: number[];
+    tx?: Knex.Transaction;
+  } & IFilter.Pagination): Promise<Paginated<ILesson.Self>> {
+    const baseBuilder = this.builder(tx).lessons;
 
-    const total = await countRows(
-      baseBuilder.clone().groupBy(this.columns.lessons("id")),
-      { column: this.columns.lessons("id") }
-    );
-
-    const rows = await withPagination(
+    if (users)
       baseBuilder
-        .clone()
-        .select(this.rows.lesson)
         .join(
-          calls.tables.calls,
-          calls.columns.calls("id"),
-          this.columns.lessons("call_id")
+          this.table.members,
+          this.columns.members("lesson_id"),
+          this.columns.lessons("id")
         )
-        .orderBy(calls.columns.calls("start"), "desc"),
-      pagination
-    ).then();
+        .whereIn(this.columns.members("user_id"), users);
+
+    const countBuilder = baseBuilder.clone();
+
+    const total = await countRows(countBuilder, {
+      column: this.columns.lessons("id"),
+    });
+
+    const query = baseBuilder
+      .clone()
+      .select(this.rows.lesson)
+      .join(
+        calls.tables.calls,
+        calls.columns.calls("id"),
+        this.columns.lessons("call_id")
+      )
+      .orderBy(calls.columns.calls("start"), "desc");
+    const rows = await withPagination(query, { page, size }).then();
     return { list: rows.map((row) => this.from(row)), total };
   }
 
