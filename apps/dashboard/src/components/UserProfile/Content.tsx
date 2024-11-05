@@ -8,8 +8,11 @@ import React from "react";
 import { Loading } from "@litespace/luna/Loading";
 import ErrorElement from "@/components/common/Error";
 import Detail from "@/components/common/Detail";
-import { formatNumber } from "@litespace/luna/utils";
+import { formatMinutes, formatNumber } from "@litespace/luna/utils";
 import DateField from "@/components/common/DateField";
+import BinaryField from "@/components/common/BinaryField";
+import GenderField from "@/components/common/GenderField";
+import UserPopover from "@/components/common/UserPopover";
 
 const Content: React.FC<{
   user?: IUser.Self;
@@ -69,49 +72,65 @@ const Content: React.FC<{
         <Detail label={intl("global.labels.id")}>{user.id}</Detail>
         <Detail label={intl("dashboard.user.name")}>{user.name}</Detail>
         <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.bio")}>{tutor?.bio}</Detail>
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.bio")}>{tutor.bio}</Detail>
         ) : null}
+
         <Detail label={intl("dashboard.user.birthYear")}>
           {user.birthYear}
         </Detail>
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.about")}>{tutor?.about}</Detail>
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.about")}>{tutor.about}</Detail>
         ) : null}
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.video")}>{tutor?.video}</Detail>
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.video")}>{tutor.video}</Detail>
         ) : null}
+
         <Detail label={intl("dashboard.user.hasPassword")}>
-          {intl(user.password ? "global.labels.yes" : "global.labels.no")}
+          <BinaryField yes={user.password} />
         </Detail>
+
         <Detail label={intl("dashboard.user.creditScore")}>
           {formatNumber(user.creditScore)}
         </Detail>
+
         <Detail label={intl("dashboard.user.gender")}>
-          {user.gender === IUser.Gender.Male
-            ? intl("global.gender.male")
-            : user.gender === IUser.Gender.Female
-            ? intl("global.gender.female")
-            : "-"}
+          <GenderField gender={user.gender} />
         </Detail>
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.activated")}>
-            {tutor?.activated}
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.activated")}>
+            <BinaryField yes={tutor.activated} />
           </Detail>
         ) : null}
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.activatedBy")}>
-            {tutor?.activatedBy}
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.activatedBy")}>
+            {tutor.activated ? <UserPopover id={tutor.id} /> : "-"}
           </Detail>
         ) : null}
-        {user.role === IUser.Role.Tutor ? (
-          <Detail label={intl("dashboard.user.notice")}>{tutor?.notice}</Detail>
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.notice")}>
+            {formatMinutes(tutor.notice)}
+          </Detail>
         ) : null}
+
         <Detail label={intl("global.created-at")}>
           <DateField date={user.createdAt} />
         </Detail>
+
         <Detail label={intl("global.updated-at")}>
           <DateField date={user.updatedAt} />
+
+          {tutor ? (
+            <React.Fragment>
+              <br />
+              <DateField date={tutor.updatedAt} />
+            </React.Fragment>
+          ) : null}
         </Detail>
       </div>
     </div>
