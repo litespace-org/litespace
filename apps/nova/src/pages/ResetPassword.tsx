@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Field, Label, Controller } from "@litespace/luna/Form";
 import { InputType } from "@litespace/luna/Input";
 import { useToast } from "@litespace/luna/Toast";
@@ -139,7 +144,8 @@ const ResetPassword = () => {
         <Button
           disabled={mutation.isPending}
           loading={mutation.isPending}
-          type={ButtonType.Primary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Primary}
           size={ButtonSize.Small}
         >
           {intl("page.login.forget.password.button.submit")}

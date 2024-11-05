@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Label } from "@litespace/luna/Form";
 import { Select } from "@litespace/luna/Select";
@@ -117,10 +122,11 @@ const BookLesson: React.FC<{
                   <Button
                     onClick={() => setSelectedEvent(event)}
                     disabled={mutation.isPending}
-                    type={
+                    type={ButtonType.Main}
+                    variant={
                       selectedEvent?.start === event.start
-                        ? ButtonType.Primary
-                        : ButtonType.Secondary
+                        ? ButtonVariant.Primary
+                        : ButtonVariant.Secondary
                     }
                     className="w-full"
                   >

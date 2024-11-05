@@ -1,7 +1,12 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { MediaType } from "@/components/Media/types";
 import { Avatar } from "@litespace/luna/Avatar";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { VideoPlayer } from "@litespace/luna/VideoPlayer";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { asFullAssetUrl } from "@litespace/luna/backend";
@@ -78,7 +83,8 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
       />
       <Button
         disabled={disabled}
-        type={ButtonType.Secondary}
+        type={ButtonType.Main}
+        variant={ButtonVariant.Secondary}
         size={ButtonSize.Small}
         onClick={onDrop}
       >
@@ -86,7 +92,8 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
       </Button>
       <Button
         disabled={disabled}
-        type={ButtonType.Secondary}
+        type={ButtonType.Main}
+        variant={ButtonVariant.Secondary}
         size={ButtonSize.Small}
         onClick={open}
       >

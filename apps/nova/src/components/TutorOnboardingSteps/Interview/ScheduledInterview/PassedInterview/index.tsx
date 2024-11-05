@@ -1,4 +1,4 @@
-import { Button, ButtonType } from "@litespace/luna/Button";
+import { Button, ButtonType, ButtonVariant } from "@litespace/luna/Button";
 import { Controller, Form, Label, Field } from "@litespace/luna/Form";
 import { useValidation } from "@litespace/luna/hooks/validation";
 import { messages } from "@litespace/luna/locales";
@@ -95,7 +95,8 @@ const PassedInterview: React.FC<{
           </Button>
           <Button
             onClick={() => skip.mutate("")}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             loading={skip.isPending}
             disabled={skip.isPending}
           >

@@ -1,4 +1,9 @@
-import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonType,
+  ButtonSize,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ICall } from "@litespace/types";
@@ -54,7 +59,11 @@ const PendingInterview: React.FC<{
 
           <div className="flex flex-row gap-4 mt-6">
             <Link to={Route.Call.replace(":id", call.id.toString())}>
-              <Button size={ButtonSize.Small} type={ButtonType.Primary}>
+              <Button
+                size={ButtonSize.Small}
+                type={ButtonType.Main}
+                variant={ButtonVariant.Primary}
+              >
                 {intl("global.labels.go")}
               </Button>
             </Link>
