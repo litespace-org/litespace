@@ -4,7 +4,9 @@ import {
   datetime,
   duration,
   id,
-  pagination,
+  jsonBoolean,
+  pageNumber,
+  pageSize,
   withNamedId,
 } from "@/validation/utils";
 import { busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
@@ -16,18 +18,29 @@ import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
 import { safe } from "@litespace/sol/error";
 import { unpackRules } from "@litespace/sol/rule";
-import { map } from "lodash";
 import { isAdmin, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/call";
+import { isEqual } from "lodash";
 
 const createLessonPayload = zod.object({
   tutorId: id,
   ruleId: id,
   start: datetime,
   duration,
+});
+
+const findLessonsQuery = zod.object({
+  users: zod.optional(zod.array(id)),
+  page: zod.optional(pageNumber),
+  size: zod.optional(pageSize),
+  fulfilled: zod.optional(jsonBoolean),
+  canceled: zod.optional(jsonBoolean),
+  future: zod.optional(jsonBoolean),
+  past: zod.optional(jsonBoolean),
+  now: zod.optional(jsonBoolean),
 });
 
 function create(context: ApiContext) {
@@ -128,23 +141,28 @@ function create(context: ApiContext) {
   );
 }
 
-async function findUserLessons(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const { id } = withNamedId("id").parse(req.params);
+async function findLessons(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = (isUser(user) && user.id === id) || isAdmin(user);
+  const query = findLessonsQuery.parse(req.query);
+  const allowed =
+    (isUser(user) && query.users && isEqual(query.users, [user.id])) ||
+    isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
-  const { list: userLessons, total } = await lessons.findMemberLessons(
-    [id],
-    query
-  );
-  const lessonMembers = await lessons.findLessonMembers(map(userLessons, "id"));
-  const lessonCalls = await calls.findByIds(map(userLessons, "callId"));
+  const { list: userLessons, total } = await lessons.findLessons({
+    users: query.users,
+    fulfilled: query.fulfilled,
+    canceled: query.canceled,
+    future: query.future,
+    past: query.past,
+    now: query.now,
+    page: query.page,
+    size: query.size,
+  });
+  const userLesonsIds = userLessons.map((lesson) => lesson.id);
+  const lessonMembers = await lessons.findLessonMembers(userLesonsIds);
+  const lessonCallIds = userLessons.map((lesson) => lesson.callId);
+  const lessonCalls = await calls.findByIds(lessonCallIds);
 
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {
@@ -225,5 +243,5 @@ function cancel(context: ApiContext) {
 export default {
   create,
   cancel,
-  findUserLessons: safeRequest(findUserLessons),
+  findLessons: safeRequest(findLessons),
 };

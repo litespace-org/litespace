@@ -1,4 +1,4 @@
-import { ICall, IUser, Paginated } from "@/index";
+import { ICall, IFilter, IUser, Paginated } from "@/index";
 
 export type Row = {
   id: number;
@@ -68,6 +68,15 @@ export type CreateApiPayload = {
   ruleId: number;
   start: string;
   duration: Duration;
+};
+
+export type FindLessonsApiQuery = IFilter.Pagination & {
+  users?: number[];
+  fulfilled?: boolean;
+  canceled?: boolean;
+  future?: boolean;
+  past?: boolean;
+  now?: boolean;
 };
 
 export type FindUserLessonsApiResponse = Paginated<{

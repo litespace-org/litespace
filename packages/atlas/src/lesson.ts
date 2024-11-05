@@ -8,11 +8,10 @@ export class Lesson extends Base {
     return this.post(`/api/v1/lesson/`, payload);
   }
 
-  async findUserLessons(
-    id: number,
-    pagnation?: IFilter.Pagination
+  async findLessons(
+    query: ILesson.FindLessonsApiQuery
   ): Promise<ILesson.FindUserLessonsApiResponse> {
-    return this.get(`/api/v1/lesson/list/${id}`, null, pagnation);
+    return this.get(`/api/v1/lesson/list/`, null, query);
   }
 
   async cancel(id: number) {
