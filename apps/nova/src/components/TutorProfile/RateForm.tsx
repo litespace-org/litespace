@@ -3,7 +3,12 @@ import {
   useEditRatingTutor,
   useCreateRatingTutor,
 } from "@litespace/headless/rating";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Form, Field, Controller, Label } from "@litespace/luna/Form";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -108,7 +113,8 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
         }
       />
       <Button
-        type={ButtonType.Primary}
+        type={ButtonType.Main}
+        variant={ButtonVariant.Primary}
         disabled={rateTutor.isPending || editRateTutor.isPending}
         loading={rateTutor.isPending || editRateTutor.isPending}
         size={ButtonSize.Small}

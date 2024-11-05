@@ -11,6 +11,7 @@ import dayjs from "@/lib/dayjs";
 import { useMediaQueries } from "@/hooks/media";
 import Overlay from "@/components/Calendar/Overlay";
 import Indicator from "@/components/Calendar/Indicator";
+import { ButtonVariant } from "../Button/types";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];
@@ -140,7 +141,8 @@ export const Calendar: React.FC<{
             disabled={disabled || loading || !canGoStartOfCurrentWeek}
             onClick={startOfCurrentWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             <RotateCcw className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>
@@ -148,7 +150,8 @@ export const Calendar: React.FC<{
             disabled={disabled || loading || !canGoBack}
             onClick={prevWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             <ChevronRight className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>
@@ -156,7 +159,8 @@ export const Calendar: React.FC<{
             disabled={disabled || loading || !canGoNext}
             onClick={nextWeek}
             size={xl ? ButtonSize.Small : ButtonSize.Tiny}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             <ChevronLeft className="tw-w-[15px] tw-h-[15px] xl:tw-w-[20px] xl:tw-h-[20px]" />
           </Button>

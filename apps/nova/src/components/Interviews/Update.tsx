@@ -1,5 +1,10 @@
 import { useInterviewStatus } from "@/hooks/interview";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Label } from "@litespace/luna/Form";
 import { Select } from "@litespace/luna/Select";
@@ -306,7 +311,8 @@ const Update: React.FC<{
         />
 
         <Button
-          type={passed ? ButtonType.Primary : ButtonType.Error}
+          type={passed ? ButtonType.Main : ButtonType.Error}
+          variant={ButtonVariant.Primary}
           size={ButtonSize.Small}
           loading={mutation.isPending}
           disabled={mutation.isPending}

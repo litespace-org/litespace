@@ -1,5 +1,10 @@
 import React, { useCallback, useEffect, useMemo } from "react";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Drawer } from "@litespace/luna/Drawer";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { useRender } from "@litespace/luna/hooks/common";
@@ -114,13 +119,15 @@ const Call: React.FC = () => {
             <Button
               onClick={chat.show}
               size={ButtonSize.Small}
-              type={ButtonType.Secondary}
+              type={ButtonType.Main}
+              variant={ButtonVariant.Secondary}
             >
               <MessageCircle />
             </Button>
           ) : null}
           <Button
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             size={ButtonSize.Small}
             onClick={toggleFullScreen}
           >
@@ -135,7 +142,8 @@ const Call: React.FC = () => {
             loading={user.screen.loading}
             disabled={user.screen.loading}
             size={ButtonSize.Small}
-            type={user.streams.screen ? ButtonType.Error : ButtonType.Secondary}
+            type={user.streams.screen ? ButtonType.Error : ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             <Monitor className="w-[20px] h-[20px]" />
           </Button>
@@ -144,7 +152,8 @@ const Call: React.FC = () => {
             onClick={onToggleCamera}
             disabled={!user.camera}
             size={ButtonSize.Small}
-            type={user.video ? ButtonType.Secondary : ButtonType.Error}
+            type={user.video ? ButtonType.Main : ButtonType.Error}
+            variant={ButtonVariant.Secondary}
           >
             {user.video ? (
               <Video className="w-[20px] h-[20px]" />
@@ -157,7 +166,8 @@ const Call: React.FC = () => {
             onClick={onToggleMic}
             disabled={!user.mic}
             size={ButtonSize.Small}
-            type={user.audio ? ButtonType.Secondary : ButtonType.Error}
+            type={user.audio ? ButtonType.Main : ButtonType.Error}
+            variant={ButtonVariant.Secondary}
           >
             {user.audio ? (
               <Mic className="w-[20px] h-[20px]" />

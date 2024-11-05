@@ -3,6 +3,7 @@ import cn from "classnames";
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "react-feather";
 import { AlertType } from "@/components/Alert/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { ButtonVariant } from "../Button/types";
 
 export const Alert: React.FC<{
   title?: string;
@@ -79,10 +80,9 @@ export const Alert: React.FC<{
               onClick={action.onClick}
               size={ButtonSize.Small}
               type={
-                type === AlertType.Error
-                  ? ButtonType.Error
-                  : ButtonType.Secondary
+                type === AlertType.Error ? ButtonType.Error : ButtonType.Main
               }
+              variant={ButtonVariant.Secondary}
               disabled={action.disabled}
               loading={action.loading}
             >
