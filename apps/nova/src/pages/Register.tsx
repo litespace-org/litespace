@@ -1,7 +1,7 @@
 import { Form, Field, Label, Controller } from "@litespace/luna/Form";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { InputType } from "@litespace/luna/Input";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -31,6 +31,7 @@ const Register: React.FC = () => {
   const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const toast = useToast();
   const { role } = useParams<{ role: Role }>();
   const {
     watch,
@@ -53,21 +54,21 @@ const Register: React.FC = () => {
 
   const onSuccess = useCallback(
     async ({ user, token }: IUser.RegisterApiResponse) => {
-      toaster.success({ title: intl("page.register.success") });
+      toast.success({ title: intl("page.register.success") });
       dispatch(setUserProfile({ user, token }));
       navigate(Route.Root);
     },
-    [dispatch, intl, navigate]
+    [dispatch, intl, navigate, toast]
   );
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("page.register.failed"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useRegisterUser({ onSuccess, onError });

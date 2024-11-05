@@ -1,16 +1,15 @@
 import React, { useEffect, useMemo } from "react";
-import { Toaster } from "@litespace/luna/Toast";
 import { useTheme } from "@litespace/luna/hooks/theme";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import cn from "classnames";
 import { useAppSelector } from "@/redux/store";
 import { Route, RoutePatterns } from "@/types/routes";
-import UrlPattern from "url-pattern";
 import { tutorMetaSelector } from "@/redux/user/tutor";
-import Navbar from "@/components/Layout/Navbar";
 import { profileSelectors } from "@/redux/user/profile";
-import { IUser } from "@litespace/types";
 import { destructureRole } from "@litespace/sol/user";
+import { IUser } from "@litespace/types";
+import Navbar from "@/components/Layout/Navbar";
+import UrlPattern from "url-pattern";
+import cn from "classnames";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -76,7 +75,6 @@ const Root: React.FC = () => {
     <div className={cn("min-h-screen text-foreground flex flex-col")}>
       {show ? <Navbar toggleTheme={toggle} theme={theme} /> : null}
       <Outlet />
-      <Toaster />
     </div>
   );
 };

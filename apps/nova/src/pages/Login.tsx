@@ -1,6 +1,6 @@
 import { Form, Controller, Field, Label } from "@litespace/luna/Form";
 import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { messages } from "@litespace/luna/locales";
 import { InputType } from "@litespace/luna/Input";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -30,6 +30,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const toast = useToast();
   const {
     control,
     handleSubmit,
@@ -53,12 +54,12 @@ const Login: React.FC = () => {
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("page.login.failed"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const dispatchFn = (profile: IUser.LoginApiResponse) => {

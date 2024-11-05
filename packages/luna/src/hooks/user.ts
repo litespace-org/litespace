@@ -1,4 +1,3 @@
-import { toaster } from "@/components/Toast";
 // todo: should be removed
 import { atlas } from "@/lib/backend";
 import { IUser } from "@litespace/types";
@@ -9,27 +8,29 @@ import { validateText } from "@/lib/validate";
 import dayjs from "@/lib/dayjs";
 import { MIN_AGE, MAX_AGE } from "@litespace/sol/constants";
 import { useRequired } from "@/hooks/validation";
+import { useToast } from "@/components/Toast";
 
 export type RefreshUser = (user?: IUser.Self) => void;
 
 function useUpdate(refresh: RefreshUser) {
   const intl = useFormatMessage();
+  const toast = useToast();
   const onSuccess = useCallback(
     (user?: IUser.Self) => {
       refresh(user);
-      toaster.success({ title: intl("profile.update.success") });
+      toast.success({ title: intl("profile.update.success") });
     },
-    [intl, refresh]
+    [intl, refresh, toast]
   );
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("profile.update.error"),
         description: error.message,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   return { onSuccess, onError };

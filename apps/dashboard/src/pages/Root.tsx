@@ -1,4 +1,3 @@
-import { Toaster } from "@litespace/luna/Toast";
 import React, { useEffect, useMemo } from "react";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
@@ -62,7 +61,6 @@ const Root: React.FC = () => {
         <SidebarNav options={routes} />
       </div>
       <Outlet />
-      <Toaster />
     </main>
   );
 };

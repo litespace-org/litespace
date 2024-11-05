@@ -1,7 +1,7 @@
 import * as RadixDialog from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
-import { X } from "react-feather";
+import { Cross2Icon } from "@radix-ui/react-icons";
 
 export const Dialog: React.FC<{
   trigger?: React.ReactNode;
@@ -15,7 +15,7 @@ export const Dialog: React.FC<{
 }> = ({ trigger, title, children, description, className, open, setOpen }) => {
   return (
     <RadixDialog.Root open={open} onOpenChange={setOpen}>
-      <RadixDialog.Trigger>{trigger}</RadixDialog.Trigger>
+      {trigger ? <RadixDialog.Trigger>{trigger}</RadixDialog.Trigger> : null}
       <RadixDialog.Portal>
         <RadixDialog.Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm" />
         <RadixDialog.Content
@@ -31,7 +31,7 @@ export const Dialog: React.FC<{
               {title}
             </RadixDialog.Title>
             <RadixDialog.Close className="hover:tw-bg-background-selection tw-rounded-md">
-              <X className="tw-cursor-pointer tw-w-6 tw-h-6" />
+              <Cross2Icon className="tw-cursor-pointer tw-w-6 tw-h-6 tw-p-0.5" />
             </RadixDialog.Close>
           </div>
 

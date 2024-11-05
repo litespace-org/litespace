@@ -1,5 +1,5 @@
 import { Route } from "@/types/routes";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useVerifyEmail } from "@litespace/headless/auth";
 import { useCallback, useEffect, useState } from "react";
@@ -9,17 +9,18 @@ const VerifyEmail = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const intl = useFormatMessage();
+  const toast = useToast();
   const [token, setToken] = useState<string | null>(null);
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("page.verify.email.success") });
+    toast.success({ title: intl("page.verify.email.success") });
     navigate(Route.Root);
-  }, [navigate, intl]);
+  }, [toast, intl, navigate]);
 
   const onError = useCallback(() => {
-    toaster.success({ title: intl("page.verify.email.failure") });
+    toast.success({ title: intl("page.verify.email.failure") });
     navigate(Route.Root);
-  }, [navigate, intl]);
+  }, [toast, intl, navigate]);
 
   useEffect(() => {
     if (token) return;

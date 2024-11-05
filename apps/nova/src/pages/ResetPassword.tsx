@@ -1,7 +1,7 @@
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Field, Label, Controller } from "@litespace/luna/Form";
 import { InputType } from "@litespace/luna/Input";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import {
   useRequired,
@@ -28,6 +28,7 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const passwordRules = useValidatePassword();
   const required = useRequired();
+  const toast = useToast();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
@@ -54,23 +55,23 @@ const ResetPassword = () => {
 
   const onSuccess = useCallback(
     (profile: IUser.ResetPasswordApiResponse) => {
-      toaster.success({ title: intl("page.login.forget.password.compelete") });
+      toast.success({ title: intl("page.login.forget.password.compelete") });
       dispatch(setUserProfile(profile));
       dispatch(resetTutorMeta());
       dispatch(resetUserRules());
       return navigate(Route.Root);
     },
-    [dispatch, intl, navigate]
+    [dispatch, intl, navigate, toast]
   );
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("error.unexpected"),
         description: error.message,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useResetPassword({ onSuccess, onError });
