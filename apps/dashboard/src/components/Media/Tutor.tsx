@@ -1,4 +1,9 @@
-import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonType,
+  ButtonSize,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Card } from "@litespace/luna/Card";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -139,7 +144,8 @@ const Tutor: React.FC<{
           }
           loading={mutation.isPending}
           size={ButtonSize.Small}
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
         >
           {intl("global.labels.cancel")}
         </Button>

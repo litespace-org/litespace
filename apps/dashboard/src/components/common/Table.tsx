@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Select, SelectList } from "@litespace/luna/Select";
 import { Void } from "@litespace/types";
 import {
@@ -109,7 +114,8 @@ export const Table = <T extends object>({
         </div>
         <Button
           size={ButtonSize.Small}
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           onClick={() => goto(1)}
           disabled={page <= 1 || loading || fetching}
         >
@@ -117,7 +123,8 @@ export const Table = <T extends object>({
         </Button>
         <Button
           size={ButtonSize.Small}
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           onClick={prev}
           disabled={page <= 1 || loading || fetching}
         >
@@ -125,7 +132,8 @@ export const Table = <T extends object>({
         </Button>
         <Button
           size={ButtonSize.Small}
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           onClick={next}
           disabled={page >= totalPages || loading || fetching}
         >
@@ -133,7 +141,8 @@ export const Table = <T extends object>({
         </Button>
         <Button
           size={ButtonSize.Small}
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           onClick={() => goto(totalPages)}
           disabled={page >= totalPages || loading || fetching}
         >

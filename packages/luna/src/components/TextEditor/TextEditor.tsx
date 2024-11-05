@@ -7,6 +7,7 @@ import Editable, { ContentEditableEvent } from "react-contenteditable";
 import { RawHtml } from "@/components/RawHtml";
 import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
+import { ButtonVariant } from "../Button/types";
 
 export const TextEditor: React.FC<{
   value: string;
@@ -61,7 +62,8 @@ export const TextEditor: React.FC<{
           <div key={idx}>
             <Button
               htmlType="button"
-              type={ButtonType.Text}
+              type={ButtonType.Main}
+              variant={ButtonVariant.Secondary}
               size={ButtonSize.Tiny}
               disabled={disabled}
               onClick={onClick}

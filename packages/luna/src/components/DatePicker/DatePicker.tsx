@@ -6,6 +6,7 @@ import { days } from "@/constants/labels";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
+import { ButtonVariant } from "../Button/types";
 
 const rows = 6;
 const cols = 7;
@@ -90,7 +91,8 @@ export const DatePicker: React.FC<{
             disabled={!canGoBack || disable}
             onClick={prevMonth}
             size={ButtonSize.Small}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             className={cn(compact && "!tw-p-1 !tw-h-auto")}
           >
             <ChevronRight
@@ -107,7 +109,8 @@ export const DatePicker: React.FC<{
             disabled={!canGoNext || disable}
             onClick={nextMonth}
             size={ButtonSize.Small}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             className={cn(compact ? "!tw-p-1 !tw-h-auto" : "")}
           >
             <ChevronLeft className={cn(compact && "tw-w-[15px] tw-h-[15px]")} />
@@ -118,7 +121,8 @@ export const DatePicker: React.FC<{
             <Button
               onClick={reset}
               size={ButtonSize.Tiny}
-              type={ButtonType.Secondary}
+              type={ButtonType.Main}
+              variant={ButtonVariant.Secondary}
               className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-xs")}
               disabled={disable || isDateDisabled(dayjs())}
             >
@@ -162,10 +166,11 @@ export const DatePicker: React.FC<{
                 compact && "!tw-p-1 !tw-h-auto",
                 !isCurrentMonth && "tw-opacity-40"
               )}
-              type={
+              type={ButtonType.Main}
+              variant={
                 selected && selected.isSame(day, "day")
-                  ? ButtonType.Primary
-                  : ButtonType.Secondary
+                  ? ButtonVariant.Primary
+                  : ButtonVariant.Secondary
               }
               size={ButtonSize.Small}
               onClick={() => onSelect && onSelect(day)}

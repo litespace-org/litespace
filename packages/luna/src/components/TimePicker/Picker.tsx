@@ -3,6 +3,7 @@ import { range } from "lodash";
 import cn from "classnames";
 import { Button, ButtonSize, ButtonType } from "../Button";
 import { Meridiem, Time } from "@litespace/sol/time";
+import { ButtonVariant } from "../Button/types";
 
 const Picker: React.FC<{
   labels: { am: string; pm: string };
@@ -92,7 +93,10 @@ const Picker: React.FC<{
                   htmlType="button"
                   size={ButtonSize.Tiny}
                   onClick={onClick}
-                  type={active ? ButtonType.Primary : ButtonType.Secondary}
+                  type={ButtonType.Main}
+                  variant={
+                    active ? ButtonVariant.Primary : ButtonVariant.Secondary
+                  }
                 >
                   {label}
                 </Button>

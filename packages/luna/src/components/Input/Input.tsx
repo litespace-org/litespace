@@ -7,6 +7,7 @@ import OpenedEye from "@/icons/OpenedEye";
 import ClosedEye from "@/icons/ClosedEye";
 import { InputType, InputAction } from "@/components/Input/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { ButtonVariant } from "../Button/types";
 
 // const arabic =
 //   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
@@ -149,7 +150,8 @@ const EyeIcon: React.FC<{
     <div>
       <Button
         htmlType="button"
-        type={ButtonType.Secondary}
+        type={ButtonType.Main}
+        variant={ButtonVariant.Secondary}
         size={ButtonSize.Tiny}
         onClick={() => toggle(!show)}
         disabled={disabled}
@@ -185,7 +187,8 @@ const Actions: React.FC<{
         <Button
           key={id}
           htmlType="button"
-          type={ButtonType.Secondary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           size={ButtonSize.Tiny}
           disabled={disabled}
           onClick={onClick}
