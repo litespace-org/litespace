@@ -37,7 +37,7 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
-  const interviews = useFindInterviews(profile?.id);
+  const interviews = useFindInterviews({ user: profile?.id, userOnly: true });
 
   const current = useMemo(() => {
     if (!interviews.list) return null;

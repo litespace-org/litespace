@@ -7,7 +7,8 @@ import Media from "@/pages/Media";
 import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
 import Users from "@/pages/Users";
-import UserProfile from "./pages/UserProfile";
+import Interviews from "@/pages/Interviews";
+import UserProfile from "@/pages/UserProfile";
 import { useAtlas } from "@litespace/headless/atlas";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/redux/store";
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: Route.Plans, element: <Plans /> },
       { path: Route.Users, element: <Users /> },
       { path: Route.User, element: <UserProfile /> },
+      { path: Route.Interviews, element: <Interviews /> },
     ],
   },
 ]);
