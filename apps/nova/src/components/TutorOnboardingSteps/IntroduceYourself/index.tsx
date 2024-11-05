@@ -3,7 +3,7 @@ import { profileSelectors } from "@/redux/user/profile";
 import { findTutorMeta } from "@/redux/user/tutor";
 import { Button } from "@litespace/luna/Button";
 import { Field, Form, Label, Controller } from "@litespace/luna/Form";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useValidation } from "@litespace/luna/hooks/validation";
 import React, { useMemo, useCallback } from "react";
@@ -20,6 +20,7 @@ const IntorduceYourself: React.FC = () => {
   const dispatch = useAppDispatch();
   const validation = useValidation();
   const profile = useAppSelector(profileSelectors.user);
+  const toast = useToast();
   const {
     watch,
     formState: { errors },
@@ -35,17 +36,17 @@ const IntorduceYourself: React.FC = () => {
 
   const onCreateSuccess = useCallback(() => {
     reset();
-    toaster.success({
+    toast.success({
       title: intl("global.notify.update.data"),
     });
     if (profile) dispatch(findTutorMeta.call(profile.id));
-  }, [dispatch, intl, profile, reset]);
+  }, [dispatch, intl, profile, reset, toast]);
 
   const onCreateError = useCallback(() => {
-    toaster.error({
+    toast.error({
       title: intl("error.update.data"),
     });
-  }, [intl]);
+  }, [intl, toast]);
 
   const mutation = useIntroduceTutor({
     profile,

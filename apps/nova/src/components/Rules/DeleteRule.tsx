@@ -2,7 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { findUserRules } from "@/redux/user/schedule";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Alert } from "@litespace/luna/Alert";
 import { IRule } from "@litespace/types";
@@ -17,23 +17,24 @@ const DeleteRule: React.FC<{
   const intl = useFormatMessage();
   const dispatch = useAppDispatch();
   const profile = useAppSelector(profileSelectors.user);
+  const toast = useToast();
 
   const onSuccess = useCallback(() => {
     if (profile) dispatch(findUserRules.call(profile.id));
-    toaster.success({
+    toast.success({
       title: intl("global.notify.schedule.update.success"),
     });
     close();
-  }, [close, dispatch, intl, profile]);
+  }, [close, dispatch, intl, profile, toast]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("global.notify.schedule.update.error"),
         description: error.message,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useDeleteRule({ rule, onSuccess, onError });

@@ -6,7 +6,7 @@ import { Table } from "@/components/common/Table";
 import { ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { formatMinutes } from "@litespace/luna/utils";
 import { Loading } from "@litespace/luna/Loading";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 import { IPlan, Void } from "@litespace/types";
@@ -23,20 +23,21 @@ const List: React.FC<{
   const intl = useFormatMessage();
   const [plan, setPlan] = useState<IPlan.MappedAttributes | null>(null);
   const close = useCallback(() => setPlan(null), []);
+  const toast = useToast();
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("dashboard.plan.delete.success") });
+    toast.success({ title: intl("dashboard.plan.delete.success") });
     refresh();
-  }, [intl, refresh]);
+  }, [intl, refresh, toast]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("dashboard.plan.delete.error"),
         description: error.message,
       });
     },
-    [intl]
+    [intl, toast]
   );
   const deletePlan = useDeletePlan({ onSuccess, onError });
   const columnHelper = createColumnHelper<IPlan.MappedAttributes>();

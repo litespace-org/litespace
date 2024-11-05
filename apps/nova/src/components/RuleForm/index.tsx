@@ -2,7 +2,7 @@ import { Button, ButtonSize } from "@litespace/luna/Button";
 import { DateInput } from "@litespace/luna/DateInput";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Form, Field, Controller, Label } from "@litespace/luna/Form";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Card } from "@litespace/luna/Card";
 import {
   useValidation,
@@ -50,6 +50,7 @@ const RuleForm: React.FC<{
   const ruleFormatterMap = useRuleFormatterMap();
   const validateDuration = useValidateDuration();
   const profile = useAppSelector(profileSelectors.user);
+  const toast = useToast();
   const dispatch = useAppDispatch();
 
   const defaultValues = useMemo((): Partial<IForm> => {
@@ -69,25 +70,24 @@ const RuleForm: React.FC<{
 
   const onSuccess = useCallback(() => {
     if (profile) dispatch(findUserRules.call(profile.id));
-    toaster.success({
+    toast.success({
       title: intl("global.notify.schedule.update.success"),
     });
     form.reset();
     close();
-  }, [dispatch, form, close, intl, profile]);
+  }, [profile, dispatch, toast, intl, form, close]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl("global.notify.schedule.update.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const create = useCreateRule({ onSuccess, onError });
-
   const update = useEditRule({ onSuccess, onError, rule });
 
   const onSubmit = useMemo(

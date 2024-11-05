@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Alert, AlertType } from "@litespace/luna/Alert";
 import { Dialog } from "@litespace/luna/Dialog";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -23,22 +23,23 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
 }) => {
   const invalidate = useInvalidateQuery();
   const intl = useFormatMessage();
+  const toast = useToast();
 
   const onSuccess = useCallback(() => {
     invalidate([QueryKey.FindTutorRating, tutorId]);
-    toaster.success({ title: intl("tutor.rate.delete.success") });
+    toast.success({ title: intl("tutor.rate.delete.success") });
     close();
-  }, [invalidate, tutorId, intl, close]);
+  }, [invalidate, tutorId, toast, intl, close]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("tutor.rate.delete.error"),
         description: error.message,
       });
       close();
     },
-    [intl, close]
+    [toast, intl, close]
   );
 
   const deleteRating = useDeleteRatingTutor({ onSuccess, onError });

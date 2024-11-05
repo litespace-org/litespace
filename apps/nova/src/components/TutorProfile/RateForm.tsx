@@ -5,7 +5,7 @@ import {
 } from "@litespace/headless/rating";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Form, Field, Controller, Label } from "@litespace/luna/Form";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useForm } from "react-hook-form";
 import { IRating, Void } from "@litespace/types";
@@ -25,26 +25,27 @@ type RateFormProps = {
 const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
+  const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: { feedback: rate?.feedback || "", rating: rate?.value || 5 },
   });
 
   const onSuccess = useCallback(() => {
     invalidate([QueryKey.FindTutorRating, tutor]);
-    toaster.success({ title: intl("tutor.rate.succes") });
+    toast.success({ title: intl("tutor.rate.succes") });
     if (rate && close) close();
     form.reset();
-  }, [close, form, intl, invalidate, rate, tutor]);
+  }, [close, form, intl, invalidate, rate, toast, tutor]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("tutor.rate.error"),
         description: error.message,
       });
       if (rate && close) close();
     },
-    [close, intl, rate]
+    [close, intl, rate, toast]
   );
 
   const rateTutor = useCreateRatingTutor({ onSuccess, onError });

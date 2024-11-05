@@ -1,7 +1,7 @@
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Form, Label, Field, Controller } from "@litespace/luna/Form";
 import { Dialog } from "@litespace/luna/Dialog";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
@@ -22,6 +22,7 @@ const callbackUrl = origin.concat(Route.ResetPassword);
 
 const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   const intl = useFormatMessage();
+  const toast = useToast();
 
   const { control, watch, formState, handleSubmit, reset } = useForm<IForm>({
     mode: "onSubmit",
@@ -33,19 +34,19 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   const email = watch("email");
 
   const onSuccess = useCallback(() => {
-    toaster.success({ title: intl("page.login.forget.password.success") });
+    toast.success({ title: intl("page.login.forget.password.success") });
     reset();
     close();
-  }, [close, intl, reset]);
+  }, [close, intl, reset, toast]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("error.unexpected"),
         description: error.message,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useForgetPassword({

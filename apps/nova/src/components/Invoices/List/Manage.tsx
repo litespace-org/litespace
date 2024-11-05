@@ -6,7 +6,7 @@ import {
 } from "@litespace/luna/utils";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Form, Field, Label, Controller } from "@litespace/luna/Form";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
@@ -49,6 +49,7 @@ const ManageInvoice: React.FC<{
 
   const intl = useFormatMessage();
   const methods = useFindWithdrawalMethods();
+  const toast = useToast();
 
   const methodOptions = useMemo(() => {
     if (!methods.data) return [];
@@ -68,7 +69,7 @@ const ManageInvoice: React.FC<{
   }, [intl]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl(
         invoice ? "invoices.edit.success" : "invoices.create.success"
       ),
@@ -76,20 +77,19 @@ const ManageInvoice: React.FC<{
     close();
     form.reset();
     if (refresh) return refresh();
-  }, [close, form, intl, invoice, refresh]);
+  }, [close, form, intl, invoice, refresh, toast]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl(invoice ? "invoices.edit.error" : "invoices.create.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl, invoice]
+    [intl, invoice, toast]
   );
 
   const create = useCreateInvoice({ onSuccess, onError });
-
   const update = useEditUserInvoice({ onSuccess, onError });
 
   const constructReceiver = useCallback((fields: IForm) => {

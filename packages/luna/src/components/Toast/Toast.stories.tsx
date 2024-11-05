@@ -1,67 +1,52 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { toaster } from "@/components/Toast/toaster";
-import { Button, ButtonType } from "@/components/Button";
+import { Toast } from "@/components/Toast/Toast";
+import React, { useState } from "react";
+import { Button } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
-import "react-toastify/dist/ReactToastify.min.css";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { Direction } from "@/components/Direction";
+import { ToastProvider } from "@/components/Toast/provider";
 
-type Component = typeof Button;
+type Component = typeof Toast;
 
 const meta: Meta<Component> = {
   title: "Toast",
-  component: Button,
+  component: Toast,
   parameters: { layout: "centered" },
-  decorators: [DarkStoryWrapper],
+  decorators: [],
 };
 
-export const Success: StoryObj<Component> = {
+export const Primary: StoryObj<Component> = {
   args: {
-    children: ar["page.login.form.button.submit.label"],
-    onClick() {
-      toaster.success({
-        title: ar["page.login.form.title"],
-        description: ar["error.email.invlaid"],
-      });
-    },
+    title: ar["dashboard.error.alert.title"],
+    description: ar["error.unexpected"],
+  },
+  render(props) {
+    const [open, setOpen] = useState<boolean>(false);
+    return (
+      <Direction>
+        <Button onClick={() => setOpen(true)}>Open</Button>
+        <Toast {...props} open={open} onOpenChange={setOpen} />
+      </Direction>
+    );
   },
 };
 
-export const Error: StoryObj<Component> = {
+export const MultiToast: StoryObj<Component> = {
   args: {
-    children: ar["page.login.form.button.submit.label"],
-    type: ButtonType.Error,
-    onClick() {
-      toaster.error({
-        title: ar["page.login.form.title"],
-        description: ar["error.email.invlaid"],
-      });
-    },
+    title: ar["dashboard.error.alert.title"],
+    description: ar["error.unexpected"],
   },
-};
-
-export const Info: StoryObj<Component> = {
-  args: {
-    children: ar["page.login.form.button.submit.label"],
-    type: ButtonType.Secondary,
-    onClick() {
-      toaster.info({
-        title: ar["page.login.form.title"],
-        description: ar["error.email.invlaid"],
-      });
-    },
-  },
-};
-
-export const Warning: StoryObj<Component> = {
-  args: {
-    children: ar["page.login.form.button.submit.label"],
-    type: ButtonType.Error,
-    onClick() {
-      toaster.warning({
-        title: ar["page.login.form.title"],
-        description: ar["error.email.invlaid"],
-      });
-    },
+  render(props) {
+    const [open, setOpen] = useState<boolean>(false);
+    return (
+      <Direction>
+        <ToastProvider>
+          <Button onClick={() => setOpen(true)}>Open</Button>
+          <Toast {...props} key={1} open={open} onOpenChange={setOpen} />
+          <Toast {...props} key={2} open={open} onOpenChange={setOpen} />
+        </ToastProvider>
+      </Direction>
+    );
   },
 };
 

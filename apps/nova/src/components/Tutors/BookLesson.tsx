@@ -2,7 +2,7 @@ import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Label } from "@litespace/luna/Form";
 import { Select } from "@litespace/luna/Select";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Schedule, splitRuleEvent } from "@litespace/sol/rule";
 import { ILesson, IRule } from "@litespace/types";
@@ -20,6 +20,7 @@ const BookLesson: React.FC<{
   notice: number;
 }> = ({ open, close, tutorId, name, rules, notice }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const [duration, setDuration] = useState<ILesson.Duration>(
     ILesson.Duration.Long
   );
@@ -48,21 +49,21 @@ const BookLesson: React.FC<{
   }, [close]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl("page.tutors.book.lesson.success", { tutor: name }),
     });
 
     onClose();
-  }, [intl, name, onClose]);
+  }, [intl, name, onClose, toast]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl("page.tutors.book.lesson.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useCreateLesson({

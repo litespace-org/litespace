@@ -4,7 +4,6 @@ import { locales } from "@litespace/luna/locales";
 import { backend } from "@litespace/luna/backend";
 import { getToken } from "@litespace/luna/cache";
 import { Spinner } from "@litespace/luna/Spinner";
-
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,11 +14,11 @@ import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
+import { ToastProvider } from "@litespace/luna/Toast";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
-import "react-toastify/dist/ReactToastify.min.css";
 
 const queryClient = new QueryClient();
 
@@ -29,29 +28,31 @@ createRoot(document.getElementById("root")!).render(
     locale="ar-EG"
     defaultLocale="ar-EG"
   >
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <QueryClientProvider client={queryClient}>
-        <BackendProvider backend={backend} getToken={getToken}>
-          <AtlasProvider>
-            <SocketProvider>
-              <PeerProvider>
-                <ReduxProvider store={store}>
-                  <PersistGate
-                    loading={
-                      <div className="flex items-center justify-center w-screen h-screen">
-                        <Spinner />
-                      </div>
-                    }
-                    persistor={persistor}
-                  >
-                    <App />
-                  </PersistGate>
-                </ReduxProvider>
-              </PeerProvider>
-            </SocketProvider>
-          </AtlasProvider>
-        </BackendProvider>
-      </QueryClientProvider>
-    </GoogleOAuthProvider>
+    <ToastProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <QueryClientProvider client={queryClient}>
+          <BackendProvider backend={backend} getToken={getToken}>
+            <AtlasProvider>
+              <SocketProvider>
+                <PeerProvider>
+                  <ReduxProvider store={store}>
+                    <PersistGate
+                      loading={
+                        <div className="flex items-center justify-center w-screen h-screen">
+                          <Spinner />
+                        </div>
+                      }
+                      persistor={persistor}
+                    >
+                      <App />
+                    </PersistGate>
+                  </ReduxProvider>
+                </PeerProvider>
+              </SocketProvider>
+            </AtlasProvider>
+          </BackendProvider>
+        </QueryClientProvider>
+      </GoogleOAuthProvider>
+    </ToastProvider>
   </IntlProvider>
 );
