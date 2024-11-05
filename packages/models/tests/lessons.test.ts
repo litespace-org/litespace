@@ -473,6 +473,105 @@ describe("Lessons", () => {
       expect(r3.total).to.be.eq(total);
     });
 
+    it("should filter users lessons using `future`, `past`, `fulfilled` and `canceled` flags", async () => {
+      const tutor = await fixtures.tutor();
+      const students = await fixtures.students(2);
+      const rule = await fixtures.rule({ userId: tutor.id });
+      const future = [2, 2];
+      const past = [3, 4];
+
+      await fixtures.make.lessons({
+        tutor: tutor.id,
+        students: students.map((student) => student.id),
+        future,
+        past,
+        canceled: {
+          future: [1, 1],
+          past: [0, 0],
+        },
+        rule: rule.id,
+      });
+
+      const tests = [
+        {
+          future: true,
+          past: true,
+          fulfilled: true,
+          canceled: true,
+          count: 11,
+        },
+        {
+          future: false,
+          past: true,
+          fulfilled: true,
+          canceled: true,
+          count: 7,
+        },
+        {
+          future: true,
+          past: false,
+          fulfilled: true,
+          canceled: true,
+          count: 4,
+        },
+        {
+          future: true,
+          past: true,
+          fulfilled: false,
+          canceled: true,
+          count: 2,
+        },
+        {
+          future: true,
+          past: true,
+          fulfilled: true,
+          canceled: false,
+          count: 9,
+        },
+        {
+          future: false,
+          past: false,
+          fulfilled: true,
+          canceled: false,
+          count: 9,
+        },
+        {
+          future: false,
+          past: false,
+          fulfilled: false,
+          canceled: false,
+          count: 11,
+        },
+        {
+          future: true,
+          past: false,
+          fulfilled: false,
+          canceled: true,
+          count: 2,
+        },
+        {
+          future: false,
+          past: true,
+          fulfilled: false,
+          canceled: true,
+          count: 0,
+        },
+      ];
+
+      for (const test of tests) {
+        const result = await lessons.findLessons({
+          page: 1,
+          size: 100,
+          future: test.future,
+          past: test.past,
+          fulfilled: test.fulfilled,
+          canceled: test.canceled,
+        });
+        expect(result.list).to.be.of.length(test.count);
+        expect(result.total).to.be.eq(test.count);
+      }
+    });
+
     it("should tutor lessons with pagination", async () => {
       const firstTutor = await fixtures.tutor();
       const firstTutorStudents = await fixtures.students(2);
