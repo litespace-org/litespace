@@ -1,6 +1,6 @@
 import { Alert, AlertType } from "@litespace/luna/Alert";
 import { Dialog } from "@litespace/luna/Dialog";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useCancelInvoiceById } from "@litespace/headless/invoices";
@@ -12,23 +12,24 @@ const Cancel: React.FC<{
   refresh?: () => void;
 }> = ({ open, id, close, refresh }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl("invoices.cancel.success"),
     });
     close();
     if (refresh) return refresh();
-  }, [close, intl, refresh]);
+  }, [close, intl, refresh, toast]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.success({
+      toast.success({
         title: intl("invoices.cancel.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useCancelInvoiceById({ id, onSuccess, onError });

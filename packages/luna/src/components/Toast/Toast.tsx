@@ -1,66 +1,46 @@
 import React from "react";
+import { Root, Title, Description, Action } from "@radix-ui/react-toast";
+import { Cross2Icon } from "@radix-ui/react-icons";
 import cn from "classnames";
-import { AlertCircle, Check, Info, AlertTriangle, X } from "react-feather";
-import { createPortal } from "react-dom";
-import { IconProps, ToastContainer } from "react-toastify";
-import { Button, ButtonSize, ButtonType } from "../Button";
 
-export type ToastProps = {
+export const Toast: React.FC<{
+  open?: boolean;
   title: string;
   description?: string;
-};
-
-export const Toast: React.FC<ToastProps> = ({ title, description }) => {
+  onOpenChange?: (value: boolean) => void;
+  key?: number;
+}> = ({ open, onOpenChange, title, description, key }) => {
   return (
-    <p>
-      {title} {description ? `: ${description}` : null}
-    </p>
-  );
-};
-
-const Icon: React.FC<IconProps> = ({ type }) => {
-  if (type === "success") return <Check className="tw-text-brand" />;
-  if (type === "error") return <AlertCircle className="tw-text-destructive" />;
-  if (type === "info") return <Info />;
-  if (type === "warning")
-    return <AlertTriangle className="tw-text-amber-900" />;
-  return <Check />;
-};
-
-export const Toaster: React.FC = () => {
-  return (
-    <>
-      {createPortal(
-        <ToastContainer
-          className="tw-w-[350px] tw-ml-2"
-          toastClassName={cn(
-            "tw-flex tw-px-3 tw-pb-3 tw-pt-2 md:tw-rounded-lg ",
-            "tw-border tw-border-border-strong hover:tw-border-border-stronger !tw-bg-background-overlay",
-            "[&>button]:tw-mt-2.5 [&>button]:tw-pl-[6px] !tw-text-foreground"
-          )}
-          bodyClassName="!tw-items-start tw-gap-2 tw-font-cairo !tw-pl-3 [&_.Toastify\_\_toast-icon]:tw-mt-[2px]"
-          closeButton={({ closeToast }) => (
-            <div className="tw-mt-1.5">
-              <Button
-                onClick={closeToast}
-                size={ButtonSize.Tiny}
-                type={ButtonType.Text}
-                className="tw-w-[25px] tw-h-[25px] tw-flex tw-items-center tw-justify-center !tw-p-1"
-              >
-                <X className="tw-w-[20px] tw-h-[20px]" />
-              </Button>
-            </div>
-          )}
-          position="top-left"
-          icon={Icon}
-          hideProgressBar
-          limit={5}
-          autoClose={3000}
-          theme="dark"
-          rtl
-        />,
-        document.body
+    <Root
+      open={open}
+      key={key}
+      onOpenChange={onOpenChange}
+      className={cn(
+        "tw-border tw-border-border-strong tw-rounded-md tw-p-3 tw-shadow-xl tw-bg-dash-sidebar",
+        "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]"
       )}
-    </>
+    >
+      <div className="tw-flex tw-justify-between">
+        <Title
+          dir="rtl"
+          className="tw-text-foreground tw-font-semibold tw-w-4/5"
+        >
+          {title}
+        </Title>
+        <Action
+          altText="close"
+          className="hover:tw-bg-background-selection tw-p-1 tw-rounded-md"
+        >
+          <Cross2Icon />
+        </Action>
+      </div>
+      {description ? (
+        <Description asChild>
+          <div className="tw-text-foreground-light tw-text-sm">
+            {description}
+          </div>
+        </Description>
+      ) : null}
+    </Root>
   );
 };

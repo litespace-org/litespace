@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Loading } from "@litespace/luna/Loading";
 import { DatePicker } from "@litespace/luna/DatePicker";
 import { asFullAssetUrl } from "@litespace/luna/backend";
@@ -23,6 +23,7 @@ const ScheduleInterview: React.FC<{
   onSuccess(): void;
 }> = ({ onSuccess }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const [date, setDate] = useState<Dayjs>(dayjs());
   const [selectedRule, setSelectedRule] = useState<IRule.RuleEvent | null>(
     null
@@ -49,19 +50,19 @@ const ScheduleInterview: React.FC<{
   const onCreateSuccess = useCallback(() => {
     onSuccess();
     rules.refetch();
-    toaster.success({
+    toast.success({
       title: intl("page.tutor.onboarding.book.interview.success.title"),
     });
-  }, [intl, onSuccess, rules]);
+  }, [intl, onSuccess, rules, toast]);
 
   const onCreateError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl("page.tutor.onboarding.book.interview.fail.title"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useCreateInterview({

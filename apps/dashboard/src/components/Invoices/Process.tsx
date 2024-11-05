@@ -1,7 +1,7 @@
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/luna/Form";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { atlas } from "@litespace/luna/backend";
 import { IInvoice } from "@litespace/types";
@@ -24,6 +24,7 @@ const Process: React.FC<{
   onUpdate?: () => void;
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: {
       note: "",
@@ -31,21 +32,21 @@ const Process: React.FC<{
   });
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl("invoices.process.success"),
     });
     close();
     if (onUpdate) return onUpdate();
-  }, [close, intl, onUpdate]);
+  }, [close, intl, onUpdate, toast]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl("invoices.process.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const update = useMutation({

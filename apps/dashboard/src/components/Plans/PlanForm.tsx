@@ -9,7 +9,7 @@ import {
   useValidatePrice,
 } from "@litespace/luna/hooks/validation";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Duration } from "@litespace/sol/duration";
 import { percentage, price } from "@litespace/sol/value";
@@ -46,6 +46,7 @@ const PlanForm: React.FC<{
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ open, plan, close, refresh, setOpen }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: {
       alias: plan ? plan.alias : "",
@@ -71,7 +72,7 @@ const PlanForm: React.FC<{
   }, [close, form]);
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl(
         plan
           ? "dashboard.plan.form.update.success"
@@ -80,11 +81,11 @@ const PlanForm: React.FC<{
     });
     refresh();
     onClose();
-  }, [intl, onClose, plan, refresh]);
+  }, [intl, onClose, plan, refresh, toast]);
 
   const onError = useCallback(
     (error: Error) => {
-      toaster.error({
+      toast.error({
         title: intl(
           plan
             ? "dashboard.plan.form.update.error"
@@ -93,7 +94,7 @@ const PlanForm: React.FC<{
         description: error.message,
       });
     },
-    [intl, plan]
+    [intl, plan, toast]
   );
 
   const createPlan = useCreatePlan({ onSuccess, onError });

@@ -4,7 +4,7 @@ import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Label } from "@litespace/luna/Form";
 import { Select } from "@litespace/luna/Select";
 import { TextEditor } from "@litespace/luna/TextEditor";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { atlas } from "@litespace/luna/backend";
 import { messages } from "@litespace/luna/locales";
 import { IInterview } from "@litespace/types";
@@ -86,6 +86,7 @@ const Update: React.FC<{
   interview: number;
 }> = ({ open, close, onUpdate, tutor, interview }) => {
   const intl = useIntl();
+  const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: { level: 1, status: IInterview.Status.Passed },
   });
@@ -99,25 +100,25 @@ const Update: React.FC<{
   );
 
   const onSuccess = useCallback(() => {
-    toaster.success({
+    toast.success({
       title: intl.formatMessage({
         id: messages["page.interviews.update.success"],
       }),
     });
     close();
     onUpdate();
-  }, [close, intl, onUpdate]);
+  }, [close, intl, onUpdate, toast]);
 
   const onError = useCallback(
     (error: unknown) => {
-      toaster.error({
+      toast.error({
         title: intl.formatMessage({
           id: messages["page.interviews.update.error"],
         }),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl]
+    [intl, toast]
   );
 
   const mutation = useMutation({

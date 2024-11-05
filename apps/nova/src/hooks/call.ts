@@ -4,7 +4,7 @@ import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
 import { Wss } from "@litespace/types";
 import hark from "hark";
-import { toaster } from "@litespace/luna/Toast";
+import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { isEmpty } from "lodash";
 import { useSocket } from "@litespace/headless/socket";
@@ -300,6 +300,7 @@ export function useCallEvents(
 export function useFullScreen() {
   const intl = useFormatMessage();
   const ref = useRef<HTMLDivElement>(null);
+  const toast = useToast();
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
 
   const onFullScreen = useCallback(() => {
@@ -313,8 +314,8 @@ export function useFullScreen() {
       await ref.current.requestFullscreen();
     });
     if (result instanceof Error)
-      toaster.error({ title: intl("error.unexpected") });
-  }, [intl]);
+      toast.error({ title: intl("error.unexpected") });
+  }, [intl, toast]);
 
   const exitFullscreen = useCallback(async () => {
     if (ref.current) await document.exitFullscreen();

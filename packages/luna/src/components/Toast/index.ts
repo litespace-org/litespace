@@ -1,2 +1,3 @@
-export { Toaster } from "@/components/Toast/Toast";
-export { toaster } from "@/components/Toast/toaster";
+export { Toast } from "@/components/Toast/Toast";
+export { ToastProvider } from "@/components/Toast/provider";
+export { useToast } from "@/components/Toast/context";
