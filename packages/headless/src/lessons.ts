@@ -42,7 +42,8 @@ export function useFindUserLessons(user?: number): useFindUserLessonsProps {
       pageParam: number;
     }): Promise<ILesson.FindUserLessonsApiResponse> => {
       if (!user) return { list: [], total: 0 };
-      return atlas.lesson.findUserLessons(user, {
+      return atlas.lesson.findLessons({
+        users: [user],
         page: pageParam,
         size: 10,
       });

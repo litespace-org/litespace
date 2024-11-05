@@ -1,4 +1,10 @@
-import { IFilter, ILesson, NumericString, Paginated } from "@litespace/types";
+import {
+  ICall,
+  IFilter,
+  ILesson,
+  NumericString,
+  Paginated,
+} from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, merge, omit, orderBy } from "lodash";
@@ -31,6 +37,15 @@ type SearchFilter = {
    * @default true (included)
    */
   future?: boolean;
+};
+
+type SearchFilter2 = {
+  users?: number[];
+  canceled?: boolean;
+  fulfilled?: boolean;
+  future?: boolean;
+  past?: boolean;
+  now?: boolean;
 };
 
 type AggregateParams = SearchFilter & {
@@ -182,37 +197,42 @@ export class Lessons {
     users,
     page,
     size,
+    fulfilled = true,
+    canceled = true,
+    future = true,
+    past = true,
+    now = false,
   }: {
-    users?: number[];
     tx?: Knex.Transaction;
-  } & IFilter.Pagination): Promise<Paginated<ILesson.Self>> {
-    const baseBuilder = this.builder(tx).lessons;
+  } & IFilter.Pagination &
+    SearchFilter2): Promise<Paginated<ILesson.Self>> {
+    const baseBuilder = this.builder(tx).lessons.join(
+      calls.tables.calls,
+      calls.columns.calls("id"),
+      this.columns.lessons("call_id")
+    );
 
-    if (users)
-      baseBuilder
-        .join(
-          this.table.members,
-          this.columns.members("lesson_id"),
-          this.columns.lessons("id")
-        )
-        .whereIn(this.columns.members("user_id"), users);
+    const filterBuilder = this.applySearchFilter2(baseBuilder, {
+      users,
+      canceled,
+      future,
+      fulfilled,
+      past,
+      now,
+    });
 
-    const countBuilder = baseBuilder.clone();
+    const countBuilder = filterBuilder.clone();
 
     const total = await countRows(countBuilder, {
       column: this.columns.lessons("id"),
     });
 
-    const query = baseBuilder
+    const queryBuilder = baseBuilder
       .clone()
       .select(this.rows.lesson)
-      .join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
       .orderBy(calls.columns.calls("start"), "desc");
-    const rows = await withPagination(query, { page, size }).then();
+
+    const rows = await withPagination(queryBuilder, { page, size }).then();
     return { list: rows.map((row) => this.from(row)), total };
   }
 
@@ -374,6 +394,61 @@ export class Lessons {
       start: start.toISOString(),
       duration,
     }));
+  }
+
+  applySearchFilter2<T>(
+    builder: Knex.QueryBuilder<ILesson.Row, T>,
+    {
+      canceled = true,
+      future = true,
+      fulfilled = true,
+      past = true,
+      now = false,
+      users,
+    }: SearchFilter2
+  ): Knex.QueryBuilder<ILesson.Row, T> {
+    //! Because of the one-to-many relationship between the lesson and its
+    //! members. We should only perform the join in case the `users` param is
+    //! providered. We will get duplicated rows if we did this by default which
+    //! will douple the total sum for the prices.
+    if (users)
+      builder
+        .join(
+          this.table.members,
+          this.columns.members("lesson_id"),
+          this.columns.lessons("id")
+        )
+        .whereIn(this.columns.members("user_id"), users);
+
+    const canceledOnly = canceled && !fulfilled;
+    const fulfilledOnly = fulfilled && !canceled;
+
+    if (canceledOnly)
+      builder.where(this.columns.lessons("canceled_by"), "IS NOT", null);
+
+    if (fulfilledOnly)
+      builder.where(this.columns.lessons("canceled_by"), "IS", null);
+
+    const futureOnly = future && !past;
+    const pastOnly = past && !future;
+
+    const nowDate = dayjs.utc().toDate();
+    const end = addSqlMinutes(
+      calls.columns.calls("start"),
+      calls.columns.calls("duration")
+    );
+
+    if (now) {
+      builder
+        .where(calls.columns.calls("start"), ">=", nowDate)
+        .andWhere(end, "<=", nowDate);
+    } else if (futureOnly) {
+      builder.where(calls.columns.calls("start"), ">=", nowDate);
+    } else if (pastOnly) {
+      builder.where(end, "<=", nowDate);
+    }
+
+    return builder;
   }
 
   applySearchFilter<T>(
