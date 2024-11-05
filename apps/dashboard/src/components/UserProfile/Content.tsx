@@ -1,5 +1,5 @@
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { IUser, Void } from "@litespace/types";
+import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -8,15 +8,19 @@ import React from "react";
 import { Loading } from "@litespace/luna/Loading";
 import ErrorElement from "@/components/common/Error";
 import Detail from "@/components/common/Detail";
-import { formatNumber } from "@litespace/luna/utils";
+import { formatMinutes, formatNumber } from "@litespace/luna/utils";
 import DateField from "@/components/common/DateField";
+import BinaryField from "@/components/common/BinaryField";
+import GenderField from "@/components/common/GenderField";
+import UserPopover from "@/components/common/UserPopover";
 
 const Content: React.FC<{
   user?: IUser.Self;
+  tutor?: ITutor.Self;
   loading?: boolean;
   error: Error | null;
   refetch: Void;
-}> = ({ user, loading, error, refetch }) => {
+}> = ({ user, tutor, loading, error, refetch }) => {
   const intl = useFormatMessage();
 
   if (loading) return <Loading className="h-[40vh]" />;
@@ -65,27 +69,68 @@ const Content: React.FC<{
         </div>
       </div>
       <div className="grid gap-6 mt-4 sm:grid-cols-2">
-        <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
         <Detail label={intl("global.labels.id")}>{user.id}</Detail>
-        <Detail label={intl("dashboard.user.birthYear")}>{user.id}</Detail>
-        <Detail label={intl("dashboard.user.hasPassword")}>
-          {intl(user.password ? "global.labels.yes" : "global.labels.no")}
+        <Detail label={intl("dashboard.user.name")}>{user.name}</Detail>
+        <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.bio")}>{tutor.bio}</Detail>
+        ) : null}
+
+        <Detail label={intl("dashboard.user.birthYear")}>
+          {user.birthYear}
         </Detail>
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.about")}>{tutor.about}</Detail>
+        ) : null}
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.video")}>{tutor.video}</Detail>
+        ) : null}
+
+        <Detail label={intl("dashboard.user.hasPassword")}>
+          <BinaryField yes={user.password} />
+        </Detail>
+
         <Detail label={intl("dashboard.user.creditScore")}>
           {formatNumber(user.creditScore)}
         </Detail>
+
         <Detail label={intl("dashboard.user.gender")}>
-          {user.gender === IUser.Gender.Male
-            ? intl("global.gender.male")
-            : user.gender === IUser.Gender.Female
-            ? intl("global.gender.female")
-            : "-"}
+          <GenderField gender={user.gender} />
         </Detail>
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.activated")}>
+            <BinaryField yes={tutor.activated} />
+          </Detail>
+        ) : null}
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.activatedBy")}>
+            {tutor.activated ? <UserPopover id={tutor.id} /> : "-"}
+          </Detail>
+        ) : null}
+
+        {tutor ? (
+          <Detail label={intl("dashboard.tutor.notice")}>
+            {formatMinutes(tutor.notice)}
+          </Detail>
+        ) : null}
+
         <Detail label={intl("global.created-at")}>
           <DateField date={user.createdAt} />
         </Detail>
+
         <Detail label={intl("global.updated-at")}>
           <DateField date={user.updatedAt} />
+
+          {tutor ? (
+            <React.Fragment>
+              <br />
+              <DateField date={tutor.updatedAt} />
+            </React.Fragment>
+          ) : null}
         </Detail>
       </div>
     </div>

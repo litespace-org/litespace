@@ -161,3 +161,20 @@ export function useIntroduceTutor({
     mutationKey: ["update-tutor-info"],
   });
 }
+
+export function useFindTutorMeta(
+  id?: number
+): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
+  const atlas = useAtlas();
+
+  const findTutorMeta = useCallback(async () => {
+    if (!id) return null;
+    return await atlas.user.findTutorMeta(id);
+  }, [atlas.user, id]);
+
+  return useQuery({
+    queryFn: findTutorMeta,
+    queryKey: [QueryKey.FindTutorMeta, id],
+    enabled: !!id,
+  });
+}
