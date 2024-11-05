@@ -38,7 +38,7 @@ export async function user(role: IUser.Role) {
   return await users.create({
     email: faker.internet.email(),
     gender: gender(),
-    name: faker.internet.userName(),
+    name: faker.internet.username(),
     password: faker.internet.password(),
     birthYear: faker.number.int({ min: 2000, max: 2024 }),
     role,
