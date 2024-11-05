@@ -143,7 +143,8 @@ async function findUserLessons(
     [id],
     query
   );
-  const lessonMembers = await lessons.findLessonMembers(map(userLessons, "id"));
+  const userLesonsIds = userLessons.map((lesson) => lesson.id);
+  const lessonMembers = await lessons.findLessonMembers(userLesonsIds);
   const lessonCalls = await calls.findByIds(map(userLessons, "callId"));
 
   const result: ILesson.FindUserLessonsApiResponse = {

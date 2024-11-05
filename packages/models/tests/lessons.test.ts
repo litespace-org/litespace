@@ -4,8 +4,7 @@ import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
 import { price } from "@litespace/sol/value";
 import { nameof } from "@litespace/sol/utils";
-import { concat, flatten, orderBy } from "lodash";
-import dayjs from "@/lib/dayjs";
+import { concat, sum } from "lodash";
 
 describe("Lessons", () => {
   beforeAll(async () => {
@@ -397,6 +396,81 @@ describe("Lessons", () => {
         expect(data).to.be.of.length(pastLessons - canceledPastLessons);
         expect(data).to.include.deep.members(test);
       });
+    });
+  });
+
+  describe.only(nameof(lessons.findLessons), () => {
+    it("should return empty list in case user has not lessons", async () => {
+      const result = await lessons.findLessons({
+        users: [1],
+      });
+      expect(result.list).to.be.empty;
+      expect(result.total).to.be.eq(0);
+    });
+
+    it("should return empty list in case the database is empty", async () => {
+      const result = await lessons.findLessons({});
+      expect(result.list).to.be.empty;
+      expect(result.total).to.be.eq(0);
+    });
+
+    it("should find all lessons in the database", async () => {
+      const tutor = await fixtures.tutor();
+      const students = await fixtures.students(5);
+      const rule = await fixtures.rule({ userId: tutor.id });
+      const future = [2, 2, 2, 1, 1];
+      const past = [3, 3, 3, 2, 2];
+      const total = sum(future) + sum(past);
+
+      await fixtures.make.lessons({
+        tutor: tutor.id,
+        students: students.map((student) => student.id),
+        future,
+        past,
+        canceled: {
+          future: [1, 1, 1, 0, 0],
+          past: [0, 0, 0, 1, 1],
+        },
+        rule: rule.id,
+      });
+
+      const result = await lessons.findLessons({ size: 100 });
+
+      expect(result.list).to.be.of.length(total);
+      expect(result.total).to.be.eq(total);
+    });
+
+    it("should find all lessons in the database (with pagination)", async () => {
+      const tutor = await fixtures.tutor();
+      const students = await fixtures.students(2);
+      const rule = await fixtures.rule({ userId: tutor.id });
+      const future = [2, 2];
+      const past = [3, 4];
+      const total = sum(future) + sum(past); // 11
+
+      await fixtures.make.lessons({
+        tutor: tutor.id,
+        students: students.map((student) => student.id),
+        future,
+        past,
+        canceled: {
+          future: [1, 1],
+          past: [0, 0],
+        },
+        rule: rule.id,
+      });
+
+      const r1 = await lessons.findLessons({ page: 1, size: 2 });
+      expect(r1.list).to.be.of.length(2);
+      expect(r1.total).to.be.eq(total);
+
+      const r2 = await lessons.findLessons({ page: 2, size: 2 });
+      expect(r2.list).to.be.of.length(2);
+      expect(r2.total).to.be.eq(total);
+
+      const r3 = await lessons.findLessons({ page: 6, size: 2 });
+      expect(r3.list).to.be.of.length(1);
+      expect(r3.total).to.be.eq(total);
     });
   });
 });
