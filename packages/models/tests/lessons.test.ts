@@ -472,5 +472,95 @@ describe("Lessons", () => {
       expect(r3.list).to.be.of.length(1);
       expect(r3.total).to.be.eq(total);
     });
+
+    it("should tutor lessons with pagination", async () => {
+      const firstTutor = await fixtures.tutor();
+      const firstTutorStudents = await fixtures.students(2);
+      const firstTutorRule = await fixtures.rule({ userId: firstTutor.id });
+      const firstTutorFutureLesson = [2, 2];
+      const firstTutorPastLessons = [3, 4];
+      const firstTutorTotaLessons =
+        sum(firstTutorFutureLesson) + sum(firstTutorPastLessons); // 11
+
+      await fixtures.make.lessons({
+        tutor: firstTutor.id,
+        students: firstTutorStudents.map((student) => student.id),
+        future: firstTutorFutureLesson,
+        past: firstTutorPastLessons,
+        canceled: {
+          future: [1, 1],
+          past: [0, 0],
+        },
+        rule: firstTutorRule.id,
+      });
+
+      const secondTutor = await fixtures.tutor();
+      const secondTutorStudents = await fixtures.students(2);
+      const secondTutorRule = await fixtures.rule({ userId: secondTutor.id });
+      const secondTutorFutureLessons = [1, 1];
+      const secondTutorPastLessons = [2, 3];
+      const secondTutorTotaLessons =
+        sum(secondTutorFutureLessons) + sum(secondTutorPastLessons); // 7
+
+      await fixtures.make.lessons({
+        tutor: secondTutor.id,
+        students: secondTutorStudents.map((student) => student.id),
+        future: secondTutorFutureLessons,
+        past: secondTutorPastLessons,
+        canceled: {
+          future: [1, 1],
+          past: [0, 0],
+        },
+        rule: secondTutorRule.id,
+      });
+
+      const r1 = await lessons.findLessons({
+        users: [firstTutor.id],
+        page: 1,
+        size: 2,
+      });
+      expect(r1.list).to.be.of.length(2);
+      expect(r1.total).to.be.eq(firstTutorTotaLessons);
+
+      const r2 = await lessons.findLessons({
+        users: [firstTutor.id],
+        page: 2,
+        size: 2,
+      });
+      expect(r2.list).to.be.of.length(2);
+      expect(r2.total).to.be.eq(firstTutorTotaLessons);
+
+      const r3 = await lessons.findLessons({
+        users: [firstTutor.id],
+        page: 6,
+        size: 2,
+      });
+      expect(r3.list).to.be.of.length(1);
+      expect(r3.total).to.be.eq(firstTutorTotaLessons);
+
+      const r4 = await lessons.findLessons({
+        users: [secondTutor.id],
+        page: 1,
+        size: 2,
+      });
+      expect(r4.list).to.be.of.length(2);
+      expect(r4.total).to.be.eq(secondTutorTotaLessons);
+
+      const r5 = await lessons.findLessons({
+        users: [secondTutor.id],
+        page: 4,
+        size: 2,
+      });
+      expect(r5.list).to.be.of.length(1);
+      expect(r5.total).to.be.eq(secondTutorTotaLessons);
+
+      const r6 = await lessons.findLessons({
+        size: 100,
+      });
+      expect(r6.list).to.be.of.length(
+        firstTutorTotaLessons + secondTutorTotaLessons
+      );
+      expect(r6.total).to.be.eq(firstTutorTotaLessons + secondTutorTotaLessons);
+    });
   });
 });
