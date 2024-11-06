@@ -135,3 +135,31 @@ export type FindUsersApiQuery = IFilter.Pagination & {
   orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
   orderDirection?: IFilter.OrderDirection;
 };
+
+export type FindStudentStatsApiResponse = {
+  lessonCount: {
+    total: number;
+    ratified: number;
+    canceled: number;
+    future: {
+      total: number;
+      fulfillable: number;
+      canceled: number;
+    };
+    past: {
+      total: number;
+      fulfilled: number;
+      canceled: number;
+    };
+  };
+  tutorCount: {
+    total: number;
+    canceled: number;
+    fulfilled: number;
+  };
+  minutes: {
+    total: number;
+    fulfilled: number;
+    canceled: number;
+  };
+};
