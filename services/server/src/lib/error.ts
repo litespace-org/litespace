@@ -52,6 +52,9 @@ export const contradictingRules = () =>
     400
   );
 
+export const interviewAlreadySigned = () =>
+  error(ApiError.InterviewAlreadySigned, "Interview is already signed", 400);
+
 export const exists = {
   room: () => error(ApiError.RoomExists, "Room already exist", 400),
   user: () => error(ApiError.UserExists, "User already exist", 400),
