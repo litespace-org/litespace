@@ -2,9 +2,9 @@ import {
   InfiniteData,
   UseInfiniteQueryResult,
   useQueryClient,
+  useInfiniteQuery,
 } from "@tanstack/react-query";
 import { Paginated, Void } from "@litespace/types";
-import { useInfiniteQuery } from "@tanstack/react-query";
 import { flatten, sum } from "lodash";
 import { useCallback, useMemo } from "react";
 
@@ -12,7 +12,7 @@ export function useInvalidateQuery() {
   const client = useQueryClient();
   return useCallback(
     (keys: (string | number)[]) => client.invalidateQueries({ queryKey: keys }),
-    []
+    [client]
   );
 }
 

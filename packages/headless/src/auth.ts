@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { IUser, Void } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
-import { MutationKey } from "./constants";
+import { MutationKey } from "@/constants";
 
 export type OnSuccess = Void;
 export type OnResetPasswordSuccess = (
@@ -46,7 +46,7 @@ export function useResetPassword({
     async (credentials: IUser.ResetPasswordApiPayload) => {
       return await atlas.auth.resetPassword(credentials);
     },
-    []
+    [atlas.auth]
   );
 
   return useMutation({
@@ -69,7 +69,7 @@ export function useVerifyEmail({
     (token: string) => {
       return atlas.auth.verifyEmail(token);
     },
-    [atlas.auth, onSuccess, onError]
+    [atlas.auth]
   );
 
   return useMutation({

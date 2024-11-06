@@ -14,9 +14,14 @@ export function useCreateRule({
   onError: OnError;
 }) {
   const atlas = useAtlas();
-  const createRule = useCallback(async (payload: IRule.CreateApiPayload) => {
-    return await atlas.rule.create(payload);
-  }, []);
+
+  const createRule = useCallback(
+    async (payload: IRule.CreateApiPayload) => {
+      return await atlas.rule.create(payload);
+    },
+    [atlas.rule]
+  );
+
   return useMutation({
     mutationFn: createRule,
     onSuccess,
@@ -34,13 +39,15 @@ export function useEditRule({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const updateRule = useCallback(
     async (payload: IRule.UpdateApiPayload) => {
       if (!rule) return;
       return await atlas.rule.update(rule.id, payload);
     },
-    [rule]
+    [atlas.rule, rule]
   );
+
   return useMutation({
     mutationFn: updateRule,
     onSuccess,
@@ -61,7 +68,7 @@ export function useDeactivateRule({
 
   const deactivateRule = useCallback(async () => {
     if (rule) return await atlas.rule.update(rule.id, { activated: false });
-  }, [rule?.id]);
+  }, [atlas.rule, rule]);
 
   return useMutation({
     mutationFn: deactivateRule,
@@ -83,7 +90,7 @@ export function useDeleteRule({
 
   const deleteRules = useCallback(async () => {
     if (rule) return await atlas.rule.delete(rule.id);
-  }, [rule?.id]);
+  }, [atlas.rule, rule]);
 
   return useMutation({
     mutationFn: deleteRules,
