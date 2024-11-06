@@ -1,4 +1,4 @@
-import { ICall, IInterview, Paginated } from ".";
+import { ICall, IFilter, IInterview, Paginated } from ".";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 export enum Status {
@@ -77,6 +77,14 @@ export type UpdateApiPayload = {
   level?: number;
   status?: Status;
   sign?: boolean;
+};
+
+export type FindInterviewsApiQuery = IFilter.Pagination & {
+  users?: number[];
+  statuses?: Status[];
+  levels?: number[];
+  signed?: boolean;
+  signers?: number[];
 };
 
 export type FindPagedInterviewsProps = {

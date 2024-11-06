@@ -6,7 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 export function useInterviews(user: number) {
   return useQuery({
     queryFn: async () => {
-      return await atlas.interview.findInterviews({ user });
+      return await atlas.interview.findInterviews({ users: [user] });
     },
     queryKey: ["get-tutuor-interviews"],
   });
