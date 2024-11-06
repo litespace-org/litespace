@@ -23,7 +23,7 @@ export function useFindUserRooms(profile: IUser.Self | null): UserRooms {
         size: 20,
       });
     },
-    [profile]
+    [atlas.chat, profile]
   );
 
   return useInfinitePaginationQuery(findUserRooms, ["find-user-rooms"]);

@@ -21,7 +21,7 @@ export function useLoginUser({
       const profile = await atlas.auth.password(credentials);
       dispatchFn(profile);
     },
-    [dispatchFn]
+    [atlas.auth, dispatchFn]
   );
 
   return useMutation({
@@ -40,9 +40,12 @@ export function useRegisterUser({
 }) {
   const atlas = useAtlas();
 
-  const createUser = useCallback(async (payload: IUser.CreateApiPayload) => {
-    return atlas.user.create(payload);
-  }, []);
+  const createUser = useCallback(
+    async (payload: IUser.CreateApiPayload) => {
+      return atlas.user.create(payload);
+    },
+    [atlas.user]
+  );
 
   return useMutation({
     mutationFn: createUser,
