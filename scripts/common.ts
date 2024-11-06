@@ -34,7 +34,7 @@ export function asVercelUrlsMessage(
   let message = prefix + "\n";
 
   for (const [name, url] of Object.entries(urls)) {
-    message += `🚀 ${capitalize(name)}: ${asVercelUrl(url)}\n`;
+    message += `🚀 [${capitalize(name)}](${asVercelUrl(url)}) \n`;
   }
 
   return message;
