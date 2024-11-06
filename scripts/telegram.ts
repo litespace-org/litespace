@@ -66,10 +66,13 @@ const sendVercelUrls = new Command()
     }) => {
       const json = fs.readFileSync(file).toString();
       const urls = JSON.parse(json) as VercelUrls;
-      const prefix =
-        pull && branch
-          ? `[#${pull} ${branch}](https://github.com/litespace-org/litespace/pull/${pull})`
-          : undefined;
+
+      let prefix =
+        "[Postman LiteSpace API](https://www.postman.com/security-astronomer-19753942/workspace/litespace-api)";
+
+      if (pull && branch)
+        prefix += `\n[#${pull} ${branch}](https://github.com/litespace-org/litespace/pull/${pull})`;
+
       const message = asVercelUrlsMessage(urls, prefix);
       await sendMessage(message);
     }
