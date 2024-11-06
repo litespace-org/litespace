@@ -1,4 +1,13 @@
-import { calls, interviews, knex, lessons, rules, users } from "@/index";
+import {
+  calls,
+  interviews,
+  knex,
+  lessons,
+  messages,
+  rooms,
+  rules,
+  users,
+} from "@/index";
 import { ICall, IInterview, ILesson, IRule, IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
@@ -10,6 +19,9 @@ export { faker } from "@faker-js/faker/locale/ar";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await messages.builder(tx).del();
+    await rooms.builder(tx).members.del();
+    await rooms.builder(tx).rooms.del();
     await interviews.builder(tx).del();
     await calls.builder(tx).members.del();
     await calls.builder(tx).calls.del();

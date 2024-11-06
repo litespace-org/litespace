@@ -42,6 +42,7 @@ import {
   encodeAuthJwt,
   isAdmin,
   isMedaiProvider,
+  isStudent,
   isTutor,
   isUser,
 } from "@litespace/auth";
@@ -394,19 +395,179 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   const tutor = await tutors.findById(id);
   if (!isPublicTutor(tutor)) return next(notfound.tutor());
 
-  // only include "past" "uncanceled" lessons
-  const flags = { future: false, canceled: false } as const;
+  // only include "past" and "fulfilled" lessons
+  const filters = {
+    future: false,
+    canceled: false,
+    past: true,
+    fulfilled: true,
+  } as const;
 
   const [lessonCount, studentCount, totalMinutes] = await Promise.all([
-    lessons.countLessons({ users: [id], ...flags }),
-    lessons.countTutorStudents({ tutor: id, ...flags }),
-    lessons.sumDuration({ users: [id], ...flags }),
+    lessons.countLessons({ users: [id], ...filters }),
+    lessons.countCounterpartMembers({ user: id, ...filters }),
+    lessons.sumDuration({ users: [id], ...filters }),
   ]);
 
   const response: ITutor.FindTutorStatsApiResponse = {
     lessonCount,
     studentCount,
     totalMinutes,
+  };
+
+  res.status(200).json(response);
+}
+
+async function findStudentStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const { student } = withNamedId("student").parse(req.params);
+  const owner = isStudent(user) && user.id === student;
+  const allowed = owner || isAdmin(user);
+  if (!allowed) return next(forbidden());
+
+  const studentData = await users.findById(student);
+  if (!studentData) return next(notfound.student());
+
+  // todo: cache student stats
+
+  const totalLessonCount = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const futureLessonCount = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: true,
+    future: true,
+    past: false,
+  });
+
+  const futureFulfilledLessons = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: false,
+    future: true,
+    past: false,
+  });
+
+  const futureCanceledLessons = await lessons.countLessons({
+    users: [student],
+    fulfilled: false,
+    canceled: true,
+    future: true,
+    past: false,
+  });
+
+  const pastLessonCount = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: true,
+    future: false,
+    past: true,
+  });
+
+  const pastFulfilledLessons = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: false,
+    future: false,
+    past: true,
+  });
+
+  const pastCanceledLessons = await lessons.countLessons({
+    users: [student],
+    fulfilled: false,
+    canceled: true,
+    future: false,
+    past: true,
+  });
+
+  const ratifiedLessonCount = await lessons.countLessons({
+    users: [student],
+    fulfilled: true,
+    canceled: false,
+    future: true,
+    past: true,
+  });
+
+  const canceledLessonCount = await lessons.countLessons({
+    users: [student],
+    fulfilled: false,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const totalTutorCount = await lessons.countCounterpartMembers({
+    user: student,
+    fulfilled: true,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const canceledTutorCount = await lessons.countCounterpartMembers({
+    user: student,
+    fulfilled: false,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const fulfilledTutorCount = totalTutorCount - canceledTutorCount;
+
+  const totalMinutes = await lessons.sumDuration({
+    users: [student],
+    fulfilled: true,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const canceledMinutes = await lessons.sumDuration({
+    users: [student],
+    fulfilled: false,
+    canceled: true,
+    future: true,
+    past: true,
+  });
+
+  const fulfilledMinutes = totalMinutes - canceledMinutes;
+
+  const response: IUser.FindStudentStatsApiResponse = {
+    lessonCount: {
+      total: totalLessonCount,
+      ratified: ratifiedLessonCount,
+      canceled: canceledLessonCount,
+      future: {
+        total: futureLessonCount,
+        fulfillable: futureFulfilledLessons,
+        canceled: futureCanceledLessons,
+      },
+      past: {
+        total: pastLessonCount,
+        fulfilled: pastFulfilledLessons,
+        canceled: pastCanceledLessons,
+      },
+    },
+    tutorCount: {
+      total: totalTutorCount,
+      canceled: canceledTutorCount,
+      fulfilled: fulfilledTutorCount,
+    },
+    minutes: {
+      total: totalMinutes,
+      fulfilled: fulfilledMinutes,
+      canceled: canceledMinutes,
+    },
   };
 
   res.status(200).json(response);
@@ -422,7 +583,7 @@ async function findTutorActivityScores(
   if (!isPublicTutor(tutor)) return next(notfound.tutor());
 
   const lessonDays = await lessons.findLessonDays({
-    user: id,
+    users: [id],
     canceled: false,
     future: false,
   });
@@ -455,4 +616,5 @@ export default {
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
+  findStudentStats: safeRequest(findStudentStats),
 };
