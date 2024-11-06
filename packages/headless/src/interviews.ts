@@ -4,6 +4,10 @@ import { useCallback } from "react";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
 import { usePaginate, UsePaginateResult } from "@/pagination";
+import {
+  useInfinitePaginationQuery,
+  UseInfinitePaginationQueryResult,
+} from "@/query";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -25,6 +29,28 @@ export function useFindInterviews(payload?: {
     [payload]
   );
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged]);
+}
+
+export function useFindInfinitInterviews(
+  user?: number
+): UseInfinitePaginationQueryResult<
+  Element<IInterview.FindInterviewsApiResponse["list"]>
+> {
+  const atlas = useAtlas();
+  const findInterviews = useCallback(
+    async ({ pageParam }: { pageParam: number }) => {
+      if (user) return { list: [], total: 0 };
+      return atlas.interview.findInterviews({
+        page: pageParam,
+        size: 10,
+        user,
+      });
+    },
+    [atlas.interview, user]
+  );
+  return useInfinitePaginationQuery(findInterviews, [
+    QueryKey.FindInterviewsPaged,
+  ]);
 }
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {

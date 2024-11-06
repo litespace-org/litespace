@@ -1,7 +1,7 @@
 import { ICall, ILesson, IRule, Paginated, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
-import { usePaginationQuery } from "@/query";
+import { useInfinitePaginationQuery } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
 import {
   InfiniteData,
@@ -50,7 +50,7 @@ export function useFindUserLessons(user?: number): useFindUserLessonsProps {
     },
     [user]
   );
-  return usePaginationQuery(findUserLessons, [QueryKey.FindLesson]);
+  return useInfinitePaginationQuery(findUserLessons, [QueryKey.FindLesson]);
 }
 
 export function useCancelLesson() {
