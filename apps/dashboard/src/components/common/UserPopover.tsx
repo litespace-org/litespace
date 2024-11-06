@@ -6,6 +6,8 @@ import { AlertCircle, User } from "react-feather";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { rolesMap } from "../utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Link } from "react-router-dom";
+import { Route } from "@/lib/route";
 
 const UserPopover: React.FC<{ id: number }> = ({ id }) => {
   const intl = useFormatMessage();
@@ -52,7 +54,22 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
         </div>
       }
     >
-      <span className="text-brand-link">#{id}</span>
+      {user.data ? (
+        <Link
+          to={Route.User.replace(":id", user.data.id.toString())}
+          className="hover:bg-background-selection px-2 py-0.5 rounded-md"
+        >
+          <div className="flex flex-col gap-1">
+            <p>
+              {user.data.name || "-"}
+              &nbsp; &bull; &nbsp;
+              <span>{intl(rolesMap[user.data.role])}</span>
+            </p>
+          </div>
+        </Link>
+      ) : (
+        "-"
+      )}
     </HoverCard>
   );
 };

@@ -6,7 +6,14 @@ import { profileSelectors } from "@/redux/user/profile";
 import { IUser } from "@litespace/types";
 import { Route } from "@/lib/route";
 import SidebarNav from "@/components/common/SideBar";
-import { BarChart, FileText, Users, Video, Columns } from "react-feather";
+import {
+  BarChart,
+  FileText,
+  Users,
+  Video,
+  Columns,
+  BookOpen,
+} from "react-feather";
 import cn from "classnames";
 
 const Root: React.FC = () => {
@@ -40,6 +47,11 @@ const Root: React.FC = () => {
         label: intl("dashboard.navbar.interviews"),
         route: Route.Interviews,
         icon: Columns,
+      },
+      {
+        label: intl("dashboard.navbar.lessons"),
+        route: Route.Lessons,
+        icon: BookOpen,
       },
     ],
     [intl]
