@@ -18,9 +18,12 @@ import {
   boolean,
   datetime,
   id,
+  ids,
   interviewStatus,
+  jsonBoolean,
   number,
-  pagination,
+  pageNumber,
+  pageSize,
   string,
   withNamedId,
 } from "@/validation/utils";
@@ -29,7 +32,7 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { isAdmin, isInterviewer, isTutor } from "@litespace/auth";
-import { isEmpty, isUndefined } from "lodash";
+import { isEmpty, isEqual, isUndefined } from "lodash";
 import { canBook } from "@/lib/call";
 
 const INTERVIEW_DURATION = 30;
@@ -53,7 +56,15 @@ const updateInterviewPayload = zod.object({
   sign: zod.optional(boolean),
 });
 
-const findInterviewsQuery = zod.object({ user: zod.optional(id) });
+const findInterviewsQuery = zod.object({
+  users: zod.optional(ids),
+  statuses: zod.optional(zod.array(interviewStatus)),
+  levels: zod.optional(zod.array(zod.number().int().positive())),
+  signed: zod.optional(jsonBoolean),
+  signers: zod.optional(ids),
+  page: zod.optional(pageNumber),
+  size: zod.optional(pageSize),
+});
 
 async function createInterview(
   req: Request,
@@ -123,17 +134,23 @@ async function createInterview(
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
-  const currentUser = req.user;
-  const { user } = findInterviewsQuery.parse(req.query);
-  const owner = isTutor(currentUser) && currentUser.id === user;
-  const allowed = owner || isAdmin(currentUser) || isInterviewer(currentUser);
+  const user = req.user;
+  const query: IInterview.FindInterviewsApiQuery = findInterviewsQuery.parse(
+    req.query
+  );
+  const owner =
+    (isTutor(user) || isInterviewer(user)) && isEqual(query.users, [user.id]);
+  const allowed = owner || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { page, size } = pagination.parse(req.query);
-  const { interviews: userInterviews, total } = await interviews.find({
-    users: user ? [user] : undefined,
-    page,
-    size,
+  const { list: userInterviews, total } = await interviews.find({
+    users: query.users,
+    statuses: query.statuses,
+    levels: query.levels,
+    signed: query.signed,
+    signers: query.signers,
+    page: query.page,
+    size: query.size,
   });
 
   const callIds = userInterviews.map((interview) => interview.ids.call);

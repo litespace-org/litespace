@@ -399,7 +399,7 @@ describe("Lessons", () => {
     });
   });
 
-  describe.only(nameof(lessons.findLessons), () => {
+  describe(nameof(lessons.findLessons), () => {
     it("should return empty list in case user has not lessons", async () => {
       const result = await lessons.findLessons({
         users: [1],
