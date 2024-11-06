@@ -11,7 +11,7 @@ import { Route } from "@/types/routes";
 import { IInterview } from "@litespace/types";
 import { maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
-import { useFindInterviews } from "@litespace/headless/interviews";
+import { useFindInfinitInterviews } from "@litespace/headless/interviews";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useFormatMessage();
@@ -37,7 +37,7 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
-  const interviews = useFindInterviews({ user: profile?.id, userOnly: true });
+  const interviews = useFindInfinitInterviews(profile?.id);
 
   const current = useMemo(() => {
     if (!interviews.list) return null;

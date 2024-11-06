@@ -7,19 +7,23 @@ import React from "react";
 
 export const Interviews: React.FC = () => {
   const intl = useFormatMessage();
-  const query = useFindInterviews({ userOnly: false });
-  console.log(query.query);
+  const interviews = useFindInterviews();
 
   return (
     <div className={cn("w-full flex flex-col max-w-screen-2xl mx-auto p-6")}>
       <header className="flex items-center justify-between mb-3">
         <PageTitle
           title={intl("dashboard.interviews.title")}
-          count={query.query.data?.list.length}
-          fetching={query.query.isFetching && !query.query.isLoading}
+          count={interviews.query.data?.list.length}
+          fetching={interviews.query.isFetching && !interviews.query.isLoading}
         />
       </header>
-      <List {...query} query={query} refresh={query.query.refetch} />
+
+      <List
+        {...interviews}
+        query={interviews}
+        refresh={interviews.query.refetch}
+      />
     </div>
   );
 };
