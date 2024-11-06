@@ -14,7 +14,7 @@ export const Interviews: React.FC = () => {
       <header className="flex items-center justify-between mb-3">
         <PageTitle
           title={intl("dashboard.interviews.title")}
-          count={interviews.query.data?.list.length}
+          count={interviews.query.data?.total}
           fetching={interviews.query.isFetching && !interviews.query.isLoading}
         />
       </header>

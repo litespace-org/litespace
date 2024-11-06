@@ -17,8 +17,9 @@ export function useFindInterviews(payload?: {
   userOnly?: boolean;
 }): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
   const atlas = useAtlas();
+
   const findInterviews = useCallback(
-    async ({ page, size = 10 }: IFilter.Pagination) => {
+    async ({ page, size }: IFilter.Pagination) => {
       if (payload?.userOnly && !payload?.user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
         users: payload?.user ? [payload.user] : [],
@@ -28,6 +29,7 @@ export function useFindInterviews(payload?: {
     },
     [payload]
   );
+
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged]);
 }
 
