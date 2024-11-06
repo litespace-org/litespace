@@ -13,6 +13,7 @@ import { useAtlas } from "@litespace/headless/atlas";
 import { useEffect } from "react";
 import { useAppDispatch } from "@/redux/store";
 import { findCurrentUser } from "@/redux/user/profile";
+import Lessons from "./pages/Lessons";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
       { path: Route.Users, element: <Users /> },
       { path: Route.User, element: <UserProfile /> },
       { path: Route.Interviews, element: <Interviews /> },
+      { path: Route.Lessons, element: <Lessons /> },
     ],
   },
 ]);
