@@ -23,7 +23,7 @@ import zod from "zod";
 type SearchFilter = {
   users?: number[];
   canceled?: boolean;
-  fulfilled?: boolean;
+  ratified?: boolean;
   future?: boolean;
   past?: boolean;
   now?: boolean;
@@ -177,7 +177,7 @@ export class Lessons {
     users,
     page,
     size,
-    fulfilled = true,
+    ratified = true,
     canceled = true,
     future = true,
     past = true,
@@ -196,7 +196,7 @@ export class Lessons {
       users,
       canceled,
       future,
-      fulfilled,
+      ratified,
       past,
       now,
     });
@@ -227,7 +227,7 @@ export class Lessons {
   }
 
   async sum({
-    fulfilled = true,
+    ratified = true,
     canceled = true,
     future = true,
     past = true,
@@ -243,7 +243,7 @@ export class Lessons {
       )
       .sum(column, { as: "total" });
 
-    const filter: SearchFilter = { users, canceled, future, fulfilled, past };
+    const filter: SearchFilter = { users, canceled, future, ratified, past };
     const builder = this.applySearchFilter(base, filter);
     const row: { total: NumericString } | undefined = await builder
       .first()
@@ -370,7 +370,7 @@ export class Lessons {
     {
       canceled = true,
       future = true,
-      fulfilled = true,
+      ratified = true,
       past = true,
       now = false,
       users,
@@ -389,13 +389,13 @@ export class Lessons {
         )
         .whereIn(this.columns.members("user_id"), users);
 
-    const canceledOnly = canceled && !fulfilled;
-    const fulfilledOnly = fulfilled && !canceled;
+    const canceledOnly = canceled && !ratified;
+    const ratifiedOnly = ratified && !canceled;
 
     if (canceledOnly)
       builder.where(this.columns.lessons("canceled_by"), "IS NOT", null);
 
-    if (fulfilledOnly)
+    if (ratifiedOnly)
       builder.where(this.columns.lessons("canceled_by"), "IS", null);
 
     const futureOnly = future && !past;

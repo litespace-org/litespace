@@ -143,23 +143,23 @@ export type FindStudentStatsApiResponse = {
     canceled: number;
     future: {
       total: number;
-      fulfillable: number;
+      ratified: number;
       canceled: number;
     };
     past: {
       total: number;
-      fulfilled: number;
+      ratified: number;
       canceled: number;
     };
   };
   tutorCount: {
     total: number;
+    ratified: number;
     canceled: number;
-    fulfilled: number;
   };
   minutes: {
     total: number;
-    fulfilled: number;
+    ratified: number;
     canceled: number;
   };
 };
