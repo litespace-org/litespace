@@ -30,6 +30,7 @@ export type SelectProps<T extends string | number> = {
   onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
+  size?: "normal" | "small";
 };
 
 const OPTIONS_COUNT_THRESHOLD = 10;
@@ -39,6 +40,7 @@ export const Select = <T extends string | number>({
   placeholder,
   options = [],
   onChange,
+  size = "normal",
 }: SelectProps<T>) => {
   const onValueChange = useCallback(
     (value: string) => {
@@ -62,8 +64,11 @@ export const Select = <T extends string | number>({
       <Trigger
         className={cn(
           "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
-          "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md tw-h-[38px]",
-          "tw-flex tw-justify-between tw-items-center tw-cursor-pointer tw-text-foreground"
+          "tw-border tw-border-control tw-text-sm tw-bg-foreground/[0.026] tw-rounded-md",
+          "tw-flex tw-justify-between tw-gap-2 tw-items-center tw-cursor-pointer tw-text-foreground",
+          size === "normal"
+            ? "tw-px-4 tw-py-2 tw-h-[38px]"
+            : "tw-px-2 tw-py-1 tw-h-[34px]"
         )}
       >
         <Value placeholder={placeholder} />

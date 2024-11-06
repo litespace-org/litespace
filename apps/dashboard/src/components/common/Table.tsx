@@ -1,4 +1,5 @@
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import { Select, SelectList } from "@litespace/luna/Select";
 import { Void } from "@litespace/types";
 import {
   getCoreRowModel,
@@ -6,7 +7,9 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 import type { TableOptions } from "@tanstack/react-table";
+import { useMemo } from "react";
 import cn from "classnames";
+import { usePageSize } from "@litespace/headless/config";
 
 interface ReactTableProps<T extends object> {
   data: T[];
@@ -36,6 +39,19 @@ export const Table = <T extends object>({
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  const pageSize = usePageSize();
+
+  const options = useMemo(
+    (): SelectList<number> => [
+      { label: "10", value: 10 },
+      { label: "20", value: 20 },
+      { label: "30", value: 30 },
+      { label: "40", value: 40 },
+      { label: "50", value: 50 },
+    ],
+    []
+  );
 
   return (
     <div>
@@ -82,7 +98,15 @@ export const Table = <T extends object>({
           </tbody>
         </table>
       </div>
-      <footer className="flex items-center justify-center gap-4 pt-4">
+      <footer className="relative flex items-center justify-center gap-4 pt-4">
+        <div className="absolute top-4 right-0">
+          <Select
+            options={options}
+            value={pageSize.value}
+            onChange={pageSize.set}
+            size="small"
+          />
+        </div>
         <Button
           size={ButtonSize.Small}
           type={ButtonType.Secondary}

@@ -5,6 +5,7 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { useCallback, useMemo, useState } from "react";
+import { usePageSize } from "@/config";
 
 export type UsePaginateResult<T> = {
   query: UseQueryResult<Paginated<T>, Error>;
@@ -15,24 +16,24 @@ export type UsePaginateResult<T> = {
   totalPages: number;
 };
 
-const SIZE = 10;
-
 export function usePaginate<T, K>(
   callback: ({ page, size }: IFilter.Pagination) => Promise<Paginated<T>>,
   key: K[]
 ): UsePaginateResult<T> {
   const [page, setPage] = useState<number>(1);
+  const pageSize = usePageSize();
+
   const find = useCallback(
-    () => callback({ page, size: SIZE }),
-    [callback, page]
+    () => callback({ page, size: pageSize.value }),
+    [callback, page, pageSize.value]
   );
   const query = useQuery({
     queryFn: find,
-    queryKey: [...key, page],
+    queryKey: [...key, page, pageSize.value],
     placeholderData: keepPreviousData,
   });
   const totalPages = useMemo(
-    () => (query.data ? Math.ceil(query.data.total / SIZE) : 0),
+    () => (query.data ? Math.ceil(query.data.total / pageSize.value) : 0),
     [query.data]
   );
 
