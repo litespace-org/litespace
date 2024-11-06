@@ -72,7 +72,7 @@ describe("Lessons", () => {
             canceled: true,
             future: true,
             past: false,
-            fulfilled: false,
+            ratified: false,
             user: tutor.id,
           })
         ).to.be.eq(0);
@@ -89,7 +89,7 @@ describe("Lessons", () => {
           await lessons.countCounterpartMembers({
             canceled: true,
             future: true,
-            fulfilled: false,
+            ratified: false,
             past: false,
             user: student.id,
           })
@@ -156,7 +156,7 @@ describe("Lessons", () => {
               future: true,
               past: false, // only execlude past lessons
               canceled: true,
-              fulfilled: true,
+              ratified: true,
             })
           ).to.be.eq(1);
         }
@@ -566,7 +566,7 @@ describe("Lessons", () => {
       expect(r3.total).to.be.eq(total);
     });
 
-    it("should filter users lessons using `future`, `past`, `fulfilled` and `canceled` flags", async () => {
+    it("should filter users lessons using `future`, `past`, `ratified` and `canceled` flags", async () => {
       const tutor = await fixtures.tutor();
       const students = await fixtures.students(2);
       const rule = await fixtures.rule({ userId: tutor.id });
@@ -589,63 +589,63 @@ describe("Lessons", () => {
         {
           future: true,
           past: true,
-          fulfilled: true,
+          ratified: true,
           canceled: true,
           count: 11,
         },
         {
           future: false,
           past: true,
-          fulfilled: true,
+          ratified: true,
           canceled: true,
           count: 7,
         },
         {
           future: true,
           past: false,
-          fulfilled: true,
+          ratified: true,
           canceled: true,
           count: 4,
         },
         {
           future: true,
           past: true,
-          fulfilled: false,
+          ratified: false,
           canceled: true,
           count: 2,
         },
         {
           future: true,
           past: true,
-          fulfilled: true,
+          ratified: true,
           canceled: false,
           count: 9,
         },
         {
           future: false,
           past: false,
-          fulfilled: true,
+          ratified: true,
           canceled: false,
           count: 9,
         },
         {
           future: false,
           past: false,
-          fulfilled: false,
+          ratified: false,
           canceled: false,
           count: 11,
         },
         {
           future: true,
           past: false,
-          fulfilled: false,
+          ratified: false,
           canceled: true,
           count: 2,
         },
         {
           future: false,
           past: true,
-          fulfilled: false,
+          ratified: false,
           canceled: true,
           count: 0,
         },
@@ -657,7 +657,7 @@ describe("Lessons", () => {
           size: 100,
           future: test.future,
           past: test.past,
-          fulfilled: test.fulfilled,
+          ratified: test.ratified,
           canceled: test.canceled,
         });
         expect(result.list).to.be.of.length(test.count);
