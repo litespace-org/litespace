@@ -301,15 +301,21 @@ export function useCall(call: number | null, mateUserId: number | null) {
       denied,
       error,
       loading,
+      mateAudio,
       mateMediaStream,
       mateScreenStream,
+      mateSpeaking,
+      mateVideo,
+      mediaConnection,
       mic,
+      onToggleCamera,
+      onToggleMic,
+      peer,
       screen,
       start,
       stop,
-      toggleCamera,
-      toggleMic,
       userMediaStream,
+      userSpeaking,
       video,
     ]
   );
@@ -428,7 +434,7 @@ export function useSpeaking(
     return () => {
       clearInterval(interval);
     };
-  }, []);
+  }, [mediaConnection, stream, threshold]);
 
   return speaking;
 }

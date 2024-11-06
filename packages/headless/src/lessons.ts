@@ -35,6 +35,7 @@ type useFindUserLessonsProps = {
 
 export function useFindUserLessons(user?: number): useFindUserLessonsProps {
   const atlas = useAtlas();
+
   const findUserLessons = useCallback(
     async ({
       pageParam,
@@ -48,16 +49,22 @@ export function useFindUserLessons(user?: number): useFindUserLessonsProps {
         size: 10,
       });
     },
-    [user]
+    [atlas.lesson, user]
   );
+
   return useInfinitePaginationQuery(findUserLessons, [QueryKey.FindLesson]);
 }
 
 export function useCancelLesson() {
   const atlas = useAtlas();
-  const cancel = useCallback((id: number) => {
-    return atlas.lesson.cancel(id);
-  }, []);
+
+  const cancel = useCallback(
+    (id: number) => {
+      return atlas.lesson.cancel(id);
+    },
+    [atlas.lesson]
+  );
+
   return useMutation({
     mutationFn: cancel,
     mutationKey: [MutationKey.CancelLesson],
@@ -87,7 +94,7 @@ export function useCreateLesson({
       ruleId: selectedEvent.id,
       start: selectedEvent.start,
     });
-  }, [duration, selectedEvent, tutorId]);
+  }, [atlas.lesson, duration, selectedEvent, tutorId]);
 
   return useMutation({
     mutationFn: bookLesson,

@@ -26,7 +26,7 @@ export function useFindUserById(
 
   const findUserById = useCallback(
     async () => await atlas.user.findById(id),
-    [atlas.user]
+    [atlas.user, id]
   );
 
   return useQuery({

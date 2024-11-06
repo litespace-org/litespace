@@ -34,7 +34,7 @@ export function usePaginate<T, K>(
   });
   const totalPages = useMemo(
     () => (query.data ? Math.ceil(query.data.total / pageSize.value) : 0),
-    [query.data]
+    [pageSize.value, query.data]
   );
 
   const next = useCallback(() => {

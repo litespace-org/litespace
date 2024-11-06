@@ -27,7 +27,7 @@ export function useFindInterviews(payload?: {
         size,
       });
     },
-    [payload]
+    [atlas.interview, payload?.user, payload?.userOnly]
   );
 
   return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged]);
@@ -39,6 +39,7 @@ export function useFindInfinitInterviews(
   Element<IInterview.FindInterviewsApiResponse["list"]>
 > {
   const atlas = useAtlas();
+
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       if (user) return { list: [], total: 0 };
@@ -50,6 +51,7 @@ export function useFindInfinitInterviews(
     },
     [atlas.interview, user]
   );
+
   return useInfinitePaginationQuery(findInterviews, [
     QueryKey.FindInterviewsPaged,
   ]);
@@ -57,9 +59,11 @@ export function useFindInfinitInterviews(
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {
   const atlas = useAtlas();
+
   const selectInterviewer = useCallback(async () => {
     return atlas.user.selectInterviewer();
-  }, []);
+  }, [atlas.user]);
+
   return useQuery({
     queryFn: selectInterviewer,
     queryKey: [QueryKey.FindInterviewer],
@@ -79,7 +83,7 @@ export function useCreateInterview({
     async (payload: IInterview.CreateApiPayload) => {
       return atlas.interview.create(payload);
     },
-    []
+    [atlas.interview]
   );
 
   return useMutation({
