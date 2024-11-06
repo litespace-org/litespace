@@ -16,6 +16,8 @@ import zod from "zod";
 
 export const id = zod.coerce.number({ message: "Invalid id" }).positive();
 
+export const ids = zod.array(id);
+
 export const password = zod
   .string({ message: "Invalid password" })
   .regex(passwordRegex, "Password doesn't meet the requirements");

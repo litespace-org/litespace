@@ -1,6 +1,6 @@
-import { IFilter, IInterview } from "@litespace/types";
+import { IFilter, IInterview, Paginated } from "@litespace/types";
 import { column, countRows, knex, withPagination } from "@/query";
-import { first } from "lodash";
+import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 import { calls } from "@/calls";
@@ -98,37 +98,59 @@ export class Interviews {
   }
 
   async find({
+    statuses,
+    signers,
+    levels,
+    signed,
     users,
     page,
     size,
     tx,
   }: {
     users?: number[];
+    statuses?: IInterview.Status[];
+    levels?: IInterview.Self["level"][];
     tx?: Knex.Transaction;
-  } & IFilter.Pagination): Promise<{
-    total: number;
-    interviews: IInterview.Self[];
-  }> {
-    const builder = this.builder(tx);
+    signed?: boolean;
+    signers?: number[];
+  } & IFilter.Pagination): Promise<Paginated<IInterview.Self>> {
+    const baseBuilder = this.builder(tx);
 
-    if (users)
-      builder
-        .whereIn(this.column("interviewer_id"), users)
-        .orWhereIn(this.column("interviewee_id"), users);
+    if (users && !isEmpty(users))
+      baseBuilder.where((builder) => {
+        builder
+          .whereIn(this.column("interviewer_id"), users)
+          .orWhereIn(this.column("interviewee_id"), users);
+      });
 
-    const total = await countRows(builder.clone());
+    if (statuses && !isEmpty(statuses))
+      baseBuilder.whereIn(this.column("status"), statuses);
 
-    const main = builder
+    if (levels && !isEmpty(levels))
+      baseBuilder.whereIn(this.column("level"), levels);
+
+    if (signed === true)
+      baseBuilder.where(this.column("signer"), "IS NOT", null);
+    else if (signed === false) {
+      baseBuilder.where(this.column("signer"), "IS", null);
+    }
+
+    if (signers && !isEmpty(signers))
+      baseBuilder.whereIn(this.column("signer"), signers);
+
+    const total = await countRows(baseBuilder.clone());
+
+    const queryBuilder = baseBuilder
       .clone()
       .join(
         calls.tables.calls,
         this.column("call_id"),
         calls.columns.calls("id")
       )
-      .select(this.columns)
+      .select<IInterview.Row[]>(this.columns)
       .orderBy(calls.columns.calls("start"), "desc");
-    const rows = await withPagination(main, { page, size }).then();
-    return { interviews: rows.map((row) => this.from(row)), total };
+    const rows = await withPagination(queryBuilder, { page, size });
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   from(row: IInterview.Row): IInterview.Self {
