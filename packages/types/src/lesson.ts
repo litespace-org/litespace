@@ -72,7 +72,7 @@ export type CreateApiPayload = {
 
 export type FindLessonsApiQuery = IFilter.Pagination & {
   users?: number[];
-  fulfilled?: boolean;
+  ratified?: boolean;
   canceled?: boolean;
   future?: boolean;
   past?: boolean;
