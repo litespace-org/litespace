@@ -24,6 +24,7 @@ export enum ApiError {
   RoomMembersNotFound = "room-members-not-found",
   ReportNotFound = "report-not-found",
   InterviewNotFound = "interview-not-found",
+  InterviewAlreadySigned = "interview-already-signed",
   ReportReplyNotFound = "report-reply-not-found",
   WidthdrawMethodNotFound = "withdraw-method-not-found",
   SubscriptionNotFound = "subscription-not-found",

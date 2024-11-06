@@ -2,6 +2,7 @@ import {
   bad,
   busyTutorManager,
   forbidden,
+  interviewAlreadySigned,
   notfound,
   unexpected,
 } from "@/lib/error";
@@ -15,7 +16,6 @@ import {
   rooms,
 } from "@litespace/models";
 import {
-  boolean,
   datetime,
   id,
   ids,
@@ -27,12 +27,12 @@ import {
   string,
   withNamedId,
 } from "@/validation/utils";
-import { Element, IInterview, IUser } from "@litespace/types";
+import { Element, IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
-import { isAdmin, isInterviewer, isTutor } from "@litespace/auth";
-import { isEmpty, isEqual, isUndefined } from "lodash";
+import { isAdmin, isInterviewer, isSuperAdmin, isTutor } from "@litespace/auth";
+import { isEmpty, isEqual } from "lodash";
 import { canBook } from "@/lib/call";
 
 const INTERVIEW_DURATION = 30;
@@ -53,7 +53,7 @@ const updateInterviewPayload = zod.object({
   interviewerNote: zod.optional(string),
   score: zod.optional(number),
   status: zod.optional(interviewStatus),
-  sign: zod.optional(boolean),
+  sign: zod.optional(zod.literal(true)),
 });
 
 const findInterviewsQuery = zod.object({
@@ -208,7 +208,7 @@ async function updateInterview(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isAdmin(user) || isInterviewer(user) || isTutor(user);
+  const allowed = isSuperAdmin(user) || isInterviewer(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
@@ -226,18 +226,16 @@ async function updateInterview(
 
   // Tutor can only update the feedback of the interview
   const isPermissionedInterviewee =
-    user.role === IUser.Role.Tutor &&
-    !isUndefined(payload.feedback?.interviewee);
+    isTutor(user) && !payload.feedback?.interviewee;
 
   const isPermissionedInterviewer =
-    user.role === IUser.Role.Interviewer &&
-    (!isUndefined(payload.feedback?.interviewer) ||
-      !isUndefined(payload.note) ||
-      !isUndefined(payload.level) ||
-      !isUndefined(payload.status));
+    isInterviewer(user) &&
+    (!payload.feedback?.interviewer ||
+      !payload.note ||
+      !payload.level ||
+      !payload.status);
 
-  const isPermissionedAdmin =
-    user.role === IUser.Role.SuperAdmin && !isUndefined(payload.sign);
+  const isPermissionedAdmin = isSuperAdmin(user) && payload.sign === true;
 
   const isPermissioned =
     isPermissionedInterviewee ||
@@ -245,15 +243,9 @@ async function updateInterview(
     isPermissionedAdmin;
   if (!isPermissioned) return next(forbidden());
 
-  //! temp: sign by the interviewer for now
-  const signer =
-    payload.status === IInterview.Status.Passed ? user.id : undefined;
-  // payload.sign === true // sign
-  //   ? req.user.id
-  //   : payload.sign === false // unsign
-  //   ? null
-  //   : undefined; // no-update
+  if (payload.sign && interview.signer) return next(interviewAlreadySigned());
 
+  const signer = payload.sign ? user.id : undefined;
   const updated = await interviews.update(interviewId, {
     feedback: payload.feedback,
     note: payload.note,

@@ -76,7 +76,7 @@ export type UpdateApiPayload = {
   note?: string;
   level?: number;
   status?: Status;
-  sign?: boolean;
+  sign?: true;
 };
 
 export type FindInterviewsApiQuery = IFilter.Pagination & {
