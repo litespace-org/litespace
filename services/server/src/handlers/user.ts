@@ -490,7 +490,7 @@ async function findStudentStats(
     past: true,
   });
 
-  const fulfilledLessonCount = await lessons.countLessons({
+  const ratifiedLessonCount = await lessons.countLessons({
     users: [student],
     fulfilled: true,
     canceled: false,
@@ -542,14 +542,14 @@ async function findStudentStats(
 
   const fulfilledMinutes = totalMinutes - canceledMinutes;
 
-  const response = {
+  const response: IUser.FindStudentStatsApiResponse = {
     lessonCount: {
       total: totalLessonCount,
-      fulfilled: fulfilledLessonCount,
+      ratified: ratifiedLessonCount,
       canceled: canceledLessonCount,
       future: {
         total: futureLessonCount,
-        fulfilled: futureFulfilledLessons,
+        fulfillable: futureFulfilledLessons,
         canceled: futureCanceledLessons,
       },
       past: {
