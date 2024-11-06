@@ -12,6 +12,7 @@ export enum ApiError {
   CallNotFound = "call-not-found",
   UserNotFound = "user-not-found",
   TutorNotFound = "tutor-not-found",
+  StudentNotFound = "student-not-found",
   LessonNotFound = "lesson-not-found",
   RuleNotFound = "rule-not-found",
   RatingNotFound = "rating-not-found",
