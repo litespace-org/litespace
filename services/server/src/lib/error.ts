@@ -68,6 +68,7 @@ export const notfound = {
   user: () => error(ApiError.UserNotFound, "User not found", 404),
   rule: () => error(ApiError.RuleNotFound, "Rule not found", 404),
   tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
+  student: () => error(ApiError.StudentNotFound, "Student not found", 404),
   call: () => error(ApiError.CallNotFound, "Call not found", 404),
   lesson: () => error(ApiError.LessonNotFound, "Lesson nto found", 404),
   room: () => error(ApiError.RoomNotFound, "Room not found", 404),
