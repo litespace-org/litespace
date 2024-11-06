@@ -78,7 +78,7 @@ export class Messages {
   }
 
   /**
-   *  @param deleted {boolean} a flat to include or exclude deleted messages.
+   *  @param deleted {boolean} a flag to include or exclude deleted messages.
    *  Default is `false` (deleted messages are not included by default)
    */
   async findRoomMessages({
@@ -106,6 +106,17 @@ export class Messages {
 
     const rows = await withPagination(query, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
+  }
+
+  async countUserMessages({
+    user,
+    tx,
+  }: {
+    user: number;
+    tx?: Knex.Transaction;
+  }): Promise<number> {
+    const builder = this.builder(tx).where(this.column("user_id"), user);
+    return await countRows(builder, { column: this.column("id") });
   }
 
   builder(tx?: Knex.Transaction) {
