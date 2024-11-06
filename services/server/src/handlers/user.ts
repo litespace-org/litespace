@@ -436,7 +436,7 @@ async function findStudentStats(
 
   const totalLessonCount = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: true,
     future: true,
     past: true,
@@ -444,7 +444,7 @@ async function findStudentStats(
 
   const futureLessonCount = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: true,
     future: true,
     past: false,
@@ -452,7 +452,7 @@ async function findStudentStats(
 
   const futureFulfilledLessons = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: false,
     future: true,
     past: false,
@@ -460,7 +460,7 @@ async function findStudentStats(
 
   const futureCanceledLessons = await lessons.countLessons({
     users: [student],
-    fulfilled: false,
+    ratified: false,
     canceled: true,
     future: true,
     past: false,
@@ -468,7 +468,7 @@ async function findStudentStats(
 
   const pastLessonCount = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: true,
     future: false,
     past: true,
@@ -476,7 +476,7 @@ async function findStudentStats(
 
   const pastFulfilledLessons = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: false,
     future: false,
     past: true,
@@ -484,7 +484,7 @@ async function findStudentStats(
 
   const pastCanceledLessons = await lessons.countLessons({
     users: [student],
-    fulfilled: false,
+    ratified: false,
     canceled: true,
     future: false,
     past: true,
@@ -492,7 +492,7 @@ async function findStudentStats(
 
   const ratifiedLessonCount = await lessons.countLessons({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: false,
     future: true,
     past: true,
@@ -500,7 +500,7 @@ async function findStudentStats(
 
   const canceledLessonCount = await lessons.countLessons({
     users: [student],
-    fulfilled: false,
+    ratified: false,
     canceled: true,
     future: true,
     past: true,
@@ -508,7 +508,7 @@ async function findStudentStats(
 
   const totalTutorCount = await lessons.countCounterpartMembers({
     user: student,
-    fulfilled: true,
+    ratified: true,
     canceled: true,
     future: true,
     past: true,
@@ -516,7 +516,7 @@ async function findStudentStats(
 
   const canceledTutorCount = await lessons.countCounterpartMembers({
     user: student,
-    fulfilled: false,
+    ratified: false,
     canceled: true,
     future: true,
     past: true,
@@ -526,7 +526,7 @@ async function findStudentStats(
 
   const totalMinutes = await lessons.sumDuration({
     users: [student],
-    fulfilled: true,
+    ratified: true,
     canceled: true,
     future: true,
     past: true,
@@ -534,7 +534,7 @@ async function findStudentStats(
 
   const canceledMinutes = await lessons.sumDuration({
     users: [student],
-    fulfilled: false,
+    ratified: false,
     canceled: true,
     future: true,
     past: true,
@@ -549,23 +549,23 @@ async function findStudentStats(
       canceled: canceledLessonCount,
       future: {
         total: futureLessonCount,
-        fulfillable: futureFulfilledLessons,
+        ratified: futureFulfilledLessons,
         canceled: futureCanceledLessons,
       },
       past: {
         total: pastLessonCount,
-        fulfilled: pastFulfilledLessons,
+        ratified: pastFulfilledLessons,
         canceled: pastCanceledLessons,
       },
     },
     tutorCount: {
       total: totalTutorCount,
       canceled: canceledTutorCount,
-      fulfilled: fulfilledTutorCount,
+      ratified: fulfilledTutorCount,
     },
     minutes: {
       total: totalMinutes,
-      fulfilled: fulfilledMinutes,
+      ratified: fulfilledMinutes,
       canceled: canceledMinutes,
     },
   };
