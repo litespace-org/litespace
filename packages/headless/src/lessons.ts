@@ -1,4 +1,11 @@
-import { ICall, ILesson, IRule, Paginated, Void } from "@litespace/types";
+import {
+  ICall,
+  IFilter,
+  ILesson,
+  IRule,
+  Paginated,
+  Void,
+} from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { useInfinitePaginationQuery } from "@/query";
@@ -8,6 +15,7 @@ import {
   UseInfiniteQueryResult,
   useMutation,
 } from "@tanstack/react-query";
+import { UsePaginateResult, usePaginate } from "@/pagination";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -51,8 +59,26 @@ export function useFindUserLessons(user?: number): useFindUserLessonsProps {
     },
     [atlas.lesson, user]
   );
+  return useInfinitePaginationQuery(findUserLessons, [QueryKey.FindUserLesson]);
+}
 
-  return useInfinitePaginationQuery(findUserLessons, [QueryKey.FindLesson]);
+export function useFindLessons(
+  params: ILesson.FindLessonsApiQuery
+): UsePaginateResult<{
+  lesson: ILesson.Self;
+  members: ILesson.PopuldatedMember[];
+  call: ICall.Self;
+}> {
+  const atlas = useAtlas();
+
+  const lessons = useCallback(
+    async ({ page, size }: IFilter.Pagination) => {
+      return await atlas.lesson.findLessons({ page, size, ...params });
+    },
+    [atlas.lesson, params]
+  );
+
+  return usePaginate(lessons, [QueryKey.FindLesson]);
 }
 
 export function useCancelLesson() {
