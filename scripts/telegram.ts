@@ -15,7 +15,7 @@ const client = axios.create({
 
 async function sendMessage(text: string) {
   await client.post("/sendMessage", null, {
-    params: { chat_id: chat, text },
+    params: { chat_id: chat, text, parse_mode: "markdown" },
   });
 }
 
@@ -68,7 +68,7 @@ const sendVercelUrls = new Command()
       const urls = JSON.parse(json) as VercelUrls;
       const prefix =
         pull && branch
-          ? `#${pull} ${branch}: (https://github.com/litespace-org/litespace/pull/${pull})`
+          ? `[#${pull} ${branch}](https://github.com/litespace-org/litespace/pull/${pull})`
           : undefined;
       const message = asVercelUrlsMessage(urls, prefix);
       await sendMessage(message);
