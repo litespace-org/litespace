@@ -18,9 +18,11 @@ type OnError = (error: Error) => void;
 
 export function useFindTutors() {
   const atlas = useAtlas();
+
   const findTutors = useCallback(() => {
     return atlas.user.findOnboardedTutors();
-  }, []);
+  }, [atlas.user]);
+
   useQuery({
     queryFn: findTutors,
     queryKey: [QueryKey.FindTutors],
@@ -36,7 +38,7 @@ export function useFindTutorById(
   const findTutoById = useCallback(() => {
     if (!id) return null;
     return atlas.user.findTutorById(id);
-  }, [id]);
+  }, [atlas.user, id]);
 
   return useQuery({
     queryKey: [QueryKey.FindTutorById, id],
@@ -54,7 +56,7 @@ export function useFindTutorStats(
   const findTutorStats = useCallback(() => {
     if (!id) return null;
     return atlas.user.findTutorStats(id);
-  }, [id]);
+  }, [atlas.user, id]);
 
   return useQuery({
     queryFn: findTutorStats,
@@ -72,7 +74,7 @@ export function useFindTutorActivityScore(
   const findTutorAcivityScores = useCallback(() => {
     if (!id) return null;
     return atlas.user.findTutorActivityScores(id);
-  }, [id]);
+  }, [atlas.user, id]);
 
   return useQuery({
     queryFn: findTutorAcivityScores,
@@ -100,7 +102,7 @@ export function useFindUnpackedTutorRules({
       start.utc().format("YYYY-MM-DD"),
       end.utc().format("YYYY-MM-DD")
     );
-  }, [end, interviewer, start]);
+  }, [atlas.rule, end, interviewer, start]);
 
   return useQuery({
     queryFn: findUnpackedUserRoles,
@@ -119,7 +121,7 @@ export function useShareFeedback(
         feedback: { interviewee: feedback },
       });
     },
-    [interviewId]
+    [atlas.interview, interviewId]
   );
   return useMutation({
     mutationFn: share,
@@ -151,7 +153,7 @@ export function useIntroduceTutor({
         about: fields.about,
       });
     },
-    [profile]
+    [atlas.user, profile]
   );
 
   return useMutation({

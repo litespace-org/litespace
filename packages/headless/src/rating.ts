@@ -1,4 +1,4 @@
-import { useAtlas } from "@/atlas/index";
+import * as atlas_1 from "@/atlas/index";
 import { IRating, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
@@ -8,11 +8,11 @@ export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
 
 export function useFindRatingTutor(id: number | null) {
-  const atlas = useAtlas();
+  const atlas = atlas_1.useAtlas();
   const findRateeRatings = useCallback(async () => {
     if (!id) return [];
     return atlas.rating.findRateeRatings(id);
-  }, [id]);
+  }, [atlas.rating, id]);
 
   return useQuery({
     queryKey: [QueryKey.FindTutorRating, id],
@@ -29,7 +29,7 @@ export function useCreateRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = atlas_1.useAtlas();
   const rate = useCallback(
     async (payload: IRating.CreateApiPayload) => {
       return atlas.rating.create(payload);
@@ -52,7 +52,7 @@ export function useEditRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = atlas_1.useAtlas();
   const editRate = useCallback(
     async ({
       id,
@@ -81,7 +81,7 @@ export function useDeleteRatingTutor({
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
-  const atlas = useAtlas();
+  const atlas = atlas_1.useAtlas();
   const deleteRate = useCallback(
     async (id: number) => {
       return atlas.rating.delete(id);
