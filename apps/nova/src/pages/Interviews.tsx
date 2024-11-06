@@ -8,13 +8,17 @@ import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import { useIntl } from "react-intl";
 import Empty from "@/components/Interviews/Empty";
-import { useFindInterviews } from "@litespace/headless/interviews";
+import { useFindInfinitInterviews } from "@litespace/headless/interviews";
 
 const Interviews: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
   const intl = useIntl();
 
-  const { query: interviews, list, more } = useFindInterviews(profile?.id);
+  const {
+    query: interviews,
+    list,
+    more,
+  } = useFindInfinitInterviews(profile?.id);
 
   const onUpdate = useCallback(() => {
     interviews.refetch();

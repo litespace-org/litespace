@@ -1,5 +1,9 @@
-import { useQueryClient } from "@tanstack/react-query";
-import { Paginated } from "@litespace/types";
+import {
+  InfiniteData,
+  UseInfiniteQueryResult,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { Paginated, Void } from "@litespace/types";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { flatten, sum } from "lodash";
 import { useCallback, useMemo } from "react";
@@ -12,7 +16,13 @@ export function useInvalidateQuery() {
   );
 }
 
-export function usePaginationQuery<T>(
+export type UseInfinitePaginationQueryResult<T> = {
+  list: T[] | null;
+  query: UseInfiniteQueryResult<InfiniteData<Paginated<T>, unknown>, Error>;
+  more: Void;
+};
+
+export function useInfinitePaginationQuery<T>(
   handler: ({ pageParam }: { pageParam: number }) => Promise<Paginated<T>>,
   key: string[]
 ) {

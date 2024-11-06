@@ -1,7 +1,7 @@
 import { useAtlas } from "@/atlas";
 import { IRoom, IUser, Paginated, Void } from "@litespace/types";
 import { useCallback } from "react";
-import { usePaginationQuery } from "@/query";
+import { useInfinitePaginationQuery } from "@/query";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 type UserRooms = {
@@ -26,5 +26,5 @@ export function useFindUserRooms(profile: IUser.Self | null): UserRooms {
     [profile]
   );
 
-  return usePaginationQuery(findUserRooms, ["find-user-rooms"]);
+  return useInfinitePaginationQuery(findUserRooms, ["find-user-rooms"]);
 }
