@@ -1,5 +1,5 @@
-import { calls, knex, lessons, rules, users } from "@/index";
-import { ICall, ILesson, IRule, IUser } from "@litespace/types";
+import { calls, interviews, knex, lessons, rules, users } from "@/index";
+import { ICall, IInterview, ILesson, IRule, IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
@@ -10,6 +10,7 @@ export { faker } from "@faker-js/faker/locale/ar";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await interviews.builder(tx).del();
     await calls.builder(tx).members.del();
     await calls.builder(tx).calls.del();
     await rules.builder(tx).del();
@@ -107,6 +108,35 @@ export async function lesson(payload?: {
   });
 }
 
+export async function interview(payload: Partial<IInterview.CreatePayload>) {
+  return await knex.transaction(async (tx: Knex.Transaction) => {
+    const interviewerId: number =
+      payload.interviewer || (await interviewer().then((user) => user.id));
+
+    const intervieweeId: number =
+      payload.interviewee || (await tutor().then((user) => user.id));
+
+    const callId: number =
+      payload.call ||
+      (await call(
+        {
+          host: interviewerId,
+          members: [intervieweeId],
+        },
+        tx
+      ).then(({ call }) => call.id));
+
+    return await interviews.create(
+      {
+        interviewer: interviewerId,
+        interviewee: intervieweeId,
+        call: callId,
+      },
+      tx
+    );
+  });
+}
+
 export async function cancelLesson({
   lesson,
   call,
@@ -130,8 +160,43 @@ function student() {
   return user(IUser.Role.Student);
 }
 
+function interviewer() {
+  return user(IUser.Role.Interviewer);
+}
+
 async function students(count: number) {
   return await Promise.all(range(0, count).map(() => student()));
+}
+
+async function makeTutors(count: number) {
+  return await Promise.all(range(0, count).map(() => tutor()));
+}
+
+async function call(
+  payload: Partial<ICall.CreatePayload>,
+  tx: Knex.Transaction
+) {
+  const host: number =
+    payload.host || (await tutor().then((tutor) => tutor.id));
+  const members: number[] = payload.members || [
+    await student().then((student) => student.id),
+  ];
+  const callRule: number =
+    payload.rule ||
+    (await rule({
+      userId: host,
+    }).then((rule) => rule.id));
+
+  return await calls.create(
+    {
+      host,
+      members,
+      duration: payload.duration || duration(),
+      rule: callRule,
+      start: payload.start || faker.date.anytime().toISOString(),
+    },
+    tx
+  );
 }
 
 async function makeLesson({
@@ -304,17 +369,54 @@ async function makeLessons({
   return lessons;
 }
 
+async function makeInterviews(payload: {
+  data: [
+    {
+      interviewer: number;
+      interviewees: number[];
+      statuses: IInterview.Status[];
+      levels: IInterview.Self["level"][];
+    }
+  ];
+}) {
+  for (const { interviewer, interviewees, statuses, levels } of payload.data) {
+    for (const [key, interviewee] of entries(interviewees)) {
+      const index = Number(key);
+      const status = statuses[index];
+      const level = levels[index];
+      const interviewObj = await interview({
+        interviewer,
+        interviewee,
+      });
+
+      if (status)
+        await interviews.update(interviewObj.ids.self, {
+          status,
+        });
+
+      if (level)
+        await interviews.update(interviewObj.ids.self, {
+          level,
+        });
+    }
+  }
+}
+
 export default {
   user,
   tutor,
   student,
+  interviewer,
   students,
+  interview,
   lesson,
   flush,
   rule,
   make: {
     lesson: makeLesson,
     lessons: makeLessons,
+    interviews: makeInterviews,
+    tutors: makeTutors,
   },
   cancel: {
     lesson: cancelLesson,

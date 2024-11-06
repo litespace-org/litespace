@@ -21,7 +21,7 @@ export function useFindInterviews(payload?: {
     async ({ page, size = 10 }: IFilter.Pagination) => {
       if (payload?.userOnly && !payload?.user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
-        user: payload?.user,
+        users: payload?.user ? [payload.user] : [],
         page,
         size,
       });
@@ -41,9 +41,9 @@ export function useFindInfinitInterviews(
     async ({ pageParam }: { pageParam: number }) => {
       if (user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
+        users: user ? [user] : [],
         page: pageParam,
         size: 10,
-        user,
       });
     },
     [atlas.interview, user]
