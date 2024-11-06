@@ -63,7 +63,7 @@ export function useFindUserLessons(user?: number): useFindUserLessonsProps {
 }
 
 export function useFindLessons(
-  params: ILesson.FindLessonsApiQuery
+  query: ILesson.FindLessonsApiQuery
 ): UsePaginateResult<{
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
@@ -73,12 +73,12 @@ export function useFindLessons(
 
   const lessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
-      return await atlas.lesson.findLessons({ page, size, ...params });
+      return await atlas.lesson.findLessons({ page, size, ...query });
     },
-    [atlas.lesson, params]
+    [atlas.lesson, query]
   );
 
-  return usePaginate(lessons, [QueryKey.FindLesson]);
+  return usePaginate(lessons, [QueryKey.FindLesson, query]);
 }
 
 export function useCancelLesson() {

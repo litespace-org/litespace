@@ -87,11 +87,11 @@ const List: React.FC<{
       }),
       columnHelper.accessor("online", {
         header: intl("dashboard.user.online"),
-        cell: (info) => <BooleanField checked={info.row.original.online} />,
+        cell: (info) => <BooleanField checked={info.getValue()} />,
       }),
       columnHelper.accessor("verified", {
         header: intl("dashboard.user.verified"),
-        cell: (info) => <BooleanField checked={info.row.original.verified} />,
+        cell: (info) => <BooleanField checked={info.getValue()} />,
       }),
       columnHelper.accessor("creditScore", {
         header: intl("dashboard.user.creditScore"),
@@ -99,11 +99,11 @@ const List: React.FC<{
       }),
       columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
-        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+        cell: (info) => <DateField date={info.getValue()} />,
       }),
       columnHelper.accessor("updatedAt", {
         header: intl("global.updated-at"),
-        cell: (info) => <DateField date={info.row.original.updatedAt} />,
+        cell: (info) => <DateField date={info.getValue()} />,
       }),
       columnHelper.display({
         id: "actions",
