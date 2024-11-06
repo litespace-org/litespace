@@ -1,7 +1,7 @@
 import { IFilter, IInvoice, IUser, Paginated, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
-import { usePaginationQuery } from "@/query";
+import { useInfinitePaginationQuery } from "@/query";
 import {
   InfiniteData,
   UseInfiniteQueryResult,
@@ -54,7 +54,9 @@ export function useFindInvoicesByUser(
     },
     [atlas.invoice, profile]
   );
-  return usePaginationQuery(findInvoices, [QueryKey.FindInvoicesByUser]);
+  return useInfinitePaginationQuery(findInvoices, [
+    QueryKey.FindInvoicesByUser,
+  ]);
 }
 
 type useFindInvoiceStatsProps = UseQueryResult<

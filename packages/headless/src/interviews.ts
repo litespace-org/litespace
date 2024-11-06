@@ -1,29 +1,56 @@
 import { useAtlas } from "@/atlas/index";
-import { IInterview, Void, IUser } from "@litespace/types";
+import { IInterview, Void, IUser, IFilter, Element } from "@litespace/types";
 import { useCallback } from "react";
-import { usePaginationQuery } from "@/query";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { QueryKey } from "@/constants";
+import { usePaginate, UsePaginateResult } from "@/pagination";
+import {
+  useInfinitePaginationQuery,
+  UseInfinitePaginationQueryResult,
+} from "@/query";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-export function useFindInterviews(
+export function useFindInterviews(payload?: {
+  user?: number;
+  userOnly?: boolean;
+}): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
+  const atlas = useAtlas();
+  const findInterviews = useCallback(
+    async ({ page, size = 10 }: IFilter.Pagination) => {
+      if (payload?.userOnly && !payload?.user) return { list: [], total: 0 };
+      return atlas.interview.findInterviews({
+        user: payload?.user,
+        page,
+        size,
+      });
+    },
+    [payload]
+  );
+  return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged]);
+}
+
+export function useFindInfinitInterviews(
   user?: number
-): IInterview.FindPagedInterviewsProps {
+): UseInfinitePaginationQueryResult<
+  Element<IInterview.FindInterviewsApiResponse["list"]>
+> {
   const atlas = useAtlas();
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
-      if (!user) return { list: [], total: 0 };
+      if (user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
-        user,
         page: pageParam,
         size: 10,
+        user,
       });
     },
-    [user]
+    [atlas.interview, user]
   );
-  return usePaginationQuery(findInterviews, [QueryKey.FindInterviewsPaged]);
+  return useInfinitePaginationQuery(findInterviews, [
+    QueryKey.FindInterviewsPaged,
+  ]);
 }
 
 export function useSelectInterviewer(): UseQueryResult<IUser.Self, Error> {

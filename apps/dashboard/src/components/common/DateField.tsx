@@ -9,7 +9,7 @@ const DateField: React.FC<{ date: string }> = ({ date }) => {
       content={
         <div className="max-w-52 text-center leading-relaxed">
           <span>
-            {dayjs(date).format("dddd D MMMM YYYY h:m a ")}&nbsp;(
+            {dayjs(date).format("dddd D MMMM YYYY hh:mm a")}&nbsp;(
             {dayjs(date).fromNow()})
           </span>
         </div>
