@@ -36,7 +36,7 @@ const findLessonsQuery = zod.object({
   users: zod.optional(zod.array(id)),
   page: zod.optional(pageNumber),
   size: zod.optional(pageSize),
-  fulfilled: zod.optional(jsonBoolean),
+  ratified: zod.optional(jsonBoolean),
   canceled: zod.optional(jsonBoolean),
   future: zod.optional(jsonBoolean),
   past: zod.optional(jsonBoolean),
@@ -143,7 +143,7 @@ function create(context: ApiContext) {
 
 async function findLessons(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const query = findLessonsQuery.parse(req.query);
+  const query: ILesson.FindLessonsApiQuery = findLessonsQuery.parse(req.query);
   const allowed =
     (isUser(user) && query.users && isEqual(query.users, [user.id])) ||
     isAdmin(user);
@@ -151,7 +151,7 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
 
   const { list: userLessons, total } = await lessons.findLessons({
     users: query.users,
-    fulfilled: query.fulfilled,
+    ratified: query.ratified,
     canceled: query.canceled,
     future: query.future,
     past: query.past,
