@@ -1,65 +1,32 @@
-import {
-  ICall,
-  IFilter,
-  ILesson,
-  IRule,
-  Paginated,
-  Void,
-} from "@litespace/types";
+import { ICall, IFilter, ILesson, IRule, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
-import { useInfinitePaginationQuery } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
-import {
-  InfiniteData,
-  UseInfiniteQueryResult,
-  useMutation,
-} from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
-type useFindUserLessonsProps = {
-  query: UseInfiniteQueryResult<
-    InfiniteData<
-      Paginated<{
-        lesson: ILesson.Self;
-        members: ILesson.PopuldatedMember[];
-        call: ICall.Self;
-      }>,
-      unknown
-    >,
-    Error
-  >;
-  list:
-    | {
-        lesson: ILesson.Self;
-        members: ILesson.PopuldatedMember[];
-        call: ICall.Self;
-      }[]
-    | null;
-  more: () => void;
-};
 
-export function useFindUserLessons(user?: number): useFindUserLessonsProps {
+export function useFindUserLessons(user?: number): UsePaginateResult<{
+  lesson: ILesson.Self;
+  members: ILesson.PopuldatedMember[];
+  call: ICall.Self;
+}> {
   const atlas = useAtlas();
 
   const findUserLessons = useCallback(
-    async ({
-      pageParam,
-    }: {
-      pageParam: number;
-    }): Promise<ILesson.FindUserLessonsApiResponse> => {
+    async ({ page, size }: IFilter.Pagination) => {
       if (!user) return { list: [], total: 0 };
       return atlas.lesson.findLessons({
         users: [user],
-        page: pageParam,
-        size: 10,
+        page,
+        size: size,
       });
     },
     [atlas.lesson, user]
   );
-  return useInfinitePaginationQuery(findUserLessons, [QueryKey.FindUserLesson]);
+  return usePaginate(findUserLessons, [QueryKey.FindUserLesson]);
 }
 
 export function useFindLessons(
