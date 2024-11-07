@@ -2,13 +2,14 @@ import BackLink from "@/components/common/BackLink";
 import Content from "@/components/UserDetails/Content";
 import Interviews from "@/components/Interviews/Content";
 import Lessons from "@/components/Lessons/Content";
+import UserStats from "@/components/UserDetails/UserStats";
 import { useFindTutorMeta } from "@litespace/headless/tutor";
 import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { useMemo, useCallback } from "react";
 
 type UserProfileParams = {
   id: string;
@@ -62,6 +63,8 @@ const UserDetails = () => {
           <Lessons user={id} />
         </div>
       ) : null}
+
+      {role?.tutor && id && <UserStats id={id} />}
     </div>
   );
 };
