@@ -245,6 +245,12 @@ export default {
         "swipe-out": "swipe-out 100ms ease-out",
       },
     },
+    boxShadow: {
+      "ls-small": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",
+      "ls-medium": "0px 6px 20px 0px rgba(0, 0, 0, 0.15)",
+      "ls-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.2)",
+      "ls-x-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.25)",
+    },
   },
   plugins: [
     require("tailwind-scrollbar"),

@@ -209,7 +209,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --code-block-3: 83.8deg 61.7% 63.1%;
   --code-block-2: 33.2deg 90.3% 75.7%;
   --code-block-1: 170.8deg 43.1% 61.4%;
-  --secondary-default: 215deg 71% 30%; /* ✅ */
+  --secondary-default: 215deg 71% 30%;
   --secondary-950: 217deg 69% 5%;
   --secondary-900: 216deg 73% 10%;
   --secondary-800: 215deg 73% 20%;
@@ -221,9 +221,9 @@ input[type="range"]:focus::-moz-range-thumb {
   --secondary-200: 215deg 73% 80%;
   --secondary-100: 216deg 73% 90%;
   --secondary-50: 213deg 69% 95%;
-  --brand-link: 153.4deg 100% 36.7%; /* ✅ */
-  --brand-button: 151.8deg 47.1% 40.8%; /* ✅ */
-  --brand-default: 151deg 62% 30%; /* ✅ */
+  --brand-link: 153.4deg 100% 36.7%;
+  --brand-button: 151.8deg 47.1% 40.8%;
+  --brand-default: 151deg 62% 30%;
   --brand-950: 151deg 62% 5%;
   --brand-900: 151deg 61% 10%;
   --brand-800: 151deg 61% 20%;
@@ -231,8 +231,8 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-600: 151deg 62% 40%;
   --brand-500: 151deg 62% 44%;
   --brand-400: 151deg 62% 60%;
-  --brand-300: 151deg 62% 70%; /* ✅ */
-  --brand-200: 151deg 61% 80%; /* ✅ */
+  --brand-300: 151deg 62% 70%;
+  --brand-200: 151deg 61% 80%;
   --brand-100: 151deg 61% 90%;
   --brand-50: 154deg 62% 95%;
   --natural-default: 0deg 0% 30%;
@@ -259,7 +259,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --success-200: 122deg 39% 80%;
   --success-100: 123deg 41% 90%;
   --success-50: 126deg 38% 95%;
-  --warning-default: 45deg 100% 30%; /* ✅ */
+  --warning-default: 45deg 100% 30%;
   --warning-950: 44deg 100% 5%;
   --warning-900: 45deg 100% 10%;
   --warning-800: 45deg 100% 20%;
@@ -271,18 +271,18 @@ input[type="range"]:focus::-moz-range-thumb {
   --warning-200: 45deg 100% 80%;
   --warning-100: 45deg 100% 90%;
   --warning-50: 45deg 100% 95%;
-  --destructive-default: 0deg 100% 30%; /* ✅ */
+  --destructive-default: 0deg 100% 30%;
   --destructive-950: 0deg 100% 5%;
   --destructive-900: 0deg 100% 10%;
   --destructive-800: 0deg 100% 20%;
   --destructive-700: 0deg 100% 30%;
-  --destructive-600: 0deg 100% 40%; /* ✅ */
-  --destructive-500: 0deg 100% 65%; /* ✅ */
-  --destructive-400: 0deg 100% 60%; /* ✅ */
-  --destructive-300: 0deg 100% 70%; /* ✅ */
-  --destructive-200: 0deg 100% 80%; /* ✅ */
-  --destructive-100: 0deg 100% 90%; /* ✅ */
-  --destructive-50: 0deg 100% 95%; /* ✅ */
+  --destructive-600: 0deg 100% 40%;
+  --destructive-500: 0deg 100% 65%;
+  --destructive-400: 0deg 100% 60%;
+  --destructive-300: 0deg 100% 70%;
+  --destructive-200: 0deg 100% 80%;
+  --destructive-100: 0deg 100% 90%;
+  --destructive-50: 0deg 100% 95%;
   --border-stronger: 0deg 0% 27.1%;
   --border-strong: 0deg 0% 21.2%;
   --border-alternative: 0deg 0% 26.7%;

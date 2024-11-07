@@ -3,7 +3,7 @@ import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import { ButtonVariant } from "./types";
+import { ButtonVariant } from "@/components/Button/types";
 
 type Component = typeof Button;
 
