@@ -11,8 +11,17 @@ export const Dialog: React.FC<{
   open?: boolean;
   className?: string;
   setOpen?: (open: boolean) => void;
-  close?: () => void;
-}> = ({ trigger, title, children, description, className, open, setOpen }) => {
+  close: () => void;
+}> = ({
+  trigger,
+  title,
+  children,
+  description,
+  className,
+  close,
+  open,
+  setOpen,
+}) => {
   return (
     <RadixDialog.Root open={open} onOpenChange={setOpen}>
       {trigger ? <RadixDialog.Trigger>{trigger}</RadixDialog.Trigger> : null}
@@ -30,7 +39,10 @@ export const Dialog: React.FC<{
             <RadixDialog.Title className="tw-font-semibold">
               {title}
             </RadixDialog.Title>
-            <RadixDialog.Close className="hover:tw-bg-background-selection tw-rounded-md">
+            <RadixDialog.Close
+              onClick={close}
+              className="hover:tw-bg-background-selection tw-rounded-md"
+            >
               <Cross2Icon className="tw-cursor-pointer tw-w-6 tw-h-6 tw-p-0.5" />
             </RadixDialog.Close>
           </div>

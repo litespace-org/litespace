@@ -10,7 +10,7 @@ export class Interview extends Base {
 
   public async update(
     id: number,
-    payload: IInterview.UpdatePayload
+    payload: IInterview.UpdateApiPayload
   ): Promise<IInterview.Self> {
     return await this.put(`/api/v1/interview/${id}`, payload);
   }

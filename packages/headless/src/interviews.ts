@@ -2,7 +2,7 @@ import { useAtlas } from "@/atlas/index";
 import { IInterview, Void, IUser, IFilter, Element } from "@litespace/types";
 import { useCallback } from "react";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
-import { QueryKey } from "@/constants";
+import { MutationKey, QueryKey } from "@/constants";
 import { usePaginate, UsePaginateResult } from "@/pagination";
 import {
   useInfinitePaginationQuery,
@@ -90,5 +90,36 @@ export function useCreateInterview({
     mutationFn: createInterview,
     onSuccess: onSuccess,
     onError: onError,
+    mutationKey: [MutationKey.CreateInterview],
+  });
+}
+
+export function useUpdateInterview({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+
+  const updateInterview = useCallback(
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: IInterview.UpdateApiPayload;
+    }) => {
+      return atlas.interview.update(id, payload);
+    },
+    [atlas.interview]
+  );
+
+  return useMutation({
+    mutationFn: updateInterview,
+    onSuccess: onSuccess,
+    onError: onError,
+    mutationKey: [MutationKey.UpdateInterview],
   });
 }
