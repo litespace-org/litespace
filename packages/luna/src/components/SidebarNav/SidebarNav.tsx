@@ -6,6 +6,7 @@ import { useClosableRef } from "@/hooks";
 import cn from "classnames";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { ButtonVariant } from "../Button/types";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -28,7 +29,8 @@ const SidebarNav: React.FC<{
         <Button
           onClick={toggle}
           size={ButtonSize.Small}
-          type={ButtonType.Text}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
           className="!tw-p-2"
         >
           <Sidebar className="tw-w-6 tw-h-6" />
@@ -68,7 +70,8 @@ const SidebarNav: React.FC<{
                           location.pathname === option.route && "bg-surface-200"
                         )}
                         size={ButtonSize.Small}
-                        type={ButtonType.Text}
+                        type={ButtonType.Main}
+                        variant={ButtonVariant.Secondary}
                       >
                         {option.label}
                       </Button>

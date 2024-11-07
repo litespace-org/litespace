@@ -1,4 +1,5 @@
 import type { Preview } from "@storybook/react";
+import Decorator from "./decorator";
 import "../src/style.css";
 
 const preview: Preview = {
@@ -10,6 +11,7 @@ const preview: Preview = {
       },
     },
   },
+  decorators: [Decorator],
 };
 
 export default preview;

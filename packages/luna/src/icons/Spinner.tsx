@@ -1,5 +1,4 @@
-import { SVGProps } from "react";
-import React from "react";
+import React, { SVGProps } from "react";
 
 const Spinner = (props: SVGProps<SVGSVGElement>) => (
   <svg

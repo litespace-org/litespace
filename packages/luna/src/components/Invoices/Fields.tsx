@@ -14,6 +14,7 @@ import { Price } from "@/components/Price";
 import { LocalId } from "@/locales";
 import { Labels, Values, Value, Columns } from "@/components/Invoices/Records";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { ButtonVariant } from "../Button/types";
 
 export const InvoiceId: React.FC<{ id: number }> = ({ id }) => {
   return `#${id}`;
@@ -72,7 +73,8 @@ export const Note: React.FC<{ note: string | null; onEdit?: () => void }> = ({
         {onEdit ? (
           <Button
             onClick={onEdit}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             size={ButtonSize.Tiny}
           >
             {intl("global.labels.edit")}

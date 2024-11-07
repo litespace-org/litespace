@@ -2,8 +2,13 @@ import { IRule } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import React, { useCallback, useMemo, useState } from "react";
 import dayjs from "@/lib/dayjs";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
 import { DatePicker } from "@litespace/luna/DatePicker";
 import { asFullAssetUrl } from "@litespace/luna/backend";
@@ -133,11 +138,12 @@ const ScheduleInterview: React.FC<{
                     <Button
                       size={ButtonSize.Small}
                       onClick={() => setSelectedRule(event)}
-                      type={
+                      type={ButtonType.Main}
+                      variant={
                         selectedRule &&
                         dayjs(event.start).isSame(selectedRule.start, "minutes")
-                          ? ButtonType.Primary
-                          : ButtonType.Secondary
+                          ? ButtonVariant.Primary
+                          : ButtonVariant.Secondary
                       }
                       disabled={mutation.isPending || rules.isFetching}
                     >

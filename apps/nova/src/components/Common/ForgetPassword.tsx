@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Form, Label, Field, Controller } from "@litespace/luna/Form";
 import { Dialog } from "@litespace/luna/Dialog";
 import { useToast } from "@litespace/luna/Toast";
@@ -93,7 +98,8 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
           }
         />
         <Button
-          type={ButtonType.Primary}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Primary}
           size={ButtonSize.Small}
           disabled={mutation.isPending}
           loading={mutation.isPending}

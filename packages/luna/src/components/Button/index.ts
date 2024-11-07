@@ -1,2 +1,6 @@
 export { Button } from "@/components/Button/Button";
-export { ButtonSize, ButtonType } from "@/components/Button/types";
+export {
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@/components/Button/types";
