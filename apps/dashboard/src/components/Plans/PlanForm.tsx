@@ -127,6 +127,7 @@ const PlanForm: React.FC<{
   );
   return (
     <Dialog
+      close={onClose}
       trigger={
         <Button size={ButtonSize.Small}>
           {intl("dashboard.plans.createPlanBtn")}

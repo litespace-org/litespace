@@ -57,7 +57,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
       {user.data ? (
         <Link
           to={Route.User.replace(":id", user.data.id.toString())}
-          className="hover:bg-background-selection px-2 py-0.5 rounded-md"
+          className="hover:bg-background-selection px-2 py-0.5 rounded-md inline-block"
         >
           <div className="flex flex-col gap-1">
             <p>
