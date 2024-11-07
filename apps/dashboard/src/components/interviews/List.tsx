@@ -6,7 +6,6 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Element, IInterview, IUser, Paginated, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
-import { Link } from "react-router-dom";
 import { dayjs } from "@/lib/dayjs";
 import DateField from "@/components/common/DateField";
 import React, { useCallback, useMemo, useState } from "react";
@@ -42,45 +41,48 @@ const List: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
   const user = useAppSelector(profileSelectors.user);
-  const [activeInterview, setActiveInterview] =
-    useState<IndividualInterview | null>(null);
+  const [interview, setInterview] = useState<IndividualInterview | null>(null);
+  const tutor = useMemo(() => {
+    const tutor = interview?.members.find(
+      (member) => member.role === IUser.Role.Tutor
+    );
+    return tutor?.name || "";
+  }, [interview?.members]);
 
-  const resetDialog = useCallback(() => {
-    setActiveInterview(null);
+  const reset = useCallback(() => {
+    setInterview(null);
   }, []);
 
   const onSuccess = useCallback(() => {
     toast.success({
       title: intl("dashboard.interview.actions.sign.fullfilled"),
     });
-    resetDialog();
+    reset();
     query.query.refetch();
-  }, [toast, query, resetDialog, intl]);
+  }, [toast, intl, reset, query.query]);
 
   const onError = useCallback(() => {
     toast.error({
       title: intl("dashboard.interview.actions.sign.rejected"),
     });
-    resetDialog();
-  }, [toast, resetDialog, intl]);
+  }, [toast, intl]);
 
-  const updateInterview = useUpdateInterview({ onSuccess, onError });
+  const update = useUpdateInterview({ onSuccess, onError });
 
   const action = useMemo(() => {
-    if (activeInterview) {
-      return {
-        label: intl("dashboard.interview.actions.sign"),
-        onClick: () => {
-          updateInterview.mutate({
-            id: activeInterview.interview.ids.self,
-            payload: { sign: true },
-          });
-        },
-        loading: updateInterview.isPending,
-        disabled: updateInterview.isPending,
-      };
-    }
-  }, [activeInterview, intl, updateInterview]);
+    if (!interview) return;
+    return {
+      label: intl("dashboard.interview.actions.sign"),
+      onClick: () => {
+        update.mutate({
+          id: interview.interview.ids.self,
+          payload: { sign: true },
+        });
+      },
+      loading: update.isPending,
+      disabled: update.isPending,
+    };
+  }, [interview, intl, update]);
 
   const columnHelper = createColumnHelper<Element<Interviews>>();
 
@@ -91,25 +93,11 @@ const List: React.FC<{
         cell: (info) => {
           const interviewer = info.row.original.interview.ids.interviewer;
           const interviewee = info.row.original.interview.ids.interviewee;
-          const signer = info.row.original.interview.signer;
           return (
-            <span className="text-brand-link">
-              <Link to={`/user/${interviewer}`}>
-                <UserPopover id={interviewer} />
-              </Link>
-              &nbsp;/&nbsp;
-              <Link to={`/user/${interviewee}`}>
-                <UserPopover id={interviewee} />
-              </Link>{" "}
-              &nbsp;/&nbsp;
-              {signer ? (
-                <Link to={`/user/${signer}`}>
-                  <UserPopover id={signer} />
-                </Link>
-              ) : (
-                "-"
-              )}
-            </span>
+            <div>
+              <UserPopover id={interviewer} />
+              <UserPopover id={interviewee} />
+            </div>
           );
         },
       }),
@@ -158,22 +146,27 @@ const List: React.FC<{
       }),
       columnHelper.display({
         id: "actions",
-        cell: ({ row }) =>
-          user?.role === IUser.Role.SuperAdmin &&
-          !row.original.interview.signer &&
-          row.original.interview.status !== IInterview.Status.Passed ? (
+        cell: ({ row }) => {
+          const superAdmin = user?.role === IUser.Role.SuperAdmin;
+          const unsigned = row.original.interview.signer === null;
+          const passed =
+            row.original.interview.status === IInterview.Status.Passed;
+          const allowed = superAdmin && unsigned && passed;
+          if (!allowed) return null;
+          return (
             <ActionsMenu
               actions={[
                 {
                   id: 1,
                   label: intl("dashboard.interview.actions.sign"),
                   onClick() {
-                    setActiveInterview(row.original);
+                    setInterview(row.original);
                   },
                 },
               ]}
             />
-          ) : null,
+          );
+        },
       }),
     ],
     [columnHelper, intl, user]
@@ -202,23 +195,14 @@ const List: React.FC<{
         fetching={query.query.isFetching}
       />
 
-      {activeInterview !== null ? (
-        <Dialog
-          open={!!activeInterview}
-          close={resetDialog}
-          title={intl("global.sure")}
-        >
+      {interview !== null ? (
+        <Dialog open close={reset} title={intl("global.sure")}>
           <Alert
             type={AlertType.Warning}
             title={intl("dashboard.interview.actions.sign")}
             action={action}
           >
-            {intl("dashboard.interview.sign.label", {
-              tutor:
-                activeInterview.members.find(
-                  (member) => member.role === IUser.Role.Tutor
-                )!.name || "",
-            })}
+            {intl("dashboard.interview.sign.label", { tutor })}
           </Alert>
         </Dialog>
       ) : null}
