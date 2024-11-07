@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/luna/Form";
 import { useToast } from "@litespace/luna/Toast";
@@ -165,8 +170,9 @@ const Process: React.FC<{
               action === Action.ApproveCancelRequest ||
               action === Action.MarkAsRejected
                 ? ButtonType.Error
-                : ButtonType.Primary
+                : ButtonType.Main
             }
+            variant={ButtonVariant.Primary}
             size={ButtonSize.Small}
             loading={update.isPending}
             disabled={update.isPending || deleteNote.isPending}

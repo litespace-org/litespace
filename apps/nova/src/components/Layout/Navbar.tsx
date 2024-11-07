@@ -1,5 +1,10 @@
 import React, { useCallback, useMemo } from "react";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { SidebarNav } from "@litespace/luna/SidebarNav";
 import { Switch } from "@litespace/luna/Switch";
 import { Theme } from "@litespace/luna/hooks/theme";
@@ -136,7 +141,8 @@ const Navbar: React.FC<{
                       location.pathname === link.route && "bg-surface-200"
                     )}
                     size={ButtonSize.Small}
-                    type={ButtonType.Text}
+                    type={ButtonType.Main}
+                    variant={ButtonVariant.Secondary}
                   >
                     {link.label}
                   </Button>

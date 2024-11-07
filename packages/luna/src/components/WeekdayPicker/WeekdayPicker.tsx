@@ -16,6 +16,7 @@ import {
 } from "@radix-ui/react-icons";
 import { clone, concat, orderBy } from "lodash";
 import { asArabicDayIndex } from "@/lib/time";
+import { ButtonVariant } from "../Button/types";
 
 export type WeekdayMap = {
   saturday: string;
@@ -205,7 +206,8 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
             onClick={reset}
             htmlType="button"
             size={ButtonSize.Tiny}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             {weekdayMap.reset}
           </Button>
@@ -213,7 +215,8 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
             htmlType="button"
             onClick={selectAll}
             size={ButtonSize.Tiny}
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
           >
             {weekdayMap.all}
           </Button>

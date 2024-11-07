@@ -15,6 +15,7 @@ import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
+import { ButtonVariant } from "@litespace/luna/Button";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -54,7 +55,12 @@ const SidebarNav: React.FC<{
         className="fixed flex flex-col items-center justify-between h-screen p-2 border-l border-border-strong"
         onMouseEnter={show}
       >
-        <Button onClick={toggleMenu} type={ButtonType.Text} className="!p-2">
+        <Button
+          onClick={toggleMenu}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
+          className="!p-2"
+        >
           <Sidebar className="w-6 h-6" />
         </Button>
       </div>
@@ -76,7 +82,7 @@ const SidebarNav: React.FC<{
               onMouseLeave={hide}
               ref={ref}
             >
-              <div className="flex items-start border border-border-strong rounded-md p-1 w-full gap-2">
+              <div className="flex items-start w-full gap-2 p-1 border rounded-md border-border-strong">
                 <div>
                   {profile?.image ? (
                     <div className="overflow-hidden border-2 border-white rounded-full">
@@ -128,7 +134,8 @@ const SidebarNav: React.FC<{
                   onClick={logout}
                   className="w-full"
                   size={ButtonSize.Small}
-                  type={ButtonType.Secondary}
+                  type={ButtonType.Main}
+                  variant={ButtonVariant.Secondary}
                 >
                   {intl("navbar.logout")}
                 </Button>

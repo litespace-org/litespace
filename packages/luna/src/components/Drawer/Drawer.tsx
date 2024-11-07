@@ -3,6 +3,7 @@ import { Button, ButtonSize, ButtonType } from "../Button";
 import { X } from "react-feather";
 import cn from "classnames";
 import { Void } from "@litespace/types";
+import { ButtonVariant } from "../Button/types";
 
 const Drawer: React.FC<{
   children?: React.ReactNode;
@@ -17,12 +18,13 @@ const Drawer: React.FC<{
         "tw-fixed tw-z-[9999] tw-right-0 tw-top-0 tw-h-screen tw-w-full tw-bg-background-dialog tw-hidden data-[open=true]:block"
       )}
     >
-      <div className="tw-flex tw-items-center tw-justify-between tw-h-10 px-2 pt-2">
+      <div className="px-2 pt-2 tw-flex tw-items-center tw-justify-between tw-h-10">
         <h3 className="tw-mr-3 tw-text-2xl">{title}</h3>
         <Button
           onClick={close}
           size={ButtonSize.Tiny}
-          type={ButtonType.Text}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Primary}
           className="!tw-px-1"
         >
           <X className="tw-w-5 tw-h-5" />

@@ -1,5 +1,10 @@
 import { NavOption } from "@/types/navbar";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Link } from "react-router-dom";
 import { Void } from "@litespace/types";
 import cn from "classnames";
@@ -13,7 +18,7 @@ function SideBarItem({
 }) {
   return (
     <li key={option.label} className="w-full">
-      <Link to={option.route} onClick={onClick} className="w-full inline-block">
+      <Link to={option.route} onClick={onClick} className="inline-block w-full">
         <Button
           onClick={option.onClick}
           loading={option.loading}
@@ -23,9 +28,10 @@ function SideBarItem({
             location.pathname === option.route && "bg-surface-200"
           )}
           size={ButtonSize.Small}
-          type={ButtonType.Text}
+          type={ButtonType.Main}
+          variant={ButtonVariant.Secondary}
         >
-          <div className="flex items-center justify-start gap-2 w-full">
+          <div className="flex items-center justify-start w-full gap-2">
             <option.icon className="w-6 h-6" />
             <p className="truncate">{option.label}</p>
           </div>

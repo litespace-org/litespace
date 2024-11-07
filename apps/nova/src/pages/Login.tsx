@@ -1,5 +1,10 @@
 import { Form, Controller, Field, Label } from "@litespace/luna/Form";
-import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonType,
+  ButtonSize,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 import { messages } from "@litespace/luna/locales";
 import { InputType } from "@litespace/luna/Input";
@@ -136,7 +141,8 @@ const Login: React.FC = () => {
           <div className="mt-6">
             <Button
               size={ButtonSize.Small}
-              type={ButtonType.Text}
+              type={ButtonType.Main}
+              variant={ButtonVariant.Secondary}
               onClick={forgetPassword.show}
               className="w-full"
             >

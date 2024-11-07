@@ -5,6 +5,7 @@ import { Edit3 } from "react-feather";
 import { Spinner } from "@/icons/Spinner";
 import { RefreshUser, useFormatMessage, useUpdateProfileMedia } from "@/hooks";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { ButtonVariant } from "../Button/types";
 
 const Image: React.FC<{
   image?: string | null;
@@ -73,7 +74,8 @@ const Image: React.FC<{
             onClick={open}
             className="disabled:!tw-opacity-90"
             htmlType="button"
-            type={ButtonType.Secondary}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
             size={ButtonSize.Small}
           >
             <div className="tw-flex tw-flex-row tw-items-center tw-gap-1">

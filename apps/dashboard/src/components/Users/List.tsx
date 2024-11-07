@@ -1,5 +1,10 @@
 import { ActionsMenu } from "@litespace/luna/ActionsMenu";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
@@ -56,7 +61,8 @@ const List: React.FC<{
             <Button
               onClick={() => setImage(value)}
               size={ButtonSize.Tiny}
-              type={ButtonType.Text}
+              type={ButtonType.Main}
+              variant={ButtonVariant.Secondary}
             >
               <TruncateField className="w-20">{value}</TruncateField>
             </Button>

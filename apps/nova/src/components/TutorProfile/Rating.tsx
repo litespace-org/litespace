@@ -1,4 +1,9 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@litespace/luna/Button";
 import { Card } from "@litespace/luna/Card";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { IRating } from "@litespace/types";
@@ -54,7 +59,8 @@ const Rating: React.FC<{
               <Button
                 onClick={() => onEdit(rating)}
                 size={ButtonSize.Tiny}
-                type={ButtonType.Primary}
+                type={ButtonType.Main}
+                variant={ButtonVariant.Primary}
               >
                 <Edit className="w-4 text-white" />
               </Button>
@@ -66,7 +72,8 @@ const Rating: React.FC<{
                   })
                 }
                 size={ButtonSize.Tiny}
-                type={ButtonType.Primary}
+                type={ButtonType.Main}
+                variant={ButtonVariant.Primary}
               >
                 <Trash2 className="w-4 text-white" />
               </Button>
