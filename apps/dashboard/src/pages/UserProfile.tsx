@@ -1,17 +1,20 @@
+import BackLink from "@/components/common/BackLink";
+import Content from "@/components/UserProfile/Content";
+import UserInterviews from "@/components/UserProfile/UserInterviews";
+import { useFindTutorMeta } from "@litespace/headless/tutor";
 import { useFindUserById } from "@litespace/headless/users";
-import { useParams } from "react-router-dom";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
-import Content from "@/components/UserProfile/Content";
-import { useMemo, useCallback } from "react";
-import BackLink from "@/components/common/BackLink";
-import { useFindTutorMeta } from "@litespace/headless/tutor";
+import { useCallback, useMemo } from "react";
+import { useParams } from "react-router-dom";
 
 type UserProfileParams = {
   id: string;
 };
 
 const UserProfile = () => {
+  const intl = useFormatMessage();
   const params = useParams<UserProfileParams>();
 
   const id = useMemo(() => {
@@ -28,6 +31,11 @@ const UserProfile = () => {
     const isTutor = query.data?.role === IUser.Role.Tutor;
     if (!isTutor || !query.data) return;
     return query.data.id;
+  }, [query.data]);
+
+  const interviewsId = useMemo(() => {
+    if (query.data?.role === IUser.Role.Tutor || IUser.Role.Interviewer)
+      return query.data?.id;
   }, [query.data]);
 
   const tutorQuery = useFindTutorMeta(tutorId);
@@ -48,6 +56,12 @@ const UserProfile = () => {
         error={query.error || tutorQuery.error}
         refetch={refetch}
       />
+      {interviewsId ? (
+        <UserInterviews
+          id={interviewsId}
+          name={query.data?.name || intl("global.labels.user")}
+        />
+      ) : null}
     </div>
   );
 };
