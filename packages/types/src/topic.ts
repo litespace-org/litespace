@@ -37,9 +37,9 @@ export type UpdatePayload = {
 
 export type FindTopicsQueryFilter = IFilter.Pagination & {
   name?: string;
-  orderBy: ExtractObjectKeys<
+  orderBy?: ExtractObjectKeys<
     Row,
     "name_ar" | "name_en" | "created_at" | "updated_at"
   >;
-  orderDirection: IFilter.OrderDirection;
+  orderDirection?: IFilter.OrderDirection;
 };

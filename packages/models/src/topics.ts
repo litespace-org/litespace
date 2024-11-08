@@ -2,6 +2,7 @@ import { IFilter, ITopic, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { column, countRows, knex, withPagination } from "@/query";
 import dayjs from "@/lib/dayjs";
+import { first } from "lodash";
 
 export class Topics {
   readonly table = { topics: "topics", userTopics: "user_topics" } as const;
@@ -16,17 +17,18 @@ export class Topics {
     tx?: Knex.Transaction
   ): Promise<ITopic.Self> {
     const now = dayjs.utc().toDate();
-    const topic = await this.builder(tx)
+    const rows = await this.builder(tx)
       .topics.insert({
         name_ar: payload.name.ar,
         name_en: payload.name.en,
         created_at: now,
         updated_at: now,
       })
-      .returning("*")
-      .first();
-    if (!topic) throw new Error("Topic not found. Should never happen.");
-    return this.from(topic);
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("Topic not found. Should never happen.");
+    return this.from(row);
   }
 
   async update(
@@ -35,24 +37,36 @@ export class Topics {
     tx?: Knex.Transaction
   ): Promise<ITopic.Self> {
     const now = dayjs.utc().toDate();
-    const topic = await this.builder(tx)
+    const rows = await this.builder(tx)
       .topics.update({
         name_ar: payload.arabicName,
         name_en: payload.englishName,
         updated_at: now,
       })
       .where(this.column.topics("id"), id)
-      .returning("*")
-      .first();
+      .returning("*");
 
-    if (!topic) throw new Error("Topic not found. Should never happen.");
-    return this.from(topic);
+    const row = first(rows);
+    if (!row) throw new Error("Topic not found. Should never happen.");
+    return this.from(row);
   }
 
   async delete(id: number, tx: Knex.Transaction) {
     const { userTopics, topics } = this.builder(tx);
     await userTopics.delete().where(this.column.userTopics("topic_id"), id);
     await topics.delete().where(this.column.topics("id"), id);
+  }
+
+  async findById(
+    id: number,
+    tx?: Knex.Transaction
+  ): Promise<ITopic.Self | null> {
+    const row = await this.builder(tx)
+      .topics.select()
+      .where(this.column.topics("id"), id)
+      .first();
+    if (!row) return null;
+    return this.from(row);
   }
 
   async find({
@@ -70,8 +84,8 @@ export class Topics {
     if (name)
       baseBuilder.where((builder) => {
         builder
-          .whereILike(this.column.topics("name_ar"), name)
-          .orWhereILike(this.column.topics("name_en"), name);
+          .whereILike(this.column.topics("name_ar"), `%${name}%`)
+          .orWhereILike(this.column.topics("name_en"), `%${name}%`);
       });
 
     const total = await countRows(baseBuilder.clone(), {
