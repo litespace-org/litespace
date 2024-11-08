@@ -2,13 +2,13 @@ import BackLink from "@/components/common/BackLink";
 import Content from "@/components/UserDetails/Content";
 import Interviews from "@/components/Interviews/Content";
 import Lessons from "@/components/Lessons/Content";
-import { useFindTutorMeta } from "@litespace/headless/tutor";
+import { useFindTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";
 import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { useMemo, useCallback } from "react";
 
 type UserProfileParams = {
   id: string;
@@ -33,11 +33,13 @@ const UserDetails = () => {
   }, [query.data]);
 
   const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
+  const tutorStats = useFindTutorStats(role?.tutor && id ? id : null);
 
   const refetch = useCallback(() => {
     query.refetch();
     tutorQuery.refetch();
-  }, [query, tutorQuery]);
+    tutorStats.refetch();
+  }, [query, tutorQuery, tutorStats]);
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
@@ -46,8 +48,11 @@ const UserDetails = () => {
       <Content
         user={query.data}
         tutor={tutorQuery.data}
-        loading={query.isLoading || tutorQuery.isLoading}
-        error={query.error || tutorQuery.error}
+        tutorStats={tutorStats.data}
+        loading={
+          query.isLoading || tutorQuery.isLoading || tutorStats.isLoading
+        }
+        error={query.error || tutorQuery.error || tutorStats.error}
         refetch={refetch}
       />
 
