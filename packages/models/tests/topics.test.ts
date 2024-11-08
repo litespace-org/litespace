@@ -107,4 +107,37 @@ describe("Topics", () => {
       }
     });
   });
+
+  describe(nameof(topics.registerUserTopics), () => {
+    it("register user topcis", async () => {
+      const student = await fixtures.student();
+      const topic = await fixtures.topic({
+        name: { ar: "t1-ar", en: "t1-en" },
+      });
+
+      await topics.registerUserTopics({
+        user: student.id,
+        topics: [topic.id],
+      });
+    });
+
+    it("register throw error when registering the same topic twice", async () => {
+      const student = await fixtures.student();
+      const topic = await fixtures.topic({
+        name: { ar: "t1-ar", en: "t1-en" },
+      });
+
+      await topics
+        .registerUserTopics({
+          user: student.id,
+          topics: [topic.id, topic.id],
+        })
+        .then(() => {
+          throw new Error("Should never successed");
+        })
+        .catch((error) => {
+          expect(error).to.be.instanceOf(Error);
+        });
+    });
+  });
 });

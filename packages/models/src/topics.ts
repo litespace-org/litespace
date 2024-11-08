@@ -31,6 +31,18 @@ export class Topics {
     return this.from(row);
   }
 
+  async registerUserTopics(
+    payload: ITopic.CreateUserTopicsPayload,
+    tx?: Knex.Transaction
+  ): Promise<void> {
+    await this.builder(tx).userTopics.insert(
+      payload.topics.map((topic) => ({
+        user_id: payload.user,
+        topic_id: topic,
+      }))
+    );
+  }
+
   async update(
     id: number,
     payload: ITopic.UpdatePayload,
@@ -55,6 +67,21 @@ export class Topics {
     const { userTopics, topics } = this.builder(tx);
     await userTopics.delete().where(this.column.userTopics("topic_id"), id);
     await topics.delete().where(this.column.topics("id"), id);
+  }
+
+  async deleteUserTopics({
+    user,
+    topic,
+    tx,
+  }: {
+    user: number;
+    topic: number;
+    tx?: Knex.Transaction;
+  }): Promise<void> {
+    await this.builder(tx)
+      .userTopics.delete()
+      .where(this.column.userTopics("user_id"), user)
+      .andWhere(this.column.userTopics("topic_id"), topic);
   }
 
   async findById(

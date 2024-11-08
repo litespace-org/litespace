@@ -25,6 +25,11 @@ export type CreatePayload = {
   name: { ar: string; en: string };
 };
 
+export type CreateUserTopicsPayload = {
+  user: number;
+  topics: number[];
+};
+
 export type CreateApiPayload = CreatePayload;
 
 /**
