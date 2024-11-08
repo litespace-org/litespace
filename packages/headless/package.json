@@ -25,7 +25,8 @@
     "./messageRooms": "./dist/messageRooms.js",
     "./tutor": "./dist/tutor.js",
     "./rule": "./dist/rule.js",
-    "./user": "./dist/user.js"
+    "./user": "./dist/user.js",
+    "./students": "./dist/students.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",
