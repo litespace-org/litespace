@@ -1,6 +1,7 @@
 import BackLink from "@/components/common/BackLink";
 import Content from "@/components/UserDetails/Content";
 import Interviews from "@/components/Interviews/Content";
+import Lessons from "@/components/Lessons/Content";
 import { useFindTutorMeta } from "@litespace/headless/tutor";
 import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/sol/user";
@@ -53,6 +54,12 @@ const UserDetails = () => {
       {(role?.tutor || role?.interviewer) && id ? (
         <div className="mt-4">
           <Interviews user={id} />
+        </div>
+      ) : null}
+
+      {(role?.tutor || role?.interviewer || role?.student) && id ? (
+        <div className="mt-4">
+          <Lessons user={id} />
         </div>
       ) : null}
     </div>
