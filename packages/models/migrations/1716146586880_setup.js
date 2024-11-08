@@ -50,12 +50,6 @@ exports.up = (pgm) => {
   ]);
 
   // tables
-  pgm.createTable("sessions", {
-    sid: { type: "CHARACTER VARYING", primaryKey: true, notNull: true },
-    sess: { type: "JSON", notNull: true },
-    expire: { type: "TIMESTAMP(6) WITHOUT TIME ZONE", notNull: true },
-  });
-
   pgm.createTable("users", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
@@ -68,17 +62,6 @@ exports.up = (pgm) => {
     online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
     credit_score: { type: "INT", notNull: true, default: 0 },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
-
-  pgm.createTable("tokens", {
-    id: { type: "SERIAL", primaryKey: true, notNull: true },
-    user_id: { type: "SERIAL", notNull: true },
-    token_hash: { type: "CHAR(64)", notNull: true },
-    used: { type: "BOOLEAN", notNull: true, default: false },
-    type: { type: "token_type", notNull: true },
-    expires_at: { type: "TIMESTAMP", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -234,6 +217,19 @@ exports.up = (pgm) => {
     created_by: { type: "SERIAL", notNull: true, references: "users(id)" },
     updated_at: { type: "TIMESTAMP", notNull: true },
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
+  });
+
+  pgm.createTable("topics", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    name_ar: { type: "VARCHAR(50)", notNull: true, unique: true },
+    name_en: { type: "VARCHAR(50)", notNull: true, unique: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable("user_topics", {
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+    topic_id: { type: "SERIAL", notNull: true, references: "topics(id)" },
   });
 
   pgm.createTable("invites", {

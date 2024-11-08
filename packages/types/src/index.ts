@@ -21,6 +21,7 @@ export * as ILesson from "@/lesson";
 export * as IWithdrawMethod from "@/withdrawMethod";
 export * as IInvoice from "@/invoice";
 export * as IAsset from "@/asset";
+export * as ITopic from "@/topic";
 export * from "@/api";
 export * from "@/utils";
 export * from "@/api";
