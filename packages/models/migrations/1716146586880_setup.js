@@ -226,10 +226,14 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
-  pgm.createTable("user_topics", {
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    topic_id: { type: "SERIAL", notNull: true, references: "topics(id)" },
-  });
+  pgm.createTable(
+    "user_topics",
+    {
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      topic_id: { type: "SERIAL", notNull: true, references: "topics(id)" },
+    },
+    { constraints: { primaryKey: ["user_id", "topic_id"] } }
+  );
 
   pgm.createTable("invites", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
