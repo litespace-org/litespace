@@ -28,11 +28,12 @@ const typographyHtmlMap: Record<TypographyElement, string> = {
 
 export const Typography: React.FC<{
   element: TypographyElement;
+  tag?: string;
   weight?: TypographyWeight;
   children?: React.ReactNode;
   className?: string;
-}> = ({ element, weight, children, className }) => {
-  return React.createElement(typographyHtmlMap[element], {
+}> = ({ element, tag, weight, children, className }) => {
+  return React.createElement(tag || typographyHtmlMap[element], {
     children,
     className: cn(
       "tw-font-cairo tw-leading-[150%]",
