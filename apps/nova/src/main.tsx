@@ -15,6 +15,7 @@ import { AtlasProvider } from "@litespace/headless/atlas";
 import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
+import { AppConfigProvider } from "@litespace/headless/config";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -29,30 +30,32 @@ createRoot(document.getElementById("root")!).render(
     defaultLocale="ar-EG"
   >
     <ToastProvider>
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-        <QueryClientProvider client={queryClient}>
-          <BackendProvider backend={backend} getToken={getToken}>
-            <AtlasProvider>
-              <SocketProvider>
-                <PeerProvider>
-                  <ReduxProvider store={store}>
-                    <PersistGate
-                      loading={
-                        <div className="flex items-center justify-center w-screen h-screen">
-                          <Spinner />
-                        </div>
-                      }
-                      persistor={persistor}
-                    >
-                      <App />
-                    </PersistGate>
-                  </ReduxProvider>
-                </PeerProvider>
-              </SocketProvider>
-            </AtlasProvider>
-          </BackendProvider>
-        </QueryClientProvider>
-      </GoogleOAuthProvider>
+      <AppConfigProvider>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <QueryClientProvider client={queryClient}>
+            <BackendProvider backend={backend} getToken={getToken}>
+              <AtlasProvider>
+                <SocketProvider>
+                  <PeerProvider>
+                    <ReduxProvider store={store}>
+                      <PersistGate
+                        loading={
+                          <div className="flex items-center justify-center w-screen h-screen">
+                            <Spinner />
+                          </div>
+                        }
+                        persistor={persistor}
+                      >
+                        <App />
+                      </PersistGate>
+                    </ReduxProvider>
+                  </PeerProvider>
+                </SocketProvider>
+              </AtlasProvider>
+            </BackendProvider>
+          </QueryClientProvider>
+        </GoogleOAuthProvider>
+      </AppConfigProvider>
     </ToastProvider>
   </IntlProvider>
 );
