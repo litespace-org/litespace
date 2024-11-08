@@ -8,29 +8,8 @@ import { UsePaginateResult, usePaginate } from "@/pagination";
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-export function useFindUserLessons(user?: number): UsePaginateResult<{
-  lesson: ILesson.Self;
-  members: ILesson.PopuldatedMember[];
-  call: ICall.Self;
-}> {
-  const atlas = useAtlas();
-
-  const findUserLessons = useCallback(
-    async ({ page, size }: IFilter.Pagination) => {
-      if (!user) return { list: [], total: 0 };
-      return atlas.lesson.findLessons({
-        users: [user],
-        page,
-        size: size,
-      });
-    },
-    [atlas.lesson, user]
-  );
-  return usePaginate(findUserLessons, [QueryKey.FindUserLesson]);
-}
-
 export function useFindLessons(
-  query: ILesson.FindLessonsApiQuery
+  query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
 ): UsePaginateResult<{
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
@@ -40,6 +19,7 @@ export function useFindLessons(
 
   const lessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
+      if (query.userOnly && !query.users?.length) return { list: [], total: 0 };
       return await atlas.lesson.findLessons({ page, size, ...query });
     },
     [atlas.lesson, query]

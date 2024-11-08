@@ -7,14 +7,17 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { isEmpty } from "lodash";
 import Empty from "@/components/Lessons/Empty";
 import Error from "@/components/Lessons/Error";
-import { useFindUserLessons } from "@litespace/headless/lessons";
+import { useFindLessons } from "@litespace/headless/lessons";
 import { Loading } from "@litespace/luna/Loading";
 
 const Lessons: React.FC = () => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.user);
 
-  const { query, ...pagination } = useFindUserLessons(profile?.id);
+  const { query, ...pagination } = useFindLessons({
+    users: profile ? [profile.id] : undefined,
+    userOnly: true,
+  });
 
   return (
     <div className="w-full px-8 py-10 mx-auto max-w-screen-2xl">
