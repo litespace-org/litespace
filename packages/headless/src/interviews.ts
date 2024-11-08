@@ -30,7 +30,7 @@ export function useFindInterviews(payload?: {
     [atlas.interview, payload?.user, payload?.userOnly]
   );
 
-  return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged]);
+  return usePaginate(findInterviews, [QueryKey.FindInterviewsPaged, payload]);
 }
 
 export function useFindInfinitInterviews(
