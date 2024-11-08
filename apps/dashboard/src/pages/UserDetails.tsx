@@ -1,9 +1,9 @@
 import BackLink from "@/components/common/BackLink";
-import Content from "@/components/UserProfile/Content";
-import UserInterviews from "@/components/UserProfile/UserInterviews";
+import Content from "@/components/UserDetails/Content";
+import Interviews from "@/components/Interviews/Content";
 import { useFindTutorMeta } from "@litespace/headless/tutor";
 import { useFindUserById } from "@litespace/headless/users";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
@@ -13,8 +13,7 @@ type UserProfileParams = {
   id: string;
 };
 
-const UserProfile = () => {
-  const intl = useFormatMessage();
+const UserDetails = () => {
   const params = useParams<UserProfileParams>();
 
   const id = useMemo(() => {
@@ -27,18 +26,12 @@ const UserProfile = () => {
 
   const query: UseQueryResult<IUser.Self> = useFindUserById(id);
 
-  const tutorId = useMemo(() => {
-    const isTutor = query.data?.role === IUser.Role.Tutor;
-    if (!isTutor || !query.data) return;
-    return query.data.id;
+  const role = useMemo(() => {
+    if (!query.data) return null;
+    return destructureRole(query.data.role);
   }, [query.data]);
 
-  const interviewsId = useMemo(() => {
-    if (query.data?.role === IUser.Role.Tutor || IUser.Role.Interviewer)
-      return query.data?.id;
-  }, [query.data]);
-
-  const tutorQuery = useFindTutorMeta(tutorId);
+  const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
 
   const refetch = useCallback(() => {
     query.refetch();
@@ -46,7 +39,7 @@ const UserProfile = () => {
   }, [query, tutorQuery]);
 
   return (
-    <div className="max-w-screen-lg mx-auto w-full p-6">
+    <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
       <BackLink to="/users" name="dashboard.users.title" />
 
       <Content
@@ -56,14 +49,14 @@ const UserProfile = () => {
         error={query.error || tutorQuery.error}
         refetch={refetch}
       />
-      {interviewsId ? (
-        <UserInterviews
-          id={interviewsId}
-          name={query.data?.name || intl("global.labels.user")}
-        />
+
+      {(role?.tutor || role?.interviewer) && id ? (
+        <div className="mt-4">
+          <Interviews user={id} />
+        </div>
       ) : null}
     </div>
   );
 };
 
-export default UserProfile;
+export default UserDetails;

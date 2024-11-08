@@ -305,7 +305,7 @@
   "dashboard.invoices.createdAt": "تاريخ الإنشاء",
   "dashboard.invoices.updatedAt": "تاريخ التحديث",
   "dashboard.interviews.title": "المقابلات",
-  "dashboard.interview.ids": "المحاور/الممتحن/الموقع",
+  "dashboard.interview.ids": "المحاور/الممتحن",
   "dashboard.interview.level": "المستوي",
   "dashboard.interview.call.start": "الموعد",
   "dashboard.interview.canceled": "تم الإلغاء",

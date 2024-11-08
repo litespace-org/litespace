@@ -35,7 +35,7 @@ const Content: React.FC<{
   if (!user) return;
 
   return (
-    <div className="p-4 mx-auto mt-6 border border-border-strong rounded-md drop-shadow-xl">
+    <div className="p-4 mx-auto mt-6 border border-border-strong rounded-md shadow-ls-small w-full">
       <div className="flex gap-2 ">
         <div className="relative">
           {user.image ? (
@@ -68,7 +68,7 @@ const Content: React.FC<{
           </p>
         </div>
       </div>
-      <div className="grid gap-6 mt-4 sm:grid-cols-2">
+      <div className="grid gap-6 mt-4 sm:grid-cols-2 xl:grid-cols-3">
         <Detail label={intl("global.labels.id")}>{user.id}</Detail>
         <Detail label={intl("dashboard.user.name")}>{user.name}</Detail>
         <Detail label={intl("dashboard.user.email")}>{user.email}</Detail>
@@ -114,7 +114,7 @@ const Content: React.FC<{
 
         {tutor ? (
           <Detail label={intl("dashboard.tutor.notice")}>
-            {formatMinutes(tutor.notice)}
+            {tutor.notice ? formatMinutes(tutor.notice) : "-"}
           </Detail>
         ) : null}
 
