@@ -8,7 +8,7 @@ const Detail: React.FC<{
   return (
     <div>
       <Typography element="subtitle-1">{label}</Typography>
-      <Typography element="body" className="text-foreground-lighter">
+      <Typography element="body" tag="div" className="text-foreground-lighter">
         {children}
       </Typography>
     </div>

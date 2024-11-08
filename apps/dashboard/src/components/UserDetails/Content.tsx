@@ -1,26 +1,28 @@
+import ErrorElement from "@/components/common/Error";
+import Detail from "@/components/common/Detail";
+import DateField from "@/components/common/DateField";
+import BinaryField from "@/components/common/BinaryField";
+import GenderField from "@/components/common/GenderField";
+import UserPopover from "@/components/common/UserPopover";
+import cn from "classnames";
+import React from "react";
+import { Duration } from "@litespace/sol/duration";
+import { formatMinutes, formatNumber } from "@litespace/luna/utils";
+import { Loading } from "@litespace/luna/Loading";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import cn from "classnames";
-import React from "react";
-import { Loading } from "@litespace/luna/Loading";
-import ErrorElement from "@/components/common/Error";
-import Detail from "@/components/common/Detail";
-import { formatMinutes, formatNumber } from "@litespace/luna/utils";
-import DateField from "@/components/common/DateField";
-import BinaryField from "@/components/common/BinaryField";
-import GenderField from "@/components/common/GenderField";
-import UserPopover from "@/components/common/UserPopover";
 
 const Content: React.FC<{
   user?: IUser.Self;
   tutor?: ITutor.Self;
+  tutorStats?: ITutor.FindTutorStatsApiResponse | null;
   loading?: boolean;
   error: Error | null;
   refetch: Void;
-}> = ({ user, tutor, loading, error, refetch }) => {
+}> = ({ user, tutor, tutorStats, loading, error, refetch }) => {
   const intl = useFormatMessage();
 
   if (loading) return <Loading className="h-[40vh]" />;
@@ -121,6 +123,20 @@ const Content: React.FC<{
         <Detail label={intl("global.created-at")}>
           <DateField date={user.createdAt} />
         </Detail>
+
+        {tutorStats ? (
+          <>
+            <Detail label={intl("stats.lesson.count")}>
+              {formatNumber(tutorStats.lessonCount)}
+            </Detail>
+            <Detail label={intl("stats.student.count")}>
+              {formatNumber(tutorStats.studentCount)}
+            </Detail>
+            <Detail label={intl("stats.teaching.hours")}>
+              {Duration.from(tutorStats.totalMinutes.toString()).format("ar")}
+            </Detail>
+          </>
+        ) : null}
 
         <Detail label={intl("global.updated-at")}>
           <DateField date={user.updatedAt} />
