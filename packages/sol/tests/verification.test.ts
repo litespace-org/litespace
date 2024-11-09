@@ -27,9 +27,11 @@ import {
   isValidWithdrawMaxAmount,
   isValidInvoiceAmount,
   isValidInvoiceNote,
+  isValidTopicName,
 } from "@/verification";
 import { FieldError } from "@litespace/types";
 import { dayjs } from "@/dayjs";
+import { nameof } from "@/utils";
 
 describe("email validation", () => {
   it("should accept emails in all valid variations", () => {
@@ -522,6 +524,7 @@ describe("invoice amount validation", () => {
     );
   });
 });
+
 describe("invoice note validation", () => {
   it("should accept note between 1 - 1000 chars and to be valid HTML", () => {
     expect(isValidInvoiceNote("<div>Hello</div>")).toBe(true);
@@ -540,5 +543,19 @@ describe("invoice note validation", () => {
       max: 1230,
     })}</div>`;
     expect(isValidInvoiceNote(fakeNote)).toBe(FieldError.TooLongInvoiceNote);
+  });
+});
+
+describe("Topic name", () => {
+  it("should reject short names", () => {
+    expect(isValidTopicName("Ga")).toBe(FieldError.ShortTopicName);
+  });
+
+  it("should reject long names", () => {
+    expect(isValidTopicName("G".repeat(51))).toBe(FieldError.LongTopicName);
+  });
+
+  it("should accept valid names", () => {
+    expect(isValidTopicName("JavaScript")).toBe(true);
   });
 });

@@ -19,6 +19,7 @@ import {
   MAX_RATING_VALUE,
   MAX_RULE_DURATION_MINUTES,
   MAX_RULE_TITLE_LENGTH,
+  MAX_TOPIC_LEGNTH,
   MAX_TUTOR_ABOUT_TEXT_LENGTH,
   MAX_TUTOR_BIO_TEXT_LENGTH,
   MAX_TUTOR_NOTICE_DURATION,
@@ -38,12 +39,15 @@ import {
   MIN_RULE_DATE_PERIOD_HOURS,
   MIN_RULE_DURATION_MINUTES,
   MIN_RULE_TITLE_LENGTH,
+  MIN_TOPIC_LEGNTH,
   MIN_TUTOR_NOTICE_DURATION,
   MIN_USER_AGE,
   NUMBERS_ONLY_REGEX,
   PASSWORD_LETTERS_REGEX,
   PASSWORD_REGEX,
   PHONE_NUMBER_REGEX,
+  TOPIC_ARABIC_NAME_REGEX,
+  TOPIC_ENGLISH_NAME_REGEX,
   USER_NAME_REGEX,
 } from "@/constants";
 import { Bank, FieldError, WithdrawMethod } from "@litespace/types";
@@ -385,6 +389,7 @@ export function isValidInvoiceReceiver(
     }
   }
 }
+
 export function isValidInvoiceAmount(
   invoiceAmount: number,
   minAmount: number,
@@ -399,6 +404,7 @@ export function isValidInvoiceAmount(
   if (invoiceAmount > maxAmount) return FieldError.InvoiceMaxAmountExceeded;
   return true;
 }
+
 export function isValidInvoiceNote(
   invoiceNote: string
 ):
@@ -410,5 +416,13 @@ export function isValidInvoiceNote(
   if (noteText.length <= 0) return FieldError.EmptyInvoiceNote;
   if (!HTML_REGEX.test(invoiceNote)) return FieldError.InvalidInvoiceNote;
   if (noteText.length > 1000) return FieldError.TooLongInvoiceNote;
+  return true;
+}
+
+export function isValidTopicName(
+  name: string
+): FieldError.ShortTopicName | FieldError.LongTopicName | true {
+  if (name.length < MIN_TOPIC_LEGNTH) return FieldError.ShortTopicName;
+  if (name.length > MAX_TOPIC_LEGNTH) return FieldError.LongTopicName;
   return true;
 }

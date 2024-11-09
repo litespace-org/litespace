@@ -1,3 +1,5 @@
+import { FieldError } from "@/verification";
+
 export enum ApiError {
   Forbidden = "forbidden",
   BadRequest = "bad-request",
@@ -25,6 +27,7 @@ export enum ApiError {
   RoomMembersNotFound = "room-members-not-found",
   ReportNotFound = "report-not-found",
   InterviewNotFound = "interview-not-found",
+  TopicNotFound = "topic-not-found",
   InterviewAlreadySigned = "interview-already-signed",
   ReportReplyNotFound = "report-reply-not-found",
   WidthdrawMethodNotFound = "withdraw-method-not-found",
@@ -32,9 +35,10 @@ export enum ApiError {
   EmailAlreadyVerified = "email-already-verified",
   IllegalInvoiceUpdate = "illegal-invoice-update",
   ContradictingRules = "contradicting-rules",
+  EmptyUpdateRequest = "empty-update-request",
 }
 
-export type ApiErrorCode = ApiError;
+export type ApiErrorCode = ApiError | FieldError;
 
 export enum Backend {
   Staging = "staging",

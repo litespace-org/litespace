@@ -14,6 +14,7 @@ import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
 import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
+import topic from "@/routes/topic";
 
 export default {
   user,
@@ -32,4 +33,5 @@ export default {
   interview,
   asset,
   auth,
+  topic,
 };
