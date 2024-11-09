@@ -29,7 +29,7 @@ const Stats: React.FC<{
     if (!query.data) return [];
     return [
       {
-        id: "stats.teaching.hours",
+        id: "stats.tutor.teaching.hours",
         // todo: move to luna
         value: humanize(query.data.totalMinutes * 60 * 1000, {
           language: "ar",
@@ -37,10 +37,13 @@ const Stats: React.FC<{
         }),
       },
       {
-        id: "stats.student.count",
+        id: "stats.tutor.student.count",
         value: formatNumber(query.data.studentCount),
       },
-      { id: "stats.lesson.count", value: formatNumber(query.data.lessonCount) },
+      {
+        id: "stats.tutor.lesson.count",
+        value: formatNumber(query.data.lessonCount),
+      },
     ];
   }, [query.data]);
 

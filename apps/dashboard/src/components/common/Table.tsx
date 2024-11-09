@@ -19,13 +19,14 @@ import { usePageSize } from "@litespace/headless/config";
 interface ReactTableProps<T extends object> {
   data: T[];
   columns: TableOptions<T>["columns"];
-  goto: (page: number) => void;
-  next: Void;
-  prev: Void;
-  totalPages: number;
-  page: number;
-  loading: boolean;
-  fetching: boolean;
+  goto?: (page: number) => void;
+  next?: Void;
+  prev?: Void;
+  totalPages?: number;
+  page?: number;
+  loading?: boolean;
+  fetching?: boolean;
+  headless?: boolean;
 }
 
 export const Table = <T extends object>({
@@ -35,6 +36,7 @@ export const Table = <T extends object>({
   totalPages,
   loading,
   fetching,
+  headless = false,
   prev,
   goto,
   next,
@@ -69,27 +71,29 @@ export const Table = <T extends object>({
         )}
       >
         <table className="min-w-full">
-          <thead className="text-xs text-foreground bg-surface-75">
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    key={header.id}
-                    className="px-4 py-3 truncate text-start"
-                    colSpan={header.colSpan}
-                    scope="col"
-                  >
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
+          {!headless ? (
+            <thead className="text-xs text-foreground bg-surface-75">
+              {table.getHeaderGroups().map((headerGroup) => (
+                <tr key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      key={header.id}
+                      className="px-4 py-3 truncate text-start"
+                      colSpan={header.colSpan}
+                      scope="col"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </th>
+                  ))}
+                </tr>
+              ))}
+            </thead>
+          ) : null}
           <tbody className="border-b bg-surface-200">
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} className="border-b border-border-strong">
@@ -103,52 +107,54 @@ export const Table = <T extends object>({
           </tbody>
         </table>
       </div>
-      <footer className="relative flex items-center justify-center gap-4 pt-4">
-        <div className="absolute top-4 right-0">
-          <Select
-            options={options}
-            value={pageSize.value}
-            onChange={pageSize.set}
-            size="small"
-          />
-        </div>
-        <Button
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          onClick={() => goto(1)}
-          disabled={page <= 1 || loading || fetching}
-        >
-          &laquo;
-        </Button>
-        <Button
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          onClick={prev}
-          disabled={page <= 1 || loading || fetching}
-        >
-          &rarr;
-        </Button>
-        <Button
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          onClick={next}
-          disabled={page >= totalPages || loading || fetching}
-        >
-          &larr;
-        </Button>
-        <Button
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          onClick={() => goto(totalPages)}
-          disabled={page >= totalPages || loading || fetching}
-        >
-          &raquo;
-        </Button>
-      </footer>
+      {prev && goto && next && page && totalPages ? (
+        <footer className="relative flex items-center justify-center gap-4 pt-4">
+          <div className="absolute top-4 right-0">
+            <Select
+              options={options}
+              value={pageSize.value}
+              onChange={pageSize.set}
+              size="small"
+            />
+          </div>
+          <Button
+            size={ButtonSize.Small}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
+            onClick={() => goto(1)}
+            disabled={page <= 1 || loading || fetching}
+          >
+            &laquo;
+          </Button>
+          <Button
+            size={ButtonSize.Small}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
+            onClick={prev}
+            disabled={page <= 1 || loading || fetching}
+          >
+            &rarr;
+          </Button>
+          <Button
+            size={ButtonSize.Small}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
+            onClick={next}
+            disabled={page >= totalPages || loading || fetching}
+          >
+            &larr;
+          </Button>
+          <Button
+            size={ButtonSize.Small}
+            type={ButtonType.Main}
+            variant={ButtonVariant.Secondary}
+            onClick={() => goto(totalPages)}
+            disabled={page >= totalPages || loading || fetching}
+          >
+            &raquo;
+          </Button>
+        </footer>
+      ) : null}
     </div>
   );
 };
