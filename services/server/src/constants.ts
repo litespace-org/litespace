@@ -60,8 +60,11 @@ export enum FileType {
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
-  media: {
-    directory: "uploads/",
+  assets: {
+    directory: {
+      uploads: "assets/uploads/",
+      receipts: "assets/receipts/",
+    },
     supported: {
       [FileType.Image]: ["image/png", "image/jpeg"],
       [FileType.Video]: ["video/webm", "video/mp4"],

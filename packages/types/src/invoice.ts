@@ -35,7 +35,7 @@ export type Self = {
   update: UpdateRequest | null;
   status: Status;
   note: string | null;
-  attachment: string | null;
+  receipt: string | null;
   addressedBy: number | null;
   createdAt: string;
   updatedAt: string;
@@ -51,7 +51,7 @@ export type Row = {
   update: string | null;
   status: Status;
   note: string | null;
-  attachment: string | null;
+  receipt: string | null;
   addressed_by: number | null;
   created_at: Date;
   updated_at: Date;
@@ -75,7 +75,7 @@ export type UpdatePayload = {
   amount?: number;
   status?: Status;
   note?: string | null;
-  attachment?: string | null;
+  receipt?: string | null;
   addressedBy?: number | null;
 };
 
@@ -91,7 +91,11 @@ export type UpdateByReceiverApiPayload = {
 };
 
 export type UpdateByAdminApiPayload = {
-  status?: Status;
+  status?:
+    | Status.Pending
+    | Status.CancellationApprovedByAdmin
+    | Status.Rejected
+    | Status.Fulfilled;
   note?: string | null;
 };
 

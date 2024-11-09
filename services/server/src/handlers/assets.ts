@@ -17,7 +17,7 @@ async function viewAssets(req: Request, res: Response, next: NextFunction) {
   const allowed = isAdmin(user);
   if (!allowed) return next(forbidden());
   const { page, size } = pagination.parse(req.params);
-  const assets = await fs.readdir(serverConfig.media.directory);
+  const assets = await fs.readdir(serverConfig.assets.directory.uploads);
   const offset = (page - 1) * size;
   const list = drop(assets, offset).slice(0, size);
   const response: IAsset.FindAssetsApiResponse = { list, total: assets.length };
@@ -30,7 +30,7 @@ async function removeAsset(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const { name } = removeAssetsParams.parse(req.params);
-  const asset = path.join(serverConfig.media.directory, name);
+  const asset = path.join(serverConfig.assets.directory.uploads, name);
   const exists = await fs
     .access(asset)
     .then(() => true)
