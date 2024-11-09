@@ -15,6 +15,7 @@ import invoice from "@/routes/invoice";
 import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
 import topic from "@/routes/topic";
+import cache from "@/routes/cache";
 
 export default {
   user,
@@ -34,4 +35,5 @@ export default {
   asset,
   auth,
   topic,
+  cache,
 };
