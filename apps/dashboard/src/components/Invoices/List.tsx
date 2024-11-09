@@ -89,8 +89,8 @@ const List: React.FC<{
         header: intl("dashboard.invoices.note"),
         cell: (info) => info.getValue(),
       }),
-      columnHelper.accessor("attachment", {
-        header: intl("dashboard.invoices.attachment"),
+      columnHelper.accessor("receipt", {
+        header: intl("dashboard.invoices.receipt"),
         cell: (info) => info.getValue(),
       }),
       columnHelper.accessor("addressedBy", {

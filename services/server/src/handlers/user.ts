@@ -20,7 +20,12 @@ import {
   orderDirection,
 } from "@/validation/utils";
 import { uploadSingle } from "@/lib/media";
-import { FileType, jwtSecret, paginationDefaults } from "@/constants";
+import {
+  FileType,
+  jwtSecret,
+  paginationDefaults,
+  serverConfig,
+} from "@/constants";
 import {
   drop,
   entries,
@@ -179,7 +184,9 @@ function update(context: ApiContext) {
 
       const [image, video] = await Promise.all(
         [files.image, files.video].map(({ file, type }) =>
-          file ? uploadSingle(file, type) : undefined
+          file
+            ? uploadSingle(file, type, serverConfig.assets.directory.uploads)
+            : undefined
         )
       );
 

@@ -35,7 +35,7 @@ export enum ApiError {
   EmailAlreadyVerified = "email-already-verified",
   IllegalInvoiceUpdate = "illegal-invoice-update",
   ContradictingRules = "contradicting-rules",
-  EmptyUpdateRequest = "empty-update-request",
+  EmptyRequest = "empty-request",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

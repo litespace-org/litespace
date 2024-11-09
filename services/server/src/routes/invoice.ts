@@ -1,5 +1,6 @@
 import { ApiContext } from "@/types/api";
 import { Router } from "express";
+import { fileupload } from "@/middleware/fileupload";
 import invoice from "@/handlers/invoice";
 
 export default function router(context: ApiContext) {
@@ -7,7 +8,7 @@ export default function router(context: ApiContext) {
 
   router.post("/", invoice.create);
   router.put("/receiver/:invoiceId", invoice.updateByReceiver(context));
-  router.put("/admin/:invoiceId", invoice.updateByAdmin(context));
+  router.put("/admin/:invoiceId", fileupload, invoice.updateByAdmin(context));
   router.get("/stats/:tutorId", invoice.stats);
   router.get("/list", invoice.find);
   router.delete("/:id", invoice.cancel);
