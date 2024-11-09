@@ -1,5 +1,11 @@
-import { FileType } from "@/constants";
-import { bad, forbidden, illegalInvoiceUpdate, notfound } from "@/lib/error";
+import { FileType, serverConfig } from "@/constants";
+import {
+  bad,
+  empty,
+  forbidden,
+  illegalInvoiceUpdate,
+  notfound,
+} from "@/lib/error";
 import { isValidInvoice } from "@/lib/invoice";
 import { uploadSingle } from "@/lib/media";
 import { ApiContext } from "@/types/api";
@@ -29,7 +35,13 @@ const invoicePayload = zod.object({
 const createPayload = invoicePayload;
 
 const updateByAdminPayload = zod.object({
-  status: zod.optional(invoiceStatus),
+  status: zod.optional(
+    zod.enum([
+      IInvoice.Status.CancellationApprovedByAdmin,
+      IInvoice.Status.Rejected,
+      IInvoice.Status.Fulfilled,
+    ])
+  ),
   note: zod.optional(zod.union([zod.string(), zod.null()])),
 });
 
@@ -218,21 +230,26 @@ export function updateByAdmin(context: ApiContext) {
       const allowed = isAdmin(user);
       if (!allowed) return next(forbidden());
 
-      const file = req.files?.attachment;
+      const file = req.files?.receipt;
       const { invoiceId } = withNamedId("invoiceId").parse(req.params);
       const payload: IInvoice.UpdateByAdminApiPayload =
         updateByAdminPayload.parse(req.body);
 
       const invoice = await invoices.findById(invoiceId);
-      if (!invoice) return next(notfound.base());
+      if (!invoice) return next(notfound.invoice());
 
-      const validStatus =
-        !payload.status ||
-        payload.status !== IInvoice.Status.CanceledByReceiver;
-      if (!validStatus) return next(bad());
+      if (isUndefined(payload.status) && isUndefined(payload.note) && !file)
+        return next(empty());
 
-      const attachment = file
-        ? await uploadSingle(file, FileType.Image)
+      if (payload.status && payload.status === invoice.status)
+        return next(bad());
+
+      const receipt = file
+        ? await uploadSingle(
+            file,
+            FileType.Image,
+            serverConfig.assets.directory.invoices
+          )
         : undefined;
 
       const approveUpdate =
@@ -246,7 +263,7 @@ export function updateByAdmin(context: ApiContext) {
       const receiver = approveUpdate ? invoice.update?.receiver : undefined;
 
       await invoices.update(invoice.id, {
-        attachment,
+        receipt,
         note: payload.note,
         status: payload.status,
         addressedBy: user.id,
@@ -276,7 +293,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
   // attachement is a private field.
   const masked = isTutor(user)
-    ? list.map((invoice): IInvoice.Self => ({ ...invoice, attachment: null }))
+    ? list.map((invoice): IInvoice.Self => ({ ...invoice, receipt: null }))
     : list;
 
   const response: IInvoice.FindInvoicesApiResponse = {
