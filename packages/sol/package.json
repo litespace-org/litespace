@@ -76,6 +76,10 @@
     "./withdrawMethod": {
       "import": "./dist/esm/withdrawMethod.js",
       "require": "./dist/cjs/withdrawMethod.js"
+    },
+    "./verification": {
+      "import": "./dist/esm/verification.js",
+      "require": "./dist/cjs/verification.js"
     }
   },
   "react-native": {
@@ -94,7 +98,8 @@
     "./user": "./dist/cjs/user.js",
     "./utils": "./dist/cjs/utils.js",
     "./value": "./dist/cjs/value.js",
-    "./withdrawMethod": "./dist/cjs/withdrawMethod.js"
+    "./withdrawMethod": "./dist/cjs/withdrawMethod.js",
+    "./verification": "./dist/cjs/verification.js"
   },
   "types": "dist/index.d.ts",
   "devDependencies": {
