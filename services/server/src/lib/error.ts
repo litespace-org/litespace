@@ -25,10 +25,15 @@ const error = (code: ApiErrorCode, message: string, status: number) =>
     status
   );
 
+export const apierror = error;
+
 export const forbidden = () =>
   error(ApiError.Forbidden, "unauthorized access", 401);
 
 export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
+
+export const empty = () =>
+  error(ApiError.EmptyUpdateRequest, "Empty update request", 400);
 
 export const busyTutor = () =>
   error(ApiError.BusyTutor, "Tutor has not time", 400);
@@ -89,4 +94,5 @@ export const notfound = {
     error(ApiError.ReportReplyNotFound, "Report reply not found", 404),
   withdrawMethod: () =>
     error(ApiError.WidthdrawMethodNotFound, "Withdraw method not found", 404),
+  topic: () => error(ApiError.TopicNotFound, "Topic not found", 404),
 } as const;

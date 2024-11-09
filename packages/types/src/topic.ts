@@ -1,4 +1,4 @@
-import { ExtractObjectKeys } from "@/utils";
+import { ExtractObjectKeys, Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
 export type Self = {
@@ -30,7 +30,10 @@ export type CreateUserTopicsPayload = {
   topics: number[];
 };
 
-export type CreateApiPayload = CreatePayload;
+export type CreateApiPayload = {
+  arabicName: string;
+  englishName: string;
+};
 
 /**
  * At least one name must be provided.
@@ -40,6 +43,8 @@ export type UpdatePayload = {
   englishName?: string;
 };
 
+export type UpdateApiPayload = UpdatePayload;
+
 export type FindTopicsQueryFilter = IFilter.Pagination & {
   name?: string;
   orderBy?: ExtractObjectKeys<
@@ -48,3 +53,11 @@ export type FindTopicsQueryFilter = IFilter.Pagination & {
   >;
   orderDirection?: IFilter.OrderDirection;
 };
+
+export type CreateTopicApiResponse = Self;
+
+export type UpdateTopicApiResponse = Self;
+
+export type FindTopicsApiQuery = FindTopicsQueryFilter;
+
+export type FindTopicsApiResponse = Paginated<Self>;

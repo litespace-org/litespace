@@ -71,4 +71,6 @@ export enum FieldError {
   InvalidInstapayIPA = "instapay-username-invalid",
   EmptyBankName = "empty-bank-name",
   InvalidBankName = "invalid-bank-name",
+  ShortTopicName = "short-topic-name",
+  LongTopicName = "long-topic-name",
 }
