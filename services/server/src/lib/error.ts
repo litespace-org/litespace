@@ -28,12 +28,11 @@ const error = (code: ApiErrorCode, message: string, status: number) =>
 export const apierror = error;
 
 export const forbidden = () =>
-  error(ApiError.Forbidden, "unauthorized access", 401);
+  error(ApiError.Forbidden, "Unauthorized access", 401);
 
 export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
 
-export const empty = () =>
-  error(ApiError.EmptyUpdateRequest, "Empty update request", 400);
+export const empty = () => error(ApiError.EmptyRequest, "Empty request", 400);
 
 export const busyTutor = () =>
   error(ApiError.BusyTutor, "Tutor has not time", 400);

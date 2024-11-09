@@ -46,7 +46,7 @@ app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware(jwtSecret));
-app.use("/assets/", express.static(serverConfig.media.directory));
+app.use("/assets/", express.static(serverConfig.assets.directory.uploads));
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
