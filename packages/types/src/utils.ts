@@ -17,6 +17,11 @@ export type EmptyObject = {};
 export type Element<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 
+export type ExtractObjectKeys<T extends object, K extends keyof T> = Extract<
+  keyof T,
+  K
+>;
+
 export type Event = {
   /**
    * UTC based start time

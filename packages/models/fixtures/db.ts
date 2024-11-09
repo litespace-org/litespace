@@ -6,9 +6,17 @@ import {
   messages,
   rooms,
   rules,
+  topics,
   users,
 } from "@/index";
-import { ICall, IInterview, ILesson, IRule, IUser } from "@litespace/types";
+import {
+  ICall,
+  IInterview,
+  ILesson,
+  IRule,
+  ITopic,
+  IUser,
+} from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
@@ -19,6 +27,8 @@ export { faker } from "@faker-js/faker/locale/ar";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await topics.builder(tx).userTopics.del();
+    await topics.builder(tx).topics.del();
     await messages.builder(tx).del();
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
@@ -146,6 +156,15 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
       },
       tx
     );
+  });
+}
+
+export async function topic(payload?: Partial<ITopic.CreatePayload>) {
+  return await topics.create({
+    name: {
+      ar: payload?.name?.ar || faker.animal.bear(),
+      en: payload?.name?.en || faker.animal.bird(),
+    },
   });
 }
 
@@ -423,6 +442,7 @@ export default {
   interview,
   lesson,
   flush,
+  topic,
   rule,
   make: {
     lesson: makeLesson,

@@ -4,7 +4,7 @@ import { nameof } from "@litespace/sol/utils";
 import { IInterview } from "@litespace/types";
 import { expect } from "chai";
 
-describe("Lessons", () => {
+describe("Interviews", () => {
   beforeAll(async () => {
     await fixtures.flush();
   });

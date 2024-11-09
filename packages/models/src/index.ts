@@ -15,6 +15,7 @@ export { users } from "@/users";
 export { rooms } from "@/rooms";
 export { withdrawMethods } from "@/withdrawMethods";
 export { invoices } from "@/invoices";
+export { topics } from "@/topics";
 export { knex, pool, count } from "@/query";
 export { hashPassword, isSamePassword } from "@/lib/password";
 export { Cache } from "@/cache";
