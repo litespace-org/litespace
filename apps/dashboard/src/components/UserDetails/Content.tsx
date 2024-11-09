@@ -126,13 +126,13 @@ const Content: React.FC<{
 
         {tutorStats ? (
           <>
-            <Detail label={intl("stats.lesson.count")}>
+            <Detail label={intl("stats.tutor.lesson.count")}>
               {formatNumber(tutorStats.lessonCount)}
             </Detail>
-            <Detail label={intl("stats.student.count")}>
+            <Detail label={intl("stats.tutor.student.count")}>
               {formatNumber(tutorStats.studentCount)}
             </Detail>
-            <Detail label={intl("stats.teaching.hours")}>
+            <Detail label={intl("stats.tutor.teaching.hours")}>
               {Duration.from(tutorStats.totalMinutes.toString()).format("ar")}
             </Detail>
           </>
