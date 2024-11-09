@@ -1,11 +1,15 @@
 import {
-  createClient,
   RedisClientType,
-  RedisDefaultModules,
   RedisFunctions,
   RedisModules,
   RedisScripts,
 } from "redis";
+
+export type RedisClient = RedisClientType<
+  RedisModules,
+  RedisFunctions,
+  RedisScripts
+>;
 
 export class CacheBase {
   constructor(
