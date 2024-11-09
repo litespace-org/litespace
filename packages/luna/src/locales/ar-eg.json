@@ -316,7 +316,7 @@
   "dashboard.invoices.amount": "الكمية",
   "dashboard.invoices.status": "الحالة",
   "dashboard.invoices.note": "ملاحظات",
-  "dashboard.invoices.attachment": "صورة الإيصال",
+  "dashboard.invoices.receipt": "صورة الإيصال",
   "dashboard.invoices.addressedBy": "تم المعالجة بواسطة",
   "dashboard.invoices.createdAt": "تاريخ الإنشاء",
   "dashboard.invoices.updatedAt": "تاريخ التحديث",

@@ -1,7 +1,7 @@
 import { FileType, serverConfig } from "@/constants";
 import { UploadedFile } from "express-fileupload";
 import { first, includes, isArray } from "lodash";
-import { join } from "node:path";
+import { join } from "node:path/posix";
 import dayjs from "@/lib/dayjs";
 
 export async function upload(

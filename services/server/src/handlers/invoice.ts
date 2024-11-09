@@ -248,7 +248,7 @@ export function updateByAdmin(context: ApiContext) {
         ? await uploadSingle(
             file,
             FileType.Image,
-            serverConfig.assets.directory.invoices
+            serverConfig.assets.directory.receipts
           )
         : undefined;
 
@@ -262,7 +262,7 @@ export function updateByAdmin(context: ApiContext) {
       const bank = approveUpdate ? invoice.update?.bank : undefined;
       const receiver = approveUpdate ? invoice.update?.receiver : undefined;
 
-      await invoices.update(invoice.id, {
+      const updated = await invoices.update(invoice.id, {
         receipt,
         note: payload.note,
         status: payload.status,
@@ -274,7 +274,7 @@ export function updateByAdmin(context: ApiContext) {
         updateRequest: null, // reset the update request if any
       });
 
-      res.status(200).json();
+      res.status(200).json(updated);
       context.io.emit(Wss.ServerEvent.InvoiceDeleted);
     }
   );
