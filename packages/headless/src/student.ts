@@ -5,14 +5,18 @@ import { QueryKey } from "@/constants";
 import { IUser } from "@litespace/types";
 
 export function useFindStudentStats(
-  id: number
+  id?: number
 ): UseQueryResult<IUser.FindStudentStatsApiResponse | null, Error> {
   const atlas = useAtlas();
+
   const findStats = useCallback(async () => {
+    if (!id) return null;
     return await atlas.user.findStudentStats(id);
   }, [atlas.user, id]);
+
   return useQuery({
     queryFn: findStats,
     queryKey: [QueryKey.FindStudentStats, id],
+    enabled: !!id,
   });
 }

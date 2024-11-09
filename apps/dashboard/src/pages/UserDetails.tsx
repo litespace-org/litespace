@@ -9,8 +9,8 @@ import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { useMemo, useCallback } from "react";
-import { useFindStudentStats } from "@litespace/headless/students";
-import Stats from "@/components/Students/Stats";
+import { useFindStudentStats } from "@litespace/headless/student";
+import StudentStats from "@/components/Students/Stats";
 
 type UserProfileParams = {
   id: string;
@@ -36,7 +36,7 @@ const UserDetails = () => {
 
   const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
   const tutorStats = useFindTutorStats(role?.tutor && id ? id : null);
-  const studentStats = useFindStudentStats(id);
+  const studentStats = useFindStudentStats(role?.student ? id : undefined);
 
   const refetch = useCallback(() => {
     query.refetch();
@@ -59,7 +59,7 @@ const UserDetails = () => {
         refetch={refetch}
       />
 
-      {studentStats ? <Stats stats={studentStats} /> : null}
+      {role?.student ? <StudentStats stats={studentStats} /> : null}
 
       {(role?.tutor || role?.interviewer) && id ? (
         <div className="mt-4">
