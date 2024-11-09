@@ -31,7 +31,6 @@ exports.up = (pgm) => {
   ]);
   pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
-  pgm.createType("token_type", ["forgot-password", "verify-email"]);
   pgm.createType("interview_status", [
     "pending",
     "passed",
@@ -50,12 +49,6 @@ exports.up = (pgm) => {
   ]);
 
   // tables
-  pgm.createTable("sessions", {
-    sid: { type: "CHARACTER VARYING", primaryKey: true, notNull: true },
-    sess: { type: "JSON", notNull: true },
-    expire: { type: "TIMESTAMP(6) WITHOUT TIME ZONE", notNull: true },
-  });
-
   pgm.createTable("users", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
@@ -68,17 +61,6 @@ exports.up = (pgm) => {
     online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
     credit_score: { type: "INT", notNull: true, default: 0 },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
-
-  pgm.createTable("tokens", {
-    id: { type: "SERIAL", primaryKey: true, notNull: true },
-    user_id: { type: "SERIAL", notNull: true },
-    token_hash: { type: "CHAR(64)", notNull: true },
-    used: { type: "BOOLEAN", notNull: true, default: false },
-    type: { type: "token_type", notNull: true },
-    expires_at: { type: "TIMESTAMP", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -236,6 +218,23 @@ exports.up = (pgm) => {
     updated_by: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
+  pgm.createTable("topics", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    name_ar: { type: "VARCHAR(50)", notNull: true, unique: true },
+    name_en: { type: "VARCHAR(50)", notNull: true, unique: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
+  pgm.createTable(
+    "user_topics",
+    {
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
+      topic_id: { type: "SERIAL", notNull: true, references: "topics(id)" },
+    },
+    { constraints: { primaryKey: ["user_id", "topic_id"] } }
+  );
+
   pgm.createTable("invites", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     email: { type: "VARCHAR(50)", notNull: true, unique: true },
@@ -360,7 +359,6 @@ exports.up = (pgm) => {
   pgm.createIndex("rules", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
-  pgm.createIndex("tokens", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("plans", "id");
   pgm.createIndex("coupons", "id");
@@ -396,10 +394,11 @@ exports.down = (pgm) => {
   pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("rules", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
-  pgm.dropIndex("tokens", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("user_topics", { ifExists: true });
+  pgm.dropTable("topics", { ifExists: true });
   pgm.dropTable("withdraw_methods", { ifExists: true });
   pgm.dropTable("invoices", { ifExists: true });
   pgm.dropTable("messages", { ifExists: true });
@@ -420,13 +419,11 @@ exports.down = (pgm) => {
   pgm.dropTable("call_members", { ifExists: true });
   pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
-  pgm.dropTable("tokens", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
   pgm.dropTable("sessions", { ifExists: true });
 
   // types
-  pgm.dropType("token_type", { ifExists: true });
   pgm.dropType("user_role", { ifExists: true });
   pgm.dropType("user_gender", { ifExists: true });
   pgm.dropType("plan_cycle", { ifExists: true });

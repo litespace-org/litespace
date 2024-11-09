@@ -3,7 +3,7 @@ import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { expect } from "chai";
 
-describe("Lessons", () => {
+describe("Messages", () => {
   beforeAll(async () => {
     await fixtures.flush();
   });
