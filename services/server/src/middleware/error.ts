@@ -5,7 +5,7 @@ import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
-import { ApiError } from "@litespace/types";
+import { ApiErrorCode, ApiError } from "@litespace/types";
 
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
@@ -24,7 +24,7 @@ export function errorHandler(
 
   let statusCode = 400;
   let message = "Unexpected error, please retry";
-  let errorCode = ApiError.Unexpected;
+  let errorCode: ApiErrorCode = ApiError.Unexpected;
 
   if (error instanceof ResponseError) {
     statusCode = error.statusCode;
