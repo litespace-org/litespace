@@ -36,4 +36,4 @@ export {
   isUser,
 } from "@/authorization";
 export { encodeAuthJwt, decodeAuthJwt } from "@/jwt";
-export { authMiddleware } from "@/middleware";
+export { authMiddleware, adminOnly } from "@/middleware";

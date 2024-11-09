@@ -10,9 +10,7 @@ import {
 
 const Invoices: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
-
   const invoices = useFindInvoicesByUser(profile);
-
   const stats = useFindInvoiceStats(profile);
 
   const refresh = useCallback(() => {

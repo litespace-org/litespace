@@ -3,6 +3,7 @@ import safeRequest from "express-async-handler";
 import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
 import { safe } from "@litespace/sol/error";
+import { isAdmin } from "@/authorization";
 
 export function authMiddleware(secret: string) {
   return safeRequest(
@@ -31,4 +32,11 @@ export function authMiddleware(secret: string) {
       next();
     }
   );
+}
+
+export function adminOnly(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isAdmin(user);
+  if (!allowed) return res.status(401).send();
+  return next();
 }

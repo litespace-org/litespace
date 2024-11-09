@@ -63,7 +63,7 @@ export const serverConfig = {
   assets: {
     directory: {
       uploads: "assets/uploads/",
-      invoices: "assets/invoices/",
+      receipts: "assets/receipts/",
     },
     supported: {
       [FileType.Image]: ["image/png", "image/jpeg"],

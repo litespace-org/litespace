@@ -12,7 +12,7 @@ import { onlyForHandshake } from "@/middleware/common";
 import { capitalize } from "lodash";
 import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
-import { authMiddleware } from "@litespace/auth";
+import { authMiddleware, adminOnly } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import "colors";
 
@@ -46,7 +46,15 @@ app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(authMiddleware(jwtSecret));
-app.use("/assets/", express.static(serverConfig.assets.directory.uploads));
+app.use(
+  "/assets/uploads",
+  express.static(serverConfig.assets.directory.uploads)
+);
+app.use(
+  "/assets/receipts",
+  adminOnly,
+  express.static(serverConfig.assets.directory.receipts)
+);
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
