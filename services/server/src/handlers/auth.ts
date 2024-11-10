@@ -1,12 +1,18 @@
 import safeRequest from "express-async-handler";
-import { bad, emailAlreadyVerified, notfound } from "@/lib/error";
+import {
+  already,
+  bad,
+  emailAlreadyVerified,
+  forbidden,
+  notfound,
+} from "@/lib/error";
 import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import { hashPassword } from "@/lib/user";
 import { IToken, IUser } from "@litespace/types";
 import { email, id, password, string, url } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
-import { encodeAuthJwt, decodeAuthJwt } from "@litespace/auth";
+import { encodeAuthJwt, decodeAuthJwt, isUser } from "@litespace/auth";
 import { OAuth2Client } from "google-auth-library";
 import zod from "zod";
 import jwt from "jsonwebtoken";
@@ -36,6 +42,8 @@ const foregetPasswordJwtPayload = zod.object({
   type: zod.literal(IToken.Type.ForgotPassword),
   user: id,
 });
+
+const sendVerificationEmailPayload = zod.object({ callbackUrl: url });
 
 async function loginWithPassword(
   req: Request,
@@ -163,6 +171,29 @@ async function verifyEmail(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
+async function sendVerificationEmail(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
+  const { callbackUrl } = sendVerificationEmailPayload.parse(req.body);
+
+  if (user.verified) return next(already.verified());
+
+  sendBackgroundMessage({
+    type: WorkerMessageType.SendUserVerificationEmail,
+    callbackUrl: callbackUrl,
+    email: user.email,
+    user: user.id,
+  });
+
+  res.status(200).send();
+}
+
 export default {
   loginWithGoogle: safeRequest(loginWithGoogle),
   loginWithPassword: safeRequest(loginWithPassword),
@@ -170,4 +201,5 @@ export default {
   forgotPassword: safeRequest(forgotPassword),
   resetPassword: safeRequest(resetPassword),
   verifyEmail: safeRequest(verifyEmail),
+  sendVerificationEmail: safeRequest(sendVerificationEmail),
 };

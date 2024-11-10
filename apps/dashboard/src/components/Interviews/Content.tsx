@@ -6,7 +6,6 @@ import {
 } from "@litespace/headless/interviews";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { orUndefined } from "@litespace/sol/utils";
 import { IFilter, IInterview } from "@litespace/types";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { interviewStatusMap } from "@/components/utils/interview";
@@ -35,7 +34,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     (): UseFindInterviewsPayload => ({
       users: user ? [user] : undefined,
       userOnly: !!user,
-      statuses: orUndefined(statuses),
+      statuses: statuses,
       levels: !isEmpty(levels) ? levels : undefined,
       signed: typeof signed === "boolean" ? signed : undefined,
     }),
@@ -78,9 +77,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
         label: intl("global.labels.cancel"),
         danger: true,
         disabled:
-          (statuses === null || status.length === 0) &&
-          (levels === null || levels.length === 0) &&
-          signed === null,
+          isEmpty(statuses) && isEmpty(levels.length) && signed === null,
         onClick: () => {
           setStatus(DEFAULT_STATUS_FILTER);
           setLevels([]);
@@ -114,7 +111,7 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
             label: intl("global.labels.cancel"),
             onClick: () => setLevels([]),
             danger: true,
-            disabled: levels === null || levels.length === 0,
+            disabled: isEmpty(levels.length),
           },
           makeLevelOption(1),
           makeLevelOption(2),
