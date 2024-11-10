@@ -26,7 +26,8 @@
     "./tutor": "./dist/tutor.js",
     "./rule": "./dist/rule.js",
     "./user": "./dist/user.js",
-    "./student": "./dist/student.js"
+    "./student": "./dist/student.js",
+    "./cache": "./dist/cache.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",

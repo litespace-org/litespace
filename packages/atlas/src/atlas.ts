@@ -16,6 +16,7 @@ import { Lesson } from "@/lesson";
 import { WithdrawMethod } from "@/withdrawMethod";
 import { Invoice } from "@/invoice";
 import { GetToken } from "@/client";
+import { Cache } from "@/cache";
 
 export class Atlas {
   public readonly user: User;
@@ -34,6 +35,7 @@ export class Atlas {
   public readonly lesson: Lesson;
   public readonly withdrawMethod: WithdrawMethod;
   public readonly invoice: Invoice;
+  public readonly cache: Cache;
 
   constructor(backend: Backend, getToken: GetToken) {
     this.user = new User(backend, getToken);
@@ -52,5 +54,6 @@ export class Atlas {
     this.lesson = new Lesson(backend, getToken);
     this.withdrawMethod = new WithdrawMethod(backend, getToken);
     this.invoice = new Invoice(backend, getToken);
+    this.cache = new Cache(backend, getToken);
   }
 }
