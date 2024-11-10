@@ -1,4 +1,4 @@
-import { IMessage, IRule, ITutor } from "@/index";
+import { IMessage, IRule, ITutor, Server } from "@/index";
 
 /**
  * Events emitted by the client
@@ -39,11 +39,13 @@ export enum ServerEvent {
   RuleCreated = "RuleCreated",
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
+  ServerStats = "ServerStats",
 }
 
 export enum Room {
   TutorsCache = "TutorsCache",
   AdminInvoices = "AdminInvoices",
+  ServerStats = "ServerStats",
 }
 
 type EventCallback<T> = (arg: T) => Promise<void> | void;
@@ -91,4 +93,5 @@ export type ServerEventsMap = {
   [ServerEvent.RuleUpdated]: EventCallback<void>;
   [ServerEvent.RuleDeleted]: EventCallback<void>;
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
+  [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
 };
