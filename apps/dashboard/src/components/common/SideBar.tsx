@@ -38,8 +38,6 @@ const SidebarNav: React.FC<{
     toggle: toggleMenu,
     open,
     ref,
-    show,
-    hide,
   } = useClosableRef<HTMLUListElement>(button.current);
 
   const logout = useCallback(() => {
@@ -53,13 +51,12 @@ const SidebarNav: React.FC<{
       <div
         ref={button}
         className="fixed flex flex-col items-center justify-between h-screen p-2 border-l border-border-strong"
-        onMouseEnter={show}
       >
         <Button
           onClick={toggleMenu}
           type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          className="!p-2"
+          variant={ButtonVariant.Primary}
+          className="!w-14 !h-14"
         >
           <Sidebar className="w-6 h-6" />
         </Button>
@@ -79,7 +76,6 @@ const SidebarNav: React.FC<{
                 "border-l border-border-overlay rounded-l-md shadow-lg",
                 "flex flex-col items-center p-6"
               )}
-              onMouseLeave={hide}
               ref={ref}
             >
               <div className="flex items-start w-full gap-2 p-1 border rounded-md border-border-strong">
@@ -121,7 +117,7 @@ const SidebarNav: React.FC<{
                   );
                 })}
               </div>
-              <div className="flex flex-row items-center justify-center w-full gap-4">
+              <div className="flex flex-col items-center justify-center w-full gap-4">
                 <div className="flex gap-1">
                   <Sun />
                   <Switch
@@ -134,7 +130,7 @@ const SidebarNav: React.FC<{
                   onClick={logout}
                   className="w-full"
                   size={ButtonSize.Small}
-                  type={ButtonType.Main}
+                  type={ButtonType.Error}
                   variant={ButtonVariant.Secondary}
                 >
                   {intl("navbar.logout")}
