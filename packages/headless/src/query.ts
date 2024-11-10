@@ -22,9 +22,9 @@ export type UseInfinitePaginationQueryResult<T> = {
   more: Void;
 };
 
-export function useInfinitePaginationQuery<T>(
+export function useInfinitePaginationQuery<T, K>(
   handler: ({ pageParam }: { pageParam: number }) => Promise<Paginated<T>>,
-  key: string[]
+  key: K[]
 ) {
   const getNextPageParam = useCallback(
     (last: Paginated<T>, all: Paginated<T>[], lastPageParam: number) => {
@@ -35,6 +35,7 @@ export function useInfinitePaginationQuery<T>(
     },
     []
   );
+
   const query = useInfiniteQuery({
     queryFn: handler,
     queryKey: key,

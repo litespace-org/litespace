@@ -22,6 +22,7 @@ import { invoices, lessons } from "@litespace/models";
 import { IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
+import { FileArray, UploadedFile } from "express-fileupload";
 import { isUndefined } from "lodash";
 import zod from "zod";
 
@@ -42,7 +43,7 @@ const updateByAdminPayload = zod.object({
       IInvoice.Status.Fulfilled,
     ])
   ),
-  note: zod.optional(zod.union([zod.string(), zod.null()])),
+  note: zod.optional(zod.string()),
 });
 
 const updateByReceiverPayload = zod.object({
@@ -230,7 +231,8 @@ export function updateByAdmin(context: ApiContext) {
       const allowed = isAdmin(user);
       if (!allowed) return next(forbidden());
 
-      const file = req.files?.receipt;
+      const files = req.files as Record<IInvoice.ReceiptFileKey, UploadedFile>;
+      const file = files?.["receipt"];
       const { invoiceId } = withNamedId("invoiceId").parse(req.params);
       const payload: IInvoice.UpdateByAdminApiPayload =
         updateByAdminPayload.parse(req.body);

@@ -99,6 +99,7 @@ const PassedInterview: React.FC<{
             variant={ButtonVariant.Secondary}
             loading={skip.isPending}
             disabled={skip.isPending}
+            htmlType="button"
           >
             {intl.formatMessage({
               id: messages["global.labels.skip"],

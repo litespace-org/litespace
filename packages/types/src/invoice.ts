@@ -96,8 +96,10 @@ export type UpdateByAdminApiPayload = {
     | Status.CancellationApprovedByAdmin
     | Status.Rejected
     | Status.Fulfilled;
-  note?: string | null;
+  note?: string;
 };
+
+export type ReceiptFileKey = "receipt";
 
 export type FindInvoicesApiResponse = Paginated<Self>;
 

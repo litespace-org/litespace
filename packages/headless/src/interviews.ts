@@ -48,7 +48,7 @@ export function useFindInfinitInterviews(
 
   const findInterviews = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
-      if (user) return { list: [], total: 0 };
+      if (!user) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
         users: user ? [user] : [],
         page: pageParam,
@@ -60,6 +60,7 @@ export function useFindInfinitInterviews(
 
   return useInfinitePaginationQuery(findInterviews, [
     QueryKey.FindInterviewsPaged,
+    user,
   ]);
 }
 
