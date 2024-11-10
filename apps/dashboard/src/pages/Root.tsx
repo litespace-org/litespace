@@ -15,12 +15,16 @@ import {
   BookOpen,
 } from "react-feather";
 import cn from "classnames";
+import { useAuthRoutes } from "@/hooks/authRoutes";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
   const navigate = useNavigate();
   const location = useLocation();
   const intl = useFormatMessage();
+
+  useAuthRoutes();
+
   const routes = useMemo(
     () => [
       {
@@ -58,7 +62,18 @@ const Root: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!profile || location.pathname !== Route.Root) return;
+    if (location.pathname === Route.Login) return;
+    if (!profile) return navigate(Route.Login);
+
+    const forbidden =
+      profile.role === IUser.Role.Tutor ||
+      profile.role === IUser.Role.Student ||
+      profile.role === IUser.Role.Interviewer;
+
+    if (forbidden) return window.location.replace("https://litespace.org");
+
+    if (location.pathname !== Route.Root) return;
+
     if (
       profile.role === IUser.Role.SuperAdmin ||
       profile.role === IUser.Role.RegularAdmin
