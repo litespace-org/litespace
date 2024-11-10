@@ -1,5 +1,6 @@
 import { Base } from "@/base";
 import { IInvoice, Paginated } from "@litespace/types";
+import { safeFormData } from "@/lib/form";
 
 export class Invoice extends Base {
   async create(payload: IInvoice.CreateApiPayload): Promise<IInvoice.Self> {
@@ -19,9 +20,25 @@ export class Invoice extends Base {
 
   async updateByAdmin(
     invoiceId: number,
-    payload: IInvoice.UpdateByAdminApiPayload
+    payload: IInvoice.UpdateByAdminApiPayload & { receipt?: File }
   ): Promise<void> {
-    return await this.put(`/api/v1/invoice/admin/${invoiceId}`, payload);
+    const { append, done } = safeFormData<
+      IInvoice.UpdateByAdminApiPayload & { receipt?: File }
+    >();
+
+    append("note", payload.note);
+    append("receipt", payload.receipt);
+    append("status", payload.status);
+
+    const config = {
+      headers: { "Content-Type": "multipart/form-data" },
+    } as const;
+
+    return await this.client.put(
+      `/api/v1/invoice/admin/${invoiceId}`,
+      done(),
+      config
+    );
   }
 
   async find(
