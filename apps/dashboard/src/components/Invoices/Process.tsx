@@ -64,7 +64,8 @@ const Process: React.FC<{
 
   const deleteNote = useMutation({
     mutationFn: async () => {
-      return await atlas.invoice.updateByAdmin(id, { note: null });
+      // todo: update the invocie api with a "deleteNote" option
+      return await atlas.invoice.updateByAdmin(id, { note: "" });
     },
     onSuccess,
     onError,
