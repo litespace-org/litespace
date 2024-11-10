@@ -59,7 +59,7 @@ const updateInterviewPayload = zod.object({
 const findInterviewsQuery = zod.object({
   users: zod.optional(ids),
   statuses: zod.optional(zod.array(interviewStatus)),
-  levels: zod.optional(zod.array(zod.number().int().positive())),
+  levels: zod.optional(zod.array(zod.coerce.number().int().positive())),
   signed: zod.optional(jsonBoolean),
   signers: zod.optional(ids),
   page: zod.optional(pageNumber),
