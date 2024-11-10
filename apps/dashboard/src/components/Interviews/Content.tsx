@@ -1,30 +1,75 @@
 import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Interviews/List";
-import { useFindInterviews } from "@litespace/headless/interviews";
+import {
+  useFindInterviews,
+  type UseFindInterviewsPayload,
+} from "@litespace/headless/interviews";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { orUndefined } from "@litespace/sol/utils";
 import { IFilter, IInterview } from "@litespace/types";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
-import React, { useMemo, useState } from "react";
+import { interviewStatusMap } from "@/components/utils/interview";
+import { isEmpty } from "lodash";
+import React, { useCallback, useMemo, useState } from "react";
+
+const DEFAULT_STATUS_FILTER = [
+  IInterview.Status.Pending,
+  IInterview.Status.Passed,
+  IInterview.Status.Rejected,
+  IInterview.Status.Canceled,
+];
 
 const Content: React.FC<{ user?: number }> = ({ user }) => {
   const intl = useFormatMessage();
-  const [status, setStatus] = useState<IInterview.Status[] | null>(null);
-  const [level, setLevel] = useState<number[] | null>(null);
+  const [statuses, setStatus] = useState<IInterview.Status[]>(
+    DEFAULT_STATUS_FILTER
+  );
+  const [levels, setLevels] = useState<number[]>([]);
   const [signed, setSigned] = useState<boolean | null>(null);
   const [orderDirection, setOrderDirection] = useState<IFilter.OrderDirection>(
     IFilter.OrderDirection.Descending
   );
+
   const filter = useMemo(
-    (): IInterview.FindInterviewsApiQuery => ({
+    (): UseFindInterviewsPayload => ({
       users: user ? [user] : undefined,
-      statuses: orUndefined(status),
-      levels: orUndefined(level),
+      userOnly: !!user,
+      statuses: orUndefined(statuses),
+      levels: !isEmpty(levels) ? levels : undefined,
       signed: typeof signed === "boolean" ? signed : undefined,
     }),
-    [status, level, signed, orderDirection]
+    [user, statuses, levels, signed]
   );
+
+  const makeLevelOption = useCallback(
+    (level: number): MenuAction => ({
+      id: level,
+      label: level.toString(),
+      onClick: () =>
+        setLevels((prev) => {
+          if (prev.includes(level)) return prev.filter((el) => el !== level);
+          return [...prev, level];
+        }),
+      checked: levels.includes(level),
+    }),
+    [levels]
+  );
+
+  const makeStatusOption = useCallback(
+    (status: IInterview.Status) => ({
+      id: status,
+      label: intl(interviewStatusMap[status]),
+      onClick: () =>
+        setStatus((prev) => {
+          if (prev.includes(status)) return prev.filter((el) => el !== status);
+          return [...prev, status];
+        }),
+      checked: statuses.includes(status),
+    }),
+    [intl, statuses]
+  );
+
   const interviews = useFindInterviews(filter);
   const actions = useMemo(
     (): MenuAction[] => [
@@ -33,12 +78,12 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
         label: intl("global.labels.cancel"),
         danger: true,
         disabled:
-          (status === null || status.length === 0) &&
-          (level === null || level.length === 0) &&
+          (statuses === null || status.length === 0) &&
+          (levels === null || levels.length === 0) &&
           signed === null,
         onClick: () => {
-          setStatus(null);
-          setLevel(null);
+          setStatus(DEFAULT_STATUS_FILTER);
+          setLevels([]);
           setSigned(null);
           setOrderDirection(IFilter.OrderDirection.Descending);
         },
@@ -50,58 +95,14 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           {
             id: 0,
             label: intl("global.labels.cancel"),
-            onClick: () => setStatus(null),
+            onClick: () => setStatus(DEFAULT_STATUS_FILTER),
             danger: true,
-            disabled: status === null || status.length === 0,
+            disabled: statuses.length === DEFAULT_STATUS_FILTER.length,
           },
-          {
-            id: 1,
-            label: intl("dashboard.interview.status.pending"),
-            onClick: () =>
-              setStatus((prev) => {
-                if (prev === null) return [IInterview.Status.Pending];
-                if (prev.includes(IInterview.Status.Pending))
-                  return prev.filter((el) => el !== IInterview.Status.Pending);
-                return [...prev, IInterview.Status.Pending];
-              }),
-            checked: status?.includes(IInterview.Status.Pending),
-          },
-          {
-            id: 2,
-            label: intl("dashboard.interview.status.passed"),
-            onClick: () =>
-              setStatus((prev) => {
-                if (prev === null) return [IInterview.Status.Passed];
-                if (prev.includes(IInterview.Status.Passed))
-                  return prev.filter((el) => el !== IInterview.Status.Passed);
-                return [...prev, IInterview.Status.Passed];
-              }),
-            checked: status?.includes(IInterview.Status.Passed),
-          },
-          {
-            id: 3,
-            label: intl("dashboard.interview.status.rejected"),
-            onClick: () =>
-              setStatus((prev) => {
-                if (prev === null) return [IInterview.Status.Rejected];
-                if (prev.includes(IInterview.Status.Rejected))
-                  return prev.filter((el) => el !== IInterview.Status.Rejected);
-                return [...prev, IInterview.Status.Rejected];
-              }),
-            checked: status?.includes(IInterview.Status.Rejected),
-          },
-          {
-            id: 4,
-            label: intl("dashboard.interview.status.canceled"),
-            onClick: () =>
-              setStatus((prev) => {
-                if (prev === null) return [IInterview.Status.Canceled];
-                if (prev.includes(IInterview.Status.Canceled))
-                  return prev.filter((el) => el !== IInterview.Status.Canceled);
-                return [...prev, IInterview.Status.Canceled];
-              }),
-            checked: status?.includes(IInterview.Status.Canceled),
-          },
+          makeStatusOption(IInterview.Status.Pending),
+          makeStatusOption(IInterview.Status.Passed),
+          makeStatusOption(IInterview.Status.Canceled),
+          makeStatusOption(IInterview.Status.Rejected),
         ],
       },
       {
@@ -111,65 +112,15 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
           {
             id: 0,
             label: intl("global.labels.cancel"),
-            onClick: () => setLevel(null),
+            onClick: () => setLevels([]),
             danger: true,
-            disabled: level === null || level.length === 0,
+            disabled: levels === null || levels.length === 0,
           },
-          {
-            id: 1,
-            label: "1",
-            onClick: () =>
-              setLevel((prev) => {
-                if (prev === null) return [1];
-                if (prev.includes(1)) return prev.filter((el) => el !== 1);
-                return [...prev, 1];
-              }),
-            checked: level?.includes(1),
-          },
-          {
-            id: 2,
-            label: "2",
-            onClick: () =>
-              setLevel((prev) => {
-                if (prev === null) return [2];
-                if (prev.includes(2)) return prev.filter((el) => el !== 2);
-                return [...prev, 2];
-              }),
-            checked: level?.includes(2),
-          },
-          {
-            id: 3,
-            label: "3",
-            onClick: () =>
-              setLevel((prev) => {
-                if (prev === null) return [3];
-                if (prev.includes(3)) return prev.filter((el) => el !== 3);
-                return [...prev, 3];
-              }),
-            checked: level?.includes(3),
-          },
-          {
-            id: 4,
-            label: "4",
-            onClick: () =>
-              setLevel((prev) => {
-                if (prev === null) return [4];
-                if (prev.includes(4)) return prev.filter((el) => el !== 4);
-                return [...prev, 4];
-              }),
-            checked: level?.includes(4),
-          },
-          {
-            id: 5,
-            label: "5",
-            onClick: () =>
-              setLevel((prev) => {
-                if (prev === null) return [5];
-                if (prev.includes(5)) return prev.filter((el) => el !== 5);
-                return [...prev, 5];
-              }),
-            checked: level?.includes(5),
-          },
+          makeLevelOption(1),
+          makeLevelOption(2),
+          makeLevelOption(3),
+          makeLevelOption(4),
+          makeLevelOption(5),
         ],
       },
       {
@@ -199,25 +150,33 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
       },
       {
         id: 4,
-        label: intl("dashboard.user.filter.order-direction"),
+        label: intl("dashboard.filter.order-direction"),
         value: orderDirection,
         onRadioValueChange: (value) =>
           setOrderDirection(value as IFilter.OrderDirection),
         radioGroup: [
           {
             id: 1,
-            label: intl("dashboard.user.filter.order-direction.desc"),
+            label: intl("dashboard.filter.order-direction.desc"),
             value: IFilter.OrderDirection.Descending,
           },
           {
             id: 2,
-            label: intl("dashboard.user.filter.order-direction.asc"),
+            label: intl("dashboard.filter.order-direction.asc"),
             value: IFilter.OrderDirection.Ascending,
           },
         ],
       },
     ],
-    [status, level, signed, orderDirection, intl]
+    [
+      intl,
+      statuses,
+      levels,
+      signed,
+      makeStatusOption,
+      makeLevelOption,
+      orderDirection,
+    ]
   );
 
   return (
