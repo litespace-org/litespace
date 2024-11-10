@@ -12,13 +12,21 @@ import {
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
+export type UseFindInterviewsPayload = Omit<
+  IInterview.FindInterviewsApiQuery,
+  "page" | "size"
+> & {
+  userOnly?: boolean;
+};
+
 export function useFindInterviews(
-  filter?: Omit<IInterview.FindInterviewsApiQuery, "page" | "size">
+  filter?: UseFindInterviewsPayload
 ): UsePaginateResult<Element<IInterview.FindInterviewsApiResponse["list"]>> {
   const atlas = useAtlas();
 
   const findInterviews = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
+      if (filter?.userOnly && !filter?.users) return { list: [], total: 0 };
       return atlas.interview.findInterviews({
         page,
         size,
