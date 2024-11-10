@@ -362,6 +362,7 @@
   "dashboard.settings.cache.delete.success": "تم حذف التخزين الموقت بنجاح",
   "dashboard.settings.cache.delete.error": "حدث خطأ أثناء حذف التخزين المؤقت",
   "dashboard.settings.cache.description": "يوفر التخزين المؤقت سرعة الوصول للبيانات عالية الطلب (مثل بيانات المعلم)",
+  "dashboard.topics.title": "الموضوعات",
   "chat.no": "إطرح جميع إسئلتك علي معلمك المفضل",
   "chat.active": "نشط الأن",
   "chat.message.edit": "تعديل",
