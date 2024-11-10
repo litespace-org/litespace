@@ -67,6 +67,11 @@ export const exists = {
     error(ApiError.SubscriptionExists, "You already subscribed", 400),
 };
 
+export const already = {
+  verified: () =>
+    error(ApiError.UserAlreadyVerified, "User already verified his email", 400),
+};
+
 export const notfound = {
   base: () => error(ApiError.NotFound, "Resource not found", 404),
   user: () => error(ApiError.UserNotFound, "User not found", 404),
