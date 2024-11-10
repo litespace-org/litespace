@@ -22,6 +22,7 @@ export * as IWithdrawMethod from "@/withdrawMethod";
 export * as IInvoice from "@/invoice";
 export * as IAsset from "@/asset";
 export * as ITopic from "@/topic";
+export * as Server from "@/server";
 export * from "@/api";
 export * from "@/utils";
 export * from "@/api";

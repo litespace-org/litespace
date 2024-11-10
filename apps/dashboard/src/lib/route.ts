@@ -8,4 +8,5 @@ export enum Route {
   User = "/user/:id",
   Interviews = "/interviews",
   Lessons = "/lessons",
+  ServerStats = "server-stats",
 }

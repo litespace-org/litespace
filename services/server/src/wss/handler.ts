@@ -10,6 +10,9 @@ import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
+import { isAdmin, isStudent } from "@litespace/auth";
+import { background } from "@/workers";
+import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
@@ -52,8 +55,8 @@ export class WssHandler {
       // private channel
       this.socket.join(this.user.id.toString());
 
-      const student = this.user.role === IUser.Role.Student;
-      if (student) this.socket.join(Wss.Room.TutorsCache);
+      if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
+      if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -214,6 +217,7 @@ export class WssHandler {
     const error = safe(async () => {
       await this.online();
       await this.joinRooms();
+      if (isAdmin(this.user)) this.emitServerStats();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -233,6 +237,13 @@ export class WssHandler {
   async offline() {
     const user = await users.update(this.user.id, { online: false });
     this.announceStatus(user);
+  }
+
+  async emitServerStats() {
+    background.on("message", (message: PartentPortMessage) => {
+      if (message.type === PartentPortMessageType.Stats)
+        return this.socket.emit(Wss.ServerEvent.ServerStats, message.stats);
+    });
   }
 
   async announceStatus(user: IUser.Self) {

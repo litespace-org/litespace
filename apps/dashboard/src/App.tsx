@@ -7,6 +7,7 @@ import Media from "@/pages/Media";
 import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
 import Users from "@/pages/Users";
+import ServerStats from "@/pages/ServerStats";
 import Interviews from "@/pages/Interviews";
 import UserDetails from "@/pages/UserDetails";
 import { useAtlas } from "@litespace/headless/atlas";
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { path: Route.User, element: <UserDetails /> },
       { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Lessons, element: <Lessons /> },
+      { path: Route.ServerStats, element: <ServerStats /> },
     ],
   },
 ]);
