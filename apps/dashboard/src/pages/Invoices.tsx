@@ -8,7 +8,7 @@ import React from "react";
 
 const Invoices: React.FC = () => {
   const intl = useFormatMessage();
-  const { query, ...pagination } = useFindInvoices();
+  const { query, ...pagination } = useFindInvoices({});
 
   if (query.error) {
     return (
