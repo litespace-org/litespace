@@ -13,9 +13,11 @@ import {
   Video,
   Columns,
   BookOpen,
+  Server,
 } from "react-feather";
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
+import { destructureRole } from "@litespace/sol/user";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -25,40 +27,58 @@ const Root: React.FC = () => {
 
   useAuthRoutes();
 
+  const role = useMemo(
+    () => profile?.role && destructureRole(profile?.role),
+    [profile?.role]
+  );
+
   const routes = useMemo(
-    () => [
-      {
-        label: intl("dashboard.navbar.users"),
-        route: Route.Users,
-        icon: Users,
-      },
-      {
-        label: intl("dashboard.navbar.invoices"),
-        route: Route.Invoices,
-        icon: FileText,
-      },
-      {
-        label: intl("dashboard.navbar.media"),
-        route: Route.Media,
-        icon: Video,
-      },
-      {
-        label: intl("dashboard.navbar.plans"),
-        route: Route.Plans,
-        icon: BarChart,
-      },
-      {
-        label: intl("dashboard.navbar.interviews"),
-        route: Route.Interviews,
-        icon: Columns,
-      },
-      {
-        label: intl("dashboard.navbar.lessons"),
-        route: Route.Lessons,
-        icon: BookOpen,
-      },
-    ],
-    [intl]
+    () =>
+      [
+        {
+          label: intl("dashboard.sidebar.users"),
+          route: Route.Users,
+          icon: Users,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.invoices"),
+          route: Route.Invoices,
+          icon: FileText,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.media"),
+          route: Route.Media,
+          icon: Video,
+          show: role?.admin || role?.mediaProvider,
+        },
+        {
+          label: intl("dashboard.sidebar.plans"),
+          route: Route.Plans,
+          icon: BarChart,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.interviews"),
+          route: Route.Interviews,
+          icon: Columns,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.lessons"),
+          route: Route.Lessons,
+          icon: BookOpen,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.server.stats"),
+          route: Route.ServerStats,
+          icon: Server,
+          show: role?.admin,
+        },
+      ].filter((route) => route.show),
+    [intl, role?.admin, role?.mediaProvider]
   );
 
   useEffect(() => {
