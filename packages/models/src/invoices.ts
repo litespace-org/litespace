@@ -5,11 +5,17 @@ import {
   Paginated,
   banks,
 } from "@litespace/types";
-import { column, countRows, knex, withPagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { Knex } from "knex";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
-import { first } from "lodash";
+import { first, isEmpty, isUndefined } from "lodash";
 
 export const updateRequest = zod.object({
   method: zod.enum([
@@ -142,18 +148,43 @@ export class Invoices {
     return row ? zod.coerce.number().parse(row.amount) : 0;
   }
 
-  async find(
-    pagination?: IFilter.Pagination,
-    tx?: Knex.Transaction
-  ): Promise<Paginated<IInvoice.Self>> {
+  async find({
+    users,
+    methods,
+    banks,
+    statuses,
+    receipt,
+    orderBy = "created_at",
+    orderDirection = IFilter.OrderDirection.Descending,
+    page,
+    size,
+    tx,
+  }: WithOptionalTx<IInvoice.FindInvoicesQuery>): Promise<
+    Paginated<IInvoice.Self>
+  > {
     const builder = this.builder(tx);
+
+    if (users && !isEmpty(users))
+      builder.whereIn(this.column("user_id"), users);
+
+    if (methods && !isEmpty(methods))
+      builder.whereIn(this.column("method"), methods);
+
+    if (banks && !isEmpty(banks)) builder.whereIn(this.column("bank"), banks);
+
+    if (statuses && !isEmpty(statuses))
+      builder.whereIn(this.column("status"), statuses);
+
+    if (!isUndefined(receipt))
+      builder.where(this.column("receipt"), receipt ? "IS NOT" : "IS", null);
+
     const total = await countRows(builder.clone());
     const query = builder
       .clone()
       .select(this.columns)
-      .orderBy(this.column("created_at"), "desc");
+      .orderBy(this.column(orderBy), orderDirection);
 
-    const rows = await withPagination(query, pagination);
+    const rows = await withPagination(query, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
   }
 
