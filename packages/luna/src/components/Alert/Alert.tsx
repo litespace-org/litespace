@@ -3,7 +3,6 @@ import cn from "classnames";
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "react-feather";
 import { AlertType } from "@/components/Alert/types";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
-import { ButtonVariant } from "../Button/types";
 
 export const Alert: React.FC<{
   title?: string;
@@ -28,11 +27,12 @@ export const Alert: React.FC<{
   return (
     <div
       className={cn(
-        "tw-border tw-p-4 tw-text-base tw-rounded-lg",
+        "tw-border tw-p-4 tw-rounded-lg",
         "tw-w-full tw-flex tw-flex-row tw-gap-2",
         {
           "tw-border-destructive-400 tw-bg-destructive-200": error,
-          "tw-border-warning-400 tw-bg-warning-200": warning,
+          "tw-border-warning-400 tw-bg-warning-200 tw-text-warning-900":
+            warning,
           "tw-border-[var(--colors-green8)] tw-bg-[var(--colors-green4)]":
             success,
           "tw-border-[var(--colors-blue8)] tw-bg-[var(--colors-blue4)]": info,
@@ -52,14 +52,7 @@ export const Alert: React.FC<{
       </div>
       <div className="tw-flex tw-flex-col tw-items-start tw-justify-center">
         {title ? (
-          <h4
-            className={cn(
-              action || children ? "tw-mb-2" : "",
-              "tw-text-foreground"
-            )}
-          >
-            {title}
-          </h4>
+          <h4 className={cn(action || children ? "tw-mb-2" : "")}>{title}</h4>
         ) : null}
 
         {children ? (
@@ -82,7 +75,6 @@ export const Alert: React.FC<{
               type={
                 type === AlertType.Error ? ButtonType.Error : ButtonType.Main
               }
-              variant={ButtonVariant.Secondary}
               disabled={action.disabled}
               loading={action.loading}
             >

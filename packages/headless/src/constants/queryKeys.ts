@@ -17,4 +17,5 @@ export enum QueryKey {
   FindWithdrawalMethods = "find-withdrawal-methods",
   FindUserById = "find-user-by-id",
   FindStudentStats = "find-student-stats",
+  FindTopic = "find-topic",
 }
