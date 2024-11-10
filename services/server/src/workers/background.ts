@@ -28,7 +28,7 @@ async function sendAuthTokenEmail({
     await emailer.send({
       to: email,
       template:
-        token === IToken.Type.VerifyEmail
+        type === IToken.Type.VerifyEmail
           ? EmailTemplate.VerifyEmail
           : EmailTemplate.ForgetPassword,
       props: { url: url.toString() },

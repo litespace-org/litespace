@@ -8,5 +8,6 @@ router.post("/google", auth.loginWithGoogle);
 router.post("/password/forgot", auth.forgotPassword);
 router.put("/password/reset", auth.resetPassword);
 router.put("/verify-email", auth.verifyEmail);
+router.put("/send-verify-email", auth.sendVerificationEmail);
 
 export default router;
