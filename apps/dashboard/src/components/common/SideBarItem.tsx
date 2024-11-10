@@ -5,7 +5,7 @@ import {
   ButtonType,
   ButtonVariant,
 } from "@litespace/luna/Button";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 import { Typography } from "@litespace/luna/Typography";
@@ -17,6 +17,7 @@ function SideBarItem({
   option: NavOption;
   onClick?: Void;
 }) {
+  const location = useLocation();
   return (
     <li key={option.label} className="w-full">
       <Link to={option.route} onClick={onClick} className="inline-block w-full">
