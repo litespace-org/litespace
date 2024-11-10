@@ -14,6 +14,7 @@ import {
   Columns,
   BookOpen,
   Server,
+  Settings,
 } from "react-feather";
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
@@ -75,6 +76,12 @@ const Root: React.FC = () => {
           label: intl("dashboard.sidebar.server.stats"),
           route: Route.ServerStats,
           icon: Server,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.settings"),
+          route: Route.Settings,
+          icon: Settings,
           show: role?.admin,
         },
       ].filter((route) => route.show),
