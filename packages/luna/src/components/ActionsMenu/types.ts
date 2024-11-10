@@ -1,5 +1,5 @@
 export type MenuAction = {
-  id: number;
+  id: number | string;
   label: string;
   disabled?: boolean;
   danger?: boolean;
