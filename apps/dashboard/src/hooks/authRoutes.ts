@@ -56,6 +56,9 @@ const routeConfigMap: Record<Route, RouteConfig> = {
   [Route.ServerStats]: {
     whitelist: [regularAdmin],
   },
+  [Route.Settings]: {
+    whitelist: [regularAdmin],
+  },
 };
 
 export function useAuthRoutes() {
