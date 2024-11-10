@@ -8,6 +8,7 @@ import {
 import { Link } from "react-router-dom";
 import { Void } from "@litespace/types";
 import cn from "classnames";
+import { Typography } from "@litespace/luna/Typography";
 
 function SideBarItem({
   option,
@@ -23,17 +24,20 @@ function SideBarItem({
           onClick={option.onClick}
           loading={option.loading}
           disabled={option.disabled}
-          className={cn(
-            "w-full [&>div]:w-full",
-            location.pathname === option.route && "bg-surface-200"
-          )}
+          className={cn("w-full [&>div]:w-full")}
           size={ButtonSize.Small}
           type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
+          variant={
+            location.pathname === option.route
+              ? ButtonVariant.Primary
+              : ButtonVariant.Tertiary
+          }
         >
           <div className="flex items-center justify-start w-full gap-2">
             <option.icon className="w-6 h-6" />
-            <p className="truncate">{option.label}</p>
+            <Typography element="body" className="truncate">
+              {option.label}
+            </Typography>
           </div>
         </Button>
       </Link>
