@@ -193,19 +193,19 @@ export const Users: React.FC = () => {
       },
       {
         id: 6,
-        label: intl("dashboard.user.filter.order-direction"),
+        label: intl("dashboard.filter.order-direction"),
         value: orderDirection,
         onRadioValueChange: (value) =>
           setOrderDirection(value as IFilter.OrderDirection),
         radioGroup: [
           {
             id: 1,
-            label: intl("dashboard.user.filter.order-direction.desc"),
+            label: intl("dashboard.filter.order-direction.desc"),
             value: IFilter.OrderDirection.Descending,
           },
           {
             id: 2,
-            label: intl("dashboard.user.filter.order-direction.asc"),
+            label: intl("dashboard.filter.order-direction.asc"),
             value: IFilter.OrderDirection.Ascending,
           },
         ],
