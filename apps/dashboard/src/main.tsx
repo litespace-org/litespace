@@ -10,6 +10,7 @@ import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
+import { SocketProvider } from "@litespace/headless/socket";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastProvider } from "@litespace/luna/Toast";
@@ -31,20 +32,22 @@ createRoot(document.getElementById("root")!).render(
         <ToastProvider>
           <BackendProvider backend={backend} getToken={getToken}>
             <AtlasProvider>
-              <QueryClientProvider client={queryClient}>
-                <ReduxProvider store={store}>
-                  <PersistGate
-                    loading={
-                      <div className="flex items-center justify-center w-screen h-screen">
-                        <Spinner />
-                      </div>
-                    }
-                    persistor={persistor}
-                  >
-                    <App />
-                  </PersistGate>
-                </ReduxProvider>
-              </QueryClientProvider>
+              <SocketProvider>
+                <QueryClientProvider client={queryClient}>
+                  <ReduxProvider store={store}>
+                    <PersistGate
+                      loading={
+                        <div className="flex items-center justify-center w-screen h-screen">
+                          <Spinner />
+                        </div>
+                      }
+                      persistor={persistor}
+                    >
+                      <App />
+                    </PersistGate>
+                  </ReduxProvider>
+                </QueryClientProvider>
+              </SocketProvider>
             </AtlasProvider>
           </BackendProvider>
         </ToastProvider>

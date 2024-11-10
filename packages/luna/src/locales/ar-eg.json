@@ -349,6 +349,8 @@
   "dashboard.lessons.filter.date.future": "عرض الحصص المستقبلية",
   "dashboard.lessons.filter.date.past": "عرض الحصص الماضية",
   "dashboard.lessons.filter.date.now": "تحدث الأن",
+  "dashboard.server.stats.title": "إحصائيات السيرفر",
+  "dashboard.server.stats.uptime": "مدة تشغيل السيرفر: {duration}",
   "dashboard.filter.order-direction": "الترتيب",
   "dashboard.filter.order-direction.asc": "الأقدم أولاً",
   "dashboard.filter.order-direction.desc": "الأحدث أولاً",

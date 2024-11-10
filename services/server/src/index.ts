@@ -23,7 +23,7 @@ const io = new Server(server, {
 });
 const context: ApiContext = { io };
 
-io.engine.use(onlyForHandshake(authMiddleware("jwt_secret")));
+io.engine.use(onlyForHandshake(authMiddleware(jwtSecret)));
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
