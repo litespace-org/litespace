@@ -16,14 +16,23 @@ import { UsePaginateResult, usePaginate } from "@/pagination";
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-export function useFindInvoices(): UsePaginateResult<IInvoice.Self> {
+type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
+  IInvoice.FindInvoicesQuery,
+  "page" | "size"
+>;
+
+export function useFindInvoices(
+  filter: UseFindInvoicesPayload
+): UsePaginateResult<IInvoice.Self> {
   const atlas = useAtlas();
   const findInvoices = useCallback(
-    async ({ page, size }: IFilter.Pagination) =>
-      await atlas.invoice.find({ page, size }),
-    [atlas.invoice]
+    async ({ page, size }: IFilter.Pagination) => {
+      if (filter.userOnly && !filter.users) return { list: [], total: 0 };
+      return await atlas.invoice.find({ page, size });
+    },
+    [atlas.invoice, filter.userOnly, filter.users]
   );
-  return usePaginate(findInvoices, [QueryKey.FindInvoices]);
+  return usePaginate(findInvoices, [QueryKey.FindInvoices, filter]);
 }
 
 type useFindInvoicesByUserProps = {
@@ -36,7 +45,10 @@ type useFindInvoicesByUserProps = {
 };
 
 export function useFindInvoicesByUser(
-  profile: IUser.Self | null
+  filter: { userOnly?: boolean } & Omit<
+    IInvoice.FindInvoicesQuery,
+    "page" | "size"
+  >
 ): useFindInvoicesByUserProps {
   const atlas = useAtlas();
   const findInvoices = useCallback(
@@ -45,17 +57,18 @@ export function useFindInvoicesByUser(
     }: {
       pageParam: number;
     }): Promise<Paginated<IInvoice.Self>> => {
-      if (!profile) return { list: [], total: 0 };
+      if (filter.userOnly && !filter.users) return { list: [], total: 0 };
       return await atlas.invoice.find({
-        userId: profile.id,
+        users: filter.users,
         page: pageParam,
-        size: 10,
+        ...filter,
       });
     },
-    [atlas.invoice, profile]
+    [atlas.invoice, filter]
   );
   return useInfinitePaginationQuery(findInvoices, [
     QueryKey.FindInvoicesByUser,
+    filter,
   ]);
 }
 

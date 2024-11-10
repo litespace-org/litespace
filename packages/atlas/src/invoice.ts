@@ -42,7 +42,7 @@ export class Invoice extends Base {
   }
 
   async find(
-    params: IInvoice.FindInvoicesParams
+    params: IInvoice.FindInvoicesQuery
   ): Promise<Paginated<IInvoice.Self>> {
     return this.get("/api/v1/invoice/list", null, params);
   }

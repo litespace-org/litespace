@@ -1,5 +1,5 @@
 import type { Type as WithdrawMethod } from "@/withdrawMethod";
-import { Paginated } from "@/utils";
+import { ExtractObjectKeys, Paginated } from "@/utils";
 import { IFilter } from "@/index";
 
 export enum Bank {
@@ -123,8 +123,15 @@ export type CancelApiPayload = {
 
 export type FindInvoicesParams = IFilter.Pagination & { userId?: number };
 
-export enum RecivingMethod {
-  Wallet = "wallet",
-  Bank = "bank",
-  Instapay = "instapay",
-}
+export type FindInvoicesQuery = IFilter.Pagination & {
+  users?: number[];
+  methods?: WithdrawMethod[];
+  banks?: Bank[];
+  statuses?: Status[];
+  receipt?: boolean;
+  orderBy?: ExtractObjectKeys<
+    Row,
+    "amount" | "created_at" | "updated_at" | "bank"
+  >;
+  orderDirection?: IFilter.OrderDirection;
+};

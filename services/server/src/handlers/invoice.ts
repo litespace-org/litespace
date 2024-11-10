@@ -12,7 +12,12 @@ import { ApiContext } from "@/types/api";
 import {
   bank,
   id,
+  ids,
   invoiceStatus,
+  jsonBoolean,
+  orderDirection,
+  pageNumber,
+  pageSize,
   pagination,
   withdrawMethod,
   withNamedId,
@@ -22,7 +27,7 @@ import { invoices, lessons } from "@litespace/models";
 import { IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { FileArray, UploadedFile } from "express-fileupload";
+import { UploadedFile } from "express-fileupload";
 import { isUndefined } from "lodash";
 import zod from "zod";
 
@@ -51,7 +56,24 @@ const updateByReceiverPayload = zod.object({
   cancel: zod.optional(zod.boolean()),
 });
 
-const findPayload = zod.object({ userId: zod.optional(id) });
+const orderByOptions = [
+  "created_at",
+  "updated_at",
+  "amount",
+  "bank",
+] as const satisfies Array<IInvoice.FindInvoicesQuery["orderBy"]>;
+
+const findPayload = zod.object({
+  users: zod.optional(ids),
+  methods: zod.optional(zod.array(withdrawMethod)),
+  banks: zod.optional(zod.array(bank)),
+  statuses: zod.optional(zod.array(invoiceStatus)),
+  receipt: zod.optional(jsonBoolean),
+  orderBy: zod.optional(zod.enum(orderByOptions)),
+  orderDirection: zod.optional(orderDirection),
+  page: zod.optional(pageNumber),
+  size: zod.optional(pageSize),
+});
 
 async function stats(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
@@ -284,14 +306,12 @@ export function updateByAdmin(context: ApiContext) {
 
 async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const { userId } = findPayload.parse(req.query);
-  const { page, size } = pagination.parse(req.query);
-  const allowed = (isTutor(user) && user.id === userId) || isAdmin(user);
+  const query: IInvoice.FindInvoicesQuery = findPayload.parse(req.query);
+  const allowed =
+    (isTutor(user) && query.users?.includes(user.id)) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { list, total } = userId
-    ? await invoices.findByUser(userId, { page, size })
-    : await invoices.find({ page, size });
+  const { list, total } = await invoices.find(query);
 
   // attachement is a private field.
   const masked = isTutor(user)

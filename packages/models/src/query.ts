@@ -1,7 +1,9 @@
 import { Pool } from "pg";
+import { IFilter, NumericString } from "@litespace/types";
 import init, { Knex } from "knex";
 import zod from "zod";
-import { IFilter, NumericString } from "@litespace/types";
+
+export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
 
 const connection = {
   user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),
