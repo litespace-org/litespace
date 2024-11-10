@@ -1,7 +1,9 @@
 import { ITopic, Void } from "@litespace/types";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
+import { usePaginate } from "@/pagination";
+import { MutationKey, QueryKey } from "@/constants";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -23,22 +25,19 @@ export function useCreateTopic({
 
   return useMutation({
     mutationFn: createTopic,
-    mutationKey: ["create-topic"],
+    mutationKey: [MutationKey.CreateTopic],
     onSuccess,
     onError,
   });
 }
 
-export function useTopics(params: ITopic.FindTopicsApiQuery) {
+export function useTopics(query: ITopic.FindTopicsApiQuery) {
   const atlas = useAtlas();
   const findTopics = useCallback(async () => {
-    return atlas.topic.findTopics(params);
-  }, [atlas.topic, params]);
+    return await atlas.topic.findTopics({ ...query });
+  }, [atlas.topic, query]);
 
-  return useQuery({
-    queryFn: findTopics,
-    queryKey: ["find-topics"],
-  });
+  return usePaginate(findTopics, [QueryKey.FindTopic]);
 }
 
 export function useUpdateTopic({
@@ -64,7 +63,7 @@ export function useUpdateTopic({
 
   return useMutation({
     mutationFn: updateTopic,
-    mutationKey: ["update-topic"],
+    mutationKey: [MutationKey.UpdateTopic],
     onSuccess,
     onError,
   });
@@ -87,7 +86,7 @@ export function useDeleteTopic({
 
   return useMutation({
     mutationFn: deleteTopic,
-    mutationKey: ["delete-topic"],
+    mutationKey: [MutationKey.DeleteTopic],
     onSuccess,
     onError,
   });

@@ -17,7 +17,6 @@
     "./users": "./dist/users.js",
     "./rating": "./dist/rating.js",
     "./topic": "./dist/topic.js",
-    "./pagination": "./dist/pagination.js",
     "./query": "./dist/query.js",
     "./constants": "./dist/constants/index.js",
     "./calls": "./dist/calls.js",

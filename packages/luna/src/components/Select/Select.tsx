@@ -65,7 +65,7 @@ export const Select = <T extends string | number>({
         className={cn(
           "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
           "tw-border tw-border-control tw-text-sm tw-bg-foreground/[0.026] tw-rounded-md",
-          "tw-flex tw-justify-between tw-gap-2 tw-items-center tw-cursor-pointer tw-text-foreground",
+          "tw-flex tw-justify-between tw-gap-2 tw-items-center tw-cursor-pointer tw-text-foreground tw-whitespace-nowrap",
           size === "normal"
             ? "tw-px-4 tw-py-2 tw-h-[38px]"
             : "tw-px-2 tw-py-1 tw-h-[34px]"
