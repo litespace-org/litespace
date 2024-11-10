@@ -9,4 +9,5 @@ export enum Route {
   Interviews = "/interviews",
   Lessons = "/lessons",
   ServerStats = "/server-stats",
+  Settings = "/settings",
 }

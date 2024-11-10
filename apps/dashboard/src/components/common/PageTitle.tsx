@@ -6,7 +6,7 @@ import { Typography } from "@litespace/luna/Typography";
 
 const PageTitle: React.FC<{
   title: string;
-  fetching: boolean;
+  fetching?: boolean;
   count?: number;
   className?: string;
 }> = ({ title, fetching, count, className }) => {
