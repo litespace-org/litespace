@@ -16,6 +16,7 @@ import { useAppDispatch } from "@/redux/store";
 import { findCurrentUser } from "@/redux/user/profile";
 import Lessons from "@/pages/Lessons";
 import Settings from "@/pages/Settings";
+import Topics from "@/pages/Topics";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: Route.User, element: <UserDetails /> },
       { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Lessons, element: <Lessons /> },
+      { path: Route.Topics, element: <Topics /> },
       { path: Route.ServerStats, element: <ServerStats /> },
       { path: Route.Settings, element: <Settings /> },
     ],
