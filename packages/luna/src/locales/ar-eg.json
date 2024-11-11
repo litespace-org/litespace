@@ -425,6 +425,7 @@
   "labels.update": "تعديل",
   "labels.new.password": "كلمة السر الجديدة",
   "labels.repeat.new.password": "أعد كتابة كلمة السر الجديدة",
+  "labels.invoice.receipt.upload": "إرفاق الإيصال",
   "global.created-at": "تاريخ الإنشاء",
   "global.updated-at": "تاريخ التعديل",
   "global.invoice.update.method": "تم تعديل وسيلة السحب من \"{from}\" الي \"{to}\".",

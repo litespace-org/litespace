@@ -27,12 +27,12 @@ const typographyHtmlMap: Record<TypographyElement, string> = {
 };
 
 export const Typography: React.FC<{
-  element: TypographyElement;
+  element?: TypographyElement;
   tag?: string;
   weight?: TypographyWeight;
   children?: React.ReactNode;
   className?: string;
-}> = ({ element, tag, weight, children, className }) => {
+}> = ({ element = "body", tag, weight, children, className }) => {
   return React.createElement(tag || typographyHtmlMap[element], {
     children,
     className: cn(
