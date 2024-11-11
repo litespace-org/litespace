@@ -9,7 +9,7 @@ import { SidebarNav } from "@litespace/luna/SidebarNav";
 import { Switch } from "@litespace/luna/Switch";
 import { Theme } from "@litespace/luna/hooks/theme";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { removeToken } from "@litespace/luna/cache";
+import { removeAuthToken } from "@litespace/luna/cache";
 import { useAppDispatch, useAppSelector } from "@/redux/store";
 import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
 import { IUser, Void } from "@litespace/types";
@@ -29,7 +29,7 @@ const Navbar: React.FC<{
   const dispatch = useAppDispatch();
 
   const logout = useCallback(() => {
-    removeToken();
+    removeAuthToken();
     dispatch(resetUserProfile());
     dispatch(resetTutorMeta());
   }, [dispatch]);

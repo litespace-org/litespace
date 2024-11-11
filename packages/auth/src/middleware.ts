@@ -4,31 +4,33 @@ import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
 import { safe } from "@litespace/sol/error";
 import { isAdmin } from "@/authorization";
+import { IUser } from "@litespace/types";
 
-export function authMiddleware(secret: string) {
+export function authMiddleware({
+  jwtSecret,
+  ghostToken,
+}: {
+  jwtSecret: string;
+  ghostToken: string;
+}) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const header = req.headers.authorization || req.headers["Authorization"];
-      if (!header) return next();
+      if (!header || typeof header !== "string") return next();
 
-      if (typeof header !== "string")
-        throw new Error("Invalid authorization header");
+      const [type, token] = header.split(" ");
 
-      const [bearer, token] = header.split(" ");
-      if (bearer !== "Bearer")
-        throw new Error("Invalid bearer authorization header");
+      if (type === "Basic" && token.trim() === ghostToken)
+        req.user = IUser.GHOST;
 
-      const id = await safe(async () => decodeAuthJwt(token, secret));
-      // skip in case of invalid token
-      if (id instanceof Error) return next();
-      const user = await users.findById(id);
+      if (type === "Bearer") {
+        const id = await safe(async () => decodeAuthJwt(token, jwtSecret));
+        if (id instanceof Error) return next();
 
-      if (user === null) {
-        res.status(404).json({ message: "User not found" });
-        return;
+        const user = await users.findById(id);
+        if (user) req.user = user;
       }
 
-      req.user = user;
       next();
     }
   );
