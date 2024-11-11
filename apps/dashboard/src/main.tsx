@@ -4,7 +4,7 @@ import { Provider as ReduxProvider } from "react-redux";
 import { Spinner } from "@litespace/luna/Spinner";
 import { locales } from "@litespace/luna/locales";
 import { backend } from "@litespace/luna/backend";
-import { getToken } from "@litespace/luna/cache";
+import { getAuthToken as getCachedAuthToken } from "@litespace/luna/cache";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -18,6 +18,7 @@ import App from "@/App.tsx";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
+import { TokenType } from "@litespace/atlas";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +31,11 @@ createRoot(document.getElementById("root")!).render(
     >
       <AppConfigProvider>
         <ToastProvider>
-          <BackendProvider backend={backend} getToken={getToken}>
+          <BackendProvider
+            backend={backend}
+            getAuthTokenValue={getCachedAuthToken}
+            tokenType={TokenType.Bearer}
+          >
             <AtlasProvider>
               <SocketProvider>
                 <QueryClientProvider client={queryClient}>

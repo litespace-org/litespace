@@ -344,6 +344,9 @@ async function findOnboardedTutors(req: Request, res: Response) {
     return Schedule.order(events, "asc");
   };
 
+  const user = req.user;
+  const userGender = isUser(user) && user.gender;
+
   const iteratees = [
     // sort in ascending order by the first availablity
     (tutor: ITutor.FullTutor) => {
@@ -353,9 +356,9 @@ async function findOnboardedTutors(req: Request, res: Response) {
       return dayjs.utc(event.start).unix();
     },
     (tutor: ITutor.FullTutor) => {
-      if (!req.user?.gender) return 0; // disable ordering by gender if user gener is unkown.
+      if (!userGender || !user.gender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
       if (!tutor.gender) return Infinity;
-      const same = req.user.gender === tutor.gender;
+      const same = user.gender === tutor.gender;
       return same ? 0 : 1;
     },
     "online",

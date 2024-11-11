@@ -18,7 +18,7 @@ import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
 import { safe } from "@litespace/sol/error";
 import { unpackRules } from "@litespace/sol/rule";
-import { isAdmin, isUser } from "@litespace/auth";
+import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
@@ -46,10 +46,9 @@ const findLessonsQuery = zod.object({
 function create(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
-      const userId = req.user?.id;
-      const role = req.user?.role;
-      const student = role === IUser.Role.Student;
-      if (!userId || !student) return next(forbidden());
+      const user = req.user;
+      const allowed = isStudent(user);
+      if (!allowed) return next(forbidden());
 
       const payload: ILesson.CreateApiPayload = createLessonPayload.parse(
         req.body
@@ -65,7 +64,7 @@ function create(context: ApiContext) {
         payload.duration
       );
 
-      const roomMembers = [userId, tutor.id];
+      const roomMembers = [user.id, tutor.id];
       const room = await rooms.findRoomByMembers(roomMembers);
       if (!room) await rooms.create(roomMembers);
 
@@ -90,7 +89,7 @@ function create(context: ApiContext) {
             {
               duration: payload.duration,
               host: payload.tutorId,
-              members: [userId],
+              members: [user.id],
               rule: payload.ruleId,
               start: payload.start,
             },
@@ -101,7 +100,7 @@ function create(context: ApiContext) {
             {
               call: call.id,
               host: payload.tutorId,
-              members: [userId],
+              members: [user.id],
               price,
             },
             tx

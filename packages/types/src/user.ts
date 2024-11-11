@@ -163,3 +163,9 @@ export type FindStudentStatsApiResponse = {
     canceled: number;
   };
 };
+
+export type Ghost = "ghost" & {
+  __type: "ghost";
+};
+
+export const GHOST = "ghost" as Ghost;
