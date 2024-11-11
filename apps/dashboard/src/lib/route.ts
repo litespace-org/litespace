@@ -12,4 +12,5 @@ export enum Route {
   Settings = "/settings",
   Topics = "/topics",
   VerifyEmail = "/verify-email",
+  UserSetting = "/user-settings",
 }
