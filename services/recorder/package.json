@@ -1,0 +1,17 @@
+{
+  "name": "@litespace/recorder",
+  "version": "1.0.0",
+  "description": "LiteSpace recording server",
+  "scripts": {
+    "guest": "vite-node src/guest/index.ts"
+  },
+  "keywords": [],
+  "author": "LiteSpace Foundation <core@litespace.org>",
+  "license": "ISC",
+  "dependencies": {
+    "playwright": "^1.48.2"
+  },
+  "devDependencies": {
+    "vite-node": "^2.1.2"
+  }
+}
