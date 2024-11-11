@@ -98,6 +98,17 @@ export const emailConfig = {
     .parse(process.env.EMAIL_PASSWORD),
 } as const;
 
+export const ghostConfig = {
+  username: zod
+    .string({ message: "Missing or invalid ghost username" })
+    .parse(process.env.GHOST_USERNAME),
+  password: zod
+    .string({
+      message: "Missing or invalid ghost password",
+    })
+    .parse(process.env.GHOST_PASSWORD),
+} as const;
+
 export const platformConfig = {
   /**
    * Tutor hourly rate scaled in EGP price.

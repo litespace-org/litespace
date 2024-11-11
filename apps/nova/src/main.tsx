@@ -2,7 +2,7 @@ import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
 import { locales } from "@litespace/luna/locales";
 import { backend } from "@litespace/luna/backend";
-import { getToken } from "@litespace/luna/cache";
+import { getAuthToken as getCachedAuthToken } from "@litespace/luna/cache";
 import { Spinner } from "@litespace/luna/Spinner";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
@@ -16,12 +16,15 @@ import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { AppConfigProvider } from "@litespace/headless/config";
+import { TokenType } from "@litespace/atlas";
+import { getGhostToken } from "@/lib/ghost";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
 
 const queryClient = new QueryClient();
+const ghostToken = getGhostToken();
 
 createRoot(document.getElementById("root")!).render(
   <IntlProvider
@@ -33,7 +36,13 @@ createRoot(document.getElementById("root")!).render(
       <AppConfigProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <QueryClientProvider client={queryClient}>
-            <BackendProvider backend={backend} getToken={getToken}>
+            <BackendProvider
+              backend={backend}
+              getAuthTokenValue={
+                ghostToken ? getGhostToken : getCachedAuthToken
+              }
+              tokenType={ghostToken ? TokenType.Basic : TokenType.Bearer}
+            >
               <AtlasProvider>
                 <SocketProvider>
                   <PeerProvider>

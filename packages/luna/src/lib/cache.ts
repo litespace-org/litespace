@@ -18,11 +18,11 @@ export function saveToken(token: string) {
   return save(CacheKey.AuthToken, token);
 }
 
-export function getToken(): string | null {
+export function getAuthToken(): string | null {
   return load(CacheKey.AuthToken);
 }
 
-export function removeToken() {
+export function removeAuthToken() {
   return remove(CacheKey.AuthToken);
 }
 

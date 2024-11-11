@@ -2,7 +2,7 @@ import React, { useRef, useCallback } from "react";
 import { Moon, Sidebar, Sun, User } from "react-feather";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Switch } from "@litespace/luna/Switch";
-import { removeToken } from "@litespace/luna/cache";
+import { removeAuthToken } from "@litespace/luna/cache";
 import { useTheme, Theme } from "@litespace/luna/hooks/theme";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useClosableRef } from "@litespace/luna/hooks/dom";
@@ -41,7 +41,7 @@ const SidebarNav: React.FC<{
   } = useClosableRef<HTMLUListElement>(button.current);
 
   const logout = useCallback(() => {
-    removeToken();
+    removeAuthToken();
     dispatch(resetUserProfile());
     navigate(Route.Login);
   }, [dispatch, navigate]);
