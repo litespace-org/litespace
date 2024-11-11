@@ -2,7 +2,6 @@ import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/common/Table";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { LocalId } from "@litespace/luna/locales";
 import { formatCurrency } from "@litespace/luna/utils";
 import { ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -12,24 +11,13 @@ import { UseQueryResult } from "@tanstack/react-query";
 import Process from "@/components/Invoices/Process";
 import { Action } from "@/components/Invoices/type";
 import UserPopover from "@/components/common/UserPopover";
-
-const withdrawMethods: Record<IWithdrawMethod.Type, LocalId> = {
-  wallet: "withdraw.methods.wallet",
-  instapay: "withdraw.methods.instapay",
-  bank: "withdraw.methods.bank",
-};
-
-const StatusDescriptions: Record<IInvoice.Status, LocalId> = {
-  [IInvoice.Status.Pending]: "invoices.admin.status.pending",
-  [IInvoice.Status.UpdatedByReceiver]:
-    "invoices.admin.status.updated-by-receiver",
-  [IInvoice.Status.CanceledByReceiver]:
-    "invoices.admin.status.canceled-by-receiver",
-  [IInvoice.Status.CancellationApprovedByAdmin]:
-    "invoices.admin.status.canceled-by-admin",
-  [IInvoice.Status.Fulfilled]: "invoices.admin.status.fulfilled",
-  [IInvoice.Status.Rejected]: "invoices.admin.status.rejected",
-};
+import {
+  invoiceStatusIntlMap,
+  withdrawMethodsIntlMap,
+} from "@/components/utils/invoice";
+import { Typography } from "@litespace/luna/Typography";
+import ImageField from "@/components/common/ImageField";
+import { asFullRecriptUrl } from "@litespace/luna/backend";
 
 const List: React.FC<{
   data: Paginated<IInvoice.Self>;
@@ -61,7 +49,7 @@ const List: React.FC<{
         header: intl("dashboard.invoices.method"),
         cell: (info) => {
           const status = info.getValue() as IWithdrawMethod.Type;
-          const value = withdrawMethods[status] as keyof typeof intl;
+          const value = withdrawMethodsIntlMap[status];
           return intl(value);
         },
       }),
@@ -81,8 +69,12 @@ const List: React.FC<{
         header: intl("dashboard.invoices.status"),
         cell: (info) => {
           const status = info.getValue();
-          const value = StatusDescriptions[status];
-          return intl(value);
+          const value = invoiceStatusIntlMap[status];
+          return (
+            <Typography element="body" className="truncate">
+              {intl(value)}
+            </Typography>
+          );
         },
       }),
       columnHelper.accessor("note", {
@@ -91,11 +83,17 @@ const List: React.FC<{
       }),
       columnHelper.accessor("receipt", {
         header: intl("dashboard.invoices.receipt"),
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <ImageField name={info.getValue()} locator={asFullRecriptUrl} />
+        ),
       }),
       columnHelper.accessor("addressedBy", {
         header: intl("dashboard.invoices.addressedBy"),
-        cell: (info) => info.getValue(),
+        cell: (info) => {
+          const id = info.getValue();
+          if (!id) return "-";
+          return <UserPopover id={id} />;
+        },
       }),
       columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
