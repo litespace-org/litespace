@@ -62,6 +62,9 @@ const routeConfigMap: Record<Route, RouteConfig> = {
   [Route.Topics]: {
     whitelist: [regularAdmin],
   },
+  [Route.VerifyEmail]: {
+    whitelist: [regularAdmin],
+  },
 };
 
 export function useAuthRoutes() {
