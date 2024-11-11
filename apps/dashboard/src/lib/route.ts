@@ -11,4 +11,5 @@ export enum Route {
   ServerStats = "/server-stats",
   Settings = "/settings",
   Topics = "/topics",
+  VerifyEmail = "/verify-email",
 }
