@@ -15,6 +15,7 @@ import {
   BookOpen,
   Server,
   Settings,
+  List,
 } from "react-feather";
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
@@ -70,6 +71,12 @@ const Root: React.FC = () => {
           label: intl("dashboard.sidebar.lessons"),
           route: Route.Lessons,
           icon: BookOpen,
+          show: role?.admin,
+        },
+        {
+          label: intl("dashboard.topics.title"),
+          route: Route.Topics,
+          icon: List,
           show: role?.admin,
         },
         {

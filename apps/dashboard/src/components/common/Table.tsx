@@ -114,11 +114,10 @@ export const Table = <T extends object>({
               options={options}
               value={pageSize.value}
               onChange={pageSize.set}
-              size="small"
             />
           </div>
           <Button
-            size={ButtonSize.Small}
+            size={ButtonSize.Tiny}
             type={ButtonType.Main}
             variant={ButtonVariant.Secondary}
             onClick={() => goto(1)}
@@ -127,7 +126,7 @@ export const Table = <T extends object>({
             &laquo;
           </Button>
           <Button
-            size={ButtonSize.Small}
+            size={ButtonSize.Tiny}
             type={ButtonType.Main}
             variant={ButtonVariant.Secondary}
             onClick={prev}
@@ -136,7 +135,7 @@ export const Table = <T extends object>({
             &rarr;
           </Button>
           <Button
-            size={ButtonSize.Small}
+            size={ButtonSize.Tiny}
             type={ButtonType.Main}
             variant={ButtonVariant.Secondary}
             onClick={next}
@@ -145,7 +144,7 @@ export const Table = <T extends object>({
             &larr;
           </Button>
           <Button
-            size={ButtonSize.Small}
+            size={ButtonSize.Tiny}
             type={ButtonType.Main}
             variant={ButtonVariant.Secondary}
             onClick={() => goto(totalPages)}
