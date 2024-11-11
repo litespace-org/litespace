@@ -1,24 +1,18 @@
 import { ActionsMenu } from "@litespace/luna/ActionsMenu";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
 import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { Table } from "@/components/common/Table";
 import BooleanField from "@/components/common/BooleanField";
 import DateField from "@/components/common/DateField";
 import TruncateField from "@/components/common/TruncateField";
-import ImageDialog from "@/components/common/ImageDialog";
 import Error from "@/components/common/Error";
 import { Link } from "react-router-dom";
+import ImageField from "@/components/common/ImageField";
 
 const List: React.FC<{
   query: UseQueryResult<IUser.FindUsersApiResponse, Error>;
@@ -28,7 +22,6 @@ const List: React.FC<{
   totalPages: number;
   page: number;
 }> = ({ query, ...props }) => {
-  const [image, setImage] = useState<string | null>(null);
   const intl = useFormatMessage();
   const columnHelper = createColumnHelper<IUser.Self>();
   const columns = useMemo(
@@ -55,21 +48,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("image", {
         header: intl("dashboard.user.image"),
-        cell: (info) => {
-          const value = info.getValue();
-          return value ? (
-            <Button
-              onClick={() => setImage(value)}
-              size={ButtonSize.Tiny}
-              type={ButtonType.Main}
-              variant={ButtonVariant.Secondary}
-            >
-              <TruncateField className="w-20">{value}</TruncateField>
-            </Button>
-          ) : (
-            "-"
-          );
-        },
+        cell: (info) => <ImageField name={info.getValue()} />,
       }),
       columnHelper.accessor("birthYear", {
         header: intl("dashboard.user.birthYear"),
@@ -159,13 +138,6 @@ const List: React.FC<{
         loading={query.isLoading}
         fetching={query.isFetching}
       />
-      {image ? (
-        <ImageDialog
-          image={image}
-          close={() => setImage(null)}
-          open={!!image}
-        />
-      ) : null}
     </div>
   );
 };

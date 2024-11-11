@@ -15,6 +15,7 @@ import { useForm } from "react-hook-form";
 import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
 import { Typography } from "@litespace/luna/Typography";
+import { X } from "react-feather";
 
 type IForm = {
   note: string;
@@ -168,30 +169,35 @@ const Process: React.FC<{
             />
           }
         />
-        <div className="flex gap-4 items-center">
-          <Button
-            htmlType="button"
-            onClick={() => {
-              if (!ref.current) return;
-              ref.current.click();
-            }}
-          >
-            {intl("labels.invoice.receipt.upload")}
-          </Button>
-          <Typography element="caption">
+
+        {action === Action.MarkAsFulfilled ? (
+          <div className="flex gap-4 items-center">
+            <Button
+              htmlType="button"
+              size={ButtonSize.Tiny}
+              variant={ButtonVariant.Secondary}
+              onClick={() => {
+                if (!ref.current) return;
+                ref.current.click();
+              }}
+            >
+              {intl("labels.invoice.receipt.upload")}
+            </Button>
             {receipt ? (
-              <div className="flex gap-2">
-                <span>{receipt.name}</span>
-                <span
+              <div className="flex gap-1">
+                <Typography element="caption">{receipt.name}</Typography>
+                <button
+                  type="button"
                   className="hover:cursor-pointer"
                   onClick={() => setReceipt(undefined)}
                 >
-                  &#10005;
-                </span>
+                  <X className="w-5 h-5" />
+                </button>
               </div>
             ) : null}
-          </Typography>
-        </div>
+          </div>
+        ) : null}
+
         <input
           type="file"
           className="hidden"

@@ -37,7 +37,6 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
             title={toast.title}
             description={toast.description}
             onOpenChange={(open: boolean) => {
-              console.log("open", open);
               if (!open) remove(toast.id);
             }}
             open
