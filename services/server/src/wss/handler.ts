@@ -10,7 +10,7 @@ import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
-import { isAdmin, isGhost, isStudent } from "@litespace/auth";
+import { isAdmin, isGhost, isStudent, isUser } from "@litespace/auth";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 
@@ -65,14 +65,21 @@ export class WssHandler {
 
   async peerOpened(ids: unknown) {
     const error = await safe(async () => {
-      if (isGhost(this.user)) return;
       const { callId, peerId } = peerPayload.parse(ids);
+
+      console.log({
+        call: callId,
+        peer: peerId,
+        user: isUser(this.user) ? this.user.email : this.user,
+      });
 
       const members = await calls.findCallMembers([callId]);
       if (isEmpty(members)) return;
 
-      const isMember = map(members, "userId").includes(this.user.id);
-      if (!isMember) return;
+      const memberIds = members.map((member) => member.userId);
+      const isMember = isUser(this.user) && memberIds.includes(this.user.id);
+      const allowed = isMember || isGhost(this.user);
+      if (!allowed) return;
 
       this.socket.join(callId.toString());
       this.socket

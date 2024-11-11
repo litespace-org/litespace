@@ -14,9 +14,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     if (!token) return null;
 
     const options = {
-      extraHeaders: {
-        Authorization: `Bearer ${token}`,
-      },
+      extraHeaders: { Authorization: `${token.type} ${token.value}` },
     } as const;
 
     return io(sockets.main[backend], options);
