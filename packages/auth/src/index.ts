@@ -4,14 +4,14 @@ declare global {
   namespace Express {
     interface Request {
       _query: { sid: string | undefined };
-      user: undefined | IUser.Self;
+      user: IUser.Self | IUser.Ghost | undefined;
     }
   }
 }
 
 declare module "http" {
   interface IncomingMessage {
-    user: undefined | IUser.Self;
+    user: IUser.Self | IUser.Ghost | undefined;
   }
 }
 
@@ -34,6 +34,7 @@ export {
   isTutor,
   isStudent,
   isUser,
+  isGhost,
 } from "@/authorization";
 export { encodeAuthJwt, decodeAuthJwt } from "@/jwt";
 export { authMiddleware, adminOnly } from "@/middleware";

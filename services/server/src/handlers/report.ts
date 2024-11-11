@@ -43,9 +43,9 @@ async function updateReport(req: Request, res: Response, next: NextFunction) {
   if (!report) return next(notfound.base());
 
   const owner =
-    user &&
+    isUser(user) &&
     (report.createdBy.id === user.id || report.updatedBy.id === user.id);
-  const eligible = (isUser(user) && owner) || isAdmin(user);
+  const eligible = owner || isAdmin(user);
   if (!eligible) return next(forbidden());
 
   const payload: IReport.UpdateApiPayload = updateReportPayload.parse(req.body);
@@ -64,9 +64,9 @@ async function deleteReport(req: Request, res: Response, next: NextFunction) {
 
   const user = req.user;
   const owner =
-    user &&
+    isUser(user) &&
     (user.id === report.createdBy.id || user.id === report.updatedBy.id);
-  const eligible = (isUser(user) && owner) || isAdmin(user);
+  const eligible = owner || isAdmin(user);
   if (!eligible) return next(forbidden());
 
   await reports.delete(id);

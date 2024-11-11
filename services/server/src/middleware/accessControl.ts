@@ -374,8 +374,12 @@ export function enforce(request: {
         console.log(
           [
             "Access Control: ",
-            ` ↳ Matched policy: ${policy.roles.join(", ")} - ${policy.methods.join(", ")} - ${policy.route}`,
-            ` ↳ Request: ${request.role} - ${request.method} ${request.route} - owner(${!!request.isOwner})`,
+            ` ↳ Matched policy: ${policy.roles.join(
+              ", "
+            )} - ${policy.methods.join(", ")} - ${policy.route}`,
+            ` ↳ Request: ${request.role} - ${request.method} ${
+              request.route
+            } - owner(${!!request.isOwner})`,
           ].join("\n").cyan
         );
       return true;
@@ -383,11 +387,4 @@ export function enforce(request: {
   }
 
   return false;
-}
-
-export function enforceRequest(request: Request, isOwner?: boolean): boolean {
-  const role = request.user?.role || unauthorized;
-  const method = request.method as Method;
-  const route = request.baseUrl + request.path;
-  return enforce({ role, method, route, isOwner });
 }

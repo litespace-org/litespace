@@ -14,6 +14,7 @@ import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, adminOnly } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
+import { getGhostToken } from "@/lib/ghost";
 import "colors";
 
 const app = express();
@@ -21,15 +22,19 @@ const server = createServer(app);
 const io = new Server(server, {
   cors: { credentials: true, origin: isAllowedOrigin },
 });
+const ghostToken = getGhostToken();
 const context: ApiContext = { io };
 
-io.engine.use(onlyForHandshake(authMiddleware(jwtSecret)));
+io.engine.use(onlyForHandshake(authMiddleware({ jwtSecret, ghostToken })));
 io.engine.use(onlyForHandshake(authorizeSocket));
 io.on("connection", wssHandler);
 
 app.use(
   logger(function (tokens, req, res) {
-    const role = req.user?.role || "unauthorized";
+    const role =
+      typeof req.user === "string"
+        ? req.user
+        : req.user?.role || "unauthorized";
     return [
       capitalize(role),
       tokens.method(req, res),
@@ -45,7 +50,7 @@ app.use(
 app.use(cors({ credentials: true, origin: isAllowedOrigin }));
 app.use(json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(authMiddleware(jwtSecret));
+app.use(authMiddleware({ jwtSecret, ghostToken }));
 app.use(
   "/assets/uploads",
   express.static(serverConfig.assets.directory.uploads)

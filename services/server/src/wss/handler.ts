@@ -10,7 +10,7 @@ import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
-import { isAdmin, isStudent } from "@litespace/auth";
+import { isAdmin, isGhost, isStudent } from "@litespace/auth";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 
@@ -22,9 +22,9 @@ const stdout = logger("wss");
 
 export class WssHandler {
   socket: Socket<Wss.ClientEventsMap, Wss.ServerEventsMap>;
-  user: IUser.Self;
+  user: IUser.Self | IUser.Ghost;
 
-  constructor(socket: Socket, user: IUser.Self) {
+  constructor(socket: Socket, user: IUser.Self | IUser.Ghost) {
     this.socket = socket;
     this.user = user;
     this.initialize();
@@ -49,6 +49,7 @@ export class WssHandler {
 
   async joinRooms() {
     const error = await safe(async () => {
+      if (isGhost(this.user)) return;
       const { list } = await rooms.findMemberRooms({ userId: this.user.id });
       const ids = list.map((room) => room.toString());
       this.socket.join(ids);
@@ -64,6 +65,7 @@ export class WssHandler {
 
   async peerOpened(ids: unknown) {
     const error = await safe(async () => {
+      if (isGhost(this.user)) return;
       const { callId, peerId } = peerPayload.parse(ids);
 
       const members = await calls.findCallMembers([callId]);
@@ -82,6 +84,7 @@ export class WssHandler {
 
   async sendMessage(data: unknown) {
     const error = safe(async () => {
+      if (isGhost(this.user)) return;
       const { roomId, text } = wss.message.send.parse(data);
       const userId = this.user.id;
 
@@ -109,6 +112,7 @@ export class WssHandler {
 
   async updateMessage(data: unknown) {
     const error = await safe(async () => {
+      if (isGhost(this.user)) return;
       const { id, text } = updateMessagePayload.parse(data);
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
@@ -134,6 +138,7 @@ export class WssHandler {
 
   async deleteMessage(data: unknown) {
     const error = safe(async () => {
+      if (isGhost(this.user)) return;
       const { id }: { id: number } = withNamedId("id").parse(data);
 
       const message = await messages.findById(id);
@@ -159,6 +164,7 @@ export class WssHandler {
 
   async toggleCamera(data: unknown) {
     const error = safe(async () => {
+      if (isGhost(this.user)) return;
       const { call, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
       this.boradcast(Wss.ServerEvent.CameraToggled, call.toString(), {
@@ -172,6 +178,7 @@ export class WssHandler {
 
   async toggleMic(data: unknown) {
     const error = safe(async () => {
+      if (isGhost(this.user)) return;
       const { call, mic } = toggleMicPayload.parse(data);
       // todo: add validation
       this.boradcast(Wss.ServerEvent.MicToggled, call.toString(), {
@@ -194,6 +201,7 @@ export class WssHandler {
 
   async markMessageAsRead(data: unknown) {
     try {
+      if (isGhost(this.user)) return;
       const messageId = wss.message.markMessageAsRead.parse(data).id;
       const message = await messages.findById(messageId);
       if (!message) throw new Error("Message not found");
@@ -230,11 +238,13 @@ export class WssHandler {
   }
 
   async online() {
+    if (isGhost(this.user)) return;
     const user = await users.update(this.user.id, { online: true });
     this.announceStatus(user);
   }
 
   async offline() {
+    if (isGhost(this.user)) return;
     const user = await users.update(this.user.id, { online: false });
     this.announceStatus(user);
   }

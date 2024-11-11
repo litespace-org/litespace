@@ -123,6 +123,10 @@ export function isInterviewer(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Interviewer;
 }
 
+export function isGhost(user: unknown): user is IUser.Ghost {
+  return user === "ghost";
+}
+
 export function authorizer() {
   return new Authorizer();
 }
