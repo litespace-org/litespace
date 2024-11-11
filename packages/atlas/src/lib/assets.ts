@@ -8,5 +8,5 @@ export function asAssetUrl(backend: Backend, file: string): string {
 
 export function asRecriptUrl(backend: Backend, file: string) {
   const base = backends.main[backend];
-  return new URL(`/assets/receipts/${file}`, base);
+  return new URL(`/assets/receipts/${file}`, base).toString();
 }

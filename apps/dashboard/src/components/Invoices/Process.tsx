@@ -10,10 +10,12 @@ import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { atlas } from "@litespace/luna/backend";
 import { IInvoice } from "@litespace/types";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
+import { Typography } from "@litespace/luna/Typography";
+import { X } from "react-feather";
 
 type IForm = {
   note: string;
@@ -30,6 +32,8 @@ const Process: React.FC<{
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const ref = useRef<HTMLInputElement>(null);
+  const [receipt, setReceipt] = useState<File | undefined>(undefined);
   const form = useForm<IForm>({
     defaultValues: {
       note: "",
@@ -55,7 +59,9 @@ const Process: React.FC<{
   );
 
   const update = useMutation({
-    mutationFn: async (payload: IInvoice.UpdateByAdminApiPayload) => {
+    mutationFn: async (
+      payload: IInvoice.UpdateByAdminApiPayload & { receipt?: File }
+    ) => {
       return await atlas.invoice.updateByAdmin(id, payload);
     },
     onSuccess,
@@ -105,9 +111,9 @@ const Process: React.FC<{
   const onSubmit = useMemo(
     () =>
       form.handleSubmit(({ note }) => {
-        update.mutate({ note, status: status || undefined });
+        update.mutate({ note, status: status || undefined, receipt });
       }),
-    [form, status, update]
+    [form, status, update, receipt]
   );
 
   const label = useMemo(() => {
@@ -145,7 +151,6 @@ const Process: React.FC<{
     markAsRejected,
     editNote,
   ]);
-
   return (
     <Dialog
       open={open}
@@ -163,6 +168,46 @@ const Process: React.FC<{
               name="note"
             />
           }
+        />
+
+        {action === Action.MarkAsFulfilled ? (
+          <div className="flex gap-4 items-center">
+            <Button
+              htmlType="button"
+              size={ButtonSize.Tiny}
+              variant={ButtonVariant.Secondary}
+              onClick={() => {
+                if (!ref.current) return;
+                ref.current.click();
+              }}
+            >
+              {intl("labels.invoice.receipt.upload")}
+            </Button>
+            {receipt ? (
+              <div className="flex gap-1">
+                <Typography element="caption">{receipt.name}</Typography>
+                <button
+                  type="button"
+                  className="hover:cursor-pointer"
+                  onClick={() => setReceipt(undefined)}
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+
+        <input
+          type="file"
+          className="hidden"
+          ref={ref}
+          accept="image/png, image/jpeg"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            setReceipt(file);
+          }}
         />
 
         <div className="flex flex-row items-center gap-2 ">

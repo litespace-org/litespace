@@ -114,7 +114,12 @@ export const Button: React.FC<{
           })}
         />
       </span>
-      <div className={cn(loading ? "tw-opacity-0" : "tw-opacity-100")}>
+      <div
+        className={cn(
+          loading ? "tw-opacity-0" : "tw-opacity-100",
+          "tw-flex tw-flex-row tw-items-center tw-justify-center"
+        )}
+      >
         {children}
       </div>
     </button>
