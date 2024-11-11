@@ -18,6 +18,7 @@ import Lessons from "@/pages/Lessons";
 import Settings from "@/pages/Settings";
 import Topics from "@/pages/Topics";
 import VerifyEmail from "@/pages/VerifyEmail";
+import UserSettings from "./pages/UserSettings";
 
 const router = createBrowserRouter([
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       { path: Route.ServerStats, element: <ServerStats /> },
       { path: Route.Settings, element: <Settings /> },
       { path: Route.VerifyEmail, element: <VerifyEmail /> },
+      { path: Route.UserSetting, element: <UserSettings /> },
     ],
   },
 ]);
