@@ -3,8 +3,7 @@ import { Table } from "@/components/common/Table";
 import UserPopover from "@/components/common/UserPopover";
 import { Loading } from "@litespace/luna/Loading";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Element, IInterview, IUser, Paginated, Void } from "@litespace/types";
-import { UseQueryResult } from "@tanstack/react-query";
+import { Element, IInterview, IUser, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { dayjs } from "@/lib/dayjs";
 import DateField from "@/components/common/DateField";
@@ -17,15 +16,8 @@ import { useToast } from "@litespace/luna/Toast";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { Dialog } from "@litespace/luna/Dialog";
+import { UsePaginateResult } from "@/types/query";
 
-export type UsePaginateResult<T> = {
-  query: UseQueryResult<Paginated<T>, Error>;
-  next: Void;
-  prev: Void;
-  goto: (pageNumber: number) => void;
-  page: number;
-  totalPages: number;
-};
 type Interviews = IInterview.FindInterviewsApiResponse["list"];
 type IndividualInterview = IInterview.FindInterviewsApiResponse["list"][number];
 
