@@ -33,7 +33,7 @@ const DeleteTopic: React.FC<{
   const action = useMemo(() => {
     if (!topic) return;
     return {
-      label: intl("global.sure"),
+      label: intl("global.labels.confirm"),
       onClick: () => {
         deleteTopic.mutate({ id: topic.id });
       },
@@ -48,7 +48,7 @@ const DeleteTopic: React.FC<{
         type={AlertType.Error}
         title={intl("dashboard.topics.delete.alert")}
         action={action}
-      ></Alert>
+      />
     </Dialog>
   );
 };
