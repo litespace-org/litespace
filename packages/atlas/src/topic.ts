@@ -11,9 +11,7 @@ export class Topic extends Base {
   async findTopics(
     params: ITopic.FindTopicsApiQuery
   ): Promise<ITopic.FindTopicsApiResponse> {
-    return await this.get(`/api/v1/topic/list`, null, {
-      ...params,
-    });
+    return await this.get(`/api/v1/topic/list`, null, params);
   }
 
   async updateTopic(

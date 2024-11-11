@@ -12,23 +12,23 @@ import DeleteTopic from "@/components/Topics/DeleteTopic";
 import TopicDialog from "@/components/Topics/TopicDialog";
 
 type Topics = ITopic.FindTopicsApiResponse["list"];
-type IndividualTopic = ITopic.FindTopicsApiResponse["list"][number];
+type Topic = Element<Topics>;
 
 const List: React.FC<{
-  query: UsePaginateResult<Element<Topics>>;
+  topics: UsePaginateResult<Element<Topics>>;
   goto: (page: number) => void;
   next: Void;
   prev: Void;
   totalPages: number;
   page: number;
-}> = ({ query, ...props }) => {
+}> = ({ topics, ...props }) => {
   const intl = useFormatMessage();
-  const [topic, setTopic] = useState<IndividualTopic | null>(null);
+  const [topic, setTopic] = useState<Topic | null>(null);
   const [action, setAction] = useState<"edit" | "delete" | null>(null);
 
   const refetch = useCallback(() => {
-    query.query.refetch();
-  }, [query.query]);
+    topics.query.refetch();
+  }, [topics.query]);
 
   const columnHelper = createColumnHelper<Element<Topics>>();
 
@@ -89,28 +89,29 @@ const List: React.FC<{
     [columnHelper, intl]
   );
 
-  if (query.query.isLoading) return <Loading className="h-1/4" />;
+  if (topics.query.isLoading) return <Loading className="h-1/4" />;
 
-  if (query.query.error)
+  if (topics.query.error)
     return (
       <Error
-        error={query.query.error}
+        error={topics.query.error}
         title={intl("dashboard.error.alert.title")}
-        refetch={query.query.refetch}
+        refetch={topics.query.refetch}
       />
     );
 
-  if (!query.query.data) return null;
+  if (!topics.query.data) return null;
 
   return (
     <div>
       <Table
         columns={columns}
-        data={query.query.data.list}
+        data={topics.query.data.list}
         {...props}
-        loading={query.query.isLoading}
-        fetching={query.query.isFetching}
+        loading={topics.query.isLoading}
+        fetching={topics.query.isFetching}
       />
+
       {action === "edit" && topic ? (
         <TopicDialog
           topic={topic}
@@ -122,6 +123,7 @@ const List: React.FC<{
           }}
         />
       ) : null}
+
       {action === "delete" && topic ? (
         <DeleteTopic
           topic={topic}

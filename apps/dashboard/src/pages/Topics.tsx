@@ -2,7 +2,7 @@ import PageTitle from "@/components/common/PageTitle";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
-import { Button } from "@litespace/luna/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useRender } from "@litespace/luna/hooks/common";
 import TopicDialog from "@/components/Topics/TopicDialog";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
@@ -91,40 +91,41 @@ const Topics = () => {
   );
 
   return (
-    <div className="p-8">
-      <div className="flex justify-between">
-        <div>
-          <PageTitle
-            title={intl("dashboard.topics.title")}
-            fetching={query.query.isFetching}
-            count={query.totalPages}
-          />
-          <div className="flex gap-4 mt-2">
-            <Input
-              onChange={handleNameChange}
-              value={name}
-              placeholder={intl("dashboard.topics.name")}
-            />
-            <Select
-              onChange={handleOrderChange}
-              options={orderOptions}
-              value={orderBy}
-            />
-            <Select
-              size={"small"}
-              onChange={handleOrderDirectionChange}
-              options={orderDirectionOptions}
-              value={orderDirection}
-            />
-          </div>
-        </div>
-        <Button onClick={addNewTopic.show}>
+    <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
+      <div className="flex flex-row justify-between">
+        <PageTitle
+          title={intl("dashboard.topics.title")}
+          fetching={query.query.isFetching && !query.query.isLoading}
+          count={query.totalPages}
+        />
+        <Button size={ButtonSize.Tiny} onClick={addNewTopic.show}>
           {intl("dashboard.topics.add")}
         </Button>
       </div>
-      <div className="mt-4">
-        <List {...query} query={query} />
+
+      <div className="flex flex-row justify-start gap-4 mt-2">
+        <Input
+          onChange={handleNameChange}
+          placeholder={intl("dashboard.topics.name")}
+          value={name}
+        />
+
+        <Select
+          onChange={handleOrderChange}
+          options={orderOptions}
+          value={orderBy}
+        />
+        <Select
+          onChange={handleOrderDirectionChange}
+          options={orderDirectionOptions}
+          value={orderDirection}
+        />
       </div>
+
+      <div className="mt-4">
+        <List {...query} topics={query} />
+      </div>
+
       <TopicDialog
         close={addNewTopic.hide}
         open={addNewTopic.open}

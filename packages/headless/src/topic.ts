@@ -34,10 +34,10 @@ export function useCreateTopic({
 export function useTopics(query: ITopic.FindTopicsApiQuery) {
   const atlas = useAtlas();
   const findTopics = useCallback(async () => {
-    return await atlas.topic.findTopics({ ...query });
+    return await atlas.topic.findTopics(query);
   }, [atlas.topic, query]);
 
-  return usePaginate(findTopics, [QueryKey.FindTopic]);
+  return usePaginate(findTopics, [QueryKey.FindTopic, query]);
 }
 
 export function useUpdateTopic({

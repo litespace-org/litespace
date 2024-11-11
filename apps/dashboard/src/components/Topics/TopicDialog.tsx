@@ -1,10 +1,10 @@
 import { useCreateTopic, useUpdateTopic } from "@litespace/headless/topic";
-import { Button } from "@litespace/luna/Button";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/luna/Form";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useToast } from "@litespace/luna/Toast";
-import { ITopic } from "@litespace/types";
+import { ITopic, Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 
@@ -16,8 +16,8 @@ type IForm = {
 const TopicDialog: React.FC<{
   topic?: ITopic.Self;
   open: boolean;
-  close: () => void;
-  onUpdate?: () => void;
+  close: Void;
+  onUpdate?: Void;
 }> = ({ open, close, onUpdate, topic }) => {
   const toast = useToast();
   const intl = useFormatMessage();
@@ -28,7 +28,7 @@ const TopicDialog: React.FC<{
     },
   });
 
-  const onAddSuccess = useCallback(() => {
+  const onCreateSuccess = useCallback(() => {
     toast.success({
       title: intl("dashboard.topics.add.success"),
     });
@@ -37,19 +37,19 @@ const TopicDialog: React.FC<{
     if (onUpdate) return onUpdate();
   }, [close, intl, form, onUpdate, toast]);
 
-  const onAddError = useCallback(
-    (error: unknown) => {
+  const onCreateError = useCallback(
+    (error: Error) => {
       toast.error({
         title: intl("dashboard.topics.add.error"),
-        description: error instanceof Error ? error.message : undefined,
+        description: error.message,
       });
     },
     [intl, toast]
   );
 
   const createTopic = useCreateTopic({
-    onSuccess: onAddSuccess,
-    onError: onAddError,
+    onSuccess: onCreateSuccess,
+    onError: onCreateError,
   });
 
   const onEditSuccess = useCallback(() => {
@@ -62,10 +62,10 @@ const TopicDialog: React.FC<{
   }, [close, intl, form, onUpdate, toast]);
 
   const onEditError = useCallback(
-    (error: unknown) => {
+    (error: Error) => {
       toast.error({
         title: intl("dashboard.topics.edit.success"),
-        description: error instanceof Error ? error.message : undefined,
+        description: error.message,
       });
     },
     [intl, toast]
@@ -79,13 +79,11 @@ const TopicDialog: React.FC<{
   const onSubmit = useMemo(
     () =>
       form.handleSubmit(({ arabicName, englishName }) => {
-        if (topic)
-          return updateTopic.mutate({
-            id: topic.id,
-            payload: { arabicName, englishName },
-          });
-
-        createTopic.mutate({ arabicName, englishName });
+        if (!topic) return createTopic.mutate({ arabicName, englishName });
+        return updateTopic.mutate({
+          id: topic.id,
+          payload: { arabicName, englishName },
+        });
       }),
     [form, createTopic, updateTopic, topic]
   );
@@ -123,10 +121,11 @@ const TopicDialog: React.FC<{
           }
         />
 
-        <div className="flex flex-row items-center gap-2 ">
+        <div className="flex flex-row items-center gap-2">
           <Button
-            loading={createTopic.isPending}
-            disabled={createTopic.isPending || createTopic.isPending}
+            loading={createTopic.isPending || updateTopic.isPending}
+            disabled={createTopic.isPending || updateTopic.isPending}
+            size={ButtonSize.Tiny}
           >
             {topic
               ? intl("dashboard.topics.edit")
