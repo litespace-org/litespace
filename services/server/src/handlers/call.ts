@@ -4,7 +4,7 @@ import asyncHandler from "express-async-handler";
 import { withNamedId } from "@/validation/utils";
 import { groupBy } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
-import { isAdmin, isUser } from "@litespace/auth";
+import { isAdmin, isGhost, isUser } from "@litespace/auth";
 
 async function findCallById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
@@ -20,8 +20,10 @@ async function findCallById(req: Request, res: Response, next: NextFunction) {
 
   const eligible =
     members.map((member) => member.userId).includes(user.id) ||
-    isAdmin(req.user);
+    isAdmin(req.user) ||
+    isGhost(user);
   if (!eligible) next(forbidden());
+
   res.status(200).json({ call, members });
 }
 
