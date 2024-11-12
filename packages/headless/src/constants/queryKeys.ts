@@ -18,4 +18,5 @@ export enum QueryKey {
   FindUserById = "find-user-by-id",
   FindStudentStats = "find-student-stats",
   FindTopic = "find-topic",
+  FindPeerId = "find-peer-id",
 }

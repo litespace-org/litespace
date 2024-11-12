@@ -18,6 +18,7 @@ import { Invoice } from "@/invoice";
 import { Topic } from "@/topic";
 import { GetToken } from "@/client";
 import { Cache } from "@/cache";
+import { Peer } from "@/peer";
 
 export class Atlas {
   public readonly user: User;
@@ -38,6 +39,7 @@ export class Atlas {
   public readonly invoice: Invoice;
   public readonly cache: Cache;
   public readonly topic: Topic;
+  public readonly peer: Peer;
 
   constructor(backend: Backend, getToken: GetToken) {
     this.user = new User(backend, getToken);
@@ -58,5 +60,6 @@ export class Atlas {
     this.invoice = new Invoice(backend, getToken);
     this.cache = new Cache(backend, getToken);
     this.topic = new Topic(backend, getToken);
+    this.peer = new Peer(backend, getToken);
   }
 }
