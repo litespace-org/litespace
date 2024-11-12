@@ -19,4 +19,12 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const PrimaryDisabled: StoryObj<Component> = {
+  args: {
+    id: "sunday",
+    label: ar["global.days.sun"],
+    disabled: true,
+  },
+};
+
 export default meta;

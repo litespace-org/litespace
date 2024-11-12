@@ -1,30 +1,34 @@
 import React from "react";
-import { Root, Indicator } from "@radix-ui/react-checkbox";
-// import { CheckIcon } from "@radix-ui/react-icons";
+import { Check } from "react-feather";
 import cn from "classnames";
+// import { CheckIcon } from "@radix-ui/react-icons";
 
 export const Checkbox: React.FC<{
   id?: string;
   label?: string;
   checked?: boolean;
+  disabled?: boolean;
   onCheckedChange?: (checked: boolean) => void;
-}> = ({ id, label, checked, onCheckedChange }) => {
+}> = ({ id, label, checked, onCheckedChange, disabled }) => {
   return (
     <div className="tw-flex tw-items-center tw-cursor-pointer">
-      <Root
-        className={cn(
-          "tw-w-[25px] tw-h-[25px] tw-bg-surface-300 hover:tw-bg-selection tw-flex tw-items-center tw-justify-center tw-rounded-md",
-          "tw-outline-none focus:tw-ring-2 focus:tw-ring-brand/50",
-          "tw-transition-colors tw-duration-200 tw-shrink-0"
-        )}
-        checked={checked}
-        onCheckedChange={onCheckedChange}
-        id={id}
+      <div
+        tabIndex={1}
+        className="hover:tw-bg-brand-100 tw-rounded-full tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center active:tw-bg-brand-200"
       >
-        <Indicator className="tw-text-foreground">
-          {/* <CheckIcon /> */}
-        </Indicator>
-      </Root>
+        <div
+          role="checkbox"
+          className={cn(
+            "tw-border-2 tw-border-brand-500 tw-flex tw-justify-center tw-items-center tw-rounded-sm tw-h-[18px] tw-w-[18px]",
+            checked && "tw-bg-brand-500",
+            disabled && "tw-opacity-50"
+          )}
+        >
+          {checked ? (
+            <Check className="tw-w-4 tw-h-4 tw-text-natural-50" />
+          ) : null}
+        </div>
+      </div>
       <label
         className="tw-pr-2 tw-text-[13px] tw-leading-none tw-text-foreground tw-cursor-pointer tw-w-full"
         htmlFor={id}
