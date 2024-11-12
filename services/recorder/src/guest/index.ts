@@ -1,7 +1,9 @@
 import playwrite from "playwright";
 
 async function main() {
-  const browser = await playwrite.chromium.launch();
+  const browser = await playwrite.chromium.launch({
+    headless: false,
+  });
   const context = await browser.newContext();
   const page = await context.newPage();
 
