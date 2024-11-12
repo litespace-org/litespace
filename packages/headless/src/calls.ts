@@ -1,4 +1,4 @@
-import { IRoom, Wss } from "@litespace/types";
+import { IPeer, IRoom, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -7,6 +7,7 @@ import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
+import { QueryKey } from "./constants";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -675,4 +676,26 @@ export function useCallEvents(
     mateAudio,
     mateVideo,
   };
+}
+
+// todo: move to peer.ts
+export function useFindPeerId(payload?: IPeer.FindPeerIdApiQuery) {
+  const atlas = useAtlas();
+
+  const findPeerId = useCallback(async () => {
+    if (!payload) return null;
+    const result = await atlas.peer.findPeerId(payload);
+    if (result.peer === null) throw new Error("Peer not found");
+    return result.peer;
+  }, [atlas.peer, payload]);
+
+  return useQuery({
+    queryFn: findPeerId,
+    queryKey: [QueryKey.FindPeerId, payload],
+    retryDelay: (attempt) => {
+      if (attempt <= 10) return 2_000;
+      return Math.min(1_000 * 2 ** attempt, 30_000);
+    },
+    enabled: !!payload,
+  });
 }

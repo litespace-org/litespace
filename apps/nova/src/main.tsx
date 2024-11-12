@@ -17,14 +17,14 @@ import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { TokenType } from "@litespace/atlas";
-import { getGhostToken } from "@/lib/ghost";
+import { ghostCall, ghostToken } from "@/lib/ghost";
+import { orUndefined } from "@litespace/sol/utils";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
 
 const queryClient = new QueryClient();
-const ghostToken = getGhostToken();
 
 createRoot(document.getElementById("root")!).render(
   <IntlProvider
@@ -39,13 +39,13 @@ createRoot(document.getElementById("root")!).render(
             <BackendProvider
               backend={backend}
               getAuthTokenValue={
-                ghostToken ? getGhostToken : getCachedAuthToken
+                ghostToken ? () => ghostToken : getCachedAuthToken
               }
               tokenType={ghostToken ? TokenType.Basic : TokenType.Bearer}
             >
               <AtlasProvider>
                 <SocketProvider>
-                  <PeerProvider>
+                  <PeerProvider call={orUndefined(ghostCall)}>
                     <ReduxProvider store={store}>
                       <PersistGate
                         loading={
