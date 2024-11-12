@@ -10,6 +10,7 @@ import { IUser } from "@litespace/types";
 import Navbar from "@/components/Layout/Navbar";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
+import { isGhost } from "@/lib/ghost";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -68,7 +69,7 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
   const show = useMemo(() => {
-    return location.pathname !== Route.Complete;
+    return location.pathname !== Route.Complete && !isGhost();
   }, [location.pathname]);
 
   return (

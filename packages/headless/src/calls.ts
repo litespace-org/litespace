@@ -6,6 +6,16 @@ import { safe } from "@litespace/sol/error";
 import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
+import { orUndefined } from "@litespace/sol/utils";
+
+declare module "peerjs" {
+  export interface CallOption {
+    constraints?: {
+      offerToReceiveAudio: boolean;
+      offerToReceiveVideo: boolean;
+    };
+  }
+}
 
 export function useFindCallRoomById(
   callId: number | null
@@ -156,13 +166,42 @@ export function useUserMedia() {
 }
 
 type PossibleStream = MediaStream | null;
+export type RemoteStream = {
+  screen: boolean;
+  owner: number;
+  stream: MediaStream;
+  peer: string;
+};
 
-export function useCall(call: number | null, mateUserId: number | null) {
+export function useCall({
+  call,
+  userId,
+  mateUserId,
+  isGhost,
+}: {
+  call?: number;
+  userId?: number;
+  mateUserId?: number;
+  isGhost?: boolean;
+}) {
   const socket = useSocket();
   const peer = usePeer();
   const [mateMediaStream, setMateMediaStream] = useState<PossibleStream>(null);
   const [mateScreenStream, setMateScreenStream] =
     useState<PossibleStream>(null);
+
+  const [mediaConnections, setMediaConnections] = useState<MediaConnection[]>(
+    []
+  );
+  const [remoteStreams, setRemoteStreams] = useState<RemoteStream[]>([]);
+
+  console.log({
+    remoteStreams,
+    setMateMediaStream,
+    setMateScreenStream,
+    mediaConnections,
+  });
+
   const [mediaConnection, setMediaConnection] =
     useState<MediaConnection | null>(null);
 
@@ -180,11 +219,21 @@ export function useCall(call: number | null, mateUserId: number | null) {
     mic,
     video,
   } = useUserMedia();
-  const screen = useShareScreen(mediaConnection?.peer);
+
+  const screen = useShareScreen(
+    useMemo(
+      () => ({
+        userId,
+        peerIds: mediaConnections.map((connection) => connection.peer),
+      }),
+      [mediaConnections, userId]
+    )
+  );
+
   const userSpeaking = useSpeaking(mediaConnection, userMediaStream);
   const mateSpeaking = useSpeaking(mediaConnection, mateMediaStream);
   const { mateAudio, mateVideo, notifyCameraToggle, notifyMicToggle } =
-    useCallEvents(mateMediaStream, call, mateUserId);
+    useCallEvents(orUndefined(mateMediaStream), call, mateUserId);
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
@@ -194,38 +243,135 @@ export function useCall(call: number | null, mateUserId: number | null) {
     [call, socket]
   );
 
+  const addStream = useCallback(
+    (call: MediaConnection, stream: MediaStream) => {
+      const userId = call.metadata?.userId as number | undefined;
+      const screen = !!call.metadata?.screen;
+      if (!userId) return;
+
+      if (isGhost)
+        return setRemoteStreams((prev) => [
+          ...prev.filter((s) => s.stream.id !== stream.id),
+          {
+            owner: userId,
+            screen: !!screen,
+            peer: call.peer,
+            stream,
+          },
+        ]);
+
+      if (screen) setMateScreenStream(stream);
+      else setMateMediaStream(stream);
+    },
+    [isGhost]
+  );
+
+  const removeStream = useCallback((peer: string) => {
+    setRemoteStreams((prev) =>
+      [...prev].filter((stream) => stream.peer !== peer)
+    );
+  }, []);
+
+  const addMediaConnection = useCallback((mediaConnection: MediaConnection) => {
+    setMediaConnections((prev) => [
+      ...prev.filter((connection) => connection.peer !== mediaConnection.peer),
+      mediaConnection,
+    ]);
+  }, []);
+
+  const removeMediaConnection = useCallback(
+    (mediaConnection: MediaConnection) => {
+      setMediaConnections((prev) =>
+        [...prev].filter(
+          (connection) => connection.peer !== mediaConnection.peer
+        )
+      );
+    },
+    []
+  );
+
+  const onMediaConnectionClose = useCallback(
+    (mediaConnection: MediaConnection) => {
+      removeMediaConnection(mediaConnection);
+      removeStream(mediaConnection.peer);
+
+      const screen = mediaConnection.metadata?.screen;
+      if (screen) return setMateScreenStream(null);
+      setMateMediaStream(null);
+    },
+    [removeMediaConnection, removeStream]
+  );
+
   // executed on the receiver side
   const onCall = useCallback(
     (call: MediaConnection) => {
       setMediaConnection(call);
+      addMediaConnection(call);
 
-      call.answer(userMediaStream || undefined);
+      const emptyStream = new MediaStream([]);
+      const stream = isGhost ? emptyStream : userMediaStream;
 
-      call.on("stream", (stream: MediaStream) => {
-        if (call.metadata?.screen) return setMateScreenStream(stream);
-        return setMateMediaStream(stream);
-      });
+      call.answer(orUndefined(stream));
 
-      call.on("close", () => {
-        if (call.metadata?.screen) return setMateScreenStream(null);
-        return setMateMediaStream(null);
-      });
+      // call.on("stream", (stream: MediaStream) => {
+      //   if (call.metadata?.screen) return setMateScreenStream(stream);
+      //   return setMateMediaStream(stream);
+      // });
+
+      call.on("stream", (stream: MediaStream) => addStream(call, stream));
+      call.on("close", () => onMediaConnectionClose(call));
+
+      // call.on("close", () => {
+      //   if (call.metadata?.screen) return setMateScreenStream(null);
+      //   return setMateMediaStream(null);
+      // });
     },
-    [userMediaStream]
+    [
+      addMediaConnection,
+      addStream,
+      isGhost,
+      onMediaConnectionClose,
+      userMediaStream,
+    ]
   );
 
   const onJoinCall = useCallback(
     ({ peerId }: { peerId: string }) => {
       setTimeout(() => {
-        if (!userMediaStream) return;
         // shared my stream with the connected peer
-        const call = peer.call(peerId, userMediaStream);
+        const emptyStream = new MediaStream();
+        const stream = isGhost ? emptyStream : userMediaStream || null;
+        if (!stream) return;
+
+        const constraints = isGhost
+          ? {
+              offerToReceiveAudio: true,
+              offerToReceiveVideo: true,
+            }
+          : null;
+
+        console.log(`I will call ${peerId}`);
+
+        const call = peer.call(peerId, stream, {
+          constraints: orUndefined(constraints),
+          metadata: { userId },
+        });
         setMediaConnection(call);
-        call.on("stream", setMateMediaStream);
-        call.on("close", () => setMateMediaStream(null));
+        addMediaConnection(call);
+        // call.on("stream", setMateMediaStream);
+        call.on("stream", (stream: MediaStream) => addStream(call, stream));
+        call.on("close", () => onMediaConnectionClose(call));
       }, 3000);
     },
-    [peer, userMediaStream]
+    [
+      onMediaConnectionClose,
+      addMediaConnection,
+      addStream,
+      userMediaStream,
+      isGhost,
+      userId,
+      peer,
+    ]
   );
 
   useEffect(() => {
@@ -294,6 +440,7 @@ export function useCall(call: number | null, mateUserId: number | null) {
       onToggleCamera,
       onToggleMic,
       peer,
+      ghostStreams: remoteStreams,
     }),
     [
       audio,
@@ -311,6 +458,7 @@ export function useCall(call: number | null, mateUserId: number | null) {
       onToggleCamera,
       onToggleMic,
       peer,
+      remoteStreams,
       screen,
       start,
       stop,
@@ -321,19 +469,28 @@ export function useCall(call: number | null, mateUserId: number | null) {
   );
 }
 
-export function useShareScreen(matePeerId?: string) {
+export function useShareScreen({
+  userId,
+  peerIds,
+}: {
+  userId?: number;
+  peerIds: string[];
+}) {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
-  const [mediaConnection, setMediaConnection] =
-    useState<MediaConnection | null>(null);
+  const [mediaConnections, setMediaConnections] = useState<MediaConnection[]>(
+    []
+  );
   const peer = usePeer();
 
   const terminateConnection = useCallback(() => {
-    if (!mediaConnection) return;
-    mediaConnection.close();
-    setMediaConnection(null);
-  }, [mediaConnection]);
+    for (const connection of mediaConnections) {
+      connection.close();
+    }
+
+    setMediaConnections([]);
+  }, [mediaConnections]);
 
   const share = useCallback(async () => {
     setLoading(true);
@@ -375,12 +532,16 @@ export function useShareScreen(matePeerId?: string) {
 
   // share the stream with my peer
   useEffect(() => {
-    if (!matePeerId || !stream) return;
-    const call = peer.call(matePeerId, stream, {
-      metadata: { screen: true },
+    if (peerIds.length === 0 || !stream) return;
+
+    const calls = peerIds.map((peerId) => {
+      return peer.call(peerId, stream, {
+        metadata: { screen: true, userId },
+      });
     });
-    setMediaConnection(call);
-  }, [matePeerId, peer, stream]);
+
+    setMediaConnections(calls);
+  }, [peer, peerIds, stream, userId]);
 
   useEffect(() => {
     if (!stream) return;
@@ -439,7 +600,7 @@ export function useSpeaking(
   return speaking;
 }
 
-function useStreamState(stream: MediaStream | null) {
+function useStreamState(stream?: MediaStream) {
   const [video, setVideo] = useState<boolean>(false);
   const [audio, setAduio] = useState<boolean>(false);
 
@@ -453,9 +614,9 @@ function useStreamState(stream: MediaStream | null) {
 }
 
 export function useCallEvents(
-  mateStream: MediaStream | null,
-  call: number | null,
-  mateUserId: number | null
+  mateStream?: MediaStream,
+  call?: number,
+  mateUserId?: number
 ) {
   const [mateVideo, setMateVideo] = useState<boolean>(false);
   const [mateAudio, setMateAudio] = useState<boolean>(false);

@@ -8,6 +8,7 @@ import { exists, forbidden, notfound } from "@/lib/error";
 import {
   authorizer,
   isAdmin,
+  isGhost,
   isInterviewer,
   isStudent,
   isTutor,
@@ -122,22 +123,22 @@ async function findRoomByMembers(
  *  @deprecated You can find room by members
  */
 async function findCallRoom(req: Request, res: Response, next: NextFunction) {
-  const allowed = authorizer()
-    .admin()
-    .tutor()
-    .student()
-    .interviewer()
-    .check(req.user);
+  const user = req.user;
+  const allowed = isUser(user) || isGhost(user);
   if (!allowed) return next(forbidden());
 
   const { call } = withNamedId("call").parse(req.params);
   const userCall = await calls.findById(call);
-  if (!userCall) return next(notfound.base());
+  if (!userCall) return next(notfound.call());
 
   const callMembers = await calls.findCallMembers([userCall.id]);
-  if (isEmpty(callMembers)) return next(notfound.base());
+  if (isEmpty(callMembers)) return next(notfound.call());
 
   const memberIds = callMembers.map((member) => member.userId);
+  const isMember = isUser(user) && memberIds.includes(user.id);
+  const eligible = isMember || isAdmin(user) || isGhost(user);
+  if (!eligible) return next(forbidden());
+
   const room = await rooms.findRoomByMembers(memberIds);
   if (!room) return next(notfound.base());
 
