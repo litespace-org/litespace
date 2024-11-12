@@ -16,12 +16,17 @@ export const Primary: StoryObj<Component> = {
   args: {
     label: ar["global.days.sun"],
     placeholder: "الووو",
+    maxSelection: 3,
     options: [
       { label: "Mostafa Kamar", value: "Mostafa" },
       { label: "Ahmed Kamar", value: "Ahmed" },
       { label: "Khloud Kamar", value: "Khloud" },
       { label: "Kamar AbdelFattah", value: "Kamar" },
       { label: "Ghada Mohamed", value: "ghada" },
+      { label: "Mostafa Kamar1", value: "Mostafa 2" },
+      { label: "Ahmed Kamar3", value: "Ahmed 2" },
+      { label: "Kamar AbdelFattah 2", value: "Kamar 2" },
+      { label: "Ghada Mohamed 2", value: "ghada 2" },
     ],
   },
 };

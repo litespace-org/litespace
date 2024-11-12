@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import cn from "classnames";
 import { ChevronDown, ChevronUp, Search, X } from "react-feather";
 import { Checkbox } from "../Checkbox";
+import { Button, ButtonSize, ButtonVariant } from "../Button";
 
 type MultiSelectOption = {
   label: string;
@@ -38,12 +39,29 @@ export const MultiSelect: React.FC<{
   disabled?: boolean;
   options: MultiSelectOption[];
   initialValues?: (string | number)[];
+  maxSelection?: number;
   onChange?: (newValues: (string | number)[]) => void;
-}> = ({ label, placeholder, disabled, options, initialValues, onChange }) => {
+}> = ({
+  label,
+  placeholder,
+  disabled,
+  options,
+  initialValues,
+  onChange,
+  maxSelection,
+}) => {
   const [active, setActive] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
   const [values, setValues] = useState<(string | number)[]>(
     initialValues || []
   );
+
+  const uniqueOptions = useMemo(
+    () =>
+      Array.from(new Map(options.map((item) => [item.value, item])).values()),
+    [options]
+  );
+
   const openMenu = useCallback(() => setActive(true), []);
   const closeMenu = useCallback(() => setActive(false), []);
 
@@ -58,10 +76,13 @@ export const MultiSelect: React.FC<{
   const chooseItem = useCallback(
     (item: string | number) => {
       if (disabled) return;
-      console.log("choosing: ", item);
+      if (values.length === maxSelection) {
+        setError("Maximum selection reached");
+        return;
+      }
       setValues((prev) => [...prev, item]);
     },
-    [disabled]
+    [disabled, values, maxSelection]
   );
 
   const unChooseItem = useCallback(
@@ -72,16 +93,28 @@ export const MultiSelect: React.FC<{
     [disabled]
   );
 
+  const selectAll = useCallback(() => {
+    setValues(options.map((opt) => opt.value));
+  }, [options]);
+
+  const deSelectAll = useCallback(() => {
+    setValues([]);
+  }, []);
+
   useEffect(() => {
     if (!onChange) return;
     onChange(values);
   }, [values, onChange]);
 
+  useEffect(() => {
+    setError("");
+  }, [active, values, options]);
+
   return (
     <div className="tw-relative tw-min-w-40 tw-max-w-80">
       <label className="tw-text-neutral-950 tw-text-[20px]">{label}</label>
       <div
-        role="listbox"
+        role="combobox"
         onClick={toggleMenu}
         tabIndex={1}
         className={cn(
@@ -130,10 +163,32 @@ export const MultiSelect: React.FC<{
           className={cn(
             "tw-absolute tw-z-10 -tw-bottom-2 tw-translate-y-full",
             "tw-border tw-border-brand-400 tw-w-full",
-            "tw-p-4 tw-rounded-lg"
+            "tw-p-4 tw-rounded-lg",
+            "tw-max-h-40 tw-overflow-auto"
           )}
         >
-          {options.map((option) => (
+          <div className="tw-flex tw-gap-2 tw-mb-2">
+            {!maxSelection && values.length !== options.length ? (
+              <Button
+                variant={ButtonVariant.Secondary}
+                size={ButtonSize.Tiny}
+                onClick={selectAll}
+              >
+                Select All
+              </Button>
+            ) : null}
+
+            {values.length > 0 ? (
+              <Button
+                variant={ButtonVariant.Secondary}
+                size={ButtonSize.Tiny}
+                onClick={deSelectAll}
+              >
+                De Select All
+              </Button>
+            ) : null}
+          </div>
+          {uniqueOptions.map((option) => (
             <Option
               checked={!!values.find((value) => value === option.value)}
               option={option}
@@ -143,6 +198,7 @@ export const MultiSelect: React.FC<{
           ))}
         </div>
       ) : null}
+      {<p className="tw-text-destructive-700 tw-text-sm">{error}</p>}
     </div>
   );
 };
