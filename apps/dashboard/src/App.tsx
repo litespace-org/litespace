@@ -15,8 +15,10 @@ import { useEffect } from "react";
 import { useAppDispatch } from "@/redux/store";
 import { findCurrentUser } from "@/redux/user/profile";
 import Lessons from "@/pages/Lessons";
-import Settings from "@/pages/Settings";
+import PlatformSettings from "@/pages/PlatformSettings";
 import Topics from "@/pages/Topics";
+import VerifyEmail from "@/pages/VerifyEmail";
+import UserSettings from "@/pages/UserSettings";
 
 const router = createBrowserRouter([
   {
@@ -34,7 +36,9 @@ const router = createBrowserRouter([
       { path: Route.Lessons, element: <Lessons /> },
       { path: Route.Topics, element: <Topics /> },
       { path: Route.ServerStats, element: <ServerStats /> },
-      { path: Route.Settings, element: <Settings /> },
+      { path: Route.PlatformSettings, element: <PlatformSettings /> },
+      { path: Route.VerifyEmail, element: <VerifyEmail /> },
+      { path: Route.UserSetting, element: <UserSettings /> },
     ],
   },
 ]);

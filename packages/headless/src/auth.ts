@@ -79,3 +79,26 @@ export function useVerifyEmail({
     mutationKey: [MutationKey.VerifyEmail],
   });
 }
+
+export function useSendVerifyEmail({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+  const verifyEmail = useCallback(
+    (callbackUrl: string) => {
+      return atlas.auth.sendVerifyEmail(callbackUrl);
+    },
+    [atlas.auth]
+  );
+
+  return useMutation({
+    onSuccess,
+    onError,
+    mutationFn: verifyEmail,
+    mutationKey: [MutationKey.ReVerifyEmail],
+  });
+}

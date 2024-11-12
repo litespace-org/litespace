@@ -14,6 +14,7 @@ import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { InputType } from "@litespace/luna/Input";
+import { CALLBACK_URL } from "@/lib/route";
 
 type IForm = {
   email: string;
@@ -63,7 +64,7 @@ const UserForm: React.FC<{
     (data: IForm) => {
       createUser.mutate({
         ...data,
-        callbackUrl: "http://localhost:5173/verify-email",
+        callbackUrl: CALLBACK_URL,
       });
     },
     [createUser]

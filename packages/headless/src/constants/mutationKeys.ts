@@ -9,6 +9,7 @@ export enum MutationKey {
   ResetPassword = "reset-password",
   ForgetPassword = "forget-password",
   VerifyEmail = "verify-email",
+  ReVerifyEmail = "reverify-email",
   FlushCache = "flush-cache",
   CreateTopic = "create-topic",
   DeleteTopic = "delete-topic",

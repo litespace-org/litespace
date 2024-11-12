@@ -9,6 +9,10 @@ export enum Route {
   Interviews = "/interviews",
   Lessons = "/lessons",
   ServerStats = "/server-stats",
-  Settings = "/settings",
+  PlatformSettings = "/platform-settings",
   Topics = "/topics",
+  VerifyEmail = "/verify-email",
+  UserSetting = "/user-settings",
 }
+
+export const CALLBACK_URL = window.location.origin.concat(Route.VerifyEmail);
