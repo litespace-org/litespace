@@ -34,6 +34,7 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
         {toasts.map((toast) => (
           <Toast
             key={toast.id}
+            toastKey={toast.id}
             title={toast.title}
             description={toast.description}
             onOpenChange={(open: boolean) => {

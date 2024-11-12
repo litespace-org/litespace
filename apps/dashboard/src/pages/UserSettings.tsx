@@ -1,27 +1,19 @@
-import { Route } from "@/lib/route";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useNavigate } from "react-router-dom";
-import VerificationDetails from "./UserSettings/Verification";
+import VerificationDetails from "@/components/UserSettings/Verification";
+import { Typography } from "@litespace/luna/Typography";
 
 const UserSettings = () => {
   const intl = useFormatMessage();
-  const user = useAppSelector(profileSelectors.user);
-  const navigate = useNavigate();
-  if (!user) {
-    navigate(Route.Login);
-    return null;
-  }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl">
-        {intl("dashboard.user-settings.welcome", {
-          name: user.name || user.email,
-        })}
-      </h1>
-      <VerificationDetails />
+    <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
+      <Typography element="h3">
+        {intl("dashboard.user-settings.title")}
+      </Typography>
+
+      <div className="mt-4">
+        <VerificationDetails />
+      </div>
     </div>
   );
 };

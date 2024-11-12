@@ -8,12 +8,12 @@ export const Toast: React.FC<{
   title: string;
   description?: string;
   onOpenChange?: (value: boolean) => void;
-  key?: number;
-}> = ({ open, onOpenChange, title, description, key }) => {
+  toastKey?: number;
+}> = ({ open, onOpenChange, title, description, toastKey }) => {
   return (
     <Root
       open={open}
-      key={key}
+      key={toastKey}
       onOpenChange={onOpenChange}
       className={cn(
         "tw-border tw-border-border-strong tw-rounded-md tw-p-3 tw-shadow-xl tw-bg-dash-sidebar",
