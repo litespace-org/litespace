@@ -221,6 +221,12 @@ export default {
           4: "var(--color-calendar-graph-day-L4-border)",
         },
       },
+      boxShadow: {
+        sm: "0px 6px 20px 0px #00000014",
+        md: "0px 6px 20px 0px #00000026",
+        lg: "0px 6px 20px 0px #00000033",
+        xl: "0px 6px 20px 0px #00000040",
+      },
       keyframes: {
         hide: {
           from: { opacity: "1" },
