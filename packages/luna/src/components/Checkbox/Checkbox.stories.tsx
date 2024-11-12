@@ -19,4 +19,22 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const PrimaryDisabled: StoryObj<Component> = {
+  args: {
+    id: "sunday",
+    label: ar["global.days.sun"],
+    checked: false,
+    disabled: true,
+  },
+};
+
+export const PrimaryCheckedDisabled: StoryObj<Component> = {
+  args: {
+    id: "sunday",
+    label: ar["global.days.sun"],
+    checked: true,
+    disabled: true,
+  },
+};
+
 export default meta;
