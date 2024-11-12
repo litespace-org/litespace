@@ -5,6 +5,6 @@ export const AtlasContext = createContext<Atlas | null>(null);
 
 export function useAtlas() {
   const atlas = useContext(AtlasContext);
-  if (!atlas) throw new Error("Invalid context. Using outside the provider?!");
+  if (!atlas) throw new Error("useAtlas must be used within its provider.");
   return atlas;
 }
