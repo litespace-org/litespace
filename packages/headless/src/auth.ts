@@ -80,7 +80,7 @@ export function useVerifyEmail({
   });
 }
 
-export function useReVerifyEmail({
+export function useSendVerifyEmail({
   onSuccess,
   onError,
 }: {
@@ -90,7 +90,7 @@ export function useReVerifyEmail({
   const atlas = useAtlas();
   const verifyEmail = useCallback(
     (callbackUrl: string) => {
-      return atlas.auth.reVerifyEmail(callbackUrl);
+      return atlas.auth.sendVerifyEmail(callbackUrl);
     },
     [atlas.auth]
   );

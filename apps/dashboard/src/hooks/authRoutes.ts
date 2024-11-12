@@ -56,7 +56,7 @@ const routeConfigMap: Record<Route, RouteConfig> = {
   [Route.ServerStats]: {
     whitelist: [regularAdmin],
   },
-  [Route.Settings]: {
+  [Route.PlatformSettings]: {
     whitelist: [regularAdmin],
   },
   [Route.Topics]: {
@@ -66,7 +66,7 @@ const routeConfigMap: Record<Route, RouteConfig> = {
     whitelist: [regularAdmin],
   },
   [Route.UserSetting]: {
-    whitelist: [regularAdmin],
+    whitelist: [regularAdmin, mediaProvider],
   },
 };
 

@@ -35,7 +35,7 @@ export class Auth extends Base {
     await this.put("/api/v1/auth/verify-email", { token });
   }
 
-  async reVerifyEmail(callbackUrl: string): Promise<void> {
+  async sendVerifyEmail(callbackUrl: string): Promise<void> {
     await this.put("/api/v1/auth/send-verify-email", { callbackUrl });
   }
 }

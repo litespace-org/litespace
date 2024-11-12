@@ -2,7 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
 import { saveToken } from "@litespace/luna/cache";
-import { initial, LoadableState, createThunk } from "@litespace/luna/redux";
+import {
+  initial,
+  LoadableState,
+  createThunk,
+  fetcher,
+} from "@litespace/luna/redux";
 import { Atlas } from "@litespace/atlas";
 
 type Value = { user: IUser.Self; token: string | null };
@@ -42,6 +47,9 @@ export const slice = createSlice({
       };
       if (payload.token) saveToken(payload.token);
     },
+  },
+  extraReducers(builder) {
+    fetcher(builder, findCurrentUser);
   },
 });
 
