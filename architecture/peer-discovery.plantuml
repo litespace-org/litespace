@@ -1,0 +1,41 @@
+@startuml Peer Discovery
+
+title Peer Discovery
+
+actor Ghost as ghost #6366f1
+actor Tutor as tutor #3b82f6
+actor Student as student #22c55e
+participant Server as server
+database Cache as cache 
+
+note over ghost
+Ghost will not share his stream when 
+answering tutor and student calls.
+
+<code>
+call.answer(undefined)
+</code>
+end note
+
+ghost -> server: Emit ghost peer id to the server
+server -> cache: Cache ghost peer id.
+
+tutor -> server: Pull ghost peer id from the server (retryable)
+tutor -> ghost: Share tutor stream with the ghost\n""peer.call(ghost_peer_id,tutor_stream)"".
+
+student -> server: Pull ghost peer id from the server (retryable)
+student -> ghost: Share ghost stream with the ghost\n""peer.call(ghost_peer_id,student_stream)"".
+
+tutor -> server: Emit tutor peer id to the server
+server -> cache: Cache tutor peer id.
+
+student -> server: Pull tutor peer id from the server (retryable)
+student -> tutor: Share student stream with the tutor\n""peer.call(tutor_peer_id,student_stream)""
+tutor -> student: Answer the student call with the tutor stream\n""call.answer(tutor_stream)""
+
+student -> tutor: Share screen with the tutor\n""peer.call(tutor_peer_id,screen_stream)""
+student -> ghost: Share screen with the ghost\n""peer.call(ghost_peer_id,screen_stream)""
+
+tutor -> student: Share screen with the student\n""peer.call(student_peer_id,screen_stream)""
+tutor -> ghost: Share screen with the ghost\n""peer.call(ghost_peer_id,screen_stream)""
+@enduml
