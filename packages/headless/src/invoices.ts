@@ -16,7 +16,7 @@ import { UsePaginateResult, usePaginate } from "@/pagination";
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
+export type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
   IInvoice.FindInvoicesQuery,
   "page" | "size"
 >;
