@@ -69,7 +69,7 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
   const show = useMemo(() => {
-    return location.pathname !== Route.Complete && !isGhost();
+    return location.pathname !== Route.Complete && !isGhost;
   }, [location.pathname]);
 
   return (

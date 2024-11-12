@@ -16,6 +16,7 @@ import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
 import topic from "@/routes/topic";
 import cache from "@/routes/cache";
+import peer from "@/routes/peer";
 
 export default {
   user,
@@ -36,4 +37,5 @@ export default {
   auth,
   topic,
   cache,
+  peer,
 };

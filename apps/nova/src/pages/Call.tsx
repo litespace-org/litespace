@@ -28,12 +28,15 @@ import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orUndefined } from "@litespace/sol/utils";
-import { useCall, useFindCallRoomById } from "@litespace/headless/calls";
+import {
+  useCall,
+  useFindCallRoomById,
+  useFindPeerId,
+} from "@litespace/headless/calls";
 import { useDisplayRecorder } from "@litespace/headless/recorder";
 import { isGhost } from "@/lib/ghost";
 import GhostView from "@/components/Call/GhostView";
-
-const ghost = isGhost();
+import { IPeer, IUser } from "@litespace/types";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -49,7 +52,7 @@ const Call: React.FC = () => {
     return call;
   }, [id]);
 
-  const callRoom = useFindCallRoomById(!ghost ? callId : null);
+  const callRoom = useFindCallRoomById(!isGhost ? callId : null);
 
   const mateInfo = useMemo(() => {
     if (!callRoom.data) return;
@@ -70,7 +73,7 @@ const Call: React.FC = () => {
         () => ({
           call: orUndefined(callId),
           mateUserId: mateInfo?.id,
-          isGhost: isGhost(),
+          isGhost,
           userId: profile?.id,
         }),
         [callId, mateInfo?.id, profile?.id]
@@ -80,23 +83,50 @@ const Call: React.FC = () => {
   const { start: startRecording } = useDisplayRecorder();
 
   useEffect(() => {
-    if (isGhost()) return;
+    if (isGhost) return;
     start();
   }, [start]);
 
   useEffect(() => {
-    if (ghost) startRecording();
+    if (isGhost) startRecording();
   }, [startRecording]);
 
   const onLeaveCall = useCallback(() => {
-    peer.destroy();
+    peer.destroy(); //! not correct!! Terminate the connection isntead
   }, [peer]);
+
+  const findGhostPeerIdQuery = useMemo(():
+    | IPeer.FindPeerIdApiQuery
+    | undefined => {
+    if (isGhost || !callId) return;
+    return { type: IPeer.PeerType.Ghost, call: callId };
+  }, [callId]);
+
+  const findTutorPeerIdQuery = useMemo(():
+    | IPeer.FindPeerIdApiQuery
+    | undefined => {
+    const allowed =
+      profile?.role === IUser.Role.Student ||
+      profile?.role === IUser.Role.Interviewer;
+    if (isGhost || !mateInfo || !allowed) return;
+
+    return { type: IPeer.PeerType.Tutor, tutor: mateInfo.id };
+  }, [mateInfo, profile]);
+
+  const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
+  const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
+
+  console.log({
+    data: ghostPeerId.data,
+    tutorPeerId: tutorPeerId.data,
+    findTutorPeerIdQuery,
+  });
 
   return (
     <div
       className={cn(
         "flex overflow-hidden w-full",
-        ghost ? "h-screen" : "h-[calc(100vh-4rem)]"
+        isGhost ? "h-screen" : "h-[calc(100vh-4rem)]"
       )}
     >
       <div
@@ -110,10 +140,10 @@ const Call: React.FC = () => {
         <div
           className={cn(
             "relative flex-1 w-full",
-            ghost ? "p-0" : "max-h-[calc(100%-110px)] pt-10 px-4"
+            isGhost ? "p-0" : "max-h-[calc(100%-110px)] pt-10 px-4"
           )}
         >
-          {ghost ? (
+          {isGhost ? (
             <GhostView streams={ghostStreams} />
           ) : (
             <Media
@@ -136,7 +166,7 @@ const Call: React.FC = () => {
             />
           )}
         </div>
-        {!ghost ? (
+        {!isGhost ? (
           <div className="flex items-center justify-center gap-4 my-10">
             <Button
               onClick={onLeaveCall}
@@ -212,7 +242,7 @@ const Call: React.FC = () => {
         ) : null}
       </div>
 
-      {!ghost ? (
+      {!isGhost ? (
         <div
           className={cn(
             "hidden w-full lg:flex lg:flex-col lg:max-w-[350px] xl:max-w-[450px]"
@@ -224,7 +254,7 @@ const Call: React.FC = () => {
 
       <Drawer
         title={intl("global.labels.chat")}
-        open={chat.open && !mediaQueries.lg && !ghost}
+        open={chat.open && !mediaQueries.lg && !isGhost}
         close={chat.hide}
       >
         {messages}
