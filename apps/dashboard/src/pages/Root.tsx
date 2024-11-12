@@ -16,6 +16,7 @@ import {
   Server,
   Settings,
   List,
+  User,
 } from "react-feather";
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
@@ -86,10 +87,16 @@ const Root: React.FC = () => {
           show: role?.admin,
         },
         {
-          label: intl("dashboard.sidebar.settings"),
-          route: Route.Settings,
+          label: intl("dashboard.sidebar.platform.settings"),
+          route: Route.PlatformSettings,
           icon: Settings,
           show: role?.admin,
+        },
+        {
+          label: intl("dashboard.sidebar.user.settings"),
+          route: Route.UserSetting,
+          icon: User,
+          show: role?.admin || role?.mediaProvider,
         },
       ].filter((route) => route.show),
     [intl, role?.admin, role?.mediaProvider]

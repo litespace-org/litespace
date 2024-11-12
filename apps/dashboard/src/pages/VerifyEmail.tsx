@@ -1,9 +1,9 @@
-import { EmailVerification } from "@litespace/luna/EmailVerification";
-import { Route } from "@/types/routes";
-import React, { useCallback } from "react";
+import { Route } from "@/lib/route";
 import { useAppDispatch } from "@/redux/store";
-import { useAtlas } from "@litespace/headless/atlas";
 import { findCurrentUser } from "@/redux/user/profile";
+import { useAtlas } from "@litespace/headless/atlas";
+import { EmailVerification } from "@litespace/luna/EmailVerification";
+import React, { useCallback } from "react";
 
 const VerifyEmail: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -12,7 +12,6 @@ const VerifyEmail: React.FC = () => {
   const onVerification = useCallback(() => {
     dispatch(findCurrentUser.call(atlas));
   }, [atlas, dispatch]);
-
   return (
     <EmailVerification onVerification={onVerification} root={Route.Root} />
   );
