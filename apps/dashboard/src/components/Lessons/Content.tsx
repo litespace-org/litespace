@@ -128,14 +128,15 @@ const Content: React.FC<{ user?: number }> = ({ user }) => {
     );
   return (
     <div>
-      <header className="flex flex-row gap-2 mb-3">
-        <PageTitle
-          fetching={query.isFetching && !query.isLoading}
-          title={intl("dashboard.lessons.title")}
-          count={query.data?.total}
-        />
-
-        <ActionsMenu actions={actions} Icon={MixerHorizontalIcon} />
+      <header className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-center gap-2">
+          <PageTitle
+            fetching={query.isFetching && !query.isLoading}
+            title={intl("dashboard.lessons.title")}
+            count={query.data?.total}
+          />
+          <ActionsMenu actions={actions} Icon={MixerHorizontalIcon} />
+        </div>
       </header>
 
       <List query={query} {...pagination} />
