@@ -2,7 +2,6 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import dts from "vite-plugin-dts";
-import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
 import svgr from "vite-plugin-svgr";
 
