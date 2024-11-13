@@ -87,12 +87,15 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
   ]);
 
   const onCheckedChange = useCallback(
-    (weekday: IDate.Weekday, checked: boolean) => {
+    (weekday: IDate.Weekday) => {
       if (!onChange) return;
       const list = clone(weekdays);
-      const updated = checked
-        ? concat(list, weekday)
-        : list.filter((day) => day !== weekday);
+      const checked = list.find((day) => day === weekday);
+
+      const updated =
+        checked !== undefined
+          ? list.filter((day) => day !== weekday)
+          : concat(list, weekday);
       onChange(updated);
     },
     [onChange, weekdays]
@@ -145,7 +148,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
               >
                 <Cross1Icon
                   className="tw-w-[15px] tw-h-[15px] tw-px-1 tw-cursor-pointer tw-bg-muted tw-rounded-full"
-                  onClick={() => onCheckedChange(weekday, false)}
+                  onClick={() => onCheckedChange(weekday)}
                 />
                 {label?.label}
               </button>
@@ -193,9 +196,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
               <Checkbox
                 label={option.label}
                 checked={weekdays.includes(option.value)}
-                onCheckedChange={(checked: boolean) =>
-                  onCheckedChange(option.value, checked)
-                }
+                onCheckedChange={() => onCheckedChange(option.value)}
               />
             </li>
           ))}

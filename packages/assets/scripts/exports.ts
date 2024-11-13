@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import path from "node:path";
+import path from "node:path/posix";
 import { glob } from "glob";
 
 type Exports = Record<string, string>;
@@ -12,7 +12,9 @@ function withCurrentDir(file: string): string {
 }
 
 async function getExports(): Promise<Exports> {
-  const files = await glob("assets/*.svg");
+  const files = await glob("assets/*.svg", {
+    posix: true,
+  });
   const sorted = [...files].sort();
   const exports: Exports = {};
 

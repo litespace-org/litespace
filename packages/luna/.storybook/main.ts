@@ -1,6 +1,7 @@
 import type { StorybookConfig } from "@storybook/react-vite";
-
 import { join, dirname, resolve } from "path";
+import svgr from "vite-plugin-svgr";
+import { merge } from "lodash";
 
 /**
  * This function is used to resolve the absolute path of a package.
@@ -22,10 +23,25 @@ const config: StorybookConfig = {
     options: {},
   },
   viteFinal: async (config) => {
-    config.resolve!.alias = {
-      ...config.resolve!.alias,
-      "@": resolve(__dirname, "../src"),
-    };
+    if (config.resolve) {
+      const alias = config.resolve.alias || {};
+      config.resolve.alias = merge(alias, {
+        "@": resolve(__dirname, "../src"),
+      });
+    }
+
+    config.plugins?.push(
+      svgr({
+        svgrOptions: {
+          exportType: "default",
+          ref: true,
+          svgo: false,
+          titleProp: true,
+        },
+        include: "**/*.svg",
+      })
+    );
+
     return config;
   },
 };
