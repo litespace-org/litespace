@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   Item,
   Portal,
@@ -12,6 +12,7 @@ import { MultiSelectOption } from "@/components/MultiSelect/types";
 import Checkbox from "@/components/Checkbox/CheckboxV2";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
+import { isEmpty } from "lodash";
 
 export const MultiSelect = <T,>({
   options,
@@ -26,6 +27,14 @@ export const MultiSelect = <T,>({
   error?: boolean;
   setValues?: (values: T[]) => void;
 }) => {
+  const lables = useMemo(
+    () =>
+      options
+        .filter((option) => values.includes(option.value))
+        .map((option) => option.label),
+    [options, values]
+  );
+
   return (
     <Root>
       <Trigger
@@ -44,9 +53,15 @@ export const MultiSelect = <T,>({
       >
         <div className="tw-flex tw-flex-row tw-justify-between tw-gap-2">
           <SearchIcon />
-          <Typography className="tw-flex-1 tw-text-natural-400">
-            {placeholder}
-          </Typography>
+          {isEmpty(lables) ? (
+            <Typography className="tw-flex-1 tw-text-natural-400">
+              {placeholder}
+            </Typography>
+          ) : (
+            <Typography className="tw-truncate tw-w-4/5 tw-flex-1">
+              {lables.join(" - ")}
+            </Typography>
+          )}
           <ArrowDown />
         </div>
       </Trigger>

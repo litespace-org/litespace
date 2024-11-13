@@ -44,6 +44,7 @@
     "lint:dashboard": "pnpm --filter @litespace/dashboard lint",
     "lint:headless": "pnpm --filter @litespace/headless lint",
     "lint:all": "pnpm lint:headless && pnpm lint:nova && pnpm lint:mobile && pnpm lint:nebula && pnpm lint:dashboard",
+    "storybook": "pnpm --filter @litespace/luna storybook",
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",
     "telegram": "vite-node scripts/telegram.ts",
