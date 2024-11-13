@@ -1,4 +1,5 @@
 import { Base } from "@/base";
+import { IAsset } from "@litespace/types";
 
 export class Asset extends Base {
   find(): Promise<string[]> {
@@ -9,5 +10,15 @@ export class Asset extends Base {
 
   async delete(name: string): Promise<void> {
     await this.client.delete(`/api/v1/asset/${name}`);
+  }
+
+  async getAssetBlob(name: string, type: IAsset.AssetType) {
+    const url =
+      type === "public"
+        ? `/assets/uploads/${name}`
+        : `/assets/receipts/${name}`;
+    return await this.client.get(url, {
+      responseType: "blob",
+    });
   }
 }

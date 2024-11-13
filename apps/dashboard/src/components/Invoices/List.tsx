@@ -84,7 +84,11 @@ const List: React.FC<{
       columnHelper.accessor("receipt", {
         header: intl("dashboard.invoices.receipt"),
         cell: (info) => (
-          <ImageField name={info.getValue()} locator={asFullRecriptUrl} />
+          <ImageField
+            name={info.getValue()}
+            locator={asFullRecriptUrl}
+            type="private"
+          />
         ),
       }),
       columnHelper.accessor("addressedBy", {
