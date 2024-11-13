@@ -447,7 +447,7 @@
   "labels.create": "إنشاء",
   "labels.update": "تعديل",
   "labels.uploaded": "مرفق",
-  "labels.notUplaoded": "غير مرفق",
+  "labels.not.uplaoded": "غير مرفق",
   "labels.new.password": "كلمة السر الجديدة",
   "labels.repeat.new.password": "أعد كتابة كلمة السر الجديدة",
   "labels.invoice.receipt": "الإيصال",

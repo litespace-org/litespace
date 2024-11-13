@@ -2,7 +2,6 @@ import List from "@/components/Invoices/List";
 import Error from "@/components/common/Error";
 import PageTitle from "@/components/common/PageTitle";
 import { Loading } from "@litespace/luna/Loading";
-import { arrayEquals } from "@/components/utils/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
@@ -17,12 +16,8 @@ import {
   invoiceStatusIntlMap,
   withdrawMethodsIntlMap,
 } from "@/components/utils/invoice";
-import {
-  ExtractObjectKeys,
-  IFilter,
-  IInvoice,
-  IWithdrawMethod,
-} from "@litespace/types";
+import { IFilter, IInvoice, IWithdrawMethod } from "@litespace/types";
+import { isEqual } from "lodash";
 
 const DEFAULT_METHODS_FILTER = [
   IWithdrawMethod.Type.Bank,
@@ -47,13 +42,8 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
   const [statuses, setStatuses] = useState<IInvoice.Status[]>(
     DEFAULT_STATUSES_FILTER
   );
-  const [orderBy, setOrderBy] = useState<
-    | ExtractObjectKeys<
-        IInvoice.Row,
-        "amount" | "created_at" | "updated_at" | "bank"
-      >
-    | undefined
-  >(undefined);
+  const [orderBy, setOrderBy] =
+    useState<IInvoice.FindInvoicesQuery["orderBy"]>(undefined);
   const [orderDirection, setOrderDirection] = useState<IFilter.OrderDirection>(
     IFilter.OrderDirection.Descending
   );
@@ -72,28 +62,25 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
     [user, methods, banks, statuses, receipt, orderBy, orderDirection]
   );
 
-  const { query, ...pagination } = useFindInvoices({ ...filter });
+  const { query, ...pagination } = useFindInvoices(filter);
 
   const makeMethodOption = useCallback(
     (method: IWithdrawMethod.Type) => ({
       id: method,
       label: intl(withdrawMethodsIntlMap[method]),
       checked:
-        methods.includes(method) &&
-        !arrayEquals(methods, DEFAULT_METHODS_FILTER),
+        methods.includes(method) && !isEqual(methods, DEFAULT_METHODS_FILTER),
       onClick: () => {
         setMethods((prev) => {
-          if (arrayEquals(prev, DEFAULT_METHODS_FILTER)) return [method];
-          if (
-            prev.includes(method) &&
-            !arrayEquals(methods, DEFAULT_METHODS_FILTER)
-          )
+          const full = isEqual(prev, DEFAULT_METHODS_FILTER);
+          if (full) return [method];
+          if (prev.includes(method) && !full)
             return prev.filter((el) => el !== method);
           return [...prev, method];
         });
       },
     }),
-    [methods, withdrawMethodsIntlMap, arrayEquals, intl]
+    [methods, intl]
   );
 
   const makeBankOption = useCallback(
@@ -109,7 +96,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
         });
       },
     }),
-    [banks, invoiceBankIntlMap, intl]
+    [banks, intl]
   );
 
   const makeStatusOption = useCallback(
@@ -118,34 +105,27 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
       label: intl(invoiceStatusIntlMap[status]),
       checked:
         statuses.includes(status) &&
-        !arrayEquals(statuses, DEFAULT_STATUSES_FILTER),
+        !isEqual(statuses, DEFAULT_STATUSES_FILTER),
       onClick: () => {
         setStatuses((prev) => {
-          if (arrayEquals(prev, DEFAULT_STATUSES_FILTER)) return [status];
-          if (
-            prev.includes(status) &&
-            !arrayEquals(statuses, DEFAULT_STATUSES_FILTER)
-          )
+          const full = isEqual(prev, DEFAULT_STATUSES_FILTER);
+          if (full) return [status];
+          if (prev.includes(status) && !full)
             return prev.filter((el) => el !== status);
           return [...prev, status];
         });
       },
     }),
-    [statuses, invoiceStatusIntlMap, intl, arrayEquals]
+    [statuses, intl]
   );
   const makeOrderByOption = useCallback(
-    (
-      order: ExtractObjectKeys<
-        IInvoice.Row,
-        "amount" | "created_at" | "updated_at" | "bank"
-      >
-    ) => ({
+    (order: Exclude<IInvoice.FindInvoicesQuery["orderBy"], undefined>) => ({
       id: order,
       label: intl(invoiceOrderIntlMap[order]),
       checked: orderBy === order,
       onClick: () => setOrderBy(order),
     }),
-    [orderBy, invoiceOrderIntlMap, intl]
+    [orderBy, intl]
   );
 
   const actions = useMemo(
@@ -155,7 +135,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
         label: intl("global.labels.cancel"),
         danger: true,
         disabled:
-          arrayEquals(methods, DEFAULT_METHODS_FILTER) &&
+          isEqual(methods, DEFAULT_METHODS_FILTER) &&
           (banks === undefined || banks.length === 0) &&
           statuses === DEFAULT_STATUSES_FILTER &&
           receipt === undefined &&
@@ -179,7 +159,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
             id: 0,
             label: intl("global.labels.cancel"),
             danger: true,
-            disabled: arrayEquals(methods, DEFAULT_METHODS_FILTER),
+            disabled: isEqual(methods, DEFAULT_METHODS_FILTER),
             onClick: () => {
               setMethods(DEFAULT_METHODS_FILTER);
             },
@@ -187,7 +167,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
           {
             id: 1,
             label: intl("global.labels.all"),
-            checked: arrayEquals(methods, DEFAULT_METHODS_FILTER),
+            checked: isEqual(methods, DEFAULT_METHODS_FILTER),
             onClick: () => {
               setMethods(DEFAULT_METHODS_FILTER);
             },
@@ -222,7 +202,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
             id: 0,
             label: intl("global.labels.cancel"),
             danger: true,
-            disabled: arrayEquals(statuses, DEFAULT_STATUSES_FILTER),
+            disabled: isEqual(statuses, DEFAULT_STATUSES_FILTER),
             onClick: () => {
               setStatuses(DEFAULT_STATUSES_FILTER);
             },
@@ -230,7 +210,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
           {
             id: 1,
             label: intl("global.labels.all"),
-            checked: arrayEquals(statuses, DEFAULT_STATUSES_FILTER),
+            checked: isEqual(statuses, DEFAULT_STATUSES_FILTER),
             onClick: () => {
               setStatuses(DEFAULT_STATUSES_FILTER);
             },
@@ -264,7 +244,7 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
           },
           {
             id: 2,
-            label: intl("labels.notUplaoded"),
+            label: intl("labels.not.uplaoded"),
             checked: receipt === false,
             onClick: () => setReceipt(false),
           },
@@ -308,16 +288,17 @@ const Invoices: React.FC = ({ user }: { user?: number }) => {
       },
     ],
     [
+      intl,
       methods,
       banks,
       statuses,
       receipt,
       orderBy,
       orderDirection,
-      intl,
-      makeBankOption,
-      makeOrderByOption,
       makeMethodOption,
+      makeBankOption,
+      makeStatusOption,
+      makeOrderByOption,
     ]
   );
 
