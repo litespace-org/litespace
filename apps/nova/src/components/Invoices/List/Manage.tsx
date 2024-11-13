@@ -16,6 +16,7 @@ import {
   useEditUserInvoice,
   useFindWithdrawalMethods,
 } from "@litespace/headless/invoices";
+import { price } from "@litespace/sol/value";
 
 type IForm = {
   method: IWithdrawMethod.Type;
@@ -108,7 +109,7 @@ const ManageInvoice: React.FC<{
       return {
         method: fields.method,
         receiver,
-        amount: fields.amount,
+        amount: price.scale(fields.amount),
         bank: bank && fields.bank ? fields.bank : null,
       };
     },

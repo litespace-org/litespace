@@ -12,6 +12,8 @@ async function getPastIncome(userId: number) {
     users: [userId],
     canceled: false,
     future: false,
+    past: true,
+    ratified: true,
   });
 }
 
