@@ -28,9 +28,9 @@ export function useFindInvoices(
   const findInvoices = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (filter.userOnly && !filter.users) return { list: [], total: 0 };
-      return await atlas.invoice.find({ page, size });
+      return await atlas.invoice.find({ page, size, ...filter });
     },
-    [atlas.invoice, filter.userOnly, filter.users]
+    [atlas.invoice, filter]
   );
   return usePaginate(findInvoices, [QueryKey.FindInvoices, filter]);
 }
