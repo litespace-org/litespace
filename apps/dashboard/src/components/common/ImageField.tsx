@@ -8,13 +8,36 @@ import { useRender } from "@litespace/luna/hooks/common";
 import { Typography } from "@litespace/luna/Typography";
 import ImageDialog from "@/components/common/ImageDialog";
 import React from "react";
+import { useAssetBlob } from "@litespace/headless/asset";
+import { IAsset } from "@litespace/types";
+import { Loading } from "@litespace/luna/Loading";
+import Error from "@/components/common/Error";
 
 const ImageField: React.FC<{
   name: string | null;
   locator?: (name: string) => string;
-}> = ({ name, locator }) => {
+  type: IAsset.AssetType;
+}> = ({ name, type = "public" }) => {
   const image = useRender();
-  if (!name) return "-";
+
+  const iamgeFetcher = useAssetBlob(name || "", type);
+
+  if (iamgeFetcher.isLoading) return <Loading />;
+
+  if (iamgeFetcher.isError)
+    return (
+      <Error
+        refetch={iamgeFetcher.refetch}
+        title="error"
+        error={iamgeFetcher.error}
+      />
+    );
+
+  if (!name) return <Typography tag="p">-</Typography>;
+
+  const data = iamgeFetcher.data?.data;
+  const imageURl = URL.createObjectURL(data);
+
   return (
     <>
       <Button
@@ -30,10 +53,10 @@ const ImageField: React.FC<{
 
       {name && image.open ? (
         <ImageDialog
-          image={name}
+          image={imageURl}
           close={image.hide}
           open={image.open}
-          locator={locator}
+          name={name}
         />
       ) : null}
     </>
