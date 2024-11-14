@@ -1,14 +1,16 @@
 import { createContext, useCallback, useContext } from "react";
 
+export type ToastTypes = "success" | "warning" | "error";
+
 export type AddToastData = {
   title: string;
   description?: string;
 };
 
-export type ToastData = AddToastData & { id: number };
+export type ToastData = AddToastData & { id: number; type: ToastTypes };
 
 type Context = {
-  add: (data: AddToastData) => number;
+  add: (data: AddToastData, type: ToastTypes) => number;
   remove: (id: number) => void;
 };
 
@@ -20,31 +22,24 @@ export function useToast() {
 
   const success = useCallback(
     (data: AddToastData) => {
-      return toast.add(data);
+      return toast.add(data, "success");
     },
     [toast]
   );
 
   const error = useCallback(
     (data: AddToastData) => {
-      return toast.add(data);
-    },
-    [toast]
-  );
-
-  const info = useCallback(
-    (data: AddToastData) => {
-      return toast.add(data);
+      return toast.add(data, "error");
     },
     [toast]
   );
 
   const warning = useCallback(
     (data: AddToastData) => {
-      return toast.add(data);
+      return toast.add(data, "warning");
     },
     [toast]
   );
 
-  return { success, error, info, warning };
+  return { success, error, warning };
 }

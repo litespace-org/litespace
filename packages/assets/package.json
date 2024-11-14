@@ -5,7 +5,10 @@
   "private": true,
   "exports": {
     "./arrow-down.svg": "./assets/arrow-down.svg",
+    "./cancel.svg": "./assets/cancel.svg",
+    "./check-circle.svg": "./assets/check-circle.svg",
     "./check.svg": "./assets/check.svg",
+    "./info.svg": "./assets/info.svg",
     "./login-dark.svg": "./assets/login-dark.svg",
     "./login-light.svg": "./assets/login-light.svg",
     "./logo.svg": "./assets/logo.svg",
