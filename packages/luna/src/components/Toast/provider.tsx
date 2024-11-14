@@ -3,6 +3,7 @@ import {
   ToastContext,
   ToastData,
   AddToastData,
+  ToastTypes,
 } from "@/components/Toast/context";
 import { Toast } from "@/components/Toast";
 import { Provider, Viewport } from "@radix-ui/react-toast";
@@ -13,9 +14,9 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
 }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
-  const add = useCallback((data: AddToastData) => {
+  const add = useCallback((data: AddToastData, type: ToastTypes) => {
     const id = Math.floor(Math.random() * 1000);
-    const toastData = { ...data, id };
+    const toastData = { ...data, id, type };
     setToasts((prev) => [...prev, toastData]);
     return id;
   }, []);
@@ -33,6 +34,7 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
 
         {toasts.map((toast) => (
           <Toast
+            type={toast.type}
             key={toast.id}
             toastKey={toast.id}
             title={toast.title}
