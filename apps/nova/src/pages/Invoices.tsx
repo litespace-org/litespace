@@ -14,7 +14,7 @@ const Invoices: React.FC = () => {
     users: profile ? [profile.id] : undefined,
     userOnly: true,
   });
-  const stats = useFindInvoiceStats(profile);
+  const stats = useFindInvoiceStats(profile?.id);
 
   const refresh = useCallback(() => {
     invoices.query.refetch();

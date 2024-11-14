@@ -1,7 +1,8 @@
-import { IFilter, IInvoice, IUser, Paginated, Void } from "@litespace/types";
-import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
+import { MutationKey, QueryKey } from "@/constants";
+import { UsePaginateResult, usePaginate } from "@/pagination";
 import { useInfinitePaginationQuery } from "@/query";
+import { IFilter, IInvoice, Paginated, Void } from "@litespace/types";
 import {
   InfiniteData,
   UseInfiniteQueryResult,
@@ -10,8 +11,7 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { MutationKey, QueryKey } from "@/constants";
-import { UsePaginateResult, usePaginate } from "@/pagination";
+import { useCallback } from "react";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -78,19 +78,19 @@ type useFindInvoiceStatsProps = UseQueryResult<
 >;
 
 export function useFindInvoiceStats(
-  profile: IUser.Self | null
+  tutorId?: number
 ): useFindInvoiceStatsProps {
   const atlas = useAtlas();
 
   const findStats = useCallback(async () => {
-    if (!profile) return null;
-    return await atlas.invoice.stats(profile.id);
-  }, [atlas.invoice, profile]);
+    if (!tutorId) return null;
+    return await atlas.invoice.stats(tutorId);
+  }, [atlas.invoice, tutorId]);
 
   return useQuery({
     queryFn: findStats,
     queryKey: [QueryKey.FindInvoiceStats],
-    enabled: !!profile,
+    enabled: !!tutorId,
   });
 }
 
