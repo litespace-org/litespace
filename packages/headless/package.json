@@ -6,6 +6,7 @@
     "dist/**"
   ],
   "exports": {
+    "./asset": "./dist/asset.js",
     "./plans": "./dist/plans.js",
     "./backend": "./dist/backend/index.js",
     "./atlas": "./dist/atlas/index.js",
