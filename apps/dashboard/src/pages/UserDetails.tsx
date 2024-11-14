@@ -1,16 +1,19 @@
-import BackLink from "@/components/common/BackLink";
-import Content from "@/components/UserDetails/Content";
-import Interviews from "@/components/Interviews/Content";
 import Lessons from "@/components/Lessons/Content";
-import { useFindTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";
+import BackLink from "@/components/common/BackLink";
+import Interviews from "@/components/Interviews/Content";
+import StudentStats from "@/components/Students/Stats";
+import TutorStats from "@/components/Tutor/Stats";
+import InvoicesContent from "@/components/Invoices/Content";
+import UserDetailsContent from "@/components/UserDetails/Content";
+import { IUser } from "@litespace/types";
+import { useParams } from "react-router-dom";
+import { UseQueryResult } from "@tanstack/react-query";
 import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/sol/user";
-import { IUser } from "@litespace/types";
-import { UseQueryResult } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
-import { useMemo, useCallback } from "react";
 import { useFindStudentStats } from "@litespace/headless/student";
-import StudentStats from "@/components/Students/Stats";
+import { useMemo, useCallback } from "react";
+import { useFindTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";
+import { useFindInvoiceStats } from "@litespace/headless/invoices";
 
 type UserProfileParams = {
   id: string;
@@ -35,32 +38,45 @@ const UserDetails = () => {
   }, [query.data]);
 
   const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
-  const tutorStats = useFindTutorStats(role?.tutor && id ? id : null);
+  const teachingTutorStats = useFindTutorStats(role?.tutor && id ? id : null);
+  const financialTutorStats = useFindInvoiceStats(
+    role?.tutor && id ? id : undefined
+  );
   const studentStats = useFindStudentStats(role?.student ? id : undefined);
-
   const refetch = useCallback(() => {
     query.refetch();
     tutorQuery.refetch();
-    tutorStats.refetch();
-  }, [query, tutorQuery, tutorStats]);
+    teachingTutorStats.refetch();
+    financialTutorStats.refetch();
+  }, [query, tutorQuery, teachingTutorStats, financialTutorStats]);
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
       <BackLink to="/users" name="dashboard.users.title" />
 
-      <Content
+      <UserDetailsContent
         user={query.data}
         tutor={tutorQuery.data}
-        tutorStats={tutorStats.data}
+        tutorStats={teachingTutorStats.data}
         loading={
-          query.isLoading || tutorQuery.isLoading || tutorStats.isLoading
+          query.isLoading ||
+          tutorQuery.isLoading ||
+          teachingTutorStats.isLoading
         }
-        error={query.error || tutorQuery.error || tutorStats.error}
+        error={query.error || tutorQuery.error || teachingTutorStats.error}
         refetch={refetch}
       />
 
-      {role?.student ? <StudentStats stats={studentStats} /> : null}
-
+      {role?.student ? (
+        <div className="mt-4">
+          <StudentStats stats={studentStats} />
+        </div>
+      ) : null}
+      {role?.tutor ? (
+        <div className="mt-4">
+          <TutorStats stats={financialTutorStats} />
+        </div>
+      ) : null}
       {(role?.tutor || role?.interviewer) && id ? (
         <div className="mt-4">
           <Interviews user={id} />
@@ -71,6 +87,10 @@ const UserDetails = () => {
         <div className="mt-4">
           <Lessons user={id} />
         </div>
+      ) : null}
+
+      {role?.tutor ? (
+        <InvoicesContent user={role?.tutor && id ? id : undefined} />
       ) : null}
     </div>
   );
