@@ -8,7 +8,6 @@ const ImageDialog: React.FC<{
   open: boolean;
   name: string;
 }> = ({ image, open, close, name }) => {
-  // todo: handle authorization
   return (
     <Dialog className="min-w-[40rem]" title={name} close={close} open={open}>
       <div className="max-h-[80vh] overflow-hidden">
