@@ -17,7 +17,6 @@ import {
 } from "@/components/utils/invoice";
 import { Typography } from "@litespace/luna/Typography";
 import ImageField from "@/components/common/ImageField";
-import { asFullRecriptUrl } from "@litespace/luna/backend";
 
 const List: React.FC<{
   data: Paginated<IInvoice.Self>;
@@ -83,13 +82,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("receipt", {
         header: intl("dashboard.invoices.receipt"),
-        cell: (info) => (
-          <ImageField
-            name={info.getValue()}
-            locator={asFullRecriptUrl}
-            type="private"
-          />
-        ),
+        cell: (info) => <ImageField name={info.getValue()} type="private" />,
       }),
       columnHelper.accessor("addressedBy", {
         header: intl("dashboard.invoices.addressedBy"),

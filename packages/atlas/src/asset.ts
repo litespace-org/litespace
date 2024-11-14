@@ -12,13 +12,12 @@ export class Asset extends Base {
     await this.client.delete(`/api/v1/asset/${name}`);
   }
 
-  async getAssetBlob(name: string, type: IAsset.AssetType) {
+  async getAssetBlob(name: string, type: IAsset.AssetType): Promise<Blob> {
     const url =
       type === "public"
         ? `/assets/uploads/${name}`
         : `/assets/receipts/${name}`;
-    return await this.client.get(url, {
-      responseType: "blob",
-    });
+    const { data } = await this.client.get(url, { responseType: "blob" });
+    return data;
   }
 }
