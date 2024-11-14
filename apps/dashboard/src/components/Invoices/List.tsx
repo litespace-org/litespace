@@ -88,7 +88,7 @@ const List: React.FC<{
         ),
       }),
       columnHelper.accessor("addressedBy", {
-        header: intl("dashboard.invoices.addressedBy"),
+        header: intl("dashboard.invoices.addressed.by"),
         cell: (info) => {
           const id = info.getValue();
           if (!id) return "-";

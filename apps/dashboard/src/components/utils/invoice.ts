@@ -29,7 +29,7 @@ export const invoiceOrderIntlMap: Record<
   LocalId
 > = {
   amount: "dashboard.invoices.amount",
-  created_at: "dashboard.invoices.createdAt",
-  updated_at: "dashboard.invoices.updatedAt",
+  created_at: "dashboard.invoices.created.at",
+  updated_at: "dashboard.invoices.updated.at",
   bank: "dashboard.invoices.bank",
 };

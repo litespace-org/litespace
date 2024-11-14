@@ -23,7 +23,7 @@ import {
   SelectItemProps,
 } from "@radix-ui/react-select";
 
-export type SelectProps<T extends string | number> = {
+export type SelectProps<T extends string | number | boolean | undefined> = {
   placeholder?: string;
   options?: SelectList<T>;
   value?: T;
@@ -35,7 +35,7 @@ export type SelectProps<T extends string | number> = {
 
 const OPTIONS_COUNT_THRESHOLD = 10;
 
-export const Select = <T extends string | number>({
+export const Select = <T extends string | number | boolean | undefined>({
   value,
   placeholder,
   options = [],
@@ -46,7 +46,7 @@ export const Select = <T extends string | number>({
     (value: string) => {
       if (!onChange) return;
       const optionValue = options.find(
-        (option) => option.value.toString() === value
+        (option) => option.value?.toString() === value
       );
       if (!optionValue) return;
       onChange(optionValue.value);
@@ -90,7 +90,18 @@ export const Select = <T extends string | number>({
           <Viewport className="focus:tw-outline-red-500">
             <Group>
               {options.map((option) => (
-                <SelectItem value={option.value.toString()} key={option.value}>
+                <SelectItem
+                  value={
+                    option.value === undefined
+                      ? "undefined"
+                      : option.value?.toString()
+                  }
+                  key={
+                    typeof option.value === "boolean"
+                      ? option.label
+                      : option.value
+                  }
+                >
                   {option.label}
                 </SelectItem>
               ))}
