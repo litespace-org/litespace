@@ -4,6 +4,7 @@ import { useTheme } from "../src/hooks/theme";
 import { IntlProvider } from "react-intl";
 import { ToastProvider } from "../src/components/Toast";
 import { locales } from "../src/locales";
+import { Direction } from "../src/components/Direction";
 
 const Decorator = (Story: React.FC) => {
   const { toggle } = useTheme();
@@ -13,14 +14,16 @@ const Decorator = (Story: React.FC) => {
       locale="ar-EG"
       defaultLocale="ar-EG"
     >
-      <ToastProvider>
-        <div>
-          <div className="tw-mb-4">
-            <Button onClick={toggle}>Toggle Theme</Button>
+      <Direction>
+        <ToastProvider>
+          <div dir="rtl">
+            <div className="tw-mb-4">
+              <Button onClick={toggle}>Toggle Theme</Button>
+            </div>
+            <Story />
           </div>
-          <Story />
-        </div>
-      </ToastProvider>
+        </ToastProvider>
+      </Direction>
     </IntlProvider>
   );
 };

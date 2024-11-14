@@ -18,6 +18,14 @@ export default {
         "3xs": "12rem",
         "4xs": "9rem",
       },
+      backgroundImage: {
+        "toast-success":
+          "radial-gradient(50% 50% at 50% 50%, rgba(0, 237, 81, 0.12) 0%, rgba(0, 237, 123, 0) 100%)",
+        "toast-warning":
+          "radial-gradient(50% 50% at 50% 50%, rgba(255, 212, 38, 0.11) 0%, rgba(255, 212, 38, 0) 100%)",
+        "toast-error":
+          "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
+      },
       colors: {
         dash: {
           sidebar: "hsl(var(--background-dash-sidebar))",

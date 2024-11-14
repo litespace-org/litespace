@@ -1,26 +1,34 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Root, Title, Description } from "@radix-ui/react-toast";
 import cn from "classnames";
-import { ToastTypes } from "./context";
-import check_circle from "@litespace/assets/check-circle.svg";
-import info from "@litespace/assets/info.svg";
-import cancel from "@litespace/assets/cancel.svg";
+import { ToastType } from "@/components/Toast/types";
+import CheckCircle from "@litespace/assets/check-circle.svg";
+import Info from "@litespace/assets/info.svg";
+import Cancel from "@litespace/assets/cancel.svg";
 import { motion } from "framer-motion";
+import { Typography } from "@/components/Typography";
 
 const TOAST_DURATION = 4800;
+
+const IconMap: Record<ToastType, React.FC<React.SVGProps<SVGSVGElement>>> = {
+  error: Cancel,
+  warning: Info,
+  success: CheckCircle,
+};
 
 export const Toast: React.FC<{
   open?: boolean;
   title: string;
-  type: ToastTypes;
+  type: ToastType;
   description?: string;
   onOpenChange?: (value: boolean) => void;
   toastKey?: number;
 }> = ({ open, onOpenChange, title, description, toastKey, type }) => {
-  const Icon =
-    type === "success" ? check_circle : type === "warning" ? info : cancel;
+  const Icon = useMemo(() => IconMap[type], [type]);
+
   return (
     <Root
+      dir="rtl"
       duration={TOAST_DURATION}
       open={open}
       key={toastKey}
@@ -30,9 +38,22 @@ export const Toast: React.FC<{
         "tw-bg-natural-50 dark:tw-bg-secondary-950",
         "tw-flex tw-gap-4 tw-items-center",
         "tw-relative tw-overflow-hidden",
-        "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]"
+        "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]",
+        "tw-relative"
       )}
     >
+      <div
+        className={cn(
+          "tw-bg-toast-success tw-absolute tw-top-0 tw-right-0",
+          "tw-h-full tw-w-1/2  tw-translate-x-[calc(50%-2rem)]",
+          {
+            "tw-bg-toast-success": type === "success",
+            "tw-bg-toast-warning": type === "warning",
+            "tw-bg-toast-error": type === "error",
+          }
+        )}
+      />
+
       <div
         className={cn(
           "tw-rounded-full tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center",
@@ -47,8 +68,7 @@ export const Toast: React.FC<{
       </div>
       <div className="tw-grow">
         <Title
-          dir="rtl"
-          className={cn("tw-font-boldtw-w-4/5 dark:tw-text-natural-50", {
+          className={cn("tw-font-bold tw-w-4/5 dark:tw-text-natural-50", {
             "tw-text-success-700": type === "success",
             "tw-text-warning-700": type === "warning",
             "tw-text-destructive-700": type === "error",
@@ -58,12 +78,16 @@ export const Toast: React.FC<{
         </Title>
         {description ? (
           <Description asChild>
-            <div className="tw-text-natural-600 tw-text-sm tw-font-semibold dark:tw-text-natural-50">
+            <Typography
+              element="caption"
+              className="tw-text-natural-600 tw-font-semibold dark:tw-text-natural-50"
+            >
               {description}
-            </div>
+            </Typography>
           </Description>
         ) : null}
       </div>
+
       <motion.div
         initial={{ width: "100%" }}
         animate={{ width: "0%" }}
@@ -78,7 +102,8 @@ export const Toast: React.FC<{
             "tw-bg-destructive-500": type === "error",
           }
         )}
-      ></motion.div>
+      />
+
       <motion.div
         initial={{ width: "100%" }}
         animate={{ width: "0%" }}
@@ -92,7 +117,7 @@ export const Toast: React.FC<{
             "tw-bg-destructive-500": type === "error",
           }
         )}
-      ></motion.div>
+      />
     </Root>
   );
 };

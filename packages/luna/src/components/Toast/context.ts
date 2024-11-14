@@ -1,16 +1,15 @@
 import { createContext, useCallback, useContext } from "react";
-
-export type ToastTypes = "success" | "warning" | "error";
+import { ToastType } from "@/components/Toast/types";
 
 export type AddToastData = {
   title: string;
   description?: string;
 };
 
-export type ToastData = AddToastData & { id: number; type: ToastTypes };
+export type ToastData = AddToastData & { id: number; type: ToastType };
 
 type Context = {
-  add: (data: AddToastData, type: ToastTypes) => number;
+  add: (data: AddToastData, type: ToastType) => number;
   remove: (id: number) => void;
 };
 
@@ -18,7 +17,7 @@ export const ToastContext = createContext<Context | null>(null);
 
 export function useToast() {
   const toast = useContext(ToastContext);
-  if (!toast) throw new Error("`useToast` must be used within `ToastProvider`");
+  if (!toast) throw new Error("`useToast` must be used within its provider");
 
   const success = useCallback(
     (data: AddToastData) => {
