@@ -2,20 +2,22 @@ import React, { useMemo } from "react";
 import { Card } from "@/components/Card";
 import { IUser, Void } from "@litespace/types";
 import cn from "classnames";
-import StudentMaleLight from "@litespace/assets/student-male-light.svg";
-import StudentMaleDark from "@litespace/assets/student-male-dark.svg";
-import StudentFemaleLight from "@litespace/assets/student-female-light.svg";
-import StudentFemaleDark from "@litespace/assets/student-female-dark.svg";
-import TutorMaleLight from "@litespace/assets/tutor-male-light.svg";
-import TutorMaleDark from "@litespace/assets/tutor-male-dark.svg";
-import TutorFemaleLight from "@litespace/assets/tutor-female-light.svg";
-import TutorFemaleDark from "@litespace/assets/tutor-female-dark.svg";
+import StudentMaleLight from "@litespace/assets/StudentMaleLight";
+import StudentMaleDark from "@litespace/assets/StudentMaleDark";
+import StudentFemaleLight from "@litespace/assets/StudentFemaleLight";
+import StudentFemaleDark from "@litespace/assets/StudentFemaleDark";
+import TutorMaleLight from "@litespace/assets/TutorMaleLight";
+import TutorMaleDark from "@litespace/assets/TutorMaleDark";
+import TutorFemaleLight from "@litespace/assets/TutorFemaleLight";
+import TutorFemaleDark from "@litespace/assets/TutorFemaleDark";
 
-type SVG = React.FC<React.SVGProps<SVGSVGElement>>;
+type Icon = React.MemoExoticComponent<
+  (props: React.SVGProps<SVGSVGElement>) => JSX.Element
+>;
 
 type Image = {
-  Light: SVG;
-  Dark: SVG;
+  Light: Icon;
+  Dark: Icon;
 };
 
 const Option: React.FC<{

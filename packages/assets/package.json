@@ -3,35 +3,38 @@
   "version": "1.0.0",
   "description": "LiteSpace static assets collection",
   "private": true,
-  "exports": {
-    "./arrow-down.svg": "./assets/arrow-down.svg",
-    "./cancel.svg": "./assets/cancel.svg",
-    "./check-circle.svg": "./assets/check-circle.svg",
-    "./check.svg": "./assets/check.svg",
-    "./info.svg": "./assets/info.svg",
-    "./login-dark.svg": "./assets/login-dark.svg",
-    "./login-light.svg": "./assets/login-light.svg",
-    "./logo.svg": "./assets/logo.svg",
-    "./register-dark.svg": "./assets/register-dark.svg",
-    "./register-light.svg": "./assets/register-light.svg",
-    "./search.svg": "./assets/search.svg",
-    "./student-female-dark.svg": "./assets/student-female-dark.svg",
-    "./student-female-light.svg": "./assets/student-female-light.svg",
-    "./student-male-dark.svg": "./assets/student-male-dark.svg",
-    "./student-male-light.svg": "./assets/student-male-light.svg",
-    "./tutor-female-dark.svg": "./assets/tutor-female-dark.svg",
-    "./tutor-female-light.svg": "./assets/tutor-female-light.svg",
-    "./tutor-male-dark.svg": "./assets/tutor-male-dark.svg",
-    "./tutor-male-light.svg": "./assets/tutor-male-light.svg"
-  },
   "scripts": {
-    "exports": "vite-node scripts/exports.ts"
+    "exports": "vite-node scripts/exports.ts",
+    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --memo -- assets"
   },
   "keywords": [],
   "author": "LiteSpace",
   "license": "ISC",
   "devDependencies": {
+    "@svgr/cli": "^8.1.0",
     "glob": "^11.0.0",
     "vite-node": "^2.1.2"
+  },
+  "exports": {
+    "./ArrowDown": "./dist/ArrowDown.tsx",
+    "./Cancel": "./dist/Cancel.tsx",
+    "./Check": "./dist/Check.tsx",
+    "./CheckCircle": "./dist/CheckCircle.tsx",
+    "./Info": "./dist/Info.tsx",
+    "./LoginDark": "./dist/LoginDark.tsx",
+    "./LoginLight": "./dist/LoginLight.tsx",
+    "./Logo": "./dist/Logo.tsx",
+    "./RegisterDark": "./dist/RegisterDark.tsx",
+    "./RegisterLight": "./dist/RegisterLight.tsx",
+    "./Search": "./dist/Search.tsx",
+    "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
+    "./StudentFemaleLight": "./dist/StudentFemaleLight.tsx",
+    "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
+    "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
+    "./TutorFemaleDark": "./dist/TutorFemaleDark.tsx",
+    "./TutorFemaleLight": "./dist/TutorFemaleLight.tsx",
+    "./TutorMaleDark": "./dist/TutorMaleDark.tsx",
+    "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
+    "./index": "./dist/index.tsx"
   }
 }

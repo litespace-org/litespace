@@ -17,7 +17,7 @@ import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { resetTutorMeta } from "@/redux/user/tutor";
-import Logo from "@litespace/assets/logo.svg";
+import Logo from "@litespace/assets/Logo";
 
 const Navbar: React.FC<{
   toggleTheme: () => void;

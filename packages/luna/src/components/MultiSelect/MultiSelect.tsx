@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import {
   Item,
   Portal,
@@ -6,8 +6,8 @@ import {
   Trigger,
   Content,
 } from "@radix-ui/react-dropdown-menu";
-import SearchIcon from "@litespace/assets/search.svg";
-import ArrowDown from "@litespace/assets/arrow-down.svg";
+import SearchIcon from "@litespace/assets/Search";
+import ArrowDown from "@litespace/assets/ArrowDown";
 import { MultiSelectOption } from "@/components/MultiSelect/types";
 import Checkbox from "@/components/Checkbox/CheckboxV2";
 import { Typography } from "@/components/Typography";
