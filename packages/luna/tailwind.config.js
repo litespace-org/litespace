@@ -18,6 +18,14 @@ export default {
         "3xs": "12rem",
         "4xs": "9rem",
       },
+      backgroundImage: {
+        "toast-success":
+          "radial-gradient(50% 50% at 50% 50%, rgba(0, 237, 81, 0.12) 0%, rgba(0, 237, 123, 0) 100%)",
+        "toast-warning":
+          "radial-gradient(50% 50% at 50% 50%, rgba(255, 212, 38, 0.11) 0%, rgba(255, 212, 38, 0) 100%)",
+        "toast-error":
+          "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
+      },
       colors: {
         dash: {
           sidebar: "hsl(var(--background-dash-sidebar))",
@@ -250,6 +258,8 @@ export default {
       "ls-medium": "0px 6px 20px 0px rgba(0, 0, 0, 0.15)",
       "ls-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.2)",
       "ls-x-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.25)",
+      toast:
+        "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
     },
   },
   plugins: [
