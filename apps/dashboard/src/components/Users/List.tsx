@@ -48,7 +48,7 @@ const List: React.FC<{
       }),
       columnHelper.accessor("image", {
         header: intl("dashboard.user.image"),
-        cell: (info) => <ImageField name={info.getValue()} />,
+        cell: (info) => <ImageField name={info.getValue()} type="public" />,
       }),
       columnHelper.accessor("birthYear", {
         header: intl("dashboard.user.birthYear"),
