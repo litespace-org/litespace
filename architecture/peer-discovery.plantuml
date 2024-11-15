@@ -38,4 +38,9 @@ student -> ghost: Share screen with the ghost\n""peer.call(ghost_peer_id,screen_
 
 tutor -> student: Share screen with the student\n""peer.call(student_peer_id,screen_stream)""
 tutor -> ghost: Share screen with the ghost\n""peer.call(ghost_peer_id,screen_stream)""
+
+
+ghost -[#b91c1c]> server: wss - remove the peer id from the server on disconnect
+tutor -[#b91c1c]> server: wss - remove the peer id from the server on disconnect
+student -[#b91c1c]> server: wss - remove the peer id from the server on disconnect
 @enduml
