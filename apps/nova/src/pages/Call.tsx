@@ -10,11 +10,11 @@ import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { useRender } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import {
-  Mic,
-  MicOff,
-  Video,
-  VideoOff,
-  Monitor,
+  // Mic,
+  // MicOff,
+  // Video,
+  // VideoOff,
+  // Monitor,
   MessageCircle,
   Phone,
   // Maximize,
@@ -23,20 +23,20 @@ import {
 import { useParams } from "react-router-dom";
 import cn from "classnames";
 // import { useFullScreen } from "@/hooks/call";
-import Media from "@/components/Call/Media";
+// import Media from "@/components/Call/Media";
 import Messages from "@/components/Chat/Messages";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { orUndefined } from "@litespace/sol/utils";
+import { orNull } from "@litespace/sol/utils";
 import {
-  useCall,
+  // useCall,
+  useCallV2,
   useFindCallRoomById,
-  useFindPeerId,
+  usePeerIds,
 } from "@litespace/headless/calls";
 import { useDisplayRecorder } from "@litespace/headless/recorder";
 import { isGhost } from "@/lib/ghost";
-import GhostView from "@/components/Call/GhostView";
-import { IPeer, IUser } from "@litespace/types";
+// import GhostView from "@/components/Call/GhostView";
 
 const Call: React.FC = () => {
   const profile = useAppSelector(profileSelectors.user);
@@ -67,60 +67,80 @@ const Call: React.FC = () => {
     [callRoom.data]
   );
 
-  const { user, mate, start, onToggleCamera, onToggleMic, peer, ghostStreams } =
-    useCall(
-      useMemo(
-        () => ({
-          call: orUndefined(callId),
-          mateUserId: mateInfo?.id,
-          isGhost,
-          userId: profile?.id,
-        }),
-        [callId, mateInfo?.id, profile?.id]
-      )
-    );
+  // const { user, mate, start, onToggleCamera, onToggleMic, peer, ghostStreams } =
+  //   useCall(
+  //     useMemo(
+  //       () => ({
+  //         call: orUndefined(callId),
+  //         mateUserId: mateInfo?.id,
+  //         isGhost,
+  //         userId: profile?.id,
+  //       }),
+  //       [callId, mateInfo?.id, profile?.id]
+  //     )
+  //   );
 
   const { start: startRecording } = useDisplayRecorder();
 
-  useEffect(() => {
-    if (isGhost) return;
-    start();
-  }, [start]);
+  // useEffect(() => {
+  //   if (isGhost) return;
+  //   start();
+  // }, [start]);
 
   useEffect(() => {
-    if (isGhost) startRecording();
+    // if (isGhost) startRecording();
   }, [startRecording]);
 
   const onLeaveCall = useCallback(() => {
-    peer.destroy(); //! not correct!! Terminate the connection isntead
-  }, [peer]);
+    // peer.destroy(); //! not correct!! Terminate the connection isntead
+  }, []);
 
-  const findGhostPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    if (isGhost || !callId) return;
-    return { type: IPeer.PeerType.Ghost, call: callId };
-  }, [callId]);
+  // const findGhostPeerIdQuery = useMemo(():
+  //   | IPeer.FindPeerIdApiQuery
+  //   | undefined => {
+  //   if (isGhost || !callId) return;
+  //   return { type: IPeer.PeerType.Ghost, call: callId };
+  // }, [callId]);
 
-  const findTutorPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    const allowed =
-      profile?.role === IUser.Role.Student ||
-      profile?.role === IUser.Role.Interviewer;
-    if (isGhost || !mateInfo || !allowed) return;
+  // const findTutorPeerIdQuery = useMemo(():
+  //   | IPeer.FindPeerIdApiQuery
+  //   | undefined => {
+  //   const allowed =
+  //     profile?.role === IUser.Role.Student ||
+  //     profile?.role === IUser.Role.Interviewer;
+  //   if (isGhost || !mateInfo || !allowed) return;
 
-    return { type: IPeer.PeerType.Tutor, tutor: mateInfo.id };
-  }, [mateInfo, profile]);
+  //   return { type: IPeer.PeerType.Tutor, tutor: mateInfo.id };
+  // }, [mateInfo, profile]);
 
-  const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
-  const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
+  // const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
+  // const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
 
-  console.log({
-    data: ghostPeerId.data,
-    tutorPeerId: tutorPeerId.data,
-    findTutorPeerIdQuery,
-  });
+  const peers = usePeerIds(
+    useMemo(
+      () => ({
+        callId,
+        isGhost,
+        mateUserId: orNull(mateInfo?.id),
+        role: orNull(profile?.role),
+      }),
+      [callId, mateInfo?.id, profile?.role]
+    )
+  );
+
+  useCallV2(
+    useMemo(
+      () => ({
+        isGhost,
+        ghostPeerId: orNull(peers.ghost.data),
+        tutorPeerId: orNull(peers.tutor.data),
+        userId: orNull(profile?.id),
+      }),
+      [peers.ghost.data, peers.tutor.data, profile?.id]
+    )
+  );
+
+  console.log({ ghost: peers.ghost.data, tutor: peers.tutor.data });
 
   return (
     <div
@@ -143,7 +163,7 @@ const Call: React.FC = () => {
             isGhost ? "p-0" : "max-h-[calc(100%-110px)] pt-10 px-4"
           )}
         >
-          {isGhost ? (
+          {/* {isGhost ? (
             <GhostView streams={ghostStreams} />
           ) : (
             <Media
@@ -164,7 +184,7 @@ const Call: React.FC = () => {
               mateAudio={mate.audio}
               userDenided={user.denied}
             />
-          )}
+          )} */}
         </div>
         {!isGhost ? (
           <div className="flex items-center justify-center gap-4 my-10">
@@ -198,7 +218,7 @@ const Call: React.FC = () => {
               <Maximize className="w-[20px] h-[20px]" />
             )}
           </Button> */}
-            <Button
+            {/* <Button
               onClick={
                 user.streams.screen ? user.screen.stop : user.screen.share
               }
@@ -237,7 +257,7 @@ const Call: React.FC = () => {
               ) : (
                 <MicOff className="w-[20px] h-[20px]" />
               )}
-            </Button>
+            </Button> */}
           </div>
         ) : null}
       </div>

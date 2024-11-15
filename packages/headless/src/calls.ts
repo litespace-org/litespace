@@ -1,4 +1,4 @@
-import { IPeer, IRoom, Wss } from "@litespace/types";
+import { IPeer, IRoom, IUser, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -7,7 +7,8 @@ import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
-import { QueryKey } from "./constants";
+import { QueryKey } from "@/constants";
+import zod from "zod";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -697,5 +698,250 @@ export function useFindPeerId(payload?: IPeer.FindPeerIdApiQuery) {
       return Math.min(1_000 * 2 ** attempt, 30_000);
     },
     enabled: !!payload,
+  });
+}
+
+export function usePeerIds({
+  isGhost,
+  callId,
+  role,
+  mateUserId,
+}: {
+  isGhost: boolean;
+  callId: number | null;
+  role: IUser.Role | null;
+  mateUserId: number | null;
+}) {
+  const findGhostPeerIdQuery = useMemo(():
+    | IPeer.FindPeerIdApiQuery
+    | undefined => {
+    if (isGhost || !callId) return;
+    return { type: IPeer.PeerType.Ghost, call: callId };
+  }, [callId, isGhost]);
+
+  const findTutorPeerIdQuery = useMemo(():
+    | IPeer.FindPeerIdApiQuery
+    | undefined => {
+    const allowed =
+      role === IUser.Role.Student || role === IUser.Role.Interviewer;
+    if (isGhost || !mateUserId || !allowed) return;
+
+    return { type: IPeer.PeerType.Tutor, tutor: mateUserId };
+  }, [isGhost, mateUserId, role]);
+
+  const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
+  const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
+  return { ghost: ghostPeerId, tutor: tutorPeerId };
+}
+
+const ghostCallMetadata = zod.object({
+  userId: zod.number().positive().int(),
+  screen: zod.boolean(),
+  //? include username, image ?!
+});
+
+const userCallMetadata = zod.object({
+  screen: zod.boolean(),
+});
+
+type GhostStream = {
+  userId: number;
+  screen: boolean;
+  peerId: string;
+  stream: MediaStream;
+  call: MediaConnection;
+};
+
+export function useCallV2({
+  isGhost,
+  tutorPeerId,
+  ghostPeerId,
+  userId,
+}: {
+  isGhost: boolean;
+  tutorPeerId: string | null;
+  ghostPeerId: string | null;
+  userId: number | null;
+}) {
+  const peer = usePeer();
+  const userMedia = useUserMedia();
+  const [ghostCalls, setGhostCalls] = useState<MediaConnection[]>([]);
+  const [ghostStreams, setGhostStreams] = useState<GhostStream[]>([]);
+  const [mateStream, setMateStream] = useState<PossibleStream>(null);
+  const [mateScreenStream, setMateScreenStream] =
+    useState<PossibleStream>(null);
+  const [outcomingCalls, setOutcomingCalls] = useState<MediaConnection[]>([]);
+
+  const onIncomingGhostCall = useCallback((call: MediaConnection) => {
+    const metadata = ghostCallMetadata.safeParse(call.metadata).data;
+    if (!metadata) return; // don't answer the call on invalid metadata
+    call.answer(); // answer with no stream as ghost does not have any.
+    setGhostCalls((prev) => [...prev, call]);
+  }, []);
+
+  /**
+   * Listen for call events: `stream` and `close`
+   */
+  const onGhostCall = useCallback(
+    (call: MediaConnection) => {
+      const metadata = ghostCallMetadata.safeParse(call.metadata).data;
+      if (!metadata) return;
+
+      call.on("stream", (stream: MediaStream) => {
+        const copy = [...ghostStreams];
+        const existing = copy.find(
+          (stream) =>
+            stream.userId === metadata.userId &&
+            stream.screen === metadata.screen
+        );
+        if (existing) existing.call.close();
+
+        setGhostStreams(
+          copy
+            .filter((stream) => {
+              const sameStream =
+                stream.userId === metadata.userId &&
+                stream.screen === metadata.screen;
+              return !sameStream;
+            })
+            .concat({
+              userId: metadata.userId,
+              screen: metadata.screen,
+              peerId: call.peer,
+              stream,
+              call,
+            })
+        );
+      });
+
+      call.on("close", () => {
+        const copy = [...ghostStreams];
+        const filtered = copy.filter((stream) => {
+          const sameStream =
+            stream.userId === metadata.userId &&
+            stream.screen === metadata.screen;
+          return !sameStream;
+        });
+        setGhostStreams(filtered);
+      });
+    },
+    [ghostStreams]
+  );
+
+  const terminateCall = useCallback(() => {
+    ghostStreams.map((stream) => stream.call.close());
+    outcomingCalls.map((call) => call.close());
+  }, [ghostStreams, outcomingCalls]);
+
+  const onCall = useCallback(
+    (call: MediaConnection) => {
+      console.log(`Incomming call from ${call.peer}`);
+      if (isGhost) return onIncomingGhostCall(call);
+
+      const metadata = userCallMetadata.safeParse(call.metadata).data;
+      if (!metadata) return; // don't answer the call on invlaid metadata.
+
+      call.answer(orUndefined(userMedia.stream));
+
+      call.on("stream", (stream: MediaStream) => {
+        if (metadata.screen) setMateScreenStream(stream);
+        return setMateStream(stream);
+      });
+
+      call.on("close", () => {
+        if (metadata.screen) return setMateScreenStream(null);
+        return setMateStream(null);
+      });
+    },
+    [isGhost, onIncomingGhostCall, userMedia.stream]
+  );
+
+  const call = useCallback(
+    ({
+      peerId,
+      stream,
+      screen,
+    }: {
+      peerId: string;
+      stream: MediaStream;
+      screen: boolean;
+    }) => {
+      setTimeout(() => {
+        console.log(`Calling ${peerId}`);
+        if (!userId) return;
+
+        const call = peer.call(peerId, stream, {
+          metadata: { screen, userId },
+        });
+
+        setOutcomingCalls((prev) => [...prev, call]);
+
+        call.on("stream", (stream: MediaStream) => {
+          if (!screen) setMateStream(stream);
+        });
+
+        call.on("close", () => {
+          if (!screen) setMateStream(null);
+        });
+      }, 3_000);
+    },
+    [peer, userId]
+  );
+
+  useEffect(() => {
+    // case: student is calling a tutor with his stream
+    if (tutorPeerId && userMedia.stream)
+      return call({
+        peerId: tutorPeerId,
+        stream: userMedia.stream,
+        screen: false,
+      });
+  }, [call, tutorPeerId, userMedia.stream]);
+
+  useEffect(() => {
+    // case: student or a tutor is calling the ghost with his stream for recording
+    if (ghostPeerId && userMedia.stream)
+      return call({
+        peerId: ghostPeerId,
+        stream: userMedia.stream,
+        screen: false,
+      });
+  }, [call, ghostPeerId, tutorPeerId, userMedia.stream]);
+
+  useEffect(() => {
+    peer.on("call", onCall);
+    return () => {
+      peer.off("call", onCall);
+    };
+  }, [onCall, peer]);
+
+  useEffect(() => {
+    ghostCalls.forEach(onGhostCall);
+
+    return () => {
+      ghostCalls.forEach((call) => {
+        call.off("stream");
+        call.off("close");
+      });
+    };
+  }, [ghostCalls, onGhostCall]);
+
+  useEffect(() => {
+    if (isGhost || userMedia.stream || userMedia.loading || userMedia.error)
+      return;
+    userMedia.start();
+  }, [isGhost, userMedia]);
+
+  useEffect(() => {
+    window.addEventListener("beforeunload", terminateCall);
+    return () => {
+      window.removeEventListener("beforeunload", terminateCall);
+    };
+  }, [terminateCall]);
+
+  console.log({
+    ghostStreams,
+    mateStream,
+    mateScreenStream,
   });
 }
