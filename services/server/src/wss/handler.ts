@@ -13,6 +13,7 @@ import "colors";
 import { isAdmin, isGhost, isStudent, isUser } from "@litespace/auth";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
+import { cache } from "@/lib/cache";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
@@ -240,6 +241,7 @@ export class WssHandler {
   async disconnect() {
     const error = safe(async () => {
       await this.offline();
+      await this.removePeerId();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -261,6 +263,11 @@ export class WssHandler {
       if (message.type === PartentPortMessageType.Stats)
         return this.socket.emit(Wss.ServerEvent.ServerStats, message.stats);
     });
+  }
+
+  async removePeerId() {
+    if (isGhost(this.user)) return; // need the call id
+    await cache.peer.removeUserPeerId(this.user.id);
   }
 
   async announceStatus(user: IUser.Self) {
