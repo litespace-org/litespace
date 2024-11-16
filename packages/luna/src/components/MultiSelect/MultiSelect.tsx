@@ -13,6 +13,7 @@ import Checkbox from "@/components/Checkbox/CheckboxV2";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { isEmpty } from "lodash";
+import React from "react";
 
 export const MultiSelect = <T,>({
   options,
