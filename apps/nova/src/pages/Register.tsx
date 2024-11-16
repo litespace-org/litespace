@@ -10,8 +10,8 @@ import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { setUserProfile } from "@/redux/user/profile";
-import RegisterLight from "@litespace/assets/register-light.svg";
-import RegisterDark from "@litespace/assets/register-dark.svg";
+import RegisterLight from "@litespace/assets/RegisterLight";
+import RegisterDark from "@litespace/assets/RegisterDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useRegisterUser } from "@litespace/headless/user";
 

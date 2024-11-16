@@ -1,6 +1,5 @@
 import type { StorybookConfig } from "@storybook/react-vite";
 import { join, dirname, resolve } from "path";
-import svgr from "vite-plugin-svgr";
 import { merge } from "lodash";
 
 /**
@@ -29,18 +28,6 @@ const config: StorybookConfig = {
         "@": resolve(__dirname, "../src"),
       });
     }
-
-    config.plugins?.push(
-      svgr({
-        svgrOptions: {
-          exportType: "default",
-          ref: true,
-          svgo: false,
-          titleProp: true,
-        },
-        include: "**/*.svg",
-      })
-    );
 
     return config;
   },

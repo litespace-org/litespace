@@ -11,15 +11,25 @@ function withCurrentDir(file: string): string {
   return `./${file}`;
 }
 
+function asExportKey(file: string) {
+  // e.g. dist/ArrowDown.tsx => ArrowDown.tsx
+  const name = path.basename(file);
+  // remove `.tsx` file extension
+  if (!name.endsWith(".tsx")) throw new Error(`Invalid file name: ${file}`);
+  const key = name.replace(".tsx", "");
+  // prefix it with `./` (current dir) => ./ArrowDown
+  return withCurrentDir(key);
+}
+
 async function getExports(): Promise<Exports> {
-  const files = await glob("assets/*.svg", {
+  const files = await glob("dist/*.tsx", {
     posix: true,
   });
   const sorted = [...files].sort();
   const exports: Exports = {};
 
   for (const file of sorted) {
-    exports[withCurrentDir(path.basename(file))] = withCurrentDir(file);
+    exports[asExportKey(file)] = withCurrentDir(file);
   }
   return exports;
 }
