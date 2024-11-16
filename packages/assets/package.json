@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "exports": "vite-node scripts/exports.ts",
-    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --memo -- assets"
+    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --template svg-template.js --memo -- assets"
   },
   "keywords": [],
   "author": "LiteSpace",
