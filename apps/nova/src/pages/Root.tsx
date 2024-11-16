@@ -11,6 +11,7 @@ import Navbar from "@/components/Layout/Navbar";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
 import { isGhost } from "@/lib/ghost";
+import Sidebar from "@/components/Layout/Sidebar";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -73,9 +74,12 @@ const Root: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div className={cn("min-h-screen text-foreground flex flex-col")}>
-      {show ? <Navbar toggleTheme={toggle} theme={theme} /> : null}
-      <Outlet />
+    <div className="flex relative ms-[240px]">
+      <Sidebar />
+      <div className={cn("min-h-screen text-foreground flex flex-col")}>
+        {show ? <Navbar toggleTheme={toggle} theme={theme} /> : null}
+        <Outlet />
+      </div>
     </div>
   );
 };
