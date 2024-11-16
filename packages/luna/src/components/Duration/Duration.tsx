@@ -14,7 +14,7 @@ export const DurationInput: React.FC<{
 
   useEffect(() => {
     if (!focused) setRawValue(value?.format() || "");
-  }, [focused, , value]);
+  }, [focused, value]);
 
   return (
     <Input

@@ -1,6 +1,6 @@
 import React from "react";
 import { Root, Indicator } from "@radix-ui/react-checkbox";
-import Check from "@litespace/assets/check.svg";
+import Check from "@litespace/assets/Check";
 import cn from "classnames";
 
 const CheckboxV2: React.FC<{

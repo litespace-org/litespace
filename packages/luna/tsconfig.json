@@ -4,7 +4,6 @@
     "target": "ES6",
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    // "jsx": "react-jsx",
     "jsx": "preserve",
 
     /* Output Options */

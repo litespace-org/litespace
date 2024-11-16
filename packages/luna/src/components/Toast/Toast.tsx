@@ -2,15 +2,20 @@ import React, { useMemo } from "react";
 import { Root, Title, Description } from "@radix-ui/react-toast";
 import cn from "classnames";
 import { ToastType } from "@/components/Toast/types";
-import CheckCircle from "@litespace/assets/check-circle.svg";
-import Info from "@litespace/assets/info.svg";
-import Cancel from "@litespace/assets/cancel.svg";
+import CheckCircle from "@litespace/assets/CheckCircle";
+import Info from "@litespace/assets/Info";
+import Cancel from "@litespace/assets/Cancel";
 import { motion } from "framer-motion";
 import { Typography } from "@/components/Typography";
 
 const TOAST_DURATION = 4800;
 
-const IconMap: Record<ToastType, React.FC<React.SVGProps<SVGSVGElement>>> = {
+const IconMap: Record<
+  ToastType,
+  React.MemoExoticComponent<
+    (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
+  >
+> = {
   error: Cancel,
   warning: Info,
   success: CheckCircle,
