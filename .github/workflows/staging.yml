@@ -38,6 +38,8 @@ jobs:
         run: pnpm build:pkgs
       - name: Lint all workspaces
         run: pnpm lint:all
+      - name: Analyze intl messages
+        run: pnpm intl inspect --fail
       # Nova Deployment
       - name: Pull Nova from Vercel
         run: pnpm vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}
