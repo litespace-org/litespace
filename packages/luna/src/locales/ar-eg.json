@@ -1,8 +1,6 @@
 {
   "page.register.tutor.title": "إنشاء حساب جديد كمعلم",
-  "page.register.tutor.subtitle": "ابدأ رحلتك التعليمية معنا وافتتح حساب جديد",
   "page.register.student.title": "إنشاء حساب جديد كطالب",
-  "page.register.student.subtitle": "انضم كمعلم وابدأ رحلتك التعليمية اليوم",
   "page.register.form.button.submit.label": "انشاء حساب جدبد",
   "page.register.success": "تم إنشاء حسابك بنجاح",
   "page.register.failed": "لديك مشكلة في إنشاء الحساب",
@@ -13,7 +11,6 @@
   "page.login.form.button.submit.label": "تسجيل الدخول",
   "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
   "page.login.failed": "لديك مشكلة في تسجيل الدخول",
-  "page.login.with.google": "تسجل الدخول باستخدام حساب جوجل",
   "page.login.forget.password": "هل نسيت كلمة السر؟",
   "page.login.forget.password.button.submit": "إعادة تعيين كلمة السر",
   "page.login.forget.password.title": "تغيير كلمة السر",
@@ -33,7 +30,6 @@
   "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.label": "أكتب شيء بارع ولافت للنظر تصف نفسك فيه باختصار",
   "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.placeholder": "إسمي يوسف، وعاشق للغة الانجليزية",
   "page.tutor.onboarding.steps.third.introduce.yourself.form.about.label": "أكتب نبذه عن نفسك",
-  "page.tutor.onboarding.steps.third.introduce.yourself.form.about.placeholder": "طالب جامعي محب للغة الانجليزية منذ الصغر...",
   "page.tutor.onboarding.book.interview.button.label": "تأكيد الحجز",
   "page.tutor.onboarding.book.interview.success.title": "تم حجز مقابلتك بنجاح",
   "page.tutor.onboarding.book.interview.fail.title": "لم نتمكن من حجز مقابلتك",
@@ -56,15 +52,6 @@
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
-  "page.complete.profile.form.birth.year.label": "سنة ميلادك",
-  "page.complete.profile.form.birth.year.placeholder": "2001",
-  "page.complete.profile.form.name.label": "الإسم بالعربية",
-  "page.complete.profile.form.name.placeholder": "محمد إبراهيم",
-  "page.complete.profile.form.gender.label": "حابب نشير لك بايه؟",
-  "page.complete.profile.form.phone.number.label": "رقم هاتفك",
-  "page.complete.profile.form.phone.number.placeholder": "xxx xxxx xxxx",
-  "page.complete.profile.form.success": "تم تحديث بياناتك بنجاح",
-  "page.complete.profile.form.error": "لديك مشكلة في تحديدث بياناتك",
   "page.schedule.add": "إضافة مواعيد",
   "page.schedule.add.dialog.title": "إضافة مواعيد جديدة الي جدولي",
   "page.schedule.add.dialog.form.fields.title.label": "إسم مميز",
@@ -72,9 +59,7 @@
   "page.schedule.add.dialog.form.fields.start-date.label": "تاريخ البدء",
   "page.schedule.add.dialog.form.fields.start-date.placeholder": "2024-08-01",
   "page.schedule.add.dialog.form.fields.start-time.label": "موعد البدء",
-  "page.schedule.add.dialog.form.fields.start-time.placeholder": "12:00 ظهراً",
   "page.schedule.add.dialog.form.fields.duration.label": "المدة",
-  "page.schedule.add.dialog.form.fields.duration.placeholder": "1س 30د",
   "page.schedule.add.dialog.form.fields.end-date.label": "تاريخ الإنتهاء",
   "page.schedule.add.dialog.form.fields.end-date.placeholder": "2024-09-01",
   "page.schedule.add.dialog.form.fields.repeat.label": "التكرار",
@@ -94,13 +79,11 @@
   "page.schedule.deactivate.alert.description.1": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك حتي بعد إالغاء التفعيل.",
   "page.schedule.deactivate.alert.description.2": "بمجرد إلغاء التفعيل لن يمكنك تلقي حصص جديدة خلال هذه المواعيد.",
   "page.schedule.deactivate.alert.button.label": "فهمتك، لا أزال أود إلغاء الموعد!",
-  "page.schedule.rule.toggle.inactive": "الموعد غير مفعل. لا يمكن للطلاب حجز الحصص معك خلال هذه الأوقات.",
   "page.schedule.list.actions.visualize": "عرض",
   "page.schedule.list.actions.update": "تعديل",
   "page.schedule.list.actions.delete": "حذف",
   "page.schedule.list.actions.activate": "تفعيل",
   "page.schedule.list.actions.deactivate": "إلغاء",
-  "page.lessons.watch.dialog.title": "شاهد حصتك مع {name}",
   "page.lessons.empty.title": "لا يوجد لديك سجل حصص بعد",
   "page.lessons.empty.tutor.description": "إبدا بانشاء وتفعيل جدولك الخاص حتي يتمكن طلابك من حجز الحصص معك",
   "page.lessons.empty.student.description": "احجز حصتك الان مع معلمك المفضل",
@@ -143,12 +126,9 @@
   "page.interviews.status.canceled.desc.header": "أنت علي وشك إلغاء المقابلة",
   "page.interviews.status.canceled.desc.1": "سوف يتمكن المعلم من حجز مقابلة اخري في موعد اخر مناسب",
   "page.interviews.status.canceled.desc.2": "يفضل كتابة سبب إلقاء المقابلة للمعلم",
-  "page.interviews.watch.interview": "مشاهدة مقابلة {name}",
   "page.interviews.empty.title": "ليس لديك أي مقابلة بعد",
   "page.interviews.empty.desc": "تاكد من جدولك حتي تتمكن من تلقي المقابلات",
   "page.interviews.empty.action": "جدولي",
-  "page.user.error": "حدث خطأ أثناء عرض المستخدم",
-  "stats.tutor.teaching.title": "إحصائيات التدريس",
   "stats.tutor.teaching.hours": "ساعات التدريس",
   "stats.tutor.student.count": "عدد الطلاب",
   "stats.tutor.lesson.count": "عدد الحصص",
@@ -161,7 +141,6 @@
   "stats.student.lesson.count.future.total": "إجمالي الحصص المستقبلية",
   "stats.student.lesson.count.future.ratified": "إجمالي الحصص المستقبلية غير الملغاه",
   "stats.student.lesson.count.future.canceled": "إجمالي الحصصة المستقبلية الملغاه",
-  "stats.student.lesson.count.past.total": "اجمالي الحصص السابقة",
   "stats.student.lesson.count.past.ratified": "الجمالي الحصص السابقة غير الملغاه",
   "stats.student.lesson.count.past.canceled": "إجمالي الحصص السابقة الملغاه",
   "stats.student.tutor.count.total": "عدد المعلمين",
@@ -187,7 +166,6 @@
   "invoices.edit.error": "لديك مشكلة في تعديل طلب السحب، الرجاء المحالة لاحقا",
   "invoices.cancel.title": "إلغاء طلب التحويل",
   "invoices.cancel.warning": "أنت علي وشك إلغاء طلب السحب رقم {id}#",
-  "invoices.cancel.note": "سوف يتعين علي أحد المسؤلين مراجعة طلب السحب أولا قبل الإلغاء.",
   "invoices.cancel.submit": "نعم أود إلغاء طلب السحب",
   "invoices.cancel.success": "تم إلغاء طلب السحب بنجاح",
   "invoices.cancel.error": "لديك مشكلة في إلغاء طلب السحب الرجاء التواصل مع أحد المسؤلين",
@@ -212,7 +190,6 @@
   "invoices.status.rejected": "لقد تم رفض طلب السحب",
   "invoices.status.canceled-by-receiver": "لقد ألغيت طلب السحب، جاري تاكيد طلب الإلغاء.",
   "invoices.status.canceled-by-receiver.note": "سوف يتعين علي أحد المسؤلين قبول طلب الإلغاء أولا.",
-  "invoices.status.canceled-by-admin": "لقد تم إلغاء طلب السحب",
   "invoices.status.updated-by-receiver": "لقد قمت بتحديث بيانات طلب السحب.",
   "invoices.status.updated-by-receiver.note": "سوف يتعين علي أحد المسؤلين مراجعة البيانات قبل قبول التحديث.",
   "invoices.status.fulfilled": "تم إتمام عملية السحب بنجاح.",
@@ -277,8 +254,6 @@
   "dashboard.plan.fullYearPrice": "السعر السنوي",
   "dashboard.plan.fullYearDiscount": "الخصم السنوي",
   "dashboard.plan.forInvitesOnly": "مخصصه لدعوة الاشخاص فقط",
-  "dashboard.plans.created-at": "تاريخ الإنشاء",
-  "dashboard.plans.updated-at": "تاريخ التعديل",
   "dashboard.plan.active": "نشطة",
   "dashboard.plan.form.create": "خطة جديدة",
   "dashboard.plan.form.create.success": "تم إنشاء خطة جديدة بنجاح",
@@ -384,25 +359,20 @@
   "dashboard.topics.add.error": "حدث خطأ أثناء إضافة الموضوع، برجاء المحاولة مرة أخرى",
   "dashboard.topics.edit": "تعديل الموضوع",
   "dashboard.topics.edit.success": "تم تعديل الموضوع بنجاح",
-  "dashboard.topics.edit.error": "حدث خطأ أثناء إضافة الموضوع، برجاء المحاولة مرة أخرى",
   "dashboard.topics.delete": "حذف الموضوع",
   "dashboard.topics.delete.alert": "هل أنت متأكد من رغبتك في حذف الموضوع؟",
   "dashboard.topics.delete.success": "تم حذف الموضوع بنجاح",
   "dashboard.topics.delete.error": "حدث خطأ أثناء حذف الموضوع، برجاء المحاولة مرة أخرى",
   "dashboard.user-settings.title": "إعدادات الحساب",
   "dashboard.user-settings.verified": "تم تاكيد بريدك الإليكترونى",
-  "dashboard.user-settings.unverified": "بريدك الإليكترونى غير مؤكد",
   "dashboard.user-settings.send-verify": "تاكيد",
   "dashboard.user-settings.send-verify.success": "تم إرسال رابط التاكيد إلى بريدك الإليكترونى بنجاح",
-  "dashboard.user-settings.send-verify.error": "حدث خطأ أثناء إرسال رابط التاكيد، برجاء المحاولة مرة أخرى",
   "chat.no": "إطرح جميع إسئلتك علي معلمك المفضل",
   "chat.active": "نشط الأن",
   "chat.message.edit": "تعديل",
   "chat.message.delete": "حذف",
   "settings.profile.title": "حسابك",
   "settings.profile.title.first": "أكمل بياناتك",
-  "settings.profile.change.password.title": "تغير كلمة السر",
-  "settings.profile.change.email.title": "تغير الإيميل",
   "profile.update.success": "تم تحديث بياناتك بنجاح",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
   "media.title": "لائحة المعلمين",
@@ -447,7 +417,6 @@
   "labels.email": "الإيميل",
   "labels.email.placeholder": "you@example.com",
   "labels.password": "كلمة السر",
-  "labels.password.confirm": "تاكيد كلمة السر",
   "labels.birthYear": "سنة الميلاد",
   "labels.birthYear.placeholder": "2005",
   "labels.gender": "حابب نشير لك بإيه؟",
@@ -455,7 +424,6 @@
   "labels.bio.placeholder": "إسمي يوسف، وعاشق للغة الانجليزية",
   "labels.about": "أكتب نبذه عن نفسك",
   "labels.about.short": "نبذه",
-  "labels.about.placeholder": "طالب جامعي محب للغة الانجليزية منذ الصغر...",
   "labels.create": "إنشاء",
   "labels.update": "تعديل",
   "labels.uploaded": "مرفق",
@@ -464,18 +432,9 @@
   "labels.repeat.new.password": "أعد كتابة كلمة السر الجديدة",
   "labels.invoice.receipt": "الإيصال",
   "labels.invoice.receipt.upload": "إرفاق الإيصال",
-  "labels.tutors": "المعلمين",
-  "labels.lessons": "الدروس",
-  "labels.dashboard": "لوحة التحكم",
-  "labels.subscriptions": "الإشتراكات",
   "labels.litespace": "لايت سبيس",
-  "labels.main": "الرئيسية",
   "global.created-at": "تاريخ الإنشاء",
   "global.updated-at": "تاريخ التعديل",
-  "global.invoice.update.method": "تم تعديل وسيلة السحب من \"{from}\" الي \"{to}\".",
-  "global.invoice.update.amount": "تم تعديل المبلغ من \"{from}\" الي \"{to}\".",
-  "global.invoice.update.receiver": "تم تعديل المستقبل من \"{from}\" الي \"{to}\".",
-  "global.invoice.update.bank": "تم تعديل البنك من \"{from}\" الي \"{to}\".",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",
   "global.form.email.placeholder": "you@example.com",
   "global.form.password.label": "كلمة المرور",
@@ -484,7 +443,6 @@
   "global.report.label": "إبلاغ",
   "global.add.to.favorites": "إضافة الي قائمة المفضلة",
   "global.labels.chat": "المحادثاث",
-  "global.labels.gotit": "تمام",
   "global.labels.previous": "السابق",
   "global.labels.next": "التالي",
   "global.labels.go": "انطلق",
@@ -496,8 +454,6 @@
   "global.labels.delete": "حذف",
   "global.labels.update": "تحديث",
   "global.labels.retry": "إعادة المحاولة",
-  "global.labels.watch.lesson": "شاهد الحصة",
-  "global.labels.download.lesson": "تحميل الحصه",
   "global.labels.my-schedule": "جدولي",
   "global.labels.confirm": "تاكيد",
   "global.labels.today": "اليوم",
@@ -506,15 +462,12 @@
   "global.labels.all": "الكل",
   "global.labels.accept": "قبول",
   "global.labels.reload.page": "إعادة تحميل الصفحة",
-  "global.labels.book": "إحجز",
-  "global.labels.booked.at": "تم الحجز {date}",
   "global.labels.send": "إرسال",
   "global.labels.block.or.ban": "إبلاغ/حظر",
   "global.labels.screen.of": "شاشة {name}",
   "global.labels.id": "الرقم التعريفي",
   "global.labels.yes": "نعم",
   "global.labels.no": "لا",
-  "global.labels.user": "المستخدم",
   "global.schedule.freq.daily": "بشكل يومي",
   "global.schedule.freq.weekly": "بشكل اسبوعي",
   "global.schedule.freq.monthly": "بشكل شهري",
@@ -529,16 +482,11 @@
   "global.schedule.rule.format.onDay": "يوم",
   "global.schedule.rule.format.day": "يوم",
   "global.schedule.rule.format.weekday.seperator": "و",
-  "global.tutor.label.male": "معلم",
-  "global.tutor.label.female": "معلمه",
-  "global.student.label.male": "تلميذ",
-  "global.student.label.female": "تلميذه",
   "global.tutor.level.1": "ضعيف جدا",
   "global.tutor.level.2": "متواضع",
   "global.tutor.level.3": "متوسط",
   "global.tutor.level.4": "جيد",
   "global.tutor.level.5": "مميز",
-  "global.tutor.level.6": "مميز جدا",
   "global.days.sat": "السبت",
   "global.days.sun": "الأحد",
   "global.days.mon": "الاثنين",
@@ -558,7 +506,6 @@
   "global.months.october": "أكتوبر",
   "global.months.november": "نوفمبر",
   "global.months.december": "ديسمبر",
-  "global.chat.input.placeholder": "أكتب رسالتك...",
   "global.chat.input.error.length.max": "من الأفضل ان لا تتخطي رسالتك ال 250 حرف",
   "global.notify.update.data": "تم تحديث بياناتك بنجاح",
   "global.notify.schedule.update.success": "تم تحديث جدولك بنجاح",
@@ -581,7 +528,6 @@
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
   "global.sure": "هل أنت متأكد؟",
-  "error.logout.failed": "لديك مشكلة في تسجيل الخروج",
   "error.invalid": "خطأ",
   "error.form.invalid": "غير مناسب",
   "error.required": "مطلوب",
@@ -609,7 +555,5 @@
   "error.plan.title.invalid": "عنوان غير مناسب",
   "error.plan.title.short": "عنوان قصير جدا",
   "error.plan.title.long": "عنوان طويل جدا",
-  "error.plan.weeklyMinutes.absent": "لابد من تحديد عدد الدقائق خلال الأسبوع",
-  "error.plan.price.absent": "لابد من تحديد السعر",
-  "error.passowrd.unequal": "كلمتى السر غير متطابقة"
+  "error.plan.price.absent": "لابد من تحديد السعر"
 }

@@ -50,6 +50,7 @@
     "vercel:ci": "vite-node scripts/vercel.ts",
     "telegram": "vite-node scripts/telegram.ts",
     "github": "vite-node scripts/github.ts",
+    "intl": "vite-node scripts/intl.ts",
     "clean:dep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules",
     "clean:dist": "pnpm -r exec rm -rf dist"
   },
@@ -61,7 +62,10 @@
     "rimraf": "^5.0.7",
     "ts-node": "^10.9.2",
     "vercel": "^34.2.7",
-    "vite-node": "^2.1.2"
+    "vite-node": "^2.1.2",
+    "@litespace/luna": "workspace:^",
+    "glob": "^11.0.0",
+    "lodash": "^4.17.21"
   },
   "dependencies": {
     "commander": "^12.1.0"
