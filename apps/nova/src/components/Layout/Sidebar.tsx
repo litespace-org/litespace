@@ -1,37 +1,110 @@
 import { useAppDispatch } from "@/redux/store";
 import { resetUserProfile } from "@/redux/user/profile";
+import { resetTutorMeta } from "@/redux/user/tutor";
 import { Route } from "@/types/routes";
-import Calendar from "@litespace/assets/calendar.svg";
-import Chat from "@litespace/assets/chat.svg";
-import Home from "@litespace/assets/home.svg";
-import Logo from "@litespace/assets/logo.svg";
-import Logout from "@litespace/assets/logout.svg";
-import People from "@litespace/assets/people.svg";
-import Settings from "@litespace/assets/settings.svg";
-import Tag from "@litespace/assets/tag.svg";
 import { removeAuthToken } from "@litespace/luna/cache";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import { Void } from "@litespace/types";
+import Calendar from "@litespace/assets/Calendar";
+import Chat from "@litespace/assets/Chat";
+import Home from "@litespace/assets/Home";
+import Logo from "@litespace/assets/Logo";
+import Logout from "@litespace/assets/Logout";
+import People from "@litespace/assets/People";
+import Settings from "@litespace/assets/Settings";
+import Tag from "@litespace/assets/Tag";
 import cn from "classnames";
-import React, { useCallback } from "react";
-import { Link } from "react-router-dom";
+import React, { SVGProps, useCallback, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
+
+const SidebarItem = ({
+  to,
+  Icon,
+  label,
+  active,
+}: {
+  to: string;
+  Icon: React.MemoExoticComponent<
+    (props: SVGProps<SVGSVGElement>) => JSX.Element
+  >;
+  label: React.ReactNode;
+  active?: boolean;
+}) => {
+  return (
+    <Link
+      className={cn(
+        "flex flex-row gap-4 px-[14px] py-2 items-center",
+        "rounded-lg transition-colors duration-200 group",
+        active ? "bg-brand-700" : "bg-transparent hover:bg-natural-400"
+      )}
+      to={to}
+    >
+      <Icon
+        className={cn(
+          "[&_*]:transition-all [&_*]:duration-200  group-hover:[&_*]:stroke-natural-50",
+          active ? "[&_*]:stroke-natural-50" : "[&_*]:stroke-natural-700"
+        )}
+      />
+      <Typography
+        element="caption"
+        weight="semibold"
+        className={cn(
+          active
+            ? "text-natural-50"
+            : "text-natural-700 group-hover:text-natural-50"
+        )}
+      >
+        {label}
+      </Typography>
+    </Link>
+  );
+};
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
+  const intl = useFormatMessage();
+  const location = useLocation();
 
   const logout = useCallback(() => {
     removeAuthToken();
     dispatch(resetUserProfile());
-    // dispatch(resetTutorMeta());
+    dispatch(resetTutorMeta());
   }, [dispatch]);
-  // const routes = [{}];
-  const intl = useFormatMessage();
+
+  const mainPages = useMemo(() => {
+    return [
+      {
+        label: intl("sidebar.dashboard"),
+        route: Route.Root,
+        Icon: Home,
+      },
+      {
+        label: intl("sidebar.tutors"),
+        route: Route.Tutors,
+        Icon: People,
+      },
+      {
+        label: intl("sidebar.lessons"),
+        route: Route.Lessons,
+        Icon: Calendar,
+      },
+      {
+        label: intl("sidebar.chat"),
+        route: Route.Chat,
+        Icon: Chat,
+      },
+      {
+        label: intl("sidebar.subscriptions"),
+        route: Route.Subscription,
+        Icon: Tag,
+      },
+    ];
+  }, [intl]);
+
   return (
     <div
       className={cn(
-        "fixed top-0 bottom-0 start-0 flex flex-col gap-10 w-[240px] p-6",
-        "shadow-sidebar"
+        "fixed top-0 bottom-0 start-0 flex flex-col gap-10 w-60 p-6 shadow-sidebar"
       )}
     >
       <Link to={Route.Root} className="flex items-center gap-2">
@@ -39,63 +112,56 @@ const Sidebar = () => {
         <Typography
           element="subtitle-2"
           weight="bold"
-          className="text-brand-500 "
+          className="text-brand-500"
         >
-          {intl("labels.lite-space")}
+          {intl("labels.litespace")}
         </Typography>
       </Link>
-      <div>
+
+      <div className="flex flex-col gap-1.5">
         <Typography
           element="caption"
           weight="bold"
-          className="py-2 leading-[21px] font-bold font-cairo text-[14px] text-natural-800"
+          className="text-natural-800 py-2"
         >
-          {intl("labels.main")}
+          {intl("sidebar.main")}
         </Typography>
         <ul className="flex flex-col gap-2">
-          <SidebarItem to={Route.Dashboard}>
-            <Home />
-            <Typography>{intl("labels.dashboard")}</Typography>
-          </SidebarItem>
-          <SidebarItem to={Route.Tutors}>
-            <People />
-            <Typography>{intl("labels.tutors")}</Typography>
-          </SidebarItem>
-          <SidebarItem to={Route.Lessons}>
-            <Calendar />
-            <Typography>{intl("labels.lessons")}</Typography>
-          </SidebarItem>
-          <SidebarItem to={Route.Chat}>
-            <Chat />
-            <Typography>{intl("global.labels.chat")}</Typography>
-          </SidebarItem>
-          <SidebarItem to={Route.Subscription}>
-            <Tag />
-            <Typography>{intl("labels.subscriptions")}</Typography>
-          </SidebarItem>
+          {mainPages.map(({ label, route, Icon }) => (
+            <SidebarItem
+              key={label}
+              to={route}
+              Icon={Icon}
+              label={label}
+              active={location.pathname === route}
+            />
+          ))}
         </ul>
       </div>
-      <div>
-        <Typography className="py-2 leading-[21px] font-bold font-cairo text-[14px] text-natural-800">
-          {intl("navbar.settings")}
+
+      <div className="flex flex-col gap-1.5">
+        <Typography className="text-natural-800 py-2" weight="bold">
+          {intl("sidebar.settings")}
         </Typography>
-        <ul>
-          <SidebarItem to={Route.Settings}>
-            <Settings />
-            <Typography>{intl("navbar.settings")}</Typography>
-          </SidebarItem>
+        <ul className="flex flex-col gap-2">
+          <SidebarItem
+            to={Route.Settings}
+            Icon={Settings}
+            label={intl("sidebar.settings")}
+            active={location.pathname === Route.Settings}
+          />
           <button
             onClick={logout}
             className={cn(
-              "flex gap-4 w-48 px-[14px] py-2 rounded-lg",
+              "flex gap-4 px-[14px] py-2 rounded-lg",
               "hover:text-destructive-400 hover:bg-destructive-100",
-              "active:bg-destructive-400 [&>*]:active:text-natural-50",
-              "[&>*]:active:stroke-natural-50"
+              "active:bg-destructive-400 [&_*]:active:text-natural-50",
+              "[&_*]:active:stroke-natural-50 transition-all duration-200"
             )}
           >
             <Logout />
             <Typography className="text-destructive-400 active:bg-destructive-400 active:text-natural-50">
-              {intl("global.labels.logout")}
+              {intl("sidebar.logout")}
             </Typography>
           </button>
         </ul>
@@ -105,25 +171,3 @@ const Sidebar = () => {
 };
 
 export default Sidebar;
-
-const SidebarItem = ({
-  children,
-  className,
-  to,
-  onClick,
-}: {
-  children: React.ReactNode;
-  className?: string;
-  to: string;
-  onClick?: Void;
-}) => {
-  return (
-    <Link
-      onClick={onClick}
-      className={cn("flex gap-4 w-48 px-[14px] py-2", className)}
-      to={to}
-    >
-      {children}
-    </Link>
-  );
-};
