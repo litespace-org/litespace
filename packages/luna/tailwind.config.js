@@ -25,6 +25,8 @@ export default {
           "radial-gradient(50% 50% at 50% 50%, rgba(255, 212, 38, 0.11) 0%, rgba(255, 212, 38, 0) 100%)",
         "toast-error":
           "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
+        "theme-switch-border-light":
+          "linear-gradient(179.04deg, #6CB8FF -3.7%, rgba(255, 255, 255, 0) 129.69%)",
       },
       colors: {
         dash: {
@@ -228,6 +230,10 @@ export default {
           3: "var(--color-calendar-graph-day-L3-border)",
           4: "var(--color-calendar-graph-day-L4-border)",
         },
+        "theme-switch": {
+          light: "hsl(var(--theme-light))",
+          dark: "hsl(var(--theme-dark))",
+        },
       },
       keyframes: {
         hide: {
@@ -258,9 +264,14 @@ export default {
       "ls-medium": "0px 6px 20px 0px rgba(0, 0, 0, 0.15)",
       "ls-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.2)",
       "ls-x-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.25)",
-      sidebar: "0px 14px 42px 0px rgba(8, 15, 52, 0.06)",
+      "sidebar-light": "0px 14px 42px 0px rgba(0, 0, 0, 0.15)",
+      "sidebar-dark": "0px 14px 42px 0px rgba(255, 255, 255, 0.06)",
       toast:
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
+      "ls-theme-switch-light":
+        "0px 7.8px 11.7px 0px hsla(209, 100%, 72%, 1) inset",
+      "ls-theme-switch-dark":
+        "0px 7.8px 11.7px 0px hsla(209, 100%, 72%, 1) inset",
     },
   },
   plugins: [

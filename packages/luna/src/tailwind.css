@@ -408,6 +408,10 @@ input[type="range"]:focus::-moz-range-thumb {
   --destructive-200: 0deg 100% 80%; /* ✅ */
   --destructive-100: 0deg 100% 90%; /* ✅ */
   --destructive-50: 0deg 100% 95%; /* ✅ */
+  --theme-light: 209, 96%, 81%;
+  --theme-dark: 222 24% 16%;
+  --theme-border-light: "179.04deg, #6CB8FF -3.7%, rgba(255, 255, 255, 0) 129.69%";
+  --theme-border-dark: "179.04deg, #000000 -3.7%, rgba(255, 255, 255, 0) 129.69%";
   --border-stronger: 0deg 0% 56.1%; /* ✅ */
   --border-strong: 0deg 0% 83.1%; /* ✅ */
   --border-default: 0deg 0% 87.5%; /* ✅ */

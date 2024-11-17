@@ -9,6 +9,7 @@ import { IUser } from "@litespace/types";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
+import Navbar from "@/components/Layout/Navbar";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -66,11 +67,14 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
   return (
-    <div className="flex relative ps-60 w-full">
+    <div className="flex relative  ps-60 w-full ms-[240px] bg-natural-50 dark:bg-secondary-950">
       <Sidebar />
       <div
-        className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
+        className={cn(
+          "min-h-screen text-foreground flex flex-col gap-8 w-full overflow-x-hidden"
+        )}
       >
+        <Navbar />
         <Outlet />
       </div>
     </div>

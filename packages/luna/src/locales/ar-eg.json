@@ -528,6 +528,7 @@
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
   "global.sure": "هل أنت متأكد؟",
+  "global.search": "ابحث",
   "error.invalid": "خطأ",
   "error.form.invalid": "غير مناسب",
   "error.required": "مطلوب",

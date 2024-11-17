@@ -40,6 +40,7 @@
     "./RegisterLight": "./dist/RegisterLight.tsx",
     "./Search": "./dist/Search.tsx",
     "./Settings": "./dist/Settings.tsx",
+    "./Notification": "./dist/Notification.tsx",
     "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
     "./StudentFemaleLight": "./dist/StudentFemaleLight.tsx",
     "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
