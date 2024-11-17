@@ -258,6 +258,7 @@ export default {
       "ls-medium": "0px 6px 20px 0px rgba(0, 0, 0, 0.15)",
       "ls-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.2)",
       "ls-x-large": "0px 6px 20px 0px rgba(0, 0, 0, 0.25)",
+      sidebar: "0px 14px 42px 0px rgba(8, 15, 52, 0.06)",
       toast:
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
     },
