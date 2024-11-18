@@ -34,7 +34,7 @@ const MovableMedia: React.FC<{
       whileDrag={{ scale: 1.03 }}
       dragMomentum={false}
       className={cn(
-        "rounded-xl overflow-hidden absolute bottom-10 right-10 z-10 cursor-pointer w-[300px] shadow-lg border-b-0"
+        "rounded-xl overflow-hidden absolute bottom-10 right-10 z-10 cursor-pointer w-[12.5rem] shadow-ls-x-large border border-natural-700"
       )}
     >
       <UserMedia
