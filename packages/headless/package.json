@@ -73,13 +73,14 @@
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
+    "@litespace/sol": "workspace:^",
     "@litespace/types": "workspace:^",
-    "@litespace/sol": "workspace:^"
+    "hark": "^1.2.3"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.56.2",
-    "react-native-webrtc": "^124.0.4",
-    "react": "18.2.0"
+    "react": "18.2.0",
+    "react-native-webrtc": "^124.0.4"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.2",
