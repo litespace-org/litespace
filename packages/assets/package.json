@@ -18,6 +18,7 @@
   "exports": {
     "./ArrowDown": "./dist/ArrowDown.tsx",
     "./Calendar": "./dist/Calendar.tsx",
+    "./CallIncoming": "./dist/CallIncoming.tsx",
     "./Cancel": "./dist/Cancel.tsx",
     "./Chat": "./dist/Chat.tsx",
     "./Check": "./dist/Check.tsx",
@@ -28,7 +29,13 @@
     "./LoginLight": "./dist/LoginLight.tsx",
     "./Logo": "./dist/Logo.tsx",
     "./Logout": "./dist/Logout.tsx",
+    "./Maximize": "./dist/Maximize.tsx",
+    "./Messages": "./dist/Messages.tsx",
+    "./Microphone": "./dist/Microphone.tsx",
+    "./MicrophoneSlash": "./dist/MicrophoneSlash.tsx",
+    "./Monitor": "./dist/Monitor.tsx",
     "./People": "./dist/People.tsx",
+    "./Recording": "./dist/Recording.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
     "./Search": "./dist/Search.tsx",
@@ -42,6 +49,8 @@
     "./TutorFemaleLight": "./dist/TutorFemaleLight.tsx",
     "./TutorMaleDark": "./dist/TutorMaleDark.tsx",
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
+    "./Video": "./dist/Video.tsx",
+    "./VideoSlash": "./dist/VideoSlash.tsx",
     "./index": "./dist/index.tsx"
   }
 }
