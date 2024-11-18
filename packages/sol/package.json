@@ -13,6 +13,10 @@
     "test": "jest"
   },
   "exports": {
+    "./ghost": {
+      "import": "./dist/esm/ghost.js",
+      "require": "./dist/cjs/ghost.js"
+    },
     "./chat": {
       "import": "./dist/esm/chat.js",
       "require": "./dist/cjs/chat.js"

@@ -27,6 +27,9 @@ const findPeerIdApiQuery = zod.union([
   }),
 ]);
 
+/**
+ * @deprecated should be removed in favor of registering the peer id using web sockets.
+ */
 async function registerPeerId(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const ghost = isGhost(user);
@@ -42,6 +45,9 @@ async function registerPeerId(req: Request, res: Response, next: NextFunction) {
   res.status(200).send();
 }
 
+/**
+ * @deprecated should be removed in favor of de-registering the peer id using web sockets.
+ */
 async function deletePeerId(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const ghost = isGhost(user);
@@ -65,6 +71,7 @@ async function findPeerId(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const query: IPeer.FindPeerIdApiQuery = findPeerIdApiQuery.parse(req.query);
+  console.log({ query });
   const peer =
     query.type === IPeer.PeerType.Tutor
       ? await cache.peer.getUserPeerId(query.tutor)
