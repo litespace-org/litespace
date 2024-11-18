@@ -44,7 +44,7 @@ const UserMedia: React.FC<{
   return (
     <div
       className={cn(
-        "relative w-full h-full rounded-md overflow-hidden bg-surface-100 border border-border-strong @container",
+        "relative w-full h-full rounded-md overflow-hidden bg-surface-100 @container",
         speaking && "ring ring-blue-1000/90"
       )}
     >

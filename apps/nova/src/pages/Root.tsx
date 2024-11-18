@@ -1,5 +1,4 @@
-import React, { useEffect, useMemo } from "react";
-import { useTheme } from "@litespace/luna/hooks/theme";
+import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/store";
 import { Route, RoutePatterns } from "@/types/routes";
@@ -7,10 +6,8 @@ import { tutorMetaSelector } from "@/redux/user/tutor";
 import { profileSelectors } from "@/redux/user/profile";
 import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
-import Navbar from "@/components/Layout/Navbar";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
-import { isGhost } from "@/lib/ghost";
 import Sidebar from "@/components/Layout/Sidebar";
 
 const Root: React.FC = () => {
@@ -18,7 +15,6 @@ const Root: React.FC = () => {
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
-  const { toggle, theme } = useTheme();
 
   useEffect(() => {
     const call = new UrlPattern(RoutePatterns.Call);
@@ -69,15 +65,12 @@ const Root: React.FC = () => {
     if (interviewer) return navigate(Route.Interviews);
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
-  const show = useMemo(() => {
-    return location.pathname !== Route.Complete && !isGhost;
-  }, [location.pathname]);
-
   return (
-    <div className="flex relative ms-[240px]">
+    <div className="flex relative ps-60 w-full">
       <Sidebar />
-      <div className={cn("min-h-screen text-foreground flex flex-col")}>
-        {show ? <Navbar toggleTheme={toggle} theme={theme} /> : null}
+      <div
+        className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
+      >
         <Outlet />
       </div>
     </div>

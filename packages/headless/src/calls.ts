@@ -1,6 +1,6 @@
 import { IPeer, IRoom, IUser, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtlas } from "@/atlas/index";
 import { safe } from "@litespace/sol/error";
 import { useSocket } from "@/socket";
@@ -706,18 +706,20 @@ export function usePeerIds({
   callId,
   role,
   mateUserId,
+  disableGhost = false,
 }: {
   isGhost: boolean;
   callId: number | null;
   role: IUser.Role | null;
   mateUserId: number | null;
+  disableGhost?: boolean;
 }) {
   const findGhostPeerIdQuery = useMemo(():
     | IPeer.FindPeerIdApiQuery
     | undefined => {
-    if (isGhost || !callId) return;
+    if (isGhost || !callId || disableGhost) return;
     return { type: IPeer.PeerType.Ghost, call: callId };
-  }, [callId, isGhost]);
+  }, [callId, disableGhost, isGhost]);
 
   const findTutorPeerIdQuery = useMemo(():
     | IPeer.FindPeerIdApiQuery
@@ -771,6 +773,10 @@ export function useCallV2({
   const [mateScreenStream, setMateScreenStream] =
     useState<PossibleStream>(null);
   const [outcomingCalls, setOutcomingCalls] = useState<MediaConnection[]>([]);
+  const [mateCall, setMateCall] = useState<MediaConnection | null>(null);
+  const [mateScreenCall, setMateScreenCall] = useState<MediaConnection | null>(
+    null
+  );
 
   const onIncomingGhostCall = useCallback((call: MediaConnection) => {
     const metadata = ghostCallMetadata.safeParse(call.metadata).data;
@@ -831,7 +837,9 @@ export function useCallV2({
   const terminateCall = useCallback(() => {
     ghostStreams.map((stream) => stream.call.close());
     outcomingCalls.map((call) => call.close());
-  }, [ghostStreams, outcomingCalls]);
+    if (mateCall) mateCall.close();
+    if (mateScreenCall) mateScreenCall.close();
+  }, [ghostStreams, mateCall, mateScreenCall, outcomingCalls]);
 
   const onCall = useCallback(
     (call: MediaConnection) => {
@@ -842,6 +850,9 @@ export function useCallV2({
       if (!metadata) return; // don't answer the call on invlaid metadata.
 
       call.answer(orUndefined(userMedia.stream));
+
+      if (metadata.screen) setMateScreenCall(call);
+      else setMateCall(call);
 
       call.on("stream", (stream: MediaStream) => {
         if (metadata.screen) setMateScreenStream(stream);
@@ -939,9 +950,49 @@ export function useCallV2({
     };
   }, [terminateCall]);
 
-  console.log({
+  return {
     ghostStreams,
+    userMedia,
     mateStream,
     mateScreenStream,
-  });
+  };
+}
+
+export function useFullScreen<T extends Element>() {
+  const ref = useRef<T>(null);
+  const [fullScreen, setFullScreen] = useState<boolean>(false);
+
+  const start = useCallback(async () => {
+    if (!ref.current) return;
+    await ref.current.requestFullscreen();
+    setFullScreen(true);
+  }, []);
+
+  const exit = useCallback(async () => {
+    await document.exitFullscreen();
+    setFullScreen(false);
+  }, []);
+
+  const onFullScreenChange = useCallback(() => {
+    setFullScreen(document.fullscreenElement === ref.current);
+  }, []);
+
+  useEffect(() => {
+    document.addEventListener("fullscreenchange", onFullScreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullScreenChange);
+    };
+  }, [onFullScreenChange]);
+
+  useEffect(() => {
+    if (ref.current && document.fullscreenElement)
+      setFullScreen(document.fullscreenElement === ref.current);
+  }, []);
+
+  return {
+    ref,
+    enabled: fullScreen,
+    start,
+    exit,
+  };
 }

@@ -4,10 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
-::selection {
+/* ::selection {
   background-color: hsl(var(--brand-default));
   color: #333 !important;
-}
+} */
 
 input[type="range"] {
   -webkit-appearance: none;
