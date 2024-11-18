@@ -164,8 +164,4 @@ export type FindStudentStatsApiResponse = {
   };
 };
 
-export type Ghost = "ghost" & {
-  __type: "ghost";
-};
-
-export const GHOST = "ghost" as Ghost;
+export type Ghost = `ghost:${number}`;

@@ -99,9 +99,6 @@ export const emailConfig = {
 } as const;
 
 export const ghostConfig = {
-  username: zod
-    .string({ message: "Missing or invalid ghost username" })
-    .parse(process.env.GHOST_USERNAME),
   password: zod
     .string({
       message: "Missing or invalid ghost password",
