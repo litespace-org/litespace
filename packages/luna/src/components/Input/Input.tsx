@@ -1,26 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
-import ErrorOutlined from "@/icons/ErrorOutlined";
-import { Dir } from "@/components/Direction";
-import OpenedEye from "@/icons/OpenedEye";
-import ClosedEye from "@/icons/ClosedEye";
 import { InputType, InputAction } from "@/components/Input/types";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
-import { ButtonVariant } from "../Button/types";
-
-// const arabic =
-//   /[\u0600-\u06ff]|[\u0750-\u077f]|[\ufb50-\ufc3f]|[\ufe70-\ufefc]/;
-// const ignore = /[0-9!-_()[]\*&\^%\$#@\s`~]/;
-// const arabicv2 = /^[ء-ي\s\d:]+$/;
-// const arabicv3 =
-//   /^[\u0600-\u06ff\u0750-\u077f\ufb50-\ufbc1\ufbd3-\ufd3f\ufd50-\ufd8f\ufd92-\ufdc7\ufe70-\ufefc\uFDF0-\uFDFD\s\d:-]+/;
-const ARABIC_LETTERS = `[\\u0600-\\u06ff\\u0750-\\u077f\\ufb50-\\ufbc1\\ufbd3-\\ufd3f\\ufd50-\\ufd8f\\ufd92-\\ufdc7\\ufe70-\\ufefc\\uFDF0-\\uFDFD]`;
-const SEPECIAL_LETTERS = `[\\d !-_\\(\\)\\[\\]\\*&\\^%\\$#@\`~]`;
-// ref: https://regex101.com/r/lbpjvo/2
-const arabicv4 = new RegExp(
-  `(^${SEPECIAL_LETTERS}+$)|(^${SEPECIAL_LETTERS}*${ARABIC_LETTERS}+)`
-);
+import { Typography } from "@/components/Typography";
 
 const passwordPlaceholder = "••••••••";
 
@@ -30,55 +12,59 @@ const passwordPlaceholder = "••••••••";
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   type?: InputType;
-  actions?: Array<InputAction>;
-  error?: string | null;
+  starActions?: Array<InputAction>;
+  endActions?: Array<InputAction>;
+  error?: boolean;
+  helper?: string | null;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
-    { type, error, value, disabled, placeholder, name, actions = [], ...props },
+    {
+      type,
+      error,
+      value,
+      disabled,
+      placeholder,
+      helper,
+      starActions = [],
+      endActions = [],
+      ...props
+    },
     ref
   ) => {
-    const [show, setShow] = useState<boolean>(false);
-    const [kind, setKind] = useState<InputType>(type || InputType.Text);
-
-    const dir: Dir | undefined = useMemo(() => {
-      if (!value) return undefined;
-      if (type === InputType.Password) return Dir.LTR;
-      if (arabicv4.test(value.toString())) return Dir.RTL;
-      return Dir.LTR;
-    }, [type, value]);
-
-    useEffect(() => {
-      setKind(type || InputType.Text);
-    }, [type]);
-
-    const onEyeClick = useCallback((shouldShow: boolean) => {
-      setShow(shouldShow);
-      setKind(shouldShow ? InputType.Text : InputType.Password);
-    }, []);
-
     return (
       <div className="tw-flex tw-flex-col tw-w-full">
-        <div className="tw-w-full tw-relative">
+        <div
+          data-filled={!!value}
+          data-error={!!error}
+          data-disabled={disabled}
+          className={cn(
+            // base
+            "tw-w-full tw-transition-colors tw-duration-200",
+            "tw-flex tw-flex-row tw-items-center tw-gap-2",
+            // default
+            " tw-bg-natural-50 tw-border tw-border-natural-300 tw-rounded-lg tw-px-[0.875rem]",
+            // hover
+            "hover:tw-bg-brand-50 hover:tw-border-brand-200",
+            // active/focus
+            "focus-within:tw-border-brand-500 focus-within:tw-shadow-input-focus",
+            // error
+            "data-[error=true]:tw-shadow-input-error data-[error=true]:tw-border-destructive-600 data-[error=true]:hover:tw-bg-natural-50 data-[error=true]:hover:tw-border-destructive-600",
+            // disabled
+            "data-[disabled=true]:tw-opacity-50"
+          )}
+        >
+          <Actions actions={starActions} />
           <input
-            dir={dir}
-            type={kind}
+            dir="auto"
+            type={type}
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-font-cairo tw-block tw-box-border tw-w-full tw-rounded-md tw-shadow-sm tw-transition-all",
-              "tw-text-foreground focus-visible:tw-shadow-md tw-outline-none",
-              "focus:tw-ring-current focus:tw-ring-2 focus-visible:tw-border-foreground-muted",
-              "focus-visible:tw-ring-background-control tw-placeholder-foreground-muted group",
-              "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2",
-              "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
-              "tw-text-right", // align all text to the right
-              {
-                "tw-bg-foreground/[.026]": !error,
-                "tw-bg-destructive-200 tw-border tw-border-destructive-400 focus:tw-ring-destructive-400 placeholder:tw-text-destructive-400":
-                  !!error,
-              }
+              "tw-w-full tw-text-right focus:tw-text-start tw-bg-transparent focus:tw-outline-none",
+              "placeholder:tw-font-normal placeholder:tw-text-natural-400 placeholder:tw-text-base placeholder:tw-leading-6",
+              "tw-text-natural-900 dark:tw-text-foreground tw-leading-6 tw-py-4"
             )}
             placeholder={
               type === InputType.Password
@@ -88,18 +74,23 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             {...props}
           />
-
-          <Actions
-            show={show}
-            error={!!error}
-            onEyeClick={onEyeClick}
-            password={type === InputType.Password}
-            disabled={disabled}
-            actions={actions}
-          />
+          <Actions actions={endActions} />
         </div>
         <AnimatePresence mode="wait" initial={false}>
-          {error ? <InputError message={error} key={name} /> : null}
+          {helper ? (
+            <Helper>
+              <Typography
+                element="tiny-text"
+                weight="regular"
+                className={cn(
+                  "tw-mt-1",
+                  error ? "tw-text-destructive-500" : "tw-text-natural-400"
+                )}
+              >
+                {helper}
+              </Typography>
+            </Helper>
+          ) : null}
         </AnimatePresence>
       </div>
     );
@@ -113,89 +104,22 @@ const framer = {
   transition: { duration: 0.2 },
 };
 
-export const InputError: React.FC<{ message: string }> = ({ message }) => {
-  return (
-    <motion.p
-      className="tw-font-cairo tw-text-sm tw-text-red-900 tw-mt-2"
-      {...framer}
-    >
-      {message}
-    </motion.p>
-  );
-};
-
-const ErrorIcon: React.FC<{ error: boolean }> = ({ error }) => {
-  return (
-    <AnimatePresence mode="wait" initial={false}>
-      {error ? (
-        <motion.div
-          className={cn(
-            "tw-flex tw-items-center tw-justify-center tw-pl-2 tw-pr-2 tw-text-red-900"
-          )}
-          {...framer}
-        >
-          <ErrorOutlined />
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
-};
-
-const EyeIcon: React.FC<{
-  disabled?: boolean;
-  show?: boolean;
-  toggle: (show: boolean) => void;
-}> = ({ toggle, disabled, show = false }) => {
-  return (
-    <div>
-      <Button
-        htmlType="button"
-        type={ButtonType.Main}
-        variant={ButtonVariant.Secondary}
-        size={ButtonSize.Tiny}
-        onClick={() => toggle(!show)}
-        disabled={disabled}
-      >
-        <span className="tw-text-foreground-muted">
-          {show ? (
-            <OpenedEye className="tw-w-[14px] tw-h-[14px]" />
-          ) : (
-            <ClosedEye className="tw-w-[14px] tw-h-[14px]" />
-          )}
-        </span>
-      </Button>
-    </div>
-  );
+export const Helper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return <motion.div {...framer}>{children}</motion.div>;
 };
 
 const Actions: React.FC<{
-  error: boolean;
-  password: boolean;
-  show: boolean;
-  onEyeClick: (show: boolean) => void;
-  disabled?: boolean;
   actions: InputAction[];
-}> = ({ error, password, show, disabled, actions, onEyeClick }) => {
+}> = ({ actions }) => {
   return (
-    <div className="tw-absolute tw-inset-y-0 tw-left-0 tw-pr-3 tw-pl-1 tw-flex tw-space-x-1 tw-items-center">
-      <ErrorIcon error={error} />
-      {password && (
-        <EyeIcon disabled={disabled} show={show} toggle={onEyeClick} />
-      )}
-
+    <>
       {actions.map(({ id, Icon, onClick }) => (
-        <Button
-          key={id}
-          htmlType="button"
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Tiny}
-          disabled={disabled}
-          onClick={onClick}
-        >
-          {<Icon className="tw-w-[14px] tw-h-[14px]" />}
-        </Button>
+        <button key={id} onClick={onClick} type="button">
+          <Icon />
+        </button>
       ))}
-    </div>
+    </>
   );
 };

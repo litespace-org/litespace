@@ -91,7 +91,8 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
               control={control}
               placeholder={intl("labels.email.placeholder")}
               autoComplete="off"
-              error={formState.errors["email"]?.message}
+              error={!!formState.errors.email?.message}
+              helper={formState.errors.email?.message}
               disabled={mutation.isPending}
               name="email"
             />
