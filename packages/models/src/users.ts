@@ -18,6 +18,7 @@ export class Users {
       "gender",
       "online",
       "verified",
+      "city",
       "credit_score",
       "created_at",
       "updated_at",
@@ -64,6 +65,8 @@ export class Users {
         verified: payload.verified,
         password: payload.password,
         birth_year: payload.birthYear,
+        phone_number: payload.phoneNumber,
+        city: payload.city,
         credit_score: payload.creditScore,
         updated_at: now,
       })
@@ -120,6 +123,7 @@ export class Users {
     size,
     orderBy,
     orderDirection,
+    city,
   }: IUser.FindUsersApiQuery & {
     tx?: Knex.Transaction;
   }): Promise<Paginated<IUser.Self>> {
@@ -131,6 +135,7 @@ export class Users {
     if (verified) base.andWhere(this.column("verified"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
     if (online) base.andWhere(this.column("online"), online);
+    if (city) base.andWhere(this.column("city"), city);
 
     const total = await countRows(base.clone().groupBy(this.column("id")));
     const rows = await withPagination(base.clone(), { page, size });
@@ -165,6 +170,8 @@ export class Users {
       online: row.online,
       verified: row.verified,
       creditScore: row.credit_score,
+      phoneNumber: row.phone_number,
+      city: row.city,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

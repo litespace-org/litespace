@@ -23,6 +23,8 @@ const fullTutorFields: FullTutorFieldsMap = {
   online: users.column("online"),
   verified: users.column("verified"),
   creditScore: users.column("credit_score"),
+  city: users.column("city"),
+  phoneNumber: users.column("phone_number"),
   createdAt: users.column("created_at"),
   updatedAt: users.column("updated_at"),
   metaUpdatedAt: tutorColumn("updated_at"),

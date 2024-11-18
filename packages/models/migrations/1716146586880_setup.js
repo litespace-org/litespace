@@ -60,6 +60,8 @@ exports.up = (pgm) => {
     gender: { type: "user_gender", default: null },
     online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
+    phone_number: { type: "VARCHAR(15)", default: null },
+    city: { type: "SMALLINT", default: null },
     credit_score: { type: "INT", notNull: true, default: 0 },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },

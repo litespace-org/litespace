@@ -77,6 +77,8 @@ const updateUserPayload = zod.object({
   ),
   bio: zod.optional(zod.string().trim()),
   about: zod.optional(zod.string().trim()),
+  city: zod.optional(zod.nativeEnum(IUser.City)),
+  phoneNumber: zod.optional(zod.string().max(15).trim()),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -88,6 +90,7 @@ const findUsersQuery = zod.object({
   verified: zod.optional(jsonBoolean),
   gender: zod.optional(gender),
   online: zod.optional(jsonBoolean),
+  city: zod.optional(zod.nativeEnum(IUser.City)),
   page: zod.optional(pageNumber).default(paginationDefaults.page),
   size: zod.optional(pageSize).default(paginationDefaults.size),
   orderBy: zod.optional(zod.enum(orderByOptions)),
@@ -153,6 +156,8 @@ function update(context: ApiContext) {
         bio,
         about,
         notice,
+        phoneNumber,
+        city,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
       const files = {
@@ -200,6 +205,8 @@ function update(context: ApiContext) {
             birthYear,
             image: drop?.image === true ? null : image,
             password: password ? hashPassword(password) : undefined,
+            phoneNumber,
+            city,
           },
           tx
         );

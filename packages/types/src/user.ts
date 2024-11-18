@@ -15,6 +15,39 @@ export enum Gender {
   Female = "female",
 }
 
+export enum City {
+  Cairo = 1,
+  Alexandria = 2,
+  Giza = 3,
+  Dakahlia = 4,
+  Qalyubia = 5,
+  Sharkia = 6,
+  Beheira = 7,
+  Aswan = 8,
+  Asyut = 9,
+  BeniSuef = 10,
+  PortSaid = 11,
+  Suez = 12,
+  Minya = 13,
+  Gharbia = 14,
+  Ismailia = 15,
+  KafrElSheikh = 16,
+  Matrouh = 17,
+  RedSea = 18,
+  Sohag = 19,
+  Fayoum = 20,
+  Luxor = 21,
+  Qena = 22,
+  NewValley = 23,
+  NorthSinai = 24,
+  SouthSinai = 25,
+  Damietta = 26,
+  Monufia = 27,
+  Minufiya = 28,
+  Helwan = 29,
+  GizaCity = 30,
+}
+
 export type Self = {
   id: number;
   email: string;
@@ -27,6 +60,8 @@ export type Self = {
   online: boolean;
   verified: boolean;
   creditScore: number;
+  city: City | null;
+  phoneNumber: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -43,6 +78,8 @@ export type Row = {
   online: boolean;
   verified: boolean;
   credit_score: number;
+  city: City | null;
+  phone_number: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -71,6 +108,8 @@ export type UpdatePayload = {
   verified?: boolean;
   online?: boolean;
   creditScore?: number;
+  phoneNumber?: string;
+  city?: City;
 };
 
 export type UpdateApiPayload = {
@@ -83,6 +122,8 @@ export type UpdateApiPayload = {
   drop?: { image?: boolean; video?: boolean };
   bio?: string;
   about?: string;
+  phoneNumber?: string;
+  city?: City;
 };
 
 export enum UpdateMediaFilesApiKeys {
@@ -132,6 +173,7 @@ export type FindUsersApiQuery = IFilter.Pagination & {
   verified?: boolean;
   gender?: Gender;
   online?: boolean;
+  city?: City;
   orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
   orderDirection?: IFilter.OrderDirection;
 };
