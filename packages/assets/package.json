@@ -16,6 +16,8 @@
     "vite-node": "^2.1.2"
   },
   "exports": {
+    "./ArrowLeft": "./dist/ArrowLeft.tsx",
+    "./ArrowRight": "./dist/ArrowRight.tsx",
     "./ArrowDown": "./dist/ArrowDown.tsx",
     "./Calendar": "./dist/Calendar.tsx",
     "./CallIncoming": "./dist/CallIncoming.tsx",
@@ -38,6 +40,7 @@
     "./Recording": "./dist/Recording.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
+    "./star": "./dist/Star.tsx",
     "./Search": "./dist/Search.tsx",
     "./Settings": "./dist/Settings.tsx",
     "./Notification": "./dist/Notification.tsx",

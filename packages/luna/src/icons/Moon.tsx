@@ -23,7 +23,7 @@ const Moon = () => {
         opacity="0.9"
         d="M49.5898 22.9278C38.7085 20.3261 27.7563 26.9513 25.0095 37.797L24.8965 38.2435C22.1132 49.2332 28.8818 60.3698 39.9186 62.9602C50.9903 65.5587 62.129 58.6304 64.7276 47.5586C67.3007 36.5953 60.5423 25.5466 49.5898 22.9278Z"
         fill="#1F2533"
-        fill-opacity="0.79"
+        fillOpacity="0.79"
       />
       <defs>
         <filter
@@ -33,9 +33,9 @@ const Moon = () => {
           width="92.6475"
           height="92.6473"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

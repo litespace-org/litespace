@@ -67,11 +67,11 @@ const Root: React.FC = () => {
   }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
 
   return (
-    <div className="flex relative  ps-60 w-full ms-[240px] bg-natural-50 dark:bg-secondary-950">
+    <div className="flex relative w-full bg-natural-50 dark:bg-secondary-950">
       <Sidebar />
       <div
         className={cn(
-          "min-h-screen text-foreground flex flex-col gap-8 w-full overflow-x-hidden"
+          "min-h-screen ps-[240px] text-foreground flex flex-col gap-8 overflow-x-hidden"
         )}
       >
         <Navbar />

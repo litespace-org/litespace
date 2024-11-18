@@ -40,7 +40,7 @@ export const Toast: React.FC<{
       onOpenChange={onOpenChange}
       className={cn(
         "tw-py-3 tw-px-4 tw-font-cairo tw-rounded-lg tw-shadow-toast",
-        "tw-bg-natural-50 dark:tw-bg-secondary-950",
+        "tw-bg-natural-50 dark:tw-bg-secondary-950 tw-z-[999]",
         "tw-flex tw-gap-4 tw-items-center",
         "tw-relative tw-overflow-hidden",
         "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]",

@@ -104,7 +104,7 @@ const Sidebar = () => {
   return (
     <div
       className={cn(
-        "fixed top-0 bottom-0 z-20 start-0 flex flex-col gap-10 w-60 p-6 shadow-sidebar-light dark:shadow-sidebar-dark bg-natural-50 dark:bg-secondary-950"
+        "fixed top-0 bottom-0 z-20 start-0 flex flex-col gap-10 w-60 p-6  shadow-sidebar-light shadow-[#00000026] dark:shadow-sidebar-dark dark:shadow-[#FFFFFF0F] bg-natural-50 dark:bg-secondary-950"
       )}
     >
       <Link to={Route.Root} className="flex items-center gap-2">

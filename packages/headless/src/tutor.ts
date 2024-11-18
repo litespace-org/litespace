@@ -6,28 +6,32 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { IInterview, IRule, ITutor, IUser, Void } from "@litespace/types";
+import {
+  IInterview,
+  IRule,
+  ITutor,
+  IUser,
+  PagniationParams,
+  Void,
+} from "@litespace/types";
 import { MutationKey, QueryKey } from "@/constants";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { usePaginate } from "@/pagination";
 
 dayjs.extend(utc);
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-export function useFindTutors() {
+export function useFindTutors(params?: PagniationParams) {
   const atlas = useAtlas();
 
-  const findTutors = useCallback(() => {
-    return atlas.user.findOnboardedTutors();
-  }, [atlas.user]);
+  const findTutors = useCallback(async () => {
+    return await atlas.user.findOnboardedTutors(params);
+  }, [atlas.user, params]);
 
-  useQuery({
-    queryFn: findTutors,
-    queryKey: [QueryKey.FindTutors],
-    retry: false,
-  });
+  return usePaginate(findTutors, [QueryKey.FindTutors]);
 }
 
 export function useFindTutorById(
