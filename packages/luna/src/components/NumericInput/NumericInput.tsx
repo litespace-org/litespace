@@ -6,13 +6,13 @@ export type NumericInputProps = Omit<NumericFormatProps, "customInput">;
 
 const NumericInput = React.forwardRef<
   HTMLInputElement,
-  NumericInputProps & { error?: string }
->(({ error, ...props }, ref) => {
+  NumericInputProps & { error?: boolean; helper?: string | null }
+>(({ error, helper, ...props }, ref) => {
   const CustomInput: React.FC<InputProps> = useMemo(
     () => (inputProps: InputProps) => {
-      return <Input ref={ref} error={error} {...inputProps} />;
+      return <Input ref={ref} error={error} helper={helper} {...inputProps} />;
     },
-    [error, ref]
+    [error, helper, ref]
   );
 
   return <NumericFormat customInput={CustomInput} {...props} />;

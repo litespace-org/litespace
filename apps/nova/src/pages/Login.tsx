@@ -118,7 +118,8 @@ const Login: React.FC = () => {
                     type={InputType.Password}
                     autoComplete="off"
                     value={password}
-                    error={errors["password"]?.message}
+                    error={!!errors.password?.message}
+                    helper={errors.password?.message}
                     disabled={mutation.isPending}
                   />
                 }

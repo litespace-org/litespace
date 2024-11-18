@@ -81,13 +81,12 @@ export function Input<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => (
-        <BaseInput
-          {...field}
-          {...props}
-          error={formState.errors[name]?.message as string}
-        />
-      )}
+      render={({ field, formState }) => {
+        const message = formState.errors[name]?.message as string;
+        return (
+          <BaseInput {...field} {...props} helper={message} error={!!message} />
+        );
+      }}
     />
   );
 }
@@ -108,11 +107,13 @@ export function NumericInput<T extends FieldValues>({
       name={name}
       rules={rules}
       render={({ field, formState }) => {
+        const message = formState.errors[name]?.message as string;
         return (
           <BaseNumericInput
             {...props}
             onValueChange={(value) => field.onChange(value.floatValue)}
-            error={formState.errors[name]?.message as string}
+            helper={message}
+            error={!!message}
           />
         );
       }}
@@ -269,15 +270,19 @@ export function Duration<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => (
-        <BaseDuration
-          disabled={disabled}
-          onChange={field.onChange}
-          value={value}
-          placeholder={placeholder}
-          error={formState.errors[name]?.message as string}
-        />
-      )}
+      render={({ field, formState }) => {
+        const message = formState.errors[name]?.message as string;
+        return (
+          <BaseDuration
+            disabled={disabled}
+            onChange={field.onChange}
+            value={value}
+            placeholder={placeholder}
+            error={!!message}
+            helper={message}
+          />
+        );
+      }}
     />
   );
 }

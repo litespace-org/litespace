@@ -6,9 +6,10 @@ export const DurationInput: React.FC<{
   value?: Duration;
   onChange?: (duration: Duration) => void;
   placeholder?: string;
-  error?: string | null;
+  error?: boolean;
+  helper?: string | null;
   disabled?: boolean;
-}> = ({ value, onChange, placeholder, error, disabled }) => {
+}> = ({ value, onChange, placeholder, error, helper, disabled }) => {
   const [rawValue, setRawValue] = useState<string>("");
   const [focused, setFocused] = useState<boolean>(false);
 
@@ -28,6 +29,7 @@ export const DurationInput: React.FC<{
       value={focused ? rawValue : value?.format() || ""}
       placeholder={placeholder}
       error={error}
+      helper={helper}
       disabled={disabled}
     />
   );
