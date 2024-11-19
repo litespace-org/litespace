@@ -16,7 +16,7 @@ export const Primary: StoryObj<Component> = {
   args: {
     id: "switch",
     title: faker.lorem.words(4),
-    description: faker.lorem.words(20),
+    description: faker.lorem.words(10),
   },
 };
 
