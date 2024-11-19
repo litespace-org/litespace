@@ -10,15 +10,24 @@ import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
-import { isAdmin, isGhost, isStudent, isUser } from "@litespace/auth";
+import {
+  isAdmin,
+  isGhost,
+  isInterviewer,
+  isStudent,
+  isTutor,
+  isUser,
+} from "@litespace/auth";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { cache } from "@/lib/cache";
+import { getGhostCall } from "@litespace/sol/ghost";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
 const toggleCameraPayload = zod.object({ call: id, camera: boolean });
 const toggleMicPayload = zod.object({ call: id, mic: boolean });
+const registerPeerPayload = zod.object({ peer: zod.string() });
 const stdout = logger("wss");
 
 export class WssHandler {
@@ -43,6 +52,7 @@ export class WssHandler {
       this.deleteMessage.bind(this)
     );
     this.socket.on(Wss.ClientEvent.PeerOpened, this.peerOpened.bind(this));
+    this.socket.on(Wss.ClientEvent.RegisterPeer, this.registerPeer.bind(this));
     this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
@@ -64,6 +74,9 @@ export class WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
+  /**
+   * @deprecated should be removed in favor of the new arch.
+   */
   async peerOpened(ids: unknown) {
     const error = await safe(async () => {
       const { callId, peerId } = peerPayload.parse(ids);
@@ -88,6 +101,21 @@ export class WssHandler {
         .emit(Wss.ServerEvent.UserJoinedCall, { peerId });
     });
     if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async registerPeer(data: unknown) {
+    const result = await safe(async () => {
+      const { peer } = registerPeerPayload.parse(data);
+      const id = isGhost(this.user) ? this.user : this.user.email;
+      stdout.info(`Register peer: ${peer} for ${id}`);
+      if (isGhost(this.user))
+        await cache.peer.setGhostPeerId(getGhostCall(this.user), peer);
+      if (isTutor(this.user))
+        await cache.peer.setUserPeerId(this.user.id, peer);
+
+      // notify peers to refetch the peer id if needed
+    });
+    if (result instanceof Error) stdout.error(result.message);
   }
 
   async sendMessage(data: unknown) {
@@ -241,7 +269,7 @@ export class WssHandler {
   async disconnect() {
     const error = safe(async () => {
       await this.offline();
-      await this.removePeerId();
+      await this.deregisterPeer();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -265,9 +293,19 @@ export class WssHandler {
     });
   }
 
-  async removePeerId() {
-    if (isGhost(this.user)) return; // need the call id
-    await cache.peer.removeUserPeerId(this.user.id);
+  /**
+   * Remove ghost and tutor peer id from the cache.
+   *
+   * @note should be called when the socket disconnects from the server.
+   */
+  async deregisterPeer() {
+    // todo: notify peers that the current user got disconnected
+    const display = isGhost(this.user) ? this.user : this.user.email;
+    stdout.info(`Deregister peer for: ${display}`);
+
+    if (isGhost(this.user))
+      return await cache.peer.removeGhostPeerId(getGhostCall(this.user));
+    if (isTutor(this.user)) await cache.peer.removeUserPeerId(this.user.id);
   }
 
   async announceStatus(user: IUser.Self) {

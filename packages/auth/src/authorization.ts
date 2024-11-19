@@ -1,5 +1,6 @@
 import { IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
+import { GHOST_USERNAME_PREFIX } from "@litespace/sol/ghost";
 
 export function authenticated(req: Request, res: Response, next: NextFunction) {
   if (req.user) return next();
@@ -124,7 +125,11 @@ export function isInterviewer(user: unknown): user is IUser.Self {
 }
 
 export function isGhost(user: unknown): user is IUser.Ghost {
-  return user === "ghost";
+  return (
+    typeof user === "string" &&
+    user.startsWith(GHOST_USERNAME_PREFIX) &&
+    !Number.isNaN(Number(user.replace(GHOST_USERNAME_PREFIX, "")))
+  );
 }
 
 export function authorizer() {

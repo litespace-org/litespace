@@ -122,23 +122,39 @@ const Call: React.FC = () => {
         isGhost,
         mateUserId: orNull(mateInfo?.id),
         role: orNull(profile?.role),
-        disableGhost: true,
+        disableGhost: false,
       }),
       [callId, mateInfo?.id, profile?.role]
     )
   );
 
-  const { userMedia, mateStream, mateScreenStream } = useCallV2(
+  const onCloseCall = useCallback(() => {
+    // peers.ghost.refetch();
+    // peers.tutor.refetch();
+  }, []);
+
+  console.log({
+    fetching: peers.ghost.isFetching,
+    isPending: peers.ghost.isPending,
+    isLoading: peers.ghost.isLoading,
+    ghost: peers.ghost.data,
+    tutor: peers.tutor.data,
+  });
+
+  const { userMedia, mateStream, mateScreenStream, ghostStreams } = useCallV2(
     useMemo(
       () => ({
         isGhost,
         ghostPeerId: orNull(peers.ghost.data),
         tutorPeerId: orNull(peers.tutor.data),
         userId: orNull(profile?.id),
+        onCloseCall,
       }),
-      [peers.ghost.data, peers.tutor.data, profile?.id]
+      [onCloseCall, peers.ghost.data, peers.tutor.data, profile?.id]
     )
   );
+
+  console.log({ ghostStreams });
 
   const callViewProps: CallViewProps = useMemo(
     () => ({
