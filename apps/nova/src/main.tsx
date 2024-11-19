@@ -17,8 +17,7 @@ import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { TokenType } from "@litespace/atlas";
-import { ghostCall, ghostToken } from "@/lib/ghost";
-import { orUndefined } from "@litespace/sol/utils";
+import { ghostToken } from "@/lib/ghost";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -45,7 +44,7 @@ createRoot(document.getElementById("root")!).render(
             >
               <AtlasProvider>
                 <SocketProvider>
-                  <PeerProvider call={orUndefined(ghostCall)}>
+                  <PeerProvider>
                     <ReduxProvider store={store}>
                       <PersistGate
                         loading={

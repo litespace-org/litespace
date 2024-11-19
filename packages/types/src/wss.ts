@@ -1,4 +1,4 @@
-import { IMessage, IRule, ITutor, Server } from "@/index";
+import { IMessage, IRule, ITutor, IUser, Server } from "@/index";
 
 /**
  * Events emitted by the client
@@ -9,7 +9,11 @@ export enum ClientEvent {
   UpdateMessage = "UpdateMessage",
   DeleteMessage = "DeleteMessage",
   MarkAsRead = "MarkAsRead",
+  /**
+   * @deprecated
+   */
   PeerOpened = "PeerOpened",
+  RegisterPeer = "RegisterPeer",
   UserSharingScreen = "UserSharingScreen",
   ToggleCamera = "ToggleCamera",
   ToggleMic = "ToggleMic",
@@ -58,6 +62,7 @@ export type ClientEventsMap = {
   [ClientEvent.UpdateMessage]: EventCallback<{ id: number; text: string }>;
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
   [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: string }>;
+  [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
 };

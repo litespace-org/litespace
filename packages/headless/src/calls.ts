@@ -1,4 +1,4 @@
-import { IPeer, IRoom, IUser, Wss } from "@litespace/types";
+import { IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -727,7 +727,6 @@ export function usePeerIds({
     const allowed =
       role === IUser.Role.Student || role === IUser.Role.Interviewer;
     if (isGhost || !mateUserId || !allowed) return;
-
     return { type: IPeer.PeerType.Tutor, tutor: mateUserId };
   }, [isGhost, mateUserId, role]);
 
@@ -759,11 +758,13 @@ export function useCallV2({
   tutorPeerId,
   ghostPeerId,
   userId,
+  onCloseCall,
 }: {
   isGhost: boolean;
   tutorPeerId: string | null;
   ghostPeerId: string | null;
   userId: number | null;
+  onCloseCall: Void;
 }) {
   const peer = usePeer();
   const userMedia = useUserMedia();
@@ -885,18 +886,27 @@ export function useCallV2({
           metadata: { screen, userId },
         });
 
+        //! choose a correct name!
         setOutcomingCalls((prev) => [...prev, call]);
 
         call.on("stream", (stream: MediaStream) => {
           if (!screen) setMateStream(stream);
         });
 
+        /**
+         * In case of tutor-ghost connection the "close" event will be called on
+         * the tutor side.
+         *
+         * In case of a student-tutor connection the "close" event will be
+         * called on the student side.
+         */
         call.on("close", () => {
+          onCloseCall();
           if (!screen) setMateStream(null);
         });
       }, 3_000);
     },
-    [peer, userId]
+    [onCloseCall, peer, userId]
   );
 
   useEffect(() => {
@@ -917,7 +927,7 @@ export function useCallV2({
         stream: userMedia.stream,
         screen: false,
       });
-  }, [call, ghostPeerId, tutorPeerId, userMedia.stream]);
+  }, [call, ghostPeerId, userMedia.stream]);
 
   useEffect(() => {
     peer.on("call", onCall);

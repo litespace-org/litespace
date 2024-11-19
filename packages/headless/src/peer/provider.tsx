@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { PeerContext } from "@/peer/context";
 import { useBackend } from "@/backend";
 import { peers } from "@litespace/atlas";
 import { Peer } from "peerjs";
-import { useAtlas } from "@/atlas";
+import { useSocket } from "@/socket";
+import { Wss } from "@litespace/types";
 
 export const PeerProvider: React.FC<{
   children: React.ReactNode;
-  call?: number;
-}> = ({ children, call }) => {
-  const [peerId, setPeerId] = useState<string | null>(null);
+}> = ({ children }) => {
   const { backend } = useBackend();
-  const atlas = useAtlas();
+  const socket = useSocket();
 
   const peer = useMemo(() => {
     const peerServer = peers[backend];
@@ -33,38 +32,20 @@ export const PeerProvider: React.FC<{
     });
   }, [backend]);
 
-  const onPeerId = useCallback((peer: string) => {
-    setPeerId(peer);
-  }, []);
+  const registerPeer = useCallback(
+    (peer: string) => {
+      if (!socket) return;
+      socket.emit(Wss.ClientEvent.RegisterPeer, { peer });
+    },
+    [socket]
+  );
 
   useEffect(() => {
-    peer.on("open", onPeerId);
+    peer.on("open", registerPeer);
     return () => {
-      peer.off("open", onPeerId);
+      peer.off("open", registerPeer);
     };
-  }, [onPeerId, peer]);
-
-  const deletePeerId = useCallback(() => {
-    if (!peerId) return;
-    console.log(`Delete peer id from the server: ${peerId}`);
-    atlas.peer.delete({ call });
-  }, [atlas.peer, call, peerId]);
-
-  useEffect(() => {
-    if (!peerId) return;
-    // todo: add loading and error handling!
-    //! don't register peer id in case of a student
-    console.log(`Register peer id on the server: ${peerId}`);
-    atlas.peer.register({ peer: peerId, call });
-  }, [atlas.peer, call, peerId]);
-
-  useEffect(() => {
-    // todo: should be disabled on react native
-    window.addEventListener("beforeunload", deletePeerId);
-    return () => {
-      window.removeEventListener("beforeunload", deletePeerId);
-    };
-  }, [deletePeerId]);
+  }, [peer, registerPeer]);
 
   return <PeerContext.Provider value={peer}>{children}</PeerContext.Provider>;
 };
