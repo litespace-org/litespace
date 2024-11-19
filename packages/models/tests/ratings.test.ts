@@ -7,9 +7,6 @@ describe("Ratings", () => {
   beforeAll(async () => {
     await fixtures.flush();
   });
-  beforeEach(async () => {
-    await fixtures.flush();
-  });
 
   afterEach(async () => {
     await fixtures.flush();
@@ -17,7 +14,7 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.create), () => {
     it("should create a rating", async () => {
-      const rating = await fixtures.make.rating(5);
+      const rating = await fixtures.make.rating({ value: 5 });
       expect(rating).to.exist;
       expect(rating.value).to.be.eq(5);
     });
@@ -25,8 +22,8 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.update), () => {
     it("should update a rating", async () => {
-      const created = await fixtures.make.rating(5);
-      expect(created).to.exist;
+      const created = await fixtures.make.rating({ value: 5 });
+      expect(created.value).to.be.eq(5);
 
       const updated = await ratings.update(created.id, {
         value: 4,
@@ -37,8 +34,8 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.delete), () => {
     it("should delete a rating", async () => {
-      const created = await fixtures.make.rating(5);
-      expect(created).to.exist;
+      const created = await fixtures.make.rating({ value: 5 });
+      expect(created.value).to.be.eq(5);
 
       await ratings.delete(created.id);
 
@@ -49,41 +46,47 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.findSelfById), () => {
     it("should find a rating by its id", async () => {
-      const created = await fixtures.make.rating(5);
-      expect(created).to.exist;
-
+      const created = await fixtures.make.rating({ value: 5 });
       const rating = await ratings.findSelfById(created.id);
-      expect(rating).to.exist;
+      expect(rating).to.be.deep.eq(created);
     });
   });
 
-  describe(nameof(ratings.findAvgRating), () => {
-    it("should find avg rating of a user", async () => {
-      const created = await fixtures.make.multipleRatings([1, 2, 3, 4, 5]);
-      expect(created).to.exist;
-
-      const avg = await ratings.findAvgRating(created[0].rateeId);
-      expect(avg).to.be.eq(3);
+  describe(nameof(ratings.findAvgRatings), () => {
+    it("should find a rating by its id", async () => {
+      const tutor = await fixtures.tutor();
+      await fixtures.make.ratings({ ratee: tutor.id, values: [1, 2, 3] });
+      const rating = await ratings.findAvgUserRatings(tutor.id);
+      expect(rating).to.be.deep.eq(2);
     });
   });
 
-  describe(nameof(ratings.findAvgUsersRating), () => {
-    it("should find avg rating of multiple users", async () => {
-      const created = await fixtures.make.multipleRatings([1, 2, 3, 4, 5]);
-      expect(created).to.exist;
-      const created2 = await fixtures.make.multipleRatings([1, 2, 3, 4, 5]);
-      expect(created).to.exist;
-      const created3 = await fixtures.make.multipleRatings([1, 2, 3, 4, 5]);
-      expect(created).to.exist;
+  describe(nameof(ratings.findAvgRatings), () => {
+    it("should find avg. rating for users", async () => {
+      const t1 = await fixtures.tutor();
+      const t2 = await fixtures.tutor();
+      const t3 = await fixtures.tutor();
 
-      const avg = await ratings.findAvgUsersRating([
-        created[0].rateeId,
-        created2[0].rateeId,
-        created3[0].rateeId,
-      ]);
-      expect(avg[0].rating === 3);
-      expect(avg[1].rating === 3);
-      expect(avg[2].rating === 3);
+      await fixtures.make.ratings({
+        ratee: t1.id,
+        values: [1, 2, 3, 4, 5],
+      });
+
+      await fixtures.make.ratings({
+        ratee: t2.id,
+        values: [1, 2, 3, 4],
+      });
+
+      await fixtures.make.ratings({
+        ratee: t3.id,
+        values: [1, 2, 4, 5],
+      });
+
+      const avg = await ratings.findAvgRatings([t1.id, t2.id, t3.id]);
+
+      expect(avg[0].avg === 3);
+      expect(avg[1].avg === 3);
+      expect(avg[2].avg === 3);
     });
   });
 });

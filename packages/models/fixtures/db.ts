@@ -403,34 +403,42 @@ async function makeLessons({
   return lessons;
 }
 
-export async function makeRating(rating: number) {
-  const tutor = await user(IUser.Role.Tutor);
-  const student = await user(IUser.Role.Student);
+export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
+  const raterId: number =
+    payload?.raterId ||
+    (await user(IUser.Role.Student).then((user) => user.id));
+  const rateeId: number =
+    payload?.rateeId || (await user(IUser.Role.Tutor).then((user) => user.id));
 
   return await ratings.create({
-    rateeId: tutor.id,
-    raterId: student.id,
-    value: rating,
-    feedback: "Great Teacher",
+    rateeId,
+    raterId,
+    value: payload?.value || faker.number.int({ min: 0, max: 5 }),
+    feedback: faker.lorem.words(20),
   });
 }
 
-export async function makeMultipleRatings(ratingsValues: number[]) {
-  const tutor = await user(IUser.Role.Tutor);
-  const ratingsArr = [];
+export async function makeRatings({
+  values,
+  ratee,
+}: {
+  values: number[];
+  ratee?: number;
+}) {
+  const rateeId: number =
+    ratee || (await user(IUser.Role.Tutor).then((user) => user.id));
 
-  for (let i = 0; i < ratingsValues.length; i++) {
-    const student = await user(IUser.Role.Student);
-    ratingsArr.push(
-      await ratings.create({
-        rateeId: tutor.id,
+  return Promise.all(
+    values.map(async (value) => {
+      const student = await user(IUser.Role.Student);
+      return await ratings.create({
+        rateeId: rateeId,
         raterId: student.id,
-        value: ratingsValues[i],
+        value: value,
         feedback: "Great Teacher",
-      })
-    );
-  }
-  return ratingsArr;
+      });
+    })
+  );
 }
 
 async function makeInterviews(payload: {
@@ -483,7 +491,7 @@ export default {
     interviews: makeInterviews,
     tutors: makeTutors,
     rating: makeRating,
-    multipleRatings: makeMultipleRatings,
+    ratings: makeRatings,
   },
   cancel: {
     lesson: cancelLesson,
