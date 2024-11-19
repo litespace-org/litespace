@@ -2,6 +2,7 @@ import { first } from "lodash";
 import { column, countRows, knex, withPagination } from "@/query";
 import { IFilter, IRating, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
+import zod from "zod";
 
 export class Ratings {
   table = "ratings" as const;
@@ -155,6 +156,28 @@ export class Ratings {
     const row = first(rows);
     if (!row) return null;
     return this.from(row);
+  }
+
+  async findAvgRatings(users: number[]): Promise<IRating.FindAvgRatingResult> {
+    const rows = await this.builder()
+      .select({ user: this.column.ratings("ratee_id") })
+      .avg<Array<{ user: number; avg: string }>>({
+        avg: this.column.ratings("value"),
+      })
+      .whereIn(this.column.ratings("ratee_id"), users)
+      .groupBy(this.column.ratings("ratee_id"));
+
+    return rows.map((row) => ({
+      user: row.user,
+      avg: zod.coerce.number().parse(row.avg),
+    }));
+  }
+
+  async findAvgUserRatings(user: number): Promise<number> {
+    const ratings = await this.findAvgRatings([user]);
+    const rating = first(ratings);
+    if (!rating) return 0;
+    return rating.avg;
   }
 
   from(row: IRating.Row): IRating.Self {

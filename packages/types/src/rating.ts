@@ -69,3 +69,5 @@ export type FindRatingsApiResponse = Paginated<Self>;
 export type FindRaterRatingsApiResponse = Paginated<Populated>;
 
 export type FindRateeRatingsApiResponse = Paginated<Populated>;
+
+export type FindAvgRatingResult = Array<{ user: number; avg: number }>;
