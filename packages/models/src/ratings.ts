@@ -157,6 +157,36 @@ export class Ratings {
     return this.from(row);
   }
 
+  async findAvgRating(user: number): Promise<number> {
+    const avgRatings = await knex<IRating.Row>(this.table)
+      .select("ratee_id")
+      .avg({ avgValue: "value" })
+      .where(this.column.ratings("ratee_id"), user)
+      .groupBy("ratee_id");
+
+    if (avgRatings.length === 0) return 0;
+
+    const rating = parseFloat(avgRatings[0]["avgValue"]);
+    return rating;
+  }
+
+  async findAvgUsersRating(
+    users: number[]
+  ): Promise<{ user: number; rating: number }[]> {
+    const usersRows = await knex<IRating.Row>(this.table)
+      .select("ratee_id")
+      .whereIn(this.column.ratings("ratee_id"), users)
+      .avg({ avgValue: "value" })
+      .groupBy("ratee_id");
+
+    if (!usersRows) return [];
+
+    return usersRows.map((user) => ({
+      user: user.ratee_id,
+      rating: parseFloat(user.avgValue),
+    }));
+  }
+
   from(row: IRating.Row): IRating.Self {
     return {
       id: row.id,
