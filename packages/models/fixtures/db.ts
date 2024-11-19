@@ -8,6 +8,7 @@ import {
   rules,
   topics,
   users,
+  ratings,
 } from "@/index";
 import {
   ICall,
@@ -16,6 +17,7 @@ import {
   IRule,
   ITopic,
   IUser,
+  IRating,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
@@ -38,6 +40,7 @@ export async function flush() {
     await rules.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await ratings.builder(tx).del();
     await users.builder(tx).del();
   });
 }
@@ -400,6 +403,36 @@ async function makeLessons({
   return lessons;
 }
 
+export async function makeRating(rating: number) {
+  const tutor = await user(IUser.Role.Tutor);
+  const student = await user(IUser.Role.Student);
+
+  return await ratings.create({
+    rateeId: tutor.id,
+    raterId: student.id,
+    value: rating,
+    feedback: "Great Teacher",
+  });
+}
+
+export async function makeMultipleRatings(ratingsValues: number[]) {
+  const tutor = await user(IUser.Role.Tutor);
+  const ratingsArr = [];
+
+  for (let i = 0; i < ratingsValues.length; i++) {
+    const student = await user(IUser.Role.Student);
+    ratingsArr.push(
+      await ratings.create({
+        rateeId: tutor.id,
+        raterId: student.id,
+        value: ratingsValues[i],
+        feedback: "Great Teacher",
+      })
+    );
+  }
+  return ratingsArr;
+}
+
 async function makeInterviews(payload: {
   data: [
     {
@@ -449,6 +482,8 @@ export default {
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
+    rating: makeRating,
+    multipleRatings: makeMultipleRatings,
   },
   cancel: {
     lesson: cancelLesson,
