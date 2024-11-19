@@ -1,7 +1,14 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
-import { exists, forbidden, notfound } from "@/lib/error";
-import { hashPassword } from "@/lib/user";
+import { ApiError, ILesson, ITutor, IUser, Wss } from "@litespace/types";
+import {
+  apierror,
+  exists,
+  forbidden,
+  invalidPassword,
+  notfound,
+  wrongPassword,
+} from "@/lib/error";
+import { hashPassword, isSamePassword } from "@/lib/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import {
@@ -54,6 +61,7 @@ import {
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
+import { isValidPassword } from "@litespace/sol/verification";
 
 const createUserPayload = zod.object({
   role,
@@ -64,7 +72,12 @@ const createUserPayload = zod.object({
 
 const updateUserPayload = zod.object({
   email: zod.optional(email),
-  password: zod.optional(password),
+  password: zod.optional(
+    zod.object({
+      current: zod.union([zod.string(), zod.null()]),
+      new: zod.string(),
+    })
+  ),
   name: zod.optional(string),
   gender: zod.optional(gender),
   notice: zod.optional(zod.number().positive().int()),
@@ -195,6 +208,29 @@ function update(context: ApiContext) {
         )
       );
 
+      if (password) {
+        const expectedPasswordHash = await users.findUserPasswordHash(
+          targetUser.id
+        );
+
+        const isValidCurrentPassword =
+          (password.current === null && expectedPasswordHash === null) ||
+          (password.current &&
+            expectedPasswordHash &&
+            isSamePassword(password.current, expectedPasswordHash));
+        if (!isValidCurrentPassword) return next(wrongPassword());
+
+        const validPassword = isValidPassword(password.new);
+        if (validPassword !== true)
+          return next(
+            apierror(
+              validPassword,
+              "Your new password doesn't meet the requirements, pelase retry",
+              400
+            )
+          );
+      }
+
       const user = await knex.transaction(async (tx: Knex.Transaction) => {
         const user = await users.update(
           id,
@@ -204,7 +240,7 @@ function update(context: ApiContext) {
             gender,
             birthYear,
             image: drop?.image === true ? null : image,
-            password: password ? hashPassword(password) : undefined,
+            password: password ? hashPassword(password.new) : undefined,
             phoneNumber,
             city,
           },
