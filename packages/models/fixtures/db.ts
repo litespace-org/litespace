@@ -8,6 +8,7 @@ import {
   rules,
   topics,
   users,
+  ratings,
 } from "@/index";
 import {
   ICall,
@@ -16,6 +17,7 @@ import {
   IRule,
   ITopic,
   IUser,
+  IRating,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
@@ -38,6 +40,7 @@ export async function flush() {
     await rules.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await ratings.builder(tx).del();
     await users.builder(tx).del();
   });
 }
@@ -400,6 +403,44 @@ async function makeLessons({
   return lessons;
 }
 
+export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
+  const raterId: number =
+    payload?.raterId ||
+    (await user(IUser.Role.Student).then((user) => user.id));
+  const rateeId: number =
+    payload?.rateeId || (await user(IUser.Role.Tutor).then((user) => user.id));
+
+  return await ratings.create({
+    rateeId,
+    raterId,
+    value: payload?.value || faker.number.int({ min: 0, max: 5 }),
+    feedback: faker.lorem.words(20),
+  });
+}
+
+export async function makeRatings({
+  values,
+  ratee,
+}: {
+  values: number[];
+  ratee?: number;
+}) {
+  const rateeId: number =
+    ratee || (await user(IUser.Role.Tutor).then((user) => user.id));
+
+  return Promise.all(
+    values.map(async (value) => {
+      const student = await user(IUser.Role.Student);
+      return await ratings.create({
+        rateeId: rateeId,
+        raterId: student.id,
+        value: value,
+        feedback: "Great Teacher",
+      });
+    })
+  );
+}
+
 async function makeInterviews(payload: {
   data: [
     {
@@ -449,6 +490,8 @@ export default {
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
+    rating: makeRating,
+    ratings: makeRatings,
   },
   cancel: {
     lesson: cancelLesson,
