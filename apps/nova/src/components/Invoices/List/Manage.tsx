@@ -230,7 +230,8 @@ const ManageInvoice: React.FC<{
                 name="username"
                 placeholder={intl("invoices.create.form.username.placeholder")}
                 value={form.watch("username")}
-                error={form.formState.errors.username?.message}
+                error={!!form.formState.errors.username?.message}
+                helper={form.formState.errors.username?.message}
                 autoComplete="off"
               />
             }
@@ -245,7 +246,8 @@ const ManageInvoice: React.FC<{
               name="amount"
               placeholder={intl("invoices.create.form.amount.placeholder")}
               value={form.watch("amount").toString()}
-              error={form.formState.errors.amount?.message}
+              error={!!form.formState.errors.amount?.message}
+              helper={form.formState.errors.amount?.message}
               autoComplete="off"
             />
           }

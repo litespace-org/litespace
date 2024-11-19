@@ -1,7 +1,5 @@
 import React from "react";
-import { AnimatePresence } from "framer-motion";
 import cn from "classnames";
-import { InputError } from "@/components/Input/Input";
 
 export interface TextareaProps
   extends React.InputHTMLAttributes<HTMLTextAreaElement> {
@@ -46,9 +44,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             {...props}
           />
         </div>
-        <AnimatePresence mode="wait" initial={false}>
+        {/* <AnimatePresence mode="wait" initial={false}>
           {error ? <InputError message={error} key={name} /> : null}
-        </AnimatePresence>
+        </AnimatePresence> */}
       </div>
     );
   }

@@ -62,11 +62,12 @@ export const TimePicker: React.FC<TimePickerProps> = ({
     <div className="tw-w-full tw-relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
-        error={error}
+        error={!!error}
+        helper={error}
         value={value}
         disabled={disabled}
         onFocus={show}
-        actions={useMemo(
+        endActions={useMemo(
           () => [{ id: 1, Icon: Clock, onClick: toggle }],
           [toggle]
         )}

@@ -107,7 +107,8 @@ const ResetPassword = () => {
               rules={passwordRules}
               placeholder={intl("labels.password")}
               autoComplete="off"
-              error={formState.errors["password"]?.message}
+              error={!!formState.errors["password"]?.message}
+              helper={formState.errors["password"]?.message}
               name="password"
             />
           }
@@ -136,7 +137,8 @@ const ResetPassword = () => {
               control={control}
               placeholder={intl("labels.new.password")}
               autoComplete="off"
-              error={formState.errors["newPassword"]?.message}
+              error={!!formState.errors["newPassword"]?.message}
+              helper={formState.errors["newPassword"]?.message}
               name="newPassword"
             />
           }

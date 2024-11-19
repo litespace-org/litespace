@@ -66,11 +66,12 @@ export const DateInput: React.FC<DateInputProps> = ({
     <div className="tw-w-full tw-relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
-        error={error}
+        error={!!error}
+        helper={error}
         value={value}
         disabled={disabled}
         onFocus={open}
-        actions={useMemo(
+        endActions={useMemo(
           () => [{ id: 1, Icon: Calendar, onClick: () => setShow(!show) }],
           [show]
         )}
