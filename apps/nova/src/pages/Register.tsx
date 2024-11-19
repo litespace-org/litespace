@@ -110,7 +110,8 @@ const Register: React.FC = () => {
                     name="email"
                     placeholder={intl("global.form.email.placeholder")}
                     value={watch("email")}
-                    error={errors["email"]?.message}
+                    error={!!errors["email"]?.message}
+                    helper={errors["email"]?.message}
                     autoComplete="off"
                     disabled={mutation.isPending}
                   />
@@ -125,7 +126,8 @@ const Register: React.FC = () => {
                     name="password"
                     value={watch("password")}
                     type={InputType.Password}
-                    error={errors["password"]?.message}
+                    error={!!errors["password"]?.message}
+                    helper={errors["password"]?.message}
                     disabled={mutation.isPending}
                     autoComplete="off"
                   />

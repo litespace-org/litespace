@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-
 import { Input, InputType } from "@/components/Input";
 import React from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { useForm } from "react-hook-form";
 import { Calendar } from "react-feather";
+import Search from "@litespace/assets/Search";
 
 type Component = typeof Input;
 
@@ -55,7 +55,16 @@ export const Error: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
-    error: ar["error.email.invlaid"],
+    error: true,
+    helper: ar["error.email.invlaid"],
+  },
+};
+
+export const WithHelperText: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: ar["global.form.email.placeholder"],
+    helper: ar["error.email.invlaid"],
   },
 };
 
@@ -63,7 +72,8 @@ export const ErrorWithValue: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: ar["global.form.email.placeholder"],
-    error: ar["error.email.invlaid"],
+    error: true,
+    helper: ar["error.email.invlaid"],
     value: "لايت اسبيس",
     onChange: () => {},
   },
@@ -95,7 +105,8 @@ export const PasswordError: StoryObj<Component> = {
       <Input
         type={InputType.Password}
         value={watch("password")}
-        error={ar["error.invalid"]}
+        error={true}
+        helper={ar["error.invalid"]}
         {...register("password")}
       />
     );
@@ -118,20 +129,42 @@ export const InputEnglish: StoryObj<Component> = {
   },
 };
 
-export const WithActions: StoryObj<Component> = {
+export const WithStartActions: StoryObj<Component> = {
   render: () => {
-    const { register, watch } = useForm<{ date: string }>({
+    const { register } = useForm<{ date: string }>({
       defaultValues: { date: "" },
     });
     return (
       <Input
         placeholder={ar["global.form.email.placeholder"]}
-        value={watch("date")}
         {...register("date")}
-        actions={[
+        starActions={[
           {
             id: 1,
             Icon: Calendar,
+            onClick() {
+              alert("Clicked!");
+            },
+          },
+        ]}
+      />
+    );
+  },
+};
+
+export const WithEndActions: StoryObj<Component> = {
+  render: () => {
+    const { register } = useForm<{ date: string }>({
+      defaultValues: { date: "" },
+    });
+    return (
+      <Input
+        placeholder={ar["global.form.email.placeholder"]}
+        {...register("date")}
+        endActions={[
+          {
+            id: 1,
+            Icon: Search,
             onClick() {
               alert("Clicked!");
             },

@@ -83,7 +83,8 @@ const IntorduceYourself: React.FC = () => {
                 "page.tutor.onboarding.steps.third.introduce.yourself.form.bio.placeholder"
               )}
               value={watch("bio")}
-              error={errors["bio"]?.message}
+              error={!!errors.bio?.message}
+              helper={errors.bio?.message}
               disabled={disabled}
               autoComplete="off"
             />

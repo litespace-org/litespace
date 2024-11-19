@@ -2,12 +2,13 @@ import React, { useCallback, useMemo, useRef } from "react";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import cn from "classnames";
 import { Bold, Italic, Underline, List } from "react-feather";
-import { InputError } from "@/components/Input/Input";
+import { Helper } from "@/components/Input/Input";
 import Editable, { ContentEditableEvent } from "react-contenteditable";
 import { RawHtml } from "@/components/RawHtml";
 import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
 import { ButtonVariant } from "../Button/types";
+import { Typography } from "../Typography";
 
 export const TextEditor: React.FC<{
   value: string;
@@ -101,7 +102,13 @@ export const TextEditor: React.FC<{
       </RawHtml>
 
       <AnimatePresence mode="wait" initial={false}>
-        {error ? <InputError message={error} /> : null}
+        {error ? (
+          <Helper>
+            <Typography element="tiny-text" className="tw-text-destructive-500">
+              {error}
+            </Typography>
+          </Helper>
+        ) : null}
       </AnimatePresence>
     </div>
   );
