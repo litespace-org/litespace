@@ -1,6 +1,6 @@
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
-import { users } from "@/index";
+import { hashPassword, isSamePassword, users } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
 import { IUser } from "@litespace/types";
@@ -39,7 +39,7 @@ describe("Users", () => {
 
   describe(nameof(users.update), () => {
     it("should update a user", async () => {
-      const created = await fixtures.user(IUser.Role.Student);
+      const created = await fixtures.user({ role: IUser.Role.Student });
 
       expect(await users.findById(created.id)).to.exist;
 
@@ -84,7 +84,7 @@ describe("Users", () => {
 
   describe(nameof(users.delete), () => {
     it("should delete user by id", async () => {
-      const user = await fixtures.user(IUser.Role.Student);
+      const user = await fixtures.user({ role: IUser.Role.Student });
       expect(await users.findById(user.id)).to.exist;
 
       await users.delete(user.id);
@@ -95,13 +95,17 @@ describe("Users", () => {
 
   describe(nameof(users.find), () => {
     it("should find users by content", async () => {
-      const interviewer = await fixtures.user(IUser.Role.Interviewer);
+      const interviewer = await fixtures.user({ role: IUser.Role.Interviewer });
       expect(await users.findById(interviewer.id)).to.exist;
 
-      const interviewer2 = await fixtures.user(IUser.Role.Interviewer);
+      const interviewer2 = await fixtures.user({
+        role: IUser.Role.Interviewer,
+      });
       expect(await users.findById(interviewer2.id)).to.exist;
 
-      const interviewer3 = await fixtures.user(IUser.Role.Interviewer);
+      const interviewer3 = await fixtures.user({
+        role: IUser.Role.Interviewer,
+      });
       expect(await users.findById(interviewer3.id)).to.exist;
 
       const result = await users.find({ role: IUser.Role.Interviewer });
@@ -116,7 +120,7 @@ describe("Users", () => {
 
   describe(nameof(users.findOneBy), () => {
     it("should find users by any key", async () => {
-      const created = await fixtures.user(IUser.Role.Interviewer);
+      const created = await fixtures.user({ role: IUser.Role.Interviewer });
       expect(await users.findById(created.id)).to.exist;
 
       const user = await users.findOneBy("role", IUser.Role.Interviewer);
@@ -127,7 +131,7 @@ describe("Users", () => {
 
   describe(nameof(users.findById), () => {
     it("should find users by role", async () => {
-      const created = await fixtures.user(IUser.Role.Interviewer);
+      const created = await fixtures.user({ role: IUser.Role.Interviewer });
       expect(await users.findById(created.id)).to.exist;
 
       const user = await users.findById(created.id);
@@ -136,9 +140,21 @@ describe("Users", () => {
     });
   });
 
+  describe(nameof(users.findUserPasswordHash), () => {
+    it("should return hash of the user", async () => {
+      const password = "pass";
+      const created = await fixtures.user({
+        role: IUser.Role.Interviewer,
+        password,
+      });
+      const hash = await users.findUserPasswordHash(created.id);
+      expect(hash).to.be.eq(hashPassword(password));
+    });
+  });
+
   describe(nameof(users.findByEmail), () => {
     it("should find users by role", async () => {
-      const created = await fixtures.user(IUser.Role.Interviewer);
+      const created = await fixtures.user({ role: IUser.Role.Interviewer });
       expect(await users.findById(created.id)).to.exist;
 
       const user = await users.findByEmail(created.email);

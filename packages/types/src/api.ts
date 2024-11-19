@@ -37,6 +37,7 @@ export enum ApiError {
   ContradictingRules = "contradicting-rules",
   EmptyRequest = "empty-request",
   UserAlreadyVerified = "user-already-verified",
+  WrongPassword = "wrong-password",
 }
 
 export type ApiErrorCode = ApiError | FieldError;
