@@ -261,6 +261,8 @@ export default {
       sidebar: "0px 14px 42px 0px rgba(8, 15, 52, 0.06)",
       "input-focus": "0px 0px 10px 4px rgba(43, 181, 114, 0.25)",
       "input-error": "0px 1px 10px 4px rgba(204, 0, 0, 0.25)",
+      "switch-thumb": "0px 2px 4px 0px rgba(39, 39, 39, 0.1)",
+      "switch-root": "0px 4px 20px 0px rgba(43, 181, 114, 0.2)",
       toast:
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
     },
