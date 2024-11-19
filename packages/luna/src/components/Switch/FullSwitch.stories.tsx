@@ -1,18 +1,23 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Switch } from "@/components/Switch";
+import { FullSwitch } from "@/components/Switch";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { faker } from "@faker-js/faker/locale/ar";
 
-type Component = typeof Switch;
+type Component = typeof FullSwitch;
 
 const meta: Meta<Component> = {
-  title: "Switch",
-  component: Switch,
+  title: "FullSwitch",
+  component: FullSwitch,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {
-  args: { id: "switch" },
+  args: {
+    id: "switch",
+    title: faker.lorem.words(4),
+    description: faker.lorem.words(20),
+  },
 };
 
 export const DisabledChecked: StoryObj<Component> = {
