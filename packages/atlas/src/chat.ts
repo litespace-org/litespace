@@ -39,4 +39,11 @@ export class Chat extends Base {
   async findCallRoom(call: number): Promise<IRoom.FindCallRoomApiResponse> {
     return await this.get(`/api/v1/chat/room/call/${call}`);
   }
+
+  async updateRoom(
+    room: number,
+    payload: IRoom.UpdateRoomApiPayload
+  ): Promise<IRoom.Member> {
+    return await this.put(`/api/v1/chat/room/${room}`, payload);
+  }
 }

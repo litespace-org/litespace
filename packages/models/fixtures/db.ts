@@ -446,6 +446,13 @@ export async function makeRatings({
     })
   );
 }
+async function makeRoom(payload?: [number, number]) {
+  const user1Id: number =
+    payload?.[0] || (await user(IUser.Role.Tutor).then((user) => user.id));
+  const user2Id: number =
+    payload?.[1] || (await user(IUser.Role.Student).then((user) => user.id));
+  return await rooms.create([user1Id, user2Id]);
+}
 
 async function makeInterviews(payload: {
   data: [
@@ -498,6 +505,7 @@ export default {
     tutors: makeTutors,
     rating: makeRating,
     ratings: makeRatings,
+    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,

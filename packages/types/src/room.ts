@@ -13,16 +13,26 @@ export type Row = {
 export type MemberRow = {
   user_id: number;
   room_id: number;
+  pinned: boolean;
+  muted: boolean;
+  created_at: Date;
+  updated_at: Date;
 };
 
 export type Member = {
   userId: number;
   roomId: number;
+  pinned: boolean;
+  muted: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type PopulatedMemberRow = {
   id: IUser.Row["id"];
   roomId: Row["id"];
+  pinned: MemberRow["pinned"];
+  muted: MemberRow["muted"];
   email: IUser.Row["email"];
   name: IUser.Row["name"];
   image: IUser.Row["image"];
@@ -35,6 +45,8 @@ export type PopulatedMemberRow = {
 export type PopulatedMember = {
   id: IUser.Self["id"];
   roomId: Self["id"];
+  pinned: Member["pinned"];
+  muted: Member["muted"];
   email: IUser.Self["email"];
   name: IUser.Self["name"];
   image: IUser.Self["image"];
@@ -55,4 +67,14 @@ export type FindRoomMembersApiResponse = PopulatedMember[];
 export type FindCallRoomApiResponse = {
   room: number;
   members: PopulatedMember[];
+};
+
+export type UpdateRoomPayload = {
+  pinned?: boolean;
+  muted?: boolean;
+};
+
+export type UpdateRoomApiPayload = {
+  pinned?: boolean;
+  muted?: boolean;
 };
