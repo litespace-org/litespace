@@ -1,5 +1,5 @@
 import { column, countRows, knex, withPagination } from "@/query";
-import { first, merge, omit, orderBy } from "lodash";
+import { first, isEmpty, merge, omit, orderBy } from "lodash";
 import { IFilter, IRoom, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
@@ -133,8 +133,10 @@ export class Rooms {
     tx,
     userId,
     pagination,
+    statuses,
   }: {
     userId: number;
+    statuses?: IRoom.Status;
     tx?: Knex.Transaction;
     pagination?: IFilter.Pagination;
   }): Promise<Paginated<number>> {
@@ -145,6 +147,12 @@ export class Rooms {
         this.column.members("room_id")
       )
       .where(this.column.members("user_id"), userId);
+
+    if (statuses && typeof statuses.muted === "boolean")
+      base.where(this.column.members("muted"), statuses.muted);
+
+    if (statuses && typeof statuses.pinned === "boolean")
+      base.where(this.column.members("pinned"), statuses.pinned);
 
     const subquery = messages
       .builder(tx)
