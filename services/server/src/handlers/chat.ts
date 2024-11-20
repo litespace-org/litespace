@@ -4,7 +4,7 @@ import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
 import zod from "zod";
 import { id, pagination, withNamedId } from "@/validation/utils";
-import { exists, forbidden, notfound } from "@/lib/error";
+import { empty, exists, forbidden, notfound } from "@/lib/error";
 import {
   authorizer,
   isAdmin,
@@ -18,6 +18,10 @@ import { IMessage, IRoom } from "@litespace/types";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
+const updateRoomPayload = zod.object({
+  pinned: zod.boolean(),
+  muted: zod.boolean(),
+});
 
 async function createRoom(req: Request, res: Response, next: NextFunction) {
   const currentUser = req.user;
@@ -171,6 +175,31 @@ async function findRoomMembers(
   res.status(200).json(members);
 }
 
+//updateRoom
+/**
+ * Add in postman
+ */
+
+async function updateRoom(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const { roomId } = withNamedId("roomId").parse(req.params);
+  const room = await rooms.findById(roomId);
+  if (!room) return next(notfound.room());
+
+  const roomMembers = await rooms.findRoomMembers({ roomIds: [roomId] });
+  const allowed =
+    isUser(user) && roomMembers.find((member) => member.id === user?.id);
+  if (!allowed) return next(forbidden());
+
+  const { muted, pinned } = updateRoomPayload.parse(req.body);
+  if (muted === undefined && pinned === undefined) {
+    return next(empty());
+  }
+
+  const updatedMember = await rooms.update(user?.id, roomId, { muted, pinned });
+  res.status(200).json(updatedMember);
+}
+
 export default {
   createRoom: safeRequest(createRoom),
   findRoomMessages: safeRequest(findRoomMessages),
@@ -178,4 +207,5 @@ export default {
   findRoomByMembers: safeRequest(findRoomByMembers),
   findRoomMembers: safeRequest(findRoomMembers),
   findCallRoom: safeRequest(findCallRoom),
+  updateRoom: safeRequest(updateRoom),
 };

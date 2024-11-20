@@ -9,5 +9,6 @@ router.get("/list/:roomId/messages", chat.findRoomMessages);
 router.get("/room/by/members/", chat.findRoomByMembers);
 router.get("/room/members/:roomId", chat.findRoomMembers);
 router.get("/room/call/:call", chat.findCallRoom);
+router.put("/room/:roomId", chat.updateRoom);
 
 export default router;
