@@ -51,6 +51,7 @@
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
     "./Video": "./dist/Video.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
+    "./userAvatar": "./dist/userAvatar.tsx",
     "./index": "./dist/index.tsx"
   }
 }
