@@ -16,7 +16,7 @@ const Decorator = (Story: React.FC) => {
     >
       <Direction>
         <ToastProvider>
-          <div dir="rtl">
+          <div dir="rtl" className="tw-font-cairo">
             <div className="tw-mb-4">
               <Button onClick={toggle}>Toggle Theme</Button>
             </div>
