@@ -1,44 +1,44 @@
-import React, { useCallback } from "react";
-import * as Components from "@litespace/luna/Settings";
-import { RefreshUser } from "@litespace/luna/hooks/user";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors, setUserProfile } from "@/redux/user/profile";
-import { findTutorMeta, tutorMetaSelectors } from "@/redux/user/tutor";
-import { IUser } from "@litespace/types";
+import PageTitle from "@/components/Common/PageTitle";
+import PageContent from "@/components/Common/PageContent";
+import { useAppSelector } from "@/redux/store";
+import { profileSelectors } from "@/redux/user/profile";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import React, { useState } from "react";
+import UploadPhoto from "@/components/Settings/UploadPhoto";
+import { orNull } from "@litespace/sol/utils";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 
 const Settings: React.FC = () => {
+  const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.full);
-  const tutor = useAppSelector(tutorMetaSelectors.full);
-  const dispatch = useAppDispatch();
-
-  const refresh: RefreshUser = useCallback(
-    (user?: IUser.Self) => {
-      if (user) dispatch(setUserProfile({ user }));
-
-      if (user?.role === IUser.Role.Tutor)
-        dispatch(findTutorMeta.call(user.id));
-    },
-    [dispatch]
-  );
+  const [photo, setPhoto] = useState<File | null>(null);
 
   return (
-    <div className="w-full p-6 pb-32 mx-auto max-w-screen-2xl sm:w-fit">
-      <Components.Profile
-        profile={profile.value?.user || null}
-        refresh={refresh}
-        tutor={tutor.value}
-        loading={profile.loading}
-        fetching={profile.fetching}
-      />
+    <div className="max-w-screen-lg mx-auto w-full">
+      <div className="w-full">
+        <div className="mb-8">
+          <PageTitle
+            title={intl("settings.profile.title")}
+            fetching={profile.fetching && !profile.loading}
+          />
+        </div>
 
-      {tutor.value ? (
-        <Components.Notice
-          notice={tutor.value.notice}
-          fetching={tutor.fetching}
-          user={tutor.value.id}
-          refresh={refresh}
-        />
-      ) : null}
+        <PageContent className="p-14">
+          <UploadPhoto
+            setPhoto={setPhoto}
+            photo={photo || orNull(profile.value?.user.image)}
+          />
+          <div className="w-full">
+            <Button
+              disabled={photo === null}
+              size={ButtonSize.Large}
+              className="mr-auto"
+            >
+              {intl("settings.save")}
+            </Button>
+          </div>
+        </PageContent>
+      </div>
     </div>
   );
 };

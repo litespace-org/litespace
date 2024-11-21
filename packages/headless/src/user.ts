@@ -53,3 +53,32 @@ export function useRegisterUser({
     onError,
   });
 }
+
+export function useUpdateUser({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+  const update = useCallback(
+    async ({
+      id,
+      payload,
+    }: {
+      id: number;
+      payload: IUser.UpdateApiPayload;
+    }) => {
+      return await atlas.user.update(id, payload);
+    },
+    [atlas.user]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: ["update-user"],
+    onSuccess,
+    onError,
+  });
+}
