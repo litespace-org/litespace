@@ -1,10 +1,9 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ApiError, ILesson, ITutor, IUser, Wss } from "@litespace/types";
+import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
 import {
   apierror,
   exists,
   forbidden,
-  invalidPassword,
   notfound,
   wrongPassword,
 } from "@/lib/error";
