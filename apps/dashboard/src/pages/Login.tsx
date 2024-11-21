@@ -3,16 +3,13 @@ import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 import { InputType } from "@litespace/luna/Input";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/backend";
-
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/lib/route";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
+import { useUser } from "@litespace/headless/user-ctx";
+import { useLoginUser } from "@litespace/headless/user";
 
 interface IForm {
   email: string;
@@ -22,7 +19,7 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
+  const user = useUser();
   const toast = useToast();
   const {
     control,
@@ -39,18 +36,10 @@ const Login: React.FC = () => {
   const email = watch("email");
   const password = watch("password");
 
-  const login = useCallback(
-    async (credentials: IUser.Credentials) => {
-      const profile = await atlas.auth.password(credentials);
-      dispatch(setUserProfile(profile));
-    },
-    [dispatch]
-  );
-
-  const mutation = useMutation({
-    mutationFn: login,
-    onSuccess() {
-      return navigate(Route.Root);
+  const mutation = useLoginUser({
+    onSuccess(result: IUser.LoginApiResponse) {
+      user.set(result);
+      navigate(Route.Root);
     },
     onError(error) {
       toast.error({
@@ -62,9 +51,8 @@ const Login: React.FC = () => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(
-        async (credentials: IUser.Credentials) =>
-          await mutation.mutateAsync(credentials)
+      handleSubmit(async (credentials: IUser.Credentials) =>
+        mutation.mutate(credentials)
       ),
     [handleSubmit, mutation]
   );

@@ -21,6 +21,7 @@ import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useLoginUser } from "@litespace/headless/user";
 import { useRender } from "@/hooks/render";
 import ForgetPassword from "@/components/Common/ForgetPassword";
+import { useUser } from "@litespace/headless/user-ctx";
 
 interface IForm {
   email: string;
@@ -31,6 +32,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
+  const user = useUser();
   const {
     control,
     handleSubmit,
@@ -47,9 +49,13 @@ const Login: React.FC = () => {
   const password = watch("password");
   const forgetPassword = useRender();
 
-  const onSuccess = useCallback(() => {
-    return navigate(Route.Root);
-  }, [navigate]);
+  const onSuccess = useCallback(
+    (result: IUser.LoginApiResponse) => {
+      user.set(result);
+      return navigate(Route.Root);
+    },
+    [navigate, user]
+  );
 
   const onError = useCallback(
     (error: Error) => {
@@ -65,9 +71,8 @@ const Login: React.FC = () => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(
-        async (credentials: IUser.Credentials) =>
-          await mutation.mutateAsync(credentials)
+      handleSubmit(async (credentials: IUser.Credentials) =>
+        mutation.mutate(credentials)
       ),
     [handleSubmit, mutation]
   );

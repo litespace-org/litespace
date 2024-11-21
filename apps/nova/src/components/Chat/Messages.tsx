@@ -14,16 +14,14 @@ import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useMessages } from "@litespace/luna/hooks/chat";
 import { Loading } from "@litespace/luna/Loading";
-
 import NoSelection from "@/components/Chat/NoSelection";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const Messages: React.FC<{
   room: number | null;
   members: IRoom.PopulatedMember[];
 }> = ({ room, members }) => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] =
@@ -101,13 +99,13 @@ const Messages: React.FC<{
   }, [messages, resetScroll, userScrolled]);
 
   const messageGroups = useMemo(() => {
-    if (!profile) return [];
+    if (!user) return [];
     return asMessageGroups({
-      currentUser: profile,
+      currentUser: user,
       messages,
       members,
     });
-  }, [members, messages, profile]);
+  }, [members, messages, user]);
 
   return (
     <div

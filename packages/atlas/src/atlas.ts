@@ -16,7 +16,7 @@ import { Lesson } from "@/lesson";
 import { WithdrawMethod } from "@/withdrawMethod";
 import { Invoice } from "@/invoice";
 import { Topic } from "@/topic";
-import { GetToken } from "@/client";
+import { AuthToken } from "@/client";
 import { Cache } from "@/cache";
 import { Peer } from "@/peer";
 
@@ -41,25 +41,25 @@ export class Atlas {
   public readonly topic: Topic;
   public readonly peer: Peer;
 
-  constructor(backend: Backend, getToken: GetToken) {
-    this.user = new User(backend, getToken);
-    this.auth = new Auth(backend, getToken);
-    this.call = new Call(backend, getToken);
-    this.plan = new Plan(backend, getToken);
-    this.coupon = new Coupon(backend, getToken);
-    this.invite = new Invite(backend, getToken);
-    this.report = new Report(backend, getToken);
-    this.reportReply = new ReportReply(backend, getToken);
-    this.asset = new Asset(backend, getToken);
-    this.rating = new Rating(backend, getToken);
-    this.chat = new Chat(backend, getToken);
-    this.interview = new Interview(backend, getToken);
-    this.rule = new Rule(backend, getToken);
-    this.lesson = new Lesson(backend, getToken);
-    this.withdrawMethod = new WithdrawMethod(backend, getToken);
-    this.invoice = new Invoice(backend, getToken);
-    this.cache = new Cache(backend, getToken);
-    this.topic = new Topic(backend, getToken);
-    this.peer = new Peer(backend, getToken);
+  constructor(backend: Backend, token: AuthToken | null) {
+    this.user = new User(backend, token);
+    this.auth = new Auth(backend, token);
+    this.call = new Call(backend, token);
+    this.plan = new Plan(backend, token);
+    this.coupon = new Coupon(backend, token);
+    this.invite = new Invite(backend, token);
+    this.report = new Report(backend, token);
+    this.reportReply = new ReportReply(backend, token);
+    this.asset = new Asset(backend, token);
+    this.rating = new Rating(backend, token);
+    this.chat = new Chat(backend, token);
+    this.interview = new Interview(backend, token);
+    this.rule = new Rule(backend, token);
+    this.lesson = new Lesson(backend, token);
+    this.withdrawMethod = new WithdrawMethod(backend, token);
+    this.invoice = new Invoice(backend, token);
+    this.cache = new Cache(backend, token);
+    this.topic = new Topic(backend, token);
+    this.peer = new Peer(backend, token);
   }
 }

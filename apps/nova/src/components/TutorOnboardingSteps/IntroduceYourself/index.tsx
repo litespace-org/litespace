@@ -1,6 +1,3 @@
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
-import { findTutorMeta } from "@/redux/user/tutor";
 import { Button } from "@litespace/luna/Button";
 import { Field, Form, Label, Controller } from "@litespace/luna/Form";
 import { useToast } from "@litespace/luna/Toast";
@@ -17,9 +14,7 @@ type IForm = {
 
 const IntorduceYourself: React.FC = () => {
   const intl = useFormatMessage();
-  const dispatch = useAppDispatch();
   const validation = useValidation();
-  const profile = useAppSelector(profileSelectors.user);
   const toast = useToast();
   const {
     watch,
@@ -39,8 +34,7 @@ const IntorduceYourself: React.FC = () => {
     toast.success({
       title: intl("global.notify.update.data"),
     });
-    if (profile) dispatch(findTutorMeta.call(profile.id));
-  }, [dispatch, intl, profile, reset, toast]);
+  }, [intl, reset, toast]);
 
   const onCreateError = useCallback(() => {
     toast.error({
@@ -49,7 +43,7 @@ const IntorduceYourself: React.FC = () => {
   }, [intl, toast]);
 
   const mutation = useIntroduceTutor({
-    profile,
+    profile: null,
     onSuccess: onCreateSuccess,
     onError: onCreateError,
   });
@@ -59,10 +53,7 @@ const IntorduceYourself: React.FC = () => {
     [handleSubmit, mutation]
   );
 
-  const disabled = useMemo(
-    () => mutation.isPending || !profile,
-    [mutation.isPending, profile]
-  );
+  const disabled = useMemo(() => mutation.isPending, [mutation.isPending]);
 
   return (
     <div>

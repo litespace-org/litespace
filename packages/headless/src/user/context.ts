@@ -4,11 +4,14 @@ import { createContext, useContext } from "react";
 export type Context = {
   user: IUser.Self | null;
   meta: ITutor.Self | null;
-  token: string | null;
   loading: boolean;
   fetching: boolean;
   refetch: { user: Void; meta: Void };
-  set: (payload: { user?: IUser.Self | null; token?: string | null }) => void;
+  set: (payload: {
+    user?: IUser.Self;
+    meta?: ITutor.Self;
+    token?: string;
+  }) => void;
   logout: Void;
 };
 

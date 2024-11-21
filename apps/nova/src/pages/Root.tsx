@@ -3,15 +3,15 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAppSelector } from "@/redux/store";
 import { Route, RoutePatterns } from "@/types/routes";
 import { tutorMetaSelector } from "@/redux/user/tutor";
-import { profileSelectors } from "@/redux/user/profile";
 import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const Root: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.full);
+  const { user } = useUser();
   const tutorMeta = useAppSelector(tutorMetaSelector);
   const navigate = useNavigate();
   const location = useLocation();
@@ -27,11 +27,7 @@ const Root: React.FC = () => {
     const ignore = [call, login, register, resetPassword, verifyEmail].some(
       (patten) => patten.match(location.pathname)
     );
-
-    if (!profile.value && !profile.loading && !ignore)
-      return navigate(Route.Login);
-    const user = profile.value?.user;
-
+    if (!user && !ignore) return navigate(Route.Login);
     // redirect the user to complete his profile
     // redirect student in case of missing: name, age
     // redirect tutor in case of missing: name, age, gender
@@ -57,13 +53,11 @@ const Root: React.FC = () => {
     )
       return navigate(Route.TutorOnboarding);
 
-    if (!profile.value || (!root && !complete)) return;
-    const { tutor, student, interviewer } = destructureRole(
-      profile.value.user.role
-    );
+    if (!user || (!root && !complete)) return;
+    const { tutor, student, interviewer } = destructureRole(user.role);
     if (tutor || student) return navigate(Route.Lessons);
     if (interviewer) return navigate(Route.Interviews);
-  }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
+  }, [navigate, location.pathname, tutorMeta, user]);
 
   return (
     <div className="flex relative ps-60 w-full">

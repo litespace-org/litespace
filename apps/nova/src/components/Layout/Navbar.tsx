@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import {
   Button,
   ButtonSize,
@@ -9,30 +9,20 @@ import { SidebarNav } from "@litespace/luna/SidebarNav";
 import { Switch } from "@litespace/luna/Switch";
 import { Theme } from "@litespace/luna/hooks/theme";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { removeAuthToken } from "@litespace/luna/cache";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
 import { IUser, Void } from "@litespace/types";
 import { Route } from "@/types/routes";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
-import { resetTutorMeta } from "@/redux/user/tutor";
 import Logo from "@litespace/assets/Logo";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const Navbar: React.FC<{
   toggleTheme: () => void;
   theme: Theme | null;
 }> = ({ toggleTheme, theme }) => {
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const location = useLocation();
-  const dispatch = useAppDispatch();
-
-  const logout = useCallback(() => {
-    removeAuthToken();
-    dispatch(resetUserProfile());
-    dispatch(resetTutorMeta());
-  }, [dispatch]);
 
   const links = useMemo((): Array<{
     label: string;
@@ -41,7 +31,7 @@ const Navbar: React.FC<{
     loading?: boolean;
     disabled?: boolean;
   }> => {
-    const role = profile?.role;
+    const role = user?.role;
     const student = role === IUser.Role.Student;
     const tutor = role === IUser.Role.Tutor;
     const interviewer = role === IUser.Role.Interviewer;
@@ -49,7 +39,7 @@ const Navbar: React.FC<{
     const logoutOption = {
       label: intl("navbar.logout"),
       route: "",
-      onClick: logout,
+      onClick: () => alert("logout"),
     };
 
     if (student)
@@ -112,7 +102,7 @@ const Navbar: React.FC<{
       ];
 
     return [];
-  }, [intl, logout, profile?.role]);
+  }, [intl, user?.role]);
 
   return (
     <nav className="h-16 border-b border-border-overlay">

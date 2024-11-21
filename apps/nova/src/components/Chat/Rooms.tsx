@@ -1,21 +1,20 @@
 import { first, isEmpty } from "lodash";
 import React, { useEffect, useMemo } from "react";
 import Room from "@/components/Chat/Room";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useInfinteScroll } from "@litespace/luna/hooks/common";
 import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
 import { Loading } from "@litespace/luna/Loading";
 import cn from "classnames";
 import { useFindUserRooms } from "@litespace/headless/messageRooms";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const Rooms: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
 }> = ({ select, selected: { room, members } }) => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
 
-  const { list: rooms, query, more } = useFindUserRooms(profile);
+  const { list: rooms, query, more } = useFindUserRooms(user);
 
   const enabled = useMemo(
     () => query.hasNextPage && !query.isLoading && !query.isFetching,

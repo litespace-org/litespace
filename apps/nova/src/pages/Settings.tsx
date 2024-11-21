@@ -1,16 +1,15 @@
 import PageTitle from "@/components/Common/PageTitle";
 import PageContent from "@/components/Common/PageContent";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useState } from "react";
 import UploadPhoto from "@/components/Settings/UploadPhoto";
 import { orNull } from "@litespace/sol/utils";
 import { Button, ButtonSize } from "@litespace/luna/Button";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const Settings: React.FC = () => {
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.full);
+  const { user, fetching, loading } = useUser();
   const [photo, setPhoto] = useState<File | null>(null);
 
   return (
@@ -19,14 +18,14 @@ const Settings: React.FC = () => {
         <div className="mb-8">
           <PageTitle
             title={intl("settings.profile.title")}
-            fetching={profile.fetching && !profile.loading}
+            fetching={fetching && !loading}
           />
         </div>
 
         <PageContent className="p-14">
           <UploadPhoto
             setPhoto={setPhoto}
-            photo={photo || orNull(profile.value?.user.image)}
+            photo={photo || orNull(user?.image)}
           />
           <div className="w-full">
             <Button

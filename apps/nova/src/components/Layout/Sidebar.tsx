@@ -1,8 +1,4 @@
-import { useAppDispatch } from "@/redux/store";
-import { resetUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
 import { Route } from "@/types/routes";
-import { removeAuthToken } from "@litespace/luna/cache";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import Calendar from "@litespace/assets/Calendar";
@@ -14,8 +10,9 @@ import People from "@litespace/assets/People";
 import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import cn from "classnames";
-import React, { SVGProps, useCallback, useMemo } from "react";
+import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const SidebarItem = ({
   to,
@@ -60,16 +57,10 @@ const SidebarItem = ({
   );
 };
 
-const Sidebar = () => {
-  const dispatch = useAppDispatch();
+const Sidebar: React.FC = () => {
   const intl = useFormatMessage();
   const location = useLocation();
-
-  const logout = useCallback(() => {
-    removeAuthToken();
-    dispatch(resetUserProfile());
-    dispatch(resetTutorMeta());
-  }, [dispatch]);
+  const { logout } = useUser();
 
   const mainPages = useMemo(() => {
     return [
