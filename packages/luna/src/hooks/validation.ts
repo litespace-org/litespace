@@ -30,6 +30,30 @@ export function useValidatePassword(create: boolean = false) {
   };
 }
 
+export function useValidateUsername(create: boolean = false) {
+  const intl = useFormatMessage();
+  const required = useRequired();
+
+  return useMemo(
+    () => ({
+      pattern: {
+        value: /^[\u0600-\u06FF\s]+$/,
+        message: intl("error.name.invalid"),
+      },
+      minLength: {
+        value: 2,
+        message: intl("error.name.length.short"),
+      },
+      maxLength: {
+        value: 30,
+        message: intl("error.name.length.long"),
+      },
+      required: create ? required : false,
+    }),
+    [create, intl, required]
+  );
+}
+
 export function useValidateEmail(create: boolean = false) {
   const intl = useFormatMessage();
   const required = useRequired();

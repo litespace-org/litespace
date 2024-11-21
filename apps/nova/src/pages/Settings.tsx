@@ -7,6 +7,7 @@ import React, { useState } from "react";
 import UploadPhoto from "@/components/Settings/UploadPhoto";
 import { orNull } from "@litespace/sol/utils";
 import { Button, ButtonSize } from "@litespace/luna/Button";
+import Personal from "@/components/Settings/Personal";
 
 const Settings: React.FC = () => {
   const intl = useFormatMessage();
@@ -23,20 +24,21 @@ const Settings: React.FC = () => {
           />
         </div>
 
-        <PageContent className="p-14">
+        <PageContent className="flex flex-col gap-8 p-14">
           <UploadPhoto
             setPhoto={setPhoto}
             photo={photo || orNull(profile.value?.user.image)}
           />
-          <div className="w-full">
+          <Personal user={profile.value?.user}>
             <Button
               disabled={photo === null}
               size={ButtonSize.Large}
               className="mr-auto"
+              htmlType="submit"
             >
               {intl("settings.save")}
             </Button>
-          </div>
+          </Personal>
         </PageContent>
       </div>
     </div>
