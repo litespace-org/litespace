@@ -5,15 +5,17 @@
   "license": "MIT",
   "scripts": {
     "start": "pnpm build && env-cmd ts-node dist/index.js",
+    "start:test:server": "pnpm build && env-cmd -f .env.test ts-node dist/index.js",
     "dev": "env-cmd nodemon src/index.ts",
-    "build": "tsc && tsc-alias",
-    "test": "env-cmd -f .env.test jest",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "test": "env-cmd -f .env.test jest -i --detectOpenHandles",
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 7070 --key peer --path /ls",
     "docker": "docker compose up -d",
     "check": "tsc --noEmit"
   },
   "devDependencies": {
+    "@litespace/atlas": "workspace:^",
     "@babel/core": "^7.24.9",
     "@babel/preset-env": "^7.25.0",
     "@babel/preset-typescript": "^7.24.7",
