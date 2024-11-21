@@ -1313,6 +1313,9 @@ importers:
       '@jest/globals':
         specifier: ^29.7.0
         version: 29.7.0
+      '@litespace/atlas':
+        specifier: workspace:^
+        version: link:../../packages/atlas
       '@types/babel__core':
         specifier: ^7
         version: 7.20.5
