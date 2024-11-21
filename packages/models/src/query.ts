@@ -151,8 +151,5 @@ export function addSqlMinutes<Row extends object>(
   start: string,
   minutes: string
 ): Knex.Raw<Row> {
-  return knex.raw("DATE_ADD(??, ??)", [
-    start,
-    asSqlInterval(minutes, "minutes"),
-  ]);
+  return knex.raw("?? + ??", [start, asSqlInterval(minutes, "minutes")]);
 }
