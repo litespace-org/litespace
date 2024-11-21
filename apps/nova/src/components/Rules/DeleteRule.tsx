@@ -1,5 +1,4 @@
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
+import { useAppDispatch } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useToast } from "@litespace/luna/Toast";
@@ -8,6 +7,7 @@ import { Alert } from "@litespace/luna/Alert";
 import { IRule } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useDeleteRule } from "@litespace/headless/rule";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const DeleteRule: React.FC<{
   open?: boolean;
@@ -16,16 +16,16 @@ const DeleteRule: React.FC<{
 }> = ({ open, close, rule }) => {
   const intl = useFormatMessage();
   const dispatch = useAppDispatch();
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {
-    if (profile) dispatch(findUserRules.call(profile.id));
+    if (user) dispatch(findUserRules.call(user.id));
     toast.success({
       title: intl("global.notify.schedule.update.success"),
     });
     close();
-  }, [close, dispatch, intl, profile, toast]);
+  }, [close, dispatch, intl, toast, user]);
 
   const onError = useCallback(
     (error: Error) => {

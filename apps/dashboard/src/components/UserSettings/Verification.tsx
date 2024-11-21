@@ -1,7 +1,6 @@
 import { CALLBACK_URL } from "@/lib/route";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
+import { useUser } from "@litespace/headless/user-ctx";
 import { Button, ButtonSize, ButtonVariant } from "@litespace/luna/Button";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Input } from "@litespace/luna/Input";
@@ -12,7 +11,7 @@ import React, { useCallback } from "react";
 import { Check } from "react-feather";
 
 const VerificationDetails: React.FC = () => {
-  const user = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const intl = useFormatMessage();
   const toast = useToast();
 

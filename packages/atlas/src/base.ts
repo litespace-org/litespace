@@ -1,12 +1,12 @@
 import { Backend } from "@litespace/types";
 import { AxiosInstance } from "axios";
-import { createClient, GetToken } from "@/client";
+import { createClient, AuthToken } from "@/client";
 
 export class Base {
   public readonly client: AxiosInstance;
 
-  constructor(backend: Backend, getToken: GetToken) {
-    this.client = createClient(backend, getToken);
+  constructor(backend: Backend, token: AuthToken | null) {
+    this.client = createClient(backend, token);
   }
 
   async post<T, R = void>(route: string, payload?: T): Promise<R> {

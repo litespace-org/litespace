@@ -6,12 +6,9 @@ import { Atlas } from "@litespace/atlas";
 export const AtlasProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { backend, getToken } = useBackend();
+  const { backend, token } = useBackend();
 
-  const atlas = useMemo(
-    () => new Atlas(backend, getToken),
-    [backend, getToken]
-  );
+  const atlas = useMemo(() => new Atlas(backend, token), [backend, token]);
 
   return (
     <AtlasContext.Provider value={atlas}>{children}</AtlasContext.Provider>

@@ -1,33 +1,27 @@
-import { IUser, Void } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { useAtlas } from "@/atlas";
 import { useCallback } from "react";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { MutationKey, QueryKey } from "@/constants";
+import { OnSuccess, OnError, BaseMutationPayload } from "@/types/query";
 
-type OnSuccess = Void;
-type OnError = (error: Error) => void;
-
-export function useLoginUser({
-  dispatchFn,
-  onSuccess,
-  onError,
-}: {
-  dispatchFn: (profile: IUser.LoginApiResponse) => void;
-  onSuccess: OnSuccess;
-  onError: OnError;
-}) {
+export function useLoginUser(
+  payload?: BaseMutationPayload<IUser.LoginApiResponse>
+) {
   const atlas = useAtlas();
+
   const login = useCallback(
     async (credentials: IUser.Credentials) => {
-      const profile = await atlas.auth.password(credentials);
-      dispatchFn(profile);
+      return await atlas.auth.password(credentials);
     },
-    [atlas.auth, dispatchFn]
+    [atlas.auth]
   );
 
   return useMutation({
     mutationFn: login,
-    onSuccess: onSuccess,
-    onError: onError,
+    onSuccess: payload?.onSuccess,
+    onError: payload?.onError,
+    mutationKey: [MutationKey.LoginUser],
   });
 }
 
@@ -58,7 +52,7 @@ export function useUpdateUser({
   onSuccess,
   onError,
 }: {
-  onSuccess?: OnSuccess;
+  onSuccess?: OnSuccess<IUser.Self>;
   onError?: OnError;
 }) {
   const atlas = useAtlas();
@@ -80,5 +74,19 @@ export function useUpdateUser({
     mutationKey: ["update-user"],
     onSuccess,
     onError,
+  });
+}
+
+export function useCurrentUser(enabled: boolean = true) {
+  const atlas = useAtlas();
+
+  const findCurrentUser = useCallback(() => {
+    return atlas.user.findCurrentUser();
+  }, [atlas.user]);
+
+  return useQuery({
+    queryKey: [QueryKey.FindCurrentUser],
+    queryFn: findCurrentUser,
+    enabled,
   });
 }

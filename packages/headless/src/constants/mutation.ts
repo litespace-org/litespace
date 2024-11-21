@@ -14,4 +14,5 @@ export enum MutationKey {
   CreateTopic = "create-topic",
   DeleteTopic = "delete-topic",
   UpdateTopic = "update-topic",
+  LoginUser = "login-user",
 }

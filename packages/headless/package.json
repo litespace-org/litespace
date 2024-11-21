@@ -13,6 +13,7 @@
     "./socket": "./dist/socket/index.js",
     "./peer": "./dist/peer/index.js",
     "./config": "./dist/config/index.js",
+    "./user-ctx": "./dist/user/index.js",
     "./auth": "./dist/auth.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",

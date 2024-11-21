@@ -164,7 +164,7 @@ export function useIntroduceTutor({
   });
 }
 
-export function useFindTutorMeta(
+export function useTutorMeta(
   id?: number
 ): UseQueryResult<ITutor.FindTutorMetaApiResponse> {
   const atlas = useAtlas();

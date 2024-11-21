@@ -2,7 +2,6 @@ import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
 import { locales } from "@litespace/luna/locales";
 import { backend } from "@litespace/luna/backend";
-import { getAuthToken as getCachedAuthToken } from "@litespace/luna/cache";
 import { Spinner } from "@litespace/luna/Spinner";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
@@ -16,8 +15,7 @@ import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { AppConfigProvider } from "@litespace/headless/config";
-import { TokenType } from "@litespace/atlas";
-import { ghostToken } from "@/lib/ghost";
+import { UserProvider } from "@litespace/headless/user-ctx";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -35,28 +33,24 @@ createRoot(document.getElementById("root")!).render(
       <AppConfigProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <QueryClientProvider client={queryClient}>
-            <BackendProvider
-              backend={backend}
-              getAuthTokenValue={
-                ghostToken ? () => ghostToken : getCachedAuthToken
-              }
-              tokenType={ghostToken ? TokenType.Basic : TokenType.Bearer}
-            >
+            <BackendProvider backend={backend}>
               <AtlasProvider>
                 <SocketProvider>
                   <PeerProvider>
-                    <ReduxProvider store={store}>
-                      <PersistGate
-                        loading={
-                          <div className="flex items-center justify-center w-screen h-screen">
-                            <Spinner />
-                          </div>
-                        }
-                        persistor={persistor}
-                      >
-                        <App />
-                      </PersistGate>
-                    </ReduxProvider>
+                    <UserProvider>
+                      <ReduxProvider store={store}>
+                        <PersistGate
+                          loading={
+                            <div className="flex items-center justify-center w-screen h-screen">
+                              <Spinner />
+                            </div>
+                          }
+                          persistor={persistor}
+                        >
+                          <App />
+                        </PersistGate>
+                      </ReduxProvider>
+                    </UserProvider>
                   </PeerProvider>
                 </SocketProvider>
               </AtlasProvider>

@@ -12,7 +12,7 @@ import { useFindUserById } from "@litespace/headless/users";
 import { destructureRole } from "@litespace/sol/user";
 import { useFindStudentStats } from "@litespace/headless/student";
 import { useMemo, useCallback } from "react";
-import { useFindTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";
+import { useTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";
 import { useFindInvoiceStats } from "@litespace/headless/invoices";
 
 type UserProfileParams = {
@@ -37,7 +37,7 @@ const UserDetails = () => {
     return destructureRole(query.data.role);
   }, [query.data]);
 
-  const tutorQuery = useFindTutorMeta(role?.tutor && id ? id : undefined);
+  const tutorQuery = useTutorMeta(role?.tutor && id ? id : undefined);
   const teachingTutorStats = useFindTutorStats(role?.tutor && id ? id : null);
   const financialTutorStats = useFindInvoiceStats(
     role?.tutor && id ? id : undefined

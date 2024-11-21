@@ -7,10 +7,9 @@ import { sockets } from "@litespace/atlas";
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { backend, getToken } = useBackend();
+  const { backend, token } = useBackend();
 
   const socket = useMemo(() => {
-    const token = getToken();
     if (!token) return null;
 
     const options = {
@@ -18,7 +17,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({
     } as const;
 
     return io(sockets.main[backend], options);
-  }, [backend, getToken]);
+  }, [backend, token]);
 
   return (
     <SocketContext.Provider value={socket}>{children}</SocketContext.Provider>

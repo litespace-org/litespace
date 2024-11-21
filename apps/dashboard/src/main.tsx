@@ -4,7 +4,6 @@ import { Provider as ReduxProvider } from "react-redux";
 import { Spinner } from "@litespace/luna/Spinner";
 import { locales } from "@litespace/luna/locales";
 import { backend } from "@litespace/luna/backend";
-import { getAuthToken as getCachedAuthToken } from "@litespace/luna/cache";
 import { IntlProvider } from "react-intl";
 import { store, persistor } from "@/redux/store";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -12,13 +11,13 @@ import { BackendProvider } from "@litespace/headless/backend";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { SocketProvider } from "@litespace/headless/socket";
 import { AppConfigProvider } from "@litespace/headless/config";
+import { UserProvider } from "@litespace/headless/user-ctx";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastProvider } from "@litespace/luna/Toast";
 import App from "@/App.tsx";
 
 import "@litespace/luna/style.css";
 import "@litespace/luna/tailwind.css";
-import { TokenType } from "@litespace/atlas";
 
 const queryClient = new QueryClient();
 
@@ -31,26 +30,24 @@ createRoot(document.getElementById("root")!).render(
     >
       <AppConfigProvider>
         <ToastProvider>
-          <BackendProvider
-            backend={backend}
-            getAuthTokenValue={getCachedAuthToken}
-            tokenType={TokenType.Bearer}
-          >
+          <BackendProvider backend={backend}>
             <AtlasProvider>
               <SocketProvider>
                 <QueryClientProvider client={queryClient}>
-                  <ReduxProvider store={store}>
-                    <PersistGate
-                      loading={
-                        <div className="flex items-center justify-center w-screen h-screen">
-                          <Spinner />
-                        </div>
-                      }
-                      persistor={persistor}
-                    >
-                      <App />
-                    </PersistGate>
-                  </ReduxProvider>
+                  <UserProvider>
+                    <ReduxProvider store={store}>
+                      <PersistGate
+                        loading={
+                          <div className="flex items-center justify-center w-screen h-screen">
+                            <Spinner />
+                          </div>
+                        }
+                        persistor={persistor}
+                      >
+                        <App />
+                      </PersistGate>
+                    </ReduxProvider>
+                  </UserProvider>
                 </QueryClientProvider>
               </SocketProvider>
             </AtlasProvider>

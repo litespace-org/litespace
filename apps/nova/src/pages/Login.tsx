@@ -15,16 +15,13 @@ import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
-import { resetUserRules } from "@/redux/user/schedule";
 import LoginLight from "@litespace/assets/LoginLight";
 import LoginDark from "@litespace/assets/LoginDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useLoginUser } from "@litespace/headless/user";
 import { useRender } from "@/hooks/render";
 import ForgetPassword from "@/components/Common/ForgetPassword";
+import { useUser } from "@litespace/headless/user-ctx";
 
 interface IForm {
   email: string;
@@ -34,8 +31,8 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const toast = useToast();
+  const user = useUser();
   const {
     control,
     handleSubmit,
@@ -50,12 +47,15 @@ const Login: React.FC = () => {
 
   const email = watch("email");
   const password = watch("password");
-
   const forgetPassword = useRender();
 
-  const onSuccess = useCallback(() => {
-    return navigate(Route.Root);
-  }, [navigate]);
+  const onSuccess = useCallback(
+    (result: IUser.LoginApiResponse) => {
+      user.set(result);
+      return navigate(Route.Root);
+    },
+    [navigate, user]
+  );
 
   const onError = useCallback(
     (error: Error) => {
@@ -67,19 +67,12 @@ const Login: React.FC = () => {
     [intl, toast]
   );
 
-  const dispatchFn = (profile: IUser.LoginApiResponse) => {
-    dispatch(setUserProfile(profile));
-    dispatch(resetTutorMeta());
-    dispatch(resetUserRules());
-  };
-
-  const mutation = useLoginUser({ dispatchFn, onSuccess, onError });
+  const mutation = useLoginUser({ onSuccess, onError });
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(
-        async (credentials: IUser.Credentials) =>
-          await mutation.mutateAsync(credentials)
+      handleSubmit(async (credentials: IUser.Credentials) =>
+        mutation.mutate(credentials)
       ),
     [handleSubmit, mutation]
   );

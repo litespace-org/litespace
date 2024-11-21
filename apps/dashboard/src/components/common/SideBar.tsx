@@ -1,21 +1,17 @@
-import React, { useRef, useCallback } from "react";
+import React, { useRef } from "react";
 import { Moon, Sidebar, Sun, User } from "react-feather";
 import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
 import { Switch } from "@litespace/luna/Switch";
-import { removeAuthToken } from "@litespace/luna/cache";
 import { useTheme, Theme } from "@litespace/luna/hooks/theme";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useClosableRef } from "@litespace/luna/hooks/dom";
 import cn from "classnames";
-import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
-import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
 import { ButtonVariant } from "@litespace/luna/Button";
+import { useUser } from "@litespace/headless/user-ctx";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -27,24 +23,17 @@ const framerSidebarBackground = {
 const SidebarNav: React.FC<{
   options: (NavOption | NavAccordionItem)[];
 }> = ({ options }) => {
-  const dispatch = useAppDispatch();
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.user);
+  const { user, logout } = useUser();
 
   const button = useRef<HTMLDivElement>(null);
   const { toggle: toggleTheme, theme } = useTheme();
-  const navigate = useNavigate();
   const {
     toggle: toggleMenu,
     open,
     ref,
+    hide,
   } = useClosableRef<HTMLUListElement>(button.current);
-
-  const logout = useCallback(() => {
-    removeAuthToken();
-    dispatch(resetUserProfile());
-    navigate(Route.Login);
-  }, [dispatch, navigate]);
 
   return (
     <nav className="relative">
@@ -80,20 +69,17 @@ const SidebarNav: React.FC<{
             >
               <div className="flex items-start w-full gap-2 p-1 border rounded-md border-border-strong">
                 <div>
-                  {profile?.image ? (
+                  {user?.image ? (
                     <div className="overflow-hidden border-2 border-white rounded-full">
-                      <img
-                        src={profile.image}
-                        className="w-8 h-8 rounded-full"
-                      />
+                      <img src={user.image} className="w-8 h-8 rounded-full" />
                     </div>
                   ) : (
                     <User className="w-6 h-6" />
                   )}
                 </div>
                 <div className="grow">
-                  <h3>{profile?.name}</h3>
-                  <p className="text-foreground-light">{profile?.email}</p>
+                  <h3>{user?.name}</h3>
+                  <p className="text-foreground-light">{user?.email}</p>
                 </div>
               </div>
 
@@ -127,7 +113,10 @@ const SidebarNav: React.FC<{
                   <Moon />
                 </div>
                 <Button
-                  onClick={logout}
+                  onClick={() => {
+                    logout();
+                    hide();
+                  }}
                   className="w-full"
                   size={ButtonSize.Small}
                   type={ButtonType.Error}

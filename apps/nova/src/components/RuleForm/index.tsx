@@ -21,11 +21,11 @@ import dayjs from "@/lib/dayjs";
 import { Duration } from "@litespace/sol/duration";
 import { Time } from "@litespace/sol/time";
 import { Schedule } from "@litespace/sol/rule";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
+import { useAppDispatch } from "@/redux/store";
 import { findUserRules } from "@/redux/user/schedule";
-import { profileSelectors } from "@/redux/user/profile";
 import RuleAlert from "@/components/Rules/RuleAlert";
 import { useCreateRule, useEditRule } from "@litespace/headless/rule";
+import { useUser } from "@litespace/headless/user-ctx";
 
 type IForm = {
   title: string;
@@ -49,7 +49,7 @@ const RuleForm: React.FC<{
   const weekdayMap = useWeekdayMap();
   const ruleFormatterMap = useRuleFormatterMap();
   const validateDuration = useValidateDuration();
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const toast = useToast();
   const dispatch = useAppDispatch();
 
@@ -69,13 +69,13 @@ const RuleForm: React.FC<{
   const form = useForm<IForm>({ defaultValues });
 
   const onSuccess = useCallback(() => {
-    if (profile) dispatch(findUserRules.call(profile.id));
+    if (user) dispatch(findUserRules.call(user.id));
     toast.success({
       title: intl("global.notify.schedule.update.success"),
     });
     form.reset();
     close();
-  }, [profile, dispatch, toast, intl, form, close]);
+  }, [user, dispatch, toast, intl, form, close]);
 
   const onError = useCallback(
     (error: unknown) => {
