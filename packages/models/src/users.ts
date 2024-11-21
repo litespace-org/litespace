@@ -143,6 +143,16 @@ export class Users {
     return { list: users, total };
   }
 
+  async findUserPasswordHash(id: number): Promise<string | null> {
+    const rows = await knex<IUser.Row>(this.table)
+      .select(this.column("password"))
+      .where(this.column("id"), id);
+
+    const row = first(rows);
+    if (!row) return null;
+    return row.password;
+  }
+
   async findByCredentials({
     email,
     password,

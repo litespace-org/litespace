@@ -49,6 +49,9 @@ export const illegalInvoiceUpdate = () =>
 export const emailAlreadyVerified = () =>
   error(ApiError.EmailAlreadyVerified, "Email already verified", 400);
 
+export const wrongPassword = () =>
+  error(ApiError.WrongPassword, "Wrong password, please try again", 400);
+
 export const contradictingRules = () =>
   error(
     ApiError.ContradictingRules,
