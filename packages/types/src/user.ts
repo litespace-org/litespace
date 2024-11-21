@@ -114,7 +114,7 @@ export type UpdatePayload = {
 
 export type UpdateApiPayload = {
   email?: string;
-  password?: string;
+  password?: { new: string; current: string | null };
   name?: string;
   gender?: Gender;
   notice?: number;

@@ -1,5 +1,6 @@
 import {
   calls,
+  hashPassword,
   interviews,
   knex,
   lessons,
@@ -60,14 +61,18 @@ export function time() {
   return Time.from(sample(times)!).utc().format();
 }
 
-export async function user(role: IUser.Role) {
+export async function user(
+  payload: Omit<Partial<IUser.Self>, "password"> & {
+    password?: string;
+  }
+) {
   return await users.create({
-    email: faker.internet.email(),
-    gender: gender(),
-    name: faker.internet.username(),
-    password: faker.internet.password(),
-    birthYear: faker.number.int({ min: 2000, max: 2024 }),
-    role,
+    email: payload.email || faker.internet.email(),
+    gender: payload.gender || gender(),
+    name: payload.name || faker.internet.username(),
+    password: hashPassword(payload.password || faker.internet.password()),
+    birthYear: payload.birthYear || faker.number.int({ min: 2000, max: 2024 }),
+    role: payload.role || IUser.Role.Tutor,
   });
 }
 
@@ -187,15 +192,15 @@ export async function cancelLesson({
 }
 
 function tutor() {
-  return user(IUser.Role.Tutor);
+  return user({ role: IUser.Role.Tutor });
 }
 
 function student() {
-  return user(IUser.Role.Student);
+  return user({ role: IUser.Role.Student });
 }
 
 function interviewer() {
-  return user(IUser.Role.Interviewer);
+  return user({ role: IUser.Role.Interviewer });
 }
 
 async function students(count: number) {
@@ -240,8 +245,8 @@ async function makeLesson({
   future?: boolean;
   canceled?: boolean;
 }) {
-  const tutor = await user(IUser.Role.Tutor);
-  const student = await user(IUser.Role.Student);
+  const tutor = await user({ role: IUser.Role.Tutor });
+  const student = await user({ role: IUser.Role.Student });
   const rule_ = await rule({ userId: tutor.id });
   const now = dayjs.utc();
   const start = future ? now.add(1, "week") : now.subtract(1, "week");
@@ -406,9 +411,10 @@ async function makeLessons({
 export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
   const raterId: number =
     payload?.raterId ||
-    (await user(IUser.Role.Student).then((user) => user.id));
+    (await user({ role: IUser.Role.Student }).then((user) => user.id));
   const rateeId: number =
-    payload?.rateeId || (await user(IUser.Role.Tutor).then((user) => user.id));
+    payload?.rateeId ||
+    (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
 
   return await ratings.create({
     rateeId,
@@ -426,11 +432,11 @@ export async function makeRatings({
   ratee?: number;
 }) {
   const rateeId: number =
-    ratee || (await user(IUser.Role.Tutor).then((user) => user.id));
+    ratee || (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
 
   return Promise.all(
     values.map(async (value) => {
-      const student = await user(IUser.Role.Student);
+      const student = await user({ role: IUser.Role.Student });
       return await ratings.create({
         rateeId: rateeId,
         raterId: student.id,

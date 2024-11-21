@@ -11,7 +11,7 @@ import { ITutor, IUser, Void } from "@litespace/types";
 import { Button, ButtonSize } from "@/components/Button";
 import { Controller } from "@/components/Form";
 import { useForm } from "react-hook-form";
-import { useValidateBirthYear, useValidateName } from "@/hooks/user";
+import { useValidateBirthYear } from "@/hooks/user";
 import { diff } from "@litespace/sol/diff";
 import { orUndefined } from "@litespace/sol/utils";
 import { isEmpty } from "lodash";
@@ -25,7 +25,7 @@ type IForm = {
   bio: string;
   about: string;
   email?: string;
-  password?: string;
+  password?: { current: string; new: string };
 };
 
 const Profile: React.FC<{
@@ -44,7 +44,10 @@ const Profile: React.FC<{
       bio: "",
       about: "",
       email: "",
-      password: "",
+      password: {
+        current: "",
+        new: "",
+      },
     },
   });
 
@@ -69,7 +72,7 @@ const Profile: React.FC<{
   ]);
 
   const mutation = useUpdateUser(refresh);
-  const validateName = useValidateName();
+  // const validateName = useValidateName();
   const validateBirthYear = useValidateBirthYear();
   const validatePassword = useValidatePassword();
   const validateEmail = useValidateEmail();
@@ -182,7 +185,7 @@ const Profile: React.FC<{
             field={
               <Controller.Input
                 placeholder={intl("labels.name.placeholder")}
-                rules={{ validate: validateName }}
+                // rules={{ validate: validateName }}
                 control={form.control}
                 disabled={disabled}
                 autoComplete="off"
@@ -213,7 +216,7 @@ const Profile: React.FC<{
                 <Controller.Input
                   type={InputType.Password}
                   control={form.control}
-                  name="password"
+                  name="password.current"
                   autoComplete="off"
                   disabled={disabled}
                   rules={validatePassword}
@@ -229,7 +232,7 @@ const Profile: React.FC<{
                 control={form.control}
                 name="birthYear"
                 rules={{
-                  validate: validateBirthYear.validate,
+                  // validate: validateBirthYear.validate,
                   required: validateBirthYear.required,
                 }}
                 placeholder={intl("labels.birthYear.placeholder")}
