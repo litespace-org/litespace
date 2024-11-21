@@ -10,7 +10,7 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
-import { ILesson, IUser, Wss } from "@litespace/types";
+import { ILesson, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -41,6 +41,8 @@ const findLessonsQuery = zod.object({
   future: zod.optional(jsonBoolean),
   past: zod.optional(jsonBoolean),
   now: zod.optional(jsonBoolean),
+  after: zod.optional(zod.string().datetime()),
+  before: zod.optional(zod.string().datetime()),
 });
 
 function create(context: ApiContext) {
@@ -155,6 +157,8 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     future: query.future,
     past: query.past,
     now: query.now,
+    after: query.after,
+    before: query.before,
     page: query.page,
     size: query.size,
   });

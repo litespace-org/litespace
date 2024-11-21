@@ -1,17 +1,14 @@
-import { lessons } from "@/index";
+import { calls, lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
 import { price } from "@litespace/sol/value";
 import { nameof } from "@litespace/sol/utils";
 import { concat, entries, sum } from "lodash";
+import dayjs from "@/lib/dayjs";
 
 describe("Lessons", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
+  beforeEach(async () => {
     await fixtures.flush();
   });
 
@@ -662,6 +659,78 @@ describe("Lessons", () => {
         });
         expect(result.list).to.be.of.length(test.count);
         expect(result.total).to.be.eq(test.count);
+      }
+    });
+
+    it("should filter lessons between `before` and `after` dates", async () => {
+      const tutor = await fixtures.tutor();
+      const rule = await fixtures.rule({ userId: tutor.id });
+      const student = await fixtures.student();
+      const date = dayjs.utc().startOf("day");
+
+      // create 24 lessons (30 minute each) across the day
+      for (let i = 0; i < 24; i++) {
+        await fixtures.lesson({
+          call: {
+            rule: rule.id,
+            start: date.add(i, "hour").toISOString(),
+            duration: 30,
+            host: tutor.id,
+            members: [student.id],
+          },
+          lesson: {
+            host: tutor.id,
+            members: [student.id],
+          },
+        });
+      }
+
+      const tests = [
+        // include all 24 lessons in the day
+        {
+          after: date.toISOString(),
+          before: date.add(24, "hours").toISOString(),
+          count: 24,
+        },
+        // skip the first lesson in the day
+        {
+          after: date.add(1.5, "hour").toISOString(),
+          before: date.add(1, "day").toISOString(),
+          count: 23,
+        },
+        // include first lesson incase it is not eneded yet.
+        {
+          after: date.add(15, "minutes").toISOString(),
+          before: date.add(1, "day").toISOString(),
+          count: 24,
+        },
+        // include last lesson incase it is not eneded yet.
+        {
+          after: date.toISOString(),
+          before: date.add(23.5, "hours").toISOString(),
+          count: 24,
+        },
+        // execlude last lesson in case it is ended
+        {
+          after: date.toISOString(),
+          before: date.add(22.9, "hours").toISOString(),
+          count: 23,
+        },
+      ];
+
+      for (const test of tests) {
+        expect(
+          await lessons
+            .findLessons({
+              users: [tutor.id],
+              size: 50,
+              after: test.after,
+              before: test.before,
+            })
+            .then((lessons) => {
+              return lessons.list;
+            })
+        ).to.be.of.length(test.count);
       }
     });
 
