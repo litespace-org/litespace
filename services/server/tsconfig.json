@@ -3,9 +3,10 @@
     "target": "es2022",
     "jsx": "react",
     "module": "NodeNext",
-    "baseUrl": "./src/",
+    "baseUrl": "./",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["./src/*"],
+      "@fixtures/*": ["fixtures/*"]
     },
     "outDir": "./dist",
     "esModuleInterop": true,
@@ -14,7 +15,7 @@
     "skipLibCheck": true
   },
   "include": ["src/", "tests/"],
-  "exclude": ["node_module", "tests/"],
+  "exclude": ["node_module"],
   "ts-node": {
     "require": ["tsconfig-paths/register"]
   }
