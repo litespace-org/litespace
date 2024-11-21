@@ -40,18 +40,19 @@
     "./RegisterLight": "./dist/RegisterLight.tsx",
     "./Search": "./dist/Search.tsx",
     "./Settings": "./dist/Settings.tsx",
+    "./StudentDefaultAvatar": "./dist/StudentDefaultAvatar.tsx",
     "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
     "./StudentFemaleLight": "./dist/StudentFemaleLight.tsx",
     "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
     "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
     "./Tag": "./dist/Tag.tsx",
+    "./ThemeSwitchLight": "./dist/ThemeSwitchLight.tsx",
     "./TutorFemaleDark": "./dist/TutorFemaleDark.tsx",
     "./TutorFemaleLight": "./dist/TutorFemaleLight.tsx",
     "./TutorMaleDark": "./dist/TutorMaleDark.tsx",
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
     "./Video": "./dist/Video.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
-    "./userAvatar": "./dist/userAvatar.tsx",
     "./index": "./dist/index.tsx"
   }
 }
