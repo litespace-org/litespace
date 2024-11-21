@@ -15,10 +15,6 @@ import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
-import { resetUserRules } from "@/redux/user/schedule";
 import LoginLight from "@litespace/assets/LoginLight";
 import LoginDark from "@litespace/assets/LoginDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
@@ -34,7 +30,6 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const toast = useToast();
   const {
     control,
@@ -50,7 +45,6 @@ const Login: React.FC = () => {
 
   const email = watch("email");
   const password = watch("password");
-
   const forgetPassword = useRender();
 
   const onSuccess = useCallback(() => {
@@ -67,13 +61,7 @@ const Login: React.FC = () => {
     [intl, toast]
   );
 
-  const dispatchFn = (profile: IUser.LoginApiResponse) => {
-    dispatch(setUserProfile(profile));
-    dispatch(resetTutorMeta());
-    dispatch(resetUserRules());
-  };
-
-  const mutation = useLoginUser({ dispatchFn, onSuccess, onError });
+  const mutation = useLoginUser({ onSuccess, onError });
 
   const onSubmit = useMemo(
     () =>

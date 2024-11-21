@@ -16,6 +16,7 @@ import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { AppConfigProvider } from "@litespace/headless/config";
+import { UserProvider } from "@litespace/headless/user-ctx";
 import { TokenType } from "@litespace/atlas";
 import { ghostToken } from "@/lib/ghost";
 import App from "@/App";
@@ -45,18 +46,20 @@ createRoot(document.getElementById("root")!).render(
               <AtlasProvider>
                 <SocketProvider>
                   <PeerProvider>
-                    <ReduxProvider store={store}>
-                      <PersistGate
-                        loading={
-                          <div className="flex items-center justify-center w-screen h-screen">
-                            <Spinner />
-                          </div>
-                        }
-                        persistor={persistor}
-                      >
-                        <App />
-                      </PersistGate>
-                    </ReduxProvider>
+                    <UserProvider>
+                      <ReduxProvider store={store}>
+                        <PersistGate
+                          loading={
+                            <div className="flex items-center justify-center w-screen h-screen">
+                              <Spinner />
+                            </div>
+                          }
+                          persistor={persistor}
+                        >
+                          <App />
+                        </PersistGate>
+                      </ReduxProvider>
+                    </UserProvider>
                   </PeerProvider>
                 </SocketProvider>
               </AtlasProvider>
