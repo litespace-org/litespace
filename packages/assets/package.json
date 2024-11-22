@@ -4,8 +4,9 @@
   "description": "LiteSpace static assets collection",
   "private": true,
   "scripts": {
+    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --template svg-template.js --memo -- assets",
     "exports": "vite-node scripts/exports.ts",
-    "build": "svgr --out-dir dist --ext tsx --typescript --jsx-runtime automatic --template svg-template.js --memo -- assets"
+    "view:svg": "vite-node scripts/view.ts"
   },
   "keywords": [],
   "author": "LiteSpace",

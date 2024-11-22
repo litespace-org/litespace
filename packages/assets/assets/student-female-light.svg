@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 435.06 428.88">
+<svg id="Layer_1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 435.06 428.88">
   <defs>
     <linearGradient id="student-female-light" x1="135.04" y1="32.49" x2="262.98" y2="32.49" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#2bb573"/>
