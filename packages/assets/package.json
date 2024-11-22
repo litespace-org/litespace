@@ -17,6 +17,8 @@
   },
   "exports": {
     "./ArrowDown": "./dist/ArrowDown.tsx",
+    "./ArrowLeft": "./dist/ArrowLeft.tsx",
+    "./ArrowRight": "./dist/ArrowRight.tsx",
     "./Calendar": "./dist/Calendar.tsx",
     "./CallIncoming": "./dist/CallIncoming.tsx",
     "./Cancel": "./dist/Cancel.tsx",
