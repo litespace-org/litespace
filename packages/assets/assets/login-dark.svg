@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1626.44 637.38">
+<svg id="Layer_1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1626.44 637.38">
   <defs>
     <linearGradient id="login-dark" x1="1280.78" y1="247.69" x2="1299.98" y2="247.69" gradientTransform="translate(-.99 490.16) rotate(-21.5)" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#1500d4"/>
