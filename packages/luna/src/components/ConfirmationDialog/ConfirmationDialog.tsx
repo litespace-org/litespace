@@ -1,119 +1,124 @@
-import * as RadixDialog from "@radix-ui/react-dialog";
+import {
+  Root,
+  Trigger,
+  Close,
+  Overlay,
+  Content,
+  Portal,
+} from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
-import { Cross2Icon } from "@radix-ui/react-icons";
 import { DialogType } from "@/components/ConfirmationDialog/types";
-import CheckCircle from "@litespace/assets/CheckCircle";
-import Save from "@litespace/assets/Save";
-import EndCall from "@litespace/assets/EndCall";
-import { Button, ButtonType, ButtonVariant } from "../Button";
+import X from "@litespace/assets/X";
+import { Button, ButtonType, ButtonVariant } from "@/components/Button";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
-
-const IconMap: Record<
-  DialogType,
-  React.MemoExoticComponent<
-    (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
-  >
-> = {
-  save: Save,
-  endCall: EndCall,
-  success: CheckCircle,
-};
+import { Typography } from "@/components/Typography";
 
 export const ConfirmationDialog: React.FC<{
   trigger?: React.ReactNode;
-  title: React.ReactNode;
-  description?: string;
+  title: string;
+  description: string;
   open?: boolean;
-  className?: string;
   setOpen?: (open: boolean) => void;
   confirm: Void;
   close: Void;
-  type: DialogType;
+  type?: DialogType;
+  Icon: typeof X;
 }> = ({
   trigger,
   title,
   description,
-  className,
-  close,
   open,
+  type = "success",
+  Icon,
+  close,
   setOpen,
-  type,
   confirm,
 }) => {
   const intl = useFormatMessage();
-  const Icon = IconMap[type];
+
   return (
-    <RadixDialog.Root open={open} onOpenChange={setOpen}>
-      {trigger ? <RadixDialog.Trigger>{trigger}</RadixDialog.Trigger> : null}
-      <RadixDialog.Portal>
-        <RadixDialog.Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm" />
-        <RadixDialog.Content
+    <Root open={open} onOpenChange={setOpen}>
+      {trigger ? <Trigger>{trigger}</Trigger> : null}
+      <Portal>
+        <Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm" />
+        <Content
+          dir="rtl"
           className={cn(
             "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
-            "tw-border tw-border-border-strong tw-rounded-xl tw-p-6 tw-w-[400px] tw-shadow-lg tw-min-w-96",
-            "tw-shadow-dialog-success",
-            className
+            "tw-border tw-border-border-strong tw-rounded-xl tw-w-[400px] tw-shadow-lg tw-min-w-96",
+            "tw-shadow-dialog-confirm"
           )}
         >
-          <div className="tw-flex tw-justify-between tw-mb-4">
-            <div
-              className={cn(
-                "tw-rounded-full tw-w-12 tw-h-12 tw-border-8 tw-flex tw-items-center tw-justify-center",
-                {
-                  "tw-bg-success-100 tw-border-success-50": type === "success",
-                  "tw-bg-warning-100 tw-border-warning-50": type === "save",
-                  "tw-bg-destructive-100 tw-border-destructive-50":
-                    type === "endCall",
-                }
-              )}
-            >
-              <Icon
-                className={cn("tw-w-6 tw-h-6", {
-                  "[&>*]:tw-stroke-success-600": type === "success",
-                  "[&>*]:tw-stroke-warning-600": type === "save",
-                  "[&>*]:tw-stroke-destructive-700": type === "endCall",
-                })}
-              />
+          <div className="tw-pl-6 tw-pr-4 tw-pt-4">
+            <div className="tw-flex tw-justify-between tw-mb-4">
+              <div
+                className={cn(
+                  "tw-w-12 tw-h-12 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mt-2",
+                  {
+                    "tw-bg-success-100 tw-border-success-50":
+                      type === "success",
+                    "tw-bg-warning-100 tw-border-warning-50":
+                      type === "warning",
+                    "tw-bg-destructive-100 tw-border-destructive-50":
+                      type === "error",
+                  }
+                )}
+              >
+                <Icon
+                  className={cn({
+                    "[&>*]:tw-stroke-success-600": type === "success",
+                    "[&>*]:tw-stroke-warning-600": type === "warning",
+                    "[&>*]:tw-stroke-destructive-700": type === "error",
+                  })}
+                />
+              </div>
+              <Close
+                onClick={close}
+                className="tw-rounded-full tw-h-11 tw-w-11 tw-flex tw-items-center tw-justify-center"
+              >
+                <X className="tw-text-natural-600" />
+              </Close>
             </div>
-            <RadixDialog.Close onClick={close} className="tw-rounded-full">
-              <Cross2Icon className="tw-cursor-pointer tw-w-6 tw-h-6 tw-p-0.5 tw-text-natural-600" />
-            </RadixDialog.Close>
-          </div>
-          <div className="tw-mb-8">
-            <RadixDialog.Title className="tw-font-semibold tw-text-natural-950">
-              {title}
-            </RadixDialog.Title>
-            {description ? (
-              <RadixDialog.Description className="tw-mb-4 tw-text-sm tw-text-natural-700">
+            <div>
+              <Typography
+                element="body"
+                weight="semibold"
+                className="tw-text-natural-950 tw-mb-1"
+              >
+                {title}
+              </Typography>
+              <Typography
+                element="caption"
+                className="tw-text-natural-750"
+                weight="regular"
+              >
                 {description}
-              </RadixDialog.Description>
-            ) : null}
+              </Typography>
+            </div>
           </div>
 
-          <div className="tw-flex tw-items-center tw-justify-center tw-gap-3">
+          <div className="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-pt-8 tw-pb-6 tw-px-6">
             <Button
               onClick={close}
-              className="tw-border-natural-500 tw-px-6 tw-py-3 !tw-w-[170px] tw-text-natural-700 tw-font-semibold"
-              type={ButtonType.Main}
+              className="tw-w-full"
+              type={type !== "error" ? ButtonType.Main : ButtonType.Error}
               variant={ButtonVariant.Secondary}
             >
-              {intl("global.labels.cancel")}{" "}
+              {intl("global.labels.cancel")}
             </Button>
             <Button
-              className="tw-px-6 tw-py-3 tw-font-semibold !tw-w-[170px]"
+              className="tw-w-full"
               onClick={confirm}
-              type={type !== "endCall" ? ButtonType.Main : ButtonType.Error}
+              type={type !== "error" ? ButtonType.Main : ButtonType.Error}
               variant={ButtonVariant.Primary}
             >
-              {type !== "endCall"
-                ? intl("global.labels.confirm")
-                : intl("call.leave")}{" "}
+              {intl("global.labels.confirm")}
             </Button>
           </div>
-        </RadixDialog.Content>
-      </RadixDialog.Portal>
-    </RadixDialog.Root>
+        </Content>
+      </Portal>
+    </Root>
   );
 };

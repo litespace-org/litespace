@@ -25,7 +25,6 @@
     "./Chat": "./dist/Chat.tsx",
     "./Check": "./dist/Check.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
-    "./EndCall": "./dist/EndCall.tsx",
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
@@ -41,7 +40,6 @@
     "./Recording": "./dist/Recording.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
-    "./Save": "./dist/Save.tsx",
     "./Search": "./dist/Search.tsx",
     "./Settings": "./dist/Settings.tsx",
     "./StudentDefaultAvatar": "./dist/StudentDefaultAvatar.tsx",
@@ -57,6 +55,7 @@
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
     "./Video": "./dist/Video.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
+    "./X": "./dist/X.tsx",
     "./index": "./dist/index.tsx"
   }
 }
