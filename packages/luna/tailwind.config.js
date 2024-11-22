@@ -265,7 +265,7 @@ export default {
       "switch-root": "0px 4px 20px 0px rgba(43, 181, 114, 0.2)",
       "page-content": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       calendar: "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
-      "dialog-success": "0px 4px 20px 0px #00000026",
+      "dialog-confirm": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       toast:
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
     },

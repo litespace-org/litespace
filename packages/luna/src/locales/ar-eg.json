@@ -46,7 +46,6 @@
   "tutor.rate.delete.error": "عذرا، حدث خطأ أثناء إزالة التقييم، برجاء المحاولة مرة أخرى",
   "rating.form.rule.feedback.less": "يجب ألا يقل التقييم عن 10 حروف",
   "rating.form.rule.feedback.more": "لا ينبغى أن يزيد التقييم عن 1000 حرف",
-  "call.leave": "مغادرة المكالمة",
   "call.no.user.stream": "لديك مشكلة في الميك أو الكاميرا",
   "call.user.denided": "الرجاء قبول طلب الوصول للمايك والكاميرا",
   "call.empty": "لا يوجد أحد",

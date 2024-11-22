@@ -1,7 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog/ConfirmationDialog";
+import CheckCircle from "@litespace/assets/CheckCircle";
 import React from "react";
-import { DialogType } from "./types";
+import { faker } from "@faker-js/faker/locale/ar";
 
 const meta: Meta<typeof ConfirmationDialog> = {
   title: "Confirmation Dialog",
@@ -18,30 +19,30 @@ const meta: Meta<typeof ConfirmationDialog> = {
 export const Success: StoryObj<typeof ConfirmationDialog> = {
   args: {
     trigger: <button>Success</button>,
-    title: "Lesson has been booked",
-    type: DialogType.Success,
-    description:
-      "The lesson has been booked. You can reschedule the lesson date up to two days before the lesson date ",
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(20),
+    type: "success",
+    Icon: CheckCircle,
   },
 };
 
-export const Save: StoryObj<typeof ConfirmationDialog> = {
+export const Warnning: StoryObj<typeof ConfirmationDialog> = {
   args: {
-    trigger: <button>Save</button>,
-    title: "Lesson has been booked",
-    type: DialogType.Save,
-    description:
-      "The lesson has been booked. You can reschedule the lesson date up to two days before the lesson date ",
+    trigger: <button>Warning</button>,
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(20),
+    type: "warning",
+    Icon: CheckCircle,
   },
 };
 
-export const EndCall: StoryObj<typeof ConfirmationDialog> = {
+export const Error: StoryObj<typeof ConfirmationDialog> = {
   args: {
-    trigger: <button>End Call</button>,
-    title: "Lesson has been booked",
-    type: DialogType.EndCall,
-    description:
-      "The lesson has been booked. You can reschedule the lesson date up to two days before the lesson date ",
+    trigger: <button>Error</button>,
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(20),
+    type: "error",
+    Icon: CheckCircle,
   },
 };
 
