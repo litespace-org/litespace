@@ -1,4 +1,5 @@
 export const MINUTES_IN_HOUR = 60;
+export const HOURS_IN_DAY = 24;
 export const MINUTES_IN_DAY = 60 * 24;
 export const MINUTES_IN_WEEK = 60 * 24 * 7;
 export const MIN_AGE = 10;
