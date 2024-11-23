@@ -116,7 +116,7 @@ export function isStudent(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Student;
 }
 
-export function isMedaiProvider(user: unknown): user is IUser.Self {
+export function isMediaProvider(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.MediaProvider;
 }
 
