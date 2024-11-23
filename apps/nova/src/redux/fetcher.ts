@@ -36,7 +36,6 @@ export function fetcher<R, A = null>(
     })
     .addCase(thunk.rejected, (state, { payload }) => {
       state.loading = false;
-      state.loading = false;
       state.fetching = false;
       state.error = payload;
     });
