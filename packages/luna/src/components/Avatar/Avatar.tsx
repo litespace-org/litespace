@@ -1,30 +1,25 @@
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
-import { Spinner } from "@/icons/Spinner";
-import { AlertCircle } from "react-feather";
-
-enum Status {
-  Loading = "loading",
-  Loaded = "loaded",
-  Error = "error",
-}
+import { JazzIcon } from "@/components/Avatar/JazzIcon";
+type Status = "loading" | "loaded" | "error";
 
 export const Avatar: React.FC<{
   src?: string;
   alt?: string;
-}> = ({ src, alt }) => {
-  const [status, setStatus] = useState<Status>(Status.Loading);
+  seed?: string;
+}> = ({ src, alt, seed }) => {
+  const [status, setStatus] = useState<Status>("loading");
 
   const onLoad = useCallback(() => {
-    setStatus(Status.Loaded);
+    setStatus("loaded");
   }, []);
 
   const onError = useCallback(() => {
-    setStatus(Status.Error);
+    setStatus("error");
   }, []);
 
   return (
-    <div className="tw-relative tw-bg-surface-100 tw-w-full tw-h-full tw-rounded-md tw-overflow-hidden">
+    <div className="tw-relative">
       <img
         data-status={status}
         className={cn(
@@ -40,23 +35,13 @@ export const Avatar: React.FC<{
       <div
         data-status={status}
         className={cn(
-          "tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center tw-bg-destructive-200",
-          "tw-opacity-0 data-[status=error]:tw-opacity-100 tw-transition-opacity tw-duration-300"
-        )}
-      >
-        <AlertCircle className="tw-text-destructive-600" />
-      </div>
-
-      <span
-        data-status={status}
-        className={cn(
           "tw-opacity-100 tw-transition-opacity tw-duration-300",
-          "data-[status=loaded]:tw-opacity-0 data-[status=error]:tw-opacity-0",
-          "tw-absolute tw-z-[1] tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
+          "data-[status=loaded]:tw-opacity-0",
+          "tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-10"
         )}
       >
-        <Spinner className="tw-text-foreground" />
-      </span>
+        <JazzIcon seed={seed || alt || src || "litespace"} />
+      </div>
     </div>
   );
 };
