@@ -31,7 +31,7 @@ const UploadPhoto: React.FC<{
             className="rounded-full overflow-hidden w-[102px] h-[102px] object-contain"
             src={
               typeof photo === "string"
-                ? "https://i.pravatar.cc/480"
+                ? "https://picsum.photos/300"
                 : URL.createObjectURL(photo)
             }
           />

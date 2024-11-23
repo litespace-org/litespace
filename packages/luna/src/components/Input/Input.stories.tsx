@@ -1,11 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Input, InputType } from "@/components/Input";
-import React from "react";
+import React, { useState } from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { useForm } from "react-hook-form";
 import { Calendar } from "react-feather";
 import Search from "@litespace/assets/Search";
+import { faker } from "@faker-js/faker/locale/ar";
+import { faker as fakeren } from "@faker-js/faker/locale/en";
 
 type Component = typeof Input;
 
@@ -29,24 +31,48 @@ const meta: Meta<Component> = {
 export const Idle: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
+    placeholder: faker.internet.email(),
+  },
+  render(props) {
+    const [value, setValue] = useState("");
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
+  },
+};
+
+export const LTRDefaultDir: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: faker.internet.email(),
+    defaultDir: "ltr",
   },
 };
 
 export const Disabled: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
     disabled: true,
-    value: "Some value",
+    value: faker.internet.email(),
   },
 };
 
-export const IdelWithValue: StoryObj<Component> = {
+export const IdelWithValueArabic: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
-    value: "لايت اسبيس",
+    value: faker.lorem.words(5),
+    onChange: () => {},
+  },
+};
+
+export const IdelWithValueEnglish: StoryObj<Component> = {
+  args: {
+    id: "name",
+    value: fakeren.lorem.words(5),
     onChange: () => {},
   },
 };

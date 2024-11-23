@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ComponentProps } from "react";
 import cn from "classnames";
 
 type TypographyElement =
@@ -14,7 +14,9 @@ type TypographyElement =
 
 type TypographyWeight = "bold" | "semibold" | "medium" | "regular";
 
-const typographyHtmlMap: Record<TypographyElement, string> = {
+type Tag = keyof JSX.IntrinsicElements;
+
+const typographyHtmlMap: Record<TypographyElement, Tag> = {
   h1: "h1",
   h2: "h2",
   h3: "h3",
@@ -26,13 +28,22 @@ const typographyHtmlMap: Record<TypographyElement, string> = {
   "tiny-text": "span",
 };
 
-export const Typography: React.FC<{
+type Props<T extends Tag> = {
   element?: TypographyElement;
-  tag?: string;
+  tag?: T;
   weight?: TypographyWeight;
   children?: React.ReactNode;
   className?: string;
-}> = ({ element = "body", tag, weight, children, className }) => {
+} & ComponentProps<T>;
+
+export const Typography = <T extends Tag>({
+  element = "body",
+  tag,
+  weight,
+  children,
+  className,
+  ...props
+}: Props<T>) => {
   return React.createElement(tag || typographyHtmlMap[element], {
     children,
     className: cn(
@@ -54,5 +65,6 @@ export const Typography: React.FC<{
       },
       className
     ),
+    ...props,
   });
 };
