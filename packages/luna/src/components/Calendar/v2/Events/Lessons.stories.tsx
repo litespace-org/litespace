@@ -17,7 +17,7 @@ export const SingleLessonWithAvatar: StoryObj<Component> = {
     lessons: [
       {
         otherMember: {
-          image: "https://avatar.iran.liara.run/public/boy",
+          image: "https://picsum.photos/200",
           name: faker.person.fullName(),
         },
         start: dayjs().startOf("hour").toString(),
@@ -46,7 +46,7 @@ export const SingleLessonCanceled: StoryObj<Component> = {
     lessons: [
       {
         otherMember: {
-          image: "https://xsgames.co/randomusers/avatar.php?g=male",
+          image: "https://picsum.photos/200",
           name: faker.person.fullName(),
         },
         start: dayjs().startOf("hour").toString(),
@@ -62,7 +62,7 @@ export const TwoLessons: StoryObj<Component> = {
     lessons: [
       {
         otherMember: {
-          image: "https://xsgames.co/randomusers/avatar.php?g=male",
+          image: "https://picsum.photos/200",
           name: faker.person.fullName(),
         },
         start: dayjs().startOf("hour").toString(),
@@ -71,7 +71,7 @@ export const TwoLessons: StoryObj<Component> = {
       },
       {
         otherMember: {
-          image: "https:xsgames.co/randomusers/avatar.php?g=pixel",
+          image: "https://picsum.photos/300",
           name: faker.person.fullName(),
         },
         start: dayjs().startOf("hour").add(30, "minutes").toString(),
@@ -89,7 +89,7 @@ export const FourLessons: StoryObj<Component> = {
     lessons: [
       {
         otherMember: {
-          image: "https://xsgames.co/randomusers/avatar.php?g=male",
+          image: "https://picsum.photos/400",
           name: faker.person.fullName(),
         },
         start: start.toString(),
@@ -98,7 +98,7 @@ export const FourLessons: StoryObj<Component> = {
       },
       {
         otherMember: {
-          image: "https:xsgames.co/randomusers/avatar.php?g=pixel",
+          image: "https://picsum.photos/500",
           name: faker.person.fullName(),
         },
         start: start.add(15, "minutes").toString(),
@@ -107,7 +107,7 @@ export const FourLessons: StoryObj<Component> = {
       },
       {
         otherMember: {
-          image: "https://xsgames.co/randomusers/avatar.php?g=male",
+          image: "https://picsum.photos/600",
           name: faker.lorem.words(6),
         },
         start: start.add(30, "minute").toISOString(),
@@ -116,7 +116,7 @@ export const FourLessons: StoryObj<Component> = {
       },
       {
         otherMember: {
-          image: "https:xsgames.co/randomusers/avatar.php?g=pixel",
+          image: "https://picsum.photos/700",
           name: faker.person.fullName(),
         },
         start: start.add(45, "minute").toISOString(),
