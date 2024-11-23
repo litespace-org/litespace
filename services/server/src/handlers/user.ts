@@ -52,7 +52,7 @@ import { asIsoDate } from "@litespace/sol/dayjs";
 import {
   encodeAuthJwt,
   isAdmin,
-  isMedaiProvider,
+  isMediaProvider,
   isStudent,
   isTutor,
   isUser,
@@ -432,7 +432,7 @@ async function findTutorsForMediaProvider(
   res: Response,
   next: NextFunction
 ) {
-  const allowed = isAdmin(req.user) || isMedaiProvider(req.user);
+  const allowed = isAdmin(req.user) || isMediaProvider(req.user);
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);

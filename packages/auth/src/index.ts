@@ -30,7 +30,7 @@ export {
   isRegAdmin,
   isSuperAdmin,
   isInterviewer,
-  isMedaiProvider,
+  isMediaProvider,
   isTutor,
   isStudent,
   isUser,
