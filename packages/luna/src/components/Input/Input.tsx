@@ -11,6 +11,10 @@ const passwordPlaceholder = "••••••••";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
+  /**
+   * Input text direction incase of no value is typed yet.
+   */
+  defaultDir?: "rlt" | "ltr";
   type?: InputType;
   starActions?: Array<InputAction>;
   endActions?: Array<InputAction>;
@@ -25,8 +29,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       error,
       value,
       disabled,
-      placeholder,
       helper,
+      placeholder,
+      defaultDir = "rlt",
       starActions = [],
       endActions = [],
       ...props
@@ -57,7 +62,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         >
           <Actions actions={starActions} />
           <input
-            dir="auto"
+            dir={!value ? defaultDir : "auto"}
             type={type}
             value={value}
             disabled={disabled}

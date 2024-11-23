@@ -9,6 +9,10 @@ import {
   NumericInput as BaseNumericInput,
   NumericInputProps,
 } from "@/components/NumericInput";
+import {
+  PatternInput as BasePatternInput,
+  PatternInputProps,
+} from "@/components/PatternInput";
 import { Rating as BaseRating } from "@/components/Rating";
 import { Select as BaseSelect, SelectProps } from "@/components/Select";
 import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
@@ -110,6 +114,36 @@ export function NumericInput<T extends FieldValues>({
         const message = formState.errors[name]?.message as string;
         return (
           <BaseNumericInput
+            {...props}
+            onValueChange={(value) => field.onChange(value.floatValue)}
+            helper={message}
+            error={!!message}
+          />
+        );
+      }}
+    />
+  );
+}
+
+export function PatternInput<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & PatternInputProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field, formState }) => {
+        const message = formState.errors[name]?.message as string;
+        return (
+          <BasePatternInput
             {...props}
             onValueChange={(value) => field.onChange(value.floatValue)}
             helper={message}

@@ -36,6 +36,7 @@
     "./Loading": "./dist/components/Loading/index.js",
     "./MultiSelect": "./dist/components/MultiSelect/index.js",
     "./NumericInput": "./dist/components/NumericInput/index.js",
+    "./PatternInput": "./dist/components/PatternInput/index.js",
     "./OnlineStatus": "./dist/components/OnlineStatus/index.js",
     "./Popover": "./dist/components/Popover/index.js",
     "./Price": "./dist/components/Price/index.js",
