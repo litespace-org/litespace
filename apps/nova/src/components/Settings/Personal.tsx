@@ -1,4 +1,4 @@
-import { Field } from "@/components/Settings/Field";
+import { Label } from "@litespace/luna/Form";
 import { useUpdateUser } from "@litespace/headless/user";
 import { Controller, Form } from "@litespace/luna/Form";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -23,7 +23,13 @@ export const Personal: React.FC<{
   children: React.ReactNode;
 }> = ({ user, children }) => {
   const intl = useFormatMessage();
-  const form = useForm<IForm>();
+  const form = useForm<IForm>({
+    defaultValues: {
+      name: user?.name || "",
+      email: user?.email || "",
+      phoneNumber: user?.phoneNumber || "",
+    },
+  });
   const toast = useToast();
   const nameRules = useValidateUsername();
   const emailRules = useValidateEmail();
@@ -60,49 +66,46 @@ export const Personal: React.FC<{
           weight="bold"
           className="text-natural-950"
         >
-          {intl("settings.personal.title")}
+          {intl("settings.edit.personal.title")}
         </Typography>
-        <Field
-          label={intl("labels.name")}
-          field={
-            <Controller.Input
-              control={form.control}
-              name="name"
-              value={form.watch("name")}
-              placeholder={
-                user?.name ? user.name : intl("settings.placeholder.name")
-              }
-              rules={nameRules}
-            />
-          }
-        />
-        <Field
-          label={intl("labels.email")}
-          field={
-            <Controller.Input
-              control={form.control}
-              name="email"
-              value={form.watch("email")}
-              placeholder={user?.email}
-              rules={emailRules}
-            />
-          }
-        />
-        <Field
-          label={intl("labels.phone")}
-          field={
-            <Controller.Input
-              control={form.control}
-              name="phoneNumber"
-              value={form.watch("phoneNumber")}
-              placeholder={
-                user?.phoneNumber
-                  ? user.phoneNumber
-                  : intl("settings.placeholder.phone")
-              }
-            />
-          }
-        />
+        <div>
+          <Label>{intl("settings.edit.personal.name")}</Label>
+          <Controller.Input
+            placeholder={intl("settings.edit.personal.name.placeholder")}
+            value={form.watch("name")}
+            control={form.control}
+            rules={nameRules}
+            autoComplete="off"
+            name="name"
+          />
+        </div>
+        <div>
+          <Label>{intl("settings.edit.personal.email")}</Label>
+          <Controller.Input
+            control={form.control}
+            name="email"
+            value={form.watch("email")}
+            placeholder={intl("settings.edit.personal.email.placeholder")}
+            autoComplete="off"
+            defaultDir="ltr"
+            rules={emailRules}
+          />
+        </div>
+        <div>
+          <Label>{intl("settings.edit.personal.phone-number")}</Label>
+          <Controller.PatternInput
+            format="01# #### ####"
+            placeholder={intl(
+              "settings.edit.personal.phone-number.placeholder"
+            )}
+            value={form.watch("phoneNumber")}
+            control={form.control}
+            name="phoneNumber"
+            autoComplete="off"
+            allowEmptyFormatting
+            mask="#"
+          />
+        </div>
       </div>
       {children}
     </Form>
