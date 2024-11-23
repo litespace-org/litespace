@@ -26,6 +26,7 @@
     "./Chat": "./dist/Chat.tsx",
     "./Check": "./dist/Check.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
+    "./Clock": "./dist/Clock.tsx",
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
