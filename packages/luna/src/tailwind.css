@@ -235,13 +235,13 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-200: #adebcd; /* ✅ */
   --brand-100: #d6f5e6;
   --brand-50: #eafaf3;
-  --natural-default: #999999;
+  --natural-default: #808080;
   --natural-950: #0d0d0d;
   --natural-900: #1a1a1a;
   --natural-800: #333333;
   --natural-700: #4d4d4d;
   --natural-600: #666666;
-  --natural-500: #999999;
+  --natural-500: #808080;
   --natural-400: #999999;
   --natural-300: #b3b3b3;
   --natural-200: #cccccc;
@@ -360,13 +360,13 @@ input[type="range"]:focus::-moz-range-thumb {
   --brand-200: #adebcd;
   --brand-100: #d6f5e6;
   --brand-50: #eafaf3;
-  --natural-default: #999999;
+  --natural-default: #808080;
   --natural-950: #0d0d0d;
   --natural-900: #1a1a1a;
   --natural-800: #333333;
   --natural-700: #4d4d4d;
   --natural-600: #666666;
-  --natural-500: #999999;
+  --natural-500: #808080;
   --natural-400: #999999;
   --natural-300: #b3b3b3;
   --natural-200: #cccccc;
