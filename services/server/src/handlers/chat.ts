@@ -80,8 +80,10 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     findUserRoomsQuery.parse(req.query);
 
   const { list: userRooms, total } = await rooms.findMemberRooms({
-    page,
-    size,
+    pagination: {
+      page,
+      size,
+    },
     pinned,
     muted,
     userId,

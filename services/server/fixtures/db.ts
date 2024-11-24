@@ -445,12 +445,29 @@ export async function makeRatings({
   );
 }
 
-async function makeRoom(payload?: [number, number]) {
-  const [firstUserId, secondUserId]: [number, number] = payload || [
-    await tutor().then((user) => user.id),
-    await student().then((user) => user.id),
-  ];
-  return await rooms.create([firstUserId, secondUserId]);
+async function makeRoom(payload?: {
+  members: [number, number];
+  initialMessages?: string[];
+}) {
+  const user1Id: number =
+    payload?.members[0] ||
+    (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
+  const user2Id: number =
+    payload?.members[1] ||
+    (await user({ role: IUser.Role.Student }).then((user) => user.id));
+  const room = await rooms.create([user1Id, user2Id]);
+
+  const usersMessages = await Promise.all(
+    (payload?.initialMessages || ["message 1", "message 2", "message 3"]).map(
+      async (m) =>
+        await messages.create({
+          userId: user1Id,
+          roomId: room,
+          text: "message",
+        })
+    )
+  );
+  return { users: { user1Id, user2Id }, room, usersMessages: usersMessages };
 }
 
 async function makeInterviews(payload: {
