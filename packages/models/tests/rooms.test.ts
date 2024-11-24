@@ -46,19 +46,84 @@ describe("Rooms", () => {
 
   describe(nameof(rooms.findMemberRooms), () => {
     it("should find member rooms", async () => {
-      const t = await fixtures.tutor();
+      const tutor = await fixtures.tutor();
       const s1 = await fixtures.student();
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
-      const room1 = await fixtures.make.room([t.id, s1.id]);
-      const room2 = await fixtures.make.room([t.id, s2.id]);
-      const room3 = await fixtures.make.room([t.id, s3.id]);
+      const tutorId = tutor.id;
+      const room1 = await fixtures.make.room([tutorId, s1.id]);
+      const room2 = await fixtures.make.room([tutorId, s2.id]);
+      const room3 = await fixtures.make.room([tutorId, s3.id]);
 
-      const memberRooms = await rooms.findMemberRooms({ userId: t.id });
+      const memberRooms = await rooms.findMemberRooms({ userId: tutorId });
       expect(memberRooms.list).to.be.an("array").with.length(3);
-      expect(memberRooms.list.sort((a, b) => a - b)).to.be.deep.eq(
-        [room1, room2, room3].sort((a, b) => a - b)
-      );
+      expect(memberRooms.list).to.be.deep.eq([room3, room2, room1]);
+    });
+
+    it("should be able to filter rooms by the `pinned` and `muted` flags", async () => {
+      const tutor = await fixtures.tutor();
+      const s1 = await fixtures.student();
+      const s2 = await fixtures.student();
+      const s3 = await fixtures.student();
+      const tutorId = tutor.id;
+      const room1 = await fixtures.make.room([tutorId, s1.id]);
+      const room2 = await fixtures.make.room([tutorId, s2.id]);
+      const room3 = await fixtures.make.room([tutorId, s3.id]);
+
+      await rooms.update({
+        userId: tutorId,
+        payload: { pinned: true, muted: true },
+        roomId: room1,
+      });
+
+      await rooms.update({
+        userId: tutorId,
+        payload: { muted: true },
+        roomId: room2,
+      });
+
+      const memberRooms = await rooms.findMemberRooms({
+        userId: tutorId,
+        pinned: true,
+      });
+
+      const tests = [
+        {
+          pinned: true,
+          list: [room1],
+        },
+        {
+          muted: true,
+          list: [room2, room1],
+        },
+        {
+          pinned: true,
+          muted: true,
+          list: [room1],
+        },
+        {
+          pinned: false,
+          muted: false,
+          list: [room3],
+        },
+        {
+          pinned: true,
+          muted: false,
+          list: [],
+        },
+      ];
+
+      for (const test of tests) {
+        expect(
+          await rooms
+            .findMemberRooms({
+              userId: tutorId,
+              pinned: test.pinned,
+              muted: test.muted,
+            })
+            .then((rooms) => rooms.list)
+        ).to.be.deep.eq(test.list);
+      }
     });
   });
 

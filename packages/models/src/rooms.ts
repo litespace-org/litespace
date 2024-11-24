@@ -132,14 +132,15 @@ export class Rooms {
   async findMemberRooms({
     tx,
     userId,
-    pagination,
-    statuses,
+    muted,
+    pinned,
+    ...pagination
   }: {
     userId: number;
-    statuses?: IRoom.Status;
+    muted?: boolean;
+    pinned?: boolean;
     tx?: Knex.Transaction;
-    pagination?: IFilter.Pagination;
-  }): Promise<Paginated<number>> {
+  } & IFilter.Pagination): Promise<Paginated<number>> {
     const base = this.builder(tx)
       .members.join(
         this.tables.rooms,
@@ -148,11 +149,11 @@ export class Rooms {
       )
       .where(this.column.members("user_id"), userId);
 
-    if (statuses && typeof statuses.muted === "boolean")
-      base.where(this.column.members("muted"), statuses.muted);
+    if (typeof muted === "boolean")
+      base.where(this.column.members("muted"), muted);
 
-    if (statuses && typeof statuses.pinned === "boolean")
-      base.where(this.column.members("pinned"), statuses.pinned);
+    if (typeof pinned === "boolean")
+      base.where(this.column.members("pinned"), pinned);
 
     const subquery = messages
       .builder(tx)

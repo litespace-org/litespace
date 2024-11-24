@@ -92,4 +92,10 @@ describe("/api/v1/chat", () => {
       expect(updated.pinned).to.be.true;
     });
   });
+
+  describe("GET /api/v1/chat/list/rooms/:userId", () => {
+    it("should find user rooms", () => {
+      throw new Error("TODO");
+    });
+  });
 });
