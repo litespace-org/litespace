@@ -84,6 +84,11 @@ const Sidebar = () => {
         Icon: People,
       },
       {
+        label: intl("sidebar.schedule"),
+        route: Route.Schedule,
+        Icon: Calendar,
+      },
+      {
         label: intl("sidebar.lessons"),
         route: Route.Lessons,
         Icon: Calendar,
