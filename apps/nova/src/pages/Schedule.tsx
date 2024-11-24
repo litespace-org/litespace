@@ -1,41 +1,38 @@
-import React, { useMemo } from "react";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-import { Calendar } from "@litespace/luna/Calendar";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import React, { useMemo, useState } from "react";
+import { Calendar } from "@litespace/luna/Calendar/v2";
+import dayjs from "@/lib/dayjs";
+import { useFindLessons } from "@litespace/headless/lessons";
 import { useAppSelector } from "@/redux/store";
-import { useNavigate } from "react-router-dom";
-import { Route } from "@/types/routes";
-import { userRulesSelector } from "@/redux/user/schedule";
-import { useCalendarEvents } from "@/hooks/event";
+import { profileSelectors } from "@/redux/user/profile";
 
 const Schedule: React.FC = () => {
-  const intl = useFormatMessage();
-  const rules = useAppSelector(userRulesSelector.full);
-  const navigate = useNavigate();
-  const { events, unapckWeek } = useCalendarEvents(
-    useMemo(() => ({ rules: rules.value || [] }), [rules.value])
+  const [date, setDate] = useState(dayjs().startOf("week"));
+  const user = useAppSelector(profileSelectors.user);
+
+  const lessons = useFindLessons(
+    useMemo(
+      () => ({
+        users: user ? [user.id] : [],
+        userOnly: true,
+        size: 1,
+        // todo: filter lessons by date
+      }),
+      [user]
+    )
   );
 
+  console.log(lessons.query.data);
+
   return (
-    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-2xl">
-      <div className="flex flex-row items-center justify-between">
-        <h1 className="mb-5 text-4xl">{intl("global.labels.my-schedule")}</h1>
-
-        <div>
-          <Button
-            size={ButtonSize.Small}
-            onClick={() => navigate(Route.EditSchedule)}
-          >
-            {intl("global.labels.edit")}
-          </Button>
-        </div>
-      </div>
-
+    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-lg">
       <Calendar
-        loading={rules.loading}
-        events={events}
-        onNextWeek={unapckWeek}
-        onPrevWeek={unapckWeek}
+        date={date}
+        nextWeek={() => {
+          setDate((prev) => prev.add(1, "week"));
+        }}
+        prevWeek={() => {
+          setDate((prev) => prev.subtract(1, "week"));
+        }}
       />
     </div>
   );
