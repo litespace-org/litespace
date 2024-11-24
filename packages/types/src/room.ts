@@ -1,9 +1,4 @@
-import { IFilter, IUser, Paginated } from ".";
-
-export type Status = {
-  muted?: boolean;
-  pinned?: boolean;
-};
+import { IFilter, IUser, Paginated } from "@/index";
 
 export type Self = {
   id: number;
@@ -64,7 +59,8 @@ export type PopulatedMember = {
 export type RoomMap = Record<number, PopulatedMember[]>;
 
 export type FindUserRoomsApiQuery = IFilter.Pagination & {
-  statuses?: Status;
+  pinned?: boolean;
+  muted?: boolean;
 };
 
 export type FindUserRoomsApiResponse = Paginated<PopulatedMember[]>;
