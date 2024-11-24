@@ -43,12 +43,17 @@ export class Rooms {
     });
   }
 
-  async update(
-    userId: number,
-    roomId: number,
-    payload: IRoom.UpdateRoomPayload,
-    tx?: Knex.Transaction
-  ) {
+  async update({
+    userId,
+    roomId,
+    payload,
+    tx,
+  }: {
+    userId: number;
+    roomId: number;
+    payload: IRoom.UpdateRoomPayload;
+    tx?: Knex.Transaction;
+  }) {
     const now = dayjs.utc();
     const rows = await this.builder(tx)
       .members.update({
@@ -56,12 +61,12 @@ export class Rooms {
         muted: payload.muted,
         updated_at: now.toDate(),
       })
-      .where("user_id", userId)
-      .where("room_id", roomId)
+      .where(this.column.members("user_id"), userId)
+      .where(this.column.members("room_id"), roomId)
       .returning("*");
 
     const row = first(rows);
-    if (!row) throw new Error("Room not found; Should never happen");
+    if (!row) throw new Error("Room member not found; Should never happen");
     return this.asRoomMember(row);
   }
 

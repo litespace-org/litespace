@@ -109,7 +109,7 @@ export class Invoices {
       .clone()
       .select(this.columns)
       .orderBy(this.column("created_at"), "desc");
-    const rows = await withPagination<IInvoice.Row>(query, pagination);
+    const rows = await withPagination(query, pagination);
     return { list: rows.map((row) => this.from(row)), total };
   }
 

@@ -27,7 +27,7 @@ export class Chat extends Base {
   async findRoomByMembers(
     members: number[]
   ): Promise<IRoom.FindRoomByMembersApiResponse> {
-    return await this.get("/api/v1/chat/room/by/members", null, { members });
+    return await this.get("/api/v1/chat/room/by/members", {}, { members });
   }
 
   async findRoomMembers(
