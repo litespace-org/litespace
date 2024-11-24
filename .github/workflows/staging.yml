@@ -52,6 +52,8 @@ jobs:
       # Luna Deployment
       - name: Pull Luna from Vercel
         run: pnpm vercel:ci pull "luna" "packages/luna/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for Nova
+        run: cp packages/luna/.env.staging packages/luna/.env
       - name: Build Luna using Vercel
         run: pnpm build:luna:vercel
       - name: Deploy Luna to Vercel
