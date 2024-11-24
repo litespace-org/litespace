@@ -2,26 +2,18 @@ import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { rooms } from "@/index";
 import { expect } from "chai";
-import { IUser } from "@litespace/types";
 
 describe("Rooms", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
   beforeEach(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
     await fixtures.flush();
   });
 
   describe(nameof(rooms.create), () => {
     it("should create a room", async () => {
-      const t = await fixtures.user(IUser.Role.Tutor);
-      const s = await fixtures.user(IUser.Role.Student);
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
 
-      const created = await rooms.create([t.id, s.id]);
+      const created = await rooms.create([tutor.id, student.id]);
       expect(created).to.be.a("number");
 
       const room = await rooms.findById(created);
@@ -32,36 +24,32 @@ describe("Rooms", () => {
 
   describe(nameof(rooms.findRoomMembers), () => {
     it("should find room members", async () => {
-      const t = await fixtures.user(IUser.Role.Tutor);
-      const s = await fixtures.user(IUser.Role.Student);
-      const created = await fixtures.make.room([t.id, s.id]);
-
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+      const created = await fixtures.make.room([tutor.id, student.id]);
       const members = await rooms.findRoomMembers({ roomIds: [created] });
 
       expect(members).to.be.an("array").with.length(2);
-      expect(members.map((m) => m.id).sort((a, b) => a - b)).to.be.deep.eq(
-        [t.id, s.id].sort((a, b) => a - b)
-      );
+      expect(members.map((m) => m.id)).to.be.deep.eq([tutor.id, student.id]);
     });
   });
 
   describe(nameof(rooms.findRoomByMembers), () => {
     it("should find the room by member ids", async () => {
-      const t = await fixtures.user(IUser.Role.Tutor);
-      const s = await fixtures.user(IUser.Role.Student);
+      const t = await fixtures.tutor();
+      const s = await fixtures.student();
       const created = await fixtures.make.room([t.id, s.id]);
-
       const room = await rooms.findRoomByMembers([t.id, s.id]);
       expect(room).to.be.eq(created);
     });
   });
 
   describe(nameof(rooms.findMemberRooms), () => {
-    it("should find every room of a member", async () => {
-      const t = await fixtures.user(IUser.Role.Tutor);
-      const s1 = await fixtures.user(IUser.Role.Student);
-      const s2 = await fixtures.user(IUser.Role.Student);
-      const s3 = await fixtures.user(IUser.Role.Student);
+    it("should find member rooms", async () => {
+      const t = await fixtures.tutor();
+      const s1 = await fixtures.student();
+      const s2 = await fixtures.student();
+      const s3 = await fixtures.student();
       const room1 = await fixtures.make.room([t.id, s1.id]);
       const room2 = await fixtures.make.room([t.id, s2.id]);
       const room3 = await fixtures.make.room([t.id, s3.id]);
@@ -72,18 +60,39 @@ describe("Rooms", () => {
         [room1, room2, room3].sort((a, b) => a - b)
       );
     });
+  });
 
-    describe(nameof(rooms.update), () => {
-      it("should update room settings", async () => {
-        const t = await fixtures.user(IUser.Role.Tutor);
-        const s = await fixtures.user(IUser.Role.Student);
-        const created = await fixtures.make.room([t.id, s.id]);
+  describe(nameof(rooms.update), () => {
+    it("should update room settings per member", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+      const roomId = await fixtures.make.room([tutor.id, student.id]);
 
-        const tUpdated = await rooms.update(t.id, created, { muted: true });
-        expect(tUpdated.muted).to.be.true;
-        const sUpdated = await rooms.update(s.id, created, { pinned: true });
-        expect(sUpdated.pinned).to.be.true;
+      const [tutorCurrentRoom, studentCurrentRoom] =
+        await rooms.findRoomMembers({
+          roomIds: [roomId],
+        });
+
+      expect(tutorCurrentRoom.muted).to.be.false;
+      expect(tutorCurrentRoom.pinned).to.be.false;
+      expect(studentCurrentRoom.muted).to.be.false;
+      expect(studentCurrentRoom.pinned).to.be.false;
+
+      const tutorUpdatedRoom = await rooms.update({
+        userId: tutor.id,
+        roomId: roomId,
+        payload: { pinned: true, muted: true },
       });
+      expect(tutorUpdatedRoom.muted).to.be.true;
+      expect(tutorUpdatedRoom.pinned).to.be.true;
+
+      const studentdUpdatedRoom = await rooms.update({
+        userId: student.id,
+        roomId: roomId,
+        payload: { pinned: true, muted: true },
+      });
+      expect(studentdUpdatedRoom.pinned).to.be.true;
+      expect(studentdUpdatedRoom.muted).to.be.true;
     });
   });
 });

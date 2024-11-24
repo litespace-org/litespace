@@ -19,8 +19,8 @@ import { IMessage, IRoom } from "@litespace/types";
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
 const updateRoomPayload = zod.object({
-  pinned: zod.boolean(),
-  muted: zod.boolean(),
+  pinned: zod.optional(zod.boolean()),
+  muted: zod.optional(zod.boolean()),
 });
 
 async function createRoom(req: Request, res: Response, next: NextFunction) {
@@ -175,28 +175,30 @@ async function findRoomMembers(
   res.status(200).json(members);
 }
 
-//updateRoom
-/**
- * Add in postman
- */
-
 async function updateRoom(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
+  const eligable = isUser(user);
+  if (!eligable) return next(forbidden());
+
   const { roomId } = withNamedId("roomId").parse(req.params);
   const room = await rooms.findById(roomId);
   if (!room) return next(notfound.room());
 
-  const roomMembers = await rooms.findRoomMembers({ roomIds: [roomId] });
-  const allowed =
-    isUser(user) && roomMembers.find((member) => member.id === user?.id);
-  if (!allowed) return next(forbidden());
+  const members = await rooms.findRoomMembers({ roomIds: [roomId] });
+  const member =
+    isUser(user) && members.find((member) => member.id === user.id);
+  if (!member) return next(forbidden());
 
-  const { muted, pinned } = updateRoomPayload.parse(req.body);
-  if (muted === undefined && pinned === undefined) {
+  const payload: IRoom.UpdateRoomPayload = updateRoomPayload.parse(req.body);
+  if (payload.muted === undefined && payload.pinned === undefined)
     return next(empty());
-  }
 
-  const updatedMember = await rooms.update(user?.id, roomId, { muted, pinned });
+  const updatedMember = await rooms.update({
+    userId: user.id,
+    roomId,
+    payload,
+  });
+
   res.status(200).json(updatedMember);
 }
 
