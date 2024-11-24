@@ -134,11 +134,13 @@ export class Rooms {
     userId,
     muted,
     pinned,
+    keyword,
     ...pagination
   }: {
-    userId: number;
     muted?: boolean;
     pinned?: boolean;
+    userId: number;
+    keyword?: string;
     tx?: Knex.Transaction;
   } & IFilter.Pagination): Promise<Paginated<number>> {
     const base = this.builder(tx)
@@ -154,6 +156,17 @@ export class Rooms {
 
     if (typeof pinned === "boolean")
       base.where(this.column.members("pinned"), pinned);
+
+    if (keyword)
+      base
+        .join(
+          messages.table,
+          messages.column("room_id"),
+          this.column.rooms("id")
+        )
+        .join(users.table, users.column("id"), this.column.members("user_id"))
+        .whereILike(messages.column("text"), keyword)
+        .orWhereILike(users.column("name"), keyword);
 
     const subquery = messages
       .builder(tx)
@@ -179,6 +192,7 @@ export class Rooms {
       .select<Array<{ roomId: number }>>({
         roomId: this.column.members("room_id"),
       })
+      .groupBy([this.column.rooms("id"), this.column.members("room_id")])
       .orderBy([
         { column: subquery, order: "DESC" },
         { column: this.column.rooms("created_at"), order: "DESC" },

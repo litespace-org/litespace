@@ -2,6 +2,7 @@ import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { rooms } from "@/index";
 import { expect } from "chai";
+import { IUser } from "@litespace/types";
 
 describe("Rooms", () => {
   beforeEach(async () => {
@@ -159,5 +160,53 @@ describe("Rooms", () => {
       expect(studentdUpdatedRoom.pinned).to.be.true;
       expect(studentdUpdatedRoom.muted).to.be.true;
     });
+  });
+  describe("Rooms", () => {
+    beforeAll(async () => {
+      await fixtures.flush();
+    });
+
+    describe(nameof(rooms.findMemberRooms), () => {});
+  });
+  it("should filter user rooms by search keyword", async () => {
+    const t = await fixtures.user({
+      role: IUser.Role.Tutor,
+      name: "Mostafa Kamar",
+    });
+    const s1 = await fixtures.user({
+      role: IUser.Role.Student,
+      name: "Ahmed",
+    });
+    const s2 = await fixtures.user({
+      role: IUser.Role.Student,
+      name: "Mostafa",
+    });
+    const s3 = await fixtures.user({
+      role: IUser.Role.Student,
+      name: "Ismail",
+    });
+
+    const room1 = await fixtures.make.room({ members: [t.id, s1.id] });
+    const room2 = await fixtures.make.room({ members: [t.id, s2.id] });
+    const room3 = await fixtures.make.room({ members: [t.id, s3.id] });
+
+    const result1 = await rooms.findMemberRooms({
+      userId: t.id,
+      keyword: "message",
+    });
+    expect(result1.list.length).to.be.eq(3);
+
+    const result2 = await rooms.findMemberRooms({
+      userId: t.id,
+      keyword: "Mostafa",
+    });
+    expect(result2.list.length).to.be.eq(1);
+
+    const result3 = await rooms.findMemberRooms({
+      userId: t.id,
+      keyword: "Ahmed",
+    });
+
+    expect(result3.list.length).to.be.eq(1);
   });
 });

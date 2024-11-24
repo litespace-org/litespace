@@ -61,6 +61,7 @@ export type RoomMap = Record<number, PopulatedMember[]>;
 export type FindUserRoomsApiQuery = IFilter.Pagination & {
   pinned?: boolean;
   muted?: boolean;
+  keyword?: string;
 };
 
 export type FindUserRoomsApiResponse = Paginated<PopulatedMember[]>;
