@@ -200,6 +200,7 @@ export class Rooms {
       .select<Array<{ roomId: number }>>({
         roomId: this.column.members("room_id"),
       })
+      .groupBy([this.column.rooms("id"), this.column.members("room_id")])
       .orderBy([
         { column: subquery, order: "DESC" },
         { column: this.column.rooms("created_at"), order: "DESC" },
