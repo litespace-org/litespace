@@ -3,7 +3,14 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
 import zod from "zod";
-import { id, pagination, withNamedId } from "@/validation/utils";
+import {
+  id,
+  pagination,
+  withNamedId,
+  pageNumber,
+  jsonBoolean,
+  pageSize,
+} from "@/validation/utils";
 import { empty, exists, forbidden, notfound } from "@/lib/error";
 import {
   authorizer,
@@ -18,6 +25,13 @@ import { IMessage, IRoom } from "@litespace/types";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
+const findUserRoomsQuery = zod.object({
+  page: zod.optional(pageNumber),
+  size: zod.optional(pageSize),
+  pinned: zod.optional(jsonBoolean),
+  muted: zod.optional(jsonBoolean),
+});
+
 const updateRoomPayload = zod.object({
   pinned: zod.optional(zod.boolean()),
   muted: zod.optional(zod.boolean()),
@@ -61,9 +75,14 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
   const allowed = owner || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const query = pagination.parse(req.query);
+  const { page, size, pinned, muted }: IRoom.FindUserRoomsApiQuery =
+    findUserRoomsQuery.parse(req.query);
+
   const { list: userRooms, total } = await rooms.findMemberRooms({
-    pagination: query,
+    page,
+    size,
+    pinned,
+    muted,
     userId,
   });
 
