@@ -46,4 +46,13 @@ export class Chat extends Base {
   ): Promise<IRoom.Member> {
     return await this.put(`/api/v1/chat/room/${room}`, payload);
   }
+
+  async findUserRooms(
+    userId: number,
+    keyword?: string
+  ): Promise<IRoom.FindUserRoomsApiResponse> {
+    return await this.get(`/api/v1/chat/list/rooms/${userId}`, null, {
+      keyword,
+    });
+  }
 }
