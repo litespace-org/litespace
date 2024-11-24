@@ -37,6 +37,7 @@ export const Primary: StoryObj<Component> = {
 export const Fallback: StoryObj<Component> = {
   args: {
     src: "",
+    seed: (Math.random() + 1).toString(36).substring(7),
   },
 };
 
