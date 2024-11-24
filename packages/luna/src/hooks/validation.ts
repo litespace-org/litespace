@@ -5,6 +5,12 @@ import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
 import { Duration } from "@litespace/sol/duration";
 import { useFormatMessage } from "./intl";
+import { FieldError } from "@litespace/types";
+import {
+  isValidEmail,
+  isValidPhoneNumber,
+  isValidUserName,
+} from "@litespace/sol/verification";
 
 export function useRequired() {
   const intl = useFormatMessage();
@@ -34,22 +40,18 @@ export function useValidateUsername(create: boolean = false) {
   const intl = useFormatMessage();
   const required = useRequired();
 
-  return useMemo(
-    () => ({
-      pattern: {
-        value: /^[\u0600-\u06FF\s]+$/,
-        message: intl("error.name.invalid"),
-      },
-      minLength: {
-        value: 2,
-        message: intl("error.name.length.short"),
-      },
-      maxLength: {
-        value: 30,
-        message: intl("error.name.length.long"),
-      },
-      required: create ? required : false,
-    }),
+  return useCallback(
+    (value: unknown) => {
+      const valid = isValidUserName(value);
+      if (create && required) return required.message;
+      if (valid === FieldError.InvalidUserName)
+        return intl("error.name.invalid");
+      if (valid === FieldError.LongUserName)
+        return intl("error.name.length.long");
+      if (valid === FieldError.ShortUserName)
+        return intl("error.name.length.short");
+      return true;
+    },
     [create, intl, required]
   );
 }
@@ -58,15 +60,29 @@ export function useValidateEmail(create: boolean = false) {
   const intl = useFormatMessage();
   const required = useRequired();
 
-  return useMemo(
-    () => ({
-      pattern: {
-        value: /^[\w-\\.]+@([\w-]+\.)+[\w-]{2,4}$/gi,
-        message: intl("error.email.invlaid"),
-      },
-      required: create ? required : false,
-    }),
+  return useCallback(
+    (value: unknown) => {
+      const valid = isValidEmail(value);
+      if (create && required) return required.message;
+      if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
+      return true;
+    },
     [create, intl, required]
+  );
+}
+
+export function useValidatePhoneNumber(create: boolean = false) {
+  const intl = useFormatMessage();
+  const required = useRequired();
+
+  return useCallback(
+    (value: unknown) => {
+      const valid = isValidPhoneNumber(value);
+      if (create && required) return required.message;
+      if (valid === FieldError.InvalidPhoneNumber)
+        return intl("error.phone.number.invlaid");
+    },
+    [intl]
   );
 }
 
