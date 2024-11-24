@@ -310,6 +310,10 @@ exports.up = (pgm) => {
     {
       user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
       room_id: { type: "SERIAL", notNull: true, references: "rooms(id)" },
+      pinned: { type: "BOOLEAN", default: false },
+      muted: { type: "BOOLEAN", default: false },
+      created_at: { type: "TIMESTAMP", notNull: true },
+      updated_at: { type: "TIMESTAMP", notNull: true },
     },
     { constraints: { primaryKey: ["user_id", "room_id"] } }
   );

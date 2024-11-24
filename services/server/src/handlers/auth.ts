@@ -53,8 +53,6 @@ async function loginWithPassword(
   //! note: here you can catch if the user owns multiple accounts.
   const { email, password } = credentials.parse(req.body);
   const hashed = hashPassword(password);
-  const allUsers = await users.find({});
-  console.log(allUsers);
   const user = await users.findByCredentials({ email, password: hashed });
   if (!user) return next(notfound.user());
   const token = encodeAuthJwt(user.id, jwtSecret);

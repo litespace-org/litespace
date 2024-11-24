@@ -20,21 +20,54 @@ export class Rooms {
 
   async create(ids: number[]): Promise<number> {
     return await knex.transaction(async (tx: Knex.Transaction) => {
-      const now = dayjs.utc();
+      const now = dayjs.utc().toDate();
       const rows = await knex<IRoom.Row>(this.tables.rooms)
         .transacting(tx)
-        .insert({ created_at: now.toDate() })
+        .insert({ created_at: now })
         .returning("*");
 
       const room = first(rows);
       if (!room) throw new Error("Room not found; should never happen");
-
       await knex<IRoom.MemberRow>(this.tables.members)
         .transacting(tx)
-        .insert(ids.map((id) => ({ user_id: id, room_id: room.id })));
+        .insert(
+          ids.map((id) => ({
+            user_id: id,
+            room_id: room.id,
+            created_at: now,
+            updated_at: now,
+          }))
+        );
 
       return room.id;
     });
+  }
+
+  async update({
+    userId,
+    roomId,
+    payload,
+    tx,
+  }: {
+    userId: number;
+    roomId: number;
+    payload: IRoom.UpdateRoomPayload;
+    tx?: Knex.Transaction;
+  }) {
+    const now = dayjs.utc();
+    const rows = await this.builder(tx)
+      .members.update({
+        pinned: payload.pinned,
+        muted: payload.muted,
+        updated_at: now.toDate(),
+      })
+      .where(this.column.members("user_id"), userId)
+      .where(this.column.members("room_id"), roomId)
+      .returning("*");
+
+    const row = first(rows);
+    if (!row) throw new Error("Room member not found; Should never happen");
+    return this.asRoomMember(row);
   }
 
   async findById(id: number): Promise<IRoom.Self | null> {
@@ -64,6 +97,8 @@ export class Rooms {
       image: users.column("image"),
       role: users.column("role"),
       online: users.column("online"),
+      pinned: this.column.members("pinned"),
+      muted: this.column.members("muted"),
       createdAt: users.column("created_at"),
       updatedAt: users.column("updated_at"),
     };
@@ -179,6 +214,10 @@ export class Rooms {
     return {
       userId: row.user_id,
       roomId: row.room_id,
+      muted: row.muted,
+      pinned: row.pinned,
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
     };
   }
 

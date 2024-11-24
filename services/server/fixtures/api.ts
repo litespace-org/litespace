@@ -16,6 +16,10 @@ export function atlas(token?: string): Atlas {
   });
 }
 
+export function unexpectedApiSuccess() {
+  throw new Error("Unexpected API response; Request should fail");
+}
+
 export class Api {
   public readonly atlas: Atlas;
   constructor(token?: string) {
@@ -30,7 +34,7 @@ export class Api {
   static async forUser(role: IUser.Role) {
     const email = faker.internet.email();
     const password = faker.internet.password();
-    await db.user({ role: IUser.Role.SuperAdmin, email, password });
+    await db.user({ role, email, password });
     return await Api.fromCredentials(email, password);
   }
 
@@ -40,6 +44,10 @@ export class Api {
 
   static async forStudent() {
     return await this.forUser(IUser.Role.Student);
+  }
+
+  static async forTutor() {
+    return await this.forUser(IUser.Role.Tutor);
   }
 
   async createUser(payload?: Partial<IUser.CreateApiPayload>) {
