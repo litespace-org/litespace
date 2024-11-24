@@ -557,6 +557,7 @@
   "error.name.length.long": "إسم طويل جدا",
   "error.name.invalid": "إسم غير مناسب",
   "error.email.invlaid": "عنوان بريد اليكتروني غير صحيح",
+  "error.phone.number.invlaid": "رقم الهاتف غير صحيح",
   "error.password.invlaid": "كلمة سر غير مناسبة، حاول ادخال كلمة مرور أقوي، إستخدم حروف وأرقام ورموز.",
   "error.birthYear.invalid": "سنة ميلاد غير صحيحة",
   "error.birthYear.old": "من المتوقع أن تكون أكير من 10 سنوات!",

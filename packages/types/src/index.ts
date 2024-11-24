@@ -31,4 +31,4 @@ export * from "@/lib";
 export * from "@/verification";
 
 export { banks, type Bank } from "@/invoice";
-export { type Type as WithdrawMethod } from "@/withdrawMethod";
+export { Type as WithdrawMethod } from "@/withdrawMethod";

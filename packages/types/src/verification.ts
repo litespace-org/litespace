@@ -6,6 +6,8 @@ export enum FieldError {
   MissingPasswordNumbers = "missing-password-numbers",
   InvalidPassword = "invalid-password",
   InvalidUserName = "invalid-user-name",
+  ShortUserName = "short-user-name",
+  LongUserName = "long-user-name",
   OldUser = "old-user",
   YoungUser = "young-user",
   EmptyBio = "empty-bio",
