@@ -22,6 +22,7 @@ import {
   isUser,
 } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
+import { asFindUserRoomsApiRecord } from "@/lib/chat";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
@@ -66,15 +67,16 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
   if (room) return next(exists.room());
 
   const roomId = await rooms.create(members);
-  res.status(200).json({ roomId });
+  const response: IRoom.CreateRoomApiResponse = { roomId };
+  res.status(200).json(response);
 }
 
 async function findUserRooms(req: Request, res: Response, next: NextFunction) {
   const { userId } = withNamedId("userId").parse(req.params);
   const user = req.user;
-  const owner = isUser(user) && user.id === userId;
-  const allowed = owner || isAdmin(user);
-  if (!allowed) return next(forbidden());
+  const isOwner = isUser(user) && user.id === userId;
+  const isAllowed = isOwner || isAdmin(user);
+  if (!isAllowed) return next(forbidden());
 
   const { page, size, pinned, muted, keyword }: IRoom.FindUserRoomsApiQuery =
     findUserRoomsQuery.parse(req.query);
@@ -88,20 +90,25 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     keyword,
   });
 
-  const members = await rooms.findRoomMembers({
-    roomIds: userRooms,
-    excludeUsers: [userId],
-  });
+  const members = await rooms.findRoomMembers({ roomIds: userRooms });
 
-  // group room members while maintaining the order.
-  const grouped: IRoom.PopulatedMember[][] = [];
-  for (const room of userRooms) {
-    const roomMembers = members.filter((member) => member.roomId === room);
-    if (isEmpty(roomMembers)) continue;
-    grouped.push(roomMembers);
-  }
+  // todo: optimize find user rooms query
+  const list = await Promise.all(
+    userRooms.map(async (roomId) => {
+      const latestMessage = await messages.findLatestRoomMessage({
+        room: roomId,
+      });
+      const roomMembers = members.filter((member) => member.roomId === roomId);
+      return asFindUserRoomsApiRecord({
+        members: roomMembers,
+        latestMessage,
+        roomId,
+        userId,
+      });
+    })
+  );
 
-  const response: IRoom.FindUserRoomsApiResponse = { list: grouped, total };
+  const response: IRoom.FindUserRoomsApiResponse = { list, total };
   res.status(200).json(response);
 }
 

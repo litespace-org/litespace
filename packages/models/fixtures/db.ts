@@ -524,6 +524,7 @@ export default {
     interviews: makeInterviews,
     tutors: makeTutors,
     ratings: makeRatings,
+    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,
