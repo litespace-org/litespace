@@ -22,6 +22,7 @@ import {
   isUser,
 } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
+import { buildRoomObject, fetchLatestMessage } from "@/lib/chat";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
@@ -72,18 +73,16 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
 async function findUserRooms(req: Request, res: Response, next: NextFunction) {
   const { userId } = withNamedId("userId").parse(req.params);
   const user = req.user;
-  const owner = isUser(user) && user.id === userId;
-  const allowed = owner || isAdmin(user);
-  if (!allowed) return next(forbidden());
+  const isOwner = isUser(user) && user.id === userId;
+  const isAllowed = isOwner || isAdmin(user);
+  if (!isAllowed) return next(forbidden());
 
   const { page, size, pinned, muted, keyword }: IRoom.FindUserRoomsApiQuery =
     findUserRoomsQuery.parse(req.query);
 
   const { list: userRooms, total } = await rooms.findMemberRooms({
-    pagination: {
-      page,
-      size,
-    },
+    page,
+    size,
     pinned,
     muted,
     userId,
@@ -95,15 +94,15 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     excludeUsers: [userId],
   });
 
-  // group room members while maintaining the order.
-  const grouped: IRoom.PopulatedMember[][] = [];
-  for (const room of userRooms) {
-    const roomMembers = members.filter((member) => member.roomId === room);
-    if (isEmpty(roomMembers)) continue;
-    grouped.push(roomMembers);
-  }
+  const responseList = await Promise.all(
+    userRooms.map(async (roomId) => {
+      const latestMessage = await fetchLatestMessage(roomId);
+      const roomMembers = members.filter((member) => member.roomId === roomId);
+      return buildRoomObject(roomId, user.id, latestMessage, roomMembers);
+    })
+  );
 
-  const response: IRoom.FindUserRoomsApiResponse = { list: grouped, total };
+  const response: IRoom.FindUserRoomsApiResponse = { list: responseList, total };
   res.status(200).json(response);
 }
 

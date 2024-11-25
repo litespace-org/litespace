@@ -1,11 +1,10 @@
 import { flush } from "@fixtures/shared";
 import { Api, unexpectedApiSuccess } from "@fixtures/api";
 import { expect } from "chai";
-import { safe } from "@litespace/sol/error";
 import db from "@fixtures/db";
 import { rooms } from "@litespace/models";
-import { first } from "lodash";
 import { IUser } from "@litespace/types";
+import { range } from "lodash";
 
 describe("/api/v1/chat", () => {
   beforeEach(async () => {
@@ -96,7 +95,60 @@ describe("/api/v1/chat", () => {
 });
 
 describe("GET /api/v1/chat/list/rooms/:userId", () => {
-  it("should filter user rooms by search keyword", async () => {
-    throw new Error("TODO");
-  });
+
+  it("Should throw an error when another user try to get the messages", async () => {
+    const tutorApi = await Api.forTutor();
+    const student1Api = await Api.forStudent();
+    const student2Api = await Api.forStudent();
+    const tutor = await tutorApi.atlas.user.findCurrentUser();
+    const student1 = await student1Api.atlas.user.findCurrentUser();
+    await tutorApi.atlas.chat.createRoom(student1.user.id);
+
+    await student2Api.atlas.chat.findUserRooms(tutor.user.id).then(unexpectedApiSuccess)
+      .catch((error) =>
+        expect(error.message).to.be.eq("Unauthorized access")
+      );
+
+  })
+
+  it("Should get all the rooms of a user", async () => {
+    const tutorApi = await Api.forTutor();
+    const tutor = await tutorApi.atlas.user.findCurrentUser();
+
+    range(3).map(async () => {
+      const api = await Api.forStudent();
+      const student = await api.atlas.user.findCurrentUser();
+      await tutorApi.atlas.chat.createRoom(student.user.id)
+    })
+
+    const rooms = await tutorApi.atlas.chat.findUserRooms(tutor.user.id);
+    expect(rooms.list.length).to.be.eq(3)
+    expect(rooms.list.map(r => r.otherMember.role)).to.be.deep.equal([IUser.Role.Student, IUser.Role.Student, IUser.Role.Student])
+    expect(rooms.list.map(r => r.unReadMessagesCount)).to.be.deep.equal([0, 0, 0])
+    expect(rooms.list.map(r => r.latestMessage)).to.be.deep.equal([null, null, null])
+  })
+
+  it("Should get rooms with specific keyword", async () => {
+    const tutorApi = await Api.forTutor();
+    const tutor = await tutorApi.atlas.user.findCurrentUser();
+
+    ["student-1", "student-2", "student-3"].map(async (name) => {
+      const api = await Api.forStudent();
+      const student = await api.atlas.user.findCurrentUser();
+      await db.make.room({ members: [tutor.user.id, student.user.id], initialMessages: [`hi from ${name}`] })
+    })
+
+    const tests = [
+      { keyword: "hi", total: 3 },
+      { keyword: "student-2", total: 1 },
+      { keyword: "hi from student-1", total: 1 },
+      { keyword: "Non Existent", total: 0 },
+    ]
+
+    for (const test of tests) {
+      const rooms = await tutorApi.atlas.chat.findUserRooms(tutor.user.id, {keyword: test.keyword});
+      expect(rooms.list.length).to.be.eq(test.total)
+    }
+  })
+
 });
