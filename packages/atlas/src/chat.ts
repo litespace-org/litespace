@@ -15,13 +15,9 @@ export class Chat extends Base {
 
   async findRooms(
     userId: number,
-    pagination?: IFilter.Pagination
+    query?: IRoom.FindUserRoomsApiQuery
   ): Promise<IRoom.FindUserRoomsApiResponse> {
-    return await this.get(
-      `/api/v1/chat/list/rooms/${userId}/`,
-      null,
-      pagination
-    );
+    return await this.get(`/api/v1/chat/list/rooms/${userId}/`, {}, query);
   }
 
   async findRoomByMembers(
@@ -45,14 +41,5 @@ export class Chat extends Base {
     payload: IRoom.UpdateRoomApiPayload
   ): Promise<IRoom.Member> {
     return await this.put(`/api/v1/chat/room/${room}`, payload);
-  }
-
-  async findUserRooms(
-    userId: number,
-    keyword?: string
-  ): Promise<IRoom.FindUserRoomsApiResponse> {
-    return await this.get(`/api/v1/chat/list/rooms/${userId}`, null, {
-      keyword,
-    });
   }
 }

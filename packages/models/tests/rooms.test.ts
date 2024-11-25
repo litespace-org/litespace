@@ -27,7 +27,7 @@ describe("Rooms", () => {
     it("should find room members", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const created = await fixtures.make.room([tutor.id, student.id]);
+      const created = await fixtures.room([tutor.id, student.id]);
       const members = await rooms.findRoomMembers({ roomIds: [created] });
 
       expect(members).to.be.an("array").with.length(2);
@@ -39,7 +39,7 @@ describe("Rooms", () => {
     it("should find the room by member ids", async () => {
       const t = await fixtures.tutor();
       const s = await fixtures.student();
-      const created = await fixtures.make.room([t.id, s.id]);
+      const created = await fixtures.room([t.id, s.id]);
       const room = await rooms.findRoomByMembers([t.id, s.id]);
       expect(room).to.be.eq(created);
     });
@@ -52,9 +52,9 @@ describe("Rooms", () => {
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
       const tutorId = tutor.id;
-      const room1 = await fixtures.make.room([tutorId, s1.id]);
-      const room2 = await fixtures.make.room([tutorId, s2.id]);
-      const room3 = await fixtures.make.room([tutorId, s3.id]);
+      const room1 = await fixtures.room([tutorId, s1.id]);
+      const room2 = await fixtures.room([tutorId, s2.id]);
+      const room3 = await fixtures.room([tutorId, s3.id]);
 
       const memberRooms = await rooms.findMemberRooms({ userId: tutorId });
       expect(memberRooms.list).to.be.an("array").with.length(3);
@@ -67,9 +67,9 @@ describe("Rooms", () => {
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
       const tutorId = tutor.id;
-      const room1 = await fixtures.make.room([tutorId, s1.id]);
-      const room2 = await fixtures.make.room([tutorId, s2.id]);
-      const room3 = await fixtures.make.room([tutorId, s3.id]);
+      const room1 = await fixtures.room([tutorId, s1.id]);
+      const room2 = await fixtures.room([tutorId, s2.id]);
+      const room3 = await fixtures.room([tutorId, s3.id]);
 
       await rooms.update({
         userId: tutorId,
@@ -126,13 +126,72 @@ describe("Rooms", () => {
         ).to.be.deep.eq(test.list);
       }
     });
+
+    it("should filter user rooms by search keyword", async () => {
+      const tutor = await fixtures.user({
+        role: IUser.Role.Tutor,
+        name: "tutor",
+      });
+
+      await Promise.all(
+        ["student-1", "student-2", "student-3"].map(async (name) => {
+          const student = await fixtures.user({
+            role: IUser.Role.Student,
+            name,
+          });
+
+          const room = await fixtures.room([tutor.id, student.id]);
+
+          await fixtures.message({
+            userId: tutor.id,
+            roomId: room,
+            text: `Hello, ${student.name}`,
+          });
+        })
+      );
+
+      const tests = [
+        {
+          keyword: "student-1",
+          total: 1,
+        },
+        {
+          keyword: "student",
+          total: 3,
+        },
+        {
+          keyword: "Hello, ",
+          total: 3,
+        },
+        {
+          keyword: "Hello, student-1",
+          total: 1,
+        },
+        {
+          keyword: "student-3",
+          total: 1,
+        },
+      ];
+
+      for (const test of tests) {
+        expect(
+          await rooms
+            .findMemberRooms({
+              userId: tutor.id,
+              keyword: test.keyword,
+              size: 50,
+            })
+            .then((rooms) => rooms.total)
+        ).to.be.eq(test.total);
+      }
+    });
   });
 
   describe(nameof(rooms.update), () => {
     it("should update room settings per member", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const roomId = await fixtures.make.room([tutor.id, student.id]);
+      const roomId = await fixtures.room([tutor.id, student.id]);
 
       const [tutorCurrentRoom, studentCurrentRoom] =
         await rooms.findRoomMembers({
@@ -160,53 +219,5 @@ describe("Rooms", () => {
       expect(studentdUpdatedRoom.pinned).to.be.true;
       expect(studentdUpdatedRoom.muted).to.be.true;
     });
-  });
-  describe("Rooms", () => {
-    beforeAll(async () => {
-      await fixtures.flush();
-    });
-
-    describe(nameof(rooms.findMemberRooms), () => {});
-  });
-  it("should filter user rooms by search keyword", async () => {
-    const t = await fixtures.user({
-      role: IUser.Role.Tutor,
-      name: "Mostafa Kamar",
-    });
-    const s1 = await fixtures.user({
-      role: IUser.Role.Student,
-      name: "Ahmed",
-    });
-    const s2 = await fixtures.user({
-      role: IUser.Role.Student,
-      name: "Mostafa",
-    });
-    const s3 = await fixtures.user({
-      role: IUser.Role.Student,
-      name: "Ismail",
-    });
-
-    const room1 = await fixtures.make.room({ members: [t.id, s1.id] });
-    const room2 = await fixtures.make.room({ members: [t.id, s2.id] });
-    const room3 = await fixtures.make.room({ members: [t.id, s3.id] });
-
-    const result1 = await rooms.findMemberRooms({
-      userId: t.id,
-      keyword: "message",
-    });
-    expect(result1.list.length).to.be.eq(3);
-
-    const result2 = await rooms.findMemberRooms({
-      userId: t.id,
-      keyword: "Mostafa",
-    });
-    expect(result2.list.length).to.be.eq(1);
-
-    const result3 = await rooms.findMemberRooms({
-      userId: t.id,
-      keyword: "Ahmed",
-    });
-
-    expect(result3.list.length).to.be.eq(1);
   });
 });
