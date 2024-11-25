@@ -77,6 +77,24 @@ export class Messages {
     return rows.map((row) => this.from(row));
   }
 
+  async findUnreadCount({
+    tx,
+    room,
+    user,
+  }: {
+    tx?: Knex.Transaction;
+    room: number;
+    user: number;
+  }) {
+    const base = this.builder(tx)
+      .where(this.column("read"), false)
+      .andWhere(this.column("room_id"), room)
+      .andWhere(this.column("user_id"), user)
+      .orderBy([{ column: this.column("created_at"), order: "desc" }]);
+    const count = await countRows(base.clone());
+    return count;
+  }
+
   /**
    *  @param deleted {boolean} a flag to include or exclude deleted messages.
    *  Default is `false` (deleted messages are not included by default)
@@ -85,15 +103,32 @@ export class Messages {
     room,
     deleted = false,
     tx,
+    lastMessageOnly,
     page,
     size,
   }: {
     room: number;
     deleted?: boolean;
     tx?: Knex.Transaction;
+    lastMessageOnly?: boolean;
   } & IFilter.Pagination): Promise<Paginated<IMessage.Self>> {
     const builder = this.builder(tx).where(this.column("room_id"), room);
     if (!deleted) builder.andWhere(this.column("deleted"), false);
+
+    if (lastMessageOnly) {
+      const lastMessage = builder
+        .clone()
+        .select()
+        .orderBy([
+          { column: this.column("created_at"), order: "desc" },
+          { column: this.column("id"), order: "desc" },
+        ])
+        .first();
+
+      const row = await withPagination(lastMessage);
+      if (!row) return { list: [], total: 0 };
+      return { list: [this.from(row)], total: 1 };
+    }
 
     const total = await countRows(builder.clone());
     const query = builder

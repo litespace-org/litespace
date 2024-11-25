@@ -3,13 +3,14 @@ import { IRoom, IUser, Paginated, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useInfinitePaginationQuery } from "@/query";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { QueryKey } from "@/constants";
 
 type UserRooms = {
   query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<IRoom.PopulatedMember[]>, unknown>,
+    InfiniteData<Paginated<IRoom.RoomPopulated>, unknown>,
     Error
   >;
-  list: IRoom.PopulatedMember[][] | null;
+  list: IRoom.RoomPopulated[] | null;
   more: Void;
 };
 
@@ -26,5 +27,5 @@ export function useFindUserRooms(profile: IUser.Self | null): UserRooms {
     [atlas.chat, profile]
   );
 
-  return useInfinitePaginationQuery(findUserRooms, ["find-user-rooms"]);
+  return useInfinitePaginationQuery(findUserRooms, [QueryKey.FindUserRooms]);
 }

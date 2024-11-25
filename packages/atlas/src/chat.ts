@@ -45,10 +45,12 @@ export class Chat extends Base {
 
   async findUserRooms(
     userId: number,
-    keyword?: string
+    query?: IRoom.FindUserRoomsApiQuery
   ): Promise<IRoom.FindUserRoomsApiResponse> {
-    return await this.get(`/api/v1/chat/list/rooms/${userId}`, null, {
-      keyword,
-    });
+    return await this.get(
+      `/api/v1/chat/list/rooms/${userId}`,
+      null,
+      query
+    );
   }
 }
