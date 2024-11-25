@@ -57,7 +57,7 @@ export const Typography = <T extends Tag>({
         "tw-text-[1.25rem]": element === "subtitle-2",
         "tw-text-[1rem]": element === "body",
         "tw-text-[0.875rem]": element === "caption",
-        "tw-text-[0.70rem]": element === "tiny-text",
+        "tw-text-[0.75rem]": element === "tiny-text",
         "tw-font-bold": weight === "bold",
         "tw-font-semibold": weight === "semibold",
         "tw-font-medium": weight === "medium",
