@@ -64,17 +64,17 @@ export type FindUserRoomsApiQuery = IFilter.Pagination & {
   keyword?: string;
 };
 
-export type RoomPopulated = {
+export type FindUserRoomsApiRecord = {
   roomId: number;
-  roomSettings: {
+  settings: {
     pinned: boolean;
     muted: boolean;
   };
-  unReadMessagesCount: number;
+  unreadMessagesCount: number;
   latestMessage: IMessage.Self | null;
   otherMember: {
-    name: string | null;
     id: number;
+    name: string | null;
     image: string | null;
     online: boolean;
     role: IUser.Role;
@@ -82,7 +82,9 @@ export type RoomPopulated = {
   };
 };
 
-export type FindUserRoomsApiResponse = Paginated<RoomPopulated>;
+export type CreateRoomApiResponse = { roomId: number };
+
+export type FindUserRoomsApiResponse = Paginated<FindUserRoomsApiRecord>;
 
 export type FindRoomByMembersApiResponse = { room: number };
 

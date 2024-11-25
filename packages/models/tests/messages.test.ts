@@ -46,4 +46,16 @@ describe("Messages", () => {
       );
     });
   });
+
+  describe(nameof(messages.findLatestRoomMessage), () => {
+    it("should return null incase room is empty or not found", async () => {
+      expect(await messages.findUnreadCount({ room: 10, user: 1 })).to.be.eq(0);
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+      const room = await fixtures.room([tutor.id, student.id]);
+      expect(
+        await messages.findUnreadCount({ room: room, user: student.id })
+      ).to.be.eq(0);
+    });
+  });
 });

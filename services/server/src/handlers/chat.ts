@@ -22,7 +22,7 @@ import {
   isUser,
 } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
-import { buildRoomObject, fetchLatestMessage } from "@/lib/chat";
+import { asFindUserRoomsApiRecord } from "@/lib/chat";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
@@ -67,7 +67,8 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
   if (room) return next(exists.room());
 
   const roomId = await rooms.create(members);
-  res.status(200).json({ roomId });
+  const response: IRoom.CreateRoomApiResponse = { roomId };
+  res.status(200).json(response);
 }
 
 async function findUserRooms(req: Request, res: Response, next: NextFunction) {
@@ -89,20 +90,25 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     keyword,
   });
 
-  const members = await rooms.findRoomMembers({
-    roomIds: userRooms,
-    excludeUsers: [userId],
-  });
+  const members = await rooms.findRoomMembers({ roomIds: userRooms });
 
-  const responseList = await Promise.all(
+  // todo: optimize find user rooms query
+  const list = await Promise.all(
     userRooms.map(async (roomId) => {
-      const latestMessage = await fetchLatestMessage(roomId);
+      const latestMessage = await messages.findLatestRoomMessage({
+        room: roomId,
+      });
       const roomMembers = members.filter((member) => member.roomId === roomId);
-      return buildRoomObject(roomId, user.id, latestMessage, roomMembers);
+      return asFindUserRoomsApiRecord({
+        members: roomMembers,
+        latestMessage,
+        roomId,
+        userId,
+      });
     })
   );
 
-  const response: IRoom.FindUserRoomsApiResponse = { list: responseList, total };
+  const response: IRoom.FindUserRoomsApiResponse = { list, total };
   res.status(200).json(response);
 }
 

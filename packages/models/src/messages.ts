@@ -1,4 +1,10 @@
-import { column, countRows, knex, withPagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { first } from "lodash";
 import { IFilter, IMessage, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -90,9 +96,25 @@ export class Messages {
       .where(this.column("read"), false)
       .andWhere(this.column("room_id"), room)
       .andWhere(this.column("user_id"), user)
+      .groupBy(this.column("created_at"))
       .orderBy([{ column: this.column("created_at"), order: "desc" }]);
-    const count = await countRows(base.clone());
-    return count;
+    return await countRows(base);
+  }
+
+  async findLatestRoomMessage({
+    tx,
+    room,
+  }: WithOptionalTx<{
+    room: number;
+  }>): Promise<IMessage.Self | null> {
+    const row = await this.builder(tx)
+      .select("*") //! todo: omit private fields
+      .where(this.column("room_id"), room)
+      .orderBy([{ column: this.column("created_at"), order: "desc" }])
+      .limit(1)
+      .first();
+    if (!row) return null;
+    return this.from(row);
   }
 
   /**
@@ -100,35 +122,18 @@ export class Messages {
    *  Default is `false` (deleted messages are not included by default)
    */
   async findRoomMessages({
-    room,
     deleted = false,
-    tx,
-    lastMessageOnly,
+    room,
     page,
     size,
+    tx,
   }: {
     room: number;
     deleted?: boolean;
     tx?: Knex.Transaction;
-    lastMessageOnly?: boolean;
   } & IFilter.Pagination): Promise<Paginated<IMessage.Self>> {
     const builder = this.builder(tx).where(this.column("room_id"), room);
     if (!deleted) builder.andWhere(this.column("deleted"), false);
-
-    if (lastMessageOnly) {
-      const lastMessage = builder
-        .clone()
-        .select()
-        .orderBy([
-          { column: this.column("created_at"), order: "desc" },
-          { column: this.column("id"), order: "desc" },
-        ])
-        .first();
-
-      const row = await withPagination(lastMessage);
-      if (!row) return { list: [], total: 0 };
-      return { list: [this.from(row)], total: 1 };
-    }
 
     const total = await countRows(builder.clone());
     const query = builder

@@ -1,20 +1,15 @@
 import { useAtlas } from "@/atlas";
-import { IRoom, IUser, Paginated, Void } from "@litespace/types";
+import { IRoom, IUser } from "@litespace/types";
 import { useCallback } from "react";
-import { useInfinitePaginationQuery } from "@/query";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import {
+  useInfinitePaginationQuery,
+  UseInfinitePaginationQueryResult,
+} from "@/query";
 import { QueryKey } from "@/constants";
 
-type UserRooms = {
-  query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<IRoom.RoomPopulated>, unknown>,
-    Error
-  >;
-  list: IRoom.RoomPopulated[] | null;
-  more: Void;
-};
-
-export function useFindUserRooms(profile: IUser.Self | null): UserRooms {
+export function useFindUserRooms(
+  profile: IUser.Self | null
+): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
   const atlas = useAtlas();
   const findUserRooms = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
