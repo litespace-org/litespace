@@ -19,14 +19,13 @@ import {
   ITopic,
   IUser,
   IRating,
+  IMessage,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
-
-export { faker } from "@faker-js/faker/locale/ar";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
@@ -408,31 +407,6 @@ async function makeLessons({
   return lessons;
 }
 
-async function makeRoom(payload?: {
-  members: [number, number];
-  initialMessages?: string[];
-}) {
-  const user1Id: number =
-    payload?.members[0] ||
-    (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
-  const user2Id: number =
-    payload?.members[1] ||
-    (await user({ role: IUser.Role.Student }).then((user) => user.id));
-  const room = await rooms.create([user1Id, user2Id]);
-
-  const usersMessages = await Promise.all(
-    (payload?.initialMessages || ["message 1", "message 2", "message 3"]).map(
-      async (m) =>
-        await messages.create({
-          userId: user1Id,
-          roomId: room,
-          text: "message",
-        })
-    )
-  );
-  return { users: { user1Id, user2Id }, room, usersMessages: usersMessages };
-}
-
 export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
   const raterId: number =
     payload?.raterId ||
@@ -471,12 +445,30 @@ export async function makeRatings({
     })
   );
 }
+
 async function makeRoom(payload?: [number, number]) {
-  const user1Id: number =
-    payload?.[0] || (await tutor().then((user) => user.id));
-  const user2Id: number =
-    payload?.[1] || (await student().then((user) => user.id));
-  return await rooms.create([user1Id, user2Id]);
+  const [firstUserId, secondUserId]: [number, number] = payload || [
+    await tutor().then((user) => user.id),
+    await student().then((user) => user.id),
+  ];
+  return await rooms.create([firstUserId, secondUserId]);
+}
+
+async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
+  const roomId: number = payload?.roomId || (await makeRoom());
+  const userId: number =
+    payload?.userId ||
+    (await rooms
+      .findRoomMembers({ roomIds: [roomId] })
+      .then((members) => members[0].id));
+
+  const text = payload?.text || faker.lorem.words(10);
+
+  return await messages.create({
+    userId,
+    roomId,
+    text,
+  });
 }
 
 async function makeInterviews(payload: {
@@ -523,14 +515,15 @@ export default {
   flush,
   topic,
   rule,
+  room: makeRoom,
+  rating: makeRating,
+  message: makeMessage,
   make: {
     lesson: makeLesson,
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
-    rating: makeRating,
     ratings: makeRatings,
-    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,

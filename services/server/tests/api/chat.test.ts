@@ -93,47 +93,10 @@ describe("/api/v1/chat", () => {
       expect(updated.pinned).to.be.true;
     });
   });
+});
 
-  describe("GET /api/v1/chat/list/rooms/:userId", () => {
-    it("should find user rooms", () => {
-      throw new Error("TODO");
-
-      describe("Chat", () => {
-        beforeEach(async () => {
-          await db.flush();
-        });
-
-        describe("/list/rooms/:userId", () => {
-          describe("Get", () => {
-            it("should get user Rooms", async () => {
-              const adminApi = await Api.forSuperAdmin();
-              const t = await db.user({ role: IUser.Role.Tutor });
-              const s1 = await db.user({
-                role: IUser.Role.Tutor,
-                name: "Mostafa",
-              });
-              const s2 = await db.user({ role: IUser.Role.Tutor });
-
-              const room1 = await db.make.room({ members: [t.id, s1.id] });
-              const room2 = await db.make.room({ members: [t.id, s2.id] });
-
-              const rooms = await adminApi.atlas.chat.findUserRooms(t.id);
-              expect(rooms.list.length).toBe(2);
-
-              const roomsWithKeyword = await adminApi.atlas.chat.findUserRooms(
-                t.id,
-                "message"
-              );
-              expect(roomsWithKeyword.list.length).toBe(2);
-
-              const roomsWithKeywordName =
-                await adminApi.atlas.chat.findUserRooms(t.id, "Mostafa");
-              expect(roomsWithKeyword.list.length).toBe(1);
-              expect(roomsWithKeyword.list).toBe([room1]);
-            });
-          });
-        });
-      });
-    });
+describe("GET /api/v1/chat/list/rooms/:userId", () => {
+  it("should filter user rooms by search keyword", async () => {
+    throw new Error("TODO");
   });
 });

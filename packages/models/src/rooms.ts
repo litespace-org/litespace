@@ -158,15 +158,23 @@ export class Rooms {
       base.where(this.column.members("pinned"), pinned);
 
     if (keyword)
-      base
-        .join(
-          messages.table,
-          messages.column("room_id"),
-          this.column.rooms("id")
-        )
-        .join(users.table, users.column("id"), this.column.members("user_id"))
-        .whereILike(messages.column("text"), keyword)
-        .orWhereILike(users.column("name"), keyword);
+      base.whereIn(
+        this.column.members("room_id"),
+        this.builder(tx)
+          .members.select(this.column.members("room_id"))
+          .innerJoin(
+            users.table,
+            users.column("id"),
+            this.column.members("user_id")
+          )
+          .fullOuterJoin(
+            messages.table,
+            messages.column("room_id"),
+            this.column.members("room_id")
+          )
+          .whereILike(users.column("name"), `%${keyword}%`)
+          .orWhereILike(messages.column("text"), `%${keyword}%`)
+      );
 
     const subquery = messages
       .builder(tx)
@@ -192,13 +200,15 @@ export class Rooms {
       .select<Array<{ roomId: number }>>({
         roomId: this.column.members("room_id"),
       })
-      .groupBy([this.column.rooms("id"), this.column.members("room_id")])
       .orderBy([
         { column: subquery, order: "DESC" },
         { column: this.column.rooms("created_at"), order: "DESC" },
       ]);
 
-    const total = await countRows(base.clone());
+    const total = await countRows(base.clone(), {
+      distinct: true,
+      column: this.column.rooms("id"),
+    });
     const rows = pagination
       ? await withPagination(query, pagination)
       : await query.then();
