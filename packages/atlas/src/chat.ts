@@ -15,13 +15,9 @@ export class Chat extends Base {
 
   async findRooms(
     userId: number,
-    pagination?: IFilter.Pagination
+    query?: IRoom.FindUserRoomsApiQuery
   ): Promise<IRoom.FindUserRoomsApiResponse> {
-    return await this.get(
-      `/api/v1/chat/list/rooms/${userId}/`,
-      null,
-      pagination
-    );
+    return await this.get(`/api/v1/chat/list/rooms/${userId}/`, {}, query);
   }
 
   async findRoomByMembers(

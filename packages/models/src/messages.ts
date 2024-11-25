@@ -5,7 +5,7 @@ import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 
 export class Messages {
-  table = "messages" as const;
+  readonly table = "messages" as const;
 
   async create(payload: IMessage.CreatePayload): Promise<IMessage.Self> {
     const now = dayjs.utc().toDate();

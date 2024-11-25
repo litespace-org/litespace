@@ -445,6 +445,14 @@ export async function makeRatings({
   );
 }
 
+async function makeRoom(payload?: [number, number]) {
+  const [firstUserId, secondUserId]: [number, number] = payload || [
+    await tutor().then((user) => user.id),
+    await student().then((user) => user.id),
+  ];
+  return await rooms.create([firstUserId, secondUserId]);
+}
+
 async function makeInterviews(payload: {
   data: [
     {
@@ -496,6 +504,7 @@ export default {
     tutors: makeTutors,
     rating: makeRating,
     ratings: makeRatings,
+    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,

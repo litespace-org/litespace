@@ -134,11 +134,13 @@ export class Rooms {
     userId,
     muted,
     pinned,
+    keyword,
     ...pagination
   }: {
-    userId: number;
     muted?: boolean;
     pinned?: boolean;
+    userId: number;
+    keyword?: string;
     tx?: Knex.Transaction;
   } & IFilter.Pagination): Promise<Paginated<number>> {
     const base = this.builder(tx)
@@ -154,6 +156,25 @@ export class Rooms {
 
     if (typeof pinned === "boolean")
       base.where(this.column.members("pinned"), pinned);
+
+    if (keyword)
+      base.whereIn(
+        this.column.members("room_id"),
+        this.builder(tx)
+          .members.select(this.column.members("room_id"))
+          .innerJoin(
+            users.table,
+            users.column("id"),
+            this.column.members("user_id")
+          )
+          .fullOuterJoin(
+            messages.table,
+            messages.column("room_id"),
+            this.column.members("room_id")
+          )
+          .whereILike(users.column("name"), `%${keyword}%`)
+          .orWhereILike(messages.column("text"), `%${keyword}%`)
+      );
 
     const subquery = messages
       .builder(tx)
@@ -184,7 +205,10 @@ export class Rooms {
         { column: this.column.rooms("created_at"), order: "DESC" },
       ]);
 
-    const total = await countRows(base.clone());
+    const total = await countRows(base.clone(), {
+      distinct: true,
+      column: this.column.rooms("id"),
+    });
     const rows = pagination
       ? await withPagination(query, pagination)
       : await query.then();
