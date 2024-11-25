@@ -1,4 +1,10 @@
-import { column, countRows, knex, withPagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { first } from "lodash";
 import { IFilter, IMessage, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -77,16 +83,50 @@ export class Messages {
     return rows.map((row) => this.from(row));
   }
 
+  async findUnreadCount({
+    tx,
+    room,
+    user,
+  }: {
+    tx?: Knex.Transaction;
+    room: number;
+    user: number;
+  }) {
+    const base = this.builder(tx)
+      .where(this.column("read"), false)
+      .andWhere(this.column("room_id"), room)
+      .andWhere(this.column("user_id"), user)
+      .groupBy(this.column("created_at"))
+      .orderBy([{ column: this.column("created_at"), order: "desc" }]);
+    return await countRows(base);
+  }
+
+  async findLatestRoomMessage({
+    tx,
+    room,
+  }: WithOptionalTx<{
+    room: number;
+  }>): Promise<IMessage.Self | null> {
+    const row = await this.builder(tx)
+      .select("*") //! todo: omit private fields
+      .where(this.column("room_id"), room)
+      .orderBy([{ column: this.column("created_at"), order: "desc" }])
+      .limit(1)
+      .first();
+    if (!row) return null;
+    return this.from(row);
+  }
+
   /**
    *  @param deleted {boolean} a flag to include or exclude deleted messages.
    *  Default is `false` (deleted messages are not included by default)
    */
   async findRoomMessages({
-    room,
     deleted = false,
-    tx,
+    room,
     page,
     size,
+    tx,
   }: {
     room: number;
     deleted?: boolean;

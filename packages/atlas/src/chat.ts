@@ -2,15 +2,15 @@ import { Base } from "@/base";
 import { IFilter, IMessage, IRoom } from "@litespace/types";
 
 export class Chat extends Base {
-  async createRoom(userId: number) {
-    await this.client.post(`/api/v1/chat/${userId}`);
+  async createRoom(userId: number): Promise<IRoom.CreateRoomApiResponse> {
+    return await this.post(`/api/v1/chat/${userId}`);
   }
 
   async findRoomMessages(
     id: number,
     pagination?: IFilter.Pagination
   ): Promise<IMessage.FindRoomMessagesApiResponse> {
-    return await this.get(`/api/v1/chat/list/${id}/messages`, null, pagination);
+    return await this.get(`/api/v1/chat/list/${id}/messages`, {}, pagination);
   }
 
   async findRooms(

@@ -19,6 +19,7 @@ import {
   ITopic,
   IUser,
   IRating,
+  IMessage,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
@@ -453,6 +454,23 @@ async function makeRoom(payload?: [number, number]) {
   return await rooms.create([firstUserId, secondUserId]);
 }
 
+async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
+  const roomId: number = payload?.roomId || (await makeRoom());
+  const userId: number =
+    payload?.userId ||
+    (await rooms
+      .findRoomMembers({ roomIds: [roomId] })
+      .then((members) => members[0].id));
+
+  const text = payload?.text || faker.lorem.words(10);
+
+  return await messages.create({
+    userId,
+    roomId,
+    text,
+  });
+}
+
 async function makeInterviews(payload: {
   data: [
     {
@@ -497,6 +515,8 @@ export default {
   flush,
   topic,
   rule,
+  room: makeRoom,
+  message: makeMessage,
   make: {
     lesson: makeLesson,
     lessons: makeLessons,
@@ -504,7 +524,6 @@ export default {
     tutors: makeTutors,
     rating: makeRating,
     ratings: makeRatings,
-    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,

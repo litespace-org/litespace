@@ -1,4 +1,4 @@
-import { IFilter, IUser, Paginated } from "@/index";
+import { IFilter, IMessage, IUser, Paginated } from "@/index";
 
 export type Self = {
   id: number;
@@ -64,7 +64,27 @@ export type FindUserRoomsApiQuery = IFilter.Pagination & {
   keyword?: string;
 };
 
-export type FindUserRoomsApiResponse = Paginated<PopulatedMember[]>;
+export type FindUserRoomsApiRecord = {
+  roomId: number;
+  settings: {
+    pinned: boolean;
+    muted: boolean;
+  };
+  unreadMessagesCount: number;
+  latestMessage: IMessage.Self | null;
+  otherMember: {
+    id: number;
+    name: string | null;
+    image: string | null;
+    online: boolean;
+    role: IUser.Role;
+    lastSeen: string;
+  };
+};
+
+export type CreateRoomApiResponse = { roomId: number };
+
+export type FindUserRoomsApiResponse = Paginated<FindUserRoomsApiRecord>;
 
 export type FindRoomByMembersApiResponse = { room: number };
 
@@ -75,12 +95,11 @@ export type FindCallRoomApiResponse = {
   members: PopulatedMember[];
 };
 
-export type UpdateRoomPayload = {
+export type RoomSettings = {
   pinned?: boolean;
   muted?: boolean;
 };
 
-export type UpdateRoomApiPayload = {
-  pinned?: boolean;
-  muted?: boolean;
-};
+export type UpdateRoomPayload = RoomSettings;
+
+export type UpdateRoomApiPayload = RoomSettings;
