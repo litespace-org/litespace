@@ -77,6 +77,8 @@ export type FindLessonsApiQuery = IFilter.Pagination & {
   future?: boolean;
   past?: boolean;
   now?: boolean;
+  after?: string;
+  before?: string;
 };
 
 export type FindUserLessonsApiResponse = Paginated<{

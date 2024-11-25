@@ -21,12 +21,27 @@ import { calls } from "@/calls";
 import zod from "zod";
 
 type SearchFilter = {
+  /**
+   * User ids to be included in the search query.
+   */
   users?: number[];
   canceled?: boolean;
   ratified?: boolean;
   future?: boolean;
   past?: boolean;
   now?: boolean;
+  /**
+   * Start date time (ISO datetime format)
+   *
+   * All lessons after (or the same as) this date will be included.
+   */
+  after?: string;
+  /**
+   * End date time (ISO datetime format)
+   *
+   * All lessons before (or the same as) this date will be included.
+   */
+  before?: string;
 };
 
 type BaseAggregateParams = SearchFilter & { tx?: Knex.Transaction };
@@ -182,6 +197,8 @@ export class Lessons {
     future = true,
     past = true,
     now = false,
+    after,
+    before,
   }: {
     tx?: Knex.Transaction;
   } & IFilter.Pagination &
@@ -195,10 +212,12 @@ export class Lessons {
     const filterBuilder = this.applySearchFilter(baseBuilder, {
       users,
       canceled,
-      future,
       ratified,
+      future,
       past,
       now,
+      after,
+      before,
     });
 
     const countBuilder = filterBuilder.clone();
@@ -231,6 +250,8 @@ export class Lessons {
     canceled = true,
     future = true,
     past = true,
+    after,
+    before,
     column,
     users,
     tx,
@@ -243,7 +264,15 @@ export class Lessons {
       )
       .sum(column, { as: "total" });
 
-    const filter: SearchFilter = { users, canceled, future, ratified, past };
+    const filter: SearchFilter = {
+      users,
+      canceled,
+      ratified,
+      future,
+      past,
+      after,
+      before,
+    };
     const builder = this.applySearchFilter(base, filter);
     const row: { total: NumericString } | undefined = await builder
       .first()
@@ -374,6 +403,8 @@ export class Lessons {
       past = true,
       now = false,
       users,
+      after,
+      before,
     }: SearchFilter
   ): Knex.QueryBuilder<ILesson.Row, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -416,6 +447,9 @@ export class Lessons {
     } else if (pastOnly) {
       builder.where(end, "<=", nowDate);
     }
+
+    if (after) builder.where(end, ">=", dayjs.utc(after).toDate());
+    if (before) builder.where(end, "<=", dayjs.utc(before).toDate());
 
     return builder;
   }

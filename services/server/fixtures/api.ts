@@ -58,6 +58,10 @@ export class Api {
       role: payload?.role || sample(Object.values(IUser.Role))!,
     });
   }
+
+  async findCurrentUser() {
+    return this.atlas.user.findCurrentUser();
+  }
 }
 
 export default {
