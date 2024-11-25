@@ -11,7 +11,7 @@ export class Lesson extends Base {
   async findLessons(
     query: ILesson.FindLessonsApiQuery
   ): Promise<ILesson.FindUserLessonsApiResponse> {
-    return this.get(`/api/v1/lesson/list/`, null, query);
+    return this.get(`/api/v1/lesson/list/`, {}, query);
   }
 
   async cancel(id: number) {
