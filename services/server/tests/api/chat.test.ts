@@ -5,6 +5,7 @@ import { safe } from "@litespace/sol/error";
 import db from "@fixtures/db";
 import { rooms } from "@litespace/models";
 import { first } from "lodash";
+import { IUser } from "@litespace/types";
 
 describe("/api/v1/chat", () => {
   beforeEach(async () => {
@@ -92,10 +93,10 @@ describe("/api/v1/chat", () => {
       expect(updated.pinned).to.be.true;
     });
   });
+});
 
-  describe("GET /api/v1/chat/list/rooms/:userId", () => {
-    it("should find user rooms", () => {
-      throw new Error("TODO");
-    });
+describe("GET /api/v1/chat/list/rooms/:userId", () => {
+  it("should filter user rooms by search keyword", async () => {
+    throw new Error("TODO");
   });
 });

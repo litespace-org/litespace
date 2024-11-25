@@ -19,14 +19,13 @@ import {
   ITopic,
   IUser,
   IRating,
+  IMessage,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
-
-export { faker } from "@faker-js/faker/locale/ar";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
@@ -446,12 +445,30 @@ export async function makeRatings({
     })
   );
 }
+
 async function makeRoom(payload?: [number, number]) {
-  const user1Id: number =
-    payload?.[0] || (await tutor().then((user) => user.id));
-  const user2Id: number =
-    payload?.[1] || (await student().then((user) => user.id));
-  return await rooms.create([user1Id, user2Id]);
+  const [firstUserId, secondUserId]: [number, number] = payload || [
+    await tutor().then((user) => user.id),
+    await student().then((user) => user.id),
+  ];
+  return await rooms.create([firstUserId, secondUserId]);
+}
+
+async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
+  const roomId: number = payload?.roomId || (await makeRoom());
+  const userId: number =
+    payload?.userId ||
+    (await rooms
+      .findRoomMembers({ roomIds: [roomId] })
+      .then((members) => members[0].id));
+
+  const text = payload?.text || faker.lorem.words(10);
+
+  return await messages.create({
+    userId,
+    roomId,
+    text,
+  });
 }
 
 async function makeInterviews(payload: {
@@ -498,14 +515,15 @@ export default {
   flush,
   topic,
   rule,
+  room: makeRoom,
+  rating: makeRating,
+  message: makeMessage,
   make: {
     lesson: makeLesson,
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
-    rating: makeRating,
     ratings: makeRatings,
-    room: makeRoom,
   },
   cancel: {
     lesson: cancelLesson,

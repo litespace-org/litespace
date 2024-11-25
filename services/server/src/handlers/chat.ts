@@ -30,6 +30,7 @@ const findUserRoomsQuery = zod.object({
   size: zod.optional(pageSize),
   pinned: zod.optional(jsonBoolean),
   muted: zod.optional(jsonBoolean),
+  keyword: zod.optional(zod.string()),
 });
 
 const updateRoomPayload = zod.object({
@@ -75,7 +76,7 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
   const allowed = owner || isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { page, size, pinned, muted }: IRoom.FindUserRoomsApiQuery =
+  const { page, size, pinned, muted, keyword }: IRoom.FindUserRoomsApiQuery =
     findUserRoomsQuery.parse(req.query);
 
   const { list: userRooms, total } = await rooms.findMemberRooms({
@@ -84,6 +85,7 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     pinned,
     muted,
     userId,
+    keyword,
   });
 
   const members = await rooms.findRoomMembers({
