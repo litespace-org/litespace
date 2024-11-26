@@ -56,7 +56,7 @@ const UserForm: React.FC<{
     [intl, toast]
   );
 
-  const emailRules = useValidateEmail(true);
+  const validateEmail = useValidateEmail(true);
   const passwordRules = useValidatePassword(true);
   const createUser = useCreateUser({ onSuccess, onError });
 
@@ -93,7 +93,7 @@ const UserForm: React.FC<{
                 control={form.control}
                 name="email"
                 value={form.watch("email")}
-                rules={emailRules}
+                rules={{ validate: validateEmail }}
               />
             }
           />

@@ -24,6 +24,7 @@ import {
   MAX_TUTOR_BIO_TEXT_LENGTH,
   MAX_TUTOR_NOTICE_DURATION,
   MAX_USER_AGE,
+  MAX_USER_NAME_LENGTH,
   MIN_BIO_LEGNTH,
   MIN_DISCOUNT_VALUE,
   MIN_FEEDBACK_TEXT_LENGTH,
@@ -42,20 +43,40 @@ import {
   MIN_TOPIC_LEGNTH,
   MIN_TUTOR_NOTICE_DURATION,
   MIN_USER_AGE,
+  MIN_USER_NAME_LENGTH,
   NUMBERS_ONLY_REGEX,
   PASSWORD_LETTERS_REGEX,
   PASSWORD_REGEX,
   PHONE_NUMBER_REGEX,
-  TOPIC_ARABIC_NAME_REGEX,
-  TOPIC_ENGLISH_NAME_REGEX,
   USER_NAME_REGEX,
 } from "@/constants";
-import { Bank, FieldError, WithdrawMethod } from "@litespace/types";
+import { banks, FieldError, WithdrawMethod, type Bank } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
 import { dayjs } from "@/dayjs";
 
-export function isValidEmail(email: string): FieldError.InvalidEmail | true {
-  if (!EMAIL_REGEX.test(email)) return FieldError.InvalidEmail;
+export function isValidUserName(
+  name: unknown
+):
+  | FieldError.InvalidUserName
+  | FieldError.ShortUserName
+  | FieldError.LongUserName
+  | true {
+  if (typeof name !== "string" || !USER_NAME_REGEX.test(name))
+    return FieldError.InvalidUserName;
+  if (name.length < MIN_USER_NAME_LENGTH) return FieldError.ShortUserName;
+  if (name.length > MAX_USER_NAME_LENGTH) return FieldError.LongUserName;
+  return true;
+}
+
+export function isValidEmail(email: unknown): FieldError.InvalidEmail | true {
+  if (typeof email !== "string" || !EMAIL_REGEX.test(email))
+    return FieldError.InvalidEmail;
+  return true;
+}
+
+export function isValidPhoneNumber(phone: unknown) {
+  if (typeof phone !== "string" || !PHONE_NUMBER_REGEX.test(phone))
+    return FieldError.InvalidPhoneNumber;
   return true;
 }
 
@@ -80,13 +101,6 @@ export function isValidPassword(
 
   if (!PASSWORD_REGEX.test(password)) return FieldError.InvalidPassword;
 
-  return true;
-}
-
-export function isValidUserName(
-  userName: string
-): FieldError.InvalidUserName | true {
-  if (!USER_NAME_REGEX.test(userName)) return FieldError.InvalidUserName;
   return true;
 }
 
@@ -384,7 +398,7 @@ export function isValidInvoiceReceiver(
   }
   if (type === WithdrawMethod.Bank) {
     if (!bankName) return FieldError.EmptyBankName;
-    if (!Object.values(Bank).includes(bankName)) {
+    if (!Object.values(banks).includes(bankName)) {
       return FieldError.InvalidBankName;
     }
   }

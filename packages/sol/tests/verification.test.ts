@@ -28,6 +28,7 @@ import {
   isValidInvoiceAmount,
   isValidInvoiceNote,
   isValidTopicName,
+  isValidPhoneNumber,
 } from "@/verification";
 import { FieldError } from "@litespace/types";
 import { dayjs } from "@/dayjs";
@@ -98,6 +99,32 @@ describe("validate username", () => {
   it("should reject user name that contains symbols", () => {
     expect(isValidUserName("زيد_عمر")).toBe(FieldError.InvalidUserName);
     expect(isValidUserName("زيد_عمر #123")).toBe(FieldError.InvalidUserName);
+  });
+});
+
+describe(nameof(isValidPhoneNumber), () => {
+  it("should reject invalid input types", () => {
+    expect(isValidPhoneNumber(-10)).toBe(FieldError.InvalidPhoneNumber);
+    expect(isValidPhoneNumber(true)).toBe(FieldError.InvalidPhoneNumber);
+  });
+
+  it("should reject invalid phone numbers", () => {
+    expect(isValidPhoneNumber("010123456789")).toBe(
+      FieldError.InvalidPhoneNumber
+    );
+    expect(isValidPhoneNumber("0101234567")).toBe(
+      FieldError.InvalidPhoneNumber
+    );
+    expect(isValidPhoneNumber("01312345678")).toBe(
+      FieldError.InvalidPhoneNumber
+    );
+  });
+
+  it("should accept valid phone numbers", () => {
+    expect(isValidPhoneNumber("01012345678")).toBe(true);
+    expect(isValidPhoneNumber("01112345678")).toBe(true);
+    expect(isValidPhoneNumber("01212345678")).toBe(true);
+    expect(isValidPhoneNumber("01512345678")).toBe(true);
   });
 });
 

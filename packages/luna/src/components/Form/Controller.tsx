@@ -145,7 +145,7 @@ export function PatternInput<T extends FieldValues>({
         return (
           <BasePatternInput
             {...props}
-            onValueChange={(value) => field.onChange(value.floatValue)}
+            onValueChange={(value) => field.onChange(value.value)}
             helper={message}
             error={!!message}
           />
