@@ -54,7 +54,7 @@ export const COUPON_REGEX = /[a-zA-Z0-9!@#$%^&*()_+=-}{?.,]/;
 export const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const USER_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const ARABIC_LETTERS_REGEX = /^[\u0600-\u06ff\s\d\.]+$/;
-export const PHONE_NUMBER_REGEX = /^[0125]\d{8}$/;
+export const PHONE_NUMBER_REGEX = /^01[0125]\d{8}$/;
 export const INSTAPAY_REGEX = /\w+@instapay/;
 export const ARABIC_LETTERS_ONLY_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const TOPIC_ARABIC_NAME_REGEX = /[\u0600-\u06ff\s]{3,50}/;
