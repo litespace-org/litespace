@@ -102,5 +102,5 @@ export type ServerEventsMap = {
   [ServerEvent.RuleDeleted]: EventCallback<void>;
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
-  [ServerEvent.UserTyping]: EventCallback<{ roomId: number }>;
+  [ServerEvent.UserTyping]: EventCallback<{ roomId: number; userId: number }>;
 };

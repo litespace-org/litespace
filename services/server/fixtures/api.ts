@@ -22,6 +22,7 @@ export function unexpectedApiSuccess() {
 
 export class Api {
   public readonly atlas: Atlas;
+
   constructor(token?: string) {
     this.atlas = atlas(token);
   }
