@@ -201,7 +201,7 @@ const Profile: React.FC<{
                 <Controller.Input
                   placeholder={intl("labels.email.placeholder")}
                   control={form.control}
-                  rules={validateEmail}
+                  rules={{ validate: validateEmail }}
                   disabled={disabled}
                   name="email"
                 />
