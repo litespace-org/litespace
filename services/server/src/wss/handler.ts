@@ -28,6 +28,10 @@ const updateMessagePayload = zod.object({ text: string, id });
 const toggleCameraPayload = zod.object({ call: id, camera: boolean });
 const toggleMicPayload = zod.object({ call: id, mic: boolean });
 const registerPeerPayload = zod.object({ peer: zod.string() });
+const userTypingPayload = zod.object({
+  roomId: zod.number(),
+});
+
 const stdout = logger("wss");
 
 export class WssHandler {
@@ -56,6 +60,7 @@ export class WssHandler {
     this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
+    this.socket.on(Wss.ClientEvent.UserTyping, this.userTyping.bind(this));
   }
 
   async joinRooms() {
@@ -116,6 +121,28 @@ export class WssHandler {
       // notify peers to refetch the peer id if needed
     });
     if (result instanceof Error) stdout.error(result.message);
+  }
+
+  async userTyping(data: unknown) {
+    const error = safe(async () => {
+      const { roomId } = userTypingPayload.parse(data);
+
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const members = await rooms.findRoomMembers({ roomIds: [roomId] });
+      if (isEmpty(members)) return;
+
+      const isMember = members.find((member) => member.id === user.id);
+      if (!isMember)
+        throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
+
+      this.socket
+        .to(roomId.toString())
+        .emit(Wss.ServerEvent.UserTyping, { roomId, userId: user.id });
+    });
+
+    if (error instanceof Error) stdout.error(error.message);
   }
 
   async sendMessage(data: unknown) {
