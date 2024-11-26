@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from "react";
 import { useIntl } from "react-intl";
-import { messages } from "@/locales";
+import { LocalId, messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
 import { Duration } from "@litespace/sol/duration";
@@ -40,19 +40,28 @@ export function useValidateUsername(create: boolean = false) {
   const intl = useFormatMessage();
   const required = useRequired();
 
+  const errorMap: Record<
+    | FieldError.InvalidUserName
+    | FieldError.LongUserName
+    | FieldError.ShortUserName,
+    LocalId
+  > = useMemo(
+    () => ({
+      [FieldError.InvalidUserName]: "error.name.invalid",
+      [FieldError.LongUserName]: "error.name.length.long",
+      [FieldError.ShortUserName]: "error.name.length.short",
+    }),
+    []
+  );
+
   return useCallback(
     (value: unknown) => {
+      if (create && !value) return required.message;
       const valid = isValidUserName(value);
-      if (create && required) return required.message;
-      if (valid === FieldError.InvalidUserName)
-        return intl("error.name.invalid");
-      if (valid === FieldError.LongUserName)
-        return intl("error.name.length.long");
-      if (valid === FieldError.ShortUserName)
-        return intl("error.name.length.short");
+      if (valid !== true) return intl(errorMap[valid]);
       return true;
     },
-    [create, intl, required]
+    [create, errorMap, intl, required]
   );
 }
 
@@ -63,7 +72,7 @@ export function useValidateEmail(create: boolean = false) {
   return useCallback(
     (value: unknown) => {
       const valid = isValidEmail(value);
-      if (create && required) return required.message;
+      if (create && !value) return required.message;
       if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
       return true;
     },
@@ -77,12 +86,17 @@ export function useValidatePhoneNumber(create: boolean = false) {
 
   return useCallback(
     (value: unknown) => {
-      const valid = isValidPhoneNumber(value);
-      if (create && required) return required.message;
+      if (create && !value) return required.message;
+
+      const prefixed = !Number.isNaN(Number(value)) ? `01${value}` : null;
+      if (!prefixed) return intl("error.phone-number.invlaid");
+
+      const valid = isValidPhoneNumber(prefixed);
       if (valid === FieldError.InvalidPhoneNumber)
-        return intl("error.phone.number.invlaid");
+        return intl("error.phone-number.invlaid");
+      return true;
     },
-    [intl]
+    [create, intl, required]
   );
 }
 

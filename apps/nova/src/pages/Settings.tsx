@@ -30,6 +30,7 @@ const Settings: React.FC = () => {
   const toast = useToast();
   const profile = useAppSelector(profileSelectors.full);
   const [photo, setPhoto] = useState<File | null>(null);
+
   const form = useForm<IForm>({
     defaultValues: {
       name: profile.value?.user.name || "",
@@ -65,14 +66,10 @@ const Settings: React.FC = () => {
     (data: IForm) => {
       if (!profile.value?.user) return;
       mutation.mutate({ id: profile.value?.user.id, payload: data });
+      if (photo) mediaMutation.mutate({ image: photo });
     },
-    [mutation, profile.value?.user]
+    [mediaMutation, mutation, photo, profile.value?.user]
   );
-
-  const handleSave = useCallback(() => {
-    if (!photo) return;
-    mediaMutation.mutate({ image: photo });
-  }, [mediaMutation, photo]);
 
   return (
     <div className="max-w-screen-lg mx-auto w-full">
@@ -143,7 +140,6 @@ const Settings: React.FC = () => {
               size={ButtonSize.Large}
               className="mr-auto"
               htmlType="submit"
-              onClick={handleSave}
             >
               {intl("settings.save")}
             </Button>

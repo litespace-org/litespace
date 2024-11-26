@@ -74,8 +74,8 @@ export function isValidEmail(email: unknown): FieldError.InvalidEmail | true {
   return true;
 }
 
-export function isValidPhoneNumber(number: unknown) {
-  if (typeof number !== "number" || !PHONE_NUMBER_REGEX.test(`${number}`))
+export function isValidPhoneNumber(phone: unknown) {
+  if (typeof phone !== "string" || !PHONE_NUMBER_REGEX.test(phone))
     return FieldError.InvalidPhoneNumber;
   return true;
 }
