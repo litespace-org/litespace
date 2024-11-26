@@ -1,31 +1,51 @@
 import { Api } from "@fixtures/api";
-import db, { user } from "@fixtures/db";
+import db, { flush } from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
-import { Wss } from "@litespace/types";
-
-async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+import { IUser, Wss } from "@litespace/types";
 
 describe("Typing", () => {
-  it("should emit an event", async () => {
+  let tutor: IUser.LoginApiResponse;
+  let student: IUser.LoginApiResponse;
+  let room: number;
+  let tutorSocket: ClientSocket;
+  let studentSocket: ClientSocket;
+
+  beforeEach(async () => {
+    await flush();
+
     const tutorApi = await Api.forTutor();
-    const tutor = await tutorApi.findCurrentUser();
+    tutor = await tutorApi.findCurrentUser();
+
     const studentApi = await Api.forStudent();
-    const student = await studentApi.findCurrentUser();
+    student = await studentApi.findCurrentUser();
 
-    const room = await db.room([student.user.id, tutor.user.id]);
+    room = await db.room([student.user.id, tutor.user.id]);
+    tutorSocket = new ClientSocket(tutor.token);
+    studentSocket = new ClientSocket(student.token);
+  });
 
-    const tutorSocket = new ClientSocket(tutor.token);
-    tutorSocket.client.on(Wss.ServerEvent.UserTyping, ({ roomId }) => {
-      console.log("Tutor is typing");
-      console.log(roomId);
-    });
+  it("should emit an event", async () => {
+    const result = tutorSocket.wait(Wss.ServerEvent.UserTyping);
+    studentSocket.userTyping(room);
 
-    const stuentSocket = new ClientSocket(student.token);
-    stuentSocket.userTyping(room);
+    const { userId, roomId } = await result;
 
-    console.log("waiting");
-    await sleep(5_000);
-  }, 999999999);
+    expect(roomId).toBe(room);
+    expect(userId).toBe(student.user.id);
+  });
+
+  it("should omit typing event incase user is not a room member", async () => {
+    const unauthedStudentApi = await Api.forStudent();
+    const unauthedStudent = await unauthedStudentApi.findCurrentUser();
+    const unauthedStudentSocket = new ClientSocket(unauthedStudent.token);
+
+    const result = tutorSocket.wait(Wss.ServerEvent.UserTyping);
+    unauthedStudentSocket.userTyping(room);
+
+    await result
+      .then(() => {
+        throw Error("Unexpected success");
+      })
+      .catch((error: Error) => expect(error.message).toBe("TIMEOUT"));
+  });
 });

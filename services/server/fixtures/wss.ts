@@ -1,8 +1,6 @@
 import { io, Socket } from "socket.io-client";
-import { sockets, TokenType } from "@litespace/atlas";
+import { sockets } from "@litespace/atlas";
 import { Backend, Wss } from "@litespace/types";
-import { safe } from "@litespace/sol/error";
-import { rooms } from "@litespace/models";
 
 export class ClientSocket {
   public readonly client: Socket<Wss.ServerEventsMap, Wss.ClientEventsMap>;
@@ -16,5 +14,20 @@ export class ClientSocket {
 
   userTyping(roomId: number) {
     this.client.emit(Wss.ClientEvent.UserTyping, { roomId });
+  }
+
+  /**
+   * Wait for event.
+   *
+   * Wrapp event callback with promise.
+   */
+  async wait<T extends keyof Wss.ServerEventsMap>(
+    event: T
+  ): Promise<Parameters<Wss.ServerEventsMap[T]>[0]> {
+    return new Promise((resolve, reject) => {
+      // @ts-ignore
+      this.client.on(event, resolve);
+      setTimeout(() => reject(new Error("TIMEOUT")), 1_000);
+    });
   }
 }
