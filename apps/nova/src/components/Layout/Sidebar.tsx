@@ -13,6 +13,7 @@ import Logout from "@litespace/assets/Logout";
 import People from "@litespace/assets/People";
 import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
+import Video from "@litespace/assets/Video";
 import cn from "classnames";
 import React, { SVGProps, useCallback, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -77,6 +78,11 @@ const Sidebar = () => {
         label: intl("sidebar.dashboard"),
         route: Route.Root,
         Icon: Home,
+      },
+      {
+        label: intl("sidebar.upcoming-lessons"),
+        route: Route.UpcomingLessons,
+        Icon: Video,
       },
       {
         label: intl("sidebar.tutors"),

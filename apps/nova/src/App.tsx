@@ -28,6 +28,7 @@ import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import { useAtlas } from "@litespace/headless/atlas";
+import UpcomingLessons from "@/pages/UpcomingLessons";
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,7 @@ const router = createBrowserRouter([
       { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Call, element: <Call /> },
       { path: Route.Dashboard, element: <Dashboard /> },
+      { path: Route.UpcomingLessons, element: <UpcomingLessons /> },
       { path: Route.Schedule, element: <Schedule /> },
       { path: Route.EditSchedule, element: <EditSchedule /> },
       { path: Route.Settings, element: <Settings /> },
