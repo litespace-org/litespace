@@ -29,6 +29,7 @@ export { Alert, AlertType } from "@/components/Alert";
 export { Switch } from "@/components/Switch";
 export { Stepper } from "@/components/Stepper";
 export { TextEditor } from "@/components/TextEditor";
+export { UpcomingLessonCard } from "@/components/Lessons";
 export { ErrorPage } from "@/components/ErrorPage";
 export { Loading } from "@/components/Loading";
 export { RawHtml } from "@/components/RawHtml";

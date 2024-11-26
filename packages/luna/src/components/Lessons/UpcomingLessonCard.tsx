@@ -24,7 +24,7 @@ export type CardProps = {
   onCancel: Void;
 };
 
-const UpcomingLessonCard: React.FC<CardProps> = ({
+export const UpcomingLessonCard: React.FC<CardProps> = ({
   start,
   duration,
   tutor,
@@ -48,7 +48,7 @@ const UpcomingLessonCard: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "tw-flex tw-flex-col tw-gap-6 tw-w-[255px] tw-py-6",
+        "tw-flex tw-flex-col tw-gap-6 tw-py-6",
         "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-lesson-upcoming-card",
         {
           "tw-bg-brand-100": canJoin,
@@ -57,7 +57,7 @@ const UpcomingLessonCard: React.FC<CardProps> = ({
         }
       )}
     >
-      <div className="tw-flex tw-justify-center tw-border-b tw-border-natural-200 tw-pb-4">
+      <div className="tw-flex tw-justify-center tw-border-b tw-border-natural-200 tw-pb-4 tw-px-2">
         {canceled ? (
           <Typography
             element="caption"
@@ -123,7 +123,7 @@ const UpcomingLessonCard: React.FC<CardProps> = ({
             </Typography>
           </div>
         </div>
-        <div className="tw-flex tw-gap-4">
+        <div className="tw-flex tw-gap-4 tw-justify-center">
           {canceled ? (
             <Button
               size={ButtonSize.Tiny}
