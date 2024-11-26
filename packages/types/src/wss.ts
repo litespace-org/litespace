@@ -18,6 +18,7 @@ export enum ClientEvent {
   ToggleCamera = "ToggleCamera",
   ToggleMic = "ToggleMic",
   Disconnect = "disconnect",
+  UserTyping = "UserTyping",
 }
 
 /**
@@ -44,6 +45,7 @@ export enum ServerEvent {
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
   ServerStats = "ServerStats",
+  UserTyping = "UserTyping",
 }
 
 export enum Room {
@@ -65,6 +67,7 @@ export type ClientEventsMap = {
   [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
+  [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
 };
 
 /**
@@ -99,4 +102,5 @@ export type ServerEventsMap = {
   [ServerEvent.RuleDeleted]: EventCallback<void>;
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
+  [ServerEvent.UserTyping]: EventCallback<{ roomId: number }>;
 };
