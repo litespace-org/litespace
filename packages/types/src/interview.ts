@@ -87,6 +87,9 @@ export type FindInterviewsApiQuery = IFilter.Pagination & {
   signers?: number[];
 };
 
+/**
+ * @deprecated should be removed
+ */
 export type FindPagedInterviewsProps = {
   query: UseInfiniteQueryResult<
     InfiniteData<
