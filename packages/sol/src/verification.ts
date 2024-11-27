@@ -81,24 +81,15 @@ export function isValidPhoneNumber(phone: unknown) {
 }
 
 export function isValidPassword(
-  password: string
+  password: unknown
 ):
   | FieldError.ShortPassword
   | FieldError.LongPassword
-  | FieldError.MissingPasswordLetters
-  | FieldError.MissingPasswordNumbers
   | FieldError.InvalidPassword
   | true {
-  if (!NUMBERS_ONLY_REGEX.test(password))
-    return FieldError.MissingPasswordNumbers;
-
-  if (!PASSWORD_LETTERS_REGEX.test(password))
-    return FieldError.MissingPasswordLetters;
-
-  if (password.length > MAX_PASSWORD_LENGTH) return FieldError.LongPassword;
-
+  if (typeof password !== "string") return FieldError.InvalidPassword;
   if (password.length < MIN_PASSWORD_LENGTH) return FieldError.ShortPassword;
-
+  if (password.length > MAX_PASSWORD_LENGTH) return FieldError.LongPassword;
   if (!PASSWORD_REGEX.test(password)) return FieldError.InvalidPassword;
 
   return true;
