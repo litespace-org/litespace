@@ -1,7 +1,10 @@
 import { MessageStream, MessageStreamAction } from "@litespace/luna/hooks/chat";
 import { Wss, IMessage } from "@litespace/types";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useSocket } from "@litespace/headless/socket";
+import { useAppSelector } from "@/redux/store";
+import { profileSelectors } from "@/redux/user/profile";
+import { useFindUserRooms } from "@litespace/headless/messageRooms";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
@@ -76,4 +79,27 @@ export function useChat(onMessage?: OnMessage) {
     deleteMessage,
     updateMessage,
   };
+}
+
+export type UseRoomQueryParams = {
+  keyword?: string;
+  queryId: "all" | "pinned";
+};
+
+export function useRoomQuery({ keyword, queryId }: UseRoomQueryParams) {
+  const profile = useAppSelector(profileSelectors.user);
+
+  const isPinned = queryId === "pinned";
+
+  const { list, query, more } = useFindUserRooms(profile, queryId, {
+    keyword,
+    pinned: isPinned,
+  });
+
+  const enabled = useMemo(
+    () => query.hasNextPage && !query.isLoading && !query.isFetching,
+    [query.hasNextPage, query.isFetching, query.isLoading]
+  );
+
+  return { list, query, more, enabled };
 }
