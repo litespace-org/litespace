@@ -387,6 +387,14 @@
   "settings.edit.personal.email.placeholder": "قم بكتابة ايميلك",
   "settings.edit.personal.phone-number": "رقم الهاتف",
   "settings.edit.personal.phone-number.placeholder": "قم بكتابة رقم هاتفك",
+  "settings.edit.password.title": "تغيير كلمة السر",
+  "settings.edit.password.current": "كلمة السر الحالية",
+  "settings.edit.password.current.placeholder": "قم بكتابة كلمة السر الحالية",
+  "settings.edit.password.new": "كلمة السر الجديدة",
+  "settings.edit.password.new.placeholder": "قم بكتابة كلمة السر الجديدة",
+  "settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
+  "settings.edit.password.confirm.placeholder": "أعد كتابة كلمة السر الجديدة",
+  "settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
   "settings.save": "حفظ التغيرات",
   "profile.update.success": "تم تحديث بياناتك بنجاح",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
@@ -581,5 +589,8 @@
   "error.plan.title.invalid": "عنوان غير مناسب",
   "error.plan.title.short": "عنوان قصير جدا",
   "error.plan.title.long": "عنوان طويل جدا",
-  "error.plan.price.absent": "لابد من تحديد السعر"
+  "error.plan.price.absent": "لابد من تحديد السعر",
+  "error.password.short": "رقم سري قصير",
+  "error.password.long": "رقم سري طويل",
+  "error.password.invalid": "يجب أن يحتوي علي أرقام، حروف ، رموز"
 }
