@@ -1,81 +1,72 @@
-import React, { useMemo } from "react";
-// import Room from "@/components/Chat/Room";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
-import { useInfinteScroll } from "@litespace/luna/hooks/common";
-import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
+import { ChatItem } from "@litespace/luna/Chat";
+import { SelectRoom } from "@litespace/luna/hooks/chat";
 import { Loading } from "@litespace/luna/Loading";
+import { Typography } from "@litespace/luna/Typography";
+import { IRoom, Paginated, Void } from "@litespace/types";
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 import cn from "classnames";
-import { useFindUserRooms } from "@litespace/headless/messageRooms";
 
-
-// TODO: Needs refactoring to suit the new data returned from the backend
+type Query = UseInfiniteQueryResult<
+  InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
+  Error
+>;
 
 const Rooms: React.FC<{
-  selected: SelectedRoom;
+  type: "all" | "pinned";
+  title: string;
+  query: Query;
+  rooms: IRoom.FindUserRoomsApiRecord[] | null;
   select: SelectRoom;
-}> = (
-    // { select, selected: { room, members} }
-  ) => {
-    const profile = useAppSelector(profileSelectors.user);
-
-    const { list: rooms, query, more } = useFindUserRooms(profile);
-
-    console.log(rooms);
-
-    const enabled = useMemo(
-      () => query.hasNextPage && !query.isLoading && !query.isFetching,
-      [query.hasNextPage, query.isFetching, query.isLoading]
-    );
-    const { target } = useInfinteScroll<HTMLDivElement>(more, enabled);
-
-    // useEffect(() => {
-    //   // handle the case if a room is preselected but without members.
-    //   if (room && isEmpty(members) && rooms) {
-    //     const roomMembers = rooms.find((members) => {
-    //       const member = first(members);
-    //       return member?.roomId === room;
-    //     });
-    //     if (!roomMembers) return;
-    //     select({ room, members: roomMembers });
-    //   }
-    // }, [members, room, rooms, select]);
-
-    return (
-      <div
-        className={cn(
-          "flex flex-col bg-background-200 overflow-auto main-scrollbar mb-1",
-          "w-20 md:w-80"
-        )}
-      >
-
-
-
-        {/* {rooms?.map((members) => {
-          const member = first(members);
-          if (!member) return null;
-          return (
-            <Room
-              key={member.roomId}
-              select={() => select({ room: member.roomId, members })}
-              active={member.roomId === room}
-              members={members}
-            />
-          );
-        })} */}
-
-
+  refetch: Void;
+  roomId: number | null;
+  target: React.RefObject<HTMLDivElement>;
+  Icon: React.ReactNode;
+}> = ({ query, rooms, select, refetch, target, roomId, title, Icon, type }) => {
+  return (
+    <div className="mt-6">
+      <Typography className="flex items-center text-sm text-natural-600 gap-[2.5px]">
+        {Icon}
+        {title}
+      </Typography>
+      {query.isFetching || query.isLoading ? (
         <Loading
-          show={query.isFetching || query.isLoading}
           className={cn("shrink-0", {
             "h-full": query.isLoading,
             "h-10": query.isFetching,
           })}
         />
-
-        <div ref={target} />
-      </div>
-    );
-  };
+      ) : (
+        <div className="flex flex-col justify-stretch mt-4">
+          {rooms
+            ?.filter((r) =>
+              type === "pinned" ? r.settings.pinned : !r.settings.pinned
+            )
+            .map((room) => (
+              <ChatItem
+                key={room.roomId}
+                isActive={room.roomId === roomId}
+                isPinned={room.settings.pinned}
+                isMuted={room.settings.muted}
+                roomId={room.roomId}
+                image={room.otherMember.image!}
+                name={room.otherMember.name!}
+                message={room.latestMessage?.text || ""}
+                unreadCount={room.unreadMessagesCount}
+                isTyping={false}
+                select={() =>
+                  select({
+                    room: room.roomId,
+                    otherMember: room.otherMember,
+                  })
+                }
+                refetch={refetch}
+              />
+            ))}
+          <div ref={target} />
+        </div>
+      )}
+    </div>
+  );
+};
 
 export default Rooms;

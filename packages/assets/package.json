@@ -70,6 +70,8 @@
     "./Trash": "./dist/Trash.tsx",
     "./Notification": "./dist/Notification.tsx",
     "./Paperclip": "./dist/Paperclip.tsx",
+    "./AllMessages": "./dist/AllMessages.tsx",
+    "./Pin": "./dist/Pin.tsx",
     "./index": "./dist/index.tsx"
   }
 }

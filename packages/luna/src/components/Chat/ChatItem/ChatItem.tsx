@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { asFullAssetUrl } from "@/lib";
@@ -10,31 +10,53 @@ import Notification from "@litespace/assets/Notification";
 import Edit from "@litespace/assets/Edit";
 import { Avatar } from "@/components/Avatar";
 import { ActionsMenu } from "@/components/ActionsMenu";
+import { Void } from "@litespace/types";
+import { useToast } from "@/components/Toast";
+import {
+  useToggleMuteRoom,
+  useTogglePinRoom,
+} from "@litespace/headless/messageRooms";
 
 export const ChatItem: React.FC<{
   name: string;
-  chatId: number;
+  roomId: number;
   image: string;
   message: string;
   unreadCount: number;
+  select: Void;
+  refetch: Void;
   isTyping?: boolean;
   isActive?: boolean;
-  onPin: (chatId: number) => void;
-  onMute: (chatId: number) => void;
-  onDelete: (chatId: number) => void;
+  isPinned?: boolean;
+  isMuted?: boolean;
 }> = ({
+  select,
+  refetch,
+  roomId,
+  isPinned,
+  isMuted,
   name,
-  chatId,
   image,
   message,
   unreadCount,
   isTyping,
   isActive,
-  onDelete,
-  onPin,
-  onMute,
 }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
+
+  const onSuccess = useCallback(() => {
+    toast.success({ title: intl("chat.settings-change.success") });
+    refetch();
+  }, [toast, refetch, intl]);
+
+  const onError = useCallback(() => {
+    toast.error({ title: intl("chat.settings-change.error") });
+    refetch();
+  }, [toast, refetch, intl]);
+
+  const togglePin = useTogglePinRoom(onSuccess, onError);
+  const toggleMute = useToggleMuteRoom(onSuccess, onError);
 
   const actions = useMemo(
     () => [
@@ -42,11 +64,11 @@ export const ChatItem: React.FC<{
         id: 1,
         label: (
           <button
-            onClick={() => onPin(chatId)}
+            onClick={() => togglePin.mutate({ roomId, pinned: !isPinned })}
             className="tw-flex tw-gap-1 tw-items-center tw-text-natural-600 tw-text-xs tw-justify-start tw-font-semibold"
           >
             <Paperclip />
-            {intl("chat.pin")}
+            {isPinned ? intl("chat.unpin") : intl("chat.pin")}
           </button>
         ),
       },
@@ -54,11 +76,11 @@ export const ChatItem: React.FC<{
         id: 2,
         label: (
           <button
-            onClick={() => onMute(chatId)}
+            onClick={() => toggleMute.mutate({ roomId, muted: !isMuted })}
             className="tw-flex tw-gap-1 tw-items-center tw-text-natural-600 tw-text-xs tw-justify-start tw-font-semibold"
           >
             <Notification />
-            {intl("chat.mute")}
+            {isMuted ? intl("chat.unmute") : intl("chat.mute")}
           </button>
         ),
       },
@@ -66,7 +88,7 @@ export const ChatItem: React.FC<{
         id: 3,
         label: (
           <button
-            onClick={() => onDelete(chatId)}
+            onClick={() => {}}
             className="tw-flex tw-gap-1 tw-items-center tw-text-natural-600 tw-text-xs tw-justify-start tw-font-semibold"
           >
             <Trash />
@@ -75,11 +97,12 @@ export const ChatItem: React.FC<{
         ),
       },
     ],
-    [intl, onDelete, onMute, onPin, chatId]
+    [intl, isMuted, isPinned, toggleMute, togglePin, roomId]
   );
 
   return (
     <div
+      onClick={select}
       className={cn(
         "tw-flex tw-gap-4 tw-items-stretch tw-group",
         "tw-max-w-[352px] tw-p-2 tw-rounded-lg tw-cursor-pointer",
