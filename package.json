@@ -52,7 +52,15 @@
     "github": "vite-node scripts/github.ts",
     "intl": "vite-node scripts/intl.ts",
     "clean:dep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules",
-    "clean:dist": "pnpm -r exec rm -rf dist"
+    "clean:dist": "pnpm -r exec rm -rf dist",
+    "assets": "pnpm --filter @litespace/assets",
+    "atlas": "pnpm --filter @litespace/assets",
+    "email": "pnpm --filter @litespace/email",
+    "headless": "pnpm --filter @litespace/headless",
+    "luna": "pnpm --filter @litespace/luna",
+    "models": "pnpm --filter @litespace/models",
+    "sol": "pnpm --filter @litespace/sol",
+    "types": "pnpm --filter @litespace/types"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

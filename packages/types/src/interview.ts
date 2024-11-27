@@ -10,15 +10,30 @@ export enum Status {
 
 export type Self = {
   ids: {
+    /**
+     * The interview ID itself.
+     */
     self: number;
+    /**
+     * The interviewer id (the id of the tutor manager).
+     */
     interviewer: number;
+    /**
+     * The interviewee id (the id of the tutor)
+     */
     interviewee: number;
-    call: number;
+    call: number | null;
+    rule: number;
   };
   feedback: { interviewer: string | null; interviewee: string | null };
   note: string | null;
   level: number | null;
   status: Status;
+  /**
+   * Singer: the id for the super admin who signed the interview.
+   *
+   * When the signer is null, it means that the interview is not signed yet.
+   */
   signer: number | null;
   createdAt: string;
   updatedAt: string;
@@ -26,11 +41,13 @@ export type Self = {
 
 export type Row = {
   id: number;
+  start: Date;
   interviewer_id: number;
   interviewee_id: number;
-  call_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
+  call_id: number | null;
+  rule_id: number;
   note: string | null;
   level: number | null;
   status: Status;
@@ -42,7 +59,6 @@ export type Row = {
 export type CreatePayload = {
   interviewer: number;
   interviewee: number;
-  call: number;
 };
 
 export type CreateApiPayload = {
