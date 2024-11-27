@@ -116,10 +116,10 @@ exports.up = (pgm) => {
   pgm.createTable(
     "call_members",
     {
-      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
       call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     },
-    { constraints: { primaryKey: ["user_id", "call_id"] } }
+    { constraints: { primaryKey: ["call_id", "user_id"] } }
   );
 
   pgm.createTable("call_events", {
@@ -135,7 +135,7 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
-    call_id: { type: "INT", default: null },
+    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
     canceled_by: { type: "INT", references: "users(id)", default: null },
     canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
@@ -154,8 +154,8 @@ exports.up = (pgm) => {
     interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
-    call_id: { type: "INT", references: "calls(id)", default: null },
-    rule_id: { type: "SERAIL", references: "rules(id)", notNull: true },
+    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
+    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },

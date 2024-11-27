@@ -25,6 +25,10 @@ export type Self = {
     call: number | null;
     rule: number;
   };
+  /**
+   * ISO UTC datetime.
+   */
+  start: string;
   feedback: { interviewer: string | null; interviewee: string | null };
   note: string | null;
   level: number | null;
@@ -46,8 +50,8 @@ export type Row = {
   interviewee_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
-  call_id: number | null;
   rule_id: number;
+  call_id: number | null;
   note: string | null;
   level: number | null;
   status: Status;
@@ -57,6 +61,12 @@ export type Row = {
 };
 
 export type CreatePayload = {
+  /**
+   * ISO UTC datetime.
+   */
+  start: string;
+  call: number;
+  rule: number;
   interviewer: number;
   interviewee: number;
 };

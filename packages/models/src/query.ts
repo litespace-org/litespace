@@ -4,6 +4,7 @@ import init, { Knex } from "knex";
 import zod from "zod";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
+export type WithTx<T> = T & { tx: Knex.Transaction };
 
 const connection = {
   user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),

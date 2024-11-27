@@ -7,7 +7,7 @@ export type Row = {
   duration: number;
   price: number;
   rule_id: number;
-  call_id: number | null;
+  call_id: number;
   canceled_by: number | null;
   canceled_at: Date | null;
   created_at: Date;
@@ -30,7 +30,8 @@ export type Self = {
    * Example: 10.01 EGP is represented as 1001.
    */
   price: number;
-  callId: number | null;
+  ruleId: number;
+  callId: number;
   /**
    * ID of the member who canceled the lesson.
    */
@@ -56,42 +57,42 @@ export type Self = {
 export type MemberRow = {
   user_id: number;
   lesson_id: number;
-  host: boolean;
 };
 
 export type Member = {
   userId: number;
   lessonId: number;
-  host: boolean;
 };
 
 export type PopuldatedMemberRow = {
-  userId: number;
-  lessonId: number;
-  host: boolean;
-  email: IUser.Row["email"];
+  user_id: number;
+  lesson_id: number;
   name: IUser.Row["name"];
   image: IUser.Row["image"];
   role: IUser.Role;
-  createdAt: Date;
-  updatedAt: Date;
 };
 
 export type PopuldatedMember = {
   userId: number;
   lessonId: number;
-  host: boolean;
-  email: IUser.Self["email"];
   name: IUser.Self["name"];
   image: IUser.Self["image"];
   role: IUser.Role;
-  createdAt: string;
-  updatedAt: string;
 };
 
 export type CreatePayload = {
+  /**
+   * ISO UTC datetime.
+   */
+  start: string;
+  /**
+   * Lesson duration in minutes.
+   */
+  duration: number;
   tutor: number;
   student: number;
+  rule: number;
+  call: number;
   /**
    * Lesson price scaled to the power of 2.
    */
