@@ -57,7 +57,7 @@ const UserForm: React.FC<{
   );
 
   const validateEmail = useValidateEmail(true);
-  const passwordRules = useValidatePassword(true);
+  const validatePassword = useValidatePassword(true);
   const createUser = useCreateUser({ onSuccess, onError });
 
   const onSubmit = useCallback(
@@ -104,7 +104,7 @@ const UserForm: React.FC<{
                 control={form.control}
                 name="password"
                 value={form.watch("password")}
-                rules={passwordRules}
+                rules={{ validate: validatePassword }}
                 type={InputType.Password}
               />
             }

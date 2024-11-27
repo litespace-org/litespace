@@ -219,7 +219,7 @@ const Profile: React.FC<{
                   name="password.current"
                   autoComplete="off"
                   disabled={disabled}
-                  rules={validatePassword}
+                  rules={{ validate: validatePassword }}
                 />
               }
             />
