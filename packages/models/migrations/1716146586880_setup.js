@@ -142,10 +142,13 @@ exports.up = (pgm) => {
 
   pgm.createTable("lessons", {
     id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
+    start: { type: "TIMESTAMP", notNull: true },
+    duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
+    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     call_id: { type: "SERIAL", notNull: true },
-    canceled_by: { type: "INT", references: "users(id)" },
-    canceled_at: { type: "TIMESTAMP" },
+    canceled_by: { type: "INT", references: "users(id)", default: null },
+    canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -158,11 +161,12 @@ exports.up = (pgm) => {
 
   pgm.createTable("interviews", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    start: { type: "TIMESTAMP", notNull: true },
     interviewer_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
+    call_id: { type: "SERIAL", references: "calls(id)", default: null },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },
