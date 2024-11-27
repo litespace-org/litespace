@@ -15,8 +15,13 @@ describe("Lessons", () => {
   describe(nameof(lessons.countCounterpartMembers), () => {
     describe("Simple (one student, one tutor)", () => {
       it("Should count one unique student for the tutor", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: false,
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          timing: "future",
           canceled: false,
         });
 
@@ -38,10 +43,13 @@ describe("Lessons", () => {
       });
 
       it("Should count no student if the lesson will happen in the future", async () => {
-        const { tutor } = await fixtures.make.lesson({
-          future: true,
+        const tutor = await fixtures.tutor();
+
+        await fixtures.lesson({
+          timing: "future",
           canceled: false,
         });
+
         const count = await lessons.countCounterpartMembers({
           canceled: false,
           future: false,
@@ -51,8 +59,11 @@ describe("Lessons", () => {
       });
 
       it("Should count future students/tutors when the `future` flag is enabled", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: true,
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          timing: "future",
           canceled: false,
         });
 
@@ -94,8 +105,11 @@ describe("Lessons", () => {
       });
 
       it("Should count canceled students/tutors when the `canceled` flag is enabled", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: false,
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          timing: "future",
           canceled: true,
         });
 
@@ -194,15 +208,9 @@ describe("Lessons", () => {
         });
 
         await fixtures.lesson({
-          lesson: {
-            host: tutor.id,
-            members: [student.id],
-          },
-          call: {
-            host: tutor.id,
-            members: [student.id],
-            rule: rule.id,
-          },
+          tutor: tutor.id,
+          student: student.id,
+          rule: rule.id,
         });
       }
 
@@ -407,9 +415,9 @@ describe("Lessons", () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
             const current = concat(lessons.past, lessons.future).map(
-              ({ call }) => ({
-                start: call.self.start,
-                duration: call.self.duration,
+              ({ lesson }) => ({
+                start: lesson.start,
+                duration: lesson.duration,
               })
             );
             return concat(list, current);
@@ -424,9 +432,9 @@ describe("Lessons", () => {
       it("should ignore future lessons", async () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
-            const current = concat(lessons.past).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
+            const current = concat(lessons.past).map(({ lesson }) => ({
+              start: lesson.start,
+              duration: lesson.duration,
             }));
             return concat(list, current);
           },
@@ -446,9 +454,9 @@ describe("Lessons", () => {
             const current = concat(
               lessons.uncanceled.future,
               lessons.uncanceled.past
-            ).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
+            ).map(({ lesson }) => ({
+              start: lesson.start,
+              duration: lesson.duration,
             }));
             return concat(list, current);
           },
@@ -470,10 +478,12 @@ describe("Lessons", () => {
       it("should ignore future and canceled lessons", async () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
-            const current = concat(lessons.uncanceled.past).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
-            }));
+            const current = concat(lessons.uncanceled.past).map(
+              ({ lesson }) => ({
+                start: lesson.start,
+                duration: lesson.duration,
+              })
+            );
             return concat(list, current);
           },
           []
@@ -671,17 +681,11 @@ describe("Lessons", () => {
       // create 24 lessons (30 minute each) across the day
       for (let i = 0; i < 24; i++) {
         await fixtures.lesson({
-          call: {
-            rule: rule.id,
-            start: date.add(i, "hour").toISOString(),
-            duration: 30,
-            host: tutor.id,
-            members: [student.id],
-          },
-          lesson: {
-            host: tutor.id,
-            members: [student.id],
-          },
+          rule: rule.id,
+          start: date.add(i, "hour").toISOString(),
+          duration: 30,
+          tutor: tutor.id,
+          student: student.id,
         });
       }
 

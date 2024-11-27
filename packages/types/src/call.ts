@@ -1,4 +1,4 @@
-import { IUser } from "@/index";
+import { IUser, NonEmptyList } from "@/index";
 
 export enum RecordingStatus {
   Idle = "idle",
@@ -37,32 +37,20 @@ export type Member = {
   callId: number;
 };
 
-/**
- * @deprecated should be removed becuase of the new database models
- */
 export type PopuldatedMemberRow = {
-  user_id: number;
   call_id: number;
-  email: IUser.Row["email"];
+  user_id: number;
   name: IUser.Row["name"];
   image: IUser.Row["image"];
   role: IUser.Role;
 };
 
 export type PopuldatedMember = {
-  userId: number;
   callId: number;
-  email: IUser.Self["email"];
+  userId: number;
   name: IUser.Self["name"];
   image: IUser.Self["image"];
   role: IUser.Role;
-};
-
-export type CreatePayload = {
-  /**
-   * At least one member is required to create the call.
-   */
-  members: [number, ...number[]];
 };
 
 export type UpdatePayload = {

@@ -1,5 +1,11 @@
 import { IFilter, IInterview, Paginated } from "@litespace/types";
-import { column, countRows, knex, withPagination } from "@/query";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+} from "@/query";
 import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
@@ -10,11 +16,13 @@ export class Interviews {
 
   readonly columns: Record<keyof IInterview.Row, string> = {
     id: this.column("id"),
+    start: this.column("start"),
     interviewer_id: this.column("interviewer_id"),
     interviewee_id: this.column("interviewee_id"),
-    call_id: this.column("call_id"),
     interviewer_feedback: this.column("interviewer_feedback"),
     interviewee_feedback: this.column("interviewee_feedback"),
+    rule_id: this.column("rule_id"),
+    call_id: this.column("call_id"),
     note: this.column("note"),
     level: this.column("level"),
     status: this.column("status"),
@@ -23,16 +31,17 @@ export class Interviews {
     updated_at: this.column("updated_at"),
   };
 
-  async create(
-    payload: IInterview.CreatePayload,
-    tx?: Knex.Transaction
-  ): Promise<IInterview.Self> {
+  async create({
+    tx,
+    ...payload
+  }: WithOptionalTx<IInterview.CreatePayload>): Promise<IInterview.Self> {
     const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
       .insert({
         interviewer_id: payload.interviewer,
         interviewee_id: payload.interviewee,
         call_id: payload.call,
+        rule_id: payload.rule,
         created_at: now,
         updated_at: now,
       })
@@ -131,9 +140,8 @@ export class Interviews {
 
     if (signed === true)
       baseBuilder.where(this.column("signer"), "IS NOT", null);
-    else if (signed === false) {
+    else if (signed === false)
       baseBuilder.where(this.column("signer"), "IS", null);
-    }
 
     if (signers && !isEmpty(signers))
       baseBuilder.whereIn(this.column("signer"), signers);
@@ -142,13 +150,8 @@ export class Interviews {
 
     const queryBuilder = baseBuilder
       .clone()
-      .join(
-        calls.tables.calls,
-        this.column("call_id"),
-        calls.columns.calls("id")
-      )
       .select<IInterview.Row[]>(this.columns)
-      .orderBy(calls.columns.calls("start"), "desc");
+      .orderBy(this.column("start"), "desc");
     const rows = await withPagination(queryBuilder, { page, size });
     return { list: rows.map((row) => this.from(row)), total };
   }
@@ -159,12 +162,14 @@ export class Interviews {
         self: row.id,
         interviewer: row.interviewer_id,
         interviewee: row.interviewee_id,
+        rule: row.rule_id,
         call: row.call_id,
       },
       feedback: {
         interviewer: row.interviewer_feedback,
         interviewee: row.interviewee_feedback,
       },
+      start: row.start.toISOString(),
       note: row.note,
       level: row.level,
       status: row.status,
@@ -181,7 +186,7 @@ export class Interviews {
   }
 
   column(value: keyof IInterview.Row): string {
-    return column(value, this.table);
+    return column<IInterview.Row>(value, this.table);
   }
 }
 
