@@ -1,6 +1,6 @@
 export { Button, ButtonType, ButtonSize } from "@/components/Button";
 export { Dir } from "@/components/Direction";
-export { Input, InputType } from "@/components/Input";
+export { Input, type InputType } from "@/components/Input";
 export { NumericInput } from "@/components/NumericInput";
 export { Toast, ToastProvider, useToast } from "@/components/Toast";
 export { Form, Field, Label, Controller } from "@/components/Form";

@@ -24,9 +24,8 @@ export function useRequired() {
   );
 }
 
-export function useValidatePassword(create: boolean = false) {
+export function useValidatePassword() {
   const intl = useFormatMessage();
-  const required = useRequired();
 
   const errorMap: Record<
     | FieldError.ShortPassword
@@ -43,12 +42,12 @@ export function useValidatePassword(create: boolean = false) {
   );
   return useCallback(
     (value: unknown) => {
-      if (create && !value) return required.message;
+      if (typeof value === "string" && !value) return true;
       const valid = isValidPassword(value);
       if (valid !== true) return intl(errorMap[valid]);
       return true;
     },
-    [create, errorMap, required, intl]
+    [errorMap, intl]
   );
 }
 
@@ -96,23 +95,18 @@ export function useValidateEmail(create: boolean = false) {
   );
 }
 
-export function useValidatePhoneNumber(create: boolean = false) {
+export function useValidatePhoneNumber() {
   const intl = useFormatMessage();
-  const required = useRequired();
 
   return useCallback(
     (value: unknown) => {
-      if (create && !value) return required.message;
-
-      const prefixed = !Number.isNaN(Number(value)) ? `01${value}` : null;
-      if (!prefixed) return intl("error.phone-number.invlaid");
-
-      const valid = isValidPhoneNumber(prefixed);
+      if (typeof value === "string" && !value) return true;
+      const valid = isValidPhoneNumber(value);
       if (valid === FieldError.InvalidPhoneNumber)
         return intl("error.phone-number.invlaid");
       return true;
     },
-    [create, intl, required]
+    [intl]
   );
 }
 

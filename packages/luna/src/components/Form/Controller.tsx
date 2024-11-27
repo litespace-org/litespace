@@ -20,6 +20,8 @@ import { Textarea as BaseTextarea } from "@/components/Textarea";
 import { TextareaProps } from "@/components/Textarea/Textarea";
 import { TextEditor as BaseTextEditor } from "@/components/TextEditor";
 import { Duration as IDuration } from "@litespace/sol/duration";
+import Eye from "@litespace/assets/Eye";
+import EyeSlash from "@litespace/assets/EyeSlash";
 import { IUser } from "@litespace/types";
 import {
   Control,
@@ -36,6 +38,7 @@ import {
   WeekdayPicker as BaseWeekdayPicker,
   WeekdayPickerProps,
 } from "@/components/WeekdayPicker";
+import { useState } from "react";
 
 export function TextEditor<T extends FieldValues>({
   control,
@@ -89,6 +92,49 @@ export function Input<T extends FieldValues>({
         const message = formState.errors[name]?.message as string;
         return (
           <BaseInput {...field} {...props} helper={message} error={!!message} />
+        );
+      }}
+    />
+  );
+}
+
+export function Password<T extends FieldValues>({
+  control,
+  name,
+  rules,
+  ...props
+}: {
+  control: Control<T>;
+  name: Path<T>;
+  rules?: ControllerProps<T>["rules"];
+} & InputProps) {
+  const [hidden, setHidden] = useState(true);
+
+  return (
+    <Controller
+      control={control}
+      name={name}
+      rules={rules}
+      render={({ field, formState }) => {
+        const message = formState.errors[name]?.message as string;
+        return (
+          <BaseInput
+            helper={message}
+            error={!!message}
+            placeholder="******************"
+            autoComplete="off"
+            type={hidden ? "password" : "text"}
+            idleDir="ltr"
+            startActions={[
+              {
+                id: 1,
+                Icon: () => (hidden ? <EyeSlash /> : <Eye />),
+                onClick: () => setHidden(!hidden),
+              },
+            ]}
+            {...field}
+            {...props}
+          />
         );
       }}
     />

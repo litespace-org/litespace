@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 
-import { Input, InputType } from "@/components/Input";
+import { Input } from "@/components/Input";
 import { Form } from "@/components/Form";
 import React from "react";
 import { Direction } from "@/components/Direction";
@@ -31,7 +31,7 @@ export const Primary: StoryObj<IForm> = {
           label={<Label id="name">{ar["global.form.email.label"]}</Label>}
           field={
             <Input
-              type={InputType.Text}
+              type="text"
               placeholder={ar["global.form.email.placeholder"]}
               autoComplete="off"
             />

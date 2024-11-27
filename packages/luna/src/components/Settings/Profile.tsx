@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from "react";
 import { Field, Form } from "@/components/Form";
-import { InputType } from "@/components/Input";
 import {
   useFormatMessage,
   useUpdateUser,
@@ -214,7 +213,7 @@ const Profile: React.FC<{
               label={intl("labels.password")}
               field={
                 <Controller.Input
-                  type={InputType.Password}
+                  type="password"
                   control={form.control}
                   name="password.current"
                   autoComplete="off"

@@ -1,6 +1,5 @@
 import { Form, Field, Label, Controller } from "@litespace/luna/Form";
 import { Button, ButtonSize } from "@litespace/luna/Button";
-import { InputType } from "@litespace/luna/Input";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
@@ -121,15 +120,11 @@ const Register: React.FC = () => {
               <Field
                 label={<Label>{intl("global.form.password.label")}</Label>}
                 field={
-                  <Controller.Input
+                  <Controller.Password
                     control={control}
                     name="password"
                     value={watch("password")}
-                    type={InputType.Password}
-                    error={!!errors["password"]?.message}
-                    helper={errors["password"]?.message}
                     disabled={mutation.isPending}
-                    autoComplete="off"
                   />
                 }
               />

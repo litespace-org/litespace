@@ -5,7 +5,6 @@ import {
   ButtonVariant,
 } from "@litespace/luna/Button";
 import { Field, Label, Controller } from "@litespace/luna/Form";
-import { InputType } from "@litespace/luna/Input";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import {
@@ -46,7 +45,7 @@ const ResetPassword = () => {
     setSearchParams({});
   }, [navigate, searchParams, setSearchParams, token]);
 
-  const { control, watch, formState, handleSubmit } = useForm<IForm>({
+  const { control, watch, handleSubmit } = useForm<IForm>({
     mode: "onSubmit",
     defaultValues: {
       password: "",
@@ -97,18 +96,13 @@ const ResetPassword = () => {
         <Field
           label={<Label id="new-password">{intl("labels.new.password")}</Label>}
           field={
-            <Controller.Input
+            <Controller.Password
               required={true}
               disabled={mutation.isPending}
-              type={InputType.Password}
               value={password}
               id="new-password"
               control={control}
               rules={{ validate: validatePassword }}
-              placeholder={intl("labels.password")}
-              autoComplete="off"
-              error={!!formState.errors["password"]?.message}
-              helper={formState.errors["password"]?.message}
               name="password"
             />
           }
@@ -120,10 +114,9 @@ const ResetPassword = () => {
             </Label>
           }
           field={
-            <Controller.Input
+            <Controller.Password
               disabled={mutation.isPending}
               required={true}
-              type={InputType.Password}
               value={newPassword}
               rules={{
                 required,
@@ -137,8 +130,6 @@ const ResetPassword = () => {
               control={control}
               placeholder={intl("labels.new.password")}
               autoComplete="off"
-              error={!!formState.errors["newPassword"]?.message}
-              helper={formState.errors["newPassword"]?.message}
               name="newPassword"
             />
           }
