@@ -3,27 +3,23 @@ import PageTitle from "@/components/Common/PageTitle";
 import UploadPhoto from "@/components/Settings/UploadPhoto";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { Route } from "@/types/routes";
-import Eye from "@litespace/assets/Eye";
-import EyeSlash from "@litespace/assets/EyeSlash";
 import { useUpdateUser } from "@litespace/headless/user";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Controller, Form, Label } from "@litespace/luna/Form";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useUpdateProfileMedia } from "@litespace/luna/hooks/user";
 import {
+  useRequired,
   useValidateEmail,
   useValidatePassword,
   useValidatePhoneNumber,
   useValidateUsername,
 } from "@litespace/luna/hooks/validation";
-import { InputType } from "@litespace/luna/Input";
 import { useToast } from "@litespace/luna/Toast";
 import { Typography } from "@litespace/luna/Typography";
 import { orNull } from "@litespace/sol/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useSearchParams } from "react-router-dom";
 
 type IForm = {
   name: string;
@@ -40,15 +36,7 @@ const Settings: React.FC = () => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.full);
   const toast = useToast();
-  const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const [token, setToken] = useState<string | null>(null);
   const [photo, setPhoto] = useState<File | null>(null);
-  const [isPwdHidden, setIsPwdHidden] = useState({
-    current: true,
-    new: true,
-    confirm: true,
-  });
 
   const form = useForm<IForm>({
     defaultValues: {
@@ -58,6 +46,7 @@ const Settings: React.FC = () => {
       password: {
         new: "",
         current: "",
+        confirm: "",
       },
     },
   });
@@ -65,14 +54,11 @@ const Settings: React.FC = () => {
   const validateEmail = useValidateEmail();
   const validatePhoneNumber = useValidatePhoneNumber();
   const validatePassword = useValidatePassword();
-
-  useEffect(() => {
-    if (token) return;
-    const searchParamToken = searchParams.get("token");
-    if (!searchParamToken) return navigate(Route.Root);
-    setToken(searchParamToken);
-    setSearchParams({});
-  }, [navigate, searchParams, setSearchParams, token]);
+  const required = useRequired();
+  const requirePassword =
+    !!form.watch("password.new") ||
+    !!form.watch("password.current") ||
+    !!form.watch("password.confirm");
 
   const onSuccess = useCallback(() => {
     alert("refresh");
@@ -103,18 +89,35 @@ const Settings: React.FC = () => {
       mutation.mutate({
         id: profile.value.user.id,
         payload: {
-          name: data.name,
-          email: data.email,
-          phoneNumber: data.phoneNumber,
-          password: {
-            new: data.password.new,
-            current: data.password.current,
-          },
+          name:
+            data.name && data.name !== profile.value.user.name
+              ? data.name
+              : undefined,
+          email:
+            data.email && data.email !== profile.value.user.email
+              ? data.email
+              : undefined,
+          phoneNumber: data.phoneNumber ? data.phoneNumber : undefined,
+          password:
+            data.password.new && data.password.current
+              ? {
+                  new: data.password.new,
+                  current: data.password.current,
+                }
+              : undefined,
         },
       });
     },
     [mediaMutation, mutation, photo, profile.value?.user]
   );
+
+  useEffect(() => {
+    if (!requirePassword) {
+      form.trigger("password.current");
+      form.trigger("password.new");
+      form.trigger("password.confirm");
+    }
+  }, [form, requirePassword]);
 
   return (
     <div className="max-w-screen-lg mx-auto w-full">
@@ -162,14 +165,13 @@ const Settings: React.FC = () => {
                   value={form.watch("email")}
                   placeholder={intl("settings.edit.personal.email.placeholder")}
                   autoComplete="off"
-                  defaultDir="ltr"
                   rules={{ validate: validateEmail }}
                 />
               </div>
               <div>
                 <Label>{intl("settings.edit.personal.phone-number")}</Label>
                 <Controller.PatternInput
-                  format="01# #### ####"
+                  format="### #### ####"
                   placeholder={intl(
                     "settings.edit.personal.phone-number.placeholder"
                   )}
@@ -178,8 +180,7 @@ const Settings: React.FC = () => {
                   name="phoneNumber"
                   rules={{ validate: validatePhoneNumber }}
                   autoComplete="off"
-                  allowEmptyFormatting
-                  mask="#"
+                  mask=" "
                 />
               </div>
             </div>
@@ -193,88 +194,48 @@ const Settings: React.FC = () => {
               </Typography>
               <div>
                 <Label>{intl("settings.edit.password.current")}</Label>
-                <Controller.Input
-                  startActions={[
-                    {
-                      id: 1,
-                      Icon: () =>
-                        isPwdHidden.current ? <Eye /> : <EyeSlash />,
-                      onClick: () =>
-                        setIsPwdHidden((prev) => ({
-                          ...prev,
-                          current: !prev.current,
-                        })),
-                    },
-                  ]}
-                  placeholder={intl(
-                    "settings.edit.password.current.placeholder"
-                  )}
+                <Controller.Password
                   value={form.watch("password.current")}
                   control={form.control}
-                  rules={{ validate: validatePassword }}
-                  autoComplete="off"
+                  helper={form.formState.errors.password?.current?.message}
+                  error={!!form.formState.errors.password?.current?.message}
+                  rules={{
+                    required: requirePassword ? required : undefined,
+                    validate: validatePassword,
+                  }}
                   name="password.current"
-                  type={
-                    isPwdHidden.current ? InputType.Password : InputType.Text
-                  }
                 />
               </div>
               <div>
                 <Label>{intl("settings.edit.password.new")}</Label>
-                <Controller.Input
-                  startActions={[
-                    {
-                      id: 1,
-                      Icon: () => (isPwdHidden.new ? <Eye /> : <EyeSlash />),
-                      onClick: () => {
-                        setIsPwdHidden((prev) => ({
-                          ...prev,
-                          new: !prev.new,
-                        }));
-                      },
-                    },
-                  ]}
-                  placeholder={intl("settings.edit.password.new.placeholder")}
+                <Controller.Password
                   value={form.watch("password.new")}
                   control={form.control}
-                  rules={{ validate: validatePassword }}
-                  autoComplete="off"
+                  helper={form.formState.errors.password?.new?.message}
+                  error={!!form.formState.errors.password?.new?.message}
+                  rules={{
+                    required: requirePassword ? required : undefined,
+                    validate: validatePassword,
+                  }}
                   name="password.new"
-                  type={isPwdHidden.new ? InputType.Password : InputType.Text}
                 />
               </div>
               <div>
                 <Label>{intl("settings.edit.password.confirm")}</Label>
-                <Controller.Input
+                <Controller.Password
                   value={form.watch("password.confirm")}
                   control={form.control}
+                  helper={form.formState.errors.password?.confirm?.message}
+                  error={!!form.formState.errors.password?.confirm?.message}
                   rules={{
+                    required: requirePassword ? required : undefined,
                     validate: (value) => {
                       if (value !== form.watch("password.new"))
                         return intl("settings.edit.password.confirm.not-same");
                       return validatePassword(value);
                     },
                   }}
-                  autoComplete="off"
                   name="password.confirm"
-                  type={
-                    isPwdHidden.confirm ? InputType.Password : InputType.Text
-                  }
-                  placeholder={intl(
-                    "settings.edit.password.confirm.placeholder"
-                  )}
-                  startActions={[
-                    {
-                      id: 1,
-                      Icon: () =>
-                        isPwdHidden.confirm ? <Eye /> : <EyeSlash />,
-                      onClick: () =>
-                        setIsPwdHidden((prev) => ({
-                          ...prev,
-                          confirm: !prev.confirm,
-                        })),
-                    },
-                  ]}
                 />
               </div>
 
