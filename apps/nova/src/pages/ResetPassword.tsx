@@ -31,7 +31,7 @@ interface IForm {
 const ResetPassword = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const passwordRules = useValidatePassword();
+  const validatePassword = useValidatePassword();
   const required = useRequired();
   const toast = useToast();
 
@@ -104,7 +104,7 @@ const ResetPassword = () => {
               value={password}
               id="new-password"
               control={control}
-              rules={passwordRules}
+              rules={{ validate: validatePassword }}
               placeholder={intl("labels.password")}
               autoComplete="off"
               error={!!formState.errors["password"]?.message}

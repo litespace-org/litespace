@@ -8,6 +8,7 @@ import { useFormatMessage } from "./intl";
 import { FieldError } from "@litespace/types";
 import {
   isValidEmail,
+  isValidPassword,
   isValidPhoneNumber,
   isValidUserName,
 } from "@litespace/sol/verification";
@@ -27,13 +28,28 @@ export function useValidatePassword(create: boolean = false) {
   const intl = useFormatMessage();
   const required = useRequired();
 
-  return {
-    pattern: {
-      value: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/,
-      message: intl("error.password.invlaid"),
+  const errorMap: Record<
+    | FieldError.ShortPassword
+    | FieldError.LongPassword
+    | FieldError.InvalidPassword,
+    LocalId
+  > = useMemo(
+    () => ({
+      [FieldError.ShortPassword]: "error.password.short",
+      [FieldError.LongPassword]: "error.password.long",
+      [FieldError.InvalidPassword]: "error.password.invalid",
+    }),
+    []
+  );
+  return useCallback(
+    (value: unknown) => {
+      if (create && !value) return required.message;
+      const valid = isValidPassword(value);
+      if (valid !== true) return intl(errorMap[valid]);
+      return true;
     },
-    required: create ? required : false,
-  };
+    [create, errorMap, required, intl]
+  );
 }
 
 export function useValidateUsername(create: boolean = false) {

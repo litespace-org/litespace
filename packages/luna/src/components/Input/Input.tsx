@@ -14,9 +14,9 @@ export interface InputProps
   /**
    * Input text direction incase of no value is typed yet.
    */
-  defaultDir?: "rlt" | "ltr";
+  defaultDir?: "rtl" | "ltr";
   type?: InputType;
-  starActions?: Array<InputAction>;
+  startActions?: Array<InputAction>;
   endActions?: Array<InputAction>;
   error?: boolean;
   helper?: string | null;
@@ -31,8 +31,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       disabled,
       helper,
       placeholder,
-      defaultDir = "rlt",
-      starActions = [],
+      defaultDir = "rtl",
+      startActions = [],
       endActions = [],
       ...props
     },
@@ -60,7 +60,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "data-[disabled=true]:tw-opacity-50"
           )}
         >
-          <Actions actions={starActions} />
+          <Actions actions={startActions} />
           <input
             dir={!value ? defaultDir : "auto"}
             type={type}

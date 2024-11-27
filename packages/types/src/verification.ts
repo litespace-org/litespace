@@ -2,8 +2,6 @@ export enum FieldError {
   InvalidEmail = "invalid-email",
   ShortPassword = "short-password",
   LongPassword = "long-password",
-  MissingPasswordLetters = "missing-password-letters",
-  MissingPasswordNumbers = "missing-password-numbers",
   InvalidPassword = "invalid-password",
   InvalidUserName = "invalid-user-name",
   ShortUserName = "short-user-name",
