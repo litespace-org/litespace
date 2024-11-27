@@ -29,6 +29,7 @@
     "./Check": "./dist/Check.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
     "./Clock": "./dist/Clock.tsx",
+    "./Edit": "./dist/Edit.tsx",
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
@@ -64,6 +65,9 @@
     "./Video": "./dist/Video.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
     "./X": "./dist/X.tsx",
+    "./Trash": "./dist/Trash.tsx",
+    "./Notification": "./dist/Notification.tsx",
+    "./Paperclip": "./dist/Paperclip.tsx",
     "./index": "./dist/index.tsx"
   }
 }

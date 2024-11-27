@@ -27,7 +27,7 @@ import {
 } from "@radix-ui/react-icons";
 
 const MenuItem: React.FC<{
-  label: string;
+  label: string | React.ReactNode;
   disabled?: boolean;
   danger?: boolean;
   checked?: boolean;
@@ -40,14 +40,14 @@ const MenuItem: React.FC<{
         "tw-relative tw-flex tw-justify-between tw-items-center tw-h-6 tw-select-none tw-rounded-[3px]",
         "tw-pr-2 tw-pl-1 tw-text-sm tw-leading-none outline-none",
         "data-[disabled]:pointer-events-none  data-[disabled]:tw-text-foreground-muted",
-        "tw-min-w-56",
+        "tw-min-w-fit",
         danger
           ? "tw-text-destructive-600 data-[highlighted]:tw-bg-destructive-300 data-[highlighted]:tw-outline-destructive-400"
           : "tw-text-foreground data-[highlighted]:tw-bg-background-selection data-[highlighted]:tw-outline-border-control"
       )}
       onClick={!disabled ? onClick : undefined}
     >
-      <p className="tw-w-4/5 tw-truncate tw-leading-normal">{label}</p>
+      <p className=" tw-truncate tw-leading-normal">{label}</p>
       {checked ? <CheckIcon /> : null}
     </Item>
   );
@@ -61,6 +61,7 @@ export const ActionsMenu: React.FC<{
   onOpenChange?: DropdownMenuProps["onOpenChange"];
   small?: boolean;
   Icon?: typeof DotsVerticalIcon;
+  menuClassName?: string;
 }> = ({
   actions,
   children,
@@ -69,6 +70,7 @@ export const ActionsMenu: React.FC<{
   disabled,
   small,
   Icon = DotsVerticalIcon,
+  menuClassName,
 }) => {
   return (
     <Root dir="rtl" onOpenChange={onOpenChange}>
@@ -102,7 +104,8 @@ export const ActionsMenu: React.FC<{
       <Portal>
         <Content
           className={cn(
-            "tw-bg-background-overlay tw-border tw-border-border-overlay tw-rounded-md tw-p-1.5"
+            "tw-bg-background-overlay tw-border tw-border-border-overlay tw-rounded-md tw-p-1.5",
+            menuClassName
           )}
           sideOffset={5}
           side={side}
