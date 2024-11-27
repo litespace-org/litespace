@@ -1,6 +1,6 @@
 export type MenuAction = {
   id: number | string;
-  label: string;
+  label: string | React.ReactNode;
   disabled?: boolean;
   danger?: boolean;
   onClick?: () => void;
