@@ -4,8 +4,6 @@ import cn from "classnames";
 import { InputType, InputAction } from "@/components/Input/types";
 import { Typography } from "@/components/Typography";
 
-const passwordPlaceholder = "••••••••";
-
 // auto resize text input, used for chat box
 // https://www.youtube.com/watch?v=sOnPz_GMa38
 
@@ -14,7 +12,7 @@ export interface InputProps
   /**
    * Input text direction incase of no value is typed yet.
    */
-  defaultDir?: "rtl" | "ltr";
+  idleDir?: "rtl" | "ltr";
   type?: InputType;
   startActions?: Array<InputAction>;
   endActions?: Array<InputAction>;
@@ -30,8 +28,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       value,
       disabled,
       helper,
-      placeholder,
-      defaultDir = "rtl",
+      idleDir = "rtl",
       startActions = [],
       endActions = [],
       ...props
@@ -62,20 +59,15 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         >
           <Actions actions={startActions} />
           <input
-            dir={!value ? defaultDir : "auto"}
+            dir={!value ? idleDir : "auto"}
             type={type}
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-w-full tw-text-right focus:tw-text-start tw-bg-transparent focus:tw-outline-none",
+              "tw-w-full tw-text-start tw-bg-transparent focus:tw-outline-none",
               "placeholder:tw-font-normal placeholder:tw-text-natural-400 placeholder:tw-text-base placeholder:tw-leading-6",
               "tw-text-natural-900 dark:tw-text-foreground tw-leading-6 tw-py-4"
             )}
-            placeholder={
-              type === InputType.Password
-                ? placeholder || passwordPlaceholder
-                : placeholder
-            }
             ref={ref}
             {...props}
           />

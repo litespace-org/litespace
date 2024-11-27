@@ -7,7 +7,6 @@ import {
 } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 import { messages } from "@litespace/luna/locales";
-import { InputType } from "@litespace/luna/Input";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -36,12 +35,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const toast = useToast();
-  const {
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useForm<IForm>({
+  const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "student@litespace.org",
       password: "LiteSpace432%^&",
@@ -112,14 +106,10 @@ const Login: React.FC = () => {
               <Field
                 label={<Label id="password">{intl("labels.password")}</Label>}
                 field={
-                  <Controller.Input
+                  <Controller.Password
                     control={control}
                     name="password"
-                    type={InputType.Password}
-                    autoComplete="off"
                     value={password}
-                    error={!!errors.password?.message}
-                    helper={errors.password?.message}
                     disabled={mutation.isPending}
                   />
                 }

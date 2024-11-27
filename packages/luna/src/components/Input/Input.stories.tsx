@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Input, InputType } from "@/components/Input";
+import { Input } from "@/components/Input";
 import React, { useState } from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
@@ -32,6 +32,25 @@ export const Idle: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
+    idleDir: "ltr",
+  },
+  render(props) {
+    const [value, setValue] = useState("");
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
+  },
+};
+
+export const ArabicPlaceholder: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: faker.person.fullName(),
+    idleDir: "rtl",
   },
   render(props) {
     const [value, setValue] = useState("");
@@ -49,7 +68,7 @@ export const LTRDefaultDir: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
-    defaultDir: "ltr",
+    idleDir: "ltr",
   },
 };
 
@@ -113,7 +132,7 @@ export const Password: StoryObj<Component> = {
     });
     return (
       <Input
-        type={InputType.Password}
+        type="password"
         value={watch("password")}
         {...register("password")}
       />
@@ -129,7 +148,7 @@ export const PasswordError: StoryObj<Component> = {
     });
     return (
       <Input
-        type={InputType.Password}
+        type="password"
         value={watch("password")}
         error={true}
         helper={ar["error.invalid"]}
@@ -146,7 +165,7 @@ export const InputEnglish: StoryObj<Component> = {
     });
     return (
       <Input
-        type={InputType.Text}
+        type="password"
         placeholder={ar["global.form.email.placeholder"]}
         value={watch("email")}
         {...register("email")}
@@ -164,7 +183,7 @@ export const WithStartActions: StoryObj<Component> = {
       <Input
         placeholder={ar["global.form.email.placeholder"]}
         {...register("date")}
-        starActions={[
+        startActions={[
           {
             id: 1,
             Icon: Calendar,
