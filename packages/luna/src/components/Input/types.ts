@@ -1,8 +1,4 @@
-export enum InputType {
-  Password = "password",
-  Text = "text",
-  Date = "date",
-}
+export type InputType = "password" | "text";
 
 export type InputAction = {
   id: number;

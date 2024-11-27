@@ -13,7 +13,6 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";
-import { InputType } from "@litespace/luna/Input";
 import { CALLBACK_URL } from "@/lib/route";
 
 type IForm = {
@@ -57,7 +56,7 @@ const UserForm: React.FC<{
   );
 
   const validateEmail = useValidateEmail(true);
-  const validatePassword = useValidatePassword(true);
+  const validatePassword = useValidatePassword();
   const createUser = useCreateUser({ onSuccess, onError });
 
   const onSubmit = useCallback(
@@ -105,7 +104,7 @@ const UserForm: React.FC<{
                 name="password"
                 value={form.watch("password")}
                 rules={{ validate: validatePassword }}
-                type={InputType.Password}
+                type="password"
               />
             }
           />
