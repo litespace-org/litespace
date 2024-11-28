@@ -24,7 +24,7 @@
     "./invoices": "./dist/invoices.js",
     "./lessons": "./dist/lessons.js",
     "./interviews": "./dist/interviews.js",
-    "./messageRooms": "./dist/messageRooms.js",
+    "./chat": "./dist/chat.js",
     "./tutor": "./dist/tutor.js",
     "./rule": "./dist/rule.js",
     "./user": "./dist/user.js",
