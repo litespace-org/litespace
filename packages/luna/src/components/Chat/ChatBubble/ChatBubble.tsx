@@ -2,7 +2,7 @@ import { Void } from "@litespace/types";
 import React from "react";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
-import { ChatBubbleVariant } from "./types";
+import { ChatBubbleVariant } from "@/components/Chat/ChatBubble/types";
 import More from "@litespace/assets/More";
 import { Menu } from "@/components/Menu";
 import { useFormatMessage } from "@/hooks";
@@ -18,10 +18,14 @@ export const ChatBubble: React.FC<{
   const intl = useFormatMessage();
   return (
     <div
-      className={cn("tw-group tw-flex", "tw-gap-[14px] tw-items-center", {
-        "tw-flex-row-reverse": variant === ChatBubbleVariant.CurrentUser,
-        "tw-flex-row": variant === ChatBubbleVariant.OtherUser,
-      })}
+      className={cn(
+        "tw-group tw-flex tw-w-fit",
+        "tw-gap-[14px] tw-items-center",
+        {
+          "tw-flex-row-reverse": variant === ChatBubbleVariant.CurrentUser,
+          "tw-flex-row": variant === ChatBubbleVariant.OtherUser,
+        }
+      )}
     >
       <div
         className={cn(
