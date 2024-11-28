@@ -1,10 +1,14 @@
 import { MessageStream, MessageStreamAction } from "@litespace/luna/hooks/chat";
-import { Wss, IMessage } from "@litespace/types";
-import { useCallback, useEffect, useMemo } from "react";
+import { Wss, IMessage, IRoom } from "@litespace/types";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSocket } from "@litespace/headless/socket";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { useFindUserRooms } from "@litespace/headless/messageRooms";
+import { useFindUserRooms, useUpdateRoom } from "@litespace/headless/chat";
+import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
+import { useInfinteScroll } from "@litespace/luna/hooks/common";
+import { useToast } from "@litespace/luna/Toast";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
@@ -81,25 +85,84 @@ export function useChat(onMessage?: OnMessage) {
   };
 }
 
-export type UseRoomQueryParams = {
-  keyword?: string;
-  queryId: "all" | "pinned";
-};
+export function useRoomManager() {
+  const toast = useToast();
+  const intl = useFormatMessage();
+  const [keyword, setKeyword] = useState("");
 
-export function useRoomQuery({ keyword, queryId }: UseRoomQueryParams) {
   const profile = useAppSelector(profileSelectors.user);
 
-  const isPinned = queryId === "pinned";
-
-  const { list, query, more } = useFindUserRooms(profile, queryId, {
-    keyword,
-    pinned: isPinned,
+  const pinnedRooms = useFindUserRooms(profile?.id, {
+    pinned: true,
   });
 
-  const enabled = useMemo(
-    () => query.hasNextPage && !query.isLoading && !query.isFetching,
-    [query.hasNextPage, query.isFetching, query.isLoading]
+  const allRooms = useFindUserRooms(profile?.id, {
+    pinned: keyword ? true : false,
+    keyword,
+    size: 2,
+  });
+
+  const isEnabled = useCallback(
+    (
+      query: UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord>["query"]
+    ) => query.hasNextPage && !query.isLoading && !query.isFetching,
+    []
   );
 
-  return { list, query, more, enabled };
+  const allRoomsEnabled = useMemo(
+    () => isEnabled(allRooms.query),
+    [allRooms.query, isEnabled]
+  );
+
+  const pinnedRoomsEnabled = useMemo(
+    () => isEnabled(pinnedRooms.query),
+    [pinnedRooms.query, isEnabled]
+  );
+
+  const { target: allRoomsTarget } = useInfinteScroll<HTMLDivElement>(
+    () => allRooms.more,
+    true
+  );
+
+  const { target: pinnedRoomsTarget } = useInfinteScroll<HTMLDivElement>(
+    pinnedRooms.more,
+    pinnedRoomsEnabled
+  );
+
+  const update = useUpdateRoom({
+    onSuccess() {
+      pinnedRooms.query.refetch();
+      allRooms.query.refetch();
+    },
+    onError() {
+      toast.error({ title: intl("chat.update-settings.error") });
+    },
+  });
+
+  return {
+    rooms: {
+      all: {
+        list: allRooms.list,
+        query: allRooms.query,
+        target: allRoomsTarget,
+        enabled: allRoomsEnabled,
+      },
+      pinned: {
+        query: pinnedRooms.query,
+        list: pinnedRooms.list,
+        target: pinnedRoomsTarget,
+        enabled: pinnedRoomsEnabled,
+      },
+    },
+    keyword: {
+      value: keyword,
+      set: setKeyword,
+    },
+    update: {
+      toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) =>
+        update.mutate({ roomId, payload: { muted } }),
+      togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) =>
+        update.mutate({ roomId, payload: { pinned } }),
+    },
+  };
 }
