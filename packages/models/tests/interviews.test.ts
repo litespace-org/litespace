@@ -5,11 +5,7 @@ import { IInterview } from "@litespace/types";
 import { expect } from "chai";
 
 describe("Interviews", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
+  beforeEach(async () => {
     await fixtures.flush();
   });
 

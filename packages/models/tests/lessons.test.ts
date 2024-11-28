@@ -1,4 +1,4 @@
-import { calls, lessons } from "@/index";
+import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
@@ -14,14 +14,14 @@ describe("Lessons", () => {
 
   describe(nameof(lessons.countCounterpartMembers), () => {
     describe("Simple (one student, one tutor)", () => {
-      it("Should count one unique student for the tutor", async () => {
+      it("should count one unique student for the tutor", async () => {
         const tutor = await fixtures.tutor();
         const student = await fixtures.student();
 
         await fixtures.lesson({
           tutor: tutor.id,
           student: student.id,
-          timing: "future",
+          timing: "past",
           canceled: false,
         });
 
@@ -42,12 +42,13 @@ describe("Lessons", () => {
         ).to.be.eq(1);
       });
 
-      it("Should count no student if the lesson will happen in the future", async () => {
+      it("should count no student if the lesson will happen in the future", async () => {
         const tutor = await fixtures.tutor();
 
         await fixtures.lesson({
           timing: "future",
           canceled: false,
+          tutor: tutor.id,
         });
 
         const count = await lessons.countCounterpartMembers({
@@ -58,13 +59,15 @@ describe("Lessons", () => {
         expect(count).to.be.eq(0);
       });
 
-      it("Should count future students/tutors when the `future` flag is enabled", async () => {
+      it("should count future students/tutors when the `future` flag is enabled", async () => {
         const tutor = await fixtures.tutor();
         const student = await fixtures.student();
 
-        await fixtures.lesson({
+        const l = await fixtures.lesson({
           timing: "future",
           canceled: false,
+          tutor: tutor.id,
+          student: student.id,
         });
 
         expect(
@@ -104,13 +107,15 @@ describe("Lessons", () => {
         ).to.be.eq(0);
       });
 
-      it("Should count canceled students/tutors when the `canceled` flag is enabled", async () => {
+      it("should count canceled students/tutors when the `canceled` flag is enabled", async () => {
         const tutor = await fixtures.tutor();
         const student = await fixtures.student();
 
         await fixtures.lesson({
           timing: "future",
           canceled: true,
+          tutor: tutor.id,
+          student: student.id,
         });
 
         expect(
@@ -779,53 +784,58 @@ describe("Lessons", () => {
         rule: secondTutorRule.id,
       });
 
-      const r1 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 1,
-        size: 2,
-      });
-      expect(r1.list).to.be.of.length(2);
-      expect(r1.total).to.be.eq(firstTutorTotaLessons);
+      const tests = [
+        {
+          users: [firstTutor.id],
+          page: 1,
+          size: 2,
+          list: 2,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [firstTutor.id],
+          page: 2,
+          size: 2,
+          list: 2,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [firstTutor.id],
+          page: 6,
+          size: 2,
+          list: 1,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [secondTutor.id],
+          page: 1,
+          size: 2,
+          list: 2,
+          total: secondTutorTotaLessons,
+        },
+        {
+          users: [secondTutor.id],
+          page: 4,
+          size: 2,
+          list: 1,
+          total: secondTutorTotaLessons,
+        },
+        {
+          size: 100,
+          list: firstTutorTotaLessons + secondTutorTotaLessons,
+          total: firstTutorTotaLessons + secondTutorTotaLessons,
+        },
+      ];
 
-      const r2 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 2,
-        size: 2,
-      });
-      expect(r2.list).to.be.of.length(2);
-      expect(r2.total).to.be.eq(firstTutorTotaLessons);
-
-      const r3 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 6,
-        size: 2,
-      });
-      expect(r3.list).to.be.of.length(1);
-      expect(r3.total).to.be.eq(firstTutorTotaLessons);
-
-      const r4 = await lessons.findLessons({
-        users: [secondTutor.id],
-        page: 1,
-        size: 2,
-      });
-      expect(r4.list).to.be.of.length(2);
-      expect(r4.total).to.be.eq(secondTutorTotaLessons);
-
-      const r5 = await lessons.findLessons({
-        users: [secondTutor.id],
-        page: 4,
-        size: 2,
-      });
-      expect(r5.list).to.be.of.length(1);
-      expect(r5.total).to.be.eq(secondTutorTotaLessons);
-
-      const r6 = await lessons.findLessons({
-        size: 100,
-      });
-      expect(r6.list).to.be.of.length(
-        firstTutorTotaLessons + secondTutorTotaLessons
-      );
-      expect(r6.total).to.be.eq(firstTutorTotaLessons + secondTutorTotaLessons);
+      for (const test of tests) {
+        const result = await lessons.findLessons({
+          users: test.users,
+          page: test.page,
+          size: test.size,
+        });
+        expect(result.list).to.be.of.length(test.list);
+        expect(result.total).to.be.eq(test.total);
+      }
     });
   });
 });

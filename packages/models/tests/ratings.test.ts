@@ -4,17 +4,13 @@ import { ratings } from "@/index";
 import { expect } from "chai";
 
 describe("Ratings", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
+  beforeEach(async () => {
     await fixtures.flush();
   });
 
   describe(nameof(ratings.create), () => {
     it("should create a rating", async () => {
-      const rating = await fixtures.make.rating({ value: 5 });
+      const rating = await fixtures.rating({ value: 5 });
       expect(rating).to.exist;
       expect(rating.value).to.be.eq(5);
     });
@@ -22,7 +18,7 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.update), () => {
     it("should update a rating", async () => {
-      const created = await fixtures.make.rating({ value: 5 });
+      const created = await fixtures.rating({ value: 5 });
       expect(created.value).to.be.eq(5);
 
       const updated = await ratings.update(created.id, {
@@ -34,7 +30,7 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.delete), () => {
     it("should delete a rating", async () => {
-      const created = await fixtures.make.rating({ value: 5 });
+      const created = await fixtures.rating({ value: 5 });
       expect(created.value).to.be.eq(5);
 
       await ratings.delete(created.id);
@@ -46,7 +42,7 @@ describe("Ratings", () => {
 
   describe(nameof(ratings.findSelfById), () => {
     it("should find a rating by its id", async () => {
-      const created = await fixtures.make.rating({ value: 5 });
+      const created = await fixtures.rating({ value: 5 });
       const rating = await ratings.findSelfById(created.id);
       expect(rating).to.be.deep.eq(created);
     });

@@ -220,9 +220,7 @@ export class Lessons {
     tx?: Knex.Transaction;
   } & IFilter.Pagination &
     SearchFilter): Promise<Paginated<ILesson.Self>> {
-    const baseBuilder = this.builder(tx).lessons;
-
-    const filterBuilder = this.applySearchFilter(baseBuilder, {
+    const baseBuilder = this.applySearchFilter(this.builder(tx).lessons, {
       users,
       canceled,
       ratified,
@@ -233,9 +231,7 @@ export class Lessons {
       before,
     });
 
-    const countBuilder = filterBuilder.clone();
-
-    const total = await countRows(countBuilder, {
+    const total = await countRows(baseBuilder.clone(), {
       column: this.columns.lessons("id"),
     });
 
@@ -357,13 +353,8 @@ export class Lessons {
         this.columns.lessons("id"),
         this.columns.members("lesson_id")
       )
-      .join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
       .whereIn(this.columns.members("lesson_id"), subqueryBaseBuilder)
-      .andWhere(this.columns.members("user_id"), "!=", user); // execlude the tutor
+      .andWhere(this.columns.members("user_id"), "!=", user); // execlude the user
 
     const queryBuilder = this.applySearchFilter(baseQueryBuilder, filter);
 
