@@ -7,6 +7,7 @@ import { useUpdateUser } from "@litespace/headless/user";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Controller, Form, Label } from "@litespace/luna/Form";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { FullSwitch } from "@litespace/luna/Switch";
 import { useUpdateProfileMedia } from "@litespace/luna/hooks/user";
 import {
   useRequired,
@@ -134,7 +135,7 @@ const Settings: React.FC = () => {
             onSubmit={form.handleSubmit(onSubmit)}
             className="flex gap-28 p-14"
           >
-            <div className="min-w-[38%] flex flex-col gap-6">
+            <div className="w-[38%] flex flex-col gap-6">
               <UploadPhoto
                 setPhoto={setPhoto}
                 photo={photo || orNull(profile.value?.user.image)}
@@ -184,65 +185,98 @@ const Settings: React.FC = () => {
                 />
               </div>
             </div>
-            <div className="min-w-[38%] flex flex-col gap-6">
-              <Typography
-                element="subtitle-1"
-                weight="bold"
-                className="text-natural-950"
-              >
-                {intl("settings.edit.password.title")}
-              </Typography>
-              <div>
-                <Label>{intl("settings.edit.password.current")}</Label>
-                <Controller.Password
-                  value={form.watch("password.current")}
-                  control={form.control}
-                  helper={form.formState.errors.password?.current?.message}
-                  error={!!form.formState.errors.password?.current?.message}
-                  rules={{
-                    required: requirePassword ? required : undefined,
-                    validate: validatePassword,
-                  }}
-                  name="password.current"
-                />
+            <div className="w-[52%] flex flex-col gap-6">
+              <div className="w-[72%] flex flex-col gap-6">
+                <Typography
+                  element="subtitle-1"
+                  weight="bold"
+                  className="text-natural-950"
+                >
+                  {intl("settings.edit.password.title")}
+                </Typography>
+                <div>
+                  <Label>{intl("settings.edit.password.current")}</Label>
+                  <Controller.Password
+                    value={form.watch("password.current")}
+                    control={form.control}
+                    helper={form.formState.errors.password?.current?.message}
+                    error={!!form.formState.errors.password?.current?.message}
+                    rules={{
+                      required: requirePassword ? required : undefined,
+                      validate: validatePassword,
+                    }}
+                    name="password.current"
+                  />
+                </div>
+                <div>
+                  <Label>{intl("settings.edit.password.new")}</Label>
+                  <Controller.Password
+                    value={form.watch("password.new")}
+                    control={form.control}
+                    helper={form.formState.errors.password?.new?.message}
+                    error={!!form.formState.errors.password?.new?.message}
+                    rules={{
+                      required: requirePassword ? required : undefined,
+                      validate: validatePassword,
+                    }}
+                    name="password.new"
+                  />
+                </div>
+                <div>
+                  <Label>{intl("settings.edit.password.confirm")}</Label>
+                  <Controller.Password
+                    value={form.watch("password.confirm")}
+                    control={form.control}
+                    helper={form.formState.errors.password?.confirm?.message}
+                    error={!!form.formState.errors.password?.confirm?.message}
+                    rules={{
+                      required: requirePassword ? required : undefined,
+                      validate: (value) => {
+                        if (value !== form.watch("password.new"))
+                          return intl(
+                            "settings.edit.password.confirm.not-same"
+                          );
+                        return validatePassword(value);
+                      },
+                    }}
+                    name="password.confirm"
+                  />
+                </div>
               </div>
-              <div>
-                <Label>{intl("settings.edit.password.new")}</Label>
-                <Controller.Password
-                  value={form.watch("password.new")}
-                  control={form.control}
-                  helper={form.formState.errors.password?.new?.message}
-                  error={!!form.formState.errors.password?.new?.message}
-                  rules={{
-                    required: requirePassword ? required : undefined,
-                    validate: validatePassword,
-                  }}
-                  name="password.new"
-                />
-              </div>
-              <div>
-                <Label>{intl("settings.edit.password.confirm")}</Label>
-                <Controller.Password
-                  value={form.watch("password.confirm")}
-                  control={form.control}
-                  helper={form.formState.errors.password?.confirm?.message}
-                  error={!!form.formState.errors.password?.confirm?.message}
-                  rules={{
-                    required: requirePassword ? required : undefined,
-                    validate: (value) => {
-                      if (value !== form.watch("password.new"))
-                        return intl("settings.edit.password.confirm.not-same");
-                      return validatePassword(value);
-                    },
-                  }}
-                  name="password.confirm"
-                />
-              </div>
+              <div className="w-full flex flex-col gap-6">
+                <Typography
+                  element="subtitle-1"
+                  weight="bold"
+                  className="text-natural-950"
+                >
+                  {intl("settings.notifications")}
+                </Typography>
 
+                <div className="flex flex-col gap-4">
+                  <FullSwitch
+                    title={intl("settings.notifications.lesson-date.title")}
+                    description={intl(
+                      "settings.notifications.lesson-date.description"
+                    )}
+                    checked={false}
+                    disabled={false}
+                    onChange={() => alert("switch change")}
+                  />
+                  <FullSwitch
+                    title={intl("settings.notifications.messages.title")}
+                    description={intl(
+                      "settings.notifications.messages.description"
+                    )}
+                    checked={true}
+                    disabled={false}
+                    onChange={() => alert("switch change")}
+                  />
+                </div>
+              </div>
               <Button
                 disabled={false}
                 size={ButtonSize.Large}
-                className="mr-auto"
+                className="mr-auto mt-auto"
                 htmlType="submit"
               >
                 {intl("settings.save")}
