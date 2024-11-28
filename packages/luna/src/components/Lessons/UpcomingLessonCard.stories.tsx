@@ -14,7 +14,7 @@ const url = "https://picsum.photos/400";
 
 type Story = StoryObj<CardProps>;
 
-export const CannotJoinLesson: Story = {
+export const BeforeJoin: Story = {
   args: {
     canceled: false,
     start: dayjs.utc().add(15, "minutes").toISOString(),
@@ -35,7 +35,7 @@ export const CanJoinLesson: Story = {
   args: {
     canceled: false,
     start: dayjs.utc().add(5, "minutes").toISOString(),
-    duration: 3,
+    duration: 30,
     tutor: {
       id: 30,
       name: faker.person.fullName(),
@@ -48,11 +48,45 @@ export const CanJoinLesson: Story = {
   },
 };
 
-export const Canceled: Story = {
+export const AfterLessonStarted: Story = {
+  args: {
+    canceled: false,
+    start: dayjs.utc().subtract(5, "minutes").toISOString(),
+    duration: 30,
+    tutor: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      studentCount: 3,
+      rating: 3.4,
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+  },
+};
+
+export const AfterLessonFinish: Story = {
+  args: {
+    canceled: false,
+    start: dayjs.utc().subtract(35, "minutes").toISOString(),
+    duration: 30,
+    tutor: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      studentCount: 3,
+      rating: 3.4,
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+  },
+};
+
+export const CanceledByTutor: Story = {
   args: {
     canceled: true,
-    start: "56473",
-    duration: 3,
+    start: new Date().toISOString(),
+    duration: 30,
     tutor: {
       id: 30,
       name: "محمد عبدالعزيز",

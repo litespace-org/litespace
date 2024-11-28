@@ -68,7 +68,7 @@ export function useInfinteScroll<T extends HTMLElement = HTMLElement>(
         const entry = first(entries);
         if (entry?.isIntersecting && enabled) more();
       },
-      { threshold: 1 }
+      { threshold: 0.5 }
     );
     if (target.current) observer.observe(target.current);
     return observer;
