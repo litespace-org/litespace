@@ -4,11 +4,7 @@ import { nameof } from "@litespace/sol/utils";
 import { expect } from "chai";
 
 describe("Messages", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
+  beforeEach(async () => {
     await fixtures.flush();
   });
 

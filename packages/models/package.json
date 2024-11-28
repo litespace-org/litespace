@@ -14,7 +14,7 @@
     "migrate:test": "env-cmd -f .env.test node-pg-migrate",
     "seed": "env-cmd -f .env vite-node scripts/seed.ts",
     "reseed": "pnpm migrate down && pnpm migrate up && pnpm seed",
-    "test": "env-cmd -f .env.test jest -i --detectOpenHandles"
+    "test": "env-cmd -f .env.test jest -i --runInBand --detectOpenHandles"
   },
   "devDependencies": {
     "@litespace/models": "workspace:^",

@@ -38,6 +38,7 @@ export class Interviews {
     const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
       .insert({
+        start: dayjs.utc(payload.start).toDate(),
         interviewer_id: payload.interviewer,
         interviewee_id: payload.interviewee,
         call_id: payload.call,

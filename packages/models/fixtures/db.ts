@@ -93,7 +93,7 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
     frequency,
     time: payload?.time || time(),
     title: faker.word.adjective(),
-    userId: payload?.userId || 1,
+    userId: await or.tutorId(payload?.userId),
     monthday: payload?.monthday,
     weekdays: payload?.weekdays,
   });
@@ -139,7 +139,7 @@ export async function lesson(
 ): Promise<LessonReturn> {
   return await knex.transaction(async (tx: Knex.Transaction) => {
     const tutor = await or.tutorId(payload?.tutor);
-    const student = await or.studentId(payload?.tutor);
+    const student = await or.studentId(payload?.student);
     const data = await lessons.create({
       call: await or.callId(payload?.call),
       start:
