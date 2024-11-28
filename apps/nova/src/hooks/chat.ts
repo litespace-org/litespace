@@ -97,9 +97,8 @@ export function useRoomManager() {
   });
 
   const allRooms = useFindUserRooms(profile?.id, {
-    pinned: keyword ? true : false,
+    pinned: !keyword ? false : undefined,
     keyword,
-    size: 2,
   });
 
   const isEnabled = useCallback(
@@ -120,8 +119,8 @@ export function useRoomManager() {
   );
 
   const { target: allRoomsTarget } = useInfinteScroll<HTMLDivElement>(
-    () => allRooms.more,
-    true
+    allRooms.more,
+    allRoomsEnabled
   );
 
   const { target: pinnedRoomsTarget } = useInfinteScroll<HTMLDivElement>(
