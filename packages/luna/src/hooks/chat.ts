@@ -361,12 +361,12 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
 
 export type SelectedRoom = {
   room: number | null;
-  members: IRoom.PopulatedMember[];
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
 };
 
 export type SelectRoom = (payload: {
   room: number;
-  members: IRoom.PopulatedMember[];
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) => void;
 
 const ROOM_URL_PARAM = "room";
@@ -405,7 +405,7 @@ export function useSelectedRoom() {
 
   const [selected, setSelected] = useState<SelectedRoom>({
     room: preSelection,
-    members: [],
+    otherMember: null,
   });
 
   const select: SelectRoom = useCallback(

@@ -1,81 +1,97 @@
-import React, { useMemo } from "react";
-// import Room from "@/components/Chat/Room";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
-import { useInfinteScroll } from "@litespace/luna/hooks/common";
-import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
+import { ChatRoom } from "@litespace/luna/Chat";
+import { SelectRoom } from "@litespace/luna/hooks/chat";
 import { Loading } from "@litespace/luna/Loading";
+import { Typography } from "@litespace/luna/Typography";
+import { IRoom, Paginated } from "@litespace/types";
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import AllMessages from "@litespace/assets/AllMessages";
+import Pin from "@litespace/assets/Pin";
 import cn from "classnames";
-import { useFindUserRooms } from "@litespace/headless/messageRooms";
 
-
-// TODO: Needs refactoring to suit the new data returned from the backend
+type Query = UseInfiniteQueryResult<
+  InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
+  Error
+>;
 
 const Rooms: React.FC<{
-  selected: SelectedRoom;
+  type: "all" | "pinned";
+  query: Query;
+  rooms: IRoom.FindUserRoomsApiRecord[] | null;
   select: SelectRoom;
-}> = (
-    // { select, selected: { room, members} }
-  ) => {
-    const profile = useAppSelector(profileSelectors.user);
+  roomId: number | null;
+  target: React.RefObject<HTMLDivElement>;
+  enabled: boolean;
+  toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
+  togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
+}> = ({
+  query,
+  rooms,
+  select,
+  target,
+  roomId,
+  type,
+  enabled,
+  toggleMute,
+  togglePin,
+}) => {
+  const intl = useFormatMessage();
 
-    const { list: rooms, query, more } = useFindUserRooms(profile);
+  return (
+    <div>
+      <div className="flex flex-row items-center justify-start gap-2 mb-4">
+        {type === "all" ? <AllMessages /> : <Pin />}
 
-    console.log(rooms);
-
-    const enabled = useMemo(
-      () => query.hasNextPage && !query.isLoading && !query.isFetching,
-      [query.hasNextPage, query.isFetching, query.isLoading]
-    );
-    const { target } = useInfinteScroll<HTMLDivElement>(more, enabled);
-
-    // useEffect(() => {
-    //   // handle the case if a room is preselected but without members.
-    //   if (room && isEmpty(members) && rooms) {
-    //     const roomMembers = rooms.find((members) => {
-    //       const member = first(members);
-    //       return member?.roomId === room;
-    //     });
-    //     if (!roomMembers) return;
-    //     select({ room, members: roomMembers });
-    //   }
-    // }, [members, room, rooms, select]);
-
-    return (
-      <div
-        className={cn(
-          "flex flex-col bg-background-200 overflow-auto main-scrollbar mb-1",
-          "w-20 md:w-80"
-        )}
-      >
-
-
-
-        {/* {rooms?.map((members) => {
-          const member = first(members);
-          if (!member) return null;
-          return (
-            <Room
-              key={member.roomId}
-              select={() => select({ room: member.roomId, members })}
-              active={member.roomId === room}
-              members={members}
-            />
-          );
-        })} */}
-
-
-        <Loading
-          show={query.isFetching || query.isLoading}
-          className={cn("shrink-0", {
-            "h-full": query.isLoading,
-            "h-10": query.isFetching,
-          })}
-        />
-
-        <div ref={target} />
+        <Typography element="caption" className="text-natural-600">
+          {type === "all" ? intl("chat.all") : intl("chat.pinned.title")}
+        </Typography>
       </div>
-    );
-  };
+
+      <div className="flex flex-col justify-stretch gap-4">
+        {rooms?.map((room) => (
+          <ChatRoom
+            key={room.roomId}
+            isActive={room.roomId === roomId}
+            isPinned={room.settings.pinned}
+            isMuted={room.settings.muted}
+            userId={room.otherMember.id}
+            toggleMute={() =>
+              toggleMute({ roomId: room.roomId, muted: !room.settings.muted })
+            }
+            togglePin={() =>
+              togglePin({ roomId: room.roomId, pinned: !room.settings.pinned })
+            }
+            image={
+              room.otherMember.image
+                ? asFullAssetUrl(room.otherMember.image)
+                : undefined
+            }
+            name={room.otherMember.name!}
+            message={room.latestMessage?.text || "TODO"}
+            unreadCount={room.unreadMessagesCount}
+            isTyping={false}
+            select={() =>
+              select({
+                room: room.roomId,
+                otherMember: room.otherMember,
+              })
+            }
+          />
+        ))}
+      </div>
+
+      {query.isFetching || query.isLoading ? (
+        <Loading className={cn("mt-6", type === "all" && "mb-6")} />
+      ) : null}
+
+      <div
+        data-enabled={enabled}
+        className="data-[enabled=true]:h-2"
+        ref={target}
+      />
+    </div>
+  );
+};
 
 export default Rooms;

@@ -15,6 +15,7 @@ import { AtlasProvider } from "@litespace/headless/atlas";
 import { SocketProvider } from "@litespace/headless/socket";
 import { PeerProvider } from "@litespace/headless/peer";
 import { ToastProvider } from "@litespace/luna/Toast";
+import { Direction } from "@litespace/luna/Direction";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { TokenType } from "@litespace/atlas";
 import { ghostToken } from "@/lib/ghost";
@@ -31,39 +32,41 @@ createRoot(document.getElementById("root")!).render(
     locale="ar-EG"
     defaultLocale="ar-EG"
   >
-    <ToastProvider>
-      <AppConfigProvider>
-        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-          <QueryClientProvider client={queryClient}>
-            <BackendProvider
-              backend={backend}
-              getAuthTokenValue={
-                ghostToken ? () => ghostToken : getCachedAuthToken
-              }
-              tokenType={ghostToken ? TokenType.Basic : TokenType.Bearer}
-            >
-              <AtlasProvider>
-                <SocketProvider>
-                  <PeerProvider>
-                    <ReduxProvider store={store}>
-                      <PersistGate
-                        loading={
-                          <div className="flex items-center justify-center w-screen h-screen">
-                            <Spinner />
-                          </div>
-                        }
-                        persistor={persistor}
-                      >
-                        <App />
-                      </PersistGate>
-                    </ReduxProvider>
-                  </PeerProvider>
-                </SocketProvider>
-              </AtlasProvider>
-            </BackendProvider>
-          </QueryClientProvider>
-        </GoogleOAuthProvider>
-      </AppConfigProvider>
-    </ToastProvider>
+    <Direction>
+      <ToastProvider>
+        <AppConfigProvider>
+          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+            <QueryClientProvider client={queryClient}>
+              <BackendProvider
+                backend={backend}
+                getAuthTokenValue={
+                  ghostToken ? () => ghostToken : getCachedAuthToken
+                }
+                tokenType={ghostToken ? TokenType.Basic : TokenType.Bearer}
+              >
+                <AtlasProvider>
+                  <SocketProvider>
+                    <PeerProvider>
+                      <ReduxProvider store={store}>
+                        <PersistGate
+                          loading={
+                            <div className="flex items-center justify-center w-screen h-screen">
+                              <Spinner />
+                            </div>
+                          }
+                          persistor={persistor}
+                        >
+                          <App />
+                        </PersistGate>
+                      </ReduxProvider>
+                    </PeerProvider>
+                  </SocketProvider>
+                </AtlasProvider>
+              </BackendProvider>
+            </QueryClientProvider>
+          </GoogleOAuthProvider>
+        </AppConfigProvider>
+      </ToastProvider>
+    </Direction>
   </IntlProvider>
 );
