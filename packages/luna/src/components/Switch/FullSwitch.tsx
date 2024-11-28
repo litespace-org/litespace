@@ -6,7 +6,7 @@ export const FullSwitch: React.FC<
   SwitchProps & { title: string; description: string }
 > = ({ title, description, ...props }) => {
   return (
-    <div className="tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-4">
+    <div className="tw-flex tw-flex-row tw-items-start tw-justify-between tw-gap-4">
       <div>
         <Typography element="subtitle-2" className="tw-text-natural-950">
           {title}
