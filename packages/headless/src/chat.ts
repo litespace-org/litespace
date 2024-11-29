@@ -6,10 +6,26 @@ import {
   UseInfinitePaginationQueryResult,
 } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
+
+export function useFindRoomMembers(
+  roomId: number | null
+): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
+  const atlas = useAtlas();
+  const findRoomMembers = useCallback(async () => {
+    if (!roomId) return [];
+    return await atlas.chat.findRoomMembers(roomId);
+  }, [atlas.chat, roomId]);
+
+  return useQuery({
+    queryFn: findRoomMembers,
+    queryKey: [QueryKey.FindRoomMembers, roomId],
+    enabled: !!roomId,
+  });
+}
 
 export function useFindUserRooms(
   userId?: number,

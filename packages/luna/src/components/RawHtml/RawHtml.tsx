@@ -7,7 +7,8 @@ const endBreaks = /(<div><br><\/div>|<br>)+$/;
 export const RawHtml: React.FC<{
   html?: string;
   children?: React.ReactNode;
-}> = ({ html, children }) => {
+  classNames?: string;
+}> = ({ html, children, classNames }) => {
   const innerHtml = useMemo(() => {
     if (!html) return;
     return { __html: html.replace(startBreaks, "").replace(endBreaks, "") };
@@ -17,7 +18,6 @@ export const RawHtml: React.FC<{
     <div
       dir="auto"
       className={cn(
-        "tw-@container",
         // plain text styles
         "tw-text-foreground-semi tw-text-sm @sm:tw-text-base",
         // heading styles
@@ -28,7 +28,8 @@ export const RawHtml: React.FC<{
         // list styles
         "[&_ul]:tw-list-disc [&_ul]:tw-list-inside [&_ul]:tw-pr-4",
         "[&_ul_li]:tw-text-foreground-light [&_ul_li]:tw-mb-2",
-        "[&_font]:tw-text-foreground [&_li]:!tw-text-foreground"
+        "[&_font]:tw-text-foreground [&_li]:!tw-text-foreground",
+        classNames
       )}
       dangerouslySetInnerHTML={innerHtml}
     >
