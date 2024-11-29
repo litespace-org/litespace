@@ -39,6 +39,7 @@
     "./Logo": "./dist/Logo.tsx",
     "./Logout": "./dist/Logout.tsx",
     "./Maximize": "./dist/Maximize.tsx",
+    "./MessageEdit": "./dist/MessageEdit.tsx",
     "./Messages": "./dist/Messages.tsx",
     "./Microphone": "./dist/Microphone.tsx",
     "./MicrophoneSlash": "./dist/MicrophoneSlash.tsx",
