@@ -504,9 +504,9 @@ describe("Lessons", () => {
     });
   });
 
-  describe(nameof(lessons.findLessons), () => {
+  describe(nameof(lessons.find), () => {
     it("should return empty list in case user has not lessons", async () => {
-      const result = await lessons.findLessons({
+      const result = await lessons.find({
         users: [1],
       });
       expect(result.list).to.be.empty;
@@ -514,7 +514,7 @@ describe("Lessons", () => {
     });
 
     it("should return empty list in case the database is empty", async () => {
-      const result = await lessons.findLessons({});
+      const result = await lessons.find({});
       expect(result.list).to.be.empty;
       expect(result.total).to.be.eq(0);
     });
@@ -539,7 +539,7 @@ describe("Lessons", () => {
         rule: rule.id,
       });
 
-      const result = await lessons.findLessons({ size: 100 });
+      const result = await lessons.find({ size: 100 });
 
       expect(result.list).to.be.of.length(total);
       expect(result.total).to.be.eq(total);
@@ -565,15 +565,15 @@ describe("Lessons", () => {
         rule: rule.id,
       });
 
-      const r1 = await lessons.findLessons({ page: 1, size: 2 });
+      const r1 = await lessons.find({ page: 1, size: 2 });
       expect(r1.list).to.be.of.length(2);
       expect(r1.total).to.be.eq(total);
 
-      const r2 = await lessons.findLessons({ page: 2, size: 2 });
+      const r2 = await lessons.find({ page: 2, size: 2 });
       expect(r2.list).to.be.of.length(2);
       expect(r2.total).to.be.eq(total);
 
-      const r3 = await lessons.findLessons({ page: 6, size: 2 });
+      const r3 = await lessons.find({ page: 6, size: 2 });
       expect(r3.list).to.be.of.length(1);
       expect(r3.total).to.be.eq(total);
     });
@@ -664,7 +664,7 @@ describe("Lessons", () => {
       ];
 
       for (const test of tests) {
-        const result = await lessons.findLessons({
+        const result = await lessons.find({
           page: 1,
           size: 100,
           future: test.future,
@@ -730,7 +730,7 @@ describe("Lessons", () => {
       for (const test of tests) {
         expect(
           await lessons
-            .findLessons({
+            .find({
               users: [tutor.id],
               size: 50,
               after: test.after,
@@ -828,7 +828,7 @@ describe("Lessons", () => {
       ];
 
       for (const test of tests) {
-        const result = await lessons.findLessons({
+        const result = await lessons.find({
           users: test.users,
           page: test.page,
           size: test.size,

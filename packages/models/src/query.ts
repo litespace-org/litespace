@@ -108,6 +108,14 @@ export function withPagination<Row extends object, Result = Row[]>(
   return builder;
 }
 
+export function withSkippablePagination<Row extends object, Result = Row[]>(
+  builder: Knex.QueryBuilder<Row, Result>,
+  pagination: IFilter.SkippablePagination = {}
+) {
+  if ("full" in pagination) return builder;
+  return withPagination(builder, pagination);
+}
+
 export async function count(table: string): Promise<number> {
   const { count } = await knex(table)
     .count("id AS count")

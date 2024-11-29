@@ -1,16 +1,9 @@
-import {
-  addSqlMinutes,
-  aggArrayOrder,
-  column,
-  knex,
-  WithOptionalTx,
-} from "@/query";
-import { concat, first, merge, now, omit, sortBy } from "lodash";
+import { aggArrayOrder, column, knex, WithOptionalTx } from "@/query";
+import { first, sortBy } from "lodash";
 import { ICall } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
-import zod from "zod";
 
 export class Calls {
   tables = { calls: "calls", members: "call_members" } as const;

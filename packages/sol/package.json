@@ -57,10 +57,6 @@
       "import": "./dist/esm/rule.js",
       "require": "./dist/cjs/rule.js"
     },
-    "./slots": {
-      "import": "./dist/esm/slots.js",
-      "require": "./dist/cjs/slots.js"
-    },
     "./time": {
       "import": "./dist/esm/time.js",
       "require": "./dist/cjs/time.js"
@@ -97,7 +93,6 @@
     "./lesson": "./dist/cjs/lesson.js",
     "./log": "./dist/cjs/log.js",
     "./rule": "./dist/cjs/rule.js",
-    "./slots": "./dist/cjs/slots.js",
     "./time": "./dist/cjs/time.js",
     "./user": "./dist/cjs/user.js",
     "./utils": "./dist/cjs/utils.js",

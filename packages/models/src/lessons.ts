@@ -7,17 +7,17 @@ import {
 } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, merge, omit, orderBy } from "lodash";
+import { concat, first, isEmpty, merge, omit, orderBy } from "lodash";
 import { users } from "@/users";
 import {
   aggArrayOrder,
   knex,
   column,
-  withPagination,
   addSqlMinutes,
   countRows,
   WithOptionalTx,
   WithTx,
+  withSkippablePagination,
 } from "@/query";
 import { calls } from "@/calls";
 import zod from "zod";
@@ -53,6 +53,10 @@ type SearchFilter = {
    * All lessons before (or the same as) this date will be included.
    */
   before?: string;
+  /**
+   * Filter only lessons that blogs to the provided rule ids.
+   */
+  rules?: number[];
 };
 
 type BaseAggregateParams = SearchFilter & { tx?: Knex.Transaction };
@@ -204,11 +208,13 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findLessons({
+  /**
+   * @typedef {SearchFilter} Payload
+   * @typedef {IFilter.SkippablePagination}
+   */
+  async find({
     tx,
     users,
-    page,
-    size,
     ratified = true,
     canceled = true,
     future = true,
@@ -216,10 +222,11 @@ export class Lessons {
     now = false,
     after,
     before,
-  }: {
-    tx?: Knex.Transaction;
-  } & IFilter.Pagination &
-    SearchFilter): Promise<Paginated<ILesson.Self>> {
+    rules,
+    ...pagination
+  }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
+    Paginated<ILesson.Self>
+  > {
     const baseBuilder = this.applySearchFilter(this.builder(tx).lessons, {
       users,
       canceled,
@@ -240,7 +247,7 @@ export class Lessons {
       .select(this.rows.lesson)
       .orderBy(this.columns.lessons("start"), "desc");
 
-    const rows = await withPagination(queryBuilder, { page, size }).then();
+    const rows = await withSkippablePagination(queryBuilder, pagination);
     return { list: rows.map((row) => this.from(row)), total };
   }
 
@@ -403,6 +410,7 @@ export class Lessons {
       users,
       after,
       before,
+      rules = [],
     }: SearchFilter
   ): Knex.QueryBuilder<ILesson.Row, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -448,6 +456,9 @@ export class Lessons {
 
     if (after) builder.where(end, ">=", dayjs.utc(after).toDate());
     if (before) builder.where(end, "<=", dayjs.utc(before).toDate());
+
+    if (!isEmpty(rules))
+      builder.whereIn(this.columns.lessons("rule_id"), rules);
 
     return builder;
   }
