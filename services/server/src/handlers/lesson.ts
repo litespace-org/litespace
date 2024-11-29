@@ -10,7 +10,7 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
-import { ILesson, Wss } from "@litespace/types";
+import { ILesson, IRule, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
@@ -23,7 +23,7 @@ import { platformConfig } from "@/constants";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/call";
-import { isEqual } from "lodash";
+import { concat, isEqual } from "lodash";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -70,64 +70,56 @@ function create(context: ApiContext) {
       const room = await rooms.findRoomByMembers(roomMembers);
       if (!room) await rooms.create(roomMembers);
 
-      const ruleCalls = await calls.findByRuleId({
-        rule: rule.id,
-        canceled: false, // ignore canceled calls
+      const ruleLessons = await lessons.find({
+        rules: [rule.id],
+        full: true,
+        canceled: false, // ignore canceled lessons
       });
 
       const canBookLesson = canBook({
         rule,
-        calls: ruleCalls,
-        call: {
-          start: payload.start,
-          duration: payload.duration,
-        },
+        lessons: ruleLessons.list,
+        slot: { start: payload.start, duration: payload.duration },
       });
       if (!canBookLesson) return next(busyTutor());
 
-      const { call, lesson } = await knex.transaction(
+      const { lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
-          const { call } = await calls.create(
-            {
-              duration: payload.duration,
-              host: payload.tutorId,
-              members: [user.id],
-              rule: payload.ruleId,
-              start: payload.start,
-            },
-            tx
-          );
-
-          const lesson = await lessons.create(
-            {
-              call: call.id,
-              host: payload.tutorId,
-              members: [user.id],
-              price,
-            },
-            tx
-          );
-
-          return { call, lesson };
+          const call = await calls.create(tx);
+          const lesson = await lessons.create({
+            tutor: payload.tutorId,
+            student: user.id,
+            start: payload.start,
+            duration: payload.duration,
+            rule: payload.ruleId,
+            call: call.id,
+            price,
+            tx,
+          });
+          return lesson;
         }
       );
 
-      res.status(200).json({ call, lesson });
+      const response: ILesson.CreateLessonApiResponse = lesson;
+      res.status(200).json(response);
 
       const error = await safe(async () => {
-        const ruleCalls = await calls.findByRuleId({
-          rule: rule.id,
-          canceled: false, // ignore canceled calls
-        });
+        const slots: IRule.Slot[] = concat(ruleLessons.list, lesson).map(
+          (lesson) => ({
+            ruleId: lesson.ruleId,
+            start: lesson.start,
+            duration: lesson.duration,
+          })
+        );
         const today = dayjs.utc().startOf("day");
         const payload = {
           tutor: tutor.id,
           rule: rule.id,
           events: unpackRules({
             rules: [rule],
-            calls: ruleCalls,
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
+            slots,
           }),
         };
 
@@ -150,7 +142,7 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     isAdmin(user);
   if (!allowed) return next(forbidden());
 
-  const { list: userLessons, total } = await lessons.findLessons({
+  const { list: userLessons, total } = await lessons.find({
     users: query.users,
     ratified: query.ratified,
     canceled: query.canceled,
@@ -192,43 +184,57 @@ function cancel(context: ApiContext) {
       if (!allowed) return next(forbidden());
 
       const { lessonId } = withNamedId("lessonId").parse(req.params);
-      const lesson = await lessons.findById(lessonId);
+      const lesson = await lessons.findById({ id: lessonId });
       if (!lesson) return next(notfound.lesson());
-
-      const call = await calls.findById(lesson.callId);
-      if (!call) return next(notfound.call());
 
       const members = await lessons.findLessonMembers([lessonId]);
       const member = members.map((member) => member.userId).includes(user.id);
       if (!member) return next(forbidden());
 
-      await knex.transaction(async (tx: Knex.Transaction) => {
-        await lessons.cancel(lessonId, user.id, tx);
-        await calls.cancel(lesson.callId, user.id, tx);
+      await lessons.cancel({
+        canceledBy: user.id,
+        id: lessonId,
       });
 
       res.status(200).send();
 
+      //! todo: cache updates should be done at the worker thread
       const error = await safe(async () => {
-        const ruleCalls = await calls.findByRuleId({
-          rule: call.ruleId,
-          canceled: false, // ignore canceled calls
+        const ruleLessons = await lessons.find({
+          rules: [lesson.ruleId],
+          full: true,
+          canceled: false,
         });
-        const host = members.find((member) => member.host);
-        if (!host) throw new Error("Unxpected error; lesson has no host");
 
-        const rule = await rules.findById(call.ruleId);
+        const slots: IRule.Slot[] = concat(ruleLessons.list, lesson).map(
+          (lesson) => ({
+            ruleId: lesson.ruleId,
+            start: lesson.start,
+            duration: lesson.duration,
+          })
+        );
+
+        const tutor = members.find(
+          (member) => member.role === IUser.Role.Tutor
+        );
+
+        if (!tutor)
+          throw new Error(
+            "Tutor not found in the lesson members; should never happen."
+          );
+
+        const rule = await rules.findById(lesson.ruleId);
         if (!rule) throw new Error("Rule not found; should never happen");
 
         const today = dayjs.utc().startOf("day");
         const payload = {
-          tutor: host.userId,
-          rule: call.ruleId,
+          tutor: tutor.userId,
+          rule: lesson.ruleId,
           events: unpackRules({
-            rules: [rule],
-            calls: ruleCalls,
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
+            rules: [rule],
+            slots,
           }),
         };
         // update tutor rules cache

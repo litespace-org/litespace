@@ -80,12 +80,10 @@ export type CreateApiPayload = {
   ruleId: number;
 };
 
+export type CreateInterviewApiResponse = Self;
+
 export type FindInterviewsApiResponse = {
-  list: Array<{
-    interview: Self;
-    call: ICall.Self;
-    members: ICall.PopuldatedMember[];
-  }>;
+  list: Self[];
   total: number;
 };
 

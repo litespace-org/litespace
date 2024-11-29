@@ -107,6 +107,10 @@ export class Interviews {
     return await this.findManyBy("interviewer_id", id);
   }
 
+  async findByRuleId(id: number): Promise<IInterview.Self[]> {
+    return await this.findManyBy("rule_id", id);
+  }
+
   async find({
     statuses,
     signers,

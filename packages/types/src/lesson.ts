@@ -1,5 +1,4 @@
 import { ICall, IFilter, IUser, Paginated } from "@/index";
-import { NonEmptyList } from "@/utils";
 
 export type Row = {
   id: number;
@@ -106,6 +105,8 @@ export type CreateApiPayload = {
   duration: Duration;
 };
 
+export type CreateLessonApiResponse = Self;
+
 export type FindLessonsApiQuery = IFilter.Pagination & {
   users?: number[];
   ratified?: boolean;
@@ -122,11 +123,6 @@ export type FindUserLessonsApiResponse = Paginated<{
   members: PopuldatedMember[];
   call: ICall.Self;
 }>;
-
-export type CreateApiResponse = {
-  lesson: Self;
-  call: ICall.Self;
-};
 
 export enum Duration {
   Short = 15,
