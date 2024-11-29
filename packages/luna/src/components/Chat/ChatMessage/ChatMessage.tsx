@@ -1,36 +1,42 @@
 import { Void } from "@litespace/types";
-import React from "react";
+import React, { useState } from "react";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
-import { ChatBubbleVariant } from "@/components/Chat/ChatBubble/types";
 import More from "@litespace/assets/More";
 import { Menu } from "@/components/Menu";
 import { useFormatMessage } from "@/hooks";
 import MessageEdit from "@litespace/assets/MessageEdit";
 import Trash from "@litespace/assets/Trash";
 
-export const ChatBubble: React.FC<{
+export const ChatMessage: React.FC<{
   text: string;
-  variant: ChatBubbleVariant;
+  owner?: boolean;
   editMessage?: Void;
   deleteMessage?: Void;
-}> = ({ text, variant, editMessage, deleteMessage }) => {
+}> = ({ text, owner, editMessage, deleteMessage }) => {
   const intl = useFormatMessage();
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [openMenu, setOpenMenu] = useState<boolean>(false);
+
   return (
     <div
       className={cn(
         "tw-group tw-flex tw-w-fit",
-        "tw-gap-[14px] tw-items-center",
+        "tw-gap-[14px] tw-items-start",
         {
-          "tw-flex-row-reverse": variant === ChatBubbleVariant.CurrentUser,
-          "tw-flex-row": variant === ChatBubbleVariant.OtherUser,
+          "tw-flex-row-reverse": owner,
+          "tw-flex-row": !owner,
         }
       )}
+      onMouseEnter={() => setShowMenu(true)}
+      onMouseLeave={() => {
+        if (openMenu) return;
+        setShowMenu(false);
+      }}
     >
       <div
-        className={cn(
-          "tw-opacity-0 group-hover:tw-opacity-100 tw-duration-150 tw-h-fit -tw-translate-y-1/2"
-        )}
+        data-show={showMenu}
+        className="tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200"
       >
         <Menu
           actions={[
@@ -45,21 +51,24 @@ export const ChatBubble: React.FC<{
               icon: <Trash />,
             },
           ]}
+          open={openMenu}
+          setOpen={(open: boolean) => {
+            if (!open) setShowMenu(false);
+            setOpenMenu(open);
+          }}
         >
-          <button className="tw-py-2 tw-flex tw-justify-center tw-items-center">
+          <div className="tw-w-6 tw-h-6 tw-flex tw-justify-center tw-items-center">
             <More className="[&>*]:tw-fill-natural-800 dark:[&>*]:tw-fill-natural-50" />
-          </button>
+          </div>
         </Menu>
       </div>
       <div
         className={cn("tw-rounded-[15px] tw-relative tw-px-6 tw-py-3", {
-          "tw-bg-brand-100 dark:tw-bg-brand-100":
-            ChatBubbleVariant.OtherUser === variant,
-          "tw-bg-brand-700 dark:tw-bg-brand-400":
-            ChatBubbleVariant.CurrentUser === variant,
+          "tw-bg-brand-100 dark:tw-bg-brand-100": !owner,
+          "tw-bg-brand-700 dark:tw-bg-brand-400": owner,
         })}
       >
-        {variant === ChatBubbleVariant.OtherUser ? (
+        {!owner ? (
           <div
             className={cn(
               "tw-absolute -tw-top-[10px] tw-left-[0px] tw-w-0 tw-h-0",
@@ -81,10 +90,8 @@ export const ChatBubble: React.FC<{
         <Typography
           element="caption"
           className={cn("tw-font-normal", {
-            "tw-text-natural-950 dark:tw-text-secondary-900":
-              variant === ChatBubbleVariant.OtherUser,
-            "tw-text-natural-50 dark:tw-text-secondary-900":
-              variant === ChatBubbleVariant.CurrentUser,
+            "tw-text-natural-950 dark:tw-text-secondary-900": !owner,
+            "tw-text-natural-50 dark:tw-text-secondary-900": owner,
           })}
         >
           {text}

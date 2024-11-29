@@ -1,3 +1,3 @@
-export { ChatGroup } from "@/components/Chat/ChatGroup";
+export { ChatMessageGroup } from "@/components/Chat/ChatMessageGroup";
 export { ChatRoom } from "@/components/Chat/ChatRoom";
-export { ChatBubble, ChatBubbleVariant } from "@/components/Chat/ChatBubble";
+export { ChatMessage } from "@/components/Chat/ChatMessage";

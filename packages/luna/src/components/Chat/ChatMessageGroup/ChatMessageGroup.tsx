@@ -1,17 +1,23 @@
 import React from "react";
 import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
-import { IMessage, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import { Typography } from "@/components/Typography";
-import { ChatBubble, ChatBubbleVariant } from "@/components/Chat/ChatBubble";
+import { ChatMessage } from "@/components/Chat/ChatMessage";
+import { motion } from "framer-motion";
 
-export const ChatGroup: React.FC<{
+const messageVariants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+} as const;
+
+export const ChatMessageGroup: React.FC<{
   userId: number;
   name: string;
-  messages: IMessage.Self[];
+  messages: Array<{ id: number; text: string }>;
   image?: string;
   sentAt: string;
-  variant: ChatBubbleVariant;
+  owner?: boolean;
   editMessage?: Void;
   deleteMessage?: Void;
 }> = ({
@@ -20,25 +26,25 @@ export const ChatGroup: React.FC<{
   messages,
   name,
   userId,
-  variant,
+  owner,
   editMessage,
   deleteMessage,
 }) => {
   return (
     <div
       className={cn("tw-flex tw-gap-4", {
-        "tw-flex-row-reverse": variant === ChatBubbleVariant.OtherUser,
-        "tw-flex-row": variant === ChatBubbleVariant.OtherUser,
+        "tw-flex-row-reverse": !owner,
+        "tw-flex-row": owner,
       })}
     >
-      <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full">
+      <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
         <Avatar alt={name} src={image} seed={userId.toString()} />
       </div>
       <div>
         <p
           className={cn("tw-flex tw-gap-6 tw-mb-[14px] tw-items-center", {
-            "tw-flex-row-reverse": variant === ChatBubbleVariant.OtherUser,
-            "tw-flex-row": variant === ChatBubbleVariant.OtherUser,
+            "tw-flex-row-reverse": !owner,
+            "tw-flex-row": owner,
           })}
         >
           <Typography
@@ -56,17 +62,26 @@ export const ChatGroup: React.FC<{
         </p>
         <div
           className={cn("tw-flex tw-flex-col tw-gap-y-4", {
-            "tw-items-end": variant === ChatBubbleVariant.OtherUser,
-            "tw-items-start": variant === ChatBubbleVariant.CurrentUser,
+            "tw-items-end": !owner,
+            "tw-items-start": owner,
           })}
         >
           {messages.map((message) => (
-            <ChatBubble
-              text={message.text}
-              variant={variant}
-              editMessage={editMessage}
-              deleteMessage={deleteMessage}
-            />
+            <motion.div
+              variants={messageVariants}
+              initial="hidden"
+              animate="visible"
+              exit="hidden"
+              className="w-full mt-1"
+              key={message.id}
+            >
+              <ChatMessage
+                text={message.text}
+                owner={owner}
+                editMessage={editMessage}
+                deleteMessage={deleteMessage}
+              />{" "}
+            </motion.div>
           ))}
         </div>
       </div>
