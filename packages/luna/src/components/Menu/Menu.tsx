@@ -56,7 +56,7 @@ export const Menu: React.FC<{
               disabled={disabled}
               className={cn(
                 "tw-flex tw-flex-row tw-gap-2 tw-p-1 tw-pe-4 tw-rounded-lg",
-                "hover:tw-bg-natural-100 active:tw-bg-brand-700",
+                "hover:tw-bg-natural-100 active:tw-bg-brand-700 tw-cursor-pointer",
                 "[&>span]:active:!tw-text-natural-50 [&>svg>*]:active:tw-stroke-natural-50",
                 "focus:tw-outline-none focus:tw-bg-natural-100",
                 disabled
