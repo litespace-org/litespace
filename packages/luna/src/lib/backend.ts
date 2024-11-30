@@ -1,5 +1,5 @@
 import { Backend } from "@litespace/types";
-import { Atlas, TokenType, asAssetUrl, asRecriptUrl } from "@litespace/atlas";
+import { Atlas, TokenType, asAssetUrl, asReceiptUrl } from "@litespace/atlas";
 import { getAuthToken } from "@/lib/cache";
 import zod from "zod";
 
@@ -12,7 +12,7 @@ export function asFullAssetUrl(name: string) {
 }
 
 export function asFullRecriptUrl(name: string) {
-  return asRecriptUrl(backend, name);
+  return asReceiptUrl(backend, name);
 }
 
 export const atlas = new Atlas(backend, () => {
