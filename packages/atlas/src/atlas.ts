@@ -1,24 +1,25 @@
-import { User } from "@/user";
-import { Auth } from "@/auth";
+import { User } from "@/derived/user";
+import { Auth } from "@/derived/auth";
 import { Backend } from "@litespace/types";
-import { Call } from "@/call";
-import { Plan } from "@/plan";
-import { Coupon } from "@/coupon";
-import { Invite } from "@/invite";
-import { Report } from "@/report";
-import { ReportReply } from "@/reportReply";
-import { Asset } from "@/asset";
-import { Rating } from "@/rating";
-import { Chat } from "@/chat";
-import { Interview } from "@/interview";
-import { Rule } from "@/rule";
-import { Lesson } from "@/lesson";
-import { WithdrawMethod } from "@/withdrawMethod";
-import { Invoice } from "@/invoice";
-import { Topic } from "@/topic";
-import { GetToken } from "@/client";
-import { Cache } from "@/cache";
-import { Peer } from "@/peer";
+import { Call } from "@/derived/call";
+import { Plan } from "@/derived/plan";
+import { Coupon } from "@/derived/coupon";
+import { Invite } from "@/derived/invite";
+import { Report } from "@/derived/report";
+import { ReportReply } from "@/derived/reportReply";
+import { Asset } from "@/derived/asset";
+import { Rating } from "@/derived/rating";
+import { Chat } from "@/derived/chat";
+import { Interview } from "@/derived/interview";
+import { Rule } from "@/derived/rule";
+import { Lesson } from "@/derived/lesson";
+import { WithdrawMethod } from "@/derived/withdrawMethod";
+import { Invoice } from "@/derived/invoice";
+import { Topic } from "@/derived/topic";
+import { Cache } from "@/derived/cache";
+import { Peer } from "@/derived/peer";
+
+import { GetToken } from "@/types";
 
 export class Atlas {
   public readonly user: User;

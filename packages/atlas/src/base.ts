@@ -1,6 +1,8 @@
-import { Backend } from "@litespace/types";
 import { AxiosInstance } from "axios";
-import { createClient, GetToken } from "@/client";
+
+import { Backend } from "@litespace/types";
+import { GetToken } from "@/types";
+import { createClient } from "@/client";
 
 export class Base {
   public readonly client: AxiosInstance;
@@ -37,3 +39,4 @@ export class Base {
       .then((response) => response.data);
   }
 }
+
