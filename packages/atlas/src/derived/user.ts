@@ -1,5 +1,5 @@
 import { Base } from "@/base";
-import { IFilter, ITutor, IUser, PagniationParams } from "@litespace/types";
+import { IFilter, ITutor, IUser, PaginationParams } from "@litespace/types";
 
 export class User extends Base {
   async create(
@@ -67,7 +67,7 @@ export class User extends Base {
   }
 
   async findOnboardedTutors(
-    params?: PagniationParams
+    params?: PaginationParams
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
     return await this.get(`/api/v1/user/tutor/list/onboarded`, null, params);
   }
