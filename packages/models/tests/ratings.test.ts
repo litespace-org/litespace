@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 describe("Ratings", () => {
   beforeEach(async () => {
-    await fixtures.flush();
+    return await fixtures.flush();
   });
 
   describe(nameof(ratings.create), () => {

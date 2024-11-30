@@ -6,7 +6,7 @@ import { IUser } from "@litespace/types";
 
 describe("Rooms", () => {
   beforeEach(async () => {
-    await fixtures.flush();
+    return await fixtures.flush();
   });
 
   describe(nameof(rooms.create), () => {

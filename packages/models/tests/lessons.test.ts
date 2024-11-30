@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 
 describe("Lessons", () => {
   beforeEach(async () => {
-    await fixtures.flush();
+    return await fixtures.flush();
   });
 
   describe(nameof(lessons.countCounterpartMembers), () => {

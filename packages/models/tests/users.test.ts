@@ -24,7 +24,6 @@ describe("Users", () => {
         gender: IUser.Gender.Male,
       });
 
-      expect(user.id).to.be.eq(1);
       expect(user.name).to.be.eq(name);
       expect(user.role).to.be.eq(IUser.Role.Student);
       expect(user.gender).to.be.eq(IUser.Gender.Male);

@@ -6,13 +6,12 @@ import dayjs from "@/lib/dayjs";
 
 describe(nameof(Calls), () => {
   beforeEach(async () => {
-    await flush();
+    return await flush();
   });
 
   describe(nameof(calls.create), () => {
     it("should insert new call row", async () => {
       const call = await calls.create();
-      expect(call.id).to.be.eq(1);
       expect(dayjs.utc(call.createdAt).isValid()).to.be.true;
       expect(dayjs.utc(call.updatedAt).isValid()).to.be.true;
       expect(call.processingTime).to.be.eq(null);

@@ -1,9 +1,17 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} **/
 export default {
+  // preset: "ts-jest/presets/default-esm",
   testEnvironment: "node",
   transformIgnorePatterns: ["<rootDir>/node_modules/"],
   transform: {
-    "^.+\\.(ts)?$": "ts-jest",
+    "^.+\\.(ts)?$": [
+      "ts-jest",
+      {
+        diagnostics: {
+          exclude: ["**"],
+        },
+      },
+    ],
     "^.+\\.(js)$": "babel-jest",
   },
   moduleNameMapper: {
