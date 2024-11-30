@@ -2,7 +2,7 @@
 
 This package can be considered as an API that facilitates communication between the backend and the frontend applications. It can be seen as well as an SDK contains a set of tools and features that are used in different parts of the software (LiteSpace).
 
-## Depends On
+## Main Dependencies
 
 Atlas inner packages dependencies:
 - [types](../types/README.md)
