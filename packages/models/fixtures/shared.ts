@@ -10,10 +10,16 @@ async function execute(command: string): Promise<string> {
   });
 }
 
+const ci = !!process.env.CI;
+
 export async function down() {
-  await execute("pnpm migrate:test down");
+  const command = ci
+    ? "pnpm migrate:test:ci down"
+    : "pnpm migrate:test:local down";
+  await execute(command);
 }
 
 export async function up() {
-  await execute("pnpm migrate:test up");
+  const command = ci ? "pnpm migrate:test:ci up" : "pnpm migrate:test:local up";
+  await execute(command);
 }

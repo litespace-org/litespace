@@ -12,16 +12,19 @@
     "build": "rollup -c --bundleConfigAsCjs",
     "watch": "pnpm build -w",
     "migrate": "env-cmd -f .env node-pg-migrate",
-    "migrate:test": "env-cmd -f .env.test node-pg-migrate",
+    "migrate:test:local": "env-cmd -f .env.test node-pg-migrate",
+    "migrate:test:ci": "env-cmd -f .env.test.ci node-pg-migrate",
     "seed": "env-cmd -f .env vite-node scripts/seed.ts",
     "reseed": "pnpm migrate down && pnpm migrate up && pnpm seed",
-    "test": "env-cmd -f .env.test jest -i --runInBand --detectOpenHandles"
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "test:local": "env-cmd -f .env.test pnpm run test",
+    "test:ci": "env-cmd -f .env.test.ci pnpm run test"
   },
   "devDependencies": {
     "@litespace/models": "workspace:^",
+    "@litespace/sol": "workspace:^",
     "@faker-js/faker": "^9.0.3",
     "@jest/globals": "^29.7.0",
-    "@litespace/sol": "workspace:^",
     "@rollup/plugin-alias": "^5.1.0",
     "@rollup/plugin-commonjs": "^25.0.8",
     "@rollup/plugin-json": "^6.1.0",
@@ -43,11 +46,14 @@
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
-    "vite-node": "^2.1.2"
+    "vite-node": "^2.1.2",
+    "aripsum": "^0.2.0",
+    "lodash": "^4.17.21",
+    "zod": "^3.23.8",
+    "redis": "^4.7.0"
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
-    "aripsum": "^0.2.0",
     "dayjs": "^1.11.13"
   },
   "peerDependencies": {

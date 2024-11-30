@@ -6,7 +6,7 @@ import dayjs from "@/lib/dayjs";
 
 describe("Topics", () => {
   beforeEach(async () => {
-    await fixtures.flush();
+    return await fixtures.flush();
   });
 
   describe(nameof(topics.create), () => {
