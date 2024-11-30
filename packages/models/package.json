@@ -10,6 +10,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
+    "watch": "pnpm build -w",
     "migrate": "env-cmd -f .env node-pg-migrate",
     "migrate:test": "env-cmd -f .env.test node-pg-migrate",
     "seed": "env-cmd -f .env vite-node scripts/seed.ts",

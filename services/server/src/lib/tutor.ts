@@ -27,13 +27,12 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       const [tutorsRules, tutorLessons] = await Promise.all([
         // find all tutors rules that are available
         rules.findActivatedRules(tutorIds, start.toISOString(), tx),
-        lessons.findLessons({
+        lessons.find({
           users: tutorIds,
           after: start.toISOString(),
           before: end.toISOString(),
           canceled: false,
-          //! todo: remove pagination, this query should return all lessons.
-          size: 1_000,
+          full: true,
           tx,
         }),
       ]);
