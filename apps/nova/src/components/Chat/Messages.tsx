@@ -8,22 +8,26 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import MessageGroup from "@/components/Chat/MessageGroup";
+import { ChatMessageGroup, ChatHeader } from "@litespace/luna/Chat";
 import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useMessages } from "@litespace/luna/hooks/chat";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loading } from "@litespace/luna/Loading";
-
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
+import dayjs from "dayjs";
+import { entries, groupBy } from "lodash";
+import { Typography } from "@litespace/luna/Typography";
 
 const Messages: React.FC<{
   room: number | null;
-  members: IRoom.PopulatedMember[];
-}> = ({ room, members }) => {
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
+}> = ({ room, otherMember }) => {
   const profile = useAppSelector(profileSelectors.user);
+  const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] =
@@ -76,9 +80,7 @@ const Messages: React.FC<{
   );
 
   const onDeleteMessage = useCallback(
-    (message: IMessage.Self) => {
-      return deleteMessage(message.id);
-    },
+    (messageId: number) => deleteMessage(messageId),
     [deleteMessage]
   );
 
@@ -102,21 +104,46 @@ const Messages: React.FC<{
 
   const messageGroups = useMemo(() => {
     if (!profile) return [];
-    return asMessageGroups({
+
+    const groups = asMessageGroups({
       currentUser: profile,
       messages,
-      members,
+      otherMember,
     });
-  }, [members, messages, profile]);
+
+    const map = groupBy(groups, (group) =>
+      dayjs(group.sentAt).format("YYYY-MM-DD")
+    );
+    return entries(map).map(([date, groups]) => ({ date, groups }));
+  }, [otherMember, messages, profile]);
+
+  const asDisplayDate = useCallback(
+    (date: string) => {
+      const day = dayjs(date);
+      if (day.isSame(dayjs(), "days")) return intl("chat.date.today");
+      if (day.isSame(dayjs().subtract(1, "day"), "days"))
+        return intl("chat.date.yesterday");
+      if (day.isSame(dayjs(), "year")) return day.format("D MMMM ");
+      return day.format("D MMMM YYYY");
+    },
+    [intl]
+  );
 
   return (
     <div
       className={cn(
-        "flex-1 border-r border-border-strong h-full",
+        "flex-1 border-r border-border-strong h-full max-h-screen",
         "flex flex-col"
       )}
     >
       {room === null ? <NoSelection /> : null}
+
+      <div className="tw-px-6 tw-pt-8">
+        <ChatHeader
+          {...otherMember}
+          lastSeen={dayjs(otherMember.lastSeen).fromNow()}
+        />
+      </div>
 
       {room ? (
         <>
@@ -133,20 +160,37 @@ const Messages: React.FC<{
             <Loading
               show={loading || fetching}
               className={cn(
-                loading ? "h-full" : fetching ? "h-12 shrink-0" : ""
+                loading ? "h-full" : fetching ? "h-full shrink-0" : ""
               )}
             />
 
             {!loading ? (
-              <ul className="flex flex-col gap-4">
-                {messageGroups.map((group) => (
-                  <MessageGroup
-                    key={group.id}
-                    group={group}
-                    onUpdateMessage={onUpdateMessage}
-                    onDeleteMessage={onDeleteMessage}
-                  />
-                ))}
+              <ul className="flex flex-col gap-4 overflow-auto">
+                {messageGroups.map(({ date, groups }) => {
+                  return (
+                    <div key={date} className="w-full">
+                      <div className="bg-natural-50 rounded-[40px] p-3 mx-auto w-fit shadow-chat-date">
+                        <Typography
+                          element="caption"
+                          className="text-natural-950"
+                        >
+                          {asDisplayDate(date)}
+                        </Typography>
+                      </div>
+
+                      {groups.map((group) => (
+                        <div className="mb-6" key={group.id}>
+                          <ChatMessageGroup
+                            {...group}
+                            deleteMessage={() => onDeleteMessage}
+                            editMessage={() => onUpdateMessage}
+                            owner={group.sender.userId === profile?.id}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </ul>
             ) : null}
           </div>

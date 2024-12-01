@@ -1,10 +1,11 @@
 import React from "react";
 import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
-import { Void } from "@litespace/types";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
+import { orUndefined } from "@litespace/sol/utils";
+import dayjs from "@/lib/dayjs";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -12,20 +13,16 @@ const messageVariants = {
 } as const;
 
 export const ChatMessageGroup: React.FC<{
-  userId: number;
-  name: string;
+  sender: { userId: number; name: string | null; image?: string | null };
   messages: Array<{ id: number; text: string }>;
-  image?: string;
   sentAt: string;
   owner?: boolean;
-  editMessage?: Void;
-  deleteMessage?: Void;
+  editMessage: (id: number) => void;
+  deleteMessage: (id: number) => void;
 }> = ({
   sentAt,
-  image,
   messages,
-  name,
-  userId,
+  sender: { image, name, userId },
   owner,
   editMessage,
   deleteMessage,
@@ -38,10 +35,14 @@ export const ChatMessageGroup: React.FC<{
       })}
     >
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
-        <Avatar alt={name} src={image} seed={userId.toString()} />
+        <Avatar
+          alt={orUndefined(name)}
+          src={orUndefined(image)}
+          seed={userId.toString()}
+        />
       </div>
       <div>
-        <p
+        <div
           className={cn("tw-flex tw-gap-6 tw-mb-[14px] tw-items-center", {
             "tw-flex-row-reverse": !owner,
             "tw-flex-row": owner,
@@ -57,9 +58,9 @@ export const ChatMessageGroup: React.FC<{
             element="tiny-text"
             className="tw-text-natural-400 dark:tw-text-natural-300"
           >
-            {sentAt}
+            {dayjs(sentAt).format("hh:mm a")}
           </Typography>
-        </p>
+        </div>
         <div
           className={cn("tw-flex tw-flex-col tw-gap-y-4", {
             "tw-items-end": !owner,
@@ -72,15 +73,18 @@ export const ChatMessageGroup: React.FC<{
               initial="hidden"
               animate="visible"
               exit="hidden"
-              className="w-full mt-1"
+              className={cn("w-full mt-1 tw-flex", {
+                "tw-justify-end": !owner,
+                "tw-justify-start": owner,
+              })}
               key={message.id}
             >
               <ChatMessage
-                text={message.text}
+                message={message}
                 owner={owner}
-                editMessage={editMessage}
-                deleteMessage={deleteMessage}
-              />{" "}
+                editMessage={() => editMessage(message.id)}
+                deleteMessage={() => deleteMessage(message.id)}
+              />
             </motion.div>
           ))}
         </div>
