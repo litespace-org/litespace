@@ -14,26 +14,26 @@ Atlas outer dependencies:
 
 ### The Base Class
 
-`src/base.ts` is the main component/class that couples together 'atlas' and Axios. You may think of it as wrapper to Axios.
+[src/base.ts](./src/base.ts) is the main component/class that couples together 'atlas' and Axios. You may think of it as wrapper to Axios.
 
 ### Derived Classes
 
-These are the main tools that 'atlas' provides to other components/packages in LiteSpace. They are located in `src/derived` directory, and they inherit from the base class.
+These are the main tools that 'atlas' provides to other components/packages in LiteSpace. They are located in [src/derived](./src/derived/) directory, and they inherit from the base class.
 
 ### The Atlas Class
 
-`src/atlas.ts` is just a facade of all the aforementioned derived classes.
+[src/atlas.ts](./src/atlas.ts) is just a facade of all the aforementioned derived classes.
 
 ### Configs
 
-`src/configs.ts` defines configuration variables, for different env modes (i.e. staging), that shall be used by the aforementioned derived classes.
+[src/configs.ts](./src/configs.ts) defines configuration variables, for different env modes (i.e. staging), that shall be used by the aforementioned derived classes.
 
 ### Types
 
-`src/types.ts` defines all the types that ought to be used in 'atlas'.
+[src/types.ts](./src/types.ts) defines all the types that ought to be used in 'atlas'.
 
 > It may be moved to [the types package](../types/README.md); as it's being used as well outside 'atlas'.
 
 ### Lib
 
-`src/lib` directory contains ancillary functions that supports the primary operations activities in other 'atlas' components/classes/files.
+[src/lib](./src/lib) directory contains ancillary functions that supports the primary operations activities in other 'atlas' components/classes/files.
