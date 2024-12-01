@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import { ChatMessageGroup } from "@litespace/luna/Chat";
+import { ChatMessageGroup, ChatHeader } from "@litespace/luna/Chat";
 import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
@@ -17,6 +17,7 @@ import { Loading } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
+import dayjs from "dayjs";
 
 const Messages: React.FC<{
   room: number | null;
@@ -116,6 +117,13 @@ const Messages: React.FC<{
       )}
     >
       {room === null ? <NoSelection /> : null}
+
+      <div className="tw-px-6 tw-pt-8">
+        <ChatHeader
+          {...otherMember}
+          lastSeen={dayjs(otherMember.lastSeen).format("hh:mm a")}
+        />
+      </div>
 
       {room ? (
         <>
