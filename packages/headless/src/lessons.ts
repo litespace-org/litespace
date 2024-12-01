@@ -1,4 +1,4 @@
-import { ICall, IFilter, ILesson, IRule, Void } from "@litespace/types";
+import { IFilter, ILesson, IRule, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
@@ -13,7 +13,6 @@ export function useFindLessons(
 ): UsePaginateResult<{
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
-  call: ICall.Self;
 }> {
   const atlas = useAtlas();
 
