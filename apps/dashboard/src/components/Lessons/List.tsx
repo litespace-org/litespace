@@ -49,11 +49,11 @@ const List: React.FC<{
         header: intl("dashboard.lessons.price"),
         cell: (info) => formatCurrency(price.unscale(info.getValue())),
       }),
-      columnHelper.accessor("call.duration", {
+      columnHelper.accessor("lesson.duration", {
         header: intl("dashboard.lessons.duration"),
         cell: (info) => Duration.from(info.getValue().toString()).format("ar"),
       }),
-      columnHelper.accessor("call.start", {
+      columnHelper.accessor("lesson.start", {
         header: intl("dashboard.lessons.start"),
         cell: (info) => <DateField date={info.getValue()} />,
       }),
@@ -71,8 +71,8 @@ const List: React.FC<{
               </div>
             );
 
-          const start = dayjs(info.row.original.call.start);
-          const end = start.add(info.row.original.call.duration, "minutes");
+          const start = dayjs(info.row.original.lesson.start);
+          const end = start.add(info.row.original.lesson.duration, "minutes");
           const now = dayjs();
 
           const happening = now.isBetween(start, end, "minutes", "[]");

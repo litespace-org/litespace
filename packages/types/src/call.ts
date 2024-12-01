@@ -1,4 +1,4 @@
-import { IUser, NonEmptyList } from "@/index";
+import { IUser } from "@/index";
 
 export enum RecordingStatus {
   Idle = "idle",

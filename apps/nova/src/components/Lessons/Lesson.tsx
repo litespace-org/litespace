@@ -9,7 +9,6 @@ import { IconField } from "@litespace/luna/IconField";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { map } from "lodash";
 import cn from "classnames";
 import { Calendar, MessageCircle, X } from "react-feather";
 import { Link } from "react-router-dom";
@@ -18,7 +17,7 @@ import { useCancelLesson } from "@litespace/headless/lessons";
 
 const Lesson: React.FC<
   Element<ILesson.FindUserLessonsApiResponse["list"]> & { user: IUser.Self }
-> = ({ lesson, call, members, user }) => {
+> = ({ lesson, members, user }) => {
   const intl = useFormatMessage();
   const otherMember = useMemo(() => {
     return members.find((member) => member.userId !== user.id);
@@ -34,7 +33,7 @@ const Lesson: React.FC<
 
   const isMemberCanceled = useMemo(() => {
     if (!canceller?.userId) return;
-    return map(members, "userId").includes(canceller.userId);
+    return members.map((member) => member.userId).includes(canceller.userId);
   }, [canceller?.userId, members]);
 
   const canceledAt = useMemo(() => {
@@ -48,17 +47,17 @@ const Lesson: React.FC<
   }, [lesson.canceledAt]);
 
   const upcoming = useMemo(() => {
-    const end = dayjs(call.start).add(call.duration, "minutes");
+    const end = dayjs(lesson.start).add(lesson.duration, "minutes");
     const now = dayjs();
     return !lesson.canceledBy && end.isAfter(now);
-  }, [call.duration, call.start, lesson.canceledBy]);
+  }, [lesson.canceledBy, lesson.duration, lesson.start]);
 
   const inprogress = useMemo(() => {
-    const start = dayjs(call.start);
-    const end = start.add(call.duration, "minutes");
+    const start = dayjs(lesson.start);
+    const end = start.add(lesson.duration, "minutes");
     const now = dayjs();
     return !lesson.canceledBy && now.isBetween(start, end, "seconds", "[]");
-  }, [call.duration, call.start, lesson.canceledBy]);
+  }, [lesson.canceledBy, lesson.duration, lesson.start]);
 
   const cancelLesson = useCancelLesson();
 
@@ -103,8 +102,8 @@ const Lesson: React.FC<
           <div>
             <p>{otherMember?.name}</p>
             <p className="text-sm text-foreground-lighter">
-              {dayjs(call.start).format("dddd D MMMM YYYY")} (
-              {dayjs(call.start).fromNow()})
+              {dayjs(lesson.start).format("dddd D MMMM YYYY")} (
+              {dayjs(lesson.start).fromNow()})
             </p>
           </div>
         </div>
@@ -115,8 +114,8 @@ const Lesson: React.FC<
       <ul className="flex flex-col gap-3 text-foreground-light">
         <IconField Icon={Calendar}>
           {intl("page.lessons.lesson.start.with.duration", {
-            start: dayjs(call.start).format("h:mm a"),
-            duration: call.duration,
+            start: dayjs(lesson.start).format("h:mm a"),
+            duration: lesson.duration,
           })}
         </IconField>
 
@@ -140,14 +139,14 @@ const Lesson: React.FC<
 
       <div className="flex flex-row gap-2 mt-4">
         {upcoming ? (
-          <Link to={Route.Call.replace(":id", call.id.toString())}>
+          <Link to={Route.Call.replace(":id", lesson.callId.toString())}>
             <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
               {inprogress
                 ? intl("page.lessons.lesson.join.inprogress", {
-                    duration: dayjs().to(call.start, true),
+                    duration: dayjs().to(lesson.start, true),
                   })
                 : intl("page.lessons.lesson.join", {
-                    duration: dayjs().to(call.start, true),
+                    duration: dayjs().to(lesson.start, true),
                   })}
             </Button>
           </Link>

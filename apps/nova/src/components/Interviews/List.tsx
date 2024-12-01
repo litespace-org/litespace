@@ -9,27 +9,17 @@ const List: React.FC<{
   list: IInterview.FindInterviewsApiResponse["list"];
   user: IUser.Self;
   onUpdate: () => void;
-}> = ({ list, user, onUpdate }) => {
+}> = ({ list, onUpdate }) => {
   const timeline = useMemo(
     () =>
       list
-        .map(({ members, interview, call }) => {
-          const tutor = members.find((member) => member.userId !== user.id);
-          if (!tutor) return null;
-
+        .map((interview) => {
           const { pending, passed, rejected, canceled } =
             destructureInterviewStatus(interview.status);
 
           return {
             id: interview.ids.self,
-            children: (
-              <Interview
-                interview={interview}
-                call={call}
-                tutor={tutor}
-                onUpdate={onUpdate}
-              />
-            ),
+            children: <Interview interview={interview} onUpdate={onUpdate} />,
             icon: passed ? (
               <CheckCircle />
             ) : pending ? (
@@ -42,7 +32,7 @@ const List: React.FC<{
           };
         })
         .filter((item) => item !== null),
-    [list, onUpdate, user.id]
+    [list, onUpdate]
   );
 
   return (
