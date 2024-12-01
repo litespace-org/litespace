@@ -1,11 +1,11 @@
 import React from "react";
 import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
-import { IMessage } from "@litespace/types";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
 import { orUndefined } from "@litespace/sol/utils";
+import dayjs from "@/lib/dayjs";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -14,11 +14,11 @@ const messageVariants = {
 
 export const ChatMessageGroup: React.FC<{
   sender: { userId: number; name: string | null; image?: string | null };
-  messages: IMessage.Self[];
+  messages: Array<{ id: number; text: string }>;
   sentAt: string;
   owner?: boolean;
-  editMessage: (message: IMessage.Self) => void;
-  deleteMessage: (messageId: number) => void;
+  editMessage: (id: number) => void;
+  deleteMessage: (id: number) => void;
 }> = ({
   sentAt,
   messages,
@@ -27,8 +27,6 @@ export const ChatMessageGroup: React.FC<{
   editMessage,
   deleteMessage,
 }) => {
-  console.log({ editMessage, deleteMessage });
-
   return (
     <div
       className={cn("tw-flex tw-gap-4", {
@@ -44,7 +42,7 @@ export const ChatMessageGroup: React.FC<{
         />
       </div>
       <div>
-        <p
+        <div
           className={cn("tw-flex tw-gap-6 tw-mb-[14px] tw-items-center", {
             "tw-flex-row-reverse": !owner,
             "tw-flex-row": owner,
@@ -60,9 +58,9 @@ export const ChatMessageGroup: React.FC<{
             element="tiny-text"
             className="tw-text-natural-400 dark:tw-text-natural-300"
           >
-            {sentAt}
+            {dayjs(sentAt).format("hh:mm a")}
           </Typography>
-        </p>
+        </div>
         <div
           className={cn("tw-flex tw-flex-col tw-gap-y-4", {
             "tw-items-end": !owner,
@@ -84,9 +82,9 @@ export const ChatMessageGroup: React.FC<{
               <ChatMessage
                 message={message}
                 owner={owner}
-                editMessage={() => editMessage(message)}
+                editMessage={() => editMessage(message.id)}
                 deleteMessage={() => deleteMessage(message.id)}
-              />{" "}
+              />
             </motion.div>
           ))}
         </div>

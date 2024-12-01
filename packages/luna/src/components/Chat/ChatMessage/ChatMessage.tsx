@@ -1,4 +1,4 @@
-import { IMessage, Void } from "@litespace/types";
+import { Void } from "@litespace/types";
 import React, { useState } from "react";
 import cn from "classnames";
 import More from "@litespace/assets/More";
@@ -9,7 +9,7 @@ import Trash from "@litespace/assets/Trash";
 import { Typography } from "@/components/Typography";
 
 export const ChatMessage: React.FC<{
-  message: IMessage.Self;
+  message: { id: number; text: string };
   owner?: boolean;
   editMessage: Void;
   deleteMessage: Void;
@@ -73,7 +73,7 @@ export const ChatMessage: React.FC<{
             className={cn(
               "tw-absolute -tw-top-[10px] tw-left-[0px] tw-w-0 tw-h-0",
               "tw-rounded-t-full tw-rounded-r-full",
-              "tw-border-r-[40px]  tw-border-b-[22px]",
+              "tw-border-r-[40px] tw-border-b-[22px]",
               "tw-border-r-transparent tw-border-b-brand-100 dark:tw-border-b-brand-100"
             )}
           />
@@ -89,7 +89,7 @@ export const ChatMessage: React.FC<{
         )}
         <Typography
           element="caption"
-          className={cn("tw-font-normal tw-text-sm", {
+          className={cn("tw-font-normal", {
             "tw-text-natural-950 dark:tw-text-secondary-900": !owner,
             "tw-text-natural-50 dark:tw-text-secondary-900": owner,
           })}

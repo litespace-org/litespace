@@ -3,6 +3,8 @@ import { Dayjs } from "dayjs";
 import { isEmpty, maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 
+export type DisplayMessage = { id: number; text: string };
+
 export type Sender = {
   userId: number;
   image?: string | null;
@@ -12,7 +14,7 @@ export type Sender = {
 export type MessageGroup = {
   id: string;
   sender: Sender;
-  messages: IMessage.Self[];
+  messages: DisplayMessage[];
   sentAt: string;
 };
 
@@ -62,8 +64,11 @@ function assignGroup({
   return {
     id,
     sender,
-    messages,
-    sentAt: dayjs(latest.updatedAt).format("h:mm a"),
+    messages: messages.map((message) => ({
+      id: message.id,
+      text: message.text,
+    })),
+    sentAt: latest.updatedAt,
   };
 }
 
@@ -81,6 +86,7 @@ export function asMessageGroups({
   let senderId: number | null = null;
   let group: IMessage.Self[] = [];
   let start: Dayjs | null = null;
+
   for (const message of messages) {
     if (!senderId && isEmpty(group)) {
       senderId = message.userId;

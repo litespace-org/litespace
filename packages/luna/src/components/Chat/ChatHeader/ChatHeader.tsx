@@ -2,9 +2,11 @@ import React from "react";
 import { Avatar } from "@/components/Avatar";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { Typography } from "@/components/Typography";
-import cn from "classnames";
-import { useFormatMessage } from "@/hooks";
 import { orUndefined } from "@litespace/sol/utils";
+import { useFormatMessage } from "@/hooks";
+import dayjs from "@/lib/dayjs";
+import cn from "classnames";
+
 export const ChatHeader: React.FC<{
   name: string | null;
   image: string | null;
@@ -23,7 +25,7 @@ export const ChatHeader: React.FC<{
             online && "tw-border-4 tw-border-brand-700"
           )}
         >
-          <div className="tw-rounded-full tw-overflow-hidden tw-w-14 tw-h-14">
+          <div className="tw-rounded-full tw-overflow-hidden tw-w-14 tw-h-14 tw-shrink-0">
             <Avatar
               alt={orUndefined(name)}
               src={orUndefined(image)}
@@ -34,7 +36,7 @@ export const ChatHeader: React.FC<{
         <div>
           <Typography
             element="subtitle-2"
-            className={"tw-font-bold tw-text-natural-950 "}
+            className={"tw-font-bold tw-text-natural-950"}
           >
             {name}
           </Typography>
@@ -47,12 +49,12 @@ export const ChatHeader: React.FC<{
           >
             {online
               ? intl("chat.online")
-              : intl("chat.offline", { time: lastSeen })}
+              : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
           </Typography>
         </div>
       </div>
       <div className="tw-flex tw-items-center">
-        <Button type={ButtonType.Main} size={ButtonSize.Large}>
+        <Button type={ButtonType.Main} size={ButtonSize.Small}>
           {intl("chat.book")}
         </Button>
       </div>

@@ -32,56 +32,66 @@ const meta: Meta<Component> = {
 
 export const OwnerOneMessage: StoryObj<Component> = {
   args: {
-    image: "https://picsum.photos/700",
-    name: faker.person.fullName(),
+    sender: {
+      image: "https://picsum.photos/700",
+      name: faker.person.fullName(),
+      userId: 1,
+    },
     messages: messages(1),
     owner: true,
-    sentAt: dayjs().format("h:mm a"),
-    userId: 1,
+    sentAt: dayjs().toISOString(),
   },
 };
 
 export const OwnerMultipleMessages: StoryObj<Component> = {
   args: {
-    image: "https://picsum.photos/700",
-    name: faker.person.fullName(),
+    sender: {
+      name: faker.person.fullName(),
+      userId: 1,
+      image: "https://picsum.photos/700",
+    },
     messages: messages(6),
     owner: true,
-    sentAt: dayjs().format("h:mm a"),
-    userId: 1,
+    sentAt: dayjs().toISOString(),
   },
 };
 
 export const ReceiverOneMessage: StoryObj<Component> = {
   args: {
-    image: "https://picsum.photos/700",
-    name: faker.person.fullName(),
+    sender: {
+      userId: 1,
+      image: "https://picsum.photos/700",
+      name: faker.person.fullName(),
+    },
     messages: messages(1),
     owner: true,
-    sentAt: dayjs().format("h:mm a"),
-    userId: 1,
+    sentAt: dayjs().toISOString(),
   },
 };
 
 export const ReceiverMultipleMessages: StoryObj<Component> = {
   args: {
-    image: "https://picsum.photos/700",
-    name: faker.person.fullName(),
+    sender: {
+      userId: 1,
+      image: "https://picsum.photos/700",
+      name: faker.person.fullName(),
+    },
     messages: messages(6),
     owner: false,
-    sentAt: dayjs().format("h:mm a"),
-    userId: 1,
+    sentAt: dayjs().toISOString(),
   },
 };
 
 export const MessagingSimulation: StoryObj<Component> = {
   args: {
-    image: "https://picsum.photos/700",
-    name: faker.person.fullName(),
+    sender: {
+      image: "https://picsum.photos/700",
+      name: faker.person.fullName(),
+      userId: 1,
+    },
     messages: messages(6),
     owner: false,
-    sentAt: dayjs().format("h:mm a"),
-    userId: 1,
+    sentAt: dayjs().toISOString(),
   },
   render(props) {
     const [messages, setMessages] = useState(props.messages);
