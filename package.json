@@ -62,7 +62,8 @@
     "luna": "pnpm --filter @litespace/luna",
     "models": "pnpm --filter @litespace/models",
     "sol": "pnpm --filter @litespace/sol",
-    "types": "pnpm --filter @litespace/types"
+    "types": "pnpm --filter @litespace/types",
+    "server": "pnpm --filter @litespace/server"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

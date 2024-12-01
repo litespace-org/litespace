@@ -5,15 +5,21 @@
   "license": "MIT",
   "scripts": {
     "start": "pnpm build && env-cmd ts-node dist/index.js",
-    "start:test:server": "pnpm build && env-cmd -f .env.test ts-node dist/index.js",
+    "start:test:server": "pnpm build && ts-node dist/index.js",
+    "start:local:test:server": "env-cmd -f .env.test pnpm start:test:server",
+    "start:ci:test:server": "env-cmd -f .env.test.ci pnpm start:test:server",
+    "start:ci:test:server:bg": "pm2 start 'pnpm start:ci:test:server' --name test-server",
     "dev": "env-cmd nodemon src/index.ts",
     "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
-    "test": "env-cmd -f .env.test jest --runInBand --detectOpenHandles --forceExit",
+    "test": "jest --runInBand --detectOpenHandles --forceExit",
+    "test:local": "env-cmd -f .env.test pnpm run test",
+    "test:ci": "env-cmd -f .env.test.ci pnpm run test",
     "pm2:start": "pm2 start ecosystem.config.js",
     "peer": "peerjs --port 7070 --key peer --path /ls",
     "docker": "docker compose up -d",
     "docker:linux": "sudo docker compose up -d",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "wait": "wait-on tcp:8080"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
@@ -42,11 +48,13 @@
     "jest": "^29.7.0",
     "node-pg-migrate": "^7.3.2",
     "nodemon": "^3.1.0",
+    "pm2": "^5.4.3",
     "ts-jest": "^29.2.3",
     "ts-node": "^10.9.2",
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "wait-on": "^8.0.1"
   },
   "dependencies": {
     "@litespace/auth": "workspace:^",

@@ -15,7 +15,7 @@ on:
 jobs:
   main:
     runs-on: ubuntu-latest
-    container: node:20-bookworm-slim
+    container: ubuntu
     services:
       postgres:
         image: postgres
@@ -62,3 +62,9 @@ jobs:
         run: pnpm build:server:pkgs
       - name: Run models tests
         run: pnpm run models test:ci
+      - name: Run server in the background
+        run: pnpm run server start:ci:test:server:bg
+      - name: Wait for the server to be ready
+        run: pnpm run server wait
+      - name: Run server tests
+        run: pnpm run server test:ci

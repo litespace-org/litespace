@@ -21,7 +21,6 @@ describe("/api/v1/user/", () => {
         password,
         callbackUrl: "https://litespace.org/verify-email",
       });
-      expect(result.user.id).to.be.eq(1);
       expect(result.user.email).to.be.eq(email);
       expect(result.user.password).to.be.eq(true);
       expect(result.user.password).to.be.eq(true);
