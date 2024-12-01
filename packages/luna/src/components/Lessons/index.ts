@@ -1,2 +1,1 @@
-export { default as UpcomingLessonCard } from "./UpcomingLessonCard";
-export { type CardProps } from "./UpcomingLessonCard";
+export { LessonCard, type Props } from "@/components/Lessons/LessonCard";
