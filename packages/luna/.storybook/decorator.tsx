@@ -5,6 +5,7 @@ import { IntlProvider } from "react-intl";
 import { ToastProvider } from "../src/components/Toast";
 import { locales } from "../src/locales";
 import { Direction } from "../src/components/Direction";
+import { MemoryRouter } from "react-router-dom";
 
 const Decorator = (Story: React.FC) => {
   const { toggle } = useTheme();
@@ -20,7 +21,9 @@ const Decorator = (Story: React.FC) => {
             <div className="tw-mb-4">
               <Button onClick={toggle}>Toggle Theme</Button>
             </div>
-            <Story />
+            <MemoryRouter initialEntries={["/"]}>
+              <Story />
+            </MemoryRouter>
           </div>
         </ToastProvider>
       </Direction>
