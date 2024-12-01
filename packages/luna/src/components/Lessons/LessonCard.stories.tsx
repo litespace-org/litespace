@@ -1,30 +1,27 @@
 import { Meta, StoryObj } from "@storybook/react";
-import UpcomingLessonCard from "./LessonCard";
-import { CardProps } from "./LessonCard";
+import LessonCard, { Props } from "@/components/Lessons/LessonCard";
 import dayjs from "@/lib/dayjs";
 import { faker } from "@faker-js/faker/locale/ar";
 
-const meta: Meta<CardProps> = {
+const meta: Meta<Props> = {
   title: "Lessons/LessonCard",
-  component: UpcomingLessonCard,
+  component: LessonCard,
 };
 export default meta;
 
 const url = "https://picsum.photos/400";
 
-type Story = StoryObj<CardProps>;
+type Story = StoryObj<Props>;
 
 export const BeforeJoin: Story = {
   args: {
     canceled: null,
     start: dayjs.utc().add(15, "minutes").toISOString(),
-    duration: 3,
+    duration: 30,
     tutor: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -40,8 +37,6 @@ export const CanJoinLesson: Story = {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -57,8 +52,6 @@ export const CanJoinLessonNow: Story = {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -74,8 +67,6 @@ export const AfterLessonStarted: Story = {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -91,8 +82,6 @@ export const LessonAboutToEnd: Story = {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -108,8 +97,6 @@ export const AfterLessonFinish: Story = {
       id: 30,
       name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -123,10 +110,23 @@ export const CanceledByTutor: Story = {
     duration: 30,
     tutor: {
       id: 30,
-      name: "محمد عبدالعزيز",
+      name: faker.person.fullName(),
       image: url,
-      studentCount: 3,
-      rating: 3.4,
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+  },
+};
+
+export const CanceledByStudent: Story = {
+  args: {
+    canceled: "student",
+    start: new Date().toISOString(),
+    duration: 30,
+    tutor: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
