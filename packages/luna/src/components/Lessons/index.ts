@@ -1,2 +1,2 @@
-export { default as UpcomingLessonCard } from "./UpcomingLessonCard";
-export { type CardProps } from "./UpcomingLessonCard";
+export { LessonCard } from "./LessonCard";
+export { type CardProps } from "./LessonCard";
