@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { ChatBubble, ChatBubbleVariant } from "@/components/Chat/ChatBubble";
+import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
 import React from "react";
 
-type Component = typeof ChatBubble;
+type Component = typeof ChatMessage;
 
 const meta: Meta<Component> = {
-  component: ChatBubble,
+  component: ChatMessage,
   parameters: { layout: "centered" },
   decorators: [
     (Story) => {
@@ -21,31 +21,31 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Primary: StoryObj<Component> = {
+export const OwnerShotMessage: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
-    variant: ChatBubbleVariant.CurrentUser,
+    owner: true,
   },
 };
 
-export const PrimaryLong: StoryObj<Component> = {
+export const OwnerLongMessage: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(40),
-    variant: ChatBubbleVariant.CurrentUser,
+    owner: true,
   },
 };
 
-export const PrimaryOtherUser: StoryObj<Component> = {
+export const ReceiverShotMessage: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
-    variant: ChatBubbleVariant.OtherUser,
+    owner: false,
   },
 };
 
-export const PrimaryOtherUserLong: StoryObj<Component> = {
+export const ReceiverLongMessage: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(40),
-    variant: ChatBubbleVariant.OtherUser,
+    owner: false,
   },
 };
 
