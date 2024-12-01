@@ -154,21 +154,16 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     page: query.page,
     size: query.size,
   });
+
   const userLesonsIds = userLessons.map((lesson) => lesson.id);
   const lessonMembers = await lessons.findLessonMembers(userLesonsIds);
-  const lessonCallIds = userLessons.map((lesson) => lesson.callId);
-  const lessonCalls = await calls.findByIds(lessonCallIds);
 
   const result: ILesson.FindUserLessonsApiResponse = {
     list: userLessons.map((lesson) => {
       const members = lessonMembers.filter(
         (member) => member.lessonId === lesson.id
       );
-
-      const call = lessonCalls.find((call) => call.id === lesson.callId);
-      if (!call) throw unexpected();
-
-      return { lesson, members, call };
+      return { lesson, members };
     }),
     total,
   };

@@ -10,11 +10,9 @@ const List: React.FC<{
 }> = ({ list, user }) => {
   const timeline = useMemo((): TimelineItem[] => {
     const lessons = list.map(
-      ({ call, lesson, members }): TimelineItem => ({
+      ({ lesson, members }): TimelineItem => ({
         id: lesson.id,
-        children: (
-          <Lesson lesson={lesson} members={members} call={call} user={user} />
-        ),
+        children: <Lesson lesson={lesson} members={members} user={user} />,
         icon: lesson.canceledBy ? <X /> : <Hash />,
       })
     );

@@ -160,6 +160,8 @@ exports.up = (pgm) => {
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },
     signer: { type: "INT", references: "users(id)" },
+    canceled_by: { type: "INT", references: "users(id)", default: null },
+    canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });

@@ -121,7 +121,6 @@ export type FindLessonsApiQuery = IFilter.Pagination & {
 export type FindUserLessonsApiResponse = Paginated<{
   lesson: Self;
   members: PopuldatedMember[];
-  call: ICall.Self;
 }>;
 
 export enum Duration {

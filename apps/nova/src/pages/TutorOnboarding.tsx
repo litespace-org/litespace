@@ -2,7 +2,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Stepper } from "@litespace/luna/Stepper";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorOnboardingStep } from "@/constants/user";
-import TutorOnboardingSteps from "@/components/TutorOnboardingSteps";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { tutorMetaSelector } from "@/redux/user/tutor";
@@ -42,17 +41,17 @@ const TutorOnboarding: React.FC = () => {
   const current = useMemo(() => {
     if (!interviews.list) return null;
     const interview = maxBy(interviews.list, (item) =>
-      dayjs(item.interview.createdAt).unix()
+      dayjs(item.createdAt).unix()
     );
     return interview || null;
   }, [interviews.list]);
 
   useEffect(() => {
-    const pending = current?.interview.status === IInterview.Status.Pending;
-    const passed = current?.interview.status === IInterview.Status.Passed;
-    const rejected = current?.interview.status === IInterview.Status.Rejected;
-    const canceled = current?.interview.status === IInterview.Status.Canceled;
-    const signed = !!current?.interview.signer;
+    const pending = current?.status === IInterview.Status.Pending;
+    const passed = current?.status === IInterview.Status.Passed;
+    const rejected = current?.status === IInterview.Status.Rejected;
+    const canceled = current?.status === IInterview.Status.Canceled;
+    const signed = !!current?.signer;
 
     if (
       interviews.list &&
@@ -91,13 +90,13 @@ const TutorOnboarding: React.FC = () => {
         <Stepper steps={steps} value={step} />
       </div>
 
-      <div>
+      {/* <div>
         <TutorOnboardingSteps
           step={step}
           interviews={interviews}
           current={current}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

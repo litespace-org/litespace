@@ -22,7 +22,7 @@ export type Self = {
      * The interviewee id (the id of the tutor)
      */
     interviewee: number;
-    call: number | null;
+    call: number;
     rule: number;
   };
   /**
@@ -39,6 +39,8 @@ export type Self = {
    * When the signer is null, it means that the interview is not signed yet.
    */
   signer: number | null;
+  canceledBy: number | null;
+  canceledAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
@@ -51,11 +53,13 @@ export type Row = {
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
   rule_id: number;
-  call_id: number | null;
+  call_id: number;
   note: string | null;
   level: number | null;
   status: Status;
   signer: number | null;
+  canceled_by: number | null;
+  canceled_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };

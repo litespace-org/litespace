@@ -9,7 +9,6 @@ import {
 import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
-import { calls } from "@/calls";
 
 export class Interviews {
   readonly table = "interviews" as const;
@@ -27,6 +26,8 @@ export class Interviews {
     level: this.column("level"),
     status: this.column("status"),
     signer: this.column("signer"),
+    canceled_by: this.column("canceled_by"),
+    canceled_at: this.column("canceled_at"),
     created_at: this.column("created_at"),
     updated_at: this.column("updated_at"),
   };
@@ -179,6 +180,8 @@ export class Interviews {
       level: row.level,
       status: row.status,
       signer: row.signer,
+      canceledBy: row.canceled_by,
+      canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
