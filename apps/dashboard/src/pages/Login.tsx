@@ -26,7 +26,7 @@ const Login: React.FC = () => {
   const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "admin@litespace.org",
-      password: "LiteSpace432%^&",
+      password: "Password@8",
     },
   });
 
