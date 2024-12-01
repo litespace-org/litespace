@@ -3,80 +3,90 @@ import { Dayjs } from "dayjs";
 import { isEmpty, maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 
+export type DisplayMessage = { id: number; text: string };
+
 export type Sender = {
-  id: number;
-  photo: string | null;
+  userId: number;
+  image?: string | null;
   name: string | null;
 };
 
 export type MessageGroup = {
   id: string;
   sender: Sender;
-  messages: IMessage.Self[];
-  date: string;
+  messages: DisplayMessage[];
+  sentAt: string;
 };
 
 function asSender({
   senderId,
   currentUser,
-  members,
+  otherMember,
 }: {
   senderId: number;
   currentUser: IUser.Self;
-  members: IRoom.PopulatedMember[];
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }): Sender | null {
   if (senderId === currentUser.id)
     return {
-      id: currentUser.id,
+      userId: currentUser.id,
       name: currentUser.name,
-      photo: currentUser.image,
+      image: currentUser.image,
     };
 
-  const member = members.find((member) => member.id === senderId);
-  if (!member) return null;
   return {
-    id: member.id,
-    name: member.name,
-    photo: member.image,
+    userId: otherMember.id,
+    name: otherMember.name,
+    image: otherMember.image,
   };
 }
 
 function assignGroup({
   senderId,
-  members,
+  otherMember,
   currentUser,
   messages,
 }: {
   senderId: number | null;
-  members: IRoom.PopulatedMember[];
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   currentUser: IUser.Self;
   messages: IMessage.Self[];
 }): MessageGroup | null {
   if (isEmpty(messages) || !senderId) return null;
-  const sender = asSender({ senderId, currentUser, members });
+  const sender = asSender({ senderId, currentUser, otherMember });
   if (!sender) return null;
 
   const latest = maxBy(messages, (message) => dayjs(message.updatedAt).unix());
   if (!latest) return null;
 
   const id = messages.map((message) => message.id).join("-");
-  return { id, sender, messages, date: latest.updatedAt };
+
+  return {
+    id,
+    sender,
+    messages: messages.map((message) => ({
+      id: message.id,
+      text: message.text,
+    })),
+    sentAt: latest.updatedAt,
+  };
 }
 
 export function asMessageGroups({
   messages,
   currentUser,
-  members,
+  otherMember,
 }: {
   messages: IMessage.Self[];
   currentUser: IUser.Self;
-  members: IRoom.PopulatedMember[];
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) {
   const groups: MessageGroup[] = [];
 
   let senderId: number | null = null;
   let group: IMessage.Self[] = [];
   let start: Dayjs | null = null;
+
   for (const message of messages) {
     if (!senderId && isEmpty(group)) {
       senderId = message.userId;
@@ -100,7 +110,7 @@ export function asMessageGroups({
       const assignedGroup = assignGroup({
         messages: group,
         currentUser,
-        members,
+        otherMember,
         senderId,
       });
       if (!assignedGroup) continue;
@@ -116,7 +126,7 @@ export function asMessageGroups({
   const lastGroup = assignGroup({
     messages: group,
     currentUser,
-    members,
+    otherMember,
     senderId,
   });
   if (lastGroup) groups.push(lastGroup);

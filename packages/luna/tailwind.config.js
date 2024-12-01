@@ -260,7 +260,7 @@ export default {
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
       "unread-count": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
       "unread-count-dark": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
-      "chat-menu": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
+      "chat-date": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
     },
   },
   plugins: [

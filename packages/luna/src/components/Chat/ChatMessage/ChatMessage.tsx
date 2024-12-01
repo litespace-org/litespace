@@ -1,19 +1,19 @@
 import { Void } from "@litespace/types";
 import React, { useState } from "react";
 import cn from "classnames";
-import { Typography } from "@/components/Typography";
 import More from "@litespace/assets/More";
 import { Menu } from "@/components/Menu";
 import { useFormatMessage } from "@/hooks";
 import MessageEdit from "@litespace/assets/MessageEdit";
 import Trash from "@litespace/assets/Trash";
+import { Typography } from "@/components/Typography";
 
 export const ChatMessage: React.FC<{
-  text: string;
+  message: { id: number; text: string };
   owner?: boolean;
-  editMessage?: Void;
-  deleteMessage?: Void;
-}> = ({ text, owner, editMessage, deleteMessage }) => {
+  editMessage: Void;
+  deleteMessage: Void;
+}> = ({ message, owner, editMessage, deleteMessage }) => {
   const intl = useFormatMessage();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -73,7 +73,7 @@ export const ChatMessage: React.FC<{
             className={cn(
               "tw-absolute -tw-top-[10px] tw-left-[0px] tw-w-0 tw-h-0",
               "tw-rounded-t-full tw-rounded-r-full",
-              "tw-border-r-[40px]  tw-border-b-[22px]",
+              "tw-border-r-[40px] tw-border-b-[22px]",
               "tw-border-r-transparent tw-border-b-brand-100 dark:tw-border-b-brand-100"
             )}
           />
@@ -94,7 +94,7 @@ export const ChatMessage: React.FC<{
             "tw-text-natural-50 dark:tw-text-secondary-900": owner,
           })}
         >
-          {text}
+          {message.text}
         </Typography>
       </div>
     </div>
