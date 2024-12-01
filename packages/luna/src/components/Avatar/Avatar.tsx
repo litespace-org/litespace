@@ -7,7 +7,8 @@ export const Avatar: React.FC<{
   src?: string;
   alt?: string;
   seed?: string;
-}> = ({ src, alt, seed }) => {
+  className?: string;
+}> = ({ src, alt, seed, className }) => {
   const [status, setStatus] = useState<Status>("loading");
 
   const onLoad = useCallback(() => {
@@ -24,7 +25,8 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear",
-          "data-[status=loaded]:tw-opacity-100 tw-object-cover"
+          "data-[status=loaded]:tw-opacity-100 tw-object-cover",
+          className
         )}
         src={src}
         alt={alt}
