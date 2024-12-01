@@ -49,6 +49,12 @@
   "call.no.user.stream": "لديك مشكلة في الميك أو الكاميرا",
   "call.user.denided": "الرجاء قبول طلب الوصول للمايك والكاميرا",
   "call.empty": "لا يوجد أحد",
+  "tutors.card.book-button.label": "احجز الآن",
+  "tutors.card.profile-button.label": "عرض الملف",
+  "tutors.card.label.students": "الطلاب",
+  "tutors.card.label.lessons": "الدروس",
+  "tutors.card.label.rating": "التقييم",
+  "tutors.card.label.read-more": "اقرأ المزيد",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
