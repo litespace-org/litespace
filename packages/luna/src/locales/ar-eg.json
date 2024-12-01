@@ -387,7 +387,7 @@
   "chat.all": "جميع الرسائل",
   "chat.search": "ابحث هنا",
   "chat.online": "نشط الان",
-  "chat.offline": "نشط منذ {time}",
+  "chat.offline": "نشط {time}",
   "chat.book": "احجز الاّن",
   "settings.profile.title": "الأعدادات",
   "settings.profile.title.first": "أكمل بياناتك",

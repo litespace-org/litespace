@@ -45,17 +45,17 @@ const Root: React.FC = () => {
       [user.name, user.birthYear, user.gender].some((value) => value === null);
     if (redirectStudent || redirectTutor) return navigate(Route.Complete);
 
-    // if (
-    //   !ignore &&
-    //   user &&
-    //   user.role === IUser.Role.Tutor &&
-    //   tutorMeta &&
-    //   (tutorMeta.bio === null ||
-    //     tutorMeta.about === null ||
-    //     user.image === null ||
-    //     tutorMeta.video === null)
-    // )
-    //   return navigate(Route.TutorOnboarding);
+    if (
+      !ignore &&
+      user &&
+      user.role === IUser.Role.Tutor &&
+      tutorMeta &&
+      (tutorMeta.bio === null ||
+        tutorMeta.about === null ||
+        user.image === null ||
+        tutorMeta.video === null)
+    )
+      return navigate(Route.TutorOnboarding);
 
     if (!profile.value || (!root && !complete)) return;
     const { tutor, student, interviewer } = destructureRole(

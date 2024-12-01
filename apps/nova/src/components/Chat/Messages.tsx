@@ -76,9 +76,7 @@ const Messages: React.FC<{
   );
 
   const onDeleteMessage = useCallback(
-    (messageId: number) => {
-      return deleteMessage(messageId);
-    },
+    (messageId: number) => deleteMessage(messageId),
     [deleteMessage]
   );
 
@@ -112,7 +110,7 @@ const Messages: React.FC<{
   return (
     <div
       className={cn(
-        "flex-1 border-r border-border-strong h-full",
+        "flex-1 border-r border-border-strong h-full max-h-screen",
         "flex flex-col"
       )}
     >
@@ -121,7 +119,7 @@ const Messages: React.FC<{
       <div className="tw-px-6 tw-pt-8">
         <ChatHeader
           {...otherMember}
-          lastSeen={dayjs(otherMember.lastSeen).format("hh:mm a")}
+          lastSeen={dayjs(otherMember.lastSeen).fromNow()}
         />
       </div>
 
@@ -145,13 +143,13 @@ const Messages: React.FC<{
             />
 
             {!loading ? (
-              <ul className="flex flex-col gap-4">
+              <ul className="flex flex-col gap-4 overflow-auto">
                 {messageGroups.map((group) => (
                   <ChatMessageGroup
                     key={group.id}
                     {...group}
-                    deleteMessage={() => onDeleteMessage}
-                    editMessage={() => onUpdateMessage}
+                    deleteMessage={onDeleteMessage}
+                    editMessage={onUpdateMessage}
                     owner={group.sender.userId === profile?.id}
                   />
                 ))}

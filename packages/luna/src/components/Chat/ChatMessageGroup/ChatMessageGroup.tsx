@@ -5,6 +5,7 @@ import { IMessage } from "@litespace/types";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
+import { orUndefined } from "@litespace/sol/utils";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -26,6 +27,8 @@ export const ChatMessageGroup: React.FC<{
   editMessage,
   deleteMessage,
 }) => {
+  console.log({ editMessage, deleteMessage });
+
   return (
     <div
       className={cn("tw-flex tw-gap-4", {
@@ -34,7 +37,11 @@ export const ChatMessageGroup: React.FC<{
       })}
     >
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
-        <Avatar alt={name || ""} src={image || ""} seed={userId.toString()} />
+        <Avatar
+          alt={orUndefined(name)}
+          src={orUndefined(image)}
+          seed={userId.toString()}
+        />
       </div>
       <div>
         <p
@@ -77,8 +84,8 @@ export const ChatMessageGroup: React.FC<{
               <ChatMessage
                 message={message}
                 owner={owner}
-                editMessage={editMessage}
-                deleteMessage={deleteMessage}
+                editMessage={() => editMessage(message)}
+                deleteMessage={() => deleteMessage(message.id)}
               />{" "}
             </motion.div>
           ))}

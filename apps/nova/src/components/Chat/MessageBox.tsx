@@ -56,11 +56,13 @@ const MessageBox: React.FC<{
 
   return (
     <Form onSubmit={onSubmit} className="flex flex-col gap-2.5">
-      <Controller.TextEditor
+      <Controller.Input
         control={form.control}
         name="message"
+        autoComplete="off"
+        autoFocus
         value={form.watch("message")}
-        className="min-h-20"
+        className="min-h-10 w-full bg-transparent focus:outline-none"
       />
       <div className="flex flex-row gap-2">
         <Button
