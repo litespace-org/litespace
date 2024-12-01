@@ -11,8 +11,9 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
+import { Tooltip } from "@/components/Tooltip";
 
-export type CardProps = {
+export type Props = {
   start: string;
   duration: number;
   canceled: "tutor" | "student" | null;
@@ -20,15 +21,13 @@ export type CardProps = {
     id: number;
     name: string | null;
     image: string | undefined;
-    studentCount: number;
-    rating: number;
   };
   onRebook: Void;
   onJoin: Void;
   onCancel: Void;
 };
 
-export const LessonCard: React.FC<CardProps> = ({
+export const LessonCard: React.FC<Props> = ({
   start,
   duration,
   tutor,
@@ -41,14 +40,16 @@ export const LessonCard: React.FC<CardProps> = ({
   const end = dayjs(start).add(duration, "minutes");
   const [title, setTitle] = useState<string | undefined>(() => {
     const now = dayjs();
-    // canceled
-    if (canceled) return intl("lessons.canceled-by-tutor");
+    // canceled by tutor
+    if (canceled === "tutor") return intl("lessons.canceled-by-tutor");
+
+    // canceled by tutor
+    if (canceled === "student") return intl("lessons.canceled-by-student");
 
     // before the lesson started
     if (!canceled && now.isBefore(start, "second"))
       return intl("lessons.time-to-join", {
         value: dayjs(start).fromNow(true),
-        finish: null,
       });
 
     // at first 3 minutes
@@ -82,9 +83,8 @@ export const LessonCard: React.FC<CardProps> = ({
         "[]"
       )
     )
-      return intl("lessons.time-to-join", {
+      return intl("lessons.time-to-end-lesson", {
         value: dayjs(end).fromNow(true),
-        finish: intl("labels.end"),
       });
 
     // after finish
@@ -153,9 +153,8 @@ export const LessonCard: React.FC<CardProps> = ({
         )
       )
         setTitle(
-          intl("lessons.time-to-join", {
+          intl("lessons.time-to-end-lesson", {
             value: dayjs(end).fromNow(true),
-            finish: intl("labels.end"),
           })
         );
 
@@ -168,17 +167,32 @@ export const LessonCard: React.FC<CardProps> = ({
   const actions: MenuAction[] = useMemo(
     () => [
       {
-        label: intl("schedule.lesson.edit"),
+        label: intl("lessons.menu.edit"),
         icon: <CalendarEdit />,
         onClick: () => console.log("edit"),
       },
       {
-        label: intl("schedule.lesson.cancel"),
+        label: intl("lessons.menu.cancel"),
         icon: <CalendarRemove />,
         onClick: () => onCancel(),
       },
     ],
     [intl, onCancel]
+  );
+
+  const button = (
+    <Button
+      size={ButtonSize.Tiny}
+      className={cn(
+        "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto"
+      )}
+      disabled={!canJoin && !canRebook}
+      onClick={canceled ? onRebook : onJoin}
+    >
+      {canceled || dayjs().isAfter(end)
+        ? intl("lessons.button.rebook")
+        : intl("lessons.button.join")}
+    </Button>
   );
 
   return (
@@ -253,19 +267,19 @@ export const LessonCard: React.FC<CardProps> = ({
             </Typography>
           </div>
         </div>
-        <Button
-          size={ButtonSize.Tiny}
-          className={cn(
-            "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto",
-            { "tw-opacity-50": !canJoin && !canRebook }
-          )}
-          disabled={!canJoin && !canRebook}
-          onClick={canceled ? onRebook : onJoin}
-        >
-          {canceled || dayjs().isAfter(end)
-            ? intl("lessons.rebook")
-            : intl("lessons.join")}
-        </Button>
+        {!canJoin ? (
+          <Tooltip
+            content={
+              <Typography className="tw-w-full tw-max-w-44">
+                {intl("lessons.join-lesson-note")}
+              </Typography>
+            }
+          >
+            <div>{button}</div>
+          </Tooltip>
+        ) : (
+          button
+        )}
       </div>
     </div>
   );

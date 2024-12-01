@@ -1,2 +1,1 @@
-export { LessonCard } from "./LessonCard";
-export { type CardProps } from "./LessonCard";
+export { LessonCard, type Props } from "@/components/Lessons/LessonCard";

@@ -25,24 +25,29 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
     },
     []
   );
+
+  if (query.isLoading) return <Loading className="h-[30vh]" />;
+
+  if (query.error)
+    return (
+      <Error
+        title={intl("error.alert")}
+        error={query.error}
+        refetch={query.refetch}
+      />
+    );
+
+  if (!query.data) return null;
+
   return (
-    <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-3">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
       {query.data?.list.map((item) => {
         const tutor = item.members.find(
           (member) => member.role === IUser.Role.Tutor
         );
 
         if (!tutor) return;
-        if (query.isLoading) return <Loading className="h-1/4" />;
-        if (query.error)
-          return (
-            <Error
-              title={intl("error.alert")}
-              error={query.error}
-              refetch={query.refetch}
-            />
-          );
-        if (!query.data) return null;
+
         return (
           <LessonCard
             key={item.lesson.id}
@@ -56,8 +61,6 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
               id: tutor.userId,
               name: tutor.name,
               image: tutor.image ? asFullAssetUrl(tutor.image) : undefined,
-              rating: 3,
-              studentCount: 100,
             }}
           />
         );
