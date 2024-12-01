@@ -23,7 +23,7 @@ export function useFindTutors() {
     return atlas.user.findOnboardedTutors();
   }, [atlas.user]);
 
-  useQuery({
+  return useQuery({
     queryFn: findTutors,
     queryKey: [QueryKey.FindTutors],
     retry: false,
