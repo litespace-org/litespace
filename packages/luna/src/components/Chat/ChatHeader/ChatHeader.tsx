@@ -4,6 +4,7 @@ import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { useFormatMessage } from "@/hooks";
+import { orUndefined } from "@litespace/sol/utils";
 export const ChatHeader: React.FC<{
   name: string | null;
   image: string | null;
@@ -23,7 +24,11 @@ export const ChatHeader: React.FC<{
           )}
         >
           <div className="tw-rounded-full tw-overflow-hidden tw-w-14 tw-h-14">
-            <Avatar alt={name || ""} src={image || ""} seed={id.toString()} />
+            <Avatar
+              alt={orUndefined(name)}
+              src={orUndefined(image)}
+              seed={id.toString()}
+            />
           </div>
         </div>
         <div>

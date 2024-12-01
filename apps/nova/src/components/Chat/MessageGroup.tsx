@@ -17,7 +17,7 @@ const MessageGroup: React.FC<{
   onUpdateMessage: (message: IMessage.Self) => void;
   onDeleteMessage: (message: IMessage.Self) => void;
 }> = ({
-  group: { sender, messages, date },
+  group: { sender, messages, sentAt },
   onUpdateMessage,
   onDeleteMessage,
 }) => {
@@ -26,7 +26,7 @@ const MessageGroup: React.FC<{
       <div className="w-8 h-8 @sm:w-10 @sm:h-10 @md:w-12 @md:h-12  overflow-hidden rounded-full shrink-0">
         <img
           className="object-cover w-full h-full"
-          src={sender.photo ? asFullAssetUrl(sender.photo) : "/avatar-1.png"}
+          src={sender.image ? asFullAssetUrl(sender.image) : "/avatar-1.png"}
         />
       </div>
       <div className="w-full">
@@ -36,7 +36,7 @@ const MessageGroup: React.FC<{
           </p>
           <p className="text-foreground-muted dark:text-foreground-light text-xs @sm:text-[14px] @md:text-base leading-none">
             &mdash; &nbsp;
-            {dayjs(date).fromNow()}
+            {dayjs(sentAt).fromNow()}
           </p>
         </div>
 

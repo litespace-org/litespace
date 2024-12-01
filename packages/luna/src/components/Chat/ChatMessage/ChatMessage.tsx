@@ -1,18 +1,18 @@
-import { IMessage } from "@litespace/types";
+import { IMessage, Void } from "@litespace/types";
 import React, { useState } from "react";
 import cn from "classnames";
-import { Typography } from "@/components/Typography";
 import More from "@litespace/assets/More";
 import { Menu } from "@/components/Menu";
 import { useFormatMessage } from "@/hooks";
 import MessageEdit from "@litespace/assets/MessageEdit";
 import Trash from "@litespace/assets/Trash";
+import { Typography } from "@/components/Typography";
 
 export const ChatMessage: React.FC<{
   message: IMessage.Self;
   owner?: boolean;
-  editMessage: (message: IMessage.Self) => void;
-  deleteMessage: (messageId: number) => void;
+  editMessage: Void;
+  deleteMessage: Void;
 }> = ({ message, owner, editMessage, deleteMessage }) => {
   const intl = useFormatMessage();
   const [showMenu, setShowMenu] = useState<boolean>(false);
@@ -42,12 +42,12 @@ export const ChatMessage: React.FC<{
           actions={[
             {
               label: intl("chat.message.edit"),
-              onClick: () => editMessage(message),
+              onClick: editMessage,
               icon: <MessageEdit />,
             },
             {
               label: intl("chat.message.delete"),
-              onClick: () => deleteMessage(message.id),
+              onClick: deleteMessage,
               icon: <Trash />,
             },
           ]}
@@ -89,7 +89,7 @@ export const ChatMessage: React.FC<{
         )}
         <Typography
           element="caption"
-          className={cn("tw-font-normal", {
+          className={cn("tw-font-normal tw-text-sm", {
             "tw-text-natural-950 dark:tw-text-secondary-900": !owner,
             "tw-text-natural-50 dark:tw-text-secondary-900": owner,
           })}
