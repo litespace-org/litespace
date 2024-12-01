@@ -1,4 +1,4 @@
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import cn from "classnames";
 
 import { Avatar } from "@/components/Avatar";
@@ -16,6 +16,8 @@ type Props = {
   rating: number;
   imgSrc: string;
   profileUrl: string;
+  onBook: MouseEventHandler<HTMLButtonElement>;
+  onOpenProfile: MouseEventHandler<HTMLButtonElement>;
 }
 
 export const TutorCard: React.FC<Props> = (props) => {
@@ -68,7 +70,7 @@ export const TutorCard: React.FC<Props> = (props) => {
 
       <div className="tw-flex tw-flex-row">
         <Button
-          onClick={close}
+          onClick={props.onBook}
           className="tw-w-full tw-ml-2"
           type={ButtonType.Main}
           variant={ButtonVariant.Primary}
@@ -76,7 +78,7 @@ export const TutorCard: React.FC<Props> = (props) => {
           <FormattedMessage id="card.tutor.book-button.label" />
         </Button>
         <Button
-          onClick={close}
+          onClick={props.onOpenProfile}
           className="tw-w-full tw-mr-2"
           type={ButtonType.Main}
           variant={ButtonVariant.Secondary}
