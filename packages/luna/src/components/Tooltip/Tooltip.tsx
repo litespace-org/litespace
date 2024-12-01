@@ -6,23 +6,27 @@ import {
   Portal,
   Content,
   Arrow,
+  TooltipContentProps,
 } from "@radix-ui/react-tooltip";
 
 export const Tooltip: React.FC<{
   content: React.ReactNode;
   children: React.ReactNode;
-}> = ({ content, children }) => {
+  side?: TooltipContentProps["side"];
+}> = ({ content, children, side }) => {
   return (
-    <Provider delayDuration={350}>
+    <Provider delayDuration={120}>
       <Root>
         <Trigger asChild>{children}</Trigger>
         <Portal>
           <Content
-            className="tw-select-none tw-rounded tw-bg-surface-200 tw-px-[15px] tw-py-2.5 tw-text-[15px] tw-leading-none tw-text-foreground"
+            side={side}
+            dir="rtl"
+            className="tw-p-3 tw-rounded-lg tw-bg-natural-50 tw-shadow-tooltip"
             sideOffset={5}
           >
             {content}
-            <Arrow className="tw-fill-surface-200" />
+            <Arrow className="tw-fill-natural-50" />
           </Content>
         </Portal>
       </Root>
