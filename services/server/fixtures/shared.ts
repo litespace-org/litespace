@@ -23,11 +23,11 @@ async function execute(command: string): Promise<string> {
 }
 
 export async function down() {
-  await execute("pnpm --filter @litespace/models migrate:test down");
+  await execute("pnpm --filter @litespace/models migrate:test:local down");
 }
 
 export async function up() {
-  await execute("pnpm --filter @litespace/models migrate:test up");
+  await execute("pnpm --filter @litespace/models migrate:test:local up");
 }
 
 export async function flush() {
