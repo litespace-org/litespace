@@ -8,21 +8,20 @@ import React, {
 } from "react";
 import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import MessageGroup from "@/components/Chat/MessageGroup";
+import { ChatMessageGroup } from "@litespace/luna/Chat";
 import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useMessages } from "@litespace/luna/hooks/chat";
 import { Loading } from "@litespace/luna/Loading";
-
 import NoSelection from "@/components/Chat/NoSelection";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 
 const Messages: React.FC<{
   room: number | null;
-  members: IRoom.PopulatedMember[];
-}> = ({ room, members }) => {
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
+}> = ({ room, otherMember }) => {
   const profile = useAppSelector(profileSelectors.user);
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
@@ -76,8 +75,8 @@ const Messages: React.FC<{
   );
 
   const onDeleteMessage = useCallback(
-    (message: IMessage.Self) => {
-      return deleteMessage(message.id);
+    (messageId: number) => {
+      return deleteMessage(messageId);
     },
     [deleteMessage]
   );
@@ -105,9 +104,9 @@ const Messages: React.FC<{
     return asMessageGroups({
       currentUser: profile,
       messages,
-      members,
+      otherMember,
     });
-  }, [members, messages, profile]);
+  }, [otherMember, messages, profile]);
 
   return (
     <div
@@ -140,11 +139,12 @@ const Messages: React.FC<{
             {!loading ? (
               <ul className="flex flex-col gap-4">
                 {messageGroups.map((group) => (
-                  <MessageGroup
+                  <ChatMessageGroup
                     key={group.id}
-                    group={group}
-                    onUpdateMessage={onUpdateMessage}
-                    onDeleteMessage={onDeleteMessage}
+                    {...group}
+                    deleteMessage={() => onDeleteMessage}
+                    editMessage={() => onUpdateMessage}
+                    owner={group.sender.userId === profile?.id}
                   />
                 ))}
               </ul>

@@ -1,7 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
-import { Void } from "@litespace/types";
+import { IMessage } from "@litespace/types";
 import { Typography } from "@/components/Typography";
 import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
@@ -12,20 +12,16 @@ const messageVariants = {
 } as const;
 
 export const ChatMessageGroup: React.FC<{
-  userId: number;
-  name: string;
-  messages: Array<{ id: number; text: string }>;
-  image?: string;
+  sender: { userId: number; name: string | null; image?: string | null };
+  messages: IMessage.Self[];
   sentAt: string;
   owner?: boolean;
-  editMessage?: Void;
-  deleteMessage?: Void;
+  editMessage: (message: IMessage.Self) => void;
+  deleteMessage: (messageId: number) => void;
 }> = ({
   sentAt,
-  image,
   messages,
-  name,
-  userId,
+  sender: { image, name, userId },
   owner,
   editMessage,
   deleteMessage,
@@ -38,7 +34,7 @@ export const ChatMessageGroup: React.FC<{
       })}
     >
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
-        <Avatar alt={name} src={image} seed={userId.toString()} />
+        <Avatar alt={name || ""} src={image || ""} seed={userId.toString()} />
       </div>
       <div>
         <p
@@ -72,11 +68,14 @@ export const ChatMessageGroup: React.FC<{
               initial="hidden"
               animate="visible"
               exit="hidden"
-              className="w-full mt-1"
+              className={cn("w-full mt-1 tw-flex", {
+                "tw-justify-end": !owner,
+                "tw-justify-start": owner,
+              })}
               key={message.id}
             >
               <ChatMessage
-                text={message.text}
+                message={message}
                 owner={owner}
                 editMessage={editMessage}
                 deleteMessage={deleteMessage}

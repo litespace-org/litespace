@@ -1,4 +1,4 @@
-import { Void } from "@litespace/types";
+import { IMessage } from "@litespace/types";
 import React, { useState } from "react";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
@@ -9,11 +9,11 @@ import MessageEdit from "@litespace/assets/MessageEdit";
 import Trash from "@litespace/assets/Trash";
 
 export const ChatMessage: React.FC<{
-  text: string;
+  message: IMessage.Self;
   owner?: boolean;
-  editMessage?: Void;
-  deleteMessage?: Void;
-}> = ({ text, owner, editMessage, deleteMessage }) => {
+  editMessage: (message: IMessage.Self) => void;
+  deleteMessage: (messageId: number) => void;
+}> = ({ message, owner, editMessage, deleteMessage }) => {
   const intl = useFormatMessage();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -42,12 +42,12 @@ export const ChatMessage: React.FC<{
           actions={[
             {
               label: intl("chat.message.edit"),
-              onClick: editMessage,
+              onClick: () => editMessage(message),
               icon: <MessageEdit />,
             },
             {
               label: intl("chat.message.delete"),
-              onClick: deleteMessage,
+              onClick: () => deleteMessage(message.id),
               icon: <Trash />,
             },
           ]}
@@ -94,7 +94,7 @@ export const ChatMessage: React.FC<{
             "tw-text-natural-50 dark:tw-text-secondary-900": owner,
           })}
         >
-          {text}
+          {message.text}
         </Typography>
       </div>
     </div>
