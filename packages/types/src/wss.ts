@@ -1,4 +1,4 @@
-import { IMessage, IRule, ITutor, IUser, Server } from "@/index";
+import { IMessage, IRule, ITutor, Server } from "@/index";
 
 /**
  * Events emitted by the client
@@ -9,6 +9,8 @@ export enum ClientEvent {
   UpdateMessage = "UpdateMessage",
   DeleteMessage = "DeleteMessage",
   MarkAsRead = "MarkAsRead",
+  JoinCall = "JoinCall",
+  LeaveCall = "LeaveCall",
   /**
    * @deprecated
    */
@@ -29,23 +31,34 @@ export enum ServerEvent {
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
   JoinedRooms = "JoinedRooms",
+
   MessageRead = "MessageRead",
+
+  MemberJoinedCall = "MemberJoinedCallId",
+  MemberLeftCall = "MemberLeftCallId",
+
   UserJoinedCall = "UserJoinedCall",
   UserSharedScreen = "UserSharedScreen",
   UserStatusChanged = "UserStatusChanged",
+  UserTyping = "UserTyping",
+
   CameraToggled = "CameraToggle",
   MicToggled = "MicToggled",
+
   TutorsCacheUpdated = "TutorsCacheUpdated",
+  TutorUpdated = "TutorUpdated",
+
   LessonBooked = "LessonBooked",
   LessonCanceled = "LessonCanceled",
-  TutorUpdated = "TutorUpdated",
+
   RuleDeleted = "RuleDeleted",
   RuleUpdated = "RuleUpdated",
   RuleCreated = "RuleCreated",
+
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
+
   ServerStats = "ServerStats",
-  UserTyping = "UserTyping",
 }
 
 export enum Room {
@@ -68,6 +81,8 @@ export type ClientEventsMap = {
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
+  [ClientEvent.JoinCall]: EventCallback<{ callId: number }>;
+  [ClientEvent.LeaveCall]: EventCallback<{ callId: number }>;
 };
 
 /**
@@ -80,7 +95,12 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
+
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
+
+  [ServerEvent.MemberJoinedCall]: EventCallback<{ memberId: number }>;
+  [ServerEvent.MemberLeftCall]: EventCallback<{ memberId: number }>;
+
   [ServerEvent.CameraToggled]: EventCallback<{ user: number; camera: boolean }>;
   [ServerEvent.MicToggled]: EventCallback<{ user: number; mic: boolean }>;
   [ServerEvent.MessageRead]: EventCallback<{ messageId: number }>;
