@@ -1,0 +1,26 @@
+@startuml
+
+title Call Management (add, remove, and acknowledge members)
+
+entity Client as client #6366f1
+entity Server as server #3b82f6 
+entity Database as database #22c55e 
+entity OtherClients as others #ef4444 
+
+others -> others: Listen on "UserJoinedCall" and\n"UserLeftCall" events emitted from by the server.
+note left: Update the in-memory list\nof all members without\nre-fetching from the server.
+client -> server: Get current call members over HTTP request 
+server -> database: Query the database for the current call members
+server -> client: Response with the current call members.
+note left: Client will call members\nincluded in the response\nand listen for new members\nover wss.
+client -> server: Emit "UserJoinedCall"  
+server -> database: Client is added as member in the "call_members" table
+server -> others: Emit "UserJoinedCall" event to notify other call members about the user. 
+client -> server: Emit "UserLeftCall" 
+note left: Client will be removed from the \ncall also when disconnecting\nfrom the server.
+server -> database: Client is removed from the "call_members" table.
+server -> others: Emit "UserLeftCall" to notify other call members.
+client -> client: Listen on "UserJoinedCall" and\n"UserLeftCall" events emitted from by the server.
+note left: Update the in-memory list\nof all members without\nre-fetching from the server.
+
+@enduml
