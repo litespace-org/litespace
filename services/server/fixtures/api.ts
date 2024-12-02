@@ -35,6 +35,7 @@ export class Api {
   static async forUser(role: IUser.Role) {
     const email = faker.internet.email();
     const password = faker.internet.password();
+    // NOTE: should be db.createUser
     await db.user({ role, email, password });
     return await Api.fromCredentials(email, password);
   }
