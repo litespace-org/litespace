@@ -5,6 +5,7 @@ import {
   Overlay,
   Content,
   Portal,
+  Title,
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
@@ -42,12 +43,12 @@ export const ConfirmationDialog: React.FC<{
     <Root open={open} onOpenChange={setOpen}>
       {trigger ? <Trigger>{trigger}</Trigger> : null}
       <Portal>
-        <Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm" />
+        <Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm tw-z-[98]" />
         <Content
           dir="rtl"
           className={cn(
             "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
-            "tw-border tw-border-border-strong tw-rounded-xl tw-w-[400px] tw-shadow-lg tw-min-w-96",
+            "tw-border tw-border-border-strong tw-rounded-xl tw-w-[400px] tw-shadow-lg tw-min-w-96 tw-z-[98]",
             "tw-shadow-dialog-confirm"
           )}
         >
@@ -82,13 +83,15 @@ export const ConfirmationDialog: React.FC<{
               </Close>
             </div>
             <div>
-              <Typography
-                element="body"
-                weight="semibold"
-                className="tw-text-natural-950 tw-mb-1"
-              >
-                {title}
-              </Typography>
+              <Title>
+                <Typography
+                  element="body"
+                  weight="semibold"
+                  className="tw-text-natural-950 tw-mb-1"
+                >
+                  {title}
+                </Typography>
+              </Title>
               <Typography
                 element="caption"
                 className="tw-text-natural-750"

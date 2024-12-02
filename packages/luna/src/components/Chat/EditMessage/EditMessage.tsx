@@ -2,7 +2,7 @@ import React from "react";
 import * as RadixDialog from "@radix-ui/react-dialog";
 import cn from "classnames";
 import Close from "@litespace/assets/Close";
-import * as EditMessageIcon from "@litespace/assets/EditMessage";
+import EditMessageIcon from "@litespace/assets/EditMessage";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { ChatMessage, SendInput } from "@/components/Chat";
@@ -31,7 +31,7 @@ export const EditMessage: React.FC<{
           >
             <div className="tw-flex tw-justify-between tw-items-center">
               <RadixDialog.Title className="tw-flex tw-items-center tw-justify-center tw-gap-2">
-                <EditMessageIcon.default className="[&>*]:tw-stroke-natural-950" />
+                <EditMessageIcon className="[&>*]:tw-stroke-natural-950" />
                 <Typography
                   element="subtitle-2"
                   className="tw-font-bold tw-text-natural-950"
