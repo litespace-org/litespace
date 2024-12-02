@@ -100,7 +100,7 @@ export type Cache = {
  *
  * @example a rule that is defined as "everyday from 5am to 6am" will have
  * these example slots below:
- * - "start from 'Sri 28 nov. 5:00am' and for 2 hours"
+ * - "start from 'Fri 28 nov. 5:00am' and for 2 hours"
  * - "start from 'Sat 29 nov. 5:00am' and for 1 hours"
  */
 export type Slot = {
