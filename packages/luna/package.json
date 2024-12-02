@@ -64,7 +64,6 @@
     "./utils": "./dist/components/utils/index.js",
     "./VideoPlayer": "./dist/components/VideoPlayer/index.js",
     "./WeekdayPicker": "./dist/components/WeekdayPicker/index.js",
-    "./UpcomingLessonCard": "./dist/components/Lessons/UpcomingLessonCard.jsx",
     "./hooks/intl": "./dist/hooks/intl.js",
     "./hooks/validation": "./dist/hooks/validation.js",
     "./hooks/duration": "./dist/hooks/duration.js",

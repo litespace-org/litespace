@@ -16,6 +16,14 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.UserTyping, { roomId });
   }
 
+  joinCall(callId: number) {
+    this.client.emit(Wss.ClientEvent.JoinCall, { callId });
+  }
+
+  leaveCall(callId: number) {
+    this.client.emit(Wss.ClientEvent.LeaveCall, { callId });
+  }
+
   /**
    * Wait for event.
    *

@@ -35,14 +35,17 @@ export class Calls {
   }
 
   async addMember({
-    call,
-    user,
+    callId,
+    userId,
     tx,
-  }: WithOptionalTx<{ call: number; user: number }>): Promise<ICall.Member> {
+  }: WithOptionalTx<{
+    callId: number;
+    userId: number;
+  }>): Promise<ICall.Member> {
     const rows = await this.builder(tx)
       .members.insert({
-        call_id: call,
-        user_id: user,
+        call_id: callId,
+        user_id: userId,
       })
       .returning("*");
 
@@ -52,13 +55,13 @@ export class Calls {
   }
 
   async removeMember({
-    call,
-    user,
+    callId,
+    userId,
     tx,
-  }: WithOptionalTx<{ user: number; call: number }>): Promise<void> {
+  }: WithOptionalTx<{ userId: number; callId: number }>): Promise<void> {
     await this.builder(tx)
-      .members.where(this.columns.members("call_id"), call)
-      .andWhere(this.columns.members("user_id"), user)
+      .members.where(this.columns.members("call_id"), callId)
+      .andWhere(this.columns.members("user_id"), userId)
       .delete();
   }
 

@@ -27,8 +27,8 @@ describe(nameof(Calls), () => {
       expect(await calls.findCallMembers([call.id])).to.be.of.length(0);
 
       const member = await calls.addMember({
-        call: call.id,
-        user: tutor.id,
+        callId: call.id,
+        userId: tutor.id,
       });
       expect(await calls.findCallMembers([call.id])).to.be.of.length(1);
       expect(member.callId).to.be.eq(call.id);
@@ -44,15 +44,15 @@ describe(nameof(Calls), () => {
       expect(await calls.findCallMembers([call.id])).to.be.of.length(0);
 
       await calls.addMember({
-        call: call.id,
-        user: tutor.id,
+        callId: call.id,
+        userId: tutor.id,
       });
 
       expect(await calls.findCallMembers([call.id])).to.be.of.length(1);
 
       await calls.removeMember({
-        call: call.id,
-        user: tutor.id,
+        callId: call.id,
+        userId: tutor.id,
       });
 
       expect(await calls.findCallMembers([call.id])).to.be.of.length(0);

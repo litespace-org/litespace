@@ -73,3 +73,5 @@ export type FindUserCallsApiResponse = {
   calls: Self[];
   members: Record<string, PopuldatedMember[]>;
 };
+
+export type Type = "lesson" | "interview";
