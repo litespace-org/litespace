@@ -35,7 +35,7 @@
     "./Interviews": "./dist/components/Interviews/index.js",
     "./Invoices": "./dist/components/Invoices/index.js",
     "./Loading": "./dist/components/Loading/index.js",
-    "./LessonCard": "./dist/components/Lessons/index.js",
+    "./Lessons": "./dist/components/Lessons/index.js",
     "./Menu": "./dist/components/Menu/index.js",
     "./MultiSelect": "./dist/components/MultiSelect/index.js",
     "./NumericInput": "./dist/components/NumericInput/index.js",
