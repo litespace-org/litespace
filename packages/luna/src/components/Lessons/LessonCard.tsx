@@ -209,7 +209,7 @@ export const LessonCard: React.FC<Props> = ({
             <Typography
               element="caption"
               weight="semibold"
-              className={cn("tw-text-[14px] tw-text-brand-700")}
+              className={cn("tw-text-brand-700 tw-line-clamp-1 tw-truncate")}
             >
               {intl("lessons.end")}
             </Typography>
@@ -220,7 +220,7 @@ export const LessonCard: React.FC<Props> = ({
               element="caption"
               weight="semibold"
               className={cn(
-                "tw-text-[14px]",
+                "tw-line-clamp-1",
                 !canceled ? "tw-text-brand-700" : "tw-text-destructive-600"
               )}
             >
