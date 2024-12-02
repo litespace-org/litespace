@@ -16,11 +16,7 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
   const canceled = useCallback(
     (item: Lessons[0], tutor: ILesson.PopuldatedMember) => {
       if (!item.lesson.canceledBy && !item.lesson.canceledBy) return null;
-      if (
-        item.lesson.canceledBy === tutor.userId ||
-        item.call.canceledBy === tutor.userId
-      )
-        return "tutor";
+      if (item.lesson.canceledBy === tutor.userId) return "tutor";
       return "student";
     },
     []
@@ -51,8 +47,8 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
         return (
           <LessonCard
             key={item.lesson.id}
-            start={item.call.start}
-            duration={item.call.duration}
+            start={item.lesson.start}
+            duration={item.lesson.duration}
             onJoin={() => console.log("join")}
             onCancel={() => console.log("canceled")}
             onRebook={() => console.log("rebook")}

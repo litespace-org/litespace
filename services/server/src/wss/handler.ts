@@ -1,23 +1,15 @@
 import { calls, messages, rooms, users } from "@litespace/models";
-import { IUser } from "@litespace/types";
+import { IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
-import { Wss } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
 import { boolean, id, string, withNamedId } from "@/validation/utils";
-import { isEmpty, map } from "lodash";
+import { isEmpty } from "lodash";
 import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
 import "colors";
-import {
-  isAdmin,
-  isGhost,
-  isInterviewer,
-  isStudent,
-  isTutor,
-  isUser,
-} from "@litespace/auth";
+import { isAdmin, isGhost, isStudent, isTutor, isUser } from "@litespace/auth";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { cache } from "@/lib/cache";
@@ -31,6 +23,9 @@ const registerPeerPayload = zod.object({ peer: zod.string() });
 const userTypingPayload = zod.object({
   roomId: zod.number(),
 });
+
+const onJoinCallPayload = zod.object({ callId: zod.number() });
+const onLeaveCallPayload = zod.object({ callId: zod.number() });
 
 const stdout = logger("wss");
 
@@ -61,19 +56,101 @@ export class WssHandler {
     this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
     this.socket.on(Wss.ClientEvent.UserTyping, this.userTyping.bind(this));
+    this.socket.on(Wss.ClientEvent.JoinCall, this.onJoinCall.bind(this));
+    this.socket.on(Wss.ClientEvent.LeaveCall, this.onLeaveCall.bind(this));
+  }
+
+  /*
+   *  This event listener will be called whenever a user
+   *  joins a call. For instance, when
+   *  users are joining a lesson, or a tutor is joining an
+   *  interview.
+   */
+  async onJoinCall(data: unknown) {
+    const result = await safe(async () => {
+      const { callId } = onJoinCallPayload.parse(data);
+
+      const user = this.user;
+      // todo: add ghost as a member of the call
+      if (isGhost(user)) return stdout.warning("Unsupported");
+
+      stdout.info(`User ${user.id} is joining call ${callId}.`);
+
+      const call = await calls.findById(callId);
+      if (!call) throw new Error("Call not found.");
+
+      // todo: verify that the user can be member of the call
+      // todo: user should not be able to join the call before its start.
+
+      // add user to the call by inserting row to call_members relation
+      await calls.addMember({
+        userId: user.id,
+        callId: callId,
+      });
+
+      stdout.info(`User ${user.id} has joined call ${callId}.`);
+
+      // notify members that a new member has joined the call
+      this.socket.broadcast
+        .to(this.asCallRoomId(callId))
+        .emit(Wss.ServerEvent.MemberJoinedCall, {
+          userId: user.id,
+        });
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  /*
+   *  This event listener will be called whenever a user
+   *  leaves a call. For instance, when users are leaving
+   *  a lesson, or a tutor is leaving an interview.
+   */
+  async onLeaveCall(data: unknown) {
+    const result = await safe(async () => {
+      const { callId } = onLeaveCallPayload.parse(data);
+
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      stdout.info(`User ${user.id} is leaving call ${callId}.`);
+
+      // remove user from the call by deleting the corresponding row from call_members relation
+      await calls.removeMember({
+        userId: user.id,
+        callId: callId,
+      });
+
+      stdout.info(`User ${user.id} has left call ${callId}.`);
+
+      // notify members that a member has left the call
+      this.socket.broadcast
+        .to(callId.toString())
+        .emit(Wss.ServerEvent.MemberLeftCall, {
+          userId: user.id,
+        });
+    });
+    if (result instanceof Error) stdout.error(result.message);
   }
 
   async joinRooms() {
     const error = await safe(async () => {
-      if (isGhost(this.user)) return;
-      const { list } = await rooms.findMemberRooms({ userId: this.user.id });
-      const ids = list.map((room) => room.toString());
-      this.socket.join(ids);
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const { list } = await rooms.findMemberRooms({ userId: user.id });
+
+      this.socket.join(list.map((roomId) => this.asChatRoomId(roomId)));
       // private channel
-      this.socket.join(this.user.id.toString());
+      this.socket.join(user.id.toString());
 
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
+
+      // todo: find user user call ids
+      // student => lessons
+      // tutor => lessons & interview
+      // interview => interviews
+      this.socket.join("call:1");
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -85,18 +162,13 @@ export class WssHandler {
   async peerOpened(ids: unknown) {
     const error = await safe(async () => {
       const { callId, peerId } = peerPayload.parse(ids);
-
-      console.log({
-        call: callId,
-        peer: peerId,
-        user: isUser(this.user) ? this.user.email : this.user,
-      });
+      const user = this.user;
 
       const members = await calls.findCallMembers([callId]);
       if (isEmpty(members)) return;
 
       const memberIds = members.map((member) => member.userId);
-      const isMember = isUser(this.user) && memberIds.includes(this.user.id);
+      const isMember = isUser(user) && memberIds.includes(user.id);
       const allowed = isMember || isGhost(this.user);
       if (!allowed) return;
 
@@ -111,12 +183,13 @@ export class WssHandler {
   async registerPeer(data: unknown) {
     const result = await safe(async () => {
       const { peer } = registerPeerPayload.parse(data);
-      const id = isGhost(this.user) ? this.user : this.user.email;
+      const user = this.user;
+      const id = isGhost(user) ? user : user.email;
       stdout.info(`Register peer: ${peer} for ${id}`);
-      if (isGhost(this.user))
-        await cache.peer.setGhostPeerId(getGhostCall(this.user), peer);
-      if (isTutor(this.user))
-        await cache.peer.setUserPeerId(this.user.id, peer);
+
+      if (isGhost(user))
+        await cache.peer.setGhostPeerId(getGhostCall(user), peer);
+      if (isTutor(user)) await cache.peer.setUserPeerId(user.id, peer);
 
       // notify peers to refetch the peer id if needed
     });
@@ -137,9 +210,10 @@ export class WssHandler {
       if (!isMember)
         throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
 
-      this.socket
-        .to(roomId.toString())
-        .emit(Wss.ServerEvent.UserTyping, { roomId, userId: user.id });
+      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
+        roomId,
+        userId: user.id,
+      });
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -147,11 +221,13 @@ export class WssHandler {
 
   async sendMessage(data: unknown) {
     const error = safe(async () => {
-      if (isGhost(this.user)) return;
-      const { roomId, text } = wss.message.send.parse(data);
-      const userId = this.user.id;
+      const user = this.user;
+      if (isGhost(user)) return;
 
-      console.log(`u:${userId} is send a message to r:${roomId}`);
+      const { roomId, text } = wss.message.send.parse(data);
+      const userId = user.id;
+
+      stdout.log(`u:${userId} is send a message to r:${roomId}`);
 
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       if (!members) throw Error("Room not found");
@@ -167,7 +243,11 @@ export class WssHandler {
         roomId,
       });
 
-      this.boradcast(Wss.ServerEvent.RoomMessage, roomId.toString(), message);
+      this.broadcast(
+        Wss.ServerEvent.RoomMessage,
+        this.asChatRoomId(roomId),
+        message
+      );
     });
 
     if (error instanceof Error) stdout.error(error);
@@ -175,12 +255,14 @@ export class WssHandler {
 
   async updateMessage(data: unknown) {
     const error = await safe(async () => {
-      if (isGhost(this.user)) return;
+      const user = this.user;
+      if (isGhost(user)) return;
+
       const { id, text } = updateMessagePayload.parse(data);
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
 
-      const owner = message.userId === this.user.id;
+      const owner = message.userId === user.id;
       if (!owner) throw new Error("Forbidden");
 
       const sanitized = sanitizeMessage(text);
@@ -189,9 +271,9 @@ export class WssHandler {
       const updated = await messages.update(id, { text: sanitized });
       if (!updated) throw new Error("Mesasge not update; should never happen.");
 
-      this.boradcast(
+      this.broadcast(
         Wss.ServerEvent.RoomMessageUpdated,
-        message.roomId.toString(),
+        this.asChatRoomId(message.roomId),
         updated
       );
     });
@@ -201,20 +283,22 @@ export class WssHandler {
 
   async deleteMessage(data: unknown) {
     const error = safe(async () => {
-      if (isGhost(this.user)) return;
+      const user = this.user;
+      if (isGhost(user)) return;
+
       const { id }: { id: number } = withNamedId("id").parse(data);
 
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
 
-      const owner = message.userId === this.user.id;
+      const owner = message.userId === user.id;
       if (!owner) throw new Error("Forbidden");
 
       await messages.markAsDeleted(id);
 
-      this.boradcast(
+      this.broadcast(
         Wss.ServerEvent.RoomMessageDeleted,
-        message.roomId.toString(),
+        this.asChatRoomId(message.roomId),
         {
           roomId: message.roomId,
           messageId: message.id,
@@ -227,11 +311,12 @@ export class WssHandler {
 
   async toggleCamera(data: unknown) {
     const error = safe(async () => {
-      if (isGhost(this.user)) return;
+      const user = this.user;
+      if (isGhost(user)) return;
       const { call, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.boradcast(Wss.ServerEvent.CameraToggled, call.toString(), {
-        user: this.user.id,
+      this.broadcast(Wss.ServerEvent.CameraToggled, call.toString(), {
+        user: user.id,
         camera,
       });
     });
@@ -241,11 +326,12 @@ export class WssHandler {
 
   async toggleMic(data: unknown) {
     const error = safe(async () => {
-      if (isGhost(this.user)) return;
+      const user = this.user;
+      if (isGhost(user)) return;
       const { call, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.boradcast(Wss.ServerEvent.MicToggled, call.toString(), {
-        user: this.user.id,
+      this.broadcast(Wss.ServerEvent.MicToggled, call.toString(), {
+        user: user.id,
         mic,
       });
     });
@@ -253,7 +339,7 @@ export class WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async boradcast<T extends keyof Wss.ServerEventsMap>(
+  async broadcast<T extends keyof Wss.ServerEventsMap>(
     event: T,
     room: string,
     ...data: Parameters<Wss.ServerEventsMap[T]>
@@ -264,12 +350,14 @@ export class WssHandler {
 
   async markMessageAsRead(data: unknown) {
     try {
-      if (isGhost(this.user)) return;
+      const user = this.user;
+      if (isGhost(user)) return;
+
       const messageId = wss.message.markMessageAsRead.parse(data).id;
       const message = await messages.findById(messageId);
       if (!message) throw new Error("Message not found");
 
-      const userId = this.user.id;
+      const userId = user.id;
       if (userId !== message.userId) throw new Error("Unauthorized");
       if (message.read)
         return console.log("Message is already marked as read".yellow);
@@ -302,15 +390,17 @@ export class WssHandler {
   }
 
   async online() {
-    if (isGhost(this.user)) return;
-    const user = await users.update(this.user.id, { online: true });
-    this.announceStatus(user);
+    const user = this.user;
+    if (isGhost(user)) return;
+    const info = await users.update(user.id, { online: true });
+    this.announceStatus(info);
   }
 
   async offline() {
-    if (isGhost(this.user)) return;
-    const user = await users.update(this.user.id, { online: false });
-    this.announceStatus(user);
+    const user = this.user;
+    if (isGhost(user)) return;
+    const info = await users.update(user.id, { online: false });
+    this.announceStatus(info);
   }
 
   async emitServerStats() {
@@ -327,27 +417,41 @@ export class WssHandler {
    */
   async deregisterPeer() {
     // todo: notify peers that the current user got disconnected
-    const display = isGhost(this.user) ? this.user : this.user.email;
+    const user = this.user;
+    const display = isGhost(user) ? user : user.email;
     stdout.info(`Deregister peer for: ${display}`);
 
-    if (isGhost(this.user))
-      return await cache.peer.removeGhostPeerId(getGhostCall(this.user));
-    if (isTutor(this.user)) await cache.peer.removeUserPeerId(this.user.id);
+    if (isGhost(user))
+      return await cache.peer.removeGhostPeerId(getGhostCall(user));
+    if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
   }
 
   async announceStatus(user: IUser.Self) {
     const userRooms = await rooms.findMemberFullRoomIds(user.id);
 
     for (const room of userRooms) {
-      this.boradcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
+      this.broadcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
         online: user.online,
       });
     }
+  }
+
+  asCallRoomId(callId: number) {
+    return `call:${callId}`;
+  }
+
+  asChatRoomId(roomId: number) {
+    return `room:${roomId}`;
   }
 }
 
 export function wssHandler(socket: Socket) {
   const user = socket.request.user;
-  if (!user) return;
+  if (!user) {
+    stdout.warning(
+      "(function) wssHandler: No user has been found in the request obj!"
+    );
+    return;
+  }
   return new WssHandler(socket, user);
 }
