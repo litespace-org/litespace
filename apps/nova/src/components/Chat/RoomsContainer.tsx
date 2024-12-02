@@ -18,10 +18,10 @@ const RoomsContainer: React.FC<{
   return (
     <div
       className={cn(
-        "flex flex-col bg-background-200 overflow-auto main-scrollbar h-screen",
+        "flex flex-col overflow-auto h-screen",
         "w-[400px] border border-natural-200",
         "px-6 pt-8",
-        "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
+        "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-100"
       )}
     >
       <div>

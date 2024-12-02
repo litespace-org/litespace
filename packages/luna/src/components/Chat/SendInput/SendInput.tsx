@@ -41,7 +41,6 @@ export const SendInput: React.FC<{
       ]}
       onChange={handleChange}
       autoFocus
-      className="tw-grow focus:tw-outline-none tw-p-[14px] tw-text-natural-950 tw-font-cairo tw-bg-natural-50"
       value={value}
       placeholder={intl("chat.input.placeholder")}
     />

@@ -19,8 +19,9 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    trigger: <button>Edit Message</button>,
+    open: true,
     message: { text: faker.lorem.words(10), id: 1 },
+    onUpdateMessage: () => {},
   },
 };
 
