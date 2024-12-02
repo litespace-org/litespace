@@ -9,11 +9,12 @@ import Trash from "@litespace/assets/Trash";
 import { Typography } from "@/components/Typography";
 
 export const ChatMessage: React.FC<{
+  viewOnly?: boolean;
   message: { id: number; text: string };
   owner?: boolean;
-  editMessage: Void;
-  deleteMessage: Void;
-}> = ({ message, owner, editMessage, deleteMessage }) => {
+  editMessage?: Void;
+  deleteMessage?: Void;
+}> = ({ message, owner, editMessage, deleteMessage, viewOnly }) => {
   const intl = useFormatMessage();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
@@ -36,7 +37,10 @@ export const ChatMessage: React.FC<{
     >
       <div
         data-show={showMenu}
-        className="tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200"
+        className={cn(
+          "tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200",
+          viewOnly && "tw-hidden"
+        )}
       >
         <Menu
           actions={[
