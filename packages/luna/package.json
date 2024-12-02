@@ -27,6 +27,7 @@
     "./Duration": "./dist/components/Duration/index.js",
     "./ErrorPage": "./dist/components/ErrorPage/index.js",
     "./EmailVerification": "./dist/components/EmailVerification/index.js",
+    "./EmptyLessons": "./dist/components/Lessons/index.js",
     "./Form": "./dist/components/Form/index.js",
     "./Gender": "./dist/components/Gender/index.js",
     "./IconField": "./dist/components/IconField/index.js",

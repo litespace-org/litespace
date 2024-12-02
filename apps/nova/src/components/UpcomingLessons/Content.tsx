@@ -5,6 +5,7 @@ import { LessonCard } from "@litespace/luna/LessonCard";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Element, ILesson, IUser } from "@litespace/types";
+import { EmptyLessons } from "@litespace/luna/EmptyLessons";
 import React, { useCallback } from "react";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
@@ -34,6 +35,8 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
     );
 
   if (!query.data) return null;
+
+  if (!query.data.list.length) return <EmptyLessons />;
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
