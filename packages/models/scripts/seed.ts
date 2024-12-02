@@ -18,7 +18,13 @@ import {
   invoices,
   hashPassword,
 } from "@litespace/models";
-import { ICall, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
+import {
+  ICall,
+  IInterview,
+  ILesson,
+  IUser,
+  IWithdrawMethod,
+} from "@litespace/types";
 import dayjs from "dayjs";
 import { Time } from "@litespace/sol/time";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
@@ -108,10 +114,27 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
+            phoneNumber: [
+              sample(["011", "012", "010", "015"]),
+              faker.number
+                .int({
+                  min: 10_000_000,
+                  max: 99_999_999,
+                })
+                .toString()
+                .padEnd(8, "0"),
+            ].join(""),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+            city: sample(
+              Object.values(IUser.City).filter(
+                (city) => !Number.isNaN(Number(city))
+              )
+            ) as IUser.City,
+            image: "/image.png",
           },
           tx
         );
+
         await tutors.update(
           tutor.id,
           {
@@ -119,6 +142,7 @@ async function main(): Promise<void> {
             bio: faker.person.bio(),
             activated: true,
             activatedBy: admin.id,
+            video: "/video.mp4",
           },
           tx
         );
@@ -289,6 +313,21 @@ async function main(): Promise<void> {
         rule: rule.id,
         tx,
       });
+
+      await interviews.update(
+        interview.ids.self,
+        {
+          feedback: {
+            interviewee: faker.lorem.paragraphs(),
+            interviewer: faker.lorem.paragraphs(),
+          },
+          status: IInterview.Status.Passed,
+          level: 5,
+          note: faker.lorem.paragraphs(),
+          signer: admin.id,
+        },
+        tx
+      );
     });
   }
 
