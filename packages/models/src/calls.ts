@@ -38,7 +38,10 @@ export class Calls {
     callId,
     userId,
     tx,
-  }: WithOptionalTx<{ callId: number; userId: number }>): Promise<ICall.Member> {
+  }: WithOptionalTx<{
+    callId: number;
+    userId: number;
+  }>): Promise<ICall.Member> {
     const rows = await this.builder(tx)
       .members.insert({
         call_id: callId,
