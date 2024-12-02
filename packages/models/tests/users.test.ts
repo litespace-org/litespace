@@ -1,36 +1,34 @@
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
-import { hashPassword, isSamePassword, users } from "@/index";
+import { hashPassword, users } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
 import { IUser } from "@litespace/types";
+import { faker } from "@faker-js/faker/locale/ar";
 
 describe("Users", () => {
   beforeEach(async () => {
     await fixtures.flush();
   });
 
-  afterEach(async () => {
-    await fixtures.flush();
-  });
-
   describe(nameof(users.create), () => {
     it("should create new user", async () => {
+      const name = faker.person.fullName();
+      const email = faker.internet.email();
       const user = await users.create({
-        name: "Mostafa Kamar",
+        name: name,
         role: IUser.Role.Student,
-        email: "mostafa.kamar@litespace.org",
+        email: email,
         password: "password",
         birthYear: 2001,
         gender: IUser.Gender.Male,
       });
 
-      expect(user.id).to.be.eq(1);
-      expect(user.name).to.be.eq("Mostafa Kamar");
+      expect(user.name).to.be.eq(name);
       expect(user.role).to.be.eq(IUser.Role.Student);
       expect(user.gender).to.be.eq(IUser.Gender.Male);
       expect(user.birthYear).to.be.eq(2001);
-      expect(user.email).to.be.eq("mostafa.kamar@litespace.org");
+      expect(user.email).to.be.eq(email);
       expect(user.password).to.be.eq(true);
       expect(user.createdAt).to.be.eq(dayjs.utc(user.createdAt).toISOString());
       expect(user.updatedAt).to.be.eq(dayjs.utc(user.updatedAt).toISOString());

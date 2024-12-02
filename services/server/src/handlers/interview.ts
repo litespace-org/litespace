@@ -34,6 +34,7 @@ import zod from "zod";
 import { isAdmin, isInterviewer, isSuperAdmin, isTutor } from "@litespace/auth";
 import { isEmpty, isEqual } from "lodash";
 import { canBook } from "@/lib/call";
+import { platformConfig } from "@/constants";
 
 const INTERVIEW_DURATION = 30;
 
@@ -90,15 +91,13 @@ async function createInterview(
   const rule = await rules.findById(ruleId);
   if (!rule) return next(notfound.rule());
 
-  const ruleCalls = await calls.findByRuleId({
-    rule: rule.id,
-    canceled: false, // ignore canceled calls
-  });
+  // Find rule interviews to check if the incoming interview is contradicting with existing ones.
+  const ruleInterviews = await interviews.findByRuleId(rule.id);
 
   const canBookInterview = canBook({
     rule,
-    calls: ruleCalls,
-    call: { start, duration: INTERVIEW_DURATION },
+    interviews: ruleInterviews,
+    slot: { start, duration: platformConfig.interviewDuration },
   });
   if (!canBookInterview) return next(busyTutorManager());
 
@@ -106,31 +105,24 @@ async function createInterview(
   const room = await rooms.findRoomByMembers(members);
   if (!room) await rooms.create(members);
 
-  const [interview, call] = await knex.transaction(async (tx) => {
-    const { call } = await calls.create(
-      {
-        rule: ruleId,
-        host: interviewerId,
-        members: [intervieweeId],
-        start: start,
-        duration: INTERVIEW_DURATION,
-      },
-      tx
-    );
+  const interview = await knex.transaction(async (tx) => {
+    const call = await calls.create(tx);
 
-    const interview = await interviews.create(
-      {
-        interviewer: interviewerId,
-        interviewee: intervieweeId,
-        call: call.id,
-      },
-      tx
-    );
+    const interview = await interviews.create({
+      interviewer: interviewerId,
+      interviewee: intervieweeId,
+      call: call.id,
+      rule: rule.id,
+      start,
+      tx,
+    });
 
-    return [interview, call];
+    return interview;
   });
 
-  res.status(200).json({ interview, call });
+  const response: IInterview.CreateInterviewApiResponse = interview;
+
+  res.status(200).json(response);
 }
 
 async function findInterviews(req: Request, res: Response, next: NextFunction) {
@@ -153,27 +145,8 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
     size: query.size,
   });
 
-  const callIds = userInterviews.map((interview) => interview.ids.call);
-  const [interviewCalls, callMembers] = await Promise.all([
-    calls.findByIds(callIds),
-    calls.findCallMembers(callIds),
-  ]);
-
   const result: IInterview.FindInterviewsApiResponse = {
-    list: userInterviews.map(
-      (interview): Element<IInterview.FindInterviewsApiResponse["list"]> => {
-        const call = interviewCalls.find(
-          (call) => call.id === interview.ids.call
-        );
-
-        const members = callMembers.filter(
-          (member) => member.callId === interview.ids.call
-        );
-
-        if (!call || isEmpty(members)) throw unexpected();
-        return { interview, call, members };
-      }
-    ),
+    list: userInterviews,
     total,
   };
 

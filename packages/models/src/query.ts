@@ -4,6 +4,7 @@ import init, { Knex } from "knex";
 import zod from "zod";
 
 export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
+export type WithTx<T> = T & { tx: Knex.Transaction };
 
 const connection = {
   user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),
@@ -105,6 +106,14 @@ export function withPagination<Row extends object, Result = Row[]>(
   const offset = size * (page - 1);
   builder.offset(offset).limit(size);
   return builder;
+}
+
+export function withSkippablePagination<Row extends object, Result = Row[]>(
+  builder: Knex.QueryBuilder<Row, Result>,
+  pagination: IFilter.SkippablePagination = {}
+) {
+  if ("full" in pagination) return builder;
+  return withPagination(builder, pagination);
 }
 
 export async function count(table: string): Promise<number> {

@@ -103,17 +103,12 @@ exports.up = (pgm) => {
 
   pgm.createTable("calls", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    rule_id: { type: "SERIAL", notNull: true, references: "rules(id)" },
-    start: { type: "TIMESTAMP", notNull: true },
-    duration: { type: "SMALLINT", notNull: true },
-    canceled_by: { type: "INT", references: "users(id)" },
-    canceled_at: { type: "TIMESTAMP" },
     recording_status: {
       type: "call_recording_status",
       notNull: true,
       default: "idle",
     },
-    processing_time: { type: "INT" },
+    processing_time: { type: "INT", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -121,52 +116,52 @@ exports.up = (pgm) => {
   pgm.createTable(
     "call_members",
     {
-      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
       call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
-      host: { type: "BOOLEAN", notNull: true, default: false },
-      note: { type: "TEXT" },
-      feedback: { type: "TEXT" },
-      rate: { type: "SMALLINT" },
-      created_at: { type: "TIMESTAMP", notNull: true },
-      updated_at: { type: "TIMESTAMP", notNull: true },
+      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     },
-    { constraints: { primaryKey: ["user_id", "call_id"] } }
+    { constraints: { primaryKey: ["call_id", "user_id"] } }
   );
 
   pgm.createTable("call_events", {
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     event_type: { type: "call_event", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("lessons", {
     id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
+    start: { type: "TIMESTAMP", notNull: true },
+    duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
-    call_id: { type: "SERIAL", notNull: true },
-    canceled_by: { type: "INT", references: "users(id)" },
-    canceled_at: { type: "TIMESTAMP" },
+    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
+    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
+    canceled_by: { type: "INT", references: "users(id)", default: null },
+    canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
   pgm.createTable("lesson_members", {
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     lesson_id: { type: "SERIAL", notNull: true, references: "lessons(id)" },
-    host: { type: "BOOLEAN", notNull: true, default: false },
+    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
   });
 
   pgm.createTable("interviews", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    start: { type: "TIMESTAMP", notNull: true },
     interviewer_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
+    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
+    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },
     signer: { type: "INT", references: "users(id)" },
+    canceled_by: { type: "INT", references: "users(id)", default: null },
+    canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -427,7 +422,6 @@ exports.down = (pgm) => {
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
-  pgm.dropTable("sessions", { ifExists: true });
 
   // types
   pgm.dropType("user_role", { ifExists: true });

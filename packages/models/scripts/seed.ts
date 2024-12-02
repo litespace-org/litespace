@@ -18,7 +18,13 @@ import {
   invoices,
   hashPassword,
 } from "@litespace/models";
-import { ICall, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
+import {
+  ICall,
+  IInterview,
+  ILesson,
+  IUser,
+  IWithdrawMethod,
+} from "@litespace/types";
 import dayjs from "dayjs";
 import { Time } from "@litespace/sol/time";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
@@ -27,26 +33,27 @@ import { price } from "@litespace/sol/value";
 import { IDate, IRule } from "@litespace/types";
 import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
-import Aripsum from "aripsum";
 import utc from "dayjs/plugin/utc";
+import { faker } from "@faker-js/faker/locale/ar";
 import "colors";
 
 dayjs.extend(utc);
 
-const aripsum = new Aripsum("regular");
 const verbose = process.argv[2] === "--verbose";
+
+const birthYear = () =>
+  faker.date.birthdate({ max: 70, min: 1, mode: "age" }).getFullYear();
 
 async function main(): Promise<void> {
   const stdout = logger("seed");
-  const password = hashPassword("LiteSpace432%^&");
-  const birthYear = 2001;
+  const password = hashPassword("Password@8");
 
   const admin = await users.create({
     email: "admin@litespace.org",
-    name: "أحمد عبدالله",
+    name: faker.person.fullName(),
     role: IUser.Role.SuperAdmin,
     password,
-    birthYear,
+    birthYear: birthYear(),
   });
 
   const interviewer = await knex.transaction(async (tx) => {
@@ -54,9 +61,9 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Interviewer,
         email: "interviewer@litespace.org",
-        name: "محمد جلال ابو إسماعيل",
+        name: faker.person.fullName(),
+        birthYear: birthYear(),
         password,
-        birthYear,
       },
       tx
     );
@@ -69,9 +76,9 @@ async function main(): Promise<void> {
       {
         role: IUser.Role.Student,
         email: "student@litespace.org",
-        name: "إبراهيم ياسين",
+        name: faker.person.fullName(),
+        birthYear: birthYear(),
         password,
-        birthYear,
       },
       tx
     );
@@ -83,22 +90,22 @@ async function main(): Promise<void> {
   const mediaProvider = await users.create({
     role: IUser.Role.MediaProvider,
     email: "media@litespace.org",
-    name: "يلا استب",
+    name: faker.person.fullName(),
+    birthYear: birthYear(),
     password,
-    birthYear,
   });
 
   const addedTutors: IUser.Self[] = await knex.transaction(async (tx) => {
     return await Promise.all(
       range(1, 16).map(async (idx) => {
-        const email = `tutor${idx}@litespace.org`;
+        const email = `tutor-${idx}@litespace.org`;
         const tutor = await users.create(
           {
+            name: faker.person.fullName(),
             role: IUser.Role.Tutor,
-            email,
-            name: `أيمن عبدالعزيز (${idx})`,
+            birthYear: birthYear(),
             password,
-            birthYear,
+            email,
           },
           tx
         );
@@ -107,17 +114,35 @@ async function main(): Promise<void> {
         await users.update(
           tutor.id,
           {
+            phoneNumber: [
+              sample(["011", "012", "010", "015"]),
+              faker.number
+                .int({
+                  min: 10_000_000,
+                  max: 99_999_999,
+                })
+                .toString()
+                .padEnd(8, "0"),
+            ].join(""),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+            city: sample(
+              Object.values(IUser.City).filter(
+                (city) => !Number.isNaN(Number(city))
+              )
+            ) as IUser.City,
+            image: "/image.png",
           },
           tx
         );
+
         await tutors.update(
           tutor.id,
           {
-            about: aripsum.generateParagraph(20, 50),
-            bio: aripsum.generateSentence(5, 10),
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
             activated: true,
             activatedBy: admin.id,
+            video: "/video.mp4",
           },
           tx
         );
@@ -132,8 +157,8 @@ async function main(): Promise<void> {
   await ratings.create({
     raterId: student.id,
     rateeId: tutor.id,
-    value: 5,
-    feedback: "مدرس عظيم جدا",
+    value: faker.number.int({ min: 1, max: 5 }),
+    feedback: faker.lorem.paragraph(1),
   });
 
   const rule = await rules.create({
@@ -182,25 +207,6 @@ async function main(): Promise<void> {
       });
     })
   );
-
-  await knex.transaction(async (tx) => {
-    const { call } = await calls.create(
-      {
-        host: interviewer.id,
-        members: [tutor.id],
-        duration: 30,
-        rule: rule.id,
-        start: dayjs.utc().toISOString(),
-      },
-      tx
-    );
-
-    await calls.update(
-      [call.id],
-      { recordingStatus: ICall.RecordingStatus.Recording },
-      tx
-    );
-  });
 
   function randomStart(): string {
     return dayjs
@@ -253,40 +259,29 @@ async function main(): Promise<void> {
   async function createRandomLesson(tutor: IUser.Self) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const activeLesson: boolean = tutor.id === 10;
-      const { call } = await calls.create(
-        {
-          duration: sample([ILesson.Duration.Short, ILesson.Duration.Long])!,
-          host: tutor.id,
-          members: [student.id],
-          rule: 1, // todo: pick valid rule id
-          start: activeLesson
-            ? dayjs.utc().add(1, "minute").toISOString()
-            : randomStart(),
-        },
-        tx
-      );
+      const call = await calls.create(tx);
+      const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
 
-      if (sample([0, 1]))
-        await calls.update(
-          [call.id],
-          { recordingStatus: randomCallRecordingStatus() },
-          tx
-        );
+      const { lesson } = await lessons.create({
+        call: call.id,
+        tutor: tutor.id,
+        student: student.id,
+        price: calculateLessonPrice(price.scale(100), duration),
+        start: activeLesson
+          ? dayjs.utc().add(1, "minute").toISOString()
+          : randomStart(),
+        duration,
+        rule: 1,
+        tx,
+      });
 
-      const { lesson } = await lessons.create(
-        {
-          call: call.id,
-          host: tutor.id,
-          members: [student.id],
-          price: calculateLessonPrice(price.scale(100), call.duration),
-        },
-        tx
-      );
+      if (sample([0, 1]) && !activeLesson)
+        await lessons.cancel({
+          id: lesson.id,
+          canceledBy: sample([tutor.id, student.id]),
+          tx,
+        });
 
-      if (sample([0, 1]) && !activeLesson) {
-        await calls.cancel(call.id, sample([tutor.id, student.id])!, tx);
-        await lessons.cancel(lesson.id, sample([tutor.id, student.id])!, tx);
-      }
       return lesson;
     });
   }
@@ -308,34 +303,31 @@ async function main(): Promise<void> {
 
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
-      const { call } = await calls.create(
-        {
-          duration: 30,
-          host: interviewer.id,
-          members: [tutor.id],
-          rule: rule.id,
-          start: randomStart(),
-        },
-        tx
-      );
+      const call = await calls.create(tx);
 
-      const interview = await interviews.create(
-        {
-          call: call.id,
-          interviewee: tutor.id,
-          interviewer: interviewer.id,
-        },
-        tx
-      );
+      const interview = await interviews.create({
+        call: call.id,
+        interviewee: tutor.id,
+        interviewer: interviewer.id,
+        start: randomStart(),
+        rule: rule.id,
+        tx,
+      });
 
-      if (sample([0, 1]))
-        await calls.update(
-          [call.id],
-          {
-            recordingStatus: randomCallRecordingStatus(),
+      await interviews.update(
+        interview.ids.self,
+        {
+          feedback: {
+            interviewee: faker.lorem.paragraphs(),
+            interviewer: faker.lorem.paragraphs(),
           },
-          tx
-        );
+          status: IInterview.Status.Passed,
+          level: 5,
+          note: faker.lorem.paragraphs(),
+          signer: admin.id,
+        },
+        tx
+      );
     });
   }
 
@@ -479,13 +471,6 @@ async function main(): Promise<void> {
     text: "Nice to meet you!",
     roomId,
   });
-
-  const total = await calls.sum({});
-  const notCanceled = await calls.sum({ canceled: false });
-  const past = await calls.sum({ future: false });
-  stdout.info("Total sum for all calls in minutes", total);
-  stdout.info("Total sum for all not canceled calls in minutes ", notCanceled);
-  stdout.info("Total sum for all past calls in minutes ", past);
 
   const lessonsTotal = await lessons.sumPrice({});
   const lessonsNotCanceled = await lessons.sumPrice({ canceled: false });

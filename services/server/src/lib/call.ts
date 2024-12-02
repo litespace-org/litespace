@@ -1,7 +1,8 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { ICall, IRule } from "@litespace/types";
-import { isEmpty } from "lodash";
+import { ICall, IInterview, ILesson, IRule } from "@litespace/types";
+import { concat, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
+import { platformConfig } from "@/constants";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(calls: ICall.Self[]): boolean {
@@ -11,32 +12,49 @@ export function canBeInterviewed(calls: ICall.Self[]): boolean {
 
 export function canBook({
   rule,
-  calls,
-  call,
+  lessons = [],
+  interviews = [],
+  slot,
 }: {
   rule: IRule.Self;
-  calls: ICall.Self[];
-  call: { start: string; duration: number };
+  lessons?: ILesson.Self[];
+  interviews?: IInterview.Self[];
+  slot: { start: string; duration: number };
 }) {
-  const start = dayjs.utc(call.start).startOf("day");
+  const start = dayjs.utc(slot.start).startOf("day");
   const end = start.add(1, "day");
-  const events = unpackRules({
-    calls,
+  const lessonSlots: IRule.Slot[] = lessons.map((lesson) => ({
+    ruleId: lesson.ruleId,
+    start: lesson.start,
+    duration: lesson.duration,
+  }));
+  const interviewSlots: IRule.Slot[] = interviews.map((interview) => ({
+    ruleId: interview.ids.rule,
+    start: interview.start,
+    duration: platformConfig.interviewDuration,
+  }));
+  const unpackedRules = unpackRules({
     rules: [rule],
+    slots: concat(lessonSlots, interviewSlots),
     start: start.toISOString(),
     end: end.toISOString(),
   });
-  if (isEmpty(events)) return false;
+  if (isEmpty(unpackedRules)) return false;
 
-  const callStart = dayjs.utc(call.start);
-  const callEnd = callStart.add(call.duration, "minutes");
+  const slotStart = dayjs.utc(slot.start);
+  const slotEnd = slotStart.add(slot.duration, "minutes");
 
-  for (const event of events) {
-    if (
-      (callStart.isSame(event.start) || callStart.isAfter(event.end)) &&
-      (callEnd.isSame(event.end) || callEnd.isBefore(event.end))
-    )
-      return true;
+  /**
+   * Check if the incoming slot can fit in one of the unpacked rules.
+   */
+  for (const unpackedRule of unpackedRules) {
+    const after =
+      slotStart.isSame(unpackedRule.start) ||
+      slotStart.isAfter(unpackedRule.end);
+    const before =
+      slotEnd.isSame(unpackedRule.end) || slotEnd.isBefore(unpackedRule.end);
+    const between = after && before;
+    if (between) return true;
   }
 
   return false;

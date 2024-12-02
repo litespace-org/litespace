@@ -94,3 +94,26 @@ export type Cache = {
   rule: number;
   events: RuleEvent[];
 };
+
+/**
+ * Slot: represents unpacked time slot at specific time and duration.
+ *
+ * @example a rule that is defined as "everyday from 5am to 6am" will have
+ * these example slots below:
+ * - "start from 'Sri 28 nov. 5:00am' and for 2 hours"
+ * - "start from 'Sat 29 nov. 5:00am' and for 1 hours"
+ */
+export type Slot = {
+  /**
+   * Rule id that the slot belongs to.
+   */
+  ruleId: number;
+  /**
+   * ISO UTC datetime
+   */
+  start: string;
+  /**
+   * Slot duration in minutes
+   */
+  duration: number;
+};

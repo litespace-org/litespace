@@ -1,16 +1,12 @@
-import fixtures, { faker } from "@fixtures/db";
+import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { knex, topics } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
 
 describe("Topics", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
-    await fixtures.flush();
+  beforeEach(async () => {
+    return await fixtures.flush();
   });
 
   describe(nameof(topics.create), () => {

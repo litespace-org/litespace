@@ -3,7 +3,8 @@ import { dayjs } from "@/dayjs";
 import { FormatterMap, RawTime, Time } from "@/time";
 import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
-import { ICall, IDate, IRule } from "@litespace/types";
+import { IDate, IInterview, ILesson, IRule } from "@litespace/types";
+import { INTERVIEW_DURATION } from "@/constants";
 
 /**
  * ### Notes
@@ -430,28 +431,28 @@ export function asRule<T extends IRule.CreateApiPayload | IRule.Self>(
 
 export function unpackRules({
   rules,
-  calls,
+  slots,
   start,
   end,
 }: {
   rules: IRule.Self[];
-  calls: ICall.Self[];
+  slots: IRule.Slot[];
   start: string;
   end: string;
 }) {
   const output: IRule.RuleEvent[] = [];
 
   for (const rule of rules) {
-    const ruleCalls = calls
-      .filter((call) => call.ruleId === rule.id)
-      .map((call) => {
-        const start = dayjs.utc(call.start);
-        const end = start.add(call.duration, "minutes");
+    const ruleSlots = slots
+      .filter((slot) => slot.ruleId === rule.id)
+      .map((slot) => {
+        const start = dayjs.utc(slot.start);
+        const end = start.add(slot.duration, "minutes");
         return Schedule.event(start, end);
       });
 
     const ruleEvents: IRule.RuleEvent[] = Schedule.from(asRule(rule))
-      .between(start, end, ruleCalls)
+      .between(start, end, ruleSlots)
       .map((event) => ({ id: rule.id, ...event }));
 
     output.push(...ruleEvents);
@@ -487,4 +488,20 @@ export function toUtcDate(value: string | Dayjs) {
     date.minute(),
     date.second()
   );
+}
+
+export function asSlot<T extends ILesson.Self | IInterview.Self>(
+  item: T
+): IRule.Slot {
+  return {
+    ruleId: "ids" in item ? item.ids.rule : item.ruleId,
+    start: item.start,
+    duration: "duration" in item ? item.duration : INTERVIEW_DURATION,
+  };
+}
+
+export function asSlots<T extends ILesson.Self | IInterview.Self>(
+  items: T[]
+): IRule.Slot[] {
+  return items.map((item) => asSlot(item));
 }

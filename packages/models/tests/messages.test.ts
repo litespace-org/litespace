@@ -1,15 +1,11 @@
 import { messages, rooms } from "@/index";
 import fixtures from "@fixtures/db";
-import { nameof } from "@litespace/sol/utils";
+import { nameof } from "@litespace/sol";
 import { expect } from "chai";
 
 describe("Messages", () => {
-  beforeAll(async () => {
-    await fixtures.flush();
-  });
-
-  afterEach(async () => {
-    await fixtures.flush();
+  beforeEach(async () => {
+    return await fixtures.flush();
   });
 
   describe(nameof(messages.countUserMessages), () => {

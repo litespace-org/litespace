@@ -13,7 +13,7 @@ export function asCalendarEvents({
   end: string;
 }): Event[] {
   const ruleMap = groupBy(rules, "id");
-  const events = unpackRules({ rules, calls: [], start, end });
+  const events = unpackRules({ rules, slots: [], start, end });
 
   return events.map((event) => {
     const rules = ruleMap[event.id];

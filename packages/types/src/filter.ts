@@ -14,6 +14,19 @@ export type Self = {
 
 export type Pagination = { page?: number; size?: number };
 
+/**
+ * Will the `full` flag is provided the pagination will be disabled and the
+ * entire list of items will be included in the result.
+ */
+export type SkippablePagination =
+  | Pagination
+  | {
+      /**
+       * Skip the pagination and return the full result when provided.
+       */
+      full: true;
+    };
+
 export enum Match {
   Exact = "exact",
   Suffix = "suffix",

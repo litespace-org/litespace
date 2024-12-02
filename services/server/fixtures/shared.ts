@@ -22,12 +22,15 @@ async function execute(command: string): Promise<string> {
   });
 }
 
+const ci = !!process.env.CI;
+const command = ci ? "migrate:test:ci" : "migrate:test:local";
+
 export async function down() {
-  await execute("pnpm --filter @litespace/models migrate:test down");
+  await execute(`pnpm --filter @litespace/models ${command} down`);
 }
 
 export async function up() {
-  await execute("pnpm --filter @litespace/models migrate:test up");
+  await execute(`pnpm --filter @litespace/models ${command} up`);
 }
 
 export async function flush() {

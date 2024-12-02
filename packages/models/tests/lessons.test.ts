@@ -1,4 +1,4 @@
-import { calls, lessons } from "@/index";
+import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
@@ -9,14 +9,19 @@ import dayjs from "@/lib/dayjs";
 
 describe("Lessons", () => {
   beforeEach(async () => {
-    await fixtures.flush();
+    return await fixtures.flush();
   });
 
   describe(nameof(lessons.countCounterpartMembers), () => {
     describe("Simple (one student, one tutor)", () => {
-      it("Should count one unique student for the tutor", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: false,
+      it("should count one unique student for the tutor", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          timing: "past",
           canceled: false,
         });
 
@@ -37,11 +42,15 @@ describe("Lessons", () => {
         ).to.be.eq(1);
       });
 
-      it("Should count no student if the lesson will happen in the future", async () => {
-        const { tutor } = await fixtures.make.lesson({
-          future: true,
+      it("should count no student if the lesson will happen in the future", async () => {
+        const tutor = await fixtures.tutor();
+
+        await fixtures.lesson({
+          timing: "future",
           canceled: false,
+          tutor: tutor.id,
         });
+
         const count = await lessons.countCounterpartMembers({
           canceled: false,
           future: false,
@@ -50,10 +59,15 @@ describe("Lessons", () => {
         expect(count).to.be.eq(0);
       });
 
-      it("Should count future students/tutors when the `future` flag is enabled", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: true,
+      it("should count future students/tutors when the `future` flag is enabled", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        const l = await fixtures.lesson({
+          timing: "future",
           canceled: false,
+          tutor: tutor.id,
+          student: student.id,
         });
 
         expect(
@@ -93,10 +107,15 @@ describe("Lessons", () => {
         ).to.be.eq(0);
       });
 
-      it("Should count canceled students/tutors when the `canceled` flag is enabled", async () => {
-        const { tutor, student } = await fixtures.make.lesson({
-          future: false,
+      it("should count canceled students/tutors when the `canceled` flag is enabled", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          timing: "future",
           canceled: true,
+          tutor: tutor.id,
+          student: student.id,
         });
 
         expect(
@@ -194,15 +213,9 @@ describe("Lessons", () => {
         });
 
         await fixtures.lesson({
-          lesson: {
-            host: tutor.id,
-            members: [student.id],
-          },
-          call: {
-            host: tutor.id,
-            members: [student.id],
-            rule: rule.id,
-          },
+          tutor: tutor.id,
+          student: student.id,
+          rule: rule.id,
         });
       }
 
@@ -407,9 +420,9 @@ describe("Lessons", () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
             const current = concat(lessons.past, lessons.future).map(
-              ({ call }) => ({
-                start: call.self.start,
-                duration: call.self.duration,
+              ({ lesson }) => ({
+                start: lesson.start,
+                duration: lesson.duration,
               })
             );
             return concat(list, current);
@@ -424,9 +437,9 @@ describe("Lessons", () => {
       it("should ignore future lessons", async () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
-            const current = concat(lessons.past).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
+            const current = concat(lessons.past).map(({ lesson }) => ({
+              start: lesson.start,
+              duration: lesson.duration,
             }));
             return concat(list, current);
           },
@@ -446,9 +459,9 @@ describe("Lessons", () => {
             const current = concat(
               lessons.uncanceled.future,
               lessons.uncanceled.past
-            ).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
+            ).map(({ lesson }) => ({
+              start: lesson.start,
+              duration: lesson.duration,
             }));
             return concat(list, current);
           },
@@ -470,10 +483,12 @@ describe("Lessons", () => {
       it("should ignore future and canceled lessons", async () => {
         const test = tutorLessons.reduce(
           (list: ILesson.LessonDay[], lessons) => {
-            const current = concat(lessons.uncanceled.past).map(({ call }) => ({
-              start: call.self.start,
-              duration: call.self.duration,
-            }));
+            const current = concat(lessons.uncanceled.past).map(
+              ({ lesson }) => ({
+                start: lesson.start,
+                duration: lesson.duration,
+              })
+            );
             return concat(list, current);
           },
           []
@@ -489,9 +504,9 @@ describe("Lessons", () => {
     });
   });
 
-  describe(nameof(lessons.findLessons), () => {
+  describe(nameof(lessons.find), () => {
     it("should return empty list in case user has not lessons", async () => {
-      const result = await lessons.findLessons({
+      const result = await lessons.find({
         users: [1],
       });
       expect(result.list).to.be.empty;
@@ -499,7 +514,7 @@ describe("Lessons", () => {
     });
 
     it("should return empty list in case the database is empty", async () => {
-      const result = await lessons.findLessons({});
+      const result = await lessons.find({});
       expect(result.list).to.be.empty;
       expect(result.total).to.be.eq(0);
     });
@@ -524,7 +539,7 @@ describe("Lessons", () => {
         rule: rule.id,
       });
 
-      const result = await lessons.findLessons({ size: 100 });
+      const result = await lessons.find({ size: 100 });
 
       expect(result.list).to.be.of.length(total);
       expect(result.total).to.be.eq(total);
@@ -550,15 +565,15 @@ describe("Lessons", () => {
         rule: rule.id,
       });
 
-      const r1 = await lessons.findLessons({ page: 1, size: 2 });
+      const r1 = await lessons.find({ page: 1, size: 2 });
       expect(r1.list).to.be.of.length(2);
       expect(r1.total).to.be.eq(total);
 
-      const r2 = await lessons.findLessons({ page: 2, size: 2 });
+      const r2 = await lessons.find({ page: 2, size: 2 });
       expect(r2.list).to.be.of.length(2);
       expect(r2.total).to.be.eq(total);
 
-      const r3 = await lessons.findLessons({ page: 6, size: 2 });
+      const r3 = await lessons.find({ page: 6, size: 2 });
       expect(r3.list).to.be.of.length(1);
       expect(r3.total).to.be.eq(total);
     });
@@ -649,7 +664,7 @@ describe("Lessons", () => {
       ];
 
       for (const test of tests) {
-        const result = await lessons.findLessons({
+        const result = await lessons.find({
           page: 1,
           size: 100,
           future: test.future,
@@ -671,17 +686,11 @@ describe("Lessons", () => {
       // create 24 lessons (30 minute each) across the day
       for (let i = 0; i < 24; i++) {
         await fixtures.lesson({
-          call: {
-            rule: rule.id,
-            start: date.add(i, "hour").toISOString(),
-            duration: 30,
-            host: tutor.id,
-            members: [student.id],
-          },
-          lesson: {
-            host: tutor.id,
-            members: [student.id],
-          },
+          rule: rule.id,
+          start: date.add(i, "hour").toISOString(),
+          duration: 30,
+          tutor: tutor.id,
+          student: student.id,
         });
       }
 
@@ -721,7 +730,7 @@ describe("Lessons", () => {
       for (const test of tests) {
         expect(
           await lessons
-            .findLessons({
+            .find({
               users: [tutor.id],
               size: 50,
               after: test.after,
@@ -775,53 +784,58 @@ describe("Lessons", () => {
         rule: secondTutorRule.id,
       });
 
-      const r1 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 1,
-        size: 2,
-      });
-      expect(r1.list).to.be.of.length(2);
-      expect(r1.total).to.be.eq(firstTutorTotaLessons);
+      const tests = [
+        {
+          users: [firstTutor.id],
+          page: 1,
+          size: 2,
+          list: 2,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [firstTutor.id],
+          page: 2,
+          size: 2,
+          list: 2,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [firstTutor.id],
+          page: 6,
+          size: 2,
+          list: 1,
+          total: firstTutorTotaLessons,
+        },
+        {
+          users: [secondTutor.id],
+          page: 1,
+          size: 2,
+          list: 2,
+          total: secondTutorTotaLessons,
+        },
+        {
+          users: [secondTutor.id],
+          page: 4,
+          size: 2,
+          list: 1,
+          total: secondTutorTotaLessons,
+        },
+        {
+          size: 100,
+          list: firstTutorTotaLessons + secondTutorTotaLessons,
+          total: firstTutorTotaLessons + secondTutorTotaLessons,
+        },
+      ];
 
-      const r2 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 2,
-        size: 2,
-      });
-      expect(r2.list).to.be.of.length(2);
-      expect(r2.total).to.be.eq(firstTutorTotaLessons);
-
-      const r3 = await lessons.findLessons({
-        users: [firstTutor.id],
-        page: 6,
-        size: 2,
-      });
-      expect(r3.list).to.be.of.length(1);
-      expect(r3.total).to.be.eq(firstTutorTotaLessons);
-
-      const r4 = await lessons.findLessons({
-        users: [secondTutor.id],
-        page: 1,
-        size: 2,
-      });
-      expect(r4.list).to.be.of.length(2);
-      expect(r4.total).to.be.eq(secondTutorTotaLessons);
-
-      const r5 = await lessons.findLessons({
-        users: [secondTutor.id],
-        page: 4,
-        size: 2,
-      });
-      expect(r5.list).to.be.of.length(1);
-      expect(r5.total).to.be.eq(secondTutorTotaLessons);
-
-      const r6 = await lessons.findLessons({
-        size: 100,
-      });
-      expect(r6.list).to.be.of.length(
-        firstTutorTotaLessons + secondTutorTotaLessons
-      );
-      expect(r6.total).to.be.eq(firstTutorTotaLessons + secondTutorTotaLessons);
+      for (const test of tests) {
+        const result = await lessons.find({
+          users: test.users,
+          page: test.page,
+          size: test.size,
+        });
+        expect(result.list).to.be.of.length(test.list);
+        expect(result.total).to.be.eq(test.total);
+      }
     });
   });
 });

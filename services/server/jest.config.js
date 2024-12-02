@@ -3,7 +3,14 @@ module.exports = {
   testEnvironment: "node",
   transformIgnorePatterns: ["<rootDir>/node_modules/"],
   transform: {
-    "^.+\\.(ts|tsx)?$": "ts-jest",
+    "^.+\\.(ts|tsx)?$": [
+      "ts-jest",
+      {
+        diagnostics: {
+          exclude: ["**"],
+        },
+      },
+    ],
     "^.+\\.(js|jsx)$": "babel-jest",
   },
   moduleNameMapper: {

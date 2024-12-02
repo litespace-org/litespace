@@ -7,15 +7,17 @@ import {
 } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, merge, omit, orderBy } from "lodash";
+import { concat, first, isEmpty, merge, omit, orderBy } from "lodash";
 import { users } from "@/users";
 import {
   aggArrayOrder,
   knex,
   column,
-  withPagination,
   addSqlMinutes,
   countRows,
+  WithOptionalTx,
+  WithTx,
+  withSkippablePagination,
 } from "@/query";
 import { calls } from "@/calls";
 import zod from "zod";
@@ -27,8 +29,17 @@ type SearchFilter = {
   users?: number[];
   canceled?: boolean;
   ratified?: boolean;
+  /**
+   * @deprecated use `after` instead
+   */
   future?: boolean;
+  /**
+   * @deprecated use `before` instead
+   */
   past?: boolean;
+  /**
+   * @deprecated use `before` and `after` instead
+   */
   now?: boolean;
   /**
    * Start date time (ISO datetime format)
@@ -42,6 +53,10 @@ type SearchFilter = {
    * All lessons before (or the same as) this date will be included.
    */
   before?: string;
+  /**
+   * Filter only lessons that blogs to the provided rule ids.
+   */
+  rules?: number[];
 };
 
 type BaseAggregateParams = SearchFilter & { tx?: Knex.Transaction };
@@ -70,8 +85,11 @@ export class Lessons {
   } = {
     lesson: {
       id: this.columns.lessons("id"),
-      call_id: this.columns.lessons("call_id"),
+      start: this.columns.lessons("start"),
+      duration: this.columns.lessons("duration"),
       price: this.columns.lessons("price"),
+      rule_id: this.columns.lessons("rule_id"),
+      call_id: this.columns.lessons("call_id"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
       created_at: this.columns.lessons("created_at"),
@@ -79,19 +97,18 @@ export class Lessons {
     },
   } as const;
 
-  filter = {
-    lesson: Object.values(this.rows.lesson),
-  } as const;
-
-  async create(
-    payload: ILesson.CreatePayload,
-    tx: Knex.Transaction
-  ): Promise<{ lesson: ILesson.Self; members: ILesson.Member[] }> {
+  async create({ tx, ...payload }: WithTx<ILesson.CreatePayload>): Promise<{
+    lesson: ILesson.Self;
+    members: ILesson.Member[];
+  }> {
     const now = dayjs.utc().toDate();
     const builder = this.builder(tx);
 
     const lessons = await builder.lessons
       .insert({
+        start: dayjs.utc(payload.start).toDate(),
+        duration: payload.duration,
+        rule_id: payload.rule,
         call_id: payload.call,
         price: payload.price,
         created_at: now,
@@ -104,10 +121,9 @@ export class Lessons {
 
     const members = await builder.members
       .insert(
-        concat(payload.members, payload.host).map((userId) => ({
+        concat(payload.tutor, payload.student).map((userId) => ({
           user_id: userId,
           lesson_id: lesson.id,
-          host: userId === payload.host,
         }))
       )
       .returning("*");
@@ -118,22 +134,31 @@ export class Lessons {
     };
   }
 
-  async cancel(
-    id: number,
-    canceledBy: number,
-    tx: Knex.Transaction
-  ): Promise<void> {
+  async cancel({
+    canceledBy,
+    id,
+    tx,
+  }: WithOptionalTx<{
+    id: number;
+    canceledBy: number;
+  }>): Promise<void> {
     const now = dayjs.utc().toDate();
     await this.builder(tx)
-      .lessons.update({ canceled_by: canceledBy, canceled_at: now })
-      .where("id", id);
+      .lessons.update({
+        canceled_by: canceledBy,
+        canceled_at: now,
+        updated_at: now,
+      })
+      .where(this.columns.lessons("id"), id);
   }
 
-  async findById(
-    id: number,
-    tx?: Knex.Transaction
-  ): Promise<ILesson.Self | null> {
-    const rows = await this.builder(tx).lessons.select("*").where({ id });
+  async findById({
+    id,
+    tx,
+  }: WithOptionalTx<{ id: number }>): Promise<ILesson.Self | null> {
+    const rows = await this.builder(tx)
+      .lessons.select("*")
+      .where(this.columns.lessons("id"), id);
     const row = first(rows);
     if (!row) return null;
     return this.from(row);
@@ -143,21 +168,17 @@ export class Lessons {
     lessonIds: number[],
     tx?: Knex.Transaction
   ): Promise<ILesson.PopuldatedMember[]> {
-    const fields: Record<keyof ILesson.PopuldatedMemberRow, string> = {
-      userId: users.column("id"),
-      lessonId: this.columns.members("lesson_id"),
-      host: this.columns.members("host"),
-      email: users.column("email"),
+    const select: Record<keyof ILesson.PopuldatedMemberRow, string> = {
+      user_id: users.column("id"),
+      lesson_id: this.columns.members("lesson_id"),
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
-      createdAt: users.column("created_at"),
-      updatedAt: users.column("updated_at"),
     };
 
     const rows: ILesson.PopuldatedMemberRow[] = await users
       .builder(tx)
-      .select<ILesson.PopuldatedMemberRow[]>(fields)
+      .select<ILesson.PopuldatedMemberRow[]>(select)
       .join(
         this.table.members,
         this.columns.members("user_id"),
@@ -187,11 +208,13 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findLessons({
+  /**
+   * @typedef {SearchFilter} Payload
+   * @typedef {IFilter.SkippablePagination}
+   */
+  async find({
     tx,
     users,
-    page,
-    size,
     ratified = true,
     canceled = true,
     future = true,
@@ -199,17 +222,12 @@ export class Lessons {
     now = false,
     after,
     before,
-  }: {
-    tx?: Knex.Transaction;
-  } & IFilter.Pagination &
-    SearchFilter): Promise<Paginated<ILesson.Self>> {
-    const baseBuilder = this.builder(tx).lessons.join(
-      calls.tables.calls,
-      calls.columns.calls("id"),
-      this.columns.lessons("call_id")
-    );
-
-    const filterBuilder = this.applySearchFilter(baseBuilder, {
+    rules,
+    ...pagination
+  }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
+    Paginated<ILesson.Self>
+  > {
+    const baseBuilder = this.applySearchFilter(this.builder(tx).lessons, {
       users,
       canceled,
       ratified,
@@ -220,18 +238,16 @@ export class Lessons {
       before,
     });
 
-    const countBuilder = filterBuilder.clone();
-
-    const total = await countRows(countBuilder, {
+    const total = await countRows(baseBuilder.clone(), {
       column: this.columns.lessons("id"),
     });
 
     const queryBuilder = baseBuilder
       .clone()
       .select(this.rows.lesson)
-      .orderBy(calls.columns.calls("start"), "desc");
+      .orderBy(this.columns.lessons("start"), "desc");
 
-    const rows = await withPagination(queryBuilder, { page, size }).then();
+    const rows = await withSkippablePagination(queryBuilder, pagination);
     return { list: rows.map((row) => this.from(row)), total };
   }
 
@@ -241,7 +257,7 @@ export class Lessons {
   }
 
   async sumDuration(params: BaseAggregateParams) {
-    const column = calls.columns.calls("duration");
+    const column = this.columns.lessons("duration");
     return await this.sum({ ...params, column });
   }
 
@@ -344,13 +360,8 @@ export class Lessons {
         this.columns.lessons("id"),
         this.columns.members("lesson_id")
       )
-      .join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
       .whereIn(this.columns.members("lesson_id"), subqueryBaseBuilder)
-      .andWhere(this.columns.members("user_id"), "!=", user); // execlude the tutor
+      .andWhere(this.columns.members("user_id"), "!=", user); // execlude the user
 
     const queryBuilder = this.applySearchFilter(baseQueryBuilder, filter);
 
@@ -375,16 +386,10 @@ export class Lessons {
   }: SearchFilter & {
     tx?: Knex.Transaction;
   }): Promise<ILesson.LessonDays> {
-    const baseBuilder = this.builder(tx)
-      .lessons.join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
-      .select<ILesson.LessonDayRows>({
-        start: calls.columns.calls("start"),
-        duration: calls.columns.calls("duration"),
-      });
+    const baseBuilder = this.builder(tx).lessons.select<ILesson.LessonDayRows>({
+      start: this.columns.lessons("start"),
+      duration: this.columns.lessons("duration"),
+    });
 
     const rows = await this.applySearchFilter(baseBuilder, filter);
 
@@ -405,6 +410,7 @@ export class Lessons {
       users,
       after,
       before,
+      rules = [],
     }: SearchFilter
   ): Knex.QueryBuilder<ILesson.Row, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -434,16 +440,16 @@ export class Lessons {
 
     const nowDate = dayjs.utc().toDate();
     const end = addSqlMinutes(
-      calls.columns.calls("start"),
-      calls.columns.calls("duration")
+      this.columns.lessons("start"),
+      this.columns.lessons("duration")
     );
 
     if (now) {
       builder
-        .where(calls.columns.calls("start"), ">=", nowDate)
+        .where(this.columns.lessons("start"), ">=", nowDate)
         .andWhere(end, "<=", nowDate);
     } else if (futureOnly) {
-      builder.where(calls.columns.calls("start"), ">=", nowDate);
+      builder.where(this.columns.lessons("start"), ">=", nowDate);
     } else if (pastOnly) {
       builder.where(end, "<=", nowDate);
     }
@@ -451,13 +457,19 @@ export class Lessons {
     if (after) builder.where(end, ">=", dayjs.utc(after).toDate());
     if (before) builder.where(end, "<=", dayjs.utc(before).toDate());
 
+    if (!isEmpty(rules))
+      builder.whereIn(this.columns.lessons("rule_id"), rules);
+
     return builder;
   }
 
   from(row: ILesson.Row): ILesson.Self {
     return {
       id: row.id,
+      start: row.start.toISOString(),
+      duration: row.duration,
       price: row.price,
+      ruleId: row.rule_id,
       callId: row.call_id,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
@@ -467,20 +479,19 @@ export class Lessons {
   }
 
   asMember(row: ILesson.MemberRow): ILesson.Member {
-    return {
-      userId: row.user_id,
-      lessonId: row.lesson_id,
-      host: row.host,
-    };
+    return { userId: row.user_id, lessonId: row.lesson_id };
   }
 
   asPopulatedMember(
     row: ILesson.PopuldatedMemberRow
   ): ILesson.PopuldatedMember {
-    return merge(omit(row, "createdAt", "updatedAt"), {
-      createdAt: row.createdAt.toISOString(),
-      updatedAt: row.updatedAt.toISOString(),
-    });
+    return {
+      lessonId: row.lesson_id,
+      userId: row.user_id,
+      name: row.name,
+      image: row.image,
+      role: row.role,
+    };
   }
 
   builder(tx?: Knex.Transaction): Builder {
