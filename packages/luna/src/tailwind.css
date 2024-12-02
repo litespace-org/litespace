@@ -92,7 +92,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --colors-gray-dark-alpha-1100: hsla(0, 0%, 100%, 0.588);
   --colors-gray-dark-alpha-1200: hsla(0, 0%, 100%, 0.922);
   --colors-gray-light-100: 0deg 0% 98.8%;
-  --colors-overlay-edit-message: 0, 0%, 0%, 0.5;
+  --colors-overlay-dialog: rgba(0, 0, 0, 0.5);
   --colors-gray-light-200: 0deg 0% 97.3%;
   --colors-gray-light-300: 0deg 0% 95.3%;
   --colors-gray-light-400: 0deg 0% 92.9%;
@@ -439,7 +439,7 @@ input[type="range"]:focus::-moz-range-thumb {
   --background-button-default: var(--colors-gray-light-100); /* ✅ */
   --background-overlay-hover: var(--colors-gray-light-300); /* ✅ */
   --background-overlay-default: var(--colors-gray-light-100); /* ✅ */
-  --background-overlay-edit-message: var(--colors-overlay-edit-message);
+  --background-overlay-edit-message: var(--colors-overlay-dialog);
   --background-control: var(--colors-gray-light-300); /* ✅ */
   --background-selection: var(--colors-gray-light-400); /* ✅ */
   --background-default: var(--colors-gray-light-100); /* ✅ */

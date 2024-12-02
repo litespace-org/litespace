@@ -40,7 +40,6 @@ const Messages: React.FC<{
     text: string;
     id: number;
   } | null>(null);
-
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
 
   const findRoomMessages = useCallback(
@@ -75,13 +74,18 @@ const Messages: React.FC<{
   const submit = useCallback(
     (text: string) => {
       if (!room) return;
-      if (updatableMessage) {
-        setUpdatableMessage(null);
-        return updateMessage({ id: updatableMessage.id, text });
-      }
       return sendMessage({ roomId: room, text });
     },
-    [room, sendMessage, updatableMessage, updateMessage]
+    [room, sendMessage]
+  );
+
+  const onUpdateMessage = useCallback(
+    (text: string) => {
+      if (!updatableMessage) return;
+      setUpdatableMessage(null);
+      updateMessage({ id: updatableMessage.id, text });
+    },
+    [updatableMessage, updateMessage]
   );
 
   const onUpdate = useCallback(
@@ -172,7 +176,7 @@ const Messages: React.FC<{
           <div
             className={cn(
               "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
-              "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+              "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
             )}
             ref={messagesRef}
             onScroll={onScroll}
@@ -222,14 +226,21 @@ const Messages: React.FC<{
           </div>
         </>
       ) : null}
-      <EditMessage
-        message={updatableMessage}
-        close={discardUpdate}
-        submit={submit}
-        open={!!updatableMessage}
-      />
+
+      {updatableMessage ? (
+        <EditMessage
+          message={updatableMessage}
+          close={discardUpdate}
+          onUpdateMessage={onUpdateMessage}
+          open={!!updatableMessage}
+        />
+      ) : null}
 
       <ConfirmationDialog
+        labels={{
+          confirm: "chat.message.delete.confirm",
+          cancel: "chat.message.delete.cancel",
+        }}
         type="error"
         title={intl("chat.message.delete")}
         description={intl("chat.message.delete.description")}
