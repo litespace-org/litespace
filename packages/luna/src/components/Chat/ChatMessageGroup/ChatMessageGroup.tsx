@@ -17,7 +17,7 @@ export const ChatMessageGroup: React.FC<{
   messages: Array<{ id: number; text: string }>;
   sentAt: string;
   owner?: boolean;
-  editMessage: (id: number) => void;
+  editMessage: (message: { id: number; text: string }) => void;
   deleteMessage: (id: number) => void;
 }> = ({
   sentAt,
@@ -82,7 +82,7 @@ export const ChatMessageGroup: React.FC<{
               <ChatMessage
                 message={message}
                 owner={owner}
-                editMessage={() => editMessage(message.id)}
+                editMessage={() => editMessage(message)}
                 deleteMessage={() => deleteMessage(message.id)}
               />
             </motion.div>
