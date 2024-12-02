@@ -1,4 +1,4 @@
-import { IFilter, IMessage, IRoom } from "@litespace/types";
+import { IFilter, IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -6,9 +6,13 @@ import React, {
   useRef,
   useState,
 } from "react";
-import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import { ChatMessageGroup, ChatHeader } from "@litespace/luna/Chat";
+import {
+  ChatMessageGroup,
+  ChatHeader,
+  SendInput,
+  EditMessage,
+} from "@litespace/luna/Chat";
 import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
@@ -30,8 +34,10 @@ const Messages: React.FC<{
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
-  const [updatableMessage, setUpdatableMessage] =
-    useState<IMessage.Self | null>(null);
+  const [updatableMessage, setUpdatableMessage] = useState<{
+    text: string;
+    id: number;
+  } | null>(null);
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
@@ -75,7 +81,7 @@ const Messages: React.FC<{
     [room, sendMessage, updatableMessage, updateMessage]
   );
   const onUpdateMessage = useCallback(
-    (message: IMessage.Self) => setUpdatableMessage(message),
+    (message: { text: string; id: number }) => setUpdatableMessage(message),
     []
   );
 
@@ -182,8 +188,8 @@ const Messages: React.FC<{
                         <div className="mb-6" key={group.id}>
                           <ChatMessageGroup
                             {...group}
-                            deleteMessage={() => onDeleteMessage}
-                            editMessage={() => onUpdateMessage}
+                            deleteMessage={onDeleteMessage}
+                            editMessage={onUpdateMessage}
                             owner={group.sender.userId === profile?.id}
                           />
                         </div>
@@ -196,15 +202,16 @@ const Messages: React.FC<{
           </div>
 
           <div className="px-4 pt-2 pb-6">
-            <MessageBox
-              discard={discard}
-              submit={submit}
-              defaultMessage={updatableMessage ? updatableMessage.text : ""}
-              update={updatableMessage !== null}
-            />
+            <SendInput onSubmit={submit} />
           </div>
         </>
       ) : null}
+      <EditMessage
+        message={updatableMessage}
+        close={discard}
+        submit={submit}
+        open={!!updatableMessage}
+      />
     </div>
   );
 };

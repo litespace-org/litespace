@@ -142,6 +142,7 @@ export default {
           overlay: {
             DEFAULT: "hsl(var(--background-overlay-default))",
             hover: "hsl(var(--background-overlay-hover))",
+            editMessage: "hsla(var(--colors-overlay-edit-message))",
           },
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",

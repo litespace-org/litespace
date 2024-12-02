@@ -397,6 +397,7 @@
   "chat.book": "احجز الاّن",
   "chat.date.today": "اليوم",
   "chat.date.yesterday": "الأمس",
+  "chat.input.placeholder": "اكتب رسالتك هنا  .......",
   "settings.profile.title": "الأعدادات",
   "settings.profile.title.first": "أكمل بياناتك",
   "settings.upload.image.label": "قم برفع صورة جديدة",
