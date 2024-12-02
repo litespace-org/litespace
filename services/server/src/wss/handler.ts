@@ -1,11 +1,10 @@
 import { calls, messages, rooms, users } from "@litespace/models";
-import { IUser } from "@litespace/types";
+import { IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
-import { Wss } from "@litespace/types";
 import wss from "@/validation/wss";
 import zod from "zod";
 import { boolean, id, string, withNamedId } from "@/validation/utils";
-import { isEmpty, map } from "lodash";
+import { isEmpty } from "lodash";
 import { logger } from "@litespace/sol/log";
 import { safe } from "@litespace/sol/error";
 import { sanitizeMessage } from "@litespace/sol/chat";
@@ -13,7 +12,6 @@ import "colors";
 import {
   isAdmin,
   isGhost,
-  isInterviewer,
   isStudent,
   isTutor,
   isUser,
@@ -66,8 +64,9 @@ export class WssHandler {
   async joinRooms() {
     const error = await safe(async () => {
       if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
       const { list } = await rooms.findMemberRooms({ userId: this.user.id });
-      const ids = list.map((room) => room.toString());
+      const ids = list.map((roomId: number) => roomId.toString());
       this.socket.join(ids);
       // private channel
       this.socket.join(this.user.id.toString());
@@ -89,14 +88,16 @@ export class WssHandler {
       console.log({
         call: callId,
         peer: peerId,
-        user: isUser(this.user) ? this.user.email : this.user,
+        user: isUser(this.user) ? (this.user as IUser.Self).email : this.user,
       });
 
       const members = await calls.findCallMembers([callId]);
       if (isEmpty(members)) return;
 
       const memberIds = members.map((member) => member.userId);
-      const isMember = isUser(this.user) && memberIds.includes(this.user.id);
+      const isMember = 
+        isUser(this.user) && 
+        memberIds.includes((this.user as IUser.Self).id);
       const allowed = isMember || isGhost(this.user);
       if (!allowed) return;
 
@@ -111,12 +112,12 @@ export class WssHandler {
   async registerPeer(data: unknown) {
     const result = await safe(async () => {
       const { peer } = registerPeerPayload.parse(data);
-      const id = isGhost(this.user) ? this.user : this.user.email;
+      const id = isGhost(this.user) ? this.user : (this.user as IUser.Self).email;
       stdout.info(`Register peer: ${peer} for ${id}`);
       if (isGhost(this.user))
         await cache.peer.setGhostPeerId(getGhostCall(this.user), peer);
       if (isTutor(this.user))
-        await cache.peer.setUserPeerId(this.user.id, peer);
+        await cache.peer.setUserPeerId((this.user as IUser.Self).id, peer);
 
       // notify peers to refetch the peer id if needed
     });
@@ -133,13 +134,13 @@ export class WssHandler {
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       if (isEmpty(members)) return;
 
-      const isMember = members.find((member) => member.id === user.id);
+      const isMember = members.find((member) => member.id === (user as IUser.Self).id);
       if (!isMember)
-        throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
+        throw new Error(`User(${(user as IUser.Self).id}) isn't member of room Id: ${roomId}`);
 
       this.socket
         .to(roomId.toString())
-        .emit(Wss.ServerEvent.UserTyping, { roomId, userId: user.id });
+        .emit(Wss.ServerEvent.UserTyping, { roomId, userId: (user as IUser.Self).id });
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -149,7 +150,7 @@ export class WssHandler {
     const error = safe(async () => {
       if (isGhost(this.user)) return;
       const { roomId, text } = wss.message.send.parse(data);
-      const userId = this.user.id;
+      const userId = (this.user as IUser.Self).id;
 
       console.log(`u:${userId} is send a message to r:${roomId}`);
 
@@ -167,7 +168,7 @@ export class WssHandler {
         roomId,
       });
 
-      this.boradcast(Wss.ServerEvent.RoomMessage, roomId.toString(), message);
+      this.broadcast(Wss.ServerEvent.RoomMessage, roomId.toString(), message);
     });
 
     if (error instanceof Error) stdout.error(error);
@@ -180,7 +181,7 @@ export class WssHandler {
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
 
-      const owner = message.userId === this.user.id;
+      const owner = message.userId === (this.user as IUser.Self).id;
       if (!owner) throw new Error("Forbidden");
 
       const sanitized = sanitizeMessage(text);
@@ -189,7 +190,7 @@ export class WssHandler {
       const updated = await messages.update(id, { text: sanitized });
       if (!updated) throw new Error("Mesasge not update; should never happen.");
 
-      this.boradcast(
+      this.broadcast(
         Wss.ServerEvent.RoomMessageUpdated,
         message.roomId.toString(),
         updated
@@ -202,17 +203,17 @@ export class WssHandler {
   async deleteMessage(data: unknown) {
     const error = safe(async () => {
       if (isGhost(this.user)) return;
-      const { id }: { id: number } = withNamedId("id").parse(data);
+      const { id }: { id: number } = withNamedId("id").parse(data) as { id: number };
 
       const message = await messages.findById(id);
       if (!message || message.deleted) throw new Error("Message not found");
 
-      const owner = message.userId === this.user.id;
+      const owner = message.userId === (this.user as IUser.Self).id;
       if (!owner) throw new Error("Forbidden");
 
       await messages.markAsDeleted(id);
 
-      this.boradcast(
+      this.broadcast(
         Wss.ServerEvent.RoomMessageDeleted,
         message.roomId.toString(),
         {
@@ -228,9 +229,10 @@ export class WssHandler {
   async toggleCamera(data: unknown) {
     const error = safe(async () => {
       if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
       const { call, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.boradcast(Wss.ServerEvent.CameraToggled, call.toString(), {
+      this.broadcast(Wss.ServerEvent.CameraToggled, call.toString(), {
         user: this.user.id,
         camera,
       });
@@ -242,9 +244,10 @@ export class WssHandler {
   async toggleMic(data: unknown) {
     const error = safe(async () => {
       if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
       const { call, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.boradcast(Wss.ServerEvent.MicToggled, call.toString(), {
+      this.broadcast(Wss.ServerEvent.MicToggled, call.toString(), {
         user: this.user.id,
         mic,
       });
@@ -253,7 +256,7 @@ export class WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async boradcast<T extends keyof Wss.ServerEventsMap>(
+  async broadcast<T extends keyof Wss.ServerEventsMap>(
     event: T,
     room: string,
     ...data: Parameters<Wss.ServerEventsMap[T]>
@@ -265,6 +268,8 @@ export class WssHandler {
   async markMessageAsRead(data: unknown) {
     try {
       if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
+
       const messageId = wss.message.markMessageAsRead.parse(data).id;
       const message = await messages.findById(messageId);
       if (!message) throw new Error("Message not found");
@@ -303,12 +308,14 @@ export class WssHandler {
 
   async online() {
     if (isGhost(this.user)) return;
+    this.user = this.user as IUser.Self;
     const user = await users.update(this.user.id, { online: true });
     this.announceStatus(user);
   }
 
   async offline() {
     if (isGhost(this.user)) return;
+    this.user = this.user as IUser.Self;
     const user = await users.update(this.user.id, { online: false });
     this.announceStatus(user);
   }
@@ -327,19 +334,19 @@ export class WssHandler {
    */
   async deregisterPeer() {
     // todo: notify peers that the current user got disconnected
-    const display = isGhost(this.user) ? this.user : this.user.email;
+    const display = isGhost(this.user) ? this.user : (this.user as IUser.Self).email;
     stdout.info(`Deregister peer for: ${display}`);
 
     if (isGhost(this.user))
       return await cache.peer.removeGhostPeerId(getGhostCall(this.user));
-    if (isTutor(this.user)) await cache.peer.removeUserPeerId(this.user.id);
+    if (isTutor(this.user)) await cache.peer.removeUserPeerId((this.user as IUser.Self).id);
   }
 
   async announceStatus(user: IUser.Self) {
     const userRooms = await rooms.findMemberFullRoomIds(user.id);
 
     for (const room of userRooms) {
-      this.boradcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
+      this.broadcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
         online: user.online,
       });
     }
@@ -348,6 +355,9 @@ export class WssHandler {
 
 export function wssHandler(socket: Socket) {
   const user = socket.request.user;
-  if (!user) return;
+  if (!user) {
+    stdout.warning("(function) wssHandler: No user has been found in the request obj!")
+    return;
+  }
   return new WssHandler(socket, user);
 }
