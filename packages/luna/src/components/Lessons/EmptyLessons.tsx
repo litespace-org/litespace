@@ -1,15 +1,17 @@
 import React from "react";
 import { Typography } from "@/components/Typography";
-import EmptyLessons from "@litespace/assets/EmptyLessons";
+import EmptyLessonsImage from "@litespace/assets/EmptyLessons";
 import { useFormatMessage } from "@/hooks";
 import { Link } from "react-router-dom";
 
-export const EmptyLessonsPage: React.FC = () => {
+export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
+  tutorsPage,
+}) => {
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-text-center tw-mt-28">
-      <EmptyLessons className="tw-mb-8" />
+    <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-text-center">
+      <EmptyLessonsImage className="tw-mb-8" />
       <div className="tw-flex tw-flex-col tw-gap-4 tw-mb-6">
         <Typography
           element="subtitle-1"
@@ -28,7 +30,7 @@ export const EmptyLessonsPage: React.FC = () => {
       </div>
       <Link
         className="tw-px-8 tw-py-4 tw-rounded-lg tw-bg-brand-700"
-        to="/tutors"
+        to={tutorsPage}
       >
         <Typography element="body" weight="bold" className="tw-text-natural-50">
           {intl("lessons.button.find-tutors")}
@@ -37,5 +39,3 @@ export const EmptyLessonsPage: React.FC = () => {
     </div>
   );
 };
-
-export default EmptyLessonsPage;

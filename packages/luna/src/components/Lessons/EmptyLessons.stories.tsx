@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { EmptyLessonsPage as EmptyLessons } from "@/components/Lessons/EmptyLessons";
+import { EmptyLessons } from "@/components/Lessons/EmptyLessons";
 
 const meta: Meta<typeof EmptyLessons> = {
-  title: "lessons/EmptyLessons",
+  title: "Lessons/EmptyLessons",
   component: EmptyLessons,
 };
 

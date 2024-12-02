@@ -1,12 +1,12 @@
 import Error from "@/components/Common/Error";
 import { UsePaginateResult } from "@/types/query";
 import { Loading } from "@litespace/luna/Loading";
-import { LessonCard } from "@litespace/luna/LessonCard";
+import { LessonCard, EmptyLessons } from "@litespace/luna/Lessons";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Element, ILesson, IUser } from "@litespace/types";
-import { EmptyLessons } from "@litespace/luna/EmptyLessons";
 import React, { useCallback } from "react";
+import { Route } from "@/types/routes";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 type ContentProps = UsePaginateResult<Element<Lessons>>;
@@ -36,7 +36,12 @@ export const Content: React.FC<ContentProps> = ({ query }) => {
 
   if (!query.data) return null;
 
-  if (!query.data.list.length) return <EmptyLessons />;
+  if (!query.data.list.length)
+    return (
+      <div className="mt-28">
+        <EmptyLessons tutorsPage={Route.Tutors} />;
+      </div>
+    );
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
