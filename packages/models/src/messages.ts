@@ -110,6 +110,7 @@ export class Messages {
     const row = await this.builder(tx)
       .select("*") //! todo: omit private fields
       .where(this.column("room_id"), room)
+      .andWhere(this.column("deleted"), false)
       .orderBy([{ column: this.column("created_at"), order: "desc" }])
       .limit(1)
       .first();
@@ -140,8 +141,8 @@ export class Messages {
       .clone()
       .select()
       .orderBy([
-        { column: this.column("created_at"), order: "asc" },
-        { column: this.column("id"), order: "asc" },
+        { column: this.column("created_at"), order: "desc" },
+        { column: this.column("id"), order: "desc" },
       ]);
 
     const rows = await withPagination(query, { page, size });
