@@ -89,7 +89,11 @@ export class WssHandler {
       stdout.info(`User ${this.user.id} has joined call ${callId}.`);
 
       // notify members that a new member has joined the call
-      this.broadcast(Wss.ServerEvent.MemberJoinedCall, callId.toString(), { memberId: this.user.id })
+      this.broadcast(
+        Wss.ServerEvent.MemberJoinedCall, 
+        callId.toString(), 
+        { memberId: this.user.id }
+      )
     });
     if (result instanceof Error) stdout.error(result.message);
   }
@@ -117,7 +121,11 @@ export class WssHandler {
       stdout.info(`User ${this.user.id} has left call ${callId}.`);
 
       // notify members that a member has left the call
-      this.broadcast(Wss.ServerEvent.MemberLeftCall, callId.toString(), { memberId: this.user.id })
+      this.broadcast(
+        Wss.ServerEvent.MemberLeftCall, 
+        callId.toString(), 
+        { memberId: this.user.id }
+      )
     });
     if (result instanceof Error) stdout.error(result.message);
   }
