@@ -56,11 +56,11 @@
     "./user": "./dist/user.js"
   },
   "scripts": {
-    "watch:build": "pnpm watch build",
-    "build": "tsc && tsc-alias",
-    "watch": "npm-watch",
+    "build": "tsc",
+    "watch": "npm-watch build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
-    "clean": "rm -rf dist/"
+    "clean": "rm -rf dist/",
+    "prepare": "ts-patch install -s"
   },
   "watch": {
     "build": {
@@ -94,9 +94,10 @@
     "globals": "^15.9.0",
     "nodemon": "^3.1.0",
     "npm-watch": "^0.13.0",
-    "tsc-alias": "^1.8.10",
+    "ts-patch": "^3.2.1",
     "typescript": "^5.4.5",
-    "typescript-eslint": "^8.0.1"
+    "typescript-eslint": "^8.0.1",
+    "typescript-transform-paths": "^3.5.2"
   },
   "keywords": [],
   "author": "LiteSpace",

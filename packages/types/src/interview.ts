@@ -10,39 +10,69 @@ export enum Status {
 
 export type Self = {
   ids: {
+    /**
+     * The interview ID itself.
+     */
     self: number;
+    /**
+     * The interviewer id (the id of the tutor manager).
+     */
     interviewer: number;
+    /**
+     * The interviewee id (the id of the tutor)
+     */
     interviewee: number;
     call: number;
+    rule: number;
   };
+  /**
+   * ISO UTC datetime.
+   */
+  start: string;
   feedback: { interviewer: string | null; interviewee: string | null };
   note: string | null;
   level: number | null;
   status: Status;
+  /**
+   * Singer: the id for the super admin who signed the interview.
+   *
+   * When the signer is null, it means that the interview is not signed yet.
+   */
   signer: number | null;
+  canceledBy: number | null;
+  canceledAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
 
 export type Row = {
   id: number;
+  start: Date;
   interviewer_id: number;
   interviewee_id: number;
-  call_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
+  rule_id: number;
+  call_id: number;
   note: string | null;
   level: number | null;
   status: Status;
   signer: number | null;
+  canceled_by: number | null;
+  canceled_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
 
 export type CreatePayload = {
+  /**
+   * ISO UTC datetime.
+   */
+  start: string;
+  call: number;
+  rule: number;
   interviewer: number;
   interviewee: number;
-  call: number;
 };
 
 export type CreateApiPayload = {
@@ -54,12 +84,10 @@ export type CreateApiPayload = {
   ruleId: number;
 };
 
+export type CreateInterviewApiResponse = Self;
+
 export type FindInterviewsApiResponse = {
-  list: Array<{
-    interview: Self;
-    call: ICall.Self;
-    members: ICall.PopuldatedMember[];
-  }>;
+  list: Self[];
   total: number;
 };
 

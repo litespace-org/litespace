@@ -3,7 +3,7 @@ import { MenuAction, ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { Card } from "@litespace/luna/Card";
 import * as Interviews from "@litespace/luna/Interviews";
 import { messages } from "@litespace/luna/locales";
-import { ICall, IInterview } from "@litespace/types";
+import { IInterview } from "@litespace/types";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
 import React, { useCallback, useMemo, useState } from "react";
 import { MessageCircle } from "react-feather";
@@ -17,25 +17,25 @@ import cn from "classnames";
 
 const Interview: React.FC<{
   interview: IInterview.Self;
-  call: ICall.Self;
-  tutor: ICall.PopuldatedMember;
+  // tutor: ICall.PopuldatedMember;
   onUpdate: () => void;
-}> = ({ call, interview, tutor, onUpdate }) => {
+}> = ({ interview, onUpdate }) => {
   const intl = useIntl();
   const watch = useRender();
   const [status, setStatus] = useState<IInterview.Status | null>(null);
   const upcoming = useMemo(() => {
     const now = dayjs();
-    const start = dayjs(call.start);
+    const start = dayjs(interview.start);
     return now.isBefore(start);
-  }, [call.start]);
+  }, [interview.start]);
 
   const started = useMemo(() => {
-    const start = dayjs(call.start);
-    const end = start.add(call.duration, "minutes");
+    const start = dayjs(interview.start);
+    // todo: 30-minute constant should be moved to `sol`
+    const end = start.add(30, "minutes");
     const now = dayjs();
     return now.isBetween(start, end, "minutes", "[]");
-  }, [call.duration, call.start]);
+  }, [interview.start]);
 
   const reset = useCallback(() => {
     setStatus(null);
@@ -74,9 +74,9 @@ const Interview: React.FC<{
       <div className="flex flex-row justify-between gap-2">
         <div className="w-full">
           <Interviews.List>
-            <Interviews.User name={tutor.name} />
-            <Interviews.Date start={call.start} />
-            <Interviews.Time start={call.start} />
+            <Interviews.User name={"Tutor Name"} />
+            <Interviews.Date start={interview.start} />
+            <Interviews.Time start={interview.start} />
           </Interviews.List>
 
           <Interviews.Feedback
@@ -97,16 +97,16 @@ const Interview: React.FC<{
 
       <div className="flex flex-row gap-2 mt-4">
         {upcoming ? (
-          <Link to={Route.Call.replace(":id", call.id.toString())}>
+          <Link to={Route.Call.replace(":id", interview.ids.call.toString())}>
             <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
               {!started
                 ? intl.formatMessage(
                     { id: messages["page.interviews.join.future"] },
-                    { duration: dayjs(call.start).fromNow(true) }
+                    { duration: dayjs(interview.start).fromNow(true) }
                   )
                 : intl.formatMessage(
                     { id: messages["page.interviews.join.past"] },
-                    { duration: dayjs(call.start).fromNow(true) }
+                    { duration: dayjs(interview.start).fromNow(true) }
                   )}
             </Button>
           </Link>
@@ -128,7 +128,7 @@ const Interview: React.FC<{
           open
           close={reset}
           status={status}
-          tutor={tutor.name || ""}
+          tutor={"tutor name"}
           interview={interview.ids.self}
           onUpdate={onUpdate}
         />

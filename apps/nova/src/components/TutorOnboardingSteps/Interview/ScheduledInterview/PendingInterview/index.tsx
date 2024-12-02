@@ -8,7 +8,6 @@ import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { ICall } from "@litespace/types";
 import React from "react";
-import dayjs from "@/lib/dayjs";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
 
@@ -34,7 +33,7 @@ const PendingInterview: React.FC<{
           </div>
         </div>
         <div className="max-w-[400px] border-r border-r-muted pr-5 pl-4 my-6">
-          <p className="text-lg text-foreground-light">
+          {/* <p className="text-lg text-foreground-light">
             {intl(
               "page.tutor.onboarding.steps.first.booked.interview.description",
               {
@@ -47,7 +46,7 @@ const PendingInterview: React.FC<{
                   .format("hh:mm a"),
               }
             )}
-          </p>
+          </p> */}
 
           <p className="mt-6 text-lg text-foreground-light">
             {intl("page.tutor.onboarding.steps.first.booked.interview.note.1")}

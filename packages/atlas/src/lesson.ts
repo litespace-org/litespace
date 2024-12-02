@@ -4,7 +4,7 @@ import { IFilter, ILesson } from "@litespace/types";
 export class Lesson extends Base {
   async create(
     payload: ILesson.CreateApiPayload
-  ): Promise<ILesson.CreateApiResponse> {
+  ): Promise<ILesson.CreateLessonApiResponse> {
     return this.post(`/api/v1/lesson/`, payload);
   }
 

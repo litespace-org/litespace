@@ -25,7 +25,7 @@ describe("GET /api/v1/lesson/list", () => {
 
     const unpackedRules = unpackRules({
       rules: [rule],
-      calls: [],
+      slots: [],
       start: rule.start,
       end: rule.end,
     });

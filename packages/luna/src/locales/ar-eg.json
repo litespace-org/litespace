@@ -422,7 +422,6 @@
   "profile.update.success": "تم تحديث بياناتك بنجاح",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
   "lessons.button.rebook": "إعادة الحجز",
-  "lessons.button.cancel": "إلغاء الحجز",
   "lessons.button.join": "دخول الحصة",
   "lessons.canceled-by-tutor": "لقد تم إلغاء الحصة من قبل المعلم",
   "lessons.canceled-by-student": "لقد قمت بإلغاء الحصة",

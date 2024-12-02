@@ -12,7 +12,6 @@ import {
   ratings,
 } from "@/index";
 import {
-  ICall,
   IInterview,
   ILesson,
   IRule,
@@ -37,9 +36,10 @@ export async function flush() {
     await interviews.builder(tx).del();
     await calls.builder(tx).members.del();
     await calls.builder(tx).calls.del();
-    await rules.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await interviews.builder(tx).del();
+    await rules.builder(tx).del();
     await ratings.builder(tx).del();
     await users.builder(tx).del();
   });
@@ -93,76 +93,83 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
     frequency,
     time: payload?.time || time(),
     title: faker.word.adjective(),
-    userId: payload?.userId || 1,
+    userId: await or.tutorId(payload?.userId),
     monthday: payload?.monthday,
     weekdays: payload?.weekdays,
   });
 }
 
+const or = {
+  async tutorId(id?: number): Promise<number> {
+    if (!id) return await tutor().then((tutor) => tutor.id);
+    return id;
+  },
+  async studentId(id?: number): Promise<number> {
+    if (!id) return await student().then((student) => student.id);
+    return id;
+  },
+  async interviewerId(id?: number): Promise<number> {
+    if (!id) return await interviewer().then((interviewer) => interviewer.id);
+    return id;
+  },
+  async callId(id?: number): Promise<number> {
+    if (!id) return await calls.create().then((call) => call.id);
+    return id;
+  },
+  async ruleId(id?: number): Promise<number> {
+    if (!id) return await rule().then((rule) => rule.id);
+    return id;
+  },
+  start(start?: string): string {
+    if (!start) return faker.date.soon().toISOString();
+    return start;
+  },
+} as const;
+
 type LessonReturn = {
-  lesson: { self: ILesson.Self; members: ILesson.Member[] };
-  call: { self: ICall.Self; members: ICall.Member[] };
+  lesson: ILesson.Self;
+  members: ILesson.Member[];
 };
 
-export async function lesson(payload?: {
-  call?: Partial<ICall.CreatePayload>;
-  lesson?: Partial<ILesson.CreatePayload>;
-}): Promise<LessonReturn> {
+export async function lesson(
+  payload?: Partial<ILesson.CreatePayload> & {
+    timing?: "future" | "past";
+    canceled?: boolean;
+  }
+): Promise<LessonReturn> {
   return await knex.transaction(async (tx: Knex.Transaction) => {
-    const { call, members: callMembers } = await calls.create(
-      {
-        start: payload?.call?.start || faker.date.soon().toISOString(),
-        duration: payload?.call?.duration || duration(),
-        host: payload?.call?.host || 1,
-        members: payload?.call?.members || [],
-        rule: payload?.call?.rule || 1,
-      },
-      tx
-    );
+    const tutor = await or.tutorId(payload?.tutor);
+    const student = await or.studentId(payload?.student);
+    const data = await lessons.create({
+      call: await or.callId(payload?.call),
+      start:
+        payload?.timing === "future"
+          ? faker.date.future().toISOString()
+          : payload?.timing === "past"
+          ? faker.date.past().toISOString()
+          : payload?.start || faker.date.soon().toISOString(),
+      duration: payload?.duration || sample([15, 30]),
+      price: payload?.price || faker.number.int(500),
+      rule: await or.ruleId(payload?.rule),
+      student,
+      tutor,
+      tx,
+    });
 
-    const { lesson, members: lessonMembers } = await lessons.create(
-      {
-        call: call.id,
-        host: payload?.lesson?.host || 1,
-        members: payload?.lesson?.members || [],
-        price: payload?.lesson?.price || faker.number.int(500),
-      },
-      tx
-    );
+    if (payload?.canceled)
+      await lessons.cancel({ canceledBy: tutor, id: data.lesson.id, tx });
 
-    return {
-      lesson: { self: lesson, members: lessonMembers },
-      call: { self: call, members: callMembers },
-    };
+    return data;
   });
 }
 
 export async function interview(payload: Partial<IInterview.CreatePayload>) {
-  return await knex.transaction(async (tx: Knex.Transaction) => {
-    const interviewerId: number =
-      payload.interviewer || (await interviewer().then((user) => user.id));
-
-    const intervieweeId: number =
-      payload.interviewee || (await tutor().then((user) => user.id));
-
-    const callId: number =
-      payload.call ||
-      (await call(
-        {
-          host: interviewerId,
-          members: [intervieweeId],
-        },
-        tx
-      ).then(({ call }) => call.id));
-
-    return await interviews.create(
-      {
-        interviewer: interviewerId,
-        interviewee: intervieweeId,
-        call: callId,
-      },
-      tx
-    );
+  return await interviews.create({
+    interviewer: await or.interviewerId(payload.interviewer),
+    interviewee: await or.tutorId(payload.interviewee),
+    call: await or.callId(payload.call),
+    rule: await or.ruleId(payload.rule),
+    start: or.start(payload.start),
   });
 }
 
@@ -172,21 +179,6 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
       ar: payload?.name?.ar || faker.animal.bear(),
       en: payload?.name?.en || faker.animal.bird(),
     },
-  });
-}
-
-export async function cancelLesson({
-  lesson,
-  call,
-  user,
-}: {
-  lesson: number;
-  call: number;
-  user: number;
-}) {
-  await knex.transaction(async (tx: Knex.Transaction) => {
-    await calls.cancel(call, user, tx);
-    await lessons.cancel(lesson, user, tx);
   });
 }
 
@@ -208,65 +200,6 @@ async function students(count: number) {
 
 async function makeTutors(count: number) {
   return await Promise.all(range(0, count).map(() => tutor()));
-}
-
-async function call(
-  payload: Partial<ICall.CreatePayload>,
-  tx: Knex.Transaction
-) {
-  const host: number =
-    payload.host || (await tutor().then((tutor) => tutor.id));
-  const members: number[] = payload.members || [
-    await student().then((student) => student.id),
-  ];
-  const callRule: number =
-    payload.rule ||
-    (await rule({
-      userId: host,
-    }).then((rule) => rule.id));
-
-  return await calls.create(
-    {
-      host,
-      members,
-      duration: payload.duration || duration(),
-      rule: callRule,
-      start: payload.start || faker.date.anytime().toISOString(),
-    },
-    tx
-  );
-}
-
-async function makeLesson({
-  future,
-  canceled,
-}: {
-  future?: boolean;
-  canceled?: boolean;
-}) {
-  const tutor = await user({ role: IUser.Role.Tutor });
-  const student = await user({ role: IUser.Role.Student });
-  const rule_ = await rule({ userId: tutor.id });
-  const now = dayjs.utc();
-  const start = future ? now.add(1, "week") : now.subtract(1, "week");
-  const { lesson: lesson_, call } = await lesson({
-    call: {
-      host: tutor.id,
-      members: [student.id],
-      rule: rule_.id,
-      start: start.toISOString(),
-    },
-    lesson: { host: tutor.id, members: [student.id] },
-  });
-
-  if (canceled) {
-    await knex.transaction(async (tx: Knex.Transaction) => {
-      await calls.cancel(call.self.id, tutor.id, tx);
-      await lessons.cancel(lesson_.self.id, tutor.id, tx);
-    });
-  }
-
-  return { lesson: lesson_, tutor, student, rule };
 }
 
 export type MakeLessonsReturn = Array<{
@@ -304,7 +237,7 @@ async function makeLessons({
     past: number[];
   };
 }): Promise<MakeLessonsReturn> {
-  const lessons: MakeLessonsReturn = [];
+  const result: MakeLessonsReturn = [];
 
   for (const [key, student] of entries(students)) {
     const index = Number(key);
@@ -315,14 +248,12 @@ async function makeLessons({
 
     const create = async (start: string) => {
       return await lesson({
-        call: {
-          host: tutor,
-          members: [student],
-          rule: rule,
-          start,
-          duration,
-        },
-        lesson: { host: tutor, members: [student], price },
+        tutor,
+        student,
+        rule,
+        start,
+        duration,
+        price,
       });
     };
 
@@ -351,46 +282,38 @@ async function makeLessons({
     // cancel future lessons
     const canceledFutureLessons = await Promise.all(
       range(0, canceledFutureLessonCount).map(async (i) => {
-        const lesson = futureLessons[i];
+        const info = futureLessons[i];
         if (!lesson) throw new Error("invalid future lesson index");
-        await cancelLesson({
-          lesson: lesson.lesson.self.id,
-          call: lesson.call.self.id,
-          user: tutor,
-        });
-        return lesson;
+        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        return info;
       })
     );
 
     // cancel past lessons
     const canceledPastLessons = await Promise.all(
       range(0, canceledPastLessonCount).map(async (i) => {
-        const lesson = pastLessons[i];
-        if (!lesson) throw new Error("invalid past lesson index");
-        await cancelLesson({
-          lesson: lesson.lesson.self.id,
-          call: lesson.call.self.id,
-          user: tutor,
-        });
-        return lesson;
+        const info = pastLessons[i];
+        if (!info) throw new Error("invalid past lesson index");
+        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        return info;
       })
     );
 
     const canceledFutureLessonIds = canceledFutureLessons.map(
-      (future) => future.lesson.self.id
+      (future) => future.lesson.id
     );
     const canceledPastLessonIds = canceledPastLessons.map(
-      (past) => past.lesson.self.id
+      (past) => past.lesson.id
     );
     // filter out canceled future lessons
     const uncanceledFutureLessons = futureLessons.filter(
-      (future) => !canceledFutureLessonIds.includes(future.lesson.self.id)
+      (future) => !canceledFutureLessonIds.includes(future.lesson.id)
     );
     // filter out canceled past lessons
     const uncanceledPastLessons = pastLessons.filter(
-      (past) => !canceledPastLessonIds.includes(past.lesson.self.id)
+      (past) => !canceledPastLessonIds.includes(past.lesson.id)
     );
-    lessons.push({
+    result.push({
       future: futureLessons,
       past: pastLessons,
       canceled: {
@@ -404,7 +327,7 @@ async function makeLessons({
     });
   }
 
-  return lessons;
+  return result;
 }
 
 export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
@@ -519,14 +442,10 @@ export default {
   rating: makeRating,
   message: makeMessage,
   make: {
-    lesson: makeLesson,
     lessons: makeLessons,
     interviews: makeInterviews,
     tutors: makeTutors,
     ratings: makeRatings,
     room: makeRoom,
-  },
-  cancel: {
-    lesson: cancelLesson,
   },
 };

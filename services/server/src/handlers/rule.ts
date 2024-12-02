@@ -12,8 +12,14 @@ import {
 } from "@/validation/utils";
 import { IRule, Wss } from "@litespace/types";
 import { contradictingRules, forbidden, notfound } from "@/lib/error";
-import { calls, rules } from "@litespace/models";
-import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
+import { calls, lessons, rules } from "@litespace/models";
+import {
+  Rule,
+  Schedule,
+  asRule,
+  asSlots,
+  unpackRules,
+} from "@litespace/sol/rule";
 import { safe } from "@litespace/sol/error";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
@@ -77,7 +83,7 @@ function createRule(context: ApiContext) {
           rule: rule.id,
           events: unpackRules({
             rules: [rule],
-            calls: [],
+            slots: [],
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
           }),
@@ -112,22 +118,32 @@ async function findUnpackedUserRules(
   const { userId } = findUnpackedUserRulesParams.parse(req.params);
   const { start, end } = findUnpackedUserRulesQuery.parse(req.query);
 
-  const [userRules, userCalls] = await Promise.all([
+  // todo: include interviews incase of a interviewer
+  const [userRules, userLessons] = await Promise.all([
     rules.findByUserId({ user: userId, deleted: false }),
-    calls.findMemberCalls({
-      userIds: [userId],
-      between: { start, end },
-      ignoreCanceled: true,
+    lessons.find({
+      users: [userId],
+      after: start,
+      before: end,
+      full: true,
+      canceled: false,
     }),
   ]);
 
+  const slots: IRule.Slot[] = userLessons.list.map((lesson) => ({
+    ruleId: lesson.ruleId,
+    start: lesson.start,
+    duration: lesson.duration,
+  }));
+
   const list = unpackRules({
     rules: userRules,
-    calls: userCalls,
+    slots,
     start,
     end,
   });
 
+  // todo: add types for the api response (IRule.FindUnpackedUserRulesApiResponse)
   res.status(200).json({
     rules: userRules,
     unpacked: list,
@@ -177,16 +193,18 @@ function updateRule(context: ApiContext) {
 
       const error = await safe(async () => {
         const today = dayjs.utc().startOf("day");
-        const ruleCalls = await calls.findByRuleId({
-          rule: rule.id,
-          canceled: false, // ignore canceled calls
+        const ruleLessons = await lessons.find({
+          rules: [rule.id],
+          canceled: false,
+          full: true,
         });
+
         await cache.rules.setOne({
           tutor: rule.userId,
           rule: rule.id,
           events: unpackRules({
             rules: [rule],
-            calls: ruleCalls,
+            slots: asSlots(ruleLessons.list),
             start: today.toISOString(),
             end: today.add(30, "days").toISOString(),
           }),
@@ -212,8 +230,12 @@ function deleteRule(context: ApiContext) {
       const owner = rule.userId === user.id;
       if (!owner) return next(forbidden());
 
-      const ruleCalls = await calls.findByRuleId({ rule: ruleId });
-      const deletable = isEmpty(ruleCalls);
+      const ruleLessons = await lessons.find({
+        rules: [ruleId],
+        canceled: false,
+        full: true,
+      });
+      const deletable = isEmpty(ruleLessons);
 
       const deletedRule = deletable
         ? await rules.delete(ruleId)

@@ -8,7 +8,7 @@ import { isAdmin, isGhost, isUser } from "@litespace/auth";
 
 async function findCallById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
-  const allowed = isUser(user);
+  const allowed = isUser(user) || isGhost(user);
   if (!allowed) return next(forbidden());
 
   const { callId } = withNamedId("callId").parse(req.params);
@@ -18,25 +18,14 @@ async function findCallById(req: Request, res: Response, next: NextFunction) {
   ]);
   if (!call) return next(notfound.call());
 
-  const eligible =
-    members.map((member) => member.userId).includes(user.id) ||
-    isAdmin(req.user) ||
-    isGhost(user);
+  const member =
+    isUser(user) && members.map((member) => member.userId).includes(user.id);
+  const eligible = member || isAdmin(req.user) || isGhost(user);
   if (!eligible) next(forbidden());
 
   res.status(200).json({ call, members });
 }
 
-async function findCallsByUserId(req: Request, res: Response) {
-  const { userId } = withNamedId("userId").parse(req.params);
-  const userCalls = await calls.findMemberCalls({ userIds: [userId] });
-  const userCallIds = userCalls.map((call) => call.id);
-  const members = await calls.findCallMembers(userCallIds);
-  const callMembersMap = groupBy(members, "callId");
-  res.status(200).json({ calls: userCalls, members: callMembersMap });
-}
-
 export default {
   findCallById: asyncHandler(findCallById),
-  findCallsByUserId: asyncHandler(findCallsByUserId),
 };

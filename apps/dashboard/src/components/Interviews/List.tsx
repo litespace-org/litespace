@@ -35,11 +35,12 @@ const List: React.FC<{
   const user = useAppSelector(profileSelectors.user);
   const [interview, setInterview] = useState<IndividualInterview | null>(null);
   const tutor = useMemo(() => {
-    const tutor = interview?.members.find(
-      (member) => member.role === IUser.Role.Tutor
-    );
-    return tutor?.name || "";
-  }, [interview?.members]);
+    // const tutor = interview?.members.find(
+    //   (member) => member.role === IUser.Role.Tutor
+    // );
+    // return tutor?.name || "";
+    return "Tutor name is not in the response";
+  }, []);
 
   const reset = useCallback(() => {
     setInterview(null);
@@ -67,7 +68,7 @@ const List: React.FC<{
       label: intl("dashboard.interview.actions.sign"),
       onClick: () => {
         update.mutate({
-          id: interview.interview.ids.self,
+          id: interview.ids.self,
           payload: { sign: true },
         });
       },
@@ -80,11 +81,11 @@ const List: React.FC<{
 
   const columns = useMemo(
     () => [
-      columnHelper.accessor("interview.ids.interviewer", {
+      columnHelper.accessor("ids.interviewer", {
         header: intl("dashboard.interview.ids"),
         cell: (info) => {
-          const interviewer = info.row.original.interview.ids.interviewer;
-          const interviewee = info.row.original.interview.ids.interviewee;
+          const interviewer = info.row.original.ids.interviewer;
+          const interviewee = info.row.original.ids.interviewee;
           return (
             <div>
               <UserPopover id={interviewer} />
@@ -93,20 +94,20 @@ const List: React.FC<{
           );
         },
       }),
-      columnHelper.accessor("call.start", {
+      columnHelper.accessor("start", {
         header: intl("dashboard.interview.call.start"),
         cell: (info) =>
           dayjs(info.getValue()).format("dddd D MMMM YYYY hh:mm a"),
       }),
-      columnHelper.accessor("interview.level", {
+      columnHelper.accessor("level", {
         header: intl("dashboard.interview.level"),
         cell: (info) => info.getValue() || "-",
       }),
-      columnHelper.accessor("interview.status", {
+      columnHelper.accessor("status", {
         header: intl("dashboard.interview.status"),
         cell: (info) => intl(interviewStatusMap[info.getValue()]),
       }),
-      columnHelper.accessor("interview.signer", {
+      columnHelper.accessor("signer", {
         header: intl("dashboard.interview.signer"),
         cell: (info) => {
           const id = info.getValue();
@@ -114,11 +115,11 @@ const List: React.FC<{
           return <UserPopover id={id} />;
         },
       }),
-      columnHelper.accessor("call.canceledBy", {
+      columnHelper.accessor("canceledBy", {
         header: intl("dashboard.interview.canceled"),
         cell: (info) => {
-          const canceledBy = info.row.original.call.canceledBy;
-          const canceledAt = info.row.original.call.canceledAt;
+          const canceledBy = info.row.original.canceledBy;
+          const canceledAt = info.row.original.canceledAt;
           if (!canceledBy || !canceledAt) return "-";
           return (
             <span>
@@ -128,11 +129,11 @@ const List: React.FC<{
           );
         },
       }),
-      columnHelper.accessor("interview.createdAt", {
+      columnHelper.accessor("createdAt", {
         header: intl("global.created-at"),
         cell: (info) => <DateField date={info.getValue()} />,
       }),
-      columnHelper.accessor("interview.updatedAt", {
+      columnHelper.accessor("updatedAt", {
         header: intl("global.updated-at"),
         cell: (info) => <DateField date={info.getValue()} />,
       }),
@@ -140,9 +141,8 @@ const List: React.FC<{
         id: "actions",
         cell: ({ row }) => {
           const superAdmin = user?.role === IUser.Role.SuperAdmin;
-          const unsigned = row.original.interview.signer === null;
-          const passed =
-            row.original.interview.status === IInterview.Status.Passed;
+          const unsigned = row.original.signer === null;
+          const passed = row.original.status === IInterview.Status.Passed;
           const allowed = superAdmin && unsigned && passed;
           if (!allowed) return null;
           return (

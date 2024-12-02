@@ -1,7 +1,7 @@
-import { ICall, IRule, ITutor } from "@litespace/types";
+import { ICall, ILesson, IRule, ITutor } from "@litespace/types";
 import { Dayjs } from "dayjs";
 import { Knex } from "knex";
-import { calls, rules, tutors, knex } from "@litespace/models";
+import { calls, rules, tutors, knex, lessons } from "@litespace/models";
 import { entries, flatten, groupBy } from "lodash";
 import { unpackRules } from "@litespace/sol/rule";
 import { cache } from "@/lib/cache";
@@ -16,41 +16,49 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   const start = date.startOf("day");
   const end = start.add(30, "days").endOf("day");
 
-  const [onboardedTutors, tutorsRules, ruleCalls] = await knex.transaction(
+  const [onboardedTutors, tutorsRules, tutorLessons] = await knex.transaction(
     async (
       tx: Knex.Transaction
-    ): Promise<[ITutor.FullTutor[], IRule.Self[], ICall.Self[]]> => {
+    ): Promise<[ITutor.FullTutor[], IRule.Self[], ILesson.Self[]]> => {
       const onboardedTutors = await tutors.findOnboardedTutors(tx);
       const tutorIds = onboardedTutors.map((tutor) => tutor.id);
 
       // find all tutors "rules" and "lessons"
-      const [tutorsRules, ruleCalls] = await Promise.all([
+      const [tutorsRules, tutorLessons] = await Promise.all([
         // find all tutors rules that are available
         rules.findActivatedRules(tutorIds, start.toISOString(), tx),
-        calls.findMemberCalls({
-          userIds: tutorIds,
-          between: { start: start.toISOString(), end: end.toISOString() },
-          ignoreCanceled: true,
+        lessons.find({
+          users: tutorIds,
+          after: start.toISOString(),
+          before: end.toISOString(),
+          canceled: false,
+          full: true,
           tx,
         }),
       ]);
-      return [onboardedTutors, tutorsRules, ruleCalls];
+      return [
+        onboardedTutors,
+        tutorsRules,
+        // todo: disable pagiation for this query
+        tutorLessons.list,
+      ];
     }
   );
 
-  const tutorCallsMap = groupBy<ICall.Self>(ruleCalls, "hostId");
+  //! todo: filter lessons by tutor id
+  // const tutorCallsMap = groupBy<ILesson.Self>(tutorLessons, l => l.);
   const tutorRulesMap = groupBy<IRule.Self>(tutorsRules, "userId");
   const rulesCachePayload = entries<IRule.Self[]>(tutorRulesMap).map(
     ([tutor, rules]): IRule.Cache[] => {
-      const calls = tutorCallsMap[tutor] || [];
+      // const calls = tutorCallsMap[tutor] || [];
       return rules.map((rule) => {
-        const ruleCalls = calls.filter((call) => call.ruleId === rule.id);
+        // const ruleCalls = calls.filter((call) => call.ruleId === rule.id);
         return {
           tutor: Number(tutor),
           rule: rule.id,
           events: unpackRules({
             rules: [rule],
-            calls: ruleCalls,
+            slots: [],
             start: start.toISOString(),
             end: end.toISOString(),
           }),

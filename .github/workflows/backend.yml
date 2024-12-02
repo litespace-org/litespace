@@ -1,0 +1,70 @@
+name: Backend
+on:
+  pull_request:
+    branches:
+      - "master"
+    paths:
+      - "packages/auth/**"
+      - "packages/models/**"
+      - "packages/atlas/**"
+      - "services/server/**"
+
+  workflow_dispatch:
+
+# @ref https://docs.github.com/en/actions/use-cases-and-examples/using-containerized-services/creating-postgresql-service-containers
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    container: ubuntu
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: litespace
+          POSTGRES_DB: test
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis/redis-stack-server:7.2.0-v6
+        options: >-
+          --health-cmd "redis-cli --raw incr ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+      - name: Enable pnpm
+        run: corepack enable pnpm
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build packages
+        run: pnpm build:server:pkgs
+      - name: Run models tests
+        run: pnpm run models test:ci
+      - name: Run server in the background
+        run: pnpm run server start:ci:test:server:bg
+      - name: Wait for the server to be ready
+        run: pnpm run server wait
+      - name: Run server tests
+        run: pnpm run server test:ci

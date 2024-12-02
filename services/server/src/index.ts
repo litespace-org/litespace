@@ -84,5 +84,7 @@ app.use("/api/v1/peer", routes.peer);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>
-  console.log(`Server is running on port ${serverConfig.port}`.cyan)
+  console.log(
+    `Server is running on ${serverConfig.host}:${serverConfig.port}`.cyan
+  )
 );
