@@ -30,6 +30,9 @@ const userTypingPayload = zod.object({
   roomId: zod.number(),
 });
 
+const onJoinCallPayload = zod.object({ callId: zod.number() });
+const onLeaveCallPayload = zod.object({ callId: zod.number() });
+
 const stdout = logger("wss");
 
 export class WssHandler {
@@ -59,6 +62,64 @@ export class WssHandler {
     this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
     this.socket.on(Wss.ClientEvent.UserTyping, this.userTyping.bind(this));
+    this.socket.on(Wss.ClientEvent.JoinCall, this.onJoinCall.bind(this));
+    this.socket.on(Wss.ClientEvent.LeaveCall, this.onLeaveCall.bind(this));
+  }
+
+  /*
+   *  This event listener is supposed to be called whenever a user
+   *  joins a call (i.e. meeting or session). For instance, when
+   *  users are joining a lesson session, or a tutor is joining an
+   *  interview session.
+   */
+  async onJoinCall(data: unknown) {
+    const result = await safe(async () => {
+      const { callId } = onJoinCallPayload.parse(data);
+      if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
+
+      stdout.info(`User ${this.user.id} is joining call ${callId}.`);
+
+      // add user to the call by inserting row to call_members relation
+      await calls.addMember({ 
+        userId: this.user.id,
+        callId: callId
+      })
+
+      stdout.info(`User ${this.user.id} has joined call ${callId}.`);
+
+      // notify members that a new member has joined the call
+      this.broadcast(Wss.ServerEvent.MemberJoinedCall, callId.toString(), { memberId: this.user.id })
+    });
+    if (result instanceof Error) stdout.error(result.message);
+  }
+
+  /*
+   *  This event listener is supposed to be called whenever a user
+   *  leaves a call (i.e. meeting or session). For instance, when
+   *  users are leaving a lesson session, or a tutor is leaving an
+   *  interview session.
+   */
+  async onLeaveCall(data: unknown) {
+    const result = await safe(async () => {
+      const { callId } = onLeaveCallPayload.parse(data);
+      if (isGhost(this.user)) return;
+      this.user = this.user as IUser.Self;
+
+      stdout.info(`User ${this.user.id} is leaving call ${callId}.`);
+
+      // remove user from the call by deleting the corresponding row from call_members relation
+      await calls.removeMember({
+        userId: this.user.id,
+        callId: callId
+      })
+
+      stdout.info(`User ${this.user.id} has left call ${callId}.`);
+
+      // notify members that a member has left the call
+      this.broadcast(Wss.ServerEvent.MemberLeftCall, callId.toString(), { memberId: this.user.id })
+    });
+    if (result instanceof Error) stdout.error(result.message);
   }
 
   async joinRooms() {
