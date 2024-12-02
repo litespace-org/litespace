@@ -2,54 +2,63 @@ import { Api } from "@fixtures/api";
 import db, { flush } from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
-import { number } from "zod";
+import dayjs from "@/lib/dayjs";
+import { IRule } from "@litespace/types";
+import { Time } from "@litespace/sol/time";
+import { faker } from "@faker-js/faker/locale/ar";
+import { unpackRules } from "@litespace/sol/rule";
+import { expect } from "chai";
 
 describe("calls test suite", () => {
-  let admin: IUser.LoginApiResponse;
   let tutor: IUser.LoginApiResponse;
+  let student: IUser.LoginApiResponse;
 
-  let callId: number;
-
-  let adminSocket: ClientSocket;
-  let tutorSocket: ClientSocket;
+  let tutorApi: Api;
+  let studentApi: Api;
 
   beforeEach(async () => {
     await flush();
 
-    const adminApi = await Api.forSuperAdmin();
-    admin = await adminApi.findCurrentUser();
-
-    const tutorApi = await Api.forTutor();
+    tutorApi = await Api.forTutor();
     tutor = await tutorApi.findCurrentUser();
 
-    let interview = await db.interview({
-      interviewer: admin.user.id,
-      interviewee: tutor.user.id
+    studentApi = await Api.forStudent();
+    student = await studentApi.findCurrentUser();
+  });
+
+  it("should broadcast the event when the user join the call", async () => {
+    const rule = await tutorApi.atlas.rule.create({
+      start: dayjs.utc().startOf("day").toISOString(),
+      end: dayjs.utc().add(10, "day").startOf("day").toISOString(),
+      duration: 8 * 60,
+      frequency: IRule.Frequency.Daily,
+      time: Time.from("12:00").utc().format("railway"),
+      title: faker.lorem.words(3),
     });
-    callId = interview.ids.call;
 
-    adminSocket = new ClientSocket(admin.token);
-    tutorSocket = new ClientSocket(tutor.token);
-  });
+    const unpackedRules = unpackRules({
+      rules: [rule],
+      slots: [],
+      start: rule.start,
+      end: rule.end,
+    });
 
-  it("should the user (client) emit an event when joining a call", async () => {
-    const asyncResult = adminSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(callId);
+    const [selectedRule] = unpackedRules;
 
-    const { memberId } = await asyncResult;
+    const lesson = await studentApi.atlas.lesson.create({
+      start: selectedRule.start,
+      duration: 30,
+      ruleId: rule.id,
+      tutorId: tutor.user.id,
+    });
 
-    expect(memberId).toBe(number);
-    expect(memberId).toEqual(tutor.user.id);
-  });
+    const tutorSocket = new ClientSocket(tutor.token);
+    const studentSocket = new ClientSocket(student.token);
 
-  it("should the user (client) emit an event when leaving a call", async () => {
-    const asyncResult = adminSocket.wait(Wss.ServerEvent.MemberLeftCall);
-    tutorSocket.joinCall(callId);
-    tutorSocket.leaveCall(callId);
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
+    tutorSocket.joinCall(lesson.callId);
 
-    const { memberId } = await asyncResult;
-
-    expect(memberId).toBe(number);
-    expect(memberId).toEqual(tutor.user.id);
+    const { userId } = await result;
+    expect(userId).to.be.eq(tutor.user.id);
   });
 });

@@ -1,4 +1,4 @@
-import { IMessage, IRule, ITutor, Server } from "@/index";
+import { IMessage, IRule, ITutor, Server, ICall } from "@/index";
 
 /**
  * Events emitted by the client
@@ -37,6 +37,9 @@ export enum ServerEvent {
   MemberJoinedCall = "MemberJoinedCallId",
   MemberLeftCall = "MemberLeftCallId",
 
+  /**
+   * @deprecated
+   */
   UserJoinedCall = "UserJoinedCall",
   UserSharedScreen = "UserSharedScreen",
   UserStatusChanged = "UserStatusChanged",
@@ -81,7 +84,10 @@ export type ClientEventsMap = {
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
-  [ClientEvent.JoinCall]: EventCallback<{ callId: number }>;
+  [ClientEvent.JoinCall]: EventCallback<{
+    callId: number;
+    type: ICall.Type;
+  }>;
   [ClientEvent.LeaveCall]: EventCallback<{ callId: number }>;
 };
 
@@ -98,8 +104,8 @@ export type ServerEventsMap = {
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
 
-  [ServerEvent.MemberJoinedCall]: EventCallback<{ memberId: number }>;
-  [ServerEvent.MemberLeftCall]: EventCallback<{ memberId: number }>;
+  [ServerEvent.MemberJoinedCall]: EventCallback<{ userId: number }>;
+  [ServerEvent.MemberLeftCall]: EventCallback<{ userId: number }>;
 
   [ServerEvent.CameraToggled]: EventCallback<{ user: number; camera: boolean }>;
   [ServerEvent.MicToggled]: EventCallback<{ user: number; mic: boolean }>;
