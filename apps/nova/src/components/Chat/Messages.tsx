@@ -1,4 +1,4 @@
-import { IFilter, IMessage, IRoom } from "@litespace/types";
+import { IFilter, IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -6,9 +6,14 @@ import React, {
   useRef,
   useState,
 } from "react";
-import MessageBox from "@/components/Chat/MessageBox";
 import cn from "classnames";
-import { ChatMessageGroup, ChatHeader } from "@litespace/luna/Chat";
+import {
+  ChatMessageGroup,
+  ChatHeader,
+  SendInput,
+  EditMessage,
+} from "@litespace/luna/Chat";
+import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
 import { OnMessage, useChat } from "@/hooks/chat";
 import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
@@ -21,6 +26,7 @@ import { profileSelectors } from "@/redux/user/profile";
 import dayjs from "dayjs";
 import { entries, groupBy } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
+import Trash from "@litespace/assets/Trash";
 
 const Messages: React.FC<{
   room: number | null;
@@ -30,8 +36,11 @@ const Messages: React.FC<{
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
-  const [updatableMessage, setUpdatableMessage] =
-    useState<IMessage.Self | null>(null);
+  const [updatableMessage, setUpdatableMessage] = useState<{
+    text: string;
+    id: number;
+  } | null>(null);
+  const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
@@ -61,28 +70,45 @@ const Messages: React.FC<{
   );
 
   const { sendMessage, updateMessage, deleteMessage } = useChat(onMessage);
-  const discard = useCallback(() => setUpdatableMessage(null), []);
 
   const submit = useCallback(
     (text: string) => {
       if (!room) return;
-      if (updatableMessage) {
-        setUpdatableMessage(null);
-        return updateMessage({ id: updatableMessage.id, text });
-      }
       return sendMessage({ roomId: room, text });
     },
-    [room, sendMessage, updatableMessage, updateMessage]
+    [room, sendMessage]
   );
+
   const onUpdateMessage = useCallback(
-    (message: IMessage.Self) => setUpdatableMessage(message),
+    (text: string) => {
+      if (!updatableMessage) return;
+      setUpdatableMessage(null);
+      updateMessage({ id: updatableMessage.id, text });
+    },
+    [updatableMessage, updateMessage]
+  );
+
+  const onUpdate = useCallback(
+    (message: { text: string; id: number }) => setUpdatableMessage(message),
     []
   );
 
-  const onDeleteMessage = useCallback(
-    (messageId: number) => deleteMessage(messageId),
-    [deleteMessage]
+  const discardUpdate = useCallback(() => setUpdatableMessage(null), []);
+
+  const onDelete = useCallback(
+    (messageId: number) => setDeletableMessage(messageId),
+    []
   );
+
+  const confirmDelete = useCallback(() => {
+    if (!deletableMessage) return;
+    deleteMessage(deletableMessage);
+    setDeletableMessage(null);
+  }, [deletableMessage, deleteMessage]);
+
+  const discardDelete = useCallback(() => {
+    setDeletableMessage(null);
+  }, []);
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -150,7 +176,7 @@ const Messages: React.FC<{
           <div
             className={cn(
               "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
-              "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
+              "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
             )}
             ref={messagesRef}
             onScroll={onScroll}
@@ -182,8 +208,8 @@ const Messages: React.FC<{
                         <div className="mb-6" key={group.id}>
                           <ChatMessageGroup
                             {...group}
-                            deleteMessage={() => onDeleteMessage}
-                            editMessage={() => onUpdateMessage}
+                            deleteMessage={onDelete}
+                            editMessage={onUpdate}
                             owner={group.sender.userId === profile?.id}
                           />
                         </div>
@@ -196,15 +222,33 @@ const Messages: React.FC<{
           </div>
 
           <div className="px-4 pt-2 pb-6">
-            <MessageBox
-              discard={discard}
-              submit={submit}
-              defaultMessage={updatableMessage ? updatableMessage.text : ""}
-              update={updatableMessage !== null}
-            />
+            <SendInput onSubmit={submit} />
           </div>
         </>
       ) : null}
+
+      {updatableMessage ? (
+        <EditMessage
+          message={updatableMessage}
+          close={discardUpdate}
+          onUpdateMessage={onUpdateMessage}
+          open={!!updatableMessage}
+        />
+      ) : null}
+
+      <ConfirmationDialog
+        labels={{
+          confirm: "chat.message.delete.confirm",
+          cancel: "chat.message.delete.cancel",
+        }}
+        type="error"
+        title={intl("chat.message.delete")}
+        description={intl("chat.message.delete.description")}
+        open={!!deletableMessage}
+        confirm={confirmDelete}
+        close={discardDelete}
+        Icon={Trash}
+      />
     </div>
   );
 };

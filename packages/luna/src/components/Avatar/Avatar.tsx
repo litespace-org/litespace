@@ -37,7 +37,7 @@ export const Avatar: React.FC<{
         className={cn(
           "tw-opacity-100 tw-transition-opacity tw-duration-300",
           "data-[status=loaded]:tw-opacity-0",
-          "tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-10"
+          "tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-[1]"
         )}
       >
         <JazzIcon seed={seed || alt || src || "litespace"} />

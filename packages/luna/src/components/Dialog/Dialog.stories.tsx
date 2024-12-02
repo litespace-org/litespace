@@ -5,7 +5,7 @@ import ar from "@/locales/ar-eg.json";
 import React from "react";
 
 const meta: Meta<typeof Dialog> = {
-  title: "Dialog",
+  title: "Dialog/V1",
   component: Dialog,
   decorators: [
     (Story: React.FC) => (

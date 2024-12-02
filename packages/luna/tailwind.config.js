@@ -134,15 +134,15 @@ export default {
             hover: "hsl(var(--border-button-hover))",
           },
         },
+        overlay: {
+          DEFAULT: "hsl(var(--background-overlay-default))",
+          dialog: "var(--colors-overlay-dialog)",
+        },
         background: {
           DEFAULT: "hsl(var(--background-default))",
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
           selection: "hsl(var(--background-selection))",
-          overlay: {
-            DEFAULT: "hsl(var(--background-overlay-default))",
-            hover: "hsl(var(--background-overlay-hover))",
-          },
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
           },
