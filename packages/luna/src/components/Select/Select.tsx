@@ -30,7 +30,6 @@ export type SelectProps<T extends string | number> = {
   onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
-  size?: "normal" | "small";
 };
 
 const OPTIONS_COUNT_THRESHOLD = 10;
@@ -40,7 +39,6 @@ export const Select = <T extends string | number>({
   placeholder,
   options = [],
   onChange,
-  size = "normal",
 }: SelectProps<T>) => {
   const onValueChange = useCallback(
     (value: string) => {
@@ -64,11 +62,9 @@ export const Select = <T extends string | number>({
       <Trigger
         className={cn(
           "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
-          "tw-border tw-border-control tw-text-sm tw-bg-foreground/[0.026] tw-rounded-md",
+          "tw-border tw-border-control tw-text-sm tw-bg-foreground/[0.026] tw-rounded-lg",
           "tw-flex tw-justify-between tw-gap-2 tw-items-center tw-cursor-pointer tw-text-foreground tw-whitespace-nowrap",
-          size === "normal"
-            ? "tw-px-4 tw-py-2 tw-h-[38px]"
-            : "tw-px-2 tw-py-1 tw-h-[34px]"
+          "tw-p-2 tw-h-14"
         )}
       >
         <Value placeholder={placeholder} />
@@ -110,8 +106,8 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
     return (
       <Item
         className={cn(
-          "tw-flex tw-items-center tw-justify-between",
-          "hover:tw-bg-background-overlay-hover tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2 tw-mx-0.5 focus:tw-outline-surface-400",
+          "tw-h-14 tw-flex tw-items-center tw-justify-between",
+          "hover:tw-bg-background-overlay-hover active:tw-bg-brand-700 active:tw-text-natural-50 tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2 tw-mx-0.5 focus:tw-outline-surface-400",
           className
         )}
         {...props}
