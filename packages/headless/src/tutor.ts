@@ -10,24 +10,24 @@ import { IInterview, IRule, ITutor, IUser, Void } from "@litespace/types";
 import { MutationKey, QueryKey } from "@/constants";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { useInfinitePaginationQuery } from "./query";
 
 dayjs.extend(utc);
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
 
-export function useFindTutors() {
+export function useTutors() {
   const atlas = useAtlas();
 
-  const findTutors = useCallback(() => {
-    return atlas.user.findOnboardedTutors();
-  }, [atlas.user]);
+  const findTutors = useCallback(
+    ({ pageParam }: { pageParam: number }) => {
+      return atlas.user.findOnboardedTutors({ page: pageParam });
+    },
+    [atlas.user]
+  );
 
-  return useQuery({
-    queryFn: findTutors,
-    queryKey: [QueryKey.FindTutors],
-    retry: false,
-  });
+  return useInfinitePaginationQuery(findTutors, [QueryKey.FindTutors]);
 }
 
 export function useFindTutorById(

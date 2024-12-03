@@ -24,7 +24,7 @@ const Schedule: React.FC = () => {
   console.log(lessons.query.data);
 
   return (
-    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-lg">
+    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
       <Calendar
         date={date}
         nextWeek={() => {
