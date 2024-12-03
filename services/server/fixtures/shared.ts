@@ -35,6 +35,9 @@ export async function up() {
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    /**
+     * ! Order matters becuase of the relations
+     */
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();
@@ -43,9 +46,9 @@ export async function flush() {
     await interviews.builder(tx).del();
     await calls.builder(tx).members.del();
     await calls.builder(tx).calls.del();
-    await rules.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await rules.builder(tx).del();
     await ratings.builder(tx).del();
     await users.builder(tx).del();
   });

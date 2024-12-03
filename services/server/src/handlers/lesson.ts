@@ -179,7 +179,7 @@ function cancel(context: ApiContext) {
       if (!allowed) return next(forbidden());
 
       const { lessonId } = withNamedId("lessonId").parse(req.params);
-      const lesson = await lessons.findById({ id: lessonId });
+      const lesson = await lessons.findById(lessonId);
       if (!lesson) return next(notfound.lesson());
 
       const members = await lessons.findLessonMembers([lessonId]);

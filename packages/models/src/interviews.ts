@@ -100,6 +100,10 @@ export class Interviews {
     return await this.findOneBy("id", id);
   }
 
+  async findByCallId(id: number): Promise<IInterview.Self | null> {
+    return await this.findOneBy("call_id", id);
+  }
+
   async findByInterviewee(id: number): Promise<IInterview.Self[]> {
     return await this.findManyBy("interviewee_id", id);
   }

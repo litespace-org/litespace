@@ -1,6 +1,6 @@
 import { column, countRows, knex, withFilter, withPagination } from "@/query";
 import { first, isEmpty } from "lodash";
-import { IFilter, IUser, Paginated } from "@litespace/types";
+import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 

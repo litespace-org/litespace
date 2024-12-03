@@ -1,5 +1,12 @@
-import { calls, messages, rooms, users } from "@litespace/models";
-import { IUser, Wss } from "@litespace/types";
+import {
+  calls,
+  interviews,
+  lessons,
+  messages,
+  rooms,
+  users,
+} from "@litespace/models";
+import { ICall, IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
 import wss from "@/validation/wss";
 import zod from "zod";
@@ -14,6 +21,8 @@ import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { cache } from "@/lib/cache";
 import { getGhostCall } from "@litespace/sol/ghost";
+import { canJoinCall } from "@/lib/call";
+import dayjs from "@/lib/dayjs";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
@@ -24,7 +33,11 @@ const userTypingPayload = zod.object({
   roomId: zod.number(),
 });
 
-const onJoinCallPayload = zod.object({ callId: zod.number() });
+const callTypes = ["lesson", "interview"] as const satisfies ICall.Type[];
+const onJoinCallPayload = zod.object({
+  callId: zod.number(),
+  type: zod.enum(callTypes),
+});
 const onLeaveCallPayload = zod.object({ callId: zod.number() });
 
 const stdout = logger("wss");
@@ -68,7 +81,7 @@ export class WssHandler {
    */
   async onJoinCall(data: unknown) {
     const result = await safe(async () => {
-      const { callId } = onJoinCallPayload.parse(data);
+      const { callId, type } = onJoinCallPayload.parse(data);
 
       const user = this.user;
       // todo: add ghost as a member of the call
@@ -76,11 +89,13 @@ export class WssHandler {
 
       stdout.info(`User ${user.id} is joining call ${callId}.`);
 
-      const call = await calls.findById(callId);
-      if (!call) throw new Error("Call not found.");
+      const canJoin = await canJoinCall({
+        userId: user.id,
+        callType: type,
+        callId,
+      });
 
-      // todo: verify that the user can be member of the call
-      // todo: user should not be able to join the call before its start.
+      if (!canJoin) throw Error("Forbidden");
 
       // add user to the call by inserting row to call_members relation
       await calls.addMember({
@@ -124,7 +139,7 @@ export class WssHandler {
 
       // notify members that a member has left the call
       this.socket.broadcast
-        .to(callId.toString())
+        .to(this.asCallRoomId(callId))
         .emit(Wss.ServerEvent.MemberLeftCall, {
           userId: user.id,
         });
@@ -146,11 +161,16 @@ export class WssHandler {
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
-      // todo: find user user call ids
-      // student => lessons
-      // tutor => lessons & interview
-      // interview => interviews
-      this.socket.join("call:1");
+      const callsList = await calls.find({
+        users: [user.id],
+        full: true,
+        after: dayjs.utc().startOf("day").toISOString(),
+        before: dayjs.utc().add(1, "day").toISOString(),
+      });
+
+      this.socket.join(
+        callsList.list.map((call) => this.asCallRoomId(call.id))
+      );
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -385,6 +405,7 @@ export class WssHandler {
     const error = safe(async () => {
       await this.offline();
       await this.deregisterPeer();
+      await this.removeUserFromCalls();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -424,6 +445,28 @@ export class WssHandler {
     if (isGhost(user))
       return await cache.peer.removeGhostPeerId(getGhostCall(user));
     if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
+  }
+
+  async removeUserFromCalls() {
+    const user = this.user;
+    if (isGhost(user)) return;
+
+    const now = dayjs.utc();
+    const { list, total } = await calls.find({
+      users: [user.id],
+      after: now.subtract(1, "hour").toISOString(),
+      before: now.add(1, "hour").toISOString(),
+    });
+    if (total === 0) return;
+
+    await Promise.all(
+      list.map((call) =>
+        calls.removeMember({
+          callId: call.id,
+          userId: user.id,
+        })
+      )
+    );
   }
 
   async announceStatus(user: IUser.Self) {
