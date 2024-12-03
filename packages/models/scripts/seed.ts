@@ -256,29 +256,32 @@ async function main(): Promise<void> {
     };
   }
 
-  async function createRandomLesson(tutor: IUser.Self) {
+  async function createRandomLesson({
+    tutorId,
+    start,
+  }: {
+    tutorId: number;
+    start: string;
+  }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
-      const activeLesson: boolean = tutor.id === 10;
       const call = await calls.create(tx);
       const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
 
       const { lesson } = await lessons.create({
         call: call.id,
-        tutor: tutor.id,
+        tutor: tutorId,
         student: student.id,
         price: calculateLessonPrice(price.scale(100), duration),
-        start: activeLesson
-          ? dayjs.utc().add(1, "minute").toISOString()
-          : randomStart(),
+        start,
         duration,
         rule: 1,
         tx,
       });
 
-      if (sample([0, 1]) && !activeLesson)
+      if (sample([0, 1]))
         await lessons.cancel({
           id: lesson.id,
-          canceledBy: sample([tutor.id, student.id]),
+          canceledBy: sample([tutorId, student.id]),
           tx,
         });
 
@@ -286,12 +289,19 @@ async function main(): Promise<void> {
     });
   }
 
+  let start = dayjs().utc().startOf("day");
   for (const tutor of addedTutors) {
     // create chat room tutor-student
     await rooms.create([tutor.id, student.id]);
 
     for (const _ of range(1, 100)) {
-      const lesson = await createRandomLesson(tutor);
+      const lesson = await createRandomLesson({
+        tutorId: tutor.id,
+        start: start.toISOString(),
+      });
+
+      start = start.add(sample([15, 30, 45, 60]), "minutes");
+
       if (verbose)
         console.log(`Created lesson ${lesson.id} for tutor ${tutor.id}`);
     }

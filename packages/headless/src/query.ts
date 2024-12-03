@@ -22,8 +22,14 @@ export type UseInfinitePaginationQueryResult<T> = {
   more: Void;
 };
 
+export type InfiniteQueryHandler<T> = ({
+  pageParam,
+}: {
+  pageParam: number;
+}) => Promise<Paginated<T>>;
+
 export function useInfinitePaginationQuery<T, K>(
-  handler: ({ pageParam }: { pageParam: number }) => Promise<Paginated<T>>,
+  handler: InfiniteQueryHandler<T>,
   key: K[]
 ) {
   const getNextPageParam = useCallback(
