@@ -63,7 +63,8 @@
     "models": "pnpm --filter @litespace/models",
     "sol": "pnpm --filter @litespace/sol",
     "types": "pnpm --filter @litespace/types",
-    "server": "pnpm --filter @litespace/server"
+    "server": "pnpm --filter @litespace/server",
+    "nova": "pnpm --filter @litespace/nova"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",
