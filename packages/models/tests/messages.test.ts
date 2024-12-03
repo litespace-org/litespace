@@ -54,4 +54,42 @@ describe("Messages", () => {
       ).to.be.eq(0);
     });
   });
+
+  describe(nameof(messages.markAsDeleted), () => {
+    it("should mark message as deleted", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+      const room = await rooms.create([tutor.id, student.id]);
+
+      const message = await messages.create({
+        roomId: room,
+        text: "1",
+        userId: student.id,
+      });
+
+      expect(message.deleted).to.be.eq(false);
+      await messages.markAsDeleted(message.id);
+      const updatedMessage = await messages.findById(message.id);
+      expect(updatedMessage?.deleted).to.be.eq(true);
+    });
+  });
+
+  describe(nameof(messages.markAsDeleted), () => {
+    it("should mark message as read", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+      const room = await rooms.create([tutor.id, student.id]);
+
+      const message = await messages.create({
+        roomId: room,
+        text: "1",
+        userId: student.id,
+      });
+
+      expect(message.read).to.be.eq(false);
+      await messages.markAsRead(message.id);
+      const updatedMessage = await messages.findById(message.id);
+      expect(updatedMessage?.read).to.be.eq(true);
+    });
+  });
 });
