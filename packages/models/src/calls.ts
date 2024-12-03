@@ -147,8 +147,18 @@ export class Calls {
     userId: number,
     tx?: Knex.Transaction
   ): Promise<ICall.Self[]> {
+
+    const selectRow: Record<keyof ICall.Row, string> = {
+      id: this.columns.calls("id"),
+      recording_status: this.columns.calls("recording_status"),
+      processing_time: this.columns.calls("processing_time"),
+      created_at: this.columns.calls("created_at"),
+      updated_at: this.columns.calls("updated_at"),
+    };
+    
     // @TODO: make it in one query to the database
-    const lessonsRows = this.builder(tx).calls
+    const lessonsRows = await this.builder(tx).calls
+      .select<ICall.Row[]>(selectRow)
       .join(
         lessons.table.lessons, 
         lessons.columns.lessons("call_id"), 
@@ -159,20 +169,19 @@ export class Calls {
         lessons.columns.members("lesson_id"), 
         lessons.columns.lessons("id")
       )
-      .where(lessons.columns.members("user_id"), userId)
-      .select("*");
+      .where(lessons.columns.members("user_id"), userId);
 
-    const interviewsRows = this.builder(tx).calls
+    const interviewsRows = await this.builder(tx).calls
+      .select<ICall.Row[]>(selectRow)
       .join(
         interviews.table, 
         interviews.column("call_id"), 
         calls.columns.calls("id")
       )
       .where(interviews.column("interviewer_id"), userId)
-      .orWhere(interviews.column("interviewee_id"), userId)
-      .select("*");
+      .orWhere(interviews.column("interviewee_id"), userId);
 
-    const rows = [...(await lessonsRows), ...(await interviewsRows)];
+    const rows = [...lessonsRows, ...interviewsRows];
     return rows.map(r => this.from(r));
   }
 
