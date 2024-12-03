@@ -152,28 +152,30 @@ export class Lessons {
       .where(this.columns.lessons("id"), id);
   }
 
-  async findById({
-    id,
-    tx,
-  }: WithOptionalTx<{ id: number }>): Promise<ILesson.Self | null> {
-    const rows = await this.builder(tx)
-      .lessons.select("*")
-      .where(this.columns.lessons("id"), id);
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+  private async findOneBy<T extends keyof ILesson.Row>(
+    key: T,
+    value: ILesson.Row[T]
+  ): Promise<ILesson.Self | null> {
+    const lessons = await this.findManyBy(key, value);
+    return first(lessons) || null;
   }
 
-  async findByCallId({
-    id,
-    tx,
-  }: WithOptionalTx<{ id: number }>): Promise<ILesson.Self | null> {
-    const rows = await this.builder(tx)
-      .lessons.select("*")
-      .where(this.columns.lessons("call_id"), id);
-    const row = first(rows);
-    if (!row) return null;
-    return this.from(row);
+  private async findManyBy<T extends keyof ILesson.Row>(
+    key: T,
+    value: ILesson.Row[T]
+  ): Promise<ILesson.Self[]> {
+    const rows = await knex<ILesson.Row>(this.table)
+      .select("*")
+      .where(key, value);
+    return rows.map((row) => this.from(row));
+  }
+
+  async findByCallId(id: number): Promise<ILesson.Self | null> {
+    return await this.findOneBy("call_id", id);
+  }
+
+  async findById(id: number): Promise<ILesson.Self | null> {
+    return await this.findOneBy("id", id);
   }
 
   async findLessonMembers(

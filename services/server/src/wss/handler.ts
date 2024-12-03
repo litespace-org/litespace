@@ -1,5 +1,12 @@
-import { calls, interviews, lessons, messages, rooms, rules, users } from "@litespace/models";
-import { IUser, Wss } from "@litespace/types";
+import {
+  calls,
+  interviews,
+  lessons,
+  messages,
+  rooms,
+  users,
+} from "@litespace/models";
+import { ICall, IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
 import wss from "@/validation/wss";
 import zod from "zod";
@@ -14,7 +21,8 @@ import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { cache } from "@/lib/cache";
 import { getGhostCall } from "@litespace/sol/ghost";
-import { dayjs, unpackRules } from "@litespace/sol";
+import { canJoinCall } from "@/lib/call";
+import dayjs from "@/lib/dayjs";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
@@ -25,7 +33,11 @@ const userTypingPayload = zod.object({
   roomId: zod.number(),
 });
 
-const onJoinCallPayload = zod.object({ callId: zod.number() });
+const callTypes = ["lesson", "interview"] as const satisfies ICall.Type[];
+const onJoinCallPayload = zod.object({
+  callId: zod.number(),
+  type: zod.enum(callTypes),
+});
 const onLeaveCallPayload = zod.object({ callId: zod.number() });
 
 const stdout = logger("wss");
@@ -69,7 +81,7 @@ export class WssHandler {
    */
   async onJoinCall(data: unknown) {
     const result = await safe(async () => {
-      const { callId } = onJoinCallPayload.parse(data);
+      const { callId, type } = onJoinCallPayload.parse(data);
 
       const user = this.user;
       // todo: add ghost as a member of the call
@@ -77,37 +89,14 @@ export class WssHandler {
 
       stdout.info(`User ${user.id} is joining call ${callId}.`);
 
-      const call = await calls.findById(callId);
-      if (!call) throw new Error("Call not found.");
-
-      // DONE: verify that the user can be member of the call
-      // in case the call is an interview
-      let ruleId = await canUserJoinCall(user.id, call.id)
-      if (ruleId === null) {
-        return stdout.warning("a user tries to join a call to which he has no access permission.");
-      }
-
-      // DONE: user should not be able to join the call before its start.
-      const rule = await rules.findById(ruleId);
-      if (!rule) throw Error("unreachable");
-      const ruleEvents = unpackRules({
-        rules: [rule],
-        slots: [],
-        start: rule.start,
-        end: rule.end
+      const canJoin = await canJoinCall({
+        userId: user.id,
+        callType: type,
+        callId,
       });
 
-      const currentEvents = ruleEvents.filter((e) => {
-        const now = dayjs();
-        const start = dayjs(e.start);
-        const end = dayjs(e.end);
-        return now.diff(start) >= 0 && now.diff(end) < 0;
-      })
+      if (!canJoin) throw Error("Forbidden");
 
-      if (currentEvents.length === 0) {
-        return stdout.info("a user tries to join a call before its start.");
-      }
-      
       // add user to the call by inserting row to call_members relation
       await calls.addMember({
         userId: user.id,
@@ -172,14 +161,16 @@ export class WssHandler {
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
-      // DONE: find user call ids
-      // student => lessons
-      // tutor => lessons & interview
-      // interview => interviews
-      const callsList = await calls.findCallsForUser(user.id);
-      for (let call of callsList) {
-        this.socket.join(this.asCallRoomId(call.id));
-      }
+      const callsList = await calls.find({
+        users: [user.id],
+        full: true,
+        after: dayjs.utc().startOf("day").toISOString(),
+        before: dayjs.utc().add(1, "day").toISOString(),
+      });
+
+      this.socket.join(
+        callsList.list.map((call) => this.asCallRoomId(call.id))
+      );
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -414,6 +405,7 @@ export class WssHandler {
     const error = safe(async () => {
       await this.offline();
       await this.deregisterPeer();
+      await this.removeUserFromCalls();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -455,6 +447,28 @@ export class WssHandler {
     if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
   }
 
+  async removeUserFromCalls() {
+    const user = this.user;
+    if (isGhost(user)) return;
+
+    const now = dayjs.utc();
+    const { list, total } = await calls.find({
+      users: [user.id],
+      after: now.subtract(1, "hour").toISOString(),
+      before: now.add(1, "hour").toISOString(),
+    });
+    if (total === 0) return;
+
+    await Promise.all(
+      list.map((call) =>
+        calls.removeMember({
+          callId: call.id,
+          userId: user.id,
+        })
+      )
+    );
+  }
+
   async announceStatus(user: IUser.Self) {
     const userRooms = await rooms.findMemberFullRoomIds(user.id);
 
@@ -483,30 +497,4 @@ export function wssHandler(socket: Socket) {
     return;
   }
   return new WssHandler(socket, user);
-}
-
-/*
- *  Ensure that a specific user can join a call. 
- *  This function shall return the ruleId of the call.
- */
-async function canUserJoinCall(userId: number, callId: number): Promise<number | null> {
-  // in case the is a interview
-  const interview = await interviews.findByCallId(callId);
-  if (interview) {
-    if (![interview.ids.interviewee, interview.ids.interviewer].includes(callId)) {
-      return null;
-    }
-    return interview.ids.rule;
-  }
-
-  // in case the call is a lesson
-  const lesson = await lessons.findByCallId({ id: callId });
-  if (!lesson) throw Error("unreachable");
-
-  const members = await lessons.findLessonMembers([lesson.id]);
-  const foundUser = members.find((m) => m.userId === userId);
-  if (!foundUser) {
-    return null;
-  }
-  return lesson.ruleId;
 }

@@ -1,11 +1,19 @@
-import { aggArrayOrder, column, knex, WithOptionalTx } from "@/query";
-import { first, sortBy } from "lodash";
-import { ICall } from "@litespace/types";
+import {
+  addSqlMinutes,
+  aggArrayOrder,
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
+import { first, isEmpty, sortBy } from "lodash";
+import { ICall, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
 import { lessons } from "@/lessons";
-import { interviews } from "./interviews";
+import { interviews } from "@/interviews";
 
 export class Calls {
   tables = { calls: "calls", members: "call_members" } as const;
@@ -140,49 +148,103 @@ export class Calls {
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
-  /*
-  * Returns a list of all calls in which a specific user is enrolled.
-  */
-  async findCallsForUser(
-    userId: number,
-    tx?: Knex.Transaction
-  ): Promise<ICall.Self[]> {
-
-    const selectRow: Record<keyof ICall.Row, string> = {
+  /**
+   * @param users list of user ids
+   * @param after ISO UTC datetime - All calls after this date will be included (inclusive)
+   * @param before ISO UTC datetime - All calls before this date will be included (inclusive)
+   */
+  async find({
+    users = [],
+    after,
+    before,
+    tx,
+    ...pagination
+  }: IFilter.SkippablePagination &
+    WithOptionalTx<{
+      users?: number[];
+      after?: string;
+      before?: string;
+    }>): Promise<Paginated<ICall.Self>> {
+    const selectColumns: Record<keyof ICall.Row, string> = {
       id: this.columns.calls("id"),
       recording_status: this.columns.calls("recording_status"),
       processing_time: this.columns.calls("processing_time"),
       created_at: this.columns.calls("created_at"),
       updated_at: this.columns.calls("updated_at"),
     };
-    
-    // @TODO: make it in one query to the database
-    const lessonsRows = await this.builder(tx).calls
-      .select<ICall.Row[]>(selectRow)
-      .join(
-        lessons.table.lessons, 
-        lessons.columns.lessons("call_id"), 
+
+    const baseBuilder = this.builder(tx)
+      .calls.select<ICall.Row[]>(selectColumns)
+      .fullOuterJoin(
+        lessons.table.lessons,
+        lessons.columns.lessons("call_id"),
         calls.columns.calls("id")
       )
-      .join(
-        lessons.table.members, 
-        lessons.columns.members("lesson_id"), 
+      .fullOuterJoin(
+        lessons.table.members,
+        lessons.columns.members("lesson_id"),
         lessons.columns.lessons("id")
       )
-      .where(lessons.columns.members("user_id"), userId);
-
-    const interviewsRows = await this.builder(tx).calls
-      .select<ICall.Row[]>(selectRow)
-      .join(
-        interviews.table, 
-        interviews.column("call_id"), 
+      .fullOuterJoin(
+        interviews.table,
+        interviews.column("call_id"),
         calls.columns.calls("id")
       )
-      .where(interviews.column("interviewer_id"), userId)
-      .orWhere(interviews.column("interviewee_id"), userId);
+      .groupBy(this.columns.calls("id"));
 
-    const rows = [...lessonsRows, ...interviewsRows];
-    return rows.map(r => this.from(r));
+    if (!isEmpty(users))
+      baseBuilder.where((builder) => {
+        builder
+          .whereIn(lessons.columns.members("user_id"), users)
+          .orWhereIn(interviews.column("interviewer_id"), users)
+          .orWhereIn(interviews.column("interviewee_id"), users);
+      });
+
+    if (after)
+      baseBuilder.where((builder) => {
+        builder
+          .andWhere(
+            addSqlMinutes(
+              lessons.columns.lessons("start"),
+              lessons.columns.lessons("duration")
+            ),
+            ">=",
+            dayjs.utc(after).toDate()
+          )
+          .orWhere(
+            interviews.column("start"),
+            ">=",
+            // todo: unmatic this number (30 minutes)
+            dayjs.utc(after).subtract(30, "minutes").toDate()
+          );
+      });
+
+    if (before)
+      baseBuilder.where((builder) => {
+        builder
+          .andWhere(
+            addSqlMinutes(
+              lessons.columns.lessons("start"),
+              lessons.columns.lessons("duration")
+            ),
+            "<=",
+            dayjs.utc(before).toDate()
+          )
+          .orWhere(
+            interviews.column("start"),
+            "<=",
+            // todo: unmatic this number (30 minutes)
+            dayjs.utc(before).subtract(30, "minutes")
+          );
+      });
+
+    const total = await countRows(baseBuilder.clone(), {
+      column: this.columns.calls("id"),
+    });
+
+    const rows = await withSkippablePagination(baseBuilder.clone(), pagination);
+
+    return { list: rows.map((row) => this.from(row)), total };
   }
 
   /**
