@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { sockets } from "@litespace/atlas";
-import { Backend, Wss } from "@litespace/types";
+import { Backend, ICall, Wss } from "@litespace/types";
 
 export class ClientSocket {
   public readonly client: Socket<Wss.ServerEventsMap, Wss.ClientEventsMap>;
@@ -16,8 +16,8 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.UserTyping, { roomId });
   }
 
-  joinCall(callId: number) {
-    this.client.emit(Wss.ClientEvent.JoinCall, { callId });
+  joinCall(callId: number, type: ICall.Type) {
+    this.client.emit(Wss.ClientEvent.JoinCall, { callId, type });
   }
 
   leaveCall(callId: number) {

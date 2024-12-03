@@ -1,8 +1,11 @@
 import { column, countRows, knex, withFilter, withPagination } from "@/query";
 import { first, isEmpty } from "lodash";
-import { IFilter, IUser, Paginated } from "@litespace/types";
+import { ICall, IFilter, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import { calls } from "./calls";
+import { lessons } from "./lessons";
+import { interviews } from "./interviews";
 
 export class Users {
   public readonly table = "users" as const;
