@@ -35,7 +35,7 @@ export class ClientSocket {
     return new Promise((resolve, reject) => {
       // @ts-ignore
       this.client.on(event, resolve);
-      setTimeout(() => reject(new Error("TIMEOUT")), 1_000);
+      setTimeout(() => reject(new Error("TIMEOUT")), 2_000);
     });
   }
 }
