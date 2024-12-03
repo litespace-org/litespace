@@ -1,19 +1,29 @@
-import TutorList from "@/components/Tutors/List";
-import { atlas } from "@litespace/luna/backend";
 import React from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useTutors } from "@litespace/headless/tutor";
+import Content from "@/components/Tutors/Content";
+import PageTitle from "@/components/Common/PageTitle";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Tutors: React.FC = () => {
-  // todo: impl. pagination
-  const tutors = useQuery({
-    queryFn: async () => await atlas.user.findOnboardedTutors(),
-    queryKey: ["find-onboarded-tutors"],
-    retry: false,
-  });
+  const intl = useFormatMessage();
+  const tutors = useTutors();
 
   return (
-    <div className="w-full p-6 mx-auto max-w-screen-2xl">
-      <TutorList tutors={tutors} />
+    <div className="w-full p-6 mx-auto max-w-screen-3xl">
+      <PageTitle
+        title={intl("tutors.title")}
+        fetching={tutors.query.isFetching && !tutors.query.isLoading}
+        className="mb-6"
+      />
+
+      <Content
+        tutors={tutors.list}
+        loading={tutors.query.isLoading}
+        fetching={tutors.query.isFetching && !tutors.query.isLoading}
+        error={tutors.query.isError}
+        more={tutors.more}
+        hasMore={tutors.query.hasNextPage && !tutors.query.isPending}
+      />
     </div>
   );
 };

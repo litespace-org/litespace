@@ -2,7 +2,7 @@ import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
 import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
-import { useFindLessons } from "@litespace/headless/lessons";
+import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 
@@ -10,7 +10,7 @@ const UpcomingLessons: React.FC = () => {
   const intl = useFormatMessage();
   const profile = useAppSelector(profileSelectors.full);
 
-  const query = useFindLessons({
+  const lessons = useInfiniteLessons({
     users: profile.value?.user ? [profile.value.user?.id] : [],
     userOnly: true,
     future: true,
@@ -22,7 +22,14 @@ const UpcomingLessons: React.FC = () => {
   return (
     <div className="p-6 max-w-screen-3xl mx-auto w-full">
       <PageTitle title={intl("page.upcoming-lessons.title")} className="mb-6" />
-      <Content {...query} />
+      <Content
+        list={lessons.list}
+        loading={lessons.query.isLoading}
+        fetching={lessons.query.isFetching && !lessons.query.isLoading}
+        error={lessons.query.isError}
+        more={lessons.more}
+        hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
+      />
     </div>
   );
 };

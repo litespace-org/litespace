@@ -1,9 +1,10 @@
-import { IFilter, ILesson, IRule, Void } from "@litespace/types";
+import { Element, IFilter, ILesson, IRule, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
+import { InfiniteQueryHandler, useInfinitePaginationQuery } from "./query";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -25,6 +26,33 @@ export function useFindLessons(
   );
 
   return usePaginate(lessons, [QueryKey.FindLesson, query]);
+}
+
+/**
+ * Paginate lessons using infinite pagination.
+ */
+export function useInfiniteLessons(
+  query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
+) {
+  const atlas = useAtlas();
+
+  const findLessons: InfiniteQueryHandler<
+    Element<ILesson.FindUserLessonsApiResponse["list"]>
+  > = useCallback(
+    async ({ pageParam }) => {
+      if (query.userOnly && !query.users?.length) return { list: [], total: 0 };
+      return await atlas.lesson.findLessons({
+        page: pageParam,
+        ...query,
+      });
+    },
+    [atlas.lesson, query]
+  );
+
+  return useInfinitePaginationQuery(findLessons, [
+    QueryKey.FindInfiniteLessons,
+    query,
+  ]);
 }
 
 export function useCancelLesson() {

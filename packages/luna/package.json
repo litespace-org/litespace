@@ -59,6 +59,7 @@
     "./Typography": "./dist/components/Typography/index.js",
     "./Toast": "./dist/components/Toast/index.js",
     "./Tooltip": "./dist/components/Tooltip/index.js",
+    "./TutorCard": "./dist/components/TutorCard/index.js",
     "./HoverCard": "./dist/components/HoverCard/index.js",
     "./Spinner": "./dist/icons/Spinner.jsx",
     "./utils": "./dist/components/utils/index.js",
