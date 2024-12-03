@@ -89,6 +89,7 @@ export type ClientEventsMap = {
     type: ICall.Type;
   }>;
   [ClientEvent.LeaveCall]: EventCallback<{ callId: number }>;
+  [ClientEvent.MarkAsRead]: EventCallback<{ messageId: number }>;
 };
 
 /**

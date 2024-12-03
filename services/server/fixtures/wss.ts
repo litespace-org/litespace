@@ -24,6 +24,14 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.LeaveCall, { callId });
   }
 
+  deleteMessage(messageId: number) {
+    this.client.emit(Wss.ClientEvent.DeleteMessage, { id: messageId });
+  }
+
+  markAsRead(messageId: number) {
+    this.client.emit(Wss.ClientEvent.DeleteMessage, { id: messageId });
+  }
+
   /**
    * Wait for event.
    *

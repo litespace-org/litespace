@@ -24,7 +24,7 @@ describe("Typing", () => {
     studentSocket = new ClientSocket(student.token);
   });
 
-  it("should emit an event", async () => {
+  it("should emit a typing event", async () => {
     const result = tutorSocket.wait(Wss.ServerEvent.UserTyping);
     studentSocket.userTyping(room);
 

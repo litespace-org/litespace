@@ -74,7 +74,7 @@ describe("Messages", () => {
     });
   });
 
-  describe(nameof(messages.markAsDeleted), () => {
+  describe(nameof(messages.markAsRead), () => {
     it("should mark message as read", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();

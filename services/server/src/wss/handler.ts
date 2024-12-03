@@ -50,6 +50,14 @@ export class WssHandler {
       Wss.ClientEvent.DeleteMessage,
       this.deleteMessage.bind(this)
     );
+    this.socket.on(
+      Wss.ClientEvent.UpdateMessage,
+      this.updateMessage.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.MarkAsRead,
+      this.markMessageAsRead.bind(this)
+    );
     this.socket.on(Wss.ClientEvent.PeerOpened, this.peerOpened.bind(this));
     this.socket.on(Wss.ClientEvent.RegisterPeer, this.registerPeer.bind(this));
     this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
@@ -210,10 +218,12 @@ export class WssHandler {
       if (!isMember)
         throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
 
-      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
-        roomId,
-        userId: user.id,
-      });
+      this.socket
+        .to(this.asChatRoomId(roomId))
+        .emit(Wss.ServerEvent.UserTyping, {
+          roomId,
+          userId: user.id,
+        });
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -357,15 +367,25 @@ export class WssHandler {
       const message = await messages.findById(messageId);
       if (!message) throw new Error("Message not found");
 
-      const userId = user.id;
-      if (userId !== message.userId) throw new Error("Unauthorized");
+      /**
+       * We will get all members then check if the user is in the room, then
+       * we check if the user is the other member of the room
+       */
+      const roomMembers = await rooms.findRoomMembers({
+        roomIds: [message.roomId],
+      });
+      const otherRoomMember = roomMembers.find(
+        (member) => member.id !== user.id
+      );
+      if (user.id !== otherRoomMember?.id) throw new Error("Unauthorized");
+
       if (message.read)
         return console.log("Message is already marked as read".yellow);
 
       await messages.markAsRead(messageId);
 
       this.socket.broadcast
-        .to(message.roomId.toString())
+        .to(this.asChatRoomId(message.roomId))
         .emit(Wss.ServerEvent.MessageRead, { messageId });
     } catch (error) {
       console.log(error);
