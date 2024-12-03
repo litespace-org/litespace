@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Calendar } from "@/components/Calendar/v2/Calendar";
-import React, { useState } from "react";
+import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 
@@ -9,7 +9,6 @@ type Component = typeof Calendar;
 const meta: Meta<Component> = {
   title: "CalendarV2",
   component: Calendar,
-  parameters: { layout: "centered" },
   decorators: [],
 };
 
@@ -21,18 +20,9 @@ const HourView: React.FC<{ date: Dayjs }> = ({ date }) => {
 };
 
 export const Primary: StoryObj<Component> = {
-  args: {},
-  render() {
-    const [date, setDate] = useState(dayjs().startOf("week"));
-
-    return (
-      <Calendar
-        date={date}
-        nextWeek={() => setDate(date.add(1, "week"))}
-        prevWeek={() => setDate(date.subtract(1, "week"))}
-        HourView={HourView}
-      />
-    );
+  args: {
+    HourView,
+    date: dayjs().startOf("week"),
   },
 };
 
