@@ -4,6 +4,8 @@ import { ICall } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
+import { lessons } from "@/lessons";
+import { interviews } from "./interviews";
 
 export class Calls {
   tables = { calls: "calls", members: "call_members" } as const;
@@ -136,6 +138,42 @@ export class Calls {
       .whereIn(this.columns.members("call_id"), callIds);
 
     return rows.map((row) => this.asPopulatedMember(row));
+  }
+
+  /*
+  * Returns a list of all calls in which a specific user is enrolled.
+  */
+  async findCallsForUser(
+    userId: number,
+    tx?: Knex.Transaction
+  ): Promise<ICall.Self[]> {
+    // @TODO: make it in one query to the database
+    const lessonsRows = this.builder(tx).calls
+      .join(
+        lessons.table.lessons, 
+        lessons.columns.lessons("call_id"), 
+        calls.columns.calls("id")
+      )
+      .join(
+        lessons.table.members, 
+        lessons.columns.members("lesson_id"), 
+        lessons.columns.lessons("id")
+      )
+      .where(lessons.columns.members("user_id"), userId)
+      .select("*");
+
+    const interviewsRows = this.builder(tx).calls
+      .join(
+        interviews.table, 
+        interviews.column("call_id"), 
+        calls.columns.calls("id")
+      )
+      .where(interviews.column("interviewer_id"), userId)
+      .orWhere(interviews.column("interviewee_id"), userId)
+      .select("*");
+
+    const rows = [...(await lessonsRows), ...(await interviewsRows)];
+    return rows.map(r => this.from(r));
   }
 
   /**

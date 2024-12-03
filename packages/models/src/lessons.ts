@@ -164,6 +164,18 @@ export class Lessons {
     return this.from(row);
   }
 
+  async findByCallId({
+    id,
+    tx,
+  }: WithOptionalTx<{ id: number }>): Promise<ILesson.Self | null> {
+    const rows = await this.builder(tx)
+      .lessons.select("*")
+      .where(this.columns.lessons("call_id"), id);
+    const row = first(rows);
+    if (!row) return null;
+    return this.from(row);
+  }
+
   async findLessonMembers(
     lessonIds: number[],
     tx?: Knex.Transaction
