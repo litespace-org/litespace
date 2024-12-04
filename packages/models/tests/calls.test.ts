@@ -9,6 +9,29 @@ describe(nameof(Calls), () => {
     return await flush();
   });
 
+  describe(nameof(calls.findCallMembers), () => {
+    it("should retrieve the members of a specific call", async () => {
+      const call = await calls.create();
+      
+      const m1 = await fixtures.tutor();
+      const m2 = await fixtures.student();
+
+      await calls.addMember({
+        callId: call.id,
+        userId: m1.id
+      });
+      await calls.addMember({
+        callId: call.id,
+        userId: m2.id
+      });
+
+      const members = await calls.findCallMembers([call.id]);
+      expect(members).to.have.length(2);
+      expect(members.map(m => m.userId)).contains(m1.id);
+      expect(members.map(m => m.userId)).contains(m2.id);
+    });
+  });
+
   describe(nameof(calls.create), () => {
     it("should insert new call row", async () => {
       const call = await calls.create();
