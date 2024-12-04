@@ -44,6 +44,8 @@
   "tutor.rate.delete.titleWarning": "أنت على وشك إزالة تقييمك للمعلم",
   "tutor.rate.delete.success": "تم إزالة التقييم بنجاح",
   "tutor.rate.delete.error": "عذرا، حدث خطأ أثناء إزالة التقييم، برجاء المحاولة مرة أخرى",
+  "tutor.rating.rater-name.placeholder": "أحد طلاب {tutor}",
+  "tutor.rating.placeholder": "أحد الطلاب",
   "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",
   "tutor.book": "حجز حصة",
   "rating.form.rule.feedback.less": "يجب ألا يقل التقييم عن 10 حروف",
