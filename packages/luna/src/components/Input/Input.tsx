@@ -114,8 +114,8 @@ const Actions: React.FC<{
 }> = ({ actions }) => {
   return (
     <>
-      {actions.map(({ id, Icon, onClick }) => (
-        <button key={id} onClick={onClick} type="button">
+      {actions.map(({ id, Icon, onClick, className }) => (
+        <button key={id} onClick={onClick} type="button" className={className}>
           <Icon />
         </button>
       ))}

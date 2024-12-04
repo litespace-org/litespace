@@ -13,10 +13,20 @@ type Story = StoryObj<typeof ProfileInfo>;
 
 const url = "https://picsum.photos/400";
 
-export const Default: Story = {
+export const Primary: Story = {
   args: {
+    id: 1,
     name: faker.person.fullName(),
     email: faker.internet.email(),
-    photo: url,
+    imageUrl: url,
+  },
+};
+
+export const WithoutNameAndImage: Story = {
+  args: {
+    id: 1,
+    name: null,
+    email: faker.internet.email(),
+    imageUrl: null,
   },
 };

@@ -10,9 +10,16 @@ export default meta;
 
 type Story = StoryObj<typeof SubscriptionQouta>;
 
-export const Default: Story = {
+export const Primary: Story = {
   args: {
-    progress: 80,
-    rest: 4,
+    totalMinutes: 100,
+    remainingMinutes: 5,
+  },
+};
+
+export const LargeQuote: Story = {
+  args: {
+    totalMinutes: 1000,
+    remainingMinutes: 100,
   },
 };

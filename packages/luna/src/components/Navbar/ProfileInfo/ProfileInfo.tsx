@@ -1,27 +1,27 @@
-import React from "react";
-import StudentDefaultAvatar from "@litespace/assets/StudentDefaultAvatar";
+import React, { useMemo } from "react";
 import { Typography } from "@/components/Typography";
+import { Avatar } from "@/components/Avatar";
+import { orUndefined } from "@litespace/sol/utils";
 
 const ProfileInfo: React.FC<{
-  name: string;
+  id: number;
+  name: string | null;
   email: string;
-  photo?: string | null;
-}> = ({ name, email, photo }) => {
+  imageUrl: string | null;
+}> = ({ id, name, email, imageUrl }) => {
+  const backupName = useMemo(() => {
+    const [prefix] = email.split("@");
+    return prefix || "-";
+  }, [email]);
+
   return (
     <div className="tw-flex tw-gap-2">
-      <div className="tw-w-[40px] tw-h-[40px]">
-        {photo ? (
-          <img
-            className="tw-rounded-full tw-overflow-hidden tw-object-contain"
-            src={
-              typeof photo === "string"
-                ? "https://picsum.photos/300"
-                : URL.createObjectURL(photo)
-            }
-          />
-        ) : (
-          <StudentDefaultAvatar className="tw-w-full tw-overflow-hidden tw-object-cover" />
-        )}
+      <div className="tw-w-[40px] tw-h-[40px] tw-rounded-full tw-overflow-hidden">
+        <Avatar
+          src={orUndefined(imageUrl)}
+          alt={orUndefined(name)}
+          seed={id.toString()}
+        />
       </div>
       <div className="tw-flex tw-flex-col tw-gap-[1px]">
         <Typography
@@ -29,7 +29,7 @@ const ProfileInfo: React.FC<{
           weight="semibold"
           className="tw-text-natural-950"
         >
-          {name}
+          {name || backupName}
         </Typography>
         <Typography
           element="tiny-text"
