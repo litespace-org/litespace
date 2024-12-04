@@ -66,6 +66,7 @@
     "./StudentFemaleLight": "./dist/StudentFemaleLight.tsx",
     "./StudentMaleDark": "./dist/StudentMaleDark.tsx",
     "./StudentMaleLight": "./dist/StudentMaleLight.tsx",
+    "./Quote": "./dist/Quote.tsx",
     "./Tag": "./dist/Tag.tsx",
     "./ThemeSwitchLight": "./dist/ThemeSwitchLight.tsx",
     "./Trash": "./dist/Trash.tsx",
