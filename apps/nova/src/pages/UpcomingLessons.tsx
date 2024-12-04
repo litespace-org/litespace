@@ -1,3 +1,4 @@
+import Navbar from "@/components/Common/Navbar";
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
 import { useAppSelector } from "@/redux/store";
@@ -19,8 +20,11 @@ const UpcomingLessons: React.FC = () => {
     canceled: true,
   });
 
+  if (!profile.value?.user) return;
+
   return (
-    <div className="p-6 max-w-screen-3xl mx-auto w-full">
+    <div className="px-6 py-8 max-w-screen-3xl mx-auto w-full">
+      <Navbar user={profile.value.user} className="mb-6" />
       <PageTitle title={intl("page.upcoming-lessons.title")} className="mb-6" />
       <Content
         list={lessons.list}
