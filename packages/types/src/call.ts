@@ -74,4 +74,9 @@ export type FindUserCallsApiResponse = {
   members: Record<string, PopuldatedMember[]>;
 };
 
+export type FindCallMembersByCallIdApiResponse = {
+  members: PopuldatedMember[];
+};
+
+
 export type Type = "lesson" | "interview";
