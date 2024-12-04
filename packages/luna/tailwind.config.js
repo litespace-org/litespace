@@ -262,6 +262,8 @@ export default {
       "unread-count-dark": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
       "chat-date": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
       tooltip: "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
+      "feedback-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
+      "dark-feedback-card": "0px 4px 15px 0px rgba(255, 255, 255, 0.08)",
     },
   },
   plugins: [
