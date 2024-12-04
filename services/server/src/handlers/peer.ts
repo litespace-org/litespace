@@ -71,7 +71,6 @@ async function findPeerId(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const query: IPeer.FindPeerIdApiQuery = findPeerIdApiQuery.parse(req.query);
-  console.log({ query });
   const peer =
     query.type === IPeer.PeerType.Tutor
       ? await cache.peer.getUserPeerId(query.tutor)
