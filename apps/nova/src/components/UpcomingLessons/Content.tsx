@@ -74,12 +74,14 @@ export const Content: React.FC<{
 
       {fetching ? <Loading className="mt-6 text-natural-950" /> : null}
 
-      <InView
-        as="div"
-        onChange={(inView) => {
-          if (inView && hasMore) more();
-        }}
-      />
+      {!fetching ? (
+        <InView
+          as="div"
+          onChange={(inView) => {
+            if (inView && hasMore) more();
+          }}
+        />
+      ) : null}
     </div>
   );
 };
