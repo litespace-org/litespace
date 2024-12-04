@@ -2,7 +2,6 @@ import { calls } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { withNamedId } from "@/validation/utils";
-import { groupBy } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 import { isAdmin, isGhost, isUser } from "@litespace/auth";
 

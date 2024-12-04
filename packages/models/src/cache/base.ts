@@ -16,7 +16,7 @@ export class CacheBase {
     public client: RedisClientType<RedisModules, RedisFunctions, RedisScripts>
   ) {}
 
-  encode<T extends object>(values: T): string {
+  encode<T extends object | string | number>(values: T): string {
     return JSON.stringify(values);
   }
 
