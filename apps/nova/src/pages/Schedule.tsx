@@ -25,10 +25,6 @@ const Schedule: React.FC = () => {
     after: date.toISOString(),
     before: date.add(1, "week").toISOString(),
   });
-  console.log({
-    after: date.toISOString(),
-    before: date.add(1, "week").toISOString(),
-  });
 
   return (
     <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
