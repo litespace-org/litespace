@@ -7,18 +7,18 @@ import Star from "@litespace/assets/Star";
 import { Button } from "@/components/Button";
 
 export const TutorProfileCard: React.FC<{
-  imageUrl: string;
-  name: string;
+  imageUrl: string | null;
+  name: string | null;
   id: number;
-  bio: string;
+  bio: string | null;
   studentCount: number;
   lessonCount: number;
   rating: number;
 }> = ({ imageUrl, name, id, bio, studentCount, lessonCount, rating }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-gap-10">
-      <div className="tw-w-[242px] tw-h-[242px] tw-rounded-full tw-overflow-hidden">
+    <div className="tw-flex tw-gap-10 tw-items-center">
+      <div className="tw-w-[242px] tw-aspect-square tw-rounded-full tw-overflow-hidden">
         <Avatar
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
@@ -26,31 +26,38 @@ export const TutorProfileCard: React.FC<{
         />
       </div>
       <div>
-        <Typography element="h2" className="tw-font-bold tw-text-natural-950">
-          {name}
-        </Typography>
-        <Typography
-          element="subtitle-2"
-          className="tw-text-natural-950 tw-font-semibold"
-        >
-          {bio}
-        </Typography>
-        <Typography
-          element="subtitle-2"
-          className="tw-text-natural-950 tw-font-semibold"
-        >
-          {intl("tutor.achievements", { lessonCount, studentCount })}
-        </Typography>
-        <div className="tw-flex tw-items-center tw-gap-2">
+        <div className="tw-flex tw-flex-col tw-gap-2">
           <Typography
-            element="subtitle-2"
-            className="tw-text-natural-950 tw-font-semibold"
+            element="h2"
+            className="tw-font-bold tw-text-natural-950 dark:tw-text-natural-50"
           >
-            {rating}
+            {name}
           </Typography>
-          <Star className="[&>*]:tw-fill-warning-500" />
+          <div className="tw-flex tw-flex-col tw-gap-1">
+            <Typography
+              element="subtitle-2"
+              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+            >
+              {bio}
+            </Typography>
+            <Typography
+              element="subtitle-2"
+              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+            >
+              {intl("tutor.achievements", { lessonCount, studentCount })}
+            </Typography>
+          </div>
+          <div className="tw-flex tw-items-center tw-gap-2">
+            <Typography
+              element="subtitle-2"
+              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+            >
+              {rating}
+            </Typography>
+            <Star className="[&>*]:tw-fill-warning-500" />
+          </div>
         </div>
-        <Button className="tw-w-full">{intl("tutor.book")}</Button>
+        <Button className="tw-mt-3 !tw-w-[301px]">{intl("tutor.book")}</Button>
       </div>
     </div>
   );

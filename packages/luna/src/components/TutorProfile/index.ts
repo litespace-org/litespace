@@ -1,2 +1,2 @@
 export { TutorProfileCard } from "@/components/TutorProfile/TutorProfileCard";
-export { TutorRatingCard } from "@/components/TutorProfile/TutorRatingCard";
+export { TutorFeedbackCard } from "@/components/TutorProfile/TutorFeedbackCard";

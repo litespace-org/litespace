@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { TutorRatingCard } from "@/components/TutorProfile";
+import { TutorFeedbackCard } from "@/components/TutorProfile";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
 import React from "react";
 
-type Component = typeof TutorRatingCard;
+type Component = typeof TutorFeedbackCard;
 
 const meta: Meta<Component> = {
-  component: TutorRatingCard,
+  component: TutorFeedbackCard,
   parameters: { layout: "centered" },
   decorators: [(Story) => <Story />, DarkStoryWrapper],
 };
