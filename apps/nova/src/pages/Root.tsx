@@ -9,6 +9,7 @@ import { IUser } from "@litespace/types";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
+import Navbar from "@/components/Layout/Navbar";
 
 const Root: React.FC = () => {
   const profile = useAppSelector(profileSelectors.full);
@@ -71,6 +72,7 @@ const Root: React.FC = () => {
       <div
         className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
       >
+        <Navbar />
         <Outlet />
       </div>
     </div>

@@ -121,7 +121,7 @@ const Settings: React.FC = () => {
   }, [form, requirePassword]);
 
   return (
-    <div className="max-w-screen-lg mx-auto w-full">
+    <div className="max-w-screen-3xl mx-auto w-full p-6">
       <div className="w-full">
         <div className="mb-8">
           <PageTitle

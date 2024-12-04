@@ -31,6 +31,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       idleDir = "rtl",
       startActions = [],
       endActions = [],
+      className,
       ...props
     },
     ref
@@ -46,7 +47,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             "tw-w-full tw-transition-colors tw-duration-200",
             "tw-flex tw-flex-row tw-items-center tw-gap-2",
             // default
-            " tw-bg-natural-50 tw-border tw-border-natural-300 tw-rounded-lg tw-px-[0.875rem]",
+            "tw-bg-natural-50 tw-border tw-border-natural-300 tw-rounded-lg tw-px-[0.875rem]",
             // hover
             "hover:tw-bg-brand-50 hover:tw-border-brand-200",
             // active/focus
@@ -54,7 +55,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             // error
             "data-[error=true]:tw-shadow-input-error data-[error=true]:tw-border-destructive-600 data-[error=true]:hover:tw-bg-natural-50 data-[error=true]:hover:tw-border-destructive-600",
             // disabled
-            "data-[disabled=true]:tw-opacity-50"
+            "data-[disabled=true]:tw-opacity-50",
+            className
           )}
         >
           <Actions actions={startActions} />
@@ -112,8 +114,8 @@ const Actions: React.FC<{
 }> = ({ actions }) => {
   return (
     <>
-      {actions.map(({ id, Icon, onClick }) => (
-        <button key={id} onClick={onClick} type="button">
+      {actions.map(({ id, Icon, onClick, className }) => (
+        <button key={id} onClick={onClick} type="button" className={className}>
           <Icon />
         </button>
       ))}
