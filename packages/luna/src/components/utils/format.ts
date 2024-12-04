@@ -1,7 +1,10 @@
 import humanize from "humanize-duration";
 
-export function formatNumber(value: number) {
-  return new Intl.NumberFormat("en").format(value);
+export function formatNumber(
+  value: number,
+  options?: Intl.NumberFormatOptions
+) {
+  return new Intl.NumberFormat("en", options).format(value);
 }
 
 /**

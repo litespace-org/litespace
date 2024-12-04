@@ -5,6 +5,10 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import Star from "@litespace/assets/Star";
 import { Button } from "@/components/Button";
+import { formatNumber } from "@/components/utils";
+import { Void } from "@litespace/types";
+
+const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
 export const TutorProfileCard: React.FC<{
   imageUrl: string | null;
@@ -14,7 +18,17 @@ export const TutorProfileCard: React.FC<{
   studentCount: number;
   lessonCount: number;
   rating: number;
-}> = ({ imageUrl, name, id, bio, studentCount, lessonCount, rating }) => {
+  onBook?: Void;
+}> = ({
+  imageUrl,
+  name,
+  id,
+  bio,
+  studentCount,
+  lessonCount,
+  rating,
+  onBook,
+}) => {
   const intl = useFormatMessage();
   return (
     <div className="tw-flex tw-gap-10 tw-items-center">
@@ -40,24 +54,35 @@ export const TutorProfileCard: React.FC<{
             >
               {bio}
             </Typography>
-            <Typography
-              element="subtitle-2"
-              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
-            >
-              {intl("tutor.achievements", { lessonCount, studentCount })}
-            </Typography>
+            {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
+              <Typography
+                element="subtitle-2"
+                className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+              >
+                {intl("tutor.achievements", {
+                  lessonCount: formatNumber(lessonCount),
+                  studentCount: formatNumber(studentCount),
+                })}
+              </Typography>
+            ) : null}
           </div>
-          <div className="tw-flex tw-items-center tw-gap-2">
-            <Typography
-              element="subtitle-2"
-              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
-            >
-              {rating}
-            </Typography>
-            <Star className="[&>*]:tw-fill-warning-500" />
-          </div>
+          {rating === 0 ? (
+            <div className="tw-flex tw-items-center tw-gap-2">
+              <Typography
+                element="subtitle-2"
+                className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+              >
+                {formatNumber(rating, {
+                  maximumFractionDigits: 1,
+                })}
+              </Typography>
+              <Star className="[&>*]:tw-fill-warning-500" />
+            </div>
+          ) : null}
         </div>
-        <Button className="tw-mt-3 !tw-w-[301px]">{intl("tutor.book")}</Button>
+        <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
+          {intl("tutor.book")}
+        </Button>
       </div>
     </div>
   );
