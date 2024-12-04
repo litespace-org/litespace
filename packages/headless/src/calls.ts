@@ -1,4 +1,4 @@
-import { IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
+import { ICall, IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -1005,4 +1005,58 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
+}
+
+export function useFindCallMembers(
+  callId: number | null
+): UseQueryResult<ICall.FindCallMembersByCallIdApiResponse | null, Error> {
+  const atlas = useAtlas();
+
+  const findCallMembers = useCallback(async () => {
+    if (!callId) return null;
+    return await atlas.call.findCallMembers(callId);
+  }, [callId]);
+
+  return useQuery({
+    queryFn: findCallMembers,
+    queryKey: ["find-call-members"],
+  });
+}
+
+/*
+ * get list of members in a specifc call by callId
+ */
+export function useCallMembers(callId: number | null, callType: ICall.Type): ICall.PopuldatedMember[]{
+  const socket = useSocket();
+
+  // get the initial list by an http request
+  const res = useFindCallMembers(callId);
+  const [members, setMembers] = useState<ICall.PopuldatedMember[]>(res.data ? res.data.members : []);
+
+  const onMemberJoinWssCallback = useCallback(({userId}: {userId: number}) => {
+    console.log(`Member ${userId} has joined the call`);
+    setMembers(prev => [...prev]); // TODO: insert the new member
+  }, [callId])
+
+  const joinCall = useCallback(() => {
+    if (!socket || !callId) return;
+      socket.emit(Wss.ClientEvent.JoinCall, {callId, type: callType} );
+      console.log("DEBUG: emitted.")
+    }, [socket]
+  );
+
+  useEffect(() => {
+    joinCall();
+  }, [])
+
+  useEffect(() => {
+    // listen to wss events to modify members list accordingly
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    return () => {
+      socket.off(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    }
+  }, [callId, socket])
+
+  return members;
 }
