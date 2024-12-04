@@ -24,11 +24,23 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
-export const HighStats: StoryObj<Component> = {
+export const HighBioWordCount: StoryObj<Component> = {
   args: {
     id: 2,
     name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
+    bio: faker.lorem.words(20),
+    studentCount: 2000,
+    lessonCount: 7123,
+    rating: 4.85,
+    imageUrl: "https://picsum.photos/200",
+  },
+};
+
+export const LowBioWordCount: StoryObj<Component> = {
+  args: {
+    id: 2,
+    name: faker.person.fullName(),
+    bio: faker.lorem.words(4),
     studentCount: 2000,
     lessonCount: 7123,
     rating: 4.85,
