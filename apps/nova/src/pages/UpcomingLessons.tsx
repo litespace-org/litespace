@@ -19,8 +19,10 @@ const UpcomingLessons: React.FC = () => {
     canceled: true,
   });
 
+  if (!profile.value?.user) return;
+
   return (
-    <div className="p-6 max-w-screen-3xl mx-auto w-full">
+    <div className="px-6 py-8 max-w-screen-3xl mx-auto w-full">
       <PageTitle title={intl("page.upcoming-lessons.title")} className="mb-6" />
       <Content
         list={lessons.list}
