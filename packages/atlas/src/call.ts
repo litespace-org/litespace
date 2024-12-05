@@ -9,4 +9,8 @@ export class Call extends Base {
   async findById(id: number): Promise<ICall.FindCallByIdApiResponse> {
     return await this.get(`/api/v1/call/${id}`);
   }
+
+  async findCallMembers(id: number): Promise<ICall.FindCallMembersByCallIdApiResponse> {
+    return await this.get(`/api/v1/call/${id}/members`);
+  }
 }
