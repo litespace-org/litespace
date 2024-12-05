@@ -1,12 +1,20 @@
 import { calls } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { findCallMembersParams, withNamedId } from "@/validation/utils";
+import { id, withNamedId } from "@/validation/utils";
 import { forbidden, notfound } from "@/lib/error";
 import { isAdmin, isGhost, isUser } from "@litespace/auth";
 import { canJoinCall } from "@/lib/call";
 import { cache } from "@/lib/cache";
 import { ICall } from "@litespace/types";
+import zod from "zod";
+
+const types = ["lesson", "interview"] as const satisfies ICall.Type[];
+
+export const findCallMembersParams = zod.object({
+  callId: id,
+  callType: zod.enum(types),
+});
 
 async function findCallById(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
@@ -41,11 +49,12 @@ async function findCallMembers(
 
   const canJoin = await canJoinCall({
     userId: user.id,
-    callId: callId,
-    callType: callType, // DONE: accept from the request body
-  }) || isAdmin(user);
+    callType,
+    callId,
+  });
 
-  if (!canJoin) return next(forbidden());
+  const eligible = canJoin || isAdmin(user);
+  if (!eligible) return next(forbidden());
 
   const members = await cache.call.getMembers(callId);
   const response: ICall.FindCallMembersApiResponse = members;

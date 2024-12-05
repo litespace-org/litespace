@@ -14,7 +14,11 @@ import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";
 import { authMiddleware, adminOnly } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
+import { cache } from "@/lib/cache";
 import "colors";
+
+// Stablish connection with the redis cache.
+cache.connect();
 
 const app = express();
 const server = createServer(app);

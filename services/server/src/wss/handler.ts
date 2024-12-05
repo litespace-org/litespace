@@ -450,7 +450,6 @@ export class WssHandler {
     if (isGhost(user)) return;
 
     const callId = await cache.call.removeMemberByUserId(user.id);
-    // todo: notify other call members that the user left the call
     if (!callId) return;
 
     // notify members that a member has left the call
