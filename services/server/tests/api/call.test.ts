@@ -8,6 +8,7 @@ import { cache } from "@/lib/cache";
 describe("/api/v1/call", () => {
   beforeEach(async () => {
     await flush();
+    await cache.flush();
   });
 
   it("should retrieve call by callId", async () => {
@@ -37,8 +38,8 @@ describe("/api/v1/call", () => {
 
     // test results
     expect(membersIds).to.have.length(1);
-    expect(membersIds[0]).deep.equal(call.id);
-    expect(membersIds[0]).deep.equal(tutor.id);
+    expect(membersIds).to.contains(call.id);
+    expect(membersIds).to.contains(tutor.id);
   });
 
   it("should NOT retrieve call data for an uneligable user", async () => {
