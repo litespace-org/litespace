@@ -22,8 +22,8 @@ export const Ready: React.FC<{
   const explaination = useMemo(() => {
     if (users.length === 0) return intl("call.ready.explaination.empty");
     if (users[0].role === IUser.Role.Tutor)
-      return intl("call.ready.explaination.full.for-student");
-    return intl("call.ready.explaination.full.for-tutor");
+      return intl("call.ready.explaination.full.for-male-student");
+    return intl("call.ready.explaination.full.for-male-tutor");
   }, [users, intl]);
 
   /**
