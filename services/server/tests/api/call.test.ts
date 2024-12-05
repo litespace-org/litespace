@@ -37,9 +37,9 @@ describe("/api/v1/call", () => {
     const membersIds = await adminApi.atlas.call.findCallMembers(call.id, "lesson");
 
     // test results
+    console.log(membersIds, tutor.id)
     expect(membersIds).to.have.length(1);
-    expect(membersIds).to.contains(call.id);
-    expect(membersIds).to.contains(tutor.id);
+    expect(membersIds).to.contain(tutor.id);
   });
 
   it("should NOT retrieve call data for an uneligable user", async () => {
