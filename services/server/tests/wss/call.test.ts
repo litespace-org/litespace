@@ -1,5 +1,5 @@
 import { Api } from "@fixtures/api";
-import db, { flush, interview } from "@fixtures/db";
+import { flush } from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -8,7 +8,7 @@ import { Time } from "@litespace/sol/time";
 import { faker } from "@faker-js/faker/locale/ar";
 import { unpackRules } from "@litespace/sol/rule";
 import { expect } from "chai";
-import { calls } from "@litespace/models";
+import { controllers } from "@/controllers";
 
 describe("calls test suite", () => {
   let tutor: IUser.LoginApiResponse;
@@ -68,8 +68,8 @@ describe("calls test suite", () => {
     tutorSocket.joinCall(lesson.callId, "lesson");
 
     const { userId } = await studentResult;
+    const callMembers = await controllers.calls.getJoinedMembers(lesson.callId);
 
-    const callMembers = await calls.findCallMembers([lesson.callId]);
     expect(callMembers).to.be.of.length(1);
     expect(callMembers[0].userId).to.be.eq(tutor.user.id);
     expect(userId).to.be.eq(tutor.user.id);
@@ -78,14 +78,12 @@ describe("calls test suite", () => {
     studentSocket.joinCall(lesson.callId, "lesson");
 
     const { userId: studentId } = await tutorResult;
-    const callMembersSecondSnapshot = await calls.findCallMembers([
-      lesson.callId,
-    ]);
+    const callMembersSecondSnapshot = await controllers.calls.getJoinedMembers(lesson.callId);
+
     expect(callMembersSecondSnapshot).to.be.of.length(2);
     expect(
       callMembersSecondSnapshot.map((member) => member.userId)
     ).to.be.members([student.user.id, tutor.user.id]);
-
     expect(studentId).to.be.eq(student.user.id);
 
     tutorSocket.client.disconnect();

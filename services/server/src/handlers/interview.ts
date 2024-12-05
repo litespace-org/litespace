@@ -35,6 +35,7 @@ import { isAdmin, isInterviewer, isSuperAdmin, isTutor } from "@litespace/auth";
 import { isEmpty, isEqual } from "lodash";
 import { canBook } from "@/lib/call";
 import { platformConfig } from "@/constants";
+import { controllers } from "@/controllers";
 
 const INTERVIEW_DURATION = 30;
 
@@ -106,7 +107,8 @@ async function createInterview(
   if (!room) await rooms.create(members);
 
   const interview = await knex.transaction(async (tx) => {
-    const call = await calls.create(tx);
+    const call = await controllers.calls
+      .createWithMembers([interviewerId, intervieweeId])
 
     const interview = await interviews.create({
       interviewer: interviewerId,

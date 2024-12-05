@@ -24,6 +24,8 @@ import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/call";
 import { concat, isEqual } from "lodash";
+import { CallsController } from "@/controllers/calls";
+import { controllers } from "@/controllers";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -85,7 +87,8 @@ function create(context: ApiContext) {
 
       const { lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
-          const call = await calls.create(tx);
+          const call = await controllers.calls
+            .createWithMembers([payload.tutorId, user.id])
           const lesson = await lessons.create({
             tutor: payload.tutorId,
             student: user.id,

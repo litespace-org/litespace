@@ -1,7 +1,4 @@
 import {
-  calls,
-  interviews,
-  lessons,
   messages,
   rooms,
   users,
@@ -21,8 +18,7 @@ import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { cache } from "@/lib/cache";
 import { getGhostCall } from "@litespace/sol/ghost";
-import { canJoinCall } from "@/lib/call";
-import dayjs from "@/lib/dayjs";
+import { controllers } from "@/controllers";
 
 const peerPayload = zod.object({ callId: id, peerId: string });
 const updateMessagePayload = zod.object({ text: string, id });
@@ -81,7 +77,7 @@ export class WssHandler {
    */
   async onJoinCall(data: unknown) {
     const result = await safe(async () => {
-      const { callId, type } = onJoinCallPayload.parse(data);
+      const { callId } = onJoinCallPayload.parse(data);
 
       const user = this.user;
       // todo: add ghost as a member of the call
@@ -89,19 +85,16 @@ export class WssHandler {
 
       stdout.info(`User ${user.id} is joining call ${callId}.`);
 
-      const canJoin = await canJoinCall({
-        userId: user.id,
-        callType: type,
-        callId,
+      const canJoin = await controllers.calls.isMember({
+        userId: user.id, 
+        callId
       });
-
       if (!canJoin) throw Error("Forbidden");
 
-      // add user to the call by inserting row to call_members relation
-      await calls.addMember({
+      await controllers.calls.joinMemberToCall({
         userId: user.id,
         callId: callId,
-      });
+      })
 
       stdout.info(`User ${user.id} has joined call ${callId}.`);
 
@@ -129,11 +122,10 @@ export class WssHandler {
 
       stdout.info(`User ${user.id} is leaving call ${callId}.`);
 
-      // remove user from the call by deleting the corresponding row from call_members relation
-      await calls.removeMember({
+      await controllers.calls.leaveMemberFromCall({
         userId: user.id,
         callId: callId,
-      });
+      })
 
       stdout.info(`User ${user.id} has left call ${callId}.`);
 
@@ -147,30 +139,27 @@ export class WssHandler {
     if (result instanceof Error) stdout.error(result.message);
   }
 
-  async joinRooms() {
+  async listenToRoomsAndCalls() {
     const error = await safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
 
+      /*
+       *  ??INQUERY: What is this for?!
+       */
       const { list } = await rooms.findMemberRooms({ userId: user.id });
-
       this.socket.join(list.map((roomId) => this.asChatRoomId(roomId)));
       // private channel
       this.socket.join(user.id.toString());
 
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
+      /*
+       *  INQUERY??
+       */
 
-      const callsList = await calls.find({
-        users: [user.id],
-        full: true,
-        after: dayjs.utc().startOf("day").toISOString(),
-        before: dayjs.utc().add(1, "day").toISOString(),
-      });
-
-      this.socket.join(
-        callsList.list.map((call) => this.asCallRoomId(call.id))
-      );
+      const callsIds = await controllers.calls.getCallsOfUser(user.id);
+      this.socket.join(callsIds.map((id) => this.asCallRoomId(id)));
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -184,7 +173,7 @@ export class WssHandler {
       const { callId, peerId } = peerPayload.parse(ids);
       const user = this.user;
 
-      const members = await calls.findCallMembers([callId]);
+      const members = await controllers.calls.getJoinedMembers(callId);
       if (isEmpty(members)) return;
 
       const memberIds = members.map((member) => member.userId);
@@ -395,7 +384,7 @@ export class WssHandler {
   async connect() {
     const error = safe(async () => {
       await this.online();
-      await this.joinRooms();
+      await this.listenToRoomsAndCalls();
       if (isAdmin(this.user)) this.emitServerStats();
     });
     if (error instanceof Error) stdout.error(error.message);
@@ -405,7 +394,7 @@ export class WssHandler {
     const error = safe(async () => {
       await this.offline();
       await this.deregisterPeer();
-      await this.removeUserFromCalls();
+      await this.leaveUserFromCalls();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -447,26 +436,10 @@ export class WssHandler {
     if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
   }
 
-  async removeUserFromCalls() {
+  async leaveUserFromCalls() {
     const user = this.user;
     if (isGhost(user)) return;
-
-    const now = dayjs.utc();
-    const { list, total } = await calls.find({
-      users: [user.id],
-      after: now.subtract(1, "hour").toISOString(),
-      before: now.add(1, "hour").toISOString(),
-    });
-    if (total === 0) return;
-
-    await Promise.all(
-      list.map((call) =>
-        calls.removeMember({
-          callId: call.id,
-          userId: user.id,
-        })
-      )
-    );
+    await controllers.calls.leaveMemberFromAll(user.id)
   }
 
   async announceStatus(user: IUser.Self) {

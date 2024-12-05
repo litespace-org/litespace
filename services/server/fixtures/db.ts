@@ -28,6 +28,7 @@ import { Time } from "@litespace/sol/time";
 export { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import { controllers } from "@/controllers";
 
 dayjs.extend(utc);
 
@@ -114,7 +115,7 @@ const or = {
     return id;
   },
   async callId(id?: number): Promise<number> {
-    if (!id) return await calls.create().then((call) => call.id);
+    if (!id) return await controllers.calls.create().then(call => call.id);
     return id;
   },
   async ruleId(id?: number): Promise<number> {
