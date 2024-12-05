@@ -17,27 +17,29 @@ describe("/api/v1/call", () => {
 
     // send request to the api
     const adminApi = await Api.forSuperAdmin();
-    const res = await adminApi.atlas.call.findById(call.id)
+    const res = await adminApi.atlas.call.findById(call.id);
 
     // test results
     expect(res.call).deep.equal(call);
   });
-  
+
   it("should retrieve call members by callId", async () => {
     // insert data in the database
     const call = await calls.create();
     const tutor = await fixtures.tutor();
     await cache.call.addMember({
       callId: call.id,
-      userId: tutor.id
-    })
+      userId: tutor.id,
+    });
 
     // send request to the api
     const adminApi = await Api.forSuperAdmin();
-    const membersIds = await adminApi.atlas.call.findCallMembers(call.id, "lesson");
+    const membersIds = await adminApi.atlas.call.findCallMembers(
+      call.id,
+      "lesson"
+    );
 
     // test results
-    console.log(membersIds, tutor.id)
     expect(membersIds).to.have.length(1);
     expect(membersIds).to.contain(tutor.id);
   });
@@ -48,11 +50,9 @@ describe("/api/v1/call", () => {
 
     // send request to the api & test the response
     const studentApi = await Api.forStudent();
-    await studentApi.atlas.call.findById(call.id)
-        .then(unexpectedApiSuccess)
-        .catch((error) =>
-          // @TODO: add these hardcoded error messages in a global contant file
-          expect(error.message).to.be.eq("Unauthorized access")
-        );
+    await studentApi.atlas.call
+      .findById(call.id)
+      .then(unexpectedApiSuccess)
+      .catch((error) => expect(error.message).to.be.eq("Unauthorized access"));
   });
 });
