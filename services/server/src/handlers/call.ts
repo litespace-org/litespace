@@ -43,13 +43,12 @@ async function findCallMembers(
     userId: user.id,
     callId: callId,
     callType: "lesson", // todo: accept from the request body
-  });
+  }) || isAdmin(user);
+
   if (!canJoin) return next(forbidden());
 
   const members = await cache.call.getMembers(callId);
-
-  const response: ICall.FindCAllMembersApiResponse = members;
-
+  const response: ICall.FindCallMembersApiResponse = members;
   res.status(200).json(response);
 }
 
