@@ -2,19 +2,13 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { SendInput } from "@/components/Chat/SendInput";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
-import React from "react";
 
 type Component = typeof SendInput;
 
 const meta: Meta<Component> = {
   component: SendInput,
   parameters: { layout: "centered" },
-  decorators: [
-    (Story) => {
-      return <Story />;
-    },
-    DarkStoryWrapper,
-  ],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<Component> = {

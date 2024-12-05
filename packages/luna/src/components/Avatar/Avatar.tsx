@@ -24,7 +24,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear",
-          "data-[status=loaded]:tw-opacity-100 tw-absolute tw-w-full tw-h-full"
+          "data-[status=loaded]:tw-opacity-100 tw-absolute tw-object-contain tw-w-full tw-h-full"
         )}
         src={src}
         alt={alt}

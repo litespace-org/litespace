@@ -100,7 +100,7 @@ export const ChatRoom: React.FC<{
                     isActive || isTyping,
                 })}
               />
-              {intl("chat.Typing-now")}
+              {intl("chat.typing-now.male")}
             </div>
           ) : (
             message
