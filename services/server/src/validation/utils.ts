@@ -11,6 +11,7 @@ import {
   IInvoice,
   banks,
   IFilter,
+  ICall,
 } from "@litespace/types";
 import zod from "zod";
 
@@ -141,4 +142,9 @@ export const pageSize = zod.coerce.number().positive().min(1).int();
 export const pagination = zod.object({
   page: zod.optional(pageNumber).default(1),
   size: zod.optional(pageSize).default(10),
+});
+
+export const findCallMembersParams = zod.object({ 
+  callId: id, 
+  callType: zod.enum(["lesson", "interview"])
 });

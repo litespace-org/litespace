@@ -10,7 +10,7 @@ export class Call extends Base {
     return await this.get(`/api/v1/call/${id}`);
   }
 
-  async findCallMembers(id: number): Promise<ICall.FindCallMembersApiResponse> {
-    return await this.get(`/api/v1/call/${id}/members`);
+  async findCallMembers(id: number, type: "lesson" | "interview"): Promise<ICall.FindCallMembersApiResponse> {
+    return await this.get(`/api/v1/call/${id}/${type}/members`);
   }
 }

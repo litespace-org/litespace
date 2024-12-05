@@ -33,7 +33,7 @@ describe("/api/v1/call", () => {
 
     // send request to the api
     const adminApi = await Api.forSuperAdmin();
-    const membersIds = await adminApi.atlas.call.findCallMembers(call.id)
+    const membersIds = await adminApi.atlas.call.findCallMembers(call.id, "lesson");
 
     // test results
     expect(membersIds).to.have.length(1);

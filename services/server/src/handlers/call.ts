@@ -1,7 +1,7 @@
 import { calls } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { withNamedId } from "@/validation/utils";
+import { findCallMembersParams, withNamedId } from "@/validation/utils";
 import { forbidden, notfound } from "@/lib/error";
 import { isAdmin, isGhost, isUser } from "@litespace/auth";
 import { canJoinCall } from "@/lib/call";
@@ -37,12 +37,12 @@ async function findCallMembers(
   const allowed = isUser(user);
   if (!allowed) return next(forbidden());
 
-  const { callId } = withNamedId("callId").parse(req.params);
+  const { callId, callType } = findCallMembersParams.parse(req.params);
 
   const canJoin = await canJoinCall({
     userId: user.id,
     callId: callId,
-    callType: "lesson", // todo: accept from the request body
+    callType: callType, // DONE: accept from the request body
   }) || isAdmin(user);
 
   if (!canJoin) return next(forbidden());
