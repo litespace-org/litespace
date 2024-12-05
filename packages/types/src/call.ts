@@ -75,3 +75,5 @@ export type FindUserCallsApiResponse = {
 };
 
 export type Type = "lesson" | "interview";
+
+export type FindCAllMembersApiResponse = number[];

@@ -32,11 +32,12 @@ export class Call extends CacheBase {
       .exec();
   }
 
-  async removeMemberByUserId(userId: number) {
+  async removeMemberByUserId(userId: number): Promise<number | null> {
     const result = await this.client.get(this.asUserKey(userId));
-    if (!result) return;
+    if (!result) return null;
     const callId = this.decode(result) as number;
     await this.removeMember({ callId, userId });
+    return callId;
   }
 
   async getMembers(callId: number): Promise<number[]> {
