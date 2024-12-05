@@ -98,10 +98,7 @@ export class WssHandler {
       if (!canJoin) throw Error("Forbidden");
 
       // add user to the call by inserting row to call_members relation
-      await calls.addMember({
-        userId: user.id,
-        callId: callId,
-      });
+      await cache.call.addMember({ userId: user.id, callId: callId });
 
       stdout.info(`User ${user.id} has joined call ${callId}.`);
 
@@ -130,7 +127,7 @@ export class WssHandler {
       stdout.info(`User ${user.id} is leaving call ${callId}.`);
 
       // remove user from the call by deleting the corresponding row from call_members relation
-      await calls.removeMember({
+      await cache.call.removeMember({
         userId: user.id,
         callId: callId,
       });
@@ -161,6 +158,7 @@ export class WssHandler {
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
+      // todo: get user calls from cache
       const callsList = await calls.find({
         users: [user.id],
         full: true,
@@ -451,22 +449,15 @@ export class WssHandler {
     const user = this.user;
     if (isGhost(user)) return;
 
-    const now = dayjs.utc();
-    const { list, total } = await calls.find({
-      users: [user.id],
-      after: now.subtract(1, "hour").toISOString(),
-      before: now.add(1, "hour").toISOString(),
-    });
-    if (total === 0) return;
+    const callId = await cache.call.removeMemberByUserId(user.id);
+    if (!callId) return;
 
-    await Promise.all(
-      list.map((call) =>
-        calls.removeMember({
-          callId: call.id,
-          userId: user.id,
-        })
-      )
-    );
+    // notify members that a member has left the call
+    this.socket.broadcast
+      .to(this.asCallRoomId(callId))
+      .emit(Wss.ServerEvent.MemberLeftCall, {
+        userId: user.id,
+      });
   }
 
   async announceStatus(user: IUser.Self) {
