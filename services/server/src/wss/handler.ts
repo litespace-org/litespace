@@ -89,6 +89,7 @@ export class WssHandler {
         userId: user.id, 
         callId
       });
+      // TODO: check the time of the call
       if (!canJoin) throw Error("Forbidden");
 
       await controllers.calls.joinMemberToCall({

@@ -17,6 +17,7 @@ import {
   withdrawMethods,
   invoices,
   hashPassword,
+  Cache,
 } from "@litespace/models";
 import {
   ICall,
@@ -47,6 +48,8 @@ const birthYear = () =>
 async function main(): Promise<void> {
   const stdout = logger("seed");
   const password = hashPassword("Password@8");
+  const redis = new Cache("redis://localhost:6379");
+  redis.connect();
 
   const admin = await users.create({
     email: "admin@litespace.org",
@@ -265,6 +268,8 @@ async function main(): Promise<void> {
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const call = await calls.create(tx);
+      redis.call.addMember({callId: call.id, userId: tutorId})
+      redis.call.addMember({callId: call.id, userId: student.id})
       const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
 
       const { lesson } = await lessons.create({
@@ -314,6 +319,8 @@ async function main(): Promise<void> {
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const call = await calls.create(tx);
+      redis.call.addMember({callId: call.id, userId: tutor.id})
+      redis.call.addMember({callId: call.id, userId: interviewer.id})
 
       const interview = await interviews.create({
         call: call.id,
@@ -501,6 +508,7 @@ async function main(): Promise<void> {
     fulfilledInvoices / 100
   );
   stdout.info("Total sum for pending invoices in egp", pendingInvoices / 100);
+  redis.disconnect();
 }
 
 main()
