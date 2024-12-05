@@ -18,6 +18,7 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orNull, orUndefined } from "@litespace/sol/utils";
 import {
+  useCallMembers,
   // useCall,
   useCallV2,
   useFindCallRoomById,
@@ -50,6 +51,12 @@ const Call: React.FC = () => {
   }, [id]);
 
   const callRoom = useFindCallRoomById(!isGhost ? callId : null);
+
+
+  const members = useCallMembers(callId, "interview");
+  useEffect(() => {
+    console.log("In View: members = ", members);
+  }, [members])
 
   const mateInfo = useMemo(() => {
     if (!callRoom.data) return;
