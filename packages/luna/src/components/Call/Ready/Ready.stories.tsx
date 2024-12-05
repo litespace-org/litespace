@@ -7,7 +7,6 @@ import { IUser } from "@litespace/types";
 type Component = typeof Ready;
 
 const meta: Meta<Component> = {
-  title: "Ready",
   component: Ready,
   parameters: { layout: "centered" },
   decorators: [
