@@ -14,6 +14,7 @@ export class Cache {
 
   constructor(url: string) {
     const client = createClient({ url });
+    client.on('error', (err) => console.log('Redis Client Error', err));
     this.client = client;
     this.tutors = new Tutors(client);
     this.rules = new Rules(client);
@@ -27,5 +28,9 @@ export class Cache {
 
   async connect() {
     await this.client.connect();
+  }
+
+  async disconnect() {
+    await this.client.quit();
   }
 }
