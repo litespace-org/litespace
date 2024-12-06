@@ -8,7 +8,6 @@ import { formatMinutes } from "@litespace/luna/utils";
 import { Loading } from "@litespace/luna/Loading";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-
 import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
