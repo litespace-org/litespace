@@ -74,6 +74,7 @@
     "./TutorFemaleLight": "./dist/TutorFemaleLight.tsx",
     "./TutorMaleDark": "./dist/TutorMaleDark.tsx",
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
+    "./UserAvatar": "./dist/UserAvatar.tsx",
     "./Video": "./dist/Video.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
     "./X": "./dist/X.tsx",

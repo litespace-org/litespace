@@ -1,6 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Select, SelectList } from "@/components/Select";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { faker } from "@faker-js/faker/locale/ar";
+import { range } from "lodash";
 
 type ISelect = typeof Select;
 
@@ -10,37 +12,33 @@ const meta: Meta<ISelect> = {
   decorators: [DarkStoryWrapper],
 };
 
-const options: SelectList<string> = [
-  { label: "الاختيار الاول", value: "1" },
-  { label: "الاختيار الثاني", value: "2" },
-  { label: "الاختيار الثالث", value: "3" },
-  { label: "الاختيار الرابع", value: "4" },
-];
+const options: SelectList<number> = range(5).map((idx) => ({
+  label: faker.color.human(),
+  value: idx,
+}));
 
 export const Primary: StoryObj<ISelect> = {
   args: {
-    placeholder: "ادخل سنه ميلادك",
+    placeholder: faker.lorem.words(5),
     options,
-    value: "3",
   },
 };
 
 export const WithDefaultValueSelected: StoryObj<ISelect> = {
   args: {
     options,
-    value: "3",
-    placeholder: "ادخل سنه ميلادك",
+    placeholder: faker.lorem.words(5),
     onChange: (value) => console.log(value),
   },
 };
 
 export const ManyOptions: StoryObj<ISelect> = {
   args: {
-    options: new Array(100)
-      .fill(0)
-      .map((_, idx) => ({ label: `Option ${idx + 1}`, value: idx })),
-    value: "3",
-    placeholder: "ادخل سنه ميلادك",
+    options: range(100).map((_, idx) => ({
+      label: faker.person.fullName(),
+      value: idx,
+    })),
+    placeholder: faker.lorem.words(3),
     onChange: (value) => console.log(value),
   },
 };
