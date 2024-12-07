@@ -94,6 +94,7 @@ const Schedule: React.FC = () => {
                       onCancel={() => alert("todo")}
                       onEdit={() => alert("todo")}
                       onRebook={() => alert("todo")}
+                      onJoin={() => alert("todo")}
                     />
                   </div>
                 );

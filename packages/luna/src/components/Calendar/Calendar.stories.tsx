@@ -9,7 +9,7 @@ import { Dayjs } from "dayjs";
 type Component = typeof Calendar;
 
 const meta: Meta<Component> = {
-  title: "Calendar",
+  title: "Calendar/V1",
   component: Calendar,
   decorators: [
     (Story: React.FC) => (

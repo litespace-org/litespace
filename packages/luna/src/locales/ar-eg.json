@@ -98,6 +98,7 @@
   "schedule.lesson.edit": "تعديل الموعد",
   "schedule.lesson.cancel": "الغاء الحصة",
   "schedule.lesson.rebook": "حجز حصة اخري",
+  "schedule.lesson.join": "دخول الحصة",
   "schedule.lesson.canceled-by-tutor": "لقد تم الغاء الحصة من قبل المعلم",
   "page.lessons.empty.title": "لا يوجد لديك سجل حصص بعد",
   "page.lessons.empty.tutor.description": "إبدا بانشاء وتفعيل جدولك الخاص حتي يتمكن طلابك من حجز الحصص معك",

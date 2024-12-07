@@ -7,9 +7,18 @@ import { Dayjs } from "dayjs";
 type Component = typeof Calendar;
 
 const meta: Meta<Component> = {
-  title: "CalendarV2",
+  title: "Calendar/V2",
   component: Calendar,
-  decorators: [],
+  decorators: [
+    (Story) => (
+      <div className="tw-p-4">
+        <Story />
+      </div>
+    ),
+  ],
+  parameters: {
+    layout: null,
+  },
 };
 
 const HourView: React.FC<{ date: Dayjs }> = ({ date }) => {

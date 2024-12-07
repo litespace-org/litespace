@@ -6,7 +6,7 @@ import dayjs from "@/lib/dayjs";
 type Component = typeof Lessons;
 
 const meta: Meta<Component> = {
-  title: "Calendar Lesson Events",
+  title: "Calendar/Lessons",
   component: Lessons,
   parameters: { layout: "centered" },
   decorators: [],
@@ -16,6 +16,7 @@ const actions = {
   onEdit: (id: number) => alert(`Edit: ${id}`),
   onCancel: (id: number) => alert(`Cancel: ${id}`),
   onRebook: (id: number) => alert(`Rebook: ${id}`),
+  onJoin: (id: number) => alert(`Join: ${id}`),
 };
 
 export const SingleLessonWithAvatar: StoryObj<Component> = {
