@@ -1,17 +1,15 @@
 import { Void } from "@litespace/types";
 import React from "react";
-import { EndCallButton } from "../EndCallButton";
-import { ToggleCallButton } from "../ToggleCallButton";
+import { EndCallButton } from "./EndCallButton";
+import { ToggleCallButton } from "./ToggleCallButton";
 
 export const CallBar: React.FC<{
   items: {
-    toggleFunction: Void;
-    ToggleIcon: {
-      On: React.FC<{ className?: string }>;
-      Off: React.FC<{ className?: string }>;
-    };
-    toggleState: boolean;
-    hasError?: boolean;
+    toggle: Void;
+    active: boolean;
+    OnIcon: React.FC<{ className?: string }>;
+    OffIcon: React.FC<{ className?: string }>;
+    error?: boolean;
   }[];
   leaveCall?: Void;
 }> = ({ leaveCall, items }) => {

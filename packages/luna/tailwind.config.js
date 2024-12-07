@@ -129,6 +129,7 @@ export default {
           secondary: "hsl(var(--border-secondary))",
           muted: "hsl(var(--border-muted))",
           overlay: "hsl(var(--border-overlay))",
+          avatar: "rgba(0, 0, 0, 0.4)",
           button: {
             DEFAULT: "hsl(var(--border-button-default))",
             hover: "hsl(var(--border-button-hover))",
