@@ -1,10 +1,5 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useState } from "react";
 import cn from "classnames";
-import {
-  CheckIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-} from "@radix-ui/react-icons";
 import { SelectList, SelectPlacement } from "@/components/Select/types";
 import {
   Root,
@@ -13,15 +8,13 @@ import {
   Icon,
   Portal,
   Content,
-  ScrollUpButton,
-  ScrollDownButton,
   Viewport,
   Group,
   Item,
   ItemText,
-  ItemIndicator,
   SelectItemProps,
 } from "@radix-ui/react-select";
+import ArrowDown from "@litespace/assets/ArrowDown";
 
 export type SelectProps<T extends string | number> = {
   placeholder?: string;
@@ -30,18 +23,15 @@ export type SelectProps<T extends string | number> = {
   onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
-  size?: "normal" | "small";
 };
-
-const OPTIONS_COUNT_THRESHOLD = 10;
 
 export const Select = <T extends string | number>({
   value,
   placeholder,
   options = [],
   onChange,
-  size = "normal",
 }: SelectProps<T>) => {
+  const [open, setOpen] = useState<boolean>(false);
   const onValueChange = useCallback(
     (value: string) => {
       if (!onChange) return;
@@ -54,41 +44,53 @@ export const Select = <T extends string | number>({
     [onChange, options]
   );
 
-  const manyOptions = useMemo(
-    () => options.length > OPTIONS_COUNT_THRESHOLD,
-    [options.length]
-  );
-
   return (
-    <Root dir="rtl" value={value?.toString()} onValueChange={onValueChange}>
+    <Root
+      open={open}
+      onOpenChange={setOpen}
+      dir="rtl"
+      value={value?.toString()}
+      onValueChange={onValueChange}
+    >
       <Trigger
+        data-open={open}
         className={cn(
-          "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
-          "tw-border tw-border-control tw-text-sm tw-bg-foreground/[0.026] tw-rounded-md",
-          "tw-flex tw-justify-between tw-gap-2 tw-items-center tw-cursor-pointer tw-text-foreground tw-whitespace-nowrap",
-          size === "normal"
-            ? "tw-px-4 tw-py-2 tw-h-[38px]"
-            : "tw-px-2 tw-py-1 tw-h-[34px]"
+          "tw-flex tw-flex-row tw-justify-between tw-items-center",
+          "tw-w-full tw-h-14 tw-rounded-lg tw-p-2 tw-transition-colors tw-duration-200",
+          "tw-border tw-border-natural-300 hover:tw-border-brand-200 focus:tw-border-brand-500",
+          "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
+          "focus:tw-outline-none focus:tw-shadow-ls-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
+          "tw-bg-natural-50 hover:tw-bg-brand-50",
+          "data-[open=true]:tw-shadow-ls-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
         )}
       >
         <Value placeholder={placeholder} />
-        <Icon className="tw-text-foreground">
-          <ChevronDownIcon />
+        <Icon>
+          <ArrowDown
+            data-open={open}
+            className={cn(
+              "tw-justify-self-end",
+              "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+            )}
+          />
         </Icon>
       </Trigger>
       <Portal>
         <Content
-          position={manyOptions ? "popper" : "item-aligned"}
+          position="popper"
           className={cn(
-            "tw-bg-background-overlay tw-border tw-border-border-strong tw-rounded-md tw-overflow-hidden",
-            manyOptions ? "tw-h-60 tw-min-w-60" : null
+            "tw-bg-natural-50 tw-border tw-border-brand-400 tw-p-1 tw-rounded-lg",
+            "tw-w-[var(--radix-select-trigger-width)]"
           )}
+          sideOffset={12}
         >
-          <ScrollUpButton className="tw-flex tw-h-[25px] tw-cursor-default tw-items-center tw-justify-center tw-bg-background-overlay tw-text-foreground hover:tw-bg-background-selection">
-            <ChevronUpIcon />
-          </ScrollUpButton>
           <Viewport className="focus:tw-outline-red-500">
-            <Group>
+            <Group
+              className={cn(
+                "tw-flex tw-flex-col tw-gap-1 tw-max-h-64 tw-overflow-y-auto",
+                "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+              )}
+            >
               {options.map((option) => (
                 <SelectItem value={option.value.toString()} key={option.value}>
                   {option.label}
@@ -96,9 +98,6 @@ export const Select = <T extends string | number>({
               ))}
             </Group>
           </Viewport>
-          <ScrollDownButton className="tw-flex tw-h-[25px] tw-cursor-default tw-items-center tw-justify-center tw-bg-background-overlay tw-text-foreground hover:tw-bg-background-selection">
-            <ChevronDownIcon />
-          </ScrollDownButton>
         </Content>
       </Portal>
     </Root>
@@ -106,21 +105,22 @@ export const Select = <T extends string | number>({
 };
 
 const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
-  ({ children, className, ...props }, forwardedRef) => {
+  ({ children, className, ...props }, ref) => {
     return (
       <Item
         className={cn(
-          "tw-flex tw-items-center tw-justify-between",
-          "hover:tw-bg-background-overlay-hover tw-cursor-pointer tw-text-sm tw-px-3 tw-py-2 tw-mx-0.5 focus:tw-outline-surface-400",
+          "tw-h-14 tw-flex tw-shrink-0 tw-items-center tw-justify-between",
+          "data-[state=unchecked]:hover:tw-bg-natural-100 data-[state=unchecked]:hover:tw-text-natural-900",
+          "focus:tw-outline-none data-[state=unchecked]:focus:tw-bg-natural-100",
+          "data-[state=unchecked]:active:tw-bg-brand-700 data-[state=unchecked]:active:tw-text-natural-50",
+          "tw-cursor-pointer tw-px-3 tw-rounded-lg",
+          "data-[state=checked]:tw-bg-brand-700 data-[state=checked]:tw-text-natural-50",
           className
         )}
         {...props}
-        ref={forwardedRef}
+        ref={ref}
       >
-        <ItemText className="tw-text-foreground">{children}</ItemText>
-        <ItemIndicator className="absolute left-0 inline-flex w-[25px] items-center justify-center">
-          <CheckIcon />
-        </ItemIndicator>
+        <ItemText className="tw-text-natural-900">{children}</ItemText>
       </Item>
     );
   }
