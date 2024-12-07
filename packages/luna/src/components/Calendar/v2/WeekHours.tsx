@@ -24,8 +24,9 @@ export const WeekHours: React.FC<{ day: Dayjs; HourView?: HourView }> = ({
 
   return (
     <>
-      {week.map(({ day, hours }) => {
+      {week.map(({ day, hours }, idx) => {
         const today = day.isSame(dayjs(), "day");
+        const lastDay = week.length - 1 === idx;
         return (
           <div
             className="tw-border-r tw-border-natural-300"
@@ -33,26 +34,29 @@ export const WeekHours: React.FC<{ day: Dayjs; HourView?: HourView }> = ({
           >
             <div
               className={cn(
-                "tw-flex tw-items-center tw-justify-center tw-px-3 tw-h-16",
-                today ? "tw-bg-brand-100" : "tw-bg-natural-50"
+                "tw-flex tw-items-center tw-justify-center tw-px-3 tw-h-16 tw-border-b tw-border-natural-300",
+                today ? "tw-bg-brand-100" : "tw-bg-natural-50",
+                lastDay && "tw-rounded-tl-3xl"
               )}
             >
               <Typography
                 element="body"
                 weight="semibold"
-                className={cn(
-                  today ? "tw-text-brand-700" : "tw-text-natural-700"
-                )}
+                className="tw-text-brand-700"
               >
                 {day.format("dddd D")}
               </Typography>
             </div>
 
             {hours.map((hour) => {
+              const lastHour = hour.hour() === 23;
               return (
                 <div
                   key={hour.toISOString()}
-                  className="tw-h-[5.5rem] tw-border-b tw-border-natural-300"
+                  className={cn(
+                    "tw-h-[5.5rem] tw-border-natural-300",
+                    !lastHour && "tw-border-b"
+                  )}
                 >
                   {HourView ? <HourView date={hour} /> : null}
                 </div>
@@ -61,10 +65,6 @@ export const WeekHours: React.FC<{ day: Dayjs; HourView?: HourView }> = ({
           </div>
         );
       })}
-      {/* {hours.map((hour) => {
-        const key = hour.toISOString();
-        return <div key={key}>{hour.format("DD HH")}</div>;
-      })} */}
     </>
   );
 };

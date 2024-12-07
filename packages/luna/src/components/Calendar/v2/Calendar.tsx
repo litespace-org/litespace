@@ -15,12 +15,12 @@ export const Calendar: React.FC<Props> = ({ date, HourView }) => {
     <div className="tw-w-full">
       <div
         className={cn(
-          "tw-w-full tw-flex tw-bg-natural-100 tw-border tw-border-natural-300/50",
-          "tw-shadow-calendar tw-rounded-2xl tw-overflow-hidden"
+          "tw-w-full tw-flex tw-bg-natural-50 tw-border tw-border-natural-300",
+          "tw-shadow-calendar tw-rounded-2xl"
         )}
       >
         <Hours day={date} />
-        <div className="tw-grid tw-grid-cols-7 tw-w-full">
+        <div className="tw-grid tw-grid-cols-7 tw-w-full tw-rounded-tl-3xl">
           <WeekHours day={date} HourView={HourView} />
         </div>
       </div>

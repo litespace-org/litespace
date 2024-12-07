@@ -7,29 +7,31 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/sol/utils";
 import Clock from "@litespace/assets/Clock";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import More from "@litespace/assets/More";
+import Video from "@litespace/assets/Video16X16";
 import { useFormatMessage } from "@/hooks";
 
 type LessonActions = {
   onCancel(id: number): void;
   onEdit(id: number): void;
   onRebook(id: number): void;
+  onJoin(id: number): void;
 };
 
-const Menu: React.FC<
+const OptionsMenu: React.FC<
   LessonActions & {
     canceled: boolean;
     id: number;
     open?: boolean;
     setOpen?: (open: boolean) => void;
   }
-> = ({ id, canceled, onCancel, onEdit, onRebook, open, setOpen }) => {
+> = ({ id, canceled, onCancel, onEdit, onRebook, onJoin, open, setOpen }) => {
   const intl = useFormatMessage();
 
-  const items = useMemo(() => {
+  const actions: MenuAction[] = useMemo(() => {
     if (canceled)
       return [
         {
@@ -39,6 +41,11 @@ const Menu: React.FC<
         },
       ];
     return [
+      {
+        icon: <Video width={16} height={16} />,
+        label: intl("schedule.lesson.join"),
+        onClick: () => onJoin(id),
+      },
       {
         icon: <CalendarEdit />,
         label: intl("schedule.lesson.edit"),
@@ -50,59 +57,20 @@ const Menu: React.FC<
         onClick: () => onCancel(id),
       },
     ];
-  }, [canceled, intl, onRebook, id, onEdit, onCancel]);
+  }, [canceled, intl, onRebook, id, onJoin, onEdit, onCancel]);
 
   return (
-    <DropdownMenu.Root open={open} onOpenChange={setOpen}>
-      <DropdownMenu.Trigger
-        className="tw-p-2 focus:tw-outline-none"
-        type="button"
-      >
+    <Menu
+      actions={actions}
+      open={open}
+      setOpen={setOpen}
+      title={canceled ? intl("schedule.lesson.canceled-by-tutor") : undefined}
+      danger={canceled}
+    >
+      <div className="tw-p-2">
         <More />
-      </DropdownMenu.Trigger>
-
-      <DropdownMenu.Portal>
-        <DropdownMenu.Content
-          side="top"
-          className={cn(
-            "tw-shadow-lesson-event-card tw-bg-natural-50 tw-p-1",
-            "tw-flex tw-flex-col tw-gap-1 tw-rounded-lg tw-z-[5]"
-          )}
-        >
-          {canceled ? (
-            <Typography
-              element="tiny-text"
-              weight="semibold"
-              className="tw-text-destructive-600 tw-max-w-24"
-            >
-              {intl("schedule.lesson.canceled-by-tutor")}
-            </Typography>
-          ) : null}
-
-          {items.map(({ icon, label, onClick }) => (
-            <DropdownMenu.Item
-              key={label}
-              className={cn(
-                "tw-flex tw-flex-row tw-gap-2 tw-p-1 tw-pe-4 tw-rounded-lg",
-                "hover:tw-bg-natural-100 active:tw-bg-brand-700",
-                "[&>span]:active:!tw-text-natural-50 [&>svg>*]:active:tw-stroke-natural-50",
-                "focus:tw-outline-none focus:tw-bg-natural-100"
-              )}
-              onClick={onClick}
-            >
-              {icon}
-              <Typography
-                element="tiny-text"
-                weight="semibold"
-                className="tw-text-natural-600"
-              >
-                {label}
-              </Typography>
-            </DropdownMenu.Item>
-          ))}
-        </DropdownMenu.Content>
-      </DropdownMenu.Portal>
-    </DropdownMenu.Root>
+      </div>
+    </Menu>
   );
 };
 
@@ -141,8 +109,10 @@ const Card: React.FC<{ children: React.ReactNode; canceled?: boolean }> = ({
   return (
     <div
       className={cn(
-        "tw-relative tw-border tw-border-natural-100 tw-px-[10px] tw-py-2 tw-rounded-lg",
-        canceled ? "tw-bg-destructive-100" : "tw-bg-brand-100"
+        "tw-relative tw-border tw-px-[10px] tw-py-2 tw-rounded-lg",
+        canceled
+          ? "tw-bg-[rgba(153,0,0,0.04)] tw-border-destructive-600 "
+          : "tw-bg-[rgba(29,124,78,0.04)] tw-border-brand-700 "
       )}
     >
       {children}
@@ -185,8 +155,8 @@ const SingleLesson: React.FC<Lesson & LessonActions> = ({
 }) => {
   return (
     <Card canceled={canceled}>
-      <div className="tw-absolute -tw-top-2 tw-left-0">
-        <Menu canceled={canceled} {...actions} />
+      <div className="tw-absolute tw-top-0 tw-left-0">
+        <OptionsMenu canceled={canceled} {...actions} />
       </div>
       <div className="tw-px-[10px]">
         <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
@@ -200,7 +170,10 @@ const SingleLesson: React.FC<Lesson & LessonActions> = ({
           <Typography
             element="tiny-text"
             weight="semibold"
-            className="tw-text-natural-700 tw-w-full tw-truncate"
+            className={cn(
+              "tw-w-full tw-truncate",
+              canceled ? "tw-text-destructive-600" : "tw-text-natural-700"
+            )}
           >
             {otherMember.name || "-"}
           </Typography>
@@ -229,7 +202,7 @@ const LessonGroupItem: React.FC<
   return (
     <div className="tw-relative tw-px-1 tw-bg-natural-50 tw-shadow-lesson-event-card tw-rounded-lg">
       <div className="tw-absolute -tw-top-2 tw-left-0">
-        <Menu canceled={canceled} {...actions} />
+        <OptionsMenu canceled={canceled} {...actions} />
       </div>
       <div className="tw-px-1 tw-py-1 tw-mb-1 tw-flex tw-flex-row tw-gap-2 tw-items-center tw-justify-start">
         <div className="tw-w-6 tw-h-6 tw-overflow-hidden tw-rounded-full tw-border tw-border-natural-400 tw-shrink-0">
@@ -290,7 +263,7 @@ const MultipleLessons: React.FC<LessonActions & { lessons: Lesson[] }> = ({
               }}
               style={{
                 position: "absolute",
-                zIndex: 4 - idx,
+                zIndex: idx === 0 ? 1 : 0,
               }}
               whileHover={{
                 zIndex: 4,
@@ -322,7 +295,7 @@ const MultipleLessons: React.FC<LessonActions & { lessons: Lesson[] }> = ({
                 </motion.button>
                 <AnimatePresence>
                   {show === lesson.id ? (
-                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1">
+                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-10">
                       <LessonGroupItem
                         {...lesson}
                         {...actions}
