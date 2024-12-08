@@ -106,6 +106,7 @@
     "watch": "npm-watch build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "check": "tsc -p tsconfig.json --noEmit",
     "prepare": "ts-patch install -s",
     "preview": "vite preview",
     "storybook": "concurrently \"pnpm storybook:css\" \"pnpm storybook:dev\"",
