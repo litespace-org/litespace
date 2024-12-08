@@ -3,6 +3,7 @@ import { PreCallUserPreview } from "@/components/Call/PreCallUserPreview";
 import { faker } from "@faker-js/faker/locale/ar";
 import React, { useEffect, useState } from "react";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { getMediaStreamFromVideo } from "@/internal/CallSimulation";
 
 type Component = typeof PreCallUserPreview;
 
@@ -22,43 +23,6 @@ type ComponentProps = {
   };
 };
 
-const videoUrl =
-  "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
-
-async function getMediaStreamFromVideo(url: string) {
-  // Create a video element
-  const video = document.createElement("video");
-  video.src = url;
-  video.crossOrigin = "anonymous";
-  video.autoplay = true;
-  video.muted = true; // Mute to avoid autoplay restrictions
-
-  // Wait for the video to load metadata
-  await new Promise((resolve, reject) => {
-    video.onloadedmetadata = resolve;
-    video.onerror = reject;
-  });
-  // Create a canvas element
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-
-  // Draw the video onto the canvas periodically
-  function drawFrame() {
-    ctx?.drawImage(video, 0, 0, canvas.width, canvas.height);
-    requestAnimationFrame(drawFrame); // Continue drawing frames
-  }
-  drawFrame();
-
-  // eslint-disable-next-line storybook/context-in-play-function
-  video.play();
-
-  // Capture the canvas as a MediaStream
-  const mediaStream = canvas.captureStream(60); // 30 fps
-  return mediaStream;
-}
-
 export const WithVideo: StoryObj<Component> = {
   args: {
     user: {
@@ -71,8 +35,7 @@ export const WithVideo: StoryObj<Component> = {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
       async function getStream() {
-        if (!videoUrl) return;
-        const stream = await getMediaStreamFromVideo(videoUrl);
+        const stream = await getMediaStreamFromVideo();
         setStream(stream);
       }
 
@@ -80,7 +43,7 @@ export const WithVideo: StoryObj<Component> = {
     }, []);
     return (
       <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
-        <PreCallUserPreview {...props} stream={stream} />
+        <PreCallUserPreview camera={true} {...props} stream={stream} />
       </div>
     );
   },
@@ -97,7 +60,7 @@ export const WithoutVideo: StoryObj<Component> = {
   render(props: ComponentProps) {
     return (
       <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
-        <PreCallUserPreview {...props} />
+        <PreCallUserPreview {...props} camera={false} />
       </div>
     );
   },
