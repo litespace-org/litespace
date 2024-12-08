@@ -18,6 +18,7 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orNull, orUndefined } from "@litespace/sol/utils";
 import {
+    useCallMembers,
   // useCall,
   useCallV2,
   useFindCallRoomById,
@@ -33,6 +34,7 @@ import Video from "@litespace/assets/Video";
 import Microphone from "@litespace/assets/Microphone";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
+import { ICall } from "@litespace/types";
 // import GhostView from "@/components/Call/GhostView";
 
 const Call: React.FC = () => {
@@ -40,7 +42,7 @@ const Call: React.FC = () => {
   // const chat = useRender();
   // const intl = useFormatMessage();
   // const mediaQueries = useMediaQueries();
-  const { id } = useParams<{ id: string }>();
+  const { id, callType } = useParams<{ id: string, callType: ICall.Type }>();
   // const { isFullScreen, toggleFullScreen, ref } = useFullScreen();
 
   const callId = useMemo(() => {
@@ -49,12 +51,20 @@ const Call: React.FC = () => {
     return call;
   }, [id]);
 
+  const ctype = useMemo(() => {
+    if (callType != "lesson" && callType != "interview") return null;
+    return callType;
+  }, [id]);
+
   const callRoom = useFindCallRoomById(!isGhost ? callId : null);
 
   const mateInfo = useMemo(() => {
     if (!callRoom.data) return;
     return callRoom.data.members.find((member) => member.id !== profile?.id);
   }, [callRoom.data, profile?.id]);
+
+  const members = useCallMembers(callId, ctype)
+  useEffect(() => console.log(members), [members]);
 
   // const messages = useMemo(
   //   () =>
@@ -133,6 +143,7 @@ const Call: React.FC = () => {
     // peers.tutor.refetch();
   }, []);
 
+  /*
   console.log({
     fetching: peers.ghost.isFetching,
     isPending: peers.ghost.isPending,
@@ -140,6 +151,7 @@ const Call: React.FC = () => {
     ghost: peers.ghost.data,
     tutor: peers.tutor.data,
   });
+  */
 
   const { userMedia, mateStream, mateScreenStream, ghostStreams } = useCallV2(
     useMemo(
@@ -154,7 +166,7 @@ const Call: React.FC = () => {
     )
   );
 
-  console.log({ ghostStreams });
+  // console.log({ ghostStreams });
 
   const callViewProps: CallViewProps = useMemo(
     () => ({
