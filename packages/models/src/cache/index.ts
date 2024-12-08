@@ -28,4 +28,8 @@ export class Cache {
   async connect() {
     await this.client.connect();
   }
+
+  async disconnect() {
+    await this.client.quit();
+  }
 }

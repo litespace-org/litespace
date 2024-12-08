@@ -54,7 +54,7 @@ const Call: React.FC = () => {
   const ctype = useMemo(() => {
     if (callType != "lesson" && callType != "interview") return null;
     return callType;
-  }, [id]);
+  }, [callType]);
 
   const callRoom = useFindCallRoomById(!isGhost ? callId : null);
 
@@ -166,7 +166,7 @@ const Call: React.FC = () => {
     )
   );
 
-  // console.log({ ghostStreams });
+  useEffect(() => console.log({ ghostStreams }), [ghostStreams]);
 
   const callViewProps: CallViewProps = useMemo(
     () => ({
