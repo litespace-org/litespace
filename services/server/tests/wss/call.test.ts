@@ -87,11 +87,13 @@ describe("calls test suite", () => {
     studentSocket.joinCall(lesson.callId, "lesson");
 
     const { userId: studentId } = await tutorResult;
-    const callMembersIdsSecondSnapshot = await cache.call.getMembers(lesson.callId);
+    const callMembersIdsSecondSnapshot = await cache.call.getMembers(
+      lesson.callId
+    );
     expect(callMembersIdsSecondSnapshot).to.be.of.length(2);
     expect(
-      callMembersIdsSecondSnapshot.map((memberId) => memberId))
-      .to.be.members([student.user.id, tutor.user.id]);
+      callMembersIdsSecondSnapshot.map((memberId) => memberId)
+    ).to.be.members([student.user.id, tutor.user.id]);
 
     expect(studentId).to.be.eq(student.user.id);
 

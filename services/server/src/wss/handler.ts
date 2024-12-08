@@ -1,9 +1,4 @@
-import {
-  calls,
-  messages,
-  rooms,
-  users,
-} from "@litespace/models";
+import { calls, messages, rooms, users } from "@litespace/models";
 import { ICall, IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
 import wss from "@/validation/wss";
@@ -109,7 +104,7 @@ export class WssHandler {
       // NOTE: the user notifies himself as well that he successfully joined the call.
       this.broadcast(
         Wss.ServerEvent.MemberJoinedCall,
-        this.asCallRoomId(callId), 
+        this.asCallRoomId(callId),
         { userId: user.id } // TODO: define the payload struct type in the types package
       );
     });
