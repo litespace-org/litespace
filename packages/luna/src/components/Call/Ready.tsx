@@ -12,28 +12,41 @@ export const Ready: React.FC<{
     name: string | null;
     imageUrl: string | null;
     role: IUser.Role;
+    gender: IUser.Gender;
     id: number;
   }[];
+  currentUser: {
+    name: string | null;
+    imageUrl: string | null;
+    role: IUser.Role;
+    id: number;
+  };
   join: Void;
-  hasMic: boolean;
-}> = ({ users, join, hasMic }) => {
+  mic: boolean;
+}> = ({ users, join, mic, currentUser }) => {
   const intl = useFormatMessage();
 
+  // TODO: add type of call to intl to differentiate between lessons and interview
   const explaination = useMemo(() => {
-    if (users.length === 0) return intl("call.ready.explaination.empty");
-    if (users[0].role === IUser.Role.Tutor)
-      return intl("call.ready.explaination.full.for-male-student");
-    return intl("call.ready.explaination.full.for-male-tutor");
-  }, [users, intl]);
-
-  /**
-   * !TODO: implement
-   * - empty room view
-   * - user don't have a mic
-   */
+    if (users.length === 0) {
+      if (currentUser.role === IUser.Role.Tutor)
+        return intl("call.ready.explaination.empty.student");
+      return intl("call.ready.explaination.empty.tutor");
+    }
+    if (users[0].role === IUser.Role.Tutor) {
+      if (users[0].gender === IUser.Gender.Male)
+        return intl("call.ready.explaination.full.male-tutor");
+      return intl("call.ready.explaination.full.female-tutor");
+    }
+    if (users[0].role === IUser.Role.Student) {
+      if (users[0].gender === IUser.Gender.Male)
+        return intl("call.ready.explaination.full.male-student");
+      return intl("call.ready.explaination.full.female-student");
+    }
+  }, [users, intl, currentUser]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-gap-8">
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-max-w-[278px] tw-text-center">
       <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
         <Typography
           element="subtitle-1"
@@ -43,7 +56,7 @@ export const Ready: React.FC<{
         </Typography>
         <Typography
           element="caption"
-          className="tw-text-natural-700 tw-font-semibold"
+          className="tw-text-success-700 tw-font-semibold"
         >
           {explaination}
         </Typography>
@@ -67,9 +80,14 @@ export const Ready: React.FC<{
       ) : (
         <Typography>{intl("call.empty")}</Typography>
       )}
-      <Button size={ButtonSize.Large} onClick={join} disabled={!hasMic}>
+      <Button size={ButtonSize.Large} onClick={join} disabled={!mic}>
         {intl("call.ready.join")}
       </Button>
+      {!mic ? (
+        <Typography element="caption" className="tw-text-destructive-700">
+          {intl("call.ready.cannot-join")}
+        </Typography>
+      ) : null}
     </div>
   );
 };

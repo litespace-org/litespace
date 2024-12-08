@@ -1,7 +1,7 @@
 import { Direction } from "@/components/Direction";
 import React from "react";
 
-export function DrarkWrapper({
+export function DarkWrapper({
   children,
 }: {
   children?: React.ReactNode;
@@ -18,7 +18,7 @@ export function DrarkWrapper({
 }
 
 export const DarkStoryWrapper = (Story: React.FC) => (
-  <DrarkWrapper>
+  <DarkWrapper>
     <Story />
-  </DrarkWrapper>
+  </DarkWrapper>
 );

@@ -2,6 +2,7 @@ import { Void } from "@litespace/types";
 import React from "react";
 import cn from "classnames";
 import CallIncoming from "@litespace/assets/CallIncoming";
+
 export const EndCallButton: React.FC<{
   leaveCall: Void;
 }> = ({ leaveCall }) => {
