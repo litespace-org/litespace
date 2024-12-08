@@ -6,72 +6,77 @@ import VideoSlash from "@litespace/assets/VideoSlash";
 import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 
-export const PreCall: React.FC<{
+export type Props = {
   stream: MediaStream | null;
-  users: {
+  otherMember: {
     id: number;
     imageUrl: string | null;
     name: string | null;
     gender: IUser.Gender;
     role: IUser.Role;
-  }[];
-  currentUser: {
+    incall: boolean;
+  };
+  currentMember: {
     id: number;
     imageUrl: string | null;
     name: string | null;
     role: IUser.Role;
   };
+  camera: {
+    enabled: boolean;
+    toggle: Void;
+    error?: boolean;
+  };
+  mic: {
+    enabled: boolean;
+    toggle: Void;
+    error?: boolean;
+  };
   join: Void;
-  toggleCamera: Void;
-  camera: boolean;
-  mic: boolean;
-  toggleMic: Void;
-  cameraError: boolean;
-  micError: boolean;
-}> = ({
+};
+
+export const PreCall: React.FC<Props> = ({
   stream,
-  users,
+  otherMember,
+  currentMember,
   join,
   camera,
-  toggleCamera,
   mic,
-  toggleMic,
-  currentUser,
-  cameraError,
-  micError,
 }) => {
   return (
     <div className="tw-rounded-2xl tw-w-full tw-p-10 tw-border tw-border-natural-100 tw-bg-natural-50 tw-shadow-pre-call tw-flex tw-items-center tw-justify-between tw-gap-[72px]">
       <div className="tw-flex tw-grow tw-flex-col tw-justify-center tw-gap-10">
         <PreCallUserPreview
-          camera={camera}
+          camera={camera.enabled}
           stream={stream}
-          user={currentUser}
+          user={currentMember}
         />
+
         <CallBar
           items={[
             {
-              active: camera,
+              active: camera.enabled,
               OnIcon: Video,
               OffIcon: VideoSlash,
-              toggle: toggleCamera,
-              error: cameraError,
+              toggle: camera.toggle,
+              error: camera.error,
             },
             {
-              active: mic,
+              active: mic.enabled,
               OnIcon: Microphone,
               OffIcon: MicrophoneSlash,
-              toggle: toggleMic,
-              error: micError,
+              toggle: mic.toggle,
+              error: mic.error,
             },
           ]}
         />
       </div>
+
       <Ready
-        currentUser={currentUser}
-        users={users}
+        currentMember={currentMember}
+        otherMember={otherMember}
+        mic={!mic.error}
         join={join}
-        mic={!micError}
       />
     </div>
   );

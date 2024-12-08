@@ -8,14 +8,15 @@ import { orUndefined } from "@litespace/sol/utils";
 import { Button, ButtonSize } from "@/components/Button";
 
 export const Ready: React.FC<{
-  users: {
+  otherMember: {
+    id: number;
     name: string | null;
     imageUrl: string | null;
     role: IUser.Role;
     gender: IUser.Gender;
-    id: number;
-  }[];
-  currentUser: {
+    incall: boolean;
+  };
+  currentMember: {
     name: string | null;
     imageUrl: string | null;
     role: IUser.Role;
@@ -23,27 +24,46 @@ export const Ready: React.FC<{
   };
   join: Void;
   mic: boolean;
-}> = ({ users, join, mic, currentUser }) => {
+}> = ({ currentMember, otherMember, join, mic }) => {
   const intl = useFormatMessage();
 
   // TODO: add type of call to intl to differentiate between lessons and interview
   const explaination = useMemo(() => {
-    if (users.length === 0) {
-      if (currentUser.role === IUser.Role.Tutor)
-        return intl("call.ready.explaination.empty.student");
+    const isCurrentMemberTutor = currentMember.role === IUser.Role.Tutor;
+    if (!otherMember.incall && isCurrentMemberTutor)
+      return intl("call.ready.explaination.empty.student");
+
+    if (!otherMember.incall && !isCurrentMemberTutor)
       return intl("call.ready.explaination.empty.tutor");
-    }
-    if (users[0].role === IUser.Role.Tutor) {
-      if (users[0].gender === IUser.Gender.Male)
-        return intl("call.ready.explaination.full.male-tutor");
+
+    if (
+      otherMember.role === IUser.Role.Tutor &&
+      otherMember.gender === IUser.Gender.Male
+    )
+      return intl("call.ready.explaination.full.male-tutor");
+    if (
+      otherMember.role === IUser.Role.Tutor &&
+      otherMember.gender !== IUser.Gender.Male
+    )
       return intl("call.ready.explaination.full.female-tutor");
-    }
-    if (users[0].role === IUser.Role.Student) {
-      if (users[0].gender === IUser.Gender.Male)
-        return intl("call.ready.explaination.full.male-student");
+
+    if (
+      otherMember.role === IUser.Role.Student &&
+      otherMember.gender === IUser.Gender.Male
+    )
+      return intl("call.ready.explaination.full.male-student");
+    if (
+      otherMember.role === IUser.Role.Student &&
+      otherMember.gender !== IUser.Gender.Male
+    )
       return intl("call.ready.explaination.full.female-student");
-    }
-  }, [users, intl, currentUser]);
+  }, [
+    otherMember.incall,
+    otherMember.role,
+    otherMember.gender,
+    currentMember.role,
+    intl,
+  ]);
 
   return (
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-max-w-[278px] tw-text-center">
@@ -61,25 +81,16 @@ export const Ready: React.FC<{
           {explaination}
         </Typography>
       </div>
-      {users.length > 0 ? (
-        users.map((user) => (
-          <div
-            key={user.id}
-            className="tw-flex tw-flex-col tw-gap-4 tw-items-center"
-          >
-            <div className="tw-w-24 tw-h-24 tw-overflow-hidden tw-rounded-full">
-              <Avatar
-                seed={user.id.toString()}
-                src={orUndefined(user.imageUrl)}
-                alt={orUndefined(user.name)}
-              />
-            </div>
-            <Typography element="subtitle-1">{user.name}</Typography>
-          </div>
-        ))
-      ) : (
-        <Typography>{intl("call.empty")}</Typography>
-      )}
+      <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
+        <div className="tw-w-24 tw-h-24 tw-overflow-hidden tw-rounded-full">
+          <Avatar
+            seed={otherMember.id.toString()}
+            src={orUndefined(otherMember.imageUrl)}
+            alt={orUndefined(otherMember.name)}
+          />
+        </div>
+        <Typography element="subtitle-1">{otherMember.name}</Typography>
+      </div>
       <Button size={ButtonSize.Large} onClick={join} disabled={!mic}>
         {intl("call.ready.join")}
       </Button>

@@ -11,17 +11,15 @@ export const PreCallUserPreview: React.FC<{
   };
 }> = ({ stream, user, camera }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+
   useEffect(() => {
-    if (videoRef.current && camera) {
-      videoRef.current.srcObject = stream;
-      videoRef.current.play();
-    }
+    if (videoRef.current && camera) videoRef.current.srcObject = stream;
   }, [stream, camera]);
 
   return (
     <div className="tw-aspect-video tw-w-full tw-grow tw-max-w-[700px] tw-rounded-lg tw-shadow-ls-small tw-overflow-hidden">
       {camera ? (
-        <video ref={videoRef} autoPlay muted />
+        <video ref={videoRef} autoPlay muted={false} playsInline />
       ) : (
         <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center">
           <CallAvatar user={user} />

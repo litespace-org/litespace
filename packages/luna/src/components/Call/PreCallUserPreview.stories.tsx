@@ -3,12 +3,12 @@ import { PreCallUserPreview } from "@/components/Call/PreCallUserPreview";
 import { faker } from "@faker-js/faker/locale/ar";
 import React, { useEffect, useState } from "react";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import { getMediaStreamFromVideo } from "@/internal/CallSimulation";
+import { getVideoMediaStream } from "@/internal/utils/stream";
 
 type Component = typeof PreCallUserPreview;
 
 const meta: Meta<Component> = {
-  title: "PreCallUserPreview",
+  title: "Call/PreCallUserPreview",
   component: PreCallUserPreview,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
@@ -35,7 +35,7 @@ export const WithVideo: StoryObj<Component> = {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
       async function getStream() {
-        const stream = await getMediaStreamFromVideo();
+        const stream = await getVideoMediaStream();
         setStream(stream);
       }
 

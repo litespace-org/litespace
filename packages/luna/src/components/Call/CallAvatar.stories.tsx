@@ -7,10 +7,21 @@ import React, { useEffect, useState } from "react";
 type Component = typeof CallAvatar;
 
 const meta: Meta<Component> = {
-  title: "CallAvatar",
+  title: "Call/CallAvatar",
   component: CallAvatar,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
+};
+
+export const Speadking: StoryObj<Component> = {
+  args: {
+    user: {
+      id: 5,
+      name: faker.person.fullName(),
+      imageUrl: "https://picsum.photos/500",
+    },
+    speaking: true,
+  },
 };
 
 export const AvatarTalking: StoryObj<Component> = {
@@ -29,17 +40,17 @@ export const AvatarTalking: StoryObj<Component> = {
     };
     talking?: boolean;
   }) {
-    const [talking, setTalking] = useState<boolean>(true);
+    const [speaking, setSpeaking] = useState<boolean>(true);
     useEffect(() => {
       const interval = setInterval(() => {
-        setTalking((prev) => !prev);
-      }, faker.number.int({ min: 1, max: 3 }) * 1_000);
+        setSpeaking((prev) => !prev);
+      }, faker.number.int({ min: 3, max: 10 }) * 1_000);
 
       return () => {
         clearInterval(interval);
       };
     }, []);
-    return <CallAvatar {...props} talking={talking} />;
+    return <CallAvatar {...props} speaking={speaking} />;
   },
 };
 

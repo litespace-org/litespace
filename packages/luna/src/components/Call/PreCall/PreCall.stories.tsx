@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PreCall } from "@/components/Call";
+import { PreCall, PreCallProps } from "@/components/Call";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
-import { IUser, Void } from "@litespace/types";
-import { getMediaStreamFromVideo } from "@/internal/CallSimulation";
+import { IUser } from "@litespace/types";
+import { getVideoMediaStream } from "@/internal/utils/stream";
 import React, { useEffect, useState } from "react";
 
 type Component = typeof PreCall;
 
 const meta: Meta<Component> = {
-  title: "PreCall",
+  title: "Call/PreCall",
   component: PreCall,
   parameters: { layout: "centered" },
   decorators: [
@@ -26,69 +26,34 @@ const meta: Meta<Component> = {
   ],
 };
 
-type ComponentProps = {
-  stream: MediaStream | null;
-  users: {
-    id: number;
-    gender: IUser.Gender;
-    imageUrl: string | null;
-    name: string | null;
-    role: IUser.Role;
-  }[];
-  currentUser: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-    role: IUser.Role;
-  };
-  join: Void;
-  toggleCamera: Void;
-  camera: boolean;
-  mic: boolean;
-  toggleMic: Void;
-  cameraError: boolean;
-  micError: boolean;
-};
-
-const componentFunctions = {
-  join: () => {},
-  toggleCamera: () => {},
-  toggleMic: () => {},
-};
+const join = () => alert("join");
+const toggleCamera = () => alert("toggle camera");
+const toggleMic = () => alert("toggle mic");
 
 export const WithMedia: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        gender: IUser.Gender.Male,
-        imageUrl: "https://picsum.photos/400",
-        name: faker.person.fullName(),
-        role: IUser.Role.Tutor,
-      },
-    ],
-    currentUser: {
+    otherMember: {
+      id: 5,
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: true,
+    },
+    currentMember: {
       id: 5,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
-    camera: true,
-    mic: true,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    camera: { enabled: true, error: false, toggle: toggleCamera },
+    mic: { enabled: true, error: false, toggle: toggleMic },
+    join,
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
-      async function getStream() {
-        const stream = await getMediaStreamFromVideo();
-        setStream(stream);
-      }
-
-      getStream();
+      getVideoMediaStream().then(setStream);
     }, []);
     return <PreCall {...props} stream={stream} />;
   },
@@ -96,95 +61,99 @@ export const WithMedia: StoryObj<Component> = {
 
 export const WithoutMedia: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        imageUrl: "https://picsum.photos/400",
-        name: faker.person.fullName(),
-        gender: IUser.Gender.Male,
-        role: IUser.Role.Tutor,
-      },
-    ],
-    currentUser: {
+    otherMember: {
       id: 5,
-      imageUrl: "https://picsum.photos/500",
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: true,
+    },
+    currentMember: {
+      id: 5,
+      imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
-    camera: false,
-    mic: false,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    camera: {
+      enabled: false,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: true,
+      toggle: toggleMic,
+      error: false,
+    },
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     return <PreCall {...props} />;
   },
 };
 
 export const OnlyMic: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        imageUrl: "https://picsum.photos/400",
-        name: faker.person.fullName(),
-        gender: IUser.Gender.Male,
-        role: IUser.Role.Tutor,
-      },
-    ],
-    currentUser: {
+    otherMember: {
+      id: 5,
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: true,
+    },
+    currentMember: {
       id: 5,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
-    camera: false,
-    mic: true,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    camera: {
+      enabled: false,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: true,
+      toggle: toggleCamera,
+      error: false,
+    },
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     return <PreCall {...props} />;
   },
 };
 
 export const OnlyCamera: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        imageUrl: "https://picsum.photos/400",
-        name: faker.person.fullName(),
-        gender: IUser.Gender.Male,
-        role: IUser.Role.Tutor,
-      },
-    ],
-    currentUser: {
+    otherMember: {
+      id: 5,
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: true,
+    },
+    currentMember: {
       id: 5,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
-    camera: true,
-    mic: false,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    camera: {
+      enabled: true,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: false,
+      toggle: toggleMic,
+      error: false,
+    },
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
-      async function getStream() {
-        const stream = await getMediaStreamFromVideo();
-        setStream(stream);
-      }
-
-      getStream();
+      getVideoMediaStream().then(setStream);
     }, []);
     return <PreCall {...props} stream={stream} />;
   },
@@ -192,87 +161,93 @@ export const OnlyCamera: StoryObj<Component> = {
 
 export const MicProblem: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        imageUrl: "https://picsum.photos/400",
-        name: faker.person.fullName(),
-        gender: IUser.Gender.Male,
-        role: IUser.Role.Tutor,
-      },
-    ],
-    currentUser: {
+    otherMember: {
+      id: 5,
+      gender: IUser.Gender.Male,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Tutor,
+      incall: false,
+    },
+    currentMember: {
       id: 5,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
-    camera: false,
-    mic: false,
-    cameraError: false,
-    micError: true,
-    ...componentFunctions,
+    camera: {
+      enabled: false,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: false,
+      toggle: toggleMic,
+      error: true,
+    },
   },
 
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     return <PreCall {...props} />;
   },
 };
 
 export const ForTutor: StoryObj<Component> = {
   args: {
-    users: [
-      {
-        id: 5,
-        imageUrl: "https://picsum.photos/400",
-        gender: IUser.Gender.Male,
-        name: faker.person.fullName(),
-        role: IUser.Role.Student,
-      },
-    ],
-    currentUser: {
+    otherMember: {
       id: 5,
+      gender: IUser.Gender.Male,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
+      incall: false,
     },
-    camera: false,
-    mic: true,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    currentMember: {
+      id: 5,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Student,
+    },
+    camera: { enabled: false, toggle: toggleCamera, error: false },
+    mic: { enabled: true, toggle: toggleMic, error: false },
+    join,
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     return <PreCall {...props} />;
   },
 };
 
 export const EmptyRoom: StoryObj<Component> = {
   args: {
-    users: [],
-    currentUser: {
+    otherMember: {
       id: 5,
+      gender: IUser.Gender.Male,
       imageUrl: "https://picsum.photos/400",
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
+      incall: false,
     },
-    camera: true,
-    mic: true,
-    cameraError: false,
-    micError: false,
-    ...componentFunctions,
+    currentMember: {
+      id: 5,
+      imageUrl: "https://picsum.photos/400",
+      name: faker.person.fullName(),
+      role: IUser.Role.Student,
+    },
+    camera: {
+      enabled: true,
+      toggle: toggleCamera,
+      error: false,
+    },
+    mic: {
+      enabled: true,
+      toggle: toggleMic,
+      error: false,
+    },
   },
-
-  render(props: ComponentProps) {
+  render(props: PreCallProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
-      async function getStream() {
-        const stream = await getMediaStreamFromVideo();
-        setStream(stream);
-      }
-
-      getStream();
+      getVideoMediaStream().then(setStream);
     }, []);
     return <PreCall {...props} stream={stream} />;
   },

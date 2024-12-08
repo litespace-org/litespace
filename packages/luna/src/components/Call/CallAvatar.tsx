@@ -9,8 +9,8 @@ export const CallAvatar: React.FC<{
     imageUrl: string | null;
     name: string | null;
   };
-  talking?: boolean;
-}> = ({ user, talking }) => {
+  speaking?: boolean;
+}> = ({ user, speaking }) => {
   return (
     <div className="tw-w-[290px] tw-h-[290px] tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center">
       <motion.div
@@ -18,9 +18,16 @@ export const CallAvatar: React.FC<{
           scale: 0,
         }}
         animate={{
-          scale: talking ? 1 : 0.5,
+          scale: speaking ? 1 : 0.5,
         }}
-        transition={{ delay: 0.1, duration: 0.3, ease: "easeInOut" }}
+        transition={{
+          delay: 0.1,
+          duration: 1,
+          ease: "easeInOut",
+          repeat: speaking ? Infinity : 0,
+          repeatType: "reverse",
+          repeatDelay: 0.1,
+        }}
         className="tw-border-[6px] tw-border-border-avatar tw-rounded-full tw-w-full tw-h-full tw-absolute"
       />
       <motion.div
@@ -28,9 +35,15 @@ export const CallAvatar: React.FC<{
           scale: 0,
         }}
         animate={{
-          scale: talking ? 1 : 0.5,
+          scale: speaking ? 1 : 0.5,
         }}
-        transition={{ duration: 0.3, ease: "easeInOut" }}
+        transition={{
+          duration: 1,
+          repeatType: "reverse",
+          ease: "easeInOut",
+          repeat: speaking ? Infinity : 0,
+          repeatDelay: 0.1,
+        }}
         className="tw-w-[265px] tw-h-[265px] tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute"
       />
       <div className="tw-w-[242px] tw-h-[242px] tw-overflow-hidden tw-rounded-full">
