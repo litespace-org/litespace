@@ -129,6 +129,7 @@ export default {
           secondary: "hsl(var(--border-secondary))",
           muted: "hsl(var(--border-muted))",
           overlay: "hsl(var(--border-overlay))",
+          avatar: "rgba(0, 0, 0, 0.4)",
           button: {
             DEFAULT: "hsl(var(--border-button-default))",
             hover: "hsl(var(--border-button-hover))",
@@ -264,6 +265,7 @@ export default {
       tooltip: "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "feedback-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "dark-feedback-card": "0px 4px 15px 0px rgba(255, 255, 255, 0.08)",
+      "pre-call": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
     },
   },
   plugins: [
