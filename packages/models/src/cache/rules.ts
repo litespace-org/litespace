@@ -2,6 +2,11 @@ import { CacheBase } from "@/cache/base";
 import { IRule } from "@litespace/types";
 import { isEmpty } from "lodash";
 
+/**
+ * Rules cache
+ *
+ * @data map from rule id to the unpacked rule events.
+ */
 export class Rules extends CacheBase {
   readonly key = "rules";
   readonly ttl = 60 * 60 * 24; // 24 hours
