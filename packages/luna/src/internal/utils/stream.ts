@@ -1,6 +1,7 @@
-export async function getMediaStreamFromVideo() {
-  const videoUrl =
-    "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+const DEFAULT_URL =
+  "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
+
+export async function getVideoMediaStream(videoUrl: string = DEFAULT_URL) {
   const video = document.createElement("video");
   video.src = videoUrl;
   video.crossOrigin = "anonymous";
@@ -23,7 +24,6 @@ export async function getMediaStreamFromVideo() {
   }
   drawFrame();
 
-  // eslint-disable-next-line storybook/context-in-play-function
   video.play();
 
   const mediaStream = canvas.captureStream(60);
