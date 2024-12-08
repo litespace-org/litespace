@@ -52,7 +52,6 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     ([tutor, rules]): IRule.Cache[] => {
       // const calls = tutorCallsMap[tutor] || [];
       return rules.map((rule) => {
-        // const ruleCalls = calls.filter((call) => call.ruleId === rule.id);
         return {
           tutor: Number(tutor),
           rule: rule.id,
