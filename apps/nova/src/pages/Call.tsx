@@ -18,7 +18,7 @@ import { useAppSelector } from "@/redux/store";
 import { profileSelectors } from "@/redux/user/profile";
 import { orNull, orUndefined } from "@litespace/sol/utils";
 import {
-    useCallMembers,
+  useCallMembers,
   // useCall,
   useCallV2,
   useFindCallRoomById,
@@ -42,7 +42,7 @@ const Call: React.FC = () => {
   // const chat = useRender();
   // const intl = useFormatMessage();
   // const mediaQueries = useMediaQueries();
-  const { id, callType } = useParams<{ id: string, callType: ICall.Type }>();
+  const { id, type } = useParams<{ id: string; type: ICall.Type }>();
   // const { isFullScreen, toggleFullScreen, ref } = useFullScreen();
 
   const callId = useMemo(() => {
@@ -52,9 +52,9 @@ const Call: React.FC = () => {
   }, [id]);
 
   const ctype = useMemo(() => {
-    if (callType != "lesson" && callType != "interview") return null;
-    return callType;
-  }, [callType]);
+    if (type != "lesson" && type != "interview") return null;
+    return type;
+  }, [type]);
 
   const callRoom = useFindCallRoomById(!isGhost ? callId : null);
 
@@ -63,7 +63,7 @@ const Call: React.FC = () => {
     return callRoom.data.members.find((member) => member.id !== profile?.id);
   }, [callRoom.data, profile?.id]);
 
-  const members = useCallMembers(callId, ctype)
+  const members = useCallMembers(callId, ctype);
   useEffect(() => console.log("In App members: ", members), [members]);
 
   // const messages = useMemo(
@@ -304,17 +304,18 @@ const Call: React.FC = () => {
                 <MicrophoneSlash className="[&_*]:stroke-brand-700" />
               )}
             </Button>
-            
+
             {
               /*
                * TODO: replace this by members views
                */
               <div>
                 <h1>Joined members</h1>
-                {members.map(m => <label className="mx-1">-{m}-</label>)}
+                {members.map((m) => (
+                  <label className="mx-1">-{m}-</label>
+                ))}
               </div>
             }
-          
 
             {/* <Button
             type={ButtonType.Main}

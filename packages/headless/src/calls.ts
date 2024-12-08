@@ -1009,7 +1009,7 @@ export function useFullScreen<T extends Element>() {
 }
 
 /*
- * dispatch an HTTP request to retrieve the current members of a call
+ * Send an HTTP request to retrieve the current members of a call
  */
 export function useFindCallMembers(
   callId: number | null,
@@ -1017,56 +1017,60 @@ export function useFindCallMembers(
 ): UseQueryResult<ICall.FindCallMembersApiResponse | null, Error> {
   const atlas = useAtlas();
 
-  const findCallMembers = async () => {
+  const findCallMembers = useCallback(async () => {
     if (!callId || !callType) return null;
     return await atlas.call.findCallMembers(callId, callType);
-  };
+  }, [atlas.call, callId, callType]);
 
   return useQuery({
     queryFn: findCallMembers,
-    queryKey: ["find-call-members"],
+    queryKey: [QueryKey.FindCallMembers],
   });
 }
 
 // a shorthand for some ServerEvent Callback type
-type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedCall]
+type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedCall];
 
 /*
- * get list of members in a specifc call by callId
+ * Real-time call members state.
  */
-export function useCallMembers(callId: number | null, callType: ICall.Type | null): number[]{
+export function useCallMembers(
+  callId: number | null,
+  callType: ICall.Type | null
+): number[] {
+  const [members, setMembers] = useState<number[]>([]);
+
   const socket = useSocket();
 
   // get the initial list by an http request
-  const { data, isPending } = useFindCallMembers(callId, callType);
+  const query = useFindCallMembers(callId, callType);
 
-  // TODO: the state type should be ICall.PopuldatedMember[]
-  const [members, setMembers] = useState<number[]>([]);
   useEffect(() => {
-    if (data) setMembers(data)
-  }, [data, isPending])
+    if (query.data && query.isFetching && query.isError) setMembers(query.data);
+  }, [query.data, query.isError, query.isFetching]);
 
   // define WSS events callbacks
-  const onMemberJoinWssCallback: CallEventsCallback = useCallback(payload => {
-    setMembers(prev => [...prev, payload.userId]);
-  }, [])
+  const onMemberJoinWssCallback: CallEventsCallback = useCallback((payload) => {
+    setMembers((prev) => [...prev, payload.userId]);
+  }, []);
 
-  const onMemberLeaveWssCallback: CallEventsCallback  = useCallback(payload => {
-    setMembers(prev => prev.filter(id => id !== payload.userId));
-  }, [])
+  const onMemberLeaveWssCallback: CallEventsCallback = useCallback(
+    (payload) => {
+      setMembers((prev) => prev.filter((id) => id !== payload.userId));
+    },
+    []
+  );
 
   // define react callbacks
   const joinCall = useCallback(() => {
     if (!socket || !callId || !callType) return;
-      socket.emit(Wss.ClientEvent.JoinCall, {callId, type: callType} );
-    }, [socket, callId, callType]
-  );
+    socket.emit(Wss.ClientEvent.JoinCall, { callId, type: callType });
+  }, [socket, callId, callType]);
 
   const leaveCall = useCallback(() => {
     if (!socket || !callId || !callType) return;
-      socket.emit(Wss.ClientEvent.LeaveCall, { callId } );
-    }, [socket, callId, callType]
-  );
+    socket.emit(Wss.ClientEvent.LeaveCall, { callId });
+  }, [socket, callId, callType]);
 
   useEffect(() => {
     // listen to wss events to modify members list accordingly
@@ -1078,8 +1082,15 @@ export function useCallMembers(callId: number | null, callType: ICall.Type | nul
       socket.off(Wss.ServerEvent.MemberJoinedCall);
       socket.off(Wss.ServerEvent.MemberLeftCall);
       leaveCall();
-    }
-  }, [callId, socket, joinCall, leaveCall, onMemberLeaveWssCallback, onMemberJoinWssCallback])
+    };
+  }, [
+    callId,
+    socket,
+    joinCall,
+    leaveCall,
+    onMemberLeaveWssCallback,
+    onMemberJoinWssCallback,
+  ]);
 
   return members;
 }

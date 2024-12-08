@@ -6,7 +6,6 @@ import { expect } from "chai";
 import { cache } from "@/lib/cache";
 
 describe("/api/v1/call", () => {
-
   beforeAll(async () => {
     await cache.connect();
   });

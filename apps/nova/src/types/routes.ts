@@ -15,7 +15,7 @@ export enum Route {
   SelectUserGender = "/gender",
   SetUserName = "/name",
   Tutors = "/tutors",
-  Call = "/call/:id/:callType",
+  Call = "/call/:id/:type",
   TutorProfile = "/:id/tutor",
   TutorOnboarding = "/tutor/onboarding",
   Complete = "/complete",
