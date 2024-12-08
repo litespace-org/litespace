@@ -1,6 +1,4 @@
 import List from "@/components/Interviews/List";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Spinner } from "@litespace/luna/Spinner";
 import { messages } from "@litespace/luna/locales";
@@ -9,16 +7,12 @@ import React, { useCallback } from "react";
 import { useIntl } from "react-intl";
 import Empty from "@/components/Interviews/Empty";
 import { useFindInfinitInterviews } from "@litespace/headless/interviews";
+import { useUser } from "@litespace/headless/context/user";
 
 const Interviews: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const intl = useIntl();
-
-  const {
-    query: interviews,
-    list,
-    more,
-  } = useFindInfinitInterviews(profile?.id);
+  const { query: interviews, list, more } = useFindInfinitInterviews(user?.id);
 
   const onUpdate = useCallback(() => {
     interviews.refetch();
@@ -38,9 +32,9 @@ const Interviews: React.FC = () => {
         </div>
       ) : null}
 
-      {list && profile ? (
+      {list && user ? (
         <div>
-          <List list={list} user={profile} onUpdate={onUpdate} />
+          <List list={list} user={user} onUpdate={onUpdate} />
           <div className="mr-6">
             <Button
               size={ButtonSize.Small}

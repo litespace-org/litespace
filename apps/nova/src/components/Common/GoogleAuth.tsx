@@ -6,13 +6,12 @@ import { Spinner } from "@litespace/luna/Spinner";
 import { CredentialResponse, GoogleLogin } from "@react-oauth/google";
 import React, { useCallback, useState } from "react";
 import cn from "classnames";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
 import { safe } from "@litespace/sol/error";
 import { IUser } from "@litespace/types";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { useAtlas } from "@litespace/headless/atlas";
+import { useUser } from "@litespace/headless/context/user";
 
 const GoogleAuth: React.FC<{
   purpose: "login" | "register";
@@ -21,11 +20,11 @@ const GoogleAuth: React.FC<{
   const intl = useFormatMessage();
   const media = useMediaQueries();
   const { theme } = useTheme();
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
   const atlas = useAtlas();
   const toast = useToast();
+  const user = useUser();
 
   const onGoogleSuccess = useCallback(
     async (response: CredentialResponse) => {
@@ -35,11 +34,8 @@ const GoogleAuth: React.FC<{
           throw new Error(
             "Cannot authenticate using Google. Missing token credentials"
           );
-        const { user, token } = await atlas.auth.google(
-          response.credential,
-          role
-        );
-        dispatch(setUserProfile({ user, token }));
+        const info = await atlas.auth.google(response.credential, role);
+        user.set(info);
         navigate(Route.Root);
       });
       setLoading(false);
@@ -52,7 +48,7 @@ const GoogleAuth: React.FC<{
           description: error.message,
         });
     },
-    [atlas.auth, dispatch, intl, navigate, purpose, role, toast]
+    [atlas.auth, intl, navigate, purpose, role, toast, user]
   );
 
   const onGoogleError = useCallback(() => {}, []);

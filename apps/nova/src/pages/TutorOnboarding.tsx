@@ -2,20 +2,17 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Stepper } from "@litespace/luna/Stepper";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorOnboardingStep } from "@/constants/user";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
-import { tutorMetaSelector } from "@/redux/user/tutor";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IInterview } from "@litespace/types";
 import { maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { useFindInfinitInterviews } from "@litespace/headless/interviews";
+import { useUser } from "@litespace/headless/context/user";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.user);
-  const tutorMeta = useAppSelector(tutorMetaSelector);
+  const { user, meta } = useUser();
   const navigate = useNavigate();
   const [step, setStep] = useState<number>(-1);
 
@@ -36,7 +33,7 @@ const TutorOnboarding: React.FC = () => {
     ];
   }, [intl]);
 
-  const interviews = useFindInfinitInterviews(profile?.id);
+  const interviews = useFindInfinitInterviews(user?.id);
 
   const current = useMemo(() => {
     if (!interviews.list) return null;
@@ -59,14 +56,10 @@ const TutorOnboarding: React.FC = () => {
     )
       return setStep(TutorOnboardingStep.Interview);
 
-    if (
-      profile &&
-      tutorMeta &&
-      (tutorMeta.video === null || profile?.image === null)
-    )
+    if (user && meta && (meta.video === null || user?.image === null))
       return setStep(TutorOnboardingStep.Media);
 
-    if (tutorMeta && (tutorMeta.bio === null || tutorMeta.about === null))
+    if (meta && (meta.bio === null || meta.about === null))
       return setStep(TutorOnboardingStep.Profile);
 
     if (
@@ -74,15 +67,15 @@ const TutorOnboarding: React.FC = () => {
       current &&
       passed &&
       signed &&
-      profile &&
-      tutorMeta &&
-      tutorMeta.bio &&
-      tutorMeta.about &&
-      profile.image &&
-      tutorMeta.video
+      user &&
+      meta &&
+      meta.bio &&
+      meta.about &&
+      user.image &&
+      meta.video
     )
       return navigate(Route.Root);
-  }, [current, interviews.list, navigate, profile, tutorMeta]);
+  }, [current, interviews.list, meta, navigate, user]);
 
   return (
     <div className="w-full px-8 py-12 mx-auto max-w-screen-2xl">

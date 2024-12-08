@@ -17,10 +17,7 @@ import { useResetPassword } from "@litespace/headless/auth";
 import { Form, useNavigate, useSearchParams } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
-import { resetUserRules } from "@/redux/user/schedule";
+import { useUser } from "@litespace/headless/context/user";
 
 interface IForm {
   password: string;
@@ -33,6 +30,7 @@ const ResetPassword = () => {
   const validatePassword = useValidatePassword();
   const required = useRequired();
   const toast = useToast();
+  const user = useUser();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState<string | null>(null);
@@ -52,7 +50,6 @@ const ResetPassword = () => {
       newPassword: "",
     },
   });
-  const dispatch = useAppDispatch();
 
   const password = watch("password");
   const newPassword = watch("newPassword");
@@ -60,12 +57,10 @@ const ResetPassword = () => {
   const onSuccess = useCallback(
     (profile: IUser.ResetPasswordApiResponse) => {
       toast.success({ title: intl("page.login.forget.password.compelete") });
-      dispatch(setUserProfile(profile));
-      dispatch(resetTutorMeta());
-      dispatch(resetUserRules());
+      user.set({ user: profile.user, token: profile.token });
       return navigate(Route.Root);
     },
-    [dispatch, intl, navigate, toast]
+    [intl, navigate, toast, user]
   );
 
   const onError = useCallback(

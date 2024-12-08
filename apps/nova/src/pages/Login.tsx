@@ -8,22 +8,19 @@ import {
 import { useToast } from "@litespace/luna/Toast";
 import { messages } from "@litespace/luna/locales";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { FormattedMessage } from "react-intl";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
-import { resetUserRules } from "@/redux/user/schedule";
 import LoginLight from "@litespace/assets/LoginLight";
 import LoginDark from "@litespace/assets/LoginDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useLoginUser } from "@litespace/headless/user";
 import { useRender } from "@/hooks/render";
 import ForgetPassword from "@/components/Common/ForgetPassword";
+import { useUser } from "@litespace/headless/context/user";
 
 interface IForm {
   email: string;
@@ -33,8 +30,8 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const toast = useToast();
+  const user = useUser();
   const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "student@litespace.org",
@@ -44,30 +41,20 @@ const Login: React.FC = () => {
 
   const email = watch("email");
   const password = watch("password");
-
   const forgetPassword = useRender();
 
-  const onSuccess = useCallback(() => {
-    return navigate(Route.Root);
-  }, [navigate]);
-
-  const onError = useCallback(
-    (error: Error) => {
+  const mutation = useLoginUser({
+    onSuccess(result) {
+      user.set(result);
+      return navigate(Route.Root);
+    },
+    onError(error) {
       toast.error({
         title: intl("page.login.failed"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
-    [intl, toast]
-  );
-
-  const dispatchFn = (profile: IUser.LoginApiResponse) => {
-    dispatch(setUserProfile(profile));
-    dispatch(resetTutorMeta());
-    dispatch(resetUserRules());
-  };
-
-  const mutation = useLoginUser({ dispatchFn, onSuccess, onError });
+  });
 
   const onSubmit = useMemo(
     () =>
