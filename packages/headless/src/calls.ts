@@ -1044,16 +1044,16 @@ export function useCallMembers(callId: number | null, callType: ICall.Type | nul
   const [members, setMembers] = useState<number[]>([]);
   useEffect(() => {
     if (data) setMembers(data)
-  }, [isPending])
+  }, [data, isPending])
 
   // define WSS events callbacks
   const onMemberJoinWssCallback: CallEventsCallback = useCallback(payload => {
     setMembers(prev => [...prev, payload.userId]);
-  }, [callId])
+  }, [])
 
   const onMemberLeaveWssCallback: CallEventsCallback  = useCallback(payload => {
     setMembers(prev => prev.filter(id => id !== payload.userId));
-  }, [callId])
+  }, [])
 
   // define react callbacks
   const joinCall = useCallback(() => {
@@ -1079,7 +1079,7 @@ export function useCallMembers(callId: number | null, callType: ICall.Type | nul
       socket.off(Wss.ServerEvent.MemberLeftCall);
       leaveCall();
     }
-  }, [callId, socket])
+  }, [callId, socket, joinCall, leaveCall, onMemberLeaveWssCallback, onMemberJoinWssCallback])
 
   return members;
 }

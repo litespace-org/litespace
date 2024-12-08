@@ -17,8 +17,17 @@ describe("calls test suite", () => {
   let tutorApi: Api;
   let studentApi: Api;
 
+  beforeAll(async () => {
+    await cache.connect();
+  });
+
+  afterAll(async () => {
+    await cache.disconnect();
+  });
+
   beforeEach(async () => {
     await flush();
+    await cache.flush();
 
     tutorApi = await Api.forTutor();
     tutor = await tutorApi.findCurrentUser();
