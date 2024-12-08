@@ -1,11 +1,4 @@
-import {
-  calls,
-  interviews,
-  lessons,
-  messages,
-  rooms,
-  users,
-} from "@litespace/models";
+import { calls, messages, rooms, users } from "@litespace/models";
 import { ICall, IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
 import wss from "@/validation/wss";
@@ -99,15 +92,21 @@ export class WssHandler {
 
       // add user to the call by inserting row to call_members relation
       await cache.call.addMember({ userId: user.id, callId: callId });
+      this.socket.join(this.asCallRoomId(callId));
 
       stdout.info(`User ${user.id} has joined call ${callId}.`);
 
+      // TODO: retrieve user data (ICall.PopulatedMember) from the database
+      // discuss with the team if shall we retrieve it from postgres,
+      // or store it in redis in the first place.
+
       // notify members that a new member has joined the call
-      this.socket.broadcast
-        .to(this.asCallRoomId(callId))
-        .emit(Wss.ServerEvent.MemberJoinedCall, {
-          userId: user.id,
-        });
+      // NOTE: the user notifies himself as well that he successfully joined the call.
+      this.broadcast(
+        Wss.ServerEvent.MemberJoinedCall,
+        this.asCallRoomId(callId),
+        { userId: user.id } // TODO: define the payload struct type in the types package
+      );
     });
     if (result instanceof Error) stdout.error(result.message);
   }

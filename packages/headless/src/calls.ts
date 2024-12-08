@@ -1,4 +1,4 @@
-import { IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
+import { ICall, IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -9,6 +9,7 @@ import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
 import { QueryKey } from "@/constants";
 import zod from "zod";
+import { ServerEvent, ServerEventsMap } from "@litespace/types/dist/esm/wss";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -1005,4 +1006,91 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
+}
+
+/*
+ * Send an HTTP request to retrieve the current members of a call
+ */
+export function useFindCallMembers(
+  callId: number | null,
+  callType: ICall.Type | null
+): UseQueryResult<ICall.FindCallMembersApiResponse | null, Error> {
+  const atlas = useAtlas();
+
+  const findCallMembers = useCallback(async () => {
+    if (!callId || !callType) return null;
+    return await atlas.call.findCallMembers(callId, callType);
+  }, [atlas.call, callId, callType]);
+
+  return useQuery({
+    queryFn: findCallMembers,
+    queryKey: [QueryKey.FindCallMembers],
+  });
+}
+
+// a shorthand for some ServerEvent Callback type
+type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedCall];
+
+/*
+ * Real-time call members state.
+ */
+export function useCallMembers(
+  callId: number | null,
+  callType: ICall.Type | null
+): number[] {
+  const [members, setMembers] = useState<number[]>([]);
+
+  const socket = useSocket();
+
+  // get the initial list by an http request
+  const query = useFindCallMembers(callId, callType);
+
+  useEffect(() => {
+    if (query.data && query.isFetching && query.isError) setMembers(query.data);
+  }, [query.data, query.isError, query.isFetching]);
+
+  // define WSS events callbacks
+  const onMemberJoinWssCallback: CallEventsCallback = useCallback((payload) => {
+    setMembers((prev) => [...prev, payload.userId]);
+  }, []);
+
+  const onMemberLeaveWssCallback: CallEventsCallback = useCallback(
+    (payload) => {
+      setMembers((prev) => prev.filter((id) => id !== payload.userId));
+    },
+    []
+  );
+
+  // define react callbacks
+  const joinCall = useCallback(() => {
+    if (!socket || !callId || !callType) return;
+    socket.emit(Wss.ClientEvent.JoinCall, { callId, type: callType });
+  }, [socket, callId, callType]);
+
+  const leaveCall = useCallback(() => {
+    if (!socket || !callId || !callType) return;
+    socket.emit(Wss.ClientEvent.LeaveCall, { callId });
+  }, [socket, callId, callType]);
+
+  useEffect(() => {
+    // listen to wss events to modify members list accordingly
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    socket.on(Wss.ServerEvent.MemberLeftCall, onMemberLeaveWssCallback);
+    joinCall();
+    return () => {
+      socket.off(Wss.ServerEvent.MemberJoinedCall);
+      socket.off(Wss.ServerEvent.MemberLeftCall);
+      leaveCall();
+    };
+  }, [
+    callId,
+    socket,
+    joinCall,
+    leaveCall,
+    onMemberLeaveWssCallback,
+    onMemberJoinWssCallback,
+  ]);
+
+  return members;
 }
