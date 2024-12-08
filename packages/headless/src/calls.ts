@@ -1,4 +1,4 @@
-import { IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
+import { ICall, IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
 import { useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAtlas } from "@/atlas/index";
@@ -1005,4 +1005,62 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
+}
+
+/*
+ * dispatch an HTTP request to retrieve the current members of a call
+ */
+export function useFindCallMembers(
+  callId: number | null,
+  callType: ICall.Type | null
+): UseQueryResult<ICall.FindCallMembersApiResponse | null, Error> {
+  const atlas = useAtlas();
+
+  const findCallMembers = useCallback(async () => {
+    if (!callId || !callType) return null;
+    return await atlas.call.findCallMembers(callId, callType);
+  }, [callId, callType]);
+
+  return useQuery({
+    queryFn: findCallMembers,
+    queryKey: ["find-call-members"],
+  });
+}
+
+/*
+ * get list of members in a specifc call by callId
+ */
+export function useCallMembers(callId: number | null, callType: ICall.Type | null): number[]{
+  const socket = useSocket();
+
+  // get the initial list by an http request
+  const res = useFindCallMembers(callId, callType);
+  // TODO: the type should be ICall.PopuldatedMember[]
+  const [members, setMembers] = useState<number[]>(res.data ? res.data : []);
+
+  const onMemberJoinWssCallback = useCallback(({userId}: {userId: number}) => {
+    console.log(`Member ${userId} has joined the call`);
+    setMembers(prev => [...prev, userId]);
+  }, [callId])
+
+  const joinCall = useCallback(() => {
+    if (!socket || !callId || !callType) return;
+      socket.emit(Wss.ClientEvent.JoinCall, {callId, type: callType} );
+    }, [socket]
+  );
+
+  useEffect(() => {
+    joinCall();
+  }, [socket])
+
+  useEffect(() => {
+    // listen to wss events to modify members list accordingly
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    return () => {
+      socket.off(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    }
+  }, [callId, socket])
+
+  return members;
 }
