@@ -9,6 +9,7 @@ import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
 import { QueryKey } from "@/constants";
 import zod from "zod";
+import { ServerEvent, ServerEventsMap } from "@litespace/types/dist/esm/wss";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -1016,16 +1017,19 @@ export function useFindCallMembers(
 ): UseQueryResult<ICall.FindCallMembersApiResponse | null, Error> {
   const atlas = useAtlas();
 
-  const findCallMembers = useCallback(async () => {
+  const findCallMembers = async () => {
     if (!callId || !callType) return null;
     return await atlas.call.findCallMembers(callId, callType);
-  }, [callId, callType]);
+  };
 
   return useQuery({
     queryFn: findCallMembers,
     queryKey: ["find-call-members"],
   });
 }
+
+// a shorthand for some ServerEvent Callback type
+type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedCall]
 
 /*
  * get list of members in a specifc call by callId
@@ -1034,31 +1038,46 @@ export function useCallMembers(callId: number | null, callType: ICall.Type | nul
   const socket = useSocket();
 
   // get the initial list by an http request
-  const res = useFindCallMembers(callId, callType);
-  // TODO: the type should be ICall.PopuldatedMember[]
-  const [members, setMembers] = useState<number[]>(res.data ? res.data : []);
+  const { data, isPending } = useFindCallMembers(callId, callType);
 
-  const onMemberJoinWssCallback = useCallback(({userId}: {userId: number}) => {
-    console.log(`Member ${userId} has joined the call`);
-    setMembers(prev => [...prev, userId]);
+  // TODO: the state type should be ICall.PopuldatedMember[]
+  const [members, setMembers] = useState<number[]>([]);
+  useEffect(() => {
+    if (data) setMembers(data)
+  }, [isPending])
+
+  // define WSS events callbacks
+  const onMemberJoinWssCallback: CallEventsCallback = useCallback(payload => {
+    setMembers(prev => [...prev, payload.userId]);
   }, [callId])
 
+  const onMemberLeaveWssCallback: CallEventsCallback  = useCallback(payload => {
+    setMembers(prev => prev.filter(id => id !== payload.userId));
+  }, [callId])
+
+  // define react callbacks
   const joinCall = useCallback(() => {
     if (!socket || !callId || !callType) return;
       socket.emit(Wss.ClientEvent.JoinCall, {callId, type: callType} );
-    }, [socket]
+    }, [socket, callId, callType]
   );
 
-  useEffect(() => {
-    joinCall();
-  }, [socket])
+  const leaveCall = useCallback(() => {
+    if (!socket || !callId || !callType) return;
+      socket.emit(Wss.ClientEvent.LeaveCall, { callId } );
+    }, [socket, callId, callType]
+  );
 
   useEffect(() => {
     // listen to wss events to modify members list accordingly
     if (!socket) return;
     socket.on(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+    socket.on(Wss.ServerEvent.MemberLeftCall, onMemberLeaveWssCallback);
+    joinCall();
     return () => {
-      socket.off(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
+      socket.off(Wss.ServerEvent.MemberJoinedCall);
+      socket.off(Wss.ServerEvent.MemberLeftCall);
+      leaveCall();
     }
   }, [callId, socket])
 

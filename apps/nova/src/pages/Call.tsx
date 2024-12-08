@@ -64,7 +64,7 @@ const Call: React.FC = () => {
   }, [callRoom.data, profile?.id]);
 
   const members = useCallMembers(callId, ctype)
-  useEffect(() => console.log(members), [members]);
+  useEffect(() => console.log("In App members: ", members), [members]);
 
   // const messages = useMemo(
   //   () =>
@@ -304,6 +304,17 @@ const Call: React.FC = () => {
                 <MicrophoneSlash className="[&_*]:stroke-brand-700" />
               )}
             </Button>
+            
+            {
+              /*
+               * TODO: replace this by members views
+               */
+              <div>
+                <h1>Joined members</h1>
+                {members.map(m => <label className="mx-1">-{m}-</label>)}
+              </div>
+            }
+          
 
             {/* <Button
             type={ButtonType.Main}
