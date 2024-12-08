@@ -46,6 +46,7 @@
     "lint:dashboard": "pnpm --filter @litespace/dashboard lint",
     "lint:headless": "pnpm --filter @litespace/headless lint",
     "lint:all": "pnpm lint:headless && pnpm lint:nova && pnpm lint:mobile && pnpm lint:nebula && pnpm lint:dashboard",
+    "check:all": "pnpm atlas check && pnpm auth check && pnpm emails check && pnpm headless check && pnpm luna check && pnpm models check && pnpm sol check && pnpm types check",
     "storybook": "pnpm --filter @litespace/luna storybook",
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",
@@ -75,7 +76,6 @@
     "ts-node": "^10.9.2",
     "vercel": "^34.2.7",
     "vite-node": "^2.1.2",
-    "@litespace/luna": "workspace:^",
     "glob": "^11.0.0",
     "lodash": "^4.17.21"
   },

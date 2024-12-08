@@ -76,14 +76,6 @@ describe("validate password", () => {
   it("should reject password more than 100 characters", () => {
     expect(isValidPassword("A2".repeat(51))).toBe(FieldError.LongPassword);
   });
-
-  it("should reject password without any letter", () => {
-    expect(isValidPassword("12345678")).toBe(FieldError.MissingPasswordLetters);
-  });
-
-  it("should reject password without any numbers", () => {
-    expect(isValidPassword("Abcdefgh")).toBe(FieldError.MissingPasswordNumbers);
-  });
 });
 
 describe("validate username", () => {

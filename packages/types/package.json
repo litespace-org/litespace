@@ -15,6 +15,7 @@
     "build:ts": "tsc",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
+    "check": "tsc -p tsconfig.json --noEmit",
     "watch": "npm-watch build"
   },
   "watch": {

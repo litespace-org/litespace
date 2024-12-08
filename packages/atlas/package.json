@@ -12,7 +12,8 @@
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
     "build:ts": "tsc",
-    "clean": "rm -rf dist/"
+    "clean": "rm -rf dist/",
+    "check": "tsc --noEmit"
   },
   "devDependencies": {
     "@rollup/plugin-alias": "^5.1.0",

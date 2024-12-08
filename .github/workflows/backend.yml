@@ -4,10 +4,12 @@ on:
     branches:
       - "master"
     paths:
+      - "services/server/**"
       - "packages/auth/**"
       - "packages/models/**"
       - "packages/atlas/**"
-      - "services/server/**"
+      - "packages/sol/**"
+      - "packages/types/**"
 
   workflow_dispatch:
 

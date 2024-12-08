@@ -10,6 +10,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
+    "check": "tsc -p tsconfig.json --noEmit --emitDeclarationOnly false",
     "watch": "pnpm build -w",
     "migrate": "env-cmd -f .env node-pg-migrate",
     "migrate:test:local": "env-cmd -f .env.test node-pg-migrate",

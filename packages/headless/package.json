@@ -60,6 +60,7 @@
     "watch": "npm-watch build",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "clean": "rm -rf dist/",
+    "check": "tsc --noEmit",
     "prepare": "ts-patch install -s"
   },
   "watch": {

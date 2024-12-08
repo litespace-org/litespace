@@ -10,6 +10,7 @@
     "dev": "email dev -p 3003",
     "build": "tsc",
     "watch": "tsc --watch",
+    "check": "tsc --noEmit",
     "clean": "rm -rf dist/"
   },
   "dependencies": {
