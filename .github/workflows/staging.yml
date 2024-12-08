@@ -5,12 +5,22 @@ env:
 on:
   pull_request:
     branches: ["master"]
+    paths:
+      - "apps/blog/**"
+      - "apps/dashboard/**"
+      - "apps/nebula/**"
+      - "apps/nova/**"
+      - "packages/luna/**"
+      - "packages/atlas/**"
+      - "packages/headless/**"
+      - "packages/sol/**"
+      - "packages/types/**"
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,10 +46,6 @@ jobs:
         run: pnpm install
       - name: Build packages
         run: pnpm build:pkgs
-      - name: Lint all workspaces
-        run: pnpm lint:all
-      - name: Analyze intl messages
-        run: pnpm intl inspect --fail
       # Nova Deployment
       - name: Pull Nova from Vercel
         run: pnpm vercel:ci pull "nova" "apps/nova/" --token=${{ secrets.VERCEL_TOKEN }}

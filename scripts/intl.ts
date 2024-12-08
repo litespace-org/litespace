@@ -1,12 +1,13 @@
 import fs from "node:fs";
-import { locales } from "@litespace/luna/locales";
 import { glob } from "glob";
 import "colors";
 import { Command } from "commander";
 import { omit } from "lodash";
 
 async function findUnusedIds() {
-  const local = locales["ar-EG"];
+  const local = JSON.parse(
+    fs.readFileSync("./packages/luna/src/locales/ar-eg.json").toString("utf-8")
+  );
   const files = await glob("{packages,apps}/**/*.{js,ts,jsx,tsx}", {
     posix: true,
     ignore: [

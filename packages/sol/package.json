@@ -9,6 +9,7 @@
     "build": "pnpm build:cjs && pnpm build:esm",
     "build:cjs": "tsc -p tsconfig.cjs.json",
     "build:esm": "tsc -p tsconfig.esm.json",
+    "check": "tsc --noEmit",
     "clean": "rm -rf dist/",
     "watch": "npm-watch build",
     "prepare": "ts-patch install -s",
