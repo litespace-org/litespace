@@ -17,6 +17,8 @@ jobs:
           node-version: "20.11.1"
       - name: Enable pnpm
         run: corepack enable pnpm
+      - name: Debug
+        run: echo "$(pnpm store path --silent)"
       - name: Get pnpm store directory
         shell: bash
         run: |
