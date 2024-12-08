@@ -10,8 +10,7 @@ import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
-import { profileSelectors } from "@/redux/user/profile";
-import { useAppSelector } from "@/redux/store";
+import { useUser } from "@litespace/headless/context/user";
 
 const Rating: React.FC<{
   rating: IRating.Populated;
@@ -25,7 +24,7 @@ const Rating: React.FC<{
     tutorId: number;
   }) => void;
 }> = ({ rating, onEdit, onDelete }) => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
 
   return (
     <Card>
@@ -54,7 +53,7 @@ const Rating: React.FC<{
               <p>{dayjs(rating.createdAt).fromNow()}</p>
             </p>
           </div>
-          {profile?.id === rating.rater.id ? (
+          {user?.id === rating.rater.id ? (
             <div className="flex gap-3">
               <Button
                 onClick={() => onEdit(rating)}

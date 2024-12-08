@@ -1,16 +1,5 @@
-import { atlas } from "@litespace/luna/backend";
 import { IInterview } from "@litespace/types";
 import { useMemo } from "react";
-import { useQuery } from "@tanstack/react-query";
-
-export function useInterviews(user: number) {
-  return useQuery({
-    queryFn: async () => {
-      return await atlas.interview.findInterviews({ users: [user] });
-    },
-    queryKey: ["get-tutuor-interviews"],
-  });
-}
 
 export function useInterviewStatus(status: IInterview.Status) {
   return useMemo(() => {

@@ -6,6 +6,7 @@
     "dist/**"
   ],
   "exports": {
+    "./context/user": "./dist/user/index.js",
     "./asset": "./dist/asset.js",
     "./plans": "./dist/plans.js",
     "./backend": "./dist/backend/index.js",

@@ -6,7 +6,7 @@ export enum TokenType {
   Basic = "Basic",
 }
 
-export type GetToken = () => null | { type: TokenType; value: string };
+export type AuthToken = { type: TokenType; value: string };
 
 export const sockets = {
   main: {
@@ -50,7 +50,7 @@ export const peers = {
 
 export function createClient(
   backend: Backend,
-  getToken: GetToken
+  token: AuthToken | null
 ): AxiosInstance {
   const client = axios.create({
     baseURL: backends.main[backend],
@@ -59,7 +59,6 @@ export function createClient(
   });
 
   client.interceptors.request.use((config) => {
-    const token = getToken();
     if (token) config.headers.Authorization = `${token.type} ${token.value}`;
     return config;
   });

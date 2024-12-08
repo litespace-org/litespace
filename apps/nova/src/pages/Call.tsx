@@ -14,8 +14,6 @@ import cn from "classnames";
 // import { useFullScreen } from "@/hooks/call";
 // import Media from "@/components/Call/Media";
 // import Messages from "@/components/Chat/Messages";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { orNull, orUndefined } from "@litespace/sol/utils";
 import {
   useCallMembers,
@@ -35,10 +33,11 @@ import Microphone from "@litespace/assets/Microphone";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import { ICall } from "@litespace/types";
+import { useUser } from "@litespace/headless/context/user";
 // import GhostView from "@/components/Call/GhostView";
 
 const Call: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   // const chat = useRender();
   // const intl = useFormatMessage();
   // const mediaQueries = useMediaQueries();
@@ -60,8 +59,8 @@ const Call: React.FC = () => {
 
   const mateInfo = useMemo(() => {
     if (!callRoom.data) return;
-    return callRoom.data.members.find((member) => member.id !== profile?.id);
-  }, [callRoom.data, profile?.id]);
+    return callRoom.data.members.find((member) => member.id !== user?.id);
+  }, [callRoom.data, user?.id]);
 
   const members = useCallMembers(callId, ctype);
   useEffect(() => console.log("In App members: ", members), [members]);
@@ -131,10 +130,10 @@ const Call: React.FC = () => {
         callId,
         isGhost,
         mateUserId: orNull(mateInfo?.id),
-        role: orNull(profile?.role),
+        role: orNull(user?.role),
         disableGhost: false,
       }),
-      [callId, mateInfo?.id, profile?.role]
+      [callId, mateInfo?.id, user?.role]
     )
   );
 
@@ -159,10 +158,10 @@ const Call: React.FC = () => {
         isGhost,
         ghostPeerId: orNull(peers.ghost.data),
         tutorPeerId: orNull(peers.tutor.data),
-        userId: orNull(profile?.id),
+        userId: orNull(user?.id),
         onCloseCall,
       }),
-      [onCloseCall, peers.ghost.data, peers.tutor.data, profile?.id]
+      [onCloseCall, peers.ghost.data, peers.tutor.data, user?.id]
     )
   );
 
@@ -176,7 +175,7 @@ const Call: React.FC = () => {
           screen: null,
         },
         speaking: true,
-        name: orUndefined(profile?.name),
+        name: orUndefined(user?.name),
       },
       mate: {
         streams: {
@@ -199,7 +198,7 @@ const Call: React.FC = () => {
       mateInfo?.name,
       mateScreenStream,
       mateStream,
-      profile?.name,
+      user?.name,
       userMedia.stream,
     ]
   );

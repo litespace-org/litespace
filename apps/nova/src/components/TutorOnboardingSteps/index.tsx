@@ -2,7 +2,6 @@ import { TutorOnboardingStep } from "@/constants/user";
 import React from "react";
 import Interview from "@/components/TutorOnboardingSteps/Interview";
 import MediaShot from "@/components/TutorOnboardingSteps/MediaShot";
-import IntorduceYourself from "@/components/TutorOnboardingSteps/IntroduceYourself";
 import { Element, IInterview } from "@litespace/types";
 
 const TutorOnboardingSteps: React.FC<{
@@ -13,7 +12,7 @@ const TutorOnboardingSteps: React.FC<{
   if (step === TutorOnboardingStep.Interview)
     return <Interview interviews={interviews} current={current} />;
   if (step === TutorOnboardingStep.Media) return <MediaShot />;
-  if (step === TutorOnboardingStep.Profile) return <IntorduceYourself />;
+  if (step === TutorOnboardingStep.Profile) return "todo";
   return null;
 };
 

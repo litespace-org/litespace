@@ -1,10 +1,14 @@
-import { GetToken } from "@litespace/atlas";
-import { Backend } from "@litespace/types";
+import { AuthToken } from "@litespace/atlas";
+import { Backend, Void } from "@litespace/types";
 import React, { useContext } from "react";
 
-type Context = {
+export type Context = {
   backend: Backend;
-  getToken: GetToken;
+  token: AuthToken | null;
+  setAuthToken(token: AuthToken): void;
+  setBearerToken(token: string): void;
+  setBasicToken(token: string): void;
+  removeToken: Void;
 };
 
 export const BackendContext = React.createContext<Context | null>(null);

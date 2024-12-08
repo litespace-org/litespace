@@ -16,7 +16,7 @@
     "build:pkg:headless": "pnpm headless build",
     "build:pkgs": "pnpm build:pkg:assets && pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:models && pnpm build:pkg:atlas && pnpm build:pkg:headless && pnpm build:pkg:auth &&  pnpm build:pkg:luna",
     "build:server:pkgs": "pnpm build:pkg:types && pnpm build:pkg:sol && pnpm build:pkg:emails && pnpm build:pkg:models && pnpm build:pkg:atlas && pnpm build:pkg:auth",
-    "watch:atlas": "pnpm build:pkg:atlas -w",
+    "watch:atlas": "pnpm atlas watch",
     "watch:auth": "pnpm auth watch",
     "watch:emails": "pnpm emails watch",
     "watch:luna": "pnpm luna watch",
@@ -65,7 +65,8 @@
     "sol": "pnpm --filter @litespace/sol",
     "types": "pnpm --filter @litespace/types",
     "server": "pnpm --filter @litespace/server",
-    "nova": "pnpm --filter @litespace/nova"
+    "nova": "pnpm --filter @litespace/nova",
+    "dashboard": "pnpm --filter @litespace/dashboard"
   },
   "devDependencies": {
     "@types/node": "^22.7.5",

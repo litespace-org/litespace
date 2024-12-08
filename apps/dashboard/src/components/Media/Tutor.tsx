@@ -7,13 +7,13 @@ import {
 import { Card } from "@litespace/luna/Card";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/backend";
 import { ITutor, IUser } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { AtSign, User } from "react-feather";
 import Media from "@/components/Media/Media";
 import { MediaType } from "@/components/Media/types";
 import { useMutation } from "@tanstack/react-query";
+import { useAtlas } from "@litespace/headless/atlas";
 
 const Tutor: React.FC<{
   tutor: ITutor.PublicTutorFieldsForMediaProvider;
@@ -22,13 +22,14 @@ const Tutor: React.FC<{
   const [image, setImage] = useState<string | File | null>(tutor.image);
   const [video, setVideo] = useState<string | File | null>(tutor.video);
   const toast = useToast();
+  const atlas = useAtlas();
 
   const intl = useFormatMessage();
   const drop = useCallback(
     async (drop: IUser.UpdateApiPayload["drop"]) => {
       return await atlas.user.update(tutor.id, { drop });
     },
-    [tutor.id]
+    [atlas.user, tutor.id]
   );
 
   const upload = useCallback(

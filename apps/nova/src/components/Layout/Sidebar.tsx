@@ -1,8 +1,4 @@
-import { useAppDispatch } from "@/redux/store";
-import { resetUserProfile } from "@/redux/user/profile";
-import { resetTutorMeta } from "@/redux/user/tutor";
 import { Route } from "@/types/routes";
-import { removeAuthToken } from "@litespace/luna/cache";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import Calendar from "@litespace/assets/Calendar";
@@ -15,8 +11,9 @@ import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
 import cn from "classnames";
-import React, { SVGProps, useCallback, useMemo } from "react";
+import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useUser } from "@litespace/headless/context/user";
 
 const SidebarItem = ({
   to,
@@ -62,15 +59,9 @@ const SidebarItem = ({
 };
 
 const Sidebar = () => {
-  const dispatch = useAppDispatch();
   const intl = useFormatMessage();
   const location = useLocation();
-
-  const logout = useCallback(() => {
-    removeAuthToken();
-    dispatch(resetUserProfile());
-    dispatch(resetTutorMeta());
-  }, [dispatch]);
+  const { logout } = useUser();
 
   const mainPages = useMemo(() => {
     return [
@@ -92,11 +83,6 @@ const Sidebar = () => {
       {
         label: intl("sidebar.schedule"),
         route: Route.Schedule,
-        Icon: Calendar,
-      },
-      {
-        label: intl("sidebar.lessons"),
-        route: Route.Lessons,
         Icon: Calendar,
       },
       {

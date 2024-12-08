@@ -2,13 +2,12 @@ import { MessageStream, MessageStreamAction } from "@litespace/luna/hooks/chat";
 import { Wss, IMessage, IRoom } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSocket } from "@litespace/headless/socket";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useFindUserRooms, useUpdateRoom } from "@litespace/headless/chat";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { useInfinteScroll } from "@litespace/luna/hooks/common";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useUser } from "@litespace/headless/context/user";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
@@ -89,14 +88,13 @@ export function useRoomManager() {
   const toast = useToast();
   const intl = useFormatMessage();
   const [keyword, setKeyword] = useState("");
+  const { user } = useUser();
 
-  const profile = useAppSelector(profileSelectors.user);
-
-  const pinnedRooms = useFindUserRooms(profile?.id, {
+  const pinnedRooms = useFindUserRooms(user?.id, {
     pinned: true,
   });
 
-  const allRooms = useFindUserRooms(profile?.id, {
+  const allRooms = useFindUserRooms(user?.id, {
     pinned: !keyword ? false : undefined,
     keyword,
   });

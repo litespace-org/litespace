@@ -23,7 +23,7 @@ const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   const form = useRender();
   const deleteRule = useRender();
   const deactivateRule = useRender();
-  const activate = useActivateRule(rule.id);
+  const activate = useActivateRule();
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [

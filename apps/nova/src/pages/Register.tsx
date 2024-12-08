@@ -5,14 +5,13 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate, useParams } from "react-router-dom";
-import { useAppDispatch } from "@/redux/store";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { setUserProfile } from "@/redux/user/profile";
 import RegisterLight from "@litespace/assets/RegisterLight";
 import RegisterDark from "@litespace/assets/RegisterDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useRegisterUser } from "@litespace/headless/user";
+import { useUser } from "@litespace/headless/context/user";
 
 interface IForm {
   email: string;
@@ -28,7 +27,7 @@ const callbackUrl = origin.concat(Route.VerifyEmail);
 
 const Register: React.FC = () => {
   const intl = useFormatMessage();
-  const dispatch = useAppDispatch();
+  const user = useUser();
   const navigate = useNavigate();
   const toast = useToast();
   const { role } = useParams<{ role: Role }>();
@@ -52,12 +51,12 @@ const Register: React.FC = () => {
   }, [isValidRole, navigate]);
 
   const onSuccess = useCallback(
-    async ({ user, token }: IUser.RegisterApiResponse) => {
+    async ({ user: info, token }: IUser.RegisterApiResponse) => {
       toast.success({ title: intl("page.register.success") });
-      dispatch(setUserProfile({ user, token }));
+      user.set({ user: info, token });
       navigate(Route.Root);
     },
-    [dispatch, intl, navigate, toast]
+    [intl, navigate, toast, user]
   );
 
   const onError = useCallback(
