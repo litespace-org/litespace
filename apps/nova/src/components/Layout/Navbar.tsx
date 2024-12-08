@@ -1,5 +1,4 @@
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
+import { useUser } from "@litespace/headless/context/user";
 import {
   ProfileInfo,
   SearchInput,
@@ -9,7 +8,7 @@ import cn from "classnames";
 import React from "react";
 
 const Navbar: React.FC = () => {
-  const user = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   if (!user) return null;
 
   return (

@@ -1,14 +1,11 @@
 import PageContent from "@/components/Common/PageContent";
 import PageTitle from "@/components/Common/PageTitle";
 import UploadPhoto from "@/components/Settings/UploadPhoto";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { useUpdateUser } from "@litespace/headless/user";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Controller, Form, Label } from "@litespace/luna/Form";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { FullSwitch } from "@litespace/luna/Switch";
-import { useUpdateProfileMedia } from "@litespace/luna/hooks/user";
 import {
   useRequired,
   useValidateEmail,
@@ -21,6 +18,7 @@ import { Typography } from "@litespace/luna/Typography";
 import { orNull } from "@litespace/sol/utils";
 import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useUser } from "@litespace/headless/context/user";
 
 type IForm = {
   name: string;
@@ -35,15 +33,15 @@ type IForm = {
 
 const Settings: React.FC = () => {
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.full);
+  const { user, loading, fetching } = useUser();
   const toast = useToast();
   const [photo, setPhoto] = useState<File | null>(null);
 
   const form = useForm<IForm>({
     defaultValues: {
-      name: profile.value?.user.name || "",
-      email: profile.value?.user.email || "",
-      phoneNumber: profile.value?.user?.phoneNumber || "",
+      name: user?.name || "",
+      email: user?.email || "",
+      phoneNumber: user?.phoneNumber || "",
       password: {
         new: "",
         current: "",
@@ -75,29 +73,19 @@ const Settings: React.FC = () => {
     [intl, toast]
   );
 
-  const refresh = useCallback(() => {
-    // refresh
-  }, []);
-
-  const mediaMutation = useUpdateProfileMedia(refresh, profile.value?.user.id);
   const mutation = useUpdateUser({ onSuccess, onError });
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      if (photo) mediaMutation.mutate({ image: photo });
-      if (!profile.value?.user) return;
+      if (photo) console.log("upload photo");
+      if (!user) return;
 
       mutation.mutate({
-        id: profile.value.user.id,
+        id: user.id,
         payload: {
-          name:
-            data.name && data.name !== profile.value.user.name
-              ? data.name
-              : undefined,
+          name: data.name && data.name !== user.name ? data.name : undefined,
           email:
-            data.email && data.email !== profile.value.user.email
-              ? data.email
-              : undefined,
+            data.email && data.email !== user.email ? data.email : undefined,
           phoneNumber: data.phoneNumber ? data.phoneNumber : undefined,
           password:
             data.password.new && data.password.current
@@ -109,7 +97,7 @@ const Settings: React.FC = () => {
         },
       });
     },
-    [mediaMutation, mutation, photo, profile.value?.user]
+    [mutation, photo, user]
   );
 
   useEffect(() => {
@@ -126,7 +114,7 @@ const Settings: React.FC = () => {
         <div className="mb-8">
           <PageTitle
             title={intl("settings.profile.title")}
-            fetching={profile.fetching && !profile.loading}
+            fetching={fetching && !loading}
           />
         </div>
 
@@ -138,7 +126,7 @@ const Settings: React.FC = () => {
             <div className="w-[38%] flex flex-col gap-6">
               <UploadPhoto
                 setPhoto={setPhoto}
-                photo={photo || orNull(profile.value?.user.image)}
+                photo={photo || orNull(user?.image)}
               />
               <Typography
                 element="subtitle-1"

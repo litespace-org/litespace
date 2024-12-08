@@ -19,7 +19,6 @@ export enum Route {
   TutorProfile = "/:id/tutor",
   TutorOnboarding = "/tutor/onboarding",
   Complete = "/complete",
-  Lessons = "/lessons",
   Interviews = "/interviews",
   Invoices = "/invoices",
   Chat = "/chat",

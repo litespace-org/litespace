@@ -1,21 +1,22 @@
 import List from "@/components/Media/List";
+import { useAtlas } from "@litespace/headless/atlas";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Loading } from "@litespace/luna/Loading";
 import { Spinner } from "@litespace/luna/Spinner";
 import { usePaginationQuery } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/backend";
 
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 
 const Media: React.FC = () => {
   const intl = useFormatMessage();
+  const atlas = useAtlas();
   const findTutors = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
       return await atlas.user.findTutorsForMediaProvider({ page: pageParam });
     },
-    []
+    [atlas.user]
   );
   const media = usePaginationQuery(findTutors, ["find-tutors"]);
 

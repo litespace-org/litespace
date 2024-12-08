@@ -1,20 +1,19 @@
 import List from "@/components/Invoices/List";
 import Stats from "@/components/Invoices/Stats";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import React, { useCallback } from "react";
 import {
   useFindInvoiceStats,
   useFindInvoicesByUser,
 } from "@litespace/headless/invoices";
+import { useUser } from "@litespace/headless/context/user";
 
 const Invoices: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const invoices = useFindInvoicesByUser({
-    users: profile ? [profile.id] : undefined,
+    users: user ? [user.id] : undefined,
     userOnly: true,
   });
-  const stats = useFindInvoiceStats(profile?.id);
+  const stats = useFindInvoiceStats(user?.id);
 
   const refresh = useCallback(() => {
     invoices.query.refetch();

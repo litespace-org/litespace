@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "build": "rollup -c --bundleConfigAsCjs",
+    "watch": "pnpm build -w",
     "build:ts": "tsc",
     "clean": "rm -rf dist/",
     "check": "tsc --noEmit"

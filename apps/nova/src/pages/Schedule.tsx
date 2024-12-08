@@ -2,12 +2,11 @@ import React, { useState } from "react";
 import { Calendar } from "@litespace/luna/Calendar/v2";
 import dayjs from "@/lib/dayjs";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import Header, { View } from "@/components/Schedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { Lessons } from "@litespace/luna/Calendar/v2/Events";
+import { useUser } from "@litespace/headless/context/user";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -17,7 +16,7 @@ const variants = {
 const Schedule: React.FC = () => {
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("calendar");
-  const user = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
 
   const lessons = useInfiniteLessons({
     users: user ? [user.id] : [],

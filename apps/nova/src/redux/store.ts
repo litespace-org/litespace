@@ -1,6 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import user from "@/redux/user";
-import chat from "@/redux/chat";
 import { useDispatch, useSelector } from "react-redux";
 import {
   persistReducer,
@@ -16,7 +15,7 @@ import storage from "redux-persist/lib/storage";
 
 const reducer = persistReducer(
   { key: "litespace", storage },
-  combineReducers({ user, chat })
+  combineReducers({ user })
 );
 
 export const store = configureStore({
