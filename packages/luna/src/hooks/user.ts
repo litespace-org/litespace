@@ -1,83 +1,13 @@
 // todo: should be removed
-import { atlas } from "@/lib/backend";
 import { IUser } from "@litespace/types";
-import { useMutation } from "@tanstack/react-query";
 import { useCallback, useMemo } from "react";
 import { useFormatMessage } from "@/hooks/intl";
 import { validateText } from "@/lib/validate";
 import dayjs from "@/lib/dayjs";
 import { MIN_AGE, MAX_AGE } from "@litespace/sol/constants";
 import { useRequired } from "@/hooks/validation";
-import { useToast } from "@/components/Toast";
 
 export type RefreshUser = (user?: IUser.Self) => void;
-
-function useUpdate(refresh: RefreshUser) {
-  const intl = useFormatMessage();
-  const toast = useToast();
-  const onSuccess = useCallback(
-    (user?: IUser.Self) => {
-      refresh(user);
-      toast.success({ title: intl("profile.update.success") });
-    },
-    [intl, refresh, toast]
-  );
-
-  const onError = useCallback(
-    (error: Error) => {
-      toast.error({
-        title: intl("profile.update.error"),
-        description: error.message,
-      });
-    },
-    [intl, toast]
-  );
-
-  return { onSuccess, onError };
-}
-
-export function useUpdateUser(refresh: RefreshUser) {
-  const { onSuccess, onError } = useUpdate(refresh);
-  const update = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IUser.UpdateApiPayload;
-    }) => {
-      return await atlas.user.update(id, payload);
-    },
-    []
-  );
-
-  return useMutation({
-    mutationFn: update,
-    mutationKey: ["update-user"],
-    onSuccess,
-    onError,
-  });
-}
-
-export function useUpdateProfileMedia(refresh: RefreshUser, user?: number) {
-  const { onSuccess, onError } = useUpdate(refresh);
-  const update = useCallback(
-    async (payload: IUser.UpdateMediaPayload) => {
-      if (!user) return;
-      return await atlas.user.updateMedia(user, payload);
-    },
-    [user]
-  );
-
-  const mutation = useMutation({
-    mutationFn: update,
-    mutationKey: ["update-user-media"],
-    onSuccess,
-    onError,
-  });
-
-  return mutation;
-}
 
 const nameRegex = /^[\u0600-\u06FF\s]+$/;
 

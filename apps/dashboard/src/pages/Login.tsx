@@ -2,16 +2,13 @@ import { Form, Label, Field, Controller } from "@litespace/luna/Form";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/backend";
-
-import React, { useCallback, useMemo } from "react";
+import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/lib/route";
 import { IUser } from "@litespace/types";
-import { useAppDispatch } from "@/redux/store";
-import { setUserProfile } from "@/redux/user/profile";
+import { useUser } from "@litespace/headless/context/user";
+import { useLoginUser } from "@litespace/headless/user";
 
 interface IForm {
   email: string;
@@ -21,8 +18,8 @@ interface IForm {
 const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
   const toast = useToast();
+  const user = useUser();
   const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "admin@litespace.org",
@@ -33,17 +30,9 @@ const Login: React.FC = () => {
   const email = watch("email");
   const password = watch("password");
 
-  const login = useCallback(
-    async (credentials: IUser.Credentials) => {
-      const profile = await atlas.auth.password(credentials);
-      dispatch(setUserProfile(profile));
-    },
-    [dispatch]
-  );
-
-  const mutation = useMutation({
-    mutationFn: login,
-    onSuccess() {
+  const mutation = useLoginUser({
+    onSuccess(result) {
+      user.set(result);
       return navigate(Route.Root);
     },
     onError(error) {

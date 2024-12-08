@@ -41,7 +41,6 @@ export { IconField } from "@/components/IconField";
 export { Gender } from "@/components/Gender";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
-export * as Settings from "@/components/Settings";
 export {
   useRequired,
   useValidation,

@@ -10,15 +10,14 @@ import { Field, Form, Label } from "@litespace/luna/Form";
 import { Select } from "@litespace/luna/Select";
 import { TextEditor } from "@litespace/luna/TextEditor";
 import { useToast } from "@litespace/luna/Toast";
-import { atlas } from "@litespace/luna/backend";
 import { messages } from "@litespace/luna/locales";
 import { IInterview } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { Check, Info, X } from "react-feather";
 import { Controller, useForm } from "react-hook-form";
 import { useIntl } from "react-intl";
-import { useMutation } from "@tanstack/react-query";
 import { isEmpty } from "lodash";
+import { useUpdateInterview } from "@litespace/headless/interviews";
 
 const Description: React.FC<{ status: IInterview.Status }> = ({ status }) => {
   const intl = useIntl();
@@ -97,12 +96,6 @@ const Update: React.FC<{
   });
   const status = form.watch("status") || IInterview.Status.Passed;
   const { passed, rejected } = useInterviewStatus(status);
-  const update = useCallback(
-    async (payload: IInterview.UpdateApiPayload) => {
-      return atlas.interview.update(interview, payload);
-    },
-    [interview]
-  );
 
   const onSuccess = useCallback(() => {
     toast.success({
@@ -126,8 +119,7 @@ const Update: React.FC<{
     [intl, toast]
   );
 
-  const mutation = useMutation({
-    mutationFn: update,
+  const mutation = useUpdateInterview({
     onSuccess,
     onError,
   });
@@ -136,13 +128,16 @@ const Update: React.FC<{
     () =>
       form.handleSubmit((fields: IForm) => {
         mutation.mutate({
-          feedback: { interviewer: fields.feedback },
-          note: fields.note,
-          level: fields.level,
-          status,
+          id: interview,
+          payload: {
+            feedback: { interviewer: fields.feedback },
+            note: fields.note,
+            level: fields.level,
+            status,
+          },
         });
       }),
-    [form, mutation, status]
+    [form, interview, mutation, status]
   );
 
   const levels = useMemo(() => {

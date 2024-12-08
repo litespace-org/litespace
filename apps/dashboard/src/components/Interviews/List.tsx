@@ -13,10 +13,9 @@ import { ActionsMenu } from "@litespace/luna/ActionsMenu";
 import { Alert, AlertType } from "@litespace/luna/Alert";
 import { useUpdateInterview } from "@litespace/headless/interviews";
 import { useToast } from "@litespace/luna/Toast";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import { Dialog } from "@litespace/luna/Dialog";
 import { UsePaginateResult } from "@/types/query";
+import { useUser } from "@litespace/headless/context/user";
 
 type Interviews = IInterview.FindInterviewsApiResponse["list"];
 type IndividualInterview = IInterview.FindInterviewsApiResponse["list"][number];
@@ -32,7 +31,7 @@ const List: React.FC<{
 }> = ({ query, ...props }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const user = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const [interview, setInterview] = useState<IndividualInterview | null>(null);
   const tutor = useMemo(() => {
     // const tutor = interview?.members.find(

@@ -8,7 +8,6 @@ import { Dialog } from "@litespace/luna/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/luna/Form";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { atlas } from "@litespace/luna/backend";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -16,6 +15,7 @@ import { Action } from "@/components/Invoices/type";
 import { useMutation } from "@tanstack/react-query";
 import { Typography } from "@litespace/luna/Typography";
 import { X } from "react-feather";
+import { useAtlas } from "@litespace/headless/atlas";
 
 type IForm = {
   note: string;
@@ -32,6 +32,7 @@ const Process: React.FC<{
 }> = ({ open, close, onUpdate, id, action, note }) => {
   const intl = useFormatMessage();
   const toast = useToast();
+  const atlas = useAtlas();
   const ref = useRef<HTMLInputElement>(null);
   const [receipt, setReceipt] = useState<File | undefined>(undefined);
   const form = useForm<IForm>({

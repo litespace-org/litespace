@@ -15,24 +15,23 @@ import {
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
 import { OnMessage, useChat } from "@/hooks/chat";
-import { atlas } from "@litespace/luna/backend";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useMessages } from "@litespace/luna/hooks/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loading } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
 import dayjs from "dayjs";
 import { entries, groupBy } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
+import { useAtlas } from "@litespace/headless/atlas";
+import { useUser } from "@litespace/headless/context/user";
 
 const Messages: React.FC<{
   room: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }> = ({ room, otherMember }) => {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
@@ -41,12 +40,13 @@ const Messages: React.FC<{
     id: number;
   } | null>(null);
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
+  const atlas = useAtlas();
 
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
       return await atlas.chat.findRoomMessages(id, pagination);
     },
-    []
+    [atlas.chat]
   );
   const {
     messages,
@@ -129,10 +129,10 @@ const Messages: React.FC<{
   }, [messages, resetScroll, userScrolled]);
 
   const messageGroups = useMemo(() => {
-    if (!profile) return [];
+    if (!user) return [];
 
     const groups = asMessageGroups({
-      currentUser: profile,
+      currentUser: user,
       messages,
       otherMember,
     });
@@ -141,7 +141,7 @@ const Messages: React.FC<{
       dayjs(group.sentAt).format("YYYY-MM-DD")
     );
     return entries(map).map(([date, groups]) => ({ date, groups }));
-  }, [otherMember, messages, profile]);
+  }, [user, messages, otherMember]);
 
   const asDisplayDate = useCallback(
     (date: string) => {
@@ -210,7 +210,7 @@ const Messages: React.FC<{
                             {...group}
                             deleteMessage={onDelete}
                             editMessage={onUpdate}
-                            owner={group.sender.userId === profile?.id}
+                            owner={group.sender.userId === user?.id}
                           />
                         </div>
                       ))}

@@ -9,13 +9,14 @@ import { useClosableRef } from "@litespace/luna/hooks/dom";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { useAppDispatch, useAppSelector } from "@/redux/store";
-import { profileSelectors, resetUserProfile } from "@/redux/user/profile";
+import { useAppDispatch } from "@/redux/store";
+import { resetUserProfile } from "@/redux/user/profile";
 import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
 import { ButtonVariant } from "@litespace/luna/Button";
+import { useUser } from "@litespace/headless/context/user";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -29,7 +30,7 @@ const SidebarNav: React.FC<{
 }> = ({ options }) => {
   const dispatch = useAppDispatch();
   const intl = useFormatMessage();
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
 
   const button = useRef<HTMLDivElement>(null);
   const { toggle: toggleTheme, theme } = useTheme();
@@ -80,20 +81,17 @@ const SidebarNav: React.FC<{
             >
               <div className="flex items-start w-full gap-2 p-1 border rounded-md border-border-strong">
                 <div>
-                  {profile?.image ? (
+                  {user?.image ? (
                     <div className="overflow-hidden border-2 border-white rounded-full">
-                      <img
-                        src={profile.image}
-                        className="w-8 h-8 rounded-full"
-                      />
+                      <img src={user.image} className="w-8 h-8 rounded-full" />
                     </div>
                   ) : (
                     <User className="w-6 h-6" />
                   )}
                 </div>
                 <div className="grow">
-                  <h3>{profile?.name}</h3>
-                  <p className="text-foreground-light">{profile?.email}</p>
+                  <h3>{user?.name}</h3>
+                  <p className="text-foreground-light">{user?.email}</p>
                 </div>
               </div>
 

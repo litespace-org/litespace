@@ -1,6 +1,5 @@
 import { Route } from "@/lib/route";
-import { useAppSelector } from "@/redux/store";
-import { profileSelectors } from "@/redux/user/profile";
+import { useUser } from "@litespace/headless/context/user";
 import { IUser } from "@litespace/types";
 import { concat, entries, isEmpty } from "lodash";
 import { useEffect, useMemo } from "react";
@@ -71,7 +70,7 @@ const routeConfigMap: Record<Route, RouteConfig> = {
 };
 
 export function useAuthRoutes() {
-  const profile = useAppSelector(profileSelectors.user);
+  const { user } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -91,9 +90,9 @@ export function useAuthRoutes() {
   useEffect(() => {
     if (!config)
       return console.warn(`No route config found for ${location.pathname}`);
-
     if (isEmpty(config.whitelist) && isEmpty(config.blacklist)) return;
-    const role = profile?.role;
+
+    const role = user?.role;
 
     const whitelist = concat(config.whitelist || [], BASE_WHITELIST);
     const blacklist = concat(config.blacklist || [], BASE_BALACKLIST);
@@ -102,5 +101,5 @@ export function useAuthRoutes() {
     const disallowed = role && blacklist.includes(role);
 
     if (!allowed || disallowed) return navigate(Route.Root);
-  }, [navigate, profile?.role, config, location.pathname]);
+  }, [navigate, config, location.pathname, user?.role]);
 }

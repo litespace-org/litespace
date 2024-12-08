@@ -1,19 +1,16 @@
 import React, { useEffect } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAppSelector } from "@/redux/store";
 import { Route, RoutePatterns } from "@/types/routes";
-import { tutorMetaSelector } from "@/redux/user/tutor";
-import { profileSelectors } from "@/redux/user/profile";
 import { destructureRole } from "@litespace/sol/user";
 import { IUser } from "@litespace/types";
 import UrlPattern from "url-pattern";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
+import { useUser } from "@litespace/headless/context/user";
 
 const Root: React.FC = () => {
-  const profile = useAppSelector(profileSelectors.full);
-  const tutorMeta = useAppSelector(tutorMetaSelector);
+  const { user, meta } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -29,9 +26,7 @@ const Root: React.FC = () => {
       (patten) => patten.match(location.pathname)
     );
 
-    if (!profile.value && !profile.loading && !ignore)
-      return navigate(Route.Login);
-    const user = profile.value?.user;
+    if (!user && !ignore) return navigate(Route.Login);
 
     // redirect the user to complete his profile
     // redirect student in case of missing: name, age
@@ -50,21 +45,19 @@ const Root: React.FC = () => {
       !ignore &&
       user &&
       user.role === IUser.Role.Tutor &&
-      tutorMeta &&
-      (tutorMeta.bio === null ||
-        tutorMeta.about === null ||
+      meta &&
+      (meta.bio === null ||
+        meta.about === null ||
         user.image === null ||
-        tutorMeta.video === null)
+        meta.video === null)
     )
       return navigate(Route.TutorOnboarding);
 
-    if (!profile.value || (!root && !complete)) return;
-    const { tutor, student, interviewer } = destructureRole(
-      profile.value.user.role
-    );
-    if (tutor || student) return navigate(Route.Lessons);
+    if (!user || (!root && !complete)) return;
+    const { tutor, student, interviewer } = destructureRole(user.role);
+    if (tutor || student) return navigate(Route.UpcomingLessons);
     if (interviewer) return navigate(Route.Interviews);
-  }, [navigate, location.pathname, tutorMeta, profile.value, profile.loading]);
+  }, [navigate, location.pathname, user, meta]);
 
   return (
     <div className="flex relative ps-60 w-full">

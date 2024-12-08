@@ -18,11 +18,6 @@ export {
   type SelectRoom,
   type SelectedRoom,
 } from "@/hooks/chat";
-export {
-  useUpdateUser,
-  useUpdateProfileMedia,
-  type RefreshUser,
-} from "@/hooks/user";
 
 export {
   useRequired,
