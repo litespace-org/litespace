@@ -77,6 +77,7 @@
     "./TutorMaleDark": "./dist/TutorMaleDark.tsx",
     "./TutorMaleLight": "./dist/TutorMaleLight.tsx",
     "./Video": "./dist/Video.tsx",
+    "./Video16X16": "./dist/Video16X16.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
     "./X": "./dist/X.tsx",
     "./index": "./dist/index.tsx"
