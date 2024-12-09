@@ -21,6 +21,26 @@ export type UserTopicsRow = {
   topic_id: number;
 };
 
+export type PopulatedUserTopicRow = {
+  id: number;
+  name_ar: string;
+  name_en: string;
+  created_at: Date;
+  updated_at: Date;
+  user_id: number;
+};
+
+export type PopulatedUserTopic = {
+  id: number;
+  name: {
+    ar: string;
+    en: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+  userId: number;
+};
+
 export type CreatePayload = {
   name: { ar: string; en: string };
 };
