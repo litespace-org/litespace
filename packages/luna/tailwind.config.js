@@ -10,6 +10,10 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      zIndex: {
+        dialog: "11",
+        "select-dropdown": "12",
+      },
       screens: {
         "3xl": "1600px",
       },
