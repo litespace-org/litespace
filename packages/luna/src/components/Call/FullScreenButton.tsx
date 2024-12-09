@@ -7,10 +7,12 @@ export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
 }) => {
   return (
     <button
-      className="tw-rounded-full tw-w-16 tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-brand-700"
+      className="tw-rounded-full tw-cursor-pointer tw-flex tw-justify-center tw-items-center tw-w-16 tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-brand-700"
       onClick={toggle}
     >
-      {enabled ? null : <FullScreen className="[&>*]:tw-stroke-natural-50" />}
+      {enabled ? null : (
+        <FullScreen className="[&>*]:tw-stroke-natural-50 tw-cursor-pointer" />
+      )}
     </button>
   );
 };
