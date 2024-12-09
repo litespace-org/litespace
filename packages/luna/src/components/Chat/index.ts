@@ -4,3 +4,4 @@ export { ChatMessage } from "@/components/Chat/ChatMessage";
 export { ChatHeader } from "@/components/Chat/ChatHeader";
 export { SendInput } from "@/components/Chat/SendInput";
 export { EditMessage } from "@/components/Chat/EditMessage";
+export { ChatSummary } from "@/components/Chat/ChatSummary/ChatSummary";
