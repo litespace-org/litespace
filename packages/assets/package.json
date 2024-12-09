@@ -30,6 +30,7 @@
     "./Categories": "./dist/Categories.tsx",
     "./Chat": "./dist/Chat.tsx",
     "./Check": "./dist/Check.tsx",
+    "./Check2": "./dist/Check2.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
     "./Clock": "./dist/Clock.tsx",
     "./Close": "./dist/Close.tsx",
