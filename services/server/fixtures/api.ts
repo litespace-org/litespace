@@ -4,16 +4,16 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { sample } from "lodash";
 import db from "@fixtures/db";
 
-function genTokenObj(token?: string) {
+function asBearerToken(token?: string) {
   if (!token) return null;
   return {
     type: TokenType.Bearer,
     value: token,
-  }
+  };
 }
 
 export function atlas(token?: string): Atlas {
-  return new Atlas(Backend.Local, genTokenObj(token));
+  return new Atlas(Backend.Local, asBearerToken(token));
 }
 
 export function unexpectedApiSuccess() {

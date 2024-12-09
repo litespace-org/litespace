@@ -1,9 +1,4 @@
-import {
-  IFilter,
-  ILesson,
-  NumericString,
-  Paginated,
-} from "@litespace/types";
+import { IFilter, ILesson, NumericString, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, isEmpty, orderBy } from "lodash";
@@ -331,59 +326,82 @@ export class Lessons {
     return await countRows(countQueryBuilder, { column, distinct });
   }
 
-  async countCounterpartMembers({
+  async countCounterpartMembersBatch({
     tx,
-    user,
+    users: userIds,
     ...filter
   }: {
-    user: number;
+    users: number[];
     tx?: Knex.Transaction;
-  } & Omit<SearchFilter, "users">) {
+  } & Omit<SearchFilter, "users">): Promise<
+    Array<{ userId: number; count: number }>
+  > {
     /**
      * Query Example:
      *
      * ```sql
-     *  SELECT COUNT(
-     *          DISTINCT lesson_members.user_id
-     *      ) as count
-     *  FROM "lesson_members"
-     *  WHERE
-     *      lesson_members.lesson_id in (
-     *          SELECT lessons.id
-     *          FROM "lessons"
-     *              JOIN "lesson_members" ON lesson_members.lesson_id = lessons.id
-     *          WHERE
-     *              lesson_members.user_id = 5
-     *      )
-     *      AND lesson_members.user_id != 5;
+     * SELECT
+     *     user_id,
+     *     COUNT(*) as count
+     * FROM
+     *    (
+     *        SELECT DISTINCT
+     *            lm.user_id as user_id,
+     *            lm2.user_id as other_member
+     *        FROM
+     *            users
+     *            JOIN lesson_members lm ON lm.user_id = users.id
+     *            JOIN lesson_members lm2 ON lm2.lesson_id = lm.lesson_id
+     *        WHERE
+     *            lm.user_id != lm2.user_id
+     *    )
+     * GROUP BY
+     *    user_id;
      * ```
      */
-    const subqueryBaseBuilder = this.builder(tx)
-      .lessons.select(this.columns.lessons("id"))
-      .join(
-        this.table.members,
-        this.columns.members("lesson_id"),
-        this.columns.lessons("id")
-      )
-      .where(this.columns.members("user_id"), user);
 
-    const baseQueryBuilder = this.builder(tx)
-      .members.join(
-        this.table.lessons,
-        this.columns.lessons("id"),
-        this.columns.members("lesson_id")
-      )
-      .whereIn(this.columns.members("lesson_id"), subqueryBaseBuilder)
-      .andWhere(this.columns.members("user_id"), "!=", user); // execlude the user
+    const query = users
+      .builder(tx)
+      .select({ user_id: "lm.user_id", other_member: "lm2.user_id" })
+      .distinct()
+      .joinRaw(`JOIN lesson_members lm ON lm.user_id = users.id`)
+      .joinRaw(`JOIN lesson_members lm2 ON lm2.lesson_id = lm.lesson_id`)
+      .joinRaw(`JOIN lessons ON lessons.id = lm.lesson_id`)
+      .whereNot("lm.user_id", "=", knex.ref("lm2.user_id"))
+      .whereIn("lm.user_id", userIds);
 
-    const queryBuilder = this.applySearchFilter(baseQueryBuilder, filter);
+    const filtered = this.applySearchFilter(query.clone(), filter);
 
-    const count: number = await countRows(queryBuilder, {
-      column: this.columns.members("user_id"),
-      distinct: true,
+    const rows = await knex
+      .select("user_id")
+      .count<Array<{ user_id: number; count: NumericString }>>("*", {
+        as: "count",
+      })
+      .from(filtered)
+      .groupBy("user_id");
+
+    return userIds.map((userId) => {
+      const count = rows.find((row) => row.user_id === userId)?.count || 0;
+
+      return {
+        userId,
+        count: Number(count),
+      };
     });
+  }
 
-    return count;
+  async countCounterpartMembers({
+    user,
+    ...params
+  }: {
+    user: number;
+    tx?: Knex.Transaction;
+  } & Omit<SearchFilter, "users">): Promise<number> {
+    const result = await this.countCounterpartMembersBatch({
+      users: [user],
+      ...params,
+    });
+    return first(result)?.count || 0;
   }
 
   /**
@@ -416,20 +434,20 @@ export class Lessons {
     tx,
     ids,
   }: {
-    tx?: Knex.Transaction,
-    ids: number[]
-  }): Promise<Array<{ userId: number, count: number }>> {
+    tx?: Knex.Transaction;
+    ids: number[];
+  }): Promise<Array<{ userId: number; count: number }>> {
     const rows = await this.builder(tx)
       .members.select("user_id")
       // test/debug this line
       .count("lesson_id", { as: "count" })
       .groupBy(this.columns.members("user_id"))
-      .whereIn(this.columns.members("user_id"), ids)
-    return rows.map(r => ({ userId: r.user_id, count: Number(r.count) }))
+      .whereIn(this.columns.members("user_id"), ids);
+    return rows.map((r) => ({ userId: r.user_id, count: Number(r.count) }));
   }
 
-  applySearchFilter<T>(
-    builder: Knex.QueryBuilder<ILesson.Row, T>,
+  applySearchFilter<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
     {
       canceled = true,
       future = true,
@@ -441,7 +459,7 @@ export class Lessons {
       before,
       rules = [],
     }: SearchFilter
-  ): Knex.QueryBuilder<ILesson.Row, T> {
+  ): Knex.QueryBuilder<R, T> {
     //! Because of the one-to-many relationship between the lesson and its
     //! members. We should only perform the join in case the `users` param is
     //! providered. We will get duplicated rows if we did this by default which

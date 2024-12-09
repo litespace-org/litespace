@@ -21,31 +21,6 @@ export class Tutors extends CacheBase {
       .exec();
   }
 
-  async update(tutor: ITutor.FullTutor) {
-    const exists = await this.exists();
-
-    const key = this.key;
-    const filed = this.asField(tutor.id);
-    const value = this.encode(tutor);
-
-    if (exists) {
-      const found = await this.getOne(tutor.id);
-      if (found) {
-        for (let key in tutor) {
-          if ((found as unknown as any)[key])
-            (found as unknown as any)[key] = (tutor as unknown as any)[key]
-        }
-        return await this.client.hSet(key, filed, this.encode(found));
-      } 
-    }
-
-    await this.client
-      .multi()
-      .hSet(key, filed, value)
-      .expire(this.key, this.ttl)
-      .exec();
-  }
-
   async getOne(id: number): Promise<ITutor.Cache | null> {
     const result = await this.client.hGet(this.key, this.asField(id));
     if (!result) return null;

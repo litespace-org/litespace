@@ -4,7 +4,7 @@ import fixtures, { MakeLessonsReturn } from "@fixtures/db";
 import { ILesson, IUser } from "@litespace/types";
 import { price } from "@litespace/sol/value";
 import { nameof } from "@litespace/sol/utils";
-import { concat, entries, sum } from "lodash";
+import { concat, entries, first, sum } from "lodash";
 import dayjs from "@/lib/dayjs";
 
 describe("Lessons", () => {
