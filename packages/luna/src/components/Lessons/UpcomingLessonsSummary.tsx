@@ -40,7 +40,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-border tw-border-natural-100 tw-rounded-lg tw-p-6 tw-shadow-ls-small tw-bg-natural-50"
+        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-rounded-lg tw-p-6 tw-shadow-ls-small tw-bg-natural-50"
       )}
     >
       <Typography
