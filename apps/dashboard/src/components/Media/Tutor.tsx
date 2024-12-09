@@ -46,7 +46,7 @@ const Tutor: React.FC<{
       if (!payload) return;
       return atlas.user.updateMedia(tutor.id, payload);
     },
-    [tutor.id]
+    [tutor.id, atlas.user]
   );
 
   const update = useCallback(async () => {

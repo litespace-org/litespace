@@ -1,5 +1,4 @@
 import {
-  ICall,
   IFilter,
   ILesson,
   NumericString,
@@ -7,7 +6,7 @@ import {
 } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, isEmpty, merge, omit, orderBy } from "lodash";
+import { concat, first, isEmpty, orderBy } from "lodash";
 import { users } from "@/users";
 import {
   aggArrayOrder,
@@ -411,6 +410,22 @@ export class Lessons {
       start: start.toISOString(),
       duration,
     }));
+  }
+
+  async findLessonsCountOfUsers({
+    tx,
+    ids,
+  }: {
+    tx?: Knex.Transaction,
+    ids: number[]
+  }): Promise<Array<{ userId: number, count: number }>> {
+    const rows = await this.builder(tx)
+      .members.select("user_id")
+      // test/debug this line
+      .count("lesson_id", { as: "count" })
+      .groupBy(this.columns.members("user_id"))
+      .whereIn(this.columns.members("user_id"), ids)
+    return rows.map(r => ({ userId: r.user_id, count: Number(r.count) }))
   }
 
   applySearchFilter<T>(

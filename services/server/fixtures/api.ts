@@ -1,19 +1,19 @@
 import { Atlas, TokenType } from "@litespace/atlas";
-import { users } from "@litespace/models";
 import { Backend, IUser } from "@litespace/types";
-import { hashPassword } from "@/lib/user";
 import { faker } from "@faker-js/faker/locale/ar";
-import { pad, sample } from "lodash";
+import { sample } from "lodash";
 import db from "@fixtures/db";
 
+function genTokenObj(token?: string) {
+  if (!token) return null;
+  return {
+    type: TokenType.Bearer,
+    value: token,
+  }
+}
+
 export function atlas(token?: string): Atlas {
-  return new Atlas(Backend.Local, () => {
-    if (!token) return null;
-    return {
-      type: TokenType.Bearer,
-      value: token,
-    };
-  });
+  return new Atlas(Backend.Local, genTokenObj(token));
 }
 
 export function unexpectedApiSuccess() {
