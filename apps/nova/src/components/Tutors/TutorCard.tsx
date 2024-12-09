@@ -8,7 +8,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const TutorCard: React.FC<{
-  tutor: ITutor.FullTutor;
+  tutor: ITutor.Cache;
   select: () => void;
 }> = ({ tutor, select }) => {
   const intl = useFormatMessage();
