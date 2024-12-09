@@ -5,24 +5,24 @@ import Error from "@litespace/assets/Error";
 
 export const ToggleCallButton: React.FC<{
   toggle: Void;
-  active: boolean;
+  enabled: boolean;
   OnIcon: React.FC<{ className?: string }>;
   OffIcon: React.FC<{ className?: string }>;
   error?: boolean;
-}> = ({ toggle, OnIcon, OffIcon, active, error = false }) => {
+}> = ({ toggle, OnIcon, OffIcon, enabled, error = false }) => {
   return (
     <button
       className={cn(
         "tw-relative tw-w-[72px] tw-h-12 tw-rounded-lg tw-border tw-py-3 tw-px-6",
         "tw-border-brand-700 hover:tw-bg-brand-100",
-        active && "tw-bg-brand-300",
+        enabled && "tw-bg-brand-300",
         error &&
           "tw-bg-destructive-100 tw-border-destructive-700 hover:tw-bg-destructive-50"
       )}
       onClick={toggle}
     >
-      {active && !error ? (
-        <OnIcon className={cn(active && "[&>*]:tw-stroke-brand-700")} />
+      {enabled && !error ? (
+        <OnIcon className={cn(enabled && "[&>*]:tw-stroke-brand-700")} />
       ) : (
         <OffIcon
           className={cn(

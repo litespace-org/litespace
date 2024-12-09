@@ -149,6 +149,8 @@ export default {
           control: "hsl(var(--background-control))",
           selection: "hsl(var(--background-selection))",
           video: "rgba(10, 41, 26, 0.8)",
+          indicator: "rgba(0, 0, 0, 0.3)",
+          speaking: "rgba(27, 84, 164, 0.8)",
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
           },
