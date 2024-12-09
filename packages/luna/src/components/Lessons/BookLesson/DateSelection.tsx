@@ -72,6 +72,7 @@ export const DateSelection: React.FC<{
           type="button"
           disabled={!canGoBack || disable}
           onClick={prevMonth}
+          className="disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
         >
           <ArrowRight className="[&>*]:tw-stroke-brand-700" />
         </button>
@@ -86,6 +87,7 @@ export const DateSelection: React.FC<{
           type="button"
           disabled={!canGoNext || disable}
           onClick={nextMonth}
+          className="disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
         >
           <ArrowLeft className="[&>*]:tw-stroke-brand-700" />
         </button>
