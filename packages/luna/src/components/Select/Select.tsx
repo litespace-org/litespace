@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { SelectList, SelectPlacement } from "@/components/Select/types";
 import {
@@ -15,6 +15,7 @@ import {
   SelectItemProps,
 } from "@radix-ui/react-select";
 import ArrowDown from "@litespace/assets/ArrowDown";
+import { Typography } from "@/components/Typography";
 
 export type SelectProps<T extends string | number> = {
   placeholder?: string;
@@ -44,6 +45,11 @@ export const Select = <T extends string | number>({
     [onChange, options]
   );
 
+  const lable = useMemo(
+    () => options.find((option) => option.value === value)?.label,
+    [options, value]
+  );
+
   return (
     <Root
       open={open}
@@ -64,7 +70,15 @@ export const Select = <T extends string | number>({
           "data-[open=true]:tw-shadow-ls-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
         )}
       >
-        <Value placeholder={placeholder} />
+        <Value>
+          <Typography
+            className={cn(
+              lable ? "tw-text-natural-950" : "tw-text-natural-400"
+            )}
+          >
+            {lable || placeholder}
+          </Typography>
+        </Value>
         <Icon>
           <ArrowDown
             data-open={open}
@@ -80,7 +94,7 @@ export const Select = <T extends string | number>({
           position="popper"
           className={cn(
             "tw-bg-natural-50 tw-border tw-border-brand-400 tw-p-1 tw-rounded-lg",
-            "tw-w-[var(--radix-select-trigger-width)]"
+            "tw-w-[var(--radix-select-trigger-width)] tw-z-select-dropdown"
           )}
           sideOffset={12}
         >
@@ -120,7 +134,9 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
         {...props}
         ref={ref}
       >
-        <ItemText className="tw-text-natural-900">{children}</ItemText>
+        <ItemText className="tw-text-natural-900">
+          <Typography>{children}</Typography>
+        </ItemText>
       </Item>
     );
   }

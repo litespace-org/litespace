@@ -19,6 +19,8 @@ export const Button: React.FC<{
   className?: string;
   htmlType?: HTMLButtonElement["type"];
   loading?: boolean;
+  startIcon?: React.ReactNode;
+  endIcon?: React.ReactNode;
 }> = ({
   children,
   variant = ButtonVariant.Primary,
@@ -29,6 +31,8 @@ export const Button: React.FC<{
   className,
   htmlType,
   loading,
+  startIcon,
+  endIcon,
 }) => {
   return (
     <button
@@ -117,10 +121,12 @@ export const Button: React.FC<{
       <div
         className={cn(
           loading ? "tw-opacity-0" : "tw-opacity-100",
-          "tw-flex tw-flex-row tw-items-center tw-justify-center"
+          "tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-2"
         )}
       >
+        {startIcon ? <div>{startIcon}</div> : null}
         {children}
+        {endIcon ? <div>{endIcon}</div> : null}
       </div>
     </button>
   );
