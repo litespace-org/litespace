@@ -1,9 +1,15 @@
 import { flush } from "@fixtures/shared";
 import { IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
-import db from "@fixtures/db";
+import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { safe } from "@litespace/sol/error";
+import { cacheTutors } from "@/lib/tutor";
+import dayjs from "@/lib/dayjs";
+import { cache } from "@/lib/cache";
+import { tutors, users } from "@litespace/models";
+import { Role } from "@litespace/types/dist/esm/user";
+import { tutor } from "@litespace/auth";
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -62,6 +68,46 @@ describe("/api/v1/user/", () => {
         const u2 = await userApi.atlas.user.findCurrentUser();
         expect(u1.user.name).to.be.eq("updated-1");
         expect(u2.user.name).to.be.eq("updated-2");
+      });
+    });
+
+    describe("GET /api/v1/user/tutor/list/onboarded", () => {
+
+      beforeAll(async () => {
+        await cache.connect();
+        await cache.flush();
+      })
+
+      afterAll(async () => {
+        await cache.disconnect();
+      })
+
+      it("should successfully load onboard tutors from db to the cache", async () => {
+        expect(await cache.tutors.exists()).to.eql(false);
+        expect(await cache.rules.exists()).to.eql(false);
+
+        const newUser = await db.user({ role: Role.SuperAdmin });
+        const newTutor = await db.tutor();
+
+        await users.update(newTutor.id, { verified: true });
+        await tutors.update(
+          newTutor.id,
+          {
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
+            activated: true,
+            activatedBy: newUser.id,
+            // NOTE: image is not in tutors table.
+            //image: "/image.jpg",
+            video: "/video.mp4",
+            notice: 10,
+          }
+        );
+
+        await cacheTutors(dayjs.utc().startOf("day"));
+
+        const ctutors = await cache.tutors.getAll();
+        expect(ctutors).to.have.length(1);
       });
     });
   });

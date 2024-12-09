@@ -60,11 +60,7 @@ describe("calls test suite", () => {
     const selectedRuleEvent = unpackedRules[0];
 
     const lesson = await studentApi.atlas.lesson.create({
-      start: dayjs
-        .utc(selectedRuleEvent.start)
-        .add(1, "hour")
-        .startOf("hour")
-        .toISOString(),
+      start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
       tutorId: tutor.user.id,

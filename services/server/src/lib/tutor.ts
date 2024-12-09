@@ -78,37 +78,42 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   const tutorIds = onboardedTutors.map((t) => t.id);
   const tutorsTopics = await topics.findUserTopics({ users: tutorIds });
   const tutorsRatings = await ratings.findAvgRatings(tutorIds);
-  // todo: @mmoehabb use `lessons.countLessons` with filters (canceled=false)
-  // todo: remove `findLessonCountOfUsers`
-  // todo: remove `cache.tutors.update`
-  const tutorsLessonsCount = await lessons.findLessonsCountOfUsers({
-    ids: tutorIds,
+  // DONE: @mmoehabb use `lessons.countLessons` with filters (canceled=false)
+  // DONE: remove `findLessonCountOfUsers`
+  // NOTE: `couteLessons` doen't meet the requirements so `countLessonsBatch`
+  // ought to be defined.
+  const tutorsLessonsCount = await lessons.countLessonsBatch({
+    users: tutorIds,
+    canceled: false,
   });
-  // todo: @mmoehabb use `lessons.countCounter..` (with filters) (canceled=false)
-  // todo: remove `findStudentsCount` from the model.
-  const tutorsStudentsCount = await tutors.findStudentsCount(tutorIds);
+  // DONE: @mmoehabb use `lessons.countCounter..` (with filters) (canceled=false)
+  // DONE: remove `findStudentsCount` from the model.
+  const tutorsStudentsCount = await lessons.countCounterpartMembersBatch({
+    users: tutorIds,
+    canceled: false,
+  });
 
   // restruct tutors list to match ITutor.Cache[]
   const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
-      .map((item) => [item.name.ar, item.name.en]); // todo: @mmoehabb only include arabic
+      .map((item) => item.name.ar); // DONE: @mmoehabb only include arabic
 
     return {
       id: tutor.id,
       name: tutor.name,
       image: tutor.image,
+      video: tutor.video,
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
       online: tutor.online,
       notice: tutor.notice,
-      topics: flatten(filteredTopics),
+      topics: filteredTopics,
       avgRating:
         tutorsRatings.find((rating) => rating.user === tutor.id)?.avg || 0,
       studentCount:
-        tutorsStudentsCount.find((item) => item.tutorId === tutor.id)?.count ||
-        0,
+        tutorsStudentsCount.find((item) => item.userId === tutor.id)?.count || 0,
       lessonCount:
         tutorsLessonsCount.find((item) => item.userId === tutor.id)?.count || 0,
     };
@@ -131,7 +136,7 @@ export async function cacheTutors(start: Dayjs): Promise<TutorsCache> {
 
 export function isPublicTutor(
   tutor?: ITutor.FullTutor | null
-): tutor is ITutor.FullTutor & { image: string; video: string } {
+): tutor is ITutor.FullTutor {
   return (
     !!tutor &&
     !!tutor.activated &&
@@ -168,8 +173,6 @@ export function orderTutors(
   ];
 
   const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
-  // TODO: discuss with the team how to filter ITutor.Cache
-  // const filtered = tutors.filter((tutor) => isPublicTutor(tutor));
   const ordered = orderBy(tutors, iteratees, orders);
 
   return ordered;
@@ -220,6 +223,7 @@ export async function joinTutorCache(
     id: tutor.id,
     name: tutor.name,
     image: tutor.image,
+    video: tutor.video,
     bio: tutor.bio,
     about: tutor.about,
     gender: tutor.gender,

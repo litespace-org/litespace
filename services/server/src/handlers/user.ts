@@ -32,7 +32,7 @@ import {
   paginationDefaults,
   serverConfig,
 } from "@/constants";
-import { drop, entries, first, groupBy, sample } from "lodash";
+import { drop, entries, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";

@@ -10,6 +10,7 @@ import {
   lessons,
   ratings,
   users,
+  tutors,
 } from "@litespace/models";
 
 async function execute(command: string): Promise<string> {
@@ -50,6 +51,7 @@ export async function flush() {
     await lessons.builder(tx).lessons.del();
     await rules.builder(tx).del();
     await ratings.builder(tx).del();
+    await tutors.builder(tx).del();
     await users.builder(tx).del();
   });
 }
