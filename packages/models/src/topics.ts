@@ -96,6 +96,27 @@ export class Topics {
     return this.from(row);
   }
 
+  async findTopicsOfTutors({
+    tx,
+    tutorsIds,
+  }: {
+    tx?: Knex.Transaction;
+    tutorsIds: number[];
+  }): Promise<Array<ITopic.Self & { userId: number }> | null> {
+
+    const rows = await this.builder(tx)
+    .topics.select()
+    .join(
+      this.table.userTopics, 
+      this.column.userTopics("topic_id"),
+      this.column.topics("id"))
+    .whereIn(this.column.userTopics("user_id"), tutorsIds);
+
+    if (!rows) return null;
+    // user_id is probably required to map between topics and users (tutors)
+    return rows.map( r => ({...this.from(r), userId: r["user_id"]}) );
+  }
+
   async find({
     tx,
     name,
