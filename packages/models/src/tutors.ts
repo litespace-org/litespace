@@ -95,6 +95,7 @@ export class Tutors {
       .update({
         bio: payload.bio,
         about: payload.about,
+        // NOTE: image is not in tutors table; it cannot be (directly) updated.
         video: payload.video,
         notice: payload.notice,
         activated: payload.activated,
@@ -240,17 +241,17 @@ export class Tutors {
   async findOnboardedTutors(
     tx?: Knex.Transaction
   ): Promise<ITutor.FullTutor[]> {
-    const rows = await this.fullTutorQuery(tx);
-    //! temp: disable it for now
-    // .where(this.column("activated"), true)
-    // .andWhereNot(this.column("video"), null)
-    // .andWhereNot(this.column("bio"), null)
-    // .andWhereNot(this.column("about"), null)
-    // .andWhereNot(users.column("image"), null)
-    // .andWhereNot(users.column("birth_year"), null)
-    // .andWhereNot(users.column("name"), null)
-    // .andWhereNot(users.column("gender"), null)
-    // .andWhere(users.column("verified"), true);
+    const rows = await this.fullTutorQuery(tx)
+     .where(this.column("activated"), true)
+     .andWhereNot(this.column("video"), null)
+     .andWhereNot(this.column("bio"), null)
+     .andWhereNot(this.column("about"), null)
+     // NOTE: image is not in tutors table.
+     //.andWhereNot(users.column("image"), null)
+     .andWhereNot(users.column("birth_year"), null)
+     .andWhereNot(users.column("name"), null)
+     .andWhereNot(users.column("gender"), null)
+     .andWhere(users.column("verified"), true);
     return rows.map((row) => this.asFullTutor(row));
   }
 

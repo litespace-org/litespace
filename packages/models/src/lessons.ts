@@ -326,6 +326,32 @@ export class Lessons {
     return await countRows(countQueryBuilder, { column, distinct });
   }
 
+  async countLessonsBatch({
+    tx,
+    users: userIds,
+    ...filter
+  }: {
+    tx?: Knex.Transaction;
+    users: number[];
+  } & Omit<SearchFilter, "users">): Promise<
+  Array<{ userId: number; count: number }>
+  > {
+    const query = this.builder(tx)
+      .lessons.select("user_id")
+      .count<Array<{ user_id: number; count: number }>>("lesson_id", { as: "count" })
+      .join(
+        this.table.members,
+        this.columns.members("lesson_id"),
+        this.columns.lessons("id")
+      )
+      .whereIn(this.columns.members("user_id"), userIds)
+
+    const filtered = this.applySearchFilter(query.clone(), filter);
+    const rows = await filtered.groupBy("user_id")
+
+    return rows.map((r) => ({ userId: r.user_id, count: Number(r.count) }));
+  }
+
   async countCounterpartMembersBatch({
     tx,
     users: userIds,
@@ -428,22 +454,6 @@ export class Lessons {
       start: start.toISOString(),
       duration,
     }));
-  }
-
-  async findLessonsCountOfUsers({
-    tx,
-    ids,
-  }: {
-    tx?: Knex.Transaction;
-    ids: number[];
-  }): Promise<Array<{ userId: number; count: number }>> {
-    const rows = await this.builder(tx)
-      .members.select("user_id")
-      // test/debug this line
-      .count("lesson_id", { as: "count" })
-      .groupBy(this.columns.members("user_id"))
-      .whereIn(this.columns.members("user_id"), ids);
-    return rows.map((r) => ({ userId: r.user_id, count: Number(r.count) }));
   }
 
   applySearchFilter<R extends object, T>(

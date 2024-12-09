@@ -36,6 +36,7 @@ export type Row = {
   id: number;
   bio: string | null;
   about: string | null;
+  //image: string | null;
   video: string | null;
   activated: boolean | null;
   activated_by: number | null;
@@ -56,6 +57,7 @@ export type UpdatePayload = {
   bio?: string;
   about?: string;
   video?: string | null;
+  //image?: string | null;
   notice?: number;
   activated?: boolean;
   activatedBy?: number;
