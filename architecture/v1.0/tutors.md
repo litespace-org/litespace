@@ -1,5 +1,3 @@
-# Backend
-
 ## Tutors cache
 
 ### Cache strucutre
@@ -21,7 +19,7 @@
 
 2. Tutor rules.
 
-### Find onboared tutors API
+## Find onboared tutors API
 
 ```ts
 type Response = Paginated<{
@@ -38,10 +36,105 @@ type Response = Paginated<{
 }>;
 ```
 
-### Tasks
+## Find tutor API
+
+Implement a new endpoint to get tutor info [here](../../services/server/src/handlers/user.ts) (e.g., `findTutorInfo`).
+
+##### Requirements
+
+- The endpoint should be public.
+- If the tutor is not onboarded the endpoint should respond with 404.
+- User information should be retrieved from the cache when it is available.
+- Get the data from the database if it is not available in the cache.
+
+##### API Request
+
+The endpoint should accept the tutor `id` as a param in a GET request.
+
+##### API Response
+
+```ts
+type Response = {
+  id: number;
+  image: string | null;
+  video: string | null; // <--- should be part of the cache.
+  name: string | null;
+  bio: string | null;
+  about: string | null;
+  topics: string[];
+  studentCount: number;
+  lessonCount: number;
+  avgRating: number;
+  rules: IRule.RuleEvents[];
+};
+```
+
+## Tutor manager
+
+Tutor manager is currently kown as _interviewer_. His responsibility was to interview make interviews with tutors.
+
+We would like to extend his responsibilities to be able to do the following:
+
+1. Making interviews with tutors.
+2. Give lessons (as if he is a tutor) when he is not occupied with the interviews.
+3. Write articles for the LiteSpace blogs (out of the scope of this sprint)
+
+To achieve this we will:
+
+1. Introduce a new use role and call it `tutor-manager`.
+2. Slowly removing the `interviewer` role. (we will work backward frontend -> backend -> models -> database)
+3. Update the create user api handler at [handlers/user.ts](../../services/server/src/handlers/user.ts).
+4. Tutor manager will have the full information as regular tutor (his extra information should be part of the `tutors` table.)
+5. Update the seed script to create multiple tutor managers.
+
+## Find tutor rules API
+
+Note: the api handler is partially implemented. `findUnpackedUserRules` at [handlers/rule.ts](../../services/server/src/handlers/rule.ts)
+
+##### API Request
+
+- `id` (required) - the target tutor id.
+- `after` & `before` (required) - ISO UTC datetime.
+  - Rules that are _completely or partially_ between `after` and `before` will be included in the response.
+  - The max difference between `after` & `before` will be 60 days.
+
+##### Requirements
+
+- Respond with 404 incase tutor is not found or it is not fully onboarded.
+- The `id` provided in the request should be the id of a `tutor` or a `tutor-manager`
+
+##### API Response
+
+```ts
+type Response = {
+  rules: IRule.Self[];
+  slots: IRule.Slots[];
+};
+```
+
+## Tasks
 
 - [ ] Update the tutors cache according to the [new design](#cache-strucutre). [@mmoehabb](https://github.com/mmoehabb)
 - [ ] Update [`findOnboardedTutors`](/services/server/src/handlers/user.ts) handler to response with [this](#find-onboared-tutors-api)
 - [ ] Search tutors by name and topics.
-      -API should accept a `keywoard` as a query param and filter tutors according to it.
-- [ ] Impl. `tutor-manager` user role.
+  - API should accept a `keywoard` as a query param and filter tutors according to it.
+- [ ] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
+  - [ ] Update the database models to include the new role `tutor-manager`.
+  - [ ] Update the `create` user api handler.
+  - [ ] Update the `update` user api handler.
+  - [ ] Tutor managers should be part of the tutors cache.
+  - [ ] Update the seed script to create multiple tutor managers.
+  - [ ] Remove the `interviewer` from the client (`nova` and `dashboard`)
+  - [ ] Remove the `interviewer` from the server, models, and database.
+  - [ ] Remove the `interviewer` from the the remaining packages.
+- [ ] Explain how `rrules` works. [@neuodev](https://github.com/neuodev)
+- [ ] Impl. _book a lesson dialog_ [@neuodev](https://github.com/neuodev)
+- [ ] Rating (or updating a rate) for the tutor [@moalidv](https://github.com/moalidv)
+  - [ ] Update the rating card design.
+    - Add actions (edit and delete).
+    - Display rating starts.
+- [ ] Impl. video player [@mostafakamar2308](https://github.com/mostafakamar2308)
+- [ ] Update the find tutor info API ([info](#find-tutor-api)). [@mmoehabb](https://github.com/mmoehabb)
+- [ ] Write tests for the ratings endpoints. [@mmoehabb](https://github.com/mmoehabb)
+- [ ] Put all pieces together at the tutor profile page [@mostafakamar2308](https://github.com/mostafakamar2308)
+- [ ] Update the find tutor rules api ([info](#find-tutor-rules-api)) (with tests) [@mmoehabb](https://github.com/mmoehabb)
