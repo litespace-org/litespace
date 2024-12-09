@@ -9,7 +9,7 @@ import dayjs from "./dayjs";
  */
 export function selectRuleEventsForTutor(
   rules: IRule.Cache[], 
-  tutor: ITutor.FullTutor,
+  tutor: ITutor.Cache,
 ): IRule.RuleEvent[] {
   const now = dayjs.utc();
 

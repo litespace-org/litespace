@@ -19,6 +19,9 @@ export type FullTutorRow = FullTutor;
 export type Cache = Pick<FullTutor, 
   "id" | 
   "name" | 
+  "image" |
+  "bio" |
+  "about" |
   "gender" | 
   "online" |
   "notice"
@@ -66,7 +69,7 @@ export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
 
 export type FindOnboardedTutorsApiResponse = {
   total: number;
-  list: Array<FullTutor & { rules: IRule.RuleEvent[] }>;
+  list: Array<Cache & { rules: IRule.RuleEvent[] }>;
 };
 
 export type PublicTutorFieldsForMediaProvider = {
