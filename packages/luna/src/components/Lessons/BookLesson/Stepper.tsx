@@ -69,7 +69,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
                   <Check />
                 )}
               </div>
-              <div className="tw-h-[2px] tw-w-12 tw-bg-natural-400">
+              <div className="tw-h-[2px] tw-w-20 tw-bg-natural-400">
                 <div
                   className={cn("tw-h-full", {
                     "tw-w-2/3 tw-bg-brand-700": isCurrent,

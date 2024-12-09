@@ -40,7 +40,7 @@ export const Dialog: React.FC<{
           dir="rtl"
           className={cn(
             "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
-            "tw-rounded-[32px] tw-p-10 tw-min-w-96 tw-z-[11]",
+            "tw-rounded-[32px] tw-p-10 tw-min-w-96 tw-z-dialog",
             className
           )}
         >
