@@ -1,15 +1,15 @@
 import { ILesson, IRule, ITutor } from "@litespace/types";
 import { flatten } from "lodash";
 import { Schedule } from "@litespace/sol/rule";
-import dayjs from "./dayjs";
+import dayjs from "@/lib/dayjs";
 
 /*
  * returns IRule.RuleEvent objects from IRule.Cache for a specific tutor.
  * returned events are filtered to contain only bookable events.
  */
-export function selectRuleEventsForTutor(
-  rules: IRule.Cache[], 
-  tutor: ITutor.Cache,
+export function selectTutorRuleEvents(
+  rules: IRule.Cache[],
+  tutor: ITutor.Cache
 ): IRule.RuleEvent[] {
   const now = dayjs.utc();
 
@@ -20,7 +20,7 @@ export function selectRuleEventsForTutor(
       const start = dayjs.utc(event.start);
       const same = start.isSame(adjustedNow);
       const after = start.isAfter(adjustedNow);
-      // NOTE: users can book after the start of the event!?
+      // NOTE: users can book after the start of the event
       const between = adjustedNow.isBetween(
         event.start,
         // rule should have some time suitable for booking at least one short lesson.

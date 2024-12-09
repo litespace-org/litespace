@@ -96,25 +96,32 @@ export class Topics {
     return this.from(row);
   }
 
-  async findTopicsOfTutors({
+  async findUserTopics({
     tx,
-    tutorsIds,
+    users,
   }: {
     tx?: Knex.Transaction;
-    tutorsIds: number[];
-  }): Promise<Array<ITopic.Self & { userId: number }> | null> {
+    users: number[];
+  }): Promise<ITopic.PopulatedUserTopic[]> {
+    const select: Record<keyof ITopic.PopulatedUserTopicRow, string> = {
+      id: this.column.topics("id"),
+      name_ar: this.column.topics("name_ar"),
+      name_en: this.column.topics("name_en"),
+      created_at: this.column.topics("name_en"),
+      updated_at: this.column.topics("updated_at"),
+      user_id: this.column.userTopics("user_id"),
+    };
 
     const rows = await this.builder(tx)
-    .topics.select()
-    .join(
-      this.table.userTopics, 
-      this.column.userTopics("topic_id"),
-      this.column.topics("id"))
-    .whereIn(this.column.userTopics("user_id"), tutorsIds);
+      .topics.select<ITopic.PopulatedUserTopicRow[]>(select)
+      .join(
+        this.table.userTopics,
+        this.column.userTopics("topic_id"),
+        this.column.topics("id")
+      )
+      .whereIn(this.column.userTopics("user_id"), users);
 
-    if (!rows) return null;
-    // user_id is probably required to map between topics and users (tutors)
-    return rows.map( r => ({...this.from(r), userId: r["user_id"]}) );
+    return rows.map((row) => this.asPopulatedUserTopic(row));
   }
 
   async find({
@@ -169,6 +176,21 @@ export class Topics {
       },
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
+    };
+  }
+
+  asPopulatedUserTopic(
+    row: ITopic.PopulatedUserTopicRow
+  ): ITopic.PopulatedUserTopic {
+    return {
+      id: row.id,
+      name: {
+        ar: row.name_ar,
+        en: row.name_en,
+      },
+      createdAt: row.created_at.toISOString(),
+      updatedAt: row.updated_at.toISOString(),
+      userId: row.user_id,
     };
   }
 }
