@@ -6,7 +6,7 @@ import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/sol/utils";
-import Clock from "@litespace/assets/Clock";
+import Clock from "@litespace/assets/Clock16X16";
 import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
