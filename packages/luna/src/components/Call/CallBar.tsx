@@ -5,7 +5,7 @@ import { ToggleCallButton, EndCallButton } from "@/components/Call";
 export const CallBar: React.FC<{
   items: {
     toggle: Void;
-    active: boolean;
+    enabled: boolean;
     OnIcon: React.FC<{ className?: string }>;
     OffIcon: React.FC<{ className?: string }>;
     error?: boolean;
