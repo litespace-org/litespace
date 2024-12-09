@@ -27,7 +27,7 @@ export class Tutors extends CacheBase {
     return this.decode(result);
   }
 
-  async setMany(tutors: ITutor.FullTutor[]) {
+  async setMany(tutors: ITutor.Cache[]) {
     const cache: Record<string, string> = {};
 
     for (const tutor of tutors) {

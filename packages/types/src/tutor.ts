@@ -16,6 +16,19 @@ export type Self = {
 export type FullTutor = IUser.Self & Self & { metaUpdatedAt: string };
 export type FullTutorRow = FullTutor;
 
+export type Cache = Pick<FullTutor, 
+  "id" | 
+  "name" | 
+  "gender" | 
+  "online" |
+  "notice"
+> & {
+  topics: string[];
+  avgRating: number;
+  studentCount: number;
+  lessonCount: number;
+};
+
 export type Row = {
   id: number;
   bio: string | null;
