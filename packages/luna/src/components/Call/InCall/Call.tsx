@@ -7,13 +7,28 @@ import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Chat from "@litespace/assets/Chat";
 import CastScreen from "@litespace/assets/CastScreen";
-import { InCallUserPreview } from "../InCallUserPreview";
+import { InCallStreams } from "../InCallStreams";
 
 type CallProps = {
-  stream: MediaStream | null;
-  speaking: boolean;
-  users: { id: number; name: string | null; imageUrl: string | null }[];
-  fullScreen: { enabled: boolean; toggle: Void };
+  streams: {
+    fullScreen: {
+      enabled: boolean;
+      toggle: Void;
+    };
+    speech: {
+      speaking: boolean;
+      mic: boolean;
+    };
+    camera: boolean;
+    cast: boolean;
+    stream: MediaStream | null;
+    user: {
+      id: number;
+      imageUrl: string | null;
+      name: string | null;
+    };
+    type: "focused" | "unfocused";
+  }[];
   chat: { enabled: boolean; toggle: Void };
   camera: {
     enabled: boolean;
@@ -31,11 +46,11 @@ type CallProps = {
     error?: boolean;
   };
   timer: {
-    duration: string;
+    duration: number;
     startAt: string;
   };
   leaveCall: Void;
-  messagesComponent: React.ReactNode;
+  messagesComponent?: React.ReactNode;
 };
 
 export const Call: React.FC<CallProps> = ({
@@ -45,21 +60,13 @@ export const Call: React.FC<CallProps> = ({
   camera,
   mic,
   cast,
-  fullScreen,
-  speaking,
-  stream,
-  users,
+  streams,
+  timer,
 }) => {
   return (
-    <div className="tw-flex tw-flex-col tw-gap-10 tw-w-full">
-      <div>
-        <InCallUserPreview
-          fullScreen={fullScreen}
-          speech={{ speaking, mic: mic.enabled }}
-          user={users[0]}
-          stream={stream}
-          camera={camera.enabled}
-        />
+    <div className="tw-flex tw-flex-col tw-gap-10 tw-w-full tw-h-full">
+      <div className="tw-h-full tw-grow">
+        <InCallStreams streams={streams} chat={chat.enabled} timer={timer} />
         {chat.enabled ? messagesComponent : null}
       </div>
       <hr />
