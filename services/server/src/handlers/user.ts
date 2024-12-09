@@ -32,16 +32,16 @@ import {
   paginationDefaults,
   serverConfig,
 } from "@/constants";
-import {
-  drop,
-  entries,
-  groupBy,
-  sample,
-} from "lodash";
+import { drop, entries, first, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { cacheTutors, isPublicTutor, orderTutors } from "@/lib/tutor";
+import {
+  cacheTutors,
+  isPublicTutor,
+  joinTutorCache,
+  orderTutors,
+} from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
 import { safe } from "@litespace/sol/error";
 import { asIsoDate } from "@litespace/sol/dayjs";
@@ -57,7 +57,7 @@ import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
-import { selectRuleEventsForTutor } from "@/lib/events";
+import { selectTutorRuleEvents } from "@/lib/events";
 import { Gender } from "@litespace/types/dist/esm/user";
 
 const createUserPayload = zod.object({
@@ -264,8 +264,11 @@ function update(context: ApiContext) {
       const error = await safe(async () => {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
-        // update tutor cache
-        await cache.tutors.update(tutor);
+
+        const tutorCache = await cache.tutors.getOne(tutor.id);
+        const joinedCache = await joinTutorCache(tutor, tutorCache);
+        await cache.tutors.setOne(joinedCache);
+
         // notify clients
         context.io
           .to(Wss.Room.TutorsCache)
@@ -360,15 +363,16 @@ async function findOnboardedTutors(req: Request, res: Response) {
         tutors: await cache.tutors.getAll(),
         rules: await cache.rules.getAll(),
       }
-    // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
-    : await cacheTutors(dayjs.utc().startOf("day"));
+    : // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
+      await cacheTutors(dayjs.utc().startOf("day"));
 
-  // order tutors based on time of the first event, genger of the user 
+  // order tutors based on time of the first event, genger of the user
   // online state, and notice.
   const user = req.user;
-  const userGender = (isUser(user) && user.gender) ? user.gender as Gender : undefined;
+  const userGender =
+    isUser(user) && user.gender ? (user.gender as Gender) : undefined;
   // TODO: search/order tutors by name and topics.
-  // an ancillary function for clean code. 
+  // an ancillary function for clean code.
   const ordered = orderTutors(tutors, rules, userGender);
 
   // paginate the ordered (tutors) list
@@ -378,11 +382,11 @@ async function findOnboardedTutors(req: Request, res: Response) {
   const total = ordered.length;
   const paginated = drop(ordered, offset).slice(0, size);
 
-  // restructure the 'paginated' list to match the 
+  // restructure the 'paginated' list to match the
   // ITutor.FindOnboardedTutorsApiResponse list attribute
   const list = paginated.map((tutor) => ({
     ...tutor,
-    rules: selectRuleEventsForTutor(rules, tutor),
+    rules: selectTutorRuleEvents(rules, tutor),
   }));
 
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)

@@ -1,11 +1,18 @@
 import { ILesson, IRule, ITutor } from "@litespace/types";
 import dayjs, { Dayjs } from "dayjs";
 import { Knex } from "knex";
-import { rules, tutors, knex, lessons, topics, ratings } from "@litespace/models";
+import {
+  rules,
+  tutors,
+  knex,
+  lessons,
+  topics,
+  ratings,
+} from "@litespace/models";
 import { entries, first, flatten, groupBy, orderBy } from "lodash";
 import { unpackRules } from "@litespace/sol/rule";
 import { cache } from "@/lib/cache";
-import { selectRuleEventsForTutor } from "./events";
+import { selectTutorRuleEvents } from "./events";
 import { Gender } from "@litespace/types/dist/esm/user";
 
 export type TutorsCache = {
@@ -68,40 +75,50 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   );
 
   // retrieve required data for ITutor.Cache from db
-  const tutorsIds = onboardedTutors.map(t => t.id);
-  const tutorsTopics = await topics.findTopicsOfTutors({ tutorsIds })
-  const tutorsRatings = await ratings.findAvgRatings(tutorsIds)
-  const tutorsLessonsCount = await lessons.findLessonsCountOfUsers({ ids: tutorsIds })
-  const tutorsStudentsCount = await tutors.findStudentsCount(tutorsIds)
+  const tutorIds = onboardedTutors.map((t) => t.id);
+  const tutorsTopics = await topics.findUserTopics({ users: tutorIds });
+  const tutorsRatings = await ratings.findAvgRatings(tutorIds);
+  // todo: @mmoehabb use `lessons.countLessons` with filters (canceled=false)
+  // todo: remove `findLessonCountOfUsers`
+  // todo: remove `cache.tutors.update`
+  const tutorsLessonsCount = await lessons.findLessonsCountOfUsers({
+    ids: tutorIds,
+  });
+  // todo: @mmoehabb use `lessons.countCounter..` (with filters) (canceled=false)
+  // todo: remove `findStudentsCount` from the model.
+  const tutorsStudentsCount = await tutors.findStudentsCount(tutorIds);
 
   // restruct tutors list to match ITutor.Cache[]
-  const cacheTutors: ITutor.Cache[] = onboardedTutors.map(t => {
-    const filteredTopics = 
-      tutorsTopics?.filter(item => item.userId === t.id)
-        .map(item => [item.name.ar, item.name.en]);
+  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
+    const filteredTopics = tutorsTopics
+      ?.filter((item) => item.userId === tutor.id)
+      .map((item) => [item.name.ar, item.name.en]); // todo: @mmoehabb only include arabic
 
     return {
-      id: t.id,
-      name: t.name,
-      image: t.image,
-      bio: t.bio,
-      about: t.about,
-      gender: t.gender,
-      online: t.online,
-      notice: t.notice,
+      id: tutor.id,
+      name: tutor.name,
+      image: tutor.image,
+      bio: tutor.bio,
+      about: tutor.about,
+      gender: tutor.gender,
+      online: tutor.online,
+      notice: tutor.notice,
       topics: flatten(filteredTopics),
-      avgRating: tutorsRatings.find(r => r.user === t.id)?.avg || 0,
-      studentCount: tutorsStudentsCount.find(item => item.tutorId === t.id)?.count || 0,
-      lessonCount: tutorsLessonsCount.find(item => item.userId === t.id)?.count || 0,
-    }
-  })
+      avgRating:
+        tutorsRatings.find((rating) => rating.user === tutor.id)?.avg || 0,
+      studentCount:
+        tutorsStudentsCount.find((item) => item.tutorId === tutor.id)?.count ||
+        0,
+      lessonCount:
+        tutorsLessonsCount.find((item) => item.userId === tutor.id)?.count || 0,
+    };
+  });
 
   return {
     tutors: cacheTutors,
     rules: flatten(rulesCachePayload),
   };
 }
-
 
 export async function cacheTutors(start: Dayjs): Promise<TutorsCache> {
   const cachePayload = await constructTutorsCache(start);
@@ -128,15 +145,14 @@ export function isPublicTutor(
  * an ancillary function used in 'findOnboardedTutors' user handler
  */
 export function orderTutors(
-  tutors: ITutor.Cache[], 
+  tutors: ITutor.Cache[],
   rules: IRule.Cache[],
-  userGender?: Gender,
+  userGender?: Gender
 ): ITutor.Cache[] {
-
   const iteratees = [
     // sort in ascending order by the first availablity
     (tutor: ITutor.Cache) => {
-      const events = selectRuleEventsForTutor(rules, tutor)
+      const events = selectTutorRuleEvents(rules, tutor);
       const event = first(events);
       if (!event) return Infinity;
       return dayjs.utc(event.start).unix();
@@ -157,4 +173,58 @@ export function orderTutors(
   const ordered = orderBy(tutors, iteratees, orders);
 
   return ordered;
+}
+
+/**
+ * Return these info about the tutor
+ * - topics
+ * - avg. rating
+ * - student count
+ * - lesson count
+ */
+async function findTutorCacheMeta(tutorId: number) {
+  const [tutorTopics, avgRatings, studentCount, lessonCount] =
+    await Promise.all([
+      topics.findUserTopics({ users: [tutorId] }),
+      ratings.findAvgRatings([tutorId]),
+      lessons.countCounterpartMembers({ user: tutorId }),
+      lessons.countLessons({
+        users: [tutorId],
+        canceled: false,
+        ratified: true,
+      }),
+    ]);
+
+  return {
+    topics: tutorTopics.map((topic) => topic.name.ar),
+    avgRating: first(avgRatings)?.avg || 0,
+    studentCount,
+    lessonCount,
+  };
+}
+
+export async function joinTutorCache(
+  tutor: ITutor.FullTutor,
+  cache: ITutor.Cache | null
+): Promise<ITutor.Cache> {
+  const meta = cache
+    ? {
+        topics: cache.topics,
+        avgRating: cache.avgRating,
+        studentCount: cache.studentCount,
+        lessonCount: cache.lessonCount,
+      }
+    : await findTutorCacheMeta(tutor.id);
+
+  return {
+    id: tutor.id,
+    name: tutor.name,
+    image: tutor.image,
+    bio: tutor.bio,
+    about: tutor.about,
+    gender: tutor.gender,
+    online: tutor.online,
+    notice: tutor.notice,
+    ...meta,
+  };
 }
