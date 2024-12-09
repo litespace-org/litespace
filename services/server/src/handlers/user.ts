@@ -35,18 +35,14 @@ import {
 import {
   drop,
   entries,
-  first,
-  flatten,
   groupBy,
-  orderBy,
   sample,
 } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { cacheTutors, isPublicTutor } from "@/lib/tutor";
+import { cacheTutors, isPublicTutor, orderTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { Schedule } from "@litespace/sol/rule";
 import { safe } from "@litespace/sol/error";
 import { asIsoDate } from "@litespace/sol/dayjs";
 import {
@@ -61,6 +57,8 @@ import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
+import { selectRuleEventsForTutor } from "@/lib/events";
+import { Gender } from "@litespace/types/dist/esm/user";
 
 const createUserPayload = zod.object({
   role,
@@ -267,7 +265,7 @@ function update(context: ApiContext) {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
         // update tutor cache
-        await cache.tutors.setOne(tutor);
+        await cache.tutors.update(tutor);
         // notify clients
         context.io
           .to(Wss.Room.TutorsCache)
@@ -348,8 +346,6 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
 
 async function findOnboardedTutors(req: Request, res: Response) {
   const query = pagination.parse(req.query);
-  const now = dayjs.utc();
-  const start = now.startOf("day");
 
   const [isTutorsCached, isRulesCached] = await Promise.all([
     cache.tutors.exists(),
@@ -358,67 +354,38 @@ async function findOnboardedTutors(req: Request, res: Response) {
 
   const validCacheState = isTutorsCached && isRulesCached;
 
+  // retrieve/set tutors and rules from/in cache (redis)
   const { tutors, rules } = validCacheState
     ? {
         tutors: await cache.tutors.getAll(),
         rules: await cache.rules.getAll(),
       }
-    : await cacheTutors(start);
+    // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
+    : await cacheTutors(dayjs.utc().startOf("day"));
 
-  const selectRuleEvents = (tutor: ITutor.FullTutor) => {
-    const tutorRules = rules.filter((rule) => rule.tutor === tutor.id);
-    const events = flatten(tutorRules.map((rule) => rule.events)).filter(
-      (event) => {
-        const adjustedNow = now.add(tutor.notice, "minutes");
-        const start = dayjs.utc(event.start);
-        const same = start.isSame(adjustedNow);
-        const after = start.isAfter(adjustedNow);
-        const between = adjustedNow.isBetween(
-          event.start,
-          // rule should have some time suitable for booking at least one short lesson.
-          dayjs.utc(event.end).subtract(ILesson.Duration.Short, "minutes"),
-          "minute",
-          "[]"
-        );
-        return same || after || between;
-      }
-    );
-    return Schedule.order(events, "asc");
-  };
-
+  // order tutors based on time of the first event, genger of the user 
+  // online state, and notice.
   const user = req.user;
-  const userGender = isUser(user) && user.gender;
+  const userGender = (isUser(user) && user.gender) ? user.gender as Gender : undefined;
+  // TODO: search/order tutors by name and topics.
+  // an ancillary function for clean code. 
+  const ordered = orderTutors(tutors, rules, userGender);
 
-  const iteratees = [
-    // sort in ascending order by the first availablity
-    (tutor: ITutor.FullTutor) => {
-      const events = selectRuleEvents(tutor);
-      const event = first(events);
-      if (!event) return Infinity;
-      return dayjs.utc(event.start).unix();
-    },
-    (tutor: ITutor.FullTutor) => {
-      if (!userGender || !user.gender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
-      if (!tutor.gender) return Infinity;
-      const same = user.gender === tutor.gender;
-      return same ? 0 : 1;
-    },
-    "online",
-    "notice",
-  ];
-  const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
-  const filtered = tutors.filter((tutor) => isPublicTutor(tutor));
-  const ordered = orderBy(filtered, iteratees, orders);
+  // paginate the ordered (tutors) list
   const page = query.page || 1;
   const size = query.size || 10;
   const offset = (page - 1) * size;
   const total = ordered.length;
   const paginated = drop(ordered, offset).slice(0, size);
+
+  // restructure the 'paginated' list to match the 
+  // ITutor.FindOnboardedTutorsApiResponse list attribute
   const list = paginated.map((tutor) => ({
     ...tutor,
-    rules: selectRuleEvents(tutor),
+    rules: selectRuleEventsForTutor(rules, tutor),
   }));
 
+  // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
   const response: ITutor.FindOnboardedTutorsApiResponse = {
     list,
     total,
