@@ -18,7 +18,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   const start = date.startOf("day");
   const end = start.add(30, "days").endOf("day");
 
-  const [onboardedTutors, tutorsRules, tutorLessons] = await knex.transaction(
+  const [onboardedTutors, tutorsRules, _] = await knex.transaction(
     async (
       tx: Knex.Transaction
     ): Promise<[ITutor.FullTutor[], IRule.Self[], ILesson.Self[]]> => {
@@ -83,6 +83,9 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     return {
       id: t.id,
       name: t.name,
+      image: t.image,
+      bio: t.bio,
+      about: t.about,
       gender: t.gender,
       online: t.online,
       notice: t.notice,
@@ -125,20 +128,20 @@ export function isPublicTutor(
  * an ancillary function used in 'findOnboardedTutors' user handler
  */
 export function orderTutors(
-  tutors: ITutor.FullTutor[], 
+  tutors: ITutor.Cache[], 
   rules: IRule.Cache[],
   userGender?: Gender,
-): ITutor.FullTutor[] {
+): ITutor.Cache[] {
 
   const iteratees = [
     // sort in ascending order by the first availablity
-    (tutor: ITutor.FullTutor) => {
+    (tutor: ITutor.Cache) => {
       const events = selectRuleEventsForTutor(rules, tutor)
       const event = first(events);
       if (!event) return Infinity;
       return dayjs.utc(event.start).unix();
     },
-    (tutor: ITutor.FullTutor) => {
+    (tutor: ITutor.Cache) => {
       if (!userGender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
       if (!tutor.gender) return Infinity;
       const same = userGender === tutor.gender;
@@ -149,8 +152,9 @@ export function orderTutors(
   ];
 
   const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
-  const filtered = tutors.filter((tutor) => isPublicTutor(tutor));
-  const ordered = orderBy(filtered, iteratees, orders);
+  // TODO: discuss with the team how to filter ITutor.Cache
+  // const filtered = tutors.filter((tutor) => isPublicTutor(tutor));
+  const ordered = orderBy(tutors, iteratees, orders);
 
   return ordered;
 }

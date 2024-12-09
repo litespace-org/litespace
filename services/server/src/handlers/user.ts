@@ -35,10 +35,7 @@ import {
 import {
   drop,
   entries,
-  first,
-  flatten,
   groupBy,
-  orderBy,
   sample,
 } from "lodash";
 import zod from "zod";
@@ -46,7 +43,6 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { cacheTutors, isPublicTutor, orderTutors } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { Schedule } from "@litespace/sol/rule";
 import { safe } from "@litespace/sol/error";
 import { asIsoDate } from "@litespace/sol/dayjs";
 import {
@@ -56,13 +52,12 @@ import {
   isStudent,
   isTutor,
   isUser,
-  tutor,
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
-import { selectEventsByRules, selectRuleEventsForTutor } from "@/lib/events";
+import { selectRuleEventsForTutor } from "@/lib/events";
 import { Gender } from "@litespace/types/dist/esm/user";
 
 const createUserPayload = zod.object({
@@ -270,7 +265,7 @@ function update(context: ApiContext) {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
         // update tutor cache
-        await cache.tutors.setOne(tutor);
+        await cache.tutors.update(tutor);
         // notify clients
         context.io
           .to(Wss.Room.TutorsCache)
@@ -390,7 +385,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
     rules: selectRuleEventsForTutor(rules, tutor),
   }));
 
-  // TODO: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
+  // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
   const response: ITutor.FindOnboardedTutorsApiResponse = {
     list,
     total,
