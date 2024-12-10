@@ -86,8 +86,6 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     users: tutorIds,
     canceled: false,
   });
-  // DONE: @mmoehabb use `lessons.countCounter..` (with filters) (canceled=false)
-  // DONE: remove `findStudentsCount` from the model.
   const tutorsStudentsCount = await lessons.countCounterpartMembersBatch({
     users: tutorIds,
     canceled: false,
@@ -97,7 +95,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
-      .map((item) => item.name.ar); // DONE: @mmoehabb only include arabic
+      .map((item) => item.name.ar);
 
     return {
       id: tutor.id,
@@ -113,7 +111,8 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       avgRating:
         tutorsRatings.find((rating) => rating.user === tutor.id)?.avg || 0,
       studentCount:
-        tutorsStudentsCount.find((item) => item.userId === tutor.id)?.count || 0,
+        tutorsStudentsCount.find((item) => item.userId === tutor.id)?.count ||
+        0,
       lessonCount:
         tutorsLessonsCount.find((item) => item.userId === tutor.id)?.count || 0,
     };
@@ -134,6 +133,9 @@ export async function cacheTutors(start: Dayjs): Promise<TutorsCache> {
   return cachePayload;
 }
 
+/**
+ *  @deprecated should be removed in favor of {@link isOnboard}
+ */
 export function isPublicTutor(
   tutor?: ITutor.FullTutor | null
 ): tutor is ITutor.FullTutor {
@@ -185,7 +187,7 @@ export function orderTutors(
  * - student count
  * - lesson count
  */
-export async function findTutorCacheMeta(tutorId: number) {
+async function findTutorCacheMeta(tutorId: number) {
   const [tutorTopics, avgRatings, studentCount, lessonCount] =
     await Promise.all([
       topics.findUserTopics({ users: [tutorId] }),
@@ -237,7 +239,8 @@ export async function joinTutorCache(
  * check whether a tutor is activated (onboard) or not.
  */
 export function isOnboard(tutor: ITutor.FullTutor): boolean {
-  return tutor.activated === true &&
+  return (
+    tutor.activated === true &&
     tutor.verified === true &&
     tutor.activatedBy !== null &&
     tutor.notice !== null &&
@@ -247,10 +250,10 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
     tutor.name !== null &&
     tutor.birthYear !== null &&
     tutor.about !== null &&
-    tutor.bio !== null;
+    tutor.bio !== null
+  );
 }
 
-// ancillary function for findTutorInfo handler
 export function asTutorInfoResponseBody(
   ctutor: ITutor.Cache
 ): ITutor.FindTutorInfoApiResponse {
@@ -268,3 +271,4 @@ export function asTutorInfoResponseBody(
   }
   return response;
 }
+

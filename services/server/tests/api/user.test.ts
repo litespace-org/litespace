@@ -164,10 +164,10 @@ describe("/api/v1/user/", () => {
           activatedBy: newUser.id,
           video: "/video.mp4",
           notice: 10,
-        }
+        };
 
-        await users.update(newTutor.id, { 
-          verified: true, 
+        await users.update(newTutor.id, {
+          verified: true,
           // NOTE: image is not in tutors table.
           image: "/image.jpg",
         });
@@ -175,7 +175,7 @@ describe("/api/v1/user/", () => {
 
         expect(await cache.tutors.exists()).to.eql(false);
 
-        const studentApi = await Api.forStudent()
+        const studentApi = await Api.forStudent();
         await studentApi.atlas.user.findOnboardedTutors();
 
         const ctutors = await cache.tutors.getAll();
