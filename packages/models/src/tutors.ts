@@ -150,28 +150,6 @@ export class Tutors {
     }).then();
   }
 
-  async findStudentsCount(tutorsIds: number[]): Promise<Array<{tutorId: number, count: number}>> {
-    const query = this.builder()
-      .join(
-        lessons.table.members, 
-        lessons.columns.members("user_id"), 
-        this.columns.fullTutorFields.map.id).as("lm")
-      .join(
-        lessons.table.members, 
-        lessons.columns.members("lesson_id"), 
-        "lm.lesson_id").as("lm2")
-      .whereNot("lm.user_id", "=", "lm2.user_id")
-      .whereIn(this.columns.fullTutorFields.map.id, tutorsIds)
-      .select(lessons.columns.members("user_id")).as("tutor")
-      .distinct()
-
-    const rows = await knex.select("tutor")
-      .count("*", { as: "studentsCount" })
-      .from(query).groupBy("tutor");
-
-    return rows.map(r => ({ tutorId: r.tutor, count: r.studentsCount }))
-  }
-
   async findForMediaProvider(
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
@@ -240,17 +218,16 @@ export class Tutors {
   async findOnboardedTutors(
     tx?: Knex.Transaction
   ): Promise<ITutor.FullTutor[]> {
-    const rows = await this.fullTutorQuery(tx);
-    //! temp: disable it for now
-    // .where(this.column("activated"), true)
-    // .andWhereNot(this.column("video"), null)
-    // .andWhereNot(this.column("bio"), null)
-    // .andWhereNot(this.column("about"), null)
-    // .andWhereNot(users.column("image"), null)
-    // .andWhereNot(users.column("birth_year"), null)
-    // .andWhereNot(users.column("name"), null)
-    // .andWhereNot(users.column("gender"), null)
-    // .andWhere(users.column("verified"), true);
+    const rows = await this.fullTutorQuery(tx)
+      .where(this.column("activated"), true)
+      .andWhereNot(this.column("video"), null)
+      .andWhereNot(this.column("bio"), null)
+      .andWhereNot(this.column("about"), null)
+      .andWhereNot(users.column("image"), null)
+      .andWhereNot(users.column("birth_year"), null)
+      .andWhereNot(users.column("name"), null)
+      .andWhereNot(users.column("gender"), null)
+      .andWhere(users.column("verified"), true);
     return rows.map((row) => this.asFullTutor(row));
   }
 
