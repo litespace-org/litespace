@@ -1,4 +1,4 @@
-import humanize from "humanize-duration";
+import humanize, { Options } from "humanize-duration";
 
 export function formatNumber(
   value: number,
@@ -27,9 +27,10 @@ export function formatCurrency(value: number): string {
   }).format(value);
 }
 
-export function formatMinutes(value: number): string {
+export function formatMinutes(value: number, options: Options = {}): string {
   return humanize(value * 60 * 1000, {
     language: "ar",
     digitReplacements: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    ...options,
   });
 }
