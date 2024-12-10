@@ -467,6 +467,7 @@
   "student-dashboard.overview.total-lessons": "اجمالي الحصص",
   "student-dashboard.overview.completed-lessons": "الحصص المكتملة",
   "student-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
+  "student-dashboard.overview.total-learning-time.unit": "{value} ساعة",
   "student-dashboard.overview.badges": "الشارات",
   "book-lesson.title": "إحجز حصة مع {tutor}",
   "book-lesson.title.placeholder": "إحجز حصة",
