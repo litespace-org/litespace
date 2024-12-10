@@ -32,7 +32,7 @@ export async function getVideoMediaStream(videoUrl: string = DEFAULT_URL) {
   return mediaStream;
 }
 
-type Stream = {
+export type Stream = {
   fullScreen: {
     enabled: boolean;
     toggle: Void;
@@ -70,7 +70,7 @@ export function createStreamObject(
     stream,
     fullScreen: {
       enabled: false,
-      toggle: () => {},
+      toggle: () => alert("full screen"),
     },
     speech: {
       speaking: false,

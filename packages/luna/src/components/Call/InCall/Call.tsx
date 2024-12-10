@@ -1,34 +1,35 @@
 import { Void } from "@litespace/types";
 import React from "react";
-import CallBar from "../CallBar";
 import Video from "@litespace/assets/Video";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Chat from "@litespace/assets/Chat";
 import CastScreen from "@litespace/assets/CastScreen";
-import { InCallStreams } from "../InCallStreams";
+import { InCallStreams, CallBar } from "@/components/Call";
+
+export type StreamProps = {
+  fullScreen: {
+    enabled: boolean;
+    toggle: Void;
+  };
+  speech: {
+    speaking: boolean;
+    mic: boolean;
+  };
+  camera: boolean;
+  cast: boolean;
+  stream: MediaStream | null;
+  user: {
+    id: number;
+    imageUrl: string | null;
+    name: string | null;
+  };
+  type: "focused" | "unfocused";
+};
 
 type CallProps = {
-  streams: {
-    fullScreen: {
-      enabled: boolean;
-      toggle: Void;
-    };
-    speech: {
-      speaking: boolean;
-      mic: boolean;
-    };
-    camera: boolean;
-    cast: boolean;
-    stream: MediaStream | null;
-    user: {
-      id: number;
-      imageUrl: string | null;
-      name: string | null;
-    };
-    type: "focused" | "unfocused";
-  }[];
+  streams: StreamProps[];
   chat: { enabled: boolean; toggle: Void };
   camera: {
     enabled: boolean;
@@ -51,6 +52,7 @@ type CallProps = {
   };
   leaveCall: Void;
   messagesComponent?: React.ReactNode;
+  internetProblem?: boolean;
 };
 
 export const Call: React.FC<CallProps> = ({
@@ -62,11 +64,17 @@ export const Call: React.FC<CallProps> = ({
   cast,
   streams,
   timer,
+  internetProblem,
 }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-10 tw-w-full tw-h-full">
-      <div className="tw-h-full tw-grow">
-        <InCallStreams streams={streams} chat={chat.enabled} timer={timer} />
+      <div className="tw-h-full tw-grow tw-flex">
+        <InCallStreams
+          streams={streams}
+          chat={chat.enabled}
+          timer={timer}
+          internetProblem={internetProblem}
+        />
         {chat.enabled ? messagesComponent : null}
       </div>
       <hr />

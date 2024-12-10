@@ -1,28 +1,9 @@
 import React, { useEffect, useRef } from "react";
-import CallAvatar from "./CallAvatar";
-import SpeechIndicator from "./SpeechIndicator";
-import { Void } from "@litespace/types";
+import { motion } from "framer-motion";
+import { SpeechIndicator, CallAvatar, StreamProps } from "@/components/Call";
 
 export const UnFocusedStream: React.FC<{
-  internetProblem?: boolean;
-  stream: {
-    fullScreen: {
-      enabled: boolean;
-      toggle: Void;
-    };
-    speech: {
-      speaking: boolean;
-      mic: boolean;
-    };
-    camera: boolean;
-    cast: boolean;
-    stream: MediaStream | null;
-    user: {
-      id: number;
-      imageUrl: string | null;
-      name: string | null;
-    };
-  };
+  stream: StreamProps;
 }> = ({ stream }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
@@ -33,7 +14,15 @@ export const UnFocusedStream: React.FC<{
   }, [stream]);
 
   return (
-    <div className="tw-aspect-video tw-w-[219px] tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-small tw-overflow-hidden">
+    <motion.div
+      initial={{ x: -200, y: -200 }}
+      animate={{ x: 0, y: 0 }}
+      transition={{
+        duration: 0.3,
+        ease: "easeInOut",
+      }}
+      className="tw-aspect-video tw-w-[219px] tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-small tw-overflow-hidden"
+    >
       {stream.camera || stream.cast ? (
         <video ref={videoRef} autoPlay muted={false} playsInline />
       ) : (
@@ -48,7 +37,7 @@ export const UnFocusedStream: React.FC<{
           mic={stream.speech.mic}
         />
       </div>
-    </div>
+    </motion.div>
   );
 };
 

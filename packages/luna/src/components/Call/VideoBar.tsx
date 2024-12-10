@@ -1,9 +1,12 @@
 import React from "react";
-import FullScreenButton from "./FullScreenButton";
-import { InternetIndicator } from "./InternetIndicator";
-import SpeechIndicator from "./SpeechIndicator";
 import { Void } from "@litespace/types";
-import TimerIndicator from "./Timer";
+import {
+  TimerIndicator,
+  SpeechIndicator,
+  InternetIndicator,
+  FullScreenButton,
+} from "@/components/Call";
+
 export const VideoBar: React.FC<{
   internetProblem?: boolean;
   fullScreen: {
