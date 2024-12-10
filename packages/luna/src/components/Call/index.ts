@@ -8,4 +8,12 @@ export {
   PreCall,
   type Props as PreCallProps,
 } from "@/components/Call/PreCall/PreCall";
-export { Call } from "@/components/Call/InCall/Call";
+export { Call, type StreamProps } from "@/components/Call/InCall/Call";
+export { FocusedStream } from "@/components/Call/FocusedStream";
+export { UnFocusedStream } from "@/components/Call/UnFocusedStream";
+export { InCallStreams } from "@/components/Call/InCallStreams";
+export { FullScreenButton } from "@/components/Call/FullScreenButton";
+export { InternetIndicator } from "@/components/Call/InternetIndicator";
+export { SpeechIndicator } from "@/components/Call/SpeechIndicator";
+export { TimerIndicator } from "@/components/Call/TimerIndicator";
+export { VideoBar } from "@/components/Call/VideoBar";

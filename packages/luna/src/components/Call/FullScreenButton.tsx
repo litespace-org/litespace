@@ -1,6 +1,7 @@
 import React from "react";
 import FullScreen from "@litespace/assets/FullScreen";
 import { Void } from "@litespace/types";
+
 export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
   enabled,
   toggle,
