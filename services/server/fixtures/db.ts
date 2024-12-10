@@ -184,8 +184,8 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 }
 
 async function tutor() {
-  const newTutor = await user({ role: IUser.Role.Tutor });
-  return tutors.create(newTutor.id);
+  const info = await user({ role: IUser.Role.Tutor });
+  return tutors.create(info.id);
 }
 
 function student() {
