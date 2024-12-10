@@ -151,28 +151,6 @@ export class Tutors {
     }).then();
   }
 
-  async findStudentsCount(tutorsIds: number[]): Promise<Array<{tutorId: number, count: number}>> {
-    const query = this.builder()
-      .join(
-        lessons.table.members, 
-        lessons.columns.members("user_id"), 
-        this.columns.fullTutorFields.map.id).as("lm")
-      .join(
-        lessons.table.members, 
-        lessons.columns.members("lesson_id"), 
-        "lm.lesson_id").as("lm2")
-      .whereNot("lm.user_id", "=", "lm2.user_id")
-      .whereIn(this.columns.fullTutorFields.map.id, tutorsIds)
-      .select(lessons.columns.members("user_id")).as("tutor")
-      .distinct()
-
-    const rows = await knex.select("tutor")
-      .count("*", { as: "studentsCount" })
-      .from(query).groupBy("tutor");
-
-    return rows.map(r => ({ tutorId: r.tutor, count: r.studentsCount }))
-  }
-
   async findForMediaProvider(
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction

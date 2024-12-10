@@ -838,4 +838,22 @@ describe("Lessons", () => {
       }
     });
   });
+
+  describe(nameof(lessons.countCounterpartMembersBatch), () => {
+    it("should retieve the number of students a tutor", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+
+      await fixtures.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        timing: "past",
+        canceled: false,
+      });
+
+      const studentsCount = await lessons.countCounterpartMembersBatch({ users: [tutor.id] });
+      expect(first(studentsCount)?.userId).to.eq(tutor.id);
+      expect(first(studentsCount)?.count).to.eq(1);
+    })
+  })
 });
