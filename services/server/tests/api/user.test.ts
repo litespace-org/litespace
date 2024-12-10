@@ -10,11 +10,11 @@ import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
 import { first } from "lodash";
+import { notfound } from "@/lib/error";
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
     await flush();
-    await cache.flush();
   });
 
   describe("POST /api/v1/user", () => {
@@ -127,7 +127,7 @@ describe("/api/v1/user/", () => {
         expect(await cache.tutors.exists()).to.eql(false);
       });
 
-      it.only("should retrieve onboard tutors data from the cache with HTTP request", async () => {
+      it("should retrieve onboard tutors data from the cache with HTTP request", async () => {
         const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
@@ -153,7 +153,7 @@ describe("/api/v1/user/", () => {
         expect(res.total).to.eq(1);
       });
 
-      it.only("should load onboard tutors data from db to cache on first HTTP request", async () => {
+      it("should load onboard tutors data from db to cache on first HTTP request", async () => {
         const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
@@ -184,7 +184,7 @@ describe("/api/v1/user/", () => {
       });
 
       // There was a bug in which every user update request stores tutor info in the cache
-      it.only("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
+      it("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
         const tutorApi = await Api.forTutor();
         const newTutor = await db.tutor();
         // any dump update
@@ -203,9 +203,75 @@ describe("/api/v1/user/", () => {
       await cache.disconnect();
     })
 
-    it("should retrieve tutor info successfully", async () => {})
-    it("should retrieve tutor info from db in case it's not in the cache", async () => {})
-    it("should load/retrieve tutor info in/from the cache", async () => {})
-    it("should response with 404 incase tutor is not onboard", async () => {})
+    beforeEach(async () => {
+      await flush();
+      await cache.flush();
+    })
+
+    it("should retrieve tutor info successfully", async () => {
+      const newUser = await db.user({ role: Role.SuperAdmin });
+      const newTutor = await db.tutor();
+
+      const mockData = {
+        about: faker.lorem.paragraphs(),
+        bio: faker.person.bio(),
+        activated: true,
+        activatedBy: newUser.id,
+        video: "/video.mp4",
+        notice: 10,
+      }
+
+      await users.update(newTutor.id, { 
+        verified: true, 
+        // NOTE: image is not in tutors table.
+        image: "/image.jpg",
+      });
+      await tutors.update(newTutor.id, mockData);
+
+      const studentApi = await Api.forStudent()
+      const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
+      
+      expect(res.id).to.eq(newTutor.id);
+    })
+
+    it("should retrieve tutor info from db, in case it's not in the cache, and then save it in the cache.", async () => {
+      expect(await cache.tutors.exists()).to.eq(false);
+
+      const newUser = await db.user({ role: Role.SuperAdmin });
+      const newTutor = await db.tutor();
+
+      const mockData = {
+        about: faker.lorem.paragraphs(),
+        bio: faker.person.bio(),
+        activated: true,
+        activatedBy: newUser.id,
+        video: "/video.mp4",
+        notice: 10,
+      }
+
+      await users.update(newTutor.id, { 
+        verified: true, 
+        // NOTE: image is not in tutors table.
+        image: "/image.jpg",
+      });
+      await tutors.update(newTutor.id, mockData);
+
+      const studentApi = await Api.forStudent()
+      // this shall save tutor in cache if not found
+      const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
+      
+      // ensure data is saved and can be retrieved from the cache
+      expect(await cache.tutors.exists()).to.eq(true);
+      expect(first(await cache.tutors.getAll())?.id).to.eq(res.id);
+    })
+
+    it("should response with 404 in case tutor is not onboard", async () => {
+      const newTutor = await db.tutor();
+
+      const studentApi = await Api.forStudent()
+      const res = await safe(async () => studentApi.atlas.user.findTutorInfo(newTutor.id));
+      
+      expect(res).to.be.deep.eq(notfound.tutor());
+    })
   });
 });

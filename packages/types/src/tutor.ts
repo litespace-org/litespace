@@ -80,7 +80,6 @@ export type FindTutorInfoApiResponse = {
   studentCount: number;
   lessonCount: number;
   avgRating: number;
-  rules: IRule.RuleEvent[];
 };
 
 export type FindOnboardedTutorsApiResponse = {
