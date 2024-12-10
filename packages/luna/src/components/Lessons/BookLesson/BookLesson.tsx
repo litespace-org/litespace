@@ -1,13 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Dialog } from "@/components/Dialog/V2";
 import { IRule, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Stepper } from "@/components/Lessons/BookLesson/Stepper";
-import { Step } from "@/components/Lessons/BookLesson/types";
+import { Step, AttributedSlot } from "@/components/Lessons/BookLesson/types";
 import { DateSelection } from "@/components/Lessons/BookLesson/DateSelection";
 import { DurationSelection } from "@/components/Lessons/BookLesson/DurationSelection";
 import { TimeSelection } from "@/components/Lessons/BookLesson/TimeSelection";
+import { Confirmation } from "@/components/Lessons/BookLesson/Confirmation";
 import { Button, ButtonSize } from "@/components/Button";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
@@ -15,20 +16,20 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Schedule, splitRuleEvent, unpackRules } from "@litespace/sol/rule";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
-import { flattenDeep } from "lodash";
-import { Confirmation } from "./Confirmation";
+import { concat, flattenDeep, isEmpty } from "lodash";
+import cn from "classnames";
 
 const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
   step,
   children,
 }) => {
   const duration = useMemo(() => {
-    if (step === "date-selection") return 0.5;
-    return 0.3;
+    if (step === "date-selection" || step === "time-selection") return 0.5;
+    return 0.4;
   }, [step]);
 
   const delay = useMemo(() => {
-    if (step === "date-selection") return 0.4;
+    if (step === "date-selection" || step === "time-selection") return 0.4;
     return 0.2;
   }, [step]);
 
@@ -45,14 +46,14 @@ const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
         transition: {
           duration,
           delay,
-          ease: "easeInOut",
+          ease: "linear",
         },
       }}
       exit={{
         opacity: 0,
         height: 0,
       }}
-      className="tw-mt-9 tw-overflow-hidden"
+      className="tw-overflow-hidden"
     >
       {children}
     </motion.div>
@@ -98,28 +99,65 @@ export const BookLesson: React.FC<{
     return { min, max };
   }, []);
 
-  const bookable = useMemo(() => {
-    const unpacked = unpackRules({
+  const unpackedRules = useMemo(() => {
+    return unpackRules({
       rules,
       slots,
-      start: dateBounds.min.toISOString(),
-      end: dateBounds.max.toISOString(),
+      /**
+       * ! update {@link unpackRules} logic and make `start` date inclusive.
+       */
+      start: dateBounds.min.subtract(1, "day").toISOString(),
+      end: dateBounds.max.add(1, "day").toISOString(),
     });
+  }, [dateBounds.max, dateBounds.min, rules, slots]);
 
-    const selectedDayEvents = unpacked.filter(
-      (event) =>
-        date.isSame(event.start, "day") || date.isSame(event.end, "day")
-    );
+  const selectDaySlots = useCallback(
+    (day: Dayjs) => {
+      const daySlots = unpackedRules.filter(
+        (event) =>
+          day.isSame(event.start, "day") || day.isSame(event.end, "day")
+      );
 
-    return Schedule.order(
-      flattenDeep(
-        selectedDayEvents.map((rule) => splitRuleEvent(rule, duration))
-      ).filter((event) =>
-        dayjs(event.start).isAfter(dayjs().add(notice, "minutes"))
-      ),
-      "asc"
-    );
-  }, [date, dateBounds.max, dateBounds.min, duration, notice, rules, slots]);
+      const unpackedSlots: AttributedSlot[] = flattenDeep(
+        daySlots.map((rule) => splitRuleEvent(rule, duration))
+      ).map((event) => ({
+        ruleId: event.id,
+        start: event.start,
+        end: event.end,
+        bookable: dayjs(event.start).isAfter(dayjs().add(notice, "minutes")),
+      }));
+
+      return unpackedSlots;
+    },
+    [duration, notice, unpackedRules]
+  );
+
+  /**
+   * Date is considered valid incase it has at least one bookable (free) slot.
+   */
+  const isValidDate = useCallback(
+    (date: Dayjs) =>
+      !isEmpty(selectDaySlots(date).filter((slot) => slot.bookable)),
+    [selectDaySlots]
+  );
+
+  /**
+   * List of all slots including booked and not-yet-booked slots.
+   */
+  const allSlots = useMemo(() => {
+    const daySlots = selectDaySlots(date);
+    const bookedSlots: AttributedSlot[] = slots
+      .map((slot) => ({
+        ruleId: slot.ruleId,
+        start: slot.start,
+        end: dayjs(slot.start).add(slot.duration, "minutes").toISOString(),
+        bookable: false,
+      }))
+      .filter(
+        (slot) => date.isSame(slot.start, "day") || date.isSame(slot.end, "day")
+      );
+    return Schedule.order(concat(daySlots, bookedSlots), "asc");
+  }, [selectDaySlots, date, slots]);
 
   return (
     <Dialog
@@ -137,13 +175,13 @@ export const BookLesson: React.FC<{
             : intl("book-lesson.title.placeholder")}
         </Typography>
       }
-      className="!tw-p-0 !tw-pt-10 !tw-pb-5 [&>div:first-child]:!tw-px-10"
+      className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
     >
-      <div className="tw-mt-8 tw-px-10">
+      <div className="tw-mt-6 tw-px-6">
         <Stepper step={step} />
       </div>
 
-      <div className="tw-mt-9">
+      <div className="tw-mt-6">
         <AnimatePresence>
           {step === "date-selection" ? (
             <Animation step="date-selection">
@@ -152,6 +190,7 @@ export const BookLesson: React.FC<{
                 max={dateBounds.max}
                 selected={date}
                 onSelect={setDate}
+                isSelectable={isValidDate}
               />
             </Animation>
           ) : null}
@@ -160,7 +199,7 @@ export const BookLesson: React.FC<{
         <AnimatePresence>
           {step === "duration-selection" ? (
             <Animation step="duration-selection">
-              <div className="tw-px-10 tw-mt-5 tw-mb-[34px]">
+              <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
@@ -171,7 +210,7 @@ export const BookLesson: React.FC<{
           {step === "time-selection" ? (
             <Animation step="time-selection">
               <TimeSelection
-                events={bookable}
+                slots={allSlots}
                 start={start}
                 setStart={setStart}
               />
@@ -182,7 +221,7 @@ export const BookLesson: React.FC<{
         <AnimatePresence>
           {step === "confirmation" && start ? (
             <Animation step="confirmation">
-              <div className="tw-px-10 tw-mt-5">
+              <div className="tw-px-6">
                 <Confirmation
                   tutorId={tutorId}
                   name={name}
@@ -201,15 +240,18 @@ export const BookLesson: React.FC<{
       </div>
 
       {step !== "confirmation" ? (
-        <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-12 tw-px-10 tw-pb-5">
+        <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
-              size={ButtonSize.Tiny}
+              size={ButtonSize.Small}
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
               }}
+              className={cn({
+                "tw-w-[128px]": step === "duration-selection",
+              })}
             >
               {intl("book-lesson.steps.prev")}
             </Button>
@@ -217,13 +259,19 @@ export const BookLesson: React.FC<{
 
           <Button
             endIcon={<LongLeftArrow />}
-            size={ButtonSize.Tiny}
+            size={ButtonSize.Small}
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
               if (step === "duration-selection") setStep("time-selection");
               if (step === "time-selection") setStep("confirmation");
             }}
-            disabled={step === "time-selection" && !start}
+            disabled={
+              (step === "time-selection" && !start) || !isValidDate(date)
+            }
+            className={cn({
+              "tw-w-[196px]": step === "date-selection",
+              "tw-w-[128px]": step === "duration-selection",
+            })}
           >
             {intl("book-lesson.steps.next")}
           </Button>

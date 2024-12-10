@@ -22,7 +22,7 @@ export const Confirmation: React.FC<{
 }> = ({ tutorId, name, imageUrl, start, duration, onConfrim, onEdit }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-flex-col tw-gap-14">
+    <div className="tw-flex tw-flex-col tw-gap-6">
       <div className="tw-flex tw-flex-row tw-gap-6">
         <div className="tw-w-[120px] tw-h-[120px] tw-overflow-hidden tw-rounded-full">
           <Avatar
