@@ -185,7 +185,7 @@ export function orderTutors(
  * - student count
  * - lesson count
  */
-async function findTutorCacheMeta(tutorId: number) {
+export async function findTutorCacheMeta(tutorId: number) {
   const [tutorTopics, avgRatings, studentCount, lessonCount] =
     await Promise.all([
       topics.findUserTopics({ users: [tutorId] }),
@@ -248,4 +248,23 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
     tutor.birthYear !== null &&
     tutor.about !== null &&
     tutor.bio !== null;
+}
+
+// ancillary function for findTutorInfo handler
+export function asTutorInfoResponseBody(
+  ctutor: ITutor.Cache
+): ITutor.FindTutorInfoApiResponse {
+  const response: ITutor.FindTutorInfoApiResponse = {
+    id: ctutor.id,
+    name: ctutor.name,
+    bio: ctutor.bio,
+    about: ctutor.about,
+    image: ctutor.image,
+    video: ctutor.video,
+    topics: ctutor.topics,
+    studentCount: ctutor.studentCount,
+    lessonCount: ctutor.lessonCount,
+    avgRating: ctutor.avgRating,
+  }
+  return response;
 }
