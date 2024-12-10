@@ -95,7 +95,7 @@ export class Tutors {
       .update({
         bio: payload.bio,
         about: payload.about,
-        // NOTE: image is not in tutors table; it cannot be (directly) updated.
+        // NOTE: image is not in tutors table; it shall be updated by models/users.
         video: payload.video,
         notice: payload.notice,
         activated: payload.activated,
@@ -246,8 +246,7 @@ export class Tutors {
      .andWhereNot(this.column("video"), null)
      .andWhereNot(this.column("bio"), null)
      .andWhereNot(this.column("about"), null)
-     // NOTE: image is not in tutors table.
-     //.andWhereNot(users.column("image"), null)
+     .andWhereNot(users.column("image"), null)
      .andWhereNot(users.column("birth_year"), null)
      .andWhereNot(users.column("name"), null)
      .andWhereNot(users.column("gender"), null)

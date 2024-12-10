@@ -1,6 +1,6 @@
 import { flush } from "@fixtures/shared";
 import { IUser } from "@litespace/types";
-import { Api } from "@fixtures/api";
+import { Api, atlas } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { safe } from "@litespace/sol/error";
@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
-import { tutor } from "@litespace/auth";
+import { first } from "lodash";
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -75,21 +75,29 @@ describe("/api/v1/user/", () => {
 
       beforeAll(async () => {
         await cache.connect();
-        await cache.flush();
       })
 
       afterAll(async () => {
         await cache.disconnect();
       })
 
-      it("should successfully load onboard tutors from db to the cache", async () => {
+      beforeEach(async () => {
+        await flush();
+        await cache.flush();
+      })
+
+      it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
         expect(await cache.rules.exists()).to.eql(false);
 
         const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
-        await users.update(newTutor.id, { verified: true });
+        await users.update(newTutor.id, { 
+          verified: true, 
+          // NOTE: image is not in tutors table.
+          image: "/image.jpg",
+        });
         await tutors.update(
           newTutor.id,
           {
@@ -97,8 +105,6 @@ describe("/api/v1/user/", () => {
             bio: faker.person.bio(),
             activated: true,
             activatedBy: newUser.id,
-            // NOTE: image is not in tutors table.
-            //image: "/image.jpg",
             video: "/video.mp4",
             notice: 10,
           }
@@ -106,8 +112,46 @@ describe("/api/v1/user/", () => {
 
         await cacheTutors(dayjs.utc().startOf("day"));
 
+        expect(await cache.tutors.exists()).to.eql(true);
         const ctutors = await cache.tutors.getAll();
         expect(ctutors).to.have.length(1);
+      });
+
+      it("should NOT load unverified tutors from db to cache", async () => {
+        const newTutor = await db.tutor();
+        await users.update(newTutor.id, { verified: false });
+
+        await cacheTutors(dayjs.utc().startOf("day"));
+
+        expect(await cache.tutors.exists()).to.eql(false);
+      });
+
+      it.only("should retrieve onboard tutors data from the cache with HTTP request", async () => {
+        const newUser = await db.user({ role: Role.SuperAdmin });
+        const newTutor = await db.tutor();
+
+        const mockData = {
+          about: faker.lorem.paragraphs(),
+          bio: faker.person.bio(),
+          activated: true,
+          activatedBy: newUser.id,
+          video: "/video.mp4",
+          notice: 10,
+        }
+
+        await users.update(newTutor.id, { 
+          verified: true, 
+          // NOTE: image is not in tutors table.
+          image: "/image.jpg",
+        });
+        await tutors.update(newTutor.id, mockData);
+
+        await cacheTutors(dayjs.utc().startOf("day"));
+
+        const studentApi = await Api.forStudent()
+        const res = await studentApi.atlas.user.findOnboardedTutors();
+        
+        expect(res.total).to.eq(1);
       });
     });
   });
