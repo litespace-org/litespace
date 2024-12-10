@@ -1,6 +1,6 @@
 import { flush } from "@fixtures/shared";
 import { IUser } from "@litespace/types";
-import { Api, atlas } from "@fixtures/api";
+import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { safe } from "@litespace/sol/error";
@@ -146,12 +146,49 @@ describe("/api/v1/user/", () => {
         });
         await tutors.update(newTutor.id, mockData);
 
-        await cacheTutors(dayjs.utc().startOf("day"));
-
         const studentApi = await Api.forStudent()
         const res = await studentApi.atlas.user.findOnboardedTutors();
         
         expect(res.total).to.eq(1);
+      });
+
+      it.only("should load onboard tutors data from db to cache on first HTTP request", async () => {
+        const newUser = await db.user({ role: Role.SuperAdmin });
+        const newTutor = await db.tutor();
+
+        const mockData = {
+          about: faker.lorem.paragraphs(),
+          bio: faker.person.bio(),
+          activated: true,
+          activatedBy: newUser.id,
+          video: "/video.mp4",
+          notice: 10,
+        }
+
+        await users.update(newTutor.id, { 
+          verified: true, 
+          // NOTE: image is not in tutors table.
+          image: "/image.jpg",
+        });
+        await tutors.update(newTutor.id, mockData);
+
+        expect(await cache.tutors.exists()).to.eql(false);
+
+        const studentApi = await Api.forStudent()
+        await studentApi.atlas.user.findOnboardedTutors();
+
+        const ctutors = await cache.tutors.getAll();
+        expect(await cache.tutors.exists()).to.eql(true);
+        expect(first(ctutors)?.id).to.eql(newTutor.id);
+      });
+
+      // There was a bug in which every user update request stores tutor info in the cache
+      it.only("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
+        const tutorApi = await Api.forTutor();
+        const newTutor = await db.tutor();
+        // any dump update
+        await tutorApi.atlas.user.update(newTutor.id, { bio: "my new bio" });
+        expect(await cache.tutors.exists()).to.eql(false);
       });
     });
   });

@@ -232,3 +232,20 @@ export async function joinTutorCache(
     ...meta,
   };
 }
+
+/*
+ * check whether a tutor is activated (onboard) or not.
+ */
+export function isOnboard(tutor: ITutor.FullTutor): boolean {
+  return tutor.activated === true &&
+    tutor.verified === true &&
+    tutor.activatedBy !== null &&
+    tutor.notice !== null &&
+    tutor.image !== null &&
+    tutor.video !== null &&
+    tutor.gender !== null &&
+    tutor.name !== null &&
+    tutor.birthYear !== null &&
+    tutor.about !== null &&
+    tutor.bio !== null;
+}
