@@ -1,30 +1,10 @@
 import React from "react";
-import { Void } from "@litespace/types";
-import FocusedStream from "./FocusedStream";
-import UnFocusedStream from "./UnFocusedStream";
 import cn from "classnames";
+import { FocusedStream, UnFocusedStream, StreamProps } from "@/components/Call";
 
 export const InCallStreams: React.FC<{
   internetProblem?: boolean;
-  streams: {
-    fullScreen: {
-      enabled: boolean;
-      toggle: Void;
-    };
-    speech: {
-      speaking: boolean;
-      mic: boolean;
-    };
-    camera: boolean;
-    cast: boolean;
-    stream: MediaStream | null;
-    user: {
-      id: number;
-      imageUrl: string | null;
-      name: string | null;
-    };
-    type: "focused" | "unfocused";
-  }[];
+  streams: StreamProps[];
   chat?: boolean;
   timer: {
     duration: number;
@@ -37,10 +17,14 @@ export const InCallStreams: React.FC<{
     <div
       className={cn(
         "tw-relative tw-w-full tw-rounded-lg tw-h-full tw-bg-brand-100 tw-grid tw-gap-6",
-        chat && "tw-p-6"
+        chat && "tw-p-6 tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg "
       )}
     >
-      <FocusedStream stream={focusedStream} timer={timer} />
+      <FocusedStream
+        stream={focusedStream}
+        timer={timer}
+        internetProblem={internetProblem}
+      />
       <div
         className={cn(
           "tw-flex tw-items-center tw-gap-6",
@@ -50,11 +34,7 @@ export const InCallStreams: React.FC<{
         {sortedStreams
           .filter((stream) => stream.type === "unfocused")
           .map((stream, index) => (
-            <UnFocusedStream
-              key={index}
-              stream={stream}
-              internetProblem={internetProblem}
-            />
+            <UnFocusedStream key={index} stream={stream} />
           ))}
       </div>
     </div>

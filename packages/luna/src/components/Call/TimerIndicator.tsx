@@ -1,7 +1,8 @@
-import Timer from "@litespace/assets/Timer";
+import Timer from "@litespace/assets/TimerIndicator";
 import React, { useCallback, useEffect, useState } from "react";
-import { Typography } from "../Typography";
+import { Typography } from "@/components/Typography";
 import dayjs from "dayjs";
+
 export const TimerIndicator: React.FC<{
   startAt: string;
   duration: number;
@@ -9,29 +10,25 @@ export const TimerIndicator: React.FC<{
   const [time, setTime] = useState<number>(0);
 
   useEffect(() => {
-    // Parse the start time and calculate the initial time left
     const startTime = dayjs(startAt);
     const endTime = startTime.add(duration, "minute");
     const now = dayjs();
-    console.log({ startTime, endTime, now });
 
     const initialTimeLeft = endTime.diff(now, "second");
-    console.log(initialTimeLeft);
 
     if (initialTimeLeft > 0) {
       setTime(initialTimeLeft);
     } else {
-      setTime(0); // Timer has already expired
+      setTime(0);
     }
 
-    // Update the timer every second
     const interval = setInterval(() => {
       const now = dayjs();
       const currentTimeLeft = endTime.diff(now, "second");
       setTime(currentTimeLeft > 0 ? currentTimeLeft : 0);
     }, 1000);
 
-    return () => clearInterval(interval); // Cleanup interval
+    return () => clearInterval(interval);
   }, [startAt, duration]);
 
   const formatTime = useCallback((seconds: number) => {

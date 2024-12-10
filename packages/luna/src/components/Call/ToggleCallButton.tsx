@@ -22,7 +22,7 @@ export const ToggleCallButton: React.FC<{
       onClick={toggle}
     >
       {enabled && !error ? (
-        <OnIcon className={cn(enabled && "[&>*]:tw-stroke-brand-700")} />
+        <OnIcon className="[&>*]:tw-stroke-brand-700" />
       ) : (
         <OffIcon
           className={cn(

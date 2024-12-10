@@ -1,32 +1,15 @@
 import React, { useEffect, useRef } from "react";
-import CallAvatar from "./CallAvatar";
-import { Void } from "@litespace/types";
-import VideoBar from "./VideoBar";
+import { motion } from "framer-motion";
+import { VideoBar, CallAvatar, StreamProps } from "@/components/Call";
 
 export const FocusedStream: React.FC<{
-  stream: {
-    fullScreen: {
-      enabled: boolean;
-      toggle: Void;
-    };
-    speech: {
-      speaking: boolean;
-      mic: boolean;
-    };
-    camera: boolean;
-    cast: boolean;
-    stream: MediaStream | null;
-    user: {
-      id: number;
-      imageUrl: string | null;
-      name: string | null;
-    };
-  };
+  internetProblem?: boolean;
+  stream: StreamProps;
   timer: {
     duration: number;
     startAt: string;
   };
-}> = ({ stream, timer }) => {
+}> = ({ stream, timer, internetProblem }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -36,7 +19,22 @@ export const FocusedStream: React.FC<{
   }, [stream]);
 
   return (
-    <div className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden">
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+      }}
+      transition={{
+        duration: 0.5,
+        ease: "easeInOut",
+      }}
+      key={stream.user.id}
+      className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
+    >
       {stream.camera || stream.cast ? (
         <video
           ref={videoRef}
@@ -51,11 +49,12 @@ export const FocusedStream: React.FC<{
         </div>
       )}
       <VideoBar
+        internetProblem={internetProblem}
         timer={timer}
         fullScreen={stream.fullScreen}
         speech={stream.speech}
       />
-    </div>
+    </motion.div>
   );
 };
 
