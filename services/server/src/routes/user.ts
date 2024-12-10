@@ -14,6 +14,7 @@ export default function router(context: ApiContext) {
   router.get("/:id", user.findById);
   router.put("/:id", fileupload, user.update(context));
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
+  router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);
   router.get("/tutor/stats/:tutor", user.findTutorStats);
   router.get("/tutor/activity/:tutor", user.findTutorActivityScores);

@@ -66,6 +66,10 @@ export class User extends Base {
     return await this.get(`/api/v1/user/tutor/meta/${tutorId}`);
   }
 
+  async findTutorInfo(id: number): Promise<ITutor.FindTutorInfoApiResponse> {
+    return await this.get(`/api/v1/user/tutor/info/${id}`);
+  }
+
   async findOnboardedTutors(
     params?: PagniationParams
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
