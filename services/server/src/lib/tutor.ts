@@ -229,3 +229,20 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
     tutor.bio !== null
   );
 }
+
+export function asTutorInfoResponseBody(
+  ctutor: ITutor.Cache
+): ITutor.FindTutorInfoApiResponse {
+  return {
+    id: ctutor.id,
+    name: ctutor.name,
+    bio: ctutor.bio,
+    about: ctutor.about,
+    image: ctutor.image,
+    video: ctutor.video,
+    topics: ctutor.topics,
+    studentCount: ctutor.studentCount,
+    lessonCount: ctutor.lessonCount,
+    avgRating: ctutor.avgRating,
+  };
+}

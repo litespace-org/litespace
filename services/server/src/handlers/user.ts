@@ -37,6 +37,7 @@ import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import {
+  asTutorInfoResponseBody,
   cacheTutors,
   isOnboard,
   isPublicTutor,
@@ -268,6 +269,9 @@ function update(context: ApiContext) {
         // should only update the cache if it's an onboard (activated) tutor
         if (!isOnboard(tutor)) return;
 
+        // should only update the cache if it's an onboard (activated) tutor
+        if (!isOnboard(tutor)) return;
+
         const tutorCache = await cache.tutors.getOne(tutor.id);
         const joinedCache = await joinTutorCache(tutor, tutorCache);
         await cache.tutors.setOne(joinedCache);
@@ -348,6 +352,32 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   if (!tutor) return next(notfound.tutor());
   const response: ITutor.FindTutorMetaApiResponse = tutor;
   res.status(200).json(response);
+}
+
+async function findTutorInfo(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
+  const { tutorId } = withNamedId("tutorId").parse(req.params);
+
+  const ctutor = await cache.tutors.getOne(tutorId);
+  if (ctutor !== null) {
+    const response = asTutorInfoResponseBody(ctutor);
+    res.status(200).json(response);
+    return;
+  }
+
+  const tutor = await tutors.findById(tutorId);
+  if (tutor !== null && isOnboard(tutor)) {
+    const ctutor = await joinTutorCache(tutor, null);
+    await cache.tutors.setOne(ctutor);
+    const response = asTutorInfoResponseBody(ctutor);
+    res.status(200).json(response);
+    return;
+  }
+
+  return next(notfound.tutor());
 }
 
 async function findOnboardedTutors(req: Request, res: Response) {
@@ -636,6 +666,7 @@ export default {
   findById: safeRequest(findById),
   findUsers: safeRequest(findUsers),
   findTutorMeta: safeRequest(findTutorMeta),
+  findTutorInfo: safeRequest(findTutorInfo),
   findTutorStats: safeRequest(findTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
   selectInterviewer: safeRequest(selectInterviewer),
