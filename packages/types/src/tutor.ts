@@ -69,6 +69,20 @@ export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
   dropVideo?: boolean;
 };
 
+export type FindTutorInfoApiResponse = {
+  id: number;
+  image: string | null;
+  video: string | null;
+  name: string | null;
+  bio: string | null;
+  about: string | null;
+  topics: string[];
+  studentCount: number;
+  lessonCount: number;
+  avgRating: number;
+  rules: IRule.RuleEvent[];
+};
+
 export type FindOnboardedTutorsApiResponse = {
   total: number;
   list: Array<Cache & { rules: IRule.RuleEvent[] }>;

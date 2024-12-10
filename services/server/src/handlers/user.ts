@@ -600,6 +600,14 @@ async function findStudentStats(
   res.status(200).json(response);
 }
 
+async function findTutorInfo(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+
+}
+
 async function findTutorActivityScores(
   req: Request,
   res: Response,
@@ -637,6 +645,7 @@ export default {
   findById: safeRequest(findById),
   findUsers: safeRequest(findUsers),
   findTutorMeta: safeRequest(findTutorMeta),
+  findTutorInfo: safeRequest(findTutorInfo),
   findTutorStats: safeRequest(findTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
   selectInterviewer: safeRequest(selectInterviewer),

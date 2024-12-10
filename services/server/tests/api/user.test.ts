@@ -14,6 +14,7 @@ import { first } from "lodash";
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
     await flush();
+    await cache.flush();
   });
 
   describe("POST /api/v1/user", () => {
@@ -191,5 +192,20 @@ describe("/api/v1/user/", () => {
         expect(await cache.tutors.exists()).to.eql(false);
       });
     });
+  });
+
+  describe("/api/v1/user/tutor/info/:tutorId", () => {
+    beforeAll(async () => {
+      await cache.connect();
+    })
+
+    afterAll(async () => {
+      await cache.disconnect();
+    })
+
+    it("should retrieve tutor info successfully", async () => {})
+    it("should retrieve tutor info from db in case it's not in the cache", async () => {})
+    it("should load/retrieve tutor info in/from the cache", async () => {})
+    it("should response with 404 incase tutor is not onboard", async () => {})
   });
 });
