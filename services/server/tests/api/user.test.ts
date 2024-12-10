@@ -1,6 +1,6 @@
 import { flush } from "@fixtures/shared";
 import { IUser } from "@litespace/types";
-import { Api, atlas } from "@fixtures/api";
+import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
 import { safe } from "@litespace/sol/error";
@@ -72,19 +72,18 @@ describe("/api/v1/user/", () => {
     });
 
     describe("GET /api/v1/user/tutor/list/onboarded", () => {
-
       beforeAll(async () => {
         await cache.connect();
-      })
+      });
 
       afterAll(async () => {
         await cache.disconnect();
-      })
+      });
 
       beforeEach(async () => {
         await flush();
         await cache.flush();
-      })
+      });
 
       it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
@@ -93,22 +92,18 @@ describe("/api/v1/user/", () => {
         const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();
 
-        await users.update(newTutor.id, { 
-          verified: true, 
-          // NOTE: image is not in tutors table.
+        await users.update(newTutor.id, {
+          verified: true,
           image: "/image.jpg",
         });
-        await tutors.update(
-          newTutor.id,
-          {
-            about: faker.lorem.paragraphs(),
-            bio: faker.person.bio(),
-            activated: true,
-            activatedBy: newUser.id,
-            video: "/video.mp4",
-            notice: 10,
-          }
-        );
+        await tutors.update(newTutor.id, {
+          about: faker.lorem.paragraphs(),
+          bio: faker.person.bio(),
+          activated: true,
+          activatedBy: newUser.id,
+          video: "/video.mp4",
+          notice: 10,
+        });
 
         await cacheTutors(dayjs.utc().startOf("day"));
 
@@ -137,21 +132,58 @@ describe("/api/v1/user/", () => {
           activatedBy: newUser.id,
           video: "/video.mp4",
           notice: 10,
-        }
+        };
 
-        await users.update(newTutor.id, { 
-          verified: true, 
+        await users.update(newTutor.id, {
+          verified: true,
           // NOTE: image is not in tutors table.
           image: "/image.jpg",
         });
         await tutors.update(newTutor.id, mockData);
 
-        await cacheTutors(dayjs.utc().startOf("day"));
-
-        const studentApi = await Api.forStudent()
+        const studentApi = await Api.forStudent();
         const res = await studentApi.atlas.user.findOnboardedTutors();
-        
+
         expect(res.total).to.eq(1);
+      });
+
+      it.only("should load onboard tutors data from db to cache on first HTTP request", async () => {
+        const newUser = await db.user({ role: Role.SuperAdmin });
+        const newTutor = await db.tutor();
+
+        const mockData = {
+          about: faker.lorem.paragraphs(),
+          bio: faker.person.bio(),
+          activated: true,
+          activatedBy: newUser.id,
+          video: "/video.mp4",
+          notice: 10,
+        };
+
+        await users.update(newTutor.id, {
+          verified: true,
+          // NOTE: image is not in tutors table.
+          image: "/image.jpg",
+        });
+        await tutors.update(newTutor.id, mockData);
+
+        expect(await cache.tutors.exists()).to.eql(false);
+
+        const studentApi = await Api.forStudent();
+        await studentApi.atlas.user.findOnboardedTutors();
+
+        const ctutors = await cache.tutors.getAll();
+        expect(await cache.tutors.exists()).to.eql(true);
+        expect(first(ctutors)?.id).to.eql(newTutor.id);
+      });
+
+      // There was a bug in which every user update request stores tutor info in the cache
+      it.only("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
+        const tutorApi = await Api.forTutor();
+        const newTutor = await db.tutor();
+        // any dump update
+        await tutorApi.atlas.user.update(newTutor.id, { bio: "my new bio" });
+        expect(await cache.tutors.exists()).to.eql(false);
       });
     });
   });
