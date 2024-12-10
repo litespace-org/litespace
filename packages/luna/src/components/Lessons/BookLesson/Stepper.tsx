@@ -39,7 +39,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
   );
 
   return (
-    <div className="tw-flex tw-flex-row tw-gap-16">
+    <div className="tw-flex tw-flex-row tw-gap-6">
       {steps.map(({ index, label }) => {
         const isCurrent = index === stepIndex;
         const isBefore = index < stepIndex;

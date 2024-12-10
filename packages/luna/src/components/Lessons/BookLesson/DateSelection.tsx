@@ -22,12 +22,13 @@ function makeDayGrid(month: Dayjs): DayGrid {
 }
 
 export const DateSelection: React.FC<{
-  onSelect?: (date: Dayjs) => void;
+  onSelect: (date: Dayjs) => void;
+  isSelectable: (date: Dayjs) => boolean;
   min?: Dayjs;
   max?: Dayjs;
   selected?: Dayjs;
   disable?: boolean;
-}> = ({ onSelect, selected, min, max, disable }) => {
+}> = ({ onSelect, isSelectable, selected, min, max, disable }) => {
   const value = useMemo(() => selected || dayjs(), [selected]);
   const [date, setDate] = useState<Dayjs>(value.startOf("month"));
   const year = useMemo(() => date.get("year"), [date]);
@@ -46,7 +47,7 @@ export const DateSelection: React.FC<{
     setDate(date.subtract(1, "month"));
   }, [date]);
 
-  const isDateDisabled = useCallback(
+  const isOutOfRange = useCallback(
     (date: Dayjs) =>
       (min && date.isBefore(min, "day")) || (max && date.isAfter(max, "day")),
     [max, min]
@@ -97,40 +98,37 @@ export const DateSelection: React.FC<{
         {grid.map((day) => {
           const isCurrentMonth = day.isSame(date, "month");
           const isSelected = selected?.isSame(day, "day");
+          const selectable = isSelectable(day);
           return (
             <button
               key={day.format("YYYY-MM-DD")}
-              disabled={
-                (min && day.isBefore(min, "day")) ||
-                (max && day.isAfter(max, "day")) ||
-                disable ||
-                isDateDisabled(day)
-              }
+              disabled={disable || isOutOfRange(day) || !isSelectable(day)}
               data-selected={isSelected}
               className={cn(
+                "tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-[7px]",
                 "tw-cursor-pointer disabled:tw-cursor-not-allowed",
-                "tw-text-center tw-w-20 tw-h-20 tw-border tw-border-natural-900 tw-shadow-date-selection-item tw-rounded-lg",
+                "tw-text-center tw-w-[60px] tw-h-[60px] tw-border tw-border-natural-900 tw-shadow-date-selection-item tw-rounded-lg",
                 isCurrentMonth &&
                   "data-[selected=false]:hover:tw-bg-brand-100 active:tw-bg-brand-700 data-[selected=true]:tw-bg-brand-700",
                 today.isSame(day, "day") && "tw-ring tw-ring-surface-300",
-                !isCurrentMonth && "tw-opacity-20"
+                (!isCurrentMonth || !selectable) && "tw-opacity-20"
               )}
-              onClick={() => onSelect && onSelect(day)}
+              onClick={() => onSelect(day)}
               type="button"
             >
               <Typography
-                element="subtitle-2"
+                element="tiny-text"
                 data-selected={isSelected}
                 className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50"
               >
                 {day.format("DD")}
               </Typography>
               <Typography
-                element="subtitle-2"
+                element="tiny-text"
                 data-selected={isSelected}
                 className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50"
               >
-                {day.format("ddd")}
+                {day.format("dddd")}
               </Typography>
             </button>
           );
