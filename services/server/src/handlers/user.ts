@@ -37,7 +37,7 @@ import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import {
-    asTutorInfoResponseBody,
+  asTutorInfoResponseBody,
   cacheTutors,
   isOnboard,
   isPublicTutor,
@@ -266,6 +266,8 @@ function update(context: ApiContext) {
       const error = await safe(async () => {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
+        // should only update the cache if it's an onboard (activated) tutor
+        if (!isOnboard(tutor)) return;
 
         // should only update the cache if it's an onboard (activated) tutor
         if (!isOnboard(tutor)) return;
@@ -352,27 +354,27 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findTutorInfo(req: Request, res: Response, next: NextFunction): Promise<void> {
+async function findTutorInfo(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
 
-  // retrieve data from cache
-  // if it's found return it to the user
   const ctutor = await cache.tutors.getOne(tutorId);
   if (ctutor !== null) {
     const response = asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
-    return
+    return;
   }
 
-  // if not, retrieve it from db, and then if the tutor is onboard 
-  // save it in cache and return it. Otherwise response with 404
   const tutor = await tutors.findById(tutorId);
   if (tutor !== null && isOnboard(tutor)) {
     const ctutor = await joinTutorCache(tutor, null);
     await cache.tutors.setOne(ctutor);
     const response = asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
-    return
+    return;
   }
 
   return next(notfound.tutor());

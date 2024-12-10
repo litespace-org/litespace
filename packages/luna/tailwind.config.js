@@ -10,6 +10,10 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      zIndex: {
+        dialog: "11",
+        "select-dropdown": "12",
+      },
       screens: {
         "3xl": "1600px",
       },
@@ -266,6 +270,8 @@ export default {
       "feedback-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "dark-feedback-card": "0px 4px 15px 0px rgba(255, 255, 255, 0.08)",
       "pre-call": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
+      "date-selection-item": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
+      "time-selection-item": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
     },
   },
   plugins: [

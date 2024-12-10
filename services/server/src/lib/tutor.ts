@@ -257,7 +257,7 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
 export function asTutorInfoResponseBody(
   ctutor: ITutor.Cache
 ): ITutor.FindTutorInfoApiResponse {
-  const response: ITutor.FindTutorInfoApiResponse = {
+  return {
     id: ctutor.id,
     name: ctutor.name,
     bio: ctutor.bio,
@@ -268,7 +268,5 @@ export function asTutorInfoResponseBody(
     studentCount: ctutor.studentCount,
     lessonCount: ctutor.lessonCount,
     avgRating: ctutor.avgRating,
-  }
-  return response;
+  };
 }
-
