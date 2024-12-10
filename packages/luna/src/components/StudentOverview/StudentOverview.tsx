@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import Video16X16 from "@litespace/assets/Video16X16";
@@ -34,6 +34,32 @@ export const StudentOverview: React.FC<Props> = ({
   totalLearningTime,
   badgesCount,
 }) => {
+  const intl = useFormatMessage();
+  const learningTime = useMemo(() => {
+    if (totalLearningTime === 0) return "0";
+    /**
+     * NOTE: `humanize-duration` does not apply formating (adding coma) on
+     * numbers (beyond 1k) (e.g., 1000h will be displayed as `1000 hours` instead
+     * of `1,000 hours`).
+     *
+     * We can use `Intl.DurationFormat` but it has a limited availability (not
+     * supported in firefox).
+     *
+     * The plan is to use `humanize-duration` below 1k hours then do manual
+     * formating beyond this.
+     */
+    if (totalLearningTime < 60 * 1000)
+      return formatMinutes(totalLearningTime, {
+        units: ["h"],
+        maxDecimalPoints: 0,
+      });
+
+    const hours = Math.floor(totalLearningTime / 60);
+    return intl("student-dashboard.overview.total-learning-time.unit", {
+      value: formatNumber(hours),
+    });
+  }, [intl, totalLearningTime]);
+
   return (
     <div className="tw-flex tw-gap-6">
       <Card
@@ -48,12 +74,14 @@ export const StudentOverview: React.FC<Props> = ({
         color="secondary-500"
         title="student-dashboard.overview.completed-lessons"
       />
+
       <Card
         icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
-        value={totalLearningTime === 0 ? "0" : formatMinutes(totalLearningTime)}
+        value={learningTime}
         color="warning-500"
         title="student-dashboard.overview.total-learning-time"
       />
+
       <Card
         icon={<MedalBadge className="[&]*:tw-stroke-natural-50" />}
         value={formatNumber(badgesCount)}
