@@ -79,7 +79,6 @@ exports.up = (pgm) => {
     video: { type: "VARCHAR(255)", default: null },
     notice: { type: "INT", notNull: true, default: 0 },
     activated: { type: "BOOLEAN", notNull: true, default: false },
-    // NOTE: notNull has been modified to false in order to be able to 
     activated_by: { type: "INT", notNull: false, references: "users(id)" },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },

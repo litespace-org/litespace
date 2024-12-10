@@ -334,22 +334,27 @@ export class Lessons {
     tx?: Knex.Transaction;
     users: number[];
   } & Omit<SearchFilter, "users">): Promise<
-  Array<{ userId: number; count: number }>
+    Array<{ userId: number; count: number }>
   > {
     const query = this.builder(tx)
-      .lessons.select("user_id")
-      .count<Array<{ user_id: number; count: number }>>("lesson_id", { as: "count" })
+      .lessons.select({ user_id: this.columns.members("user_id") })
+      .count<Array<{ user_id: number; count: number }>>("lesson_id", {
+        as: "count",
+      })
       .join(
         this.table.members,
         this.columns.members("lesson_id"),
         this.columns.lessons("id")
       )
-      .whereIn(this.columns.members("user_id"), userIds)
+      .whereIn(this.columns.members("user_id"), userIds);
 
     const filtered = this.applySearchFilter(query.clone(), filter);
-    const rows = await filtered.groupBy("user_id")
+    const rows = await filtered.groupBy("user_id");
 
-    return rows.map((r) => ({ userId: r.user_id, count: Number(r.count) }));
+    return rows.map((row) => ({
+      userId: row.user_id,
+      count: Number(row.count),
+    }));
   }
 
   async countCounterpartMembersBatch({

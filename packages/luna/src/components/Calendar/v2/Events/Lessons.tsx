@@ -6,7 +6,7 @@ import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/sol/utils";
-import Clock from "@litespace/assets/Clock";
+import Clock from "@litespace/assets/Clock16X16";
 import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
@@ -201,7 +201,7 @@ const LessonGroupItem: React.FC<
 > = ({ otherMember, canceled, start, end, ...actions }) => {
   return (
     <div className="tw-relative tw-px-1 tw-bg-natural-50 tw-shadow-lesson-event-card tw-rounded-lg">
-      <div className="tw-absolute -tw-top-2 tw-left-0">
+      <div className="tw-absolute tw-top-0 tw-left-0">
         <OptionsMenu canceled={canceled} {...actions} />
       </div>
       <div className="tw-px-1 tw-py-1 tw-mb-1 tw-flex tw-flex-row tw-gap-2 tw-items-center tw-justify-start">
@@ -223,7 +223,7 @@ const LessonGroupItem: React.FC<
       </div>
 
       <div className="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-px-1 tw-py-1">
-        <Clock />
+        <Clock className="[&>*]:tw-stroke-brand-700" />
         <LessonSpan start={start} end={end} />
       </div>
     </div>
