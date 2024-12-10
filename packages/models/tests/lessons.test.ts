@@ -1,7 +1,7 @@
 import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
-import { ILesson, IUser } from "@litespace/types";
+import { ILesson, ITutor, IUser } from "@litespace/types";
 import { price } from "@litespace/sol/value";
 import { nameof } from "@litespace/sol/utils";
 import { concat, entries, first, sum } from "lodash";
@@ -228,7 +228,7 @@ describe("Lessons", () => {
   });
 
   describe("Lessons Duration Sum, Lessons Count, Lesson Days, and Price", () => {
-    let tutor: IUser.Self;
+    let tutor: ITutor.Self;
     let tutorLessons: MakeLessonsReturn;
     const futureLessons = 8;
     const pastLessons = 13;
@@ -838,4 +838,22 @@ describe("Lessons", () => {
       }
     });
   });
+
+  describe(nameof(lessons.countCounterpartMembersBatch), () => {
+    it("should retieve the number of students a tutor", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+
+      await fixtures.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        timing: "past",
+        canceled: false,
+      });
+
+      const studentsCount = await lessons.countCounterpartMembersBatch({ users: [tutor.id] });
+      expect(first(studentsCount)?.userId).to.eq(tutor.id);
+      expect(first(studentsCount)?.count).to.eq(1);
+    })
+  })
 });

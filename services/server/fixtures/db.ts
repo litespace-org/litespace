@@ -10,9 +10,9 @@ import {
   topics,
   users,
   ratings,
+  tutors,
 } from "@litespace/models";
 import {
-  ICall,
   IInterview,
   ILesson,
   IRule,
@@ -183,8 +183,9 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
   });
 }
 
-function tutor() {
-  return user({ role: IUser.Role.Tutor });
+async function tutor() {
+  const info = await user({ role: IUser.Role.Tutor });
+  return tutors.create(info.id);
 }
 
 function student() {

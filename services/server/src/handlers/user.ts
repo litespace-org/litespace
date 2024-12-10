@@ -32,12 +32,13 @@ import {
   paginationDefaults,
   serverConfig,
 } from "@/constants";
-import { drop, entries, first, groupBy, sample } from "lodash";
+import { drop, entries, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import {
   cacheTutors,
+  isOnboard,
   isPublicTutor,
   joinTutorCache,
   orderTutors,
@@ -264,6 +265,8 @@ function update(context: ApiContext) {
       const error = await safe(async () => {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
+        // should only update the cache if it's an onboard (activated) tutor
+        if (!isOnboard(tutor)) return;
 
         const tutorCache = await cache.tutors.getOne(tutor.id);
         const joinedCache = await joinTutorCache(tutor, tutorCache);
