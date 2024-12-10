@@ -1,4 +1,4 @@
-import { ILesson, IRule, ITutor } from "@litespace/types";
+import { IRule, ITutor } from "@litespace/types";
 import dayjs, { Dayjs } from "dayjs";
 import { Knex } from "knex";
 import {
@@ -25,33 +25,26 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
   const start = date.startOf("day");
   const end = start.add(30, "days").endOf("day");
 
-  const [onboardedTutors, tutorsRules, _] = await knex.transaction(
-    async (
-      tx: Knex.Transaction
-    ): Promise<[ITutor.FullTutor[], IRule.Self[], ILesson.Self[]]> => {
+  const [
+    onboardedTutors,
+    tutorsRules,
+    tutorsTopics,
+    tutorsRatings,
+    tutorsLessonsCount,
+    tutorsStudentsCount,
+  ] = await knex.transaction(async (tx: Knex.Transaction) => {
+
       const onboardedTutors = await tutors.findOnboardedTutors(tx);
-
-      // find all tutors "rules" and "lessons"
       const tutorIds = onboardedTutors.map((tutor) => tutor.id);
-      const [tutorsRules, tutorLessons] = await Promise.all([
-        // find all tutors rules that are available
-        rules.findActivatedRules(tutorIds, start.toISOString(), tx),
-        lessons.find({
-          users: tutorIds,
-          after: start.toISOString(),
-          before: end.toISOString(),
-          canceled: false,
-          full: true,
-          tx,
-        }),
-      ]);
 
-      return [
+      return await Promise.all([
         onboardedTutors,
-        tutorsRules,
-        // todo: disable pagiation for this query
-        tutorLessons.list,
-      ];
+        rules.findActivatedRules(tutorIds, start.toISOString(), tx),
+        topics.findUserTopics({ users: tutorIds }),
+        ratings.findAvgRatings(tutorIds),
+        lessons.countLessonsBatch({ users: tutorIds, canceled: false }),
+        lessons.countCounterpartMembersBatch({ users: tutorIds, canceled: false }),
+      ]);
     }
   );
 
@@ -73,23 +66,6 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       }));
     }
   );
-
-  // retrieve required data for ITutor.Cache from db
-  const tutorIds = onboardedTutors.map((t) => t.id);
-  const tutorsTopics = await topics.findUserTopics({ users: tutorIds });
-  const tutorsRatings = await ratings.findAvgRatings(tutorIds);
-  // DONE: @mmoehabb use `lessons.countLessons` with filters (canceled=false)
-  // DONE: remove `findLessonCountOfUsers`
-  // NOTE: `couteLessons` doen't meet the requirements so `countLessonsBatch`
-  // ought to be defined.
-  const tutorsLessonsCount = await lessons.countLessonsBatch({
-    users: tutorIds,
-    canceled: false,
-  });
-  const tutorsStudentsCount = await lessons.countCounterpartMembersBatch({
-    users: tutorIds,
-    canceled: false,
-  });
 
   // restruct tutors list to match ITutor.Cache[]
   const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
