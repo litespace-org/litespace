@@ -39,10 +39,25 @@ import "colors";
 
 dayjs.extend(utc);
 
-const verbose = process.argv[2] === "--verbose";
-
 const birthYear = () =>
   faker.date.birthdate({ max: 70, min: 1, mode: "age" }).getFullYear();
+
+const phoneNumber = () =>
+  [
+    sample(["011", "012", "010", "015"]),
+    faker.number
+      .int({
+        min: 10_000_000,
+        max: 99_999_999,
+      })
+      .toString()
+      .padEnd(8, "0"),
+  ].join("");
+
+const city = () =>
+  sample(
+    Object.values(IUser.City).filter((city) => !Number.isNaN(Number(city)))
+  ) as IUser.City;
 
 async function main(): Promise<void> {
   const stdout = logger("seed");
@@ -87,6 +102,37 @@ async function main(): Promise<void> {
     return student;
   });
 
+  const students = await Promise.all(
+    range(10).map(
+      async (idx) =>
+        await knex.transaction(async (tx) => {
+          const isMale = Math.random() >= 0.5;
+          const student = await users.create(
+            {
+              role: IUser.Role.Student,
+              email: `student-${idx + 1}@litespace.org`,
+              name: faker.person.fullName({ sex: isMale ? "male" : "female" }),
+              birthYear: birthYear(),
+              gender: isMale ? IUser.Gender.Male : IUser.Gender.Female,
+              password,
+            },
+            tx
+          );
+
+          await users.update(
+            student.id,
+            {
+              phoneNumber: phoneNumber(),
+              city: city(),
+              image: `/image-${idx + 1}.png`,
+              verified: true,
+            },
+            tx
+          );
+        })
+    )
+  );
+
   const mediaProvider = await users.create({
     role: IUser.Role.MediaProvider,
     email: "media@litespace.org",
@@ -110,27 +156,18 @@ async function main(): Promise<void> {
           tx
         );
 
+        console.log(`tutor: ${tutor.id} - ${tutor.email}`);
+
         await tutors.create(tutor.id, tx);
+
         await users.update(
           tutor.id,
           {
-            phoneNumber: [
-              sample(["011", "012", "010", "015"]),
-              faker.number
-                .int({
-                  min: 10_000_000,
-                  max: 99_999_999,
-                })
-                .toString()
-                .padEnd(8, "0"),
-            ].join(""),
+            phoneNumber: phoneNumber(),
             gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
-            city: sample(
-              Object.values(IUser.City).filter(
-                (city) => !Number.isNaN(Number(city))
-              )
-            ) as IUser.City,
+            city: city(),
             image: "/image.png",
+            verified: true,
           },
           tx
         );
@@ -139,7 +176,7 @@ async function main(): Promise<void> {
           tutor.id,
           {
             about: faker.lorem.paragraphs(),
-            bio: faker.person.bio(),
+            bio: faker.lorem.words(9),
             activated: true,
             activatedBy: admin.id,
             video: "/video.mp4",
@@ -301,9 +338,6 @@ async function main(): Promise<void> {
       });
 
       start = start.add(sample([15, 30, 45, 60]), "minutes");
-
-      if (verbose)
-        console.log(`Created lesson ${lesson.id} for tutor ${tutor.id}`);
     }
 
     stdout.log(
