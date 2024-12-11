@@ -89,6 +89,11 @@ export type FindUnpackedUserRulesResponse = {
   unpacked: RuleEvent[];
 };
 
+export type FindUserRulesWithSlotsApiResponse = {
+  rules: Self[];
+  slots: Slot[];
+};
+
 export type Cache = {
   tutor: number;
   rule: number;

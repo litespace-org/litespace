@@ -12,7 +12,7 @@ import {
 } from "@/validation/utils";
 import { IRule, Wss } from "@litespace/types";
 import { contradictingRules, forbidden, notfound } from "@/lib/error";
-import { calls, lessons, rules } from "@litespace/models";
+import { lessons, rules } from "@litespace/models";
 import {
   Rule,
   Schedule,
@@ -150,6 +150,37 @@ async function findUnpackedUserRules(
   });
 }
 
+
+const findUserRulesWithSlotsParams = zod.object({ userId: id });
+const findUserRulesWithSlotsQuery = zod.object({ after: date, before: date });
+
+async function findUserRulesWithSlots(
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+) {
+  const allowed = isUser(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { userId } = findUserRulesWithSlotsParams.parse(req.params);
+  const { after, before } = findUserRulesWithSlotsQuery.parse(req.query);
+
+  // check if the userId is for a tutor or tutor-manager; return 404 if it's not
+  //
+  // if the user is a tutor, then return 404 if it's not onboard.
+  //
+  // get (not deleted or cancelled) rules from the database, that fully or partially lay between `after` and `before`.
+  //
+  // get (not canceled) lessons and interviews then generate slots from them
+  //
+  // return the response to the client
+  const response: IRule.FindUserRulesWithSlotsApiResponse = {
+    rules: [],
+    slots: []
+  }
+  res.status(200).json(response);
+}
+
 function updateRule(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -255,6 +286,7 @@ function deleteRule(context: ApiContext) {
 export default {
   findUnpackedUserRules: safeRequest(findUnpackedUserRules),
   findUserRules: safeRequest(findUserRules),
+  findUserRulesWithSlots: safeRequest(findUserRulesWithSlots),
   createRule,
   updateRule,
   deleteRule,
