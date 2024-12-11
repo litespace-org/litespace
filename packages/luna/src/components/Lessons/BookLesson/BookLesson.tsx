@@ -61,7 +61,13 @@ const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
 };
 
 export const BookLesson: React.FC<{
+  /**
+   * Flag to show or hide the dialog
+   */
   open: boolean;
+  /**
+   * Handler to close the dialog.
+   */
   close: Void;
   tutorId: number;
   /**
@@ -72,10 +78,15 @@ export const BookLesson: React.FC<{
    * Tutor image url.
    */
   imageUrl: string | null;
+  loading?: boolean;
   rules: IRule.Self[];
   slots: IRule.Slot[];
   notice: number;
-  onBook: (payload: { start: string; duration: number }) => void;
+  onBook: (payload: {
+    ruleId: number;
+    start: string;
+    duration: number;
+  }) => void;
 }> = ({
   open,
   close,
@@ -91,6 +102,7 @@ export const BookLesson: React.FC<{
   const [step, setStep] = useState<Step>("date-selection");
   const [duration, setDuration] = useState<number>(15);
   const [start, setStart] = useState<string | null>(null);
+  const [ruleId, setRuleId] = useState<number | null>(null);
   const [date, setDate] = useState<Dayjs>(dayjs());
 
   const dateBounds = useMemo(() => {
@@ -212,14 +224,18 @@ export const BookLesson: React.FC<{
               <TimeSelection
                 slots={allSlots}
                 start={start}
-                setStart={setStart}
+                ruleId={ruleId}
+                select={({ ruleId, start }) => {
+                  setStart(start);
+                  setRuleId(ruleId);
+                }}
               />
             </Animation>
           ) : null}
         </AnimatePresence>
 
         <AnimatePresence>
-          {step === "confirmation" && start ? (
+          {step === "confirmation" && start && ruleId ? (
             <Animation step="confirmation">
               <div className="tw-px-6">
                 <Confirmation
@@ -228,7 +244,7 @@ export const BookLesson: React.FC<{
                   imageUrl={imageUrl}
                   start={start}
                   duration={duration}
-                  onConfrim={() => onBook({ start, duration })}
+                  onConfrim={() => onBook({ ruleId, start, duration })}
                   onEdit={() => {
                     setStep("date-selection");
                   }}
