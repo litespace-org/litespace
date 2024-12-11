@@ -33,20 +33,21 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     tutorsLessonsCount,
     tutorsStudentsCount,
   ] = await knex.transaction(async (tx: Knex.Transaction) => {
+    const onboardedTutors = await tutors.findOnboardedTutors(tx);
+    const tutorIds = onboardedTutors.map((tutor) => tutor.id);
 
-      const onboardedTutors = await tutors.findOnboardedTutors(tx);
-      const tutorIds = onboardedTutors.map((tutor) => tutor.id);
-
-      return await Promise.all([
-        onboardedTutors,
-        rules.findActivatedRules(tutorIds, start.toISOString(), tx),
-        topics.findUserTopics({ users: tutorIds }),
-        ratings.findAvgRatings(tutorIds),
-        lessons.countLessonsBatch({ users: tutorIds, canceled: false }),
-        lessons.countCounterpartMembersBatch({ users: tutorIds, canceled: false }),
-      ]);
-    }
-  );
+    return await Promise.all([
+      onboardedTutors,
+      rules.findActivatedRules(tutorIds, start.toISOString(), tx),
+      topics.findUserTopics({ users: tutorIds }),
+      ratings.findAvgRatings(tutorIds),
+      lessons.countLessonsBatch({ users: tutorIds, canceled: false }),
+      lessons.countCounterpartMembersBatch({
+        users: tutorIds,
+        canceled: false,
+      }),
+    ]);
+  });
 
   //! todo: filter lessons by tutor id
   // const tutorCallsMap = groupBy<ILesson.Self>(tutorLessons, l => l.);
@@ -219,14 +220,14 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
     tutor.activated === true &&
     tutor.verified === true &&
     tutor.activatedBy !== null &&
-    tutor.notice !== null &&
     tutor.image !== null &&
     tutor.video !== null &&
     tutor.gender !== null &&
     tutor.name !== null &&
     tutor.birthYear !== null &&
     tutor.about !== null &&
-    tutor.bio !== null
+    tutor.bio !== null &&
+    tutor.phoneNumber !== null
   );
 }
 
