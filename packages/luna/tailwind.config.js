@@ -148,6 +148,9 @@ export default {
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
           selection: "hsl(var(--background-selection))",
+          indicator: "rgba(0, 0, 0, 0.3)",
+          internet: "rgba(51, 38, 0, 0.6)",
+          speaking: "rgba(27, 84, 164, 0.8)",
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
           },
