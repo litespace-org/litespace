@@ -79,7 +79,7 @@ export async function user(payload?: Partial<IUser.CreatePayload>) {
 
 export async function rule(payload?: Partial<IRule.CreatePayload>) {
   const start = dayjs.utc(payload?.start || faker.date.future());
-  const end = start.add(faker.number.int(8), "hours");
+  const end = payload?.end ? dayjs.utc(payload.end) : start.add(faker.number.int(8), "hours");
   const frequency =
     payload?.frequency ||
     sample([
@@ -99,6 +99,11 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
     monthday: payload?.monthday,
     weekdays: payload?.weekdays,
   });
+}
+
+async function activatedRule(payload?: Partial<IRule.CreatePayload>) {
+  const newRule = await rule(payload);
+  return await rules.update(newRule.id, { activated: true })
 }
 
 const or = {
@@ -187,6 +192,27 @@ export async function topic(payload?: Partial<ITopic.CreatePayload>) {
 async function tutor() {
   const info = await user({ role: IUser.Role.Tutor });
   return tutors.create(info.id);
+}
+
+async function onBoardTutor() {
+  const newAdmin = await user({ role: IUser.Role.SuperAdmin });
+  const newTutor = await tutor();
+
+  await users.update(newTutor.id, {
+    verified: true,
+    image: "/image.jpg",
+  });
+
+  await tutors.update(newTutor.id, {
+    about: faker.lorem.paragraphs(),
+    bio: faker.person.bio(),
+    activated: true,
+    activatedBy: newAdmin.id,
+    video: "/video.mp4",
+    notice: 10,
+  });
+
+  return newTutor;
 }
 
 function student() {
@@ -433,6 +459,8 @@ async function makeInterviews(payload: {
 export default {
   user,
   tutor,
+  onBoardTutor,
+  activatedRule,
   student,
   interviewer,
   students,
