@@ -76,7 +76,11 @@ export const TutorProfileCard: React.FC<{
                   maximumFractionDigits: 1,
                 })}
               </Typography>
-              <Star className="[&>*]:tw-fill-warning-500" />
+              <Star
+                width={13}
+                height={13}
+                className="[&>*]:tw-fill-warning-500"
+              />
             </div>
           ) : null}
         </div>

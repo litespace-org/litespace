@@ -1,163 +1,251 @@
-import React from "react";
-import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
-import { Typography } from "@/components/Typography";
+import { Menu, MenuAction } from "@/components/Menu";
 import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@/components/Button";
-import Star from "@litespace/assets/Star";
+  CardProps,
+  StarProps,
+  TutorCardProps,
+} from "@/components/TutorCard/types";
+import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
-import { formatNumber } from "@/components/utils";
-import { Link } from "react-router-dom";
+import { LocalId } from "@/locales";
+import EditMessage16X16 from "@litespace/assets/EditMessage16X16";
+import More from "@litespace/assets/More";
+import Quote from "@litespace/assets/Quote";
+import SStar from "@litespace/assets/SStar";
+import Trash from "@litespace/assets/Trash";
 import { orUndefined } from "@litespace/sol/utils";
-import { Void } from "@litespace/types";
+import cn from "classnames";
+import { range } from "lodash";
+import React, { useMemo } from "react";
 
-type Props = {
-  id: number;
-  name: string | null;
-  bio: string | null;
-  about: string | null;
-  studentCount: number;
-  lessonCount: number;
-  rating: number;
-  imageUrl?: string | null;
-  profileUrl: string;
-  onBook: Void;
-  onOpenProfile: Void;
+const ratingMap: { [key: number]: LocalId } = {
+  0: "rating.bad",
+  1: "rating.accepted",
+  2: "rating.good",
+  3: "rating.very-good",
+  4: "rating.excellent",
 };
 
-export const TutorCard: React.FC<Props> = ({
-  id,
-  name,
-  bio,
-  about,
+export const TutorCard: React.FC<TutorCardProps> = ({
+  profileId,
+  studentId,
+  studentName,
+  tutorName,
+  comment,
   imageUrl,
-  lessonCount,
-  studentCount,
-  profileUrl,
   rating,
-  onBook,
-  onOpenProfile,
+  editSetOpen,
+  deleteSetOpen,
+}) => {
+  const intl = useFormatMessage();
+
+  const actions: MenuAction[] = useMemo(
+    () => [
+      {
+        label: intl("student-dashboard.rating.edit"),
+        icon: <EditMessage16X16 />,
+        onClick: () => editSetOpen(true),
+      },
+      {
+        label: intl("student-dashboard.rating.delete"),
+        icon: <Trash />,
+        onClick: () => deleteSetOpen(true),
+      },
+    ],
+    [intl, editSetOpen, deleteSetOpen]
+  );
+
+  const isCommentOwner = useMemo(() => {
+    return studentId === profileId;
+  }, [studentId, profileId]);
+
+  return (
+    <div className="tw-relative">
+      <Card
+        studentName={studentName}
+        studentId={studentId}
+        imageUrl={imageUrl}
+        comment={comment}
+        isCommentOwner={isCommentOwner}
+        rating={rating}
+        tutorName={tutorName}
+        actions={actions}
+        editSetOpen={editSetOpen}
+      />
+    </div>
+  );
+};
+
+export const RatingStars: React.FC<StarProps> = ({
+  isCommentOwner,
+  comment,
+  rating,
+  editOpened = false,
+  readonly = false,
+  newRating = rating,
+  className,
+  setNewRate,
+}) => {
+  const intl = useFormatMessage();
+
+  return (
+    <div
+      className={cn(
+        "tw-self-center tw-flex tw-gap-2",
+        isCommentOwner && !editOpened ? "tw-order-3" : "",
+        editOpened && !readonly ? "tw-order-2" : "",
+        editOpened && readonly ? "tw-order-0" : ""
+      )}
+    >
+      {range(5).map((_, idx) => (
+        <div
+          key={idx}
+          className={cn(
+            "tw-w-5 tw-h-5",
+            !comment && !readonly && editOpened ? "tw-w-5 tw-h-5" : "",
+            comment && !editOpened ? "tw-w-5 tw-h-5" : "",
+            !comment && !editOpened ? "tw-w-[38px] tw-h-[38px]" : ""
+          )}
+          style={{
+            width: editOpened && readonly ? "50px" : "",
+            height: editOpened && readonly ? "50px" : "",
+          }}
+        >
+          <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
+            <SStar
+              className={cn(
+                !editOpened && idx + 1 <= rating
+                  ? "[&>*]:tw-fill-warning-500"
+                  : "[&>*]:tw-fill-natural-300",
+                editOpened && idx + 1 <= newRating
+                  ? "[&>*]:tw-fill-warning-500"
+                  : "[&>*]:tw-fill-natural-300",
+                className
+              )}
+              onClick={() => setNewRate(idx + 1)}
+            />
+            {editOpened && readonly ? (
+              <Typography
+                element="caption"
+                weight="regular"
+                className="tw-text-natural-950"
+              >
+                {intl(ratingMap[idx])}
+              </Typography>
+            ) : null}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+export const Card: React.FC<CardProps> = ({
+  imageUrl,
+  studentName,
+  studentId,
+  isCommentOwner,
+  comment,
+  rating,
+  tutorName,
+  actions,
+  editOpened = false,
+  className,
 }) => {
   const intl = useFormatMessage();
   return (
     <div
       className={cn(
-        "tw-flex tw-flex-col",
-        "tw-bg-natural-50 tw-border tw-border-natural-100",
-        "tw-p-4 tw-shadow-ls-small tw-rounded-lg"
+        "tw-relative tw-h-full tw-flex tw-flex-col tw-justify-between tw-items-center",
+        "tw-bg-natural-50 tw-p-6 tw-shadow-lesson-event-card tw-rounded-3xl",
+        "tw-max-w-64",
+        className
       )}
+      style={{ gap: editOpened ? "16px" : "24px" }}
     >
-      <div className="tw-flex tw-flex-row tw-gap-2 tw-mb-4">
-        <div className="tw-rounded-lg tw-overflow-hidden tw-shrink-0 tw-w-[77px] tw-h-[77px]">
-          <Avatar
-            src={orUndefined(imageUrl)}
-            alt={orUndefined(name)}
-            seed={id.toString()}
-          />
+      {isCommentOwner && actions ? (
+        <div className="tw-absolute tw-z-10 tw-w-6 tw-h-6 tw-overflow-hidden tw-top-4 tw-left-4 tw-flex tw-justify-center tw-items-center">
+          <Menu actions={actions}>
+            <More />
+          </Menu>
         </div>
-        <div>
-          <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="tw-text-brand-700 tw-mb-2"
-          >
-            {name}
-          </Typography>
-          <Typography
-            element="tiny-text"
-            className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800"
-          >
-            {bio}
-          </Typography>
-        </div>
-      </div>
+      ) : null}
 
-      <Typography
-        element="caption"
-        weight="semibold"
-        className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800"
+      <div
+        className={cn(
+          "tw-flex tw-justify-center tw-items-center tw-gap-2",
+          isCommentOwner ? "tw-order-1" : ""
+        )}
       >
-        {about}
-      </Typography>
-
-      <Link to={profileUrl} className="tw-cursor-pointer">
-        <Typography
-          element="caption"
-          weight="semibold"
-          className="tw-ellipsis tw-line-clamp-2 tw-text-natural-950 tw-underline"
+        <div
+          className={cn(
+            "tw-relative tw-rounded-full tw-shrink-0 tw-border-[3px] tw-border-brand-500"
+          )}
+          style={{
+            width: editOpened ? "82px" : "129px",
+            height: editOpened ? "82px" : "129px",
+          }}
         >
-          {intl("tutors.card.label.read-more")}
-        </Typography>
-      </Link>
-
-      <div className="tw-flex tw-flex-row tw-gap-8 tw-my-4">
-        <div className="tw-flex tw-flex-col">
-          <Typography element="body">
-            {intl("tutors.card.label.students")}
-          </Typography>
-          <Typography
-            element="body"
-            weight="semibold"
-            className="tw-text-natural-950"
+          <div className="tw-overflow-hidden tw-w-full tw-h-full tw-rounded-full">
+            <Avatar
+              src={orUndefined(imageUrl)}
+              alt={orUndefined(studentName)}
+              seed={studentId.toString()}
+            />
+          </div>
+          <div
+            className={cn(
+              "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-5"
+            )}
+            style={{
+              width: editOpened ? "42px" : "56px",
+              height: editOpened ? "42px" : "56px",
+              right: editOpened ? "-7.5px" : "-4.5px",
+              bottom: editOpened ? "-7.5px" : "-12px",
+            }}
           >
-            {formatNumber(studentCount)}
-          </Typography>
-        </div>
-
-        <div className="tw-flex tw-flex-col">
-          <Typography element="body">
-            {intl("tutors.card.label.lessons")}
-          </Typography>
-          <Typography
-            element="body"
-            weight="semibold"
-            className="tw-text-natural-950"
-          >
-            {formatNumber(lessonCount)}
-          </Typography>
-        </div>
-
-        <div className="tw-flex tw-flex-col">
-          <Typography element="body">
-            {intl("tutors.card.label.rating")}
-          </Typography>
-          <div className="tw-flex tw-flex-row tw-items-center">
-            <Typography
-              element="body"
-              weight="semibold"
-              className="tw-text-natural-950"
-            >
-              {rating}
-            </Typography>
-            <Star />
+            <Quote />
           </div>
         </div>
       </div>
 
-      <div className="tw-flex tw-flex-row tw-gap-3">
-        <Button
-          onClick={onBook}
-          className="tw-w-full"
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
-          size={ButtonSize.Tiny}
+      <RatingStars
+        isCommentOwner={isCommentOwner}
+        rating={rating}
+        comment={comment}
+        setNewRate={() => {}}
+        readonly={false}
+        editOpened={editOpened || false}
+      />
+      <div
+        className={cn(
+          "tw-line-clamp-5 tw-text-center",
+          isCommentOwner ? "tw-order-2" : ""
+        )}
+      >
+        <Typography
+          element="tiny-text"
+          weight={!comment && editOpened ? "semibold" : "regular"}
+          className={cn("tw-text-ellipsis tw-text-natural-600")}
         >
-          {intl("tutors.card.book-button.label")}
-        </Button>
-        <Button
-          onClick={onOpenProfile}
-          className="tw-w-full"
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Tiny}
-        >
-          {intl("tutors.card.profile-button.label")}
-        </Button>
+          {!comment && editOpened
+            ? intl("student-dashboard.rating-dialog.add-comment")
+            : comment}
+        </Typography>
       </div>
+
+      <Typography
+        element="body"
+        weight="bold"
+        className={cn(
+          "tw-text-brand-950 tw-text-center",
+          isCommentOwner ? "tw-order-4" : ""
+        )}
+      >
+        {studentName
+          ? studentName
+          : intl("student-dashboard.student-of", { value: tutorName })}
+      </Typography>
     </div>
   );
 };
