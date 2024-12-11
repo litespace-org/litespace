@@ -5,6 +5,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 import React from "react";
 
 type Component = typeof TutorCard;
+type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
   title: "TutorCard",
@@ -12,7 +13,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="tw-w-64">
+      <div className="tw-w-64 tw-h-[383px]">
         <Story />
       </div>
     ),
@@ -20,28 +21,62 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Primary: StoryObj<Component> = {
+export const Primary: Story = {
   args: {
-    id: 1,
-    name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
-    about: faker.lorem.paragraphs(3),
-    studentCount: 12,
-    lessonCount: 40,
+    profileId: 4,
+    studentId: 1,
+    studentName: faker.person.fullName(),
+    tutorName: faker.person.fullName(),
+    comment: faker.lorem.words(10),
     rating: 4.85,
     imageUrl: "https://picsum.photos/200",
   },
 };
 
-export const HighStats: StoryObj<Component> = {
+export const UnkownStudent: Story = {
   args: {
-    id: 2,
-    name: faker.person.fullName(),
-    bio: faker.lorem.words(10),
-    about: faker.lorem.paragraphs(3),
-    studentCount: 2000,
-    lessonCount: 7123,
+    profileId: 4,
+    studentId: 2,
+    studentName: null,
+    tutorName: faker.person.fullName(),
+    comment: faker.lorem.words(40),
     rating: 4.85,
+    imageUrl: "https://picsum.photos/200",
+  },
+};
+
+export const WithoutComment: Story = {
+  args: {
+    profileId: 4,
+    studentId: 3,
+    studentName: null,
+    tutorName: faker.person.fullName(),
+    comment: null,
+    rating: 4.85,
+    imageUrl: "https://picsum.photos/200",
+  },
+};
+
+export const HighStats: Story = {
+  args: {
+    profileId: 4,
+    studentId: 15,
+    studentName: faker.person.fullName(),
+    tutorName: faker.person.fullName(),
+    comment: faker.lorem.words(50),
+    rating: 4.85,
+    imageUrl: "https://picsum.photos/200",
+  },
+};
+
+export const OwnerOfComment: Story = {
+  args: {
+    profileId: 4,
+    studentId: 4,
+    studentName: faker.person.fullName(),
+    tutorName: faker.person.fullName(),
+    comment: faker.lorem.words(10),
+    rating: 2.85,
     imageUrl: "https://picsum.photos/200",
   },
 };
