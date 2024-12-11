@@ -18,8 +18,8 @@ export const Primary: StoryObj<Component> = {
     bio: faker.lorem.words(10),
     studentCount: 12,
     lessonCount: 40,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
+    avgRating: 4.85,
+    image: "https://picsum.photos/200",
   },
 };
 
@@ -30,8 +30,8 @@ export const WithoutAchivements: StoryObj<Component> = {
     bio: faker.lorem.words(10),
     studentCount: 3,
     lessonCount: 3,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
+    avgRating: 4.85,
+    image: "https://picsum.photos/200",
   },
 };
 
@@ -42,8 +42,8 @@ export const LongBio: StoryObj<Component> = {
     bio: faker.lorem.words(20),
     studentCount: 2000,
     lessonCount: 7123,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
+    avgRating: 4.85,
+    image: "https://picsum.photos/200",
   },
 };
 
@@ -54,8 +54,8 @@ export const ShortBio: StoryObj<Component> = {
     bio: faker.lorem.words(4),
     studentCount: 2000,
     lessonCount: 7123,
-    rating: 4.85,
-    imageUrl: "https://picsum.photos/200",
+    avgRating: 4.85,
+    image: "https://picsum.photos/200",
   },
 };
 
