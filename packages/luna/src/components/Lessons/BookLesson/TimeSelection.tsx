@@ -8,8 +8,9 @@ import { AttributedSlot } from "@/components/Lessons/BookLesson/types";
 export const TimeSelection: React.FC<{
   slots: AttributedSlot[];
   start: string | null;
-  setStart: (start: string) => void;
-}> = ({ slots, start, setStart }) => {
+  ruleId: number | null;
+  select: (payload: { start: string; ruleId: number }) => void;
+}> = ({ slots, start, ruleId, select }) => {
   return (
     <div className="tw-px-5">
       <div
@@ -25,8 +26,8 @@ export const TimeSelection: React.FC<{
               whileTap={{ scale: 0.95 }}
               type="button"
               key={slot.start}
-              onClick={() => setStart(slot.start)}
-              data-selected={slot.start === start}
+              onClick={() => select({ ruleId: slot.ruleId, start: slot.start })}
+              data-selected={slot.start === start && slot.ruleId === ruleId}
               disabled={!slot.bookable}
               className={cn(
                 "tw-bg-natural-50 tw-border tw-border-natural-800 tw-shadow-time-selection-item",
