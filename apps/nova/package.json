@@ -19,6 +19,7 @@
     "@litespace/luna": "workspace:^",
     "@litespace/sol": "workspace:^",
     "@litespace/types": "workspace:^",
+    "@radix-ui/react-tabs": "^1.1.1",
     "@react-oauth/google": "^0.12.1",
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-query": "^5.56.2",

@@ -11,22 +11,22 @@ import { Void } from "@litespace/types";
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
 export const TutorProfileCard: React.FC<{
-  imageUrl: string | null;
+  image: string | null;
   name: string | null;
   id: number;
   bio: string | null;
   studentCount: number;
   lessonCount: number;
-  rating: number;
+  avgRating: number;
   onBook?: Void;
 }> = ({
-  imageUrl,
+  image,
   name,
   id,
   bio,
   studentCount,
   lessonCount,
-  rating,
+  avgRating,
   onBook,
 }) => {
   const intl = useFormatMessage();
@@ -34,7 +34,7 @@ export const TutorProfileCard: React.FC<{
     <div className="tw-flex tw-gap-10 tw-items-center">
       <div className="tw-w-[242px] tw-aspect-square tw-rounded-full tw-overflow-hidden">
         <Avatar
-          src={orUndefined(imageUrl)}
+          src={orUndefined(image)}
           alt={orUndefined(name)}
           seed={id.toString()}
         />
@@ -66,13 +66,13 @@ export const TutorProfileCard: React.FC<{
               </Typography>
             ) : null}
           </div>
-          {rating === 0 ? (
+          {avgRating === 0 ? (
             <div className="tw-flex tw-items-center tw-gap-2">
               <Typography
                 element="subtitle-2"
                 className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
               >
-                {formatNumber(rating, {
+                {formatNumber(avgRating, {
                   maximumFractionDigits: 1,
                 })}
               </Typography>
