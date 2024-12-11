@@ -25,4 +25,5 @@ export enum QueryKey {
   FindRoomMembers = "find-room-members",
   FindCallMembers = "find-call-members",
   FindCurrentUser = "find-current-user",
+  FindTutorInfo = "find-tutor-info",
 }
