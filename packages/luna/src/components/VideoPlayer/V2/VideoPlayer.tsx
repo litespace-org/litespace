@@ -11,6 +11,7 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { AudioController } from "@/components/VideoPlayer/V2/AudioController";
 import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
+import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const intl = useFormatMessage();
@@ -57,30 +58,38 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
         src={src}
         className="tw-w-full tw-h-full data-[ready=true]:tw-cursor-pointer"
       />
-      <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-[56px] tw-flex tw-items-center tw-justify-center tw-py-2 tw-px-4 tw-gap-2">
-        <div className="tw-grow tw-bg-background-video tw-py-1 tw-px-2 tw-h-10 tw-rounded tw-flex tw-items-center tw-gap-4">
-          <SettingsMenu
-            setPlaybackSpeed={setPlaybackRate}
-            playbackSpeed={playbackRate}
-          >
-            <SettingsScrew />
-          </SettingsMenu>
-          <AudioController setVolume={setVolume} volume={volume} />
-          <VideoProgressbar
-            currentTime={currentTime}
-            duration={duration}
-            progressRef={progressRef}
-            buffered={buffered}
-            seekingHandlers={seekingHandlers}
-          />
+      {paused && currentTime === 0 ? (
+        <div className="tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2">
+          <PlayButton togglePlay={togglePlay} />
         </div>
-        <button
-          onClick={togglePlay}
-          className="tw-w-16 tw-h-10 tw-bg-background-video tw-flex tw-justify-center tw-items-center tw-rounded"
-        >
-          {paused ? <Play /> : <Pause />}
-        </button>
-      </div>
+      ) : null}
+      {currentTime !== 0 ? (
+        <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-[56px] tw-flex tw-items-center tw-justify-center tw-py-2 tw-px-4 tw-gap-2">
+          <div className="tw-grow tw-bg-background-video tw-py-1 tw-px-2 tw-h-10 tw-rounded tw-flex tw-items-center tw-gap-4">
+            <SettingsMenu
+              setPlaybackSpeed={setPlaybackRate}
+              playbackSpeed={playbackRate}
+            >
+              <SettingsScrew />
+            </SettingsMenu>
+            <AudioController setVolume={setVolume} volume={volume} />
+            <VideoProgressbar
+              currentTime={currentTime}
+              duration={duration}
+              progressRef={progressRef}
+              buffered={buffered}
+              seekingHandlers={seekingHandlers}
+            />
+          </div>
+
+          <button
+            onClick={togglePlay}
+            className="tw-w-16 tw-h-10 tw-bg-background-video tw-flex tw-justify-center tw-items-center tw-rounded"
+          >
+            {paused ? <Play /> : <Pause />}
+          </button>
+        </div>
+      ) : null}
       {status !== "error" ? (
         <span
           className={cn(

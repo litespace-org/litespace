@@ -65,7 +65,7 @@
     "./HoverCard": "./dist/components/HoverCard/index.js",
     "./Spinner": "./dist/icons/Spinner.jsx",
     "./utils": "./dist/components/utils/index.js",
-    "./VideoPlayer": "./dist/components/VideoPlayer/index.js",
+    "./VideoPlayer": "./dist/components/VideoPlayer/V2/index.js",
     "./WeekdayPicker": "./dist/components/WeekdayPicker/index.js",
     "./hooks/intl": "./dist/hooks/intl.js",
     "./hooks/validation": "./dist/hooks/validation.js",
