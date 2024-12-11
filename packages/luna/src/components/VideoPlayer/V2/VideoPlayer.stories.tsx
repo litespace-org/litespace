@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { VideoPlayer } from "@/components/VideoPlayer";
+import { VideoPlayer } from "@/components/VideoPlayer/V2/VideoPlayer";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 
 type Component = typeof VideoPlayer;
 
 const meta: Meta<Component> = {
-  title: "VideoPlayer/V1",
+  title: "VideoPlayer/V2",
   component: VideoPlayer,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],

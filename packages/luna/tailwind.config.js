@@ -148,6 +148,7 @@ export default {
           200: "hsl(var(--background-200))",
           control: "hsl(var(--background-control))",
           selection: "hsl(var(--background-selection))",
+          video: "rgba(10, 41, 26, 0.8)",
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
           },
@@ -272,6 +273,7 @@ export default {
       "pre-call": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       "date-selection-item": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
       "time-selection-item": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
+      "exclaimation-mark-video": "0px 4px 20px 1px rgba(204, 0, 0, 0.25)",
     },
   },
   plugins: [
