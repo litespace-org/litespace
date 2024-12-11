@@ -112,12 +112,63 @@ type Response = {
 };
 ```
 
+## Find tutor ratings API
+
+**NOTE:** impl. new endpoint if needed.
+
+##### Requirements
+
+- It should be public.
+- It should support pagination (page/size).
+- Ratings order:
+  1. If the current user (who is making the request) is a student, his rating **must** be at the top of the ratings list in the response.
+  2. Then order by **high rating value**.
+  3. Then order by **feedback (long feedback is preferred over short ones, short feedback is preferred over none)**.
+     - in future versions, LLM Models (e.g., Gemini) will be used to perform semantic analysis over the feedback text thus enables us to filter out inappropriate feedback and make good feedback at the top.
+  4. Then order by recent ratings (recent ratings should come before old ratings).
+
+##### API Request
+
+- `id` (required) - the target tutor id.
+- `page` & `size` (optional) - use for pagination.
+
+##### API Response
+
+```ts
+type Response = Paginated<{
+  /**
+   * Rating id.
+   */
+  id: number;
+  /**
+   * Student id.
+   */
+  userId: number;
+  /**
+   * Student image.
+   */
+  image: string | null;
+  /**
+   * Student name.
+   */
+  name: string | null;
+  /**
+   * Rating value between 1-5.
+   */
+  value: number;
+  /**
+   * Rating feedback text.
+   */
+  feedback: string | null;
+}>;
+```
+
 ## Tasks
 
 - [x] Update the tutors cache according to the [new design](#cache-strucutre). [@mmoehabb](https://github.com/mmoehabb)
 - [x] Update [`findOnboardedTutors`](/services/server/src/handlers/user.ts) handler to response with [this](#find-onboared-tutors-api)
 - [ ] Search tutors by name and topics.
-  - API should accept a `keywoard` as a query param and filter tutors according to it.
+  - API should accept a `keyword` as a query param and filter tutors according to it.
 - [ ] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
   - [ ] Update the database models to include the new role `tutor-manager`.
   - [ ] Update the `create` user api handler.
@@ -138,3 +189,4 @@ type Response = {
 - [ ] Write tests for the ratings endpoints. [@mmoehabb](https://github.com/mmoehabb)
 - [ ] Put all pieces together at the tutor profile page [@mostafakamar2308](https://github.com/mostafakamar2308)
 - [ ] Update the find tutor rules api ([info](#find-tutor-rules-api)) (with tests) [@mmoehabb](https://github.com/mmoehabb)
+- [ ] Impl. find tutor ratings endpoint ([info](#find-tutor-ratings-api)) [@mmoehabb](https://github.com/mmoehabb)
