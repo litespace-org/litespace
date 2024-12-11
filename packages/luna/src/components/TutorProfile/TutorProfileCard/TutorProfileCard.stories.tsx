@@ -6,6 +6,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 type Component = typeof TutorProfileCard;
 
 const meta: Meta<Component> = {
+  title: "TutorProfile/TutorProfileCard",
   component: TutorProfileCard,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
