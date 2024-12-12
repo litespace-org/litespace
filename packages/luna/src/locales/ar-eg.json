@@ -59,6 +59,7 @@
   "call.ready.explaination.empty.student": "الطالب في طريقه لدخول الحصة",
   "call.ready.join": "انضم للحصة الاّن",
   "call.ready.cannot-join": "يرجى التأكد من إعدادات الميكروفون وتفعيله لضمان دخولك الحصة بنجاح.",
+  "call.internet.problem": "برجاء التحقق من اتصال الانترنت الخاص بك",
   "tutors.title": "كل المعلمين",
   "tutors.card.book-button.label": "احجز الآن",
   "tutors.card.profile-button.label": "عرض الملف",

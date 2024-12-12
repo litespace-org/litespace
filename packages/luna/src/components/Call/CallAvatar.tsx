@@ -2,6 +2,7 @@ import React from "react";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/sol/utils";
 import { motion } from "framer-motion";
+import cn from "classnames";
 
 export const CallAvatar: React.FC<{
   user: {
@@ -10,9 +11,18 @@ export const CallAvatar: React.FC<{
     name: string | null;
   };
   speaking?: boolean;
-}> = ({ user, speaking }) => {
+  variant?: "large" | "small";
+}> = ({ user, speaking, variant = "large" }) => {
   return (
-    <div className="tw-w-[290px] tw-h-[290px] tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center">
+    <div
+      className={cn(
+        "tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center",
+        {
+          "tw-w-[290px] tw-h-[290px]": variant === "large",
+          "tw-w-[120px] tw-h-[120px]": variant === "small",
+        }
+      )}
+    >
       <motion.div
         initial={{
           scale: 0,
@@ -44,9 +54,20 @@ export const CallAvatar: React.FC<{
           repeat: speaking ? Infinity : 0,
           repeatDelay: 0.1,
         }}
-        className="tw-w-[265px] tw-h-[265px] tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute"
+        className={cn(
+          "tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute",
+          {
+            "tw-w-[265px] tw-h-[265px]": variant === "large",
+            "tw-w-[112] tw-h-[112]": variant === "small",
+          }
+        )}
       />
-      <div className="tw-w-[242px] tw-h-[242px] tw-overflow-hidden tw-rounded-full">
+      <div
+        className={cn("tw-overflow-hidden tw-rounded-full", {
+          "tw-w-[242px] tw-h-[242px]": variant === "large",
+          "tw-w-[90px] tw-h-[90px]": variant === "small",
+        })}
+      >
         <Avatar
           src={orUndefined(user.imageUrl)}
           alt={orUndefined(user.name)}
