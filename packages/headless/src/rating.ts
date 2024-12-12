@@ -10,7 +10,7 @@ export type OnError = (error: Error) => void;
 export function useFindRatingTutor(id: number | null) {
   const atlas = atlas_1.useAtlas();
   const findRateeRatings = useCallback(async () => {
-    if (!id) return [];
+    if (!id) return {} as IRating.FindRateeRatingsApiResponse;
     return atlas.rating.findRateeRatings(id);
   }, [atlas.rating, id]);
 
