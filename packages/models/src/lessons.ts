@@ -244,6 +244,7 @@ export class Lessons {
       now,
       after,
       before,
+      rules,
     });
 
     const total = await countRows(baseBuilder.clone(), {

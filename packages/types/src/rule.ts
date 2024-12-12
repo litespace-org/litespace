@@ -84,9 +84,17 @@ export type UpdatePayload = {
 
 export type UpdateApiPayload = Omit<UpdatePayload, "deleted">;
 
+/**
+ * @deprecated should be removed in favor of {@link FindUserRulesWithSlotsApiResponse}
+ */
 export type FindUnpackedUserRulesResponse = {
   rules: Self[];
   unpacked: RuleEvent[];
+};
+
+export type FindUserRulesWithSlotsApiResponse = {
+  rules: Self[];
+  slots: Slot[];
 };
 
 export type Cache = {

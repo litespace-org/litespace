@@ -96,6 +96,7 @@ describe("/api/v1/user/", () => {
         await users.update(newTutor.id, {
           verified: true,
           image: "/image.jpg",
+          phoneNumber: "01012345678",
         });
         await tutors.update(newTutor.id, {
           about: faker.lorem.paragraphs(),
@@ -192,16 +193,16 @@ describe("/api/v1/user/", () => {
   describe("/api/v1/user/tutor/info/:tutorId", () => {
     beforeAll(async () => {
       await cache.connect();
-    })
+    });
 
     afterAll(async () => {
       await cache.disconnect();
-    })
+    });
 
     beforeEach(async () => {
       await flush();
       await cache.flush();
-    })
+    });
 
     it("should retrieve tutor info successfully", async () => {
       const newUser = await db.user({ role: Role.SuperAdmin });
@@ -214,20 +215,21 @@ describe("/api/v1/user/", () => {
         activatedBy: newUser.id,
         video: "/video.mp4",
         notice: 10,
-      }
+      };
 
-      await users.update(newTutor.id, { 
-        verified: true, 
+      await users.update(newTutor.id, {
+        verified: true,
         // NOTE: image is not in tutors table.
         image: "/image.jpg",
+        phoneNumber: "01012345678",
       });
       await tutors.update(newTutor.id, mockData);
 
-      const studentApi = await Api.forStudent()
+      const studentApi = await Api.forStudent();
       const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
-      
+
       expect(res.id).to.eq(newTutor.id);
-    })
+    });
 
     it("should retrieve tutor info from db, in case it's not in the cache, and then save it in the cache.", async () => {
       expect(await cache.tutors.exists()).to.eq(false);
@@ -242,31 +244,34 @@ describe("/api/v1/user/", () => {
         activatedBy: newUser.id,
         video: "/video.mp4",
         notice: 10,
-      }
+      };
 
-      await users.update(newTutor.id, { 
-        verified: true, 
+      await users.update(newTutor.id, {
+        verified: true,
         // NOTE: image is not in tutors table.
         image: "/image.jpg",
+        phoneNumber: "01012345678",
       });
       await tutors.update(newTutor.id, mockData);
 
-      const studentApi = await Api.forStudent()
+      const studentApi = await Api.forStudent();
       // this shall save tutor in cache if not found
       const res = await studentApi.atlas.user.findTutorInfo(newTutor.id);
-      
+
       // ensure data is saved and can be retrieved from the cache
       expect(await cache.tutors.exists()).to.eq(true);
       expect(first(await cache.tutors.getAll())?.id).to.eq(res.id);
-    })
+    });
 
     it("should response with 404 in case tutor is not onboard", async () => {
       const newTutor = await db.tutor();
 
-      const studentApi = await Api.forStudent()
-      const res = await safe(async () => studentApi.atlas.user.findTutorInfo(newTutor.id));
-      
+      const studentApi = await Api.forStudent();
+      const res = await safe(async () =>
+        studentApi.atlas.user.findTutorInfo(newTutor.id)
+      );
+
       expect(res).to.be.deep.eq(notfound.tutor());
-    })
+    });
   });
 });

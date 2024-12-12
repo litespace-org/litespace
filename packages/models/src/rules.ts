@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { column, knex } from "@/query";
+import { column, knex, WithOptionalTx } from "@/query";
 import { IRule } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { first } from "lodash";
@@ -102,6 +102,44 @@ export class Rules {
       .whereIn("user_id", userIds)
       .andWhere("activated", true)
       .andWhere("end", ">=", start); // select rules that didn't end yet.
+    return rows.map((row) => this.from(row));
+  }
+
+  /**
+   * retrieves activated rules that fully or partially lay between two dates
+   * @param userId {number} - the user whose rules are in query
+   * @param after {string} - the data (iso datetime) after which rules shall lay/intersect
+   * @param before {string} - the data (iso datetime) before which rules shall lay/intersect
+   *
+   * @todo impl. generic finding function and call it `rules.find` @mmoehabb
+   * @todo write tests @mmoehabb
+   */
+  async findActivatedRulesBetween({
+    userId,
+    after,
+    before,
+    tx,
+  }: WithOptionalTx<{
+    userId: number;
+    after: string;
+    before: string;
+  }>): Promise<IRule.Self[]> {
+    const rows = await this.builder(tx)
+      .select("*")
+      .where(this.column("user_id"), userId)
+      .andWhere(this.column("activated"), true)
+      .andWhere(this.column("deleted"), false)
+      .andWhere((builder) =>
+        builder
+          .whereBetween(this.column("start"), [after, before])
+          .orWhereBetween(this.column("end"), [after, before])
+          .orWhere((builder) =>
+            builder
+              // rule started but not ended yet
+              .where(this.column("start"), "<", after)
+              .andWhere(this.column("end"), ">", before)
+          )
+      );
     return rows.map((row) => this.from(row));
   }
 
