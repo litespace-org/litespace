@@ -11,7 +11,7 @@ import {
   string,
   withNamedId,
 } from "@/validation/utils";
-import { IRating, IUser } from "@litespace/types";
+import { IRating } from "@litespace/types";
 import {
   isAdmin,
   isMediaProvider,
@@ -49,7 +49,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   const eligible =
     (isStudent(user) && isTutor(ratee)) ||
     (isTutor(user) && isMediaProvider(ratee));
-  if (eligible) return next(forbidden());
+  if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({
     rater: user.id,
@@ -87,6 +87,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
 
 async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
+  // NOTE: can tutors remove ratings?!
   const allowed = isStudent(user) || isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
@@ -161,7 +162,6 @@ async function findTutorRatings(
 
   const tutor = await tutors.findById(id);
   if (!tutor) return next(notfound.tutor());
-
 
   const result = await ratings.findOrderedTutorRatings(id, { page, size });
 
