@@ -11,8 +11,8 @@ import {
   weekday,
 } from "@/validation/utils";
 import { IRule, Wss } from "@litespace/types";
-import { contradictingRules, forbidden, notfound } from "@/lib/error";
-import { calls, lessons, rules } from "@litespace/models";
+import { bad, contradictingRules, forbidden, notfound } from "@/lib/error";
+import { interviews, lessons, rules, tutors } from "@litespace/models";
 import {
   Rule,
   Schedule,
@@ -26,6 +26,7 @@ import { ApiContext } from "@/types/api";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { isInterviewer, isTutor, isUser } from "@litespace/auth";
+import { isOnboard } from "@/lib/tutor";
 
 const title = zod.string().min(5).max(255);
 const createRulePayload = zod.object({
@@ -38,11 +39,19 @@ const createRulePayload = zod.object({
   weekday: zod.optional(zod.array(weekday)),
   monthday: zod.optional(monthday),
 });
+
 const findUserRulesPayload = zod.object({ userId: id });
+
 const findUnpackedUserRulesParams = zod.object({ userId: id });
 const findUnpackedUserRulesQuery = zod.object({ start: date, end: date });
+
+const findUserRulesWithSlotsParams = zod.object({ userId: id });
+const findUserRulesWithSlotsQuery = zod.object({
+  after: datetime,
+  before: datetime,
+});
+
 const updateRuleParams = zod.object({ ruleId: id });
-const deleteRuleParams = zod.object({ ruleId: id });
 const updateRulePayload = zod.object({
   title: zod.optional(title),
   frequency: zod.optional(number),
@@ -54,6 +63,8 @@ const updateRulePayload = zod.object({
   monthday: zod.optional(monthday),
   activated: zod.optional(zod.boolean()),
 });
+
+const deleteRuleParams = zod.object({ ruleId: id });
 
 function createRule(context: ApiContext) {
   return safeRequest(
@@ -107,6 +118,9 @@ async function findUserRules(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(userRules);
 }
 
+/**
+ *  @deprecated should be removed in favor of {@link findUserRulesWithSlots}
+ */
 async function findUnpackedUserRules(
   req: Request,
   res: Response,
@@ -148,6 +162,58 @@ async function findUnpackedUserRules(
     rules: userRules,
     unpacked: list,
   });
+}
+
+/**
+ * Respond with user's (e.g. tutor) IRule.Self objects that lay between two dates,
+ * along with the occupied slots.
+ */
+async function findUserRulesWithSlots(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const allowed = isUser(req.user);
+  if (!allowed) return next(forbidden());
+
+  const { userId } = findUserRulesWithSlotsParams.parse(req.params);
+  const { after, before } = findUserRulesWithSlotsQuery.parse(req.query);
+
+  // return 400 status code if the diff between after and before is more than 60 days
+  if (dayjs(before).diff(dayjs(after), "day") > 60) return next(bad());
+
+  // check if the userId is for a tutor or tutor-manager; return 404 if it's not
+  const tutor = await tutors.findById(userId);
+  if (tutor === null)
+    // TODO: add condition for tutor-manager
+    return next(notfound.tutor());
+
+  // if the user is a tutor but not onboard then return 404
+  if (tutor && !isOnboard(tutor)) return next(notfound.tutor());
+
+  // get (not deleted) rules from the database,
+  // that fully or partially lay between `after` and `before`.
+  const userRules = await rules.findActivatedRulesBetween({
+    userId,
+    after,
+    before,
+  });
+
+  // get (not canceled) lessons and interviews then generate slots from them
+  const ruleIds = userRules.map((rule) => rule.id);
+  const ruleLessons = await lessons.find({ rules: ruleIds, canceled: false });
+  const ruleInterviews = await interviews.find({
+    rules: ruleIds,
+    cancelled: false,
+  });
+
+  // return the response to the client
+  const response: IRule.FindUserRulesWithSlotsApiResponse = {
+    rules: userRules,
+    slots: [...asSlots(ruleLessons.list), ...asSlots(ruleInterviews.list)],
+  };
+
+  res.status(200).json(response);
 }
 
 function updateRule(context: ApiContext) {
@@ -255,6 +321,7 @@ function deleteRule(context: ApiContext) {
 export default {
   findUnpackedUserRules: safeRequest(findUnpackedUserRules),
   findUserRules: safeRequest(findUserRules),
+  findUserRulesWithSlots: safeRequest(findUserRulesWithSlots),
   createRule,
   updateRule,
   deleteRule,

@@ -69,6 +69,10 @@ export class Interviews {
         signer: payload.signer,
         status: payload.status,
         updated_at: now,
+        canceled_at: payload.canceledAt
+          ? dayjs.utc(payload.canceledAt).toDate()
+          : undefined,
+        canceled_by: payload.canceledBy,
       })
       .where("id", id)
       .returning("*");
@@ -124,6 +128,8 @@ export class Interviews {
     users,
     page,
     size,
+    rules = [],
+    cancelled,
     tx,
   }: {
     users?: number[];
@@ -132,6 +138,8 @@ export class Interviews {
     tx?: Knex.Transaction;
     signed?: boolean;
     signers?: number[];
+    rules?: number[];
+    cancelled?: boolean;
   } & IFilter.Pagination): Promise<Paginated<IInterview.Self>> {
     const baseBuilder = this.builder(tx);
 
@@ -155,6 +163,13 @@ export class Interviews {
 
     if (signers && !isEmpty(signers))
       baseBuilder.whereIn(this.column("signer"), signers);
+
+    if (!isEmpty(rules)) baseBuilder.whereIn(this.column("rule_id"), rules);
+
+    if (cancelled === true)
+      baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
+    else if (cancelled === false)
+      baseBuilder.where(this.column("canceled_at"), "IS", null);
 
     const total = await countRows(baseBuilder.clone());
 

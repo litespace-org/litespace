@@ -97,6 +97,11 @@ export type UpdatePayload = {
   level?: number;
   status?: Status;
   signer?: number | null;
+  canceledBy?: number | null;
+  /**
+   * ISO datetime.
+   */
+  canceledAt?: string | null;
 };
 
 export type UpdateApiPayload = {
