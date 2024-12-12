@@ -11,15 +11,15 @@ export const CallAvatar: React.FC<{
     name: string | null;
   };
   speaking?: boolean;
-  variant?: "Large" | "Small";
-}> = ({ user, speaking, variant = "Large" }) => {
+  variant?: "large" | "small";
+}> = ({ user, speaking, variant = "large" }) => {
   return (
     <div
       className={cn(
         "tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center",
         {
-          "tw-w-[290px] tw-h-[290px]": variant === "Large",
-          "tw-w-[120px] tw-h-[120px]": variant === "Small",
+          "tw-w-[290px] tw-h-[290px]": variant === "large",
+          "tw-w-[120px] tw-h-[120px]": variant === "small",
         }
       )}
     >
@@ -57,15 +57,15 @@ export const CallAvatar: React.FC<{
         className={cn(
           "tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute",
           {
-            "tw-w-[265px] tw-h-[265px]": variant === "Large",
-            "tw-w-[112] tw-h-[112]": variant === "Small",
+            "tw-w-[265px] tw-h-[265px]": variant === "large",
+            "tw-w-[112] tw-h-[112]": variant === "small",
           }
         )}
       />
       <div
         className={cn("tw-overflow-hidden tw-rounded-full", {
-          "tw-w-[242px] tw-h-[242px]": variant === "Large",
-          "tw-w-[90px] tw-h-[90px]": variant === "Small",
+          "tw-w-[242px] tw-h-[242px]": variant === "large",
+          "tw-w-[90px] tw-h-[90px]": variant === "small",
         })}
       >
         <Avatar

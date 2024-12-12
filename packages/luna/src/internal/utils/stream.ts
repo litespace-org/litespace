@@ -1,4 +1,4 @@
-import { Void } from "@litespace/types";
+import { StreamInfo } from "@/components/Call/types";
 
 const DEFAULT_URL =
   "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
@@ -29,30 +29,11 @@ export async function getVideoMediaStream(videoUrl: string = DEFAULT_URL) {
   video.play();
 
   const mediaStream = canvas.captureStream(60);
+
   return mediaStream;
 }
 
-export type Stream = {
-  fullScreen: {
-    enabled: boolean;
-    toggle: Void;
-  };
-  speech: {
-    speaking: boolean;
-    mic: boolean;
-  };
-  camera: boolean;
-  cast: boolean;
-  stream: MediaStream | null;
-  user: {
-    id: number;
-    imageUrl: string | null;
-    name: string | null;
-  };
-  type: "focused" | "unfocused";
-};
-
-export function createStreamObject(
+export function createStreamInfo(
   stream: MediaStream | null,
   options: {
     user: {
@@ -64,18 +45,11 @@ export function createStreamObject(
     camera: boolean;
     cast: boolean;
   }
-): Stream | null {
-  if (!stream) return null;
+): StreamInfo {
   return {
     stream,
-    fullScreen: {
-      enabled: false,
-      toggle: () => alert("full screen"),
-    },
-    speech: {
-      speaking: false,
-      mic: true,
-    },
+    speaking: false,
+    muted: true,
     ...options,
   };
 }

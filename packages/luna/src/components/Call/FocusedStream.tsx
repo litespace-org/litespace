@@ -1,22 +1,27 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { VideoBar, CallAvatar, StreamProps } from "@/components/Call";
-
+import { VideoBar, CallAvatar } from "@/components/Call";
+import { StreamInfo } from "@/components/Call/types";
+import { Void } from "@litespace/types";
 export const FocusedStream: React.FC<{
   internetProblem?: boolean;
-  stream: StreamProps;
+  stream: StreamInfo;
   timer: {
     duration: number;
     startAt: string;
   };
-}> = ({ stream, timer, internetProblem }) => {
+  fullScreen: {
+    enabled: boolean;
+    toggle: Void;
+  };
+}> = ({ stream, timer, internetProblem, fullScreen }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
-    if (videoRef.current && stream.camera)
+    if (videoRef.current && stream.stream)
       videoRef.current.srcObject = stream.stream;
     videoRef.current?.play();
-  }, [stream]);
+  }, [stream.stream]);
 
   return (
     <motion.div
@@ -35,6 +40,7 @@ export const FocusedStream: React.FC<{
       key={stream.user.id}
       className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
     >
+      {/* todo: keep the video ref alwayas accessable */}
       {stream.camera || stream.cast ? (
         <video
           ref={videoRef}
@@ -45,14 +51,19 @@ export const FocusedStream: React.FC<{
         />
       ) : (
         <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center">
-          <CallAvatar user={stream.user} />
+          <CallAvatar user={stream.user} speaking={stream.speaking} />
         </div>
       )}
+
+      {/*
+       * TODO:  animate by using opacities not the movement
+       */}
       <VideoBar
         internetProblem={internetProblem}
         timer={timer}
-        fullScreen={stream.fullScreen}
-        speech={stream.speech}
+        fullScreen={fullScreen}
+        speaking={stream.speaking}
+        muted={stream.muted}
       />
     </motion.div>
   );
