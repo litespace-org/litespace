@@ -1,8 +1,9 @@
 import { first } from "lodash";
 import { column, countRows, knex, withPagination } from "@/query";
-import { IFilter, IRating, IUser, Paginated } from "@litespace/types";
+import { IFilter, IRating, IUser, NumericString, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import zod from "zod";
+import { Pagination } from "@litespace/types/dist/esm/filter";
 
 export class Ratings {
   table = "ratings" as const;
@@ -126,6 +127,68 @@ export class Ratings {
 
   async findByRateeId(id: number): Promise<Paginated<IRating.Populated>> {
     return await this.findManyBy("ratee_id", id);
+  }
+
+  async findByRaterAndRateeIds(
+    raterId: number,
+    rateeId: number
+  ): Promise<IRating.PublicTutorRating | undefined> {
+    const select: Record<keyof IRating.PublicTutorRating, string> = {
+      id: this.column.ratings("id"),
+      userId: this.column.rater("id"),
+      name: this.column.rater("name"),
+      image: this.column.rater("image"),
+      value: this.column.ratings("value"),
+      feedback: this.column.ratings("feedback"),
+    };
+
+    const row = await this.builder()
+      .select<IRating.PublicTutorRating[]>(select)
+      .innerJoin(
+        "users AS rater",
+        this.column.rater("id"),
+        this.column.ratings("rater_id")
+      )
+      .where(this.column.ratings("rater_id"), raterId)
+      .andWhere(this.column.ratings("ratee_id"), rateeId)
+      .first();
+
+    return row;
+  }
+
+  /**
+  * This is a concrete or specific function that's only expected to work
+  * with tutors whereas it orders rows in a specific order.
+  */
+  async findOrderedTutorRatings(
+    tutorId: number,
+    pagination?: Pagination
+  ): Promise<Paginated<IRating.PublicTutorRating>> {
+    const select: Record<keyof IRating.PublicTutorRating, string> = {
+      id: this.column.ratings("id"),
+      userId: this.column.rater("id"),
+      name: this.column.rater("name"),
+      image: this.column.rater("image"),
+      value: this.column.ratings("value"),
+      feedback: this.column.ratings("feedback"),
+    };
+
+    const query = this.builder()
+      .select<IRating.PublicTutorRating[]>(select)
+      .innerJoin(
+        "users AS rater",
+        this.column.rater("id"),
+        this.column.ratings("rater_id")
+      )
+      .where(this.column.ratings("ratee_id"), tutorId)
+      .orderByRaw("value DESC, LENGTH(feedback) DESC NULLS LAST, ratings.created_at DESC");
+
+    const totalQuery = knex.count().from(query);
+    const totalRow = await totalQuery.first();
+    const total = totalRow ? zod.coerce.number().parse(totalRow.count) : 0;
+
+    const rows = await withPagination(query.clone(), pagination);
+    return { list: rows, total };
   }
 
   async find({
