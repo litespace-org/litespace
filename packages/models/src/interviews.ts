@@ -69,8 +69,10 @@ export class Interviews {
         signer: payload.signer,
         status: payload.status,
         updated_at: now,
-        canceled_at: payload.canceledAt,
-        canceled_by: payload.canceledBy
+        canceled_at: payload.canceledAt
+          ? dayjs.utc(payload.canceledAt).toDate()
+          : undefined,
+        canceled_by: payload.canceledBy,
       })
       .where("id", id)
       .returning("*");
@@ -126,7 +128,7 @@ export class Interviews {
     users,
     page,
     size,
-    rules,
+    rules = [],
     cancelled,
     tx,
   }: {
@@ -150,7 +152,6 @@ export class Interviews {
 
     if (statuses && !isEmpty(statuses))
       baseBuilder.whereIn(this.column("status"), statuses);
-    this.column("canceled_at")
 
     if (levels && !isEmpty(levels))
       baseBuilder.whereIn(this.column("level"), levels);
@@ -163,8 +164,7 @@ export class Interviews {
     if (signers && !isEmpty(signers))
       baseBuilder.whereIn(this.column("signer"), signers);
 
-    if (rules !== undefined)
-      baseBuilder.whereIn(this.column("rule_id"), rules);
+    if (!isEmpty(rules)) baseBuilder.whereIn(this.column("rule_id"), rules);
 
     if (cancelled === true)
       baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
@@ -200,7 +200,7 @@ export class Interviews {
       status: row.status,
       signer: row.signer,
       canceledBy: row.canceled_by,
-      canceledAt: row.canceled_at || null,
+      canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };

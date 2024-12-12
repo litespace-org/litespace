@@ -8,21 +8,26 @@ export class Rule extends Base {
 
   /**
    * @param id user id (interviewer or tutor)
+   * @deprecated should be removed in favor of {@link findUserRulesWithSlots}
    */
   async findUserRules(id: number): Promise<IRule.Self[]> {
     return await this.get(`/api/v1/rule/list/${id}`);
   }
 
   /**
-   * @param id user id (interviewer or tutor)
-   * @param after  utc after time (get rules after this time)
-   * @param before utc before time (get rules before this time)
+   * @param id user id (manger or tutor)
+   * @param after  utc after datetime (get rules after this date)
+   * @param before utc before datetime (get rules before this date)
    */
-  async findUserRulesWithSlots(
-    id: number, 
-    after: string, 
-    before: string
-  ): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
+  async findUserRulesWithSlots({
+    id,
+    after,
+    before,
+  }: {
+    id: number;
+    after: string;
+    before: string;
+  }): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
     return await this.get(`/api/v1/rule/slots/${id}`, {}, { after, before });
   }
 
@@ -36,10 +41,14 @@ export class Rule extends Base {
     start: string,
     end: string
   ): Promise<IRule.FindUnpackedUserRulesResponse> {
-    return await this.get(`/api/v1/rule/list/unpacked/${id}`, {}, {
-      start,
-      end,
-    });
+    return await this.get(
+      `/api/v1/rule/list/unpacked/${id}`,
+      {},
+      {
+        start,
+        end,
+      }
+    );
   }
 
   async update(
