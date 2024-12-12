@@ -59,7 +59,7 @@ export type Row = {
   status: Status;
   signer: number | null;
   canceled_by: number | null;
-  canceled_at: Date | null;
+  canceled_at: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -97,6 +97,8 @@ export type UpdatePayload = {
   level?: number;
   status?: Status;
   signer?: number | null;
+  canceledBy?: number | null;
+  canceledAt?: string | null;
 };
 
 export type UpdateApiPayload = {

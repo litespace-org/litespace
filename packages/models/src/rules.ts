@@ -105,6 +105,34 @@ export class Rules {
     return rows.map((row) => this.from(row));
   }
 
+  /**
+  * retrieves activated rules that fully or partially lay between two dates
+  * @param userId number - the user whose rules are in query
+  * @param after string - the data after which rules shall lay/intersect
+  * @param before string - the data before which rules shall lay/intersect
+  */
+  async findActivatedRulesBetween(
+    userId: number,
+    after: string,
+    before: string,
+    tx?: Knex.Transaction
+  ): Promise<IRule.Self[]> {
+    const rows = await this.builder(tx)
+      .select("*")
+      .where(this.column("user_id"), userId)
+      .andWhere(this.column("activated"), true)
+      .andWhere(this.column("deleted"), false)
+      .andWhere((builder) => builder
+        .whereBetween(this.column("start"), [after, before])
+        .orWhereBetween(this.column("end"), [after, before])
+        .orWhere(builder => builder
+          .where(this.column("start"), "<", after)
+          .andWhere(this.column("end"), ">", before)
+        )
+      )
+    return rows.map((row) => this.from(row));
+  }
+
   async findByUserId({
     user,
     deleted = true,
