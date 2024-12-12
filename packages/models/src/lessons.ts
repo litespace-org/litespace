@@ -1,7 +1,7 @@
 import { IFilter, ILesson, NumericString, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, orderBy } from "lodash";
+import { concat, first, isEmpty, orderBy } from "lodash";
 import { users } from "@/users";
 import {
   aggArrayOrder,
@@ -473,7 +473,7 @@ export class Lessons {
       users,
       after,
       before,
-      rules,
+      rules = [],
     }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -520,7 +520,7 @@ export class Lessons {
     if (after) builder.where(end, ">=", dayjs.utc(after).toDate());
     if (before) builder.where(end, "<=", dayjs.utc(before).toDate());
 
-    if (rules !== undefined)
+    if (!isEmpty(rules))
       builder.whereIn(this.columns.lessons("rule_id"), rules);
 
     return builder;

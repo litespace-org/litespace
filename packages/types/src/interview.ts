@@ -59,7 +59,7 @@ export type Row = {
   status: Status;
   signer: number | null;
   canceled_by: number | null;
-  canceled_at: string | null;
+  canceled_at: Date | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -98,6 +98,9 @@ export type UpdatePayload = {
   status?: Status;
   signer?: number | null;
   canceledBy?: number | null;
+  /**
+   * ISO datetime.
+   */
   canceledAt?: string | null;
 };
 

@@ -46,7 +46,10 @@ const findUnpackedUserRulesParams = zod.object({ userId: id });
 const findUnpackedUserRulesQuery = zod.object({ start: date, end: date });
 
 const findUserRulesWithSlotsParams = zod.object({ userId: id });
-const findUserRulesWithSlotsQuery = zod.object({ after: datetime, before: datetime });
+const findUserRulesWithSlotsQuery = zod.object({
+  after: datetime,
+  before: datetime,
+});
 
 const updateRuleParams = zod.object({ ruleId: id });
 const updateRulePayload = zod.object({
@@ -115,6 +118,9 @@ async function findUserRules(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(userRules);
 }
 
+/**
+ *  @deprecated should be removed in favor of {@link findUserRulesWithSlots}
+ */
 async function findUnpackedUserRules(
   req: Request,
   res: Response,
@@ -159,12 +165,12 @@ async function findUnpackedUserRules(
 }
 
 /**
- * respond with user's (e.g. tutor) IRule.Self objects that lay between two dates,
+ * Respond with user's (e.g. tutor) IRule.Self objects that lay between two dates,
  * along with the occupied slots.
  */
 async function findUserRulesWithSlots(
-  req: Request, 
-  res: Response, 
+  req: Request,
+  res: Response,
   next: NextFunction
 ) {
   const allowed = isUser(req.user);
@@ -174,38 +180,38 @@ async function findUserRulesWithSlots(
   const { after, before } = findUserRulesWithSlotsQuery.parse(req.query);
 
   // return 400 status code if the diff between after and before is more than 60 days
-  if (dayjs(before).diff(dayjs(after), 'day') > 60) {
-    return next(bad());
-  }
+  if (dayjs(before).diff(dayjs(after), "day") > 60) return next(bad());
 
   // check if the userId is for a tutor or tutor-manager; return 404 if it's not
   const tutor = await tutors.findById(userId);
-  if (tutor === null) { // TODO: add condition for tutor-manager
-    return next(notfound.tutor())
-  }
+  if (tutor === null)
+    // TODO: add condition for tutor-manager
+    return next(notfound.tutor());
 
   // if the user is a tutor but not onboard then return 404
-  if (tutor && !isOnboard(tutor)) {
-    return next(notfound.tutor())
-  }
+  if (tutor && !isOnboard(tutor)) return next(notfound.tutor());
 
-  // get (not deleted) rules from the database, 
+  // get (not deleted) rules from the database,
   // that fully or partially lay between `after` and `before`.
-  const userRules = await rules.findActivatedRulesBetween(userId, after, before);
+  const userRules = await rules.findActivatedRulesBetween({
+    userId,
+    after,
+    before,
+  });
 
   // get (not canceled) lessons and interviews then generate slots from them
-  const ruleIds = userRules.map(rule => rule.id);
+  const ruleIds = userRules.map((rule) => rule.id);
   const ruleLessons = await lessons.find({ rules: ruleIds, canceled: false });
-  const ruleInterviews = await interviews.find({ rules: ruleIds, cancelled: false });
+  const ruleInterviews = await interviews.find({
+    rules: ruleIds,
+    cancelled: false,
+  });
 
   // return the response to the client
   const response: IRule.FindUserRulesWithSlotsApiResponse = {
     rules: userRules,
-    slots: [
-      ...asSlots(ruleLessons.list),
-      ...asSlots(ruleInterviews.list)
-    ]
-  }
+    slots: [...asSlots(ruleLessons.list), ...asSlots(ruleInterviews.list)],
+  };
 
   res.status(200).json(response);
 }
