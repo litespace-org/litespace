@@ -1,18 +1,29 @@
 import React from "react";
 import cn from "classnames";
-import { FocusedStream, UnFocusedStream, StreamProps } from "@/components/Call";
+import { FocusedStream, UnFocusedStream } from "@/components/Call";
+import { StreamInfo } from "@/components/Call/types";
+import { Void } from "@litespace/types";
 
 export const InCallStreams: React.FC<{
   internetProblem?: boolean;
-  streams: StreamProps[];
+  streams: {
+    focused: StreamInfo;
+    unfocused: StreamInfo[];
+  };
+  /**
+   * Whether the chat panel is enabled or not.
+   * @default false
+   */
   chat?: boolean;
   timer: {
     duration: number;
     startAt: string;
   };
-}> = ({ internetProblem, streams, chat, timer }) => {
-  const sortedStreams = streams.sort((a, b) => a.type.localeCompare(b.type));
-  const focusedStream = streams.slice(0, 1)[0];
+  fullScreen: {
+    enabled: boolean;
+    toggle: Void;
+  };
+}> = ({ internetProblem, streams, chat, timer, fullScreen }) => {
   return (
     <div
       className={cn(
@@ -21,7 +32,8 @@ export const InCallStreams: React.FC<{
       )}
     >
       <FocusedStream
-        stream={focusedStream}
+        fullScreen={fullScreen}
+        stream={streams.focused}
         timer={timer}
         internetProblem={internetProblem}
       />
@@ -31,11 +43,9 @@ export const InCallStreams: React.FC<{
           !chat && "tw-absolute tw-bottom-6 tw-right-6"
         )}
       >
-        {sortedStreams
-          .filter((stream) => stream.type === "unfocused")
-          .map((stream, index) => (
-            <UnFocusedStream key={index} stream={stream} />
-          ))}
+        {streams.unfocused.map((stream, index) => (
+          <UnFocusedStream key={index} stream={stream} />
+        ))}
       </div>
     </div>
   );

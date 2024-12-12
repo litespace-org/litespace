@@ -8,20 +8,19 @@ import {
 } from "@/components/Call";
 
 export const VideoBar: React.FC<{
+  // TODO: This will be a generic alert, not just for internet problems
   internetProblem?: boolean;
   fullScreen: {
     enabled: boolean;
     toggle: Void;
   };
-  speech: {
-    speaking: boolean;
-    mic: boolean;
-  };
+  speaking: boolean;
+  muted: boolean;
   timer: {
     startAt: string;
     duration: number;
   };
-}> = ({ internetProblem, fullScreen, speech, timer }) => {
+}> = ({ internetProblem, fullScreen, speaking, muted, timer }) => {
   return (
     <div className="tw-w-full tw-px-6 tw-mt-6 tw-absolute tw-top-0 tw-left-1/2 -tw-translate-x-1/2 tw-flex tw-justify-between tw-items-center">
       <div className="tw-flex tw-items-center tw-gap-8">
@@ -29,7 +28,7 @@ export const VideoBar: React.FC<{
         {internetProblem ? <InternetIndicator /> : null}
       </div>
       <div className="tw-flex tw-items-center tw-gap-8">
-        <SpeechIndicator {...speech} variant="Large" />
+        <SpeechIndicator speaking={speaking} muted={muted} variant="large" />
         <TimerIndicator {...timer} />
       </div>
     </div>

@@ -7,32 +7,32 @@ import SoundSmall from "@litespace/assets/SoundSmall";
 
 export const SpeechIndicator: React.FC<{
   speaking: boolean;
-  mic: boolean;
-  variant?: "Small" | "Large";
-}> = ({ speaking, mic, variant = "Large" }) => {
-  const Icon = useMemo(() => {
-    if (!mic && variant === "Small")
+  muted: boolean;
+  variant?: "small" | "large";
+}> = ({ speaking, muted, variant = "large" }) => {
+  const icon = useMemo(() => {
+    if (muted && variant === "small")
       return <MicrophoneSlashSmall className="[&>*]:tw-stroke-natural-50" />;
-    if (!mic && variant === "Large")
+    if (muted && variant === "large")
       return <MicrophoneSlash className="[&>*]:tw-stroke-natural-50" />;
-    if (mic && variant === "Small")
+    if (!muted && variant === "small")
       return <SoundSmall className="[&>*]:tw-stroke-natural-50 hekki" />;
     return <Sound className="[&>*]:tw-stroke-natural-50" />;
-  }, [mic, variant]);
+  }, [muted, variant]);
 
   return (
     <div
       className={cn(
         "tw-rounded-full tw-backdrop-blur-[15px] tw-flex tw-items-center tw-justify-center",
         {
-          "tw-bg-background-indicator": !speaking || !mic,
+          "tw-bg-background-indicator": !speaking || muted,
           "tw-bg-background-speaking": speaking,
-          "tw-w-16 tw-h-16": variant === "Large",
-          "tw-w-8 tw-h-8": variant === "Small",
+          "tw-w-16 tw-h-16": variant === "large",
+          "tw-w-8 tw-h-8": variant === "small",
         }
       )}
     >
-      {Icon}
+      {icon}
     </div>
   );
 };

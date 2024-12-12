@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createStreamObject, getVideoMediaStream } from "../utils/stream";
+import { createStreamInfo, getVideoMediaStream } from "@/internal/utils/stream";
 import { faker } from "@faker-js/faker/locale/en";
 
 export function useCreateStream(
@@ -8,27 +8,20 @@ export function useCreateStream(
 ) {
   const [stream, setStream] = useState<MediaStream | null>(null);
   useEffect(() => {
-    async function getStream() {
-      const stream = await getVideoMediaStream();
-      setStream(stream);
-    }
-
-    getStream();
+    getVideoMediaStream().then(setStream);
   }, []);
 
-  if (!stream) return null;
-  const streamObj = createStreamObject(stream, {
+  return createStreamInfo(stream, {
     user: {
       id: faker.number.int({
         min: 1,
         max: 1000,
       }),
-      imageUrl: "https://picsum.photos/1900",
-      name: "User",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+      name: faker.person.fullName(),
     },
     type: type,
     camera: camera || false,
     cast: false,
   });
-  return streamObj;
 }
