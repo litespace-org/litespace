@@ -1,17 +1,17 @@
 import { StoryObj, Meta } from "@storybook/react";
-import { BookLesson } from "@/components/Lessons/BookLesson";
-import React from "react";
+import { BookLessonDialog } from "@/components/Lessons/BookLesson";
+import React, { useEffect, useState } from "react";
 import { identity, range } from "lodash";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IDate, IRule } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 
-type Component = typeof BookLesson;
+type Component = typeof BookLessonDialog;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "Lessons/BookLesson",
-  component: BookLesson,
+  title: "Lessons/BookLessonDialog",
+  component: BookLessonDialog,
   parameters: {
     layout: null,
   },
@@ -66,6 +66,95 @@ export const Primary: Story = {
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     rules: [makeRule(1)],
+    slots: range(5).map((idx) => ({
+      ruleId: 1,
+      start: dayjs
+        .utc()
+        .add(1, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      duration: 30,
+    })),
+    notice: 0,
+    onBook() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
+export const LoadingRules: Story = {
+  args: {
+    open: true,
+    loading: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    rules: [makeRule(1)],
+    slots: range(5).map((idx) => ({
+      ruleId: 1,
+      start: dayjs
+        .utc()
+        .add(1, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      duration: 30,
+    })),
+    notice: 0,
+    onBook() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
+export const LoadingThenShowingRules: Story = {
+  args: {
+    open: true,
+    loading: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    rules: [makeRule(1)],
+    slots: range(5).map((idx) => ({
+      ruleId: 1,
+      start: dayjs
+        .utc()
+        .add(1, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      duration: 30,
+    })),
+    notice: 0,
+    onBook() {
+      alert("Lesson booked!!");
+    },
+  },
+  render: (props) => {
+    const [loading, setIsLoading] = useState(true);
+    useEffect(() => {
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2_000);
+    }, []);
+    return <BookLessonDialog {...props} loading={loading} />;
+  },
+};
+
+export const EmptyRules: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    rules: [],
     slots: range(5).map((idx) => ({
       ruleId: 1,
       start: dayjs

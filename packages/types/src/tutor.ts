@@ -7,6 +7,9 @@ export type Self = {
   video: string | null;
   activated: boolean | null;
   activatedBy: number | null;
+  /**
+   * time before the student is able to book a lesson with the tutor in *minutes*
+   */
   notice: number;
   createdAt: string;
   updatedAt: string;
@@ -84,6 +87,7 @@ export type FindTutorInfoApiResponse = {
   studentCount: number;
   lessonCount: number;
   avgRating: number;
+  notice: number;
 };
 
 export type FindOnboardedTutorsApiResponse = {

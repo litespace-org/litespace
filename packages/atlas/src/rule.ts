@@ -23,11 +23,7 @@ export class Rule extends Base {
     id,
     after,
     before,
-  }: {
-    id: number;
-    after: string;
-    before: string;
-  }): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
+  }: IRule.FindRulesWithSlotsApiQuery): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
     return await this.get(`/api/v1/rule/slots/${id}`, {}, { after, before });
   }
 

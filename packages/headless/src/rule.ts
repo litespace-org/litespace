@@ -1,7 +1,8 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useAtlas } from "@/atlas";
 import { useCallback } from "react";
 import { IRule, Void } from "@litespace/types";
+import { QueryKey } from "@/constants";
 
 type OnSuccess = Void;
 type OnError = (error: Error) => void;
@@ -96,5 +97,20 @@ export function useDeleteRule({
     mutationFn: deleteRules,
     onSuccess,
     onError,
+  });
+}
+
+export function useFindUserRulesWithSlots(
+  payload: IRule.FindRulesWithSlotsApiQuery
+) {
+  const atlas = useAtlas();
+
+  const findRules = useCallback(() => {
+    return atlas.rule.findUserRulesWithSlots(payload);
+  }, [payload, atlas.rule]);
+
+  return useQuery({
+    queryFn: findRules,
+    queryKey: [QueryKey.FindRulesWithSlots],
   });
 }

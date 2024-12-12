@@ -1,1 +1,1 @@
-export { BookLesson } from "@/components/Lessons/BookLesson/BookLesson";
+export { BookLessonDialog } from "@/components/Lessons/BookLesson/BookLessonDialog";
