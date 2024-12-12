@@ -1,10 +1,11 @@
-import { ratings, users } from "@litespace/models";
+import { ratings, tutors, users } from "@litespace/models";
 import { exists, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { NextFunction } from "express";
 import safeRequest from "express-async-handler";
 import {
   id,
+  number,
   pagination,
   rating,
   string,
@@ -31,6 +32,11 @@ const updateRatingPayload = zod.object({
   feedback: zod.optional(string),
 });
 
+const findTutorRatingsQuery = zod.object({ 
+  page: zod.optional(number), 
+  size: zod.optional(number) 
+});
+
 async function createRating(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user);
@@ -43,7 +49,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   const eligible =
     (isStudent(user) && isTutor(ratee)) ||
     (isTutor(user) && isMediaProvider(ratee));
-  if (eligible) return next(forbidden());
+  if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({
     rater: user.id,
@@ -81,6 +87,7 @@ async function updateRating(req: Request, res: Response, next: NextFunction) {
 
 async function deleteRating(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
+  // NOTE: can tutors remove ratings?!
   const allowed = isStudent(user) || isTutor(user) || isAdmin(user);
   if (!allowed) return next(forbidden());
 
@@ -138,6 +145,33 @@ async function findRateeRatings(
   res.status(200).json(response);
 }
 
+/**
+  * Responds with a paginated list of a tutor ratings. 
+  * This handler is pulbic, any one can get its response.
+  */
+async function findTutorRatings(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  if (!isUser(user)) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
+  const { page, size } = findTutorRatingsQuery.parse(req.query);
+
+  const tutor = await tutors.findById(id);
+  if (!tutor) return next(notfound.tutor());
+
+  const result = await ratings.findOrderedTutorRatings(id, { page, size });
+
+  const userRating = await ratings.findByRaterAndRateeIds(user.id, id);
+  result.list = result.list.filter(rating => rating.userId !== user.id);
+  if (userRating) result.list.unshift(userRating);
+
+  res.status(200).json(result);
+}
+
 async function findRatingById(req: Request, res: Response, next: NextFunction) {
   const { id } = withNamedId("id").parse(req.params);
   const user = req.user;
@@ -157,6 +191,7 @@ export default {
   findRatings: safeRequest(findRatings),
   findRaterRatings: safeRequest(findRaterRatings),
   findRateeRatings: safeRequest(findRateeRatings),
+  findTutorRatings: safeRequest(findTutorRatings),
   findRatingById: safeRequest(findRatingById),
   deleteRating: safeRequest(deleteRating),
 };
