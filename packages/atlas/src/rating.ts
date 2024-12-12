@@ -1,5 +1,6 @@
 import { Base } from "@/base";
 import { IRating } from "@litespace/types";
+import { Pagination } from "@litespace/types/dist/esm/filter";
 
 export class Rating extends Base {
   async create(payload: IRating.CreateApiPayload): Promise<void> {
@@ -24,5 +25,12 @@ export class Rating extends Base {
     return this.client
       .get<IRating.Populated[]>(`/api/v1/rating/list/ratee/${id}`)
       .then((response) => response.data);
+  }
+
+  async findTutorRatings(
+    id: number, 
+    pagination?: Pagination
+  ): Promise<IRating.FindTutorRatingsApiResponse> {
+    return await this.get(`/api/v1/rating/list/tutor/${id}`, {}, pagination || {});
   }
 }

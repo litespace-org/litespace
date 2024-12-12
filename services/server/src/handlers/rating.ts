@@ -1,16 +1,17 @@
-import { ratings, users } from "@litespace/models";
+import { ratings, tutors, users } from "@litespace/models";
 import { exists, forbidden, notfound } from "@/lib/error";
 import { Request, Response } from "express";
 import { NextFunction } from "express";
 import safeRequest from "express-async-handler";
 import {
   id,
+  number,
   pagination,
   rating,
   string,
   withNamedId,
 } from "@/validation/utils";
-import { IRating } from "@litespace/types";
+import { IRating, IUser } from "@litespace/types";
 import {
   isAdmin,
   isMediaProvider,
@@ -29,6 +30,11 @@ const createRatingPayload = zod.object({
 const updateRatingPayload = zod.object({
   value: zod.optional(rating),
   feedback: zod.optional(string),
+});
+
+const findTutorRatingsQuery = zod.object({ 
+  page: zod.optional(number), 
+  size: zod.optional(number) 
 });
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
@@ -138,6 +144,34 @@ async function findRateeRatings(
   res.status(200).json(response);
 }
 
+/**
+  * Responds with a paginated list of a tutor ratings. 
+  * This handler is pulbic, any one can get its response.
+  */
+async function findTutorRatings(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  if (!isUser(user)) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
+  const { page, size } = findTutorRatingsQuery.parse(req.query);
+
+  const tutor = await tutors.findById(id);
+  if (!tutor) return next(notfound.tutor());
+
+
+  const result = await ratings.findOrderedTutorRatings(id, { page, size });
+
+  const userRating = await ratings.findByRaterAndRateeIds(user.id, id);
+  result.list = result.list.filter(rating => rating.userId !== user.id);
+  if (userRating) result.list.unshift(userRating);
+
+  res.status(200).json(result);
+}
+
 async function findRatingById(req: Request, res: Response, next: NextFunction) {
   const { id } = withNamedId("id").parse(req.params);
   const user = req.user;
@@ -157,6 +191,7 @@ export default {
   findRatings: safeRequest(findRatings),
   findRaterRatings: safeRequest(findRaterRatings),
   findRateeRatings: safeRequest(findRateeRatings),
+  findTutorRatings: safeRequest(findTutorRatings),
   findRatingById: safeRequest(findRatingById),
   deleteRating: safeRequest(deleteRating),
 };
