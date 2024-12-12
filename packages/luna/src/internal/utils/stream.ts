@@ -1,3 +1,5 @@
+import { StreamInfo } from "@/components/Call/types";
+
 const DEFAULT_URL =
   "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
 
@@ -27,5 +29,27 @@ export async function getVideoMediaStream(videoUrl: string = DEFAULT_URL) {
   video.play();
 
   const mediaStream = canvas.captureStream(60);
+
   return mediaStream;
+}
+
+export function createStreamInfo(
+  stream: MediaStream | null,
+  options: {
+    user: {
+      id: number;
+      imageUrl: string | null;
+      name: string | null;
+    };
+    type: "focused" | "unfocused";
+    camera: boolean;
+    cast: boolean;
+  }
+): StreamInfo {
+  return {
+    stream,
+    speaking: false,
+    muted: true,
+    ...options,
+  };
 }

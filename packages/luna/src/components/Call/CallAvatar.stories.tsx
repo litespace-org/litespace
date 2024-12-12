@@ -13,7 +13,7 @@ const meta: Meta<Component> = {
   decorators: [DarkStoryWrapper],
 };
 
-export const Speadking: StoryObj<Component> = {
+export const Speaking: StoryObj<Component> = {
   args: {
     user: {
       id: 5,

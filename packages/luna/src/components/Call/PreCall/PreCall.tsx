@@ -55,14 +55,14 @@ export const PreCall: React.FC<Props> = ({
         <CallBar
           items={[
             {
-              active: camera.enabled,
+              enabled: camera.enabled,
               OnIcon: Video,
               OffIcon: VideoSlash,
               toggle: camera.toggle,
               error: camera.error,
             },
             {
-              active: mic.enabled,
+              enabled: mic.enabled,
               OnIcon: Microphone,
               OffIcon: MicrophoneSlash,
               toggle: mic.toggle,
