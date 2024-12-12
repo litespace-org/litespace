@@ -10,7 +10,7 @@ import EditRating from "@/components/TutorProfile/EditRating";
 import DeleteRating from "@/components/TutorProfile/DeleteRating";
 
 const Ratings: React.FC<{
-  query: UseQueryResult<IRating.Populated[], Error>;
+  query: UseQueryResult<IRating.FindRateeRatingsApiResponse, Error>;
 }> = ({ query }) => {
   const [editRating, setEditRating] = useState<IRating.Populated | null>(null);
   const [deleteRating, setDeleteRating] = useState<{
@@ -37,7 +37,7 @@ const Ratings: React.FC<{
   const timeline = useMemo((): TimelineItem[] => {
     if (!query.data) return [];
 
-    return query.data.map((rating) => ({
+    return query.data.list.map((rating) => ({
       id: rating.id,
       children: (
         <Rating
