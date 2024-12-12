@@ -90,9 +90,12 @@ export class Ratings {
         this.column.ratee("id"),
         this.column.ratings("ratee_id")
       )
-      .where(key, value);
+      .where(this.column.ratings(key), value);
 
-    const total = await countRows(query.clone());
+    const totalQuery = knex.count().from(query);
+    const totalRow = await totalQuery.first();
+    const total = totalRow ? zod.coerce.number().parse(totalRow.count) : 0;
+
     const rows = await withPagination(query.clone(), pagination);
     return { list: rows.map((row) => this.asPopulated(row)), total };
   }
