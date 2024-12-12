@@ -249,5 +249,6 @@ export function asTutorInfoResponseBody(
     studentCount: ctutor.studentCount,
     lessonCount: ctutor.lessonCount,
     avgRating: ctutor.avgRating,
+    notice: ctutor.notice,
   };
 }

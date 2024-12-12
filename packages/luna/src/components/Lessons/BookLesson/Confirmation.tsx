@@ -19,7 +19,17 @@ export const Confirmation: React.FC<{
   duration: number;
   onConfrim: Void;
   onEdit: Void;
-}> = ({ tutorId, name, imageUrl, start, duration, onConfrim, onEdit }) => {
+  confirmationLoading?: boolean;
+}> = ({
+  tutorId,
+  name,
+  imageUrl,
+  start,
+  duration,
+  onConfrim,
+  onEdit,
+  confirmationLoading,
+}) => {
   const intl = useFormatMessage();
   return (
     <div className="tw-flex tw-flex-col tw-gap-6">
@@ -81,11 +91,17 @@ export const Confirmation: React.FC<{
       </div>
 
       <div className="tw-flex tw-flex-row tw-gap-8 tw-pb-5">
-        <Button className="tw-w-full" onClick={onConfrim}>
+        <Button
+          className="tw-w-full"
+          loading={confirmationLoading}
+          disabled={confirmationLoading}
+          onClick={onConfrim}
+        >
           {intl("book-lesson.confirm")}
         </Button>
         <Button
           className="tw-w-full"
+          disabled={confirmationLoading}
           variant={ButtonVariant.Secondary}
           onClick={onEdit}
         >

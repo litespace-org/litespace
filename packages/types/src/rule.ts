@@ -82,6 +82,23 @@ export type UpdatePayload = {
   deleted?: boolean;
 };
 
+export type FindRulesWithSlotsApiQuery = {
+  /**
+   * id is for userId
+   */
+  id: number;
+
+  /**
+   * before and after are bounderies of the slots that will be fetched
+   */
+  after: string;
+
+  /**
+   * before and after are bounderies of the slots that will be fetched
+   */
+  before: string;
+};
+
 export type UpdateApiPayload = Omit<UpdatePayload, "deleted">;
 
 /**

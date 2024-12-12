@@ -1,4 +1,4 @@
-import { Element, IFilter, ILesson, IRule, Void } from "@litespace/types";
+import { Element, IFilter, ILesson, Void } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
@@ -72,29 +72,36 @@ export function useCancelLesson() {
 }
 
 export function useCreateLesson({
-  selectedEvent,
   tutorId,
-  duration,
   onSuccess,
   onError,
 }: {
-  selectedEvent: IRule.RuleEvent | null;
-  duration: ILesson.Duration;
   tutorId: number;
   onSuccess: OnSuccess;
   onError: OnError;
 }) {
   const atlas = useAtlas();
 
-  const bookLesson = useCallback(async () => {
-    if (!selectedEvent) return;
-    return await atlas.lesson.create({
-      tutorId,
+  const bookLesson = useCallback(
+    async ({
+      ruleId,
+      start,
       duration,
-      ruleId: selectedEvent.id,
-      start: selectedEvent.start,
-    });
-  }, [atlas.lesson, duration, selectedEvent, tutorId]);
+    }: {
+      ruleId: number | null;
+      start: string | null;
+      duration: ILesson.Duration;
+    }) => {
+      if (!ruleId || !start) return;
+      return await atlas.lesson.create({
+        tutorId,
+        duration,
+        ruleId,
+        start,
+      });
+    },
+    [atlas.lesson, tutorId]
+  );
 
   return useMutation({
     mutationFn: bookLesson,

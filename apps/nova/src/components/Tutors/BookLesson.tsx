@@ -72,9 +72,7 @@ const BookLesson: React.FC<{
   );
 
   const mutation = useCreateLesson({
-    selectedEvent,
     tutorId,
-    duration,
     onSuccess,
     onError,
   });
@@ -142,7 +140,13 @@ const BookLesson: React.FC<{
       <Button
         disabled={!selectedEvent || mutation.isPending}
         loading={mutation.isPending}
-        onClick={() => mutation.mutate()}
+        onClick={() =>
+          mutation.mutate({
+            duration,
+            ruleId: selectedEvent?.id || null,
+            start: selectedEvent?.start || null,
+          })
+        }
         className="mt-4"
         size={ButtonSize.Small}
       >
