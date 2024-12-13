@@ -7,10 +7,15 @@ import { QueryKey } from "@/constants";
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
 
+/**
+ * @note: should be renamed to `useFindTutorRatings`
+ * @note should use `atlas.rating.findTutorRatings` and not
+ * `atlas.rating.findRateeRatings`
+ */
 export function useFindRatingTutor(id: number | null) {
   const atlas = atlas_1.useAtlas();
   const findRateeRatings = useCallback(async () => {
-    if (!id) return [];
+    if (!id) return { list: [], total: 0 };
     return atlas.rating.findRateeRatings(id);
   }, [atlas.rating, id]);
 

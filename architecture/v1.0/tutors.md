@@ -185,8 +185,8 @@ type Response = Paginated<{
     - Add actions (edit and delete).
     - Display rating starts.
 - [ ] Impl. video player [@mostafakamar2308](https://github.com/mostafakamar2308)
-- [ ] Update the find tutor info API ([info](#find-tutor-api)). [@mmoehabb](https://github.com/mmoehabb)
-- [ ] Write tests for the ratings endpoints. [@mmoehabb](https://github.com/mmoehabb)
+- [x] Update the find tutor info API ([info](#find-tutor-api)). [@mmoehabb](https://github.com/mmoehabb)
+- [x] Write tests for the ratings endpoints. [@mmoehabb](https://github.com/mmoehabb)
 - [ ] Put all pieces together at the tutor profile page [@mostafakamar2308](https://github.com/mostafakamar2308)
-- [ ] Update the find tutor rules api ([info](#find-tutor-rules-api)) (with tests) [@mmoehabb](https://github.com/mmoehabb)
-- [ ] Impl. find tutor ratings endpoint ([info](#find-tutor-ratings-api)) [@mmoehabb](https://github.com/mmoehabb)
+- [x] Update the find tutor rules api ([info](#find-tutor-rules-api)) (with tests) [@mmoehabb](https://github.com/mmoehabb)
+- [x] Impl. find tutor ratings endpoint ([info](#find-tutor-ratings-api)) [@mmoehabb](https://github.com/mmoehabb)
