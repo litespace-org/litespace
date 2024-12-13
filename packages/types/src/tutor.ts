@@ -1,5 +1,4 @@
-import { IUser } from "@/index";
-import { IRule, Paginated } from "@/index";
+import { IUser, IRule, Paginated, IFilter } from "@/index";
 
 export type Self = {
   id: number;
@@ -59,6 +58,13 @@ export type UpdatePayload = {
   notice?: number;
   activated?: boolean;
   activatedBy?: number;
+};
+
+export type FindOnboardedTutorsParams = IFilter.Pagination & {
+  /**
+   * Search keyword to filter out tutors and topics.
+   */
+  search?: string;
 };
 
 export type CreateApiPayload = IUser.Credentials & { name: string };

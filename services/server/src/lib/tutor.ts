@@ -128,11 +128,15 @@ export function isPublicTutor(
 /*
  * an ancillary function used in 'findOnboardedTutors' user handler
  */
-export function orderTutors(
-  tutors: ITutor.Cache[],
-  rules: IRule.Cache[],
-  userGender?: Gender
-): ITutor.Cache[] {
+export function orderTutors({
+  tutors,
+  rules,
+  userGender,
+}: {
+  tutors: ITutor.Cache[];
+  rules: IRule.Cache[];
+  userGender?: Gender;
+}): ITutor.Cache[] {
   const iteratees = [
     // sort in ascending order by the first availablity
     (tutor: ITutor.Cache) => {

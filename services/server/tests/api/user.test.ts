@@ -179,6 +179,66 @@ describe("/api/v1/user/", () => {
         expect(first(ctutors)?.id).to.eql(newTutor.id);
       });
 
+      it("should retrieve onboard tutors data ordered/searched by name and topic", async () => {
+        const newUser = await db.user({ role: Role.SuperAdmin });
+
+        const mockData = [
+          {
+            name: "Mohamed",
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
+            activated: true,
+            activatedBy: newUser.id,
+            video: "/video1.mp4",
+            notice: 7,
+          },
+          {
+            name: "Ahmed",
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
+            activated: true,
+            activatedBy: newUser.id,
+            video: "/video2.mp4",
+            notice: 12,
+          },
+          {
+            name: "Mostafa",
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
+            activated: true,
+            activatedBy: newUser.id,
+            video: "/video3.mp4",
+            notice: 14,
+          },
+          {
+            name: "Mahmoud",
+            about: faker.lorem.paragraphs(),
+            bio: faker.person.bio(),
+            activated: true,
+            activatedBy: newUser.id,
+            video: "/video4.mp4",
+            notice: 7,
+          },
+        ];
+
+        for (let data of mockData) {
+          const newTutor = await db.tutor({ name: data.name });
+          await users.update(newTutor.id, {
+            verified: true,
+            image: "/image.jpg",
+          });
+          await tutors.update(newTutor.id, data);
+        }
+
+        const studentApi = await Api.forStudent();
+        const res = await studentApi.atlas.user.findOnboardedTutors({
+          search: "mos",
+        });
+
+        expect(res.total).to.eq(1);
+        expect(mockData[2].name).to.deep.eq(res.list[0].name);
+      });
+
       // There was a bug in which every user update request stores tutor info in the cache
       it("should NOT add (non-onboard) tutor data to cache on every update HTTP request", async () => {
         const tutorApi = await Api.forTutor();
