@@ -1,8 +1,16 @@
-import { first } from "lodash";
-import { column, countRows, knex, withPagination } from "@/query";
+import { first, isEmpty, last } from "lodash";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+  withPaginationObj,
+} from "@/query";
 import { IFilter, IRating, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import zod from "zod";
+import { users } from "@/users";
 
 export class Ratings {
   table = "ratings" as const;
@@ -89,9 +97,12 @@ export class Ratings {
         this.column.ratee("id"),
         this.column.ratings("ratee_id")
       )
-      .where(key, value);
+      .where(this.column.ratings(key), value);
 
-    const total = await countRows(query.clone());
+    const totalQuery = knex.count().from(query);
+    const totalRow = await totalQuery.first();
+    const total = totalRow ? zod.coerce.number().parse(totalRow.count) : 0;
+
     const rows = await withPagination(query.clone(), pagination);
     return { list: rows.map((row) => this.asPopulated(row)), total };
   }
@@ -126,6 +137,64 @@ export class Ratings {
 
   async findByRateeId(id: number): Promise<Paginated<IRating.Populated>> {
     return await this.findManyBy("ratee_id", id);
+  }
+
+  async findRateeRatings({
+    topRaterId,
+    userId,
+    page,
+    size,
+    tx,
+  }: WithOptionalTx<
+    withPaginationObj<{
+      /**
+       * The ratee id.
+       */
+      userId: number;
+      /**
+       * When provided, the rating associated with this user will be at the top
+       * of the rating list.
+       */
+      topRaterId?: number;
+    }>
+  >): Promise<Paginated<IRating.RateeRatings>> {
+    const select: Record<keyof IRating.RateeRatings, string> = {
+      id: this.column.ratings("id"),
+      userId: users.column("id"),
+      name: users.column("name"),
+      image: users.column("image"),
+      value: this.column.ratings("value"),
+      feedback: this.column.ratings("feedback"),
+    };
+
+    const query = this.builder(tx)
+      .innerJoin(
+        users.table,
+        users.column("id"),
+        this.column.ratings("rater_id")
+      )
+      .where(this.column.ratings("ratee_id"), userId);
+
+    const total = await countRows(query.clone());
+
+    const rows = await withPagination(
+      query
+        .clone()
+        .select<IRating.RateeRatings[]>(select)
+        .orderByRaw(
+          [
+            topRaterId ? `users.id = ${topRaterId} DESC` : null,
+            "ratings.value DESC",
+            "LENGTH(ratings.feedback) DESC NULLS LAST",
+            "ratings.created_at DESC",
+          ]
+            .filter((filed) => !!filed)
+            .join(", ")
+        ),
+      { page, size }
+    );
+
+    return { list: rows, total: zod.coerce.number().parse(total) };
   }
 
   async find({
