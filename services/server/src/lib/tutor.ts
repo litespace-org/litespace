@@ -14,7 +14,6 @@ import { unpackRules } from "@litespace/sol/rule";
 import { cache } from "@/lib/cache";
 import { selectTutorRuleEvents } from "./events";
 import { Gender } from "@litespace/types/dist/esm/user";
-import { FilterTutorsParams } from "@litespace/types/dist/esm/tutor";
 
 export type TutorsCache = {
   tutors: ITutor.Cache[];
@@ -133,45 +132,12 @@ export function orderTutors({
   tutors,
   rules,
   userGender,
-  filter
-}:{
-  tutors: ITutor.Cache[],
-  rules: IRule.Cache[],
-  userGender?: Gender,
-  filter: FilterTutorsParams
+}: {
+  tutors: ITutor.Cache[];
+  rules: IRule.Cache[];
+  userGender?: Gender;
 }): ITutor.Cache[] {
   const iteratees = [
-    // sort/filter with the name
-    (tutor: ITutor.Cache) => {
-      if (!filter.name || filter.name === "") return 0;
-      let weight = 0;
-      for (let i = 1; i <= filter.name.length; i++) {
-        const x = tutor.name?.toLowerCase();
-        const y = filter.name?.toLowerCase();
-        if (x?.startsWith(y.slice(0, i)))
-          weight += 1;
-        else 
-          break;
-      }
-      return weight;
-    },
-    //sort/filter with the topic
-    (tutor: ITutor.Cache) => {
-      if (!filter.topic || filter.topic === "") return 0;
-      let weight = 0;
-      for (let topic of tutor.topics) {
-        for (let i = 1; i <= filter.topic.length; i++) {
-          const x = topic.toLowerCase();
-          const y = filter.topic.toLowerCase();
-          if (x.startsWith(y.slice(0, i)))
-            weight += 1;
-          else 
-            break;
-        }
-      }
-      return weight;
-    },
-    //sort/filter with the topic
     // sort in ascending order by the first availablity
     (tutor: ITutor.Cache) => {
       const events = selectTutorRuleEvents(rules, tutor);
@@ -189,7 +155,7 @@ export function orderTutors({
     "notice",
   ];
 
-  const orders: Array<"asc" | "desc"> = ["desc", "desc", "asc", "asc", "desc", "asc"];
+  const orders: Array<"asc" | "desc"> = ["asc", "asc", "desc", "asc"];
   const ordered = orderBy(tutors, iteratees, orders);
 
   return ordered;
