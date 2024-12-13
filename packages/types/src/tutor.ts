@@ -1,4 +1,4 @@
-import { IUser } from "@/index";
+import { IUser, PagniationParams } from "@/index";
 import { IRule, Paginated } from "@/index";
 
 export type Self = {
@@ -59,6 +59,11 @@ export type UpdatePayload = {
   notice?: number;
   activated?: boolean;
   activatedBy?: number;
+};
+
+export type FilterTutorsParams = PagniationParams & {
+  name?: string;
+  topic?: string;
 };
 
 export type CreateApiPayload = IUser.Credentials & { name: string };

@@ -109,6 +109,13 @@ const findUsersQuery = zod.object({
   orderDirection: zod.optional(orderDirection),
 });
 
+const findOnboardedTutorsQuery = zod.object({
+  name: zod.optional(string).default(""),
+  topic: zod.optional(string).default(""),
+  page: zod.optional(pageNumber).default(paginationDefaults.page),
+  size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
   const admin = isAdmin(req.user);
@@ -380,8 +387,9 @@ async function findTutorInfo(
   return next(notfound.tutor());
 }
 
+
 async function findOnboardedTutors(req: Request, res: Response) {
-  const query = pagination.parse(req.query);
+  const query = findOnboardedTutorsQuery.parse(req.query);
 
   const [isTutorsCached, isRulesCached] = await Promise.all([
     cache.tutors.exists(),
@@ -404,9 +412,14 @@ async function findOnboardedTutors(req: Request, res: Response) {
   const user = req.user;
   const userGender =
     isUser(user) && user.gender ? (user.gender as Gender) : undefined;
-  // TODO: search/order tutors by name and topics.
+  // DONE: search/order tutors by name and topics.
   // an ancillary function for clean code.
-  const ordered = orderTutors(tutors, rules, userGender);
+  const ordered = orderTutors({ 
+    tutors,
+    rules,
+    userGender,
+    filter: query
+  });
 
   // paginate the ordered (tutors) list
   const page = query.page || 1;
