@@ -2,6 +2,7 @@ import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { ratings } from "@/index";
 import { expect } from "chai";
+import { faker } from "@faker-js/faker/locale/ar";
 
 describe("Ratings", () => {
   beforeEach(async () => {
@@ -83,6 +84,99 @@ describe("Ratings", () => {
       expect(avg[0].avg === 3);
       expect(avg[1].avg === 3);
       expect(avg[2].avg === 3);
+    });
+  });
+
+  describe(nameof(ratings.findRateeRatings), () => {
+    it("should return empty list incase user has not ratings", async () => {
+      const { list, total } = await ratings.findRateeRatings({ userId: 1 });
+      expect(list).to.be.empty;
+      expect(total).to.be.eq(0);
+    });
+
+    it("should order user ratings", async () => {
+      const tutor = await fixtures.tutor();
+      const firstStudent = await fixtures.student();
+      const secondStudent = await fixtures.student();
+      const thirdStudent = await fixtures.student();
+      const forthStudent = await fixtures.student();
+
+      // this rating is the same as below (value=3) but it should be after the
+      // one below because it created before it.
+      await ratings.create({
+        feedback: null,
+        raterId: firstStudent.id,
+        rateeId: tutor.id,
+        value: 3,
+      });
+
+      await ratings.create({
+        feedback: null,
+        raterId: secondStudent.id,
+        rateeId: tutor.id,
+        value: 3,
+      });
+
+      // this should be the the top of the list becuase it has the longest
+      // feedback and the highest values.
+      await ratings.create({
+        raterId: thirdStudent.id,
+        rateeId: tutor.id,
+        feedback: faker.lorem.words(10),
+        value: 5,
+      });
+
+      // this should be second in the list becuase it has the highest feedback
+      // value but a shorter feedback than the one above it.
+      await ratings.create({
+        raterId: forthStudent.id,
+        rateeId: tutor.id,
+        feedback: faker.lorem.words(5),
+        value: 5,
+      });
+
+      const { list, total } = await ratings.findRateeRatings({
+        userId: tutor.id,
+      });
+      expect(total).to.be.eq(4);
+      expect(list[0].name).to.be.eq(thirdStudent.name);
+      expect(list[0].value).to.be.eq(5);
+      expect(list[1].name).to.be.eq(forthStudent.name);
+      expect(list[1].value).to.be.eq(5);
+      expect(list[2].name).to.be.eq(secondStudent.name);
+      expect(list[2].value).to.be.eq(3);
+      expect(list[3].name).to.be.eq(firstStudent.name);
+      expect(list[3].value).to.be.eq(3);
+    });
+
+    it("should be able to filter out ratings", async () => {
+      const tutor = await fixtures.tutor();
+      const firstStudent = await fixtures.student();
+      const secondStudent = await fixtures.student();
+
+      const firstRating = await ratings.create({
+        feedback: null,
+        raterId: firstStudent.id,
+        rateeId: tutor.id,
+        value: 3,
+      });
+
+      const secondRating = await ratings.create({
+        feedback: null,
+        raterId: secondStudent.id,
+        rateeId: tutor.id,
+        value: 2,
+      });
+
+      const { list, total } = await ratings.findRateeRatings({
+        userId: tutor.id,
+        topRaterId: secondStudent.id,
+      });
+
+      expect(total).to.be.eq(2);
+      expect(list).to.be.of.length(2);
+      expect(list[0].id).to.be.eq(secondRating.id);
+      expect(list[1].id).to.be.eq(firstRating.id);
     });
   });
 });

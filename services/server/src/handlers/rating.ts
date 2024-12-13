@@ -20,6 +20,7 @@ import {
   isUser,
 } from "@litespace/auth";
 import zod from "zod";
+import { concat } from "lodash";
 
 const createRatingPayload = zod.object({
   rateeId: id,
@@ -32,9 +33,9 @@ const updateRatingPayload = zod.object({
   feedback: zod.optional(string),
 });
 
-const findTutorRatingsQuery = zod.object({ 
-  page: zod.optional(number), 
-  size: zod.optional(number) 
+const findTutorRatingsQuery = zod.object({
+  page: zod.optional(number),
+  size: zod.optional(number),
 });
 
 async function createRating(req: Request, res: Response, next: NextFunction) {
@@ -146,16 +147,15 @@ async function findRateeRatings(
 }
 
 /**
-  * Responds with a paginated list of a tutor ratings. 
-  * This handler is pulbic, any one can get its response.
-  */
+ * Responds with a paginated list of a tutor ratings.
+ * This handler is pulbic, any one can get its response.
+ */
 async function findTutorRatings(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
   const user = req.user;
-  if (!isUser(user)) return next(forbidden());
 
   const { id } = withNamedId("id").parse(req.params);
   const { page, size } = findTutorRatingsQuery.parse(req.query);
@@ -163,13 +163,16 @@ async function findTutorRatings(
   const tutor = await tutors.findById(id);
   if (!tutor) return next(notfound.tutor());
 
-  const result = await ratings.findOrderedTutorRatings(id, { page, size });
+  const result = await ratings.findRateeRatings({
+    topRaterId: isUser(user) ? user.id : undefined,
+    userId: id,
+    page,
+    size,
+  });
 
-  const userRating = await ratings.findByRaterAndRateeIds(user.id, id);
-  result.list = result.list.filter(rating => rating.userId !== user.id);
-  if (userRating) result.list.unshift(userRating);
+  const response: IRating.FindTutorRatingsApiResponse = result;
 
-  res.status(200).json(result);
+  res.status(200).json(response);
 }
 
 async function findRatingById(req: Request, res: Response, next: NextFunction) {
