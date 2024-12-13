@@ -223,18 +223,20 @@ describe("/api/v1/user/", () => {
 
         for (let data of mockData) {
           const newTutor = await db.tutor({ name: data.name });
-          await users.update(newTutor.id, { verified: true, image: "/image.jpg" });
+          await users.update(newTutor.id, {
+            verified: true,
+            image: "/image.jpg",
+          });
           await tutors.update(newTutor.id, data);
         }
 
         const studentApi = await Api.forStudent();
-        const res = await studentApi.atlas.user.findOnboardedTutors({ name: "mos" });
+        const res = await studentApi.atlas.user.findOnboardedTutors({
+          search: "mos",
+        });
 
-        expect(res.total).to.eq(4);
+        expect(res.total).to.eq(1);
         expect(mockData[2].name).to.deep.eq(res.list[0].name);
-        expect(mockData[0].name).to.deep.eq(res.list[1].name);
-        expect(mockData[3].name).to.deep.eq(res.list[2].name);
-        expect(mockData[1].name).to.deep.eq(res.list[3].name);
       });
 
       // There was a bug in which every user update request stores tutor info in the cache
