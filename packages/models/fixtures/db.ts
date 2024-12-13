@@ -334,18 +334,11 @@ async function makeLessons({
 }
 
 export async function makeRating(payload?: Partial<IRating.CreatePayload>) {
-  const raterId: number =
-    payload?.raterId ||
-    (await user({ role: IUser.Role.Student }).then((user) => user.id));
-  const rateeId: number =
-    payload?.rateeId ||
-    (await user({ role: IUser.Role.Tutor }).then((user) => user.id));
-
   return await ratings.create({
-    rateeId,
-    raterId,
+    raterId: await or.studentId(payload?.raterId),
+    rateeId: await or.tutorId(payload?.rateeId),
     value: payload?.value || faker.number.int({ min: 0, max: 5 }),
-    feedback: faker.lorem.words(20),
+    feedback: payload?.feedback || faker.lorem.words(20),
   });
 }
 

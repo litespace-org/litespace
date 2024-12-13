@@ -62,7 +62,7 @@ export type CreateApiPayload = {
   feedback: string | null;
 };
 
-export type PublicTutorRating = {
+export type RateeRatings = {
   /**
    * Rating id.
    */
@@ -87,7 +87,7 @@ export type PublicTutorRating = {
    * Rating feedback text.
    */
   feedback: string | null;
-}
+};
 
 export type UpdateApiPayload = UpdatePayload;
 
@@ -97,6 +97,6 @@ export type FindRaterRatingsApiResponse = Paginated<Populated>;
 
 export type FindRateeRatingsApiResponse = Paginated<Populated>;
 
-export type FindTutorRatingsApiResponse = Paginated<PublicTutorRating>;
+export type FindTutorRatingsApiResponse = Paginated<RateeRatings>;
 
 export type FindAvgRatingResult = Array<{ user: number; avg: number }>;

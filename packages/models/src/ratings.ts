@@ -1,9 +1,16 @@
-import { first } from "lodash";
-import { column, countRows, knex, withPagination } from "@/query";
-import { IFilter, IRating, IUser, NumericString, Paginated } from "@litespace/types";
+import { first, isEmpty, last } from "lodash";
+import {
+  column,
+  countRows,
+  knex,
+  WithOptionalTx,
+  withPagination,
+  withPaginationObj,
+} from "@/query";
+import { IFilter, IRating, IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import zod from "zod";
-import { Pagination } from "@litespace/types/dist/esm/filter";
+import { users } from "@/users";
 
 export class Ratings {
   table = "ratings" as const;
@@ -132,66 +139,62 @@ export class Ratings {
     return await this.findManyBy("ratee_id", id);
   }
 
-  async findByRaterAndRateeIds(
-    raterId: number,
-    rateeId: number
-  ): Promise<IRating.PublicTutorRating | undefined> {
-    const select: Record<keyof IRating.PublicTutorRating, string> = {
+  async findRateeRatings({
+    topRaterId,
+    userId,
+    page,
+    size,
+    tx,
+  }: WithOptionalTx<
+    withPaginationObj<{
+      /**
+       * The ratee id.
+       */
+      userId: number;
+      /**
+       * When provided, the rating associated with this user will be at the top
+       * of the rating list.
+       */
+      topRaterId?: number;
+    }>
+  >): Promise<Paginated<IRating.RateeRatings>> {
+    const select: Record<keyof IRating.RateeRatings, string> = {
       id: this.column.ratings("id"),
-      userId: this.column.rater("id"),
-      name: this.column.rater("name"),
-      image: this.column.rater("image"),
+      userId: users.column("id"),
+      name: users.column("name"),
+      image: users.column("image"),
       value: this.column.ratings("value"),
       feedback: this.column.ratings("feedback"),
     };
 
-    const row = await this.builder()
-      .select<IRating.PublicTutorRating[]>(select)
+    const query = this.builder(tx)
       .innerJoin(
-        "users AS rater",
-        this.column.rater("id"),
+        users.table,
+        users.column("id"),
         this.column.ratings("rater_id")
       )
-      .where(this.column.ratings("rater_id"), raterId)
-      .andWhere(this.column.ratings("ratee_id"), rateeId)
-      .first();
+      .where(this.column.ratings("ratee_id"), userId);
 
-    return row;
-  }
+    const total = await countRows(query.clone());
 
-  /**
-  * This is a concrete or specific function that's only expected to work
-  * with tutors whereas it orders rows in a specific order.
-  */
-  async findOrderedTutorRatings(
-    tutorId: number,
-    pagination?: Pagination
-  ): Promise<Paginated<IRating.PublicTutorRating>> {
-    const select: Record<keyof IRating.PublicTutorRating, string> = {
-      id: this.column.ratings("id"),
-      userId: this.column.rater("id"),
-      name: this.column.rater("name"),
-      image: this.column.rater("image"),
-      value: this.column.ratings("value"),
-      feedback: this.column.ratings("feedback"),
-    };
+    const rows = await withPagination(
+      query
+        .clone()
+        .select<IRating.RateeRatings[]>(select)
+        .orderByRaw(
+          [
+            topRaterId ? `users.id = ${topRaterId} DESC` : null,
+            "ratings.value DESC",
+            "LENGTH(ratings.feedback) DESC NULLS LAST",
+            "ratings.created_at DESC",
+          ]
+            .filter((filed) => !!filed)
+            .join(", ")
+        ),
+      { page, size }
+    );
 
-    const query = this.builder()
-      .select<IRating.PublicTutorRating[]>(select)
-      .innerJoin(
-        "users AS rater",
-        this.column.rater("id"),
-        this.column.ratings("rater_id")
-      )
-      .where(this.column.ratings("ratee_id"), tutorId)
-      .orderByRaw("value DESC, LENGTH(feedback) DESC NULLS LAST, ratings.created_at DESC");
-
-    const totalQuery = knex.count().from(query);
-    const totalRow = await totalQuery.first();
-    const total = totalRow ? zod.coerce.number().parse(totalRow.count) : 0;
-
-    const rows = await withPagination(query.clone(), pagination);
-    return { list: rows, total };
+    return { list: rows, total: zod.coerce.number().parse(total) };
   }
 
   async find({

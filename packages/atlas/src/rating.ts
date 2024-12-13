@@ -1,6 +1,5 @@
 import { Base } from "@/base";
-import { IRating } from "@litespace/types";
-import { Pagination } from "@litespace/types/dist/esm/filter";
+import { IFilter, IRating } from "@litespace/types";
 
 export class Rating extends Base {
   async findById(id: number): Promise<IRating.Populated> {
@@ -19,22 +18,26 @@ export class Rating extends Base {
     await this.client.delete(`/api/v1/rating/${id}`);
   }
 
-  async findRaterRatings(id: number): Promise<IRating.FindRaterRatingsApiResponse> {
+  async findRaterRatings(
+    id: number
+  ): Promise<IRating.FindRaterRatingsApiResponse> {
     return this.client
       .get(`/api/v1/rating/list/rater/${id}`)
       .then((response) => response.data);
   }
 
-  async findRateeRatings(id: number): Promise<IRating.FindRateeRatingsApiResponse> {
+  async findRateeRatings(
+    id: number
+  ): Promise<IRating.FindRateeRatingsApiResponse> {
     return this.client
       .get(`/api/v1/rating/list/ratee/${id}`)
       .then((response) => response.data);
   }
 
   async findTutorRatings(
-    id: number, 
-    pagination?: Pagination
+    id: number,
+    pagination?: IFilter.Pagination
   ): Promise<IRating.FindTutorRatingsApiResponse> {
-    return await this.get(`/api/v1/rating/list/tutor/${id}`, {}, pagination || {});
+    return await this.get(`/api/v1/rating/list/tutor/${id}`, {}, pagination);
   }
 }
