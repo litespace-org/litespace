@@ -71,7 +71,7 @@ export class User extends Base {
   }
 
   async findOnboardedTutors(
-    params?: PagniationParams
+    params?: ITutor.FindOnboardedTutorsParams
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
     return await this.get(`/api/v1/user/tutor/list/onboarded`, {}, params);
   }
