@@ -15,7 +15,8 @@ exports.up = (pgm) => {
     "reg-admin",
     "tutor",
     "student",
-    "interviewer",
+    "interviewer", // TODO: to be removed
+    "tutor-manager",
     "media-provider",
   ]);
   pgm.createType("call_event", ["join", "leave"]);
@@ -359,6 +360,7 @@ exports.up = (pgm) => {
   pgm.createIndex("lessons", "id");
   pgm.createIndex("rules", "id");
   pgm.createIndex("tutors", "id");
+  pgm.createIndex("tutor_managers", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
   pgm.createIndex("plans", "id");
@@ -395,6 +397,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("rules", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
+  pgm.dropIndex("tutor_managers", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
@@ -421,6 +424,7 @@ exports.down = (pgm) => {
   pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
+  pgm.dropTable("tutor_managers", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
 
   // types

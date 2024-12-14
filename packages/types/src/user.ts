@@ -6,7 +6,8 @@ export enum Role {
   RegularAdmin = "reg-admin",
   Tutor = "tutor",
   Student = "student",
-  Interviewer = "interviewer",
+  Interviewer = "interviewer", // TODO: to be removed
+  TutorManager = "tutor-manager",
   MediaProvider = "media-provider",
 }
 
