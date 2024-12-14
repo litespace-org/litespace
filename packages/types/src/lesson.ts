@@ -107,7 +107,7 @@ export type CreateApiPayload = {
 
 export type CreateLessonApiResponse = Self;
 
-export type FindLessonsApiQuery = IFilter.Pagination & {
+export type FindLessonsApiQuery = IFilter.SkippablePagination & {
   users?: number[];
   ratified?: boolean;
   canceled?: boolean;
