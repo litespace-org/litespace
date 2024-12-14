@@ -1,91 +1,125 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { VideoPlayer } from "@litespace/luna/VideoPlayer";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { isEmpty } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import { ITutor } from "@litespace/types";
+import React, { useMemo, useState } from "react";
+import { LocalId } from "@litespace/luna/locales";
+import cn from "classnames";
+import { AnimatePresence, motion } from "framer-motion";
+import ProfileInfo from "./ProfileInfo";
+
+type Tab = "profile" | "ratings";
+
+const Animate: React.FC<{ children: React.ReactNode; tab: Tab }> = ({
+  children,
+  tab,
+}) => {
+  return (
+    <motion.div
+      key={tab}
+      initial={{
+        opacity: 0,
+        // height: 0,
+      }}
+      animate={{
+        opacity: 1,
+        // height: "auto",
+        transition: {
+          duration: 0.1,
+          ease: "linear",
+        },
+      }}
+      exit={{
+        opacity: 0,
+        // height: 0,
+      }}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 export const TutorTabs: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
 }> = ({ tutor }) => {
   const intl = useFormatMessage();
+  const [tab, setTab] = useState<Tab>("profile");
+
+  const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
+    return [
+      {
+        value: "profile",
+        label: "tutor.profile.tabs.profile",
+      },
+      {
+        value: "ratings",
+        label: "tutor.profile.tabs.reviews",
+      },
+    ];
+  }, []);
+
   return (
     <div className="mt-12">
-      <Tabs.Root defaultValue="profile">
+      <Tabs.Root
+        value={tab}
+        onValueChange={(value: string) => setTab(value as Tab)}
+      >
         <Tabs.List className="border-b border-natural-300 flex gap-[56px] ">
-          <Tabs.Trigger
-            value="profile"
-            className=" data-[state=active]:border-b-[3px] border-brand-700 py-2 rounded-t-[10px]"
-          >
-            <Typography element="body" className="text-brand-700 font-semibold">
-              {intl("tutor.profile.tabs.profile")}
-            </Typography>
-          </Tabs.Trigger>
-          <Tabs.Trigger
-            value="reviews"
-            className=" data-[state=active]:border-b-[3px] border-brand-700 py-2 rounded-t-[10px]"
-          >
-            <Typography element="body" className="text-brand-700 font-semibold">
-              {intl("tutor.profile.tabs.reviews")}
-            </Typography>
-          </Tabs.Trigger>
-        </Tabs.List>
-        <Tabs.Content
-          value="profile"
-          className="grid grid-cols-2 gap-[88px] mt-8"
-        >
-          <div>
-            {tutor.about ? (
-              <div>
-                <Typography
-                  element="subtitle-2"
-                  className="text-natural-950 font-bold mb-8"
-                >
-                  {intl("tutor.profile.tabs.profile.about")}
-                </Typography>
-                <Typography element="body" className="text-natural-800">
-                  {tutor.about}
-                </Typography>
-              </div>
-            ) : null}
-            {!isEmpty(tutor.topics) ? (
-              <div className="mt-8">
-                <Typography
-                  element="subtitle-2"
-                  className="text-natural-950 font-bold mb-8"
-                >
-                  {intl("tutor.profile.tabs.profile.specialities")}
-                </Typography>
-                <div className="flex items-center gap-4 flex-wrap">
-                  {tutor.topics.map((topic, index) => (
-                    <div
-                      key={index}
-                      className="py-3 px-4 bg-brand-700 rounded-3xl text-center"
-                    >
-                      <Typography
-                        element="caption"
-                        className="text-natural-50 "
-                      >
-                        {topic}
-                      </Typography>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-          </div>
-          {tutor.video ? (
-            <div>
+          {tabs.map(({ value, label }) => (
+            <Tabs.Trigger
+              key={value}
+              value={value}
+              className={cn("py-2 relative")}
+            >
               <Typography
-                element="subtitle-2"
-                className="text-natural-950 font-bold mb-8"
+                element="body"
+                weight="semibold"
+                className={cn(
+                  "transition-colors duration-300",
+                  value === tab ? "text-brand-700" : "text-natural-500"
+                )}
               >
-                {intl("tutor.profile.tabs.profile.video")}
+                {intl(label)}
               </Typography>
-              <VideoPlayer src={tutor.video} />
-            </div>
-          ) : null}
-        </Tabs.Content>
+              <AnimatePresence>
+                {tab === value ? (
+                  <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{
+                      opacity: 1,
+                      transition: {
+                        duration: 0.3,
+                      },
+                    }}
+                    exit={{ opacity: 0 }}
+                    className="absolute -bottom-[1px] left-0 w-full h-[3px] bg-brand-700 rounded-t-[10px]"
+                  />
+                ) : null}
+              </AnimatePresence>
+            </Tabs.Trigger>
+          ))}
+        </Tabs.List>
+
+        <div className="mt-8">
+          <AnimatePresence initial={false} mode="wait">
+            {tab === "profile" ? (
+              <Animate key="profile" tab="profile">
+                <ProfileInfo
+                  about={tutor.about}
+                  topics={tutor.topics}
+                  video={tutor.video}
+                />
+              </Animate>
+            ) : null}
+            {tab === "ratings" ? (
+              <Animate key="ratings" tab="ratings">
+                <div className="min-h-96">
+                  <h1>Ratings</h1>
+                </div>
+              </Animate>
+            ) : null}
+          </AnimatePresence>
+        </div>
       </Tabs.Root>
     </div>
   );
