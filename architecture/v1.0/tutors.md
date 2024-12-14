@@ -170,10 +170,10 @@ type Response = Paginated<{
 - [x] Search tutors by name and topics.
   - API should accept a `keyword` as a query param and filter tutors according to it.
 - [ ] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
-  - [ ] Update the database models to include the new role `tutor-manager`.
-  - [ ] Update the `create` user api handler.
-  - [ ] Update the `update` user api handler.
-  - [ ] Tutor managers should be part of the tutors cache.
+  - [x] Update the database models to include the new role `tutor-manager`.
+  - [x] Update the `create` user api handler.
+  - [x] Update the `update` user api handler.
+  - [x] Tutor managers should be part of the tutors cache.
   - [ ] Update the seed script to create multiple tutor managers.
   - [ ] Remove the `interviewer` from the client (`nova` and `dashboard`)
   - [ ] Remove the `interviewer` from the server, models, and database.

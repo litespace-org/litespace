@@ -112,6 +112,10 @@ export function isTutor(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Tutor;
 }
 
+export function isTutorManager(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.TutorManager;
+}
+
 export function isStudent(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Student;
 }

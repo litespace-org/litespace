@@ -1,10 +1,9 @@
 import { column, countRows, knex, withFilter, withPagination } from "@/query";
 import { first, isEmpty, merge, omit } from "lodash";
-import { IUser, ITutor, IFilter, Paginated, as } from "@litespace/types";
+import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
-import { lessons } from "./lessons";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFields = ITutor.FullTutorRow;

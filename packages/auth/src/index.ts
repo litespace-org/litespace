@@ -1,4 +1,4 @@
-import { EmptyObject, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 
 declare global {
   namespace Express {
