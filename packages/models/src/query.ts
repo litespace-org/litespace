@@ -113,7 +113,7 @@ export function withSkippablePagination<Row extends object, Result = Row[]>(
   builder: Knex.QueryBuilder<Row, Result>,
   pagination: IFilter.SkippablePagination = {}
 ) {
-  if ("full" in pagination) return builder;
+  if (pagination.full) return builder;
   return withPagination(builder, pagination);
 }
 

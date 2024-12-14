@@ -9,7 +9,7 @@ import {
   pageSize,
   withNamedId,
 } from "@/validation/utils";
-import { busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
+import { bad, busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
 import { ILesson, IRule, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
@@ -43,6 +43,7 @@ const findLessonsQuery = zod.object({
   now: zod.optional(jsonBoolean),
   after: zod.optional(zod.string().datetime()),
   before: zod.optional(zod.string().datetime()),
+  full: zod.optional(jsonBoolean),
 });
 
 function create(context: ApiContext) {
@@ -142,6 +143,25 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     isAdmin(user);
   if (!allowed) return next(forbidden());
 
+  /**
+   * The `full` flag can be used only if the `after` and `before` params are
+   * provided and the period between them is less than equal to 2 weeks.
+   *
+   *
+   * @note why expose the `full` flag?
+   *
+   * Client will need to display all lessons available for a given week (e.g.,
+   * weekly calendar). By providing the `full` flag, it will be able to get all
+   * lessons of the week in one single request.
+   */
+
+  const canUseFullFlag =
+    query.after &&
+    query.before &&
+    dayjs.utc(query.before).diff(query.after, "days") <= 14;
+
+  if (query.full && !canUseFullFlag) return next(bad());
+
   const { list: userLessons, total } = await lessons.find({
     users: query.users,
     ratified: query.ratified,
@@ -153,6 +173,7 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     before: query.before,
     page: query.page,
     size: query.size,
+    full: query.full,
   });
 
   const userLesonsIds = userLessons.map((lesson) => lesson.id);
