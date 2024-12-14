@@ -64,3 +64,9 @@ When the user is connected/disconnected to/from the server
 - [ ] Online/Offline ([info](#onlineoffline)) @mmoehabb
 - [ ] Mark message as read ([info](#mark-messages-as-read)). @mmoehabb
 - [ ] Delete messages ([info](#delete-message)). @mmoehabb
+- [ ] Update the message component to have the following states @mostafakamar2308
+  - Loading
+  - Idle.
+  - Error (with retry)
+- [ ] Integrate typing now. @mostafakamar2308
+- [ ] Update the overall design of the chat page according to Figma. @mostafakamar2308

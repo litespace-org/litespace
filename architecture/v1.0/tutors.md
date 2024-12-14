@@ -167,7 +167,7 @@ type Response = Paginated<{
 
 - [x] Update the tutors cache according to the [new design](#cache-strucutre). [@mmoehabb](https://github.com/mmoehabb)
 - [x] Update [`findOnboardedTutors`](/services/server/src/handlers/user.ts) handler to response with [this](#find-onboared-tutors-api)
-- [ ] Search tutors by name and topics.
+- [x] Search tutors by name and topics.
   - API should accept a `keyword` as a query param and filter tutors according to it.
 - [ ] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
   - [ ] Update the database models to include the new role `tutor-manager`.
@@ -178,15 +178,15 @@ type Response = Paginated<{
   - [ ] Remove the `interviewer` from the client (`nova` and `dashboard`)
   - [ ] Remove the `interviewer` from the server, models, and database.
   - [ ] Remove the `interviewer` from the the remaining packages.
-- [ ] Explain how `rrules` works. [@neuodev](https://github.com/neuodev)
-- [ ] Impl. _book a lesson dialog_ [@neuodev](https://github.com/neuodev)
-- [ ] Rating (or updating a rate) for the tutor [@moalidv](https://github.com/moalidv)
-  - [ ] Update the rating card design.
+- [x] Explain how `rrules` works. [@neuodev](https://github.com/neuodev)
+- [x] Impl. _book a lesson dialog_ [@neuodev](https://github.com/neuodev)
+- [x] Rating (or updating a rate) for the tutor [@moalidv](https://github.com/moalidv)
+  - [x] Update the rating card design.
     - Add actions (edit and delete).
     - Display rating starts.
-- [ ] Impl. video player [@mostafakamar2308](https://github.com/mostafakamar2308)
+- [x] Impl. video player [@mostafakamar2308](https://github.com/mostafakamar2308)
 - [x] Update the find tutor info API ([info](#find-tutor-api)). [@mmoehabb](https://github.com/mmoehabb)
 - [x] Write tests for the ratings endpoints. [@mmoehabb](https://github.com/mmoehabb)
-- [ ] Put all pieces together at the tutor profile page [@mostafakamar2308](https://github.com/mostafakamar2308)
+- [x] Put all pieces together at the tutor profile page [@mostafakamar2308](https://github.com/mostafakamar2308)
 - [x] Update the find tutor rules api ([info](#find-tutor-rules-api)) (with tests) [@mmoehabb](https://github.com/mmoehabb)
 - [x] Impl. find tutor ratings endpoint ([info](#find-tutor-ratings-api)) [@mmoehabb](https://github.com/mmoehabb)
