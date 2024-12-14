@@ -23,6 +23,7 @@ const Schedule: React.FC = () => {
     userOnly: true,
     after: date.toISOString(),
     before: date.add(1, "week").toISOString(),
+    full: true,
   });
 
   return (
