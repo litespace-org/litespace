@@ -66,7 +66,7 @@ export const TutorProfileCard: React.FC<{
               </Typography>
             ) : null}
           </div>
-          {avgRating === 0 ? (
+          {avgRating > 0 ? (
             <div className="tw-flex tw-items-center tw-gap-2">
               <Typography
                 element="subtitle-2"

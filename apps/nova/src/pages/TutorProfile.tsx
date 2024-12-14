@@ -2,7 +2,7 @@ import { Loading } from "@litespace/luna/Loading";
 import React, { useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
-import RightArrowHead from "@litespace/assets/RightArrowHead";
+import RightArrow from "@litespace/assets/ArrowRight";
 import { Typography } from "@litespace/luna/Typography";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorProfileCard } from "@litespace/luna/TutorProfile";
@@ -22,13 +22,13 @@ const TutorProfile: React.FC = () => {
 
   if (tutor.isLoading) return <Loading className="h-[40vh]" />;
 
-  //TODO: Need to implement error state
+  // TODO: Need to implement error state
   if (!tutor.data || tutor.error) return null;
   return (
-    <div className="w-full max-w-screen-3xl p-6 mx-auto mb-12 lg:max-w-screen-2xl">
+    <div className="w-full max-w-screen-3xl p-6 mx-auto mb-12 lg:max-w-screen-3xl">
       <div className="flex items-center gap-6">
         <button className="w-6 h-6 flex items-center justify-center">
-          <RightArrowHead className="[&>*]:stroke-brand-700" />
+          <RightArrow className="[&>*]:stroke-brand-700" />
         </button>
         <Typography element="subtitle-2" className="font-bold text-natural-950">
           {intl("tutors.title")} /{" "}
