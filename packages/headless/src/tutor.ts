@@ -180,3 +180,18 @@ export function useFindTutorMeta(
     enabled: !!id,
   });
 }
+
+export function useFindTutorInfo(id: number | null) {
+  const atlas = useAtlas();
+
+  const findTutorInfo = useCallback(async () => {
+    if (!id) return null;
+    return await atlas.user.findTutorInfo(id);
+  }, [atlas.user, id]);
+
+  return useQuery({
+    queryFn: findTutorInfo,
+    queryKey: [QueryKey.FindTutorInfo, id],
+    enabled: !!id,
+  });
+}
