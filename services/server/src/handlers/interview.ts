@@ -4,7 +4,6 @@ import {
   forbidden,
   interviewAlreadySigned,
   notfound,
-  unexpected,
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import {
@@ -27,12 +26,12 @@ import {
   string,
   withNamedId,
 } from "@/validation/utils";
-import { Element, IInterview } from "@litespace/types";
+import { IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
-import { isAdmin, isInterviewer, isSuperAdmin, isTutor } from "@litespace/auth";
-import { isEmpty, isEqual } from "lodash";
+import { isAdmin, isTutorManager, isSuperAdmin, isTutor } from "@litespace/auth";
+import { isEqual } from "lodash";
 import { canBook } from "@/lib/call";
 import { platformConfig } from "@/constants";
 
@@ -82,7 +81,7 @@ async function createInterview(
 
   const interviewer = await users.findById(interviewerId);
   if (!interviewer) return next(notfound.user());
-  if (!isInterviewer(interviewer)) return next(bad());
+  if (!isTutorManager(interviewer)) return next(bad());
 
   const list = await interviews.findByInterviewee(intervieweeId);
   const interviewable = canBeInterviewed(list);
@@ -131,7 +130,7 @@ async function findInterviews(req: Request, res: Response, next: NextFunction) {
     req.query
   );
   const owner =
-    (isTutor(user) || isInterviewer(user)) && isEqual(query.users, [user.id]);
+    (isTutor(user) || isTutorManager(user)) && isEqual(query.users, [user.id]);
   const allowed = owner || isAdmin(user);
   if (!allowed) return next(forbidden());
 
@@ -159,7 +158,7 @@ async function findInterviewById(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isTutor(user) || isAdmin(user) || isInterviewer(user);
+  const allowed = isTutor(user) || isAdmin(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
@@ -168,7 +167,7 @@ async function findInterviewById(
 
   if (
     (isTutor(user) && user.id !== interview.ids.interviewee) ||
-    (isInterviewer(user) && user.id !== interview.ids.interviewer)
+    (isTutorManager(user) && user.id !== interview.ids.interviewer)
   )
     return next(forbidden());
 
@@ -181,7 +180,7 @@ async function updateInterview(
   next: NextFunction
 ) {
   const user = req.user;
-  const allowed = isSuperAdmin(user) || isInterviewer(user) || isTutor(user);
+  const allowed = isSuperAdmin(user) || isTutorManager(user) || isTutor(user);
   if (!allowed) return next(forbidden());
 
   const { interviewId } = withNamedId("interviewId").parse(req.params);
@@ -193,7 +192,7 @@ async function updateInterview(
 
   if (
     (isTutor(user) && user.id !== interview.ids.interviewee) ||
-    (isInterviewer(user) && user.id !== interview.ids.interviewer)
+    (isTutorManager(user) && user.id !== interview.ids.interviewer)
   )
     return next(forbidden());
 
@@ -202,7 +201,7 @@ async function updateInterview(
     isTutor(user) && !payload.feedback?.interviewee;
 
   const isPermissionedInterviewer =
-    isInterviewer(user) &&
+    isTutorManager(user) &&
     (!payload.feedback?.interviewer ||
       !payload.note ||
       !payload.level ||

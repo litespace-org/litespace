@@ -25,7 +25,7 @@ import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
 import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
-import { isInterviewer, isTutor, isUser } from "@litespace/auth";
+import { isTutorManager, isTutor, isUser } from "@litespace/auth";
 import { isOnboard } from "@/lib/tutor";
 
 const title = zod.string().min(5).max(255);
@@ -70,7 +70,7 @@ function createRule(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
       const user = req.user;
-      const allowed = isTutor(user) || isInterviewer(user);
+      const allowed = isTutor(user) || isTutorManager(user);
       if (!allowed) return next(forbidden());
 
       const payload: IRule.CreateApiPayload = createRulePayload.parse(req.body);

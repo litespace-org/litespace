@@ -77,13 +77,13 @@ const UserDetails = () => {
           <TutorStats stats={financialTutorStats} />
         </div>
       ) : null}
-      {(role?.tutor || role?.interviewer) && id ? (
+      {(role?.tutor || role?.tutorManager) && id ? (
         <div className="mt-4">
           <Interviews user={id} />
         </div>
       ) : null}
 
-      {(role?.tutor || role?.interviewer || role?.student) && id ? (
+      {(role?.tutor || role?.tutorManager || role?.student) && id ? (
         <div className="mt-4">
           <Lessons user={id} />
         </div>

@@ -1,5 +1,4 @@
 import { IUser } from "@litespace/types";
-import { Request } from "express";
 import UrlPattern from "url-pattern";
 import { isProduction } from "@/constants";
 import "colors";
@@ -9,7 +8,7 @@ const authorized = "authorized";
 const unauthorized = "unauthorized";
 const superAdmin = IUser.Role.SuperAdmin;
 const regAdmin = IUser.Role.RegularAdmin;
-const interviewer = IUser.Role.Interviewer;
+const tutorManager = IUser.Role.TutorManager;
 const tutor = IUser.Role.Tutor;
 const student = IUser.Role.Student;
 const provider = IUser.Role.MediaProvider;
@@ -75,7 +74,7 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [regAdmin, interviewer],
+    roles: [regAdmin, tutorManager],
     route: "(/)api/v1/user/list(/)",
     methods: ["GET"],
   },
@@ -118,7 +117,7 @@ const policies: Array<Policy> = [
     methods: ["DELETE"],
   },
   {
-    roles: [regAdmin, interviewer, provider],
+    roles: [regAdmin, tutorManager, provider],
     route: "(/)api/v1/tutor/media/*",
     methods: ["GET"],
   },
@@ -273,23 +272,23 @@ const policies: Array<Policy> = [
   },
   // slots
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/slot(/)",
     methods: ["POST"],
   },
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/slot/:id(/)",
     methods: ["PUT"],
   },
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/slot/:id(/)",
     methods: ["GET"],
     ignore: { key: "id", value: "me" },
   },
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/slot/me(/)",
     methods: ["GET"],
   },
@@ -299,12 +298,12 @@ const policies: Array<Policy> = [
     methods: ["GET"],
   },
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/slot/:id(/)",
     methods: ["PUT"],
   },
   {
-    roles: [regAdmin, interviewer, tutor],
+    roles: [regAdmin, tutorManager, tutor],
     route: "(/)api/v1/slot/:id(/)",
     methods: ["DELETE"],
   },
@@ -326,7 +325,7 @@ const policies: Array<Policy> = [
     methods: ["POST"],
   },
   {
-    roles: [interviewer, tutor],
+    roles: [tutorManager, tutor],
     route: "(/)api/v1/interview/list/:userId(/)",
     methods: ["GET"],
   },

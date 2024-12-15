@@ -35,8 +35,8 @@ export class Authorizer {
     return this.superAdmin().regAdmin();
   }
 
-  interviewer(): Authorizer {
-    return this.role(IUser.Role.Interviewer);
+  tutorManager(): Authorizer {
+    return this.role(IUser.Role.TutorManager);
   }
 
   mediaProvider(): Authorizer {
@@ -112,16 +112,16 @@ export function isTutor(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Tutor;
 }
 
+export function isTutorManager(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.TutorManager;
+}
+
 export function isStudent(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Student;
 }
 
 export function isMediaProvider(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.MediaProvider;
-}
-
-export function isInterviewer(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.Interviewer;
 }
 
 export function isGhost(user: unknown): user is IUser.Ghost {
@@ -144,8 +144,8 @@ export function admin(role: IUser.Role): boolean {
   return role === IUser.Role.SuperAdmin || role === IUser.Role.RegularAdmin;
 }
 
-export function interviewer(role: IUser.Role): boolean {
-  return role === IUser.Role.Interviewer;
+export function tutorManager(role: IUser.Role): boolean {
+  return role === IUser.Role.TutorManager;
 }
 
 export function mediaProvider(role: IUser.Role): boolean {
@@ -159,7 +159,7 @@ export function student(role: IUser.Role): boolean {
 export const is = {
   tutor,
   admin,
-  interviewer,
+  tutorManager,
   mediaProvider,
   student,
 } as const;
