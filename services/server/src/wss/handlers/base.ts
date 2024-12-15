@@ -1,7 +1,7 @@
 import { IUser, Wss } from "@litespace/types";
 import { Socket } from "socket.io";
 
-export abstract class WSSHandler {
+export abstract class WssHandler {
   protected readonly socket: Socket;
   protected readonly user: IUser.Self | IUser.Ghost;
 

@@ -5,8 +5,7 @@ import { Wss } from "@litespace/types";
 import { getGhostCall } from "@litespace/sol/ghost";
 import { cache } from "@/lib/cache";
 import { id, string } from "@/validation/utils";
-import { WSSHandler } from "./base";
-
+import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
 import { isEmpty } from "lodash";
 
@@ -15,7 +14,10 @@ const registerPeerPayload = zod.object({ peer: zod.string() });
 
 const stdout = logger("wss");
 
-export class PeerHandler extends WSSHandler {
+/**
+ * @deprecated should be removed in favor of the new call-cache-based design.
+ */
+export class Peer extends WssHandler {
   async peerOpened(data: unknown) {
     const error = await safe(async () => {
       const { callId, peerId } = peerPayload.parse(data);
@@ -46,8 +48,7 @@ export class PeerHandler extends WSSHandler {
 
       if (isGhost(user))
         await cache.peer.setGhostPeerId(getGhostCall(user), peer);
-      if (isTutor(user)) 
-        await cache.peer.setUserPeerId(user.id, peer);
+      if (isTutor(user)) await cache.peer.setUserPeerId(user.id, peer);
 
       // notify peers to refetch the peer id if needed
     });

@@ -3,18 +3,27 @@ import { canJoinCall } from "@/lib/call";
 import { isGhost } from "@litespace/auth";
 import { logger, safe } from "@litespace/sol";
 import { ICall, Wss } from "@litespace/types";
-import { WSSHandler } from "@/wss/handlers/base";
+import { WssHandler } from "@/wss/handlers/base";
+import { asCallRoomId } from "@/wss/utils";
 
 import zod from "zod";
-import { asCallRoomId } from "../utils";
 
 const callTypes = ["lesson", "interview"] as const satisfies ICall.Type[];
 const stdout = logger("wss");
 
-const onJoinCallPayload = zod.object({ callId: zod.number(), type: zod.enum(callTypes) });
+const onJoinCallPayload = zod.object({
+  callId: zod.number(),
+  type: zod.enum(callTypes),
+});
 const onLeaveCallPayload = zod.object({ callId: zod.number() });
 
-export class CallHandler extends WSSHandler {
+export class Call extends WssHandler {
+  public init(): Call {
+    this.socket.on(Wss.ClientEvent.JoinCall, this.onJoinCall.bind(this));
+    this.socket.on(Wss.ClientEvent.LeaveCall, this.onLeaveCall.bind(this));
+    return this;
+  }
+
   /*
    *  This event listener will be called whenever a user
    *  joins a call. For instance, when
@@ -93,4 +102,3 @@ export class CallHandler extends WSSHandler {
     if (result instanceof Error) stdout.error(result.message);
   }
 }
-
