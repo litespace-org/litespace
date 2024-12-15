@@ -71,21 +71,6 @@ async function main(): Promise<void> {
     birthYear: birthYear(),
   });
 
-  const interviewer = await knex.transaction(async (tx) => {
-    const interviewer = await users.create(
-      {
-        role: IUser.Role.Interviewer,
-        email: "interviewer@litespace.org",
-        name: faker.person.fullName(),
-        birthYear: birthYear(),
-        password,
-      },
-      tx
-    );
-
-    return interviewer;
-  });
-
   const student = await knex.transaction(async (tx) => {
     const student = await users.create(
       {
@@ -190,7 +175,7 @@ async function main(): Promise<void> {
 
   const addedTutorManagers: IUser.Self[] = await knex.transaction(async (tx) => {
     return await Promise.all(
-      range(1, 16).map(async (idx) => {
+      range(1, 3).map(async (idx) => {
         const email = `tutor-manager-${idx}@litespace.org`;
         const tutor = await users.create(
           {
@@ -249,7 +234,7 @@ async function main(): Promise<void> {
   });
 
   const rule = await rules.create({
-    userId: interviewer.id,
+    userId: tutorManager.id,
     frequency: IRule.Frequency.Daily,
     start: dayjs.utc().startOf("day").toISOString(),
     end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
@@ -402,7 +387,7 @@ async function main(): Promise<void> {
       const interview = await interviews.create({
         call: call.id,
         interviewee: tutor.id,
-        interviewer: interviewer.id,
+        interviewer: tutorManager.id,
         start: randomStart(),
         rule: rule.id,
         tx,
@@ -552,7 +537,7 @@ async function main(): Promise<void> {
     reportId: 1,
   });
 
-  const roomId = await rooms.create([tutor.id, interviewer.id]);
+  const roomId = await rooms.create([tutor.id, tutorManager.id]);
 
   await messages.create({
     userId: tutor.id,
@@ -561,7 +546,7 @@ async function main(): Promise<void> {
   });
 
   await messages.create({
-    userId: interviewer.id,
+    userId: tutorManager.id,
     text: "Nice to meet you!",
     roomId,
   });

@@ -13,10 +13,9 @@ import {
 } from "@/validation/utils";
 import { empty, exists, forbidden, notfound } from "@/lib/error";
 import {
-  authorizer,
   isAdmin,
   isGhost,
-  isInterviewer,
+  isTutorManager,
   isStudent,
   isTutor,
   isUser,
@@ -57,8 +56,8 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
    */
   const eligible =
     (isStudent(currentUser) && isTutor(targetUser)) ||
-    (isTutor(currentUser) && isInterviewer(targetUser)) ||
-    (isInterviewer(currentUser) && isTutor(targetUser));
+    (isTutor(currentUser) && isTutorManager(targetUser)) ||
+    (isTutorManager(currentUser) && isTutor(targetUser));
 
   if (!eligible) return next(forbidden());
 
