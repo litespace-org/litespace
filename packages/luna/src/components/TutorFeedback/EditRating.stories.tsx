@@ -18,7 +18,7 @@ const meta: Meta<typeof EditRating> = {
 
 const url = "https://picsum.photos/200";
 
-export const WithComment: Story = {
+export const WithFeedback: Story = {
   args: {
     studentName: faker.person.fullName(),
     tutorName: faker.person.fullName(),
@@ -28,10 +28,11 @@ export const WithComment: Story = {
     rating: 3,
     open: true,
     setOpen: () => {},
+    onUpdate: () => alert("update rating"),
   },
 };
 
-export const WithoutComment: Story = {
+export const WithoutFeedback: Story = {
   args: {
     rating: 0,
     studentName: faker.person.fullName(),
@@ -40,6 +41,7 @@ export const WithoutComment: Story = {
     imageUrl: url,
     open: true,
     setOpen: () => {},
+    onUpdate: () => alert("update rating"),
   },
 };
 

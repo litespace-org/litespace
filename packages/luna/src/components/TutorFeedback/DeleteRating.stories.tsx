@@ -19,6 +19,8 @@ const meta: Meta<typeof DeleteRating> = {
 export const Primary: Story = {
   args: {
     open: true,
+    close: () => alert("close"),
+    onDelete: () => alert("delete rating"),
   },
 };
 

@@ -79,7 +79,6 @@
     "./PlaybackSpeed": "./dist/PlaybackSpeed.tsx",
     "./Quote": "./dist/Quote.tsx",
     "./Recording": "./dist/Recording.tsx",
-    "./RedTrash": "./dist/RedTrash.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
     "./RightArrowHead": "./dist/RightArrowHead.tsx",
