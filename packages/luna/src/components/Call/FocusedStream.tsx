@@ -4,6 +4,8 @@ import { VideoBar } from "@/components/Call/VideoBar";
 import { CallAvatar } from "@/components/Call/CallAvatar";
 import { StreamInfo } from "@/components/Call/types";
 import { Void } from "@litespace/types";
+import cn from "classnames";
+
 export const FocusedStream: React.FC<{
   alert?: string;
   streamMuted: boolean;
@@ -43,19 +45,24 @@ export const FocusedStream: React.FC<{
         key={stream.user.id}
         className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
       >
-        {stream.camera || stream.cast ? (
-          <video
-            ref={videoRef}
-            autoPlay
-            className="tw-w-full tw-aspect-video"
-            muted={streamMuted}
-            playsInline
-          />
-        ) : (
-          <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center">
-            <CallAvatar user={stream.user} speaking={stream.speaking} />
-          </div>
-        )}
+        <video
+          ref={videoRef}
+          autoPlay
+          className={cn(
+            "tw-w-full tw-aspect-video tw-absolute tw-top-0",
+            !stream.camera && !stream.cast && "tw-opacity-0"
+          )}
+          muted={streamMuted}
+          playsInline
+        />
+        <div
+          className={cn(
+            "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center",
+            (stream.camera || stream.cast) && "tw-opacity-0"
+          )}
+        >
+          <CallAvatar user={stream.user} speaking={stream.speaking} />
+        </div>
       </motion.div>
 
       <VideoBar
