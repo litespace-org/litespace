@@ -5,6 +5,7 @@ import SStar from "@litespace/assets/SStar";
 import cn from "classnames";
 import { range } from "lodash";
 import React from "react";
+import { motion } from "framer-motion";
 
 type StarProps = {
   /**
@@ -13,7 +14,9 @@ type StarProps = {
   rating: number;
   /**
    * represents the size of star
-   * sm "20*20" md "38*38" lg "50*51"
+   * - sm "20x20"
+   * - md "38x38"
+   * - lg "50x51"
    */
   variant?: "sm" | "md" | "lg";
   /**
@@ -50,7 +53,9 @@ export const RatingStars: React.FC<StarProps> = ({
     >
       {range(5).map((idx) => (
         <div key={idx} className={cn("tw-flex tw-flex-col tw-gap-4")}>
-          <div
+          <motion.div
+            whileHover={readonly ? undefined : { scale: 1.1 }}
+            whileTap={readonly ? undefined : { scale: 0.9 }}
             className={cn(
               { "tw-w-5 tw-h-5": variant === "sm" },
               { "tw-w-[38px] tw-h-[38px]": variant === "md" },
@@ -60,7 +65,7 @@ export const RatingStars: React.FC<StarProps> = ({
             <SStar
               width={variant === "sm" ? "20px" : ""}
               className={cn(
-                "hover:tw-cursor-pointer",
+                !readonly && "hover:tw-cursor-pointer",
                 idx + 1 <= rating
                   ? "[&>*]:tw-fill-warning-500"
                   : "[&>*]:tw-fill-natural-300"
@@ -70,7 +75,7 @@ export const RatingStars: React.FC<StarProps> = ({
                 setRating(idx + 1);
               }}
             />
-          </div>
+          </motion.div>
           {!readonly ? (
             <Typography
               element="caption"

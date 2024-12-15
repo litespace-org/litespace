@@ -50,7 +50,7 @@ export type FeedbackEditProps = {
   /**
    * student comment about the tutor
    */
-  feedback: string;
+  feedback: string | null;
   /**
    * rating of the tutor bet 1, 5
    */
@@ -70,15 +70,11 @@ export type FeedbackEditProps = {
   /**
    * fn updates the rating and comment of the tutor
    */
-  onUpdate: (newRating: number, newComment: string) => void;
+  onUpdate: (payload: { value: number; feedback: string | null }) => void;
   onClose: Void;
 };
 
 export type FeedbackDeleteProps = {
-  /**
-   * id for the deleted comment
-   */
-  ratingId: number;
   /**
    * state of the dialog wheather opened or not
    */
@@ -87,9 +83,6 @@ export type FeedbackDeleteProps = {
    * fn toggles the dialog
    */
   setOpen: (open: boolean) => void;
-  /**
-   * fn deletes the rating
-   */
-  onDelete: (studentId: number) => void;
-  onClose: Void;
+  onDelete: Void;
+  close: Void;
 };

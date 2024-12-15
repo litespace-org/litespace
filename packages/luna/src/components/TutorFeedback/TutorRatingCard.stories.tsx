@@ -68,7 +68,7 @@ export const HighStats: Story = {
   },
 };
 
-export const OwnerOfComment: Story = {
+export const RatingOwner: Story = {
   args: {
     owner: true,
     studentId: 4,
@@ -77,6 +77,8 @@ export const OwnerOfComment: Story = {
     feedback: faker.lorem.words(10),
     rating: 2.85,
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    onEdit: () => alert("edit rating"),
+    onDelete: () => alert("delete rating"),
   },
 };
 

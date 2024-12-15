@@ -22,7 +22,7 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
   onUpdate,
 }) => {
   const intl = useFormatMessage();
-  const [newFeedback, setNewFeedback] = useState<string>(feedback);
+  const [newFeedback, setNewFeedback] = useState<string | null>(feedback);
   const [newRating, setNewRating] = useState<number>(rating);
 
   return (
@@ -51,7 +51,7 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
         feedback={newFeedback}
         rating={newRating}
         tutorName={tutorName}
-        isEditing={true}
+        isEditing
       />
       <RatingStars
         variant="lg"
@@ -59,18 +59,19 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
         readonly={false}
         setRating={setNewRating}
       />
-      <div className="tw-flex tw-gap-6 tw-mt-8 tw-w-[696px]">
+      <div className="tw-flex tw-gap-6 tw-w-[696px]">
         <Input
-          className="tw-h-14"
           placeholder={intl(
             "student-dashboard.rating-dialog.add-comment-placeholder"
           )}
-          value={newFeedback}
+          value={newFeedback || ""}
           onChange={(e) => setNewFeedback(e.target.value)}
         />
         <Button
           size={ButtonSize.Large}
-          onClick={() => onUpdate(newRating, newFeedback)}
+          onClick={() =>
+            onUpdate({ value: newRating, feedback: newFeedback || null })
+          }
           disabled={newFeedback === feedback && newRating === rating}
         >
           <Typography

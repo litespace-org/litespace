@@ -91,26 +91,22 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
 
         <RatingStars
           rating={rating}
-          readonly={true}
           variant={!feedback && !isEditing ? "md" : "sm"}
+          readonly
         />
 
         {!isEditing && !feedback ? null : (
-          <div
-            className={cn("tw-line-clamp-5 tw-text-center")}
-            style={{ overflowWrap: "anywhere" }}
+          <Typography
+            element="tiny-text"
+            weight={!feedback && isEditing ? "semibold" : "regular"}
+            className={cn("tw-line-clamp-5 tw-text-center tw-text-natural-600")}
           >
-            <Typography
-              element="tiny-text"
-              weight={!feedback && isEditing ? "semibold" : "regular"}
-              className={cn("tw-text-ellipsis tw-text-natural-600")}
-            >
-              {!feedback && isEditing
-                ? intl("tutor.rating.feedback.placeholder")
-                : feedback}
-            </Typography>
-          </div>
+            {!feedback && isEditing
+              ? intl("tutor.rating.feedback.placeholder")
+              : feedback}
+          </Typography>
         )}
+
         <Typography
           element="body"
           weight="bold"
