@@ -24,7 +24,7 @@ export const WithComment: Story = {
     tutorName: faker.person.fullName(),
     studentId: 1,
     imageUrl: url,
-    comment: faker.lorem.words(20),
+    feedback: faker.lorem.words(20),
     rating: 3,
     open: true,
     setOpen: () => {},

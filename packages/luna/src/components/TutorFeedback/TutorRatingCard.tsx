@@ -5,42 +5,54 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import More from "@litespace/assets/More";
 import Quote from "@litespace/assets/Quote";
+import EditMessage16X16 from "@litespace/assets/EditMessage16X16";
+import Trash from "@litespace/assets/Trash";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
 import { orUndefined } from "@litespace/sol/utils";
 import cn from "classnames";
-import React, { useMemo } from "react";
+import React from "react";
 
 export const TutorRatingCard: React.FC<RatingCardProps> = ({
-  profileId,
+  owner,
   studentId,
   studentName,
   tutorName,
-  comment,
+  feedback,
   imageUrl,
   rating,
-  actions,
-  className,
-  active,
+  isEditing = false,
+  onEdit,
+  onDelete,
 }) => {
   const intl = useFormatMessage();
-  const isCommentOwner = useMemo(() => {
-    return studentId === profileId;
-  }, [studentId, profileId]);
 
   return (
     <div className="tw-relative">
       <div
         className={cn(
-          "tw-relative tw-h-full tw-flex tw-flex-col tw-justify-between tw-items-center",
           "tw-bg-natural-50 tw-p-6 tw-shadow-lesson-event-card tw-rounded-3xl",
-          "tw-max-w-64",
-          className
+          "tw-relative tw-flex tw-flex-col tw-items-center tw-min-w-64",
+          { "tw-justify-between": !feedback },
+          isEditing ? "tw-w-64 tw-h-[313px]" : "tw-h-[383px]",
+          isEditing ? "tw-gap-4" : "tw-gap-6"
         )}
-        style={{ gap: active ? "16px" : "24px" }}
       >
-        {isCommentOwner && actions ? (
+        {owner ? (
           <div className="tw-absolute tw-z-10 tw-w-6 tw-h-6 tw-overflow-hidden tw-top-4 tw-left-4 tw-flex tw-justify-center tw-items-center">
-            <Menu actions={actions}>
+            <Menu
+              actions={[
+                {
+                  label: intl("tutor.rating.edit"),
+                  icon: <EditMessage16X16 />,
+                  onClick: onEdit,
+                },
+                {
+                  label: intl("tutor.rating.delete"),
+                  icon: <Trash />,
+                  onClick: onDelete,
+                },
+              ]}
+            >
               <More />
             </Menu>
           </div>
@@ -51,12 +63,11 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
         >
           <div
             className={cn(
-              "tw-relative tw-rounded-full tw-shrink-0 tw-border-[3px] tw-border-brand-500"
+              "tw-relative tw-rounded-full tw-shrink-0 tw-border-[3px] tw-border-brand-500",
+              isEditing
+                ? "tw-w-[82px] tw-h-[82px]"
+                : "tw-w-[129px] tw-h-[129px]"
             )}
-            style={{
-              width: active ? "82px" : "129px",
-              height: active ? "82px" : "129px",
-            }}
           >
             <div className="tw-overflow-hidden tw-w-full tw-h-full tw-rounded-full">
               <Avatar
@@ -67,42 +78,49 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
             </div>
             <div
               className={cn(
-                "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-50"
+                "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-50",
+                isEditing
+                  ? "tw-w-[42px] tw-h-[42px] -tw-right-[7.5px] -tw-bottom-[7.5px]"
+                  : "tw-w-14 tw-h-14 -tw-right-[12px] -tw-bottom-[12px]"
               )}
-              style={{
-                width: active ? "42px" : "56px",
-                height: active ? "42px" : "56px",
-                right: active ? "-7.5px" : "-4.5px",
-                bottom: active ? "-7.5px" : "-12px",
-              }}
             >
               <Quote />
             </div>
           </div>
         </div>
 
-        <RatingStars rating={rating} comment={comment} readonly={true} />
+        <RatingStars
+          rating={rating}
+          readonly={true}
+          variant={!feedback && !isEditing ? "md" : "sm"}
+        />
 
-        <div className={cn("tw-line-clamp-5 tw-text-center")}>
-          <Typography
-            element="tiny-text"
-            weight={!comment && active ? "semibold" : "regular"}
-            className={cn("tw-text-ellipsis tw-text-natural-600")}
+        {!isEditing && !feedback ? null : (
+          <div
+            className={cn("tw-line-clamp-5 tw-text-center")}
+            style={{ overflowWrap: "anywhere" }}
           >
-            {!comment && active
-              ? intl("student-dashboard.rating-dialog.add-comment")
-              : comment}
-          </Typography>
-        </div>
-
+            <Typography
+              element="tiny-text"
+              weight={!feedback && isEditing ? "semibold" : "regular"}
+              className={cn("tw-text-ellipsis tw-text-natural-600")}
+            >
+              {!feedback && isEditing
+                ? intl("tutor.rating.feedback.placeholder")
+                : feedback}
+            </Typography>
+          </div>
+        )}
         <Typography
           element="body"
           weight="bold"
-          className={cn("tw-text-brand-950 tw-text-center")}
+          className={cn("tw-text-brand-950 tw-text-center", {
+            "tw-mt-auto": feedback,
+          })}
         >
           {studentName
             ? studentName
-            : intl("student-dashboard.student-of", { value: tutorName })}
+            : intl("tutor.rating.name.placeholder", { value: tutorName })}
         </Typography>
       </div>
     </div>
