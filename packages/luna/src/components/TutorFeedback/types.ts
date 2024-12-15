@@ -1,10 +1,7 @@
-import { MenuAction } from "@/components/Menu";
+import { Void } from "@litespace/types";
 
 export type RatingCardProps = {
-  /**
-   * id of the user profile
-   */
-  profileId?: number;
+  owner?: boolean;
   /**
    * id of the owner of the comment
    */
@@ -20,24 +17,21 @@ export type RatingCardProps = {
   /**
    * student comment about the tutor
    */
-  comment: string | null;
+  feedback: string | null;
   /**
    * rating of the tutor bet 1, 5
    */
   rating: number;
   /**
+   * state shows wheather in the dialog for editing or not
+   */
+  isEditing?: boolean;
+  /**
    * image url for student own the comment
    */
   imageUrl?: string | null;
-  /**
-   * arr of actions to control edit and delete rating
-   */
-  actions?: MenuAction[];
-  /**
-   * state shows the dialog opened or not
-   */
-  active: boolean;
-  className?: string;
+  onEdit?: Void;
+  onDelete?: Void;
 };
 
 export type FeedbackEditProps = {
@@ -56,7 +50,7 @@ export type FeedbackEditProps = {
   /**
    * student comment about the tutor
    */
-  comment: string;
+  feedback: string;
   /**
    * rating of the tutor bet 1, 5
    */
@@ -77,6 +71,7 @@ export type FeedbackEditProps = {
    * fn updates the rating and comment of the tutor
    */
   onUpdate: (newRating: number, newComment: string) => void;
+  onClose: Void;
 };
 
 export type FeedbackDeleteProps = {
@@ -93,7 +88,8 @@ export type FeedbackDeleteProps = {
    */
   setOpen: (open: boolean) => void;
   /**
-   * fn deletes the comment
+   * fn deletes the rating
    */
   onDelete: (studentId: number) => void;
+  onClose: Void;
 };

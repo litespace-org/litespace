@@ -44,7 +44,7 @@ export const Dialog: React.FC<{
             className
           )}
         >
-          <div className="tw-flex tw-justify-between tw-items-center">
+          <div className="tw-flex tw-justify-between tw-items-center tw-w-full">
             <Title>{title}</Title>
             <Close onClick={close}>
               <X className="tw-cursor-pointer" />
