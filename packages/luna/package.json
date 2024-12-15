@@ -37,6 +37,7 @@
     "./Loading": "./dist/components/Loading/index.js",
     "./Lessons": "./dist/components/Lessons/index.js",
     "./Menu": "./dist/components/Menu/index.js",
+    "./MovableMedia": "./dist/components/MovableMedia/index.js",
     "./MultiSelect": "./dist/components/MultiSelect/index.js",
     "./Navbar": "./dist/components/Navbar/index.js",
     "./NumericInput": "./dist/components/NumericInput/index.js",

@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useRef } from "react";
 import cn from "classnames";
 import { FocusedStream } from "@/components/Call/FocusedStream";
 import { UnFocusedStream } from "@/components/Call/UnFocusedStream";
 import { StreamInfo } from "@/components/Call/types";
 import { Void } from "@litespace/types";
+import { MovableMedia } from "../MovableMedia";
 
 export const InCallStreams: React.FC<{
   alert?: string;
@@ -26,8 +27,10 @@ export const InCallStreams: React.FC<{
     toggle: Void;
   };
 }> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
+  const containerRef = useRef<HTMLDivElement>(null);
   return (
     <div
+      ref={containerRef}
       className={cn(
         "tw-relative tw-w-full tw-rounded-lg tw-h-full tw-bg-brand-100 tw-grid tw-gap-6",
         chat && "tw-p-6 tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg "
@@ -47,11 +50,12 @@ export const InCallStreams: React.FC<{
         )}
       >
         {streams.unfocused.map((stream, index) => (
-          <UnFocusedStream
-            streamMuted={stream.user.id === currentUserId}
-            key={index}
-            stream={stream}
-          />
+          <MovableMedia container={containerRef} key={index}>
+            <UnFocusedStream
+              streamMuted={stream.user.id === currentUserId}
+              stream={stream}
+            />
+          </MovableMedia>
         ))}
       </div>
     </div>
