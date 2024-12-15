@@ -108,7 +108,7 @@ const Root: React.FC = () => {
     const forbidden =
       user.role === IUser.Role.Tutor ||
       user.role === IUser.Role.Student ||
-      user.role === IUser.Role.Interviewer;
+      user.role === IUser.Role.TutorManager;
 
     if (forbidden) return window.location.replace("https://litespace.org");
 

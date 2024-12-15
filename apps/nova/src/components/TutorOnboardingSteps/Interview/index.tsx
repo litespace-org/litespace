@@ -13,7 +13,7 @@ const Interview: React.FC<{
   //   interviews.query.refetch();
   // }, [interviews]);
 
-  const interviewer = useMemo(() => {
+  const tutorManager = useMemo(() => {
     if (!current) return null;
     return {
       name: "Name",
@@ -25,10 +25,10 @@ const Interview: React.FC<{
 
   const html = useMemo(() => {
     return marked.parse(
-      markdown.replace(/{interviewer}/gi, interviewer?.name || ""),
+      markdown.replace(/{interviewer}/gi, tutorManager?.name || ""),
       { async: false }
     );
-  }, [interviewer?.name]);
+  }, [tutorManager?.name]);
 
   return (
     <div className="flex flex-col w-full pb-10">

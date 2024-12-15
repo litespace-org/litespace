@@ -175,7 +175,7 @@ type Response = Paginated<{
   - [x] Update the `update` user api handler.
   - [x] Tutor managers should be part of the tutors cache.
   - [x] Update the seed script to create multiple tutor managers.
-  - [ ] Remove the `interviewer` from the client (`nova` and `dashboard`)
+  - [x] Remove the `interviewer` from the client (`nova` and `dashboard`)
   - [ ] Remove the `interviewer` from the server, models, and database.
   - [ ] Remove the `interviewer` from the the remaining packages.
 - [x] Explain how `rrules` works. [@neuodev](https://github.com/neuodev)

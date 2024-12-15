@@ -86,7 +86,7 @@ export const Users: React.FC = () => {
           makeRoleOption(1, IUser.Role.SuperAdmin),
           makeRoleOption(2, IUser.Role.RegularAdmin),
           makeRoleOption(3, IUser.Role.MediaProvider),
-          makeRoleOption(4, IUser.Role.Interviewer),
+          makeRoleOption(4, IUser.Role.TutorManager),
           makeRoleOption(5, IUser.Role.Tutor),
           makeRoleOption(6, IUser.Role.Student),
         ],
