@@ -6,7 +6,7 @@ export function destructureRole(role: IUser.Role) {
   return {
     tutor: role === IUser.Role.Tutor,
     student: role === IUser.Role.Student,
-    interviewer: role === IUser.Role.Interviewer,
+    tutorManager: role === IUser.Role.TutorManager,
     mediaProvider: role === IUser.Role.MediaProvider,
     regularAdmin,
     superAdmin,

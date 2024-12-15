@@ -1,4 +1,4 @@
-import { EmptyObject, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 
 declare global {
   namespace Express {
@@ -20,7 +20,7 @@ export {
   authenticated,
   authorizer,
   admin,
-  interviewer,
+  tutorManager,
   mediaProvider,
   student,
   tutor,
@@ -29,7 +29,7 @@ export {
   isAdmin,
   isRegAdmin,
   isSuperAdmin,
-  isInterviewer,
+  isTutorManager,
   isMediaProvider,
   isTutor,
   isStudent,

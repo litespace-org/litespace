@@ -89,7 +89,7 @@ export const repeat = zod.enum([
 export const role = zod.enum([
   IUser.Role.SuperAdmin,
   IUser.Role.RegularAdmin,
-  IUser.Role.Interviewer,
+  IUser.Role.TutorManager,
   IUser.Role.MediaProvider,
   IUser.Role.Tutor,
   IUser.Role.Student,

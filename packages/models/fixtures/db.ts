@@ -110,8 +110,8 @@ const or = {
     if (!id) return await student().then((student) => student.id);
     return id;
   },
-  async interviewerId(id?: number): Promise<number> {
-    if (!id) return await interviewer().then((interviewer) => interviewer.id);
+  async tutorManagerId(id?: number): Promise<number> {
+    if (!id) return await tutorManager().then((tutorManager) => tutorManager.id);
     return id;
   },
   async callId(id?: number): Promise<number> {
@@ -167,7 +167,7 @@ export async function lesson(
 
 export async function interview(payload: Partial<IInterview.CreatePayload>) {
   return await interviews.create({
-    interviewer: await or.interviewerId(payload.interviewer),
+    interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
     call: await or.callId(payload.call),
     rule: await or.ruleId(payload.rule),
@@ -193,8 +193,8 @@ function student() {
   return user({ role: IUser.Role.Student });
 }
 
-function interviewer() {
-  return user({ role: IUser.Role.Interviewer });
+function tutorManager() {
+  return user({ role: IUser.Role.TutorManager });
 }
 
 async function students(count: number) {
@@ -427,7 +427,7 @@ export default {
   user,
   tutor,
   student,
-  interviewer,
+  tutorManager,
   students,
   interview,
   lesson,

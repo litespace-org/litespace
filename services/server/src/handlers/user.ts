@@ -52,7 +52,6 @@ import {
   isAdmin,
   isMediaProvider,
   isStudent,
-  isTutor,
   isUser,
 } from "@litespace/auth";
 import { cache } from "@/lib/cache";
@@ -61,6 +60,7 @@ import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { selectTutorRuleEvents } from "@/lib/events";
 import { Gender } from "@litespace/types/dist/esm/user";
+import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
   role,
@@ -118,7 +118,11 @@ const findOnboardedTutorsQuery = zod.object({
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
   const admin = isAdmin(req.user);
-  const publicRole = [IUser.Role.Tutor, IUser.Role.Student].includes(
+  const publicRole = [
+    IUser.Role.TutorManager,
+    IUser.Role.Tutor, 
+    IUser.Role.Student
+  ].includes(
     payload.role
   );
   if (!publicRole && !admin) return next(forbidden());
@@ -136,7 +140,10 @@ export async function create(req: Request, res: Response, next: NextFunction) {
       tx
     );
 
-    if (payload.role === IUser.Role.Tutor) await tutors.create(user.id, tx);
+    if (isTutor(user) || isTutorManager(user)) {
+      await tutors.create(user.id, tx);
+    }
+
     return user;
   });
 
@@ -193,7 +200,8 @@ function update(context: ApiContext) {
       // Tutor cannot upload it for himself.
       const isUpdatingTutorMedia =
         (files.image.file || files.video.file) &&
-        targetUser.role === IUser.Role.Tutor;
+        (isTutor(targetUser) || isTutorManager(targetUser));
+        
       const isEligibleUser = [
         IUser.Role.SuperAdmin,
         IUser.Role.RegularAdmin,
@@ -253,7 +261,7 @@ function update(context: ApiContext) {
         );
 
         const tutorData = bio || about || video || drop?.video || notice;
-        if (targetUser.role === IUser.Role.Tutor && tutorData)
+        if (tutorData && (isTutor(targetUser) || isTutorManager(targetUser)))
           await tutors.update(
             targetUser.id,
             { bio, about, video: drop?.video ? null : video, notice },
@@ -266,15 +274,11 @@ function update(context: ApiContext) {
       // todo: remove the tutor from the case incase tutor is no longer fully onboarded
       res.status(200).json(user);
       // todo: handle cache update using a specific worker
-      const isTutor = user.role === IUser.Role.Tutor;
-      if (!isTutor) return;
+      if (!isTutor(user) && !isTutorManager(user)) return;
 
       const error = await safe(async () => {
         const tutor = await tutors.findById(user.id);
         if (!tutor) return;
-        // should only update the cache if it's an onboard (activated) tutor
-        if (!isOnboard(tutor)) return;
-
         // should only update the cache if it's an onboard (activated) tutor
         if (!isOnboard(tutor)) return;
 
@@ -344,9 +348,10 @@ async function selectInterviewer(
   const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
-  const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
+  const tutorManagers = await users.findManyBy("role", IUser.Role.TutorManager);
   // todo: select best interviewer based on his sechudle
-  const interviewer = sample(interviewers);
+  const interviewer = sample(tutorManagers);
+
   if (!interviewer) return next(notfound.user());
 
   res.status(200).json(interviewer);

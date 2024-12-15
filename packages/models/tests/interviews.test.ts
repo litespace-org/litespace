@@ -25,7 +25,7 @@ describe("Interviews", () => {
 
     it("should find users interviews", async () => {
       const tutor = await fixtures.tutor();
-      const interviewer = await fixtures.interviewer();
+      const interviewer = await fixtures.tutorManager();
       const interview = await fixtures.interview({
         interviewer: interviewer.id,
         interviewee: tutor.id,
@@ -45,7 +45,7 @@ describe("Interviews", () => {
 
     it("should find users interviews with different filters", async () => {
       const tutors = await fixtures.make.tutors(5);
-      const interviewer = await fixtures.interviewer();
+      const interviewer = await fixtures.tutorManager();
       await fixtures.make.interviews({
         data: [
           {

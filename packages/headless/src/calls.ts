@@ -726,7 +726,7 @@ export function usePeerIds({
     | IPeer.FindPeerIdApiQuery
     | undefined => {
     const allowed =
-      role === IUser.Role.Student || role === IUser.Role.Interviewer;
+      role === IUser.Role.Student || role === IUser.Role.TutorManager;
     if (isGhost || !mateUserId || !allowed) return;
     return { type: IPeer.PeerType.Tutor, tutor: mateUserId };
   }, [isGhost, mateUserId, role]);

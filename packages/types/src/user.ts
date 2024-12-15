@@ -6,7 +6,7 @@ export enum Role {
   RegularAdmin = "reg-admin",
   Tutor = "tutor",
   Student = "student",
-  Interviewer = "interviewer",
+  TutorManager = "tutor-manager",
   MediaProvider = "media-provider",
 }
 
