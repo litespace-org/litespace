@@ -82,23 +82,6 @@ export type UpdatePayload = {
   deleted?: boolean;
 };
 
-export type FindRulesWithSlotsApiQuery = {
-  /**
-   * id is for userId
-   */
-  id: number;
-
-  /**
-   * before and after are bounderies of the slots that will be fetched
-   */
-  after: string;
-
-  /**
-   * before and after are bounderies of the slots that will be fetched
-   */
-  before: string;
-};
-
 export type UpdateApiPayload = Omit<UpdatePayload, "deleted">;
 
 /**
@@ -141,4 +124,19 @@ export type Slot = {
    * Slot duration in minutes
    */
   duration: number;
+};
+
+export type FindRulesWithSlotsApiQuery = {
+  /**
+   * ISO UTC datetime.
+   *
+   * Get user rules that are defined after this date.
+   */
+  after: string;
+  /**
+   * ISO UTC datetime.
+   *
+   * Get user rules that are defined before this date.
+   */
+  before: string;
 };

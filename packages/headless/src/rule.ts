@@ -101,7 +101,7 @@ export function useDeleteRule({
 }
 
 export function useFindUserRulesWithSlots(
-  payload: IRule.FindRulesWithSlotsApiQuery
+  payload: { id: number } & IRule.FindRulesWithSlotsApiQuery
 ) {
   const atlas = useAtlas();
 
@@ -111,6 +111,6 @@ export function useFindUserRulesWithSlots(
 
   return useQuery({
     queryFn: findRules,
-    queryKey: [QueryKey.FindRulesWithSlots],
+    queryKey: [QueryKey.FindRulesWithSlots, payload],
   });
 }

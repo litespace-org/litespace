@@ -140,13 +140,14 @@ const BookLesson: React.FC<{
       <Button
         disabled={!selectedEvent || mutation.isPending}
         loading={mutation.isPending}
-        onClick={() =>
+        onClick={() => {
+          if (!selectedEvent) return;
           mutation.mutate({
             duration,
-            ruleId: selectedEvent?.id || null,
-            start: selectedEvent?.start || null,
-          })
-        }
+            ruleId: selectedEvent.id,
+            start: selectedEvent.start,
+          });
+        }}
         className="mt-4"
         size={ButtonSize.Small}
       >

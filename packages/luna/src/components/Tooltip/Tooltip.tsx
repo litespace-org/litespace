@@ -22,7 +22,7 @@ export const Tooltip: React.FC<{
           <Content
             side={side}
             dir="rtl"
-            className="tw-p-3 tw-rounded-lg tw-bg-natural-50 tw-shadow-tooltip"
+            className="tw-p-3 tw-rounded-lg tw-bg-natural-50 tw-shadow-tooltip tw-z-tooltip"
             sideOffset={5}
           >
             {content}

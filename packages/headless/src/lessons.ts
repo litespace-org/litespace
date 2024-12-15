@@ -1,13 +1,11 @@
-import { Element, IFilter, ILesson, Void } from "@litespace/types";
+import { Element, IFilter, ILesson } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 import { InfiniteQueryHandler, useInfinitePaginationQuery } from "./query";
-
-type OnSuccess = Void;
-type OnError = (error: Error) => void;
+import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindLessons(
   query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
@@ -77,7 +75,7 @@ export function useCreateLesson({
   onError,
 }: {
   tutorId: number;
-  onSuccess: OnSuccess;
+  onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
   const atlas = useAtlas();
@@ -88,11 +86,10 @@ export function useCreateLesson({
       start,
       duration,
     }: {
-      ruleId: number | null;
-      start: string | null;
+      ruleId: number;
+      start: string;
       duration: ILesson.Duration;
     }) => {
-      if (!ruleId || !start) return;
       return await atlas.lesson.create({
         tutorId,
         duration,

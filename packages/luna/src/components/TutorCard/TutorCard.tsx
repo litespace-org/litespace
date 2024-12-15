@@ -14,6 +14,7 @@ import { formatNumber } from "@/components/utils";
 import { Link } from "react-router-dom";
 import { orUndefined } from "@litespace/sol/utils";
 import { Void } from "@litespace/types";
+import { Tooltip } from "@/components/Tooltip";
 
 type Props = {
   id: number;
@@ -60,13 +61,21 @@ export const TutorCard: React.FC<Props> = ({
           />
         </div>
         <div>
-          <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="tw-text-brand-700 tw-mb-2"
+          <Tooltip
+            content={
+              <Typography className="tw-text-natural-950">{name}</Typography>
+            }
           >
-            {name}
-          </Typography>
+            <div>
+              <Typography
+                element="subtitle-2"
+                weight="bold"
+                className="tw-text-brand-700 tw-mb-2 tw-line-clamp-1"
+              >
+                {name}
+              </Typography>
+            </div>
+          </Tooltip>
           <Typography
             element="tiny-text"
             className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800"

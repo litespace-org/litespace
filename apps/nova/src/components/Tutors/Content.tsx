@@ -5,7 +5,7 @@ import { TutorCard } from "@litespace/luna/TutorCard";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { Route } from "@/types/routes";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { motion } from "framer-motion";
 import { InView } from "react-intersection-observer";
 import BookLesson from "@/components/Lessons/BookLesson";
 
@@ -49,9 +49,9 @@ const Content: React.FC<{
                 bio={tutor.bio}
                 about={tutor.about}
                 name={tutor.name}
-                lessonCount={20}
-                studentCount={20}
-                rating={4.5}
+                lessonCount={tutor.lessonCount}
+                studentCount={tutor.studentCount}
+                rating={tutor.avgRating}
                 onBook={() => openBookingDialog(tutor)}
                 onOpenProfile={() => navigate(profileUrl)}
                 profileUrl={profileUrl}
@@ -62,20 +62,18 @@ const Content: React.FC<{
         })}
       </div>
 
-      <AnimatePresence>
-        {tutor ? (
-          <BookLesson
-            close={closeBookingDialog}
-            open={!!tutor}
-            user={{
-              tutorId: tutor?.id,
-              imageUrl: tutor.image,
-              notice: tutor.notice,
-              name: tutor.name,
-            }}
-          />
-        ) : null}
-      </AnimatePresence>
+      {tutor ? (
+        <BookLesson
+          close={closeBookingDialog}
+          open={!!tutor}
+          user={{
+            tutorId: tutor?.id,
+            imageUrl: tutor.image,
+            notice: tutor.notice,
+            name: tutor.name,
+          }}
+        />
+      ) : null}
 
       {fetching ? <Loading className="mt-6 text-natural-950" /> : null}
 

@@ -21,23 +21,58 @@ import cn from "classnames";
 import Spinner from "@litespace/assets/Spinner";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
 
-const Animation: React.FC<{
-  step?: Step;
-  children: React.ReactNode;
-}> = ({ step, children }) => {
-  const duration = useMemo(() => {
-    if (step === "date-selection" || step === "time-selection") return 0.5;
-    return 0.4;
-  }, [step]);
+const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+  const intl = useFormatMessage();
+  return (
+    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
+      <Spinner className="tw-animate-spin" />
+      {tutorName ? (
+        <Typography
+          element="subtitle-2"
+          className="tw-font-bold tw-text-brand-700 tw-text-center"
+        >
+          {intl("book-lesson.loading-rules", { tutor: tutorName })}
+        </Typography>
+      ) : null}
+    </div>
+  );
+};
 
-  const delay = useMemo(() => {
-    if (step === "date-selection" || step === "time-selection") return 0.4;
-    return 0.2;
-  }, [step]);
+const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+  const intl = useFormatMessage();
+  return (
+    <div
+      className={cn(
+        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-[82px] tw-mb-[148px]"
+      )}
+    >
+      <CalendarEmpty />
+      <Typography
+        element="subtitle-2"
+        weight="bold"
+        className="tw-text-brand-700 tw-text-center"
+      >
+        {tutorName
+          ? intl("book-lesson.empty-slots", { tutor: tutorName })
+          : null}
+      </Typography>
+    </div>
+  );
+};
+
+const Animation: React.FC<{
+  id?: Step | "loading" | "busy-tutor";
+  children: React.ReactNode;
+}> = ({ id, children }) => {
+  const duration = useMemo(() => {
+    if (id === "date-selection" || id === "loading" || id === "busy-tutor")
+      return 0.5;
+    return 0.4;
+  }, [id]);
 
   return (
     <motion.div
-      key={step}
+      key={id}
       initial={{
         opacity: 0,
         height: 0,
@@ -47,7 +82,6 @@ const Animation: React.FC<{
         height: "auto",
         transition: {
           duration,
-          delay,
           ease: "linear",
         },
       }}
@@ -134,8 +168,6 @@ export const BookLessonDialog: React.FC<{
 
   const selectDaySlots = useCallback(
     (day: Dayjs) => {
-      console.log(unpackedRules);
-
       const daySlots = unpackedRules.filter(
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
@@ -199,9 +231,9 @@ export const BookLessonDialog: React.FC<{
       close={close}
       title={
         <Typography
+          className="tw-text-natural-950"
           element="subtitle-2"
           weight="bold"
-          className="tw-text-natural-950"
           tag="div"
         >
           {name
@@ -211,151 +243,122 @@ export const BookLessonDialog: React.FC<{
       }
       className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
     >
-      <AnimatePresence>
-        {loading ? (
-          <Animation>
-            <div className="tw-h-[442px] tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8">
-              <Spinner className="tw-animate-spin" />
-              <Typography
-                element="subtitle-2"
-                className="tw-font-bold tw-text-brand-700 tw-text-center"
-              >
-                {intl("book-lesson.loading-rules", { tutor: name })}
-              </Typography>
-            </div>
-          </Animation>
-        ) : null}
-      </AnimatePresence>
-
       {!loading ? (
-        <>
-          <div className="tw-mt-6 tw-px-6">
-            <Stepper step={step} />
-          </div>
+        <div className="tw-mt-6 tw-px-6">
+          <Stepper step={step} />
+        </div>
+      ) : null}
 
-          <div className="tw-mt-6">
-            <AnimatePresence>
-              {isTutorBusy ? (
-                <Animation>
-                  <div className="tw-flex tw-items-center tw-flex-col tw-w-full tw-h-[442px] tw-gap-8 tw-justify-center">
-                    <CalendarEmpty />
-                    <Typography
-                      element="subtitle-2"
-                      className="tw-font-bold tw-text-brand-700 tw-text-center"
-                    >
-                      {intl("book-lesson.empty-slots", { tutor: name })}
-                    </Typography>
-                  </div>
-                </Animation>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {!isTutorBusy && step === "date-selection" ? (
-                <Animation step="date-selection">
-                  <DateSelection
-                    min={dateBounds.min}
-                    max={dateBounds.max}
-                    selected={date}
-                    onSelect={setDate}
-                    isSelectable={isValidDate}
-                  />
-                </Animation>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {!isTutorBusy && step === "duration-selection" ? (
-                <Animation step="duration-selection">
-                  <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
-                    <DurationSelection
-                      value={duration}
-                      onChange={setDuration}
-                    />
-                  </div>
-                </Animation>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {!isTutorBusy && step === "time-selection" ? (
-                <Animation step="time-selection">
-                  <TimeSelection
-                    slots={allSlots}
-                    start={start}
-                    ruleId={ruleId}
-                    select={({ ruleId, start }) => {
-                      setStart(start);
-                      setRuleId(ruleId);
-                    }}
-                  />
-                </Animation>
-              ) : null}
-            </AnimatePresence>
-
-            <AnimatePresence>
-              {!isTutorBusy && step === "confirmation" && start && ruleId ? (
-                <Animation step="confirmation">
-                  <div className="tw-px-6">
-                    <Confirmation
-                      tutorId={tutorId}
-                      name={name}
-                      imageUrl={imageUrl}
-                      start={start}
-                      confirmationLoading={confirmationLoading}
-                      duration={duration}
-                      onConfrim={() => onBook({ ruleId, start, duration })}
-                      onEdit={() => {
-                        setStep("date-selection");
-                      }}
-                    />
-                  </div>
-                </Animation>
-              ) : null}
-            </AnimatePresence>
-          </div>
-
-          {step !== "confirmation" ? (
-            <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
-              {step !== "date-selection" ? (
-                <Button
-                  startIcon={<LongRightArrow />}
-                  size={ButtonSize.Small}
-                  onClick={() => {
-                    if (step === "time-selection")
-                      setStep("duration-selection");
-                    if (step === "duration-selection")
-                      setStep("date-selection");
-                  }}
-                  className={cn({
-                    "tw-w-[128px]": step === "duration-selection",
-                  })}
-                >
-                  {intl("book-lesson.steps.prev")}
-                </Button>
-              ) : null}
-
-              <Button
-                endIcon={<LongLeftArrow />}
-                size={ButtonSize.Small}
-                onClick={() => {
-                  if (step === "date-selection") setStep("duration-selection");
-                  if (step === "duration-selection") setStep("time-selection");
-                  if (step === "time-selection") setStep("confirmation");
-                }}
-                disabled={
-                  (step === "time-selection" && !start) || !isValidDate(date)
-                }
-                className={cn({
-                  "tw-w-[196px]": step === "date-selection",
-                  "tw-w-[128px]": step === "duration-selection",
-                })}
-              >
-                {intl("book-lesson.steps.next")}
-              </Button>
-            </div>
+      <div className="tw-mt-6">
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <Animation key="loading" id="loading">
+              <Loading tutorName={name} />
+            </Animation>
           ) : null}
-        </>
+
+          {isTutorBusy ? (
+            <Animation key="busy-tutor" id="busy-tutor">
+              <BusyTutor tutorName={name} />
+            </Animation>
+          ) : null}
+
+          {step === "date-selection" && !loading && !isTutorBusy ? (
+            <Animation key="date-selection" id="date-selection">
+              <DateSelection
+                min={dateBounds.min}
+                max={dateBounds.max}
+                selected={date}
+                onSelect={setDate}
+                isSelectable={isValidDate}
+              />
+            </Animation>
+          ) : null}
+
+          {!isTutorBusy && step === "duration-selection" && !loading ? (
+            <Animation key="duration-selection" id="duration-selection">
+              <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
+                <DurationSelection value={duration} onChange={setDuration} />
+              </div>
+            </Animation>
+          ) : null}
+
+          {!isTutorBusy && step === "time-selection" && !loading ? (
+            <Animation key="time-selection" id="time-selection">
+              <TimeSelection
+                slots={allSlots}
+                start={start}
+                ruleId={ruleId}
+                select={({ ruleId, start }) => {
+                  setStart(start);
+                  setRuleId(ruleId);
+                }}
+              />
+            </Animation>
+          ) : null}
+
+          {!isTutorBusy &&
+          step === "confirmation" &&
+          start &&
+          ruleId &&
+          !loading ? (
+            <Animation key="confimration" id="confirmation">
+              <div className="tw-px-6">
+                <Confirmation
+                  tutorId={tutorId}
+                  name={name}
+                  imageUrl={imageUrl}
+                  start={start}
+                  confirmationLoading={confirmationLoading}
+                  duration={duration}
+                  onConfrim={() => onBook({ ruleId, start, duration })}
+                  onEdit={() => {
+                    setStep("date-selection");
+                  }}
+                />
+              </div>
+            </Animation>
+          ) : null}
+        </AnimatePresence>
+      </div>
+
+      {step !== "confirmation" && !loading && !isTutorBusy ? (
+        <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
+          {step !== "date-selection" ? (
+            <Button
+              startIcon={<LongRightArrow />}
+              size={ButtonSize.Small}
+              onClick={() => {
+                if (step === "time-selection") setStep("duration-selection");
+                if (step === "duration-selection") setStep("date-selection");
+              }}
+              className={cn({
+                "tw-w-[128px]": step === "duration-selection",
+              })}
+            >
+              {intl("book-lesson.steps.prev")}
+            </Button>
+          ) : null}
+
+          <Button
+            endIcon={<LongLeftArrow />}
+            size={ButtonSize.Small}
+            onClick={() => {
+              if (step === "date-selection") setStep("duration-selection");
+              if (step === "duration-selection") setStep("time-selection");
+              if (step === "time-selection") setStep("confirmation");
+            }}
+            disabled={
+              (step === "time-selection" && !start) || !isValidDate(date)
+            }
+            className={cn({
+              "tw-w-[196px]": step === "date-selection",
+              "tw-w-[128px]": step === "duration-selection",
+            })}
+          >
+            {intl("book-lesson.steps.next")}
+          </Button>
+        </div>
       ) : null}
     </Dialog>
   );
