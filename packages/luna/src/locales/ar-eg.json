@@ -67,6 +67,11 @@
   "tutors.card.label.lessons": "الدروس",
   "tutors.card.label.rating": "التقييم",
   "tutors.card.label.read-more": "اقرأ المزيد",
+  "tutor.profile.tabs.profile": "الملف الشخصى",
+  "tutor.profile.tabs.profile.about": "حول المعلم",
+  "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
+  "tutor.profile.tabs.profile.video": "الفيديو التعريفى",
+  "tutor.profile.tabs.reviews": "الأراء",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
