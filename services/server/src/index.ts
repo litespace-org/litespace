@@ -4,7 +4,6 @@ import express, { json } from "express";
 import routes from "@/routes";
 import { ghostConfig, jwtSecret, serverConfig } from "@/constants";
 import { errorHandler } from "@/middleware/error";
-import { wssHandler } from "@/wss";
 import bodyParser from "body-parser";
 import cors from "cors";
 import logger from "morgan";
@@ -16,6 +15,7 @@ import { authMiddleware, adminOnly } from "@litespace/auth";
 import { isAllowedOrigin } from "@/lib/cors";
 import { cache } from "@/lib/cache";
 import "colors";
+import { wssConnectionHandler } from "./wss";
 
 // Stablish connection with the redis cache.
 cache.connect();
@@ -33,7 +33,7 @@ io.engine.use(
   )
 );
 io.engine.use(onlyForHandshake(authorizeSocket));
-io.on("connection", wssHandler);
+io.on("connection", wssConnectionHandler);
 
 app.use(
   logger(function (tokens, req, res) {
