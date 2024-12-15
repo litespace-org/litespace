@@ -14,12 +14,12 @@ type RouteConfig = {
 const superAdmin = IUser.Role.SuperAdmin;
 const regularAdmin = IUser.Role.RegularAdmin;
 const mediaProvider = IUser.Role.MediaProvider;
-const interviewer = IUser.Role.Interviewer;
+const tutorManager = IUser.Role.TutorManager;
 const tutor = IUser.Role.Tutor;
 const student = IUser.Role.Student;
 
 const BASE_WHITELIST = [superAdmin] as const;
-const BASE_BALACKLIST = [tutor, student, interviewer] as const;
+const BASE_BALACKLIST = [tutor, student, tutorManager] as const;
 
 /**
  * @note Super Admin is included by default in all whitelists.

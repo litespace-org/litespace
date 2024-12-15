@@ -126,8 +126,8 @@ const UserForm: React.FC<{
                     value: IUser.Role.MediaProvider,
                   },
                   {
-                    label: intl("global.role.interviewer"),
-                    value: IUser.Role.Interviewer,
+                    label: intl("global.role.tutor-manager"),
+                    value: IUser.Role.TutorManager,
                   },
                 ]}
                 control={form.control}
