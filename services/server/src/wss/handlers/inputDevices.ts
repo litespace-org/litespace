@@ -3,19 +3,26 @@ import { rooms } from "@litespace/models";
 import { isGhost } from "@litespace/auth";
 import { Wss } from "@litespace/types";
 import { id, boolean } from "@/validation/utils";
-import { WSSHandler } from "./base";
-
+import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
 import { isEmpty } from "lodash";
 
 const toggleCameraPayload = zod.object({ call: id, camera: boolean });
 const toggleMicPayload = zod.object({ call: id, mic: boolean });
-const userTypingPayload = zod.object({ roomId: zod.number() });
 
 const stdout = logger("wss");
 
-export class InputDevicesHandler extends WSSHandler {
-  async toggleCamera(data: unknown) {
+export class InputDevices extends WssHandler {
+  public init(): InputDevices {
+    this.socket.on(
+      Wss.ClientEvent.ToggleCamera,
+      this.onToggleCamera.bind(this)
+    );
+    this.socket.on(Wss.ClientEvent.ToggleMic, this.onToggleMic.bind(this));
+    return this;
+  }
+
+  async onToggleCamera(data: unknown) {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
@@ -29,7 +36,7 @@ export class InputDevicesHandler extends WSSHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async toggleMic(data: unknown) {
+  async onToggleMic(data: unknown) {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
@@ -40,29 +47,6 @@ export class InputDevicesHandler extends WSSHandler {
         mic,
       });
     });
-    if (error instanceof Error) stdout.error(error.message);
-  }
-
-  async userTyping(data: unknown) {
-    const error = safe(async () => {
-      const { roomId } = userTypingPayload.parse(data);
-
-      const user = this.user;
-      if (isGhost(user)) return;
-
-      const members = await rooms.findRoomMembers({ roomIds: [roomId] });
-      if (isEmpty(members)) return;
-
-      const isMember = members.find((member) => member.id === user.id);
-      if (!isMember)
-        throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
-
-      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
-        roomId,
-        userId: user.id,
-      });
-    });
-
     if (error instanceof Error) stdout.error(error.message);
   }
 }

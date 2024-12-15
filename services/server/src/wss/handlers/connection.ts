@@ -1,7 +1,7 @@
 import { isAdmin, isGhost, isStudent, isTutor } from "@litespace/auth";
 import { dayjs, logger, safe } from "@litespace/sol";
 import { IUser, Wss } from "@litespace/types";
-import { WSSHandler } from "@/wss/handlers/base";
+import { WssHandler } from "@/wss/handlers/base";
 import { calls, rooms, users } from "@litespace/models";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
@@ -11,7 +11,13 @@ import { getGhostCall } from "@litespace/sol/ghost";
 
 const stdout = logger("wss");
 
-export class ConnectionHandler extends WSSHandler {
+export class Connection extends WssHandler {
+  public init(): Connection {
+    this.connect();
+    this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
+    return this;
+  }
+
   async connect() {
     const error = safe(async () => {
       const user = this.user;
@@ -79,9 +85,7 @@ export class ConnectionHandler extends WSSHandler {
         before: dayjs.utc().add(1, "day").toISOString(),
       });
 
-      this.socket.join(
-        callsList.list.map((call) => asCallRoomId(call.id))
-      );
+      this.socket.join(callsList.list.map((call) => asCallRoomId(call.id)));
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -118,4 +122,3 @@ export class ConnectionHandler extends WSSHandler {
       });
   }
 }
-

@@ -1,19 +1,34 @@
 import { isGhost } from "@litespace/auth";
 import { logger, safe, sanitizeMessage } from "@litespace/sol";
 import { Wss } from "@litespace/types";
-import { WSSHandler } from "@/wss/handlers/base";
+import { WssHandler } from "@/wss/handlers/base";
 import { messages, rooms } from "@litespace/models";
 import { asChatRoomId } from "@/wss/utils";
-import wss from "@/validation/wss";
-
-import zod from "zod";
 import { id, string, withNamedId } from "@/validation/utils";
+import wss from "@/validation/wss";
+import zod from "zod";
+import { isEmpty } from "lodash";
 
 const stdout = logger("wss");
 
 const updateMessagePayload = zod.object({ text: string, id });
+const userTypingPayload = zod.object({ roomId: zod.number() });
 
-export class MessageHandler extends WSSHandler {
+export class Messages extends WssHandler {
+  public init(): Messages {
+    this.socket.on(Wss.ClientEvent.SendMessage, this.sendMessage.bind(this));
+    this.socket.on(
+      Wss.ClientEvent.UpdateMessage,
+      this.updateMessage.bind(this)
+    );
+    this.socket.on(
+      Wss.ClientEvent.DeleteMessage,
+      this.deleteMessage.bind(this)
+    );
+    this.socket.on(Wss.ClientEvent.UserTyping, this.onUserTyping.bind(this));
+    return this;
+  }
+
   async sendMessage(data: unknown) {
     const error = safe(async () => {
       const user = this.user;
@@ -98,6 +113,29 @@ export class MessageHandler extends WSSHandler {
         }
       );
     });
+    if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async onUserTyping(data: unknown) {
+    const error = safe(async () => {
+      const { roomId } = userTypingPayload.parse(data);
+
+      const user = this.user;
+      if (isGhost(user)) return;
+
+      const members = await rooms.findRoomMembers({ roomIds: [roomId] });
+      if (isEmpty(members)) return;
+
+      const isMember = members.find((member) => member.id === user.id);
+      if (!isMember)
+        throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
+
+      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
+        roomId,
+        userId: user.id,
+      });
+    });
+
     if (error instanceof Error) stdout.error(error.message);
   }
 }
