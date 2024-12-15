@@ -3,8 +3,10 @@ import { canJoinCall } from "@/lib/call";
 import { isGhost } from "@litespace/auth";
 import { logger, safe } from "@litespace/sol";
 import { ICall, Wss } from "@litespace/types";
+import { WSSHandler } from "@/wss/handlers/base";
+
 import zod from "zod";
-import { WSSHandler } from "../handler";
+import { asCallRoomId } from "../utils";
 
 const callTypes = ["lesson", "interview"] as const satisfies ICall.Type[];
 const stdout = logger("wss");
@@ -25,6 +27,7 @@ export class CallHandler extends WSSHandler {
 
       const user = this.user;
       // todo: add ghost as a member of the call
+      if (!user) return stdout.error("user undefined!");
       if (isGhost(user)) return stdout.warning("Unsupported");
 
       stdout.info(`User ${user.id} is joining call ${callId}.`);
@@ -39,7 +42,7 @@ export class CallHandler extends WSSHandler {
 
       // add user to the call by inserting row to call_members relation
       await cache.call.addMember({ userId: user.id, callId: callId });
-      this.socket.join(this.asCallRoomId(callId));
+      this.socket.join(asCallRoomId(callId));
 
       stdout.info(`User ${user.id} has joined call ${callId}.`);
 
@@ -51,7 +54,7 @@ export class CallHandler extends WSSHandler {
       // NOTE: the user notifies himself as well that he successfully joined the call.
       this.broadcast(
         Wss.ServerEvent.MemberJoinedCall,
-        this.asCallRoomId(callId),
+        asCallRoomId(callId),
         { userId: user.id } // TODO: define the payload struct type in the types package
       );
     });
@@ -82,16 +85,12 @@ export class CallHandler extends WSSHandler {
 
       // notify members that a member has left the call
       this.socket.broadcast
-        .to(this.asCallRoomId(callId))
+        .to(asCallRoomId(callId))
         .emit(Wss.ServerEvent.MemberLeftCall, {
           userId: user.id,
         });
     });
     if (result instanceof Error) stdout.error(result.message);
-  }
-
-  private asCallRoomId(callId: number) {
-    return `call:${callId}`;
   }
 }
 
