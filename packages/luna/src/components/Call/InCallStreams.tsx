@@ -1,11 +1,13 @@
 import React from "react";
 import cn from "classnames";
-import { FocusedStream, UnFocusedStream } from "@/components/Call";
+import { FocusedStream } from "@/components/Call/FocusedStream";
+import { UnFocusedStream } from "@/components/Call/UnFocusedStream";
 import { StreamInfo } from "@/components/Call/types";
 import { Void } from "@litespace/types";
 
 export const InCallStreams: React.FC<{
-  internetProblem?: boolean;
+  alert?: string;
+  currentUserId: number;
   streams: {
     focused: StreamInfo;
     unfocused: StreamInfo[];
@@ -23,7 +25,7 @@ export const InCallStreams: React.FC<{
     enabled: boolean;
     toggle: Void;
   };
-}> = ({ internetProblem, streams, chat, timer, fullScreen }) => {
+}> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
   return (
     <div
       className={cn(
@@ -35,7 +37,8 @@ export const InCallStreams: React.FC<{
         fullScreen={fullScreen}
         stream={streams.focused}
         timer={timer}
-        internetProblem={internetProblem}
+        streamMuted={streams.focused.user.id === currentUserId}
+        alert={alert}
       />
       <div
         className={cn(
@@ -44,7 +47,11 @@ export const InCallStreams: React.FC<{
         )}
       >
         {streams.unfocused.map((stream, index) => (
-          <UnFocusedStream key={index} stream={stream} />
+          <UnFocusedStream
+            streamMuted={stream.user.id === currentUserId}
+            key={index}
+            stream={stream}
+          />
         ))}
       </div>
     </div>
