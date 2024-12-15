@@ -15,7 +15,6 @@ exports.up = (pgm) => {
     "reg-admin",
     "tutor",
     "student",
-    "interviewer", // TODO: to be removed
     "tutor-manager",
     "media-provider",
   ]);

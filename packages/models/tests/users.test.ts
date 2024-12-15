@@ -93,20 +93,20 @@ describe("Users", () => {
 
   describe(nameof(users.find), () => {
     it("should find users by content", async () => {
-      const interviewer = await fixtures.user({ role: IUser.Role.Interviewer });
+      const interviewer = await fixtures.user({ role: IUser.Role.TutorManager });
       expect(await users.findById(interviewer.id)).to.exist;
 
       const interviewer2 = await fixtures.user({
-        role: IUser.Role.Interviewer,
+        role: IUser.Role.TutorManager,
       });
       expect(await users.findById(interviewer2.id)).to.exist;
 
       const interviewer3 = await fixtures.user({
-        role: IUser.Role.Interviewer,
+        role: IUser.Role.TutorManager,
       });
       expect(await users.findById(interviewer3.id)).to.exist;
 
-      const result = await users.find({ role: IUser.Role.Interviewer });
+      const result = await users.find({ role: IUser.Role.TutorManager });
 
       expect(result).to.exist;
       expect(result.list.length).to.be.eq(3);
@@ -118,10 +118,10 @@ describe("Users", () => {
 
   describe(nameof(users.findOneBy), () => {
     it("should find users by any key", async () => {
-      const created = await fixtures.user({ role: IUser.Role.Interviewer });
+      const created = await fixtures.user({ role: IUser.Role.TutorManager });
       expect(await users.findById(created.id)).to.exist;
 
-      const user = await users.findOneBy("role", IUser.Role.Interviewer);
+      const user = await users.findOneBy("role", IUser.Role.TutorManager);
       expect(user).to.exist;
       expect(user?.id).to.be.eq(created.id);
     });
@@ -129,7 +129,7 @@ describe("Users", () => {
 
   describe(nameof(users.findById), () => {
     it("should find users by role", async () => {
-      const created = await fixtures.user({ role: IUser.Role.Interviewer });
+      const created = await fixtures.user({ role: IUser.Role.TutorManager });
       expect(await users.findById(created.id)).to.exist;
 
       const user = await users.findById(created.id);
@@ -142,7 +142,7 @@ describe("Users", () => {
     it("should return hash of the user", async () => {
       const password = "pass";
       const created = await fixtures.user({
-        role: IUser.Role.Interviewer,
+        role: IUser.Role.TutorManager,
         password,
       });
       const hash = await users.findUserPasswordHash(created.id);
@@ -152,7 +152,7 @@ describe("Users", () => {
 
   describe(nameof(users.findByEmail), () => {
     it("should find users by role", async () => {
-      const created = await fixtures.user({ role: IUser.Role.Interviewer });
+      const created = await fixtures.user({ role: IUser.Role.TutorManager });
       expect(await users.findById(created.id)).to.exist;
 
       const user = await users.findByEmail(created.email);

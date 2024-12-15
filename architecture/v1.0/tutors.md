@@ -169,15 +169,15 @@ type Response = Paginated<{
 - [x] Update [`findOnboardedTutors`](/services/server/src/handlers/user.ts) handler to response with [this](#find-onboared-tutors-api)
 - [x] Search tutors by name and topics.
   - API should accept a `keyword` as a query param and filter tutors according to it.
-- [ ] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
+- [x] Impl. `tutor-manager` user role ([info](#tutor-manager)). [@mmoehabb](https://github.com/mmoehabb)
   - [x] Update the database models to include the new role `tutor-manager`.
   - [x] Update the `create` user api handler.
   - [x] Update the `update` user api handler.
   - [x] Tutor managers should be part of the tutors cache.
   - [x] Update the seed script to create multiple tutor managers.
   - [x] Remove the `interviewer` from the client (`nova` and `dashboard`)
-  - [ ] Remove the `interviewer` from the server, models, and database.
-  - [ ] Remove the `interviewer` from the the remaining packages.
+  - [x] Remove the `interviewer` from the server, models, and database.
+  - [x] Remove the `interviewer` from the the remaining packages.
 - [x] Explain how `rrules` works. [@neuodev](https://github.com/neuodev)
 - [x] Impl. _book a lesson dialog_ [@neuodev](https://github.com/neuodev)
 - [x] Rating (or updating a rate) for the tutor [@moalidv](https://github.com/moalidv)

@@ -348,11 +348,9 @@ async function selectInterviewer(
   const allowed = isTutor(user);
   if (!allowed) return next(forbidden());
 
-  // TODO: to be removed
-  const interviewers = await users.findManyBy("role", IUser.Role.Interviewer);
   const tutorManagers = await users.findManyBy("role", IUser.Role.TutorManager);
   // todo: select best interviewer based on his sechudle
-  const interviewer = sample([...interviewers, ...tutorManagers]);
+  const interviewer = sample(tutorManagers);
 
   if (!interviewer) return next(notfound.user());
 
