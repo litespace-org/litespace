@@ -249,6 +249,11 @@ export default {
         "slide-in": "slide-in 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         "swipe-out": "swipe-out 100ms ease-out",
       },
+      lineClamp: {
+        3: "3",
+        4: "4",
+        5: "5",
+      },
     },
     boxShadow: {
       "ls-small": "0px 6px 20px 0px rgba(0, 0, 0, 0.08)",

@@ -55,7 +55,7 @@ export const ConfirmationDialog: React.FC<{
             "tw-shadow-dialog-confirm"
           )}
         >
-          <div className="tw-pl-6 tw-pr-4 tw-pt-4">
+          <div className="tw-pl-6 tw-pr-6 tw-mt-6">
             <div className="tw-flex tw-justify-between tw-mb-4">
               <div
                 className={cn(

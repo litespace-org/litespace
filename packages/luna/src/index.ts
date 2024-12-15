@@ -39,6 +39,7 @@ export { OnlineStatus, UserOnlineStatus } from "@/components/OnlineStatus";
 export { messages, locales, type LocalMap, type LocalId } from "@/locales";
 export { IconField } from "@/components/IconField";
 export { Gender } from "@/components/Gender";
+export * as TutorFeedback from "@/components/TutorFeedback";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
 export {

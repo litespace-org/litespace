@@ -1,5 +1,5 @@
+import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-
 import { Rating } from "@/components/Rating/Rating";
 import { Direction } from "@/components/Direction";
 import { Controller, useForm } from "react-hook-form";
