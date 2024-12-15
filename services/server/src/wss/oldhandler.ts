@@ -35,6 +35,9 @@ const onLeaveCallPayload = zod.object({ callId: zod.number() });
 
 const stdout = logger("wss");
 
+/**
+ * @deprecated
+ */
 export class WssHandler {
   socket: Socket<Wss.ClientEventsMap, Wss.ServerEventsMap>;
   user: IUser.Self | IUser.Ghost;
@@ -46,18 +49,14 @@ export class WssHandler {
   }
 
   async initialize() {
-    this.connect();
+    this.connect(); 
     this.socket.on(Wss.ClientEvent.SendMessage, this.sendMessage.bind(this));
-    this.socket.on(
-      Wss.ClientEvent.UpdateMessage,
-      this.updateMessage.bind(this)
-    );
-    this.socket.on(
-      Wss.ClientEvent.DeleteMessage,
-      this.deleteMessage.bind(this)
-    );
+    this.socket.on(Wss.ClientEvent.UpdateMessage, this.updateMessage.bind(this));
+    this.socket.on(Wss.ClientEvent.DeleteMessage, this.deleteMessage.bind(this));
+
     this.socket.on(Wss.ClientEvent.PeerOpened, this.peerOpened.bind(this));
     this.socket.on(Wss.ClientEvent.RegisterPeer, this.registerPeer.bind(this));
+
     this.socket.on(Wss.ClientEvent.Disconnect, this.disconnect.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleCamera, this.toggleCamera.bind(this));
     this.socket.on(Wss.ClientEvent.ToggleMic, this.toggleMic.bind(this));
@@ -488,3 +487,4 @@ export function wssHandler(socket: Socket) {
   }
   return new WssHandler(socket, user);
 }
+
