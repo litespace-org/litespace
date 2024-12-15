@@ -13,6 +13,8 @@ export default {
       zIndex: {
         dialog: "11",
         "select-dropdown": "12",
+        tooltip: "13",
+        toast: "14",
       },
       screens: {
         "3xl": "1600px",

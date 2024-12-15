@@ -1,13 +1,11 @@
-import { Element, IFilter, ILesson, IRule, Void } from "@litespace/types";
+import { Element, IFilter, ILesson } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 import { InfiniteQueryHandler, useInfinitePaginationQuery } from "./query";
-
-type OnSuccess = Void;
-type OnError = (error: Error) => void;
+import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindLessons(
   query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
@@ -72,29 +70,35 @@ export function useCancelLesson() {
 }
 
 export function useCreateLesson({
-  selectedEvent,
   tutorId,
-  duration,
   onSuccess,
   onError,
 }: {
-  selectedEvent: IRule.RuleEvent | null;
-  duration: ILesson.Duration;
   tutorId: number;
-  onSuccess: OnSuccess;
+  onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
   const atlas = useAtlas();
 
-  const bookLesson = useCallback(async () => {
-    if (!selectedEvent) return;
-    return await atlas.lesson.create({
-      tutorId,
+  const bookLesson = useCallback(
+    async ({
+      ruleId,
+      start,
       duration,
-      ruleId: selectedEvent.id,
-      start: selectedEvent.start,
-    });
-  }, [atlas.lesson, duration, selectedEvent, tutorId]);
+    }: {
+      ruleId: number;
+      start: string;
+      duration: ILesson.Duration;
+    }) => {
+      return await atlas.lesson.create({
+        tutorId,
+        duration,
+        ruleId,
+        start,
+      });
+    },
+    [atlas.lesson, tutorId]
+  );
 
   return useMutation({
     mutationFn: bookLesson,
