@@ -1,11 +1,13 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { SpeechIndicator, CallAvatar } from "@/components/Call";
+import { CallAvatar } from "@/components/Call/CallAvatar";
+import { SpeechIndicator } from "@/components/Call/SpeechIndicator";
 import { StreamInfo } from "@/components/Call/types";
 
 export const UnFocusedStream: React.FC<{
   stream: StreamInfo;
-}> = ({ stream }) => {
+  streamMuted: boolean;
+}> = ({ stream, streamMuted }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -25,7 +27,7 @@ export const UnFocusedStream: React.FC<{
     >
       {stream.camera || stream.cast ? (
         // todo: should only be muted for the current user (props)
-        <video ref={videoRef} autoPlay muted={false} playsInline />
+        <video ref={videoRef} autoPlay muted={streamMuted} playsInline />
       ) : (
         <div className="tw-w-[120px] tw-h-[120px] tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center">
           <CallAvatar

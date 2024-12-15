@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useCreateStream } from "@/internal/hooks/stream";
 import dayjs from "dayjs";
 import { StreamInfo } from "@/components/Call/types";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Call;
 
@@ -49,6 +50,41 @@ export const AloneWithCamera: StoryObj<Component> = {
     },
     leaveCall: () => {},
     chatPanel: <div>This is a Message Component</div>,
+  },
+  render(props) {
+    const stream = useCreateStream("focused", true);
+    return <Call {...props} streams={{ focused: stream, unfocused: [] }} />;
+  },
+};
+
+export const Alert: StoryObj<Component> = {
+  args: {
+    chat: {
+      enabled: true,
+      toggle: () => alert("toggle chat"),
+    },
+    camera: {
+      enabled: true,
+      error: false,
+      toggle: () => alert("toggle camera"),
+    },
+    mic: {
+      enabled: true,
+      error: false,
+      toggle: () => alert("toggle mic"),
+    },
+    cast: {
+      enabled: false,
+      error: false,
+      toggle: () => alert("toggle cast"),
+    },
+    timer: {
+      duration: 30,
+      startAt: dayjs().toISOString(),
+    },
+    leaveCall: () => {},
+    chatPanel: <div>This is a Message Component</div>,
+    alert: faker.lorem.words(3),
   },
   render(props) {
     const stream = useCreateStream("focused", true);
