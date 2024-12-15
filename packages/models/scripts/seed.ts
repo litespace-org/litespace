@@ -184,12 +184,62 @@ async function main(): Promise<void> {
           tx
         );
         return tutor;
-      })
+      }),
+    );
+  });
+
+  const addedTutorManagers: IUser.Self[] = await knex.transaction(async (tx) => {
+    return await Promise.all(
+      range(1, 16).map(async (idx) => {
+        const email = `tutor-manager-${idx}@litespace.org`;
+        const tutor = await users.create(
+          {
+            name: faker.person.fullName(),
+            role: IUser.Role.TutorManager,
+            birthYear: birthYear(),
+            password,
+            email,
+          },
+          tx
+        );
+
+        console.log(`tutor-manager: ${tutor.id} - ${tutor.email}`);
+
+        await tutors.create(tutor.id, tx);
+
+        await users.update(
+          tutor.id,
+          {
+            phoneNumber: phoneNumber(),
+            gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+            city: city(),
+            image: "/image.png",
+            verified: true,
+          },
+          tx
+        );
+
+        await tutors.update(
+          tutor.id,
+          {
+            about: faker.lorem.paragraphs(),
+            bio: faker.lorem.words(9),
+            activated: true,
+            activatedBy: admin.id,
+            video: "/video.mp4",
+          },
+          tx
+        );
+        return tutor;
+      }),
     );
   });
 
   const tutor = first(addedTutors);
   if (!tutor) throw new Error("Tutor not found; should never happen.");
+
+  const tutorManager = first(addedTutorManagers);
+  if (!tutorManager) throw new Error("TutorManager not found; should never happen.");
 
   await ratings.create({
     raterId: student.id,

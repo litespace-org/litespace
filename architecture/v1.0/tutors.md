@@ -174,7 +174,7 @@ type Response = Paginated<{
   - [x] Update the `create` user api handler.
   - [x] Update the `update` user api handler.
   - [x] Tutor managers should be part of the tutors cache.
-  - [ ] Update the seed script to create multiple tutor managers.
+  - [x] Update the seed script to create multiple tutor managers.
   - [ ] Remove the `interviewer` from the client (`nova` and `dashboard`)
   - [ ] Remove the `interviewer` from the server, models, and database.
   - [ ] Remove the `interviewer` from the the remaining packages.
