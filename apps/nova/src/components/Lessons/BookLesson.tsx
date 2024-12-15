@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import { useCallback } from "react";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useQueryClient } from "@tanstack/react-query";
+import { QueryKey } from "@litespace/headless/constants";
 
 const BookLesson = ({
   open,
@@ -25,6 +27,7 @@ const BookLesson = ({
   const toast = useToast();
   const before = dayjs().toISOString();
   const after = dayjs(before).add(user.notice, "minutes").toISOString();
+  const queryClient = useQueryClient();
   const rulesQuery = useFindUserRulesWithSlots({
     id: user.tutorId,
     before,
@@ -32,9 +35,16 @@ const BookLesson = ({
   });
 
   const onSuccess = useCallback(() => {
-    toast.success({ title: intl("book-lesson.success", { tutor: user.name }) });
     close();
-  }, [toast, close, intl, user.name]);
+    toast.success({ title: intl("book-lesson.success", { tutor: user.name }) });
+    queryClient.invalidateQueries({
+      queryKey: [
+        QueryKey.FindRulesWithSlots,
+        QueryKey.FindLesson,
+        QueryKey.FindTutors,
+      ],
+    });
+  }, [toast, intl, user.name, close, queryClient]);
 
   const onError = useCallback(() => {
     toast.error({ title: intl("book-lesson.error") });

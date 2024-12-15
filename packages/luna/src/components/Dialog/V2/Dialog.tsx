@@ -10,6 +10,7 @@ import {
 import cn from "classnames";
 import React from "react";
 import X from "@litespace/assets/X";
+import { Void } from "@litespace/types";
 
 export const Dialog: React.FC<{
   trigger?: React.ReactNode;
@@ -18,7 +19,7 @@ export const Dialog: React.FC<{
   className?: string;
   open?: boolean;
   setOpen?: (open: boolean) => void;
-  close: () => void;
+  close: Void;
   description?: string;
 }> = ({
   trigger,

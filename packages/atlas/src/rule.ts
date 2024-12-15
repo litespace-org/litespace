@@ -14,16 +14,16 @@ export class Rule extends Base {
     return await this.get(`/api/v1/rule/list/${id}`);
   }
 
-  /**
-   * @param id user id (manger or tutor)
-   * @param after  utc after datetime (get rules after this date)
-   * @param before utc before datetime (get rules before this date)
-   */
   async findUserRulesWithSlots({
     id,
-    after,
     before,
-  }: IRule.FindRulesWithSlotsApiQuery): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
+    after,
+  }: {
+    /**
+     * user id (manger or tutor)
+     */
+    id: number;
+  } & IRule.FindRulesWithSlotsApiQuery): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
     return await this.get(`/api/v1/rule/slots/${id}`, {}, { after, before });
   }
 

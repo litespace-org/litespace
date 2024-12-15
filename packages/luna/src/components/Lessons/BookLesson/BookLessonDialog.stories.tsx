@@ -111,6 +111,33 @@ export const LoadingRules: Story = {
   },
 };
 
+export const ConfirmationLoading: Story = {
+  args: {
+    open: true,
+    close: identity,
+    tutorId: faker.number.int(),
+    name: faker.person.fullName(),
+    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+    rules: [makeRule(1)],
+    slots: range(5).map((idx) => ({
+      ruleId: 1,
+      start: dayjs
+        .utc()
+        .add(1, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      duration: 30,
+    })),
+    notice: 0,
+    confirmationLoading: true,
+    onBook() {
+      alert("Lesson booked!!");
+    },
+  },
+};
+
 export const LoadingThenShowingRules: Story = {
   args: {
     open: true,
@@ -139,9 +166,10 @@ export const LoadingThenShowingRules: Story = {
   render: (props) => {
     const [loading, setIsLoading] = useState(true);
     useEffect(() => {
-      setTimeout(() => {
+      const id = setTimeout(() => {
         setIsLoading(false);
       }, 2_000);
+      return () => clearTimeout(id);
     }, []);
     return <BookLessonDialog {...props} loading={loading} />;
   },

@@ -8,7 +8,7 @@ export type Self = {
   activated: boolean | null;
   activatedBy: number | null;
   /**
-   * time before the student is able to book a lesson with the tutor in *minutes*
+   * The period that be available before booking any lesson with the tutor.
    */
   notice: number;
   createdAt: string;

@@ -1,6 +1,6 @@
 import { Loading } from "@litespace/luna/Loading";
 import React, { useCallback, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import RightArrow from "@litespace/assets/ArrowRight";
 import { Typography } from "@litespace/luna/Typography";
@@ -8,6 +8,7 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { TutorProfileCard } from "@litespace/luna/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import BookLesson from "@/components/Lessons/BookLesson";
+import { Route } from "@/types/routes";
 
 const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -30,9 +31,12 @@ const TutorProfile: React.FC = () => {
   return (
     <div className="w-full max-w-screen-3xl p-6 mx-auto mb-12 lg:max-w-screen-3xl">
       <div className="flex items-center gap-6">
-        <button className="w-6 h-6 flex items-center justify-center">
+        <Link
+          to={Route.Tutors}
+          className="w-6 h-6 flex items-center justify-center"
+        >
           <RightArrow className="[&>*]:stroke-brand-700" />
-        </button>
+        </Link>
         <Typography element="subtitle-2" className="font-bold text-natural-950">
           {intl("tutors.title")} /{" "}
           <span className="underline text-brand-700">{tutor.data.name}</span>
