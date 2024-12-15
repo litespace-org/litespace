@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Dialog } from "@/components/Dialog/V2";
-import { IRule, Void } from "@litespace/types";
+import { ILesson, IRule, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Stepper } from "@/components/Lessons/BookLesson/Stepper";
@@ -18,24 +18,61 @@ import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { concat, flattenDeep, isEmpty } from "lodash";
 import cn from "classnames";
+import Spinner from "@litespace/assets/Spinner";
+import CalendarEmpty from "@litespace/assets/CalendarEmpty";
 
-const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
-  step,
-  children,
-}) => {
+const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+  const intl = useFormatMessage();
+  return (
+    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
+      <Spinner className="tw-animate-spin" />
+      {tutorName ? (
+        <Typography
+          element="subtitle-2"
+          className="tw-font-bold tw-text-brand-700 tw-text-center"
+        >
+          {intl("book-lesson.loading-rules", { tutor: tutorName })}
+        </Typography>
+      ) : null}
+    </div>
+  );
+};
+
+const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+  const intl = useFormatMessage();
+  return (
+    <div
+      className={cn(
+        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-[82px] tw-mb-[148px]"
+      )}
+    >
+      <CalendarEmpty />
+      <Typography
+        element="subtitle-2"
+        weight="bold"
+        className="tw-text-brand-700 tw-text-center"
+      >
+        {tutorName
+          ? intl("book-lesson.empty-slots", { tutor: tutorName })
+          : null}
+      </Typography>
+    </div>
+  );
+};
+
+const Animation: React.FC<{
+  id?: Step | "loading" | "busy-tutor";
+  children: React.ReactNode;
+}> = ({ id, children }) => {
   const duration = useMemo(() => {
-    if (step === "date-selection" || step === "time-selection") return 0.5;
+    if (id === "date-selection" || id === "loading" || id === "busy-tutor")
+      return 0.5;
     return 0.4;
-  }, [step]);
-
-  const delay = useMemo(() => {
-    if (step === "date-selection" || step === "time-selection") return 0.4;
-    return 0.2;
-  }, [step]);
+  }, [id]);
 
   return (
     <motion.div
-      key={step}
+      key={id}
       initial={{
         opacity: 0,
         height: 0,
@@ -45,7 +82,6 @@ const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
         height: "auto",
         transition: {
           duration,
-          delay,
           ease: "linear",
         },
       }}
@@ -60,7 +96,7 @@ const Animation: React.FC<{ step: Step; children: React.ReactNode }> = ({
   );
 };
 
-export const BookLesson: React.FC<{
+export const BookLessonDialog: React.FC<{
   /**
    * Flag to show or hide the dialog
    */
@@ -79,13 +115,18 @@ export const BookLesson: React.FC<{
    */
   imageUrl: string | null;
   loading?: boolean;
+  confirmationLoading?: boolean;
   rules: IRule.Self[];
   slots: IRule.Slot[];
   notice: number;
-  onBook: (payload: {
+  onBook: ({
+    ruleId,
+    start,
+    duration,
+  }: {
     ruleId: number;
     start: string;
-    duration: number;
+    duration: ILesson.Duration;
   }) => void;
 }> = ({
   open,
@@ -97,6 +138,8 @@ export const BookLesson: React.FC<{
   slots,
   notice,
   onBook,
+  loading,
+  confirmationLoading,
 }) => {
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
@@ -171,15 +214,26 @@ export const BookLesson: React.FC<{
     return Schedule.order(concat(daySlots, bookedSlots), "asc");
   }, [selectDaySlots, date, slots]);
 
+  const isTutorBusy = useMemo(() => {
+    return (
+      isEmpty(unpackedRules) ||
+      isEmpty(
+        unpackedRules.filter((slot) =>
+          dayjs(slot.start).isAfter(dayjs().add(notice))
+        )
+      )
+    );
+  }, [notice, unpackedRules]);
+
   return (
     <Dialog
       open={open}
       close={close}
       title={
         <Typography
+          className="tw-text-natural-950"
           element="subtitle-2"
           weight="bold"
-          className="tw-text-natural-950"
           tag="div"
         >
           {name
@@ -189,14 +243,28 @@ export const BookLesson: React.FC<{
       }
       className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
     >
-      <div className="tw-mt-6 tw-px-6">
-        <Stepper step={step} />
-      </div>
+      {!loading ? (
+        <div className="tw-mt-6 tw-px-6">
+          <Stepper step={step} />
+        </div>
+      ) : null}
 
       <div className="tw-mt-6">
-        <AnimatePresence>
-          {step === "date-selection" ? (
-            <Animation step="date-selection">
+        <AnimatePresence mode="wait">
+          {loading ? (
+            <Animation key="loading" id="loading">
+              <Loading tutorName={name} />
+            </Animation>
+          ) : null}
+
+          {isTutorBusy ? (
+            <Animation key="busy-tutor" id="busy-tutor">
+              <BusyTutor tutorName={name} />
+            </Animation>
+          ) : null}
+
+          {step === "date-selection" && !loading && !isTutorBusy ? (
+            <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
                 max={dateBounds.max}
@@ -206,21 +274,17 @@ export const BookLesson: React.FC<{
               />
             </Animation>
           ) : null}
-        </AnimatePresence>
 
-        <AnimatePresence>
-          {step === "duration-selection" ? (
-            <Animation step="duration-selection">
+          {!isTutorBusy && step === "duration-selection" && !loading ? (
+            <Animation key="duration-selection" id="duration-selection">
               <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
           ) : null}
-        </AnimatePresence>
 
-        <AnimatePresence>
-          {step === "time-selection" ? (
-            <Animation step="time-selection">
+          {!isTutorBusy && step === "time-selection" && !loading ? (
+            <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
                 start={start}
@@ -232,17 +296,20 @@ export const BookLesson: React.FC<{
               />
             </Animation>
           ) : null}
-        </AnimatePresence>
 
-        <AnimatePresence>
-          {step === "confirmation" && start && ruleId ? (
-            <Animation step="confirmation">
+          {!isTutorBusy &&
+          step === "confirmation" &&
+          start &&
+          ruleId &&
+          !loading ? (
+            <Animation key="confimration" id="confirmation">
               <div className="tw-px-6">
                 <Confirmation
                   tutorId={tutorId}
                   name={name}
                   imageUrl={imageUrl}
                   start={start}
+                  confirmationLoading={confirmationLoading}
                   duration={duration}
                   onConfrim={() => onBook({ ruleId, start, duration })}
                   onEdit={() => {
@@ -255,7 +322,7 @@ export const BookLesson: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" ? (
+      {step !== "confirmation" && !loading && !isTutorBusy ? (
         <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
           {step !== "date-selection" ? (
             <Button

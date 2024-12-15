@@ -48,7 +48,7 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
 
         <Viewport
           className={cn(
-            "tw-fixed tw-top-0 tw-left-0 tw-w-96",
+            "tw-fixed tw-top-0 tw-left-0 tw-w-96 tw-z-toast",
             "tw-list-none tw-flex tw-flex-col tw-gap-2.5 tw-p-[var(--viewport-padding)] tw-outline-none [--viewport-padding:_25px]"
           )}
         />

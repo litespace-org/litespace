@@ -50,7 +50,7 @@ export const Toast: React.FC<{
       <div
         className={cn(
           "tw-bg-toast-success tw-absolute tw-top-0 tw-right-0",
-          "tw-h-full tw-w-1/2  tw-translate-x-[calc(50%-2rem)]",
+          "tw-h-full tw-w-1/2 tw-translate-x-[calc(50%-2rem)]",
           {
             "tw-bg-toast-success": type === "success",
             "tw-bg-toast-warning": type === "warning",

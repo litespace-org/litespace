@@ -125,3 +125,18 @@ export type Slot = {
    */
   duration: number;
 };
+
+export type FindRulesWithSlotsApiQuery = {
+  /**
+   * ISO UTC datetime.
+   *
+   * Get user rules that are defined after this date.
+   */
+  after: string;
+  /**
+   * ISO UTC datetime.
+   *
+   * Get user rules that are defined before this date.
+   */
+  before: string;
+};

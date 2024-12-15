@@ -25,6 +25,7 @@
     "./Calendar": "./dist/Calendar.tsx",
     "./CalendarEdit": "./dist/CalendarEdit.tsx",
     "./CalendarRemove": "./dist/CalendarRemove.tsx",
+    "./CalendarEmpty": "./dist/CalendarEmpty.tsx",
     "./CallIncoming": "./dist/CallIncoming.tsx",
     "./Cancel": "./dist/Cancel.tsx",
     "./CastScreen": "./dist/CastScreen.tsx",
