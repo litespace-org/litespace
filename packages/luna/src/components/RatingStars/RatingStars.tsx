@@ -63,8 +63,8 @@ export const RatingStars: React.FC<StarProps> = ({
             )}
           >
             <SStar
-              width={variant === "sm" ? "20px" : ""}
               className={cn(
+                variant === "sm" && "tw-w-[20px]",
                 !readonly && "hover:tw-cursor-pointer",
                 idx + 1 <= rating
                   ? "[&>*]:tw-fill-warning-500"
