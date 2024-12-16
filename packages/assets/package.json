@@ -24,8 +24,8 @@
     "./BottomRightArch": "./dist/BottomRightArch.tsx",
     "./Calendar": "./dist/Calendar.tsx",
     "./CalendarEdit": "./dist/CalendarEdit.tsx",
-    "./CalendarRemove": "./dist/CalendarRemove.tsx",
     "./CalendarEmpty": "./dist/CalendarEmpty.tsx",
+    "./CalendarRemove": "./dist/CalendarRemove.tsx",
     "./CallIncoming": "./dist/CallIncoming.tsx",
     "./Cancel": "./dist/Cancel.tsx",
     "./CastScreen": "./dist/CastScreen.tsx",
@@ -36,6 +36,7 @@
     "./Check2": "./dist/Check2.tsx",
     "./Check3": "./dist/Check3.tsx",
     "./CheckCircle": "./dist/CheckCircle.tsx",
+    "./CheckCircleFill": "./dist/CheckCircleFill.tsx",
     "./Clock": "./dist/Clock.tsx",
     "./Clock16X16": "./dist/Clock16X16.tsx",
     "./Close": "./dist/Close.tsx",
@@ -110,7 +111,9 @@
     "./Video": "./dist/Video.tsx",
     "./Video16X16": "./dist/Video16X16.tsx",
     "./VideoSlash": "./dist/VideoSlash.tsx",
+    "./WarningFill": "./dist/WarningFill.tsx",
     "./X": "./dist/X.tsx",
+    "./XErroredFill": "./dist/XErroredFill.tsx",
     "./index": "./dist/index.tsx"
   }
 }
