@@ -14,7 +14,7 @@ export class Lesson extends Base {
     return this.get(`/api/v1/lesson/list/`, {}, query);
   }
 
-  async cancel(id: number): Promise<void | Error> {
+  async cancel(id: number): Promise<void> {
     return this.del(`/api/v1/lesson/${id}`);
   }
 }
