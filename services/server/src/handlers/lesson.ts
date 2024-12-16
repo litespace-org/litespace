@@ -9,7 +9,7 @@ import {
   pageSize,
   withNamedId,
 } from "@/validation/utils";
-import { bad, busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
+import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
 import { ILesson, IRule, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
