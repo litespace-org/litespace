@@ -24,6 +24,14 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.LeaveCall, { callId });
   }
 
+  sendMessage(roomId: number, text: string) {
+    this.client.emit(Wss.ClientEvent.SendMessage, { roomId, text });
+  }
+
+  markMessageAsRead(msgId: number) {
+    this.client.emit(Wss.ClientEvent.MarkAsRead, { id: msgId });
+  }
+
   /**
    * Wait for event.
    *

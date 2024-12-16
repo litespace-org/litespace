@@ -30,6 +30,7 @@ export enum ServerEvent {
   RoomMessage = "RoomMessage",
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
+  RoomMessageReverted = "RoomMessageReverted",
   JoinedRooms = "JoinedRooms",
 
   MessageRead = "MessageRead",
@@ -79,10 +80,14 @@ export type ClientEventsMap = {
   [ClientEvent.SendMessage]: EventCallback<{ roomId: number; text: string }>;
   [ClientEvent.UpdateMessage]: EventCallback<{ id: number; text: string }>;
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
+  [ClientEvent.MarkAsRead]: EventCallback<{ id: number }>;
+
   [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: string }>;
   [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
+
   [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
   [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
+
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
   [ClientEvent.JoinCall]: EventCallback<{
     callId: number;
@@ -101,6 +106,7 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
+  [ServerEvent.RoomMessageReverted]: EventCallback<{ code: number, message: string }>;
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
 

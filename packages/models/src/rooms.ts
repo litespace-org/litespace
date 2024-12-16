@@ -18,6 +18,10 @@ export class Rooms {
       column(value, this.tables.members),
   };
 
+  /**
+  * @param ids - members user ids
+  * @returns the created room id
+  */
   async create(ids: number[]): Promise<number> {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const now = dayjs.utc().toDate();

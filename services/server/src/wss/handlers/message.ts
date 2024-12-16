@@ -1,4 +1,4 @@
-import { isGhost } from "@litespace/auth";
+import { isGhost, isUser } from "@litespace/auth";
 import { logger, safe, sanitizeMessage } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
@@ -8,6 +8,7 @@ import { id, string, withNamedId } from "@/validation/utils";
 import wss from "@/validation/wss";
 import zod from "zod";
 import { isEmpty } from "lodash";
+import ResponseError, { bad, forbidden, notfound } from "@/lib/error";
 
 const stdout = logger("wss");
 
@@ -26,24 +27,27 @@ export class Messages extends WssHandler {
       this.deleteMessage.bind(this)
     );
     this.socket.on(Wss.ClientEvent.UserTyping, this.onUserTyping.bind(this));
+    this.socket.on(Wss.ClientEvent.MarkAsRead, this.markAsRead.bind(this));
     return this;
   }
 
   async sendMessage(data: unknown) {
-    const error = safe(async () => {
+    const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user)) return;
+      if (isGhost(user) || !isUser(user)) return;
 
       const { roomId, text } = wss.message.send.parse(data);
-      const userId = user.id;
+      if (!roomId || !text) throw bad();
 
-      stdout.log(`u:${userId} is send a message to r:${roomId}`);
+      const room = await rooms.findById(roomId);
+      if (!room) throw notfound.base();
+
+      const userId = user.id;
+      stdout.log(`u:${userId} is sending a message to r:${roomId}`);
 
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
-      if (!members) throw Error("Room not found");
-
       const member = members.map((member) => member.id).includes(userId);
-      if (!member) throw new Error("Unauthorized");
+      if (!member) throw forbidden();
 
       const sanitized = sanitizeMessage(text);
       if (!sanitized) return; // empty message
@@ -59,23 +63,29 @@ export class Messages extends WssHandler {
         message
       );
     });
-    if (error instanceof Error) stdout.error(error);
+    if (error instanceof ResponseError)
+      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+        code: error.statusCode, 
+        message: error.message
+      });
+    else if (error instanceof Error)
+      stdout.error(error.message);
   }
 
   async updateMessage(data: unknown) {
     const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user)) return;
+      if (isGhost(user) || !isUser(user)) return;
 
       const { id, text } = updateMessagePayload.parse(data);
       const message = await messages.findById(id);
-      if (!message || message.deleted) throw new Error("Message not found");
+      if (!message || message.deleted) throw notfound.base();
 
       const owner = message.userId === user.id;
-      if (!owner) throw new Error("Forbidden");
+      if (!owner) throw forbidden();
 
       const sanitized = sanitizeMessage(text);
-      if (!sanitized) throw new Error("Invalid message");
+      if (!sanitized) throw bad();
 
       const updated = await messages.update(id, { text: sanitized });
       if (!updated) throw new Error("Mesasge not update; should never happen.");
@@ -86,21 +96,27 @@ export class Messages extends WssHandler {
         updated
       );
     });
-    if (error instanceof Error) stdout.error(error.message);
+    if (error instanceof ResponseError)
+      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+        code: error.statusCode, 
+        message: error.message
+      });
+    else if (error instanceof Error)
+      stdout.error(error.message);
   }
 
   async deleteMessage(data: unknown) {
-    const error = safe(async () => {
+    const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user)) return;
+      if (isGhost(user) || !isUser(user)) return;
 
       const { id }: { id: number } = withNamedId("id").parse(data);
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) throw new Error("Message not found");
+      if (!message || message.deleted) throw notfound.base();
 
       const owner = message.userId === user.id;
-      if (!owner) throw new Error("Forbidden");
+      if (!owner) throw forbidden();
 
       await messages.markAsDeleted(id);
 
@@ -113,11 +129,17 @@ export class Messages extends WssHandler {
         }
       );
     });
-    if (error instanceof Error) stdout.error(error.message);
+    if (error instanceof ResponseError)
+      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+        code: error.statusCode, 
+        message: error.message
+      });
+    else if (error instanceof Error)
+      stdout.error(error.message);
   }
 
   async onUserTyping(data: unknown) {
-    const error = safe(async () => {
+    const error = await safe(async () => {
       const { roomId } = userTypingPayload.parse(data);
 
       const user = this.user;
@@ -127,8 +149,7 @@ export class Messages extends WssHandler {
       if (isEmpty(members)) return;
 
       const isMember = members.find((member) => member.id === user.id);
-      if (!isMember)
-        throw new Error(`User(${user.id}) isn't member of room Id: ${roomId}`);
+      if (!isMember) throw forbidden();
 
       this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
         roomId,
@@ -137,5 +158,30 @@ export class Messages extends WssHandler {
     });
 
     if (error instanceof Error) stdout.error(error.message);
+  }
+
+  async markAsRead(data: unknown) {
+    const error = await safe(async () => {
+      const { id }: { id: number } = withNamedId("id").parse(data);
+
+      const user = this.user;
+      if (isGhost(user) || !isUser(user)) return;
+
+      const message = await messages.findById(id);
+      if (!message || message.deleted) throw notfound.base();
+
+      const members = await rooms.findRoomMembers({ roomIds: [message.roomId] });
+      const isMember = members.find((member) => member.id === user.id);
+      if (!isMember) throw forbidden();
+
+      await messages.markAsRead(id);
+    });
+    if (error instanceof ResponseError)
+      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+        code: error.statusCode, 
+        message: error.message
+      });
+    else if (error instanceof Error)
+      stdout.error(error.message);
   }
 }
