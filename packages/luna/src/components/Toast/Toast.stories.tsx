@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Toast } from "@/components/Toast/Toast";
-import React, { useCallback, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/Button";
-import ar from "@/locales/ar-eg.json";
 import { Direction } from "@/components/Direction";
 import { ToastProvider, useToast } from "@/components/Toast";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Toast;
 
@@ -16,22 +16,33 @@ const meta: Meta<Component> = {
 };
 
 export const Success: StoryObj<Component> = {
-  args: {
-    title: ar["dashboard.error.alert.title"],
-    description: ar["error.unexpected"],
-  },
   render() {
     const toast = useToast();
-    const showToast = useCallback(() => {
-      toast.success({
-        title: "Saved Successfully",
-        description: "This is a good sign that you have succeeded",
-      });
-    }, [toast]);
+
     return (
       <Direction>
         <ToastProvider>
-          <Button onClick={showToast}>Open</Button>
+          <Button
+            onClick={() =>
+              toast.success({
+                title: faker.lorem.words(4),
+                description: faker.lorem.words(5),
+              })
+            }
+            className="tw-mb-4"
+          >
+            Short
+          </Button>
+          <Button
+            onClick={() =>
+              toast.success({
+                title: faker.lorem.words(10),
+                description: faker.lorem.words(40),
+              })
+            }
+          >
+            Long
+          </Button>
         </ToastProvider>
       </Direction>
     );
@@ -39,43 +50,63 @@ export const Success: StoryObj<Component> = {
 };
 
 export const Warning: StoryObj<Component> = {
-  args: {
-    title: ar["dashboard.error.alert.title"],
-    description: ar["error.unexpected"],
-  },
   render() {
     const toast = useToast();
-    const showToast = useCallback(() => {
-      toast.warning({
-        title: "Are you sure man",
-        description: "please reconsider your choices quickly",
-      });
-    }, [toast]);
     return (
       <Direction>
-        <Button onClick={showToast}>Open</Button>
+        <Button
+          onClick={() =>
+            toast.warning({
+              title: faker.lorem.words(4),
+              description: faker.lorem.words(5),
+            })
+          }
+          className="tw-mb-4"
+        >
+          Short
+        </Button>
+        <Button
+          onClick={() =>
+            toast.warning({
+              title: faker.lorem.words(10),
+              description: faker.lorem.words(40),
+            })
+          }
+        >
+          Long
+        </Button>
       </Direction>
     );
   },
 };
 
 export const Error: StoryObj<Component> = {
-  args: {
-    title: ar["dashboard.error.alert.title"],
-    description: ar["error.unexpected"],
-  },
   render() {
     const toast = useToast();
-    const showToast = useCallback(() => {
-      toast.error({
-        title: "Couldn't Connect to Server",
-        description: "Help Me, I can't connect to the server",
-      });
-    }, [toast]);
     return (
       <Direction>
         <ToastProvider>
-          <Button onClick={showToast}>Open</Button>
+          <Button
+            onClick={() =>
+              toast.error({
+                title: faker.lorem.words(4),
+                description: faker.lorem.words(5),
+              })
+            }
+            className="tw-mb-4"
+          >
+            Short
+          </Button>
+          <Button
+            onClick={() =>
+              toast.error({
+                title: faker.lorem.words(10),
+                description: faker.lorem.words(40),
+              })
+            }
+          >
+            Long
+          </Button>
         </ToastProvider>
       </Direction>
     );
@@ -84,8 +115,9 @@ export const Error: StoryObj<Component> = {
 
 export const MultiToast: StoryObj<Component> = {
   args: {
-    title: ar["dashboard.error.alert.title"],
-    description: ar["error.unexpected"],
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(8),
+    type: "success",
   },
   render(props) {
     const [open, setOpen] = useState<boolean>(false);
