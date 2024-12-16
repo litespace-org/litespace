@@ -9,7 +9,7 @@ import {
   pageSize,
   withNamedId,
 } from "@/validation/utils";
-import { bad, busyTutor, forbidden, notfound, unexpected } from "@/lib/error";
+import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
 import { ILesson, IRule, IUser, Wss } from "@litespace/types";
 import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
@@ -212,8 +212,6 @@ function cancel(context: ApiContext) {
         id: lessonId,
       });
 
-      res.status(200).send();
-
       //! todo: cache updates should be done at the worker thread
       const error = await safe(async () => {
         const ruleLessons = await lessons.find({
@@ -261,6 +259,8 @@ function cancel(context: ApiContext) {
           .emit(Wss.ServerEvent.LessonCanceled, payload);
       });
       if (error instanceof Error) console.error(error);
+
+      res.status(200).send();
     }
   );
 }
