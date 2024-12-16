@@ -2,9 +2,9 @@ import React, { useMemo } from "react";
 import { Root, Title, Description } from "@radix-ui/react-toast";
 import cn from "classnames";
 import { ToastType } from "@/components/Toast/types";
-import CheckCircle from "@litespace/assets/CheckCircle";
-import Info from "@litespace/assets/Info";
-import Cancel from "@litespace/assets/Cancel";
+import Check from "@litespace/assets/CheckCircleFill";
+import Warning from "@litespace/assets/WarningFill";
+import XErrored from "@litespace/assets/XErroredFill";
 import { motion } from "framer-motion";
 import { Typography } from "@/components/Typography";
 
@@ -16,9 +16,9 @@ const IconMap: Record<
     (props: React.SVGProps<SVGSVGElement>) => React.JSX.Element
   >
 > = {
-  error: Cancel,
-  warning: Info,
-  success: CheckCircle,
+  error: XErrored,
+  warning: Warning,
+  success: Check,
 };
 
 export const Toast: React.FC<{
@@ -49,7 +49,7 @@ export const Toast: React.FC<{
     >
       <div
         className={cn(
-          "tw-bg-toast-success tw-absolute tw-top-0 tw-right-0",
+          "tw-absolute tw-top-0 tw-right-0",
           "tw-h-full tw-w-1/2 tw-translate-x-[calc(50%-2rem)]",
           {
             "tw-bg-toast-success": type === "success",
@@ -61,7 +61,7 @@ export const Toast: React.FC<{
 
       <div
         className={cn(
-          "tw-rounded-full tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center",
+          "tw-rounded-full tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center tw-shrink-0",
           {
             "tw-bg-success-900": type === "success",
             "tw-bg-warning-900": type === "warning",
@@ -69,7 +69,7 @@ export const Toast: React.FC<{
           }
         )}
       >
-        <Icon className="tw-w-6 tw-h-6" />
+        <Icon />
       </div>
       <div className="tw-grow">
         <Title
