@@ -1,18 +1,16 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import cn from "classnames";
 import { FocusedStream } from "@/components/Call/FocusedStream";
 import { UnFocusedStream } from "@/components/Call/UnFocusedStream";
 import { StreamInfo } from "@/components/Call/types";
 import { Void } from "@litespace/types";
 import { MovableMedia } from "../MovableMedia";
+import { streamsOrganizer } from "@/lib/stream";
 
 export const InCallStreams: React.FC<{
   alert?: string;
   currentUserId: number;
-  streams: {
-    focused: StreamInfo;
-    unfocused: StreamInfo[];
-  };
+  streams: StreamInfo[];
   /**
    * Whether the chat panel is enabled or not.
    * @default false
@@ -28,6 +26,14 @@ export const InCallStreams: React.FC<{
   };
 }> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
   const containerRef = useRef<HTMLDivElement>(null);
+  const newStreams = useMemo(
+    () => streamsOrganizer(streams, currentUserId),
+    [streams, currentUserId]
+  );
+
+  // SHOULD NEVER HAPPEN
+  if (!newStreams.focused) return null;
+
   return (
     <div
       ref={containerRef}
@@ -38,9 +44,9 @@ export const InCallStreams: React.FC<{
     >
       <FocusedStream
         fullScreen={fullScreen}
-        stream={streams.focused}
+        stream={newStreams.focused}
         timer={timer}
-        streamMuted={streams.focused.user.id === currentUserId}
+        streamMuted={newStreams.focused.user.id === currentUserId}
         alert={alert}
       />
       <div
@@ -49,14 +55,16 @@ export const InCallStreams: React.FC<{
           !chat && "tw-absolute tw-bottom-6 tw-right-6"
         )}
       >
-        {streams.unfocused.map((stream, index) => (
-          <MovableMedia container={containerRef} key={index}>
-            <UnFocusedStream
-              streamMuted={stream.user.id === currentUserId}
-              stream={stream}
-            />
-          </MovableMedia>
-        ))}
+        {newStreams.unfocused.map((stream, index) =>
+          stream ? (
+            <MovableMedia container={containerRef} key={index}>
+              <UnFocusedStream
+                streamMuted={stream.user.id === currentUserId}
+                stream={stream}
+              />
+            </MovableMedia>
+          ) : null
+        )}
       </div>
     </div>
   );

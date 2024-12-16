@@ -50,7 +50,7 @@ export const FocusedStream: React.FC<{
           autoPlay
           className={cn(
             "tw-w-full tw-aspect-video tw-absolute tw-top-0",
-            !stream.camera && !stream.cast && "tw-opacity-0"
+            !stream.stream || (!stream.camera && !stream.cast && "tw-opacity-0")
           )}
           muted={streamMuted}
           playsInline

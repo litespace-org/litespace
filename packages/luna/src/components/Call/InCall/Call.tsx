@@ -10,19 +10,8 @@ import { CallBar } from "@/components/Call/CallBar";
 import { InCallStreams } from "@/components/Call/InCallStreams";
 import { StreamInfo } from "@/components/Call/types";
 
-/**
- * @todo should accept list of streams
- *    - user alone => should be the main stream
- *    - two users => the other user is the focused stream.
- *    - two users with cast => cast is the focused stream.
- *    - one user with casting => cast is the focused stream.
- *    - two users with two streams => the other user cast should be focused.
- */
 type Props = {
-  streams: {
-    focused: StreamInfo;
-    unfocused: StreamInfo[];
-  };
+  streams: StreamInfo[];
   currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
   fullScreen: {
