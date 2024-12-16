@@ -56,30 +56,31 @@ const BookLesson = ({
     onError,
   });
 
-  const onBook = ({
-    ruleId,
-    start,
-    duration,
-  }: {
-    ruleId: number;
-    start: string;
-    duration: ILesson.Duration;
-  }) => bookLessonMutation.mutate({ ruleId, start, duration });
+  const onBook = useCallback(
+    ({
+      ruleId,
+      start,
+      duration,
+    }: {
+      ruleId: number;
+      start: string;
+      duration: ILesson.Duration;
+    }) => bookLessonMutation.mutate({ ruleId, start, duration }),
+    [bookLessonMutation]
+  );
 
   return (
-    <div>
-      <BookLessonDialog
-        {...user}
-        open={open}
-        close={close}
-        confirmationLoading={bookLessonMutation.isPending}
-        loading={rulesQuery.isLoading}
-        rules={rulesQuery.data?.rules || []}
-        slots={rulesQuery.data?.slots || []}
-        notice={user.notice}
-        onBook={onBook}
-      />
-    </div>
+    <BookLessonDialog
+      {...user}
+      open={open}
+      close={close}
+      confirmationLoading={bookLessonMutation.isPending}
+      loading={rulesQuery.isLoading}
+      rules={rulesQuery.data?.rules || []}
+      slots={rulesQuery.data?.slots || []}
+      notice={user.notice}
+      onBook={onBook}
+    />
   );
 };
 

@@ -25,6 +25,10 @@ export type Props = {
   onRebook: Void;
   onJoin: Void;
   onCancel: Void;
+  /**
+   * to disable the button while fetching tutor data
+   */
+  rebookLoading: boolean;
 };
 
 export const LessonCard: React.FC<Props> = ({
@@ -35,6 +39,7 @@ export const LessonCard: React.FC<Props> = ({
   onJoin,
   onCancel,
   onRebook,
+  rebookLoading,
 }) => {
   const intl = useFormatMessage();
   const end = dayjs(start).add(duration, "minutes");
@@ -186,7 +191,8 @@ export const LessonCard: React.FC<Props> = ({
       className={cn(
         "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto"
       )}
-      disabled={!canJoin && !canRebook}
+      disabled={(!canJoin && !canRebook) || rebookLoading}
+      loading={rebookLoading}
       onClick={canceled ? onRebook : onJoin}
     >
       {canceled || dayjs().isAfter(end)
@@ -226,9 +232,11 @@ export const LessonCard: React.FC<Props> = ({
             >
               {title}
             </Typography>
-            <Menu actions={actions}>
-              <More />
-            </Menu>
+            {!canceled ? (
+              <Menu actions={actions}>
+                <More />
+              </Menu>
+            ) : null}
           </>
         )}
       </div>

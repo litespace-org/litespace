@@ -257,7 +257,7 @@ export const BookLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy ? (
+          {isTutorBusy && !loading ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
