@@ -48,6 +48,8 @@
   "tutor.rating.name.placeholder": "أحد طلاب {value}",
   "tutor.rating.delete.warning": "هل انت متأكد من انك تريد حذف هذا التعليق ؟ هذا الفعل لا يمكن الرجوع فيه.",
   "tutor.rating.feedback.placeholder": "اضف تعليقك بالاسفل !",
+  "tutor.rating.group-names.suffix.singluar": "آخر",
+  "tutor.rating.group-names.suffix.pleural": "آخرون",
   "student-dashboard.rating-dialog.add-comment-placeholder": "اكتب تعليقك هنا",
   "rating.form.rule.feedback.less": "يجب ألا يقل التقييم عن 10 حروف",
   "rating.form.rule.feedback.more": "لا ينبغى أن يزيد التقييم عن 1000 حرف",

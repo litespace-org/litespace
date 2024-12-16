@@ -84,7 +84,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
                   : "tw-w-14 tw-h-14 -tw-right-[12px] -tw-bottom-[12px]"
               )}
             >
-              <Quote />
+              <Quote width={24} height={24} />
             </div>
           </div>
         </div>
