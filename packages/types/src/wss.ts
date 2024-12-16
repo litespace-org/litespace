@@ -30,6 +30,7 @@ export enum ServerEvent {
   RoomMessage = "RoomMessage",
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
+  RoomMessageRead = "RoomMessageRead",
   JoinedRooms = "JoinedRooms",
   Revert = "Revert",
 
@@ -132,6 +133,7 @@ export type ServerEventsMap = {
     messageId: number;
   }>;
   [ServerEvent.Revert]: EventCallback<ReverPayload>;
+  [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
 
