@@ -86,3 +86,25 @@ export type FeedbackDeleteProps = {
   onDelete: Void;
   close: Void;
 };
+
+export type TutorRatingCardGroupProps = {
+  ratings: Array<{
+    /**
+     * name of the rater.
+     */
+    name: string | null;
+    /**
+     * the rater id.
+     */
+    userId: number;
+    /**
+     * rater profile image url.
+     */
+    imageUrl: string | null;
+  }>;
+  /**
+   * the rating value that is shared between all users.
+   */
+  value: number;
+  tutorName: string | null;
+};
