@@ -3,22 +3,66 @@ import { TutorRatingCardGroupProps } from "@/components/TutorFeedback/types";
 import Quote from "@litespace/assets/Quote";
 import { orUndefined } from "@litespace/sol/utils";
 import cn from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { Avatar } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
+import { countBy, first } from "lodash";
+
+const MAX_DISPLAYED_NAMED = 3;
 
 export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
   ratings,
   value,
+  tutorName,
 }) => {
   const intl = useFormatMessage();
+
+  const raterNames = useMemo(() => {
+    const firstRating = first(ratings);
+    const oneRating = ratings.length === 1;
+    if (oneRating && firstRating && firstRating.name) return firstRating.name;
+    if (oneRating && firstRating && !firstRating.name)
+      return intl("tutor.rating.name.placeholder", { value: tutorName });
+
+    const { named = 0, unamed = 0 } = countBy(ratings, (rating) =>
+      rating.name ? "named" : "unamed"
+    );
+
+    if (named === 0 && unamed > 0)
+      return intl("tutor.rating.group-names.n-students", {
+        count: unamed,
+        tutor: tutorName,
+      });
+
+    const othersNamedCount =
+      named <= MAX_DISPLAYED_NAMED ? 0 : named - MAX_DISPLAYED_NAMED;
+    const othersCount = othersNamedCount + unamed;
+
+    const names = ratings
+      .filter((rating) => rating.name)
+      .slice(0, MAX_DISPLAYED_NAMED)
+      .map((rating) => rating.name)
+      .join("، ");
+
+    if (othersCount <= 0) return names;
+    if (othersCount === 1)
+      return intl("tutor.rating.group-names.one-more", {
+        names,
+      });
+    if (othersCount > 1)
+      return intl("tutor.rating.group-names.others", {
+        names,
+        count: othersCount,
+      });
+  }, [intl, ratings, tutorName]);
 
   return (
     <div
       className={cn(
-        "tw-h-[383px] tw-p-6 tw-bg-natural-50 tw-rounded-3xl",
-        "tw-flex tw-flex-col tw-justify-between tw-items-center"
+        "tw-p-6 tw-bg-natural-50 tw-rounded-3xl",
+        "tw-flex tw-flex-col tw-gap-6 tw-justify-between tw-items-center",
+        "tw-shadow-feedback-card"
       )}
     >
       <div className="tw-flex -tw-ml-4">
@@ -31,9 +75,9 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
                 className={cn(
                   "tw-w-[54px] tw-h-[54px] tw-rounded-full tw-overflow-hidden tw-border-[3px] tw-border-brand-500 -tw-mr-4 tw-relative",
                   "tw-felx tw-justify-center tw-items-center",
-                  { "tw-bg-brand-500": idx === 4 }
+                  { "tw-bg-brand-600": idx === 4 }
                 )}
-                style={{ zIndex: arr.length - idx }}
+                style={{ zIndex: idx }}
               >
                 {idx < 4 || isLast ? (
                   <Avatar
@@ -57,35 +101,13 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
       </div>
       <RatingStars readonly rating={value} variant="md" />
       <div className="tw-flex tw-flex-wrap tw-justify-center">
-        {ratings.map((rating, idx, arr) => {
-          const isLast = arr.length - idx === 1;
-          const others = arr.length - idx;
-          const separator = () => {
-            if (idx < 2 && !isLast) return "،";
-            if (idx === 2 && !isLast) return " " + "و";
-            return "";
-          };
-          return (
-            <Typography
-              element="body"
-              weight="bold"
-              className="tw-text-natural-950 tw-text-center"
-            >
-              {idx <= 2 ? rating.name + separator() : null}
-              {idx === 3 && others > 1
-                ? separator() +
-                  others +
-                  intl("tutor.rating.group-names.suffix.pleural")
-                : null}
-              {idx === 3 && others === 1
-                ? separator() +
-                  others +
-                  intl("tutor.rating.group-names.suffix.singluar")
-                : null}
-              &nbsp;
-            </Typography>
-          );
-        })}
+        <Typography
+          element="body"
+          weight="bold"
+          className="tw-text-natural-950 tw-text-center"
+        >
+          {raterNames}
+        </Typography>
       </div>
       <div
         className={cn(
