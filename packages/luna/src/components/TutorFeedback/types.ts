@@ -106,4 +106,5 @@ export type TutorRatingCardGroupProps = {
    * the rating value that is shared between all users.
    */
   value: number;
+  tutorName: string | null;
 };

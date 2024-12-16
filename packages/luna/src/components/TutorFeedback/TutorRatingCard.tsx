@@ -30,7 +30,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
     <div className="tw-relative">
       <div
         className={cn(
-          "tw-bg-natural-50 tw-p-6 tw-shadow-lesson-event-card tw-rounded-3xl",
+          "tw-bg-natural-50 tw-p-6 tw-shadow-feedback-card tw-rounded-3xl",
           "tw-relative tw-flex tw-flex-col tw-items-center tw-min-w-64",
           { "tw-justify-between": !feedback },
           isEditing ? "tw-w-64 tw-h-[313px]" : "tw-h-[383px]",

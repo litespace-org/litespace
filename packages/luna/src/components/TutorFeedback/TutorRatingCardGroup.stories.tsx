@@ -28,8 +28,70 @@ function makeRating() {
 
 export const OneRating: Story = {
   args: {
-    ratings: range(1).map(() => makeRating()),
+    ratings: [makeRating()],
     value: 3,
+  },
+};
+
+export const OneRatingWithoutName: Story = {
+  args: {
+    ratings: [
+      {
+        ...makeRating(),
+        name: null,
+      },
+    ],
+    value: 3,
+    tutorName: faker.person.fullName(),
+  },
+};
+
+export const TwoUnamedRaters: Story = {
+  args: {
+    ratings: range(2).map(() => ({ ...makeRating(), name: null })),
+    value: 3,
+    tutorName: faker.person.fullName(),
+  },
+};
+
+export const ThreeUnamedRaters: Story = {
+  args: {
+    ratings: range(3).map(() => ({ ...makeRating(), name: null })),
+    value: 5,
+    tutorName: faker.person.fullName(),
+  },
+};
+
+export const NamedAnUnnamed1: Story = {
+  args: {
+    ratings: [
+      ...range(3).map(() => ({ ...makeRating(), name: null })),
+      ...range(3).map(() => makeRating()),
+    ],
+    value: 5,
+    tutorName: faker.person.fullName(),
+  },
+};
+
+export const NamedAnUnnamed2: Story = {
+  args: {
+    ratings: [
+      ...range(1).map(() => makeRating()),
+      ...range(2).map(() => ({ ...makeRating(), name: null })),
+    ],
+    value: 5,
+    tutorName: faker.person.fullName(),
+  },
+};
+
+export const NamedAnUnnamed3: Story = {
+  args: {
+    ratings: [
+      ...range(12).map(() => makeRating()),
+      ...range(12).map(() => ({ ...makeRating(), name: null })),
+    ],
+    value: 5,
+    tutorName: faker.person.fullName(),
   },
 };
 
