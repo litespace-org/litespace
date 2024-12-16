@@ -63,13 +63,15 @@ export class Messages extends WssHandler {
         message
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
+    if (error instanceof Error) {
       stdout.error(error.message);
+      if (error instanceof ResponseError) {
+        this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+          code: error.statusCode, 
+          message: error.message
+        });
+      }
+    }
   }
 
   async updateMessage(data: unknown) {
@@ -96,13 +98,15 @@ export class Messages extends WssHandler {
         updated
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
+    if (error instanceof Error) {
       stdout.error(error.message);
+      if (error instanceof ResponseError) {
+        this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+          code: error.statusCode, 
+          message: error.message
+        });
+      }
+    }
   }
 
   async deleteMessage(data: unknown) {
@@ -129,13 +133,15 @@ export class Messages extends WssHandler {
         }
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
+    if (error instanceof Error) {
       stdout.error(error.message);
+      if (error instanceof ResponseError) {
+        this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+          code: error.statusCode, 
+          message: error.message
+        });
+      }
+    }
   }
 
   async onUserTyping(data: unknown) {
@@ -151,13 +157,21 @@ export class Messages extends WssHandler {
       const isMember = members.find((member) => member.id === user.id);
       if (!isMember) throw forbidden();
 
-      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
+      this.socket.to(roomId.toString()).emit(
+        Wss.ServerEvent.UserTyping, {
         roomId,
         userId: user.id,
       });
     });
-
-    if (error instanceof Error) stdout.error(error.message);
+    if (error instanceof Error) {
+      stdout.error(error.message);
+      if (error instanceof ResponseError) {
+        this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+          code: error.statusCode, 
+          message: error.message
+        });
+      }
+    }
   }
 
   async markAsRead(data: unknown) {
@@ -170,18 +184,29 @@ export class Messages extends WssHandler {
       const message = await messages.findById(id);
       if (!message || message.deleted) throw notfound.base();
 
+      const owner = message.userId === user.id;
+      if (owner) throw bad();
+
       const members = await rooms.findRoomMembers({ roomIds: [message.roomId] });
       const isMember = members.find((member) => member.id === user.id);
       if (!isMember) throw forbidden();
 
       await messages.markAsRead(id);
+
+      this.broadcast(
+        Wss.ServerEvent.RoomMessageRead,
+        asChatRoomId(message.roomId),
+        { userId: user.id }
+      );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
+    if (error instanceof Error) {
       stdout.error(error.message);
+      if (error instanceof ResponseError) {
+        this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
+          code: error.statusCode, 
+          message: error.message
+        });
+      }
+    }
   }
 }
