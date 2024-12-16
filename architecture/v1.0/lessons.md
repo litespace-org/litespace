@@ -15,6 +15,6 @@
   - [x] Default image
   - [x] Generate random but consistent fallback image ([ref](https://github.com/loweisz/generate-avatar/blob/master/lib/generateFromString.ts))
   - [x] Check: https://github.com/raugfer/jazzicon/blob/master/src/index.ts
-- [ ] Write tests for the cancel lesson API. @mmoehabb
+- [x] Write tests for the cancel lesson API. @mmoehabb
 - [ ] Impl. cancel lesson dialog at luna. @moalidv
 - [ ] Cancel a lesson. @mostafakamar2308

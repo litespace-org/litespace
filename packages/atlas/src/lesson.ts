@@ -1,5 +1,5 @@
 import { Base } from "@/base";
-import { IFilter, ILesson } from "@litespace/types";
+import { ILesson } from "@litespace/types";
 
 export class Lesson extends Base {
   async create(
@@ -14,7 +14,7 @@ export class Lesson extends Base {
     return this.get(`/api/v1/lesson/list/`, {}, query);
   }
 
-  async cancel(id: number) {
+  async cancel(id: number): Promise<void> {
     return this.del(`/api/v1/lesson/${id}`);
   }
 }

@@ -82,7 +82,7 @@ export const notfound = {
   tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
   student: () => error(ApiError.StudentNotFound, "Student not found", 404),
   call: () => error(ApiError.CallNotFound, "Call not found", 404),
-  lesson: () => error(ApiError.LessonNotFound, "Lesson nto found", 404),
+  lesson: () => error(ApiError.LessonNotFound, "Lesson not found", 404),
   room: () => error(ApiError.RoomNotFound, "Room not found", 404),
   roomMembers: () =>
     error(ApiError.RoomMembersNotFound, "Room members not found", 404),
