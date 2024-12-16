@@ -27,8 +27,4 @@ export type StreamInfo = {
     imageUrl: string | null;
     name: string | null;
   };
-  /**
-   * type of component, who will have the largest portion of the screen
-   */
-  type: "focused" | "unfocused";
 };
