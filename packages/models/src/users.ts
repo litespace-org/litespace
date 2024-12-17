@@ -1,10 +1,8 @@
-import { column, countRows, knex, withFilter, withPagination } from "@/query";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import zod from "zod";
-import { Cache } from "@/cache";
 
 export class Users {
   public readonly table = "users" as const;
@@ -173,14 +171,6 @@ export class Users {
   }
 
   async from(row: IUser.Row): Promise<IUser.Self> {
-    const redisUrl = zod.string({ 
-      message: "Missing PG_USER" 
-    }).parse(process.env.REDIS_URL);
-
-    const cache = new Cache(redisUrl);
-    // TODO: make one perminant connection session for all models
-    await cache.connect();
-
     return {
       id: row.id,
       email: row.email,
@@ -190,7 +180,6 @@ export class Users {
       birthYear: row.birth_year,
       gender: row.gender,
       role: row.role,
-      online: await cache.onlineStatus.isOnline(row.id),
       verified: row.verified,
       creditScore: row.credit_score,
       phoneNumber: row.phone_number,

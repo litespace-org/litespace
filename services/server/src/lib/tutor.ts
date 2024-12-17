@@ -68,6 +68,8 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     }
   );
 
+  const onlineUsers = await cache.onlineStatus.getAll();
+
   // restruct tutors list to match ITutor.Cache[]
   const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
     const filteredTopics = tutorsTopics
@@ -82,7 +84,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
-      online: tutor.online,
+      online: onlineUsers[tutor.id] ? true : false,
       notice: tutor.notice,
       topics: filteredTopics,
       avgRating:
@@ -191,14 +193,14 @@ async function findTutorCacheMeta(tutorId: number) {
 
 export async function joinTutorCache(
   tutor: ITutor.FullTutor,
-  cache: ITutor.Cache | null
+  cacheData: ITutor.Cache | null
 ): Promise<ITutor.Cache> {
-  const meta = cache
+  const meta = cacheData
     ? {
-        topics: cache.topics,
-        avgRating: cache.avgRating,
-        studentCount: cache.studentCount,
-        lessonCount: cache.lessonCount,
+        topics: cacheData.topics,
+        avgRating: cacheData.avgRating,
+        studentCount: cacheData.studentCount,
+        lessonCount: cacheData.lessonCount,
       }
     : await findTutorCacheMeta(tutor.id);
 
@@ -210,8 +212,8 @@ export async function joinTutorCache(
     bio: tutor.bio,
     about: tutor.about,
     gender: tutor.gender,
-    online: tutor.online,
     notice: tutor.notice,
+    online: await cache.onlineStatus.isOnline(tutor.id),
     ...meta,
   };
 }

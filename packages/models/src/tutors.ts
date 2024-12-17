@@ -4,8 +4,6 @@ import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
-import zod from "zod";
-import { Cache } from "@/cache";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFields = ITutor.FullTutorRow;
@@ -255,17 +253,8 @@ export class Tutors {
   }
 
   async asFullTutor(row: ITutor.FullTutorRow): Promise<ITutor.FullTutor> {
-    const redisUrl = zod.string({ 
-      message: "Missing PG_USER" 
-    }).parse(process.env.REDIS_URL);
-
-    const cache = new Cache(redisUrl);
-    // TODO: make one perminant connection session for all models
-    await cache.connect();
-
     return merge(omit(row), {
       password: row.password !== null,
-      online: await cache.onlineStatus.isOnline(row.id),
     });
   }
 
