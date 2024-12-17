@@ -37,7 +37,7 @@ export type PopulatedMemberRow = {
   name: IUser.Row["name"];
   image: IUser.Row["image"];
   role: IUser.Row["role"];
-  online: IUser.Row["online"];
+  //online: IUser.Row["online"]; TODO: to be removed
   createdAt: IUser.Row["created_at"];
   updatedAt: IUser.Row["updated_at"];
 };

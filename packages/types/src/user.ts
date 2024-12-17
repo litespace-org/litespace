@@ -75,7 +75,7 @@ export type Row = {
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
-  online: boolean;
+  //online: boolean; TODO: to be removed
   verified: boolean;
   credit_score: number;
   city: City | null;

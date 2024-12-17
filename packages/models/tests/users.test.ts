@@ -49,7 +49,7 @@ describe("Users", () => {
         birthYear: 2003,
         gender: IUser.Gender.Female,
         verified: true,
-        online: true,
+        //online: true, TODO: to be removed
         creditScore: 2382001,
         phoneNumber: "01018303125",
         city: 2,
@@ -63,7 +63,7 @@ describe("Users", () => {
       expect(updated.birthYear).to.be.eq(2003);
       expect(updated.gender).to.be.eq(IUser.Gender.Female);
       expect(updated.verified).to.be.eq(true);
-      expect(updated.online).to.be.eq(true);
+      //expect(updated.online).to.be.eq(true); TODO: to be removed
       expect(updated.creditScore).to.be.eq(2382001);
       expect(updated.phoneNumber).to.be.eq("01018303125");
       expect(updated.city).to.be.eq(2);

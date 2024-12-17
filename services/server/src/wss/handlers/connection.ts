@@ -1,8 +1,8 @@
 import { isAdmin, isGhost, isStudent, isTutor } from "@litespace/auth";
 import { dayjs, logger, safe } from "@litespace/sol";
-import { IUser, Wss } from "@litespace/types";
+import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
-import { calls, rooms, users } from "@litespace/models";
+import { calls, rooms } from "@litespace/models";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { asCallRoomId, asChatRoomId } from "@/wss/utils";
@@ -23,8 +23,8 @@ export class Connection extends WssHandler {
       const user = this.user;
       if (isGhost(user)) return;
 
-      const info = await users.update(user.id, { online: true });
-      this.announceStatus(info);
+      await cache.onlineStatus.addUser(user.id);
+      this.announceStatus(user.id, true);
 
       await this.joinRooms();
       if (isAdmin(this.user)) this.emitServerStats();
@@ -37,8 +37,8 @@ export class Connection extends WssHandler {
       const user = this.user;
       if (isGhost(user)) return;
 
-      const info = await users.update(user.id, { online: false });
-      this.announceStatus(info);
+      await cache.onlineStatus.removeUser(user.id);
+      this.announceStatus(user.id, false);
 
       await this.deregisterPeer();
       await this.removeUserFromCalls();
@@ -46,12 +46,12 @@ export class Connection extends WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  private async announceStatus(user: IUser.Self) {
-    const userRooms = await rooms.findMemberFullRoomIds(user.id);
+  private async announceStatus(userId: number, status: boolean) {
+    const userRooms = await rooms.findMemberFullRoomIds(userId);
 
     for (const room of userRooms) {
       this.broadcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
-        online: user.online,
+        online: status,
       });
     }
   }

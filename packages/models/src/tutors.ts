@@ -4,6 +4,8 @@ import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
+import zod from "zod";
+import { Cache } from "@/cache";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFields = ITutor.FullTutorRow;
@@ -20,7 +22,7 @@ const fullTutorFields: FullTutorFieldsMap = {
   password: users.column("password"),
   birthYear: users.column("birth_year"),
   gender: users.column("gender"),
-  online: users.column("online"),
+  //online: users.column("online"), TODO: to be removed
   verified: users.column("verified"),
   creditScore: users.column("credit_score"),
   city: users.column("city"),
@@ -227,7 +229,7 @@ export class Tutors {
       .andWhereNot(users.column("name"), null)
       .andWhereNot(users.column("gender"), null)
       .andWhere(users.column("verified"), true);
-    return rows.map((row) => this.asFullTutor(row));
+    return await Promise.all(rows.map((row) => this.asFullTutor(row)));
   }
 
   fullTutorQuery(tx?: Knex.Transaction) {
@@ -252,9 +254,18 @@ export class Tutors {
     };
   }
 
-  asFullTutor(row: ITutor.FullTutorRow): ITutor.FullTutor {
+  async asFullTutor(row: ITutor.FullTutorRow): Promise<ITutor.FullTutor> {
+    const redisUrl = zod.string({ 
+      message: "Missing PG_USER" 
+    }).parse(process.env.REDIS_URL);
+
+    const cache = new Cache(redisUrl);
+    // TODO: make one perminant connection session for all models
+    await cache.connect();
+
     return merge(omit(row), {
       password: row.password !== null,
+      online: await cache.onlineStatus.isOnline(row.id),
     });
   }
 

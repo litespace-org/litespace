@@ -16,7 +16,7 @@ export type Self = {
 };
 
 export type FullTutor = IUser.Self & Self & { metaUpdatedAt: string };
-export type FullTutorRow = FullTutor;
+export type FullTutorRow = Omit<FullTutor, "online">;
 
 export type Cache = {
   id: number;

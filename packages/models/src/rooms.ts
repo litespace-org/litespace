@@ -1,8 +1,10 @@
 import { column, countRows, knex, withPagination } from "@/query";
-import { first, isEmpty, merge, omit, orderBy } from "lodash";
-import { IFilter, IRoom, IUser, Paginated } from "@litespace/types";
+import { first, merge, omit, orderBy } from "lodash";
+import { IFilter, IRoom, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import zod from "zod";
+import { Cache } from "@/cache";
 import { users } from "@/users";
 import { messages } from "@/messages";
 
@@ -100,7 +102,7 @@ export class Rooms {
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
-      online: users.column("online"),
+      //online: users.column("online"), TODO: to be removed
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
       createdAt: users.column("created_at"),
@@ -116,7 +118,7 @@ export class Rooms {
       builder.whereNotIn(this.column.members("user_id"), excludeUsers);
 
     const rows = await builder.then();
-    return rows.map((row) => this.asPopulatedMember(row));
+    return await Promise.all(rows.map((row) => this.asPopulatedMember(row)));
   }
 
   async findRoomByMembers(members: number[]): Promise<number | null> {
@@ -258,10 +260,19 @@ export class Rooms {
     };
   }
 
-  asPopulatedMember(row: IRoom.PopulatedMemberRow): IRoom.PopulatedMember {
+  async asPopulatedMember(row: IRoom.PopulatedMemberRow): Promise<IRoom.PopulatedMember> {
+    const redisUrl = zod.string({ 
+      message: "Missing PG_USER" 
+    }).parse(process.env.REDIS_URL);
+
+    const cache = new Cache(redisUrl);
+    // TODO: make one perminant connection session for all models
+    await cache.connect();
+
     return merge(omit(row, "createdAt", "updatedAt"), {
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
+      online: await cache.onlineStatus.isOnline(row.id)
     });
   }
 }
