@@ -70,10 +70,6 @@ const List: React.FC<{
           <TruncateField>{intl(rolesMap[info.getValue()])}</TruncateField>
         ),
       }),
-      columnHelper.accessor("online", {
-        header: intl("dashboard.user.online"),
-        cell: (info) => <BooleanField checked={info.getValue()} />,
-      }),
       columnHelper.accessor("verified", {
         header: intl("dashboard.user.verified"),
         cell: (info) => <BooleanField checked={info.getValue()} />,

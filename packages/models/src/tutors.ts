@@ -20,7 +20,6 @@ const fullTutorFields: FullTutorFieldsMap = {
   password: users.column("password"),
   birthYear: users.column("birth_year"),
   gender: users.column("gender"),
-  online: users.column("online"),
   verified: users.column("verified"),
   creditScore: users.column("credit_score"),
   city: users.column("city"),

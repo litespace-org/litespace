@@ -26,7 +26,6 @@ export type Cache = {
   bio: string | null;
   about: string | null;
   gender: IUser.Gender | null;
-  online: boolean;
   notice: number;
   topics: string[];
   avgRating: number;

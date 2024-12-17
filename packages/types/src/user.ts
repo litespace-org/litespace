@@ -57,7 +57,6 @@ export type Self = {
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
-  online: boolean;
   verified: boolean;
   creditScore: number;
   city: City | null;
@@ -75,7 +74,6 @@ export type Row = {
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
-  online: boolean;
   verified: boolean;
   credit_score: number;
   city: City | null;
@@ -106,7 +104,6 @@ export type UpdatePayload = {
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
-  online?: boolean;
   creditScore?: number;
   phoneNumber?: string;
   city?: City;
@@ -172,7 +169,6 @@ export type FindUsersApiQuery = IFilter.Pagination & {
   role?: Role;
   verified?: boolean;
   gender?: Gender;
-  online?: boolean;
   city?: City;
   orderBy?: Extract<keyof Row, "created_at" | "updated_at">;
   orderDirection?: IFilter.OrderDirection;

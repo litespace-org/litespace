@@ -16,6 +16,7 @@ export const Users: React.FC = () => {
   const [role, setRole] = useState<IUser.Role | null>(null);
   const [gender, setGender] = useState<IUser.Gender | null>(null);
   const [verified, setVerified] = useState<boolean | null>(null);
+  // TODO: use a hook to get the online status from the server cache
   const [online, setOnline] = useState<boolean | null>(null);
   const [orderBy, setOrderBy] = useState<
     IUser.FindUsersApiQuery["orderBy"] | null
@@ -29,11 +30,10 @@ export const Users: React.FC = () => {
       role: orUndefined(role),
       gender: orUndefined(gender),
       verified: typeof verified === "boolean" ? verified : undefined,
-      online: typeof online === "boolean" ? online : undefined,
       orderBy: orUndefined(orderBy),
       orderDirection,
     }),
-    [gender, online, orderBy, orderDirection, role, verified]
+    [gender, orderBy, orderDirection, role, verified]
   );
 
   const users = useUsers(filter);

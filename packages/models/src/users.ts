@@ -1,4 +1,4 @@
-import { column, countRows, knex, withFilter, withPagination } from "@/query";
+import { column, countRows, knex, withPagination } from "@/query";
 import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
@@ -16,7 +16,6 @@ export class Users {
       "role",
       "birth_year",
       "gender",
-      "online",
       "verified",
       "city",
       "credit_score",
@@ -60,7 +59,6 @@ export class Users {
         email: payload.email,
         image: payload.image,
         gender: payload.gender,
-        online: payload.online,
         name: payload.name,
         verified: payload.verified,
         password: payload.password,
@@ -105,7 +103,8 @@ export class Users {
     const rows = await knex<IUser.Row>(this.table)
       .select("*")
       .where(key, value);
-    return rows.map((row) => this.from(row));
+
+    return rows.map(row => this.from(row));
   }
 
   async exists(id: number): Promise<boolean> {
@@ -118,7 +117,6 @@ export class Users {
     role,
     verified,
     gender,
-    online,
     page,
     size,
     orderBy,
@@ -134,12 +132,13 @@ export class Users {
     if (role) base.andWhere(this.column("role"), role);
     if (verified) base.andWhere(this.column("verified"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
-    if (online) base.andWhere(this.column("online"), online);
+    //if (online) base.andWhere(this.column("online"), online); TODO: to be removed
     if (city) base.andWhere(this.column("city"), city);
 
     const total = await countRows(base.clone().groupBy(this.column("id")));
     const rows = await withPagination(base.clone(), { page, size });
-    const users = rows.map((row) => this.from(row));
+    const users = rows.map(row => this.from(row));
+    
     return { list: users, total };
   }
 
@@ -177,7 +176,6 @@ export class Users {
       birthYear: row.birth_year,
       gender: row.gender,
       role: row.role,
-      online: row.online,
       verified: row.verified,
       creditScore: row.credit_score,
       phoneNumber: row.phone_number,

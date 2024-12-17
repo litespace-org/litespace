@@ -5,7 +5,7 @@ import BinaryField from "@/components/common/BinaryField";
 import GenderField from "@/components/common/GenderField";
 import UserPopover from "@/components/common/UserPopover";
 import cn from "classnames";
-import React from "react";
+import React, { useState } from "react";
 import { Duration } from "@litespace/sol/duration";
 import { formatMinutes, formatNumber } from "@litespace/luna/utils";
 import { Loading } from "@litespace/luna/Loading";
@@ -24,6 +24,8 @@ const Content: React.FC<{
   refetch: Void;
 }> = ({ user, tutor, tutorStats, loading, error, refetch }) => {
   const intl = useFormatMessage();
+  // TODO: use a hook to get the online status form the server cache
+  const [onlineStatus] = useState(false);
 
   if (loading) return <Loading className="h-[40vh]" />;
   if (error)
@@ -54,7 +56,7 @@ const Content: React.FC<{
           <div
             className={cn(
               "absolute left-0 bottom-0 w-4 h-4 rounded-full ring ring-dash-sidebar",
-              user.online ? "bg-green-400" : "bg-gray-600"
+              onlineStatus ? "bg-green-400" : "bg-gray-600"
             )}
           />
         </div>

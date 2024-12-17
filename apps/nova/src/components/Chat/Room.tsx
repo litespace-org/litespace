@@ -4,7 +4,6 @@ import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 enum Status {
   Active,
@@ -17,11 +16,12 @@ const Room: React.FC<{
   active: boolean;
   select: Void;
 }> = ({ members, active, select }) => {
-  const intl = useFormatMessage();
+  // const intl = useFormatMessage(); TODO: uncomment this when online status is implemented
   const member = useMemo(() => first(members), [members]);
   const status = useMemo(() => {
     if (!member) return Status.InActive;
-    if (member.online) return Status.Active;
+    // TODO: use a hook to get user status from server cache
+    // if (member.online) return Status.Active;
     const now = dayjs();
     const recently = dayjs(member.updatedAt).isBetween(
       now,
@@ -59,7 +59,8 @@ const Room: React.FC<{
             {
               "hidden bg-transparent": status === Status.InActive,
               "bg-amber-700 dark:bg-amber-900": status === Status.WasActive,
-              "bg-brand-8 dark:bg-brand-9": status === Status.Active,
+              // TODO: uncomment when online status impl is done.
+              // "bg-brand-8 dark:bg-brand-9": status === Status.Active,
             }
           )}
         />
@@ -67,9 +68,10 @@ const Room: React.FC<{
       <div className="flex-col items-start hidden w-full md:flex">
         <p className="w-4/5 truncate">{member.name}</p>
         <span className="text-sm text-foreground-light">
-          {status === Status.Active
-            ? intl("chat.active")
-            : dayjs(member.updatedAt).fromNow()}
+          {
+            // TODO: uncomment when online status impl is done.
+            // status.active ? intl("chat.active") : dayjs(member.updatedAt).fromNow()
+          }
         </span>
       </div>
     </button>
