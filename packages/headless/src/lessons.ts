@@ -53,7 +53,13 @@ export function useInfiniteLessons(
   ]);
 }
 
-export function useCancelLesson() {
+export function useCancelLesson({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<void>;
+  onError: OnError;
+}) {
   const atlas = useAtlas();
 
   const cancel = useCallback(
@@ -66,15 +72,15 @@ export function useCancelLesson() {
   return useMutation({
     mutationFn: cancel,
     mutationKey: [MutationKey.CancelLesson],
+    onSuccess,
+    onError,
   });
 }
 
 export function useCreateLesson({
-  tutorId,
   onSuccess,
   onError,
 }: {
-  tutorId: number;
   onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
@@ -82,10 +88,12 @@ export function useCreateLesson({
 
   const bookLesson = useCallback(
     async ({
+      tutorId,
       ruleId,
       start,
       duration,
     }: {
+      tutorId: number;
       ruleId: number;
       start: string;
       duration: ILesson.Duration;
@@ -97,11 +105,12 @@ export function useCreateLesson({
         start,
       });
     },
-    [atlas.lesson, tutorId]
+    [atlas.lesson]
   );
 
   return useMutation({
     mutationFn: bookLesson,
+    mutationKey: [MutationKey.BookLesson],
     onSuccess,
     onError,
   });

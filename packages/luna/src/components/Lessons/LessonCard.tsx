@@ -202,7 +202,7 @@ export const LessonCard: React.FC<Props> = ({
         "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-lesson-upcoming-card"
       )}
     >
-      <div className="tw-flex tw-justify-between tw-items-center tw-gap-6">
+      <div className="tw-flex tw-justify-between tw-items-stretch tw-gap-6">
         {dayjs().isAfter(end) ? (
           <div className="tw-flex tw-gap-2 tw-items-center">
             <CheckCircle className="[&>*]:tw-stroke-brand-700" />
@@ -226,9 +226,11 @@ export const LessonCard: React.FC<Props> = ({
             >
               {title}
             </Typography>
-            <Menu actions={actions}>
-              <More />
-            </Menu>
+            {!canceled ? (
+              <Menu actions={actions}>
+                <More />
+              </Menu>
+            ) : null}
           </>
         )}
       </div>

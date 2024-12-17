@@ -22,7 +22,7 @@ export const Success: StoryObj<typeof ConfirmationDialog> = {
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
     type: "success",
-    Icon: CheckCircle,
+    icon: <CheckCircle />,
   },
 };
 
@@ -32,7 +32,7 @@ export const Warnning: StoryObj<typeof ConfirmationDialog> = {
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
     type: "warning",
-    Icon: CheckCircle,
+    icon: <CheckCircle />,
   },
 };
 
@@ -42,7 +42,7 @@ export const Error: StoryObj<typeof ConfirmationDialog> = {
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
     type: "error",
-    Icon: CheckCircle,
+    icon: <CheckCircle />,
   },
 };
 

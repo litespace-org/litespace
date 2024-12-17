@@ -45,17 +45,7 @@ const TutorProfile: React.FC = () => {
       <div className="bg-natural-50 border border-natural-100 shadow-tutor-profile rounded-2xl p-10 mt-6">
         <TutorProfileCard {...tutor.data} onBook={openDialog} />
         <TutorTabs tutor={tutor.data} />
-        <BookLesson
-          user={{
-            tutorId: tutor.data.id,
-            imageUrl: tutor.data.image,
-            name: tutor.data.name,
-            // TODO: Remove it when we add the changes to the server
-            notice: tutor.data.notice || 30,
-          }}
-          close={closeDialog}
-          open={open}
-        />
+        <BookLesson tutorId={tutor.data.id} close={closeDialog} open={open} />
       </div>
     </div>
   );

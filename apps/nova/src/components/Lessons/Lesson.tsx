@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import { Element, ILesson, IUser } from "@litespace/types";
 import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
@@ -59,7 +59,10 @@ const Lesson: React.FC<
     return !lesson.canceledBy && now.isBetween(start, end, "seconds", "[]");
   }, [lesson.canceledBy, lesson.duration, lesson.start]);
 
-  const cancelLesson = useCancelLesson();
+  const onSuccess = useCallback(() => {}, []);
+  const onError = useCallback(() => {}, []);
+
+  const cancelLesson = useCancelLesson({ onSuccess, onError });
 
   const actions = useMemo((): MenuAction[] => {
     const list: MenuAction[] = [

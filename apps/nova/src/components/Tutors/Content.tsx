@@ -66,12 +66,7 @@ const Content: React.FC<{
         <BookLesson
           close={closeBookingDialog}
           open={!!tutor}
-          user={{
-            tutorId: tutor?.id,
-            imageUrl: tutor.image,
-            notice: tutor.notice,
-            name: tutor.name,
-          }}
+          tutorId={tutor.id}
         />
       ) : null}
 
