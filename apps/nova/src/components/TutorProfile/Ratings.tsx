@@ -1,7 +1,7 @@
 import { useFindTutorRatings } from "@litespace/headless/rating";
 import React, { useCallback } from "react";
 import { LoadingTutorInfo } from "@/components/TutorProfile/LoadingTutorInfo";
-import { ratingOrganizer } from "@/lib/ratings";
+import { organizeRatings } from "@/lib/ratings";
 import { useUser } from "@litespace/headless/context/user";
 import {
   TutorRatingCard,
@@ -20,12 +20,12 @@ const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="flex flex-col mt-20 gap-14 items-center justify-center">
+    <div className="flex flex-col my-20 gap-14 items-center justify-center">
       <NewTutor />
       <Typography
         element="h4"
         weight="bold"
-        className="text-natural-950 text-center mb-20"
+        className="text-natural-950 text-center"
       >
         {intl("tutor.profile.first-rating", { tutor: tutorName })}
       </Typography>
@@ -51,7 +51,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   if (ratingsQuery.error || !user)
     return <TutorLoadingError refetchRatings={refetchRatings} />;
 
-  const ratings = ratingOrganizer(ratingsQuery.data.list, user.id);
+  const ratings = organizeRatings(ratingsQuery.data.list, user.id);
 
   return (
     <div className="flex my-8 mx-10 gap-4 flex-wrap justify-center">
@@ -85,13 +85,22 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
       })}
 
       <div className="flex gap-10 flex-col items-center justify-center mt-10">
-        <Typography
-          element="subtitle-1"
-          weight="medium"
-          className="text-natural-950 w-2/3 text-center"
-        >
-          {intl("tutor.profile.your-ratings-help")}
-        </Typography>
+        <div>
+          <Typography
+            element="subtitle-1"
+            weight="medium"
+            className="text-natural-950 text-center"
+          >
+            {intl("tutor.profile.your-ratings-help")}
+          </Typography>
+          <Typography
+            element="subtitle-1"
+            weight="medium"
+            className="text-natural-950 text-center"
+          >
+            {intl("tutor.profile.we-care-about-ratings")}
+          </Typography>
+        </div>
         <Button
           size={ButtonSize.Small}
           className="w-[386px] flex items-center gap-2"
