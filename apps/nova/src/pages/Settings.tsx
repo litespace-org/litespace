@@ -100,6 +100,13 @@ const Settings: React.FC = () => {
     [mutation, photo, user]
   );
 
+  const notifyComingSoon = useCallback(() => {
+    toast.success({
+      title: intl("settings.notifications.coming-soon.title"),
+      description: intl("settings.notifications.coming-soon.description"),
+    });
+  }, [intl, toast]);
+
   useEffect(() => {
     if (!requirePassword) {
       form.trigger("password.current");
@@ -248,16 +255,16 @@ const Settings: React.FC = () => {
                     )}
                     checked={false}
                     disabled={false}
-                    onChange={() => alert("switch change")}
+                    onChange={notifyComingSoon}
                   />
                   <FullSwitch
                     title={intl("settings.notifications.messages.title")}
                     description={intl(
                       "settings.notifications.messages.description"
                     )}
-                    checked={true}
+                    checked={false}
                     disabled={false}
-                    onChange={() => alert("switch change")}
+                    onChange={notifyComingSoon}
                   />
                 </div>
               </div>
