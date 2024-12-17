@@ -3,40 +3,46 @@ import { BookLessonDialog } from "@litespace/luna/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson } from "@litespace/headless/lessons";
 import dayjs from "dayjs";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
+import { useFindTutorInfo } from "@litespace/headless/tutor";
+import { orNull } from "@litespace/sol/utils";
 
 const BookLesson = ({
   open,
   close,
-  user,
+  tutorId,
 }: {
   open: boolean;
   close: Void;
-  user: {
-    tutorId: number;
-    name: string | null;
-    imageUrl: string | null;
-    notice: number;
-  };
+  tutorId: number;
 }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const before = dayjs().toISOString();
-  const after = dayjs(before).add(user.notice, "minutes").toISOString();
   const queryClient = useQueryClient();
-  const rulesQuery = useFindUserRulesWithSlots({
-    id: user.tutorId,
-    before,
-    after,
-  });
+  const rulesQuery = useFindUserRulesWithSlots(
+    useMemo(
+      () => ({
+        id: tutorId,
+        after: dayjs().utc().toISOString(),
+        before: dayjs.utc().add(60, "days").toISOString(),
+      }),
+      [tutorId]
+    )
+  );
+  const tutor = useFindTutorInfo(tutorId);
 
   const onSuccess = useCallback(() => {
     close();
-    toast.success({ title: intl("book-lesson.success", { tutor: user.name }) });
+
+    if (tutor.data && tutor.data.name)
+      toast.success({
+        title: intl("book-lesson.success", { tutor: tutor.data.name }),
+      });
+
     queryClient.invalidateQueries({
       queryKey: [
         QueryKey.FindRulesWithSlots,
@@ -44,14 +50,13 @@ const BookLesson = ({
         QueryKey.FindTutors,
       ],
     });
-  }, [toast, intl, user.name, close, queryClient]);
+  }, [close, tutor.data, toast, intl, queryClient]);
 
   const onError = useCallback(() => {
     toast.error({ title: intl("book-lesson.error") });
   }, [toast, intl]);
 
   const bookLessonMutation = useCreateLesson({
-    tutorId: user.tutorId,
     onSuccess,
     onError,
   });
@@ -65,20 +70,22 @@ const BookLesson = ({
       ruleId: number;
       start: string;
       duration: ILesson.Duration;
-    }) => bookLessonMutation.mutate({ ruleId, start, duration }),
-    [bookLessonMutation]
+    }) => bookLessonMutation.mutate({ tutorId, ruleId, start, duration }),
+    [bookLessonMutation, tutorId]
   );
 
   return (
     <BookLessonDialog
-      {...user}
+      imageUrl={orNull(tutor.data?.image)}
+      name={orNull(tutor.data?.name)}
+      tutorId={tutorId}
       open={open}
       close={close}
       confirmationLoading={bookLessonMutation.isPending}
-      loading={rulesQuery.isLoading}
+      loading={rulesQuery.isLoading || tutor.isLoading || tutor.isFetching}
       rules={rulesQuery.data?.rules || []}
       slots={rulesQuery.data?.slots || []}
-      notice={user.notice}
+      notice={orNull(tutor.data?.notice)}
       onBook={onBook}
     />
   );

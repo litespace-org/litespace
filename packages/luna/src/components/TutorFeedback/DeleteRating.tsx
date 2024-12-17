@@ -22,7 +22,7 @@ export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
       labels={{
         confirm: "labels.delete",
       }}
-      Icon={Trash}
+      icon={<Trash width={24} height={24} />}
       type="error"
       confirm={onDelete}
     />

@@ -12,7 +12,7 @@ type Story = StoryObj<typeof CancelLesson>;
 
 export const Default: Story = {
   args: {
-    id: 4,
+    open: true,
     close: () => alert("closing dialog"),
     onCancel: () => alert("cancelled the lesson"),
   },

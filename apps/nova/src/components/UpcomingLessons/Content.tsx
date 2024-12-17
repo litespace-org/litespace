@@ -5,7 +5,7 @@ import {
   CancelLesson,
 } from "@litespace/luna/Lessons";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { Element, ILesson, IUser, Void } from "@litespace/types";
+import { ILesson, IUser, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
@@ -16,14 +16,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import BookLesson from "@/components/Lessons/BookLesson";
-import { useFindTutorInfo } from "@litespace/headless/tutor";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
-
-const findTutorId = (item: Element<Lessons>) => {
-  return item.members.find((member) => member.role === IUser.Role.Tutor)!
-    .userId;
-};
 
 export const Content: React.FC<{
   list: Lessons | null;
@@ -37,30 +31,16 @@ export const Content: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
 
-  /**
-   * Rebooking will set the tutor id, which in turn will result in
-   * getting the tutor info  /I am fetching it again to get the notice period of the tutor/
-   */
   const [tutorId, setTutorId] = useState<number | null>(null);
-  const tutorInfoQuery = useFindTutorInfo(tutorId);
-
-  const openBookingDialog = useCallback(
-    (tutorId: number) => setTutorId(tutorId),
-    []
-  );
-  const closeBookingDialog = useCallback(() => setTutorId(null), []);
-
   const [lessonId, setLessonId] = useState<number | null>(null);
-  const closeCancellationDialog = useCallback(() => setLessonId(null), []);
-  const orderCancellation = useCallback((id: number) => setLessonId(id), []);
 
   const onCancelSuccess = useCallback(() => {
     toast.success({ title: intl("cancel-lesson.success") });
-    closeCancellationDialog();
+    setLessonId(null);
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
-  }, [toast, closeCancellationDialog, queryClient, intl]);
+  }, [toast, queryClient, intl]);
 
   const onCancelError = useCallback(() => {
     toast.error({ title: intl("cancel-lesson.error") });
@@ -112,11 +92,8 @@ export const Content: React.FC<{
                 start={item.lesson.start}
                 duration={item.lesson.duration}
                 onJoin={() => console.log("join")}
-                onCancel={() => orderCancellation(item.lesson.id)}
-                onRebook={() => openBookingDialog(findTutorId(item))}
-                rebookLoading={
-                  tutorInfoQuery.isLoading && tutorId === findTutorId(item)
-                }
+                onCancel={() => setLessonId(item.lesson.id)}
+                onRebook={() => setTutorId(tutor.userId)}
                 canceled={canceled(item, tutor)}
                 tutor={{
                   id: tutor.userId,
@@ -142,22 +119,18 @@ export const Content: React.FC<{
 
       {lessonId ? (
         <CancelLesson
-          close={closeCancellationDialog}
-          id={lessonId}
+          close={() => setLessonId(null)}
           onCancel={() => cancelLesson.mutate(lessonId)}
+          loading={cancelLesson.isPending}
+          open
         />
       ) : null}
 
-      {tutorId && !tutorInfoQuery.isLoading ? (
+      {tutorId ? (
         <BookLesson
-          user={{
-            ...tutorInfoQuery.data!,
-            tutorId: tutorInfoQuery.data!.id,
-            imageUrl: tutorInfoQuery.data!.image,
-            notice: tutorInfoQuery.data!.notice || 30,
-          }}
+          tutorId={tutorId}
           open={!!tutorId}
-          close={closeBookingDialog}
+          close={() => setTutorId(null)}
         />
       ) : null}
     </div>

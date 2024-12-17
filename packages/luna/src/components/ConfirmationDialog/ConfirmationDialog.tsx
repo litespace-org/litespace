@@ -27,7 +27,8 @@ export const ConfirmationDialog: React.FC<{
   close: Void;
   labels?: { confirm?: LocalId; cancel?: LocalId };
   type?: DialogType;
-  Icon: typeof X;
+  icon: React.ReactNode;
+  loading?: boolean;
 }> = ({
   labels,
   trigger,
@@ -35,7 +36,8 @@ export const ConfirmationDialog: React.FC<{
   description,
   open,
   type = "success",
-  Icon,
+  icon,
+  loading,
   close,
   setOpen,
   confirm,
@@ -59,7 +61,7 @@ export const ConfirmationDialog: React.FC<{
             <div className="tw-flex tw-justify-between tw-mb-4">
               <div
                 className={cn(
-                  "tw-w-12 tw-h-12 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mt-2",
+                  "tw-w-14 tw-h-14 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center tw-mt-2",
                   {
                     "tw-bg-success-100 tw-border-success-50":
                       type === "success",
@@ -67,16 +69,15 @@ export const ConfirmationDialog: React.FC<{
                       type === "warning",
                     "tw-bg-destructive-100 tw-border-destructive-50":
                       type === "error",
+                  },
+                  {
+                    "[&>svg>*]:tw-stroke-success-600": type === "success",
+                    "[&>svg>*]:tw-stroke-warning-600": type === "warning",
+                    "[&>svg>*]:tw-stroke-destructive-700": type === "error",
                   }
                 )}
               >
-                <Icon
-                  className={cn({
-                    "[&>*]:tw-stroke-success-600": type === "success",
-                    "[&>*]:tw-stroke-warning-600": type === "warning",
-                    "[&>*]:tw-stroke-destructive-700": type === "error",
-                  })}
-                />
+                {icon}
               </div>
               <Close
                 onClick={close}
@@ -111,6 +112,8 @@ export const ConfirmationDialog: React.FC<{
               onClick={confirm}
               type={type !== "error" ? ButtonType.Main : ButtonType.Error}
               variant={ButtonVariant.Primary}
+              loading={loading}
+              disabled={loading}
             >
               {intl(labels?.confirm || "global.labels.confirm")}
             </Button>
@@ -119,6 +122,7 @@ export const ConfirmationDialog: React.FC<{
               className="tw-w-full"
               type={type !== "error" ? ButtonType.Main : ButtonType.Error}
               variant={ButtonVariant.Secondary}
+              disabled={loading}
             >
               {intl(labels?.cancel || "global.labels.cancel")}
             </Button>

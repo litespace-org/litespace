@@ -118,7 +118,7 @@ export const BookLessonDialog: React.FC<{
   confirmationLoading?: boolean;
   rules: IRule.Self[];
   slots: IRule.Slot[];
-  notice: number;
+  notice: number | null;
   onBook: ({
     ruleId,
     start,
@@ -179,7 +179,9 @@ export const BookLessonDialog: React.FC<{
         ruleId: event.id,
         start: event.start,
         end: event.end,
-        bookable: dayjs(event.start).isAfter(dayjs().add(notice, "minutes")),
+        bookable: dayjs(event.start).isAfter(
+          dayjs().add(notice || 0, "minutes")
+        ),
       }));
 
       return unpackedSlots;
@@ -219,7 +221,7 @@ export const BookLessonDialog: React.FC<{
       isEmpty(unpackedRules) ||
       isEmpty(
         unpackedRules.filter((slot) =>
-          dayjs(slot.start).isAfter(dayjs().add(notice))
+          dayjs(slot.start).isAfter(dayjs().add(notice || 0))
         )
       )
     );

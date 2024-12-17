@@ -247,7 +247,7 @@ const Messages: React.FC<{
         open={!!deletableMessage}
         confirm={confirmDelete}
         close={discardDelete}
-        Icon={Trash}
+        icon={<Trash />}
       />
     </div>
   );

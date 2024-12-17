@@ -25,10 +25,6 @@ export type Props = {
   onRebook: Void;
   onJoin: Void;
   onCancel: Void;
-  /**
-   * to disable the button while fetching tutor data
-   */
-  rebookLoading: boolean;
 };
 
 export const LessonCard: React.FC<Props> = ({
@@ -39,7 +35,6 @@ export const LessonCard: React.FC<Props> = ({
   onJoin,
   onCancel,
   onRebook,
-  rebookLoading,
 }) => {
   const intl = useFormatMessage();
   const end = dayjs(start).add(duration, "minutes");
@@ -191,8 +186,7 @@ export const LessonCard: React.FC<Props> = ({
       className={cn(
         "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto"
       )}
-      disabled={(!canJoin && !canRebook) || rebookLoading}
-      loading={rebookLoading}
+      disabled={!canJoin && !canRebook}
       onClick={canceled ? onRebook : onJoin}
     >
       {canceled || dayjs().isAfter(end)
@@ -208,7 +202,7 @@ export const LessonCard: React.FC<Props> = ({
         "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-lesson-upcoming-card"
       )}
     >
-      <div className="tw-flex tw-justify-between tw-items-center tw-gap-6">
+      <div className="tw-flex tw-justify-between tw-items-stretch tw-gap-6">
         {dayjs().isAfter(end) ? (
           <div className="tw-flex tw-gap-2 tw-items-center">
             <CheckCircle className="[&>*]:tw-stroke-brand-700" />

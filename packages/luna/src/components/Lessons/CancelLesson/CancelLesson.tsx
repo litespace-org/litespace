@@ -7,14 +7,16 @@ import { useFormatMessage } from "@/hooks";
 export const CancelLesson: React.FC<{
   onCancel: Void;
   close: Void;
-  id: number;
-}> = ({ close, onCancel }) => {
+  open: boolean;
+  loading?: boolean;
+}> = ({ open, loading, close, onCancel }) => {
   const intl = useFormatMessage();
   return (
     <ConfirmationDialog
-      open={true}
+      open={open}
       type="error"
-      Icon={CallIncoming}
+      loading={loading}
+      icon={<CallIncoming />}
       close={close}
       confirm={onCancel}
       title={intl("cancel-lesson.title")}

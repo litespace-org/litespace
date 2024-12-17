@@ -78,11 +78,9 @@ export function useCancelLesson({
 }
 
 export function useCreateLesson({
-  tutorId,
   onSuccess,
   onError,
 }: {
-  tutorId: number;
   onSuccess: OnSuccess<ILesson.Self>;
   onError: OnError;
 }) {
@@ -90,10 +88,12 @@ export function useCreateLesson({
 
   const bookLesson = useCallback(
     async ({
+      tutorId,
       ruleId,
       start,
       duration,
     }: {
+      tutorId: number;
       ruleId: number;
       start: string;
       duration: ILesson.Duration;
@@ -105,7 +105,7 @@ export function useCreateLesson({
         start,
       });
     },
-    [atlas.lesson, tutorId]
+    [atlas.lesson]
   );
 
   return useMutation({
