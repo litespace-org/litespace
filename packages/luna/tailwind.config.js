@@ -31,6 +31,8 @@ export default {
           "radial-gradient(50% 50% at 50% 50%, rgba(255, 212, 38, 0.11) 0%, rgba(255, 212, 38, 0) 100%)",
         "toast-error":
           "radial-gradient(50% 50% at 50% 50%, rgba(240, 66, 72, 0.13) 0%, rgba(240, 66, 72, 0) 100%)",
+        loader:
+          "conic-gradient(from 180deg at 50% 50%, #1D7C4E 0deg, rgba(17,173,207,0) 360deg)",
       },
       colors: {
         dash: {
@@ -154,6 +156,7 @@ export default {
           indicator: "rgba(0, 0, 0, 0.3)",
           internet: "rgba(51, 38, 0, 0.6)",
           speaking: "rgba(27, 84, 164, 0.8)",
+          "loader-spinner": "rgba(29,124,78,1)",
           dialog: {
             DEFAULT: "hsl(var(--background-dialog-default))",
           },

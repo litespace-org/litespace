@@ -1,18 +1,21 @@
-import { IRating, Void } from "@litespace/types";
+import { IFilter, IRating, Void } from "@litespace/types";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { QueryKey } from "@/constants";
+import { MutationKey, QueryKey } from "@/constants";
 import { useAtlas } from "@/atlas";
 
 export type OnSuccess = Void;
 export type OnError = (error: Error) => void;
 
-export function useFindTutorRatings(id: number | null) {
+export function useFindTutorRatings(
+  id: number | null,
+  pagination: IFilter.Pagination
+) {
   const atlas = useAtlas();
   const findRateeRatings = useCallback(async () => {
     if (!id) return { list: [], total: 0 };
-    return atlas.rating.findTutorRatings(id, { size: 30, page: 1 });
-  }, [atlas.rating, id]);
+    return atlas.rating.findTutorRatings(id, pagination);
+  }, [atlas.rating, id, pagination]);
 
   return useQuery({
     queryKey: [QueryKey.FindTutorRating, id],
@@ -41,7 +44,7 @@ export function useCreateRatingTutor({
     onSuccess,
     onError,
     mutationFn: rate,
-    mutationKey: ["create-rate"],
+    mutationKey: [MutationKey.CreateRating],
   });
 }
 
@@ -70,7 +73,7 @@ export function useEditRatingTutor({
     onSuccess,
     onError,
     mutationFn: editRate,
-    mutationKey: ["edit-rate"],
+    mutationKey: [MutationKey.EditRating],
   });
 }
 
@@ -93,6 +96,6 @@ export function useDeleteRatingTutor({
     onSuccess,
     onError,
     mutationFn: deleteRate,
-    mutationKey: ["delete-rate"],
+    mutationKey: [MutationKey.DeleteRating],
   });
 }

@@ -24,6 +24,19 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const Loading: StoryObj<Component> = {
+  args: {
+    loading: true,
+  },
+};
+
+export const Error: StoryObj<Component> = {
+  args: {
+    error: true,
+    retry: () => {},
+  },
+};
+
 export const WithoutAchivements: StoryObj<Component> = {
   args: {
     id: 1,
