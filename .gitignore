@@ -5,6 +5,7 @@ dist/
 .yarn/
 *storybook.log
 vercel-urls.json
+.DS_Store
 
 # luna 
 luna/src/index.css
