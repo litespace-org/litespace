@@ -7,6 +7,7 @@ import { LocalId } from "@litespace/luna/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
+import Ratings from "@/components/TutorProfile/Ratings";
 
 type Tab = "profile" | "ratings";
 
@@ -114,7 +115,7 @@ export const TutorTabs: React.FC<{
             {tab === "ratings" ? (
               <Animate key="ratings" tab="ratings">
                 <div className="min-h-96">
-                  <h1>Ratings</h1>
+                  <Ratings tutorName={tutor.name} id={tutor.id} />
                 </div>
               </Animate>
             ) : null}
