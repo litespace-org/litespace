@@ -3,6 +3,8 @@ import { first, isEmpty } from "lodash";
 import { IUser, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
+import zod from "zod";
+import { Cache } from "@/cache";
 
 export class Users {
   public readonly table = "users" as const;
@@ -16,7 +18,7 @@ export class Users {
       "role",
       "birth_year",
       "gender",
-      "online",
+      //"online", TODO: to be removed
       "verified",
       "city",
       "credit_score",
@@ -60,7 +62,7 @@ export class Users {
         email: payload.email,
         image: payload.image,
         gender: payload.gender,
-        online: payload.online,
+        //online: payload.online, TODO: to be removed
         name: payload.name,
         verified: payload.verified,
         password: payload.password,
@@ -105,7 +107,9 @@ export class Users {
     const rows = await knex<IUser.Row>(this.table)
       .select("*")
       .where(key, value);
-    return rows.map((row) => this.from(row));
+
+    const users = await Promise.all(rows.map((row) => this.from(row)));
+    return users;
   }
 
   async exists(id: number): Promise<boolean> {
@@ -118,7 +122,7 @@ export class Users {
     role,
     verified,
     gender,
-    online,
+    //online, TODO: to be removed
     page,
     size,
     orderBy,
@@ -134,12 +138,13 @@ export class Users {
     if (role) base.andWhere(this.column("role"), role);
     if (verified) base.andWhere(this.column("verified"), verified);
     if (gender) base.andWhere(this.column("gender"), gender);
-    if (online) base.andWhere(this.column("online"), online);
+    //if (online) base.andWhere(this.column("online"), online); TODO: to be removed
     if (city) base.andWhere(this.column("city"), city);
 
     const total = await countRows(base.clone().groupBy(this.column("id")));
     const rows = await withPagination(base.clone(), { page, size });
-    const users = rows.map((row) => this.from(row));
+    const users = await Promise.all(rows.map((row) => this.from(row)));
+    
     return { list: users, total };
   }
 
@@ -167,7 +172,15 @@ export class Users {
     return this.from(row);
   }
 
-  from(row: IUser.Row): IUser.Self {
+  async from(row: IUser.Row): Promise<IUser.Self> {
+    const redisUrl = zod.string({ 
+      message: "Missing PG_USER" 
+    }).parse(process.env.REDIS_URL);
+
+    const cache = new Cache(redisUrl);
+    // TODO: make one perminant connection session for all models
+    await cache.connect();
+
     return {
       id: row.id,
       email: row.email,
@@ -177,7 +190,7 @@ export class Users {
       birthYear: row.birth_year,
       gender: row.gender,
       role: row.role,
-      online: row.online,
+      online: await cache.onlineStatus.isOnline(row.id),
       verified: row.verified,
       creditScore: row.credit_score,
       phoneNumber: row.phone_number,
