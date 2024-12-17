@@ -39,7 +39,6 @@ export async function asFindUserRoomsApiRecord({
       id: otherMember.id,
       name: otherMember.name,
       image: otherMember.image,
-      online: otherMember.online,
       role: otherMember.role,
       lastSeen: otherMember.updatedAt,
     },

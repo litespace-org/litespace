@@ -3,8 +3,6 @@ import { first, merge, omit, orderBy } from "lodash";
 import { IFilter, IRoom, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import zod from "zod";
-import { Cache } from "@/cache";
 import { users } from "@/users";
 import { messages } from "@/messages";
 
@@ -261,18 +259,9 @@ export class Rooms {
   }
 
   async asPopulatedMember(row: IRoom.PopulatedMemberRow): Promise<IRoom.PopulatedMember> {
-    const redisUrl = zod.string({ 
-      message: "Missing PG_USER" 
-    }).parse(process.env.REDIS_URL);
-
-    const cache = new Cache(redisUrl);
-    // TODO: make one perminant connection session for all models
-    await cache.connect();
-
     return merge(omit(row, "createdAt", "updatedAt"), {
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
-      online: await cache.onlineStatus.isOnline(row.id)
     });
   }
 }
