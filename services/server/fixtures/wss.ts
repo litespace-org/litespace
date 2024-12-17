@@ -24,16 +24,16 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.LeaveCall, { callId });
   }
 
-  sendMessage(roomId: number, text: string) {
-    this.client.emit(Wss.ClientEvent.SendMessage, { roomId, text });
+  sendMessage(roomId: number, ref: number, text: string) {
+    this.client.emit(Wss.ClientEvent.SendMessage, { roomId, ref, text });
   }
 
   deleteMessage(id: number) {
     this.client.emit(Wss.ClientEvent.DeleteMessage, { id });
   }
 
-  markMessageAsRead(id: number) {
-    this.client.emit(Wss.ClientEvent.MarkAsRead, { id });
+  markMessageAsRead(msgId: number) {
+    this.client.emit(Wss.ClientEvent.MarkMessageAsRead, { id: msgId });
   }
 
   /**

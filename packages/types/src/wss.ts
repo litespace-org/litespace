@@ -8,7 +8,7 @@ export enum ClientEvent {
   SendMessage = "SendMessage",
   UpdateMessage = "UpdateMessage",
   DeleteMessage = "DeleteMessage",
-  MarkAsRead = "MarkAsRead",
+  MarkMessageAsRead = "MarkMessageAsRead",
   JoinCall = "JoinCall",
   LeaveCall = "LeaveCall",
   /**
@@ -30,10 +30,10 @@ export enum ServerEvent {
   RoomMessage = "RoomMessage",
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
-  RoomMessageReverted = "RoomMessageReverted",
   RoomMessageRead = "RoomMessageRead",
 
   JoinedRooms = "JoinedRooms",
+  Revert = "Revert",
 
   MessageRead = "MessageRead",
 
@@ -73,16 +73,41 @@ export enum Room {
   ServerStats = "ServerStats",
 }
 
+export type ReverPayload =
+  | {
+      type: "send-message";
+      ref: number;
+      reason: string;
+    }
+  | {
+      type: "update-message" | "delete-message" | "mark-msg-as-read";
+      id: number;
+      reason: string;
+    }
+  | {
+      type: "user-typing";
+      roomId: number;
+      reason: string;
+    };
+
 type EventCallback<T> = (arg: T) => Promise<void> | void;
 
 /**
  * Events emitted by the client
  */
 export type ClientEventsMap = {
-  [ClientEvent.SendMessage]: EventCallback<{ roomId: number; text: string }>;
+  [ClientEvent.SendMessage]: EventCallback<{
+    /**
+     * Temporarily id set by the client. Will be emitted by the server incase
+     * the is a problem with tihs message.
+     */
+    ref: number;
+    roomId: number;
+    text: string;
+  }>;
   [ClientEvent.UpdateMessage]: EventCallback<{ id: number; text: string }>;
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
-  [ClientEvent.MarkAsRead]: EventCallback<{ id: number }>;
+  [ClientEvent.MarkMessageAsRead]: EventCallback<{ id: number }>;
 
   [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: string }>;
   [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
@@ -108,8 +133,8 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
-  [ServerEvent.RoomMessageReverted]: EventCallback<{ code: number, message: string }>;
   [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
+  [ServerEvent.Revert]: EventCallback<ReverPayload>;
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
 
