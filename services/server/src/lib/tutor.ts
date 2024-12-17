@@ -68,10 +68,10 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     }
   );
 
-  const onlineUsers = await cache.onlineStatus.getAll();
+  const isOnlineList = await cache.onlineStatus.isOnlineBatch(onboardedTutors.map(t => t.id));
 
   // restruct tutors list to match ITutor.Cache[]
-  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
+  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor, i) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
       .map((item) => item.name.ar);
@@ -84,7 +84,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
-      online: onlineUsers[tutor.id] ? true : false,
+      online: isOnlineList[i] ? true : false,
       notice: tutor.notice,
       topics: filteredTopics,
       avgRating:
@@ -171,7 +171,7 @@ export function orderTutors({
  * - lesson count
  */
 async function findTutorCacheMeta(tutorId: number) {
-  const [tutorTopics, avgRatings, studentCount, lessonCount] =
+  const [tutorTopics, avgRatings, studentCount, lessonCount, online] =
     await Promise.all([
       topics.findUserTopics({ users: [tutorId] }),
       ratings.findAvgRatings([tutorId]),
@@ -181,6 +181,7 @@ async function findTutorCacheMeta(tutorId: number) {
         canceled: false,
         ratified: true,
       }),
+      cache.onlineStatus.isOnline(tutorId),
     ]);
 
   return {
@@ -188,6 +189,7 @@ async function findTutorCacheMeta(tutorId: number) {
     avgRating: first(avgRatings)?.avg || 0,
     studentCount,
     lessonCount,
+    online,
   };
 }
 
@@ -201,6 +203,7 @@ export async function joinTutorCache(
         avgRating: cacheData.avgRating,
         studentCount: cacheData.studentCount,
         lessonCount: cacheData.lessonCount,
+        online: cacheData.online,
       }
     : await findTutorCacheMeta(tutor.id);
 
@@ -213,7 +216,6 @@ export async function joinTutorCache(
     about: tutor.about,
     gender: tutor.gender,
     notice: tutor.notice,
-    online: await cache.onlineStatus.isOnline(tutor.id),
     ...meta,
   };
 }

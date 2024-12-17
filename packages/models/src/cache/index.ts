@@ -4,7 +4,7 @@ import { Rules } from "@/cache/rules";
 import { RedisClient } from "@/cache/base";
 import { Peer } from "@/cache/peer";
 import { Call } from "@/cache/call";
-import { OnlineStatus } from "./onlineStatus";
+import { OnlineStatus } from "@/cache/onlineStatus";
 
 export class Cache {
   public tutors: Tutors;

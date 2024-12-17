@@ -16,7 +16,6 @@ export class Users {
       "role",
       "birth_year",
       "gender",
-      //"online", TODO: to be removed
       "verified",
       "city",
       "credit_score",
@@ -60,7 +59,6 @@ export class Users {
         email: payload.email,
         image: payload.image,
         gender: payload.gender,
-        //online: payload.online, TODO: to be removed
         name: payload.name,
         verified: payload.verified,
         password: payload.password,
@@ -120,7 +118,6 @@ export class Users {
     role,
     verified,
     gender,
-    //online, TODO: to be removed
     page,
     size,
     orderBy,
