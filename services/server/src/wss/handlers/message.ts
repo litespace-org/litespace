@@ -1,58 +1,69 @@
-import { isGhost, isUser } from "@litespace/auth";
-import { logger, safe, sanitizeMessage } from "@litespace/sol";
+import { isGhost } from "@litespace/auth";
+import { logger, safe } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { messages, rooms } from "@litespace/models";
 import { asChatRoomId } from "@/wss/utils";
-import { id, string, withNamedId } from "@/validation/utils";
-import wss from "@/validation/wss";
+import { id, string } from "@/validation/utils";
 import zod from "zod";
 import { isEmpty } from "lodash";
-import ResponseError, { bad, forbidden, notfound } from "@/lib/error";
 
 const stdout = logger("wss");
 
+const sendMessagePayload = zod.object({
+  roomId: id,
+  ref: id,
+  text: zod.string(),
+});
 const updateMessagePayload = zod.object({ text: string, id });
 const userTypingPayload = zod.object({ roomId: zod.number() });
+const deleteMessagePayload = zod.object({ id });
+const markMessageAsReadPayload = zod.object({ id });
 
 export class Messages extends WssHandler {
   public init(): Messages {
-    this.socket.on(Wss.ClientEvent.SendMessage, this.sendMessage.bind(this));
+    this.socket.on(Wss.ClientEvent.SendMessage, this.onSendMessage.bind(this));
     this.socket.on(
       Wss.ClientEvent.UpdateMessage,
-      this.updateMessage.bind(this)
+      this.onUpdateMessage.bind(this)
     );
     this.socket.on(
       Wss.ClientEvent.DeleteMessage,
-      this.deleteMessage.bind(this)
+      this.onDeleteMessage.bind(this)
     );
     this.socket.on(Wss.ClientEvent.UserTyping, this.onUserTyping.bind(this));
-    this.socket.on(Wss.ClientEvent.MarkAsRead, this.markAsRead.bind(this));
+    this.socket.on(
+      Wss.ClientEvent.MarkMessageAsRead,
+      this.onMarkMessageAsRead.bind(this)
+    );
     return this;
   }
 
-  async sendMessage(data: unknown) {
+  async onSendMessage(data: unknown) {
     const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user) || !isUser(user)) return;
+      if (isGhost(user)) return;
 
-      const { roomId, text } = wss.message.send.parse(data);
-      if (!roomId || !text) throw bad();
+      const { roomId, ref, text } = sendMessagePayload.parse(data);
+
+      const revert = (reason: string) =>
+        this.revert({ type: "send-message", ref, reason });
+
+      // todo: set a max message length
+      if (!text) return revert("Empty text message");
 
       const room = await rooms.findById(roomId);
-      if (!room) throw notfound.base();
+      if (!room) return revert("Room not found");
 
       const userId = user.id;
       stdout.log(`u:${userId} is sending a message to r:${roomId}`);
 
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       const member = members.map((member) => member.id).includes(userId);
-      if (!member) throw forbidden();
+      if (!member) return revert("User is not a member");
 
-      const sanitized = sanitizeMessage(text);
-      if (!sanitized) return; // empty message
       const message = await messages.create({
-        text: sanitized,
+        text,
         userId,
         roomId,
       });
@@ -63,32 +74,29 @@ export class Messages extends WssHandler {
         message
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
-      stdout.error(error.message);
+
+    if (error instanceof Error) stdout.log(error.message);
   }
 
-  async updateMessage(data: unknown) {
+  async onUpdateMessage(data: unknown) {
     const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user) || !isUser(user)) return;
+      if (isGhost(user)) return;
 
       const { id, text } = updateMessagePayload.parse(data);
+
+      const revert = (reason: string) =>
+        this.revert({ type: "update-message", id, reason });
+
       const message = await messages.findById(id);
-      if (!message || message.deleted) throw notfound.base();
+      if (!message || message.deleted) return revert("Message not found.");
 
       const owner = message.userId === user.id;
-      if (!owner) throw forbidden();
+      if (!owner) return revert("User is not the owner.");
+      if (!text) return revert("Empty message.");
 
-      const sanitized = sanitizeMessage(text);
-      if (!sanitized) throw bad();
-
-      const updated = await messages.update(id, { text: sanitized });
-      if (!updated) throw new Error("Mesasge not update; should never happen.");
+      const updated = await messages.update(id, { text });
+      if (!updated) return revert("Mesasge not update; should never happen.");
 
       this.broadcast(
         Wss.ServerEvent.RoomMessageUpdated,
@@ -96,27 +104,24 @@ export class Messages extends WssHandler {
         updated
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
-      stdout.error(error.message);
+    if (error instanceof Error) stdout.error(error.message);
   }
 
-  async deleteMessage(data: unknown) {
+  async onDeleteMessage(data: unknown) {
     const error = await safe(async () => {
       const user = this.user;
-      if (isGhost(user) || !isUser(user)) return;
+      if (isGhost(user)) return;
 
-      const { id }: { id: number } = withNamedId("id").parse(data);
+      const { id } = deleteMessagePayload.parse(data);
+
+      const revert = (reason: string) =>
+        this.revert({ type: "delete-message", id, reason });
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) throw notfound.base();
+      if (!message || message.deleted) return revert("Message not found");
 
       const owner = message.userId === user.id;
-      if (!owner) throw forbidden();
+      if (!owner) return revert("User is not the owner.");
 
       await messages.markAsDeleted(id);
 
@@ -129,18 +134,15 @@ export class Messages extends WssHandler {
         }
       );
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
-      stdout.error(error.message);
+    if (error instanceof Error) stdout.error(error.message);
   }
 
   async onUserTyping(data: unknown) {
     const error = await safe(async () => {
       const { roomId } = userTypingPayload.parse(data);
+
+      const revert = (reason: string) =>
+        this.revert({ type: "user-typing", roomId, reason });
 
       const user = this.user;
       if (isGhost(user)) return;
@@ -149,9 +151,9 @@ export class Messages extends WssHandler {
       if (isEmpty(members)) return;
 
       const isMember = members.find((member) => member.id === user.id);
-      if (!isMember) throw forbidden();
+      if (!isMember) return revert("User is not a member.");
 
-      this.socket.to(roomId.toString()).emit(Wss.ServerEvent.UserTyping, {
+      this.socket.to(asChatRoomId(roomId)).emit(Wss.ServerEvent.UserTyping, {
         roomId,
         userId: user.id,
       });
@@ -160,28 +162,30 @@ export class Messages extends WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  async markAsRead(data: unknown) {
+  async onMarkMessageAsRead(data: unknown) {
     const error = await safe(async () => {
-      const { id }: { id: number } = withNamedId("id").parse(data);
-
       const user = this.user;
-      if (isGhost(user) || !isUser(user)) return;
+      if (isGhost(user)) return;
+
+      const { id } = markMessageAsReadPayload.parse(data);
+
+      const revert = (reason: string) =>
+        this.revert({ type: "mark-msg-as-read", id, reason });
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) throw notfound.base();
+      if (!message || message.deleted) return revert("Message not found.");
 
-      const members = await rooms.findRoomMembers({ roomIds: [message.roomId] });
+      const members = await rooms.findRoomMembers({
+        roomIds: [message.roomId],
+      });
       const isMember = members.find((member) => member.id === user.id);
-      if (!isMember) throw forbidden();
+      if (!isMember) return revert("User is not a member.");
+
+      if (user.id === message.userId)
+        return revert("User can not mark his own message as read.");
 
       await messages.markAsRead(id);
     });
-    if (error instanceof ResponseError)
-      this.socket.emit(Wss.ServerEvent.RoomMessageReverted, { 
-        code: error.statusCode, 
-        message: error.message
-      });
-    else if (error instanceof Error)
-      stdout.error(error.message);
+    if (error instanceof Error) stdout.error(error.message);
   }
 }
