@@ -1,21 +1,14 @@
 import { IRating } from "@litespace/types";
+import { TutorRatingCardGroupProps } from "@litespace/luna/TutorFeedback";
 
-export const ratingOrganizer = (
+export const organizeRatings = (
   ratings: IRating.FindTutorRatingsApiResponse["list"],
-  currentUserId: number
+  currentUserId: number | undefined
 ) => {
   let currentUserRating: IRating.RateeRatings | undefined;
   const ratingsWithFeedback: IRating.RateeRatings[] = [];
-  const ratingsWithoutFeedback: {
-    ratings: Array<{
-      name: string | null;
-
-      userId: number;
-
-      imageUrl: string | null;
-    }>;
-    value: number;
-  }[] = [];
+  const ratingsWithoutFeedback: Omit<TutorRatingCardGroupProps, "tutorName">[] =
+    [];
 
   ratings.forEach((rating) => {
     if (rating.userId === currentUserId) {
