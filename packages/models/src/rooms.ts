@@ -18,6 +18,10 @@ export class Rooms {
       column(value, this.tables.members),
   };
 
+  /**
+   * @param ids - members user ids
+   * @returns the created room id
+   */
   async create(ids: number[]): Promise<number> {
     return await knex.transaction(async (tx: Knex.Transaction) => {
       const now = dayjs.utc().toDate();
@@ -28,6 +32,7 @@ export class Rooms {
 
       const room = first(rows);
       if (!room) throw new Error("Room not found; should never happen");
+
       await knex<IRoom.MemberRow>(this.tables.members)
         .transacting(tx)
         .insert(
@@ -38,7 +43,6 @@ export class Rooms {
             updated_at: now,
           }))
         );
-
       return room.id;
     });
   }
