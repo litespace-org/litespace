@@ -57,7 +57,6 @@ export type Self = {
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
-  //online: boolean; TODO: to be removed
   verified: boolean;
   creditScore: number;
   city: City | null;
@@ -65,6 +64,8 @@ export type Self = {
   createdAt: string;
   updatedAt: string;
 };
+
+export type PopulatedSelf = Self & { online: boolean };
 
 export type Row = {
   id: number;
@@ -75,7 +76,6 @@ export type Row = {
   birth_year: number | null;
   gender: Gender | null;
   role: Role;
-  //online: boolean; TODO: to be removed
   verified: boolean;
   credit_score: number;
   city: City | null;
@@ -106,7 +106,6 @@ export type UpdatePayload = {
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
-  //online?: boolean; TODO: to be removed
   creditScore?: number;
   phoneNumber?: string;
   city?: City;
@@ -150,7 +149,7 @@ export type LoginApiResponse = {
 
 export type RegisterApiResponse = LoginApiResponse;
 
-export type FindUsersApiResponse = Paginated<Self>;
+export type FindUsersApiResponse = Paginated<PopulatedSelf>;
 
 export type ResetPasswordApiResponse = LoginApiResponse;
 

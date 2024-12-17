@@ -100,7 +100,6 @@ export class Rooms {
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
-      //online: users.column("online"), TODO: to be removed
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
       createdAt: users.column("created_at"),
@@ -258,10 +257,11 @@ export class Rooms {
     };
   }
 
-  async asPopulatedMember(row: IRoom.PopulatedMemberRow): Promise<IRoom.PopulatedMember> {
+  asPopulatedMember(row: IRoom.PopulatedMemberRow): IRoom.PopulatedMember {
     return merge(omit(row, "createdAt", "updatedAt"), {
       createdAt: row.createdAt.toISOString(),
       updatedAt: row.updatedAt.toISOString(),
+      online: false // TODO: substitute this workaround
     });
   }
 }

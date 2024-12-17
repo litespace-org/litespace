@@ -24,7 +24,7 @@ export class Connection extends WssHandler {
       if (isGhost(user)) return;
 
       await cache.onlineStatus.addUser(user.id);
-      this.announceStatus(user.id, true);
+      this.announceStatus({ userId: user.id, online: true });
 
       await this.joinRooms();
       if (isAdmin(this.user)) this.emitServerStats();
@@ -38,7 +38,7 @@ export class Connection extends WssHandler {
       if (isGhost(user)) return;
 
       await cache.onlineStatus.removeUser(user.id);
-      this.announceStatus(user.id, false);
+      this.announceStatus({ userId: user.id, online: false });
 
       await this.deregisterPeer();
       await this.removeUserFromCalls();
@@ -46,13 +46,20 @@ export class Connection extends WssHandler {
     if (error instanceof Error) stdout.error(error.message);
   }
 
-  private async announceStatus(userId: number, status: boolean) {
+  private async announceStatus({
+    userId, 
+    online,
+  }: {
+    userId: number, 
+    online: boolean,
+  }) {
     const userRooms = await rooms.findMemberFullRoomIds(userId);
-
     for (const room of userRooms) {
-      this.broadcast(Wss.ServerEvent.UserStatusChanged, room.toString(), {
-        online: status,
-      });
+      this.broadcast(
+        Wss.ServerEvent.UserStatusChanged,
+        room.toString(),
+        { online }
+      );
     }
   }
 

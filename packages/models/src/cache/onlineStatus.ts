@@ -19,6 +19,12 @@ export class OnlineStatus extends CacheBase {
     return await this.client.hExists(this.key, this.asField(userId));
   }
 
+  async isOnlineBatch(userIds: number[]): Promise<boolean[]> {
+    return await Promise.all(
+      userIds.map(async id => this.client.hExists(this.key, this.asField(id)))
+    );
+  }
+
   private asField(userId: number): string {
     return userId.toString();
   }

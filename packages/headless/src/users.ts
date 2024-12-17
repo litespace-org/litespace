@@ -7,7 +7,7 @@ import { QueryKey } from "./constants";
 
 export function useUsers(
   filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">
-): UsePaginateResult<IUser.Self> {
+): UsePaginateResult<IUser.PopulatedSelf> {
   const atlas = useAtlas();
 
   const findUsers = useCallback(
@@ -21,7 +21,7 @@ export function useUsers(
 
 export function useFindUserById(
   id: string | number
-): UseQueryResult<IUser.Self> {
+): UseQueryResult<IUser.PopulatedSelf> {
   const atlas = useAtlas();
 
   const findUserById = useCallback(
