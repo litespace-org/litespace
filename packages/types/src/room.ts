@@ -51,7 +51,7 @@ export type PopulatedMember = {
   name: IUser.Self["name"];
   image: IUser.Self["image"];
   role: IUser.Self["role"];
-  online: IUser.Self["online"];
+  //online: IUser.Self["online"]; TODO: to be removed
   createdAt: IUser.Self["createdAt"];
   updatedAt: IUser.Self["updatedAt"];
 };
@@ -76,7 +76,7 @@ export type FindUserRoomsApiRecord = {
     id: number;
     name: string | null;
     image: string | null;
-    online: boolean;
+    //online: boolean; TODO: to be removed
     role: IUser.Role;
     lastSeen: string;
   };

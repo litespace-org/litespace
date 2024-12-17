@@ -57,7 +57,7 @@ export type Self = {
   birthYear: number | null;
   gender: Gender | null;
   role: Role;
-  online: boolean;
+  //online: boolean; TODO: to be removed
   verified: boolean;
   creditScore: number;
   city: City | null;
@@ -106,7 +106,7 @@ export type UpdatePayload = {
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
-  online?: boolean;
+  //online?: boolean; TODO: to be removed
   creditScore?: number;
   phoneNumber?: string;
   city?: City;
