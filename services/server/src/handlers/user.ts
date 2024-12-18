@@ -59,7 +59,6 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { selectTutorRuleEvents } from "@/lib/events";
-import { FindMyStatsApiResponse, Gender } from "@litespace/types/dist/esm/user";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
@@ -415,7 +414,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // online state, and notice.
   const user = req.user;
   const userGender =
-    isUser(user) && user.gender ? (user.gender as Gender) : undefined;
+    isUser(user) && user.gender ? (user.gender as IUser.Gender) : undefined;
 
   const filtered = query.search
     ? tutors.filter((tutor) => {
@@ -653,7 +652,7 @@ async function findStudentStats(
   res.status(200).json(response);
 }
 
-async function findMyStats(
+async function findPublicStudentStats(
   req: Request,
   res: Response,
   next: NextFunction
@@ -666,45 +665,36 @@ async function findMyStats(
   const studentData = await users.findById(id);
   if (!studentData) return next(notfound.student());
 
-  const nowdate = dayjs.utc().toISOString();
+  const now = dayjs.utc().toISOString();
 
   const tutorCount = await lessons.countCounterpartMembers({
     user: id,
     ratified: true,
-    canceled: true,
+    canceled: false,
   });
 
   const completedLessonCount  = await lessons.countLessons({
     users: [id],
     ratified: true,
     canceled: false,
-    before: nowdate
+    before: now
   });
-
-  const totalMinutes = await lessons.sumDuration({
-    users: [id],
-    ratified: true,
-    canceled: true,
-    before: nowdate
-  });
-
-  const canceledMinutes = await lessons.sumDuration({
-    users: [id],
-    ratified: false,
-    canceled: true,
-    before: nowdate
-  });
-
-  const totalLearningTime = totalMinutes - canceledMinutes;
 
   const upcomingLessonCount  = await lessons.countLessons({
     users: [id],
     ratified: true,
     canceled: false,
-    after: nowdate,
+    after: now,
   });
 
-  const response: FindMyStatsApiResponse = {
+  const totalLearningTime = await lessons.sumDuration({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    before: now
+  });
+
+  const response: IUser.FindPublicStudentStatsApiResponse = {
     tutorCount,
     completedLessonCount,
     totalLearningTime,
@@ -759,5 +749,5 @@ export default {
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
   findStudentStats: safeRequest(findStudentStats),
-  findMyStats: safeRequest(findMyStats),
+  findPublicStudentStats: safeRequest(findPublicStudentStats),
 };

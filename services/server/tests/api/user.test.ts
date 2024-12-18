@@ -10,7 +10,7 @@ import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
 import { first } from "lodash";
-import { notfound } from "@/lib/error";
+import { forbidden, notfound } from "@/lib/error";
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
@@ -332,6 +332,60 @@ describe("/api/v1/user/", () => {
       );
 
       expect(res).to.be.deep.eq(notfound.tutor());
+    });
+  });
+
+  describe("GET /api/v1/user/student/stats/public", () => {
+    beforeEach(async () => {
+      await flush();
+    });
+
+    it("should retrieve student stats by current logged-in user id.", async () => {
+      const studentApi = await Api.forStudent();
+      const student = await studentApi.findCurrentUser();
+
+      const rule1 = await db.rule({ 
+        userId: student.user.id,
+        start: dayjs.utc().subtract(2, "days").toISOString(),
+      })
+      const rule2 = await db.rule({ 
+        userId: student.user.id,
+        start: dayjs.utc().add(2, "days").toISOString(),
+      })
+      const rule3 = await db.rule({ 
+        userId: student.user.id,
+        start: dayjs.utc().add(3, "days").toISOString(),
+      })
+
+      const lesson1 = await db.lesson({ 
+        student: student.user.id, 
+        rule: rule1.id, 
+        start: rule1.start,
+      });
+
+      await db.lesson({ 
+        student: student.user.id, 
+        rule: rule2.id,
+      });
+
+      await db.lesson({ 
+        student: student.user.id, 
+        rule: rule3.id,
+        canceled: true,
+      });
+
+      const res = await studentApi.atlas.user.findPublicStudentStats();
+      
+      expect(res.tutorCount).to.eq(2);
+      expect(res.totalLearningTime).to.eq(lesson1.lesson.duration);
+      expect(res.upcomingLessonCount).to.eq(1);
+      expect(res.completedLessonCount).to.eq(1);
+    });
+
+    it("should respond with forbidden if the user is not a student.", async () => {
+      const tutorApi = await Api.forTutor();
+      const res = await safe(async () => tutorApi.atlas.user.findPublicStudentStats());
+      expect(res).to.deep.eq(forbidden())
     });
   });
 });

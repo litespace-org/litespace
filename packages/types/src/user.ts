@@ -206,7 +206,7 @@ export type FindStudentStatsApiResponse = {
   };
 };
 
-export type FindMyStatsApiResponse = {
+export type FindPublicStudentStatsApiResponse = {
   /**
   * Tutors that the student interacted with.
   */
