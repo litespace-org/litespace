@@ -24,4 +24,8 @@ export class Topic extends Base {
   async deleteTopic(id: number) {
     return await this.del(`/api/v1/topic/${id}`);
   }
+
+  async addUserTopics(topicIds: number[]): Promise<void> {
+    return await this.post(`/api/v1/topic/user`, { topicIds });
+  }
 }
