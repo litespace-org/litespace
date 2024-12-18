@@ -20,3 +20,16 @@ export function useFindStudentStats(
     enabled: !!id,
   });
 }
+
+export function useFindPublicStudentStats() {
+  const atlas = useAtlas();
+
+  const findStats = useCallback(async () => {
+    return await atlas.user.findPublicStudentStats();
+  }, [atlas.user]);
+
+  return useQuery({
+    queryFn: findStats,
+    queryKey: [QueryKey.FindPublicStudentStats],
+  });
+}

@@ -67,7 +67,7 @@ const Sidebar = () => {
     return [
       {
         label: intl("sidebar.dashboard"),
-        route: Route.Root,
+        route: Route.Dashboard,
         Icon: Home,
       },
       {

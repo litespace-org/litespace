@@ -25,7 +25,7 @@ const makeRoom = () => ({
   url: "/",
   name: faker.person.fullName(),
   image: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-  message: faker.lorem.words(10),
+  message: faker.lorem.words(1),
   sentAt: faker.date.past().toISOString(),
   read: faker.datatype.boolean(),
 });
@@ -34,6 +34,23 @@ export const Primary: Story = {
   args: {
     rooms: range(4).map(() => makeRoom()),
     chatsUrl: "/",
+  },
+};
+
+export const Loading: Story = {
+  args: {
+    rooms: range(4).map(() => makeRoom()),
+    chatsUrl: "/",
+    loading: true,
+  },
+};
+
+export const Error: Story = {
+  args: {
+    rooms: range(4).map(() => makeRoom()),
+    chatsUrl: "/",
+    error: true,
+    retry: () => alert("retry"),
   },
 };
 

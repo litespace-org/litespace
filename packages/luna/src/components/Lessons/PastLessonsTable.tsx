@@ -9,6 +9,8 @@ import dayjs from "@/lib/dayjs";
 import { isEmpty } from "lodash";
 import EmptyLessons from "@litespace/assets/EmptyLesson2";
 import { Link } from "react-router-dom";
+import { Loader, LoadingError } from "@/components/Loading";
+import { Void } from "@litespace/types";
 
 export type Props = {
   lessons: Array<{
@@ -23,12 +25,18 @@ export type Props = {
   }>;
   onRebook?: (tutorId: number) => void;
   tutorsRoute: string;
+  loading?: boolean;
+  error?: boolean;
+  retry?: Void;
 };
 
 export const PastLessonsTable: React.FC<Props> = ({
   lessons,
   tutorsRoute,
   onRebook,
+  loading,
+  error,
+  retry,
 }) => {
   const intl = useFormatMessage();
 
@@ -40,6 +48,20 @@ export const PastLessonsTable: React.FC<Props> = ({
     ],
     [intl]
   );
+
+  if (loading)
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+        <Loader text={intl("student-dashboard.loading")} />
+      </div>
+    );
+
+  if (error && retry)
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+        <LoadingError error={intl("student-dashboard.error")} retry={retry} />
+      </div>
+    );
 
   return (
     <div>
@@ -85,7 +107,7 @@ export const PastLessonsTable: React.FC<Props> = ({
               </div>
               <div className="tw-mb-4">
                 <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                  <div className="tw-w-10 tw-h-10 tw-rounded-full tw-overflow-hidden">
+                  <div className="tw-w-10 tw-h-10 tw-rounded-lg tw-overflow-hidden">
                     <Avatar
                       src={orUndefined(lesson.tutor.imageUrl)}
                       alt={orUndefined(lesson.tutor.name)}

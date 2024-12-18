@@ -49,6 +49,29 @@ export const Primary: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    onRebook(tutorId) {
+      alert(`Rebook with tutor id ${tutorId}`);
+    },
+    tutorsRoute: "/",
+    loading: true,
+  },
+};
+
+export const Error: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    onRebook(tutorId) {
+      alert(`Rebook with tutor id ${tutorId}`);
+    },
+    tutorsRoute: "/",
+    error: true,
+    retry: () => alert("retry"),
+  },
+};
+
 export const Empty: Story = {
   args: {
     lessons: [],

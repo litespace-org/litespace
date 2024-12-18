@@ -15,8 +15,10 @@ export const Loader: React.FC<{
         className={cn(
           "tw-animate-spin tw-flex tw-items-center tw-relative tw-rounded-full tw-justify-center tw-bg-loader",
           {
-            "tw-w-[64px] tw-h-[64px]": variant === "small",
-            "tw-w-[80px] tw-h-[80px]": variant === "large",
+            "tw-w-[64px] tw-h-[64px] tw-max-w-16 tw-max-h-16":
+              variant === "small",
+            "tw-w-[80px] tw-h-[80px] tw-max-w-[80px] tw-max-h-[80px]":
+              variant === "large",
           }
         )}
       >
