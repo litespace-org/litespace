@@ -59,7 +59,7 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { selectTutorRuleEvents } from "@/lib/events";
-import { Gender } from "@litespace/types/dist/esm/user";
+import { FindMyStatsApiResponse, Gender } from "@litespace/types/dist/esm/user";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
@@ -653,6 +653,67 @@ async function findStudentStats(
   res.status(200).json(response);
 }
 
+async function findMyStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const id = user.id;
+  const studentData = await users.findById(id);
+  if (!studentData) return next(notfound.student());
+
+  const nowdate = dayjs.utc().toISOString();
+
+  const tutorCount = await lessons.countCounterpartMembers({
+    user: id,
+    ratified: true,
+    canceled: true,
+  });
+
+  const completedLessonCount  = await lessons.countLessons({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    before: nowdate
+  });
+
+  const totalMinutes = await lessons.sumDuration({
+    users: [id],
+    ratified: true,
+    canceled: true,
+    before: nowdate
+  });
+
+  const canceledMinutes = await lessons.sumDuration({
+    users: [id],
+    ratified: false,
+    canceled: true,
+    before: nowdate
+  });
+
+  const totalLearningTime = totalMinutes - canceledMinutes;
+
+  const upcomingLessonCount  = await lessons.countLessons({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    after: nowdate,
+  });
+
+  const response: FindMyStatsApiResponse = {
+    tutorCount,
+    completedLessonCount,
+    totalLearningTime,
+    upcomingLessonCount,
+  }
+
+  res.status(200).json(response);
+}
+
 async function findTutorActivityScores(
   req: Request,
   res: Response,
@@ -698,4 +759,5 @@ export default {
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
   findStudentStats: safeRequest(findStudentStats),
+  findMyStats: safeRequest(findMyStats),
 };

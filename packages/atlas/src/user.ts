@@ -1,5 +1,5 @@
 import { Base } from "@/base";
-import { IFilter, ITutor, IUser, PagniationParams } from "@litespace/types";
+import { IFilter, ITutor, IUser } from "@litespace/types";
 
 export class User extends Base {
   async create(
@@ -92,6 +92,13 @@ export class User extends Base {
     student: number
   ): Promise<IUser.FindStudentStatsApiResponse> {
     return await this.get(`/api/v1/user/student/stats/${student}`);
+  }
+
+  /**
+  * used by studens to retrieve their learning stats
+  */
+  async findMyStats(): Promise<IUser.FindMyStatsApiResponse> {
+    return await this.get(`/api/v1/user/student/mystats`);
   }
 
   async findTutorActivityScores(
