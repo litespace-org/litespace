@@ -32,6 +32,21 @@ export const Primary: Story = {
   },
 };
 
+export const Loading: Story = {
+  args: {
+    lessons: range(4).map(() => makelesson()),
+    loading: true,
+  },
+};
+
+export const Error: Story = {
+  args: {
+    lessons: range(4).map(() => makelesson()),
+    error: true,
+    retry: () => alert("retry"),
+  },
+};
+
 export const Empty: Story = {
   args: {
     lessons: [],

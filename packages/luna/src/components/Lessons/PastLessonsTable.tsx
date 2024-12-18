@@ -85,7 +85,7 @@ export const PastLessonsTable: React.FC<Props> = ({
               </div>
               <div className="tw-mb-4">
                 <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                  <div className="tw-w-10 tw-h-10 tw-rounded-full tw-overflow-hidden">
+                  <div className="tw-w-10 tw-h-10 tw-rounded-lg tw-overflow-hidden">
                     <Avatar
                       src={orUndefined(lesson.tutor.imageUrl)}
                       alt={orUndefined(lesson.tutor.name)}
