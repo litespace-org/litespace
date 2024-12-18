@@ -82,6 +82,7 @@
     "./Play": "./dist/Play.tsx",
     "./PlaybackSpeed": "./dist/PlaybackSpeed.tsx",
     "./Quote": "./dist/Quote.tsx",
+    "./Rate": "./dist/Rate.tsx",
     "./Recording": "./dist/Recording.tsx",
     "./RegisterDark": "./dist/RegisterDark.tsx",
     "./RegisterLight": "./dist/RegisterLight.tsx",
