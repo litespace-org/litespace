@@ -107,7 +107,7 @@ export class Topics {
       id: this.column.topics("id"),
       name_ar: this.column.topics("name_ar"),
       name_en: this.column.topics("name_en"),
-      created_at: this.column.topics("name_en"),
+      created_at: this.column.topics("created_at"),
       updated_at: this.column.topics("updated_at"),
       user_id: this.column.userTopics("user_id"),
     };
@@ -157,6 +157,18 @@ export class Topics {
       list: rows.map((row) => this.from(row)),
       total,
     };
+  }
+
+  async isExistsBatch(
+    ids: number[], 
+    tx?: Knex.Transaction
+  ): Promise<boolean[]> {
+    const baseBuilder = this.builder(tx).topics;
+    const rows = await baseBuilder
+    .select<Pick<ITopic.Row, "id">[]>(this.column.topics("id"))
+    .whereIn(this.column.topics("id"), ids);
+
+    return ids.map(id => rows.find(r => r.id === id) !== undefined);
   }
 
   builder(tx?: Knex.Transaction) {
