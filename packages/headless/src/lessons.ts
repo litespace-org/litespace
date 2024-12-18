@@ -4,7 +4,7 @@ import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
-import { InfiniteQueryHandler, useInfinitePaginationQuery } from "./query";
+import { InfiniteQueryHandler, useInfinitePaginationQuery } from "@/query";
 import { OnError, OnSuccess } from "@/types/query";
 
 export function useFindLessons(

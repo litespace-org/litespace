@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Alert, AlertType } from "@/components/Alert";
 import { useFormatMessage } from "@/hooks";
-import { InvoiceUpdates } from "./Fields";
+import { InvoiceUpdates } from "@/components/Invoices/Fields";
 import { IInvoice } from "@litespace/types";
 
 export const Pending: React.FC<{ show?: boolean }> = ({ show = true }) => {

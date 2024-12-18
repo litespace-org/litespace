@@ -1,6 +1,6 @@
 import { ActionReducerMapBuilder } from "@reduxjs/toolkit";
 import { clone } from "lodash";
-import { Thunk } from "./thunk";
+import { Thunk } from "@/redux/thunk";
 
 export type LoadableState<T> = {
   loading: boolean;

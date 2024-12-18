@@ -10,7 +10,7 @@ import { IInterview, IRule, ITutor, IUser, Void } from "@litespace/types";
 import { MutationKey, QueryKey } from "@/constants";
 import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
-import { useInfinitePaginationQuery } from "./query";
+import { useInfinitePaginationQuery } from "@/query";
 
 dayjs.extend(utc);
 

@@ -1,9 +1,9 @@
 import React, { useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
-import { Button, ButtonSize, ButtonType } from "../Button";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { Meridiem, Time } from "@litespace/sol/time";
-import { ButtonVariant } from "../Button/types";
+import { ButtonVariant } from "@/components/Button/types";
 
 const Picker: React.FC<{
   labels: { am: string; pm: string };

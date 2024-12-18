@@ -1,6 +1,6 @@
 import React from "react";
 import { Switch, SwitchProps } from "@/components/Switch/Switch";
-import { Typography } from "../Typography";
+import { Typography } from "@/components/Typography";
 
 export const FullSwitch: React.FC<
   SwitchProps & { title: string; description: string }

@@ -8,7 +8,7 @@ import { Hash } from "react-feather";
 import { useIntl } from "react-intl";
 import Invoice from "@/components/Invoices/List/Invoice";
 import { isEmpty } from "lodash";
-import Error from "./Error";
+import Error from "@/components/Invoices/List/Error";
 
 const List: React.FC<{
   refreshAll: () => void;

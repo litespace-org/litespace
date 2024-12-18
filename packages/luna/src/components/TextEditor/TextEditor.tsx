@@ -7,8 +7,8 @@ import Editable, { ContentEditableEvent } from "react-contenteditable";
 import { RawHtml } from "@/components/RawHtml";
 import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
-import { ButtonVariant } from "../Button/types";
-import { Typography } from "../Typography";
+import { ButtonVariant } from "@/components/Button/types";
+import { Typography } from "@/components/Typography";
 
 export const TextEditor: React.FC<{
   value: string;

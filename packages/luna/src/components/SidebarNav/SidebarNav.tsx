@@ -6,7 +6,7 @@ import { useClosableRef } from "@/hooks";
 import cn from "classnames";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ButtonVariant } from "../Button/types";
+import { ButtonVariant } from "@/components/Button/types";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },

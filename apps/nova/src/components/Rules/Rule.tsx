@@ -12,7 +12,7 @@ import RuleForm from "@/components/RuleForm";
 import DeleteRule from "@/components/Rules/DeleteRule";
 import { useActivateRule } from "@/hooks/rule";
 import cn from "classnames";
-import DeactivateRule from "./DeactivateRule";
+import DeactivateRule from "@/components/Rules/DeactivateRule";
 
 const Rule: React.FC<{ rule: IRule.Self; formatterMap: RuleFormatterMap }> = ({
   rule,

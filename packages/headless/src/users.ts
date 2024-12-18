@@ -3,7 +3,7 @@ import { usePaginate, UsePaginateResult } from "@/pagination";
 import { IFilter, IUser, Void } from "@litespace/types";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useCallback } from "react";
-import { QueryKey } from "./constants";
+import { QueryKey } from "@/constants";
 
 export function useUsers(
   filter?: Omit<IUser.FindUsersApiQuery, "page" | "size">

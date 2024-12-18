@@ -1,8 +1,8 @@
 import { destructureInterviewStatus } from "@litespace/sol/interview";
 import { ICall, IInterview } from "@litespace/types";
 import React, { useMemo } from "react";
-import PendingInterview from "./PendingInterview";
-import PassedInterview from "./PassedInterview";
+import PendingInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview/PendingInterview";
+import PassedInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview/PassedInterview";
 
 const ScheduledInterview: React.FC<{
   interview: IInterview.Self;

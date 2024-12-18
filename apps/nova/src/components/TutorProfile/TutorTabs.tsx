@@ -6,7 +6,7 @@ import React, { useMemo, useState } from "react";
 import { LocalId } from "@litespace/luna/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import ProfileInfo from "./ProfileInfo";
+import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 
 type Tab = "profile" | "ratings";
 

@@ -6,7 +6,7 @@ import React, {
   useState,
 } from "react";
 import { Input } from "@/components/Input";
-import { DatePicker } from "../DatePicker";
+import { DatePicker } from "@/components/DatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
 import { Calendar } from "react-feather";

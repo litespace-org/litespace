@@ -1,9 +1,9 @@
 import React from "react";
-import { Button, ButtonSize, ButtonType } from "../Button";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import { X } from "react-feather";
 import cn from "classnames";
 import { Void } from "@litespace/types";
-import { ButtonVariant } from "../Button/types";
+import { ButtonVariant } from "@/components/Button/types";
 
 const Drawer: React.FC<{
   children?: React.ReactNode;
