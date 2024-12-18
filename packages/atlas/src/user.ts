@@ -94,6 +94,13 @@ export class User extends Base {
     return await this.get({ route: `/api/v1/user/student/stats/${student}` });
   }
 
+  /**
+  * used by studens to retrieve their learning stats
+  */
+  async findMyStats(): Promise<IUser.FindMyStatsApiResponse> {
+    return await this.get(`/api/v1/user/student/mystats`);
+  }
+
   async findTutorActivityScores(
     tutor: number
   ): Promise<ITutor.FindTutorActivityScores> {
