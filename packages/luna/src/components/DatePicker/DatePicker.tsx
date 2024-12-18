@@ -1,12 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@/components/Button";
 import { ChevronRight, ChevronLeft } from "react-feather";
 import { flatten, range } from "lodash";
 import { days } from "@/constants/labels";
 import cn from "classnames";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
-import { ButtonVariant } from "../Button/types";
 
 const rows = 6;
 const cols = 7;

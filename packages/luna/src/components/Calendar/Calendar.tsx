@@ -1,7 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { days } from "@/constants/labels";
 import { Dayjs } from "dayjs";
-import { Button, ButtonSize, ButtonType } from "../Button";
+import {
+  Button,
+  ButtonSize,
+  ButtonType,
+  ButtonVariant,
+} from "@/components/Button";
 import { ChevronLeft, ChevronRight, RotateCcw } from "react-feather";
 import cn from "classnames";
 import { DAYS_OF_WEEK, HOURS_OF_DAY } from "@/constants/number";
@@ -11,7 +16,6 @@ import dayjs from "@/lib/dayjs";
 import { useMediaQueries } from "@/hooks/media";
 import Overlay from "@/components/Calendar/Overlay";
 import Indicator from "@/components/Calendar/Indicator";
-import { ButtonVariant } from "../Button/types";
 
 function makeWeekHours() {
   const week: Array<Array<number>> = [];

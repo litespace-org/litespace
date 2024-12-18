@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Calendar, User as UserIcon } from "react-feather";
 import dayjs from "@/lib/dayjs";
 import { IconField } from "@/components/IconField";
-import { RawHtml } from "../RawHtml";
+import { RawHtml } from "@/components/RawHtml";
 import { useFormatMessage } from "@/hooks";
 
 export const List: React.FC<{ children: React.ReactNode }> = ({ children }) => {

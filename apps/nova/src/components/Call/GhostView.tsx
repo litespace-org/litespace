@@ -3,7 +3,7 @@ import { Typography } from "@litespace/luna/Typography";
 import { RemoteStream } from "@litespace/headless/calls";
 import { isEmpty } from "lodash";
 import React from "react";
-import UserMedia from "./UserMedia";
+import UserMedia from "@/components/Call/UserMedia";
 
 const GhostView: React.FC<{ streams: RemoteStream[] }> = ({ streams }) => {
   const intl = useFormatMessage();

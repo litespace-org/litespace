@@ -14,7 +14,7 @@ import { Price } from "@/components/Price";
 import { LocalId } from "@/locales";
 import { Labels, Values, Value, Columns } from "@/components/Invoices/Records";
 import { Button, ButtonSize, ButtonType } from "@/components/Button";
-import { ButtonVariant } from "../Button/types";
+import { ButtonVariant } from "@/components/Button/types";
 
 export const InvoiceId: React.FC<{ id: number }> = ({ id }) => {
   return `#${id}`;

@@ -7,7 +7,7 @@ import Time from "@/components/VideoPlayer/Time";
 import Speed from "@/components/VideoPlayer/Speed";
 import { CONTAINER_ID, Status, useVideo } from "@/components/VideoPlayer/video";
 import Progress from "@/components/VideoPlayer/Progress";
-import Overlay from "./Overlay";
+import Overlay from "@/components/VideoPlayer/Overlay";
 
 // l-1 => spinner
 // l-2 => error

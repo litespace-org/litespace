@@ -8,7 +8,7 @@ import React, {
 import { IDate } from "@litespace/types";
 import { Checkbox } from "@/components/Checkbox";
 import cn from "classnames";
-import { Button, ButtonSize, ButtonType } from "../Button";
+import { Button, ButtonSize, ButtonType } from "@/components/Button";
 import {
   BorderDottedIcon,
   CaretDownIcon,
@@ -16,7 +16,7 @@ import {
 } from "@radix-ui/react-icons";
 import { clone, concat, orderBy } from "lodash";
 import { asArabicDayIndex } from "@/lib/time";
-import { ButtonVariant } from "../Button/types";
+import { ButtonVariant } from "@/components/Button/types";
 
 export type WeekdayMap = {
   saturday: string;

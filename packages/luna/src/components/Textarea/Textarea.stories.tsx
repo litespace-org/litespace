@@ -4,8 +4,8 @@ import { Textarea } from "@/components/Textarea/Textarea";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
 import { useForm } from "react-hook-form";
-import { Field, Form, Label } from "../Form";
-import { Button } from "../Button";
+import { Field, Form, Label } from "@/components/Form";
+import { Button } from "@/components/Button";
 
 type Component = typeof Textarea;
 

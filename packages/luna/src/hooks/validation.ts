@@ -4,7 +4,7 @@ import { LocalId, messages } from "@/locales";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
 import { Duration } from "@litespace/sol/duration";
-import { useFormatMessage } from "./intl";
+import { useFormatMessage } from "@/hooks/intl";
 import { FieldError } from "@litespace/types";
 import {
   isValidEmail,
