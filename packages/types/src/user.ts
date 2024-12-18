@@ -206,4 +206,23 @@ export type FindStudentStatsApiResponse = {
   };
 };
 
+export type FindMyStatsApiResponse = {
+  /**
+  * Tutors that the student interacted with.
+  */
+  tutorCount: number; 
+  /**
+  * Count for completed lessons only.
+  */
+  completedLessonCount: number;
+  /**
+  * Total sum of all completed lessons in minutes. 
+  */
+  totalLearningTime: number;
+  /**
+  * Future but not canceled lessons. 
+  */
+  upcomingLessonCount: number;
+};
+
 export type Ghost = `ghost:${number}`;
