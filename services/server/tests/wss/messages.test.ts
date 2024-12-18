@@ -1,3 +1,4 @@
+import { revertReasons } from "@/constants";
 import { forbidden, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db from "@fixtures/db";
@@ -98,8 +99,8 @@ describe("wss message test suite", () => {
       const studentSocket = new ClientSocket(student.token);
       studentSocket.markMessageAsRead(123)
 
-      const res = await studentSocket.wait(Wss.ServerEvent.RoomMessageReverted)
-      expect(res.message).to.eq(notfound.base().message);
+      const res = await studentSocket.wait(Wss.ServerEvent.Revert)
+      expect(res.reason).to.eq(revertReasons.notfound.message);
     });
 
     it("should throw not found error if the message is deleted.", async () => {
@@ -114,17 +115,14 @@ describe("wss message test suite", () => {
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);
 
-      tutorSocket.sendMessage(roomId, "Lesson will start soon.");
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
       // wait for message to be saved in db
       const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
-
-      tutorSocket.deleteMessage(msg.id)
-      // wait for message to be deleted
-      await studentSocket.wait(Wss.ServerEvent.RoomMessageDeleted); 
+      await messages.markAsDeleted(msg.id);
 
       studentSocket.markMessageAsRead(msg.id)
-      const res = await studentSocket.wait(Wss.ServerEvent.RoomMessageReverted);
-      expect(res.message).to.eq(notfound.base().message);
+      const res = await studentSocket.wait(Wss.ServerEvent.Revert);
+      expect(res.reason).to.eq(revertReasons.notfound.message);
     });
     
     it("should throw forbidden error if the reader is not a member of the messages room.", async () => {
@@ -139,15 +137,15 @@ describe("wss message test suite", () => {
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);
 
-      tutorSocket.sendMessage(roomId, "Lesson will start soon.");
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
 
       // wait for message to be saved in db
       const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
 
       studentSocket.markMessageAsRead(msg.id)
-      const res = await studentSocket.wait(Wss.ServerEvent.RoomMessageReverted);
+      const res = await studentSocket.wait(Wss.ServerEvent.Revert);
       
-      expect(res.message).to.eq(forbidden().message);
+      expect(res.reason).to.eq(revertReasons.notMember);
     });
 
     it("should NOT mark read by the owner.", async () => {
@@ -156,15 +154,14 @@ describe("wss message test suite", () => {
       const tutorSocket = new ClientSocket(tutor.token);
 
       const roomId = await rooms.create([tutor.user.id]);
-      tutorSocket.sendMessage(roomId, "Lesson will start soon.");
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
 
       // wait for message to be saved in db
       const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
 
       tutorSocket.markMessageAsRead(msg.id)
-      //const res = await tutorSocket.wait(Wss.ServerEvent.RoomMessageReverted);
-      
-      //expect(res.message).to.eq(bad().message);
+      const res = await tutorSocket.wait(Wss.ServerEvent.Revert);
+      expect(res.reason).to.eq(revertReasons.unallowed);
     });
 
     it("should successfully mark message as read in the database.", async () => {
@@ -179,14 +176,13 @@ describe("wss message test suite", () => {
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);
 
-      tutorSocket.sendMessage(roomId, "Lesson will start soon.");
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
 
       // wait for message to be saved in db
       const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
 
       studentSocket.markMessageAsRead(msg.id)
       const res = await tutorSocket.wait(Wss.ServerEvent.RoomMessageRead);
-      
       expect(res.userId).to.eq(student.user.id);
     });
   });

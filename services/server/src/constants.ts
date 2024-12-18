@@ -116,3 +116,15 @@ export const platformConfig = {
    */
   interviewDuration: 30,
 };
+
+export const revertReasons = {
+  emptyText: "Empty text message",
+  notfound: {
+    room: "Room not found",
+    message: "Message not found",
+  },
+  notMember: "User is not a member",
+  notOwner: "User is not the owner",
+  unreachable: "should never happen",
+  unallowed: "unallowed",
+}
