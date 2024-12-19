@@ -68,10 +68,10 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     }
   );
 
-  const isOnlineList = await cache.onlineStatus.isOnlineBatch(onboardedTutors.map(t => t.id));
+  const isOnlineMap = await cache.onlineStatus.isOnlineBatch(onboardedTutors.map(t => t.id));
 
   // restruct tutors list to match ITutor.Cache[]
-  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor, i) => {
+  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
       .map((item) => item.name.ar);
@@ -84,7 +84,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
-      online: isOnlineList[i] ? true : false,
+      online: !!isOnlineMap.get(tutor.id),
       notice: tutor.notice,
       topics: filteredTopics,
       avgRating:

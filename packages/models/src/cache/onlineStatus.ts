@@ -1,4 +1,4 @@
-import { CacheBase } from "./base";
+import { CacheBase } from "@/cache/base";
 
 export class OnlineStatus extends CacheBase {
   readonly key = "online-status";
@@ -19,10 +19,15 @@ export class OnlineStatus extends CacheBase {
     return await this.client.hExists(this.key, this.asField(userId));
   }
 
-  async isOnlineBatch(userIds: number[]): Promise<boolean[]> {
-    return await Promise.all(
-      userIds.map(async id => this.client.hExists(this.key, this.asField(id)))
-    );
+  async isOnlineBatch(userIds: number[]): Promise<Map<number, boolean>> {
+    const redisClient = this.client.multi();
+    userIds.forEach(id => redisClient.hExists(this.key, this.asField(id)));
+    const result = await redisClient.exec() as unknown as boolean[];
+
+    const statusMap = new Map<number, boolean>();
+    userIds.forEach((id, i) => statusMap.set(id, result[i]));
+
+    return statusMap;
   }
 
   private asField(userId: number): string {

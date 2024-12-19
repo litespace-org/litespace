@@ -104,7 +104,7 @@ export class Users {
       .select("*")
       .where(key, value);
 
-    const users = await Promise.all(rows.map((row) => this.from(row)));
+    const users = rows.map(row => this.from(row));
     return users;
   }
 
@@ -138,7 +138,7 @@ export class Users {
 
     const total = await countRows(base.clone().groupBy(this.column("id")));
     const rows = await withPagination(base.clone(), { page, size });
-    const users = await Promise.all(rows.map((row) => this.from(row)));
+    const users = rows.map(row => this.from(row));
     
     return { list: users, total };
   }
@@ -167,7 +167,7 @@ export class Users {
     return this.from(row);
   }
 
-  async from(row: IUser.Row): Promise<IUser.Self> {
+  from(row: IUser.Row): IUser.Self {
     return {
       id: row.id,
       email: row.email,

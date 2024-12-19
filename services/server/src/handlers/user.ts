@@ -315,10 +315,10 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
   const query: IUser.FindUsersApiQuery = findUsersQuery.parse(req.query);
   const result = await users.find(query);
 
-  const isOnlineList = await cache.onlineStatus.isOnlineBatch(result.list.map(user => user.id));
-  const resList = result.list.map<PopulatedSelf>((user, i) => ({
+  const isOnlineMap = await cache.onlineStatus.isOnlineBatch(result.list.map(user => user.id));
+  const resList = result.list.map<PopulatedSelf>((user) => ({
     ...user, 
-    online: isOnlineList[i],
+    online: !!isOnlineMap.get(user.id)
   }));
 
   const response: IUser.FindUsersApiResponse = {
