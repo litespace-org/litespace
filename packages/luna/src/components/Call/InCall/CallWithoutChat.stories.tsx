@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react";
 import { useCreateStream } from "@/internal/hooks/stream";
 import dayjs from "dayjs";
 import { StreamInfo } from "@/components/Call/types";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Call;
 
@@ -21,6 +22,8 @@ const meta: Meta<Component> = {
     DarkStoryWrapper,
   ],
 };
+
+const CURRENT_USER_ID = 5;
 
 export const AloneWithCamera: StoryObj<Component> = {
   args: {
@@ -51,8 +54,47 @@ export const AloneWithCamera: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const stream = useCreateStream("focused", true);
-    return <Call {...props} streams={{ focused: stream, unfocused: [] }} />;
+    const stream = useCreateStream(true, CURRENT_USER_ID);
+    return (
+      <Call {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
+    );
+  },
+};
+
+export const Alert: StoryObj<Component> = {
+  args: {
+    chat: {
+      enabled: false,
+      toggle: () => alert("toggle chat"),
+    },
+    camera: {
+      enabled: true,
+      error: false,
+      toggle: () => alert("toggle camera"),
+    },
+    mic: {
+      enabled: true,
+      error: false,
+      toggle: () => alert("toggle mic"),
+    },
+    cast: {
+      enabled: false,
+      error: false,
+      toggle: () => alert("toggle cast"),
+    },
+    timer: {
+      duration: 30,
+      startAt: dayjs().toISOString(),
+    },
+    leaveCall: () => {},
+    chatPanel: <div>This is a Message Component</div>,
+    alert: faker.lorem.words(3),
+  },
+  render(props) {
+    const stream = useCreateStream(true, CURRENT_USER_ID);
+    return (
+      <Call {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
+    );
   },
 };
 
@@ -85,8 +127,10 @@ export const AloneWithoutCamera: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const stream = useCreateStream("focused", false);
-    return <Call {...props} streams={{ focused: stream, unfocused: [] }} />;
+    const stream = useCreateStream(false, CURRENT_USER_ID);
+    return (
+      <Call {...props} streams={[stream]} currentUserId={CURRENT_USER_ID} />
+    );
   },
 };
 
@@ -119,9 +163,12 @@ export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const s1 = useCreateStream("focused", true);
-    const s2 = useCreateStream("unfocused", false);
-    return <Call {...props} streams={{ focused: s1, unfocused: [s2] }} />;
+    const s1 = useCreateStream(true, CURRENT_USER_ID);
+    const s2 = useCreateStream(false);
+
+    return (
+      <Call {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
+    );
   },
 };
 
@@ -154,9 +201,11 @@ export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const s1 = useCreateStream("focused", false);
-    const s2 = useCreateStream("unfocused", true);
-    return <Call {...props} streams={{ focused: s1, unfocused: [s2] }} />;
+    const s1 = useCreateStream(false, CURRENT_USER_ID);
+    const s2 = useCreateStream(true);
+    return (
+      <Call {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
+    );
   },
 };
 
@@ -189,10 +238,12 @@ export const FullRoomWithoutCameras: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const s1 = useCreateStream("focused", false);
-    const s2 = useCreateStream("unfocused", false);
+    const s1 = useCreateStream(false, CURRENT_USER_ID);
+    const s2 = useCreateStream(false);
     if (!s1 || !s2) return <div></div>;
-    return <Call {...props} streams={{ focused: s1, unfocused: [s2] }} />;
+    return (
+      <Call {...props} streams={[s1, s2]} currentUserId={CURRENT_USER_ID} />
+    );
   },
 };
 
@@ -227,11 +278,17 @@ export const FullRoomWithCastWithCameras: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const cast = useCreateStream("focused", true);
-    const s1 = useCreateStream("unfocused", true);
-    const s2 = useCreateStream("unfocused", true);
+    const cast = useCreateStream(true, CURRENT_USER_ID, true);
+    const s1 = useCreateStream(true, CURRENT_USER_ID);
+    const s2 = useCreateStream(true);
     if (!s1 || !s2 || !cast) return <div></div>;
-    return <Call {...props} streams={{ focused: cast, unfocused: [s1, s2] }} />;
+    return (
+      <Call
+        {...props}
+        streams={[s1, s2, cast]}
+        currentUserId={CURRENT_USER_ID}
+      />
+    );
   },
 };
 
@@ -264,11 +321,17 @@ export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const cast = useCreateStream("focused", true);
-    const s1 = useCreateStream("unfocused", false);
-    const s2 = useCreateStream("unfocused", false);
+    const cast = useCreateStream(true, CURRENT_USER_ID, true);
+    const s1 = useCreateStream(false, CURRENT_USER_ID);
+    const s2 = useCreateStream(false);
     if (!s1 || !s2 || !cast) return <div></div>;
-    return <Call {...props} streams={{ focused: cast, unfocused: [s1, s2] }} />;
+    return (
+      <Call
+        {...props}
+        streams={[s1, s2, cast]}
+        currentUserId={CURRENT_USER_ID}
+      />
+    );
   },
 };
 
@@ -301,10 +364,59 @@ export const FullRoomWithCastWithCameraWithoutCamera: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const cast = useCreateStream("focused", true);
-    const s1 = useCreateStream("unfocused", true);
-    const s2 = useCreateStream("unfocused", false);
-    return <Call {...props} streams={{ focused: cast, unfocused: [s1, s2] }} />;
+    const cast = useCreateStream(true, CURRENT_USER_ID, true);
+    const s1 = useCreateStream(true, CURRENT_USER_ID);
+    const s2 = useCreateStream(false);
+    return (
+      <Call
+        {...props}
+        streams={[s1, s2, cast]}
+        currentUserId={CURRENT_USER_ID}
+      />
+    );
+  },
+};
+
+export const FullRoomWithFullCast: StoryObj<Component> = {
+  args: {
+    chat: {
+      enabled: false,
+      toggle: () => {},
+    },
+    camera: {
+      enabled: true,
+      error: false,
+      toggle: () => {},
+    },
+    mic: {
+      enabled: true,
+      error: false,
+      toggle: () => {},
+    },
+    cast: {
+      enabled: false,
+      error: false,
+      toggle: () => {},
+    },
+    timer: {
+      duration: 30,
+      startAt: dayjs().toISOString(),
+    },
+    leaveCall: () => {},
+    chatPanel: <div>This is a Message Component</div>,
+  },
+  render(props) {
+    const cast = useCreateStream(true, CURRENT_USER_ID, true);
+    const cast2 = useCreateStream(true, 8, true);
+    const s1 = useCreateStream(true, CURRENT_USER_ID);
+    const s2 = useCreateStream(false, 8);
+    return (
+      <Call
+        {...props}
+        streams={[s1, s2, cast, cast2]}
+        currentUserId={CURRENT_USER_ID}
+      />
+    );
   },
 };
 
@@ -338,108 +450,27 @@ export const NewUserEntering: StoryObj<Component> = {
     chatPanel: <div>This is a Message Component</div>,
   },
   render(props) {
-    const initialStream = useCreateStream("focused", false);
-    const unfocusedStream = useCreateStream("unfocused", false);
-    const [focused, setFocused] = useState<StreamInfo>(initialStream);
-    const [unfocused, setUnfocused] = useState<StreamInfo[]>([]);
+    const initialStream = useCreateStream(false, CURRENT_USER_ID);
+    const unfocusedStream = useCreateStream(false);
+
+    const [streams, setStreams] = useState<StreamInfo[]>([]);
 
     useEffect(() => {
-      setFocused(initialStream);
-    }, [initialStream]);
+      setStreams([initialStream]);
+      //eslint-disable-next-line
+    }, []);
 
     useEffect(() => {
       const timeout = setTimeout(() => {
-        setUnfocused((prev) => [...prev, unfocusedStream]);
+        setStreams((prev) => [...prev, unfocusedStream]);
       }, 5_000);
 
       return () => clearTimeout(timeout);
-    }, [unfocusedStream]);
+      //eslint-disable-next-line
+    }, []);
 
     return (
-      <Call
-        {...props}
-        streams={{
-          focused,
-          unfocused,
-        }}
-      />
-    );
-  },
-};
-
-export const NewUserEnteringThenCasting: StoryObj<Component> = {
-  args: {
-    chat: {
-      enabled: false,
-      toggle: () => {},
-    },
-    camera: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    mic: {
-      enabled: true,
-      error: false,
-      toggle: () => {},
-    },
-    cast: {
-      enabled: false,
-      error: false,
-      toggle: () => {},
-    },
-    timer: {
-      duration: 30,
-      startAt: dayjs().toISOString(),
-    },
-    leaveCall: () => {},
-    chatPanel: <div>This is a Message Component</div>,
-  },
-  render(props) {
-    const initialStream = useCreateStream("focused", false);
-    const unfocusedStream = useCreateStream("unfocused", false);
-    const unfocusedStream2 = useCreateStream("unfocused", false);
-    const cast = useCreateStream("focused", false);
-    const [focused, setFocused] = useState<StreamInfo>(initialStream);
-    const [unfocused, setUnfocused] = useState<StreamInfo[]>([]);
-
-    useEffect(() => {
-      setFocused(initialStream);
-    }, [initialStream]);
-
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setUnfocused((prev) => [...prev, unfocusedStream]);
-      }, 5_000);
-
-      return () => clearTimeout(timeout);
-    }, [unfocusedStream]);
-
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setUnfocused((prev) => [...prev, unfocusedStream2]);
-      }, 10_000);
-
-      return () => clearTimeout(timeout);
-    }, [unfocusedStream2]);
-
-    useEffect(() => {
-      const timeout = setTimeout(() => {
-        setFocused(cast);
-        setUnfocused([initialStream, unfocusedStream, unfocusedStream2]);
-      }, 15_000);
-
-      return () => clearTimeout(timeout);
-    }, [cast, initialStream, unfocusedStream, unfocusedStream2]);
-
-    return (
-      <Call
-        {...props}
-        streams={{
-          focused: focused,
-          unfocused: unfocused,
-        }}
-      />
+      <Call {...props} streams={streams} currentUserId={CURRENT_USER_ID} />
     );
   },
 };

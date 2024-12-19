@@ -1,5 +1,7 @@
 import React from "react";
-import { PreCallUserPreview, CallBar, Ready } from "@/components/Call";
+import { Ready } from "@/components/Call/Ready";
+import { CallBar } from "@/components/Call/CallBar";
+import { PreCallUserPreview } from "@/components/Call/PreCallUserPreview";
 import { IUser, Void } from "@litespace/types";
 import Video from "@litespace/assets/Video";
 import VideoSlash from "@litespace/assets/VideoSlash";

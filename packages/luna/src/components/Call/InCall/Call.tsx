@@ -6,22 +6,13 @@ import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Chat from "@litespace/assets/Chat";
 import CastScreen from "@litespace/assets/CastScreen";
-import { InCallStreams, CallBar } from "@/components/Call";
+import { CallBar } from "@/components/Call/CallBar";
+import { InCallStreams } from "@/components/Call/InCallStreams";
 import { StreamInfo } from "@/components/Call/types";
 
-/**
- * @todo should accept list of streams
- *    - user alone => should be the main stream
- *    - two users => the other user is the focused stream.
- *    - two users with cast => cast is the focused stream.
- *    - one user with casting => cast is the focused stream.
- *    - two users with two streams => the other user cast should be focused.
- */
 type Props = {
-  streams: {
-    focused: StreamInfo;
-    unfocused: StreamInfo[];
-  };
+  streams: StreamInfo[];
+  currentUserId: number;
   chat: { enabled: boolean; toggle: Void };
   fullScreen: {
     enabled: boolean;
@@ -48,7 +39,7 @@ type Props = {
   };
   leaveCall: Void;
   chatPanel?: React.ReactNode;
-  internetProblem?: boolean;
+  alert?: string;
 };
 
 export const Call: React.FC<Props> = ({
@@ -60,18 +51,20 @@ export const Call: React.FC<Props> = ({
   cast,
   streams,
   timer,
-  internetProblem,
+  alert,
   fullScreen,
+  currentUserId,
 }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-10 tw-w-full tw-h-full">
       <div className="tw-h-full tw-grow tw-flex">
         <InCallStreams
+          currentUserId={currentUserId}
           fullScreen={fullScreen}
           streams={streams}
           chat={chat.enabled}
           timer={timer}
-          internetProblem={internetProblem}
+          alert={alert}
         />
         {chat.enabled ? chatPanel : null}
       </div>
