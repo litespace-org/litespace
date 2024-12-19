@@ -71,17 +71,17 @@ export class Topics {
 
   async deleteUserTopics({
     user,
-    topic,
+    topics,
     tx,
   }: {
     user: number;
-    topic: number;
+    topics: number[];
     tx?: Knex.Transaction;
   }): Promise<void> {
     await this.builder(tx)
       .userTopics.delete()
       .where(this.column.userTopics("user_id"), user)
-      .andWhere(this.column.userTopics("topic_id"), topic);
+      .whereIn(this.column.userTopics("topic_id"), topics);
   }
 
   async findById(

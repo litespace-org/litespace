@@ -72,4 +72,57 @@ describe("/api/v1/topic/", () => {
       expect(myTopics.length).to.eq(3);
     });
   });
+
+  describe("DELETE /api/v1/topic/user", () => {
+    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+      const adminApi = await Api.forSuperAdmin();
+      const res = await safe(async () => adminApi.atlas.topic.deleteUserTopics([1]));
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should respond with 200 even when the user delete topics that he doesn't have.", async () => {
+      const studentApi = await Api.forStudent();
+
+      const mockTopicIds = await Promise.all(
+        range(0, 3).map(
+          async (i) => (await db.topic({
+            name: {
+              ar: `${faker.animal.bear()}-${i}`,
+              en: `${faker.animal.bird()}-${i}`,
+            }
+          })).id)
+      );
+
+      const res = await safe(async () => studentApi.atlas.topic.deleteUserTopics(mockTopicIds));
+      expect(res).to.deep.eq("OK");
+    });
+
+    it("should respond with 200 and successfully remove user topics.", async () => {
+      const studentApi = await Api.forStudent();
+      const student = await studentApi.findCurrentUser();
+
+      const mockTopicIds = await Promise.all(
+        range(0, 3).map(
+          async (i) => (await db.topic({
+            name: {
+              ar: `${faker.animal.bear()}-${i}`,
+              en: `${faker.animal.bird()}-${i}`,
+            }
+          })).id)
+      );
+
+      const res1 = await safe(
+        async () => studentApi.atlas.topic.addUserTopics(mockTopicIds)
+      );
+      expect(res1).to.eq("OK");
+
+      const res = await safe(
+        async () => studentApi.atlas.topic.deleteUserTopics(mockTopicIds.slice(0,2))
+      );
+      expect(res).to.deep.eq("OK");
+
+      const myTopics = await topics.findUserTopics({ users: [student.user.id] });
+      expect(myTopics.length).to.eq(1);
+    });
+  });
 });

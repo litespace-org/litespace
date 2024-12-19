@@ -26,7 +26,7 @@ const updateTopicPayload = zod.object({
   englishName: zod.optional(string),
 });
 
-const addUserTopicsBodyParser = zod.object({
+const generalUserTopicsBodyParser = zod.object({
   topicIds: zod.array(zod.number()),
 });
 
@@ -125,13 +125,15 @@ async function findTopics(req: Request, res: Response, _: NextFunction) {
   res.status(200).json(response);
 }
 
+//async function findUserTopics(req: Request, res: Response, next: NextFunction) {}
+
 async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds } = addUserTopicsBodyParser.parse(req.body);
+  const { topicIds } = generalUserTopicsBodyParser.parse(req.body);
 
-  // filter passed topics to count/insert which doesn't already exist
+  // filter passed topics to ignore the ones that does already exist
   const myTopics = await topics.findUserTopics({ users: [user.id] });
   const myTopicsIds = myTopics.map(t => t.id);
   const filteredIds = topicIds.filter(id => !myTopicsIds.includes(id));
@@ -158,15 +160,33 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(200);
 }
 
-//async function findUserTopics(req: Request, res: Response, next: NextFunction) {}
-//async function deleteUserTopics(req: Request, res: Response, next: NextFunction) {}
+async function deleteUserTopics(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
+  if (!allowed) return next(forbidden());
+  const { topicIds } = generalUserTopicsBodyParser.parse(req.body);
+
+  // filter passed topics to include only the ones that the user has included 
+  const myTopics = await topics.findUserTopics({ users: [user.id] });
+  const myTopicsIds = myTopics.map(t => t.id);
+  const filteredIds = topicIds.filter(id => myTopicsIds.includes(id));
+
+  // remove user topics from the database
+  if (filteredIds.length > 0)
+    await topics.deleteUserTopics({ 
+      user: user.id,
+      topics: filteredIds,
+    });
+
+  res.sendStatus(200);
+}
 
 export default {
   createTopic: safeRequest(createTopic),
   updateTopic: safeRequest(updateTopic),
   deleteTopic: safeRequest(deleteTopic),
   findTopics: safeRequest(findTopics),
-  addUserTopics: safeRequest(addUserTopics),
   //findUserTopics: safeRequest(findUserTopics),
-  //deleteUserTopics: safeRequest(deleteUserTopics),
+  addUserTopics: safeRequest(addUserTopics),
+  deleteUserTopics: safeRequest(deleteUserTopics),
 };
