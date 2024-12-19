@@ -30,6 +30,10 @@ export const apierror = error;
 export const forbidden = () =>
   error(ApiError.Forbidden, "Unauthorized access", 401);
 
+// The server understood the request, but it's refusing to fulfill it
+export const refused = () =>
+  error(ApiError.Forbidden, "Cannot fulfill the request", 403);
+
 export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
 
 export const empty = () => error(ApiError.EmptyRequest, "Empty request", 400);

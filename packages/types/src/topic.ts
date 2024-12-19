@@ -81,3 +81,5 @@ export type UpdateTopicApiResponse = Self;
 export type FindTopicsApiQuery = FindTopicsQueryFilter;
 
 export type FindTopicsApiResponse = Paginated<Self>;
+
+export type FindUserTopicsApiResponse = PopulatedUserTopic[];

@@ -1,5 +1,6 @@
 import { Base } from "@/base";
 import { ITopic } from "@litespace/types";
+import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 
 export class Topic extends Base {
   async create(
@@ -23,5 +24,17 @@ export class Topic extends Base {
 
   async deleteTopic(id: number) {
     return await this.del(`/api/v1/topic/${id}`);
+  }
+
+  async findUserTopics(): Promise<FindUserTopicsApiResponse> {
+    return await this.get(`/api/v1/topic/of/user`);
+  }
+
+  async addUserTopics(topicIds: number[]): Promise<void> {
+    return await this.post(`/api/v1/topic/of/user`, { topicIds });
+  }
+
+  async deleteUserTopics(topicIds: number[]): Promise<void> {
+    return await this.del(`/api/v1/topic/of/user`, { topicIds });
   }
 }
