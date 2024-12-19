@@ -3,7 +3,7 @@ import { IFilter, IRating } from "@litespace/types";
 
 export class Rating extends Base {
   async findById(id: number): Promise<IRating.Populated> {
-    return await this.get(`/api/v1/rating/${id}`);
+    return await this.get({ route: `/api/v1/rating/${id}` });
   }
 
   async create(payload: IRating.CreateApiPayload): Promise<void> {
@@ -38,6 +38,6 @@ export class Rating extends Base {
     id: number,
     pagination?: IFilter.Pagination
   ): Promise<IRating.FindTutorRatingsApiResponse> {
-    return await this.get(`/api/v1/rating/list/tutor/${id}`, {}, pagination);
+    return await this.get({ route: `/api/v1/rating/list/tutor/${id}`, params: pagination });
   }
 }

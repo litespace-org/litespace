@@ -1,4 +1,4 @@
-import fixtures, { topic } from "@fixtures/db";
+import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { knex, topics } from "@/index";
 import { expect } from "chai";
@@ -143,7 +143,7 @@ describe("Topics", () => {
     it("should return a map that tells if the passed topic ids exists in the db or not.", async () => {
       const topic1 = await fixtures.topic();
       const topic2 = await fixtures.topic();
-      
+
       const list = [topic1.id, topic2.id, 123];
       const existanceMap = await topics.isExistsBatch(list);
 
@@ -159,9 +159,9 @@ describe("Topics", () => {
 
       const topic1 = await fixtures.topic();
       const topic2 = await fixtures.topic();
-      
+
       const list = [topic1.id, topic2.id];
-      await topics.registerUserTopics({ 
+      await topics.registerUserTopics({
         user: user.id,
         topics: list,
       });
@@ -173,7 +173,7 @@ describe("Topics", () => {
 
       const found = await topics.findUserTopics({ users: [user.id] });
       expect(found).to.have.length(1);
-      expect(first(found)).to.deep.eq({ 
+      expect(first(found)).to.deep.eq({
         ...topic2,
         userId: user.id,
       });

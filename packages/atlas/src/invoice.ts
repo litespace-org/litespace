@@ -4,18 +4,24 @@ import { safeFormData } from "@/lib/form";
 
 export class Invoice extends Base {
   async create(payload: IInvoice.CreateApiPayload): Promise<IInvoice.Self> {
-    return await this.post("/api/v1/invoice", payload);
+    return await this.post({
+      route: "/api/v1/invoice", 
+      payload
+    });
   }
 
   async stats(userId: number): Promise<IInvoice.StatsApiResponse> {
-    return await this.get(`/api/v1/invoice/stats/${userId}`);
+    return await this.get({ route: `/api/v1/invoice/stats/${userId}` });
   }
 
   async updateByReceiver(
     invoiceId: number,
     payload: IInvoice.UpdateByReceiverApiPayload
   ): Promise<void> {
-    return await this.put(`/api/v1/invoice/receiver/${invoiceId}`, payload);
+    return await this.put({
+      route: `/api/v1/invoice/receiver/${invoiceId}`,
+      payload,
+    });
   }
 
   async updateByAdmin(
@@ -44,10 +50,13 @@ export class Invoice extends Base {
   async find(
     params: IInvoice.FindInvoicesQuery
   ): Promise<Paginated<IInvoice.Self>> {
-    return this.get("/api/v1/invoice/list", null, params);
+    return this.get({
+      route: "/api/v1/invoice/list",
+      params,
+    });
   }
 
   async cancel(invoiceId: number): Promise<void> {
-    return this.del(`/api/v1/invoice/${invoiceId}`);
+    return this.del({ route: `/api/v1/invoice/${invoiceId}` });
   }
 }
