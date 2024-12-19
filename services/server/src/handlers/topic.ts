@@ -15,6 +15,7 @@ import safeRequest from "express-async-handler";
 import zod from "zod";
 import { Knex } from "knex";
 import { MAX_TOPICS_NUM } from "@litespace/sol";
+import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 
 const createTopicPayload = zod.object({
   arabicName: string,
@@ -125,7 +126,15 @@ async function findTopics(req: Request, res: Response, _: NextFunction) {
   res.status(200).json(response);
 }
 
-//async function findUserTopics(req: Request, res: Response, next: NextFunction) {}
+async function findUserTopics(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
+  if (!allowed) return next(forbidden());
+
+  const myTopics = await topics.findUserTopics({ users: [user.id] });
+  const response: FindUserTopicsApiResponse = myTopics;
+  res.status(200).json(response);
+}
 
 async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
@@ -186,7 +195,7 @@ export default {
   updateTopic: safeRequest(updateTopic),
   deleteTopic: safeRequest(deleteTopic),
   findTopics: safeRequest(findTopics),
-  //findUserTopics: safeRequest(findUserTopics),
+  findUserTopics: safeRequest(findUserTopics),
   addUserTopics: safeRequest(addUserTopics),
   deleteUserTopics: safeRequest(deleteUserTopics),
 };

@@ -3,6 +3,7 @@ import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";
 import { MAX_TOPICS_NUM, safe } from "@litespace/sol";
+import { PopulatedUserTopic } from "@litespace/types/dist/esm/topic";
 import { expect } from "chai";
 import { range } from "lodash";
 
@@ -123,6 +124,36 @@ describe("/api/v1/topic/", () => {
 
       const myTopics = await topics.findUserTopics({ users: [student.user.id] });
       expect(myTopics.length).to.eq(1);
+    });
+  });
+
+  describe("GET /api/v1/topic/user", () => {
+    it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
+      const adminApi = await Api.forSuperAdmin();
+      const res = await safe(async () => adminApi.atlas.topic.findUserTopics());
+      expect(res).to.deep.eq(forbidden());
+    });
+
+    it("should successfully retrieve a list of user topics.", async () => {
+      const studentApi = await Api.forStudent();
+
+      const mockTopics = await Promise.all(
+        range(0, 3).map(
+          async (i) => await db.topic({
+            name: {
+              ar: `${faker.animal.bear()}-${i}`,
+              en: `${faker.animal.bird()}-${i}`,
+            }
+          }))
+      );
+      const mockTopicIds = mockTopics.map(t => t.id);
+
+      const res = await safe(async () => studentApi.atlas.topic.addUserTopics(mockTopicIds));
+      expect(res).to.eq("OK");
+
+      const myTopics = await safe(async () => studentApi.atlas.topic.findUserTopics());
+      expect(myTopics).to.be.an("array");
+      expect(myTopics).to.have.length(3);
     });
   });
 });
