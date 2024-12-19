@@ -119,11 +119,9 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const admin = isAdmin(req.user);
   const publicRole = [
     IUser.Role.TutorManager,
-    IUser.Role.Tutor, 
-    IUser.Role.Student
-  ].includes(
-    payload.role
-  );
+    IUser.Role.Tutor,
+    IUser.Role.Student,
+  ].includes(payload.role);
   if (!publicRole && !admin) return next(forbidden());
 
   const userObject = await users.findByEmail(payload.email);
@@ -200,7 +198,7 @@ function update(context: ApiContext) {
       const isUpdatingTutorMedia =
         (files.image.file || files.video.file) &&
         (isTutor(targetUser) || isTutorManager(targetUser));
-        
+
       const isEligibleUser = [
         IUser.Role.SuperAdmin,
         IUser.Role.RegularAdmin,
@@ -667,20 +665,21 @@ async function findPublicStudentStats(
 
   const now = dayjs.utc().toISOString();
 
+  // todo: @mmoehabb use Promise.all to resolve all promises.
   const tutorCount = await lessons.countCounterpartMembers({
     user: id,
     ratified: true,
     canceled: false,
   });
 
-  const completedLessonCount  = await lessons.countLessons({
+  const completedLessonCount = await lessons.countLessons({
     users: [id],
     ratified: true,
     canceled: false,
-    before: now
+    before: now,
   });
 
-  const upcomingLessonCount  = await lessons.countLessons({
+  const upcomingLessonCount = await lessons.countLessons({
     users: [id],
     ratified: true,
     canceled: false,
@@ -691,7 +690,7 @@ async function findPublicStudentStats(
     users: [id],
     ratified: true,
     canceled: false,
-    before: now
+    before: now,
   });
 
   const response: IUser.FindPublicStudentStatsApiResponse = {
@@ -699,7 +698,7 @@ async function findPublicStudentStats(
     completedLessonCount,
     totalLearningTime,
     upcomingLessonCount,
-  }
+  };
 
   res.status(200).json(response);
 }
