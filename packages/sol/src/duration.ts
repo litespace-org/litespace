@@ -1,4 +1,4 @@
-import humanizeDuration from "humanize-duration";
+import humanizeDuration, { Options } from "humanize-duration";
 
 const HOUR_MINUTE_COUNT = 60;
 const MINUTE_TO_MS = 60000;
@@ -12,29 +12,41 @@ const labels = {
 
 export class Duration {
   durationInMS: number;
+  humanizer: humanizeDuration.Humanizer;
 
   constructor(value: RawDuration) {
     this.durationInMS = Duration.parse(value);
+    this.humanizer = humanizeDuration.humanizer({
+      language: "en",
+      languages: {
+        "ar-short": {
+          h: () => "س", // Short form for hours
+          m: () => "د", // Short form for minutes
+          s: () => "ث", // Optional, for seconds if needed
+        },
+      },
+    });
   }
 
   minutes() {
     return Math.floor(this.durationInMS / MINUTE_TO_MS);
   }
 
-  hours() {
-    return humanizeDuration(this.durationInMS, {
+  hours(options: Options = {}) {
+    return this.humanizer(this.durationInMS, {
       units: ["h"],
       round: true,
+      ...options,
     });
   }
 
   format(locale: string = "en"): string {
     if (this.durationInMS === 0) return "";
-    return humanizeDuration(this.durationInMS, {
+    return this.humanizer(this.durationInMS, {
       units: ["h", "m"],
       language: locale,
       digitReplacements:
-        locale === "ar"
+        locale === "ar" || locale === "ar-short"
           ? ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"]
           : undefined,
     });

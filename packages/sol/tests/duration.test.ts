@@ -41,6 +41,20 @@ describe("Duration", () => {
     expect(Duration.from(".5hr").format("ar")).to.be.eq("30 دقيقة");
   });
 
+  it("should format durations in Arabic but in short form", () => {
+    expect(Duration.from("").format("ar-short")).to.be.eq("");
+    expect(Duration.from("2").format("ar-short")).to.be.eq("2 د");
+    expect(Duration.from("2min").format("ar-short")).to.be.eq("2 د");
+    expect(Duration.from("0 mins").format("ar-short")).to.be.eq("");
+    expect(Duration.from("mins").format("ar-short")).to.be.eq("1 د");
+    expect(Duration.from("د").format("ar-short")).to.be.eq("1 د");
+    expect(Duration.from("1hr 30min").format("ar-short")).to.be.eq("1 س, 30 د");
+    expect(Duration.from("1.5hr").format("ar-short")).to.be.eq("1 س, 30 د");
+    expect(Duration.from("2.5hr").format("ar-short")).to.be.eq("2 س, 30 د");
+    expect(Duration.from("1.hr").format("ar-short")).to.be.eq("1 س");
+    expect(Duration.from(".5hr").format("ar-short")).to.be.eq("30 د");
+  });
+
   it("should format durations in English", () => {
     expect(Duration.from("").format("en")).to.be.eq("");
     expect(Duration.from("2").format("en")).to.be.eq("2 minutes");
