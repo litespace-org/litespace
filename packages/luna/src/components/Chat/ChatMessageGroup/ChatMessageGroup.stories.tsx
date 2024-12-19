@@ -64,7 +64,7 @@ export const ReceiverOneMessage: StoryObj<Component> = {
       name: faker.person.fullName(),
     },
     messages: messages(1),
-    owner: true,
+    owner: false,
     sentAt: dayjs().toISOString(),
   },
 };
