@@ -20,9 +20,10 @@ export class OnlineStatus extends CacheBase {
   }
 
   async isOnlineBatch(userIds: number[]): Promise<boolean[]> {
-    return await Promise.all(
-      userIds.map(async id => this.client.hExists(this.key, this.asField(id)))
-    );
+    const redisClient = this.client.multi();
+    userIds.forEach(id => redisClient.hExists(this.key, this.asField(id)));
+    const result = await redisClient.exec();
+    return result as unknown as boolean[];
   }
 
   private asField(userId: number): string {
