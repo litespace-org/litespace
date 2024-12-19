@@ -443,6 +443,8 @@
   "settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
   "settings.notifications.messages.title": "إشعارات الرسائل",
   "settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
+  "settings.notifications.coming-soon.title": "قريبا 🎉",
+  "settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
   "settings.save": "حفظ التغيرات",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
   "lessons.button.rebook": "إعادة الحجز",
