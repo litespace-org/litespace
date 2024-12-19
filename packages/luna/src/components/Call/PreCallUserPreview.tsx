@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { CallAvatar } from "@/components/Call";
+import { CallAvatar } from "@/components/Call/CallAvatar";
 
 export const PreCallUserPreview: React.FC<{
   camera: boolean;
