@@ -30,7 +30,7 @@ const UserDetails = () => {
     return value;
   }, [params.id]);
 
-  const query: UseQueryResult<IUser.Self> = useFindUserById(id);
+  const query: UseQueryResult<IUser.PopulatedSelf> = useFindUserById(id);
 
   const role = useMemo(() => {
     if (!query.data) return null;

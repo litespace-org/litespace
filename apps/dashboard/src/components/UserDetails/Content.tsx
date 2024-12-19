@@ -16,7 +16,7 @@ import { rolesMap } from "@/components/utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Content: React.FC<{
-  user?: IUser.Self;
+  user?: IUser.PopulatedSelf;
   tutor?: ITutor.Self;
   tutorStats?: ITutor.FindTutorStatsApiResponse | null;
   loading?: boolean;
