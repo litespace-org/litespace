@@ -30,6 +30,15 @@ export const Primary: Story = {
   },
 };
 
+export const Below1Hour: Story = {
+  args: {
+    totalLessonCount: 44,
+    completedLessonCount: 17,
+    totalLearningTime: 37,
+    badgesCount: 4,
+  },
+};
+
 export const Below1000Hours: Story = {
   args: {
     totalLessonCount: 0,

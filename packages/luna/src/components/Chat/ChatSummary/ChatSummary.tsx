@@ -9,7 +9,7 @@ import cn from "classnames";
 import React from "react";
 import { Link } from "react-router-dom";
 
-type Props = {
+export type ChatSummaryProps = {
   rooms: Array<{
     id: number;
     /**
@@ -43,7 +43,10 @@ type Props = {
   chatsUrl: string;
 };
 
-export const ChatSummary: React.FC<Props> = ({ rooms, chatsUrl }) => {
+export const ChatSummary: React.FC<ChatSummaryProps> = ({
+  rooms,
+  chatsUrl,
+}) => {
   const intl = useFormatMessage();
   return (
     <div
@@ -63,49 +66,49 @@ export const ChatSummary: React.FC<Props> = ({ rooms, chatsUrl }) => {
           <div className="tw-mt-4 tw-mb-[19px] tw-flex tw-flex-col tw-gap-4">
             {rooms.map((room) => {
               return (
-                <Link to={room.url} key={room.id} className="group">
-                  <div className="tw-flex tw-gap-2 tw-w-full">
-                    <div className="tw-min-w-[42px] tw-min-h-[42px] tw-w-[42px] tw-h-[42px] tw-rounded-full tw-overflow-hidden">
-                      <Avatar
-                        src={orUndefined(room.image)}
-                        seed={room.id.toString()}
-                        alt={orUndefined(room.name)}
-                      />
-                    </div>
-                    <div className="tw-flex tw-flex-col tw-justify-between">
-                      <div className="tw-flex tw-justify-between tw-self-stretch">
-                        <Typography
-                          element="caption"
-                          weight="semibold"
-                          className="tw-text-natural-950"
-                        >
-                          {room.name}
-                        </Typography>
-                        <Typography
-                          element="tiny-text"
-                          weight="regular"
-                          className={cn(
-                            room.read
-                              ? "tw-text-brand-700"
-                              : "tw-text-natural-600"
-                          )}
-                        >
-                          {dayjs(room.sentAt).format("hh:mm a")}
-                        </Typography>
-                      </div>
+                <Link
+                  to={room.url}
+                  key={room.id}
+                  className="tw-group tw-w-full tw-flex tw-gap-2 "
+                >
+                  <div className="tw-min-w-[42px] tw-min-h-[42px] tw-w-[42px] tw-h-[42px] tw-rounded-lg tw-overflow-hidden">
+                    <Avatar
+                      src={orUndefined(room.image)}
+                      seed={room.id.toString()}
+                      alt={orUndefined(room.name)}
+                    />
+                  </div>
+                  <div className="tw-flex tw-flex-col tw-grow tw-justify-between">
+                    <div className="tw-flex tw-justify-between tw-self-stretch">
                       <Typography
                         element="caption"
+                        weight="semibold"
+                        className="tw-text-natural-950"
+                      >
+                        {room.name}
+                      </Typography>
+                      <Typography
+                        element="tiny-text"
                         weight="regular"
                         className={cn(
-                          "tw-line-clamp-1",
                           room.read
                             ? "tw-text-brand-700"
                             : "tw-text-natural-600"
                         )}
                       >
-                        {room.message}
+                        {dayjs(room.sentAt).format("hh:mm a")}
                       </Typography>
                     </div>
+                    <Typography
+                      element="caption"
+                      weight="regular"
+                      className={cn(
+                        "tw-line-clamp-1",
+                        room.read ? "tw-text-brand-700" : "tw-text-natural-600"
+                      )}
+                    >
+                      {room.message}
+                    </Typography>
                   </div>
                 </Link>
               );
