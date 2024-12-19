@@ -21,9 +21,13 @@ export class Base {
       .then((response) => response.data);
   }
 
-  async del<T, R = void, P = {}>(route: string, params?: P): Promise<R> {
+  async del<T, R = void, P = {}>(
+    route: string,
+    payload?: T,
+    params?: P
+  ): Promise<R> {
     return this.client
-      .delete(route, { params })
+      .delete(route, { data: JSON.stringify(payload), params })
       .then((response) => response.data);
   }
 
