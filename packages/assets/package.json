@@ -17,6 +17,7 @@
     "vite-node": "^2.1.2"
   },
   "exports": {
+    "./AlertCircle": "./dist/AlertCircle.tsx",
     "./AllMessages": "./dist/AllMessages.tsx",
     "./ArrowDown": "./dist/ArrowDown.tsx",
     "./ArrowLeft": "./dist/ArrowLeft.tsx",
@@ -64,6 +65,7 @@
     "./LongRightArrow": "./dist/LongRightArrow.tsx",
     "./Maximize": "./dist/Maximize.tsx",
     "./MedalBadge": "./dist/MedalBadge.tsx",
+    "./MessageCap": "./dist/MessageCap.tsx",
     "./MessageEdit": "./dist/MessageEdit.tsx",
     "./MessageQuestion": "./dist/MessageQuestion.tsx",
     "./Messages": "./dist/Messages.tsx",
@@ -92,6 +94,7 @@
     "./Sound": "./dist/Sound.tsx",
     "./SoundSmall": "./dist/SoundSmall.tsx",
     "./Spinner": "./dist/Spinner.tsx",
+    "./SpinnerError": "./dist/SpinnerError.tsx",
     "./Star": "./dist/Star.tsx",
     "./StudentDefaultAvatar": "./dist/StudentDefaultAvatar.tsx",
     "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
