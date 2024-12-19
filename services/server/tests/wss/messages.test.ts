@@ -1,11 +1,11 @@
+import { revertReasons } from "@/constants";
 import { forbidden, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { messages, rooms } from "@litespace/models";
 import { Wss } from "@litespace/types";
-import { expect } from "chai";
-import { first } from "lodash";
+import { expect } from "chai"; import { first } from "lodash";
 
 describe("wss message test suite", () => {
   beforeEach(async () => {
@@ -87,6 +87,84 @@ describe("wss message test suite", () => {
 
       const res = await studentSocket.wait(Wss.ServerEvent.Revert);
       expect(res.reason).to.eq("Room not found");
+    });
+  });
+
+  
+  describe("deleting messages", () => {
+    it("should return not found if the message doesn't exist.", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser()
+      const tutorSocket = new ClientSocket(tutor.token);
+
+      tutorSocket.deleteMessage(123);
+      const res = await tutorSocket.wait(Wss.ServerEvent.Revert);
+
+      expect(res.reason).to.eq(revertReasons.notfound.message);
+    });
+
+    it("should return not found if the message is already deleted.", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser()
+      const tutorSocket = new ClientSocket(tutor.token);
+
+      const roomId = await rooms.create([tutor.user.id]);
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
+      // wait for message to be saved in db
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+
+      // first deletion
+      tutorSocket.deleteMessage(msg.id);
+      await tutorSocket.wait(Wss.ServerEvent.RoomMessageDeleted);
+
+      // second deletion
+      tutorSocket.deleteMessage(msg.id);
+      const res = await tutorSocket.wait(Wss.ServerEvent.Revert);
+
+      expect(res.reason).to.eq(revertReasons.notfound.message);
+    });
+
+    it("should return forbidden if the user is not the owner.", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser()
+      const tutorSocket = new ClientSocket(tutor.token);
+
+      const roomId = await rooms.create([tutor.user.id]);
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
+      // wait for message to be saved in db
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+
+      const secTutorApi = await Api.forTutor();
+      const secTutor = await secTutorApi.findCurrentUser()
+      const secTutorSocket = new ClientSocket(secTutor.token);
+
+      secTutorSocket.deleteMessage(msg.id);
+      const res = await secTutorSocket.wait(Wss.ServerEvent.Revert);
+
+      expect(res.reason).to.eq(revertReasons.notOwner);
+    });
+
+    it("should successfully delete the message (mark as deleted).", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser()
+      const tutorSocket = new ClientSocket(tutor.token);
+
+      const roomId = await rooms.create([tutor.user.id]);
+      tutorSocket.sendMessage(roomId, 1, "Lesson will start soon.");
+      // wait for message to be saved in db
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+
+      tutorSocket.deleteMessage(msg.id);
+      // wait for message to be saved in db
+      const res = await tutorSocket.wait(Wss.ServerEvent.RoomMessageDeleted);
+
+      const found = await messages.findById(res.messageId);
+      expect(found).to.not.eq(null);
+      expect(found?.id).to.eq(msg.id);
+      expect(found?.deleted).to.eq(true);
+
+      const list = await messages.findRoomMessages({ room: res.roomId })
+      expect(list.total).to.eq(0);
     });
   });
 
