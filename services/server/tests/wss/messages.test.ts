@@ -1,5 +1,3 @@
-import { revertReasons } from "@/constants";
-import { forbidden, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
@@ -87,7 +85,7 @@ describe("wss message test suite", () => {
       studentSocket.sendMessage(123, 1, "Hello.");
 
       const res = await studentSocket.wait(Wss.ServerEvent.Revert);
-      expect(res.reason).to.eq("Room not found");
+      expect(res.code).to.eq(Wss.RevertErrorCode.RoomNotFound);
     });
   });
 
@@ -100,7 +98,7 @@ describe("wss message test suite", () => {
       studentSocket.markMessageAsRead(123)
 
       const res = await studentSocket.wait(Wss.ServerEvent.Revert)
-      expect(res.reason).to.eq(revertReasons.notfound.message);
+      expect(res.code).to.eq(Wss.RevertErrorCode.MessageNotFound);
     });
 
     it("should throw not found error if the message is deleted.", async () => {
@@ -122,7 +120,7 @@ describe("wss message test suite", () => {
 
       studentSocket.markMessageAsRead(msg.id)
       const res = await studentSocket.wait(Wss.ServerEvent.Revert);
-      expect(res.reason).to.eq(revertReasons.notfound.message);
+      expect(res.code).to.eq(Wss.RevertErrorCode.MessageNotFound);
     });
     
     it("should throw forbidden error if the reader is not a member of the messages room.", async () => {
@@ -145,7 +143,7 @@ describe("wss message test suite", () => {
       studentSocket.markMessageAsRead(msg.id)
       const res = await studentSocket.wait(Wss.ServerEvent.Revert);
       
-      expect(res.reason).to.eq(revertReasons.notMember);
+      expect(res.code).to.eq(Wss.RevertErrorCode.NotMember);
     });
 
     it("should NOT mark read by the owner.", async () => {
@@ -161,7 +159,7 @@ describe("wss message test suite", () => {
 
       tutorSocket.markMessageAsRead(msg.id)
       const res = await tutorSocket.wait(Wss.ServerEvent.Revert);
-      expect(res.reason).to.eq(revertReasons.unallowed);
+      expect(res.code).to.eq(Wss.RevertErrorCode.Unallowed);
     });
 
     it("should successfully mark message as read in the database.", async () => {
