@@ -46,21 +46,30 @@ export class Messages extends WssHandler {
 
       const { roomId, ref, text } = sendMessagePayload.parse(data);
 
-      const revert = (reason: string) =>
-        this.revert({ type: "send-message", ref, reason });
+      const revert = (code: Wss.RevertErrorCode, reason: string) =>
+        this.revert({ type: "send-message", ref, reason, code });
 
       // todo: set a max message length
-      if (!text) return revert("Empty text message");
+      if (!text) return revert(
+        Wss.RevertErrorCode.EmptyText, 
+        "Cannot send an empty message."
+      );
 
       const room = await rooms.findById(roomId);
-      if (!room) return revert("Room not found");
+      if (!room) return revert(
+        Wss.RevertErrorCode.RoomNotFound,
+        "Cannot find the room in the database."
+      );
 
       const userId = user.id;
       stdout.log(`u:${userId} is sending a message to r:${roomId}`);
 
       const members = await rooms.findRoomMembers({ roomIds: [roomId] });
       const member = members.map((member) => member.id).includes(userId);
-      if (!member) return revert("User is not a member");
+      if (!member) return revert(
+        Wss.RevertErrorCode.NotMember,
+        "The user is not a member of the room!"
+      );
 
       const message = await messages.create({
         text,
@@ -85,18 +94,31 @@ export class Messages extends WssHandler {
 
       const { id, text } = updateMessagePayload.parse(data);
 
-      const revert = (reason: string) =>
-        this.revert({ type: "update-message", id, reason });
+      const revert = (code: Wss.RevertErrorCode, reason: string) =>
+        this.revert({ type: "update-message", id, reason, code });
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) return revert("Message not found.");
+      if (!message || message.deleted) 
+        return revert(
+          Wss.RevertErrorCode.MessageNotFound, 
+          "Cannot find the message in the database."
+        );
 
       const owner = message.userId === user.id;
-      if (!owner) return revert("User is not the owner.");
-      if (!text) return revert("Empty message.");
+      if (!owner) return revert(
+        Wss.RevertErrorCode.NotOwner, 
+        "The user is not the sender/owner of the message to be updated."
+      );
+      if (!text) return revert(
+        Wss.RevertErrorCode.EmptyText,
+        "Cannot send an empty message."
+      );
 
       const updated = await messages.update(id, { text });
-      if (!updated) return revert("Mesasge not update; should never happen.");
+      if (!updated) return revert(
+        Wss.RevertErrorCode.Unreachable, 
+        "Something went wrong! This needs to be debugged in the backend."
+      );
 
       this.broadcast(
         Wss.ServerEvent.RoomMessageUpdated,
@@ -114,14 +136,20 @@ export class Messages extends WssHandler {
 
       const { id } = deleteMessagePayload.parse(data);
 
-      const revert = (reason: string) =>
-        this.revert({ type: "delete-message", id, reason });
+      const revert = (code: Wss.RevertErrorCode, reason: string) =>
+        this.revert({ type: "delete-message", id, reason, code });
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) return revert("Message not found");
+      if (!message || message.deleted) return revert(
+        Wss.RevertErrorCode.MessageNotFound, 
+        "Message not found; perhabs it's already deleted."
+      );
 
       const owner = message.userId === user.id;
-      if (!owner) return revert("User is not the owner.");
+      if (!owner) return revert(
+        Wss.RevertErrorCode.NotOwner, 
+        "The user is not the sender/owner of the message to be deleted."
+      );
 
       await messages.markAsDeleted(id);
 
@@ -141,8 +169,8 @@ export class Messages extends WssHandler {
     const error = await safe(async () => {
       const { roomId } = userTypingPayload.parse(data);
 
-      const revert = (reason: string) =>
-        this.revert({ type: "user-typing", roomId, reason });
+      const revert = (code: Wss.RevertErrorCode, reason: string) =>
+        this.revert({ type: "user-typing", roomId, reason, code });
 
       const user = this.user;
       if (isGhost(user)) return;
@@ -151,7 +179,10 @@ export class Messages extends WssHandler {
       if (isEmpty(members)) return;
 
       const isMember = members.find((member) => member.id === user.id);
-      if (!isMember) return revert("User is not a member.");
+      if (!isMember) return revert(
+        Wss.RevertErrorCode.NotMember,
+        "The user is not a member of the room!"
+      );
 
       this.socket.to(asChatRoomId(roomId)).emit(Wss.ServerEvent.UserTyping, {
         roomId,
@@ -169,22 +200,38 @@ export class Messages extends WssHandler {
 
       const { id } = markMessageAsReadPayload.parse(data);
 
-      const revert = (reason: string) =>
-        this.revert({ type: "mark-msg-as-read", id, reason });
+      const revert = (code: Wss.RevertErrorCode, reason: string) =>
+        this.revert({ type: "mark-msg-as-read", id, reason, code });
 
       const message = await messages.findById(id);
-      if (!message || message.deleted) return revert("Message not found.");
+      if (!message || message.deleted) 
+        return revert(
+          Wss.RevertErrorCode.MessageNotFound, 
+          "Message is not found in the database. I might be deleted."
+        );
 
       const members = await rooms.findRoomMembers({
         roomIds: [message.roomId],
       });
       const isMember = members.find((member) => member.id === user.id);
-      if (!isMember) return revert("User is not a member.");
+      if (!isMember) return revert(
+        Wss.RevertErrorCode.NotMember, 
+        "The user is not a member of the room!"
+      );
 
       if (user.id === message.userId)
-        return revert("User can not mark his own message as read.");
+        return revert(
+          Wss.RevertErrorCode.Unallowed, 
+          "The user cannot mark his own message as read."
+        );
 
       await messages.markAsRead(id);
+
+      this.broadcast(
+        Wss.ServerEvent.RoomMessageRead,
+        asChatRoomId(message.roomId),
+        { userId: user.id }
+      )
     });
     if (error instanceof Error) stdout.error(error.message);
   }

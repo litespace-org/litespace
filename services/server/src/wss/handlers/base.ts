@@ -19,7 +19,7 @@ export abstract class WssHandler {
     this.socket.broadcast.to(room).emit(event, ...data);
   }
 
-  revert(payload: Wss.ReverPayload) {
+  revert(payload: Wss.RevertPayload) {
     this.socket.emit(Wss.ServerEvent.Revert, payload);
   }
 }
