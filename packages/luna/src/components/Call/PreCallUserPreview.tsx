@@ -17,7 +17,7 @@ export const PreCallUserPreview: React.FC<{
   }, [stream, camera]);
 
   return (
-    <div className="tw-aspect-video tw-w-full tw-grow tw-max-w-[700px] tw-rounded-lg tw-shadow-ls-small tw-overflow-hidden">
+    <div className="tw-aspect-video tw-w-full tw-grow tw-max-w-[700px] tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
       {camera ? (
         <video ref={videoRef} autoPlay muted={false} playsInline />
       ) : (

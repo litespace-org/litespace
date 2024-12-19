@@ -49,7 +49,7 @@ export const TutorCard: React.FC<Props> = ({
       className={cn(
         "tw-flex tw-flex-col",
         "tw-bg-natural-50 tw-border tw-border-natural-100",
-        "tw-p-4 tw-shadow-ls-small tw-rounded-lg"
+        "tw-p-4 tw-shadow-ls-x-small tw-rounded-lg"
       )}
     >
       <div className="tw-flex tw-flex-row tw-gap-2 tw-mb-4">
