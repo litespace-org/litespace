@@ -68,8 +68,10 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     }
   );
 
+  const isOnlineList = await cache.onlineStatus.isOnlineBatch(onboardedTutors.map(t => t.id));
+
   // restruct tutors list to match ITutor.Cache[]
-  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
+  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor, i) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
       .map((item) => item.name.ar);
@@ -82,7 +84,7 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
       bio: tutor.bio,
       about: tutor.about,
       gender: tutor.gender,
-      online: tutor.online,
+      online: isOnlineList[i] ? true : false,
       notice: tutor.notice,
       topics: filteredTopics,
       avgRating:
@@ -169,7 +171,7 @@ export function orderTutors({
  * - lesson count
  */
 async function findTutorCacheMeta(tutorId: number) {
-  const [tutorTopics, avgRatings, studentCount, lessonCount] =
+  const [tutorTopics, avgRatings, studentCount, lessonCount, online] =
     await Promise.all([
       topics.findUserTopics({ users: [tutorId] }),
       ratings.findAvgRatings([tutorId]),
@@ -179,6 +181,7 @@ async function findTutorCacheMeta(tutorId: number) {
         canceled: false,
         ratified: true,
       }),
+      cache.onlineStatus.isOnline(tutorId),
     ]);
 
   return {
@@ -186,19 +189,21 @@ async function findTutorCacheMeta(tutorId: number) {
     avgRating: first(avgRatings)?.avg || 0,
     studentCount,
     lessonCount,
+    online,
   };
 }
 
 export async function joinTutorCache(
   tutor: ITutor.FullTutor,
-  cache: ITutor.Cache | null
+  cacheData: ITutor.Cache | null
 ): Promise<ITutor.Cache> {
-  const meta = cache
+  const meta = cacheData
     ? {
-        topics: cache.topics,
-        avgRating: cache.avgRating,
-        studentCount: cache.studentCount,
-        lessonCount: cache.lessonCount,
+        topics: cacheData.topics,
+        avgRating: cacheData.avgRating,
+        studentCount: cacheData.studentCount,
+        lessonCount: cacheData.lessonCount,
+        online: cacheData.online,
       }
     : await findTutorCacheMeta(tutor.id);
 
@@ -210,7 +215,6 @@ export async function joinTutorCache(
     bio: tutor.bio,
     about: tutor.about,
     gender: tutor.gender,
-    online: tutor.online,
     notice: tutor.notice,
     ...meta,
   };
