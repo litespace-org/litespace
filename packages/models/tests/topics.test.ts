@@ -1,8 +1,10 @@
-import fixtures from "@fixtures/db";
+import fixtures, { topic } from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
 import { knex, topics } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";
+import { IUser } from "@litespace/types";
+import { first } from "lodash";
 
 describe("Topics", () => {
   beforeEach(async () => {
@@ -134,6 +136,47 @@ describe("Topics", () => {
         .catch((error) => {
           expect(error).to.be.instanceOf(Error);
         });
+    });
+  });
+
+  describe(nameof(topics.isExistsBatch), () => {
+    it("should return a map that tells if the passed topic ids exists in the db or not.", async () => {
+      const topic1 = await fixtures.topic();
+      const topic2 = await fixtures.topic();
+      
+      const list = [topic1.id, topic2.id, 123];
+      const existanceMap = await topics.isExistsBatch(list);
+
+      expect(existanceMap[topic1.id]).to.eq(true);
+      expect(existanceMap[topic2.id]).to.eq(true);
+      expect(existanceMap[123]).to.eq(false);
+    });
+  });
+
+  describe(nameof(topics.deleteUserTopics), () => {
+    it("should delete list of topics for a specific user.", async () => {
+      const user = await fixtures.user({ role: IUser.Role.Student });
+
+      const topic1 = await fixtures.topic();
+      const topic2 = await fixtures.topic();
+      
+      const list = [topic1.id, topic2.id];
+      await topics.registerUserTopics({ 
+        user: user.id,
+        topics: list,
+      });
+
+      await topics.deleteUserTopics({
+        user: user.id,
+        topics: [topic1.id],
+      });
+
+      const found = await topics.findUserTopics({ users: [user.id] });
+      expect(found).to.have.length(1);
+      expect(first(found)).to.deep.eq({ 
+        ...topic2,
+        userId: user.id,
+      });
     });
   });
 });

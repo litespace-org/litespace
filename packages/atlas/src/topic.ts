@@ -25,11 +25,15 @@ export class Topic extends Base {
     return await this.del(`/api/v1/topic/${id}`);
   }
 
-  async addUserTopics(topicIds: number[]): Promise<void> {
-    return await this.post(`/api/v1/topic/of/user`, { topicIds });
+  async findUserTopics(): Promise<ITopic.FindUserTopicsApiResponse> {
+    return await this.get(`/api/v1/topic/of/user`);
   }
 
-  async deleteUserTopics(topicIds: number[]): Promise<void> {
-    return await this.del(`/api/v1/topic/of/user`, { topicIds });
+  async addUserTopics(payload: ITopic.AddUserTopicsApiPayload): Promise<void> {
+    return await this.post(`/api/v1/topic/of/user`, payload);
+  }
+
+  async deleteUserTopics(payload: ITopic.DeleteUserTopicsApiPayload): Promise<void> {
+    return await this.del(`/api/v1/topic/of/user`, payload);
   }
 }

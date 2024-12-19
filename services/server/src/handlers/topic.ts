@@ -1,4 +1,4 @@
-import { apierror, empty, forbidden, notfound, refused } from "@/lib/error";
+import { apierror, bad, empty, forbidden, notfound, refused } from "@/lib/error";
 import {
   orderDirection,
   pageNumber,
@@ -14,7 +14,8 @@ import { isValidTopicName } from "@litespace/sol/verification";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { Knex } from "knex";
-import { MAX_TOPICS_NUM } from "@litespace/sol";
+import { MAX_TOPICS_COUNT } from "@litespace/sol";
+import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 
 const createTopicPayload = zod.object({
   arabicName: string,
@@ -125,21 +126,30 @@ async function findTopics(req: Request, res: Response, _: NextFunction) {
   res.status(200).json(response);
 }
 
-//async function findUserTopics(req: Request, res: Response, next: NextFunction) {}
+async function findUserTopics(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
+  if (!allowed) return next(forbidden());
+
+  const userTopics = await topics.findUserTopics({ users: [user.id] });
+  const response: FindUserTopicsApiResponse = userTopics;
+  res.status(200).json(response);
+}
 
 async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds } = generalUserTopicsBodyParser.parse(req.body);
+  const { topicIds }: ITopic.AddUserTopicsApiPayload = 
+  generalUserTopicsBodyParser.parse(req.body);
 
   // filter passed topics to ignore the ones that does already exist
-  const myTopics = await topics.findUserTopics({ users: [user.id] });
-  const myTopicsIds = myTopics.map(t => t.id);
-  const filteredIds = topicIds.filter(id => !myTopicsIds.includes(id));
+  const userTopics = await topics.findUserTopics({ users: [user.id] });
+  const userTopicsIds = userTopics.map(t => t.id);
+  const filteredIds = topicIds.filter(id => !userTopicsIds.includes(id));
 
   // ensure that user topics will not exceed the max num after insertion
-  if (myTopics.length + filteredIds.length > MAX_TOPICS_NUM)
+  if (userTopics.length + filteredIds.length > MAX_TOPICS_COUNT)
     return next(refused());
 
   if (filteredIds.length === 0) {
@@ -149,7 +159,7 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
 
   // verify that all topics do exist in the database
   const isExists = await topics.isExistsBatch(filteredIds);
-  if (isExists.includes(false))
+  if (Object.values(isExists).includes(false))
     return next(notfound.topic());
 
   await topics.registerUserTopics({
@@ -164,19 +174,22 @@ async function deleteUserTopics(req: Request, res: Response, next: NextFunction)
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds } = generalUserTopicsBodyParser.parse(req.body);
+  const { topicIds }: ITopic.DeleteUserTopicsApiPayload = 
+  generalUserTopicsBodyParser.parse(req.body);
 
-  // filter passed topics to include only the ones that the user has included 
-  const myTopics = await topics.findUserTopics({ users: [user.id] });
-  const myTopicsIds = myTopics.map(t => t.id);
-  const filteredIds = topicIds.filter(id => myTopicsIds.includes(id));
+  if (topicIds.length === 0)
+    return next(bad());
+
+  // verify that all topics do exist in the database
+  const isExists = await topics.isExistsBatch(topicIds);
+  if (Object.values(isExists).includes(false))
+    return next(notfound.topic());
 
   // remove user topics from the database
-  if (filteredIds.length > 0)
-    await topics.deleteUserTopics({ 
-      user: user.id,
-      topics: filteredIds,
-    });
+  await topics.deleteUserTopics({ 
+    user: user.id,
+    topics: topicIds,
+  });
 
   res.sendStatus(200);
 }
@@ -186,7 +199,7 @@ export default {
   updateTopic: safeRequest(updateTopic),
   deleteTopic: safeRequest(deleteTopic),
   findTopics: safeRequest(findTopics),
-  //findUserTopics: safeRequest(findUserTopics),
+  findUserTopics: safeRequest(findUserTopics),
   addUserTopics: safeRequest(addUserTopics),
   deleteUserTopics: safeRequest(deleteUserTopics),
 };

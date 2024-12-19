@@ -162,13 +162,18 @@ export class Topics {
   async isExistsBatch(
     ids: number[], 
     tx?: Knex.Transaction
-  ): Promise<boolean[]> {
+  ): Promise<{ [x: number]: boolean }> {
     const baseBuilder = this.builder(tx).topics;
     const rows = await baseBuilder
     .select<Pick<ITopic.Row, "id">[]>(this.column.topics("id"))
     .whereIn(this.column.topics("id"), ids);
 
-    return ids.map(id => rows.find(r => r.id === id) !== undefined);
+    const existanceMap: { [x: number]: boolean } = {};
+    ids.forEach(id => {
+      existanceMap[id] = rows.find(row => row.id === id) !== undefined;
+    });
+
+    return existanceMap;
   }
 
   builder(tx?: Knex.Transaction) {
