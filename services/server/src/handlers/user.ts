@@ -59,7 +59,6 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { selectTutorRuleEvents } from "@/lib/events";
-import { Gender } from "@litespace/types/dist/esm/user";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
@@ -120,11 +119,9 @@ export async function create(req: Request, res: Response, next: NextFunction) {
   const admin = isAdmin(req.user);
   const publicRole = [
     IUser.Role.TutorManager,
-    IUser.Role.Tutor, 
-    IUser.Role.Student
-  ].includes(
-    payload.role
-  );
+    IUser.Role.Tutor,
+    IUser.Role.Student,
+  ].includes(payload.role);
   if (!publicRole && !admin) return next(forbidden());
 
   const userObject = await users.findByEmail(payload.email);
@@ -201,7 +198,7 @@ function update(context: ApiContext) {
       const isUpdatingTutorMedia =
         (files.image.file || files.video.file) &&
         (isTutor(targetUser) || isTutorManager(targetUser));
-        
+
       const isEligibleUser = [
         IUser.Role.SuperAdmin,
         IUser.Role.RegularAdmin,
@@ -415,7 +412,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // online state, and notice.
   const user = req.user;
   const userGender =
-    isUser(user) && user.gender ? (user.gender as Gender) : undefined;
+    isUser(user) && user.gender ? (user.gender as IUser.Gender) : undefined;
 
   const filtered = query.search
     ? tutors.filter((tutor) => {
@@ -653,6 +650,59 @@ async function findStudentStats(
   res.status(200).json(response);
 }
 
+async function findPublicStudentStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const id = user.id;
+  const studentData = await users.findById(id);
+  if (!studentData) return next(notfound.student());
+
+  const now = dayjs.utc().toISOString();
+
+  // todo: @mmoehabb use Promise.all to resolve all promises.
+  const tutorCount = await lessons.countCounterpartMembers({
+    user: id,
+    ratified: true,
+    canceled: false,
+  });
+
+  const completedLessonCount = await lessons.countLessons({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    before: now,
+  });
+
+  const upcomingLessonCount = await lessons.countLessons({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    after: now,
+  });
+
+  const totalLearningTime = await lessons.sumDuration({
+    users: [id],
+    ratified: true,
+    canceled: false,
+    before: now,
+  });
+
+  const response: IUser.FindPublicStudentStatsApiResponse = {
+    tutorCount,
+    completedLessonCount,
+    totalLearningTime,
+    upcomingLessonCount,
+  };
+
+  res.status(200).json(response);
+}
+
 async function findTutorActivityScores(
   req: Request,
   res: Response,
@@ -698,4 +748,5 @@ export default {
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
   findStudentStats: safeRequest(findStudentStats),
+  findPublicStudentStats: safeRequest(findPublicStudentStats),
 };
