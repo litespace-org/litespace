@@ -2,6 +2,12 @@ import { Backend } from "@litespace/types";
 import { AxiosInstance } from "axios";
 import { createClient, AuthToken } from "@/client";
 
+type HTTPMethodAttr<T, P = {}> = {
+  route: string;
+  payload?: T;
+  params?: P;
+}
+
 export class Base {
   public readonly client: AxiosInstance;
 
@@ -9,31 +15,33 @@ export class Base {
     this.client = createClient(backend, token);
   }
 
-  async post<T, R = void>(route: string, payload?: T): Promise<R> {
+  async post<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .post(route, payload ? JSON.stringify(payload) : undefined)
+      .post(attr.route, attr.payload ? JSON.stringify(attr.payload) : undefined)
       .then((response) => response.data);
   }
 
-  async put<T, R = void>(route: string, payload: T): Promise<R> {
+  async put<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .put(route, JSON.stringify(payload))
+      .put(attr.route, JSON.stringify(attr.payload))
       .then((response) => response.data);
   }
 
-  async del<T, R = void, P = {}>(route: string, params?: P): Promise<R> {
+  async del<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .delete(route, { params })
+      .delete(attr.route, { 
+        data: JSON.stringify(attr.payload), 
+        params: attr.params,
+      })
       .then((response) => response.data);
   }
 
-  async get<T, R = void, P = {}>(
-    route: string,
-    payload?: T,
-    params?: P
-  ): Promise<R> {
+  async get<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .get<R>(route, { data: JSON.stringify(payload), params })
+      .get<R>(attr.route, { 
+        data: JSON.stringify(attr.payload),
+        params: attr.params,
+      })
       .then((response) => response.data);
   }
 }

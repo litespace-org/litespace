@@ -1,11 +1,11 @@
 import { Base } from "@/base";
-import { IFilter, ITutor, IUser, PagniationParams } from "@litespace/types";
+import { IFilter, ITutor, IUser } from "@litespace/types";
 
 export class User extends Base {
   async create(
     payload: IUser.CreateApiPayload
   ): Promise<IUser.RegisterApiResponse> {
-    return this.post("/api/v1/user/", payload);
+    return this.post({ route: "/api/v1/user/", payload });
   }
 
   async findById(id: number | string): Promise<IUser.Self> {
@@ -18,20 +18,20 @@ export class User extends Base {
   }
 
   async findCurrentUser(): Promise<IUser.FindCurrentUserApiResponse> {
-    return await this.get("/api/v1/user/current");
+    return await this.get({ route: "/api/v1/user/current" });
   }
 
   async find(
     query: IUser.FindUsersApiQuery
   ): Promise<IUser.FindUsersApiResponse> {
-    return this.get(`/api/v1/user/list`, null, query);
+    return this.get({ route: `/api/v1/user/list`, params: query });
   }
 
   async update(
     id: number,
     payload: IUser.UpdateApiPayload
   ): Promise<IUser.Self> {
-    return this.put(`/api/v1/user/${id}`, payload);
+    return this.put({ route: `/api/v1/user/${id}`, payload });
   }
 
   async updateMedia(
@@ -63,40 +63,40 @@ export class User extends Base {
   }
 
   async findTutorMeta(tutorId: number): Promise<ITutor.Self> {
-    return await this.get(`/api/v1/user/tutor/meta/${tutorId}`);
+    return await this.get({ route: `/api/v1/user/tutor/meta/${tutorId}` });
   }
 
   async findTutorInfo(id: number): Promise<ITutor.FindTutorInfoApiResponse> {
-    return await this.get(`/api/v1/user/tutor/info/${id}`);
+    return await this.get({ route: `/api/v1/user/tutor/info/${id}` });
   }
 
   async findOnboardedTutors(
     params?: ITutor.FindOnboardedTutorsParams
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
-    return await this.get(`/api/v1/user/tutor/list/onboarded`, {}, params);
+    return await this.get({ route: `/api/v1/user/tutor/list/onboarded`, params });
   }
 
   async findTutorsForMediaProvider(
     pagination?: IFilter.Pagination
   ): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
-    return this.get(`/api/v1/user/media-provider/tutors`, {}, pagination);
+    return this.get({ route: `/api/v1/user/media-provider/tutors`, params: pagination });
   }
 
   async findTutorStats(
     tutor: number
   ): Promise<ITutor.FindTutorStatsApiResponse> {
-    return await this.get(`/api/v1/user/tutor/stats/${tutor}`);
+    return await this.get({ route: `/api/v1/user/tutor/stats/${tutor}` });
   }
 
   async findStudentStats(
     student: number
   ): Promise<IUser.FindStudentStatsApiResponse> {
-    return await this.get(`/api/v1/user/student/stats/${student}`);
+    return await this.get({ route: `/api/v1/user/student/stats/${student}` });
   }
 
   async findTutorActivityScores(
     tutor: number
   ): Promise<ITutor.FindTutorActivityScores> {
-    return await this.get(`/api/v1/user/tutor/activity/${tutor}`);
+    return await this.get({ route: `/api/v1/user/tutor/activity/${tutor}` });
   }
 }

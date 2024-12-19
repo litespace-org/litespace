@@ -65,6 +65,9 @@ export type UpdatePayload = {
 
 export type UpdateApiPayload = UpdatePayload;
 
+export type AddUserTopicsApiPayload = { topicIds: number[] };
+export type DeleteUserTopicsApiPayload = { topicIds: number[] }
+
 export type FindTopicsQueryFilter = IFilter.Pagination & {
   name?: string;
   orderBy?: ExtractObjectKeys<
@@ -81,3 +84,5 @@ export type UpdateTopicApiResponse = Self;
 export type FindTopicsApiQuery = FindTopicsQueryFilter;
 
 export type FindTopicsApiResponse = Paginated<Self>;
+
+export type FindUserTopicsApiResponse = PopulatedUserTopic[];

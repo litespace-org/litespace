@@ -71,17 +71,17 @@ export class Topics {
 
   async deleteUserTopics({
     user,
-    topic,
+    topics,
     tx,
   }: {
     user: number;
-    topic: number;
+    topics: number[];
     tx?: Knex.Transaction;
   }): Promise<void> {
     await this.builder(tx)
       .userTopics.delete()
       .where(this.column.userTopics("user_id"), user)
-      .andWhere(this.column.userTopics("topic_id"), topic);
+      .whereIn(this.column.userTopics("topic_id"), topics);
   }
 
   async findById(
@@ -107,7 +107,7 @@ export class Topics {
       id: this.column.topics("id"),
       name_ar: this.column.topics("name_ar"),
       name_en: this.column.topics("name_en"),
-      created_at: this.column.topics("name_en"),
+      created_at: this.column.topics("created_at"),
       updated_at: this.column.topics("updated_at"),
       user_id: this.column.userTopics("user_id"),
     };
@@ -157,6 +157,23 @@ export class Topics {
       list: rows.map((row) => this.from(row)),
       total,
     };
+  }
+
+  async isExistsBatch(
+    ids: number[], 
+    tx?: Knex.Transaction
+  ): Promise<{ [x: number]: boolean }> {
+    const baseBuilder = this.builder(tx).topics;
+    const rows = await baseBuilder
+    .select<Pick<ITopic.Row, "id">[]>(this.column.topics("id"))
+    .whereIn(this.column.topics("id"), ids);
+
+    const existanceMap: { [x: number]: boolean } = {};
+    ids.forEach(id => {
+      existanceMap[id] = rows.find(row => row.id === id) !== undefined;
+    });
+
+    return existanceMap;
   }
 
   builder(tx?: Knex.Transaction) {

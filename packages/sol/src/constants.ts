@@ -62,6 +62,7 @@ export const TOPIC_ARABIC_NAME_REGEX = /[\u0600-\u06ff\s]{3,50}/;
 export const TOPIC_ENGLISH_NAME_REGEX = /[a-zA-Z\s]{3,50}/;
 export const MIN_TOPIC_LEGNTH = 3;
 export const MAX_TOPIC_LEGNTH = 50;
+export const MAX_TOPICS_COUNT = 30;
 
 /**
  * Interview duration in minutes.
