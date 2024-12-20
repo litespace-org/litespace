@@ -18,7 +18,7 @@ type StarProps = {
    * - md "38x38"
    * - lg "50x51"
    */
-  variant?: "sm" | "md" | "lg";
+  variant?: "sm" | "md" | "lg" | "xl";
   /**
    * state shows weather stars can be clicked or not
    */
@@ -48,7 +48,7 @@ export const RatingStars: React.FC<StarProps> = ({
         "tw-flex tw-p-0",
         { "tw-gap-2": variant === "sm" },
         { "tw-gap-1": variant === "md" },
-        { "tw-gap-8": variant === "lg" }
+        { "tw-gap-8": variant === "lg" || variant === "xl" }
       )}
     >
       {range(5).map((idx) => (
@@ -59,7 +59,8 @@ export const RatingStars: React.FC<StarProps> = ({
             className={cn(
               { "tw-w-5 tw-h-5": variant === "sm" },
               { "tw-w-[38px] tw-h-[38px]": variant === "md" },
-              { "tw-w-[51px] tw-h-[50px]": variant === "lg" }
+              { "tw-w-[51px] tw-h-[50px]": variant === "lg" },
+              { "tw-w-[80px] tw-h-[80px]": variant === "xl" }
             )}
           >
             <SStar
@@ -71,7 +72,7 @@ export const RatingStars: React.FC<StarProps> = ({
                   : "[&>*]:tw-fill-natural-300"
               )}
               onClick={() => {
-                if (!setRating) return;
+                if (!setRating || readonly) return;
                 setRating(idx + 1);
               }}
             />
