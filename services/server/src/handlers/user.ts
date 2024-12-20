@@ -1,5 +1,5 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
+import { ILesson, ITutor, IUser, Paginated, Wss } from "@litespace/types";
 import {
   apierror,
   exists,
@@ -59,6 +59,7 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { selectTutorRuleEvents } from "@/lib/events";
+import { Gender, PopulatedSelf } from "@litespace/types/dist/esm/user";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
@@ -313,7 +314,17 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
 
   const query: IUser.FindUsersApiQuery = findUsersQuery.parse(req.query);
   const result = await users.find(query);
-  const response: IUser.FindUsersApiResponse = result;
+
+  const isOnlineMap = await cache.onlineStatus.isOnlineBatch(result.list.map(user => user.id));
+  const resList = result.list.map<PopulatedSelf>((user) => ({
+    ...user, 
+    online: !!isOnlineMap.get(user.id)
+  }));
+
+  const response: IUser.FindUsersApiResponse = {
+    list: resList,
+    total: result.total
+  };
 
   res.status(200).json(response);
 }

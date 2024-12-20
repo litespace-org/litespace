@@ -20,7 +20,6 @@ const fullTutorFields: FullTutorFieldsMap = {
   password: users.column("password"),
   birthYear: users.column("birth_year"),
   gender: users.column("gender"),
-  online: users.column("online"),
   verified: users.column("verified"),
   creditScore: users.column("credit_score"),
   city: users.column("city"),
@@ -227,7 +226,7 @@ export class Tutors {
       .andWhereNot(users.column("name"), null)
       .andWhereNot(users.column("gender"), null)
       .andWhere(users.column("verified"), true);
-    return rows.map((row) => this.asFullTutor(row));
+    return await Promise.all(rows.map((row) => this.asFullTutor(row)));
   }
 
   fullTutorQuery(tx?: Knex.Transaction) {
@@ -252,7 +251,7 @@ export class Tutors {
     };
   }
 
-  asFullTutor(row: ITutor.FullTutorRow): ITutor.FullTutor {
+  async asFullTutor(row: ITutor.FullTutorRow): Promise<ITutor.FullTutor> {
     return merge(omit(row), {
       password: row.password !== null,
     });

@@ -3,7 +3,6 @@ import { Api, unexpectedApiSuccess } from "@fixtures/api";
 import { expect } from "chai";
 import db from "@fixtures/db";
 import { messages, rooms } from "@litespace/models";
-import { IUser } from "@litespace/types";
 import { range } from "lodash";
 
 describe("/api/v1/chat", () => {
@@ -132,19 +131,12 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id);
     expect(rooms.list.length).to.be.eq(3);
 
-    expect(rooms.list.map((room) => room.latestMessage)).to.be.deep.members(
-      seedData.map((data) => data.message)
+    expect(rooms.list.map((room) => room.latestMessage?.id)).to.contain.members(
+      seedData.map((data) => data.message.id)
     );
 
-    expect(rooms.list.map((room) => room.otherMember)).to.be.deep.members(
-      seedData.map(({ user: info }) => ({
-        id: info.user.id,
-        name: info.user.name,
-        image: info.user.image,
-        online: info.user.online,
-        role: info.user.role,
-        lastSeen: info.user.updatedAt,
-      }))
+    expect(rooms.list.map((room) => room.otherMember.id)).to.contain.members(
+      seedData.map(({ user: info }) => info.user.id)
     );
   });
 

@@ -23,7 +23,7 @@ const List: React.FC<{
   page: number;
 }> = ({ query, ...props }) => {
   const intl = useFormatMessage();
-  const columnHelper = createColumnHelper<IUser.Self>();
+  const columnHelper = createColumnHelper<IUser.PopulatedSelf>();
   const columns = useMemo(
     () => [
       columnHelper.accessor("id", {
