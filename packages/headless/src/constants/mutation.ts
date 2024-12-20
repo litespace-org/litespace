@@ -16,4 +16,7 @@ export enum MutationKey {
   UpdateTopic = "update-topic",
   UpdateRoom = "update-room",
   BookLesson = "book-lesson",
+  CreateRating = "create-rate",
+  EditRating = "edit-rate",
+  DeleteRating = "delete-rate",
 }

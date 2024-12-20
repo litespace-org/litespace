@@ -72,6 +72,7 @@
     "./Microphone": "./dist/Microphone.tsx",
     "./Monitor": "./dist/Monitor.tsx",
     "./More": "./dist/More.tsx",
+    "./NewTutor": "./dist/NewTutor.tsx",
     "./Notification": "./dist/Notification.tsx",
     "./Paperclip": "./dist/Paperclip.tsx",
     "./Pause": "./dist/Pause.tsx",
