@@ -30,6 +30,7 @@ export enum ServerEvent {
   RoomMessage = "RoomMessage",
   RoomMessageUpdated = "RoomMessageUpdated",
   RoomMessageDeleted = "RoomMessageDeleted",
+  RoomMessageRead = "RoomMessageRead",
   JoinedRooms = "JoinedRooms",
   Revert = "Revert",
 
@@ -71,7 +72,19 @@ export enum Room {
   ServerStats = "ServerStats",
 }
 
-export type ReverPayload =
+export enum RevertErrorCode {
+  EmptyText = 'empty-text',
+  RoomNotFound = 'room-not-found', 
+  MessageNotFound = 'message-not-found',
+  NotMember = 'not-member',
+  NotOwner = 'not-owner',
+  Unreachable = 'unreachable',
+  Unallowed = 'unallowed',
+}
+
+export type WithRevetCode<T extends object> =  T & {code: RevertErrorCode};
+
+export type RevertPayload = WithRevetCode<
   | {
       type: "send-message";
       ref: number;
@@ -86,7 +99,7 @@ export type ReverPayload =
       type: "user-typing";
       roomId: number;
       reason: string;
-    };
+    }>;
 
 type EventCallback<T> = (arg: T) => Promise<void> | void;
 
@@ -131,7 +144,8 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
-  [ServerEvent.Revert]: EventCallback<ReverPayload>;
+  [ServerEvent.Revert]: EventCallback<RevertPayload>;
+  [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
 
