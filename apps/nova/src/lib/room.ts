@@ -9,8 +9,8 @@ export function asOtherMember(
   if (!otherMember) return null;
   return {
     id: otherMember.id,
-    name: otherMember.name || null,
-    image: otherMember.image || null,
+    name: otherMember.name,
+    image: otherMember.image,
     online: otherMember.online,
     role: otherMember.role,
     lastSeen: otherMember.updatedAt,

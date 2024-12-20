@@ -22,6 +22,8 @@ export default [
       "**/.eslintrc.cjs",
       "**/tailwind.config.js",
       "**/src-tauri",
+      "babel.config.cjs",
+      "jest.config.cjs",
     ],
   },
   ...fixupConfigRules(
