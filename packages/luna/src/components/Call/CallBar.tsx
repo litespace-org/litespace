@@ -1,6 +1,7 @@
 import { Void } from "@litespace/types";
 import React from "react";
-import { ToggleCallButton, EndCallButton } from "@/components/Call";
+import { EndCallButton } from "@/components/Call/EndCallButton";
+import { ToggleCallButton } from "@/components/Call/ToggleCallButton";
 
 export const CallBar: React.FC<{
   items: {
