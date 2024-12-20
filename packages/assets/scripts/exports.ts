@@ -1,36 +1,44 @@
 import fs from "node:fs";
 import path from "node:path/posix";
 import { glob } from "glob";
+import { camelCase, upperFirst } from "lodash";
 
 type Exports = Record<string, string>;
 type PackageJson = {
   exports: Exports;
 };
 
-function withCurrentDir(file: string): string {
-  return `./${file}`;
+function asComponentName(file: string) {
+  // e.g. assets/arrow-down.svg => arrow-down.svg
+  const name = path.basename(file);
+  // remove `.svg` file extension
+  if (!name.endsWith(".svg")) throw new Error(`Invalid file name: ${file}`);
+  const key = name.replace(".svg", "");
+  // e.g., arrow-down => ArrowDown
+  return upperFirst(camelCase(key));
 }
 
 function asExportKey(file: string) {
-  // e.g. dist/ArrowDown.tsx => ArrowDown.tsx
-  const name = path.basename(file);
-  // remove `.tsx` file extension
-  if (!name.endsWith(".tsx")) throw new Error(`Invalid file name: ${file}`);
-  const key = name.replace(".tsx", "");
-  // prefix it with `./` (current dir) => ./ArrowDown
-  return withCurrentDir(key);
+  const component = asComponentName(file);
+  return `./${component}`;
+}
+
+function asComponentPath(file: string) {
+  const component = asComponentName(file);
+  return `./dist/${component}.tsx`;
 }
 
 async function getExports(): Promise<Exports> {
-  const files = await glob("dist/*.tsx", {
+  const files = await glob("assets/*.svg", {
     posix: true,
   });
   const sorted = [...files].sort();
   const exports: Exports = {};
 
   for (const file of sorted) {
-    exports[asExportKey(file)] = withCurrentDir(file);
+    exports[asExportKey(file)] = asComponentPath(file);
   }
+
   return exports;
 }
 
