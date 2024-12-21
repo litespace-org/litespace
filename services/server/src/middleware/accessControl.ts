@@ -11,7 +11,7 @@ const regAdmin = IUser.Role.RegularAdmin;
 const tutorManager = IUser.Role.TutorManager;
 const tutor = IUser.Role.Tutor;
 const student = IUser.Role.Student;
-const provider = IUser.Role.MediaProvider;
+const provider = IUser.Role.Studio;
 
 export type Role = `${IUser.Role}` | "owner" | "unauthorized" | "authorized";
 export type Method = "POST" | "GET" | "PUT" | "DELETE";

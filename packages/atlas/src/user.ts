@@ -76,10 +76,10 @@ export class User extends Base {
     return await this.get({ route: `/api/v1/user/tutor/list/onboarded`, params });
   }
 
-  async findTutorsForMediaProvider(
+  async findTutorsForStudio(
     pagination?: IFilter.Pagination
-  ): Promise<ITutor.FindTutorsForMediaProviderApiResponse> {
-    return this.get({ route: `/api/v1/user/media-provider/tutors`, params: pagination });
+  ): Promise<ITutor.FindTutorsForStudioApiResponse> {
+    return this.get({ route: `/api/v1/user/studio/tutors`, params: pagination });
   }
 
   async findTutorStats(

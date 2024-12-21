@@ -14,7 +14,7 @@ import {
 import { IRating } from "@litespace/types";
 import {
   isAdmin,
-  isMediaProvider,
+  isStudio,
   isStudent,
   isTutor,
   isUser,
@@ -49,7 +49,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
 
   const eligible =
     (isStudent(user) && isTutor(ratee)) ||
-    (isTutor(user) && isMediaProvider(ratee));
+    (isTutor(user) && isStudio(ratee));
   if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({
@@ -138,7 +138,7 @@ async function findRateeRatings(
   const ratee = await users.findById(id);
   if (!ratee) return next(notfound.user());
 
-  const eligible = isTutor(ratee) || (isMediaProvider(ratee) && isAdmin(user));
+  const eligible = isTutor(ratee) || (isStudio(ratee) && isAdmin(user));
   if (!eligible) return next(forbidden());
 
   const result = await ratings.findByRateeId(id);

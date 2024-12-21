@@ -118,8 +118,8 @@ async function main(): Promise<void> {
     )
   );
 
-  const mediaProvider = await users.create({
-    role: IUser.Role.MediaProvider,
+  const studio = await users.create({
+    role: IUser.Role.Studio,
     email: "media@litespace.org",
     name: faker.person.fullName(),
     birthYear: birthYear(),

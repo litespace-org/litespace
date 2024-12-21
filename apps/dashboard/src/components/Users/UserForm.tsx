@@ -122,8 +122,8 @@ const UserForm: React.FC<{
                     value: IUser.Role.RegularAdmin,
                   },
                   {
-                    label: intl("global.role.media-provider"),
-                    value: IUser.Role.MediaProvider,
+                    label: intl("global.role.studio"),
+                    value: IUser.Role.Studio,
                   },
                   {
                     label: intl("global.role.tutor-manager"),
