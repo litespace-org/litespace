@@ -90,7 +90,7 @@ export const role = zod.enum([
   IUser.Role.SuperAdmin,
   IUser.Role.RegularAdmin,
   IUser.Role.TutorManager,
-  IUser.Role.MediaProvider,
+  IUser.Role.Studio,
   IUser.Role.Tutor,
   IUser.Role.Student,
 ]);

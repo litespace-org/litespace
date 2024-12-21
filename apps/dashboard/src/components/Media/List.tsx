@@ -5,7 +5,7 @@ import { Hash } from "react-feather";
 import Tutor from "@/components/Media/Tutor";
 
 const List: React.FC<{
-  list: ITutor.PublicTutorFieldsForMediaProvider[];
+  list: ITutor.PublicTutorFieldsForStudio[];
   refersh: () => void;
 }> = ({ list, refersh }) => {
   const timeline = useMemo((): TimelineItem[] => {

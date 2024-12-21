@@ -53,7 +53,7 @@ const Root: React.FC = () => {
           label: intl("dashboard.sidebar.media"),
           route: Route.Media,
           icon: Video,
-          show: role?.admin || role?.mediaProvider,
+          show: role?.admin || role?.studio,
         },
         {
           label: intl("dashboard.sidebar.plans"),
@@ -95,10 +95,10 @@ const Root: React.FC = () => {
           label: intl("dashboard.sidebar.user.settings"),
           route: Route.UserSetting,
           icon: User,
-          show: role?.admin || role?.mediaProvider,
+          show: role?.admin || role?.studio,
         },
       ].filter((route) => route.show),
-    [intl, role?.admin, role?.mediaProvider]
+    [intl, role?.admin, role?.studio]
   );
 
   useEffect(() => {
@@ -119,7 +119,7 @@ const Root: React.FC = () => {
       user.role === IUser.Role.RegularAdmin
     )
       navigate(Route.Users);
-    if (user.role === IUser.Role.MediaProvider) navigate(Route.Media);
+    if (user.role === IUser.Role.Studio) navigate(Route.Media);
   }, [location.pathname, navigate, user]);
 
   return (

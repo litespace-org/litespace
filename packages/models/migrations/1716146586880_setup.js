@@ -16,7 +16,7 @@ exports.up = (pgm) => {
     "tutor",
     "student",
     "tutor-manager",
-    "media-provider",
+    "studio",
   ]);
   pgm.createType("call_event", ["join", "leave"]);
   pgm.createType("call_recording_status", [

@@ -14,7 +14,7 @@ const Media: React.FC = () => {
   const atlas = useAtlas();
   const findTutors = useCallback(
     async ({ pageParam }: { pageParam: number }) => {
-      return await atlas.user.findTutorsForMediaProvider({ page: pageParam });
+      return await atlas.user.findTutorsForStudio({ page: pageParam });
     },
     [atlas.user]
   );
