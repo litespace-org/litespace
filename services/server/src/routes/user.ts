@@ -13,7 +13,7 @@ export default function router(context: ApiContext) {
   router.get("/list", user.findUsers);
   router.get("/:id", user.findById);
   router.put("/:id", fileupload, user.update(context));
-  router.get("/media-provider/tutors", user.findTutorsForMediaProvider);
+  router.get("/studio/tutors", user.findTutorsForStudio);
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);

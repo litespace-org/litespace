@@ -646,7 +646,7 @@
   "global.currency.egp": "ج.م.",
   "global.role.super-admin": "كبير المسؤولين",
   "global.role.regular-admin": "مسؤول",
-  "global.role.media-provider": "استديو",
+  "global.role.studio": "استديو",
   "global.role.tutor-manager": "مسؤول المعلمين",
   "global.role.tutor": "معلم",
   "global.role.student": "طالب",

@@ -16,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useAtlas } from "@litespace/headless/atlas";
 
 const Tutor: React.FC<{
-  tutor: ITutor.PublicTutorFieldsForMediaProvider;
+  tutor: ITutor.PublicTutorFieldsForStudio;
   refresh: () => void;
 }> = ({ tutor, refresh }) => {
   const [image, setImage] = useState<string | File | null>(tutor.image);

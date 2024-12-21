@@ -149,12 +149,12 @@ export class Tutors {
     }).then();
   }
 
-  async findForMediaProvider(
+  async findForStudio(
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
-  ): Promise<Paginated<ITutor.PublicTutorFieldsForMediaProvider>> {
+  ): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
     const columns: Record<
-      keyof ITutor.PublicTutorFieldsForMediaProvider,
+      keyof ITutor.PublicTutorFieldsForStudio,
       string
     > = {
       id: this.column("id"),
@@ -172,7 +172,7 @@ export class Tutors {
     const total = await countRows(builder.clone());
     const main = builder
       .clone()
-      .select<ITutor.PublicTutorFieldsForMediaProvider[]>(columns)
+      .select<ITutor.PublicTutorFieldsForStudio[]>(columns)
       .orderBy([
         { column: this.column("created_at"), order: "desc" },
         { column: this.column("id"), order: "asc" },

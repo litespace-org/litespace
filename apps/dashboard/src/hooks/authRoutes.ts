@@ -13,7 +13,7 @@ type RouteConfig = {
 
 const superAdmin = IUser.Role.SuperAdmin;
 const regularAdmin = IUser.Role.RegularAdmin;
-const mediaProvider = IUser.Role.MediaProvider;
+const studio = IUser.Role.Studio;
 const tutorManager = IUser.Role.TutorManager;
 const tutor = IUser.Role.Tutor;
 const student = IUser.Role.Student;
@@ -41,7 +41,7 @@ const routeConfigMap: Record<Route, RouteConfig> = {
     whitelist: [regularAdmin],
   },
   [Route.Media]: {
-    whitelist: [regularAdmin, mediaProvider],
+    whitelist: [regularAdmin, studio],
   },
   [Route.Plans]: {
     whitelist: [regularAdmin],
@@ -65,7 +65,7 @@ const routeConfigMap: Record<Route, RouteConfig> = {
     whitelist: [regularAdmin],
   },
   [Route.UserSetting]: {
-    whitelist: [regularAdmin, mediaProvider],
+    whitelist: [regularAdmin, studio],
   },
 };
 
