@@ -58,7 +58,6 @@ exports.up = (pgm) => {
     role: { type: "user_role", default: null },
     birth_year: { type: "INT", default: null },
     gender: { type: "user_gender", default: null },
-    online: { type: "BOOLEAN", notNull: true, default: false },
     verified: { type: "BOOLEAN", notNull: true, default: false },
     phone_number: { type: "VARCHAR(15)", default: null },
     city: { type: "SMALLINT", default: null },

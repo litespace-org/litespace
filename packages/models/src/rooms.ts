@@ -1,6 +1,6 @@
 import { column, countRows, knex, withPagination } from "@/query";
-import { first, isEmpty, merge, omit, orderBy } from "lodash";
-import { IFilter, IRoom, IUser, Paginated } from "@litespace/types";
+import { first, merge, omit, orderBy } from "lodash";
+import { IFilter, IRoom, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { users } from "@/users";
@@ -100,7 +100,6 @@ export class Rooms {
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
-      online: users.column("online"),
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
       createdAt: users.column("created_at"),

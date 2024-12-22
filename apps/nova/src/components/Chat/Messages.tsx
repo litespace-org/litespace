@@ -42,6 +42,9 @@ const Messages: React.FC<{
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
   const atlas = useAtlas();
 
+  // TODO: retrieve user online status from the server cache
+  const [onlineStatus, _] = useState(false);
+
   const findRoomMessages = useCallback(
     async (id: number, pagination?: IFilter.Pagination) => {
       return await atlas.chat.findRoomMessages(id, pagination);
@@ -167,6 +170,7 @@ const Messages: React.FC<{
       <div className="tw-px-6 tw-pt-8">
         <ChatHeader
           {...otherMember}
+          online={onlineStatus}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
         />
       </div>

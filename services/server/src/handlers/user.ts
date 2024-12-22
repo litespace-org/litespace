@@ -312,10 +312,9 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const query: IUser.FindUsersApiQuery = findUsersQuery.parse(req.query);
-  const result = await users.find(query);
-  const response: IUser.FindUsersApiResponse = result;
+  const result: IUser.FindUsersApiResponse = await users.find(query);
 
-  res.status(200).json(response);
+  res.status(200).json(result);
 }
 
 async function findCurrentUser(
