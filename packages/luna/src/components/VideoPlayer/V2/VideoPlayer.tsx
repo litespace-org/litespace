@@ -103,7 +103,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       {status === "error" ? (
         <div className="tw-absolute tw-top-0 tw-h-full tw-w-full tw-bg-natural-700 tw-flex tw-justify-center tw-items-center">
           <div className="tw-flex tw-flex-col tw-items-center tw-gap-4">
-            <span className="tw-w-12 tw-h-12 tw-overflow-hidden tw-rounded-full tw-bg-destructive-200 tw-shadow-exclaimation-mark-video tw-items-center tw-justify-center tw-flex">
+            <span className="tw-w-12 tw-h-12 tw-p-1 tw-overflow-hidden tw-rounded-full tw-bg-destructive-200 tw-shadow-exclaimation-mark-video tw-items-center tw-justify-center tw-flex">
               <ExclaimationMarkCircle />
             </span>
             <Typography

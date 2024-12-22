@@ -75,6 +75,11 @@
   "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
   "tutor.profile.tabs.profile.video": "الفيديو التعريفى",
   "tutor.profile.tabs.reviews": "الأراء",
+  "tutor.profile.loading": "برجاء الانتظار... نحضر لك بيانات المعلم!",
+  "tutor.profile.rate-tutor": "قيم المعلم",
+  "tutor.profile.your-ratings-help": "آراؤك تساهم في تحسين طريقة تدريس معلمينا، ونحن نحرص على استخدامها لتقديم تجربة تعليمية أفضل",
+  "tutor.profile.first-rating": " كن من أوائل الطلاب الذين يكتشفون إمكانيات {tutor} المتميز! اغتنم الفرصة الآن قبل أن يصبح جدوله ممتلئًا!",
+  "tutor.profile.error": " عذرًا، حدث خطأ أثناء تحميل المحتوى. برجاء المحاولة مرة أخرى",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
@@ -547,8 +552,6 @@
   "labels.activity.lesson": "أعطي حصة واحدة",
   "labels.activity.two.lessons": "أعطي حصتينj",
   "labels.activity.many.lessons": "أعطي {count} حصص",
-  "labels.ratings": "التقييمات والآراء",
-  "labels.rating": "التقييم",
   "labels.email": "الإيميل",
   "labels.email.placeholder": "you@example.com",
   "labels.password": "كلمة السر",
@@ -653,6 +656,7 @@
   "global.gender.male": "ذكر",
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
+  "global.retry": "حاول مرة اخري",
   "global.sure": "هل أنت متأكد؟",
   "error.invalid": "خطأ",
   "error.alert": "حدث خطأ ما",

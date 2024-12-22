@@ -7,6 +7,7 @@ import Star from "@litespace/assets/Star";
 import { Button } from "@/components/Button";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
+import { Loader, LoadingError } from "@/components/Loading";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -19,6 +20,9 @@ export const TutorProfileCard: React.FC<{
   lessonCount: number;
   avgRating: number;
   onBook?: Void;
+  loading?: boolean;
+  error?: boolean;
+  retry?: Void;
 }> = ({
   image,
   name,
@@ -28,8 +32,26 @@ export const TutorProfileCard: React.FC<{
   lessonCount,
   avgRating,
   onBook,
+  loading,
+  error,
+  retry,
 }) => {
   const intl = useFormatMessage();
+
+  if (loading)
+    return (
+      <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
+        <Loader text={intl("tutor.profile.loading")} />
+      </div>
+    );
+
+  if (error && retry)
+    return (
+      <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
+        <LoadingError error={intl("tutor.profile.error")} retry={retry} />
+      </div>
+    );
+
   return (
     <div className="tw-flex tw-gap-10 tw-items-center">
       <div className="tw-w-[242px] tw-aspect-square tw-rounded-full tw-overflow-hidden">
