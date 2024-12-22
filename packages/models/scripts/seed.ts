@@ -22,6 +22,7 @@ import {
   ICall,
   IInterview,
   ILesson,
+  IRating,
   IUser,
   IWithdrawMethod,
 } from "@litespace/types";
@@ -88,7 +89,7 @@ async function main(): Promise<void> {
   });
 
   const students = await Promise.all(
-    range(10).map(
+    range(20).map(
       async (idx) =>
         await knex.transaction(async (tx) => {
           const isMale = Math.random() >= 0.5;
@@ -114,6 +115,8 @@ async function main(): Promise<void> {
             },
             tx
           );
+
+          return student;
         })
     )
   );
@@ -226,11 +229,31 @@ async function main(): Promise<void> {
   const tutorManager = first(addedTutorManagers);
   if (!tutorManager) throw new Error("TutorManager not found; should never happen.");
 
-  await ratings.create({
-    raterId: student.id,
-    rateeId: tutor.id,
-    value: faker.number.int({ min: 1, max: 5 }),
-    feedback: faker.lorem.paragraph(1),
+  // seeding ratings data
+  await knex.transaction(async () => {
+    return await Promise.all(
+      students.map(async (student) => {
+
+        stdout.info(`Student ${student.id} is rating all available tutors.`);
+
+        const allTutors = [...addedTutors, ...addedTutorManagers];
+        for (const tutor of allTutors) {
+          const randomValue = sample(range(1,6));
+          if (randomValue === undefined)
+            throw Error("Unexpected error: getting random rating value failed!");
+
+          const wordCount = sample(range(6, 20)) || 0;
+          const randomFeedback = faker.lorem.words(wordCount);
+
+          await ratings.create({
+            raterId: student.id,
+            rateeId: tutor.id,
+            value: randomValue,
+            feedback: wordCount < 8 ? null : randomFeedback,
+          });
+        }
+      })
+    );
   });
 
   const rule = await rules.create({
