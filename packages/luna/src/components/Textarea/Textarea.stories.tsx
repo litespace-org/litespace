@@ -1,11 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
-
+import React from "react";
 import { Textarea } from "@/components/Textarea/Textarea";
-import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
-import { useForm } from "react-hook-form";
-import { Field, Form, Label } from "@/components/Form";
-import { Button } from "@/components/Button";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Textarea;
 
@@ -13,53 +9,40 @@ const meta: Meta<Component> = {
   title: "Textarea",
   component: Textarea,
   parameters: { layout: "centered" },
+  decorators: [
+    (Story) => (
+      <div className="tw-w-[500px]">
+        <Story />
+      </div>
+    ),
+  ],
 };
 
 export const PrimaryInteractive: StoryObj<Component> = {
-  render: () => {
-    const {
-      register,
-      watch,
-      formState: { errors },
-      handleSubmit,
-    } = useForm<{ feedback: string }>({
-      defaultValues: { feedback: "" },
-    });
-
-    return (
-      <Direction>
-        <Form onSubmit={handleSubmit(() => {})} className="tw-ui-w-[50rem]">
-          <Field
-            label={<Label>{ar["global.add.to.favorites"]}</Label>}
-            field={
-              <Textarea
-                value={watch("feedback")}
-                placeholder={ar["global.start.chating"]}
-                error={errors["feedback"]?.message}
-                {...register("feedback")}
-              />
-            }
-          />
-
-          <Button>{ar["global.report.label"]}</Button>
-        </Form>
-      </Direction>
-    );
+  args: {
+    placeholder: faker.lorem.words(2),
   },
 };
 
-export const Errored: StoryObj<Component> = {
+export const WithHelperText: StoryObj<Component> = {
   args: {
-    placeholder: ar["global.start.chating"],
-    error: ar["error.required"],
-    className: "ui-min-w-[600px] ui-border",
+    placeholder: faker.lorem.words(2),
+    helper: faker.lorem.words(4),
   },
-  render: (props: object) => {
-    return (
-      <Direction>
-        <Textarea {...props} />
-      </Direction>
-    );
+};
+
+export const Error: StoryObj<Component> = {
+  args: {
+    placeholder: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    error: true,
+  },
+};
+
+export const Disabled: StoryObj<Component> = {
+  args: {
+    placeholder: faker.lorem.words(2),
+    disabled: true,
   },
 };
 

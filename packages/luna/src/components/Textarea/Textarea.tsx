@@ -1,52 +1,60 @@
 import React from "react";
 import cn from "classnames";
+import { Typography } from "@/components/Typography";
+import { AnimatePresence } from "framer-motion";
+import { Helper } from "@/components/Input/Input";
 
 export interface TextareaProps
   extends React.InputHTMLAttributes<HTMLTextAreaElement> {
-  error?: string;
+  helper?: string;
+  error?: boolean;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ error, name, className, ...props }, ref) => {
+  ({ error, name, value, placeholder, helper, className, ...props }, ref) => {
     return (
-      <div className="tw-flex tw-flex-col tw-w-full">
-        <div
+      <div className="tw-flex tw-flex-col tw-gap-1">
+        <textarea
+          ref={ref}
+          name={name}
+          disabled={props.disabled}
+          data-error={!!error}
+          value={value}
+          placeholder={placeholder}
           className={cn(
-            "tw-w-full tw-relative tw-grid",
-            'after:tw-content-[attr(TEST)_"_"] after:tw-whitespace-pre-wrap after:tw-invisible'
+            //base
+            "tw-w-full tw-h-full tw-resize-none tw-bg-natural-50 tw-font-cairo",
+            "tw-border tw-border-natural-300 tw-p-[14px] tw-rounded-lg",
+            "tw-text-natural-900 tw-text-base tw-transition-all tw-duration-200",
+            // hover
+            "hover:tw-bg-brand-50 hover:tw-border-brand-200",
+            // active/focus
+            "focus-within:tw-border-brand-500 focus-within:hover:tw-border-brand-500 focus-within:tw-shadow-input-focus focus:tw-outline-none",
+            //placeholder
+            "placeholder:tw-text-natural-400",
+            // error
+            "data-[error=true]:tw-shadow-input-error data-[error=true]:tw-border-destructive-600 data-[error=true]:hover:tw-bg-natural-50 data-[error=true]:hover:tw-border-destructive-600",
+            // disabled
+            "disabled:tw-opacity-50",
+            className
           )}
-          style={{
-            gridArea: "1 / 1 / 2 / 2",
-          }}
-        >
-          <textarea
-            className={cn(
-              "tw-font-cairo tw-block tw-box-border tw-w-full tw-rounded-md tw-shadow-sm tw-transition-all",
-              "tw-text-foreground focus-visible:tw-shadow-md tw-outline-none",
-              "focus:tw-ring-current focus:tw-ring-2 focus-visible:tw-border-foreground-muted",
-              "focus-visible:tw-ring-background-control tw-placeholder-foreground-muted group",
-              "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-4",
-              "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
-              {
-                "tw-bg-foreground/[.026]": !error,
-                "tw-bg-destructive-200 tw-border tw-border-destructive-400 focus:tw-ring-destructive-400 placeholder:tw-text-destructive-400":
-                  !!error,
-              },
-              "tw-resize-none tw-overflow-hidden",
-              className
-            )}
-            name={name}
-            ref={ref}
-            dir="auto"
-            style={{
-              gridArea: "1 / 1 / 2 / 2",
-            }}
-            {...props}
-          />
-        </div>
-        {/* <AnimatePresence mode="wait" initial={false}>
-          {error ? <InputError message={error} key={name} /> : null}
-        </AnimatePresence> */}
+          {...props}
+        />
+
+        <AnimatePresence mode="wait" initial={false}>
+          {helper ? (
+            <Helper>
+              <Typography
+                element="tiny-text"
+                className={cn(
+                  error ? "tw-text-destructive-500" : "tw-text-natural-400"
+                )}
+              >
+                {helper}
+              </Typography>
+            </Helper>
+          ) : null}
+        </AnimatePresence>
       </div>
     );
   }
