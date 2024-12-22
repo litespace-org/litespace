@@ -24,7 +24,7 @@ const Chart = <T extends { timestamp: number }>({
   dataKey?: keyof T;
 }) => {
   return (
-    <div className="h-[20rem] shadow-ls-small rounded-md p-4" dir="ltr">
+    <div className="h-[20rem] shadow-ls-x-small rounded-md p-4" dir="ltr">
       <ResponsiveContainer>
         <LineChart data={data}>
           {lines.map((key) => (

@@ -58,8 +58,8 @@ export const MultiSelect = <T,>({
           className={cn(
             "tw-w-full tw-h-14 tw-rounded-lg tw-p-2 tw-transition-colors tw-duration-200",
             "tw-border tw-border-natural-300 hover:tw-border-brand-200 focus:tw-border-brand-500",
-            "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
-            "focus:tw-outline-none focus:tw-shadow-ls-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
+            "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-x-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
+            "focus:tw-outline-none focus:tw-shadow-ls-x-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
             "tw-bg-natural-50 hover:tw-bg-brand-50",
             "data-[open=true]:tw-shadow-ls-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
           )}

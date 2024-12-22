@@ -554,6 +554,7 @@
   "labels.invoice.receipt.upload": "إرفاق الإيصال",
   "labels.litespace": "لايت سبيس",
   "labels.delete": "حذف",
+  "labels.plus": "{value}+",
   "global.created-at": "تاريخ الإنشاء",
   "global.updated-at": "تاريخ التعديل",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",

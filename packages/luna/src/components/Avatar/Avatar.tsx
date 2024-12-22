@@ -24,7 +24,7 @@ export const Avatar: React.FC<{
         data-status={status}
         className={cn(
           "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear",
-          "data-[status=loaded]:tw-opacity-100 tw-absolute tw-object-fill tw-w-full tw-h-full"
+          "data-[status=loaded]:tw-opacity-100 tw-absolute tw-object-cover tw-w-full tw-h-full"
         )}
         src={src}
         alt={alt}
@@ -42,7 +42,7 @@ export const Avatar: React.FC<{
       >
         <JazzIcon
           seed={seed || alt || src || "litespace"}
-          className="tw-object-fill"
+          className="tw-h-full"
         />
       </div>
     </div>
