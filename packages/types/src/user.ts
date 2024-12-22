@@ -7,7 +7,7 @@ export enum Role {
   Tutor = "tutor",
   Student = "student",
   TutorManager = "tutor-manager",
-  MediaProvider = "media-provider",
+  Studio = "studio",
 }
 
 export enum Gender {

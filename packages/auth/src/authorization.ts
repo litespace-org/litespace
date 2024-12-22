@@ -39,8 +39,8 @@ export class Authorizer {
     return this.role(IUser.Role.TutorManager);
   }
 
-  mediaProvider(): Authorizer {
-    return this.role(IUser.Role.MediaProvider);
+  studio(): Authorizer {
+    return this.role(IUser.Role.Studio);
   }
 
   tutor(): Authorizer {
@@ -120,8 +120,8 @@ export function isStudent(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Student;
 }
 
-export function isMediaProvider(user: unknown): user is IUser.Self {
-  return isUser(user) && user.role === IUser.Role.MediaProvider;
+export function isStudio(user: unknown): user is IUser.Self {
+  return isUser(user) && user.role === IUser.Role.Studio;
 }
 
 export function isGhost(user: unknown): user is IUser.Ghost {
@@ -148,8 +148,8 @@ export function tutorManager(role: IUser.Role): boolean {
   return role === IUser.Role.TutorManager;
 }
 
-export function mediaProvider(role: IUser.Role): boolean {
-  return role === IUser.Role.MediaProvider;
+export function studio(role: IUser.Role): boolean {
+  return role === IUser.Role.Studio;
 }
 
 export function student(role: IUser.Role): boolean {
@@ -160,6 +160,6 @@ export const is = {
   tutor,
   admin,
   tutorManager,
-  mediaProvider,
+  studio,
   student,
 } as const;

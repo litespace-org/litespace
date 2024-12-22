@@ -71,7 +71,7 @@ export type FindOnboardedTutorsParams = IFilter.Pagination & {
 };
 
 export type CreateApiPayload = IUser.Credentials & { name: string };
-export type UpdateApiPayload = Omit<UpdatePayload, "mediaProviderId"> & {
+export type UpdateApiPayload = Omit<UpdatePayload, "studioId"> & {
   dropPhoto?: boolean;
   dropVideo?: boolean;
 };
@@ -95,7 +95,7 @@ export type FindOnboardedTutorsApiResponse = {
   list: Array<Cache & { rules: IRule.RuleEvent[] }>;
 };
 
-export type PublicTutorFieldsForMediaProvider = {
+export type PublicTutorFieldsForStudio = {
   id: number;
   email: IUser.Self["email"];
   name: IUser.Self["name"];
@@ -104,8 +104,8 @@ export type PublicTutorFieldsForMediaProvider = {
   createdAt: string;
 };
 
-export type FindTutorsForMediaProviderApiResponse =
-  Paginated<PublicTutorFieldsForMediaProvider>;
+export type FindTutorsForStudioApiResponse =
+  Paginated<PublicTutorFieldsForStudio>;
 
 export type FindTutorStatsApiResponse = {
   lessonCount: number;

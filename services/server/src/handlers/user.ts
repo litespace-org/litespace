@@ -50,7 +50,7 @@ import { asIsoDate } from "@litespace/sol/dayjs";
 import {
   encodeAuthJwt,
   isAdmin,
-  isMediaProvider,
+  isStudio,
   isStudent,
   isUser,
 } from "@litespace/auth";
@@ -193,7 +193,7 @@ function update(context: ApiContext) {
         },
       } as const;
 
-      // Only media provider and admins can update tutor media files (images and videos)
+      // Only studios and admins can update tutor media files (images and videos)
       // Tutor cannot upload it for himself.
       const isUpdatingTutorMedia =
         (files.image.file || files.video.file) &&
@@ -202,11 +202,11 @@ function update(context: ApiContext) {
       const isEligibleUser = [
         IUser.Role.SuperAdmin,
         IUser.Role.RegularAdmin,
-        IUser.Role.MediaProvider,
+        IUser.Role.Studio,
       ].includes(currentUser.role);
       if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
 
-      // Only media providers and admins can upload videos.
+      // Only studios and admins can upload videos.
       // e.g., students/interviewers cannot upload videos
       if (files.video.file && !isEligibleUser) return next(forbidden());
 
@@ -452,17 +452,17 @@ async function findOnboardedTutors(req: Request, res: Response) {
   res.status(200).json(response);
 }
 
-async function findTutorsForMediaProvider(
+async function findTutorsForStudio(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const allowed = isAdmin(req.user) || isMediaProvider(req.user);
+  const allowed = isAdmin(req.user) || isStudio(req.user);
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
-  const result: ITutor.FindTutorsForMediaProviderApiResponse =
-    await tutors.findForMediaProvider(query);
+  const result: ITutor.FindTutorsForStudioApiResponse =
+    await tutors.findForStudio(query);
   res.status(200).json(result);
 }
 
@@ -746,7 +746,7 @@ export default {
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
-  findTutorsForMediaProvider: safeRequest(findTutorsForMediaProvider),
+  findTutorsForStudio: safeRequest(findTutorsForStudio),
   findStudentStats: safeRequest(findStudentStats),
   findPublicStudentStats: safeRequest(findPublicStudentStats),
 };
