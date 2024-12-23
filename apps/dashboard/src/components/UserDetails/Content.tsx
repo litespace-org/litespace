@@ -39,7 +39,7 @@ const Content: React.FC<{
   if (!user) return;
 
   return (
-    <div className="p-4 mx-auto mt-6 border border-border-strong rounded-md shadow-ls-small w-full">
+    <div className="p-4 mx-auto mt-6 border border-border-strong rounded-md shadow-ls-x-small w-full">
       <div className="flex gap-2 ">
         <div className="relative">
           {user.image ? (

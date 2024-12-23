@@ -104,7 +104,7 @@ export const Card: React.FC<{
   return (
     <div
       className={cn(
-        "tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-small",
+        "tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-x-small",
         "tw-border tw-border-transparent hover:tw-border-natural-100",
         "tw-basis-full tw-flex tw-flex-col tw-gap-2"
       )}

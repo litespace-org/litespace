@@ -27,7 +27,6 @@ type Props = {
   imageUrl?: string | null;
   profileUrl: string;
   onBook: Void;
-  onOpenProfile: Void;
 };
 
 export const TutorCard: React.FC<Props> = ({
@@ -41,7 +40,6 @@ export const TutorCard: React.FC<Props> = ({
   profileUrl,
   rating,
   onBook,
-  onOpenProfile,
 }) => {
   const intl = useFormatMessage();
   return (
@@ -49,7 +47,7 @@ export const TutorCard: React.FC<Props> = ({
       className={cn(
         "tw-flex tw-flex-col",
         "tw-bg-natural-50 tw-border tw-border-natural-100",
-        "tw-p-4 tw-shadow-ls-small tw-rounded-lg"
+        "tw-p-4 tw-shadow-ls-x-small tw-rounded-lg"
       )}
     >
       <div className="tw-flex tw-flex-row tw-gap-2 tw-mb-4">
@@ -157,15 +155,22 @@ export const TutorCard: React.FC<Props> = ({
         >
           {intl("tutors.card.book-button.label")}
         </Button>
-        <Button
-          onClick={onOpenProfile}
-          className="tw-w-full"
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
-          size={ButtonSize.Tiny}
+        <Link
+          to={profileUrl}
+          className={cn(
+            "tw-block tw-grow tw-basis-1/2 tw-text-center tw-px-4 tw-py-2 tw-border tw-border-brand-700 tw-rounded-lg tw-w-full",
+            "hover:tw-bg-brand-100 hover:tw-border-brand-700 focus:tw-bg-brand-200 focus:tw-ring-1 focus:tw-ring-brand-900",
+            "tw-transition-colors tw-ease-out tw-duration-200"
+          )}
         >
-          {intl("tutors.card.profile-button.label")}
-        </Button>
+          <Typography
+            element="caption"
+            weight="semibold"
+            className="tw-text-brand-700"
+          >
+            {intl("tutors.card.profile-button.label")}
+          </Typography>
+        </Link>
       </div>
     </div>
   );
