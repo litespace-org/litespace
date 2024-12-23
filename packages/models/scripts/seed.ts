@@ -17,12 +17,12 @@ import {
   withdrawMethods,
   invoices,
   hashPassword,
+  topics,
 } from "@litespace/models";
 import {
   ICall,
   IInterview,
   ILesson,
-  IRating,
   IUser,
   IWithdrawMethod,
 } from "@litespace/types";
@@ -36,6 +36,7 @@ import { first, random, range, sample } from "lodash";
 import { Knex } from "knex";
 import utc from "dayjs/plugin/utc";
 import { faker } from "@faker-js/faker/locale/ar";
+import { faker as fakerEn } from "@faker-js/faker/locale/en";
 import "colors";
 
 dayjs.extend(utc);
@@ -172,75 +173,79 @@ async function main(): Promise<void> {
           tx
         );
         return tutor;
-      }),
+      })
     );
   });
 
-  const addedTutorManagers: IUser.Self[] = await knex.transaction(async (tx) => {
-    return await Promise.all(
-      range(1, 3).map(async (idx) => {
-        const email = `tutor-manager-${idx}@litespace.org`;
-        const tutor = await users.create(
-          {
-            name: faker.person.fullName(),
-            role: IUser.Role.TutorManager,
-            birthYear: birthYear(),
-            password,
-            email,
-          },
-          tx
-        );
+  const addedTutorManagers: IUser.Self[] = await knex.transaction(
+    async (tx) => {
+      return await Promise.all(
+        range(1, 3).map(async (idx) => {
+          const email = `tutor-manager-${idx}@litespace.org`;
+          const tutor = await users.create(
+            {
+              name: faker.person.fullName(),
+              role: IUser.Role.TutorManager,
+              birthYear: birthYear(),
+              password,
+              email,
+            },
+            tx
+          );
 
-        console.log(`tutor-manager: ${tutor.id} - ${tutor.email}`);
+          console.log(`tutor-manager: ${tutor.id} - ${tutor.email}`);
 
-        await tutors.create(tutor.id, tx);
+          await tutors.create(tutor.id, tx);
 
-        await users.update(
-          tutor.id,
-          {
-            phoneNumber: phoneNumber(),
-            gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
-            city: city(),
-            image: "/image.png",
-            verified: true,
-          },
-          tx
-        );
+          await users.update(
+            tutor.id,
+            {
+              phoneNumber: phoneNumber(),
+              gender: sample([IUser.Gender.Male, IUser.Gender.Female]),
+              city: city(),
+              image: "/image.png",
+              verified: true,
+            },
+            tx
+          );
 
-        await tutors.update(
-          tutor.id,
-          {
-            about: faker.lorem.paragraphs(),
-            bio: faker.lorem.words(9),
-            activated: true,
-            activatedBy: admin.id,
-            video: "/video.mp4",
-          },
-          tx
-        );
-        return tutor;
-      }),
-    );
-  });
+          await tutors.update(
+            tutor.id,
+            {
+              about: faker.lorem.paragraphs(),
+              bio: faker.lorem.words(9),
+              activated: true,
+              activatedBy: admin.id,
+              video: "/video.mp4",
+            },
+            tx
+          );
+          return tutor;
+        })
+      );
+    }
+  );
 
   const tutor = first(addedTutors);
   if (!tutor) throw new Error("Tutor not found; should never happen.");
 
   const tutorManager = first(addedTutorManagers);
-  if (!tutorManager) throw new Error("TutorManager not found; should never happen.");
+  if (!tutorManager)
+    throw new Error("TutorManager not found; should never happen.");
 
   // seeding ratings data
   await knex.transaction(async () => {
     return await Promise.all(
       students.map(async (student) => {
-
         stdout.info(`Student ${student.id} is rating all available tutors.`);
 
         const allTutors = [...addedTutors, ...addedTutorManagers];
         for (const tutor of allTutors) {
-          const randomValue = sample(range(1,6));
+          const randomValue = sample(range(1, 6));
           if (randomValue === undefined)
-            throw Error("Unexpected error: getting random rating value failed!");
+            throw Error(
+              "Unexpected error: getting random rating value failed!"
+            );
 
           const wordCount = sample(range(6, 20)) || 0;
           const randomFeedback = faker.lorem.words(wordCount);
@@ -255,6 +260,18 @@ async function main(): Promise<void> {
       })
     );
   });
+
+  // seeding topics data
+  stdout.info(`Inserting at most 50 random topics in the database.`);
+  await Promise.all(
+    range(100).map(async (idx) => {
+      try {
+        const ar = faker.lorem.words(2);
+        const en = fakerEn.lorem.words(2);
+        await topics.create({ name: { ar, en } });
+      } catch (_) {} // ignore errors (duplicate topics)
+    })
+  );
 
   const rule = await rules.create({
     userId: tutorManager.id,
