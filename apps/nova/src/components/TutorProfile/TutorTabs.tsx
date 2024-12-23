@@ -100,26 +100,22 @@ export const TutorTabs: React.FC<{
         ))}
       </Tabs.List>
 
-      <div className="mt-8">
-        <AnimatePresence initial={false} mode="wait">
-          {tab === "profile" ? (
-            <Animate key="profile" tab="profile">
-              <ProfileInfo
-                about={tutor.about}
-                topics={tutor.topics}
-                video={tutor.video}
-              />
-            </Animate>
-          ) : null}
-          {tab === "ratings" ? (
-            <Animate key="ratings" tab="ratings">
-              <div className="min-h-96">
-                <Ratings tutorName={tutor.name} id={tutor.id} />
-              </div>
-            </Animate>
-          ) : null}
-        </AnimatePresence>
-      </div>
+      <AnimatePresence initial={false} mode="wait">
+        {tab === "profile" ? (
+          <Animate key="profile" tab="profile">
+            <ProfileInfo
+              about={tutor.about}
+              topics={tutor.topics}
+              video={tutor.video}
+            />
+          </Animate>
+        ) : null}
+        {tab === "ratings" ? (
+          <Animate key="ratings" tab="ratings">
+            <Ratings tutorName={tutor.name} id={tutor.id} />
+          </Animate>
+        ) : null}
+      </AnimatePresence>
     </Tabs.Root>
   );
 };

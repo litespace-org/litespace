@@ -1,14 +1,17 @@
 import { IRating } from "@litespace/types";
-import { TutorRatingCardGroupProps } from "@litespace/luna/TutorFeedback";
 
 export const organizeRatings = (
-  ratings: IRating.FindTutorRatingsApiResponse["list"],
+  ratings: IRating.FindTutorRatingsApiResponse["list"] | undefined,
   currentUserId: number | undefined
 ) => {
-  let currentUserRating: IRating.RateeRatings | undefined;
-  const ratingsWithFeedback: IRating.RateeRatings[] = [];
-  const ratingsWithoutFeedback: Omit<TutorRatingCardGroupProps, "tutorName">[] =
-    [];
+  if (!ratings) return [];
+
+  let currentUserRating: IRating.RateeRating | undefined;
+  const ratingsWithFeedback: IRating.RateeRating[] = [];
+  const ratingsWithoutFeedback: {
+    ratings: IRating.RateeRating[];
+    value: number;
+  }[] = [];
 
   ratings.forEach((rating) => {
     if (rating.userId === currentUserId) {
@@ -20,21 +23,10 @@ export const organizeRatings = (
       const ratingGroup = ratingsWithoutFeedback.find(
         (r) => r.value === rating.value
       );
-      if (ratingGroup)
-        return ratingGroup.ratings.push({
-          name: rating.name,
-          imageUrl: rating.image,
-          userId: rating.userId,
-        });
+      if (ratingGroup) return ratingGroup.ratings.push(rating);
 
       return ratingsWithoutFeedback.push({
-        ratings: [
-          {
-            name: rating.name,
-            imageUrl: rating.image,
-            userId: rating.userId,
-          },
-        ],
+        ratings: [rating],
         value: rating.value,
       });
     }

@@ -157,8 +157,8 @@ export class Ratings {
        */
       topRaterId?: number;
     }>
-  >): Promise<Paginated<IRating.RateeRatings>> {
-    const select: Record<keyof IRating.RateeRatings, string> = {
+  >): Promise<Paginated<IRating.RateeRating>> {
+    const select: Record<keyof IRating.RateeRating, string> = {
       id: this.column.ratings("id"),
       userId: users.column("id"),
       name: users.column("name"),
@@ -180,7 +180,7 @@ export class Ratings {
     const rows = await withPagination(
       query
         .clone()
-        .select<IRating.RateeRatings[]>(select)
+        .select<IRating.RateeRating[]>(select)
         .orderByRaw(
           [
             topRaterId ? `users.id = ${topRaterId} DESC` : null,
