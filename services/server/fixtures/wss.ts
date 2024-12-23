@@ -28,6 +28,10 @@ export class ClientSocket {
     this.client.emit(Wss.ClientEvent.SendMessage, { roomId, ref, text });
   }
 
+  deleteMessage(msgId: number) {
+    this.client.emit(Wss.ClientEvent.DeleteMessage, { id: msgId });
+  }
+
   markMessageAsRead(msgId: number) {
     this.client.emit(Wss.ClientEvent.MarkMessageAsRead, { id: msgId });
   }

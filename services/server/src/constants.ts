@@ -115,4 +115,4 @@ export const platformConfig = {
    * Tutor interview duration in minutes
    */
   interviewDuration: 30,
-};
+}
