@@ -41,7 +41,6 @@ export function createStreamInfo(
       imageUrl: string | null;
       name: string | null;
     };
-    type: "focused" | "unfocused";
     camera: boolean;
     cast: boolean;
   }

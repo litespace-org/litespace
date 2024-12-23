@@ -1,11 +1,14 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { SpeechIndicator, CallAvatar } from "@/components/Call";
+import { CallAvatar } from "@/components/Call/CallAvatar";
+import { SpeechIndicator } from "@/components/Call/SpeechIndicator";
 import { StreamInfo } from "@/components/Call/types";
+import cn from "classnames";
 
 export const UnFocusedStream: React.FC<{
   stream: StreamInfo;
-}> = ({ stream }) => {
+  streamMuted: boolean;
+}> = ({ stream, streamMuted }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -23,18 +26,28 @@ export const UnFocusedStream: React.FC<{
       }}
       className="tw-aspect-video tw-w-[219px] tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-small tw-overflow-hidden"
     >
-      {stream.camera || stream.cast ? (
-        // todo: should only be muted for the current user (props)
-        <video ref={videoRef} autoPlay muted={false} playsInline />
-      ) : (
-        <div className="tw-w-[120px] tw-h-[120px] tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center">
-          <CallAvatar
-            variant="small"
-            user={stream.user}
-            speaking={stream.speaking}
-          />
-        </div>
-      )}
+      <video
+        ref={videoRef}
+        className={cn(
+          "tw-w-full tw-aspect-video tw-absolute tw-top-0",
+          !stream.camera && !stream.cast && "tw-opacity-0"
+        )}
+        autoPlay
+        muted={streamMuted}
+        playsInline
+      />
+      <div
+        className={cn(
+          "tw-w-[120px] tw-h-[120px] tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center",
+          (stream.camera || stream.cast) && "tw-opacity-0"
+        )}
+      >
+        <CallAvatar
+          variant="small"
+          user={stream.user}
+          speaking={stream.speaking}
+        />
+      </div>
       <div className="tw-absolute tw-top-[8px] tw-left-[8px]">
         <SpeechIndicator
           variant="small"

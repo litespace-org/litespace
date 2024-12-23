@@ -62,7 +62,6 @@
   "call.ready.explaination.empty.student": "الطالب في طريقه لدخول الحصة",
   "call.ready.join": "انضم للحصة الاّن",
   "call.ready.cannot-join": "يرجى التأكد من إعدادات الميكروفون وتفعيله لضمان دخولك الحصة بنجاح.",
-  "call.internet.problem": "برجاء التحقق من اتصال الانترنت الخاص بك",
   "call.rating.title": "قيم تجربتك",
   "call.rating.question": "كيف كانت حصتك مع {tutor} ؟",
   "call.rating.question.description": "تقييمك يساهم في جعل تجربتك التعليمية أكثر تميزًا. أخبرنا عن انطباعك لتقديم تجربة تتناسب مع احتياجاتك",
