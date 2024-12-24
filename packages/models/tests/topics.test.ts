@@ -142,8 +142,18 @@ describe("Topics", () => {
 
   describe(nameof(topics.isExistsBatch), () => {
     it("should return a map that tells if the passed topic ids exists in the db or not.", async () => {
-      const topic1 = await fixtures.topic();
-      const topic2 = await fixtures.topic();
+      const topic1 = await fixtures.topic({
+        name: {
+          ar: "dump-topic-name-ar",
+          en: "dump-topic-name-en",
+        }
+      });
+      const topic2 = await fixtures.topic({
+        name: {
+          ar: "another-dump-topic-name-ar",
+          en: "another-dump-topic-name-en",
+        }
+      });
 
       const list = [topic1.id, topic2.id, 123];
       const existanceMap = await topics.isExistsBatch(list);
