@@ -53,7 +53,7 @@ export const TutorProfileCard: React.FC<{
     );
 
   return (
-    <div className="tw-flex tw-gap-10 tw-items-center">
+    <div className="tw-flex tw-gap-10 tw-items-center tw-p-10">
       <div className="tw-w-[242px] tw-aspect-square tw-rounded-full tw-overflow-hidden">
         <Avatar
           src={orUndefined(image)}

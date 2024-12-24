@@ -64,7 +64,7 @@ export const TutorTabs: React.FC<{
       value={tab}
       onValueChange={(value: string) => setTab(value as Tab)}
     >
-      <Tabs.List className="border-b border-natural-300 flex gap-[56px] ">
+      <Tabs.List className="border-b border-natural-300 flex gap-[56px] px-10 ">
         {tabs.map(({ value, label }) => (
           <Tabs.Trigger
             key={value}

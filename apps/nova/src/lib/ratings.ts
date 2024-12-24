@@ -1,12 +1,15 @@
 import { IRating } from "@litespace/types";
+import { concat } from "lodash";
+
+const MAX_RATING_COUNT = 8;
 
 export const organizeRatings = (
-  ratings: IRating.FindTutorRatingsApiResponse["list"] | undefined,
-  currentUserId: number | undefined
+  ratings?: IRating.FindTutorRatingsApiResponse["list"],
+  currentUserId?: number
 ) => {
   if (!ratings) return [];
 
-  let currentUserRating: IRating.RateeRating | undefined;
+  let currentUserRating: IRating.RateeRating | null = null;
   const ratingsWithFeedback: IRating.RateeRating[] = [];
   const ratingsWithoutFeedback: {
     ratings: IRating.RateeRating[];
@@ -14,14 +17,12 @@ export const organizeRatings = (
   }[] = [];
 
   ratings.forEach((rating) => {
-    if (rating.userId === currentUserId) {
-      currentUserRating = rating;
-      return;
-    }
+    if (rating.userId === currentUserId) return (currentUserRating = rating);
+
     if (rating.feedback) ratingsWithFeedback.push(rating);
     if (!rating.feedback) {
       const ratingGroup = ratingsWithoutFeedback.find(
-        (r) => r.value === rating.value
+        (rating) => rating.value === rating.value
       );
       if (ratingGroup) return ratingGroup.ratings.push(rating);
 
@@ -32,11 +33,9 @@ export const organizeRatings = (
     }
   });
 
-  if (currentUserRating)
-    return [
-      currentUserRating,
-      ...ratingsWithFeedback,
-      ...ratingsWithoutFeedback,
-    ].slice(0, 8);
-  return [...ratingsWithFeedback, ...ratingsWithoutFeedback].slice(0, 8);
+  const otherUsersRatings = [...ratingsWithFeedback, ...ratingsWithoutFeedback];
+  return concat(currentUserRating || [], otherUsersRatings).slice(
+    0,
+    MAX_RATING_COUNT
+  );
 };

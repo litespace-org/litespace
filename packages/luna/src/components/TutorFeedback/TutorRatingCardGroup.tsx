@@ -83,7 +83,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
                   <Avatar
                     alt={orUndefined(rating.name)}
                     seed={rating.userId.toString()}
-                    src={idx <= 4 ? orUndefined(rating.image) : undefined}
+                    src={idx <= 4 ? orUndefined(rating.imageUrl) : undefined}
                   />
                 ) : (
                   <Typography

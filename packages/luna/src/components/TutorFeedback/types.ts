@@ -100,7 +100,7 @@ export type TutorRatingCardGroupProps = {
     /**
      * rater profile image url.
      */
-    image: string | null;
+    imageUrl: string | null;
   }>;
   /**
    * the rating value that is shared between all users.
