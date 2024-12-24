@@ -67,7 +67,8 @@ export const MultiSelect = <T,>({
         >
           <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
             <SearchIcon className="tw-justify-self-start" />
-            <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
+            {/* TODO: make it accept multiple lines */}
+            <div className="tw-h-full tw-flex-1 tw-flex tw-flex-wrap tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
                   {placeholder}
@@ -138,7 +139,7 @@ export const MultiSelect = <T,>({
           className={cn(
             "tw-flex tw-flex-col tw-gap-1 tw-w-[var(--radix-dropdown-menu-trigger-width)]",
             "tw-border tw-border-brand-400 tw-rounded-lg tw-p-1",
-            "tw-max-h-64 tw-overflow-y-auto",
+            "tw-max-h-64 tw-overflow-y-auto tw-bg-natural-50",
             "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
           )}
           sideOffset={5}
