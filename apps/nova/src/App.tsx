@@ -21,29 +21,31 @@ import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import UpcomingLessons from "@/pages/UpcomingLessons";
+import Plans from "@/pages/Plans";
 
 const router = createBrowserRouter([
   {
     path: Route.Root,
     element: <Root />,
     children: [
-      { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
-      { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Call, element: <Call /> },
+      { path: Route.Chat, element: <Chat /> },
+      { path: Route.Complete, element: <Complete /> },
       { path: Route.Dashboard, element: <Dashboard /> },
-      { path: Route.UpcomingLessons, element: <UpcomingLessons /> },
-      { path: Route.Schedule, element: <Schedule /> },
       { path: Route.EditSchedule, element: <EditSchedule /> },
-      { path: Route.Settings, element: <Settings /> },
-      { path: Route.Payments, element: <Payments /> },
-      { path: Route.Tutors, element: <Tutors /> },
       { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Invoices, element: <Invoices /> },
-      { path: Route.Chat, element: <Chat /> },
       { path: Route.Login, element: <Login /> },
+      { path: Route.Payments, element: <Payments /> },
       { path: Route.Register, element: <Register /> },
-      { path: Route.Complete, element: <Complete /> },
       { path: Route.ResetPassword, element: <ResetPassword /> },
+      { path: Route.Settings, element: <Settings /> },
+      { path: Route.Schedule, element: <Schedule /> },
+      { path: Route.Subscription, element: <Plans /> },
+      { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
+      { path: Route.TutorProfile, element: <TutorProfile /> },
+      { path: Route.Tutors, element: <Tutors /> },
+      { path: Route.UpcomingLessons, element: <UpcomingLessons /> },
       { path: Route.VerifyEmail, element: <VerifyEmail /> },
     ],
     errorElement: <ErrorPage />,
