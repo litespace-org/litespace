@@ -1,13 +1,12 @@
+import BookLesson from "@/components/Lessons/BookLesson";
+import { Route } from "@/types/routes";
 import { Loading } from "@litespace/luna/Loading";
-import { Element, ITutor, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
 import { TutorCard } from "@litespace/luna/TutorCard";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { Route } from "@/types/routes";
-import { useNavigate } from "react-router-dom";
+import { Element, ITutor, Void } from "@litespace/types";
 import { motion } from "framer-motion";
+import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
-import BookLesson from "@/components/Lessons/BookLesson";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -19,8 +18,6 @@ const Content: React.FC<{
   more: Void;
   hasMore: boolean;
 }> = ({ tutors, loading, error, more, hasMore, fetching }) => {
-  const navigate = useNavigate();
-
   const [tutor, setTutor] = useState<Tutor | null>(null);
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);
@@ -53,7 +50,6 @@ const Content: React.FC<{
                 studentCount={tutor.studentCount}
                 rating={tutor.avgRating}
                 onBook={() => openBookingDialog(tutor)}
-                onOpenProfile={() => navigate(profileUrl)}
                 profileUrl={profileUrl}
                 imageUrl={tutor.image ? asFullAssetUrl(tutor.image) : null}
               />
