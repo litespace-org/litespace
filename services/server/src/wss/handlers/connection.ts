@@ -2,12 +2,12 @@ import { isAdmin, isGhost, isStudent, isTutor } from "@litespace/auth";
 import { dayjs, logger, safe } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
-import { calls, rooms } from "@litespace/models";
+import { interviews, lessons, rooms } from "@litespace/models";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
-import { asCallRoomId, asChatRoomId } from "@/wss/utils";
+import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
 import { cache } from "@/lib/cache";
-import { getGhostCall } from "@litespace/sol/ghost";
+import { getGhostSession } from "@litespace/sol/ghost";
 
 const stdout = logger("wss");
 
@@ -41,7 +41,7 @@ export class Connection extends WssHandler {
       this.announceStatus({ userId: user.id, online: false });
 
       await this.deregisterPeer();
-      await this.removeUserFromCalls();
+      await this.removeUserFromSessions();
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -87,15 +87,17 @@ export class Connection extends WssHandler {
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
-      // todo: get user calls from cache
-      const callsList = await calls.find({
+      // todo: get user sessions from cache
+      const lessonsSessions = (await lessons.find({
         users: [user.id],
         full: true,
         after: dayjs.utc().startOf("day").toISOString(),
         before: dayjs.utc().add(1, "day").toISOString(),
-      });
+      })).list.map(lesson => lesson.sessionId);
 
-      this.socket.join(callsList.list.map((call) => asCallRoomId(call.id)));
+      this.socket.join([...lessonsSessions, ...interviewsSessions].map(
+        (session) => asSessionRoomId(session))
+      );
     });
 
     if (error instanceof Error) stdout.error(error.message);
@@ -113,23 +115,22 @@ export class Connection extends WssHandler {
     stdout.info(`Deregister peer for: ${display}`);
 
     if (isGhost(user))
-      return await cache.peer.removeGhostPeerId(getGhostCall(user));
+      return await cache.peer.removeGhostPeerId(getGhostSession(user));
     if (isTutor(user)) await cache.peer.removeUserPeerId(user.id);
   }
 
-  private async removeUserFromCalls() {
+  private async removeUserFromSessions() {
     const user = this.user;
     if (isGhost(user)) return;
 
-    const callId = await cache.call.removeMemberByUserId(user.id);
-    if (!callId) return;
+    const sessionId = await cache.session.removeMemberByUserId(user.id);
+    if (!sessionId) return;
 
-    // notify members that a member has left the call
+    // notify members that a member has left the session
     this.socket.broadcast
-      .to(asCallRoomId(callId))
-      .emit(
-        Wss.ServerEvent.MemberLeftCall, 
-        { userId: user.id },
-      );
+      .to(asSessionRoomId(sessionId))
+      .emit(Wss.ServerEvent.MemberLeftSession, {
+        userId: user.id,
+      });
   }
 }

@@ -1,7 +1,7 @@
 import { lessons } from "@/index";
 import { expect } from "chai";
 import fixtures, { MakeLessonsReturn } from "@fixtures/db";
-import { ILesson, ITutor, IUser } from "@litespace/types";
+import { ILesson, ITutor } from "@litespace/types";
 import { price } from "@litespace/sol/value";
 import { nameof } from "@litespace/sol/utils";
 import { concat, entries, first, sum } from "lodash";

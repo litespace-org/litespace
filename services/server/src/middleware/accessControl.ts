@@ -307,15 +307,15 @@ const policies: Array<Policy> = [
     route: "(/)api/v1/slot/:id(/)",
     methods: ["DELETE"],
   },
-  // calls
+  // sessions
   {
     roles: [student, tutor],
-    route: "(/)api/v1/call(/)",
+    route: "(/)api/v1/session(/)",
     methods: ["POST"],
   },
   {
     roles: [regAdmin, owner],
-    route: "(/)api/v1/call/tutor/interviews/:id(/)",
+    route: "(/)api/v1/session/tutor/interviews/:id(/)",
     methods: ["GET"],
   },
   // interviews

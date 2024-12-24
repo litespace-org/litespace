@@ -1,6 +1,6 @@
 import { cache } from "@/lib/cache";
 import { bad, forbidden } from "@/lib/error";
-import { id, string } from "@/validation/utils";
+import { id, sessionId, string } from "@/validation/utils";
 import { isGhost, isStudent, isTutor } from "@litespace/auth";
 import { IPeer } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
@@ -9,11 +9,11 @@ import zod from "zod";
 
 const registerPeerIdPayload = zod.object({
   peer: string,
-  call: zod.optional(id),
+  session: zod.optional(sessionId),
 });
 
 const deletePeerIdQuery = zod.object({
-  call: zod.optional(id),
+  session: zod.optional(sessionId),
 });
 
 const findPeerIdApiQuery = zod.union([
@@ -23,7 +23,7 @@ const findPeerIdApiQuery = zod.union([
   }),
   zod.object({
     type: zod.literal(IPeer.PeerType.Ghost),
-    call: id,
+    session: sessionId,
   }),
 ]);
 
@@ -37,10 +37,10 @@ async function registerPeerId(req: Request, res: Response, next: NextFunction) {
   const allowed = ghost || tutor;
   if (!allowed) return next(forbidden());
 
-  const { peer, call }: IPeer.RegisterPeerIdApiPayload =
+  const { peer, session }: IPeer.RegisterPeerIdApiPayload =
     registerPeerIdPayload.parse(req.body);
-  if (ghost && !call) return next(bad());
-  if (ghost && call) await cache.peer.setGhostPeerId(call, peer);
+  if (ghost && !session) return next(bad());
+  if (ghost && session) await cache.peer.setGhostPeerId(session, peer);
   if (tutor) await cache.peer.setUserPeerId(user.id, peer);
   res.status(200).send();
 }
@@ -55,11 +55,11 @@ async function deletePeerId(req: Request, res: Response, next: NextFunction) {
   const allowed = ghost || tutor;
   if (!allowed) return next(forbidden());
 
-  const { call }: IPeer.DeletePeerIdApiQurey = deletePeerIdQuery.parse(
+  const { session }: IPeer.DeletePeerIdApiQurey = deletePeerIdQuery.parse(
     req.query
   );
-  if (ghost && !call) return next(bad());
-  if (ghost && call) await cache.peer.removeGhostPeerId(call);
+  if (ghost && !session) return next(bad());
+  if (ghost && session) await cache.peer.removeGhostPeerId(session);
   if (tutor) await cache.peer.removeUserPeerId(user.id);
 
   res.status(200).send();
@@ -74,7 +74,7 @@ async function findPeerId(req: Request, res: Response, next: NextFunction) {
   const peer =
     query.type === IPeer.PeerType.Tutor
       ? await cache.peer.getUserPeerId(query.tutor)
-      : await cache.peer.getGhostPeerId(query.call);
+      : await cache.peer.getGhostPeerId(query.session);
 
   const response: IPeer.FindPeerIdApiResponse = { peer };
   res.status(200).json(response);

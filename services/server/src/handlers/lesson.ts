@@ -11,7 +11,7 @@ import {
 } from "@/validation/utils";
 import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
 import { ILesson, IRule, IUser, Wss } from "@litespace/types";
-import { calls, lessons, rules, users, knex, rooms } from "@litespace/models";
+import { lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
@@ -21,8 +21,9 @@ import { unpackRules } from "@litespace/sol/rule";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
-import { canBook } from "@/lib/call";
+import { canBook } from "@/lib/session";
 import { concat, isEqual } from "lodash";
+import { genSessionId } from "@litespace/sol";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -85,14 +86,13 @@ function create(context: ApiContext) {
 
       const { lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
-          const call = await calls.create(tx);
           const lesson = await lessons.create({
             tutor: payload.tutorId,
             student: user.id,
             start: payload.start,
             duration: payload.duration,
             rule: payload.ruleId,
-            call: call.id,
+            session: genSessionId("lesson"),
             price,
             tx,
           });

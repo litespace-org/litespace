@@ -1,4 +1,4 @@
-import { ICall, IFilter, IInterview, Paginated } from ".";
+import { ISession, IFilter, IInterview, Paginated } from ".";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 export enum Status {
@@ -22,9 +22,12 @@ export type Self = {
      * The interviewee id (the id of the tutor)
      */
     interviewee: number;
-    call: number;
     rule: number;
+    session: ISession.Id; /** @deprecated */
   };
+  // sessionId has to be extracted from ids to be compatible with ILesson.Self 
+  // as ISession.Self is either a lesson.self or interview.self
+  sessionId: ISession.Id;
   /**
    * ISO UTC datetime.
    */
@@ -53,7 +56,7 @@ export type Row = {
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
   rule_id: number;
-  call_id: number;
+  session_id: ISession.Id;
   note: string | null;
   level: number | null;
   status: Status;
@@ -69,7 +72,7 @@ export type CreatePayload = {
    * ISO UTC datetime.
    */
   start: string;
-  call: number;
+  session: ISession.Id;
   rule: number;
   interviewer: number;
   interviewee: number;
@@ -128,8 +131,8 @@ export type FindPagedInterviewsProps = {
     InfiniteData<
       Paginated<{
         interview: IInterview.Self;
-        call: ICall.Self;
-        members: ICall.PopuldatedMember[];
+        session: ISession.Self;
+        members: ISession.PopuldatedMember[];
       }>,
       unknown
     >,
@@ -138,8 +141,8 @@ export type FindPagedInterviewsProps = {
   list:
     | {
         interview: IInterview.Self;
-        call: ICall.Self;
-        members: ICall.PopuldatedMember[];
+        session: ISession.Self;
+        members: ISession.PopuldatedMember[];
       }[]
     | null;
   more: () => void;

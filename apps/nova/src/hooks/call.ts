@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState, useRef } from "react";
 import { isPermissionDenied, safe } from "@/lib/error";
 import { MediaConnection } from "peerjs";
 import peer from "@/lib/peer";
-import { Wss } from "@litespace/types";
+import { ISession, Wss } from "@litespace/types";
 import hark from "hark";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
@@ -235,7 +235,7 @@ function useStreamState(stream: MediaStream | null) {
 
 export function useCallEvents(
   stream: MediaStream | null,
-  call: number | null,
+  session: ISession.Id | null,
   mate?: number
 ) {
   const [mateVideo, setMateVideo] = useState<boolean>(false);
@@ -245,18 +245,18 @@ export function useCallEvents(
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
-      if (!call || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
+      if (!session || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { session, camera });
     },
-    [call, socket]
+    [session, socket]
   );
 
   const notifyMicToggle = useCallback(
     (mic: boolean) => {
-      if (!call || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleMic, { call, mic });
+      if (!session || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { session, mic });
     },
-    [call, socket]
+    [session, socket]
   );
 
   const onCameraToggle = useCallback(

@@ -1,7 +1,7 @@
 import { User } from "@/user";
 import { Auth } from "@/auth";
 import { Backend } from "@litespace/types";
-import { Call } from "@/call";
+import { Session } from "@/session";
 import { Plan } from "@/plan";
 import { Coupon } from "@/coupon";
 import { Invite } from "@/invite";
@@ -23,7 +23,7 @@ import { Peer } from "@/peer";
 export class Atlas {
   public readonly user: User;
   public readonly auth: Auth;
-  public readonly call: Call;
+  public readonly session: Session;
   public readonly plan: Plan;
   public readonly coupon: Coupon;
   public readonly invite: Invite;
@@ -44,7 +44,7 @@ export class Atlas {
   constructor(backend: Backend, token: AuthToken | null) {
     this.user = new User(backend, token);
     this.auth = new Auth(backend, token);
-    this.call = new Call(backend, token);
+    this.session = new Session(backend, token);
     this.plan = new Plan(backend, token);
     this.coupon = new Coupon(backend, token);
     this.invite = new Invite(backend, token);

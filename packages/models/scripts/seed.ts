@@ -4,7 +4,6 @@ import {
   tutors,
   ratings,
   rules,
-  calls,
   plans,
   coupons,
   invites,
@@ -20,7 +19,6 @@ import {
   topics,
 } from "@litespace/models";
 import {
-  ICall,
   IInterview,
   ILesson,
   IUser,
@@ -38,6 +36,7 @@ import utc from "dayjs/plugin/utc";
 import { faker } from "@faker-js/faker/locale/ar";
 import { faker as fakerEn } from "@faker-js/faker/locale/en";
 import "colors";
+import { randomUUID } from "crypto";
 
 dayjs.extend(utc);
 
@@ -331,19 +330,6 @@ async function main(): Promise<void> {
       .toISOString();
   }
 
-  function randomCallRecordingStatus(): ICall.RecordingStatus {
-    return sample([
-      ICall.RecordingStatus.Empty,
-      ICall.RecordingStatus.Idle,
-      ICall.RecordingStatus.Processed,
-      ICall.RecordingStatus.Processing,
-      ICall.RecordingStatus.ProcessingFailed,
-      ICall.RecordingStatus.Queued,
-      ICall.RecordingStatus.Recorded,
-      ICall.RecordingStatus.Recording,
-    ])!;
-  }
-
   const methods = [
     IWithdrawMethod.Type.Wallet,
     IWithdrawMethod.Type.Bank,
@@ -376,11 +362,10 @@ async function main(): Promise<void> {
     start: string;
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
-      const call = await calls.create(tx);
       const duration = sample([ILesson.Duration.Short, ILesson.Duration.Long]);
 
       const { lesson } = await lessons.create({
-        call: call.id,
+        session: `lesson:${randomUUID()}`,
         tutor: tutorId,
         student: student.id,
         price: calculateLessonPrice(price.scale(100), duration),
@@ -422,10 +407,8 @@ async function main(): Promise<void> {
 
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
-      const call = await calls.create(tx);
-
       const interview = await interviews.create({
-        call: call.id,
+        session: `interview:${randomUUID()}`,
         interviewee: tutor.id,
         interviewer: tutorManager.id,
         start: randomStart(),

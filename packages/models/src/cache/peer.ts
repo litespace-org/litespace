@@ -10,8 +10,8 @@ export class Peer extends CacheBase {
     });
   }
 
-  async setGhostPeerId(call: number, peer: string) {
-    await this.client.set(this.asGhostField(call), peer, {
+  async setGhostPeerId(session: string, peer: string) {
+    await this.client.set(this.asGhostField(session), peer, {
       EX: this.ttl,
     });
   }
@@ -20,23 +20,23 @@ export class Peer extends CacheBase {
     return await this.client.get(this.asUserField(user));
   }
 
-  async getGhostPeerId(call: number): Promise<string | null> {
-    return await this.client.get(this.asGhostField(call));
+  async getGhostPeerId(session: string): Promise<string | null> {
+    return await this.client.get(this.asGhostField(session));
   }
 
   async removeUserPeerId(user: number) {
     await this.client.del(this.asUserField(user));
   }
 
-  async removeGhostPeerId(call: number) {
-    await this.client.del(this.asGhostField(call));
+  async removeGhostPeerId(session: string) {
+    await this.client.del(this.asGhostField(session));
   }
 
   asUserField(user: number): string {
     return [this.prefix, user].join(":");
   }
 
-  asGhostField(call: number): string {
-    return [this.prefix, "ghost", call].join(":");
+  asGhostField(session: string): string {
+    return [this.prefix, "ghost", session].join(":");
   }
 }

@@ -36,7 +36,7 @@ describe("calls test suite", () => {
     student = await studentApi.findCurrentUser();
   });
 
-  it("should broadcast the event when the user join the call", async () => {
+  it("should broadcast the event when the user join a session", async () => {
     const now = dayjs();
 
     const rule = await tutorApi.atlas.rule.create({
@@ -69,22 +69,22 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(tutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const studentResult = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const studentResult = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     const { userId } = await studentResult;
 
-    const callMembersIds = await cache.call.getMembers(lesson.callId);
+    const callMembersIds = await cache.session.getMembers(lesson.sessionId);
     expect(callMembersIds).to.be.of.length(1);
     expect(callMembersIds[0]).to.be.eq(tutor.user.id);
     expect(userId).to.be.eq(tutor.user.id);
 
-    const tutorResult = tutorSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    studentSocket.joinCall(lesson.callId, "lesson");
+    const tutorResult = tutorSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    studentSocket.joinSession(lesson.sessionId);
 
     const { userId: studentId } = await tutorResult;
-    const callMembersIdsSecondSnapshot = await cache.call.getMembers(
-      lesson.callId
+    const callMembersIdsSecondSnapshot = await cache.session.getMembers(
+      lesson.sessionId
     );
     expect(callMembersIdsSecondSnapshot).to.be.of.length(2);
     expect(
@@ -132,8 +132,8 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     await result
       .then(() => expect(false))
@@ -177,8 +177,8 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     await result
       .then(() => expect(false))

@@ -1,4 +1,3 @@
-export { calls } from "@/calls";
 export { coupons } from "@/coupons";
 export { interviews } from "@/interviews";
 export { invites } from "@/invites";

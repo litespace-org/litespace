@@ -2,13 +2,13 @@ import { createClient } from "redis";
 import { Tutors } from "@/cache/tutors";
 import { RedisClient } from "@/cache/base";
 import { Peer } from "@/cache/peer";
-import { Call } from "@/cache/call";
+import { Session } from "@/cache/session";
 import { OnlineStatus } from "@/cache/onlineStatus";
 
 export class Cache {
   public tutors: Tutors;
   public peer: Peer;
-  public call: Call;
+  public session: Session;
   public onlineStatus: OnlineStatus;
   private readonly client: RedisClient;
 
@@ -17,7 +17,7 @@ export class Cache {
     this.client = client;
     this.tutors = new Tutors(client);
     this.peer = new Peer(client);
-    this.call = new Call(client);
+    this.session = new Session(client);
     this.onlineStatus = new OnlineStatus(client);
   }
 

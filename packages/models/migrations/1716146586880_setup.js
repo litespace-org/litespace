@@ -18,17 +18,6 @@ exports.up = (pgm) => {
     "tutor-manager",
     "studio",
   ]);
-  pgm.createType("call_event", ["join", "leave"]);
-  pgm.createType("call_recording_status", [
-    "idle",
-    "recording",
-    "recorded",
-    "queued",
-    "empty",
-    "processing",
-    "processed",
-    "processing-failed",
-  ]);
   pgm.createType("user_gender", ["male", "female"]);
   pgm.createType("plan_cycle", ["month", "quarter", "biannual", "year"]);
   pgm.createType("interview_status", [
@@ -143,7 +132,7 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
-    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
+    session_id: { type: "VARCHAR(50)", notNull: true, primaryKey: true },
     canceled_by: { type: "INT", references: "users(id)", default: null },
     canceled_at: { type: "TIMESTAMP", default: null },
     created_at: { type: "TIMESTAMP", notNull: true },
@@ -162,7 +151,7 @@ exports.up = (pgm) => {
     interviewee_id: { type: "SERIAL", notNull: true, references: "users(id)" },
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
-    call_id: { type: "SERIAL", notNull: true, reference: "calls(id)" },
+    session_id: { type: "TEXT", notNull: true, primaryKey: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
@@ -363,7 +352,6 @@ exports.up = (pgm) => {
   });
 
   // indexes
-  pgm.createIndex("calls", "id");
   pgm.createIndex("lessons", "id");
   pgm.createIndex("rules", "id");
   pgm.createIndex("availability_slots", "id");
@@ -402,7 +390,6 @@ exports.down = (pgm) => {
   pgm.dropIndex("gifts", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
-  pgm.dropIndex("calls", "id", { ifExists: true });
   pgm.dropIndex("rules", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
@@ -427,9 +414,6 @@ exports.down = (pgm) => {
   pgm.dropTable("interviews", { ifExists: true });
   pgm.dropTable("lesson_members", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
-  pgm.dropTable("call_events", { ifExists: true });
-  pgm.dropTable("call_members", { ifExists: true });
-  pgm.dropTable("calls", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("users", { ifExists: true });
@@ -438,9 +422,7 @@ exports.down = (pgm) => {
   pgm.dropType("user_role", { ifExists: true });
   pgm.dropType("user_gender", { ifExists: true });
   pgm.dropType("plan_cycle", { ifExists: true });
-  pgm.dropType("call_event", { ifExists: true });
   pgm.dropType("interview_status", { ifExists: true });
-  pgm.dropType("call_recording_status", { ifExists: true });
   pgm.dropType("withdraw_method", { ifExists: true });
   pgm.dropType("invoice_status", { ifExists: true });
 };

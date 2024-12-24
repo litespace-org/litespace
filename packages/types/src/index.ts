@@ -4,7 +4,7 @@ export * as ISubscription from "@/subscription";
 export * as IRoom from "@/room";
 export * as IRating from "@/rating";
 export * as IMessage from "@/message";
-export * as ICall from "@/call";
+export * as ISession from "@/session";
 export * as IPlan from "@/plan";
 export * as ICoupon from "@/coupon";
 export * as IInvite from "@/invite";

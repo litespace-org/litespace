@@ -1,15 +1,14 @@
-import { logger, safe } from "@litespace/sol";
-import { calls } from "@litespace/models";
+import { asSessionId, logger, safe } from "@litespace/sol";
 import { isGhost, isTutor, isUser } from "@litespace/auth";
 import { Wss } from "@litespace/types";
-import { getGhostCall } from "@litespace/sol/ghost";
+import { getGhostSession } from "@litespace/sol/ghost";
 import { cache } from "@/lib/cache";
-import { id, string } from "@/validation/utils";
+import { sessionId, string } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
 import { isEmpty } from "lodash";
 
-const peerPayload = zod.object({ callId: id, peerId: string });
+const peerPayload = zod.object({ sessionId: sessionId, peerId: string });
 const registerPeerPayload = zod.object({ peer: zod.string() });
 
 const stdout = logger("wss");
@@ -20,25 +19,20 @@ const stdout = logger("wss");
 export class Peer extends WssHandler {
   async peerOpened(data: unknown) {
     const error = await safe(async () => {
-      const { callId, peerId } = peerPayload.parse(data);
+      const { sessionId, peerId } = peerPayload.parse(data);
       const user = this.user;
 
-      const members = await calls.findCallMembers([callId]);
-      if (isEmpty(members)) return;
+      const memberIds = await cache.session.getMembers(asSessionId(sessionId));
+      if (isEmpty(memberIds)) return;
 
-      const memberIds = members.map((member) => member.userId);
       const isMember = isUser(user) && memberIds.includes(user.id);
       const allowed = isMember || isGhost(this.user);
       if (!allowed) return;
 
-      this.socket.join(callId.toString());
+      this.socket.join(sessionId);
       this.socket
-        .to(callId.toString())
-        .emit(
-          Wss.ServerEvent.UserJoinedCall, 
-          { peerId }, 
-          () => {}
-        );
+        .to(sessionId)
+        .emit(Wss.ServerEvent.UserJoinedSession, { peerId });
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -51,7 +45,7 @@ export class Peer extends WssHandler {
       stdout.info(`Register peer: ${peer} for ${id}`);
 
       if (isGhost(user))
-        await cache.peer.setGhostPeerId(getGhostCall(user), peer);
+        await cache.peer.setGhostPeerId(getGhostSession(user), peer);
       if (isTutor(user)) await cache.peer.setUserPeerId(user.id, peer);
 
       // notify peers to refetch the peer id if needed

@@ -1,14 +1,15 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { ICall, IInterview, ILesson, IRule, IUser } from "@litespace/types";
+import { ISession, IInterview, ILesson, IRule } from "@litespace/types";
 import { concat, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
 import { interviews, lessons } from "@litespace/models";
 import { INTERVIEW_DURATION } from "@litespace/sol";
+import { asSessionId } from "@litespace/sol";
 
 // todo: impl: each tutor can have interview each 3 months.
-export function canBeInterviewed(calls: ICall.Self[]): boolean {
-  if (isEmpty(calls)) return true;
+export function canBeInterviewed(sessions: ISession.Self[]): boolean {
+  if (isEmpty(sessions)) return true;
   return false;
 }
 
@@ -63,19 +64,18 @@ export function canBook({
 }
 
 // todo: write tests
-export async function canJoinCall({
+export async function canJoinSession({
   userId,
-  callId,
-  callType,
+  sessionId,
 }: {
   userId: number;
-  callId: number;
-  callType: ICall.Type;
+  sessionId: string;
 }) {
   const now = dayjs.utc();
+  const sessionType = sessionId.split(":")[0];
 
-  if (callType === "lesson") {
-    const lesson = await lessons.findByCallId(callId);
+  if (sessionType === "lesson") {
+    const lesson = await lessons.findBySessionId(asSessionId(sessionId));
     if (!lesson) return false;
 
     const start = dayjs.utc(lesson.start);
@@ -91,7 +91,7 @@ export async function canJoinCall({
     return true;
   }
 
-  const interview = await interviews.findByCallId(callId);
+  const interview = await interviews.findBySessionId(asSessionId(sessionId));
   if (!interview) return false;
 
   const start = dayjs.utc(interview.start);

@@ -1,4 +1,4 @@
-import { calls, messages, rooms, users } from "@litespace/models";
+import { interviews, lessons, messages, rooms, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
@@ -10,6 +10,7 @@ import {
   pageNumber,
   jsonBoolean,
   pageSize,
+  sessionId,
 } from "@/validation/utils";
 import { empty, exists, forbidden, notfound } from "@/lib/error";
 import {
@@ -22,6 +23,7 @@ import {
 } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
 import { asFindUserRoomsApiRecord } from "@/lib/chat";
+import { asSessionId } from "@litespace/sol";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
@@ -37,6 +39,8 @@ const updateRoomPayload = zod.object({
   pinned: zod.optional(zod.boolean()),
   muted: zod.optional(zod.boolean()),
 });
+
+const findSessionRoomParams = zod.object({ sessionId: sessionId });
 
 async function createRoom(req: Request, res: Response, next: NextFunction) {
   const currentUser = req.user;
@@ -153,19 +157,22 @@ async function findRoomByMembers(
 /**
  *  @deprecated You can find room by members
  */
-async function findCallRoom(req: Request, res: Response, next: NextFunction) {
+async function findSessionRoom(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isUser(user) || isGhost(user);
   if (!allowed) return next(forbidden());
 
-  const { call } = withNamedId("call").parse(req.params);
-  const userCall = await calls.findById(call);
-  if (!userCall) return next(notfound.call());
+  const { sessionId } = findSessionRoomParams.parse(req.params);
+  const sessionType = sessionId.split(":")[0];
+  const model = sessionType === "lesson" ? lessons : interviews;
 
-  const callMembers = await calls.findCallMembers([userCall.id]);
-  if (isEmpty(callMembers)) return next(notfound.call());
+  const foundSession = await model.findBySessionId(asSessionId(sessionId));
+  if (!foundSession) return next(notfound.session());
 
-  const memberIds = callMembers.map((member) => member.userId);
+  const sessionMembers = await model.findSessionMembers(sessionId);
+  if (isEmpty(sessionMembers)) return next(notfound.session());
+
+  const memberIds = sessionMembers.map((member) => member.userId);
   const isMember = isUser(user) && memberIds.includes(user.id);
   const eligible = isMember || isAdmin(user) || isGhost(user);
   if (!eligible) return next(forbidden());
@@ -176,7 +183,7 @@ async function findCallRoom(req: Request, res: Response, next: NextFunction) {
   const roomMembers = await rooms.findRoomMembers({ roomIds: [room] });
   if (isEmpty(roomMembers)) return next(notfound.base());
 
-  const response: IRoom.FindCallRoomApiResponse = {
+  const response: IRoom.FindSessionRoomApiResponse = {
     room,
     members: roomMembers,
   } as const;
@@ -235,6 +242,6 @@ export default {
   findUserRooms: safeRequest(findUserRooms),
   findRoomByMembers: safeRequest(findRoomByMembers),
   findRoomMembers: safeRequest(findRoomMembers),
-  findCallRoom: safeRequest(findCallRoom),
+  findSessionRoom: safeRequest(findSessionRoom),
   updateRoom: safeRequest(updateRoom),
 };

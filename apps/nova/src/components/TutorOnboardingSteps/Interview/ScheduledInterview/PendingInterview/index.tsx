@@ -6,15 +6,15 @@ import {
 } from "@litespace/luna/Button";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { ICall } from "@litespace/types";
+import { ISession } from "@litespace/types";
 import React from "react";
 import { Link } from "react-router-dom";
 import { Route } from "@/types/routes";
 
 const PendingInterview: React.FC<{
-  interviewer: ICall.PopuldatedMember;
-  call: ICall.Self;
-}> = ({ interviewer, call }) => {
+  interviewer: ISession.PopuldatedMember;
+  session: ISession.Self;
+}> = ({ interviewer, session }) => {
   const intl = useFormatMessage();
   return (
     <div>
@@ -57,7 +57,7 @@ const PendingInterview: React.FC<{
           </p>
 
           <div className="flex flex-row gap-4 mt-6">
-            <Link to={Route.Call.replace(":id", call.id.toString())}>
+            <Link to={Route.Call.replace(":id", session.sessionId)}>
               <Button
                 size={ButtonSize.Small}
                 type={ButtonType.Main}

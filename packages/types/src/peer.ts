@@ -1,10 +1,10 @@
 export type RegisterPeerIdApiPayload = {
   peer: string;
-  call?: number;
+  session?: string;
 };
 
 export type DeletePeerIdApiQurey = {
-  call?: number;
+  session?: string;
 };
 
 export enum PeerType {
@@ -19,7 +19,7 @@ export type FindPeerIdApiQuery =
     }
   | {
       type: PeerType.Ghost;
-      call: number;
+      session: string; // has to be string so zod check can pass
     };
 
 export type FindPeerIdApiResponse = {

@@ -5,7 +5,6 @@ import { users } from "@litespace/models";
 import { safe } from "@litespace/sol/error";
 import { asGhost } from "@litespace/sol/ghost";
 import { isAdmin } from "@/authorization";
-import { IUser } from "@litespace/types";
 
 export function authMiddleware({
   jwtSecret,
@@ -24,9 +23,7 @@ export function authMiddleware({
       if (type === "Basic") {
         const data = Buffer.from(token, "base64").toString("utf-8");
         const [username, password] = data.split(":");
-        const call = Number(username);
-        const valid = !Number.isNaN(call) && password === ghostPassword;
-        if (valid) req.user = asGhost(call);
+        if (password === ghostPassword) req.user = asGhost(username);
       }
 
       if (type === "Bearer") {

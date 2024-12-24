@@ -11,7 +11,7 @@ export enum ApiError {
   BusyTutorManager = "busy-tutor-manager",
   Unexpected = "unexpected",
   NotFound = "not-found",
-  CallNotFound = "call-not-found",
+  SessionNotFound = "session-not-found",
   UserNotFound = "user-not-found",
   TutorNotFound = "tutor-not-found",
   StudentNotFound = "student-not-found",

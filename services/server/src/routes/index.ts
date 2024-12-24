@@ -1,5 +1,5 @@
 import user from "@/routes/user";
-import call from "@/routes/call";
+import session from "@/routes/session";
 import interview from "@/routes/interview";
 import rating from "@/routes/rating";
 import chat from "@/routes/chat";
@@ -24,7 +24,7 @@ export default {
   invoice,
   rule,
   withdrawMethod,
-  call,
+  session,
   plan,
   chat,
   rating,
