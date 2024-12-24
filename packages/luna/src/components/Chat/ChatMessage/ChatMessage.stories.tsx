@@ -13,7 +13,7 @@ const meta: Meta<Component> = {
   decorators: [
     (Story) => {
       return (
-        <div className="tw-max-w-[352px]">
+        <div className="tw-max-w-[400px]">
           <Story />
         </div>
       );
@@ -44,6 +44,24 @@ export const OwnerLongMessage: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(40) },
     owner: true,
+  },
+};
+
+export const PendingMessage: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(10) },
+    owner: true,
+    pending: true,
+    retry: () => alert("retry sending"),
+  },
+};
+
+export const ErrorMessage: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(10) },
+    owner: true,
+    error: true,
+    retry: () => alert("retry sending"),
   },
 };
 
