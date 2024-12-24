@@ -73,14 +73,19 @@
     "axios": "^1.7.7",
     "concurrently": "^8.2.2",
     "env-cmd": "^10.1.0",
+    "glob": "^11.0.0",
+    "lodash": "^4.17.21",
     "rimraf": "^5.0.7",
     "ts-node": "^10.9.2",
     "vercel": "^34.2.7",
-    "vite-node": "^2.1.2",
-    "glob": "^11.0.0",
-    "lodash": "^4.17.21"
+    "vite-node": "^2.1.2"
   },
   "dependencies": {
     "commander": "^12.1.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "dayjs@1.11.13": "patches/dayjs@1.11.13.patch"
+    }
   }
 }
