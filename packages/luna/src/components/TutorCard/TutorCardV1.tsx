@@ -50,7 +50,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "tw-bg-natural-50 tw-flex tw-gap-4",
+        "tw-h-full tw-bg-natural-50 tw-flex tw-gap-4",
         "tw-border tw-border-transparent hover:tw-border hover:tw-border-natural-100",
         "tw-p-4 tw-shadow-ls-small tw-rounded-lg"
       )}
@@ -63,7 +63,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
           object="cover"
         />
       </div>
-      <div>
+      <div className="tw-flex tw-flex-col">
         <Typography
           element="subtitle-1"
           weight="bold"
@@ -158,8 +158,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
           </div>
         ) : null}
 
-        {!isEmpty(topics) ? (
-          <div className="tw-flex tw-mt-4 tw-gap-2 tw-flex-wrap tw-justify-start">
+        {!isEmpty(topics) && topics.join("").length > 0 ? (
+          <div className="tw-flex tw-my-4 tw-gap-2 tw-flex-wrap tw-justify-start">
             {topics.map((topic, idx) => {
               if ((isNewTutor && idx < 6) || (!isNewTutor && idx < 3))
                 return (
@@ -189,7 +189,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
             </Typography>
           </div>
         ) : null}
-        <div className="tw-flex tw-gap-3 tw-mt-4">
+
+        <div className="tw-flex tw-gap-3 tw-mt-auto">
           <Button
             onClick={onBook}
             className="tw-grow tw-basis-1/2 tw-w-full"

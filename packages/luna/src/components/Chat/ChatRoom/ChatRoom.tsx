@@ -47,7 +47,7 @@ export const ChatRoom: React.FC<{
         onClick: togglePin,
       },
       {
-        icon: <Notification />,
+        icon: <Notification width={16} height={16} />,
         label: isMuted ? intl("chat.unmute") : intl("chat.mute"),
         onClick: toggleMute,
       },

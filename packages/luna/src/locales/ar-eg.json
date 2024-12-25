@@ -76,6 +76,9 @@
   "tutors.card.label.lessons": "الدروس",
   "tutors.card.label.rating": "التقييم",
   "tutors.card.label.read-more": "اقرأ المزيد",
+  "tutors.coming-soon": "فرص تعلم جديدة تقترب... معلمون مميزون سينضمون قريبًا!",
+  "tutors.coming.set-notifications": "أخبرني عند التوفر",
+  "tutors.coming-soon.notification-description": "سوف يتم اشعارك بجميع المعلمين الجدد",
   "tutor.profile.tabs.profile": "الملف الشخصى",
   "tutor.profile.tabs.profile.about": "حول المعلم",
   "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
@@ -573,6 +576,7 @@
   "labels.invoice.receipt.upload": "إرفاق الإيصال",
   "labels.litespace": "لايت سبيس",
   "labels.delete": "حذف",
+  "labels.coming-soon": "قريبا 🎉",
   "global.created-at": "تاريخ الإنشاء",
   "global.updated-at": "تاريخ التعديل",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",
