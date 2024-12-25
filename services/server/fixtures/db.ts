@@ -120,7 +120,7 @@ const or = {
     if (!id) return await tutorManager().then((tutorManager) => tutorManager.id);
     return id;
   },
-  async sessionId(type: "lesson" | "interview"): Promise<ISession.Id> {
+  async sessionId(type: ISession.Type): Promise<ISession.Id> {
     return `${type}:${randomUUID()}`;
   },
   async ruleId(id?: number): Promise<number> {

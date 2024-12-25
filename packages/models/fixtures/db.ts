@@ -19,6 +19,7 @@ import {
   IUser,
   IRating,
   IMessage,
+  ISession,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";

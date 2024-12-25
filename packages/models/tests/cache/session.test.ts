@@ -33,7 +33,7 @@ describe("Testing cache/session functions", () => {
     expect(res2).to.contains(3);
   });
 
-  it("should NOT add (duplicate) the same user to the same call twice", async () => {
+  it("should NOT add (duplicate) the same user to the same session twice", async () => {
     const sessionId = genSessionId("lesson");
     await cache.session.addMember({ sessionId, userId: 1 });
     await cache.session.addMember({ sessionId, userId: 1 });

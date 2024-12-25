@@ -2,19 +2,16 @@ import {
   Button,
   ButtonType,
   ButtonSize,
-  ButtonVariant,
 } from "@litespace/luna/Button";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { ISession } from "@litespace/types";
+import { IInterview, IRoom } from "@litespace/types";
 import React from "react";
-import { Link } from "react-router-dom";
-import { Route } from "@/types/routes";
 
 const PendingInterview: React.FC<{
-  interviewer: ISession.PopuldatedMember;
-  session: ISession.Self;
-}> = ({ interviewer, session }) => {
+  interviewer: IRoom.PopulatedMember;
+  interview: IInterview.Self;
+}> = ({ interviewer }) => {
   const intl = useFormatMessage();
   return (
     <div>
@@ -57,6 +54,7 @@ const PendingInterview: React.FC<{
           </p>
 
           <div className="flex flex-row gap-4 mt-6">
+            {/*
             <Link to={Route.Call.replace(":id", session.sessionId)}>
               <Button
                 size={ButtonSize.Small}
@@ -66,6 +64,7 @@ const PendingInterview: React.FC<{
                 {intl("global.labels.go")}
               </Button>
             </Link>
+            */}
             <Button size={ButtonSize.Small} type={ButtonType.Error}>
               {intl("global.labels.cancel")}
             </Button>

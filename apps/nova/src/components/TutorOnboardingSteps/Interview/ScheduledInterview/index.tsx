@@ -1,14 +1,13 @@
 import { destructureInterviewStatus } from "@litespace/sol/interview";
-import { ISession, IInterview } from "@litespace/types";
+import { IInterview, IRoom } from "@litespace/types";
 import React, { useMemo } from "react";
 import PendingInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview/PendingInterview";
 import PassedInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview/PassedInterview";
 
 const ScheduledInterview: React.FC<{
   interview: IInterview.Self;
-  session: ISession.Self;
-  members: ISession.PopuldatedMember[];
-}> = ({ interview, session, members }) => {
+  members: IRoom.PopulatedMember[];
+}> = ({ interview, members }) => {
   // todo: handle canceled and rejected
   const { pending, passed, rejected, canceled } = useMemo(
     () => destructureInterviewStatus(interview.status),
@@ -17,7 +16,7 @@ const ScheduledInterview: React.FC<{
 
   const interviewer = useMemo(() => {
     return (
-      members.find((member) => member.userId === interview.ids.interviewer) ||
+      members.find((member) => member.id === interview.ids.interviewer) ||
       null
     );
   }, [interview.ids.interviewer, members]);
@@ -25,7 +24,7 @@ const ScheduledInterview: React.FC<{
   return (
     <div>
       {pending && interviewer ? (
-        <PendingInterview interviewer={interviewer} session={session} />
+        <PendingInterview interviewer={interviewer} interview={interview} />
       ) : passed && interviewer ? (
         <PassedInterview
           feedback={interview.feedback.interviewer}

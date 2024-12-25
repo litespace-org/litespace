@@ -73,6 +73,7 @@ export class Connection extends WssHandler {
     });
   }
 
+  // TODO: put some more thought on this function implementaion details
   private async joinRooms() {
     const error = await safe(async () => {
       const user = this.user;
@@ -87,13 +88,17 @@ export class Connection extends WssHandler {
       if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
-      // todo: get user sessions from cache
+      // TODO: get user sessions from cache
       const lessonsSessions = (await lessons.find({
         users: [user.id],
         full: true,
         after: dayjs.utc().startOf("day").toISOString(),
         before: dayjs.utc().add(1, "day").toISOString(),
       })).list.map(lesson => lesson.sessionId);
+
+      const interviewsSessions = (await interviews.find({
+        users: [user.id],
+      })).list.map(interview => interview.ids.session);
 
       this.socket.join([...lessonsSessions, ...interviewsSessions].map(
         (session) => asSessionRoomId(session))

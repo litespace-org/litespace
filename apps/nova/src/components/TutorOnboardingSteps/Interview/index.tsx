@@ -6,7 +6,6 @@ import RawHtml from "@/components/TutorOnboardingSteps/RawHtml";
 // import ScheduledInterview from "@/components/TutorOnboardingSteps/Interview/ScheduledInterview";
 
 const Interview: React.FC<{
-  interviews: IInterview.FindPagedInterviewsProps;
   current: Element<IInterview.FindInterviewsApiResponse["list"]> | null;
 }> = ({ current }) => {
   // const onScheduleSuccess = useCallback(() => {

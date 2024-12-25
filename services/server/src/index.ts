@@ -73,7 +73,6 @@ app.use(
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
-app.use("/api/v1/session", routes.session);
 app.use("/api/v1/lesson", routes.lesson(context));
 app.use("/api/v1/interview", routes.interview);
 app.use("/api/v1/rating", routes.rating);
@@ -88,7 +87,6 @@ app.use("/api/v1/topic", routes.topic);
 app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
 app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/cache", routes.cache);
-app.use("/api/v1/peer", routes.peer);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>

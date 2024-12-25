@@ -9,7 +9,6 @@ import {
 import { first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
-import { users } from "@/users";
 
 export class Interviews {
   readonly table = "interviews" as const;
@@ -109,35 +108,6 @@ export class Interviews {
     return await this.findOneBy("session_id", id);
   }
 
-  async findSessionMembers(
-    sessionId: string,
-    tx?: Knex.Transaction
-  ): Promise<ISession.PopuldatedMember[]> {
-    const select: Record<keyof ISession.PopuldatedMemberRow, string> = {
-      user_id: users.column("id"),
-      session_id: this.columns.session_id,
-      name: users.column("name"),
-      image: users.column("image"),
-      role: users.column("role"),
-    };
-
-    const rows: ISession.PopuldatedMemberRow[] = await this.builder(tx)
-      .select<ISession.PopuldatedMemberRow[]>(select)
-      .join(
-        users.table,
-        users.column("id"),
-        this.column("interviewer_id")
-      )
-      .join(
-        users.table,
-        users.column("id"),
-        this.column("interviewee_id")
-      )
-      .where(this.column("session_id"), sessionId);
-
-    return rows.map((row) => this.asSessionPopulatedMember(row));
-  }
-
   async findByInterviewee(id: number): Promise<IInterview.Self[]> {
     return await this.findManyBy("interviewee_id", id);
   }
@@ -220,7 +190,6 @@ export class Interviews {
         rule: row.rule_id,
         session: row.session_id,
       },
-      sessionId: row.session_id,
       feedback: {
         interviewer: row.interviewer_feedback,
         interviewee: row.interviewee_feedback,
@@ -234,18 +203,6 @@ export class Interviews {
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
-    };
-  }
-
-  asSessionPopulatedMember(
-    row: ISession.PopuldatedMemberRow
-  ): ISession.PopuldatedMember {
-    return {
-      sessionId: row.session_id,
-      userId: row.user_id,
-      name: row.name,
-      image: row.image,
-      role: row.role,
     };
   }
 

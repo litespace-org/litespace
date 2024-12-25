@@ -4,6 +4,7 @@ import { Wss } from "@litespace/types";
 import { boolean, sessionId } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
+import { asSessionRoomId } from "../utils";
 
 const toggleCameraPayload = zod.object({ session: sessionId, camera: boolean });
 const toggleMicPayload = zod.object({ session: sessionId, mic: boolean });
@@ -26,10 +27,11 @@ export class InputDevices extends WssHandler {
       if (isGhost(user)) return;
       const { session, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.broadcast(Wss.ServerEvent.CameraToggled, session, {
-        user: user.id,
-        camera,
-      });
+      this.broadcast(
+        Wss.ServerEvent.CameraToggled, 
+        asSessionRoomId(session), 
+        { user: user.id, camera }
+      );
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -40,10 +42,11 @@ export class InputDevices extends WssHandler {
       if (isGhost(user)) return;
       const { session, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.broadcast(Wss.ServerEvent.MicToggled, session, {
-        user: user.id,
-        mic,
-      });
+      this.broadcast(
+        Wss.ServerEvent.MicToggled, 
+        asSessionRoomId(session),
+        { user: user.id, mic }
+      );
     });
     if (error instanceof Error) stdout.error(error.message);
   }

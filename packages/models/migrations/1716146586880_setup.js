@@ -98,34 +98,6 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
-  pgm.createTable("calls", {
-    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
-    recording_status: {
-      type: "call_recording_status",
-      notNull: true,
-      default: "idle",
-    },
-    processing_time: { type: "INT", default: null },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
-
-  pgm.createTable(
-    "call_members",
-    {
-      call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
-      user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    },
-    { constraints: { primaryKey: ["call_id", "user_id"] } }
-  );
-
-  pgm.createTable("call_events", {
-    call_id: { type: "SERIAL", notNull: true, references: "calls(id)" },
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    event_type: { type: "call_event", notNull: true },
-    created_at: { type: "TIMESTAMP", notNull: true },
-  });
-
   pgm.createTable("lessons", {
     id: { type: "SERIAL", primaryKey: true, notNull: true, unique: true },
     start: { type: "TIMESTAMP", notNull: true },
@@ -416,7 +388,7 @@ exports.down = (pgm) => {
   pgm.dropTable("lessons", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
-  pgm.dropTable("users", { ifExists: true });
+  pgm.dropTable("users", { ifExists: true, cascade: true });
 
   // types
   pgm.dropType("user_role", { ifExists: true });

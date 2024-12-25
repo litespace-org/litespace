@@ -1,15 +1,11 @@
-import { ISession, IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { ISession, Void, Wss } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAtlas } from "@/atlas/index";
 import { safe } from "@litespace/sol/error";
 import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
-import { QueryKey } from "@/constants";
 import zod from "zod";
-import { ServerEvent, ServerEventsMap } from "@litespace/types/dist/esm/wss";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -18,22 +14,6 @@ declare module "peerjs" {
       offerToReceiveVideo: boolean;
     };
   }
-}
-
-export function useFindSessionRoomById(
-  sessionId: string | null
-): UseQueryResult<IRoom.FindSessionRoomApiResponse | null, Error> {
-  const atlas = useAtlas();
-
-  const findSessionRoom = useCallback(async () => {
-    if (!sessionId) return null;
-    return await atlas.chat.findSessionRoom(sessionId);
-  }, [atlas.chat, sessionId]);
-
-  return useQuery({
-    queryFn: findSessionRoom,
-    queryKey: ["find-session-room"],
-  });
 }
 
 export function isPermissionDenied(error: Error): boolean {
@@ -364,9 +344,7 @@ export function useSession({
         // call.on("stream", setMateMediaStream);
         call.on("stream", (stream: MediaStream) => addStream(call, stream));
         call.on("close", () => onMediaConnectionClose(call));
-      }, 3000);
-    },
-    [
+      }, 3000); }, [
       onMediaConnectionClose,
       addMediaConnection,
       addStream,
@@ -680,62 +658,6 @@ export function useCallEvents(
   };
 }
 
-// todo: move to peer.ts
-export function useFindPeerId(payload?: IPeer.FindPeerIdApiQuery) {
-  const atlas = useAtlas();
-
-  const findPeerId = useCallback(async () => {
-    if (!payload) return null;
-    const result = await atlas.peer.findPeerId(payload);
-    if (result.peer === null) throw new Error("Peer not found");
-    return result.peer;
-  }, [atlas.peer, payload]);
-
-  return useQuery({
-    queryFn: findPeerId,
-    queryKey: [QueryKey.FindPeerId, payload],
-    retryDelay: (attempt) => {
-      if (attempt <= 10) return 2_000;
-      return Math.min(1_000 * 2 ** attempt, 30_000);
-    },
-    enabled: !!payload,
-  });
-}
-
-export function usePeerIds({
-  isGhost,
-  sessionId,
-  role,
-  mateUserId,
-  disableGhost = false,
-}: {
-  isGhost: boolean;
-  sessionId: string | null;
-  role: IUser.Role | null;
-  mateUserId: number | null;
-  disableGhost?: boolean;
-}) {
-  const findGhostPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    if (isGhost || !sessionId || disableGhost) return;
-    return { type: IPeer.PeerType.Ghost, session: sessionId };
-  }, [sessionId, disableGhost, isGhost]);
-
-  const findTutorPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    const allowed =
-      role === IUser.Role.Student || role === IUser.Role.TutorManager;
-    if (isGhost || !mateUserId || !allowed) return;
-    return { type: IPeer.PeerType.Tutor, tutor: mateUserId };
-  }, [isGhost, mateUserId, role]);
-
-  const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
-  const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
-  return { ghost: ghostPeerId, tutor: tutorPeerId };
-}
-
 const ghostCallMetadata = zod.object({
   userId: zod.number().positive().int(),
   screen: zod.boolean(),
@@ -1006,89 +928,4 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
-}
-
-/*
- * Send an HTTP request to retrieve the current members of a call
- */
-export function useFindSessionMembers(
-  sessionId: string | null
-): UseQueryResult<ISession.FindSessionMembersApiResponse | null, Error> {
-  const atlas = useAtlas();
-
-  const findCallMembers = useCallback(async () => {
-    if (!sessionId) return null;
-    return await atlas.session.findSessionMembers(sessionId);
-  }, [atlas.session, sessionId]);
-
-  return useQuery({
-    queryFn: findCallMembers,
-    queryKey: [QueryKey.FindCallMembers],
-  });
-}
-
-// a shorthand for some ServerEvent Callback type
-type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedSession];
-
-/*
- * Real-time call members state.
- */
-export function useSessionMembers(
-  sessionId: ISession.Id | null
-): number[] {
-  const [members, setMembers] = useState<number[]>([]);
-
-  const socket = useSocket();
-
-  // get the initial list by an http request
-  const query = useFindSessionMembers(sessionId);
-
-  useEffect(() => {
-    if (query.data && query.isFetching && query.isError) setMembers(query.data);
-  }, [query.data, query.isError, query.isFetching]);
-
-  // define WSS events callbacks
-  const onMemberJoinWssCallback: CallEventsCallback = useCallback((payload) => {
-    setMembers((prev) => [...prev, payload.userId]);
-  }, []);
-
-  const onMemberLeaveWssCallback: CallEventsCallback = useCallback(
-    (payload) => {
-      setMembers((prev) => prev.filter((id) => id !== payload.userId));
-    },
-    []
-  );
-
-  // define react callbacks
-  const joinSession = useCallback(() => {
-    if (!socket || !sessionId) return;
-    socket.emit(Wss.ClientEvent.JoinSession, { sessionId });
-  }, [socket, sessionId]);
-
-  const leaveSession = useCallback(() => {
-    if (!socket || !sessionId) return;
-    socket.emit(Wss.ClientEvent.LeaveSession, { sessionId });
-  }, [socket, sessionId]);
-
-  useEffect(() => {
-    // listen to wss events to modify members list accordingly
-    if (!socket) return;
-    socket.on(Wss.ServerEvent.MemberJoinedSession, onMemberJoinWssCallback);
-    socket.on(Wss.ServerEvent.MemberLeftSession, onMemberLeaveWssCallback);
-    joinSession();
-    return () => {
-      socket.off(Wss.ServerEvent.MemberJoinedSession);
-      socket.off(Wss.ServerEvent.MemberLeftSession);
-      leaveSession();
-    };
-  }, [
-    sessionId,
-    socket,
-    joinSession,
-    leaveSession,
-    onMemberLeaveWssCallback,
-    onMemberJoinWssCallback,
-  ]);
-
-  return members;
 }

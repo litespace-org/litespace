@@ -23,7 +23,6 @@ export * as IInvoice from "@/invoice";
 export * as IAsset from "@/asset";
 export * as ITopic from "@/topic";
 export * as Server from "@/server";
-export * as IPeer from "@/peer";
 export * from "@/api";
 export * from "@/utils";
 export * from "@/api";

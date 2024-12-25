@@ -1,6 +1,6 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { ISession, IInterview, ILesson, IRule } from "@litespace/types";
-import { concat, isEmpty } from "lodash";
+import { IInterview, ILesson, IRule } from "@litespace/types";
+import { concat, first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
 import { interviews, lessons } from "@litespace/models";
@@ -8,7 +8,7 @@ import { INTERVIEW_DURATION } from "@litespace/sol";
 import { asSessionId } from "@litespace/sol";
 
 // todo: impl: each tutor can have interview each 3 months.
-export function canBeInterviewed(sessions: ISession.Self[]): boolean {
+export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
   if (isEmpty(sessions)) return true;
   return false;
 }
@@ -72,7 +72,7 @@ export async function canJoinSession({
   sessionId: string;
 }) {
   const now = dayjs.utc();
-  const sessionType = sessionId.split(":")[0];
+  const sessionType = first(sessionId.split(":"));
 
   if (sessionType === "lesson") {
     const lesson = await lessons.findBySessionId(asSessionId(sessionId));

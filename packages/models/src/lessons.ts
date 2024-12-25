@@ -196,36 +196,6 @@ export class Lessons {
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
-  async findSessionMembers(
-    sessionId: string,
-    tx?: Knex.Transaction
-  ): Promise<ISession.PopuldatedMember[]> {
-    const select: Record<keyof ISession.PopuldatedMemberRow, string> = {
-      user_id: users.column("id"),
-      session_id: this.columns.lessons("session_id"),
-      name: users.column("name"),
-      image: users.column("image"),
-      role: users.column("role"),
-    };
-
-    const rows: ISession.PopuldatedMemberRow[] = await users
-      .builder(tx)
-      .select<ISession.PopuldatedMemberRow[]>(select)
-      .join(
-        this.table.members,
-        this.columns.members("user_id"),
-        users.column("id")
-      )
-      .join(
-        this.table.lessons,
-        this.columns.lessons("id"),
-        this.columns.members("lesson_id")
-      )
-      .where(this.columns.lessons("session_id"), sessionId)
-
-    return rows.map((row) => this.asSessionPopulatedMember(row));
-  }
-
   async findLessonsByMembers(
     members: number[],
     tx?: Knex.Transaction
@@ -570,18 +540,6 @@ export class Lessons {
   ): ILesson.PopuldatedMember {
     return {
       lessonId: row.lesson_id,
-      userId: row.user_id,
-      name: row.name,
-      image: row.image,
-      role: row.role,
-    };
-  }
-
-  asSessionPopulatedMember(
-    row: ISession.PopuldatedMemberRow
-  ): ISession.PopuldatedMember {
-    return {
-      sessionId: row.session_id,
       userId: row.user_id,
       name: row.name,
       image: row.image,

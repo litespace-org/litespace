@@ -9,19 +9,17 @@ import {
 // import { useMediaQueries } from "@litespace/luna/hooks/media";
 // import { useRender } from "@litespace/luna/hooks/common";
 // import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useParams } from "react-router-dom";
 import cn from "classnames";
 // import { useFullScreen } from "@/hooks/call";
 // import Media from "@/components/Call/Media";
 // import Messages from "@/components/Chat/Messages";
 import { orNull, orUndefined } from "@litespace/sol/utils";
 import {
-  useSessionMembers,
-  // useCall,
+  //useSessionMembers,
+  //usePeerIds,
   useSessionV2,
-  useFindSessionRoomById,
+  //useFindSessionRoomById,
   useFullScreen,
-  usePeerIds,
 } from "@litespace/headless/sessions";
 import { useDisplayRecorder } from "@litespace/headless/recorder";
 import { isGhost } from "@/lib/ghost";
@@ -33,7 +31,6 @@ import Microphone from "@litespace/assets/Microphone";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import { useUser } from "@litespace/headless/context/user";
-import { ISession } from "@litespace/types";
 // import GhostView from "@/components/Call/GhostView";
 
 const Call: React.FC = () => {
@@ -41,23 +38,10 @@ const Call: React.FC = () => {
   // const chat = useRender();
   // const intl = useFormatMessage();
   // const mediaQueries = useMediaQueries();
-  const { id } = useParams<{ id: ISession.Id }>();
   // const { isFullScreen, toggleFullScreen, ref } = useFullScreen();
 
-  const { sessionId } = useMemo(() => {
-    return { sessionId: id || null };
-  }, [id]);
-
-
-  const callRoom = useFindSessionRoomById(!isGhost ? sessionId : null);
-
-  const mateInfo = useMemo(() => {
-    if (!callRoom.data) return;
-    return callRoom.data.members.find((member) => member.id !== user?.id);
-  }, [callRoom.data, user?.id]);
-
-  const members = useSessionMembers(sessionId);
-  useEffect(() => console.log("In App members: ", members), [members]);
+  //const members = useSessionMembers(sessionId);
+  //useEffect(() => console.log("In App members: ", members), [members]);
 
   // const messages = useMemo(
   //   () =>
@@ -118,6 +102,7 @@ const Call: React.FC = () => {
 
   const fullScreen = useFullScreen<HTMLDivElement>();
 
+  /*
   const peers = usePeerIds(
     useMemo(
       () => ({
@@ -130,6 +115,7 @@ const Call: React.FC = () => {
       [sessionId, mateInfo?.id, user?.role]
     )
   );
+  */
 
   const onCloseSession = useCallback(() => {
     // peers.ghost.refetch();
@@ -150,12 +136,12 @@ const Call: React.FC = () => {
     useMemo(
       () => ({
         isGhost,
-        ghostPeerId: orNull(peers.ghost.data),
-        tutorPeerId: orNull(peers.tutor.data),
+        ghostPeerId: orNull("ghost"), // TODO: pass peers.ghost.data
+        tutorPeerId: orNull("ghost"), // TODO: pass peers.tutor.data
         userId: orNull(user?.id),
         onCloseSession,
       }),
-      [onCloseSession, peers.ghost.data, peers.tutor.data, user?.id]
+      [onCloseSession, user?.id]
     )
   );
 
@@ -177,7 +163,7 @@ const Call: React.FC = () => {
           screen: mateScreenStream,
         },
         speaking: true,
-        name: orUndefined(mateInfo?.name),
+        name: undefined // orUndefined(mateInfo?.name),
       },
       fullScreen: {
         enabled: fullScreen.enabled,
@@ -189,7 +175,6 @@ const Call: React.FC = () => {
       fullScreen.enabled,
       fullScreen.exit,
       fullScreen.start,
-      mateInfo?.name,
       mateScreenStream,
       mateStream,
       user?.name,
@@ -302,12 +287,14 @@ const Call: React.FC = () => {
               /*
                * TODO: replace this by members views
                */
+              /*
               <div>
                 <h1>Joined members</h1>
                 {members.map((m) => (
                   <label className="mx-1">-{m}-</label>
                 ))}
               </div>
+              */
             }
 
             {/* <Button

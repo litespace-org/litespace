@@ -16,7 +16,7 @@
   - `apps/dashboard` - LiteSpace admin dashboard.
   - `apps/mobile` - LiteSpace mobile app.
   - `apps/nebula` - LiteSpace landing page.
-  - `apps/nova` - LiteSpace main web platform.
+  - `apps/nova` - LiteSpace main web platform. 
 
 # Project Setup
 

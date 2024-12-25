@@ -1,5 +1,4 @@
-import { ISession, IFilter, IInterview, Paginated } from ".";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { ISession, IFilter } from ".";
 
 export enum Status {
   Pending = "pending",
@@ -23,11 +22,8 @@ export type Self = {
      */
     interviewee: number;
     rule: number;
-    session: ISession.Id; /** @deprecated */
+    session: ISession.Id;
   };
-  // sessionId has to be extracted from ids to be compatible with ILesson.Self 
-  // as ISession.Self is either a lesson.self or interview.self
-  sessionId: ISession.Id;
   /**
    * ISO UTC datetime.
    */
@@ -121,29 +117,4 @@ export type FindInterviewsApiQuery = IFilter.Pagination & {
   levels?: number[];
   signed?: boolean;
   signers?: number[];
-};
-
-/**
- * @deprecated should be removed
- */
-export type FindPagedInterviewsProps = {
-  query: UseInfiniteQueryResult<
-    InfiniteData<
-      Paginated<{
-        interview: IInterview.Self;
-        session: ISession.Self;
-        members: ISession.PopuldatedMember[];
-      }>,
-      unknown
-    >,
-    Error
-  >;
-  list:
-    | {
-        interview: IInterview.Self;
-        session: ISession.Self;
-        members: ISession.PopuldatedMember[];
-      }[]
-    | null;
-  more: () => void;
 };
