@@ -11,6 +11,7 @@ export default {
     },
     extend: {
       zIndex: {
+        quote: 10,
         dialog: "11",
         "select-dropdown": "12",
         tooltip: "13",

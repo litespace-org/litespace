@@ -1,20 +1,28 @@
-import { useFindTutorRatings } from "@litespace/headless/rating";
-import React, { useMemo } from "react";
+import {
+  useDeleteRatingTutor,
+  useEditRatingTutor,
+  useFindTutorRatings,
+} from "@litespace/headless/rating";
+import React, { useCallback, useMemo, useState } from "react";
 import { organizeRatings } from "@/lib/ratings";
 import { useUser } from "@litespace/headless/context/user";
 import {
+  DeleteRating,
+  RatingDialog,
   TutorRatingCard,
   TutorRatingCardGroup,
 } from "@litespace/luna/TutorFeedback";
 import { Typography } from "@litespace/luna/Typography";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import Star from "@litespace/assets/Star";
-import { Button, ButtonSize } from "@litespace/luna/Button";
+import NewTutor from "@litespace/assets/NewTutor";
 import { isEmpty } from "lodash";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
-import cn from "classnames";
+import { useToast } from "@litespace/luna/Toast";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKey } from "@litespace/headless/constants";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import NewTutor from "@litespace/assets/NewTutor";
+import { RateTutor } from "@/components/TutorProfile/RateTutor";
+import cn from "classnames";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -42,10 +50,66 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
 }) => {
   const { user } = useUser();
   const intl = useFormatMessage();
+  const toast = useToast();
+  const invalidateQuery = useInvalidateQuery();
+  const [deleteDialog, setDeleteDialog] = useState<number | null>(null);
+
+  const [editDialog, setEditDialog] = useState<{
+    id: number;
+    studentName: string;
+    studentId: number;
+    imageUrl: string;
+    feedback: string | null;
+    rating: number;
+  } | null>(null);
+
+  const closeDelete = useCallback(() => {
+    setDeleteDialog(null);
+  }, []);
+
+  const onDeleteError = useCallback(
+    () =>
+      toast.error({
+        title: intl("tutor.rating.delete.error"),
+      }),
+    [intl, toast]
+  );
+
+  const onDeleteSuccess = useCallback(() => {
+    invalidateQuery([QueryKey.FindTutorRating, id]);
+    closeDelete();
+  }, [id, invalidateQuery, closeDelete]);
+
+  const deleteMutation = useDeleteRatingTutor({
+    onSuccess: onDeleteSuccess,
+    onError: onDeleteError,
+  });
+
+  const closeEdit = useCallback(() => {
+    setEditDialog(null);
+  }, []);
+
+  const onEditSuccess = useCallback(() => {
+    invalidateQuery([QueryKey.FindTutorRating, id]);
+    closeEdit();
+  }, [id, invalidateQuery, closeEdit]);
+
+  const onEditError = useCallback(
+    () =>
+      toast.error({
+        title: intl("tutor.rating.edit.error"),
+      }),
+    [intl, toast]
+  );
+  const editMutation = useEditRatingTutor({
+    onSuccess: onEditSuccess,
+    onError: onEditError,
+  });
+
   const ratingsQuery = useFindTutorRatings(id, { page: 1, size: 30 });
 
-  const ratings = useMemo(
-    () => organizeRatings(ratingsQuery.data?.list, user?.id),
+  const { ratings, currentUserRated } = useMemo(
+    () => organizeRatings(ratingsQuery.data?.list || [], user?.id),
     [ratingsQuery.data, user]
   );
 
@@ -92,6 +156,17 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                   studentName={rating.name}
                   tutorName={tutorName}
                   owner={rating.userId === user.id}
+                  onDelete={() => setDeleteDialog(rating.id)}
+                  onEdit={() =>
+                    setEditDialog({
+                      id: rating.id,
+                      studentName: rating.name || "",
+                      studentId: rating.userId,
+                      imageUrl: asFullAssetUrl(rating.image || ""),
+                      feedback: rating.feedback,
+                      rating: rating.value,
+                    })
+                  }
                 />
               );
 
@@ -112,30 +187,37 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
         </div>
       )}
 
-      <div
-        className={cn(
-          "flex gap-10 flex-col items-center justify-center",
-          isEmpty(ratings) && "-mt-6"
-        )}
-      >
-        <Typography
-          element="subtitle-1"
-          weight="medium"
-          className="text-natural-950 text-center max-w-[631px]"
-        >
-          {intl("tutor.profile.your-ratings-help")}
-        </Typography>
+      {deleteDialog ? (
+        <DeleteRating
+          loading={deleteMutation.isPending}
+          open={!!deleteDialog}
+          close={closeDelete}
+          onDelete={() => deleteMutation.mutate(deleteDialog)}
+        />
+      ) : null}
 
-        <Button
-          size={ButtonSize.Small}
-          className="w-[386px] flex items-center gap-2"
-        >
-          <Typography element="body" weight="semibold">
-            {intl("tutor.profile.rate-tutor")}
-          </Typography>
-          <Star className="[&>*]:fill-natural-50" />
-        </Button>
-      </div>
+      {editDialog ? (
+        <RatingDialog
+          {...editDialog}
+          tutorName={tutorName || ""}
+          onClose={closeEdit}
+          loading={editMutation.isPending}
+          open={!!editDialog}
+          onSubmit={(payload: { value: number; feedback: string | null }) =>
+            editMutation.mutate({
+              id: editDialog.id,
+              payload: {
+                value: payload.value,
+                feedback: payload.feedback || "",
+              },
+            })
+          }
+        />
+      ) : null}
+
+      {!currentUserRated ? (
+        <RateTutor tutorName={tutorName || ""} tutorId={id} />
+      ) : null}
     </div>
   );
 };

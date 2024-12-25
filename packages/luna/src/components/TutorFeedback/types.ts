@@ -34,7 +34,7 @@ export type RatingCardProps = {
   onDelete?: Void;
 };
 
-export type FeedbackEditProps = {
+export type RateDialogProps = {
   /**
    * name of the owner of the rating
    */
@@ -54,7 +54,7 @@ export type FeedbackEditProps = {
   /**
    * rating of the tutor bet 1, 5
    */
-  rating: number;
+  rating?: number;
   /**
    * tutor name who is being rated
    */
@@ -64,13 +64,17 @@ export type FeedbackEditProps = {
    */
   open: boolean;
   /**
+   * flag indicating the query is pending
+   */
+  loading?: boolean;
+  /**
    * fn toggles the dialog
    */
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
   /**
    * fn updates the rating and comment of the tutor
    */
-  onUpdate: (payload: { value: number; feedback: string | null }) => void;
+  onSubmit: (payload: { value: number; feedback: string | null }) => void;
   onClose: Void;
 };
 
@@ -82,9 +86,10 @@ export type FeedbackDeleteProps = {
   /**
    * fn toggles the dialog
    */
-  setOpen: (open: boolean) => void;
+  setOpen?: (open: boolean) => void;
   onDelete: Void;
   close: Void;
+  loading?: boolean;
 };
 
 export type TutorRatingCardGroupProps = {

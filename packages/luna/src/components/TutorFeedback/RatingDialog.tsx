@@ -3,13 +3,17 @@ import { Dialog } from "@/components/Dialog/V2";
 import { Input } from "@/components/Input";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
 import { TutorRatingCard } from "@/components/TutorFeedback";
-import { FeedbackEditProps } from "@/components/TutorFeedback/types";
+import { RateDialogProps } from "@/components/TutorFeedback/types";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import MessageQuestion from "@litespace/assets/MessageQuestion";
 import React, { useState } from "react";
 
-export const EditRating: React.FC<FeedbackEditProps> = ({
+/**
+ * This dialog will be used for both editing ratings and creating new rating
+ * The reason they are used for this is because they are similar in design
+ */
+export const RatingDialog: React.FC<RateDialogProps> = ({
   studentName,
   tutorName,
   studentId,
@@ -17,13 +21,14 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
   feedback,
   rating,
   open,
+  loading,
   setOpen,
   onClose,
-  onUpdate,
+  onSubmit,
 }) => {
   const intl = useFormatMessage();
   const [newFeedback, setNewFeedback] = useState<string | null>(feedback);
-  const [newRating, setNewRating] = useState<number>(rating);
+  const [newRating, setNewRating] = useState<number>(rating || 0);
 
   return (
     <Dialog
@@ -35,7 +40,9 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
             weight="bold"
             className="tw-text-natural-950"
           >
-            {intl("tutor.rating.edit")}
+            {rating
+              ? intl("tutor.rating.edit")
+              : intl("tutor.rating.rate", { tutor: tutorName })}
           </Typography>
         </div>
       }
@@ -70,9 +77,12 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
         <Button
           size={ButtonSize.Large}
           onClick={() =>
-            onUpdate({ value: newRating, feedback: newFeedback || null })
+            onSubmit({ value: newRating, feedback: newFeedback || null })
           }
-          disabled={newFeedback === feedback && newRating === rating}
+          disabled={
+            loading || (newFeedback === feedback && newRating === rating)
+          }
+          loading={loading}
         >
           <Typography
             element="body"
@@ -87,4 +97,4 @@ export const EditRating: React.FC<FeedbackEditProps> = ({
   );
 };
 
-export default EditRating;
+export default RatingDialog;

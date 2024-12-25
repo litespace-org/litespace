@@ -78,7 +78,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
             </div>
             <div
               className={cn(
-                "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-50",
+                "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-quote",
                 isEditing
                   ? "tw-w-[42px] tw-h-[42px] -tw-right-[7.5px] -tw-bottom-[7.5px]"
                   : "tw-w-14 tw-h-14 -tw-right-[12px] -tw-bottom-[12px]"
@@ -98,8 +98,8 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
         {!isEditing && !feedback ? null : (
           <Typography
             element="tiny-text"
-            weight={!feedback && isEditing ? "semibold" : "regular"}
-            className={cn("tw-line-clamp-5 tw-text-center tw-text-natural-600")}
+            weight="semibold"
+            className={cn("tw-line-clamp-5 tw-text-center tw-text-natural-800")}
           >
             {!feedback && isEditing
               ? intl("tutor.rating.feedback.placeholder")

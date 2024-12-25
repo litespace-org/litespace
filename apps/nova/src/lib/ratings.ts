@@ -7,9 +7,9 @@ export const organizeRatings = (
   ratings?: IRating.FindTutorRatingsApiResponse["list"],
   currentUserId?: number
 ) => {
-  if (!ratings) return [];
+  if (!ratings) return { ratings: [], currentUserRated: false };
 
-  let currentUserRating: IRating.RateeRating | null = null;
+  let currentUserRating: IRating.RateeRating | undefined;
   const ratingsWithFeedback: IRating.RateeRating[] = [];
   const ratingsWithoutFeedback: {
     ratings: IRating.RateeRating[];
@@ -34,8 +34,11 @@ export const organizeRatings = (
   });
 
   const otherUsersRatings = [...ratingsWithFeedback, ...ratingsWithoutFeedback];
-  return concat(currentUserRating || [], otherUsersRatings).slice(
-    0,
-    MAX_RATING_COUNT
-  );
+  return {
+    ratings: concat(currentUserRating || [], otherUsersRatings).slice(
+      0,
+      MAX_RATING_COUNT
+    ),
+    currentUserRated: !!currentUserRating,
+  };
 };
