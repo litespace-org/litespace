@@ -14,6 +14,7 @@ import { isEmpty } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 import { X } from "react-feather";
 import React from "react";
+import { Tooltip } from "@/components/Tooltip/Tooltip";
 
 export const MultiSelect = <T,>({
   options,
@@ -67,8 +68,7 @@ export const MultiSelect = <T,>({
         >
           <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
             <SearchIcon className="tw-justify-self-start" />
-            {/* TODO: make it accept multiple lines */}
-            <div className="tw-h-full tw-flex-1 tw-flex tw-flex-wrap tw-justify-start tw-items-center tw-gap-2">
+            <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
                   {placeholder}
@@ -77,30 +77,29 @@ export const MultiSelect = <T,>({
                 selectedOptions.map(({ label, value }, idx) => {
                   if (idx <= 1)
                     return (
-                      <div
-                        key={label}
-                        className="tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full"
-                      >
-                        <Typography
-                          element="body"
-                          className="tw-text-natural-50"
-                        >
-                          {label}
-                        </Typography>
-                        <button
-                          onClick={() => {
-                            if (!setValues) return;
-                            const copy = structuredClone(values);
-                            setValues(
-                              copy.filter(
-                                (optionValue) => optionValue !== value
-                              )
-                            );
-                          }}
-                        >
-                          <X className="tw-w-4 tw-h-4 tw-stroke-natural-50" />
-                        </button>
-                      </div>
+                      <Tooltip side="top" content={label} key={label}>
+                        <div className=" tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full">
+                          <Typography
+                            element="body"
+                            className="tw-text-natural-50 tw-max-w-[100px] tw-truncate"
+                          >
+                            {label}
+                          </Typography>
+                          <button
+                            onClick={() => {
+                              if (!setValues) return;
+                              const copy = structuredClone(values);
+                              setValues(
+                                copy.filter(
+                                  (optionValue) => optionValue !== value
+                                )
+                              );
+                            }}
+                          >
+                            <X className="tw-w-4 tw-h-4 tw-stroke-natural-50" />
+                          </button>
+                        </div>
+                      </Tooltip>
                     );
 
                   if (idx === 2)
@@ -111,7 +110,7 @@ export const MultiSelect = <T,>({
                       >
                         <Typography
                           element="body"
-                          className="tw-text-natural-50"
+                          className="tw-text-natural-50 tw-whitespace-nowrap"
                         >
                           {selectedOptions.length - idx} +
                         </Typography>

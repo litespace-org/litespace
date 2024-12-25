@@ -20,7 +20,7 @@ import {
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import TopicSelector from "@/components/Settings/TopicSelector";
-import { useTopics, useUserTopics } from "@litespace/headless/topic";
+import { isEqual } from "lodash";
 
 type IForm = {
   name: string;
@@ -36,23 +36,13 @@ type IForm = {
 
 export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   const [photo, setPhoto] = useState<File | null>(null);
-  const [topics, setTopics] = useState<number[]>([]);
-
-  const allTopicsQuery = useTopics({});
-  const userTopicsQuery = useUserTopics();
-
-  const allTopics = useMemo(() => {
-    if (!allTopicsQuery.query.data?.list) return [];
-    return allTopicsQuery.query.data.list.map((topic) => ({
-      value: topic.id,
-      label: topic.name.en,
-    }));
-  }, [allTopicsQuery]);
-
-  const userTopics = useMemo(() => {
-    if (!userTopicsQuery.data) return [];
-    return userTopicsQuery.data.map((topic) => topic.id);
-  }, [userTopicsQuery.data]);
+  /**
+   * flag to indicate that change has happened in user settings to enable sending requests
+   */
+  const [submitFlag, setSubmitFlag] = useState({
+    userData: false,
+    topics: false,
+  });
 
   const intl = useFormatMessage();
   const toast = useToast();
@@ -82,6 +72,21 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     !!form.watch("password.new") ||
     !!form.watch("password.current") ||
     !!form.watch("password.confirm");
+
+  const currentValues = form.watch();
+
+  useEffect(() => {
+    const initialValues = form.control._defaultValues;
+    if (isEqual(initialValues, currentValues) && !photo)
+      return setSubmitFlag((prev) => ({
+        ...prev,
+        userData: false,
+      }));
+    return setSubmitFlag((prev) => ({
+      ...prev,
+      userData: true,
+    }));
+  }, [form, currentValues, photo, submitFlag]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
@@ -120,6 +125,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
 
   const onSubmit = useCallback(
     (data: IForm) => {
+      if (!submitFlag) return;
       if (photo) console.log("upload photo");
       if (!user) return;
 
@@ -141,7 +147,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
         },
       });
     },
-    [mutation, photo, user]
+    [mutation, photo, user, submitFlag]
   );
 
   useEffect(() => {
@@ -151,10 +157,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
       form.trigger("password.confirm");
     }
   }, [form, requirePassword]);
-
-  useEffect(() => {
-    setTopics(userTopics);
-  }, [userTopics]);
 
   return (
     <Form
@@ -303,14 +305,9 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           </div>
         </div>
       </div>
-      <TopicSelector
-        onChange={setTopics}
-        allTopics={allTopics}
-        userTopics={topics}
-        loading={allTopicsQuery.query.isPending || userTopicsQuery.isPending}
-      />
+      <TopicSelector setSubmitFlag={setSubmitFlag} submitFlag={submitFlag} />
       <Button
-        disabled={false}
+        disabled={!submitFlag.topics && !submitFlag.userData}
         size={ButtonSize.Large}
         className="mr-auto mt-auto"
         htmlType="submit"
