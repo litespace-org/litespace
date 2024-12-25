@@ -1,7 +1,7 @@
 import { passwordRegex } from "@/constants";
 import {
   IUser,
-  ISlot,
+  IRule,
   ISubscription,
   IDate,
   StringLiteral,
@@ -80,10 +80,10 @@ export const birthYear = zod.coerce
 export const datetime = zod.coerce.string().datetime();
 
 export const repeat = zod.enum([
-  ISlot.Repeat.No,
-  ISlot.Repeat.Daily,
-  ISlot.Repeat.Weekly,
-  ISlot.Repeat.Monthly,
+  IRule.Repeat.No,
+  IRule.Repeat.Daily,
+  IRule.Repeat.Weekly,
+  IRule.Repeat.Monthly,
 ]);
 
 export const role = zod.enum([

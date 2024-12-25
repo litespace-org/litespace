@@ -1,7 +1,6 @@
 export * as IUser from "@/user";
 export * as ITutor from "@/tutor";
 export * as ISubscription from "@/subscription";
-export * as ISlot from "@/slot";
 export * as IRoom from "@/room";
 export * as IRating from "@/rating";
 export * as IMessage from "@/message";
@@ -16,6 +15,7 @@ export * as IFilter from "@/filter";
 export * as IInterview from "@/interview";
 export * as Wss from "@/wss";
 export * as IRule from "@/rule";
+export * as IAvailabilitySlot from "@/availabilitySlot";
 export * as IDate from "@/date";
 export * as ILesson from "@/lesson";
 export * as IWithdrawMethod from "@/withdrawMethod";
