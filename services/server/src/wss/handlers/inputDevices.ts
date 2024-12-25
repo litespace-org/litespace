@@ -1,11 +1,9 @@
 import { logger, safe } from "@litespace/sol";
-import { rooms } from "@litespace/models";
 import { isGhost } from "@litespace/auth";
 import { Wss } from "@litespace/types";
 import { id, boolean } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
-import { isEmpty } from "lodash";
 
 const toggleCameraPayload = zod.object({ call: id, camera: boolean });
 const toggleMicPayload = zod.object({ call: id, mic: boolean });

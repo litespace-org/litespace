@@ -13,27 +13,37 @@ export class ClientSocket {
   }
 
   userTyping(roomId: number) {
-    this.client.emit(Wss.ClientEvent.UserTyping, { roomId });
+    return this.emit( Wss.ClientEvent.UserTyping, { roomId });
   }
 
   joinCall(callId: number, type: ICall.Type) {
-    this.client.emit(Wss.ClientEvent.JoinCall, { callId, type });
+    return this.emit(Wss.ClientEvent.JoinCall, { callId, type });
   }
 
   leaveCall(callId: number) {
-    this.client.emit(Wss.ClientEvent.LeaveCall, { callId });
+    return this.emit(Wss.ClientEvent.LeaveCall, { callId });
   }
 
-  sendMessage(roomId: number, ref: number, text: string) {
-    this.client.emit(Wss.ClientEvent.SendMessage, { roomId, ref, text });
+  sendMessage(roomId: number, text: string) {
+    return this.emit(Wss.ClientEvent.SendMessage, { roomId, text });
   }
 
   deleteMessage(msgId: number) {
-    this.client.emit(Wss.ClientEvent.DeleteMessage, { id: msgId });
+    return this.emit(Wss.ClientEvent.DeleteMessage, { id: msgId });
   }
 
   markMessageAsRead(msgId: number) {
-    this.client.emit(Wss.ClientEvent.MarkMessageAsRead, { id: msgId });
+    return this.emit(Wss.ClientEvent.MarkMessageAsRead, { id: msgId });
+  }
+
+  async emit<T extends keyof Wss.ClientEventsMap>(
+    event: keyof Wss.ClientEventsMap, 
+    data: Parameters<Wss.ClientEventsMap[T]>[0]
+  ): Promise<Wss.AcknowledgePayload> {
+    return new Promise((resolve, _) => {
+      this.client.emit(event, data as any, (ack) => ack && resolve(ack));
+      setTimeout(() => resolve({ code: Wss.AcknowledgeCode.Ok }), 2_000);
+    });
   }
 
   /**

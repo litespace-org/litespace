@@ -34,7 +34,11 @@ export class Peer extends WssHandler {
       this.socket.join(callId.toString());
       this.socket
         .to(callId.toString())
-        .emit(Wss.ServerEvent.UserJoinedCall, { peerId });
+        .emit(
+          Wss.ServerEvent.UserJoinedCall, 
+          { peerId }, 
+          () => {}
+        );
     });
     if (error instanceof Error) stdout.error(error.message);
   }
