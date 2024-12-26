@@ -97,12 +97,6 @@ export type FindUserRulesWithSlotsApiResponse = {
   slots: Slot[];
 };
 
-export type Cache = {
-  tutor: number;
-  rule: number;
-  events: RuleEvent[];
-};
-
 /**
  * Slot: represents unpacked time slot at specific time and duration.
  *

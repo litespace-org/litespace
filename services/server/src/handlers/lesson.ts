@@ -20,7 +20,6 @@ import { safe } from "@litespace/sol/error";
 import { unpackRules } from "@litespace/sol/rule";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
-import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/call";
 import { concat, isEqual } from "lodash";
@@ -123,8 +122,6 @@ function create(context: ApiContext) {
             slots,
           }),
         };
-
-        await cache.rules.setOne(payload);
 
         context.io.sockets
           .in(Wss.Room.TutorsCache)
@@ -253,8 +250,7 @@ function cancel(context: ApiContext) {
             slots,
           }),
         };
-        // update tutor rules cache
-        await cache.rules.setOne(payload);
+
         // notify client
         context.io.sockets
           .to(Wss.Room.TutorsCache)

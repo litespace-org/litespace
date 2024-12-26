@@ -88,7 +88,6 @@ describe("/api/v1/user/", () => {
 
       it("should successfully load onboard tutors from db to cache", async () => {
         expect(await cache.tutors.exists()).to.eql(false);
-        expect(await cache.rules.exists()).to.eql(false);
 
         const newUser = await db.user({ role: Role.SuperAdmin });
         const newTutor = await db.tutor();

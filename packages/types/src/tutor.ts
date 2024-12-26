@@ -91,7 +91,7 @@ export type FindTutorInfoApiResponse = {
 
 export type FindOnboardedTutorsApiResponse = {
   total: number;
-  list: Array<Cache & { rules: IRule.RuleEvent[] }>;
+  list: Array<Cache>;
 };
 
 export type PublicTutorFieldsForStudio = {
