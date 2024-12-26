@@ -1,33 +1,22 @@
-import { IRule, ITutor } from "@litespace/types";
-import dayjs, { Dayjs } from "dayjs";
+import { ITutor } from "@litespace/types";
 import { Knex } from "knex";
 import {
-  rules,
   tutors,
   knex,
   lessons,
   topics,
   ratings,
 } from "@litespace/models";
-import { entries, first, flatten, groupBy, orderBy } from "lodash";
-import { unpackRules } from "@litespace/sol/rule";
+import { first, orderBy } from "lodash";
 import { cache } from "@/lib/cache";
-import { selectTutorRuleEvents } from "./events";
 import { Gender } from "@litespace/types/dist/esm/user";
 
-export type TutorsCache = {
-  tutors: ITutor.Cache[];
-  rules: IRule.Cache[];
-};
+export type TutorsCache = ITutor.Cache[];
 
-export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
+export async function constructTutorsCache(): Promise<TutorsCache> {
   // create the cache for the next month starting from `date`
-  const start = date.startOf("day");
-  const end = start.add(30, "days").endOf("day");
-
   const [
     onboardedTutors,
-    tutorsRules,
     tutorsTopics,
     tutorsRatings,
     tutorsLessonsCount,
@@ -38,7 +27,6 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
 
     return await Promise.all([
       onboardedTutors,
-      rules.findActivatedRules(tutorIds, start.toISOString(), tx),
       topics.findUserTopics({ users: tutorIds }),
       ratings.findAvgRatings(tutorIds),
       lessons.countLessonsBatch({ users: tutorIds, canceled: false }),
@@ -49,27 +37,8 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     ]);
   });
 
-  //! todo: filter lessons by tutor id
-  // const tutorCallsMap = groupBy<ILesson.Self>(tutorLessons, l => l.);
-  const tutorRulesMap = groupBy<IRule.Self>(tutorsRules, "userId");
-  const rulesCachePayload = entries<IRule.Self[]>(tutorRulesMap).map(
-    ([tutor, rules]): IRule.Cache[] => {
-      // const calls = tutorCallsMap[tutor] || [];
-      return rules.map((rule) => ({
-        tutor: Number(tutor),
-        rule: rule.id,
-        events: unpackRules({
-          rules: [rule],
-          slots: [],
-          start: start.toISOString(),
-          end: end.toISOString(),
-        }),
-      }));
-    }
-  );
-
   // restruct tutors list to match ITutor.Cache[]
-  const cacheTutors: ITutor.Cache[] = onboardedTutors.map((tutor) => {
+  const tutorsCache: ITutor.Cache[] = onboardedTutors.map((tutor) => {
     const filteredTopics = tutorsTopics
       ?.filter((item) => item.userId === tutor.id)
       .map((item) => item.name.ar);
@@ -94,19 +63,13 @@ export async function constructTutorsCache(date: Dayjs): Promise<TutorsCache> {
     };
   });
 
-  return {
-    tutors: cacheTutors,
-    rules: flatten(rulesCachePayload),
-  };
+  return tutorsCache;
 }
 
-export async function cacheTutors(start: Dayjs): Promise<TutorsCache> {
-  const cachePayload = await constructTutorsCache(start);
-  await Promise.all([
-    cache.tutors.setMany(cachePayload.tutors),
-    cache.rules.setMany(cachePayload.rules),
-  ]);
-  return cachePayload;
+export async function cacheTutors(): Promise<TutorsCache> {
+  const tutorsCache = await constructTutorsCache();
+  await cache.tutors.setMany(tutorsCache);
+  return tutorsCache;
 }
 
 /**
@@ -129,21 +92,12 @@ export function isPublicTutor(
  */
 export function orderTutors({
   tutors,
-  rules,
   userGender,
 }: {
   tutors: ITutor.Cache[];
-  rules: IRule.Cache[];
   userGender?: Gender;
 }): ITutor.Cache[] {
   const iteratees = [
-    // sort in ascending order by the first availablity
-    (tutor: ITutor.Cache) => {
-      const events = selectTutorRuleEvents(rules, tutor);
-      const event = first(events);
-      if (!event) return Infinity;
-      return dayjs.utc(event.start).unix();
-    },
     (tutor: ITutor.Cache) => {
       if (!userGender) return 0; // disable ordering by gender if user is not logged in or gender is unkown
       if (!tutor.gender) return Infinity;
@@ -152,7 +106,7 @@ export function orderTutors({
     },
     "notice",
   ];
-  const orders: Array<"asc" | "desc"> = ["asc", "asc", "asc"];
+  const orders: Array<"asc" | "desc"> = ["asc", "asc"];
   return orderBy(tutors, iteratees, orders);
 }
 

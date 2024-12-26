@@ -58,7 +58,6 @@ import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
-import { selectTutorRuleEvents } from "@/lib/events";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 
 const createUserPayload = zod.object({
@@ -391,21 +390,13 @@ async function findOnboardedTutors(req: Request, res: Response) {
   const query: ITutor.FindOnboardedTutorsParams =
     findOnboardedTutorsQuery.parse(req.query);
 
-  const [isTutorsCached, isRulesCached] = await Promise.all([
-    cache.tutors.exists(),
-    cache.rules.exists(),
-  ]);
-
-  const validCacheState = isTutorsCached && isRulesCached;
+  const isTutorsCached = await cache.tutors.exists();
 
   // retrieve/set tutors and rules from/in cache (redis)
-  const { tutors, rules } = validCacheState
-    ? {
-        tutors: await cache.tutors.getAll(),
-        rules: await cache.rules.getAll(),
-      }
-    : // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
-      await cacheTutors(dayjs.utc().startOf("day"));
+  const tutorsCache = isTutorsCached
+    ? await cache.tutors.getAll()
+    // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
+    : await cacheTutors();
 
   // order tutors based on time of the first event, genger of the user
   // online state, and notice.
@@ -414,17 +405,17 @@ async function findOnboardedTutors(req: Request, res: Response) {
     isUser(user) && user.gender ? (user.gender as IUser.Gender) : undefined;
 
   const filtered = query.search
-    ? tutors.filter((tutor) => {
+    ? tutorsCache.filter((tutor) => {
         if (!query.search) return true;
         const regex = new RegExp(query.search, "gi");
         const nameMatch = tutor.name && regex.test(tutor.name);
         const topicMatch = tutor.topics.find((topic) => regex.test(topic));
         return nameMatch || topicMatch;
       })
-    : tutors;
+    : tutorsCache;
+
   const ordered = orderTutors({
     tutors: filtered,
-    rules,
     userGender,
   });
 
@@ -439,7 +430,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // ITutor.FindOnboardedTutorsApiResponse list attribute
   const list = paginated.map((tutor) => ({
     ...tutor,
-    rules: selectTutorRuleEvents(rules, tutor),
+    slots: [] // TODO: retrieve AvailabilitySlots from the db
   }));
 
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)

@@ -20,10 +20,8 @@ import {
   asSlots,
   unpackRules,
 } from "@litespace/sol/rule";
-import { safe } from "@litespace/sol/error";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
-import { cache } from "@/lib/cache";
 import dayjs from "@/lib/dayjs";
 import { isTutorManager, isTutor, isUser } from "@litespace/auth";
 import { isOnboard } from "@/lib/tutor";
@@ -86,22 +84,7 @@ function createRule(context: ApiContext) {
       }
       const rule = await rules.create({ ...payload, userId: user.id });
       res.status(201).json(rule);
-
-      const error = await safe(async () => {
-        const today = dayjs.utc().startOf("day");
-        await cache.rules.setOne({
-          tutor: rule.userId,
-          rule: rule.id,
-          events: unpackRules({
-            rules: [rule],
-            slots: [],
-            start: today.toISOString(),
-            end: today.add(30, "days").toISOString(),
-          }),
-        });
-        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleCreated);
-      });
-      if (error instanceof Error) console.log(error);
+      context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleCreated);
     }
   );
 }
@@ -256,28 +239,7 @@ function updateRule(context: ApiContext) {
         activated: payload.activated,
       });
       res.status(200).json(updatedRule);
-
-      const error = await safe(async () => {
-        const today = dayjs.utc().startOf("day");
-        const ruleLessons = await lessons.find({
-          rules: [rule.id],
-          canceled: false,
-          full: true,
-        });
-
-        await cache.rules.setOne({
-          tutor: rule.userId,
-          rule: rule.id,
-          events: unpackRules({
-            rules: [rule],
-            slots: asSlots(ruleLessons.list),
-            start: today.toISOString(),
-            end: today.add(30, "days").toISOString(),
-          }),
-        });
-        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleUpdated);
-      });
-      if (error instanceof Error) console.log(error);
+      context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleUpdated);
     }
   );
 }
@@ -308,12 +270,7 @@ function deleteRule(context: ApiContext) {
         : await rules.update(ruleId, { deleted: true });
 
       res.status(204).json(deletedRule);
-
-      const error = await safe(async () => {
-        await cache.rules.deleteOne({ tutor: rule.userId, rule: rule.id });
-        context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleDeleted);
-      });
-      if (error instanceof Error) console.log(error);
+      context.io.to(Wss.Room.TutorsCache).emit(Wss.ServerEvent.RuleDeleted);
     }
   );
 }
