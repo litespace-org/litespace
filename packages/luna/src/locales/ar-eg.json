@@ -482,6 +482,8 @@
   "lessons.menu.cancel": "الغاء الحصة",
   "lessons.empty": "ليس لديك أي دروس في الوقت الحالي",
   "lessons.empty.find-tutors": "قم بتصفح المعلمين و اختار المعلم الذي يتناسب مع احتياجاتك و ابدأ رحلتك التعليمية",
+  "lessons.loading.message": "برجاء الانتظار... جاري تحميل الدروس الجارية!",
+  "lessons.error.message": " عذرًا، حدث خطأ أثناء تحميل الدروس الجارية، برجاء المحاولة مرة أخرى",
   "student-dashboard.upcoming-lessons.title": "الحصص القادمة",
   "student-dashboard.table.date": "التاريخ",
   "student-dashboard.table.duration": "المدة",

@@ -28,6 +28,7 @@ const UpcomingLessons: React.FC = () => {
         loading={lessons.query.isLoading}
         fetching={lessons.query.isFetching && !lessons.query.isLoading}
         error={lessons.query.isError}
+        refetch={() => lessons.query.refetch()}
         more={lessons.more}
         hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
       />

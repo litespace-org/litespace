@@ -4,15 +4,24 @@ import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { Void } from "@litespace/types";
 import React from "react";
+import cn from "classnames";
 
-export const LoadingError: React.FC<{ retry: Void; error: string }> = ({
-  retry,
-  error,
-}) => {
+export const LoadingError: React.FC<{
+  retry: Void;
+  error: string;
+  variant?: "small" | "medium" | "large";
+}> = ({ retry, error, variant = "large" }) => {
   const intl = useFormatMessage();
   return (
     <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
-      <div className="tw-p-[6px] tw-w-16 tw-h-16 tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full">
+      <div
+        className={cn(
+          "tw-p-[6px] tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full",
+          { "tw-w-10 tw-h-10": variant === "small" },
+          { "tw-w-16 tw-h-16": variant === "medium" },
+          { "tw-w-20 tw-h-20": variant === "large" }
+        )}
+      >
         <ExclaimationMarkCircle />
       </div>
       <Typography

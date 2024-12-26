@@ -24,6 +24,7 @@ const meta: Meta<Component> = {
 };
 
 export const SpinnerAlone: StoryObj<Component> = {};
+
 export const WithText: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
@@ -36,6 +37,14 @@ export const LargeLoader: StoryObj<Component> = {
     variant: "large",
   },
 };
+
+export const MediumLoader: StoryObj<Component> = {
+  args: {
+    text: faker.lorem.words(10),
+    variant: "medium",
+  },
+};
+
 export const SmallLoader: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),

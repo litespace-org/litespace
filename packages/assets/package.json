@@ -61,6 +61,7 @@
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
     "./LeftArrowHead": "./dist/LeftArrowHead.tsx",
+    "./Loading": "./dist/Loading.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
     "./Logo": "./dist/Logo.tsx",
