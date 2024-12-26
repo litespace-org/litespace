@@ -21,6 +21,9 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import TopicSelector from "@/components/Settings/TopicSelector";
 import { isEqual } from "lodash";
+import { useTopics, useUserTopics } from "@litespace/headless/topic";
+import { MAX_TOPICS_COUNT } from "@litespace/sol/constants";
+import { governorates } from "@/constants/user";
 
 type IForm = {
   name: string;
@@ -31,18 +34,33 @@ type IForm = {
     current: string;
     confirm: string;
   };
-  city: IUser.City;
+  city: IUser.City | null;
+  topics: number[];
+};
+
+export type TopicWatcher = {
+  addTopics: number[];
+  removeTopics: number[];
 };
 
 export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   const [photo, setPhoto] = useState<File | null>(null);
-  /**
-   * flag to indicate that change has happened in user settings to enable sending requests
-   */
-  const [submitFlag, setSubmitFlag] = useState({
-    userData: false,
-    topics: false,
-  });
+
+  const allTopicsQuery = useTopics({});
+  const userTopicsQuery = useUserTopics();
+
+  const allTopics = useMemo(() => {
+    if (!allTopicsQuery.query.data?.list) return [];
+    return allTopicsQuery.query.data.list.map((topic) => ({
+      value: topic.id,
+      label: topic.name.ar,
+    }));
+  }, [allTopicsQuery]);
+
+  const userTopics = useMemo(() => {
+    if (!userTopicsQuery.data) return [];
+    return userTopicsQuery.data.map((topic) => topic.id);
+  }, [userTopicsQuery.data]);
 
   const intl = useFormatMessage();
   const toast = useToast();
@@ -57,9 +75,14 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
         current: "",
         confirm: "",
       },
-      city: orUndefined(user?.city),
+      city: user?.city || null,
+      topics: userTopics,
     },
   });
+
+  useEffect(() => {
+    form.setValue("topics", userTopics);
+  }, [userTopics, form]);
 
   const invalidateQuery = useInvalidateQuery();
   const validateUsername = useValidateUsername();
@@ -73,25 +96,46 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     !!form.watch("password.current") ||
     !!form.watch("password.confirm");
 
-  const currentValues = form.watch();
+  const city = form.watch("city");
+  const name = form.watch("name");
+  const email = form.watch("email");
+  const password = form.watch("password");
+  const phoneNumber = form.watch("phoneNumber");
+  const topics = form.watch("topics");
 
-  useEffect(() => {
-    const initialValues = form.control._defaultValues;
-    if (isEqual(initialValues, currentValues) && !photo)
-      return setSubmitFlag((prev) => ({
-        ...prev,
-        userData: false,
-      }));
-    return setSubmitFlag((prev) => ({
-      ...prev,
-      userData: true,
-    }));
-  }, [form, currentValues, photo, submitFlag]);
+  const canSubmit = useMemo(() => {
+    const currentValues = { city, name, email, password, phoneNumber, topics };
+    const initialValues = {
+      name: user.name,
+      email: user.email,
+      phoneNumber: user.phoneNumber,
+      password: {
+        new: "",
+        current: "",
+        confirm: "",
+      },
+      city: user.city || null,
+      topics: userTopics,
+    };
+
+    if (photo) return true;
+    if (!isEqual(currentValues, initialValues)) return true;
+    return false;
+  }, [
+    user,
+    userTopics,
+    photo,
+    city,
+    name,
+    email,
+    password,
+    phoneNumber,
+    topics,
+  ]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);
-    toast.success({ title: intl("profile.update.success") });
-  }, [invalidateQuery, intl, toast]);
+  }, [invalidateQuery]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -103,18 +147,16 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     [intl, toast]
   );
 
-  const cityArr = useMemo(
+  const cityOptions = useMemo(
     () =>
-      Object.entries(IUser.City)
-        .filter((city) => !isNaN(Number(city[0])))
-        .map((city) => ({
-          label: city[1] as string,
-          value: Number(city[0]),
-        })),
-    []
+      Object.entries(governorates).map(([key, value]) => ({
+        label: intl(value),
+        value: Number(key),
+      })),
+    [intl]
   );
 
-  const mutation = useUpdateUser({ onSuccess, onError });
+  const profileMutation = useUpdateUser({ onSuccess, onError });
 
   const notifyComingSoon = useCallback(() => {
     toast.success({
@@ -125,11 +167,18 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      if (!submitFlag) return;
+      if (!canSubmit) return;
       if (photo) console.log("upload photo");
       if (!user) return;
 
-      mutation.mutate({
+      const addTopics: number[] = topics.filter(
+        (topic) => !userTopics.includes(topic)
+      );
+      const removeTopics: number[] = userTopics.filter(
+        (topic) => !topics.includes(topic)
+      );
+
+      profileMutation.mutate({
         id: user.id,
         payload: {
           name: data.name && data.name !== user.name ? data.name : undefined,
@@ -144,10 +193,12 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
                 }
               : undefined,
           city: data.city && data.city !== user.city ? data.city : undefined,
+          addTopics,
+          removeTopics,
         },
       });
     },
-    [mutation, photo, user, submitFlag]
+    [profileMutation, photo, user, canSubmit, topics, userTopics]
   );
 
   useEffect(() => {
@@ -164,7 +215,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
       className="grid justify-items-stretch grid-cols-2 gap-x-28 gap-y-8 p-14"
     >
       <div className=" flex flex-col gap-6">
-        <UploadPhoto setPhoto={setPhoto} photo={photo || orNull(user?.image)} />
+        <UploadPhoto
+          id={user.id}
+          setPhoto={setPhoto}
+          photo={photo || orNull(user?.image)}
+        />
         <Typography
           element="subtitle-1"
           weight="bold"
@@ -212,9 +267,9 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
         <div>
           <Label>{intl("settings.edit.personal.city")}</Label>
           <Controller.Select
-            options={cityArr}
+            options={cityOptions}
             placeholder={intl("settings.edit.personal.city.placeholder")}
-            value={form.watch("city")}
+            value={orUndefined(form.watch("city"))}
             control={form.control}
             name="city"
           />
@@ -305,9 +360,22 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           </div>
         </div>
       </div>
-      <TopicSelector setSubmitFlag={setSubmitFlag} submitFlag={submitFlag} />
+      {userTopicsQuery.isPending || allTopicsQuery.query.isPending ? (
+        // adding this div to not cause layout shift while loading the queries
+        <div />
+      ) : (
+        <TopicSelector
+          setTopics={(newTopics: number[]) => {
+            if (topics.length === MAX_TOPICS_COUNT) return;
+            form.setValue("topics", newTopics);
+          }}
+          topics={topics}
+          allTopics={allTopics}
+        />
+      )}
       <Button
-        disabled={!submitFlag.topics && !submitFlag.userData}
+        disabled={profileMutation.isPending || !canSubmit}
+        loading={profileMutation.isPending}
         size={ButtonSize.Large}
         className="mr-auto mt-auto"
         htmlType="submit"

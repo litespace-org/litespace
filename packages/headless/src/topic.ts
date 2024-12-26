@@ -16,6 +16,7 @@ export function useCreateTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const createTopic = useCallback(
     async (payload: ITopic.CreateApiPayload) => {
       return atlas.topic.create(payload);
@@ -33,6 +34,7 @@ export function useCreateTopic({
 
 export function useTopics(query: ITopic.FindTopicsApiQuery) {
   const atlas = useAtlas();
+
   const findTopics = useCallback(async () => {
     return await atlas.topic.findTopics(query);
   }, [atlas.topic, query]);
@@ -42,13 +44,14 @@ export function useTopics(query: ITopic.FindTopicsApiQuery) {
 
 export function useUserTopics() {
   const atlas = useAtlas();
+
   const findTopics = useCallback(async () => {
     return await atlas.topic.findUserTopics();
   }, [atlas.topic]);
 
   return useQuery({
     queryFn: findTopics,
-    queryKey: [QueryKey.FindTopic],
+    queryKey: [QueryKey.FindUserTopics],
   });
 }
 
@@ -60,6 +63,7 @@ export function useUpdateTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const updateTopic = useCallback(
     async ({
       id,
@@ -89,6 +93,7 @@ export function useDeleteTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const deleteTopic = useCallback(
     async ({ id }: { id: number }) => {
       return atlas.topic.deleteTopic(id);

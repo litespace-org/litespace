@@ -67,7 +67,7 @@ export const MultiSelect = <T,>({
           onClick={() => setOpen(true)}
         >
           <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
-            <SearchIcon className="tw-justify-self-start" />
+            <SearchIcon className="tw-justify-self-start tw-shrink-0" />
             <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
@@ -77,7 +77,11 @@ export const MultiSelect = <T,>({
                 selectedOptions.map(({ label, value }, idx) => {
                   if (idx <= 1)
                     return (
-                      <Tooltip side="top" content={label} key={label}>
+                      <Tooltip
+                        side="top"
+                        content={<Typography>{label}</Typography>}
+                        key={label}
+                      >
                         <div className=" tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full">
                           <Typography
                             element="body"

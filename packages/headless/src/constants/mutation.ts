@@ -19,4 +19,5 @@ export enum MutationKey {
   CreateRating = "create-rate",
   EditRating = "edit-rate",
   DeleteRating = "delete-rate",
+  UpdateUser = "update-user",
 }
