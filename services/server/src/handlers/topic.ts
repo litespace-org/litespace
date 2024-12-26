@@ -1,5 +1,6 @@
 import { apierror, bad, empty, forbidden, notfound, refused } from "@/lib/error";
 import {
+    id,
   orderDirection,
   pageNumber,
   pageSize,
@@ -16,6 +17,7 @@ import zod from "zod";
 import { Knex } from "knex";
 import { MAX_TOPICS_COUNT } from "@litespace/sol";
 import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
+import { isEmpty } from "lodash";
 
 const createTopicPayload = zod.object({
   arabicName: string,
@@ -27,9 +29,15 @@ const updateTopicPayload = zod.object({
   englishName: zod.optional(string),
 });
 
-const generalUserTopicsBodyParser = zod.object({
+const generalUserTopicsPayload = zod.object({
   topicIds: zod.array(zod.number()),
 });
+
+const replaceUserTopicsPayload = zod.object({
+  removeTopics: zod.array(id),
+  addTopics: zod.array(id),
+});
+
 
 const orderByOptions = [
   "name_ar",
@@ -141,7 +149,7 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
   const { topicIds }: ITopic.AddUserTopicsApiPayload = 
-  generalUserTopicsBodyParser.parse(req.body);
+  generalUserTopicsPayload.parse(req.body);
 
   // filter passed topics to ignore the ones that does already exist
   const userTopics = await topics.findUserTopics({ users: [user.id] });
@@ -170,12 +178,56 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   res.sendStatus(200);
 }
 
+async function replaceUserTopics(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
+  if (!allowed) return next(forbidden());
+
+  const { removeTopics, addTopics }: ITopic.ReplaceUserTopicsApiPayload = 
+    replaceUserTopicsPayload.parse(req.body);
+
+  if (isEmpty(removeTopics) && isEmpty(addTopics)) return next(empty());
+
+  // ensure that all topics in `addTopics` exists for the current user
+  const inDBTopics = await topics.findUserTopics({ users: [user.id] });
+  const inDBTopicIds = inDBTopics.map(topic => topic.id);
+  for (const topicId of removeTopics) {
+    if (!inDBTopicIds.includes(topicId))
+      return next(notfound.topic());
+  }
+  
+  // verify that all topics do exist in the database
+  const isExists = await topics.isExistsBatch(addTopics);
+  if (Object.values(isExists).includes(false))
+    return next(notfound.topic());
+
+  // ensure that user topics will not exceed the max num after insertion
+  const exceededMaxAllowedTopics = 
+    (inDBTopicIds.length + addTopics.length - removeTopics.length) > MAX_TOPICS_COUNT;
+  if (exceededMaxAllowedTopics) return next(refused());
+
+  await knex.transaction(async (tx: Knex.Transaction) => {
+    if (!isEmpty(removeTopics)) await topics.deleteUserTopics({
+      user: user.id,
+      topics: removeTopics,
+      tx,
+    });
+    
+    if(!isEmpty(addTopics)) await topics.registerUserTopics({
+      user: user.id,
+      topics: addTopics
+    }, tx);
+  });
+
+  res.sendStatus(200);
+}
+
 async function deleteUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
   const { topicIds }: ITopic.DeleteUserTopicsApiPayload = 
-  generalUserTopicsBodyParser.parse(req.body);
+  generalUserTopicsPayload.parse(req.body);
 
   if (topicIds.length === 0)
     return next(bad());
@@ -202,4 +254,5 @@ export default {
   findUserTopics: safeRequest(findUserTopics),
   addUserTopics: safeRequest(addUserTopics),
   deleteUserTopics: safeRequest(deleteUserTopics),
+  replaceUserTopics: safeRequest(replaceUserTopics),
 };

@@ -27,6 +27,12 @@ export class Base {
       .then((response) => response.data);
   }
 
+  async patch<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
+    return this.client
+      .patch(attr.route, JSON.stringify(attr.payload))
+      .then((response) => response.data);
+  }
+
   async del<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
       .delete(attr.route, { 

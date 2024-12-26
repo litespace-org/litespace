@@ -36,4 +36,8 @@ export class Topic extends Base {
   async deleteUserTopics(payload: ITopic.DeleteUserTopicsApiPayload): Promise<void> {
     return await this.del({ route: `/api/v1/topic/of/user`, payload });
   }
+
+  async replaceUserTopics(payload: ITopic.ReplaceUserTopicsApiPayload): Promise<void> {
+    return await this.patch({ route: `/api/v1/topic/of/user`, payload });
+  }
 }

@@ -11,5 +11,6 @@ router.get("/list", topic.findTopics);
 router.get("/of/user", topic.findUserTopics);
 router.post("/of/user", topic.addUserTopics);
 router.delete("/of/user", topic.deleteUserTopics);
+router.patch("/of/user", topic.replaceUserTopics);
 
 export default router;
