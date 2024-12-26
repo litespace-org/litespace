@@ -17,6 +17,9 @@ import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Tooltip } from "@/components/Tooltip";
 
+const FRESH_TUTOR_MAX_TOPIC_COUNT = 7;
+const TUTOR_MAX_TOPIC_COUNT = 3;
+
 export const TutorCardV1: React.FC<CardProps> = ({
   id,
   name,
@@ -30,22 +33,22 @@ export const TutorCardV1: React.FC<CardProps> = ({
   onBook,
 }) => {
   const intl = useFormatMessage();
-  const isNewTutor = useMemo(
+  const isFreshTutor = useMemo(
     () => !studentCount && !lessonCount && !rating,
     [lessonCount, rating, studentCount]
   );
 
   const remainingTopicsCount = useMemo(() => {
-    // 3 is the number of the topics presented in one line
-    // 6 is the number of the topics presented in two lines
-    const displayedCount = !isNewTutor ? 3 : 6;
+    const displayedCount = !isFreshTutor
+      ? FRESH_TUTOR_MAX_TOPIC_COUNT
+      : TUTOR_MAX_TOPIC_COUNT;
     const totalTopics = topics.length;
 
     const remainingTopicsCount =
       totalTopics < displayedCount ? 0 : totalTopics - displayedCount;
 
     return remainingTopicsCount;
-  }, [isNewTutor, topics]);
+  }, [isFreshTutor, topics]);
 
   return (
     <div
@@ -90,7 +93,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
           </Typography>
         </Link>
 
-        {!isNewTutor ? (
+        {!isFreshTutor ? (
           <div className={cn("tw-flex tw-gap-8 tw-my-4")}>
             {studentCount ? (
               <div className="tw-flex tw-flex-col tw-gap-1">
@@ -159,15 +162,23 @@ export const TutorCardV1: React.FC<CardProps> = ({
         ) : null}
 
         {!isEmpty(topics) && topics.join("").length > 0 ? (
-          <div className="tw-flex tw-my-4 tw-gap-2 tw-flex-wrap tw-justify-start">
+          <div
+            className={cn(
+              "tw-flex tw-gap-2 tw-flex-wrap tw-justify-start tw-mb-4",
+              { "tw-mt-4": isFreshTutor }
+            )}
+          >
             {topics.map((topic, idx) => {
-              if ((isNewTutor && idx < 6) || (!isNewTutor && idx < 3))
+              if (
+                (isFreshTutor && idx < FRESH_TUTOR_MAX_TOPIC_COUNT) ||
+                (!isFreshTutor && idx < TUTOR_MAX_TOPIC_COUNT)
+              )
                 return (
                   <Tooltip
                     key={idx}
                     content={<Typography element="body">{topic}</Typography>}
                   >
-                    <div className="tw-w-1/4">
+                    <div className="tw-w-16">
                       <Typography
                         element="tiny-text"
                         weight="regular"

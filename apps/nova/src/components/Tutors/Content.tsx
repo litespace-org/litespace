@@ -8,28 +8,13 @@ import { motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
 import { InView } from "react-intersection-observer";
 import MoreTutorsSoon from "@litespace/assets/MoreTutorsSoon";
-import Notification from "@litespace/assets/Notification";
+import Notification2 from "@litespace/assets/Notification2";
 import { Typography } from "@litespace/luna/Typography";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
-
-const topics = [
-  "hobbies",
-  "travel",
-  "books",
-  "food",
-  "family",
-  "health",
-  "career",
-  "culture",
-  "holidays",
-  "work",
-  "favourite subjects",
-  "current events",
-];
 
 const Content: React.FC<{
   tutors: ITutor.FindOnboardedTutorsApiResponse["list"] | null;
@@ -75,7 +60,7 @@ const Content: React.FC<{
                 onBook={() => openBookingDialog(tutor)}
                 profileUrl={profileUrl}
                 imageUrl={tutor.image ? asFullAssetUrl(tutor.image) : null}
-                topics={topics}
+                topics={tutor.topics}
               />
             </motion.div>
           );
@@ -127,13 +112,7 @@ const Content: React.FC<{
             >
               {intl("tutors.coming.set-notifications")}
             </Typography>
-            <Notification
-              width={24}
-              height={24}
-              viewBox="0 0 16 16"
-              fill="var(--natural-50)"
-              className="block [&>*]:stroke-natural-50"
-            />
+            <Notification2 width={24} height={24} />
           </div>
         </Button>
       </div>
