@@ -4,10 +4,12 @@ import { useFormatMessage } from "@/hooks";
 import Video16X16 from "@litespace/assets/Video16X16";
 import Check16X16 from "@litespace/assets/Check16X16";
 import Clock16X16 from "@litespace/assets/Clock16X16";
-import MedalBadge from "@litespace/assets/MedalBadge";
+import People from "@litespace/assets/People";
 import cn from "classnames";
 import { LocalId } from "@/locales";
-import { formatMinutes, formatNumber } from "@/components/utils";
+import { formatNumber } from "@/components/utils";
+import { Void } from "@litespace/types";
+import { Loader, LoadingError } from "@/components/Loading";
 
 type Props = {
   /**
@@ -25,68 +27,70 @@ type Props = {
   /**
    * number of badges earned
    */
-  badgesCount: number;
+  tutorCount: number;
+  loading?: boolean;
+  error?: boolean;
+  retry?: Void;
 };
 
 export const StudentOverview: React.FC<Props> = ({
   totalLessonCount,
   completedLessonCount,
   totalLearningTime,
-  badgesCount,
+  tutorCount,
+  loading,
+  error,
+  retry,
 }) => {
   const intl = useFormatMessage();
   const learningTime = useMemo(() => {
     if (totalLearningTime === 0) return "0";
-    /**
-     * NOTE: `humanize-duration` does not apply formating (adding coma) on
-     * numbers (beyond 1k) (e.g., 1000h will be displayed as `1000 hours` instead
-     * of `1,000 hours`).
-     *
-     * We can use `Intl.DurationFormat` but it has a limited availability (not
-     * supported in firefox).
-     *
-     * The plan is to use `humanize-duration` below 1k hours then do manual
-     * formating beyond this.
-     */
-    if (totalLearningTime < 60 * 1000)
-      return formatMinutes(totalLearningTime, {
-        units: ["h"],
-        maxDecimalPoints: 0,
-      });
-
-    const hours = Math.floor(totalLearningTime / 60);
-    return intl("student-dashboard.overview.total-learning-time.unit", {
-      value: formatNumber(hours),
+    return intl("student-dashboard.overview.total-learning-time.unit.minute", {
+      value: formatNumber(totalLearningTime),
     });
   }, [intl, totalLearningTime]);
 
+  if (loading)
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+        <Loader text={intl("student-dashboard.loading")} />
+      </div>
+    );
+
+  if (error && retry)
+    return (
+      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+        <LoadingError error={intl("student-dashboard.error")} retry={retry} />
+      </div>
+    );
+
   return (
-    <div className="tw-flex tw-gap-6">
+    <div className="tw-flex tw-gap-6 tw-flex-wrap tw-w-full">
       <Card
         icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" />}
         value={formatNumber(totalLessonCount)}
-        color="brand-500"
+        color="brand"
         title="student-dashboard.overview.total-lessons"
       />
       <Card
         icon={<Check16X16 className="[&]*:tw-stroke-natural-50" />}
         value={formatNumber(completedLessonCount)}
-        color="secondary-500"
+        color="secondary"
         title="student-dashboard.overview.completed-lessons"
       />
 
       <Card
         icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
         value={learningTime}
-        color="warning-500"
+        color="warning"
         title="student-dashboard.overview.total-learning-time"
       />
 
       <Card
-        icon={<MedalBadge className="[&]*:tw-stroke-natural-50" />}
-        value={formatNumber(badgesCount)}
-        color="destructive-500"
-        title="student-dashboard.overview.badges"
+        icon={<People className="[&>*]:tw-stroke-natural-50" />}
+        value={formatNumber(tutorCount)}
+        color="destructive"
+        title="student-dashboard.overview.teachers"
       />
     </div>
   );
@@ -95,7 +99,7 @@ export const StudentOverview: React.FC<Props> = ({
 export const Card: React.FC<{
   icon: React.JSX.Element;
   value: string;
-  color: "brand-500" | "secondary-500" | "warning-500" | "destructive-500";
+  color: "brand" | "secondary" | "warning" | "destructive";
   title: LocalId;
   className?: string;
 }> = ({ value, icon, color, title }) => {
@@ -105,16 +109,30 @@ export const Card: React.FC<{
     <div
       className={cn(
         "tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-x-small",
-        "tw-border tw-border-transparent hover:tw-border-natural-100",
-        "tw-basis-full tw-flex tw-flex-col tw-gap-2"
+        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-max-w-[215px]",
+        "tw-basis-full tw-flex tw-flex-col tw-justify-between tw-gap-2 tw-relative tw-overflow-hidden"
       )}
     >
-      <div className="tw-flex tw-items-center tw-gap-2">
+      <div
+        className={cn(
+          "tw-absolute tw-top-0 tw-left-11 -tw-translate-y-1/2 -tw-translate-x-1/2",
+          "tw-w-[69px] tw-h-[69px] tw-rounded-full"
+        )}
+        style={{ background: `var(--${color}-100)` }}
+      />
+      <div
+        className={cn(
+          "tw-absolute tw-top-0 tw-left-2 -tw-translate-y-1/2 -tw-translate-x-1/2",
+          "tw-w-[69px] tw-h-[69px] tw-rounded-full"
+        )}
+        style={{ background: `var(--${color}-200)` }}
+      />
+      <div className="tw-flex tw-items-center tw-gap-2 tw-z-10">
         <div
           className={cn(
             "tw-w-6 tw-h-6 tw-rounded-md tw-flex tw-justify-center tw-items-center"
           )}
-          style={{ backgroundColor: `var(--${color})` }}
+          style={{ backgroundColor: `var(--${color}-500)` }}
         >
           {icon}
         </div>
@@ -132,7 +150,7 @@ export const Card: React.FC<{
         className={cn(
           "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b"
         )}
-        style={{ borderBottomColor: `var(--${color})` }}
+        style={{ borderBottomColor: `var(--${color}-500)` }}
       >
         {value}
       </Typography>

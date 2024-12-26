@@ -8,6 +8,8 @@ import ArrowLeft from "@litespace/assets/ArrowLeft";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
 import EmptyUpcomingLessons from "@litespace/assets/EmptyUpcomingLessons";
+import { Loader, LoadingError } from "@/components/Loading";
+import { Void } from "@litespace/types";
 
 type Props = {
   lessons: Array<{
@@ -26,6 +28,9 @@ type Props = {
    */
   lessonsUrl: string;
   tutorsUrl: string;
+  loading?: boolean;
+  error?: boolean;
+  retry?: Void;
 };
 
 /**
@@ -35,6 +40,9 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   lessons,
   lessonsUrl,
   tutorsUrl,
+  loading,
+  error,
+  retry,
 }) => {
   const intl = useFormatMessage();
   return (
@@ -50,56 +58,71 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       >
         {intl("student-dashboard.upcoming-lessons.title")}
       </Typography>
-      <div>
-        {lessons.length ? (
-          <div className="tw-flex tw-flex-col tw-gap-4 tw-mt-4">
-            {lessons.map((lesson) => (
-              <Link
-                key={lesson.start}
-                to={lesson.url}
-                className="tw-flex tw-gap-2 tw-items-center"
-              >
-                <div className="tw-bg-brand-500 tw-w-[43px] tw-h-[43px] tw-flex tw-justify-center tw-items-center tw-rounded-[4px]">
-                  <Video className="[&>*]:tw-stroke-natural-50" />
-                </div>
-                <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
+
+      {error && retry && !loading ? (
+        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+          <LoadingError error={intl("student-dashboard.error")} retry={retry} />
+        </div>
+      ) : null}
+
+      {loading ? (
+        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+          <Loader text={intl("student-dashboard.loading")} />
+        </div>
+      ) : null}
+
+      {lessons && !error && !loading ? (
+        <div>
+          {lessons.length ? (
+            <div className="tw-flex tw-flex-col tw-gap-4 tw-mt-4">
+              {lessons.map((lesson) => (
+                <Link
+                  key={lesson.start}
+                  to={lesson.url}
+                  className="tw-flex tw-gap-2 tw-items-center"
+                >
+                  <div className="tw-bg-brand-500 tw-w-[43px] tw-h-[43px] tw-flex tw-justify-center tw-items-center tw-rounded-[4px]">
+                    <Video className="[&>*]:tw-stroke-natural-50" />
+                  </div>
+                  <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
+                    <Typography
+                      element="caption"
+                      weight="semibold"
+                      className="tw-text-natural-950"
+                    >
+                      {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
+                    </Typography>
+                    <Typography
+                      element="tiny-text"
+                      weight="regular"
+                      className="tw-text-natural-600"
+                    >
+                      {lesson.tutorName}
+                    </Typography>
+                  </div>
+                  <div className="tw-w-6 tw-h-6 tw-mr-auto">
+                    <ArrowLeft className="[&>*]:tw-stroke-natural-950" />
+                  </div>
+                </Link>
+              ))}
+
+              <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
+                <Button size={ButtonSize.Tiny} className="tw-w-full">
                   <Typography
                     element="caption"
                     weight="semibold"
-                    className="tw-text-natural-950"
+                    className="tw-text-natural-50"
                   >
-                    {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
+                    {intl("student-dashboard.button.show-all-lessons")}
                   </Typography>
-                  <Typography
-                    element="tiny-text"
-                    weight="regular"
-                    className="tw-text-natural-600"
-                  >
-                    {lesson.tutorName}
-                  </Typography>
-                </div>
-                <div className="tw-w-6 tw-h-6 tw-mr-auto">
-                  <ArrowLeft className="[&>*]:tw-stroke-natural-950" />
-                </div>
+                </Button>
               </Link>
-            ))}
-
-            <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
-              <Button size={ButtonSize.Tiny} className="tw-w-full">
-                <Typography
-                  element="caption"
-                  weight="semibold"
-                  className="tw-text-natural-50"
-                >
-                  {intl("student-dashboard.button.show-all-lessons")}
-                </Typography>
-              </Button>
-            </Link>
-          </div>
-        ) : (
-          <EmptyUpcomingLessonsComponent tutorsUrl={tutorsUrl} />
-        )}
-      </div>
+            </div>
+          ) : (
+            <EmptyUpcomingLessonsComponent tutorsUrl={tutorsUrl} />
+          )}
+        </div>
+      ) : null}
     </div>
   );
 };
