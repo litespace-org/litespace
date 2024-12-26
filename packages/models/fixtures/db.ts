@@ -26,9 +26,11 @@ import { entries, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
+import { availabilitySlots } from "@/availabilitySlot";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
+    await availabilitySlots.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();

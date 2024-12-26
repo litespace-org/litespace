@@ -126,6 +126,13 @@ export type Slot = {
   duration: number;
 };
 
+export enum Repeat {
+  No = "no",
+  Daily = "daily",
+  Weekly = "weekly",
+  Monthly = "monthly",
+}
+
 export type FindRulesWithSlotsApiQuery = {
   /**
    * ISO UTC datetime.

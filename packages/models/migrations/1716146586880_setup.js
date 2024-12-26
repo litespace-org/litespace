@@ -100,6 +100,15 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
+  pgm.createTable("availability_slots", {
+    id: { type: "SERIAL", primaryKey: true, notNull: true },
+    user_id: { type: "INT", notNull: true, references: "users(id)" },
+    start: { type: "TIMESTAMP", notNull: true },
+    end: { type: "TIMESTAMP", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+    updated_at: { type: "TIMESTAMP", notNull: true },
+  });
+
   pgm.createTable("calls", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     recording_status: {
@@ -357,6 +366,7 @@ exports.up = (pgm) => {
   pgm.createIndex("calls", "id");
   pgm.createIndex("lessons", "id");
   pgm.createIndex("rules", "id");
+  pgm.createIndex("availability_slots", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
@@ -379,6 +389,7 @@ exports.up = (pgm) => {
  */
 exports.down = (pgm) => {
   // indexes
+  pgm.dropIndex("availability_slots", "id", { ifExists: true });
   pgm.dropIndex("invoices", "id", { ifExists: true });
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
@@ -397,6 +408,7 @@ exports.down = (pgm) => {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
+  pgm.dropTable("availability_slots", { ifExists: true });
   pgm.dropTable("user_topics", { ifExists: true });
   pgm.dropTable("topics", { ifExists: true });
   pgm.dropTable("withdraw_methods", { ifExists: true });
