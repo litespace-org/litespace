@@ -67,6 +67,10 @@ export type UpdateApiPayload = UpdatePayload;
 
 export type AddUserTopicsApiPayload = { topicIds: number[] };
 export type DeleteUserTopicsApiPayload = { topicIds: number[] }
+export type ReplaceUserTopicsApiPayload = { 
+  addTopics: number[], 
+  removeTopics: number[],
+}
 
 export type FindTopicsQueryFilter = IFilter.Pagination & {
   name?: string;
