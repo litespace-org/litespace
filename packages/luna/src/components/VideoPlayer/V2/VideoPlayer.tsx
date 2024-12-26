@@ -3,7 +3,6 @@ import { CONTAINER_ID, useVideo } from "@/components/VideoPlayer/V2/video";
 import Play from "@litespace/assets/Play";
 import Pause from "@litespace/assets/Pause";
 import SettingsScrew from "@litespace/assets/SettingsScrew";
-import Spinner from "@litespace/assets/Spinner";
 import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
 import cn from "classnames";
 import SettingsMenu from "@/components/VideoPlayer/V2/SettingsMenu";
@@ -12,6 +11,7 @@ import { useFormatMessage } from "@/hooks";
 import { AudioController } from "@/components/VideoPlayer/V2/AudioController";
 import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
+import { Loader } from "@/components/Loading";
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const intl = useFormatMessage();
@@ -58,7 +58,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
         src={src}
         className="tw-w-full tw-h-full data-[ready=true]:tw-cursor-pointer"
       />
-      {paused && currentTime === 0 ? (
+      {readyState > 1 && paused && currentTime === 0 ? (
         <div className="tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2">
           <PlayButton togglePlay={togglePlay} />
         </div>
@@ -97,7 +97,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             "tw-absolute tw-z-[8] tw-transition-opacity  tw-duration-300 tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
           )}
         >
-          <Spinner className="tw-animate-spin" />
+          <Loader variant="large" />
         </span>
       ) : null}
       {status === "error" ? (

@@ -42,7 +42,7 @@ const TutorProfile: React.FC = () => {
           <span className="underline text-brand-700">{tutor.data.name}</span>
         </Typography>
       </div>
-      <div className="bg-natural-50 border border-natural-100 shadow-tutor-profile rounded-2xl p-10 mt-6 flex flex-col gap-12">
+      <div className="bg-natural-50 border border-natural-100 shadow-tutor-profile rounded-2xl  mt-6 flex flex-col gap-12">
         <TutorProfileCard {...tutor.data} onBook={openDialog} />
         <TutorTabs tutor={tutor.data} />
         <BookLesson tutorId={tutor.data.id} close={closeDialog} open={open} />

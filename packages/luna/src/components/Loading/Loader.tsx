@@ -1,6 +1,7 @@
 import React from "react";
 import { Typography } from "@litespace/luna/Typography";
 import cn from "classnames";
+import { motion } from "framer-motion";
 
 export const Loader: React.FC<{
   text?: string;
@@ -8,12 +9,23 @@ export const Loader: React.FC<{
 }> = ({ text, variant = "large" }) => {
   return (
     <div className="tw-h-full tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-4">
-      <div
+      <motion.div
+        animate={{
+          rotate: [360, 0],
+        }}
+        transition={{
+          repeat: Infinity,
+          duration: 1,
+          ease: "linear",
+        }}
         style={{
-          animationDirection: "reverse",
+          maskImage:
+            variant === "large"
+              ? "radial-gradient(circle, transparent 30px, white 16px)"
+              : "radial-gradient(circle, transparent 25px, white 0px)",
         }}
         className={cn(
-          "tw-animate-spin tw-flex tw-items-center tw-relative tw-rounded-full tw-justify-center tw-bg-loader",
+          "tw-flex tw-items-center tw-relative tw-rounded-full tw-justify-center tw-bg-loader",
           {
             "tw-w-[64px] tw-h-[64px] tw-max-w-16 tw-max-h-16":
               variant === "small",
@@ -23,12 +35,6 @@ export const Loader: React.FC<{
         )}
       >
         <div
-          className={cn("tw-bg-white tw-rounded-full", {
-            "tw-w-[48px] tw-h-[48px]": variant === "small",
-            "tw-w-[60px] tw-h-[60px]": variant === "large",
-          })}
-        />
-        <div
           className={cn(
             "tw-bg-background-loader-spinner tw-rounded-full tw-absolute tw-bottom-0 tw-left-1/2 -tw-translate-x-1/2",
             {
@@ -37,7 +43,7 @@ export const Loader: React.FC<{
             }
           )}
         />
-      </div>
+      </motion.div>
 
       {text ? (
         <Typography

@@ -1,50 +1,41 @@
 import { IRating } from "@litespace/types";
-import { TutorRatingCardGroupProps } from "@litespace/luna/TutorFeedback";
+import { concat } from "lodash";
+
+const MAX_RATING_COUNT = 8;
 
 export const organizeRatings = (
-  ratings: IRating.FindTutorRatingsApiResponse["list"],
-  currentUserId: number | undefined
+  ratings?: IRating.FindTutorRatingsApiResponse["list"],
+  currentUserId?: number
 ) => {
-  let currentUserRating: IRating.RateeRatings | undefined;
-  const ratingsWithFeedback: IRating.RateeRatings[] = [];
-  const ratingsWithoutFeedback: Omit<TutorRatingCardGroupProps, "tutorName">[] =
-    [];
+  if (!ratings) return [];
+
+  let currentUserRating: IRating.RateeRating | null = null;
+  const ratingsWithFeedback: IRating.RateeRating[] = [];
+  const ratingsWithoutFeedback: {
+    ratings: IRating.RateeRating[];
+    value: number;
+  }[] = [];
 
   ratings.forEach((rating) => {
-    if (rating.userId === currentUserId) {
-      currentUserRating = rating;
-      return;
-    }
+    if (rating.userId === currentUserId) return (currentUserRating = rating);
+
     if (rating.feedback) ratingsWithFeedback.push(rating);
     if (!rating.feedback) {
       const ratingGroup = ratingsWithoutFeedback.find(
-        (r) => r.value === rating.value
+        (rating) => rating.value === rating.value
       );
-      if (ratingGroup)
-        return ratingGroup.ratings.push({
-          name: rating.name,
-          imageUrl: rating.image,
-          userId: rating.userId,
-        });
+      if (ratingGroup) return ratingGroup.ratings.push(rating);
 
       return ratingsWithoutFeedback.push({
-        ratings: [
-          {
-            name: rating.name,
-            imageUrl: rating.image,
-            userId: rating.userId,
-          },
-        ],
+        ratings: [rating],
         value: rating.value,
       });
     }
   });
 
-  if (currentUserRating)
-    return [
-      currentUserRating,
-      ...ratingsWithFeedback,
-      ...ratingsWithoutFeedback,
-    ].slice(0, 8);
-  return [...ratingsWithFeedback, ...ratingsWithoutFeedback].slice(0, 8);
+  const otherUsersRatings = [...ratingsWithFeedback, ...ratingsWithoutFeedback];
+  return concat(currentUserRating || [], otherUsersRatings).slice(
+    0,
+    MAX_RATING_COUNT
+  );
 };

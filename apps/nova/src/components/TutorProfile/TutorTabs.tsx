@@ -64,7 +64,7 @@ export const TutorTabs: React.FC<{
       value={tab}
       onValueChange={(value: string) => setTab(value as Tab)}
     >
-      <Tabs.List className="border-b border-natural-300 flex gap-[56px] ">
+      <Tabs.List className="border-b border-natural-300 flex gap-[56px] px-10 ">
         {tabs.map(({ value, label }) => (
           <Tabs.Trigger
             key={value}
@@ -100,26 +100,22 @@ export const TutorTabs: React.FC<{
         ))}
       </Tabs.List>
 
-      <div className="mt-8">
-        <AnimatePresence initial={false} mode="wait">
-          {tab === "profile" ? (
-            <Animate key="profile" tab="profile">
-              <ProfileInfo
-                about={tutor.about}
-                topics={tutor.topics}
-                video={tutor.video}
-              />
-            </Animate>
-          ) : null}
-          {tab === "ratings" ? (
-            <Animate key="ratings" tab="ratings">
-              <div className="min-h-96">
-                <Ratings tutorName={tutor.name} id={tutor.id} />
-              </div>
-            </Animate>
-          ) : null}
-        </AnimatePresence>
-      </div>
+      <AnimatePresence initial={false} mode="wait">
+        {tab === "profile" ? (
+          <Animate key="profile" tab="profile">
+            <ProfileInfo
+              about={tutor.about}
+              topics={tutor.topics}
+              video={tutor.video}
+            />
+          </Animate>
+        ) : null}
+        {tab === "ratings" ? (
+          <Animate key="ratings" tab="ratings">
+            <Ratings tutorName={tutor.name} id={tutor.id} />
+          </Animate>
+        ) : null}
+      </AnimatePresence>
     </Tabs.Root>
   );
 };

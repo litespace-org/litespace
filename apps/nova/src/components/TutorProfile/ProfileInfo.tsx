@@ -12,7 +12,7 @@ const ProfileInfo: React.FC<{
 }> = ({ about, topics, video }) => {
   const intl = useFormatMessage();
   return (
-    <div className="grid grid-cols-2 gap-[88px]">
+    <div className="grid grid-cols-2 py-8 gap-[88px] p-8 px-10">
       <div>
         {about ? (
           <div>
