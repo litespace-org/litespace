@@ -32,7 +32,6 @@ export enum ServerEvent {
   RoomMessageDeleted = "RoomMessageDeleted",
   RoomMessageRead = "RoomMessageRead",
   JoinedRooms = "JoinedRooms",
-  Revert = "Revert",
 
   MessageRead = "MessageRead",
 
@@ -72,7 +71,7 @@ export enum Room {
   ServerStats = "ServerStats",
 }
 
-export enum RevertErrorCode {
+export enum AcknowledgeCode {
   EmptyText = 'empty-text',
   RoomNotFound = 'room-not-found', 
   MessageNotFound = 'message-not-found',
@@ -80,39 +79,23 @@ export enum RevertErrorCode {
   NotOwner = 'not-owner',
   Unreachable = 'unreachable',
   Unallowed = 'unallowed',
+  Ok = 'ok',
 }
 
-export type WithRevetCode<T extends object> =  T & {code: RevertErrorCode};
+export type AcknowledgePayload = {
+  code: AcknowledgeCode;
+  message?: string;
+}
 
-export type RevertPayload = WithRevetCode<
-  | {
-      type: "send-message";
-      ref: number;
-      reason: string;
-    }
-  | {
-      type: "update-message" | "delete-message" | "mark-msg-as-read";
-      id: number;
-      reason: string;
-    }
-  | {
-      type: "user-typing";
-      roomId: number;
-      reason: string;
-    }>;
+export type AcknowledgeCallback = (payload?: AcknowledgePayload) => void;
 
-type EventCallback<T> = (arg: T) => Promise<void> | void;
+type EventCallback<T> = (arg: T, callback?: AcknowledgeCallback) => Promise<void> | void;
 
 /**
  * Events emitted by the client
  */
 export type ClientEventsMap = {
   [ClientEvent.SendMessage]: EventCallback<{
-    /**
-     * Temporarily id set by the client. Will be emitted by the server incase
-     * the is a problem with tihs message.
-     */
-    ref: number;
     roomId: number;
     text: string;
   }>;
@@ -144,7 +127,6 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
-  [ServerEvent.Revert]: EventCallback<RevertPayload>;
   [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
 
   [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;

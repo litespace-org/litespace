@@ -19,7 +19,11 @@ export abstract class WssHandler {
     this.socket.broadcast.to(room).emit(event, ...data);
   }
 
-  revert(payload: Wss.RevertPayload) {
-    this.socket.emit(Wss.ServerEvent.Revert, payload);
+  protected call(
+    callback: Wss.AcknowledgeCallback | undefined, 
+    payload: Wss.AcknowledgePayload
+  ): void {
+    if (!callback) return console.warn("Socket.io callback is not defined!");
+    return callback(payload);
   }
 }

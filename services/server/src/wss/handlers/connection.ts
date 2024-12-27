@@ -58,7 +58,7 @@ export class Connection extends WssHandler {
       this.broadcast(
         Wss.ServerEvent.UserStatusChanged,
         room.toString(),
-        { online }
+        { online },
       );
     }
   }
@@ -66,7 +66,10 @@ export class Connection extends WssHandler {
   private async emitServerStats() {
     background.on("message", (message: PartentPortMessage) => {
       if (message.type === PartentPortMessageType.Stats)
-        return this.socket.emit(Wss.ServerEvent.ServerStats, message.stats);
+        return this.socket.emit(
+          Wss.ServerEvent.ServerStats, 
+          message.stats,
+        );
     });
   }
 
@@ -124,8 +127,9 @@ export class Connection extends WssHandler {
     // notify members that a member has left the call
     this.socket.broadcast
       .to(asCallRoomId(callId))
-      .emit(Wss.ServerEvent.MemberLeftCall, {
-        userId: user.id,
-      });
+      .emit(
+        Wss.ServerEvent.MemberLeftCall, 
+        { userId: user.id },
+      );
   }
 }

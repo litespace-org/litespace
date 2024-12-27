@@ -16,7 +16,7 @@ export function useChat(onMessage?: OnMessage) {
 
   const sendMessage = useCallback(
     ({ roomId, text }: { roomId: number; text: string }) => {
-      socket?.emit(Wss.ClientEvent.SendMessage, { ref: 1, roomId, text });
+      socket?.emit(Wss.ClientEvent.SendMessage, { roomId, text });
     },
     [socket]
   );

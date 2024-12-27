@@ -64,7 +64,8 @@ export class Call extends WssHandler {
       this.broadcast(
         Wss.ServerEvent.MemberJoinedCall,
         asCallRoomId(callId),
-        { userId: user.id } // TODO: define the payload struct type in the types package
+        { userId: user.id }, // TODO: define the payload struct type in the types package
+        () => {}
       );
     });
     if (result instanceof Error) stdout.error(result.message);
@@ -97,7 +98,7 @@ export class Call extends WssHandler {
         .to(asCallRoomId(callId))
         .emit(Wss.ServerEvent.MemberLeftCall, {
           userId: user.id,
-        });
+        }, () => {});
     });
     if (result instanceof Error) stdout.error(result.message);
   }
