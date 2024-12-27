@@ -1,5 +1,5 @@
 import React from "react";
-import { Button } from "../src/components/Button";
+import { Button, ButtonSize } from "../src/components/Button";
 import { useTheme } from "../src/hooks/theme";
 import { IntlProvider } from "react-intl";
 import { ToastProvider } from "../src/components/Toast";
@@ -19,7 +19,9 @@ const Decorator = (Story: React.FC) => {
         <ToastProvider>
           <div dir="rtl" className="tw-font-cairo">
             <div className="tw-mb-4">
-              <Button onClick={toggle}>Toggle Theme</Button>
+              <Button onClick={toggle} size={ButtonSize.Tiny}>
+                Toggle Theme
+              </Button>
             </div>
             <MemoryRouter initialEntries={["/"]}>
               <Story />

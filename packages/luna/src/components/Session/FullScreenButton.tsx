@@ -2,14 +2,15 @@ import React from "react";
 import FullScreen from "@litespace/assets/FullScreen";
 import Minimize from "@litespace/assets/Minimize";
 import { Void } from "@litespace/types";
+import { Button } from "@/components/Button";
 
 export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
   enabled,
   toggle,
 }) => {
   return (
-    <button
-      className="tw-rounded-full tw-cursor-pointer tw-flex tw-justify-center tw-items-center tw-w-16 tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-brand-700"
+    <Button
+      className="!tw-h-16 !tw-w-16 !tw-p-0 !tw-rounded-full"
       onClick={toggle}
     >
       {enabled ? (
@@ -17,7 +18,7 @@ export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
       ) : (
         <FullScreen className="[&>*]:tw-stroke-natural-50" />
       )}
-    </button>
+    </Button>
   );
 };
 

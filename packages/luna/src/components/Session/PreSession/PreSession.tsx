@@ -1,7 +1,7 @@
 import React from "react";
-import { Ready } from "@/components/Call/Ready";
-import { CallBar } from "@/components/Call/CallBar";
-import { PreCallUserPreview } from "@/components/Call/PreCallUserPreview";
+import { Ready } from "@/components/Session/Ready";
+import { ActionsBar } from "@/components/Session/ActionsBar";
+import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { IUser, Void } from "@litespace/types";
 import Video from "@litespace/assets/Video";
 import VideoSlash from "@litespace/assets/VideoSlash";
@@ -34,27 +34,30 @@ export type Props = {
     toggle: Void;
     error?: boolean;
   };
+  speaking: boolean;
   join: Void;
 };
 
-export const PreCall: React.FC<Props> = ({
+export const PreSession: React.FC<Props> = ({
   stream,
   otherMember,
   currentMember,
-  join,
   camera,
   mic,
+  speaking,
+  join,
 }) => {
   return (
-    <div className="tw-rounded-2xl tw-w-full tw-p-10 tw-border tw-border-natural-100 tw-bg-natural-50 tw-shadow-pre-call tw-flex tw-items-center tw-justify-between tw-gap-[72px]">
-      <div className="tw-flex tw-grow tw-flex-col tw-justify-center tw-gap-10">
-        <PreCallUserPreview
+    <div className="tw-rounded-2xl tw-w-full tw-p-10 tw-border tw-border-natural-100 tw-bg-natural-50 tw-shadow-pre-call tw-flex tw-items-center tw-justify-between tw-gap-[76px]">
+      <div className="tw-flex tw-grow tw-flex-col tw-justify-center tw-gap-10 tw-max-w-[calc(100%-341px)]">
+        <PreSessionUserPreview
           camera={camera.enabled}
           stream={stream}
           user={currentMember}
+          speaking={speaking}
         />
 
-        <CallBar
+        <ActionsBar
           items={[
             {
               enabled: camera.enabled,
@@ -74,14 +77,16 @@ export const PreCall: React.FC<Props> = ({
         />
       </div>
 
-      <Ready
-        currentMember={currentMember}
-        otherMember={otherMember}
-        mic={!mic.error}
-        join={join}
-      />
+      <div className="tw-shrink-0">
+        <Ready
+          currentMember={currentMember}
+          otherMember={otherMember}
+          mic={!mic.error}
+          join={join}
+        />
+      </div>
     </div>
   );
 };
 
-export default PreCall;
+export default PreSession;

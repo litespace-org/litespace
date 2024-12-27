@@ -44,6 +44,7 @@
     "./Clock16X16": "./dist/Clock16X16.tsx",
     "./Close": "./dist/Close.tsx",
     "./CurvedDashedLine": "./dist/CurvedDashedLine.tsx",
+    "./Devices": "./dist/Devices.tsx",
     "./EditMessage": "./dist/EditMessage.tsx",
     "./EditMessage16X16": "./dist/EditMessage16X16.tsx",
     "./Edit": "./dist/Edit.tsx",

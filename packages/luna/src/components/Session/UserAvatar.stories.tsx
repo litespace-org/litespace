@@ -1,14 +1,14 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { CallAvatar } from "@/components/Call/CallAvatar";
+import { UserAvatar } from "@/components/Session/UserAvatar";
 import { faker } from "@faker-js/faker/locale/ar";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import React, { useEffect, useState } from "react";
 
-type Component = typeof CallAvatar;
+type Component = typeof UserAvatar;
 
 const meta: Meta<Component> = {
-  title: "Call/CallAvatar",
-  component: CallAvatar,
+  title: "Session/UserAvatar",
+  component: UserAvatar,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
 };
@@ -24,7 +24,7 @@ export const Speaking: StoryObj<Component> = {
   },
 };
 
-export const AvatarTalking: StoryObj<Component> = {
+export const Speaking2: StoryObj<Component> = {
   args: {
     user: {
       id: 5,
@@ -50,7 +50,7 @@ export const AvatarTalking: StoryObj<Component> = {
         clearInterval(interval);
       };
     }, []);
-    return <CallAvatar {...props} speaking={speaking} />;
+    return <UserAvatar {...props} speaking={speaking} />;
   },
 };
 

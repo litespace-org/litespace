@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PreCallUserPreview } from "@/components/Call/PreCallUserPreview";
+import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { faker } from "@faker-js/faker/locale/ar";
 import React, { useEffect, useState } from "react";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { getVideoMediaStream } from "@/internal/utils/stream";
 
-type Component = typeof PreCallUserPreview;
+type Component = typeof PreSessionUserPreview;
 
 const meta: Meta<Component> = {
-  title: "Call/PreCallUserPreview",
-  component: PreCallUserPreview,
+  title: "Session/PreSessionUserPreview",
+  component: PreSessionUserPreview,
   parameters: { layout: "centered" },
   decorators: [DarkStoryWrapper],
 };
@@ -43,7 +43,7 @@ export const WithVideo: StoryObj<Component> = {
     }, []);
     return (
       <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
-        <PreCallUserPreview camera={true} {...props} stream={stream} />
+        <PreSessionUserPreview camera={true} {...props} stream={stream} />
       </div>
     );
   },
@@ -60,7 +60,7 @@ export const WithoutVideo: StoryObj<Component> = {
   render(props: ComponentProps) {
     return (
       <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
-        <PreCallUserPreview {...props} camera={false} />
+        <PreSessionUserPreview {...props} camera={false} />
       </div>
     );
   },

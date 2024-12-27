@@ -6,9 +6,9 @@ import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Chat from "@litespace/assets/Chat";
 import CastScreen from "@litespace/assets/CastScreen";
-import { CallBar } from "@/components/Call/CallBar";
-import { InCallStreams } from "@/components/Call/InCallStreams";
-import { StreamInfo } from "@/components/Call/types";
+import { ActionsBar } from "@/components/Session/ActionsBar";
+import { SessionStreams } from "@/components/Session/SessionStreams";
+import { StreamInfo } from "@/components/Session/types";
 
 type Props = {
   streams: StreamInfo[];
@@ -37,15 +37,15 @@ type Props = {
     duration: number;
     startAt: string;
   };
-  leaveCall: Void;
+  leave: Void;
   chatPanel?: React.ReactNode;
   alert?: string;
 };
 
-export const Call: React.FC<Props> = ({
+export const Session: React.FC<Props> = ({
   chat,
   chatPanel,
-  leaveCall,
+  leave,
   camera,
   mic,
   cast,
@@ -58,7 +58,7 @@ export const Call: React.FC<Props> = ({
   return (
     <div className="tw-flex tw-flex-col tw-gap-10 tw-w-full tw-h-full">
       <div className="tw-h-full tw-grow tw-flex">
-        <InCallStreams
+        <SessionStreams
           currentUserId={currentUserId}
           fullScreen={fullScreen}
           streams={streams}
@@ -69,8 +69,8 @@ export const Call: React.FC<Props> = ({
         {chat.enabled ? chatPanel : null}
       </div>
       <div className="tw-border-t tw-border-natural-400" />
-      <CallBar
-        leaveCall={leaveCall}
+      <ActionsBar
+        leave={leave}
         items={[
           {
             enabled: cast.enabled,
@@ -104,4 +104,4 @@ export const Call: React.FC<Props> = ({
   );
 };
 
-export default Call;
+export default Session;

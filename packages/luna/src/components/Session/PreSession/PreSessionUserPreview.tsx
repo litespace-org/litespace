@@ -1,15 +1,16 @@
 import React, { useEffect, useRef } from "react";
-import { CallAvatar } from "@/components/Call/CallAvatar";
+import { UserAvatar } from "@/components/Session/UserAvatar";
 
-export const PreCallUserPreview: React.FC<{
+export const PreSessionUserPreview: React.FC<{
   camera: boolean;
   stream: MediaStream | null;
+  speaking?: boolean;
   user: {
     id: number;
     imageUrl: string | null;
     name: string | null;
   };
-}> = ({ stream, user, camera }) => {
+}> = ({ stream, user, camera, speaking }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -17,12 +18,12 @@ export const PreCallUserPreview: React.FC<{
   }, [stream, camera]);
 
   return (
-    <div className="tw-aspect-video tw-w-full tw-grow tw-max-w-[700px] tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
+    <div className="tw-aspect-video tw-w-full tw-grow tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
       {camera ? (
         <video ref={videoRef} autoPlay muted={false} playsInline />
       ) : (
-        <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center">
-          <CallAvatar user={user} />
+        <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-lg">
+          <UserAvatar user={user} speaking={speaking} />
         </div>
       )}
     </div>

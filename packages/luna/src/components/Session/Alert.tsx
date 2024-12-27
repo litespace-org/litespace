@@ -3,7 +3,7 @@ import cn from "classnames";
 import ExclamationMark from "@litespace/assets/ExclamationMark";
 import { Typography } from "@/components/Typography";
 
-export const CallAlert: React.FC<{ alert: string }> = ({ alert }) => {
+export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
   return (
     <div className="tw-flex tw-items-center tw-justify-center tw-gap-2">
       <div
