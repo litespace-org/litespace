@@ -3,8 +3,9 @@ import { Void } from "@litespace/types";
 import { TimerIndicator } from "@/components/Session/TimerIndicator";
 import { SpeechIndicator } from "@/components/Session/SpeechIndicator";
 import { FullScreenButton } from "@/components/Session/FullScreenButton";
-import { CallAlert } from "@/components/Session/CallAlert";
+import { Alert } from "@/components/Session/Alert";
 import { motion } from "framer-motion";
+
 export const VideoBar: React.FC<{
   alert?: string;
   fullScreen: {
@@ -30,7 +31,7 @@ export const VideoBar: React.FC<{
     >
       <div className="tw-flex tw-items-center tw-gap-8">
         <FullScreenButton {...fullScreen} />
-        {alert ? <CallAlert alert={alert} /> : null}
+        {alert ? <Alert alert={alert} /> : null}
       </div>
       <div className="tw-flex tw-items-center tw-gap-8">
         <SpeechIndicator speaking={speaking} muted={muted} variant="large" />

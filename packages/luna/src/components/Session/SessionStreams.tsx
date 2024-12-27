@@ -7,7 +7,7 @@ import { Void } from "@litespace/types";
 import { MovableMedia } from "@/components/MovableMedia";
 import { streamsOrganizer } from "@/lib/stream";
 
-export const InCallStreams: React.FC<{
+export const SessionStreams: React.FC<{
   alert?: string;
   currentUserId: number;
   streams: StreamInfo[];

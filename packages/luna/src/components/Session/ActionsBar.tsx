@@ -1,9 +1,9 @@
 import { Void } from "@litespace/types";
 import React from "react";
-import { EndCallButton } from "@/components/Session/EndCallButton";
-import { ToggleCallButton } from "@/components/Session/ToggleCallButton";
+import { EndSession } from "@/components/Session/EndSession";
+import { ToggleButton } from "@/components/Session/ToggleButton";
 
-export const CallBar: React.FC<{
+export const ActionsBar: React.FC<{
   items: {
     toggle: Void;
     enabled: boolean;
@@ -11,16 +11,16 @@ export const CallBar: React.FC<{
     OffIcon: React.FC<{ className?: string }>;
     error?: boolean;
   }[];
-  leaveCall?: Void;
-}> = ({ leaveCall, items }) => {
+  leave?: Void;
+}> = ({ leave, items }) => {
   return (
     <div className="tw-flex tw-items-center tw-justify-center tw-gap-8">
-      {leaveCall ? <EndCallButton leaveCall={leaveCall} /> : null}
+      {leave ? <EndSession onClick={leave} /> : null}
       {items.map((item, index) => (
-        <ToggleCallButton key={index} {...item} />
+        <ToggleButton key={index} {...item} />
       ))}
     </div>
   );
 };
 
-export default CallBar;
+export default ActionsBar;

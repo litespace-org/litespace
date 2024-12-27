@@ -5,13 +5,20 @@ import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 
-export const PermissionsDialog: React.FC<{
+export type Props = {
   onSubmit: (payload: { camera: boolean; mic: boolean }) => void;
   loading?: "mic-and-camera" | "mic-only";
-}> = ({ onSubmit, loading }) => {
+  open: boolean;
+};
+
+export const PermissionsDialog: React.FC<Props> = ({
+  onSubmit,
+  loading,
+  open,
+}) => {
   const intl = useFormatMessage();
   return (
-    <Dialog open>
+    <Dialog open={open}>
       <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-8">
         <div className="tw-mb-8">
           <Devices />

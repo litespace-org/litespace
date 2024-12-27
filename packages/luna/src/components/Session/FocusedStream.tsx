@@ -24,7 +24,6 @@ export const FocusedStream: React.FC<{
   useEffect(() => {
     if (videoRef.current && stream.stream)
       videoRef.current.srcObject = stream.stream;
-    videoRef.current?.play();
   }, [stream.stream]);
 
   return (

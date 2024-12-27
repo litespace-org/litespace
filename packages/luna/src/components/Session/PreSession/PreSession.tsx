@@ -1,6 +1,6 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { CallBar } from "@/components/Session/CallBar";
+import { ActionsBar } from "@/components/Session/ActionsBar";
 import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { IUser, Void } from "@litespace/types";
 import Video from "@litespace/assets/Video";
@@ -57,7 +57,7 @@ export const PreSession: React.FC<Props> = ({
           speaking={speaking}
         />
 
-        <CallBar
+        <ActionsBar
           items={[
             {
               enabled: camera.enabled,

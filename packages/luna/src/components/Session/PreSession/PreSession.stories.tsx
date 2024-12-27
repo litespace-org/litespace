@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { PreSession, PreSessionProps } from "@/components/Session";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
-import { getVideoMediaStream } from "@/internal/utils/stream";
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useUserMedia } from "@/internal/hooks/stream";
 
 type Component = typeof PreSession;
 
@@ -49,10 +49,7 @@ export const WithMedia: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const [stream, setStream] = useState<MediaStream | null>(null);
-    useEffect(() => {
-      getVideoMediaStream().then(setStream);
-    }, []);
+    const stream = useUserMedia();
     return <PreSession {...props} stream={stream} />;
   },
 };
@@ -153,10 +150,7 @@ export const OnlyCamera: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const [stream, setStream] = useState<MediaStream | null>(null);
-    useEffect(() => {
-      getVideoMediaStream().then(setStream);
-    }, []);
+    const stream = useUserMedia();
     return <PreSession {...props} stream={stream} />;
   },
 };
@@ -189,9 +183,6 @@ export const MicProblem: StoryObj<Component> = {
     },
     join,
   },
-  render(props: PreSessionProps) {
-    return <PreSession {...props} />;
-  },
 };
 
 export const ForTutor: StoryObj<Component> = {
@@ -213,9 +204,6 @@ export const ForTutor: StoryObj<Component> = {
     camera: { enabled: false, toggle: toggleCamera, error: false },
     mic: { enabled: true, toggle: toggleMic, error: false },
     join,
-  },
-  render(props: PreSessionProps) {
-    return <PreSession {...props} />;
   },
 };
 
@@ -248,10 +236,7 @@ export const EmptyRoom: StoryObj<Component> = {
     join,
   },
   render(props: PreSessionProps) {
-    const [stream, setStream] = useState<MediaStream | null>(null);
-    useEffect(() => {
-      getVideoMediaStream().then(setStream);
-    }, []);
+    const stream = useUserMedia();
     return <PreSession {...props} stream={stream} />;
   },
 };
