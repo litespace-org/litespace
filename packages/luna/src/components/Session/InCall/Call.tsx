@@ -6,9 +6,9 @@ import Microphone from "@litespace/assets/Microphone";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
 import Chat from "@litespace/assets/Chat";
 import CastScreen from "@litespace/assets/CastScreen";
-import { CallBar } from "@/components/Call/CallBar";
-import { InCallStreams } from "@/components/Call/InCallStreams";
-import { StreamInfo } from "@/components/Call/types";
+import { CallBar } from "@/components/Session/CallBar";
+import { InCallStreams } from "@/components/Session/InCallStreams";
+import { StreamInfo } from "@/components/Session/types";
 
 type Props = {
   streams: StreamInfo[];

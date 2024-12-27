@@ -4,7 +4,7 @@ import { orUndefined } from "@litespace/sol/utils";
 import { motion } from "framer-motion";
 import cn from "classnames";
 
-export const CallAvatar: React.FC<{
+export const UserAvatar: React.FC<{
   user: {
     id: number;
     imageUrl: string | null;
@@ -27,9 +27,7 @@ export const CallAvatar: React.FC<{
         initial={{
           scale: 0,
         }}
-        animate={{
-          scale: speaking ? 1 : 0.5,
-        }}
+        animate={{ scale: speaking ? 1 : 0.5 }}
         transition={{
           delay: 0.1,
           duration: 1,
@@ -78,4 +76,4 @@ export const CallAvatar: React.FC<{
   );
 };
 
-export default CallAvatar;
+export default UserAvatar;

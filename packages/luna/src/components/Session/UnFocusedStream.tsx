@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { CallAvatar } from "@/components/Call/CallAvatar";
-import { SpeechIndicator } from "@/components/Call/SpeechIndicator";
-import { StreamInfo } from "@/components/Call/types";
+import { UserAvatar } from "@/components/Session/UserAvatar";
+import { SpeechIndicator } from "@/components/Session/SpeechIndicator";
+import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 
 export const UnFocusedStream: React.FC<{
@@ -42,7 +42,7 @@ export const UnFocusedStream: React.FC<{
           (stream.camera || stream.cast) && "tw-opacity-0"
         )}
       >
-        <CallAvatar
+        <UserAvatar
           variant="small"
           user={stream.user}
           speaking={stream.speaking}

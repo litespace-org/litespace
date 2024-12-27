@@ -14,12 +14,12 @@ import { Void } from "@litespace/types";
 
 export const Dialog: React.FC<{
   trigger?: React.ReactNode;
-  title: React.ReactNode;
+  title?: React.ReactNode;
   children?: React.ReactNode;
   className?: string;
   open?: boolean;
   setOpen?: (open: boolean) => void;
-  close: Void;
+  close?: Void;
   description?: string;
 }> = ({
   trigger,
@@ -47,9 +47,11 @@ export const Dialog: React.FC<{
         >
           <div className="tw-flex tw-justify-between tw-items-center tw-w-full">
             <Title>{title}</Title>
-            <Close onClick={close}>
-              <X className="tw-cursor-pointer" />
-            </Close>
+            {close ? (
+              <Close onClick={close}>
+                <X className="tw-cursor-pointer" />
+              </Close>
+            ) : null}
           </div>
 
           {children}

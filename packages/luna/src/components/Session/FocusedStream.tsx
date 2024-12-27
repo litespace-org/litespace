@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { VideoBar } from "@/components/Call/VideoBar";
-import { CallAvatar } from "@/components/Call/CallAvatar";
-import { StreamInfo } from "@/components/Call/types";
+import { VideoBar } from "@/components/Session/VideoBar";
+import { UserAvatar } from "@/components/Session/UserAvatar";
+import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 
@@ -61,7 +61,7 @@ export const FocusedStream: React.FC<{
             (stream.camera || stream.cast) && "tw-opacity-0"
           )}
         >
-          <CallAvatar user={stream.user} speaking={stream.speaking} />
+          <UserAvatar user={stream.user} speaking={stream.speaking} />
         </div>
       </motion.div>
 

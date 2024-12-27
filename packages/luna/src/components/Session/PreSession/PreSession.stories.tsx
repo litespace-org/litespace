@@ -1,16 +1,15 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { PreCall, PreCallProps } from "@/components/Call";
-import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { PreSession, PreSessionProps } from "@/components/Session";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
 import { getVideoMediaStream } from "@/internal/utils/stream";
 import React, { useEffect, useState } from "react";
 
-type Component = typeof PreCall;
+type Component = typeof PreSession;
 
 const meta: Meta<Component> = {
-  title: "Call/PreCall",
-  component: PreCall,
+  title: "Session/PreSession",
+  component: PreSession,
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
@@ -22,7 +21,6 @@ const meta: Meta<Component> = {
         <Story />
       </div>
     ),
-    DarkStoryWrapper,
   ],
 };
 
@@ -35,14 +33,14 @@ export const WithMedia: StoryObj<Component> = {
     otherMember: {
       id: 5,
       gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
       incall: true,
     },
     currentMember: {
       id: 5,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
@@ -50,12 +48,12 @@ export const WithMedia: StoryObj<Component> = {
     mic: { enabled: true, error: false, toggle: toggleMic },
     join,
   },
-  render(props: PreCallProps) {
+  render(props: PreSessionProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
       getVideoMediaStream().then(setStream);
     }, []);
-    return <PreCall {...props} stream={stream} />;
+    return <PreSession {...props} stream={stream} />;
   },
 };
 
@@ -64,14 +62,14 @@ export const WithoutMedia: StoryObj<Component> = {
     otherMember: {
       id: 5,
       gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
       incall: true,
     },
     currentMember: {
       id: 5,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
@@ -85,9 +83,10 @@ export const WithoutMedia: StoryObj<Component> = {
       toggle: toggleMic,
       error: false,
     },
+    join,
   },
-  render(props: PreCallProps) {
-    return <PreCall {...props} />;
+  render(props: PreSessionProps) {
+    return <PreSession {...props} />;
   },
 };
 
@@ -96,14 +95,14 @@ export const OnlyMic: StoryObj<Component> = {
     otherMember: {
       id: 5,
       gender: IUser.Gender.Male,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Tutor,
       incall: true,
     },
     currentMember: {
       id: 5,
-      imageUrl: "https://picsum.photos/400",
+      imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
       role: IUser.Role.Student,
     },
@@ -117,9 +116,11 @@ export const OnlyMic: StoryObj<Component> = {
       toggle: toggleCamera,
       error: false,
     },
+    speaking: true,
+    join,
   },
-  render(props: PreCallProps) {
-    return <PreCall {...props} />;
+  render(props: PreSessionProps) {
+    return <PreSession {...props} />;
   },
 };
 
@@ -149,13 +150,14 @@ export const OnlyCamera: StoryObj<Component> = {
       toggle: toggleMic,
       error: false,
     },
+    join,
   },
-  render(props: PreCallProps) {
+  render(props: PreSessionProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
       getVideoMediaStream().then(setStream);
     }, []);
-    return <PreCall {...props} stream={stream} />;
+    return <PreSession {...props} stream={stream} />;
   },
 };
 
@@ -185,10 +187,10 @@ export const MicProblem: StoryObj<Component> = {
       toggle: toggleMic,
       error: true,
     },
+    join,
   },
-
-  render(props: PreCallProps) {
-    return <PreCall {...props} />;
+  render(props: PreSessionProps) {
+    return <PreSession {...props} />;
   },
 };
 
@@ -212,8 +214,8 @@ export const ForTutor: StoryObj<Component> = {
     mic: { enabled: true, toggle: toggleMic, error: false },
     join,
   },
-  render(props: PreCallProps) {
-    return <PreCall {...props} />;
+  render(props: PreSessionProps) {
+    return <PreSession {...props} />;
   },
 };
 
@@ -243,13 +245,14 @@ export const EmptyRoom: StoryObj<Component> = {
       toggle: toggleMic,
       error: false,
     },
+    join,
   },
-  render(props: PreCallProps) {
+  render(props: PreSessionProps) {
     const [stream, setStream] = useState<MediaStream | null>(null);
     useEffect(() => {
       getVideoMediaStream().then(setStream);
     }, []);
-    return <PreCall {...props} stream={stream} />;
+    return <PreSession {...props} stream={stream} />;
   },
 };
 

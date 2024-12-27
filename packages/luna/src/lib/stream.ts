@@ -1,4 +1,4 @@
-import { StreamInfo } from "@/components/Call/types";
+import { StreamInfo } from "@/components/Session/types";
 
 export function streamsOrganizer(
   streams: StreamInfo[],

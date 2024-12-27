@@ -1,10 +1,10 @@
 import React, { useMemo, useRef } from "react";
 import cn from "classnames";
-import { FocusedStream } from "@/components/Call/FocusedStream";
-import { UnFocusedStream } from "@/components/Call/UnFocusedStream";
-import { StreamInfo } from "@/components/Call/types";
+import { FocusedStream } from "@/components/Session/FocusedStream";
+import { UnFocusedStream } from "@/components/Session/UnFocusedStream";
+import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
-import { MovableMedia } from "../MovableMedia";
+import { MovableMedia } from "@/components/MovableMedia";
 import { streamsOrganizer } from "@/lib/stream";
 
 export const InCallStreams: React.FC<{

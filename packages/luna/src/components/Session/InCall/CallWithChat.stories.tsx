@@ -1,16 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Call } from "@/components/Call";
+import { Call } from "@/components/Session";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import React, { useEffect, useState } from "react";
 import { useCreateStream } from "@/internal/hooks/stream";
 import dayjs from "dayjs";
-import { StreamInfo } from "@/components/Call/types";
+import { StreamInfo } from "@/components/Session/types";
 import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Call;
 
 const meta: Meta<Component> = {
-  title: "Call/InCallWithoutChat",
+  title: "Session/InCallWithChat",
   component: Call,
   parameters: { layout: "centered" },
   decorators: [
@@ -28,7 +28,7 @@ const CURRENT_USER_ID = 5;
 export const AloneWithCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => alert("toggle chat"),
     },
     camera: {
@@ -64,7 +64,7 @@ export const AloneWithCamera: StoryObj<Component> = {
 export const Alert: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => alert("toggle chat"),
     },
     camera: {
@@ -101,7 +101,7 @@ export const Alert: StoryObj<Component> = {
 export const AloneWithoutCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -137,7 +137,7 @@ export const AloneWithoutCamera: StoryObj<Component> = {
 export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -175,7 +175,7 @@ export const FocusedWithUnfocusedWithoutCamera: StoryObj<Component> = {
 export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -212,7 +212,7 @@ export const FocusedWithoutUnfocusedWithCamera: StoryObj<Component> = {
 export const FullRoomWithoutCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -252,7 +252,7 @@ export const FullRoomWithoutCameras: StoryObj<Component> = {
 export const FullRoomWithCastWithCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -295,7 +295,7 @@ export const FullRoomWithCastWithCameras: StoryObj<Component> = {
 export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -338,7 +338,7 @@ export const FullRoomWithCastWithoutCameras: StoryObj<Component> = {
 export const FullRoomWithCastWithCameraWithoutCamera: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -380,7 +380,7 @@ export const FullRoomWithCastWithCameraWithoutCamera: StoryObj<Component> = {
 export const FullRoomWithFullCast: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {
@@ -424,7 +424,7 @@ export const FullRoomWithFullCast: StoryObj<Component> = {
 export const NewUserEntering: StoryObj<Component> = {
   args: {
     chat: {
-      enabled: false,
+      enabled: true,
       toggle: () => {},
     },
     camera: {

@@ -1,9 +1,9 @@
 import React from "react";
 import { Void } from "@litespace/types";
-import { TimerIndicator } from "@/components/Call/TimerIndicator";
-import { SpeechIndicator } from "@/components/Call/SpeechIndicator";
-import { FullScreenButton } from "@/components/Call/FullScreenButton";
-import { CallAlert } from "@/components/Call/CallAlert";
+import { TimerIndicator } from "@/components/Session/TimerIndicator";
+import { SpeechIndicator } from "@/components/Session/SpeechIndicator";
+import { FullScreenButton } from "@/components/Session/FullScreenButton";
+import { CallAlert } from "@/components/Session/CallAlert";
 import { motion } from "framer-motion";
 export const VideoBar: React.FC<{
   alert?: string;

@@ -1,4 +1,4 @@
-import { StreamInfo } from "@/components/Call/types";
+import { StreamInfo } from "@/components/Session/types";
 
 const DEFAULT_URL =
   "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4";
