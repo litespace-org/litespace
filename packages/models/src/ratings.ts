@@ -227,8 +227,13 @@ export class Ratings {
     return this.from(row);
   }
 
-  async findAvgRatings(users: number[]): Promise<IRating.FindAvgRatingResult> {
-    const rows = await this.builder()
+  async findAvgRatings({
+    users,
+    tx,
+  }: WithOptionalTx<{
+    users: number[];
+  }>): Promise<IRating.FindAvgRatingResult> {
+    const rows = await this.builder(tx)
       .select({ user: this.column.ratings("ratee_id") })
       .avg<Array<{ user: number; avg: string }>>({
         avg: this.column.ratings("value"),
@@ -243,7 +248,7 @@ export class Ratings {
   }
 
   async findAvgUserRatings(user: number): Promise<number> {
-    const ratings = await this.findAvgRatings([user]);
+    const ratings = await this.findAvgRatings({ users: [user] });
     const rating = first(ratings);
     if (!rating) return 0;
     return rating.avg;

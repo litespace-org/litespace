@@ -53,6 +53,7 @@
     "telegram": "vite-node scripts/telegram.ts",
     "github": "vite-node scripts/github.ts",
     "intl": "vite-node scripts/intl.ts",
+    "benchmark": "vite-node scripts/benchmark.ts",
     "clean:dep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules",
     "clean:dist": "pnpm -r exec rm -rf dist",
     "assets": "pnpm --filter @litespace/assets",
@@ -69,19 +70,25 @@
     "dashboard": "pnpm --filter @litespace/dashboard"
   },
   "devDependencies": {
+    "@litespace/atlas": "workspace:^",
+    "@litespace/types": "workspace:^",
+    "@types/autocannon": "^7.12.5",
+    "@types/ms": "^0.7.34",
     "@types/node": "^22.7.5",
+    "autocannon": "^8.0.0",
     "axios": "^1.7.7",
+    "commander": "^12.1.0",
     "concurrently": "^8.2.2",
     "env-cmd": "^10.1.0",
     "glob": "^11.0.0",
     "lodash": "^4.17.21",
+    "ms": "^2.1.3",
+    "pretty-bytes": "^6.1.1",
     "rimraf": "^5.0.7",
+    "table": "^6.9.0",
     "ts-node": "^10.9.2",
     "vercel": "^34.2.7",
     "vite-node": "^2.1.2"
-  },
-  "dependencies": {
-    "commander": "^12.1.0"
   },
   "pnpm": {
     "patchedDependencies": {

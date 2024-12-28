@@ -1,12 +1,6 @@
 import { ITutor } from "@litespace/types";
 import { Knex } from "knex";
-import {
-  tutors,
-  knex,
-  lessons,
-  topics,
-  ratings,
-} from "@litespace/models";
+import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
 import { cache } from "@/lib/cache";
 import { Gender } from "@litespace/types/dist/esm/user";
@@ -27,12 +21,13 @@ export async function constructTutorsCache(): Promise<TutorsCache> {
 
     return await Promise.all([
       onboardedTutors,
-      topics.findUserTopics({ users: tutorIds }),
-      ratings.findAvgRatings(tutorIds),
-      lessons.countLessonsBatch({ users: tutorIds, canceled: false }),
+      topics.findUserTopics({ users: tutorIds, tx }),
+      ratings.findAvgRatings({ users: tutorIds, tx }),
+      lessons.countLessonsBatch({ users: tutorIds, canceled: false, tx }),
       lessons.countCounterpartMembersBatch({
         users: tutorIds,
         canceled: false,
+        tx,
       }),
     ]);
   });
@@ -121,7 +116,7 @@ async function findTutorCacheMeta(tutorId: number) {
   const [tutorTopics, avgRatings, studentCount, lessonCount, online] =
     await Promise.all([
       topics.findUserTopics({ users: [tutorId] }),
-      ratings.findAvgRatings([tutorId]),
+      ratings.findAvgRatings({ users: [tutorId] }),
       lessons.countCounterpartMembers({ user: tutorId }),
       lessons.countLessons({
         users: [tutorId],
