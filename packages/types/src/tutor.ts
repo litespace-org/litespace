@@ -124,7 +124,7 @@ export type FindTutorActivityScores = ActivityScoreMap;
 
 export type FindTutorMetaApiResponse = Self;
 
-export type FindPublicTutorStatsApiResponse = { 
+export type FindPersonalizedTutorStatsApiResponse = { 
   /**
   * Total sum of all completed lessons.
   */

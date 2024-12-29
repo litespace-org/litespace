@@ -484,7 +484,7 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findPublicTutorStats(req: Request, res: Response, next: NextFunction) {
+async function findPersonalizedTutorStats(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isUser(user) && (isTutor(user) || isTutorManager(user));
   if (!allowed) return next(forbidden());
@@ -499,18 +499,18 @@ async function findPublicTutorStats(req: Request, res: Response, next: NextFunct
     upcomingLessonCount,
     completedLessonCount,
   ] = await Promise.all([
-    await lessons.countCounterpartMembers({
+    lessons.countCounterpartMembers({
       user: id,
       ratified: true,
       canceled: false,
     }),
-    await lessons.countLessons({
+    lessons.countLessons({
       users: [id],
       ratified: true,
       canceled: false,
       after: now,
     }),
-    await lessons.countLessons({
+    lessons.countLessons({
       users: [id],
       ratified: true,
       canceled: false,
@@ -520,7 +520,7 @@ async function findPublicTutorStats(req: Request, res: Response, next: NextFunct
 
   const totalLessonCount = completedLessonCount + upcomingLessonCount;
 
-  const response: ITutor.FindPublicTutorStatsApiResponse = {
+  const response: ITutor.FindPersonalizedTutorStatsApiResponse = {
     studentCount,
     completedLessonCount,
     upcomingLessonCount,
@@ -685,7 +685,7 @@ async function findStudentStats(
   res.status(200).json(response);
 }
 
-async function findPublicStudentStats(
+async function findPersonalizedStudentStats(
   req: Request,
   res: Response,
   next: NextFunction
@@ -700,7 +700,6 @@ async function findPublicStudentStats(
 
   const now = dayjs.utc().toISOString();
 
-  // DONE: @mmoehabb use Promise.all to resolve all promises.
   const [
     tutorCount,
     completedLessonCount,
@@ -732,7 +731,7 @@ async function findPublicStudentStats(
     }),
   ]);
 
-  const response: IUser.FindPublicStudentStatsApiResponse = {
+  const response: IUser.FindPersonalizedStudentStatsApiResponse = {
     tutorCount,
     completedLessonCount,
     totalLearningTime,
@@ -781,12 +780,12 @@ export default {
   findTutorMeta: safeRequest(findTutorMeta),
   findTutorInfo: safeRequest(findTutorInfo),
   findTutorStats: safeRequest(findTutorStats),
-  findPublicTutorStats: safeRequest(findPublicTutorStats),
+  findPersonalizedTutorStats: safeRequest(findPersonalizedTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForStudio: safeRequest(findTutorsForStudio),
   findStudentStats: safeRequest(findStudentStats),
-  findPublicStudentStats: safeRequest(findPublicStudentStats),
+  findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
 };

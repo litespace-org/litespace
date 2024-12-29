@@ -25,7 +25,7 @@ export function useFindPublicStudentStats() {
   const atlas = useAtlas();
 
   const findStats = useCallback(async () => {
-    return await atlas.user.findPublicStudentStats();
+    return await atlas.user.findPersonalizedStudentStats();
   }, [atlas.user]);
 
   return useQuery({

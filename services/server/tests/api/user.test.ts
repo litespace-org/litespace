@@ -334,7 +334,7 @@ describe("/api/v1/user/", () => {
     });
   });
 
-  describe("GET /api/v1/user/tutor/stats/public", () => {
+  describe("GET /api/v1/user/tutor/stats/personalized", () => {
     beforeEach(async () => {
       await flush();
     });
@@ -397,7 +397,7 @@ describe("/api/v1/user/", () => {
         canceled: true, // should not be counted
       });
 
-      const res = await tutorApi.atlas.user.findPublicTutorStats();
+      const res = await tutorApi.atlas.user.findPersonalizedTutorStats();
       
       expect(res.studentCount).to.eq(2);
       expect(res.upcomingLessonCount).to.eq(1);
@@ -407,12 +407,12 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden if the user is not a tutor.", async () => {
       const studentApi = await Api.forStudent();
-      const res = await safe(async () => studentApi.atlas.user.findPublicTutorStats());
+      const res = await safe(async () => studentApi.atlas.user.findPersonalizedTutorStats());
       expect(res).to.deep.eq(forbidden())
     });
   });
 
-  describe("GET /api/v1/user/student/stats/public", () => {
+  describe("GET /api/v1/user/student/stats/personalized", () => {
     beforeEach(async () => {
       await flush();
     });
@@ -451,8 +451,7 @@ describe("/api/v1/user/", () => {
         canceled: true,
       });
 
-      const res = await safe(async () => studentApi.atlas.user.findPublicStudentStats());
-      if (res instanceof Error) throw res;
+      const res = await studentApi.atlas.user.findPersonalizedStudentStats();
       
       expect(res.tutorCount).to.eq(2);
       expect(res.totalLearningTime).to.eq(lesson1.lesson.duration);
@@ -462,7 +461,7 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden if the user is not a student.", async () => {
       const tutorApi = await Api.forTutor();
-      const res = await safe(async () => tutorApi.atlas.user.findPublicStudentStats());
+      const res = await safe(async () => tutorApi.atlas.user.findPersonalizedStudentStats());
       expect(res).to.deep.eq(forbidden())
     });
   });
