@@ -79,7 +79,9 @@ describe("Ratings", () => {
         values: [1, 2, 4, 5],
       });
 
-      const avg = await ratings.findAvgRatings([t1.id, t2.id, t3.id]);
+      const avg = await ratings.findAvgRatings({
+        users: [t1.id, t2.id, t3.id],
+      });
 
       expect(avg[0].avg === 3);
       expect(avg[1].avg === 3);
