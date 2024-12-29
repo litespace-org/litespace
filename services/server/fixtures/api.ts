@@ -3,6 +3,7 @@ import { Backend, IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { sample } from "lodash";
 import db from "@fixtures/db";
+import { tutors } from "@litespace/models";
 
 function asBearerToken(token?: string) {
   if (!token) return null;
@@ -48,7 +49,13 @@ export class Api {
   }
 
   static async forTutor() {
-    return await this.forUser(IUser.Role.Tutor);
+    const res = await this.forUser(IUser.Role.Tutor);
+
+    // insert row in tutors table
+    const cur = await res.findCurrentUser();
+    await tutors.create(cur.user.id);
+
+    return res;
   }
 
   async createUser(payload?: Partial<IUser.CreateApiPayload>) {

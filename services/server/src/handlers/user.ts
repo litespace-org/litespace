@@ -40,7 +40,6 @@ import {
   asTutorInfoResponseBody,
   cacheTutors,
   isOnboard,
-  isPublicTutor,
   joinTutorCache,
   orderTutors,
 } from "@/lib/tutor";
@@ -460,7 +459,7 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
 
   const tutor = await tutors.findById(id);
-  if (!isPublicTutor(tutor)) return next(notfound.tutor());
+  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
 
   // only include "past" and "fulfilled" lessons
   const filters = {
@@ -480,6 +479,52 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
     lessonCount,
     studentCount,
     totalMinutes,
+  };
+
+  res.status(200).json(response);
+}
+
+async function findPublicTutorStats(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isUser(user) && (isTutor(user) || isTutorManager(user));
+  if (!allowed) return next(forbidden());
+
+  const id = user.id;
+  const tutor = await tutors.findById(id);
+  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
+
+  const now = dayjs.utc().toISOString();
+  const [
+    studentCount,
+    upcomingLessonCount,
+    completedLessonCount,
+  ] = await Promise.all([
+    await lessons.countCounterpartMembers({
+      user: id,
+      ratified: true,
+      canceled: false,
+    }),
+    await lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      after: now,
+    }),
+    await lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      before: now,
+    }),
+  ]);
+
+  const totalLessonCount = completedLessonCount + upcomingLessonCount;
+
+  const response: ITutor.FindPublicTutorStatsApiResponse = {
+    studentCount,
+    completedLessonCount,
+    upcomingLessonCount,
+    totalLessonCount,
   };
 
   res.status(200).json(response);
@@ -655,33 +700,37 @@ async function findPublicStudentStats(
 
   const now = dayjs.utc().toISOString();
 
-  // todo: @mmoehabb use Promise.all to resolve all promises.
-  const tutorCount = await lessons.countCounterpartMembers({
-    user: id,
-    ratified: true,
-    canceled: false,
-  });
-
-  const completedLessonCount = await lessons.countLessons({
-    users: [id],
-    ratified: true,
-    canceled: false,
-    before: now,
-  });
-
-  const upcomingLessonCount = await lessons.countLessons({
-    users: [id],
-    ratified: true,
-    canceled: false,
-    after: now,
-  });
-
-  const totalLearningTime = await lessons.sumDuration({
-    users: [id],
-    ratified: true,
-    canceled: false,
-    before: now,
-  });
+  // DONE: @mmoehabb use Promise.all to resolve all promises.
+  const [
+    tutorCount,
+    completedLessonCount,
+    upcomingLessonCount,
+    totalLearningTime
+  ] = await Promise.all([
+    await lessons.countCounterpartMembers({
+      user: id,
+      ratified: true,
+      canceled: false,
+    }),
+    await lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      before: now,
+    }),
+    await lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      after: now,
+    }),
+    await lessons.sumDuration({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      before: now,
+    }),
+  ]);
 
   const response: IUser.FindPublicStudentStatsApiResponse = {
     tutorCount,
@@ -700,7 +749,7 @@ async function findTutorActivityScores(
 ) {
   const { tutor: id } = withNamedId("tutor").parse(req.params);
   const tutor = await tutors.findById(id);
-  if (!isPublicTutor(tutor)) return next(notfound.tutor());
+  if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
 
   const lessonDays = await lessons.findLessonDays({
     users: [id],
@@ -732,6 +781,7 @@ export default {
   findTutorMeta: safeRequest(findTutorMeta),
   findTutorInfo: safeRequest(findTutorInfo),
   findTutorStats: safeRequest(findTutorStats),
+  findPublicTutorStats: safeRequest(findPublicTutorStats),
   findCurrentUser: safeRequest(findCurrentUser),
   selectInterviewer: safeRequest(selectInterviewer),
   findOnboardedTutors: safeRequest(findOnboardedTutors),

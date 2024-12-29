@@ -106,7 +106,7 @@ describe("/api/v1/user/", () => {
           notice: 10,
         });
 
-        await cacheTutors(dayjs.utc().startOf("day"));
+        await cacheTutors();
 
         expect(await cache.tutors.exists()).to.eql(true);
         const ctutors = await cache.tutors.getAll();
@@ -117,7 +117,7 @@ describe("/api/v1/user/", () => {
         const newTutor = await db.tutor();
         await users.update(newTutor.id, { verified: false });
 
-        await cacheTutors(dayjs.utc().startOf("day"));
+        await cacheTutors();
 
         expect(await cache.tutors.exists()).to.eql(false);
       });
@@ -331,6 +331,84 @@ describe("/api/v1/user/", () => {
       );
 
       expect(res).to.be.deep.eq(notfound.tutor());
+    });
+  });
+
+  describe("GET /api/v1/user/tutor/stats/public", () => {
+    beforeEach(async () => {
+      await flush();
+    });
+
+    it("should retrieve tutor stats by current logged-in user id.", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser();
+
+      // make the tutor onboard
+      await tutors.update(tutor.user.id, {
+        about: faker.lorem.paragraphs(),
+        bio: faker.person.bio(),
+        activated: true,
+        activatedBy: tutor.user.id,
+        video: "/video.mp4",
+        notice: 10,
+      });
+      await users.update(tutor.user.id, {
+        verified: true,
+        image: "/image.jpg",
+        gender: IUser.Gender.Female,
+        name: "Sara",
+        phoneNumber: "01112223334"
+      });
+
+      // defining rules
+      const rule1 = await db.rule({ 
+        userId: tutor.user.id,
+        start: dayjs.utc().subtract(2, "days").toISOString(),
+      })
+      const rule2 = await db.rule({ 
+        userId: tutor.user.id,
+        start: dayjs.utc().add(2, "days").toISOString(),
+      })
+      const rule3 = await db.rule({ 
+        userId: tutor.user.id,
+        start: dayjs.utc().add(3, "days").toISOString(),
+      })
+
+      // inserting lessons
+      const students = await db.students(3);
+
+      await db.lesson({ 
+        tutor: tutor.user.id, 
+        student: students[0].id, 
+        rule: rule1.id, 
+        start: rule1.start,
+      });
+
+      await db.lesson({ 
+        tutor: tutor.user.id, 
+        student: students[1].id, 
+        rule: rule2.id,
+      });
+
+      await db.lesson({ 
+        tutor: tutor.user.id, 
+        student: students[2].id, 
+        rule: rule3.id,
+        canceled: true, // should not be counted
+      });
+
+      const res = await tutorApi.atlas.user.findPublicTutorStats();
+      
+      expect(res.studentCount).to.eq(2);
+      expect(res.upcomingLessonCount).to.eq(1);
+      expect(res.completedLessonCount).to.eq(1);
+      expect(res.totalLessonCount).to.eq(2);
+    });
+
+    it("should respond with forbidden if the user is not a tutor.", async () => {
+      const studentApi = await Api.forStudent();
+      const res = await safe(async () => studentApi.atlas.user.findPublicTutorStats());
+      expect(res).to.deep.eq(forbidden())
     });
   });
 

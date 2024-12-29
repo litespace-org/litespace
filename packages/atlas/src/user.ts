@@ -88,6 +88,10 @@ export class User extends Base {
     return await this.get({ route: `/api/v1/user/tutor/stats/${tutor}` });
   }
 
+  async findPublicTutorStats(): Promise<ITutor.FindPublicTutorStatsApiResponse> {
+    return await this.get({ route: `/api/v1/user/tutor/stats/public` });
+  }
+
   async findStudentStats(
     student: number
   ): Promise<IUser.FindStudentStatsApiResponse> {
