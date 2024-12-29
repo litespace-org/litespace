@@ -107,4 +107,10 @@ export class User extends Base {
   ): Promise<ITutor.FindTutorActivityScores> {
     return await this.get({ route: `/api/v1/user/tutor/activity/${tutor}` });
   }
+
+  async findUncontactedTutors(
+    pagination?: IFilter.Pagination
+  ): Promise<ITutor.FindUncontactedTutorsApiResponse> {
+    return await this.get({ route: `/api/v1/user/tutor/list/uncontacted`, params: pagination });
+  }
 }

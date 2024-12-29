@@ -4,6 +4,7 @@ import { IUser, ITutor, IFilter, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import { users } from "@/users";
 import dayjs from "@/lib/dayjs";
+import zod from "zod";
 
 type TutorMediaFieldsMap = Record<keyof ITutor.TutorMedia, string>;
 type FullTutorFields = ITutor.FullTutorRow;
@@ -227,6 +228,53 @@ export class Tutors {
       .andWhereNot(users.column("gender"), null)
       .andWhere(users.column("verified"), true);
     return rows.map((row) => this.asFullTutor(row));
+  }
+
+  async findUncontactedTutorsForStudent({
+    student,
+    pagination,
+    tx,
+  }: {
+    student: number,
+    pagination?: IFilter.Pagination,
+    tx?: Knex.Transaction
+  }): Promise<Paginated<ITutor.UncontactedTutorInfo>> {
+    /*
+      SELECT * FROM tutors
+      JOIN users ON tutors.id = users.id
+      WHERE tutors.id IN (
+        SELECT tutors.id FROM room_members rm1
+        JOIN room_members rm2 ON rm1.room_id = rm2.room_id
+        RIGHT JOIN tutors ON tutors.id = rm2.user_id
+        GROUP BY tutors.id
+        HAVING COUNT(rm1.user_id = 2 OR NULL) = 0
+      );
+     */
+
+    const selectObj: Record<keyof ITutor.UncontactedTutorInfo, string> = {
+      id: users.column("id"),
+      image: users.column("image"),
+      bio: this.column("bio"),
+    };
+
+    // NOTE: pagination is applied in the inner select query
+    // in order to optain more sql query performance.
+    const innerSelect = knex.select(this.column("id"))
+      .from("room_members AS rm1")
+      .join("room_members AS rm2", "rm1.room_id", "rm2.room_id")
+      .rightJoin(this.table, this.column("id"), "rm2.user_id")
+      .groupBy(this.column("id"))
+      .havingRaw(`COUNT(rm1.user_id = ${student} OR NULL) = 0`);
+
+    const row = await knex.count("*").from(innerSelect).first();
+    const total = row ? zod.coerce.number().parse(row.count) : 0;
+
+    const list = await this.builder(tx)
+      .select(selectObj)
+      .join(users.table, users.column("id"), this.column("id"))
+      .whereIn(this.column("id"), withPagination(innerSelect.clone(), pagination));
+
+    return { list, total };
   }
 
   fullTutorQuery(tx?: Knex.Transaction) {

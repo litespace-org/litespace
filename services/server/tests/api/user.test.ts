@@ -9,7 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
 import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
-import { first } from "lodash";
+import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 
 describe("/api/v1/user/", () => {
@@ -249,6 +249,35 @@ describe("/api/v1/user/", () => {
     });
   });
 
+  describe("GET /api/v1/user/tutor/list/uncontacted", () => {
+    beforeEach(async () => {
+      await flush();
+    });
+
+    it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
+      const studentApi = await Api.forStudent();
+      const student = (await studentApi.findCurrentUser()).user;
+      
+      const mockTutors = await Promise.all(range(0,5).map(() => db.tutor()));
+
+      await Promise.all([
+        db.room([student.id, mockTutors[0].id]),
+        db.room([student.id, mockTutors[1].id]),
+      ]);
+
+      const res = await studentApi.atlas.user.findUncontactedTutors();
+
+      expect(res.total).to.eq(3);
+      expect(res.list).to.have.length(3);
+    });
+
+    it("should respond with forbidden in case the requester is not a student.", async () => {
+      const tutorApi = await Api.forTutor();
+      const res = await safe(async () => tutorApi.atlas.user.findUncontactedTutors());
+      expect(res).to.deep.eq(forbidden())
+    });
+  });
+
   describe("/api/v1/user/tutor/info/:tutorId", () => {
     beforeAll(async () => {
       await cache.connect();
@@ -465,4 +494,5 @@ describe("/api/v1/user/", () => {
       expect(res).to.deep.eq(forbidden())
     });
   });
+
 });

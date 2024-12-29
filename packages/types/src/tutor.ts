@@ -1,4 +1,4 @@
-import { IUser, IRule, Paginated, IFilter } from "@/index";
+import { IUser, Paginated, IFilter } from "@/index";
 
 export type Self = {
   id: number;
@@ -61,6 +61,12 @@ export type UpdatePayload = {
   activated?: boolean;
   activatedBy?: number;
 };
+
+export type UncontactedTutorInfo = {
+  id: number;
+  image: string | null;
+  bio: string | null;
+}
 
 export type FindOnboardedTutorsParams = IFilter.Pagination & {
   /**
@@ -142,3 +148,5 @@ export type FindPersonalizedTutorStatsApiResponse = {
   */
   studentCount: number; 
 };
+
+export type FindUncontactedTutorsApiResponse = Paginated<UncontactedTutorInfo>;
