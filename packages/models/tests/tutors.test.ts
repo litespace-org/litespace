@@ -5,9 +5,8 @@ import fixtures from "@fixtures/db";
 import { expect } from "chai";
 import { dayjs, nameof } from "@litespace/sol";
 import { IUser } from "@litespace/types";
-import { first } from "lodash";
+import { first, range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";
-import { lessons } from "@/lessons";
 
 const mockUser = {
   id: 0,
@@ -21,10 +20,6 @@ const mockUser = {
 }
 
 describe(nameof(Tutors), () => {
-  beforeAll(async () => {
-    return await fixtures.flush();
-  })
-
   describe("testing CRUD on tutors table", () => {
     it("should insert new tutor row", async () => {
       const newUser = await users.create(mockUser);
@@ -53,6 +48,10 @@ describe(nameof(Tutors), () => {
   })
 
   describe(nameof(tutors.findOnboardedTutors), () => {
+    beforeEach(async () => {
+      return await fixtures.flush();
+    })
+
     it("should retrieve onboarded (activated) tutors", async () => {
       const adminUser = await fixtures.user({ role: Role.SuperAdmin });
       
@@ -76,7 +75,33 @@ describe(nameof(Tutors), () => {
 
       const onboardedTutors = await tutors.findOnboardedTutors();
       expect(first(onboardedTutors)?.id).to.eq(tutor.id);
+    });
+  });
+
+  describe(nameof(tutors.findUncontactedTutorsForStudent), () => {
+    beforeEach(async () => {
+      return await fixtures.flush();
     })
-  })
+
+    it("should retrieve tutors that a specific student hasn't open a chat room with yet", async () => {
+      const student = await fixtures.user({ role: Role.Student });
+
+      const mockTutors = await Promise.all(
+        range(0,5).map(() => fixtures.tutor())
+      );
+
+      await Promise.all([
+        fixtures.room([student.id, mockTutors[0].id]),
+        fixtures.room([student.id, mockTutors[1].id]),
+      ]);
+
+      const res = await tutors.findUncontactedTutorsForStudent({ student: student.id })
+      expect(res.total).to.eq(3);
+      expect(res.list).to.have.length(3);
+
+      const ids = res.list.map(info => info.id);
+      expect(ids).to.have.members(mockTutors.slice(2).map(e => e.id));
+    });
+  });
 });
 

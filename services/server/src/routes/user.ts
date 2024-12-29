@@ -18,6 +18,7 @@ export default function router(context: ApiContext) {
   router.get("/tutor/info/:tutorId", user.findTutorInfo);
   router.get("/tutor/list/onboarded", user.findOnboardedTutors);
   router.get("/tutor/stats/personalized", user.findPersonalizedTutorStats);
+  router.get("/tutor/list/uncontacted", user.findUncontactedTutors);
   router.get("/tutor/stats/:tutor", user.findTutorStats);
   router.get("/tutor/activity/:tutor", user.findTutorActivityScores);
   router.get("/student/stats/personalized", user.findPersonalizedStudentStats);

@@ -112,6 +112,11 @@ const findOnboardedTutorsQuery = zod.object({
   size: zod.optional(pageSize).default(paginationDefaults.size),
 });
 
+const findUncontactedTutorsQuery = zod.object({
+  page: zod.optional(pageNumber).default(paginationDefaults.page),
+  size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
 export async function create(req: Request, res: Response, next: NextFunction) {
   const payload = createUserPayload.parse(req.body);
   const admin = isAdmin(req.user);
@@ -772,6 +777,26 @@ async function findTutorActivityScores(
   res.status(200).json(response);
 }
 
+/**
+  * handles requests from students and responds with data of tutors
+  * who the student (requester) didn't open a chat room with.
+  */
+async function findUncontactedTutors(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  const allowed = isStudent(user);
+  if (!allowed) return next(forbidden());
+
+  const pagination = findUncontactedTutorsQuery.parse(req.query);
+  const response: ITutor.FindUncontactedTutorsApiResponse = 
+    await tutors.findUncontactedTutorsForStudent({ student: user.id, pagination });
+
+  res.status(200).json(response);
+}
+
 export default {
   update,
   create: safeRequest(create),
@@ -786,6 +811,7 @@ export default {
   findOnboardedTutors: safeRequest(findOnboardedTutors),
   findTutorActivityScores: safeRequest(findTutorActivityScores),
   findTutorsForStudio: safeRequest(findTutorsForStudio),
+  findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
 };
