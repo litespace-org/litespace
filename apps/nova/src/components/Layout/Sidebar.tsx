@@ -13,7 +13,7 @@ import Video from "@litespace/assets/Video";
 import cn from "classnames";
 import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const SidebarItem = ({
   to,
@@ -61,7 +61,7 @@ const SidebarItem = ({
 const Sidebar = () => {
   const intl = useFormatMessage();
   const location = useLocation();
-  const { logout } = useUser();
+  const { logout } = useUserContext();
 
   const mainPages = useMemo(() => {
     return [

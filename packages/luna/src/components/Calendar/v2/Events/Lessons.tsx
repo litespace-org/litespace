@@ -68,7 +68,7 @@ const OptionsMenu: React.FC<
       danger={canceled}
     >
       <div className="tw-p-2">
-        <More />
+        <More className="[&>*]:tw-fill-natural-800" />
       </div>
     </Menu>
   );

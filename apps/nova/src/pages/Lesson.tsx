@@ -5,7 +5,7 @@ import { PreSession, PermissionsDialog } from "@litespace/luna/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams } from "react-router-dom";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import {
   useSessionV3,
@@ -16,7 +16,7 @@ import {
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const intl = useFormatMessage();
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   // ============================ Lesson ================================
   const lessonId = useMemo(() => {

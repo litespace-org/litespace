@@ -30,11 +30,11 @@ import Video from "@litespace/assets/Video";
 import Microphone from "@litespace/assets/Microphone";
 import VideoSlash from "@litespace/assets/VideoSlash";
 import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 // import GhostView from "@/components/Call/GhostView";
 
 const Call: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   // const chat = useRender();
   // const intl = useFormatMessage();
   // const mediaQueries = useMediaQueries();

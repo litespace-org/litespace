@@ -8,11 +8,11 @@ import { IInterview } from "@litespace/types";
 import { maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { useFindInfinitInterviews } from "@litespace/headless/interviews";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const TutorOnboarding: React.FC = () => {
   const intl = useFormatMessage();
-  const { user, meta } = useUser();
+  const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const [step, setStep] = useState<number>(-1);
 

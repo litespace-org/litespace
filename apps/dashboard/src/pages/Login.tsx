@@ -7,7 +7,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/lib/route";
 import { IUser } from "@litespace/types";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { useLoginUser } from "@litespace/headless/user";
 
 interface IForm {
@@ -19,7 +19,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
-  const user = useUser();
+  const user = useUserContext();
   const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "admin@litespace.org",

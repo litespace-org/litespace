@@ -25,13 +25,13 @@ import { entries, groupBy } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
 import { useAtlas } from "@litespace/headless/atlas";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Messages: React.FC<{
   room: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }> = ({ room, otherMember }) => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);

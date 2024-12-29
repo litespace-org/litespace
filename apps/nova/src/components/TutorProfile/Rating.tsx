@@ -10,7 +10,7 @@ import { IRating } from "@litespace/types";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Edit, Star, Trash2 } from "react-feather";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Rating: React.FC<{
   rating: IRating.Populated;
@@ -24,7 +24,7 @@ const Rating: React.FC<{
     tutorId: number;
   }) => void;
 }> = ({ rating, onEdit, onDelete }) => {
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   return (
     <Card>

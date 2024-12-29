@@ -228,7 +228,7 @@ export const LessonCard: React.FC<Props> = ({
             </Typography>
             {!canceled ? (
               <Menu actions={actions}>
-                <More />
+                <More className="[&>*]:tw-fill-natural-800" />
               </Menu>
             ) : null}
           </>

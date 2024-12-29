@@ -11,7 +11,7 @@ import { IUser } from "@litespace/types";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { useAtlas } from "@litespace/headless/atlas";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const GoogleAuth: React.FC<{
   purpose: "login" | "register";
@@ -24,7 +24,7 @@ const GoogleAuth: React.FC<{
   const [loading, setLoading] = useState<boolean>(false);
   const atlas = useAtlas();
   const toast = useToast();
-  const user = useUser();
+  const user = useUserContext();
 
   const onGoogleSuccess = useCallback(
     async (response: CredentialResponse) => {

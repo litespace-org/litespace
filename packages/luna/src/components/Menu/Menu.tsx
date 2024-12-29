@@ -29,7 +29,7 @@ export const Menu: React.FC<{
         )}
         type="button"
       >
-        {children || <More />}
+        {children || <More className="[&>*]:tw-fill-natural-800" />}
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
