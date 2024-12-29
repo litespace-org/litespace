@@ -1,5 +1,5 @@
 import { Route } from "@/types/routes";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { PastLessonsTable } from "@litespace/luna/Lessons";
@@ -43,7 +43,7 @@ export const PastLessons = () => {
     setTutor(tutorId);
   }, []);
 
-  const { user } = useUser();
+  const { user } = useUserContext();
   const now = useMemo(() => dayjs.utc().toISOString(), []);
 
   const lessonsQuery = useInfiniteLessons({

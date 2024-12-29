@@ -3,7 +3,7 @@ import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { RatingDialog } from "@litespace/luna/TutorFeedback";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import React, { useCallback, useState } from "react";
 import { useCreateRatingTutor } from "@litespace/headless/rating";
@@ -15,7 +15,7 @@ export const RateTutor: React.FC<{
   tutorName: string;
   tutorId: number;
 }> = ({ tutorName, tutorId }) => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const intl = useFormatMessage();
   const [rating, setRating] = useState<boolean>(false);
   const toast = useToast();

@@ -1,6 +1,6 @@
 import { Route } from "@/types/routes";
 import { useFindUserRooms } from "@litespace/headless/chat";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import {
   ChatSummary as Summary,
   type ChatSummaryProps,
@@ -27,7 +27,7 @@ function asRooms(
 }
 
 export const ChatSummary = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const rooms = useFindUserRooms(user?.id, { size: 4 });
   const organizedRooms = useMemo(() => asRooms(rooms.list), [rooms.list]);
 

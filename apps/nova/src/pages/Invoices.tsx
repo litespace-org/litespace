@@ -5,10 +5,10 @@ import {
   useFindInvoiceStats,
   useFindInvoicesByUser,
 } from "@litespace/headless/invoices";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Invoices: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const invoices = useFindInvoicesByUser({
     users: user ? [user.id] : undefined,
     userOnly: true,

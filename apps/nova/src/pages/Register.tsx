@@ -11,7 +11,7 @@ import RegisterLight from "@litespace/assets/RegisterLight";
 import RegisterDark from "@litespace/assets/RegisterDark";
 import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useRegisterUser } from "@litespace/headless/user";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 interface IForm {
   email: string;
@@ -27,7 +27,7 @@ const callbackUrl = origin.concat(Route.VerifyEmail);
 
 const Register: React.FC = () => {
   const intl = useFormatMessage();
-  const user = useUser();
+  const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
   const { role } = useParams<{ role: Role }>();

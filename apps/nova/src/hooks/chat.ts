@@ -7,7 +7,7 @@ import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { useInfinteScroll } from "@litespace/luna/hooks/common";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
@@ -88,7 +88,7 @@ export function useRoomManager() {
   const toast = useToast();
   const intl = useFormatMessage();
   const [keyword, setKeyword] = useState("");
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const pinnedRooms = useFindUserRooms(user?.id, {
     pinned: true,

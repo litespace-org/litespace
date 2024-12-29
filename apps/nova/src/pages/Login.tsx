@@ -20,7 +20,7 @@ import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useLoginUser } from "@litespace/headless/user";
 import { useRender } from "@/hooks/render";
 import ForgetPassword from "@/components/Common/ForgetPassword";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 interface IForm {
   email: string;
@@ -31,7 +31,7 @@ const Login: React.FC = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
-  const user = useUser();
+  const user = useUserContext();
   const { control, handleSubmit, watch } = useForm<IForm>({
     defaultValues: {
       email: "student@litespace.org",

@@ -5,10 +5,10 @@ import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember } from "@/lib/room";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Chat: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const { select, selected } = useSelectedRoom();
   // TODO: read/unread function

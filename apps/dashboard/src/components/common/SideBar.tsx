@@ -16,7 +16,7 @@ import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
 import { ButtonVariant } from "@litespace/luna/Button";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -30,7 +30,7 @@ const SidebarNav: React.FC<{
 }> = ({ options }) => {
   const dispatch = useAppDispatch();
   const intl = useFormatMessage();
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const button = useRef<HTMLDivElement>(null);
   const { toggle: toggleTheme, theme } = useTheme();
