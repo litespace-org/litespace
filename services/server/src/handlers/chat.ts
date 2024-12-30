@@ -1,4 +1,4 @@
-import { calls, messages, rooms, users } from "@litespace/models";
+import { messages, rooms, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
@@ -14,7 +14,6 @@ import {
 import { empty, exists, forbidden, notfound } from "@/lib/error";
 import {
   isAdmin,
-  isGhost,
   isTutorManager,
   isStudent,
   isTutor,
@@ -150,40 +149,6 @@ async function findRoomByMembers(
   res.status(200).json({ room });
 }
 
-/**
- *  @deprecated You can find room by members
- */
-async function findCallRoom(req: Request, res: Response, next: NextFunction) {
-  const user = req.user;
-  const allowed = isUser(user) || isGhost(user);
-  if (!allowed) return next(forbidden());
-
-  const { call } = withNamedId("call").parse(req.params);
-  const userCall = await calls.findById(call);
-  if (!userCall) return next(notfound.call());
-
-  const callMembers = await calls.findCallMembers([userCall.id]);
-  if (isEmpty(callMembers)) return next(notfound.call());
-
-  const memberIds = callMembers.map((member) => member.userId);
-  const isMember = isUser(user) && memberIds.includes(user.id);
-  const eligible = isMember || isAdmin(user) || isGhost(user);
-  if (!eligible) return next(forbidden());
-
-  const room = await rooms.findRoomByMembers(memberIds);
-  if (!room) return next(notfound.base());
-
-  const roomMembers = await rooms.findRoomMembers({ roomIds: [room] });
-  if (isEmpty(roomMembers)) return next(notfound.base());
-
-  const response: IRoom.FindCallRoomApiResponse = {
-    room,
-    members: roomMembers,
-  } as const;
-
-  res.status(200).json(response);
-}
-
 async function findRoomMembers(
   req: Request,
   res: Response,
@@ -235,6 +200,5 @@ export default {
   findUserRooms: safeRequest(findUserRooms),
   findRoomByMembers: safeRequest(findRoomByMembers),
   findRoomMembers: safeRequest(findRoomMembers),
-  findCallRoom: safeRequest(findCallRoom),
   updateRoom: safeRequest(updateRoom),
 };

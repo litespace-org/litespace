@@ -373,7 +373,8 @@ describe("/api/v1/user/", () => {
         canceled: true,
       });
 
-      const res = await studentApi.atlas.user.findPublicStudentStats();
+      const res = await safe(async () => studentApi.atlas.user.findPublicStudentStats());
+      if (res instanceof Error) throw res;
       
       expect(res.tutorCount).to.eq(2);
       expect(res.totalLearningTime).to.eq(lesson1.lesson.duration);

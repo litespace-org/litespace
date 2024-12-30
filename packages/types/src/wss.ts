@@ -1,4 +1,4 @@
-import { IMessage, IRule, ITutor, Server, ICall } from "@/index";
+import { IMessage, IRule, ISession, ITutor, Server } from "@/index";
 
 /**
  * Events emitted by the client
@@ -9,8 +9,8 @@ export enum ClientEvent {
   UpdateMessage = "UpdateMessage",
   DeleteMessage = "DeleteMessage",
   MarkMessageAsRead = "MarkMessageAsRead",
-  JoinCall = "JoinCall",
-  LeaveCall = "LeaveCall",
+  JoinSession = "JoinSession",
+  LeaveSession = "LeaveSession",
   /**
    * @deprecated
    */
@@ -35,13 +35,14 @@ export enum ServerEvent {
 
   MessageRead = "MessageRead",
 
-  MemberJoinedCall = "MemberJoinedCallId",
-  MemberLeftCall = "MemberLeftCallId",
+  MemberJoinedSession = "MemberJoinedSessionId",
+  MemberLeftSession = "MemberLeftSessionId",
+
+  UserJoinedSession = "UserJoinedSession",
 
   /**
    * @deprecated
    */
-  UserJoinedCall = "UserJoinedCall",
   UserSharedScreen = "UserSharedScreen",
   UserStatusChanged = "UserStatusChanged",
   UserTyping = "UserTyping",
@@ -103,18 +104,15 @@ export type ClientEventsMap = {
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
   [ClientEvent.MarkMessageAsRead]: EventCallback<{ id: number }>;
 
-  [ClientEvent.PeerOpened]: EventCallback<{ callId: number; peerId: string }>;
+  [ClientEvent.PeerOpened]: EventCallback<{ sessionId: ISession.Id; peerId: string }>;
   [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
 
-  [ClientEvent.ToggleCamera]: EventCallback<{ call: number; camera: boolean }>;
-  [ClientEvent.ToggleMic]: EventCallback<{ call: number; mic: boolean }>;
+  [ClientEvent.ToggleCamera]: EventCallback<{ session: ISession.Id; camera: boolean }>;
+  [ClientEvent.ToggleMic]: EventCallback<{ session: ISession.Id; mic: boolean }>;
 
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
-  [ClientEvent.JoinCall]: EventCallback<{
-    callId: number;
-    type: ICall.Type;
-  }>;
-  [ClientEvent.LeaveCall]: EventCallback<{ callId: number }>;
+  [ClientEvent.JoinSession]: EventCallback<{ sessionId: ISession.Id }>;
+  [ClientEvent.LeaveSession]: EventCallback<{ sessionId: ISession.Id }>;
 };
 
 /**
@@ -129,10 +127,10 @@ export type ServerEventsMap = {
   }>;
   [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
 
-  [ServerEvent.UserJoinedCall]: EventCallback<{ peerId: string }>;
+  [ServerEvent.UserJoinedSession]: EventCallback<{ peerId: string }>;
 
-  [ServerEvent.MemberJoinedCall]: EventCallback<{ userId: number }>;
-  [ServerEvent.MemberLeftCall]: EventCallback<{ userId: number }>;
+  [ServerEvent.MemberJoinedSession]: EventCallback<{ userId: number }>;
+  [ServerEvent.MemberLeftSession]: EventCallback<{ userId: number }>;
 
   [ServerEvent.CameraToggled]: EventCallback<{ user: number; camera: boolean }>;
   [ServerEvent.MicToggled]: EventCallback<{ user: number; mic: boolean }>;

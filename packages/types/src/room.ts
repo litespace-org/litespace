@@ -87,7 +87,7 @@ export type FindRoomByMembersApiResponse = { room: number };
 
 export type FindRoomMembersApiResponse = PopulatedMember[];
 
-export type FindCallRoomApiResponse = {
+export type FindSessionRoomApiResponse = {
   room: number;
   members: PopulatedMember[];
 };

@@ -1,4 +1,4 @@
-import { IFilter, ILesson, NumericString, Paginated } from "@litespace/types";
+import { IFilter, ILesson, ISession, NumericString, Paginated } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, isEmpty, orderBy } from "lodash";
@@ -13,7 +13,6 @@ import {
   WithTx,
   withSkippablePagination,
 } from "@/query";
-import { calls } from "@/calls";
 import zod from "zod";
 
 type SearchFilter = {
@@ -83,7 +82,7 @@ export class Lessons {
       duration: this.columns.lessons("duration"),
       price: this.columns.lessons("price"),
       rule_id: this.columns.lessons("rule_id"),
-      call_id: this.columns.lessons("call_id"),
+      session_id: this.columns.lessons("session_id"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
       created_at: this.columns.lessons("created_at"),
@@ -103,7 +102,7 @@ export class Lessons {
         start: dayjs.utc(payload.start).toDate(),
         duration: payload.duration,
         rule_id: payload.rule,
-        call_id: payload.call,
+        session_id: payload.session,
         price: payload.price,
         created_at: now,
         updated_at: now,
@@ -164,8 +163,8 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findByCallId(id: number): Promise<ILesson.Self | null> {
-    return await this.findOneBy("call_id", id);
+  async findBySessionId(id: ISession.Id): Promise<ILesson.Self | null> {
+    return await this.findOneBy("session_id", id);
   }
 
   async findById(id: number): Promise<ILesson.Self | null> {
@@ -281,12 +280,7 @@ export class Lessons {
     users,
     tx,
   }: AggregateParams) {
-    const base = this.builder(tx)
-      .lessons.join(
-        calls.tables.calls,
-        calls.columns.calls("id"),
-        this.columns.lessons("call_id")
-      )
+    const base = this.builder(tx).lessons
       .sum(column, { as: "total" });
 
     const filter: SearchFilter = {
@@ -317,11 +311,7 @@ export class Lessons {
     distinct = false,
     ...filter
   }: AggregateParams & { distinct?: boolean }) {
-    const base = this.builder(tx).lessons.join(
-      calls.tables.calls,
-      calls.columns.calls("id"),
-      this.columns.lessons("call_id")
-    );
+    const base = this.builder(tx).lessons;
 
     const countQueryBuilder = this.applySearchFilter(base, filter);
     return await countRows(countQueryBuilder, { column, distinct });
@@ -533,7 +523,7 @@ export class Lessons {
       duration: row.duration,
       price: row.price,
       ruleId: row.rule_id,
-      callId: row.call_id,
+      sessionId: row.session_id,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),

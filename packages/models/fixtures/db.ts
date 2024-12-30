@@ -1,5 +1,4 @@
 import {
-  calls,
   hashPassword,
   interviews,
   knex,
@@ -20,6 +19,7 @@ import {
   IUser,
   IRating,
   IMessage,
+  ISession,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, range, sample } from "lodash";
@@ -27,6 +27,7 @@ import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
 import { availabilitySlots } from "@/availabilitySlot";
+import { randomUUID } from "crypto";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
@@ -37,8 +38,6 @@ export async function flush() {
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
     await interviews.builder(tx).del();
-    await calls.builder(tx).members.del();
-    await calls.builder(tx).calls.del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
@@ -116,9 +115,8 @@ const or = {
     if (!id) return await tutorManager().then((tutorManager) => tutorManager.id);
     return id;
   },
-  async callId(id?: number): Promise<number> {
-    if (!id) return await calls.create().then((call) => call.id);
-    return id;
+  async sessionId(type: ISession.Type): Promise<ISession.Id> {
+    return `${type}:${randomUUID()}`;
   },
   async ruleId(id?: number): Promise<number> {
     if (!id) return await rule().then((rule) => rule.id);
@@ -145,7 +143,7 @@ export async function lesson(
     const tutor = await or.tutorId(payload?.tutor);
     const student = await or.studentId(payload?.student);
     const data = await lessons.create({
-      call: await or.callId(payload?.call),
+      session: await or.sessionId("lesson"),
       start:
         payload?.timing === "future"
           ? faker.date.future().toISOString()
@@ -171,7 +169,7 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
   return await interviews.create({
     interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
-    call: await or.callId(payload.call),
+    session: await or.sessionId("interview"),
     rule: await or.ruleId(payload.rule),
     start: or.start(payload.start),
   });

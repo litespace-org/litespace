@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import { RemoteStream } from "@litespace/headless/calls";
+import { RemoteStream } from "@litespace/headless/sessions";
 import { isEmpty } from "lodash";
 import React from "react";
 import UserMedia from "@/components/Call/UserMedia";

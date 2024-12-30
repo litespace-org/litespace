@@ -1,4 +1,4 @@
-import { ICall, IFilter, IUser, Paginated } from "@/index";
+import { ISession, IFilter, IUser, Paginated } from "@/index";
 
 export type Row = {
   id: number;
@@ -6,7 +6,7 @@ export type Row = {
   duration: number;
   price: number;
   rule_id: number;
-  call_id: number;
+  session_id: ISession.Id;
   canceled_by: number | null;
   canceled_at: Date | null;
   created_at: Date;
@@ -30,7 +30,7 @@ export type Self = {
    */
   price: number;
   ruleId: number;
-  callId: number;
+  sessionId: ISession.Id;
   /**
    * ID of the member who canceled the lesson.
    */
@@ -91,7 +91,7 @@ export type CreatePayload = {
   tutor: number;
   student: number;
   rule: number;
-  call: number;
+  session: ISession.Id;
   /**
    * Lesson price scaled to the power of 2.
    */

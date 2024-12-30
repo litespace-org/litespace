@@ -1,15 +1,11 @@
-import { ICall, IPeer, IRoom, IUser, Void, Wss } from "@litespace/types";
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { ISession, Void, Wss } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useAtlas } from "@/atlas/index";
 import { safe } from "@litespace/sol/error";
 import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
-import { QueryKey } from "@/constants";
 import zod from "zod";
-import { ServerEvent, ServerEventsMap } from "@litespace/types/dist/esm/wss";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -18,22 +14,6 @@ declare module "peerjs" {
       offerToReceiveVideo: boolean;
     };
   }
-}
-
-export function useFindCallRoomById(
-  callId: number | null
-): UseQueryResult<IRoom.FindCallRoomApiResponse | null, Error> {
-  const atlas = useAtlas();
-
-  const findCallRoom = useCallback(async () => {
-    if (!callId) return null;
-    return await atlas.chat.findCallRoom(callId);
-  }, [atlas.chat, callId]);
-
-  return useQuery({
-    queryFn: findCallRoom,
-    queryKey: ["find-call-room"],
-  });
 }
 
 export function isPermissionDenied(error: Error): boolean {
@@ -176,13 +156,13 @@ export type RemoteStream = {
   peer: string;
 };
 
-export function useCall({
-  call,
+export function useSession({
+  session,
   userId,
   mateUserId,
   isGhost,
 }: {
-  call?: number;
+  session?: ISession.Id;
   userId?: number;
   mateUserId?: number;
   isGhost?: boolean;
@@ -236,14 +216,14 @@ export function useCall({
   const userSpeaking = useSpeaking(mediaConnection, userMediaStream);
   const mateSpeaking = useSpeaking(mediaConnection, mateMediaStream);
   const { mateAudio, mateVideo, notifyCameraToggle, notifyMicToggle } =
-    useCallEvents(orUndefined(mateMediaStream), call, mateUserId);
+    useCallEvents(orUndefined(mateMediaStream), session, mateUserId);
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
-      if (!call || !socket) return;
-      socket.emit(Wss.ClientEvent.PeerOpened, { peerId, callId: call });
+      if (!session || !socket) return;
+      socket.emit(Wss.ClientEvent.PeerOpened, { peerId, sessionId: session });
     },
-    [call, socket]
+    [session, socket]
   );
 
   const addStream = useCallback(
@@ -338,7 +318,7 @@ export function useCall({
     ]
   );
 
-  const onJoinCall = useCallback(
+  const onJoinSession = useCallback(
     ({ peerId }: { peerId: string }) => {
       setTimeout(() => {
         // shared my stream with the connected peer
@@ -364,9 +344,7 @@ export function useCall({
         // call.on("stream", setMateMediaStream);
         call.on("stream", (stream: MediaStream) => addStream(call, stream));
         call.on("close", () => onMediaConnectionClose(call));
-      }, 3000);
-    },
-    [
+      }, 3000); }, [
       onMediaConnectionClose,
       addMediaConnection,
       addStream,
@@ -379,11 +357,11 @@ export function useCall({
 
   useEffect(() => {
     if (!socket) return;
-    socket.on(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+    socket.on(Wss.ServerEvent.UserJoinedSession, onJoinSession);
     return () => {
-      socket.off(Wss.ServerEvent.UserJoinedCall, onJoinCall);
+      socket.off(Wss.ServerEvent.UserJoinedSession, onJoinSession);
     };
-  }, [onJoinCall, socket]);
+  }, [onJoinSession, socket]);
 
   useEffect(() => {
     if (peer.id) acknowledgePeer(peer.id);
@@ -618,7 +596,7 @@ function useStreamState(stream?: MediaStream) {
 
 export function useCallEvents(
   mateStream?: MediaStream,
-  call?: number,
+  session?: ISession.Id,
   mateUserId?: number
 ) {
   const [mateVideo, setMateVideo] = useState<boolean>(false);
@@ -628,18 +606,18 @@ export function useCallEvents(
 
   const notifyCameraToggle = useCallback(
     (camera: boolean) => {
-      if (!call || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleCamera, { call, camera });
+      if (!session || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { session, camera });
     },
-    [call, socket]
+    [session, socket]
   );
 
   const notifyMicToggle = useCallback(
     (mic: boolean) => {
-      if (!call || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleMic, { call, mic });
+      if (!session || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { session, mic });
     },
-    [call, socket]
+    [session, socket]
   );
 
   const onCameraToggle = useCallback(
@@ -680,62 +658,6 @@ export function useCallEvents(
   };
 }
 
-// todo: move to peer.ts
-export function useFindPeerId(payload?: IPeer.FindPeerIdApiQuery) {
-  const atlas = useAtlas();
-
-  const findPeerId = useCallback(async () => {
-    if (!payload) return null;
-    const result = await atlas.peer.findPeerId(payload);
-    if (result.peer === null) throw new Error("Peer not found");
-    return result.peer;
-  }, [atlas.peer, payload]);
-
-  return useQuery({
-    queryFn: findPeerId,
-    queryKey: [QueryKey.FindPeerId, payload],
-    retryDelay: (attempt) => {
-      if (attempt <= 10) return 2_000;
-      return Math.min(1_000 * 2 ** attempt, 30_000);
-    },
-    enabled: !!payload,
-  });
-}
-
-export function usePeerIds({
-  isGhost,
-  callId,
-  role,
-  mateUserId,
-  disableGhost = false,
-}: {
-  isGhost: boolean;
-  callId: number | null;
-  role: IUser.Role | null;
-  mateUserId: number | null;
-  disableGhost?: boolean;
-}) {
-  const findGhostPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    if (isGhost || !callId || disableGhost) return;
-    return { type: IPeer.PeerType.Ghost, call: callId };
-  }, [callId, disableGhost, isGhost]);
-
-  const findTutorPeerIdQuery = useMemo(():
-    | IPeer.FindPeerIdApiQuery
-    | undefined => {
-    const allowed =
-      role === IUser.Role.Student || role === IUser.Role.TutorManager;
-    if (isGhost || !mateUserId || !allowed) return;
-    return { type: IPeer.PeerType.Tutor, tutor: mateUserId };
-  }, [isGhost, mateUserId, role]);
-
-  const ghostPeerId = useFindPeerId(findGhostPeerIdQuery);
-  const tutorPeerId = useFindPeerId(findTutorPeerIdQuery);
-  return { ghost: ghostPeerId, tutor: tutorPeerId };
-}
-
 const ghostCallMetadata = zod.object({
   userId: zod.number().positive().int(),
   screen: zod.boolean(),
@@ -754,18 +676,18 @@ type GhostStream = {
   call: MediaConnection;
 };
 
-export function useCallV2({
+export function useSessionV2({
   isGhost,
   tutorPeerId,
   ghostPeerId,
   userId,
-  onCloseCall,
+  onCloseSession,
 }: {
   isGhost: boolean;
   tutorPeerId: string | null;
   ghostPeerId: string | null;
   userId: number | null;
-  onCloseCall: Void;
+  onCloseSession: Void;
 }) {
   const peer = usePeer();
   const userMedia = useUserMedia();
@@ -902,12 +824,12 @@ export function useCallV2({
          * called on the student side.
          */
         call.on("close", () => {
-          onCloseCall();
+          onCloseSession();
           if (!screen) setMateStream(null);
         });
       }, 3_000);
     },
-    [onCloseCall, peer, userId]
+    [onCloseSession, peer, userId]
   );
 
   useEffect(() => {
@@ -1006,91 +928,4 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
-}
-
-/*
- * Send an HTTP request to retrieve the current members of a call
- */
-export function useFindCallMembers(
-  callId: number | null,
-  callType: ICall.Type | null
-): UseQueryResult<ICall.FindCallMembersApiResponse | null, Error> {
-  const atlas = useAtlas();
-
-  const findCallMembers = useCallback(async () => {
-    if (!callId || !callType) return null;
-    return await atlas.call.findCallMembers(callId, callType);
-  }, [atlas.call, callId, callType]);
-
-  return useQuery({
-    queryFn: findCallMembers,
-    queryKey: [QueryKey.FindCallMembers],
-  });
-}
-
-// a shorthand for some ServerEvent Callback type
-type CallEventsCallback = ServerEventsMap[ServerEvent.MemberJoinedCall];
-
-/*
- * Real-time call members state.
- */
-export function useCallMembers(
-  callId: number | null,
-  callType: ICall.Type | null
-): number[] {
-  const [members, setMembers] = useState<number[]>([]);
-
-  const socket = useSocket();
-
-  // get the initial list by an http request
-  const query = useFindCallMembers(callId, callType);
-
-  useEffect(() => {
-    if (query.data && query.isFetching && query.isError) setMembers(query.data);
-  }, [query.data, query.isError, query.isFetching]);
-
-  // define WSS events callbacks
-  const onMemberJoinWssCallback: CallEventsCallback = useCallback((payload) => {
-    setMembers((prev) => [...prev, payload.userId]);
-  }, []);
-
-  const onMemberLeaveWssCallback: CallEventsCallback = useCallback(
-    (payload) => {
-      setMembers((prev) => prev.filter((id) => id !== payload.userId));
-    },
-    []
-  );
-
-  // define react callbacks
-  const joinCall = useCallback(() => {
-    if (!socket || !callId || !callType) return;
-    socket.emit(Wss.ClientEvent.JoinCall, { callId, type: callType });
-  }, [socket, callId, callType]);
-
-  const leaveCall = useCallback(() => {
-    if (!socket || !callId || !callType) return;
-    socket.emit(Wss.ClientEvent.LeaveCall, { callId });
-  }, [socket, callId, callType]);
-
-  useEffect(() => {
-    // listen to wss events to modify members list accordingly
-    if (!socket) return;
-    socket.on(Wss.ServerEvent.MemberJoinedCall, onMemberJoinWssCallback);
-    socket.on(Wss.ServerEvent.MemberLeftCall, onMemberLeaveWssCallback);
-    joinCall();
-    return () => {
-      socket.off(Wss.ServerEvent.MemberJoinedCall);
-      socket.off(Wss.ServerEvent.MemberLeftCall);
-      leaveCall();
-    };
-  }, [
-    callId,
-    socket,
-    joinCall,
-    leaveCall,
-    onMemberLeaveWssCallback,
-    onMemberJoinWssCallback,
-  ]);
-
-  return members;
 }

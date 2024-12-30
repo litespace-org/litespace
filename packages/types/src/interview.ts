@@ -1,5 +1,4 @@
-import { ICall, IFilter, IInterview, Paginated } from ".";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { ISession, IFilter } from ".";
 
 export enum Status {
   Pending = "pending",
@@ -22,8 +21,8 @@ export type Self = {
      * The interviewee id (the id of the tutor)
      */
     interviewee: number;
-    call: number;
     rule: number;
+    session: ISession.Id;
   };
   /**
    * ISO UTC datetime.
@@ -53,7 +52,7 @@ export type Row = {
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
   rule_id: number;
-  call_id: number;
+  session_id: ISession.Id;
   note: string | null;
   level: number | null;
   status: Status;
@@ -69,7 +68,7 @@ export type CreatePayload = {
    * ISO UTC datetime.
    */
   start: string;
-  call: number;
+  session: ISession.Id;
   rule: number;
   interviewer: number;
   interviewee: number;
@@ -118,29 +117,4 @@ export type FindInterviewsApiQuery = IFilter.Pagination & {
   levels?: number[];
   signed?: boolean;
   signers?: number[];
-};
-
-/**
- * @deprecated should be removed
- */
-export type FindPagedInterviewsProps = {
-  query: UseInfiniteQueryResult<
-    InfiniteData<
-      Paginated<{
-        interview: IInterview.Self;
-        call: ICall.Self;
-        members: ICall.PopuldatedMember[];
-      }>,
-      unknown
-    >,
-    Error
-  >;
-  list:
-    | {
-        interview: IInterview.Self;
-        call: ICall.Self;
-        members: ICall.PopuldatedMember[];
-      }[]
-    | null;
-  more: () => void;
 };

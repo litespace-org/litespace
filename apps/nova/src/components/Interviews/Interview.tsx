@@ -97,7 +97,7 @@ const Interview: React.FC<{
 
       <div className="flex flex-row gap-2 mt-4">
         {upcoming ? (
-          <Link to={Route.Call.replace(":id", interview.ids.call.toString())}>
+          <Link to={Route.Call.replace(":id", interview.ids.session)}>
             <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
               {!started
                 ? intl.formatMessage(

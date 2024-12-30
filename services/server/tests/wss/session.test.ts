@@ -10,7 +10,7 @@ import { unpackRules } from "@litespace/sol/rule";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 
-describe("calls test suite", () => {
+describe("sessions test suite", () => {
   let tutor: IUser.LoginApiResponse;
   let student: IUser.LoginApiResponse;
 
@@ -36,7 +36,7 @@ describe("calls test suite", () => {
     student = await studentApi.findCurrentUser();
   });
 
-  it("should broadcast the event when the user join the call", async () => {
+  it("should broadcast the event when the user join a session", async () => {
     const now = dayjs();
 
     const rule = await tutorApi.atlas.rule.create({
@@ -69,26 +69,26 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(tutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const studentResult = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const studentResult = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     const { userId } = await studentResult;
 
-    const callMembersIds = await cache.call.getMembers(lesson.callId);
-    expect(callMembersIds).to.be.of.length(1);
-    expect(callMembersIds[0]).to.be.eq(tutor.user.id);
+    const sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    expect(sessionMembersIds).to.be.of.length(1);
+    expect(sessionMembersIds[0]).to.be.eq(tutor.user.id);
     expect(userId).to.be.eq(tutor.user.id);
 
-    const tutorResult = tutorSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    studentSocket.joinCall(lesson.callId, "lesson");
+    const tutorResult = tutorSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    studentSocket.joinSession(lesson.sessionId);
 
     const { userId: studentId } = await tutorResult;
-    const callMembersIdsSecondSnapshot = await cache.call.getMembers(
-      lesson.callId
+    const sessionMembersIdsSecondSnapshot = await cache.session.getMembers(
+      lesson.sessionId
     );
-    expect(callMembersIdsSecondSnapshot).to.be.of.length(2);
+    expect(sessionMembersIdsSecondSnapshot).to.be.of.length(2);
     expect(
-      callMembersIdsSecondSnapshot.map((memberId) => memberId)
+      sessionMembersIdsSecondSnapshot.map((memberId) => memberId)
     ).to.be.members([student.user.id, tutor.user.id]);
 
     expect(studentId).to.be.eq(student.user.id);
@@ -132,8 +132,8 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     await result
       .then(() => expect(false))
@@ -143,7 +143,7 @@ describe("calls test suite", () => {
     studentSocket.client.disconnect();
   });
 
-  it("should NOT broadcast when user tries to join a call before its start", async () => {
+  it("should NOT broadcast when user tries to join a session before its start", async () => {
     const now = dayjs();
     const rule = await tutorApi.atlas.rule.create({
       start: now.add(1, "day").utc().startOf("day").toISOString(),
@@ -177,8 +177,8 @@ describe("calls test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedCall);
-    tutorSocket.joinCall(lesson.callId, "lesson");
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
 
     await result
       .then(() => expect(false))

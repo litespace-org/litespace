@@ -7,7 +7,6 @@ import {
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
 import {
-  calls,
   interviews,
   rules,
   users,
@@ -32,8 +31,9 @@ import safeRequest from "express-async-handler";
 import zod from "zod";
 import { isAdmin, isTutorManager, isSuperAdmin, isTutor } from "@litespace/auth";
 import { isEqual } from "lodash";
-import { canBook } from "@/lib/call";
+import { canBook } from "@/lib/session";
 import { platformConfig } from "@/constants";
+import { genSessionId } from "@litespace/sol";
 
 const INTERVIEW_DURATION = 30;
 
@@ -105,12 +105,10 @@ async function createInterview(
   if (!room) await rooms.create(members);
 
   const interview = await knex.transaction(async (tx) => {
-    const call = await calls.create(tx);
-
     const interview = await interviews.create({
       interviewer: interviewerId,
       interviewee: intervieweeId,
-      call: call.id,
+      session: genSessionId("interview"),
       rule: rule.id,
       start,
       tx,

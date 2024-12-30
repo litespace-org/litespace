@@ -41,10 +41,6 @@ export class Chat extends Base {
     return await this.get({ route: `/api/v1/chat/room/members/${room}` });
   }
 
-  async findCallRoom(call: number): Promise<IRoom.FindCallRoomApiResponse> {
-    return await this.get({ route: `/api/v1/chat/room/call/${call}` });
-  }
-
   async updateRoom(
     room: number,
     payload: IRoom.UpdateRoomApiPayload

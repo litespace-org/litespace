@@ -1,5 +1,5 @@
-export function asCallRoomId(callId: number) {
-  return `call:${callId}`;
+export function asSessionRoomId(sessionId: string) {
+  return `session:${sessionId}`;
 }
 
 export function asChatRoomId(roomId: number) {

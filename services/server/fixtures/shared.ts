@@ -5,7 +5,6 @@ import {
   messages,
   rooms,
   interviews,
-  calls,
   rules,
   lessons,
   ratings,
@@ -45,8 +44,6 @@ export async function flush() {
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
     await interviews.builder(tx).del();
-    await calls.builder(tx).members.del();
-    await calls.builder(tx).calls.del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
     await rules.builder(tx).del();

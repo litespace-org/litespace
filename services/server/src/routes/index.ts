@@ -1,5 +1,4 @@
 import user from "@/routes/user";
-import call from "@/routes/call";
 import interview from "@/routes/interview";
 import rating from "@/routes/rating";
 import chat from "@/routes/chat";
@@ -16,7 +15,6 @@ import withdrawMethod from "@/routes/withdrawMethod";
 import auth from "@/routes/auth";
 import topic from "@/routes/topic";
 import cache from "@/routes/cache";
-import peer from "@/routes/peer";
 
 export default {
   user,
@@ -24,7 +22,6 @@ export default {
   invoice,
   rule,
   withdrawMethod,
-  call,
   plan,
   chat,
   rating,
@@ -37,5 +34,4 @@ export default {
   auth,
   topic,
   cache,
-  peer,
 };

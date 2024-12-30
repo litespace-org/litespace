@@ -221,4 +221,4 @@ export type FindPublicStudentStatsApiResponse = {
   upcomingLessonCount: number;
 };
 
-export type Ghost = `ghost:${number}`;
+export type Ghost = `ghost:${string}`;

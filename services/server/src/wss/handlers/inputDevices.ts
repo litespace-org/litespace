@@ -1,12 +1,13 @@
 import { logger, safe } from "@litespace/sol";
 import { isGhost } from "@litespace/auth";
 import { Wss } from "@litespace/types";
-import { id, boolean } from "@/validation/utils";
+import { boolean, sessionId } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";
 import zod from "zod";
+import { asSessionRoomId } from "../utils";
 
-const toggleCameraPayload = zod.object({ call: id, camera: boolean });
-const toggleMicPayload = zod.object({ call: id, mic: boolean });
+const toggleCameraPayload = zod.object({ session: sessionId, camera: boolean });
+const toggleMicPayload = zod.object({ session: sessionId, mic: boolean });
 
 const stdout = logger("wss");
 
@@ -24,12 +25,13 @@ export class InputDevices extends WssHandler {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
-      const { call, camera } = toggleCameraPayload.parse(data);
+      const { session, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.broadcast(Wss.ServerEvent.CameraToggled, call.toString(), {
-        user: user.id,
-        camera,
-      });
+      this.broadcast(
+        Wss.ServerEvent.CameraToggled, 
+        asSessionRoomId(session), 
+        { user: user.id, camera }
+      );
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -38,12 +40,13 @@ export class InputDevices extends WssHandler {
     const error = safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
-      const { call, mic } = toggleMicPayload.parse(data);
+      const { session, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.broadcast(Wss.ServerEvent.MicToggled, call.toString(), {
-        user: user.id,
-        mic,
-      });
+      this.broadcast(
+        Wss.ServerEvent.MicToggled, 
+        asSessionRoomId(session),
+        { user: user.id, mic }
+      );
     });
     if (error instanceof Error) stdout.error(error.message);
   }

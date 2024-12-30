@@ -142,7 +142,7 @@ const Lesson: React.FC<
 
       <div className="flex flex-row gap-2 mt-4">
         {upcoming ? (
-          <Link to={Route.Call.replace(":id", lesson.callId.toString())}>
+          <Link to={Route.Call.replace(":id", lesson.sessionId)}>
             <Button size={sm ? ButtonSize.Small : ButtonSize.Tiny}>
               {inprogress
                 ? intl("page.lessons.lesson.join.inprogress", {
