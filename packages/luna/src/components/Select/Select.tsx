@@ -24,12 +24,14 @@ export type SelectProps<T extends string | number> = {
   onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
+  hasIcon?: boolean;
 };
 
 export const Select = <T extends string | number>({
   value,
   placeholder,
   options = [],
+  hasIcon = true,
   onChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -45,14 +47,14 @@ export const Select = <T extends string | number>({
     [onChange, options]
   );
 
-  const lable = useMemo(
+  const label = useMemo(
     () => options.find((option) => option.value === value)?.label,
     [options, value]
   );
 
   return (
     <Root
-      open={open}
+      open={options.length ? open : false}
       onOpenChange={setOpen}
       dir="rtl"
       value={value?.toString()}
@@ -70,24 +72,28 @@ export const Select = <T extends string | number>({
           "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
         )}
       >
-        <Value>
-          <Typography
-            className={cn(
-              lable ? "tw-text-natural-950" : "tw-text-natural-400"
-            )}
-          >
-            {lable || placeholder}
-          </Typography>
+        <Value
+          placeholder={
+            placeholder ? (
+              <Typography className={cn("tw-text-natural-400")}>
+                {placeholder}
+              </Typography>
+            ) : null
+          }
+        >
+          <Typography className={cn("tw-text-natural-950")}>{label}</Typography>
         </Value>
-        <Icon>
-          <ArrowDown
-            data-open={open}
-            className={cn(
-              "tw-justify-self-end",
-              "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
-            )}
-          />
-        </Icon>
+        {hasIcon ? (
+          <Icon>
+            <ArrowDown
+              data-open={open}
+              className={cn(
+                "tw-justify-self-end",
+                "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+              )}
+            />
+          </Icon>
+        ) : null}
       </Trigger>
       <Portal>
         <Content
