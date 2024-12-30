@@ -57,8 +57,8 @@ export class Connection extends WssHandler {
     for (const room of userRooms) {
       this.broadcast(
         Wss.ServerEvent.UserStatusChanged,
-        room.toString(),
-        { online },
+        asChatRoomId(room),
+        { online, userId, roomId: room },
       );
     }
   }

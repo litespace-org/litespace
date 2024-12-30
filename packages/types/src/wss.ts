@@ -137,7 +137,11 @@ export type ServerEventsMap = {
   [ServerEvent.CameraToggled]: EventCallback<{ user: number; camera: boolean }>;
   [ServerEvent.MicToggled]: EventCallback<{ user: number; mic: boolean }>;
   [ServerEvent.MessageRead]: EventCallback<{ messageId: number }>;
-  [ServerEvent.UserStatusChanged]: EventCallback<{ online: boolean }>;
+  [ServerEvent.UserStatusChanged]: EventCallback<{ 
+    online: boolean, 
+    userId: number, 
+    roomId: number 
+  }>;
   [ServerEvent.InvoiceUpdated]: EventCallback<void>;
   [ServerEvent.InvoiceDeleted]: EventCallback<void>;
   [ServerEvent.LessonBooked]: EventCallback<{
