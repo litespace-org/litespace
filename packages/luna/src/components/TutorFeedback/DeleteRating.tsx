@@ -9,6 +9,7 @@ export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
   setOpen,
   onDelete,
   close,
+  loading,
 }) => {
   const intl = useFormatMessage();
 
@@ -23,6 +24,7 @@ export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
         confirm: "labels.delete",
       }}
       icon={<Trash width={24} height={24} />}
+      loading={loading}
       type="error"
       confirm={onDelete}
     />

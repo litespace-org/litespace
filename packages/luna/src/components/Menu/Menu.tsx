@@ -23,7 +23,10 @@ export const Menu: React.FC<{
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger
-        className={cn("focus:tw-outline-none", !children && "tw-p-2")}
+        className={cn(
+          "focus:tw-outline-none tw-h-6 tw-flex tw-items-center tw-justify-center",
+          !children && "tw-p-2"
+        )}
         type="button"
       >
         {children || <More />}
@@ -63,7 +66,7 @@ export const Menu: React.FC<{
               )}
               onClick={onClick}
             >
-              {icon}
+              <div className="tw-w-4 tw-h-4">{icon}</div>
 
               <Typography
                 element="tiny-text"

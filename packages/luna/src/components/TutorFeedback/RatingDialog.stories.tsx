@@ -1,12 +1,12 @@
 import React from "react";
 import { faker } from "@faker-js/faker/locale/ar";
 import { Meta, StoryObj } from "@storybook/react";
-import { EditRating } from "@/components/TutorFeedback";
+import { RatingDialog } from "@/components/TutorFeedback";
 
-type Story = StoryObj<typeof EditRating>;
-const meta: Meta<typeof EditRating> = {
-  title: "TutorFeedback/EditRating",
-  component: EditRating,
+type Story = StoryObj<typeof RatingDialog>;
+const meta: Meta<typeof RatingDialog> = {
+  title: "TutorFeedback/RatingDialog",
+  component: RatingDialog,
   decorators: [
     (Story) => (
       <div style={{ width: "744px" }}>
@@ -28,7 +28,7 @@ export const WithFeedback: Story = {
     rating: 3,
     open: true,
     setOpen: () => {},
-    onUpdate: () => alert("update rating"),
+    onSubmit: () => alert("update rating"),
   },
 };
 
@@ -41,7 +41,7 @@ export const WithoutFeedback: Story = {
     imageUrl: url,
     open: true,
     setOpen: () => {},
-    onUpdate: () => alert("update rating"),
+    onSubmit: () => alert("update rating"),
   },
 };
 
