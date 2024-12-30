@@ -4,6 +4,8 @@ import { expect } from "chai";
 import db from "@fixtures/db";
 import { messages, rooms } from "@litespace/models";
 import { range } from "lodash";
+import { ClientSocket } from "@fixtures/wss";
+import { Wss } from "@litespace/types";
 
 describe("/api/v1/chat", () => {
   beforeEach(async () => {
@@ -137,6 +139,39 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
 
     expect(rooms.list.map((room) => room.otherMember.id)).to.contain.members(
       seedData.map(({ user: info }) => info.user.id)
+    );
+  });
+
+  it("should other room member online status", async () => {
+    const tutorApi = await Api.forTutor();
+    const tutor = await tutorApi.findCurrentUser();
+
+    const seedData = await Promise.all(
+      range(3).map(async () => {
+        const studnetApi = await Api.forStudent();
+        const student = await studnetApi.findCurrentUser();
+        const { roomId } = await studnetApi.atlas.chat.createRoom(
+          tutor.user.id
+        );
+        const message = await messages.create({
+          roomId,
+          text: student.user.email,
+          userId: student.user.id,
+        });
+
+        return { message, user: student };
+      })
+    );
+
+    // make the first student online
+    new ClientSocket(seedData[0].user.token);
+    const tutorSocket = new ClientSocket(tutor.token);
+    await tutorSocket.wait(Wss.ServerEvent.UserStatusChanged);
+
+    const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id);
+
+    expect(rooms.list.map((room) => room.otherMember.online)).to.contain.members(
+      [true, false, false]
     );
   });
 

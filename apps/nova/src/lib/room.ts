@@ -2,7 +2,7 @@ import { IRoom } from "@litespace/types";
 
 export function asOtherMember(
   currentUserId?: number,
-  roomMembers?: IRoom.PopulatedMember[]
+  roomMembers?: IRoom.PopulatedMemberWithStatus[]
 ) {
   if (!roomMembers) return null;
   const otherMember = roomMembers.find((member) => member.id !== currentUserId);
@@ -13,5 +13,6 @@ export function asOtherMember(
     image: otherMember.image || null,
     role: otherMember.role,
     lastSeen: otherMember.updatedAt,
+    online: otherMember.online,
   };
 }
