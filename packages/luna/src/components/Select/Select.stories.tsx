@@ -32,6 +32,14 @@ export const WithDefaultValueSelected: StoryObj<ISelect> = {
   },
 };
 
+export const EmptyOptions: StoryObj<ISelect> = {
+  args: {
+    options: [],
+    placeholder: faker.lorem.words(5),
+    onChange: (value) => console.log(value),
+  },
+};
+
 export const ManyOptions: StoryObj<ISelect> = {
   args: {
     options: range(100).map((_, idx) => ({
