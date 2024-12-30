@@ -54,6 +54,7 @@
     "github": "vite-node scripts/github.ts",
     "intl": "vite-node scripts/intl.ts",
     "dangerfile": "danger --dangerfile scripts/dangerfile.ts",
+    "clickup": "vite-node scripts/clickup.ts",
     "benchmark": "vite-node scripts/benchmark.ts",
     "clean:dep": "rm -rf node_modules && pnpm -r exec rm -rf node_modules",
     "clean:dist": "pnpm -r exec rm -rf dist",
