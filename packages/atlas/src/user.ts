@@ -88,14 +88,18 @@ export class User extends Base {
     return await this.get({ route: `/api/v1/user/tutor/stats/${tutor}` });
   }
 
+  async findPersonalizedTutorStats(): Promise<ITutor.FindPersonalizedTutorStatsApiResponse> {
+    return await this.get({ route: `/api/v1/user/tutor/stats/personalized` });
+  }
+
   async findStudentStats(
     student: number
   ): Promise<IUser.FindStudentStatsApiResponse> {
     return await this.get({ route: `/api/v1/user/student/stats/${student}` });
   }
 
-  async findPublicStudentStats(): Promise<IUser.FindPublicStudentStatsApiResponse> {
-    return await this.get({ route: `/api/v1/user/student/stats/public` });
+  async findPersonalizedStudentStats(): Promise<IUser.FindPersonalizedStudentStatsApiResponse> {
+    return await this.get({ route: `/api/v1/user/student/stats/personalized` });
   }
 
   async findTutorActivityScores(

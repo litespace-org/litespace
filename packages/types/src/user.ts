@@ -202,7 +202,7 @@ export type FindStudentStatsApiResponse = {
   };
 };
 
-export type FindPublicStudentStatsApiResponse = {
+export type FindPersonalizedStudentStatsApiResponse = {
   /**
   * Tutors that the student interacted with.
   */

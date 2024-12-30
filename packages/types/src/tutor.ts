@@ -123,3 +123,22 @@ export type ActivityScoreMap = Record<
 export type FindTutorActivityScores = ActivityScoreMap;
 
 export type FindTutorMetaApiResponse = Self;
+
+export type FindPersonalizedTutorStatsApiResponse = { 
+  /**
+  * Total sum of all completed lessons.
+  */
+  totalLessonCount: number;
+  /**
+  * Future but not canceled lessons. 
+  */
+  upcomingLessonCount: number;
+  /**
+  * Count for completed lessons only.
+  */
+  completedLessonCount: number;
+  /**
+  * Students that the tutor interacted with.
+  */
+  studentCount: number; 
+};
