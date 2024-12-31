@@ -1,6 +1,6 @@
 import { ChatRoom } from "@litespace/luna/Chat";
 import { SelectRoom } from "@litespace/luna/hooks/chat";
-import { Loading } from "@litespace/luna/Loading";
+import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { Typography } from "@litespace/luna/Typography";
 import { IRoom, Paginated } from "@litespace/types";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
@@ -8,7 +8,6 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
-import cn from "classnames";
 
 type Query = UseInfiniteQueryResult<
   InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
@@ -81,8 +80,10 @@ const Rooms: React.FC<{
         ))}
       </div>
 
-      {query.isFetching || query.isLoading ? (
-        <Loading className={cn("mt-6", type === "all" && "mb-6")} />
+      {query.isPending || query.isFetching ? (
+        <div className="my-6">
+          <Loader variant="small" />
+        </div>
       ) : null}
 
       <div
@@ -90,6 +91,16 @@ const Rooms: React.FC<{
         className="data-[enabled=true]:h-2"
         ref={target}
       />
+
+      {query.isError && !query.isPending ? (
+        <div className="my-6 max-w-[192px] mx-auto">
+          <LoadingError
+            variant="small"
+            retry={() => query.refetch}
+            error={intl("chat.error")}
+          />
+        </div>
+      ) : null}
     </div>
   );
 };
