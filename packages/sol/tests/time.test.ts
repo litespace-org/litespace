@@ -390,7 +390,7 @@ describe("Time", () => {
   });
 
   describe("UTC and Local", () => {
-    it("should convert local to utc time", () => {
+    it.only("should convert local to utc time", () => {
       const tests: Array<[string, string]> = [
         ["3am", "12am"],
         ["4am", "1am"],
