@@ -106,6 +106,8 @@
     "./Sound": "./dist/Sound.tsx",
     "./Spinner": "./dist/Spinner.tsx",
     "./Star": "./dist/Star.tsx",
+    "./StartMessaging": "./dist/StartMessaging.tsx",
+    "./StartNewMessage": "./dist/StartNewMessage.tsx",
     "./StudentDefaultAvatar": "./dist/StudentDefaultAvatar.tsx",
     "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
     "./StudentFemaleLight": "./dist/StudentFemaleLight.tsx",

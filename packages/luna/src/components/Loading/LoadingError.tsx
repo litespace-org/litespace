@@ -1,5 +1,5 @@
 import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
-import { Button, ButtonVariant } from "@litespace/luna/Button";
+import { Button, ButtonSize, ButtonVariant } from "@litespace/luna/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { Void } from "@litespace/types";
@@ -27,13 +27,17 @@ export const LoadingError: React.FC<{
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        element="caption"
-        weight="semibold"
+        element={size === "large" ? "caption" : "tiny-text"}
+        weight={size === "large" ? "semibold" : "regular"}
         className="tw-text-natural-950 tw-text-center"
       >
         {error}
       </Typography>
-      <Button onClick={retry} variant={ButtonVariant.Secondary}>
+      <Button
+        size={size === "large" ? ButtonSize.Small : ButtonSize.Tiny}
+        onClick={retry}
+        variant={ButtonVariant.Secondary}
+      >
         {intl("global.retry")}
       </Button>
     </div>
