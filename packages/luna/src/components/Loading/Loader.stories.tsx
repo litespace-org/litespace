@@ -23,23 +23,30 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const SpinnerAlone: StoryObj<Component> = {};
-export const WithText: StoryObj<Component> = {
+export const Small: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
+    size: "sm",
   },
 };
 
-export const LargeLoader: StoryObj<Component> = {
+export const Medium: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
-    variant: "large",
+    size: "md",
   },
 };
-export const SmallLoader: StoryObj<Component> = {
+
+export const Large: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
-    variant: "small",
+    size: "lg",
+  },
+};
+
+export const WithText: StoryObj<Component> = {
+  args: {
+    text: faker.lorem.words(10),
   },
 };
 

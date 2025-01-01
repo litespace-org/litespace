@@ -102,6 +102,7 @@
     "./SoundSmall": "./dist/SoundSmall.tsx",
     "./Sound": "./dist/Sound.tsx",
     "./Spinner": "./dist/Spinner.tsx",
+    "./Spinner2": "./dist/Spinner2.tsx",
     "./Star": "./dist/Star.tsx",
     "./StudentDefaultAvatar": "./dist/StudentDefaultAvatar.tsx",
     "./StudentFemaleDark": "./dist/StudentFemaleDark.tsx",
