@@ -141,8 +141,8 @@ export class Messages {
       .clone()
       .select()
       .orderBy([
-        { column: this.column("created_at"), order: "desc" },
-        { column: this.column("id"), order: "desc" },
+        { column: this.column("created_at"), order: "asc" },
+        { column: this.column("id"), order: "asc" },
       ]);
 
     const rows = await withPagination(query, { page, size });
