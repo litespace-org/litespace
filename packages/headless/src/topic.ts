@@ -1,5 +1,5 @@
 import { ITopic, Void } from "@litespace/types";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas";
 import { usePaginate } from "@/pagination";
@@ -16,6 +16,7 @@ export function useCreateTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const createTopic = useCallback(
     async (payload: ITopic.CreateApiPayload) => {
       return atlas.topic.create(payload);
@@ -33,11 +34,25 @@ export function useCreateTopic({
 
 export function useTopics(query: ITopic.FindTopicsApiQuery) {
   const atlas = useAtlas();
+
   const findTopics = useCallback(async () => {
     return await atlas.topic.findTopics(query);
   }, [atlas.topic, query]);
 
   return usePaginate(findTopics, [QueryKey.FindTopic, query]);
+}
+
+export function useUserTopics() {
+  const atlas = useAtlas();
+
+  const findTopics = useCallback(async () => {
+    return await atlas.topic.findUserTopics();
+  }, [atlas.topic]);
+
+  return useQuery({
+    queryFn: findTopics,
+    queryKey: [QueryKey.FindUserTopics],
+  });
 }
 
 export function useUpdateTopic({
@@ -48,6 +63,7 @@ export function useUpdateTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const updateTopic = useCallback(
     async ({
       id,
@@ -77,6 +93,7 @@ export function useDeleteTopic({
   onError: OnError;
 }) {
   const atlas = useAtlas();
+
   const deleteTopic = useCallback(
     async ({ id }: { id: number }) => {
       return atlas.topic.deleteTopic(id);

@@ -1,12 +1,10 @@
-import { IUser, Void } from "@litespace/types";
+import { ITopic, IUser } from "@litespace/types";
 import { useAtlas } from "@/atlas";
 import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { QueryKey } from "@/constants";
-import { BaseMutationPayload } from "@/types/query";
-
-type OnSuccess = Void;
-type OnError = (error: Error) => void;
+import { MutationKey, QueryKey } from "@/constants";
+import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
+import { isEmpty } from "lodash";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
@@ -49,11 +47,14 @@ export function useRegisterUser({
   });
 }
 
+/**
+ * Update all user data in one mutation.
+ */
 export function useUpdateUser({
   onSuccess,
   onError,
 }: {
-  onSuccess?: OnSuccess;
+  onSuccess?: OnSuccess<void>;
   onError?: OnError;
 }) {
   const atlas = useAtlas();
@@ -63,16 +64,22 @@ export function useUpdateUser({
       payload,
     }: {
       id: number;
-      payload: IUser.UpdateApiPayload;
+      payload: IUser.UpdateApiPayload & ITopic.ReplaceUserTopicsApiPayload;
     }) => {
-      return await atlas.user.update(id, payload);
+      // TODO: Handle Updating profile Pictures here
+      await Promise.all([
+        atlas.user.update(id, payload),
+        !isEmpty(payload.addTopics) || !isEmpty(payload.removeTopics)
+          ? atlas.topic.replaceUserTopics(payload)
+          : Promise.resolve(null),
+      ]);
     },
-    [atlas.user]
+    [atlas.user, atlas.topic]
   );
 
   return useMutation({
     mutationFn: update,
-    mutationKey: ["update-user"],
+    mutationKey: [MutationKey.UpdateUser],
     onSuccess,
     onError,
   });

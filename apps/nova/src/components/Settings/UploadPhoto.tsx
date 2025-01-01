@@ -1,16 +1,24 @@
-import React, { useRef } from "react";
-import StudentDefaultAvatar from "@litespace/assets/StudentDefaultAvatar";
+import React, { useMemo, useRef } from "react";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Typography } from "@litespace/luna/Typography";
 import { first } from "lodash";
+import { Avatar } from "@litespace/luna/Avatar";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 
 const UploadPhoto: React.FC<{
   photo: File | string | null;
   setPhoto: (photo: File) => void;
-}> = ({ photo, setPhoto }) => {
+  id: number;
+}> = ({ photo, setPhoto, id }) => {
   const intl = useFormatMessage();
   const ref = useRef<HTMLInputElement>(null);
+
+  const photoUrl = useMemo(() => {
+    if (!photo) return undefined;
+    if (typeof photo === "string") return asFullAssetUrl(photo);
+    return URL.createObjectURL(photo);
+  }, [photo]);
 
   return (
     <div className="flex flex-row gap-6">
@@ -25,21 +33,10 @@ const UploadPhoto: React.FC<{
           setPhoto(file);
         }}
       />
-      <div>
-        {photo ? ( // todo: create avatar component
-          <img
-            className="rounded-full overflow-hidden w-[102px] h-[102px] object-contain"
-            src={
-              typeof photo === "string"
-                ? "https://picsum.photos/300"
-                : URL.createObjectURL(photo)
-            }
-          />
-        ) : (
-          <StudentDefaultAvatar />
-        )}
+      <div className="w-[102px] h-[102px] rounded-full overflow-hidden">
+        <Avatar src={photoUrl} alt={photoUrl} seed={id.toString()} />
       </div>
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-4">
         <Button
           size={ButtonSize.Tiny}
           onClick={() => {
@@ -52,7 +49,7 @@ const UploadPhoto: React.FC<{
         <Typography
           element="caption"
           weight="semibold"
-          className="text-natural-700 max-w-56"
+          className="text-natural-700 max-w-[214px]"
         >
           {intl("settings.upload.image.desc")}
         </Typography>

@@ -28,4 +28,5 @@ export enum QueryKey {
   FindCurrentUser = "find-current-user",
   FindTutorInfo = "find-tutor-info",
   FindRulesWithSlots = "find-rules-with-slots",
+  FindUserTopics = "find-user-topics",
 }

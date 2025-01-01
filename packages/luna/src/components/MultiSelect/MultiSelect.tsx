@@ -14,6 +14,7 @@ import { isEmpty } from "lodash";
 import { useCallback, useMemo, useState } from "react";
 import { X } from "react-feather";
 import React from "react";
+import { Tooltip } from "@/components/Tooltip/Tooltip";
 
 export const MultiSelect = <T,>({
   options,
@@ -66,7 +67,7 @@ export const MultiSelect = <T,>({
           onClick={() => setOpen(true)}
         >
           <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
-            <SearchIcon className="tw-justify-self-start" />
+            <SearchIcon className="tw-justify-self-start tw-shrink-0" />
             <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
@@ -76,30 +77,33 @@ export const MultiSelect = <T,>({
                 selectedOptions.map(({ label, value }, idx) => {
                   if (idx <= 1)
                     return (
-                      <div
+                      <Tooltip
+                        side="top"
+                        content={<Typography>{label}</Typography>}
                         key={label}
-                        className="tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full"
                       >
-                        <Typography
-                          element="body"
-                          className="tw-text-natural-50"
-                        >
-                          {label}
-                        </Typography>
-                        <button
-                          onClick={() => {
-                            if (!setValues) return;
-                            const copy = structuredClone(values);
-                            setValues(
-                              copy.filter(
-                                (optionValue) => optionValue !== value
-                              )
-                            );
-                          }}
-                        >
-                          <X className="tw-w-4 tw-h-4 tw-stroke-natural-50" />
-                        </button>
-                      </div>
+                        <div className=" tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full">
+                          <Typography
+                            element="body"
+                            className="tw-text-natural-50 tw-max-w-[100px] tw-truncate"
+                          >
+                            {label}
+                          </Typography>
+                          <button
+                            onClick={() => {
+                              if (!setValues) return;
+                              const copy = structuredClone(values);
+                              setValues(
+                                copy.filter(
+                                  (optionValue) => optionValue !== value
+                                )
+                              );
+                            }}
+                          >
+                            <X className="tw-w-4 tw-h-4 tw-stroke-natural-50" />
+                          </button>
+                        </div>
+                      </Tooltip>
                     );
 
                   if (idx === 2)
@@ -110,7 +114,7 @@ export const MultiSelect = <T,>({
                       >
                         <Typography
                           element="body"
-                          className="tw-text-natural-50"
+                          className="tw-text-natural-50 tw-whitespace-nowrap"
                         >
                           {selectedOptions.length - idx} +
                         </Typography>
@@ -138,7 +142,7 @@ export const MultiSelect = <T,>({
           className={cn(
             "tw-flex tw-flex-col tw-gap-1 tw-w-[var(--radix-dropdown-menu-trigger-width)]",
             "tw-border tw-border-brand-400 tw-rounded-lg tw-p-1",
-            "tw-max-h-64 tw-overflow-y-auto",
+            "tw-max-h-64 tw-overflow-y-auto tw-bg-natural-50",
             "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
           )}
           sideOffset={5}
