@@ -874,6 +874,9 @@ importers:
       '@eslint/js':
         specifier: ^9.9.0
         version: 9.16.0
+      '@types/hark':
+        specifier: ^1
+        version: 1.2.5
       '@types/node':
         specifier: ^22.7.5
         version: 22.10.1
