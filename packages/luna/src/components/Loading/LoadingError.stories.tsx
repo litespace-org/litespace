@@ -23,10 +23,27 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Primary: StoryObj<Component> = {
+export const Small: StoryObj<Component> = {
   args: {
     error: faker.lorem.words(10),
     retry: () => {},
+    size: "sm",
+  },
+};
+
+export const Medium: StoryObj<Component> = {
+  args: {
+    error: faker.lorem.words(10),
+    retry: () => {},
+    size: "md",
+  },
+};
+
+export const Large: StoryObj<Component> = {
+  args: {
+    error: faker.lorem.words(10),
+    retry: () => {},
+    size: "lg",
   },
 };
 
