@@ -14,9 +14,8 @@ import {
   EditMessage,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
-import { OnMessage, useChat } from "@/hooks/chat";
+import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/luna/chat";
-import { useMessages } from "@litespace/luna/hooks/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loading } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
@@ -26,6 +25,7 @@ import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
 import { useAtlas } from "@litespace/headless/atlas";
 import { useUserContext } from "@litespace/headless/context/user";
+import { InView } from "react-intersection-observer";
 
 const Messages: React.FC<{
   room: number | null;
@@ -55,9 +55,9 @@ const Messages: React.FC<{
     messages,
     loading,
     fetching,
-    target,
     onMessage: onMessages,
-  } = useMessages<HTMLDivElement>(findRoomMessages, room);
+    more,
+  } = useMessages(findRoomMessages, room);
 
   const scrollDown = useCallback(() => {
     if (messagesRef.current)
@@ -185,8 +185,7 @@ const Messages: React.FC<{
             ref={messagesRef}
             onScroll={onScroll}
           >
-            <div ref={target} />
-
+            <InView as="div" onChange={more} />
             <Loading
               show={loading || fetching}
               className={cn(
