@@ -6,7 +6,7 @@ import { Typography } from "@/components/Typography";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 
 export type Props = {
-  onSubmit: (payload: { camera: boolean; mic: boolean }) => void;
+  onSubmit: (permission: "mic-and-camera" | "mic-only") => void;
   loading?: "mic-and-camera" | "mic-only";
   open: boolean;
 };
@@ -44,7 +44,7 @@ export const PermissionsDialog: React.FC<Props> = ({
           <Button
             className="tw-shrink-0 tw-min-w-[274px]"
             size={ButtonSize.Large}
-            onClick={() => onSubmit({ camera: true, mic: true })}
+            onClick={() => onSubmit("mic-and-camera")}
             loading={loading === "mic-and-camera"}
             disabled={!!loading}
           >
@@ -56,7 +56,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             className="tw-shrink-0 tw-min-w-[274px]"
             size={ButtonSize.Large}
             variant={ButtonVariant.Secondary}
-            onClick={() => onSubmit({ camera: false, mic: true })}
+            onClick={() => onSubmit("mic-only")}
             loading={loading === "mic-only"}
             disabled={!!loading}
           >
