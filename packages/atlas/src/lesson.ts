@@ -20,6 +20,10 @@ export class Lesson extends Base {
     });
   }
 
+  async findLesson(id: number): Promise<ILesson.FindLessonByIdApiResponse> {
+    return await this.get({ route: `/api/v1/lesson/${id}` });
+  }
+
   async cancel(id: number): Promise<void> {
     return this.del({ route: `/api/v1/lesson/${id}` });
   }

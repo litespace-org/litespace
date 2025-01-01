@@ -36,79 +36,65 @@ export function useUserMedia() {
   const [denied, setUserDenied] = useState<boolean>(false);
 
   const getUserMedia = useCallback(
-    async ({
-      video,
-      audio,
-    }: {
-      video: boolean;
-      audio: boolean;
-    }): Promise<Error | MediaStream> => {
+    async (
+      constraints?: MediaStreamConstraints
+    ): Promise<Error | MediaStream> => {
       return await safe(
-        async () => await navigator.mediaDevices.getUserMedia({ video, audio })
+        async () => await navigator.mediaDevices.getUserMedia(constraints)
       );
     },
     []
   );
 
-  const getUserStream = useCallback(async () => {
-    // request both audio and video stream
-    const combinedStream = await getUserMedia({ video: true, audio: true });
-    if (combinedStream instanceof MediaStream) return combinedStream;
-    // try to get audio stream only to check if the user has mic and no camera.
-    const audioStreamOnly = await getUserMedia({ video: false, audio: true });
-    if (audioStreamOnly instanceof MediaStream) return audioStreamOnly;
-    // try to get video stream only incase the user only has camera and no mic.
-    const videoStreamOnly = await getUserMedia({ video: true, audio: false });
-    if (videoStreamOnly instanceof MediaStream) return videoStreamOnly;
-    return videoStreamOnly;
-  }, [getUserMedia]);
+  const start = useCallback(
+    async (constraints?: MediaStreamConstraints) => {
+      setLoading(true);
+      const stream = await getUserMedia(constraints);
+      setLoading(false);
+      const error = stream instanceof Error;
+      const denied = error ? isPermissionDenied(stream) : false;
 
-  const start = useCallback(async () => {
-    setLoading(true);
-    const stream = await getUserStream();
-    setLoading(false);
-    const error = stream instanceof Error;
-    const denied = error ? isPermissionDenied(stream) : false;
-
-    // user canceled the process.
-    if (denied) {
-      setError(null);
-      setUserDenied(true);
-      return setStream(null);
-    }
-
-    if (!error) {
-      const videoTracks = stream.getVideoTracks();
-      const audioTracks = stream.getAudioTracks();
-
-      if (videoTracks.length !== 0) {
-        setCamera(true);
-        setVideo(true);
+      // user canceled the process.
+      if (denied) {
+        setError(null);
+        setUserDenied(true);
+        return setStream(null);
       }
 
-      if (audioTracks.length !== 0) {
-        setMic(true);
-        setAudio(true);
+      if (!error) {
+        const videoTracks = stream.getVideoTracks();
+        const audioTracks = stream.getAudioTracks();
+
+        if (videoTracks.length !== 0) {
+          setCamera(true);
+          setVideo(true);
+        }
+
+        if (audioTracks.length !== 0) {
+          setMic(true);
+          setAudio(true);
+        }
+
+        videoTracks.forEach((track) => {
+          track.addEventListener("ended", () => {
+            setStream(null);
+            setCamera(false);
+          });
+        });
+
+        audioTracks.forEach((track) => {
+          track.addEventListener("ended", () => {
+            setStream(null);
+            setMic(false);
+          });
+        });
       }
 
-      videoTracks.forEach((track) => {
-        track.addEventListener("ended", () => {
-          setStream(null);
-          setCamera(false);
-        });
-      });
-
-      audioTracks.forEach((track) => {
-        track.addEventListener("ended", () => {
-          setStream(null);
-          setMic(false);
-        });
-      });
-    }
-
-    if (!error) setError(error ? stream : null);
-    setStream(error ? null : stream);
-  }, [getUserStream]);
+      if (!error) setError(error ? stream : null);
+      setStream(error ? null : stream);
+    },
+    [getUserMedia]
+  );
 
   const stop = useCallback(() => {
     if (!stream) return;
@@ -930,4 +916,14 @@ export function useFullScreen<T extends Element>() {
     start,
     exit,
   };
+}
+
+export function useSessionV3() {
+  const userMedia = useUserMedia();
+  return useMemo(
+    () => ({
+      userMedia,
+    }),
+    [userMedia]
+  );
 }

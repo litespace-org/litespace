@@ -2,7 +2,7 @@ import { Element, IFilter, ILesson } from "@litespace/types";
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { UsePaginateResult, usePaginate } from "@/pagination";
 import { InfiniteQueryHandler, useInfinitePaginationQuery } from "@/query";
 import { OnError, OnSuccess } from "@/types/query";
@@ -23,7 +23,7 @@ export function useFindLessons(
     [atlas.lesson, query]
   );
 
-  return usePaginate(lessons, [QueryKey.FindLesson, query]);
+  return usePaginate(lessons, [QueryKey.FindLessons, query]);
 }
 
 /**
@@ -113,5 +113,19 @@ export function useCreateLesson({
     mutationKey: [MutationKey.BookLesson],
     onSuccess,
     onError,
+  });
+}
+
+export function useFindLesson(id?: number) {
+  const atlas = useAtlas();
+
+  const findLessonById = useCallback(async () => {
+    if (!id) return null;
+    return atlas.lesson.findLesson(id);
+  }, [atlas.lesson, id]);
+
+  return useQuery({
+    queryFn: findLessonById,
+    queryKey: [QueryKey.FindLesson, id],
   });
 }

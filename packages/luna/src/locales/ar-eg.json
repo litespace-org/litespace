@@ -493,6 +493,7 @@
   "upcoming-lessons.title": "الدروس الجارية",
   "upcoming-lessons.loading-error": "عذرًا، حدث خطأ أثناء تحميل جدول الحصص، برجاء المحاولة مرة أخرى",
   "upcoming-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس الجارية!",
+  "lesson.title": "الدروس الجارية",
   "student-dashboard.upcoming-lessons.title": "الحصص القادمة",
   "student-dashboard.table.date": "التاريخ",
   "student-dashboard.table.duration": "المدة",

@@ -22,8 +22,8 @@ const render = (props: Props) => {
       <PermissionsDialog
         {...props}
         open={open}
-        onSubmit={(payload) => {
-          alert(`cam = ${payload.camera}, mic = ${payload.mic}`);
+        onSubmit={(permission) => {
+          alert(permission);
           setOpen(false);
         }}
       />
