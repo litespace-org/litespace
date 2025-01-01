@@ -116,7 +116,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   if (ratingsQuery.isLoading || ratingsQuery.isPending)
     return (
       <div className="h-96 flex justify-center items-center">
-        <Loader text={intl("tutor.profile.loading")} />
+        <Loader size="medium" text={intl("tutor.profile.loading")} />
       </div>
     );
 
@@ -124,6 +124,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
     return (
       <div className="h-96 flex items-center justify-center">
         <LoadingError
+          size="medium"
           error={intl("tutor.profile.error")}
           retry={ratingsQuery.refetch}
         />

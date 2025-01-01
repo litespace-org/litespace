@@ -25,28 +25,40 @@ const meta: Meta<Component> = {
 
 export const Small: StoryObj<Component> = {
   args: {
-    text: faker.lorem.words(10),
-    size: "sm",
+    size: "small",
   },
 };
 
 export const Medium: StoryObj<Component> = {
   args: {
-    text: faker.lorem.words(10),
-    size: "md",
+    size: "medium",
   },
 };
 
 export const Large: StoryObj<Component> = {
   args: {
-    text: faker.lorem.words(10),
-    size: "lg",
+    size: "large",
   },
 };
 
-export const WithText: StoryObj<Component> = {
+export const SmallWithText: StoryObj<Component> = {
   args: {
     text: faker.lorem.words(10),
+    size: "small",
+  },
+};
+
+export const MediumWithText: StoryObj<Component> = {
+  args: {
+    text: faker.lorem.words(10),
+    size: "medium",
+  },
+};
+
+export const LargeWithText: StoryObj<Component> = {
+  args: {
+    text: faker.lorem.words(10),
+    size: "large",
   },
 };
 

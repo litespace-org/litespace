@@ -120,6 +120,7 @@ const Schedule: React.FC = () => {
               fetching={lessons.query.isFetching && !lessons.query.isLoading}
               more={lessons.more}
               hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
+              refetch={lessons.query.refetch}
               key="list"
             />
           </motion.div>
