@@ -1,4 +1,4 @@
-import { Loading } from "@litespace/luna/Loading";
+import { Loader, Loading, LoadingError } from "@litespace/luna/Loading";
 import {
   LessonCard,
   EmptyLessons,
@@ -26,7 +26,8 @@ export const Content: React.FC<{
   error: boolean;
   hasMore: boolean;
   more: Void;
-}> = ({ list, loading, fetching, error, hasMore, more }) => {
+  refetch: Void;
+}> = ({ list, loading, fetching, error, hasMore, more, refetch }) => {
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
   const toast = useToast();
@@ -60,10 +61,23 @@ export const Content: React.FC<{
     []
   );
 
-  if (loading) return <Loading className="h-[30vh]" />;
+  if (loading)
+    return (
+      <div className="mt-[15vh]">
+        <Loader size="large" text={intl("upcoming-lessons.loading")} />
+      </div>
+    );
 
-  // todo: add error element
-  if (error) return "TODO: ERROR";
+  if (error)
+    return (
+      <div className="mt-[15vh]">
+        <LoadingError
+          size="large"
+          error={intl("upcoming-lessons.loading-error")}
+          retry={refetch}
+        />
+      </div>
+    );
 
   if (!list) return null;
 

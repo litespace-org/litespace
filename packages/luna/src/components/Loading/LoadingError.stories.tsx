@@ -27,7 +27,7 @@ export const Small: StoryObj<Component> = {
   args: {
     error: faker.lorem.words(10),
     retry: () => {},
-    size: "sm",
+    size: "small",
   },
 };
 
@@ -35,7 +35,7 @@ export const Medium: StoryObj<Component> = {
   args: {
     error: faker.lorem.words(10),
     retry: () => {},
-    size: "md",
+    size: "medium",
   },
 };
 
@@ -43,7 +43,7 @@ export const Large: StoryObj<Component> = {
   args: {
     error: faker.lorem.words(10),
     retry: () => {},
-    size: "lg",
+    size: "large",
   },
 };
 

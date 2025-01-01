@@ -1,13 +1,16 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
+import { Route } from "@/types/routes";
 import { useUser } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const UpcomingLessons: React.FC = () => {
   const intl = useFormatMessage();
   const { user } = useUser();
+  const navigate = useNavigate();
 
   const lessons = useInfiniteLessons({
     users: user ? [user?.id] : [],
@@ -18,11 +21,13 @@ const UpcomingLessons: React.FC = () => {
     canceled: true,
   });
 
-  if (!user) return;
+  useEffect(() => {
+    if (!user) return navigate(Route.Root);
+  }, [navigate, user]);
 
   return (
-    <div className="px-6 py-8 max-w-screen-3xl mx-auto w-full">
-      <PageTitle title={intl("page.upcoming-lessons.title")} className="mb-6" />
+    <div className="p-6 max-w-screen-3xl mx-auto w-full h-full">
+      <PageTitle title={intl("upcoming-lessons.title")} className="mb-6" />
       <Content
         list={lessons.list}
         loading={lessons.query.isLoading}
@@ -30,6 +35,7 @@ const UpcomingLessons: React.FC = () => {
         error={lessons.query.isError}
         more={lessons.more}
         hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
+        refetch={lessons.query.refetch}
       />
     </div>
   );

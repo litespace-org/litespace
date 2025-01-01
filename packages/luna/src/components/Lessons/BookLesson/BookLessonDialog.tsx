@@ -18,22 +18,21 @@ import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { concat, flattenDeep, isEmpty } from "lodash";
 import cn from "classnames";
-import Spinner from "@litespace/assets/Spinner";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
+import { Loader } from "@/components/Loading";
 
 const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
   return (
     <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
-      <Spinner className="tw-animate-spin" />
-      {tutorName ? (
-        <Typography
-          element="subtitle-2"
-          className="tw-font-bold tw-text-brand-700 tw-text-center"
-        >
-          {intl("book-lesson.loading-rules", { tutor: tutorName })}
-        </Typography>
-      ) : null}
+      <Loader
+        size="medium"
+        text={
+          tutorName
+            ? intl("book-lesson.loading-rules", { tutor: tutorName })
+            : undefined
+        }
+      />
     </div>
   );
 };

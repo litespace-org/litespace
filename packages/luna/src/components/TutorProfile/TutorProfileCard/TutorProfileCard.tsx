@@ -41,14 +41,18 @@ export const TutorProfileCard: React.FC<{
   if (loading)
     return (
       <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
-        <Loader text={intl("tutor.profile.loading")} />
+        <Loader size="medium" text={intl("tutor.profile.loading")} />
       </div>
     );
 
   if (error && retry)
     return (
       <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
-        <LoadingError error={intl("tutor.profile.error")} retry={retry} />
+        <LoadingError
+          size="medium"
+          error={intl("tutor.profile.error")}
+          retry={retry}
+        />
       </div>
     );
 
