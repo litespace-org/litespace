@@ -21,6 +21,7 @@ import {
 } from "@litespace/auth";
 import { IMessage, IRoom } from "@litespace/types";
 import { asFindUserRoomsApiRecord } from "@/lib/chat";
+import { cache } from "@/lib/cache";
 
 const createRoomPayload = zod.object({ userId: id });
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
@@ -88,7 +89,9 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
     keyword,
   });
 
+  // members of all rooms
   const members = await rooms.findRoomMembers({ roomIds: userRooms });
+  const onlineStatuses = await cache.onlineStatus.isOnlineBatch(members.map(m => m.id));
 
   // todo: optimize find user rooms query
   const list = await Promise.all(
@@ -96,12 +99,29 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
       const latestMessage = await messages.findLatestRoomMessage({
         room: roomId,
       });
+
+      const unreadMessagesCount = await messages.findUnreadCount({
+        user: userId,
+        room: roomId,
+      });
+
+      // members of this specific room
       const roomMembers = members.filter((member) => member.roomId === roomId);
+      const currentMember = roomMembers.find((member) => member.id === userId);
+      const otherMember = roomMembers.find((member) => member.id !== userId);
+
+      if (!currentMember || !otherMember)
+        throw Error("unreachable; should never happen.");
+
+      const otherMemberOnlineStatus = onlineStatuses.get(otherMember.id) || false;
+
       return asFindUserRoomsApiRecord({
-        members: roomMembers,
-        latestMessage,
         roomId,
-        userId,
+        latestMessage,
+        unreadMessagesCount,
+        currentMember,
+        otherMember,
+        otherMemberOnlineStatus,
       });
     })
   );

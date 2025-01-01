@@ -54,6 +54,8 @@ export type PopulatedMember = {
   updatedAt: IUser.Self["updatedAt"];
 };
 
+export type PopulatedMemberWithStatus = PopulatedMember & { online: boolean };
+
 export type RoomMap = Record<number, PopulatedMember[]>;
 
 export type FindUserRoomsApiQuery = IFilter.Pagination & {
@@ -76,6 +78,7 @@ export type FindUserRoomsApiRecord = {
     image: string | null;
     role: IUser.Role;
     lastSeen: string;
+    online: boolean;
   };
 };
 
@@ -85,7 +88,7 @@ export type FindUserRoomsApiResponse = Paginated<FindUserRoomsApiRecord>;
 
 export type FindRoomByMembersApiResponse = { room: number };
 
-export type FindRoomMembersApiResponse = PopulatedMember[];
+export type FindRoomMembersApiResponse = PopulatedMemberWithStatus[];
 
 export type FindSessionRoomApiResponse = {
   room: number;

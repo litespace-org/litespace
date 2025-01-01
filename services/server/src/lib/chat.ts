@@ -1,32 +1,20 @@
-import { messages } from "@litespace/models";
 import { IMessage, IRoom } from "@litespace/types";
 
-export async function asFindUserRoomsApiRecord({
+export function asFindUserRoomsApiRecord({
   roomId,
-  userId,
   latestMessage,
-  members,
+  unreadMessagesCount,
+  currentMember,
+  otherMember,
+  otherMemberOnlineStatus,
 }: {
   roomId: number;
-  userId: number;
   latestMessage: IMessage.Self | null;
-  members: IRoom.PopulatedMember[];
-}): Promise<IRoom.FindUserRoomsApiRecord> {
-  const currentMember = members.find((member) => member.id === userId);
-  const otherMember = members.find((member) => member.id !== userId);
-  const unreadMessagesCount = await messages.findUnreadCount({
-    user: userId,
-    room: roomId,
-  });
-
-  if (!currentMember)
-    throw Error(
-      "User is not part of the room (or room is empty); should never happen"
-    );
-
-  if (!otherMember)
-    throw Error("No other members in the room; should never happen");
-
+  unreadMessagesCount: number;
+  currentMember: IRoom.PopulatedMember;
+  otherMember: IRoom.PopulatedMember;
+  otherMemberOnlineStatus: boolean;
+}): IRoom.FindUserRoomsApiRecord {
   return {
     roomId,
     settings: {
@@ -41,6 +29,7 @@ export async function asFindUserRoomsApiRecord({
       image: otherMember.image,
       role: otherMember.role,
       lastSeen: otherMember.updatedAt,
+      online: otherMemberOnlineStatus,
     },
   };
 }
