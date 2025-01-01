@@ -6,6 +6,7 @@ import { usePeer } from "@/peer";
 import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
 import zod from "zod";
+import hark from "hark";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -25,7 +26,62 @@ export function isPermissionDenied(error: Error): boolean {
   );
 }
 
-export function useUserMedia() {
+type UseUserMediaReturn = {
+  /**
+   * `true` if the request to access user media is still in progress.
+   */
+  loading: boolean;
+  /**
+   * User media stream. It will be null incase of loading or error.
+   *
+   * @default null
+   */
+  stream: MediaStream | null;
+  /**
+   * Error while requesting the permission to use user media devices.
+   *
+   * @default null
+   */
+  error: Error | null;
+  /**
+   * Request user media stream with the provided constrains.
+   */
+  start: (constraints?: MediaStreamConstraints) => Promise<void>;
+  /**
+   * Stop all tracks in the media stream.
+   */
+  stop: Void;
+  /**
+   * Toggle user mic.
+   */
+  toggleMic: Void;
+  /**
+   * Toggle user camera.
+   */
+  toggleCamera: Void;
+  /**
+   * `true` if the user microphone enabled. It can be controlled using `toggleMic`
+   */
+  audio: boolean;
+  /**
+   * `true` if the user camera is enabled. It can be controlled using `toggleCamera`
+   */
+  video: boolean;
+  /**
+   * `true` if the `MediaStream` as an audio source (aka, user has a microphone).
+   */
+  mic: boolean;
+  /**
+   * `true` if the `MediaStream` as a video source (aka, user has a camera).
+   */
+  camera: boolean;
+  /**
+   * `true` if the user rejected the permission to use his media devices.
+   */
+  denied: boolean;
+};
+
+export function useUserMedia(): UseUserMediaReturn {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -918,12 +974,127 @@ export function useFullScreen<T extends Element>() {
   };
 }
 
+//============================== Session V3 ==============================
+
+export function useSpeakingV3(stream: MediaStream | null) {
+  const [speadking, setSpeadking] = useState<boolean>(false);
+
+  const events = useMemo(() => {
+    if (!stream) return null;
+    return hark(stream);
+  }, [stream]);
+
+  useEffect(() => {
+    if (!events) return;
+
+    events.on("speaking", () => {
+      setSpeadking(true);
+    });
+
+    events.on("stopped_speaking", () => {
+      setSpeadking(false);
+    });
+
+    //! TODO: clear hook on re-render.
+  }, [events]);
+
+  return speadking;
+}
+
 export function useSessionV3() {
   const userMedia = useUserMedia();
+  const speaking = useSpeakingV3(userMedia.stream);
+
   return useMemo(
     () => ({
       userMedia,
+      speaking,
     }),
-    [userMedia]
+    [speaking, userMedia]
+  );
+}
+
+type DeviceInfo = {
+  /**
+   * `true` if the platform is allowed to use the device.
+   *
+   * @default false.
+   */
+  permissioned: boolean;
+  /**
+   * `true` if the user has this deviced connected. `false` means that the user
+   * doesn't has the device.
+   *
+   * @default false
+   */
+  connected: boolean;
+};
+
+type DevicesInfo = {
+  microphone: DeviceInfo;
+  speakers: DeviceInfo;
+  camera: DeviceInfo;
+};
+
+const defaultDeviceInfo: DeviceInfo = {
+  permissioned: false,
+  connected: false,
+};
+
+const defaultDevicesInfo: DevicesInfo = {
+  microphone: structuredClone(defaultDeviceInfo),
+  speakers: structuredClone(defaultDeviceInfo),
+  camera: structuredClone(defaultDeviceInfo),
+};
+
+const isPermissioned = (device: MediaDeviceInfo): boolean =>
+  !!device.deviceId && !!device.label && !!device.groupId;
+
+export function useDevices() {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<boolean>(false);
+  const [devices, setDevices] = useState<DevicesInfo>(defaultDevicesInfo);
+
+  const enumerateDevices = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    const devices = await safe(
+      async () => await navigator.mediaDevices.enumerateDevices()
+    );
+    setLoading(false);
+    if (devices instanceof Error) return setError(true);
+
+    const devicesInfo = structuredClone(defaultDevicesInfo);
+    for (const device of devices) {
+      if (device.kind === "audioinput" && !devicesInfo.microphone.connected) {
+        devicesInfo.microphone.connected = true;
+        devicesInfo.microphone.permissioned = isPermissioned(device);
+      }
+
+      if (device.kind === "audiooutput" && !devicesInfo.speakers.connected) {
+        devicesInfo.speakers.connected = true;
+        devicesInfo.speakers.permissioned = isPermissioned(device);
+      }
+
+      if (device.kind === "videoinput" && !devicesInfo.camera.connected) {
+        devicesInfo.camera.connected = true;
+        devicesInfo.camera.permissioned = isPermissioned(device);
+      }
+    }
+    setDevices(devicesInfo);
+  }, []);
+
+  useEffect(() => {
+    enumerateDevices();
+  }, [enumerateDevices]);
+
+  return useMemo(
+    () => ({
+      info: devices,
+      recheck: enumerateDevices,
+      loading,
+      error,
+    }),
+    [devices, enumerateDevices, error, loading]
   );
 }

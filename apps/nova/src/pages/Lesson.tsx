@@ -1,13 +1,13 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { PreSession, PermissionsDialog } from "@litespace/luna/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams } from "react-router-dom";
 import { useUser } from "@litespace/headless/context/user";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { useSessionV3 } from "@litespace/headless/sessions";
+import { useSessionV3, useDevices } from "@litespace/headless/sessions";
 
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -40,7 +40,22 @@ const Lesson: React.FC = () => {
 
   // ============================ Session/Streams ================================
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
-  const { userMedia } = useSessionV3();
+  const session = useSessionV3();
+  const devices = useDevices();
+
+  useEffect(() => {
+    if (devices.info.microphone.permissioned && !session.userMedia.stream)
+      session.userMedia.start({
+        audio: true,
+        video: devices.info.camera.permissioned
+          ? { width: 1280, height: 720 }
+          : false,
+      });
+  }, [
+    devices.info.camera.permissioned,
+    devices.info.microphone.permissioned,
+    session.userMedia,
+  ]);
 
   if (!members) return null;
 
@@ -68,21 +83,31 @@ const Lesson: React.FC = () => {
 
       <PermissionsDialog
         onSubmit={(permission) => {
-          userMedia.start({
-            audio: true, // microphone is a requirement.
-            video:
-              permission === "mic-and-camera"
-                ? { width: 1280, height: 720 }
-                : false,
-          });
+          session.userMedia
+            .start({
+              audio: true, // microphone is a requirement.
+              video:
+                permission === "mic-and-camera"
+                  ? { width: 1280, height: 720 }
+                  : false,
+            })
+            .then(() => {
+              devices.recheck();
+            });
           setPermission(permission);
         }}
-        loading={userMedia.loading ? permission : undefined}
-        open
+        loading={
+          session.userMedia.loading ||
+          devices.loading ||
+          session.userMedia.loading
+            ? permission
+            : undefined
+        }
+        open={!devices.info.microphone.permissioned}
       />
 
       <PreSession
-        stream={null}
+        stream={session.userMedia.stream}
         currentMember={{
           id: members.current.userId,
           imageUrl: members.current.image
@@ -104,17 +129,19 @@ const Lesson: React.FC = () => {
           role: members.other.role,
         }}
         camera={{
-          enabled: false,
-          toggle: () => {},
-          error: false,
+          enabled: session.userMedia.video,
+          toggle: session.userMedia.toggleCamera,
+          error: !devices.info.camera.connected,
         }}
         mic={{
-          enabled: false,
-          toggle: () => {},
-          error: false,
+          enabled: session.userMedia.audio,
+          toggle: session.userMedia.toggleMic,
+          error: !devices.info.microphone.connected,
         }}
-        speaking={false}
-        join={() => {}}
+        speaking={session.speaking}
+        join={() => {
+          alert("soon!");
+        }}
       />
     </div>
   );
