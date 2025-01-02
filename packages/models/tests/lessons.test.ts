@@ -851,9 +851,11 @@ describe("Lessons", () => {
         canceled: false,
       });
 
-      const studentsCount = await lessons.countCounterpartMembersBatch({ users: [tutor.id] });
+      const studentsCount = await lessons.countCounterpartMembersBatch({
+        users: [tutor.id],
+      });
       expect(first(studentsCount)?.userId).to.eq(tutor.id);
       expect(first(studentsCount)?.count).to.eq(1);
-    })
-  })
+    });
+  });
 });

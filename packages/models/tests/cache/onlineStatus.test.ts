@@ -35,7 +35,7 @@ describe("Testing cache/onlineStatus functions", () => {
     await cache.onlineStatus.addUser(1);
     await cache.onlineStatus.addUser(2);
     await cache.onlineStatus.addUser(3);
-    
+
     const res = await cache.onlineStatus.getAll();
     expect(res["1"]).to.eq("1");
     expect(res["2"]).to.eq("1");
@@ -46,7 +46,7 @@ describe("Testing cache/onlineStatus functions", () => {
     await cache.onlineStatus.addUser(1);
     await cache.onlineStatus.addUser(2);
     await cache.onlineStatus.addUser(3);
-    
+
     const res = await cache.onlineStatus.isOnlineBatch([1, 2, 3, 4]);
     expect(res.get(1)).to.true;
     expect(res.get(2)).to.true;

@@ -16,12 +16,12 @@ describe("AvailabilitySlots", () => {
         {
           userId: user.id,
           start: dayjs.utc().toISOString(),
-          end: dayjs.utc().add(1, "hour").toISOString() 
+          end: dayjs.utc().add(1, "hour").toISOString(),
         },
         {
           userId: user.id,
           start: dayjs.utc().add(2, "hour").toISOString(),
-          end: dayjs.utc().add(4, "hour").toISOString() 
+          end: dayjs.utc().add(4, "hour").toISOString(),
         },
       ]);
       expect(res).to.have.length(2);
@@ -41,21 +41,21 @@ describe("AvailabilitySlots", () => {
         {
           userId: user1.id,
           start: dayjs.utc().toISOString(),
-          end: dayjs.utc().add(1, "hour").toISOString() 
+          end: dayjs.utc().add(1, "hour").toISOString(),
         },
         {
           userId: user1.id,
           start: dayjs.utc().add(2, "hour").toISOString(),
-          end: dayjs.utc().add(4, "hour").toISOString() 
+          end: dayjs.utc().add(4, "hour").toISOString(),
         },
         {
           userId: user2.id,
           start: dayjs.utc().add(6, "hour").toISOString(),
-          end: dayjs.utc().add(7, "hour").toISOString() 
+          end: dayjs.utc().add(7, "hour").toISOString(),
         },
       ]);
 
-      const res = await availabilitySlots.find({ users: [user1.id, user2.id] })
+      const res = await availabilitySlots.find({ users: [user1.id, user2.id] });
       expect(res).to.have.length(3);
       expect(res).to.deep.eq(slots);
     });
@@ -66,27 +66,27 @@ describe("AvailabilitySlots", () => {
         {
           userId: user.id,
           start: dayjs.utc().toISOString(),
-          end: dayjs.utc().add(1, "hour").toISOString() 
+          end: dayjs.utc().add(1, "hour").toISOString(),
         },
         {
           userId: user.id,
           start: dayjs.utc().add(2, "hour").toISOString(),
-          end: dayjs.utc().add(4, "hour").toISOString() 
+          end: dayjs.utc().add(4, "hour").toISOString(),
         },
         {
           userId: user.id,
           start: dayjs.utc().add(6, "hour").toISOString(),
-          end: dayjs.utc().add(7, "hour").toISOString() 
+          end: dayjs.utc().add(7, "hour").toISOString(),
         },
       ]);
 
-      const res = await availabilitySlots.find({ 
-        after: slots[0].start, 
-        before: slots[1].end 
+      const res = await availabilitySlots.find({
+        after: slots[0].start,
+        before: slots[1].end,
       });
 
       expect(res).to.have.length(2);
-      expect(res).to.deep.eq(slots.slice(0,2));
+      expect(res).to.deep.eq(slots.slice(0, 2));
     });
   });
 
@@ -98,13 +98,13 @@ describe("AvailabilitySlots", () => {
         {
           userId: user.id,
           start: dayjs.utc().toISOString(),
-          end: dayjs.utc().add(1, "hour").toISOString() 
-        }
+          end: dayjs.utc().add(1, "hour").toISOString(),
+        },
       ]);
 
       const updated = await availabilitySlots.update(slots[0].id, {
         start: dayjs.utc().add(2, "hour").toISOString(),
-        end: dayjs.utc().add(3, "hour").toISOString() 
+        end: dayjs.utc().add(3, "hour").toISOString(),
       });
 
       const found = first(await availabilitySlots.find({ users: [user.id] }));
@@ -120,16 +120,16 @@ describe("AvailabilitySlots", () => {
         {
           userId: user.id,
           start: dayjs.utc().toISOString(),
-          end: dayjs.utc().add(1, "hour").toISOString() 
+          end: dayjs.utc().add(1, "hour").toISOString(),
         },
         {
           userId: user.id,
           start: dayjs.utc().add(2, "hour").toISOString(),
-          end: dayjs.utc().add(4, "hour").toISOString() 
+          end: dayjs.utc().add(4, "hour").toISOString(),
         },
       ]);
-      
-      await availabilitySlots.delete(created.map(slot => slot.id));
+
+      await availabilitySlots.delete(created.map((slot) => slot.id));
 
       const res = await availabilitySlots.find({ users: [user.id] });
       expect(res).to.have.length(0);

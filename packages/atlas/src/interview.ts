@@ -5,8 +5,8 @@ export class Interview extends Base {
   public async create(
     payload: IInterview.CreateApiPayload
   ): Promise<IInterview.Self> {
-    return await this.post({ 
-      route: `/api/v1/interview`, 
+    return await this.post({
+      route: `/api/v1/interview`,
       payload,
     });
   }
@@ -16,8 +16,8 @@ export class Interview extends Base {
     payload: IInterview.UpdateApiPayload
   ): Promise<IInterview.Self> {
     return await this.put({
-      route: `/api/v1/interview/${id}`, 
-      payload, 
+      route: `/api/v1/interview/${id}`,
+      payload,
     });
   }
 
@@ -25,8 +25,8 @@ export class Interview extends Base {
     query: IInterview.FindInterviewsApiQuery
   ): Promise<IInterview.FindInterviewsApiResponse> {
     return this.get({
-      route: "/api/v1/interview/list/", 
-      params: query
+      route: "/api/v1/interview/list/",
+      params: query,
     });
   }
 

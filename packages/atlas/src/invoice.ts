@@ -5,8 +5,8 @@ import { safeFormData } from "@/lib/form";
 export class Invoice extends Base {
   async create(payload: IInvoice.CreateApiPayload): Promise<IInvoice.Self> {
     return await this.post({
-      route: "/api/v1/invoice", 
-      payload
+      route: "/api/v1/invoice",
+      payload,
     });
   }
 

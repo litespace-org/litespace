@@ -28,24 +28,27 @@ export class AvailabilitySlots {
     payloads: IAvailabilitySlot.CreatePayload[],
     tx?: Knex.Transaction
   ): Promise<IAvailabilitySlot.Self[]> {
-    if (isEmpty(payloads)) throw new Error("At least one payload must be passed.");
+    if (isEmpty(payloads))
+      throw new Error("At least one payload must be passed.");
 
     const now = dayjs.utc().toDate();
     const rows = await this.builder(tx)
-      .insert(payloads.map(payload => ({
-        user_id: payload.userId,
-        start: dayjs.utc(payload.start).toDate(),
-        end: dayjs.utc(payload.end).toDate(),
-        created_at: now,
-        updated_at: now,
-      })))
+      .insert(
+        payloads.map((payload) => ({
+          user_id: payload.userId,
+          start: dayjs.utc(payload.start).toDate(),
+          end: dayjs.utc(payload.end).toDate(),
+          created_at: now,
+          updated_at: now,
+        }))
+      )
       .returning("*");
 
-    return rows.map(row => this.from(row));
+    return rows.map((row) => this.from(row));
   }
 
   async delete(
-    ids: number[], 
+    ids: number[],
     tx?: Knex.Transaction
   ): Promise<IAvailabilitySlot.Self[]> {
     if (isEmpty(ids)) throw new Error("At least one id must be passed.");
@@ -55,7 +58,7 @@ export class AvailabilitySlots {
       .delete()
       .returning("*");
 
-    return rows.map(row => this.from(row));
+    return rows.map((row) => this.from(row));
   }
 
   async update(
@@ -82,24 +85,19 @@ export class AvailabilitySlots {
     users,
     after,
     before,
-  }: WithOptionalTx<SearchFilter>
-  ): Promise<IAvailabilitySlot.Self[]> {
+  }: WithOptionalTx<SearchFilter>): Promise<IAvailabilitySlot.Self[]> {
     const baseBuilder = this.applySearchFilter(this.builder(tx), {
       users,
       after,
       before,
     });
     const rows = await baseBuilder.clone().select();
-    return rows.map(row => this.from(row));
+    return rows.map((row) => this.from(row));
   }
 
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
-    {
-      users,
-      after,
-      before,
-    }: SearchFilter
+    { users, after, before }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     if (users && !isEmpty(users))
       builder.whereIn(this.column("user_id"), users);
@@ -124,7 +122,9 @@ export class AvailabilitySlots {
   }
 
   builder(tx?: Knex.Transaction) {
-    return tx ? tx<IAvailabilitySlot.Row>(this.table) : knex<IAvailabilitySlot.Row>(this.table);
+    return tx
+      ? tx<IAvailabilitySlot.Row>(this.table)
+      : knex<IAvailabilitySlot.Row>(this.table);
   }
 
   column(value: keyof IAvailabilitySlot.Row) {

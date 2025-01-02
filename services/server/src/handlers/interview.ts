@@ -6,13 +6,7 @@ import {
   notfound,
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
-import {
-  interviews,
-  rules,
-  users,
-  knex,
-  rooms,
-} from "@litespace/models";
+import { interviews, rules, users, knex, rooms } from "@litespace/models";
 import {
   datetime,
   id,
@@ -29,7 +23,12 @@ import { IInterview } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
-import { isAdmin, isTutorManager, isSuperAdmin, isTutor } from "@litespace/auth";
+import {
+  isAdmin,
+  isTutorManager,
+  isSuperAdmin,
+  isTutor,
+} from "@litespace/auth";
 import { isEqual } from "lodash";
 import { canBook } from "@/lib/session";
 import { platformConfig } from "@/constants";

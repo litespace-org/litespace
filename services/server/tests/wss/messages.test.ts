@@ -17,7 +17,10 @@ describe("wss message test suite", () => {
       const tutor = await tutorApi.findCurrentUser();
 
       const tutorSocket = new ClientSocket(tutor.token);
-      const res = await tutorSocket.sendMessage(123, "The lesson will start soon.");
+      const res = await tutorSocket.sendMessage(
+        123,
+        "The lesson will start soon."
+      );
 
       expect(res.code).to.eq(Wss.AcknowledgeCode.RoomNotFound);
     });
@@ -84,11 +87,10 @@ describe("wss message test suite", () => {
     });
   });
 
-  
   describe("deleting messages", () => {
     it("should return not found if the message doesn't exist.", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser()
+      const tutor = await tutorApi.findCurrentUser();
       const tutorSocket = new ClientSocket(tutor.token);
 
       const res = await tutorSocket.deleteMessage(123);
@@ -97,13 +99,13 @@ describe("wss message test suite", () => {
 
     it("should return not found if the message is already deleted.", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser()
+      const tutor = await tutorApi.findCurrentUser();
       const tutorSocket = new ClientSocket(tutor.token);
 
       const roomId = await rooms.create([tutor.user.id]);
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       // first deletion
       tutorSocket.deleteMessage(msg.id);
@@ -116,16 +118,16 @@ describe("wss message test suite", () => {
 
     it("should return forbidden if the user is not the owner.", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser()
+      const tutor = await tutorApi.findCurrentUser();
       const tutorSocket = new ClientSocket(tutor.token);
 
       const roomId = await rooms.create([tutor.user.id]);
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       const secTutorApi = await Api.forTutor();
-      const secTutor = await secTutorApi.findCurrentUser()
+      const secTutor = await secTutorApi.findCurrentUser();
       const secTutorSocket = new ClientSocket(secTutor.token);
 
       const res = await secTutorSocket.deleteMessage(msg.id);
@@ -134,13 +136,13 @@ describe("wss message test suite", () => {
 
     it("should successfully delete the message (mark as deleted).", async () => {
       const tutorApi = await Api.forTutor();
-      const tutor = await tutorApi.findCurrentUser()
+      const tutor = await tutorApi.findCurrentUser();
       const tutorSocket = new ClientSocket(tutor.token);
 
       const roomId = await rooms.create([tutor.user.id]);
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       tutorSocket.deleteMessage(msg.id);
       // wait for message to be saved in db
@@ -151,7 +153,7 @@ describe("wss message test suite", () => {
       expect(found?.id).to.eq(msg.id);
       expect(found?.deleted).to.eq(true);
 
-      const list = await messages.findRoomMessages({ room: res.roomId })
+      const list = await messages.findRoomMessages({ room: res.roomId });
       expect(list.total).to.eq(0);
     });
   });
@@ -162,7 +164,7 @@ describe("wss message test suite", () => {
       const student = await studentApi.findCurrentUser();
 
       const studentSocket = new ClientSocket(student.token);
-      
+
       const res = await studentSocket.markMessageAsRead(123);
       expect(res.code).to.eq(Wss.AcknowledgeCode.MessageNotFound);
     });
@@ -181,13 +183,13 @@ describe("wss message test suite", () => {
 
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
       await messages.markAsDeleted(msg.id);
 
       const res = await studentSocket.markMessageAsRead(msg.id);
       expect(res.code).to.eq(Wss.AcknowledgeCode.MessageNotFound);
     });
-    
+
     it("should throw forbidden error if the reader is not a member of the messages room.", async () => {
       const tutorApi = await Api.forTutor();
       const tutor = await tutorApi.findCurrentUser();
@@ -203,7 +205,7 @@ describe("wss message test suite", () => {
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       const res = await studentSocket.markMessageAsRead(msg.id);
       expect(res.code).to.eq(Wss.AcknowledgeCode.NotMember);
@@ -218,7 +220,7 @@ describe("wss message test suite", () => {
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
       const res = await tutorSocket.markMessageAsRead(msg.id);
       expect(res.code).to.eq(Wss.AcknowledgeCode.Unallowed);
@@ -239,9 +241,9 @@ describe("wss message test suite", () => {
       tutorSocket.sendMessage(roomId, "Lesson will start soon.");
 
       // wait for message to be saved in db
-      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage); 
+      const msg = await tutorSocket.wait(Wss.ServerEvent.RoomMessage);
 
-      studentSocket.markMessageAsRead(msg.id)
+      studentSocket.markMessageAsRead(msg.id);
       const res = await tutorSocket.wait(Wss.ServerEvent.RoomMessageRead);
       expect(res.userId).to.eq(student.user.id);
     });

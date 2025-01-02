@@ -17,7 +17,10 @@ const onLeaveSessionPayload = zod.object({ sessionId: sessionId });
 export class Session extends WssHandler {
   public init(): Session {
     this.socket.on(Wss.ClientEvent.JoinSession, this.onJoinSession.bind(this));
-    this.socket.on(Wss.ClientEvent.LeaveSession, this.onLeaveSession.bind(this));
+    this.socket.on(
+      Wss.ClientEvent.LeaveSession,
+      this.onLeaveSession.bind(this)
+    );
     return this;
   }
 
@@ -46,7 +49,10 @@ export class Session extends WssHandler {
       if (!canJoin) throw Error("Forbidden");
 
       // add user to the session by adding its id in the cache
-      await cache.session.addMember({ userId: user.id, sessionId: asSessionId(sessionId) });
+      await cache.session.addMember({
+        userId: user.id,
+        sessionId: asSessionId(sessionId),
+      });
       this.socket.join(asSessionRoomId(sessionId));
 
       stdout.info(`User ${user.id} has joined session ${sessionId}.`);

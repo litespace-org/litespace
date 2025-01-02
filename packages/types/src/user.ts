@@ -204,20 +204,20 @@ export type FindStudentStatsApiResponse = {
 
 export type FindPersonalizedStudentStatsApiResponse = {
   /**
-  * Tutors that the student interacted with.
-  */
-  tutorCount: number; 
+   * Tutors that the student interacted with.
+   */
+  tutorCount: number;
   /**
-  * Count for completed lessons only.
-  */
+   * Count for completed lessons only.
+   */
   completedLessonCount: number;
   /**
-  * Total sum of all completed lessons in minutes. 
-  */
+   * Total sum of all completed lessons in minutes.
+   */
   totalLearningTime: number;
   /**
-  * Future but not canceled lessons. 
-  */
+   * Future but not canceled lessons.
+   */
   upcomingLessonCount: number;
 };
 

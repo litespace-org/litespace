@@ -69,7 +69,9 @@ describe("sessions test suite", () => {
     const tutorSocket = new ClientSocket(tutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const studentResult = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    const studentResult = studentSocket.wait(
+      Wss.ServerEvent.MemberJoinedSession
+    );
     tutorSocket.joinSession(lesson.sessionId);
 
     const { userId } = await studentResult;

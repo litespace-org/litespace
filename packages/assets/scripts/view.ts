@@ -18,8 +18,8 @@ async function open(url: string) {
     process.platform == "darwin"
       ? "open"
       : process.platform == "win32"
-      ? "start"
-      : "xdg-open";
+        ? "start"
+        : "xdg-open";
 
   return await execute(`${start} ${url}`);
 }

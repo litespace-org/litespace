@@ -1,8 +1,4 @@
-import {
-  Button,
-  ButtonType,
-  ButtonSize,
-} from "@litespace/luna/Button";
+import { Button, ButtonType, ButtonSize } from "@litespace/luna/Button";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { IInterview, IRoom } from "@litespace/types";
