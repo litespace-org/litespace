@@ -1,13 +1,13 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React from "react";
 
 const UpcomingLessons: React.FC = () => {
   const intl = useFormatMessage();
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const lessons = useInfiniteLessons({
     users: user ? [user?.id] : [],

@@ -6,7 +6,7 @@ import Header, { View } from "@/components/Schedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { Lessons } from "@litespace/luna/Calendar/v2/Events";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -16,7 +16,7 @@ const variants = {
 const Schedule: React.FC = () => {
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("calendar");
-  const { user } = useUser();
+  const { user } = useUserContext();
 
   const lessons = useInfiniteLessons({
     users: user ? [user.id] : [],

@@ -18,7 +18,7 @@ export type Context = {
 
 export const UserContext = createContext<Context | null>(null);
 
-export function useUser() {
+export function useUserContext() {
   const context = useContext(UserContext);
   if (context === null)
     throw new Error(`useUser must be used within its provider`);

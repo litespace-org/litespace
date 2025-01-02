@@ -17,7 +17,7 @@ import { useResetPassword } from "@litespace/headless/auth";
 import { Form, useNavigate, useSearchParams } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 interface IForm {
   password: string;
@@ -30,7 +30,7 @@ const ResetPassword = () => {
   const validatePassword = useValidatePassword();
   const required = useRequired();
   const toast = useToast();
-  const user = useUser();
+  const user = useUserContext();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [token, setToken] = useState<string | null>(null);

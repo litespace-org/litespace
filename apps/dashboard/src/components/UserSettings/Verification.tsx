@@ -1,6 +1,6 @@
 import { CALLBACK_URL } from "@/lib/route";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { Button, ButtonSize, ButtonVariant } from "@litespace/luna/Button";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Input } from "@litespace/luna/Input";
@@ -11,7 +11,7 @@ import React, { useCallback } from "react";
 import { Check } from "react-feather";
 
 const VerificationDetails: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const intl = useFormatMessage();
   const toast = useToast();
 
