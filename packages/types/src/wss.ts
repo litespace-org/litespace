@@ -9,6 +9,7 @@ export enum ClientEvent {
   UpdateMessage = "UpdateMessage",
   DeleteMessage = "DeleteMessage",
   MarkMessageAsRead = "MarkMessageAsRead",
+  PreJoinSession = "PreJoinSession",
   JoinSession = "JoinSession",
   LeaveSession = "LeaveSession",
   /**
@@ -76,6 +77,8 @@ export enum AcknowledgeCode {
   EmptyText = "empty-text",
   RoomNotFound = "room-not-found",
   MessageNotFound = "message-not-found",
+  LessonNotFound = "lesson-not-found",
+  InterviewNotFound = "interview-not-found",
   NotMember = "not-member",
   NotOwner = "not-owner",
   Unreachable = "unreachable",
@@ -123,6 +126,7 @@ export type ClientEventsMap = {
   }>;
 
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
+  [ClientEvent.PreJoinSession]: EventCallback<{ sessionId: ISession.Id }>;
   [ClientEvent.JoinSession]: EventCallback<{ sessionId: ISession.Id }>;
   [ClientEvent.LeaveSession]: EventCallback<{ sessionId: ISession.Id }>;
 };

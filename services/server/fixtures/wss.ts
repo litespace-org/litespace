@@ -16,12 +16,16 @@ export class ClientSocket {
     return this.emit(Wss.ClientEvent.UserTyping, { roomId });
   }
 
+  preJoinSession(sessionId: ISession.Id) {
+    return this.emit(Wss.ClientEvent.PreJoinSession, { sessionId });
+  }
+
   joinSession(sessionId: ISession.Id) {
-    this.client.emit(Wss.ClientEvent.JoinSession, { sessionId });
+    return this.emit(Wss.ClientEvent.JoinSession, { sessionId });
   }
 
   leaveSession(sessionId: ISession.Id) {
-    this.client.emit(Wss.ClientEvent.LeaveSession, { sessionId });
+    return this.emit(Wss.ClientEvent.LeaveSession, { sessionId });
   }
 
   sendMessage(roomId: number, text: string) {

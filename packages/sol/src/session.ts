@@ -1,4 +1,5 @@
 import { ISession } from "@litespace/types";
+import { first } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 export function asSessionId(id: string) {
@@ -9,4 +10,9 @@ export function asSessionId(id: string) {
 
 export function genSessionId(type: ISession.Type): ISession.Id {
   return `${type}:${uuidv4()}`;
+}
+
+export function getSessionType(id: string) {
+  const sessionId = asSessionId(id);
+  return first(sessionId.split(":"));
 }
