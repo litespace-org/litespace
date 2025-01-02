@@ -47,29 +47,26 @@ export class Connection extends WssHandler {
   }
 
   private async announceStatus({
-    userId, 
+    userId,
     online,
   }: {
-    userId: number, 
-    online: boolean,
+    userId: number;
+    online: boolean;
   }) {
     const userRooms = await rooms.findMemberFullRoomIds(userId);
     for (const room of userRooms) {
-      this.broadcast(
-        Wss.ServerEvent.UserStatusChanged,
-        asChatRoomId(room),
-        { online, userId, roomId: room },
-      );
+      this.broadcast(Wss.ServerEvent.UserStatusChanged, asChatRoomId(room), {
+        online,
+        userId,
+        roomId: room,
+      });
     }
   }
 
   private async emitServerStats() {
     background.on("message", (message: PartentPortMessage) => {
       if (message.type === PartentPortMessageType.Stats)
-        return this.socket.emit(
-          Wss.ServerEvent.ServerStats, 
-          message.stats,
-        );
+        return this.socket.emit(Wss.ServerEvent.ServerStats, message.stats);
     });
   }
 
@@ -89,19 +86,25 @@ export class Connection extends WssHandler {
       if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
 
       // TODO: get user sessions from cache
-      const lessonsSessions = (await lessons.find({
-        users: [user.id],
-        full: true,
-        after: dayjs.utc().startOf("day").toISOString(),
-        before: dayjs.utc().add(1, "day").toISOString(),
-      })).list.map(lesson => lesson.sessionId);
+      const lessonsSessions = (
+        await lessons.find({
+          users: [user.id],
+          full: true,
+          after: dayjs.utc().startOf("day").toISOString(),
+          before: dayjs.utc().add(1, "day").toISOString(),
+        })
+      ).list.map((lesson) => lesson.sessionId);
 
-      const interviewsSessions = (await interviews.find({
-        users: [user.id],
-      })).list.map(interview => interview.ids.session);
+      const interviewsSessions = (
+        await interviews.find({
+          users: [user.id],
+        })
+      ).list.map((interview) => interview.ids.session);
 
-      this.socket.join([...lessonsSessions, ...interviewsSessions].map(
-        (session) => asSessionRoomId(session))
+      this.socket.join(
+        [...lessonsSessions, ...interviewsSessions].map((session) =>
+          asSessionRoomId(session)
+        )
       );
     });
 
@@ -112,6 +115,8 @@ export class Connection extends WssHandler {
    * Remove ghost and tutor peer id from the cache.
    *
    * @note should be called when the socket disconnects from the server.
+   *
+   * @deprecated It should be removed in favor of the new `session` architecture.
    */
   private async deregisterPeer() {
     // todo: notify peers that the current user got disconnected
@@ -131,7 +136,7 @@ export class Connection extends WssHandler {
     const sessionId = await cache.session.removeMemberByUserId(user.id);
     if (!sessionId) return;
 
-    // notify members that a member has left the session
+    // notify other members that a member has left the session.
     this.socket.broadcast
       .to(asSessionRoomId(sessionId))
       .emit(Wss.ServerEvent.MemberLeftSession, {

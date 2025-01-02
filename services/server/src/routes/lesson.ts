@@ -7,6 +7,7 @@ export default function router(context: ApiContext) {
 
   router.post("/", lesson.create(context));
   router.get("/list", lesson.findLessons);
+  router.get("/:id", lesson.findLessonById);
   router.delete("/:lessonId", lesson.cancel(context));
 
   return router;

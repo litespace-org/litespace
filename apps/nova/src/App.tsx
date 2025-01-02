@@ -22,6 +22,7 @@ import ResetPassword from "@/pages/ResetPassword";
 import VerifyEmail from "@/pages/VerifyEmail";
 import UpcomingLessons from "@/pages/UpcomingLessons";
 import Plans from "@/pages/Plans";
+import Lesson from "@/pages/Lesson";
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,7 @@ const router = createBrowserRouter([
       { path: Route.TutorProfile, element: <TutorProfile /> },
       { path: Route.Tutors, element: <Tutors /> },
       { path: Route.UpcomingLessons, element: <UpcomingLessons /> },
+      { path: Route.Lesson, element: <Lesson /> },
       { path: Route.VerifyEmail, element: <VerifyEmail /> },
     ],
     errorElement: <ErrorPage />,

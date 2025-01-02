@@ -140,3 +140,8 @@ export type LessonDay = {
 
 export type LessonDayRows = LessonDayRow[];
 export type LessonDays = LessonDay[];
+
+export type FindLessonByIdApiResponse = {
+  lesson: Self;
+  members: PopuldatedMember[];
+};

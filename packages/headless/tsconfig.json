@@ -6,6 +6,7 @@
     "jsx": "preserve",
     "skipLibCheck": true,
     "module": "ESNext",
+    "declarationMap": true,
     "declaration": true,
     "outDir": "dist",
     "moduleResolution": "Bundler",

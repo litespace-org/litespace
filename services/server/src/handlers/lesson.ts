@@ -22,7 +22,7 @@ import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/session";
-import { concat, isEqual } from "lodash";
+import { concat, isEmpty, isEqual } from "lodash";
 import { genSessionId } from "@litespace/sol";
 
 const createLessonPayload = zod.object({
@@ -189,6 +189,29 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(result);
 }
 
+async function findLessonById(req: Request, res: Response, next: NextFunction) {
+  const user = req.user;
+  const allowed = isUser(user);
+  if (!allowed) return next(forbidden());
+
+  const { id } = withNamedId("id").parse(req.params);
+  const [lesson, members] = await Promise.all([
+    lessons.findById(id),
+    lessons.findLessonMembers([id]),
+  ]);
+  if (!lesson || isEmpty(members)) return next(notfound.lesson());
+
+  const isMember = !!members.find((member) => member.userId === user.id);
+  if (!isMember) return next(forbidden());
+
+  const response: ILesson.FindLessonByIdApiResponse = {
+    lesson,
+    members,
+  };
+
+  res.status(200).json(response);
+}
+
 function cancel(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -265,4 +288,5 @@ export default {
   create,
   cancel,
   findLessons: safeRequest(findLessons),
+  findLessonById: safeRequest(findLessonById),
 };
