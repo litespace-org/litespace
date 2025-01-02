@@ -32,13 +32,24 @@ const render = (props: Props) => {
 };
 
 export const Primary: Story = {
-  args: {},
+  args: {
+    devices: {
+      mic: true,
+      camera: true,
+      speakers: true,
+    },
+  },
   render,
 };
 
 export const EnablingMicAndCamera: Story = {
   args: {
     loading: "mic-and-camera",
+    devices: {
+      mic: true,
+      camera: true,
+      speakers: true,
+    },
   },
   render,
 };
@@ -46,6 +57,55 @@ export const EnablingMicAndCamera: Story = {
 export const EnablingMicOnly: Story = {
   args: {
     loading: "mic-only",
+    devices: {
+      mic: true,
+      camera: true,
+      speakers: true,
+    },
+  },
+  render,
+};
+
+export const UserHasNoSpeakers: Story = {
+  args: {
+    devices: {
+      mic: true,
+      camera: true,
+      speakers: false,
+    },
+  },
+  render,
+};
+
+export const NoCameraAndMic: Story = {
+  args: {
+    devices: {
+      mic: false,
+      camera: false,
+      speakers: true,
+    },
+  },
+  render,
+};
+
+export const NoMicOnly: Story = {
+  args: {
+    devices: {
+      mic: false,
+      camera: true,
+      speakers: true,
+    },
+  },
+  render,
+};
+
+export const NoCameraOnly: Story = {
+  args: {
+    devices: {
+      mic: true,
+      camera: false,
+      speakers: true,
+    },
   },
   render,
 };

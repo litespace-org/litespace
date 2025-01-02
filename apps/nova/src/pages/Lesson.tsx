@@ -7,7 +7,11 @@ import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams } from "react-router-dom";
 import { useUser } from "@litespace/headless/context/user";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { useSessionV3, useDevices } from "@litespace/headless/sessions";
+import {
+  useSessionV3,
+  useDevices,
+  useSessionMembers,
+} from "@litespace/headless/sessions";
 
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +28,7 @@ const Lesson: React.FC = () => {
 
   const lesson = useFindLesson(lessonId);
 
-  const members = useMemo(() => {
+  const lessonMembers = useMemo(() => {
     if (!lesson.data || !user) return null;
     const current = lesson.data.members.find(
       (member) => member.userId === user.id
@@ -42,9 +46,14 @@ const Lesson: React.FC = () => {
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
   const session = useSessionV3();
   const devices = useDevices();
+  const sessionMembers = useSessionMembers(lesson.data?.lesson.sessionId);
 
   useEffect(() => {
-    if (devices.info.microphone.permissioned && !session.userMedia.stream)
+    if (
+      devices.info.microphone.permissioned &&
+      !session.userMedia.stream &&
+      !devices.loading
+    )
       session.userMedia.start({
         audio: true,
         video: devices.info.camera.permissioned
@@ -54,10 +63,11 @@ const Lesson: React.FC = () => {
   }, [
     devices.info.camera.permissioned,
     devices.info.microphone.permissioned,
+    devices.loading,
     session.userMedia,
   ]);
 
-  if (!members) return null;
+  if (!lessonMembers) return null;
 
   return (
     <div className="max-w-screen-3xl mx-auto w-full p-6">
@@ -68,15 +78,15 @@ const Lesson: React.FC = () => {
           className="text-natural-950"
         >
           {intl("lesson.title")}
-          {members.other.name ? "/" : null}
+          {lessonMembers.other.name ? "/" : null}
         </Typography>
-        {members.other.name ? (
+        {lessonMembers.other.name ? (
           <Typography
             element="subtitle-2"
             weight="bold"
             className="text-brand-700"
           >
-            {members.other.name}
+            {lessonMembers.other.name}
           </Typography>
         ) : null}
       </div>
@@ -104,29 +114,34 @@ const Lesson: React.FC = () => {
             : undefined
         }
         open={!devices.info.microphone.permissioned}
+        devices={{
+          mic: devices.info.microphone.connected,
+          camera: devices.info.camera.connected,
+          speakers: devices.info.speakers.connected,
+        }}
       />
 
       <PreSession
         stream={session.userMedia.stream}
         currentMember={{
-          id: members.current.userId,
-          imageUrl: members.current.image
-            ? asFullAssetUrl(members.current.image)
+          id: lessonMembers.current.userId,
+          imageUrl: lessonMembers.current.image
+            ? asFullAssetUrl(lessonMembers.current.image)
             : null,
-          name: members.current.name,
-          role: members.current.role,
+          name: lessonMembers.current.name,
+          role: lessonMembers.current.role,
         }}
         otherMember={{
-          id: members.other.userId,
-          imageUrl: members.other.image
-            ? asFullAssetUrl(members.other.image)
+          id: lessonMembers.other.userId,
+          imageUrl: lessonMembers.other.image
+            ? asFullAssetUrl(lessonMembers.other.image)
             : null,
-          name: members.other.name,
+          name: lessonMembers.other.name,
           //! TODO: gender is not in the response.
           //! TODO: gender should be optional
           gender: IUser.Gender.Male,
-          incall: false,
-          role: members.other.role,
+          incall: sessionMembers.members.includes(lessonMembers.other.userId),
+          role: lessonMembers.other.role,
         }}
         camera={{
           enabled: session.userMedia.video,
@@ -140,7 +155,7 @@ const Lesson: React.FC = () => {
         }}
         speaking={session.speaking}
         join={() => {
-          alert("soon!");
+          sessionMembers.join();
         }}
       />
     </div>

@@ -7,6 +7,7 @@ import { MediaConnection } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
 import zod from "zod";
 import hark from "hark";
+import { uniq } from "lodash";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -1050,10 +1051,17 @@ const defaultDevicesInfo: DevicesInfo = {
 const isPermissioned = (device: MediaDeviceInfo): boolean =>
   !!device.deviceId && !!device.label && !!device.groupId;
 
+const getPermissionStatus = async (device: "microphone" | "camera") =>
+  await navigator.permissions.query({ name: device as PermissionName });
+
 export function useDevices() {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
   const [devices, setDevices] = useState<DevicesInfo>(defaultDevicesInfo);
+  const [permissionStatuses, setPemissionStatuses] = useState<{
+    microphone: PermissionStatus | null;
+    camera: PermissionStatus | null;
+  }>({ microphone: null, camera: null });
 
   const enumerateDevices = useCallback(async () => {
     setLoading(true);
@@ -1084,9 +1092,54 @@ export function useDevices() {
     setDevices(devicesInfo);
   }, []);
 
+  const getPermissionStatuses = useCallback(async () => {
+    const [microphone, camera] = await Promise.all([
+      getPermissionStatus("microphone"),
+      getPermissionStatus("camera"),
+    ]);
+    setPemissionStatuses({ microphone, camera });
+  }, []);
+
+  const onPermissionChange = useCallback(() => {
+    enumerateDevices();
+  }, [enumerateDevices]);
+
   useEffect(() => {
     enumerateDevices();
   }, [enumerateDevices]);
+
+  useEffect(() => {
+    getPermissionStatuses();
+  }, [getPermissionStatuses]);
+
+  useEffect(() => {
+    if (permissionStatuses.camera)
+      permissionStatuses.camera.addEventListener("change", onPermissionChange);
+
+    if (permissionStatuses.microphone)
+      permissionStatuses.microphone.addEventListener(
+        "change",
+        onPermissionChange
+      );
+
+    return () => {
+      if (permissionStatuses.camera)
+        permissionStatuses.camera.removeEventListener(
+          "change",
+          onPermissionChange
+        );
+
+      if (permissionStatuses.microphone)
+        permissionStatuses.microphone.removeEventListener(
+          "change",
+          onPermissionChange
+        );
+    };
+  }, [
+    onPermissionChange,
+    permissionStatuses.camera,
+    permissionStatuses.microphone,
+  ]);
 
   return useMemo(
     () => ({
@@ -1097,4 +1150,42 @@ export function useDevices() {
     }),
     [devices, enumerateDevices, error, loading]
   );
+}
+
+/**
+ * Reflect and manage session members in real-time.
+ */
+export function useSessionMembers(sessionId?: ISession.Id) {
+  const socket = useSocket();
+  const [members, setMembers] = useState<number[]>([]);
+
+  const join = useCallback(() => {
+    if (!socket || !sessionId) return;
+    socket.emit(Wss.ClientEvent.JoinSession, { sessionId });
+  }, [sessionId, socket]);
+
+  const leave = useCallback(() => {
+    if (!socket || !sessionId) return;
+    socket.emit(Wss.ClientEvent.LeaveSession, { sessionId });
+  }, [sessionId, socket]);
+
+  const onJoinSession = useCallback(({ userId }: { userId: number }) => {
+    setMembers((prev) => uniq([...prev, userId]));
+  }, []);
+
+  const onLeaveSession = useCallback(({ userId }: { userId: number }) => {
+    setMembers((prev) => [...prev].filter((member) => member !== userId));
+  }, []);
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.MemberJoinedSession, onJoinSession);
+    socket.on(Wss.ServerEvent.MemberLeftSession, onLeaveSession);
+    return () => {
+      socket.off(Wss.ServerEvent.MemberJoinedSession, onJoinSession);
+      socket.off(Wss.ServerEvent.MemberLeftSession, onLeaveSession);
+    };
+  }, [onJoinSession, onLeaveSession, socket]);
+
+  return { join, leave, members };
 }
