@@ -16,8 +16,7 @@ const ScheduledInterview: React.FC<{
 
   const interviewer = useMemo(() => {
     return (
-      members.find((member) => member.id === interview.ids.interviewer) ||
-      null
+      members.find((member) => member.id === interview.ids.interviewer) || null
     );
   }, [interview.ids.interviewer, members]);
 

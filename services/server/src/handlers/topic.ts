@@ -1,6 +1,13 @@
-import { apierror, bad, empty, forbidden, notfound, refused } from "@/lib/error";
 import {
-    id,
+  apierror,
+  bad,
+  empty,
+  forbidden,
+  notfound,
+  refused,
+} from "@/lib/error";
+import {
+  id,
   orderDirection,
   pageNumber,
   pageSize,
@@ -37,7 +44,6 @@ const replaceUserTopicsPayload = zod.object({
   removeTopics: zod.array(id),
   addTopics: zod.array(id),
 });
-
 
 const orderByOptions = [
   "name_ar",
@@ -148,13 +154,13 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds }: ITopic.AddUserTopicsApiPayload = 
-  generalUserTopicsPayload.parse(req.body);
+  const { topicIds }: ITopic.AddUserTopicsApiPayload =
+    generalUserTopicsPayload.parse(req.body);
 
   // filter passed topics to ignore the ones that does already exist
   const userTopics = await topics.findUserTopics({ users: [user.id] });
-  const userTopicsIds = userTopics.map(t => t.id);
-  const filteredIds = topicIds.filter(id => !userTopicsIds.includes(id));
+  const userTopicsIds = userTopics.map((t) => t.id);
+  const filteredIds = topicIds.filter((id) => !userTopicsIds.includes(id));
 
   // ensure that user topics will not exceed the max num after insertion
   if (userTopics.length + filteredIds.length > MAX_TOPICS_COUNT)
@@ -167,78 +173,87 @@ async function addUserTopics(req: Request, res: Response, next: NextFunction) {
 
   // verify that all topics do exist in the database
   const isExists = await topics.isExistsBatch(filteredIds);
-  if (Object.values(isExists).includes(false))
-    return next(notfound.topic());
+  if (Object.values(isExists).includes(false)) return next(notfound.topic());
 
   await topics.registerUserTopics({
     user: user.id,
     topics: filteredIds,
-  })
+  });
 
   res.sendStatus(200);
 }
 
-async function replaceUserTopics(req: Request, res: Response, next: NextFunction) {
+async function replaceUserTopics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
 
-  const { removeTopics, addTopics }: ITopic.ReplaceUserTopicsApiPayload = 
+  const { removeTopics, addTopics }: ITopic.ReplaceUserTopicsApiPayload =
     replaceUserTopicsPayload.parse(req.body);
 
   if (isEmpty(removeTopics) && isEmpty(addTopics)) return next(empty());
 
   // ensure that all topics in `addTopics` exists for the current user
   const inDBTopics = await topics.findUserTopics({ users: [user.id] });
-  const inDBTopicIds = inDBTopics.map(topic => topic.id);
+  const inDBTopicIds = inDBTopics.map((topic) => topic.id);
   for (const topicId of removeTopics) {
-    if (!inDBTopicIds.includes(topicId))
-      return next(notfound.topic());
+    if (!inDBTopicIds.includes(topicId)) return next(notfound.topic());
   }
-  
+
   // verify that all topics do exist in the database
   const isExists = await topics.isExistsBatch(addTopics);
-  if (Object.values(isExists).includes(false))
-    return next(notfound.topic());
+  if (Object.values(isExists).includes(false)) return next(notfound.topic());
 
   // ensure that user topics will not exceed the max num after insertion
-  const exceededMaxAllowedTopics = 
-    (inDBTopicIds.length + addTopics.length - removeTopics.length) > MAX_TOPICS_COUNT;
+  const exceededMaxAllowedTopics =
+    inDBTopicIds.length + addTopics.length - removeTopics.length >
+    MAX_TOPICS_COUNT;
   if (exceededMaxAllowedTopics) return next(refused());
 
   await knex.transaction(async (tx: Knex.Transaction) => {
-    if (!isEmpty(removeTopics)) await topics.deleteUserTopics({
-      user: user.id,
-      topics: removeTopics,
-      tx,
-    });
-    
-    if(!isEmpty(addTopics)) await topics.registerUserTopics({
-      user: user.id,
-      topics: addTopics
-    }, tx);
+    if (!isEmpty(removeTopics))
+      await topics.deleteUserTopics({
+        user: user.id,
+        topics: removeTopics,
+        tx,
+      });
+
+    if (!isEmpty(addTopics))
+      await topics.registerUserTopics(
+        {
+          user: user.id,
+          topics: addTopics,
+        },
+        tx
+      );
   });
 
   res.sendStatus(200);
 }
 
-async function deleteUserTopics(req: Request, res: Response, next: NextFunction) {
+async function deleteUserTopics(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
   const allowed = isStudent(user) || isTutor(user) || isTutorManager(user);
   if (!allowed) return next(forbidden());
-  const { topicIds }: ITopic.DeleteUserTopicsApiPayload = 
-  generalUserTopicsPayload.parse(req.body);
+  const { topicIds }: ITopic.DeleteUserTopicsApiPayload =
+    generalUserTopicsPayload.parse(req.body);
 
-  if (topicIds.length === 0)
-    return next(bad());
+  if (topicIds.length === 0) return next(bad());
 
   // verify that all topics do exist in the database
   const isExists = await topics.isExistsBatch(topicIds);
-  if (Object.values(isExists).includes(false))
-    return next(notfound.topic());
+  if (Object.values(isExists).includes(false)) return next(notfound.topic());
 
   // remove user topics from the database
-  await topics.deleteUserTopics({ 
+  await topics.deleteUserTopics({
     user: user.id,
     topics: topicIds,
   });

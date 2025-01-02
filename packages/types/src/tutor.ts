@@ -66,7 +66,7 @@ export type UncontactedTutorInfo = {
   id: number;
   image: string | null;
   bio: string | null;
-}
+};
 
 export type FindOnboardedTutorsParams = IFilter.Pagination & {
   /**
@@ -130,23 +130,23 @@ export type FindTutorActivityScores = ActivityScoreMap;
 
 export type FindTutorMetaApiResponse = Self;
 
-export type FindPersonalizedTutorStatsApiResponse = { 
+export type FindPersonalizedTutorStatsApiResponse = {
   /**
-  * Total sum of all completed lessons.
-  */
+   * Total sum of all completed lessons.
+   */
   totalLessonCount: number;
   /**
-  * Future but not canceled lessons. 
-  */
+   * Future but not canceled lessons.
+   */
   upcomingLessonCount: number;
   /**
-  * Count for completed lessons only.
-  */
+   * Count for completed lessons only.
+   */
   completedLessonCount: number;
   /**
-  * Students that the tutor interacted with.
-  */
-  studentCount: number; 
+   * Students that the tutor interacted with.
+   */
+  studentCount: number;
 };
 
 export type FindUncontactedTutorsApiResponse = Paginated<UncontactedTutorInfo>;

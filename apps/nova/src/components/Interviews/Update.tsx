@@ -317,8 +317,8 @@ const Update: React.FC<{
             id: passed
               ? messages["page.interviews.status.passed"]
               : rejected
-              ? messages["page.interviews.status.rejected"]
-              : messages["page.interviews.status.canceled"],
+                ? messages["page.interviews.status.rejected"]
+                : messages["page.interviews.status.canceled"],
           })}
         </Button>
       </Form>

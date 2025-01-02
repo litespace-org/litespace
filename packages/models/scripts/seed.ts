@@ -18,12 +18,7 @@ import {
   hashPassword,
   topics,
 } from "@litespace/models";
-import {
-  IInterview,
-  ILesson,
-  IUser,
-  IWithdrawMethod,
-} from "@litespace/types";
+import { IInterview, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
 import dayjs from "dayjs";
 import { Time } from "@litespace/sol/time";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
@@ -346,11 +341,11 @@ async function main(): Promise<void> {
         method === IWithdrawMethod.Type.Bank
           ? random(1_000_000_000, 5_000_000_000).toString()
           : method === IWithdrawMethod.Type.Wallet
-          ? [
-              sample(["015", "010", "011"])!,
-              random(1_000_000_0, 9_999_999_9),
-            ].join("")
-          : Math.random().toString(36).slice(2),
+            ? [
+                sample(["015", "010", "011"])!,
+                random(1_000_000_0, 9_999_999_9),
+              ].join("")
+            : Math.random().toString(36).slice(2),
     };
   }
 

@@ -104,7 +104,7 @@ export class Users {
       .select("*")
       .where(key, value);
 
-    return rows.map(row => this.from(row));
+    return rows.map((row) => this.from(row));
   }
 
   async exists(id: number): Promise<boolean> {
@@ -137,8 +137,8 @@ export class Users {
 
     const total = await countRows(base.clone().groupBy(this.column("id")));
     const rows = await withPagination(base.clone(), { page, size });
-    const users = rows.map(row => this.from(row));
-    
+    const users = rows.map((row) => this.from(row));
+
     return { list: users, total };
   }
 

@@ -132,18 +132,19 @@ const Call: React.FC = () => {
   });
   */
 
-  const { userMedia, mateStream, mateScreenStream, ghostStreams } = useSessionV2(
-    useMemo(
-      () => ({
-        isGhost,
-        ghostPeerId: orNull("ghost"), // TODO: pass peers.ghost.data
-        tutorPeerId: orNull("ghost"), // TODO: pass peers.tutor.data
-        userId: orNull(user?.id),
-        onCloseSession,
-      }),
-      [onCloseSession, user?.id]
-    )
-  );
+  const { userMedia, mateStream, mateScreenStream, ghostStreams } =
+    useSessionV2(
+      useMemo(
+        () => ({
+          isGhost,
+          ghostPeerId: orNull("ghost"), // TODO: pass peers.ghost.data
+          tutorPeerId: orNull("ghost"), // TODO: pass peers.tutor.data
+          userId: orNull(user?.id),
+          onCloseSession,
+        }),
+        [onCloseSession, user?.id]
+      )
+    );
 
   useEffect(() => console.log({ ghostStreams }), [ghostStreams]);
 
@@ -163,7 +164,7 @@ const Call: React.FC = () => {
           screen: mateScreenStream,
         },
         speaking: true,
-        name: undefined // orUndefined(mateInfo?.name),
+        name: undefined, // orUndefined(mateInfo?.name),
       },
       fullScreen: {
         enabled: fullScreen.enabled,
@@ -283,19 +284,17 @@ const Call: React.FC = () => {
               )}
             </Button>
 
-            {
-              /*
-               * TODO: replace this by members views
-               */
-              /*
+            {/*
+             * TODO: replace this by members views
+             */
+            /*
               <div>
                 <h1>Joined members</h1>
                 {members.map((m) => (
                   <label className="mx-1">-{m}-</label>
                 ))}
               </div>
-              */
-            }
+              */}
 
             {/* <Button
             type={ButtonType.Main}

@@ -26,4 +26,3 @@ export type UpdatePayload = {
   start: string;
   end: string;
 };
-

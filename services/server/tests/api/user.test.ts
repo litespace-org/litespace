@@ -257,8 +257,8 @@ describe("/api/v1/user/", () => {
     it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
       const studentApi = await Api.forStudent();
       const student = (await studentApi.findCurrentUser()).user;
-      
-      const mockTutors = await Promise.all(range(0,5).map(() => db.tutor()));
+
+      const mockTutors = await Promise.all(range(0, 5).map(() => db.tutor()));
 
       await Promise.all([
         db.room([student.id, mockTutors[0].id]),
@@ -273,8 +273,10 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden in case the requester is not a student.", async () => {
       const tutorApi = await Api.forTutor();
-      const res = await safe(async () => tutorApi.atlas.user.findUncontactedTutors());
-      expect(res).to.deep.eq(forbidden())
+      const res = await safe(async () =>
+        tutorApi.atlas.user.findUncontactedTutors()
+      );
+      expect(res).to.deep.eq(forbidden());
     });
   });
 
@@ -386,48 +388,48 @@ describe("/api/v1/user/", () => {
         image: "/image.jpg",
         gender: IUser.Gender.Female,
         name: "Sara",
-        phoneNumber: "01112223334"
+        phoneNumber: "01112223334",
       });
 
       // defining rules
-      const rule1 = await db.rule({ 
+      const rule1 = await db.rule({
         userId: tutor.user.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
-      })
-      const rule2 = await db.rule({ 
+      });
+      const rule2 = await db.rule({
         userId: tutor.user.id,
         start: dayjs.utc().add(2, "days").toISOString(),
-      })
-      const rule3 = await db.rule({ 
+      });
+      const rule3 = await db.rule({
         userId: tutor.user.id,
         start: dayjs.utc().add(3, "days").toISOString(),
-      })
+      });
 
       // inserting lessons
       const students = await db.students(3);
 
-      await db.lesson({ 
-        tutor: tutor.user.id, 
-        student: students[0].id, 
-        rule: rule1.id, 
+      await db.lesson({
+        tutor: tutor.user.id,
+        student: students[0].id,
+        rule: rule1.id,
         start: rule1.start,
       });
 
-      await db.lesson({ 
-        tutor: tutor.user.id, 
-        student: students[1].id, 
+      await db.lesson({
+        tutor: tutor.user.id,
+        student: students[1].id,
         rule: rule2.id,
       });
 
-      await db.lesson({ 
-        tutor: tutor.user.id, 
-        student: students[2].id, 
+      await db.lesson({
+        tutor: tutor.user.id,
+        student: students[2].id,
         rule: rule3.id,
         canceled: true, // should not be counted
       });
 
       const res = await tutorApi.atlas.user.findPersonalizedTutorStats();
-      
+
       expect(res.studentCount).to.eq(2);
       expect(res.upcomingLessonCount).to.eq(1);
       expect(res.completedLessonCount).to.eq(1);
@@ -436,8 +438,10 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden if the user is not a tutor.", async () => {
       const studentApi = await Api.forStudent();
-      const res = await safe(async () => studentApi.atlas.user.findPersonalizedTutorStats());
-      expect(res).to.deep.eq(forbidden())
+      const res = await safe(async () =>
+        studentApi.atlas.user.findPersonalizedTutorStats()
+      );
+      expect(res).to.deep.eq(forbidden());
     });
   });
 
@@ -450,38 +454,38 @@ describe("/api/v1/user/", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const rule1 = await db.rule({ 
+      const rule1 = await db.rule({
         userId: student.user.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
-      })
-      const rule2 = await db.rule({ 
+      });
+      const rule2 = await db.rule({
         userId: student.user.id,
         start: dayjs.utc().add(2, "days").toISOString(),
-      })
-      const rule3 = await db.rule({ 
+      });
+      const rule3 = await db.rule({
         userId: student.user.id,
         start: dayjs.utc().add(3, "days").toISOString(),
-      })
+      });
 
-      const lesson1 = await db.lesson({ 
-        student: student.user.id, 
-        rule: rule1.id, 
+      const lesson1 = await db.lesson({
+        student: student.user.id,
+        rule: rule1.id,
         start: rule1.start,
       });
 
-      await db.lesson({ 
-        student: student.user.id, 
+      await db.lesson({
+        student: student.user.id,
         rule: rule2.id,
       });
 
-      await db.lesson({ 
-        student: student.user.id, 
+      await db.lesson({
+        student: student.user.id,
         rule: rule3.id,
         canceled: true,
       });
 
       const res = await studentApi.atlas.user.findPersonalizedStudentStats();
-      
+
       expect(res.tutorCount).to.eq(2);
       expect(res.totalLearningTime).to.eq(lesson1.lesson.duration);
       expect(res.upcomingLessonCount).to.eq(1);
@@ -490,9 +494,10 @@ describe("/api/v1/user/", () => {
 
     it("should respond with forbidden if the user is not a student.", async () => {
       const tutorApi = await Api.forTutor();
-      const res = await safe(async () => tutorApi.atlas.user.findPersonalizedStudentStats());
-      expect(res).to.deep.eq(forbidden())
+      const res = await safe(async () =>
+        tutorApi.atlas.user.findPersonalizedStudentStats()
+      );
+      expect(res).to.deep.eq(forbidden());
     });
   });
-
 });

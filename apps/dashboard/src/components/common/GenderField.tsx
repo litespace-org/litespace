@@ -11,8 +11,8 @@ const GenderField: React.FC<{ gender?: IUser.Gender | null }> = ({
       {gender === IUser.Gender.Male
         ? intl("global.gender.male")
         : gender === IUser.Gender.Female
-        ? intl("global.gender.female")
-        : "-"}
+          ? intl("global.gender.female")
+          : "-"}
     </React.Fragment>
   );
 };

@@ -8,8 +8,8 @@ const BinaryField: React.FC<{ yes?: boolean | null }> = ({ yes }) => {
       {yes == true
         ? intl("global.labels.yes")
         : yes === false
-        ? intl("global.labels.no")
-        : "-"}
+          ? intl("global.labels.no")
+          : "-"}
     </React.Fragment>
   );
 };

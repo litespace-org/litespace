@@ -38,6 +38,9 @@ export class Rating extends Base {
     id: number,
     pagination?: IFilter.Pagination
   ): Promise<IRating.FindTutorRatingsApiResponse> {
-    return await this.get({ route: `/api/v1/rating/list/tutor/${id}`, params: pagination });
+    return await this.get({
+      route: `/api/v1/rating/list/tutor/${id}`,
+      params: pagination,
+    });
   }
 }

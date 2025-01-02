@@ -11,7 +11,7 @@ export class Chat extends Base {
     pagination?: IFilter.Pagination
   ): Promise<IMessage.FindRoomMessagesApiResponse> {
     return await this.get({
-      route: `/api/v1/chat/list/${id}/messages`, 
+      route: `/api/v1/chat/list/${id}/messages`,
       params: pagination,
     });
   }
@@ -21,7 +21,7 @@ export class Chat extends Base {
     query?: IRoom.FindUserRoomsApiQuery
   ): Promise<IRoom.FindUserRoomsApiResponse> {
     return await this.get({
-      route: `/api/v1/chat/list/rooms/${userId}/`, 
+      route: `/api/v1/chat/list/rooms/${userId}/`,
       params: query,
     });
   }
@@ -30,7 +30,7 @@ export class Chat extends Base {
     members: number[]
   ): Promise<IRoom.FindRoomByMembersApiResponse> {
     return await this.get({
-      route:"/api/v1/chat/room/by/members", 
+      route: "/api/v1/chat/room/by/members",
       params: { members },
     });
   }
@@ -45,9 +45,9 @@ export class Chat extends Base {
     room: number,
     payload: IRoom.UpdateRoomApiPayload
   ): Promise<IRoom.Member> {
-    return await this.put({ 
-      route: `/api/v1/chat/room/${room}`, 
-      payload, 
+    return await this.put({
+      route: `/api/v1/chat/room/${room}`,
+      payload,
     });
   }
 }

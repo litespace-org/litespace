@@ -399,8 +399,8 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // retrieve/set tutors and rules from/in cache (redis)
   const tutorsCache = isTutorsCached
     ? await cache.tutors.getAll()
-    // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
-    : await cacheTutors();
+    : // DONE: Update the tutors cache according to the new design in (@/architecture/v1.0/tutors.md)
+      await cacheTutors();
 
   // order tutors based on time of the first event, genger of the user
   // online state, and notice.
@@ -434,7 +434,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
   // ITutor.FindOnboardedTutorsApiResponse list attribute
   const list = paginated.map((tutor) => ({
     ...tutor,
-    slots: [] // TODO: retrieve AvailabilitySlots from the db
+    slots: [], // TODO: retrieve AvailabilitySlots from the db
   }));
 
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
@@ -489,7 +489,11 @@ async function findTutorStats(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(response);
 }
 
-async function findPersonalizedTutorStats(req: Request, res: Response, next: NextFunction) {
+async function findPersonalizedTutorStats(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
   const user = req.user;
   const allowed = isUser(user) && (isTutor(user) || isTutorManager(user));
   if (!allowed) return next(forbidden());
@@ -499,29 +503,26 @@ async function findPersonalizedTutorStats(req: Request, res: Response, next: Nex
   if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
 
   const now = dayjs.utc().toISOString();
-  const [
-    studentCount,
-    upcomingLessonCount,
-    completedLessonCount,
-  ] = await Promise.all([
-    lessons.countCounterpartMembers({
-      user: id,
-      ratified: true,
-      canceled: false,
-    }),
-    lessons.countLessons({
-      users: [id],
-      ratified: true,
-      canceled: false,
-      after: now,
-    }),
-    lessons.countLessons({
-      users: [id],
-      ratified: true,
-      canceled: false,
-      before: now,
-    }),
-  ]);
+  const [studentCount, upcomingLessonCount, completedLessonCount] =
+    await Promise.all([
+      lessons.countCounterpartMembers({
+        user: id,
+        ratified: true,
+        canceled: false,
+      }),
+      lessons.countLessons({
+        users: [id],
+        ratified: true,
+        canceled: false,
+        after: now,
+      }),
+      lessons.countLessons({
+        users: [id],
+        ratified: true,
+        canceled: false,
+        before: now,
+      }),
+    ]);
 
   const totalLessonCount = completedLessonCount + upcomingLessonCount;
 
@@ -709,7 +710,7 @@ async function findPersonalizedStudentStats(
     tutorCount,
     completedLessonCount,
     upcomingLessonCount,
-    totalLearningTime
+    totalLearningTime,
   ] = await Promise.all([
     await lessons.countCounterpartMembers({
       user: id,
@@ -778,9 +779,9 @@ async function findTutorActivityScores(
 }
 
 /**
-  * handles requests from students and responds with data of tutors
-  * who the student (requester) didn't open a chat room with.
-  */
+ * handles requests from students and responds with data of tutors
+ * who the student (requester) didn't open a chat room with.
+ */
 async function findUncontactedTutors(
   req: Request,
   res: Response,
@@ -791,8 +792,11 @@ async function findUncontactedTutors(
   if (!allowed) return next(forbidden());
 
   const pagination = findUncontactedTutorsQuery.parse(req.query);
-  const response: ITutor.FindUncontactedTutorsApiResponse = 
-    await tutors.findUncontactedTutorsForStudent({ student: user.id, pagination });
+  const response: ITutor.FindUncontactedTutorsApiResponse =
+    await tutors.findUncontactedTutorsForStudent({
+      student: user.id,
+      pagination,
+    });
 
   res.status(200).json(response);
 }

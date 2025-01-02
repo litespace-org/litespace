@@ -27,11 +27,10 @@ export class InputDevices extends WssHandler {
       if (isGhost(user)) return;
       const { session, camera } = toggleCameraPayload.parse(data);
       // todo: add validation
-      this.broadcast(
-        Wss.ServerEvent.CameraToggled, 
-        asSessionRoomId(session), 
-        { user: user.id, camera }
-      );
+      this.broadcast(Wss.ServerEvent.CameraToggled, asSessionRoomId(session), {
+        user: user.id,
+        camera,
+      });
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -42,11 +41,10 @@ export class InputDevices extends WssHandler {
       if (isGhost(user)) return;
       const { session, mic } = toggleMicPayload.parse(data);
       // todo: add validation
-      this.broadcast(
-        Wss.ServerEvent.MicToggled, 
-        asSessionRoomId(session),
-        { user: user.id, mic }
-      );
+      this.broadcast(Wss.ServerEvent.MicToggled, asSessionRoomId(session), {
+        user: user.id,
+        mic,
+      });
     });
     if (error instanceof Error) stdout.error(error.message);
   }

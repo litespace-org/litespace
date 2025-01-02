@@ -146,13 +146,13 @@ describe("Topics", () => {
         name: {
           ar: "dump-topic-name-ar",
           en: "dump-topic-name-en",
-        }
+        },
       });
       const topic2 = await fixtures.topic({
         name: {
           ar: "another-dump-topic-name-ar",
           en: "another-dump-topic-name-en",
-        }
+        },
       });
 
       const list = [topic1.id, topic2.id, 123];
@@ -168,17 +168,17 @@ describe("Topics", () => {
     it("should delete list of topics for a specific user.", async () => {
       const user = await fixtures.user({ role: IUser.Role.Student });
 
-      const topic1 = await fixtures.topic({ 
+      const topic1 = await fixtures.topic({
         name: {
           ar: `${faker.animal.bear()}-${1}`,
           en: `${faker.animal.bird()}-${1}`,
-        }
+        },
       });
-      const topic2 = await fixtures.topic({ 
+      const topic2 = await fixtures.topic({
         name: {
           ar: `${faker.animal.bear()}-${2}`,
           en: `${faker.animal.bird()}-${2}`,
-        }
+        },
       });
 
       const list = [topic1.id, topic2.id];

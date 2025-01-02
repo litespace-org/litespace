@@ -36,6 +36,8 @@ jobs:
         run: pnpm install
       - name: Lint all workspaces
         run: pnpm lint:all
+      - name: Check formatting
+        run: pnpm prettier:check
       - name: Analyze intl messages
         run: pnpm intl inspect --fail
       - name: Build packages

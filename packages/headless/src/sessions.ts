@@ -344,7 +344,9 @@ export function useSession({
         // call.on("stream", setMateMediaStream);
         call.on("stream", (stream: MediaStream) => addStream(call, stream));
         call.on("close", () => onMediaConnectionClose(call));
-      }, 3000); }, [
+      }, 3000);
+    },
+    [
       onMediaConnectionClose,
       addMediaConnection,
       addStream,

@@ -19,8 +19,8 @@ import "colors";
 
 // Stablish connection with the redis cache.
 cache.connect().then(() => {
-  // Flush the cache as the data in cache might not be compatible with the changes 
-  // in the server itself which might lead to undefined behavior. 
+  // Flush the cache as the data in cache might not be compatible with the changes
+  // in the server itself which might lead to undefined behavior.
   cache.flush();
 });
 

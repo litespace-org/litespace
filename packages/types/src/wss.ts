@@ -73,24 +73,27 @@ export enum Room {
 }
 
 export enum AcknowledgeCode {
-  EmptyText = 'empty-text',
-  RoomNotFound = 'room-not-found', 
-  MessageNotFound = 'message-not-found',
-  NotMember = 'not-member',
-  NotOwner = 'not-owner',
-  Unreachable = 'unreachable',
-  Unallowed = 'unallowed',
-  Ok = 'ok',
+  EmptyText = "empty-text",
+  RoomNotFound = "room-not-found",
+  MessageNotFound = "message-not-found",
+  NotMember = "not-member",
+  NotOwner = "not-owner",
+  Unreachable = "unreachable",
+  Unallowed = "unallowed",
+  Ok = "ok",
 }
 
 export type AcknowledgePayload = {
   code: AcknowledgeCode;
   message?: string;
-}
+};
 
 export type AcknowledgeCallback = (payload?: AcknowledgePayload) => void;
 
-type EventCallback<T> = (arg: T, callback?: AcknowledgeCallback) => Promise<void> | void;
+type EventCallback<T> = (
+  arg: T,
+  callback?: AcknowledgeCallback
+) => Promise<void> | void;
 
 /**
  * Events emitted by the client
@@ -104,11 +107,20 @@ export type ClientEventsMap = {
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
   [ClientEvent.MarkMessageAsRead]: EventCallback<{ id: number }>;
 
-  [ClientEvent.PeerOpened]: EventCallback<{ sessionId: ISession.Id; peerId: string }>;
+  [ClientEvent.PeerOpened]: EventCallback<{
+    sessionId: ISession.Id;
+    peerId: string;
+  }>;
   [ClientEvent.RegisterPeer]: EventCallback<{ peer: string }>;
 
-  [ClientEvent.ToggleCamera]: EventCallback<{ session: ISession.Id; camera: boolean }>;
-  [ClientEvent.ToggleMic]: EventCallback<{ session: ISession.Id; mic: boolean }>;
+  [ClientEvent.ToggleCamera]: EventCallback<{
+    session: ISession.Id;
+    camera: boolean;
+  }>;
+  [ClientEvent.ToggleMic]: EventCallback<{
+    session: ISession.Id;
+    mic: boolean;
+  }>;
 
   [ClientEvent.UserTyping]: EventCallback<{ roomId: number }>;
   [ClientEvent.JoinSession]: EventCallback<{ sessionId: ISession.Id }>;
@@ -135,10 +147,10 @@ export type ServerEventsMap = {
   [ServerEvent.CameraToggled]: EventCallback<{ user: number; camera: boolean }>;
   [ServerEvent.MicToggled]: EventCallback<{ user: number; mic: boolean }>;
   [ServerEvent.MessageRead]: EventCallback<{ messageId: number }>;
-  [ServerEvent.UserStatusChanged]: EventCallback<{ 
-    online: boolean, 
-    userId: number, 
-    roomId: number 
+  [ServerEvent.UserStatusChanged]: EventCallback<{
+    online: boolean;
+    userId: number;
+    roomId: number;
   }>;
   [ServerEvent.InvoiceUpdated]: EventCallback<void>;
   [ServerEvent.InvoiceDeleted]: EventCallback<void>;

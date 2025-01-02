@@ -91,7 +91,9 @@ describe("Users", () => {
 
   describe(nameof(users.find), () => {
     it("should find users by content", async () => {
-      const interviewer = await fixtures.user({ role: IUser.Role.TutorManager });
+      const interviewer = await fixtures.user({
+        role: IUser.Role.TutorManager,
+      });
       expect(await users.findById(interviewer.id)).to.exist;
 
       const interviewer2 = await fixtures.user({

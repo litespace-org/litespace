@@ -6,7 +6,7 @@ type HTTPMethodAttr<T, P = {}> = {
   route: string;
   payload?: T;
   params?: P;
-}
+};
 
 export class Base {
   public readonly client: AxiosInstance;
@@ -35,8 +35,8 @@ export class Base {
 
   async del<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .delete(attr.route, { 
-        data: JSON.stringify(attr.payload), 
+      .delete(attr.route, {
+        data: JSON.stringify(attr.payload),
         params: attr.params,
       })
       .then((response) => response.data);
@@ -44,7 +44,7 @@ export class Base {
 
   async get<T, R = void, P = {}>(attr: HTTPMethodAttr<T, P>): Promise<R> {
     return this.client
-      .get<R>(attr.route, { 
+      .get<R>(attr.route, {
         data: JSON.stringify(attr.payload),
         params: attr.params,
       })
