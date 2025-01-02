@@ -52,14 +52,18 @@ export const PastLessonsTable: React.FC<Props> = ({
   if (loading)
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
-        <Loader text={intl("student-dashboard.loading")} />
+        <Loader size="medium" text={intl("student-dashboard.loading")} />
       </div>
     );
 
   if (error && retry)
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
-        <LoadingError error={intl("student-dashboard.error")} retry={retry} />
+        <LoadingError
+          size="medium"
+          error={intl("student-dashboard.error")}
+          retry={retry}
+        />
       </div>
     );
 
