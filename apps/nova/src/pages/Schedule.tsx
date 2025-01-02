@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { Lessons } from "@litespace/luna/Calendar/v2/Events";
 import { useUser } from "@litespace/headless/context/user";
+import ManageSchedule from "@/components/Schedule/ManageSchedule";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -125,6 +126,40 @@ const Schedule: React.FC = () => {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      <ManageSchedule
+        open={true}
+        onClose={() => {}}
+        save={() => {}}
+        setSlots={() => {}}
+        slots={[
+          {
+            id: 1,
+            start: new Date("1/4/2025-10:00").toISOString(),
+            end: new Date("1/4/2025-10:30").toISOString(),
+            state: "unchanged",
+          },
+          {
+            id: 2,
+            start: new Date("1/3/2025 13:30").toString(),
+            end: new Date("1/3/2025 15:00").toString(),
+            state: "new",
+          },
+          {
+            id: 3,
+            start: new Date("1/5/2025 20:00").toString(),
+            end: new Date("1/5/2025 23:00").toString(),
+            state: "new",
+          },
+          {
+            id: 4,
+            start: new Date().getHours().toString(),
+            end: new Date().toString(),
+            state: "new",
+          },
+        ]}
+        start={new Date("1/1/2025").toISOString()}
+      />
     </div>
   );
 };
