@@ -100,6 +100,10 @@ const Sidebar = () => {
 
   return (
     <div
+      style={{
+        boxShadow: "0px 14px 42px 0px rgba(0, 0, 0, 0.08)",
+        zIndex: 2,
+      }}
       className={cn(
         "fixed top-0 bottom-0 start-0 flex flex-col gap-10 w-60 p-6 shadow-sidebar"
       )}

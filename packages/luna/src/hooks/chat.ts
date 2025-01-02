@@ -1,7 +1,6 @@
 import { IFilter, IMessage, IRoom } from "@litespace/types";
 import { concat } from "lodash";
 import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
-import { useInfinteScroll } from "@/hooks/common";
 import { useSearchParams } from "react-router-dom";
 
 type State = {
@@ -245,7 +244,7 @@ function reducer(state: State, action: Action) {
   return mutate();
 }
 
-export function useMessages<T extends HTMLElement = HTMLElement>(
+export function useMessages(
   finder: (
     id: number,
     pagination?: IFilter.Pagination
@@ -307,15 +306,6 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
     ]
   );
 
-  const enabled = useMemo(() => {
-    return (
-      !!room &&
-      !!state.pages[room] &&
-      !state.loading[room] &&
-      !state.errors[room]
-    );
-  }, [room, state.errors, state.loading, state.pages]);
-
   const more = useCallback(() => {
     if (!room) return;
     const page = state.pages[room];
@@ -339,8 +329,6 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
       fetcher(room, page);
   }, [fetcher, room, state.errors, state.loading, state.messages, state.pages]);
 
-  const { target } = useInfinteScroll<T>(more, enabled);
-
   const messages = useMemo((): IMessage.Self[] => {
     if (!room) return [];
     const messages = state.messages[room] || [];
@@ -353,10 +341,19 @@ export function useMessages<T extends HTMLElement = HTMLElement>(
       messages,
       loading: room ? state.loading[room] : false,
       fetching: room ? state.fetching[room] : false,
-      target,
+      error: room ? state.errors[room] : false,
       onMessage,
+      refetch: more,
     };
-  }, [messages, onMessage, room, state.fetching, state.loading, target]);
+  }, [
+    messages,
+    onMessage,
+    room,
+    state.fetching,
+    state.loading,
+    more,
+    state.errors,
+  ]);
 }
 
 export type SelectedRoom = {

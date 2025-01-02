@@ -6,27 +6,66 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Input } from "@litespace/luna/Input";
 import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
-import { useRoomManager } from "@/hooks/chat";
+import { IRoom, Paginated } from "@litespace/types";
+import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
-}> = ({ select, selected: { room: roomId } }) => {
+  update: {
+    toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
+    togglePin: ({
+      roomId,
+      pinned,
+    }: {
+      roomId: number;
+      pinned: boolean;
+    }) => void;
+  };
+  keyword: {
+    value: string;
+    set: (keyword: string) => void;
+  };
+  rooms: {
+    all: {
+      list: IRoom.FindUserRoomsApiRecord[] | null;
+      query: UseInfiniteQueryResult<
+        InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
+        Error
+      >;
+      target: React.RefObject<HTMLDivElement>;
+      enabled: boolean;
+    };
+    pinned: {
+      query: UseInfiniteQueryResult<
+        InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
+        Error
+      >;
+      list: IRoom.FindUserRoomsApiRecord[] | null;
+      target: React.RefObject<HTMLDivElement>;
+      enabled: boolean;
+    };
+  };
+}> = ({ select, selected: { room: roomId }, update, keyword, rooms }) => {
   const intl = useFormatMessage();
-  const { rooms, keyword, update } = useRoomManager();
 
   return (
     <div
+      style={{ height: "calc(100vh - 106px)" }}
       className={cn(
-        "flex flex-col overflow-auto h-screen",
-        "w-[400px] border border-natural-200",
+        "flex flex-col overflow-auto",
+        "w-[400px] border-l border-natural-200",
         "px-6 pt-8",
         "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-100"
       )}
     >
       <div>
         <div className="mb-6">
-          <Typography className="font-bold text-xl text-natural-950 mb-6">
+          <Typography
+            weight="bold"
+            element="subtitle-2"
+            className=" text-natural-950 mb-6"
+          >
             {intl("chat.title")}
           </Typography>
           <Input
