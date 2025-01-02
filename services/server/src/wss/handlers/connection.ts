@@ -93,6 +93,8 @@ export class Connection extends WssHandler {
    * Remove ghost and tutor peer id from the cache.
    *
    * @note should be called when the socket disconnects from the server.
+   *
+   * @deprecated It should be removed in favor of the new `session` architecture.
    */
   private async deregisterPeer() {
     // todo: notify peers that the current user got disconnected
@@ -112,7 +114,7 @@ export class Connection extends WssHandler {
     const sessionId = await cache.session.removeMemberByUserId(user.id);
     if (!sessionId) return;
 
-    // notify members that a member has left the session
+    // notify other members that a member has left the session.
     this.socket.broadcast
       .to(asSessionRoomId(sessionId))
       .emit(Wss.ServerEvent.MemberLeftSession, {
