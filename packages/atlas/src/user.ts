@@ -73,13 +73,19 @@ export class User extends Base {
   async findOnboardedTutors(
     params?: ITutor.FindOnboardedTutorsParams
   ): Promise<ITutor.FindOnboardedTutorsApiResponse> {
-    return await this.get({ route: `/api/v1/user/tutor/list/onboarded`, params });
+    return await this.get({
+      route: `/api/v1/user/tutor/list/onboarded`,
+      params,
+    });
   }
 
   async findTutorsForStudio(
     pagination?: IFilter.Pagination
   ): Promise<ITutor.FindTutorsForStudioApiResponse> {
-    return this.get({ route: `/api/v1/user/studio/tutors`, params: pagination });
+    return this.get({
+      route: `/api/v1/user/studio/tutors`,
+      params: pagination,
+    });
   }
 
   async findTutorStats(
@@ -111,6 +117,9 @@ export class User extends Base {
   async findUncontactedTutors(
     pagination?: IFilter.Pagination
   ): Promise<ITutor.FindUncontactedTutorsApiResponse> {
-    return await this.get({ route: `/api/v1/user/tutor/list/uncontacted`, params: pagination });
+    return await this.get({
+      route: `/api/v1/user/tutor/list/uncontacted`,
+      params: pagination,
+    });
   }
 }

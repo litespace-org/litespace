@@ -17,7 +17,7 @@ const getMockTutorCache = (id: number) => ({
   avgRating: faker.number.float(),
   studentCount: faker.number.int(),
   lessonCount: faker.number.int(),
-})
+});
 
 describe("Testing cache/tutors functions", () => {
   beforeAll(async () => {

@@ -5,7 +5,7 @@ export class Lesson extends Base {
   async create(
     payload: ILesson.CreateApiPayload
   ): Promise<ILesson.CreateLessonApiResponse> {
-    return this.post({ 
+    return this.post({
       route: `/api/v1/lesson/`,
       payload,
     });
@@ -14,8 +14,8 @@ export class Lesson extends Base {
   async findLessons(
     query: ILesson.FindLessonsApiQuery
   ): Promise<ILesson.FindUserLessonsApiResponse> {
-    return this.get({ 
-      route: `/api/v1/lesson/list/`, 
+    return this.get({
+      route: `/api/v1/lesson/list/`,
       params: query,
     });
   }

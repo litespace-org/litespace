@@ -13,7 +13,7 @@ export class ClientSocket {
   }
 
   userTyping(roomId: number) {
-    return this.emit( Wss.ClientEvent.UserTyping, { roomId });
+    return this.emit(Wss.ClientEvent.UserTyping, { roomId });
   }
 
   joinSession(sessionId: ISession.Id) {
@@ -37,7 +37,7 @@ export class ClientSocket {
   }
 
   async emit<T extends keyof Wss.ClientEventsMap>(
-    event: keyof Wss.ClientEventsMap, 
+    event: keyof Wss.ClientEventsMap,
     data: Parameters<Wss.ClientEventsMap[T]>[0]
   ): Promise<Wss.AcknowledgePayload> {
     return new Promise((resolve, _) => {

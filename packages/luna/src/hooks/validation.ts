@@ -309,7 +309,7 @@ export function useValidation() {
             });
           },
         },
-      } as const),
+      }) as const,
     [intl, required, validateDate, validateName, validateTime]
   );
 

@@ -1,4 +1,10 @@
-import { IFilter, ILesson, ISession, NumericString, Paginated } from "@litespace/types";
+import {
+  IFilter,
+  ILesson,
+  ISession,
+  NumericString,
+  Paginated,
+} from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { concat, first, isEmpty, orderBy } from "lodash";
@@ -280,8 +286,7 @@ export class Lessons {
     users,
     tx,
   }: AggregateParams) {
-    const base = this.builder(tx).lessons
-      .sum(column, { as: "total" });
+    const base = this.builder(tx).lessons.sum(column, { as: "total" });
 
     const filter: SearchFilter = {
       users,

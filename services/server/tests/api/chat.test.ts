@@ -170,9 +170,9 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
 
     const rooms = await tutorApi.atlas.chat.findRooms(tutor.user.id);
 
-    expect(rooms.list.map((room) => room.otherMember.online)).to.contain.members(
-      [true, false, false]
-    );
+    expect(
+      rooms.list.map((room) => room.otherMember.online)
+    ).to.contain.members([true, false, false]);
   });
 
   it("should get rooms that match specific keyword", async () => {

@@ -153,10 +153,7 @@ export class Tutors {
     pagination?: IFilter.Pagination,
     tx?: Knex.Transaction
   ): Promise<Paginated<ITutor.PublicTutorFieldsForStudio>> {
-    const columns: Record<
-      keyof ITutor.PublicTutorFieldsForStudio,
-      string
-    > = {
+    const columns: Record<keyof ITutor.PublicTutorFieldsForStudio, string> = {
       id: this.column("id"),
       email: users.column("email"),
       name: users.column("name"),
@@ -235,9 +232,9 @@ export class Tutors {
     pagination,
     tx,
   }: {
-    student: number,
-    pagination?: IFilter.Pagination,
-    tx?: Knex.Transaction
+    student: number;
+    pagination?: IFilter.Pagination;
+    tx?: Knex.Transaction;
   }): Promise<Paginated<ITutor.UncontactedTutorInfo>> {
     /*
       SELECT * FROM tutors
@@ -259,7 +256,8 @@ export class Tutors {
 
     // NOTE: pagination is applied in the inner select query
     // in order to optain more sql query performance.
-    const innerSelect = knex.select(this.column("id"))
+    const innerSelect = knex
+      .select(this.column("id"))
       .from("room_members AS rm1")
       .join("room_members AS rm2", "rm1.room_id", "rm2.room_id")
       .rightJoin(this.table, this.column("id"), "rm2.user_id")
@@ -272,7 +270,10 @@ export class Tutors {
     const list = await this.builder(tx)
       .select(selectObj)
       .join(users.table, users.column("id"), this.column("id"))
-      .whereIn(this.column("id"), withPagination(innerSelect.clone(), pagination));
+      .whereIn(
+        this.column("id"),
+        withPagination(innerSelect.clone(), pagination)
+      );
 
     return { list, total };
   }

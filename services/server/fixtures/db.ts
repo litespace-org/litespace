@@ -117,7 +117,8 @@ const or = {
     return id;
   },
   async tutorManagerId(id?: number): Promise<number> {
-    if (!id) return await tutorManager().then((tutorManager) => tutorManager.id);
+    if (!id)
+      return await tutorManager().then((tutorManager) => tutorManager.id);
     return id;
   },
   async sessionId(type: ISession.Type): Promise<ISession.Id> {
@@ -153,8 +154,8 @@ export async function lesson(
         payload?.timing === "future"
           ? faker.date.future().toISOString()
           : payload?.timing === "past"
-          ? faker.date.past().toISOString()
-          : payload?.start || faker.date.soon().toISOString(),
+            ? faker.date.past().toISOString()
+            : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
       rule: await or.ruleId(payload?.rule),
@@ -431,7 +432,7 @@ async function makeInterviews(payload: {
       interviewees: number[];
       statuses: IInterview.Status[];
       levels: IInterview.Self["level"][];
-    }
+    },
   ];
 }) {
   for (const { interviewer, interviewees, statuses, levels } of payload.data) {

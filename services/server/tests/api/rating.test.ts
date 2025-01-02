@@ -21,10 +21,12 @@ describe("/api/v1/rating/", () => {
         raterId: student.user.id,
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
-      const res = await studentApi.atlas.rating.findRaterRatings(student.user.id);
+      const res = await studentApi.atlas.rating.findRaterRatings(
+        student.user.id
+      );
 
       expect(res.list).to.have.length(1);
       expect(res.list[0].feedback).to.eq("Very good instructor.");
@@ -39,7 +41,7 @@ describe("/api/v1/rating/", () => {
         raterId: student.user.id,
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
       const res = await studentApi.atlas.rating.findRateeRatings(newTutor.id);
@@ -57,7 +59,7 @@ describe("/api/v1/rating/", () => {
         raterId: student.user.id,
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
       const res = await studentApi.atlas.rating.findById(rating.id);
@@ -72,22 +74,22 @@ describe("/api/v1/rating/", () => {
         raterId: students[0].id,
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
       await ratings.create({
         raterId: students[1].id,
         rateeId: newTutor.id,
         value: 5,
-        feedback: "Excellent exposition for complex concept."
+        feedback: "Excellent exposition for complex concept.",
       });
 
       const studentApi = await Api.forStudent();
       const res = await studentApi.atlas.rating.findTutorRatings(newTutor.id);
 
       expect(res.total).to.eq(2);
-      expect(res.list.map(item => item.userId)).to.contains(students[0].id);
-      expect(res.list.map(item => item.userId)).to.contains(students[1].id);
+      expect(res.list.map((item) => item.userId)).to.contains(students[0].id);
+      expect(res.list.map((item) => item.userId)).to.contains(students[1].id);
     });
 
     it("should retrieve tutor ratings with the requester user rating at the top", async () => {
@@ -98,14 +100,14 @@ describe("/api/v1/rating/", () => {
         raterId: students[0].id,
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
       await ratings.create({
         raterId: students[1].id,
         rateeId: newTutor.id,
         value: 5,
-        feedback: "Excellent exposition for complex concept."
+        feedback: "Excellent exposition for complex concept.",
       });
 
       const studentApi = await Api.forStudent();
@@ -115,7 +117,8 @@ describe("/api/v1/rating/", () => {
         raterId: requester.user.id,
         rateeId: newTutor.id,
         value: 1,
-        feedback: "I don't think it's for beginers as the instructor claims. I cannot grasp most of the content."
+        feedback:
+          "I don't think it's for beginers as the instructor claims. I cannot grasp most of the content.",
       });
 
       const res = await studentApi.atlas.rating.findTutorRatings(newTutor.id);
@@ -139,21 +142,23 @@ describe("/api/v1/rating/", () => {
         raterId: students[1].id,
         rateeId: newTutor.id,
         value: 2,
-        feedback: "Not as expected but ok."
+        feedback: "Not as expected but ok.",
       });
 
       await ratings.create({
         raterId: students[2].id,
         rateeId: newTutor.id,
         value: 5,
-        feedback: "Excellent exposition for complex concept."
+        feedback: "Excellent exposition for complex concept.",
       });
 
       const studentApi = await Api.forStudent();
       const res = await studentApi.atlas.rating.findTutorRatings(newTutor.id);
 
       expect(res.total).to.eq(3);
-      expect(res.list[0].feedback).to.eq("Excellent exposition for complex concept.");
+      expect(res.list[0].feedback).to.eq(
+        "Excellent exposition for complex concept."
+      );
       expect(res.list[1].feedback).to.eq("Not as expected but ok.");
       expect(res.list[2].feedback).to.eq("Not as expected.");
     });
@@ -170,7 +175,7 @@ describe("/api/v1/rating/", () => {
         feedback: "",
       });
 
-      const res = await safe(async () => 
+      const res = await safe(async () =>
         studentApi.atlas.rating.findTutorRatings(123)
       );
       expect(res).to.deep.eq(notfound.tutor());
@@ -185,10 +190,12 @@ describe("/api/v1/rating/", () => {
       await studentApi.atlas.rating.create({
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
-      const ratings = await studentApi.atlas.rating.findRateeRatings(newTutor.id);
+      const ratings = await studentApi.atlas.rating.findRateeRatings(
+        newTutor.id
+      );
 
       expect(ratings.list).to.have.length(1);
       expect(ratings.list[0].feedback).to.eq("Very good instructor.");
@@ -201,14 +208,16 @@ describe("/api/v1/rating/", () => {
       await studentApi.atlas.rating.create({
         rateeId: newTutor.id,
         value: 4,
-        feedback: "Very good instructor."
+        feedback: "Very good instructor.",
       });
 
-      const res = await safe(async () => studentApi.atlas.rating.create({
-        rateeId: newTutor.id,
-        value: 4,
-        feedback: "Very good instructor."
-      }));
+      const res = await safe(async () =>
+        studentApi.atlas.rating.create({
+          rateeId: newTutor.id,
+          value: 4,
+          feedback: "Very good instructor.",
+        })
+      );
 
       expect(res).to.deep.eq(exists.rate());
     });
@@ -228,7 +237,7 @@ describe("/api/v1/rating/", () => {
       });
 
       await studentApi.atlas.rating.update(newRating.id, {
-        feedback: "my new feedback."
+        feedback: "my new feedback.",
       });
       const updated = await studentApi.atlas.rating.findById(newRating.id);
 
@@ -247,9 +256,11 @@ describe("/api/v1/rating/", () => {
         feedback: "",
       });
 
-      const res = await safe(async () => studentApi.atlas.rating.update(newRating.id, {
-        feedback: "my new feedback."
-      }));
+      const res = await safe(async () =>
+        studentApi.atlas.rating.update(newRating.id, {
+          feedback: "my new feedback.",
+        })
+      );
 
       expect(res).to.deep.eq(forbidden());
     });
@@ -269,7 +280,9 @@ describe("/api/v1/rating/", () => {
       });
 
       await studentApi.atlas.rating.delete(newRating.id);
-      const res = await safe(async () => studentApi.atlas.rating.findById(newRating.id));
+      const res = await safe(async () =>
+        studentApi.atlas.rating.findById(newRating.id)
+      );
 
       expect(res).to.deep.eq(notfound.rating());
     });
@@ -286,7 +299,9 @@ describe("/api/v1/rating/", () => {
         feedback: "",
       });
 
-      const res = await safe(async () => await studentApi.atlas.rating.delete(newRating.id));
+      const res = await safe(
+        async () => await studentApi.atlas.rating.delete(newRating.id)
+      );
 
       expect(res).to.deep.eq(forbidden());
     });

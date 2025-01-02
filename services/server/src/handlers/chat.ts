@@ -91,7 +91,9 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
 
   // members of all rooms
   const members = await rooms.findRoomMembers({ roomIds: userRooms });
-  const onlineStatuses = await cache.onlineStatus.isOnlineBatch(members.map(m => m.id));
+  const onlineStatuses = await cache.onlineStatus.isOnlineBatch(
+    members.map((m) => m.id)
+  );
 
   // todo: optimize find user rooms query
   const list = await Promise.all(
@@ -113,7 +115,8 @@ async function findUserRooms(req: Request, res: Response, next: NextFunction) {
       if (!currentMember || !otherMember)
         throw Error("unreachable; should never happen.");
 
-      const otherMemberOnlineStatus = onlineStatuses.get(otherMember.id) || false;
+      const otherMemberOnlineStatus =
+        onlineStatuses.get(otherMember.id) || false;
 
       return asFindUserRoomsApiRecord({
         roomId,

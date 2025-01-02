@@ -60,7 +60,10 @@ describe("Testing cache/session functions", () => {
 
     const res1 = await cache.session.isMember({ sessionId, userId: 1 });
     const res2 = await cache.session.isMember({ sessionId, userId: 3 });
-    const res3 = await cache.session.isMember({ sessionId: genSessionId("lesson"), userId: 2 });
+    const res3 = await cache.session.isMember({
+      sessionId: genSessionId("lesson"),
+      userId: 2,
+    });
 
     expect(res1).to.true;
     expect(res2).to.false;

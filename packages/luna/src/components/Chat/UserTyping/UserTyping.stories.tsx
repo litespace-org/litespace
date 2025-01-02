@@ -25,9 +25,12 @@ export const Primary: StoryObj<Component> = {
     const [seed, setSeed] = useState(1);
 
     useEffect(() => {
-      const interval = setInterval(() => {
-        setSeed(seed + 1);
-      }, faker.number.int({ min: 1, max: 3 }) * 1000);
+      const interval = setInterval(
+        () => {
+          setSeed(seed + 1);
+        },
+        faker.number.int({ min: 1, max: 3 }) * 1000
+      );
 
       return () => {
         clearInterval(interval);

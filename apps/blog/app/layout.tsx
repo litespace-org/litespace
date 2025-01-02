@@ -69,7 +69,7 @@ const Nav = ({ className, children, id }: NavProps) => {
         "sticky z-50 top-0 bg-background",
         "border-b",
         "fade-in",
-        className,
+        className
       )}
       id={id}
     >
