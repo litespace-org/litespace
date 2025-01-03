@@ -1,4 +1,4 @@
-import { IFilter, IRoom } from "@litespace/types";
+import { IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -23,9 +23,9 @@ import dayjs from "dayjs";
 import { entries, groupBy } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
-import { useAtlas } from "@litespace/headless/atlas";
 import { useUserContext } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
+import { orUndefined } from "@litespace/sol/utils";
 
 const Messages: React.FC<{
   room: number | null;
@@ -40,24 +40,18 @@ const Messages: React.FC<{
     id: number;
   } | null>(null);
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
-  const atlas = useAtlas();
 
   // TODO: retrieve user online status from the server cache
   const [onlineStatus, _] = useState(false);
 
-  const findRoomMessages = useCallback(
-    async (id: number, pagination?: IFilter.Pagination) => {
-      return await atlas.chat.findRoomMessages(id, pagination);
-    },
-    [atlas.chat]
-  );
   const {
     messages,
     loading,
     fetching,
     onMessage: onMessages,
     more,
-  } = useMessages(findRoomMessages, room);
+  } = useMessages(room);
+  console.log({ messages });
 
   const scrollDown = useCallback(() => {
     if (messagesRef.current)
@@ -72,14 +66,17 @@ const Messages: React.FC<{
     [onMessages, scrollDown]
   );
 
-  const { sendMessage, updateMessage, deleteMessage } = useChat(onMessage);
+  const { sendMessage, updateMessage, deleteMessage } = useChat(
+    onMessage,
+    orUndefined(user?.id)
+  );
 
   const submit = useCallback(
     (text: string) => {
       if (!room) return;
-      return sendMessage({ roomId: room, text });
+      return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
-    [room, sendMessage]
+    [room, sendMessage, user]
   );
 
   const onUpdateMessage = useCallback(
@@ -157,6 +154,7 @@ const Messages: React.FC<{
     },
     [intl]
   );
+  console.log({ messageGroups });
 
   return (
     <div

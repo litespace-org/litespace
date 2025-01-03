@@ -8,7 +8,7 @@ import {
 import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
-import { concat } from "lodash";
+import { concat, uniqueId } from "lodash";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -90,7 +90,7 @@ export function useUpdateRoom({
   });
 }
 
-export type OnMessage = (action: MessageStreamAction) => void;
+export type OnMessage = (action: Action) => void;
 
 /**
  * The hook responsible for integration with the wss server, it allows the user to send
@@ -98,15 +98,33 @@ export type OnMessage = (action: MessageStreamAction) => void;
  * @param onMessage : The action the user has done
  * @returns Send, update, delete functions which are wss emitters
  */
-export function useChat(onMessage?: OnMessage) {
+export function useChat(onMessage?: OnMessage, userId?: number) {
   const socket = useSocket();
 
   const sendMessage = useCallback(
-    ({ roomId, text }: { roomId: number; text: string }) => {
-      // the callback at the end will only give me errors
-      socket?.emit(Wss.ClientEvent.SendMessage, { roomId, text });
+    ({
+      roomId,
+      text,
+      userId,
+    }: {
+      roomId: number;
+      text: string;
+      userId: number;
+    }) => {
+      if (!onMessage) return;
+      const id = uniqueId();
+      socket?.emit(Wss.ClientEvent.SendMessage, {
+        roomId,
+        text,
+        refId: id,
+      });
+
+      onMessage({
+        type: ActionType.AddPendingMessage,
+        message: { text, room: roomId, refId: id, userId },
+      });
     },
-    [socket]
+    [socket, onMessage]
   );
 
   const updateMessage = useCallback(
@@ -124,14 +142,21 @@ export function useChat(onMessage?: OnMessage) {
   );
 
   const onRoomMessage = useCallback(
-    (message: IMessage.Self) => {
-      if (!onMessage) return;
+    (message: IMessage.Self & { refId?: string }) => {
+      if (!onMessage || !userId) return;
+      console.log(message);
+
+      if (message.userId === userId)
+        return onMessage({
+          type: ActionType.ActivatePendingMessage,
+          message: { refId: message.refId!, room: message.roomId },
+        });
       return onMessage({
         type: MessageStream.Add,
         message,
       });
     },
-    [onMessage]
+    [onMessage, userId]
   );
 
   const onUpdateMessage = useCallback(
@@ -172,6 +197,11 @@ export function useChat(onMessage?: OnMessage) {
   };
 }
 
+type MessageState = "seen" | "sent" | "pending" | undefined;
+type ClientSideMessage = IMessage.Self & {
+  messageState?: MessageState;
+};
+
 type State = {
   /**
    * Current active room id
@@ -184,11 +214,17 @@ type State = {
   /**
    * Map from room id to its messages from the backend
    */
-  messages: Record<number, IMessage.Self[] | undefined>;
+  messages: Record<number, ClientSideMessage[] | undefined>;
   /**
    * Map from room id to its fresh messages (new messages received since the last page refresh)
    */
-  freshMessages: Record<number, IMessage.Self[] | undefined>;
+  freshMessages: Record<
+    number,
+    | (ClientSideMessage & {
+        refId?: string;
+      })[]
+    | undefined
+  >;
   /**
    * Map from room id to the total number of messages that the room has.
    */
@@ -228,6 +264,8 @@ enum ActionType {
   PreCall,
   PostCall,
   PostCallError,
+  AddPendingMessage,
+  ActivatePendingMessage,
   AddMessage,
   UpdateMessage,
   DeleteMessage,
@@ -273,6 +311,14 @@ type Action =
       room: number;
       total: number;
     }
+  | {
+      type: ActionType.AddPendingMessage;
+      message: { text: string; room: number; refId: string; userId: number };
+    }
+  | {
+      type: ActionType.ActivatePendingMessage;
+      message: { refId: string; room: number };
+    }
   | MessageStreamAction;
 
 function isFreshMessage(id: number, messages: IMessage.Self[]): boolean {
@@ -284,6 +330,25 @@ function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
   if (index === -1) return;
   messages.splice(index, 1, incoming);
   return messages;
+}
+
+// function deleteTemporaryMessage(
+//   incoming: { refId: string; room: number },
+//   messages: (IMessage.Self & { refId?: string })[]
+// ) {
+//   return messages.filter((message) => message.refId !== incoming.refId);
+// }
+
+function activateTemporaryMessage(
+  incoming: { refId: string; room: number },
+  messages: (ClientSideMessage & { refId?: string })[]
+) {
+  return messages.map((message) => {
+    if (message.messageState === "pending" && message.refId == incoming.refId) {
+      message.messageState = "sent";
+    }
+    return message;
+  });
 }
 
 function reducer(state: State, action: Action) {
@@ -374,6 +439,64 @@ function reducer(state: State, action: Action) {
     return mutate({ totals, messages, errors, fetching, loading });
   }
 
+  if (action.type === ActionType.AddPendingMessage) {
+    const room = action.message.room;
+    const freshMessages = structuredClone(state.freshMessages);
+    const roomMessages = freshMessages[room];
+    const messageCreator = ({
+      text,
+      roomId,
+      refId,
+      userId,
+    }: {
+      text: string;
+      roomId: number;
+      userId: number;
+      refId: string;
+    }) => {
+      const now = new Date().toISOString();
+      return {
+        id: 0,
+        userId,
+        roomId,
+        text,
+        refId,
+        messageState: "pending" as MessageState,
+        read: false,
+        deleted: false,
+        createdAt: now,
+        updatedAt: now,
+      };
+    };
+
+    const newMessage = messageCreator({
+      text: action.message.text,
+      refId: action.message.refId,
+      roomId: action.message.room,
+      userId: action.message.userId,
+    });
+    if (!roomMessages) freshMessages[room] = [newMessage];
+    else roomMessages.push(newMessage);
+
+    return mutate({ freshMessages });
+  }
+
+  if (action.type === ActionType.ActivatePendingMessage) {
+    const room = action.message.room;
+    const freshMessages = structuredClone(state.freshMessages);
+    const roomMessages = freshMessages[room];
+    if (!roomMessages || !freshMessages) return mutate({ freshMessages: [] });
+    const newFreshMessages = activateTemporaryMessage(
+      action.message,
+      roomMessages
+    );
+    freshMessages[room] = newFreshMessages;
+    console.log(newFreshMessages);
+
+    return mutate({ freshMessages });
+  }
+
+  // MessageStream actions are all coming from the server itself
   if (action.type === MessageStream.Add) {
     const room = action.message.roomId;
     const freshMessages = structuredClone(state.freshMessages);
@@ -382,7 +505,7 @@ function reducer(state: State, action: Action) {
     else roomMessages.push(action.message);
     return mutate({ freshMessages });
   }
-
+  // TODO: change this update to either update based on the message id or refId
   if (action.type === MessageStream.Update) {
     const room = action.message.roomId;
     const messageId = action.message.id;
@@ -414,7 +537,7 @@ function reducer(state: State, action: Action) {
 }
 
 // use the findRoom atlas function instead of the finder
-export function useMessages(room: number | null, userId: number) {
+export function useMessages(room: number | null) {
   const atlas = useAtlas();
   const [state, dispatch] = useReducer(reducer, initial);
 
@@ -509,29 +632,21 @@ export function useMessages(room: number | null, userId: number) {
   /**
    * list of messages in the chat
    */
-  const messages = useMemo((): IMessage.Self[] => {
+  const messages = useMemo(() => {
     if (!room) return [];
-    const messages =
-      state.messages[room]?.map((message) => {
-        const isOwner = message.userId === userId;
-        let messageState;
-        if (!isOwner) messageState = undefined;
-        else messageState = message.read ? "seen" : "reached";
-
+    const messages = state.messages[room] || [];
+    const fresh =
+      state.freshMessages[room]?.map((message) => {
         return {
           ...message,
-          messageState,
+          messageState: message.messageState,
         };
       }) || [];
-    const fresh = state.freshMessages[room] || [];
 
-    // we will sort fresh messages to make sure no error has happened
-    const sortedFreshMessages = fresh.sort(
-      (a, b) =>
-        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-    );
-    return concat(messages, sortedFreshMessages);
-  }, [room, state.freshMessages, state.messages, userId]);
+    console.log(fresh);
+
+    return concat(messages, fresh);
+  }, [room, state.freshMessages, state.messages]);
 
   return useMemo(() => {
     return {

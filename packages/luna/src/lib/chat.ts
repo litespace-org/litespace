@@ -3,7 +3,16 @@ import { Dayjs } from "dayjs";
 import { isEmpty, maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 
-export type DisplayMessage = { id: number; text: string };
+type MessageState = "seen" | "sent" | "pending" | undefined;
+type ClientSideMessage = IMessage.Self & {
+  messageState?: MessageState;
+};
+
+export type DisplayMessage = {
+  id: number;
+  text: string;
+  messageState?: MessageState;
+};
 
 export type Sender = {
   userId: number;
@@ -50,7 +59,7 @@ function assignGroup({
   senderId: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   currentUser: IUser.Self;
-  messages: IMessage.Self[];
+  messages: (IMessage.Self & { messageState?: MessageState })[];
 }): MessageGroup | null {
   if (isEmpty(messages) || !senderId) return null;
   const sender = asSender({ senderId, currentUser, otherMember });
@@ -61,12 +70,17 @@ function assignGroup({
 
   const id = messages.map((message) => message.id).join("-");
 
+  console.log(
+    messages.map((message) => ({ messageState: message.messageState }))
+  );
+
   return {
     id,
     sender,
     messages: messages.map((message) => ({
       id: message.id,
       text: message.text,
+      messageState: message.messageState,
     })),
     sentAt: latest.updatedAt,
   };
@@ -77,7 +91,7 @@ export function asMessageGroups({
   currentUser,
   otherMember,
 }: {
-  messages: IMessage.Self[];
+  messages: ClientSideMessage[];
   currentUser: IUser.Self;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) {
