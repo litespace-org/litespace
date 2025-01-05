@@ -5,7 +5,7 @@ import { UnFocusedStream } from "@/components/Session/UnFocusedStream";
 import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
 import { MovableMedia } from "@/components/MovableMedia";
-import { streamsOrganizer } from "@/lib/stream";
+import { organizeStreams } from "@/lib/stream";
 
 export const SessionStreams: React.FC<{
   alert?: string;
@@ -27,7 +27,7 @@ export const SessionStreams: React.FC<{
 }> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const newStreams = useMemo(
-    () => streamsOrganizer(streams, currentUserId),
+    () => organizeStreams(streams, currentUserId),
     [streams, currentUserId]
   );
 
@@ -46,25 +46,24 @@ export const SessionStreams: React.FC<{
         fullScreen={fullScreen}
         stream={newStreams.focused}
         timer={timer}
-        streamMuted={newStreams.focused.user.id === currentUserId}
+        muted={newStreams.focused.user.id === currentUserId}
         alert={alert}
       />
+
       <div
         className={cn(
           "tw-flex tw-items-center tw-gap-6",
           !chat && "tw-absolute tw-bottom-6 tw-right-6"
         )}
       >
-        {newStreams.unfocused.map((stream, index) =>
-          stream ? (
-            <MovableMedia container={containerRef} key={index}>
-              <UnFocusedStream
-                streamMuted={stream.user.id === currentUserId}
-                stream={stream}
-              />
+        {newStreams.unfocused.map((stream, idx) => {
+          if (!stream) return null;
+          return (
+            <MovableMedia container={containerRef} key={idx}>
+              <UnFocusedStream stream={stream} />
             </MovableMedia>
-          ) : null
-        )}
+          );
+        })}
       </div>
     </div>
   );

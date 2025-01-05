@@ -17,6 +17,7 @@ import { Invoice } from "@/invoice";
 import { Topic } from "@/topic";
 import { AuthToken } from "@/client";
 import { Cache } from "@/cache";
+import { Session } from "@/session";
 
 export class Atlas {
   public readonly user: User;
@@ -36,6 +37,7 @@ export class Atlas {
   public readonly invoice: Invoice;
   public readonly cache: Cache;
   public readonly topic: Topic;
+  public readonly session: Session;
 
   constructor(backend: Backend, token: AuthToken | null) {
     this.user = new User(backend, token);
@@ -55,5 +57,6 @@ export class Atlas {
     this.invoice = new Invoice(backend, token);
     this.cache = new Cache(backend, token);
     this.topic = new Topic(backend, token);
+    this.session = new Session(backend, token);
   }
 }

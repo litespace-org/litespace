@@ -46,7 +46,7 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
-    dedupe: ["react", "react-dom"],
+    dedupe: ["react", "react-dom", "react-router-dom"],
   },
   assetsInclude: ["src/markdown/**/*.md"],
   esbuild: {

@@ -8,11 +8,15 @@ export function asSessionId(id: string) {
   return id as ISession.Id;
 }
 
+export function isSessionId(id: string): id is ISession.Id {
+  const [prefix, uuid] = id.split(":");
+  return (prefix === "lesson" || prefix === "interview") && !!uuid;
+}
+
 export function genSessionId(type: ISession.Type): ISession.Id {
   return `${type}:${uuidv4()}`;
 }
 
-export function getSessionType(id: string) {
-  const sessionId = asSessionId(id);
-  return first(sessionId.split(":"));
+export function getSessionType(id: ISession.Id): ISession.Type {
+  return first(id.split(":")) as ISession.Type;
 }

@@ -243,8 +243,8 @@ const Messages: React.FC<{
 
       <ConfirmationDialog
         labels={{
-          confirm: "chat.message.delete.confirm",
-          cancel: "chat.message.delete.cancel",
+          confirm: intl("chat.message.delete.confirm"),
+          cancel: intl("chat.message.delete.cancel"),
         }}
         type="error"
         title={intl("chat.message.delete")}

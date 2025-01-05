@@ -1,16 +1,16 @@
 import { StreamInfo } from "@/components/Session/types";
 
-export function streamsOrganizer(
+export function organizeStreams(
   streams: StreamInfo[],
   currentUserId: number
 ): {
-  focused: StreamInfo | undefined;
-  unfocused: (StreamInfo | undefined)[];
+  focused: StreamInfo | null;
+  unfocused: (StreamInfo | null)[];
 } {
-  let currentUserStream: StreamInfo | undefined;
-  let currentUserCast: StreamInfo | undefined;
-  let otherUserStream: StreamInfo | undefined;
-  let otherUserCast: StreamInfo | undefined;
+  let currentUserStream: StreamInfo | null = null;
+  let currentUserCast: StreamInfo | null = null;
+  let otherUserStream: StreamInfo | null = null;
+  let otherUserCast: StreamInfo | null = null;
 
   /**
    * assigning each stream to a unique variable
@@ -19,6 +19,7 @@ export function streamsOrganizer(
     if (stream.user.id === currentUserId && stream.cast) {
       currentUserCast = stream;
     }
+
     if (stream.user.id === currentUserId && !stream.cast) {
       currentUserStream = stream;
     }
@@ -32,13 +33,16 @@ export function streamsOrganizer(
   });
 
   /**
-   * Degree of Hirarchy -> Cast then streams and otherUser then currentUser
+   * Degree of Hirarchy
+   * 1. Screens
+   * 2. Other user stream.
+   * 3. Current user stream.
    */
   if (otherUserCast)
     return {
       focused: otherUserCast,
       unfocused: [currentUserCast, currentUserStream, otherUserStream].filter(
-        (stream) => stream !== undefined
+        (stream) => stream !== null
       ),
     };
 
@@ -46,14 +50,14 @@ export function streamsOrganizer(
     return {
       focused: currentUserCast,
       unfocused: [currentUserStream, otherUserStream].filter(
-        (stream) => stream !== undefined
+        (stream) => stream !== null
       ),
     };
 
   if (otherUserStream)
     return {
       focused: otherUserStream,
-      unfocused: [currentUserStream].filter((stream) => stream !== undefined),
+      unfocused: [currentUserStream].filter((stream) => stream !== null),
     };
 
   return {
