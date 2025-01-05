@@ -1,8 +1,8 @@
 import { isAdmin, isGhost, isStudent, isTutor } from "@litespace/auth";
-import { dayjs, logger, safe } from "@litespace/sol";
+import { logger, safe } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
-import { interviews, lessons, rooms } from "@litespace/models";
+import { rooms } from "@litespace/models";
 import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
@@ -25,9 +25,14 @@ export class Connection extends WssHandler {
 
       await cache.onlineStatus.addUser(user.id);
       this.announceStatus({ userId: user.id, online: true });
+      this.joinChatRooms();
 
-      await this.joinRooms();
-      if (isAdmin(this.user)) this.emitServerStats();
+      if (isStudent(this.user)) {
+        this.socket.join(Wss.Room.TutorsCache);
+      } else if (isAdmin(this.user)) {
+        this.socket.join(Wss.Room.ServerStats);
+        this.emitServerStats();
+      }
     });
     if (error instanceof Error) stdout.error(error.message);
   }
@@ -70,44 +75,17 @@ export class Connection extends WssHandler {
     });
   }
 
-  // TODO: put some more thought on this function implementaion details
-  private async joinRooms() {
+  /**
+   * This function is invoked on each user connection, it lets the user
+   * listen to events appertain to chat messages.
+   */
+  private async joinChatRooms() {
     const error = await safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
-
       const { list } = await rooms.findMemberRooms({ userId: user.id });
-
       this.socket.join(list.map((roomId) => asChatRoomId(roomId)));
-      // private channel
-      this.socket.join(user.id.toString());
-
-      if (isStudent(this.user)) this.socket.join(Wss.Room.TutorsCache);
-      if (isAdmin(this.user)) this.socket.join(Wss.Room.ServerStats);
-
-      // TODO: get user sessions from cache
-      const lessonsSessions = (
-        await lessons.find({
-          users: [user.id],
-          full: true,
-          after: dayjs.utc().startOf("day").toISOString(),
-          before: dayjs.utc().add(1, "day").toISOString(),
-        })
-      ).list.map((lesson) => lesson.sessionId);
-
-      const interviewsSessions = (
-        await interviews.find({
-          users: [user.id],
-        })
-      ).list.map((interview) => interview.ids.session);
-
-      this.socket.join(
-        [...lessonsSessions, ...interviewsSessions].map((session) =>
-          asSessionRoomId(session)
-        )
-      );
     });
-
     if (error instanceof Error) stdout.error(error.message);
   }
 

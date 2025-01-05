@@ -1,11 +1,10 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { IInterview, ILesson, IRule } from "@litespace/types";
+import { IInterview, ILesson, IRule, Wss } from "@litespace/types";
 import { concat, first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
 import { interviews, lessons } from "@litespace/models";
-import { INTERVIEW_DURATION } from "@litespace/sol";
-import { asSessionId } from "@litespace/sol";
+import { asSessionId, getSessionType } from "@litespace/sol";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
@@ -64,46 +63,45 @@ export function canBook({
 }
 
 // todo: write tests
-export async function canJoinSession({
+/**
+ * this function has been written to clean up the wss session handler
+ * by seperating this verbose details from the main logic code.
+ */
+export async function canJoinSessionAck({
   userId,
   sessionId,
 }: {
   userId: number;
   sessionId: string;
-}) {
-  const now = dayjs.utc();
-  const sessionType = first(sessionId.split(":"));
+}): Promise<Wss.AcknowledgePayload> {
+  const sessionType = getSessionType(sessionId);
 
   if (sessionType === "lesson") {
     const lesson = await lessons.findBySessionId(asSessionId(sessionId));
-    if (!lesson) return false;
-
-    const start = dayjs.utc(lesson.start);
-    const end = start.add(lesson.duration, "minutes");
-    // todo: unmagic "10" minutes
-    // const early = start.isAfter(now) && start.diff(now, "minutes") > 10;
-    // if (end.isAfter(now) || early) return false;
+    if (!lesson) return { code: Wss.AcknowledgeCode.LessonNotFound };
 
     const members = await lessons.findLessonMembers([lesson.id]);
     const member = members.find((member) => member.userId === userId);
-    if (!member) return false;
+    if (!member)
+      return {
+        code: Wss.AcknowledgeCode.Unallowed,
+        message: "The user is not a member of the lesson.",
+      };
 
-    return true;
+    return { code: Wss.AcknowledgeCode.Ok };
   }
 
   const interview = await interviews.findBySessionId(asSessionId(sessionId));
-  if (!interview) return false;
-
-  const start = dayjs.utc(interview.start);
-  const end = start.add(INTERVIEW_DURATION, "minutes");
-  // todo: unmagic "10" minutes
-  const early = start.isAfter(now) && start.diff(now, "minutes") > 10;
-  if (end.isAfter(now) || early) return false;
+  if (!interview) return { code: Wss.AcknowledgeCode.InterviewNotFound };
 
   const member =
     interview.ids.interviewer === userId ||
     interview.ids.interviewee === userId;
-  if (!member) return false;
+  if (!member)
+    return {
+      code: Wss.AcknowledgeCode.Unallowed,
+      message: "The user is not a member of the lesson.",
+    };
 
-  return true;
+  return { code: Wss.AcknowledgeCode.Ok };
 }

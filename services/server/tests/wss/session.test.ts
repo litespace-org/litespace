@@ -36,6 +36,56 @@ describe("sessions test suite", () => {
     student = await studentApi.findCurrentUser();
   });
 
+  it("should join the user socket in the socket.io room when the user pre-join", async () => {
+    const now = dayjs();
+
+    const rule = await tutorApi.atlas.rule.create({
+      start: now.utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      duration: 8 * 60,
+      frequency: IRule.Frequency.Daily,
+      time: Time.from(now.hour() + ":" + now.minute())
+        .utc()
+        .format("railway"),
+      title: faker.lorem.words(3),
+    });
+
+    const unpackedRules = unpackRules({
+      rules: [rule],
+      slots: [],
+      start: rule.start,
+      end: rule.end,
+    });
+
+    const selectedRuleEvent = unpackedRules[0];
+
+    const lesson = await studentApi.atlas.lesson.create({
+      start: selectedRuleEvent.start,
+      duration: 30,
+      ruleId: rule.id,
+      tutorId: tutor.user.id,
+    });
+
+    const tutorSocket = new ClientSocket(tutor.token);
+    let ack = await tutorSocket.preJoinSession(lesson.sessionId);
+
+    let sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
+    expect(sessionMembersIds).to.be.of.length(0);
+
+    const result = tutorSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+
+    const studentSocket = new ClientSocket(student.token);
+    ack = await studentSocket.joinSession(lesson.sessionId);
+    expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
+
+    const { userId } = await result;
+    expect(userId).to.eq(student.user.id);
+
+    tutorSocket.client.disconnect();
+    studentSocket.client.disconnect();
+  });
+
   it("should broadcast the event when the user join a session", async () => {
     const now = dayjs();
 
@@ -67,33 +117,23 @@ describe("sessions test suite", () => {
     });
 
     const tutorSocket = new ClientSocket(tutor.token);
-    const studentSocket = new ClientSocket(student.token);
+    let ack = await tutorSocket.joinSession(lesson.sessionId);
 
-    const studentResult = studentSocket.wait(
-      Wss.ServerEvent.MemberJoinedSession
-    );
-    tutorSocket.joinSession(lesson.sessionId);
-
-    const { userId } = await studentResult;
-
-    const sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    let sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
     expect(sessionMembersIds).to.be.of.length(1);
     expect(sessionMembersIds[0]).to.be.eq(tutor.user.id);
-    expect(userId).to.be.eq(tutor.user.id);
 
-    const tutorResult = tutorSocket.wait(Wss.ServerEvent.MemberJoinedSession);
-    studentSocket.joinSession(lesson.sessionId);
+    const studentSocket = new ClientSocket(student.token);
+    ack = await studentSocket.joinSession(lesson.sessionId);
 
-    const { userId: studentId } = await tutorResult;
-    const sessionMembersIdsSecondSnapshot = await cache.session.getMembers(
-      lesson.sessionId
-    );
-    expect(sessionMembersIdsSecondSnapshot).to.be.of.length(2);
-    expect(
-      sessionMembersIdsSecondSnapshot.map((memberId) => memberId)
-    ).to.be.members([student.user.id, tutor.user.id]);
-
-    expect(studentId).to.be.eq(student.user.id);
+    sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
+    expect(sessionMembersIds).to.be.of.length(2);
+    expect(sessionMembersIds.map((memberId) => memberId)).to.be.members([
+      student.user.id,
+      tutor.user.id,
+    ]);
 
     tutorSocket.client.disconnect();
     studentSocket.client.disconnect();
@@ -118,7 +158,6 @@ describe("sessions test suite", () => {
       start: rule.start,
       end: rule.end,
     });
-
     const selectedRuleEvent = unpackedRules[0];
 
     const lesson = await studentApi.atlas.lesson.create({
@@ -134,57 +173,8 @@ describe("sessions test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
-    tutorSocket.joinSession(lesson.sessionId);
-
-    await result
-      .then(() => expect(false))
-      .catch((e) => expect(e.message).to.be.eq("TIMEOUT"));
-
-    tutorSocket.client.disconnect();
-    studentSocket.client.disconnect();
-  });
-
-  it("should NOT broadcast when user tries to join a session before its start", async () => {
-    const now = dayjs();
-    const rule = await tutorApi.atlas.rule.create({
-      start: now.add(1, "day").utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
-      duration: 8 * 60,
-      frequency: IRule.Frequency.Daily,
-      time: Time.from(now.hour() + ":" + now.minute())
-        .utc()
-        .format("railway"),
-      title: faker.lorem.words(3),
-    });
-
-    const unpackedRules = unpackRules({
-      rules: [rule],
-      slots: [],
-      start: rule.start,
-      end: rule.end,
-    });
-    const selectedRuleEvent = unpackedRules[0];
-
-    const lesson = await studentApi.atlas.lesson.create({
-      start: selectedRuleEvent.start,
-      duration: 30,
-      ruleId: rule.id,
-      tutorId: tutor.user.id,
-    });
-
-    const newTutorApi = await Api.forTutor();
-    const newTutor = await newTutorApi.findCurrentUser();
-
-    const tutorSocket = new ClientSocket(newTutor.token);
-    const studentSocket = new ClientSocket(student.token);
-
-    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
-    tutorSocket.joinSession(lesson.sessionId);
-
-    await result
-      .then(() => expect(false))
-      .catch((e) => expect(e.message).to.be.eq("TIMEOUT"));
+    const ack = await tutorSocket.joinSession(lesson.sessionId);
+    expect(ack.code).to.eq(Wss.AcknowledgeCode.Unallowed);
 
     tutorSocket.client.disconnect();
     studentSocket.client.disconnect();
