@@ -14,7 +14,13 @@ export class Session extends CacheBase {
     return this;
   }
 
-  async addMember({ sessionId, userId }: { sessionId: ISession.Id; userId: number }) {
+  async addMember({
+    sessionId,
+    userId,
+  }: {
+    sessionId: ISession.Id;
+    userId: number;
+  }) {
     const sessionKey = this.asSessionKey(sessionId);
     const userKey = this.asUserKey(userId);
     await this.client
@@ -26,7 +32,13 @@ export class Session extends CacheBase {
       .exec();
   }
 
-  async removeMember({ sessionId, userId }: { sessionId: ISession.Id; userId: number }) {
+  async removeMember({
+    sessionId,
+    userId,
+  }: {
+    sessionId: ISession.Id;
+    userId: number;
+  }) {
     await this.client
       .multi()
       .sRem(this.asSessionKey(sessionId), userId.toString())

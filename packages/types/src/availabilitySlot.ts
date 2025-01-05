@@ -27,13 +27,13 @@ export type UpdatePayload = {
   end: string;
 };
 
-export type Slot = { 
+export type Slot = {
   id: number;
   start: string;
   end: string;
 };
 
-export type SubSlot = { 
+export type SubSlot = {
   parent: number;
   start: string;
   end: string;

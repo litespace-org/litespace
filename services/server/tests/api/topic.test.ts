@@ -14,9 +14,11 @@ describe("/api/v1/topic/", () => {
   describe("POST /api/v1/topic/user", () => {
     it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
-      const res = await safe(async () => adminApi.atlas.topic.addUserTopics({
-        topicIds: [1],
-      }));
+      const res = await safe(async () =>
+        adminApi.atlas.topic.addUserTopics({
+          topicIds: [1],
+        })
+      );
       expect(res).to.deep.eq(forbidden());
     });
 
@@ -24,23 +26,27 @@ describe("/api/v1/topic/", () => {
       const studentApi = await Api.forStudent();
       const mockTopicIds = await Promise.all(
         range(0, MAX_TOPICS_COUNT + 1).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
-      const res1 = await safe(
-        async () => studentApi.atlas.topic.addUserTopics({
+      const res1 = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({
           topicIds: mockTopicIds.slice(0, MAX_TOPICS_COUNT),
         })
       );
       expect(res1).to.eq("OK");
 
-      const res2 = await safe(
-        async () => studentApi.atlas.topic.addUserTopics({
+      const res2 = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({
           topicIds: mockTopicIds.slice(MAX_TOPICS_COUNT),
         })
       );
@@ -49,9 +55,11 @@ describe("/api/v1/topic/", () => {
 
     it("should respond with 404 if atleast one topic is not found.", async () => {
       const studentApi = await Api.forStudent();
-      const res = await safe(async () => studentApi.atlas.topic.addUserTopics({
-        topicIds: [123]
-      }));
+      const res = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({
+          topicIds: [123],
+        })
+      );
       expect(res).to.deep.eq(notfound.topic());
     });
 
@@ -61,22 +69,32 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 3).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
-      const res1 = await safe(async () => studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds }));
+      const res1 = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+      );
       expect(res1).to.eq("OK");
 
       // it should ignore duplicated topics
-      const res2 = await safe(async () => studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds }));
+      const res2 = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+      );
       expect(res2).to.eq("OK");
 
-      const myTopics = await topics.findUserTopics({ users: [student.user.id] });
+      const myTopics = await topics.findUserTopics({
+        users: [student.user.id],
+      });
       expect(myTopics.length).to.eq(3);
     });
   });
@@ -84,7 +102,9 @@ describe("/api/v1/topic/", () => {
   describe("DELETE /api/v1/topic/user", () => {
     it("should respond with 401 if the user neither a student, a tutor, nor a tutor-manager.", async () => {
       const adminApi = await Api.forSuperAdmin();
-      const res = await safe(async () => adminApi.atlas.topic.deleteUserTopics({ topicIds: [1] }));
+      const res = await safe(async () =>
+        adminApi.atlas.topic.deleteUserTopics({ topicIds: [1] })
+      );
       expect(res).to.deep.eq(forbidden());
     });
 
@@ -93,15 +113,21 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 3).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
-      const res = await safe(async () => studentApi.atlas.topic.deleteUserTopics({ topicIds: mockTopicIds }));
+      const res = await safe(async () =>
+        studentApi.atlas.topic.deleteUserTopics({ topicIds: mockTopicIds })
+      );
       expect(res).to.deep.eq("OK");
     });
 
@@ -111,25 +137,33 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 3).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
-      const res1 = await safe(
-        async () => studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+      const res1 = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
       );
       expect(res1).to.eq("OK");
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.deleteUserTopics({ topicIds: mockTopicIds.slice(0,2) })
+      const res = await safe(async () =>
+        studentApi.atlas.topic.deleteUserTopics({
+          topicIds: mockTopicIds.slice(0, 2),
+        })
       );
       expect(res).to.deep.eq("OK");
 
-      const myTopics = await topics.findUserTopics({ users: [student.user.id] });
+      const myTopics = await topics.findUserTopics({
+        users: [student.user.id],
+      });
       expect(myTopics.length).to.eq(1);
     });
   });
@@ -146,19 +180,25 @@ describe("/api/v1/topic/", () => {
 
       const mockTopics = await Promise.all(
         range(0, 3).map(
-          async (i) => await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          }))
+          async (i) =>
+            await db.topic({
+              name: {
+                ar: `${faker.animal.bear()}-${i}`,
+                en: `${faker.animal.bird()}-${i}`,
+              },
+            })
+        )
       );
-      const mockTopicIds = mockTopics.map(t => t.id);
+      const mockTopicIds = mockTopics.map((t) => t.id);
 
-      const res = await safe(async () => studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds }));
+      const res = await safe(async () =>
+        studentApi.atlas.topic.addUserTopics({ topicIds: mockTopicIds })
+      );
       expect(res).to.eq("OK");
 
-      const myTopics = await safe(async () => studentApi.atlas.topic.findUserTopics());
+      const myTopics = await safe(async () =>
+        studentApi.atlas.topic.findUserTopics()
+      );
       expect(myTopics).to.be.an("array");
       expect(myTopics).to.have.length(3);
     });
@@ -171,23 +211,27 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: mockTopicIds.slice(0,2), 
-          addTopics: mockTopicIds.slice(2,4),
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: mockTopicIds.slice(0, 2),
+          addTopics: mockTopicIds.slice(2, 4),
         })
       );
       expect(res).to.eq("OK");
@@ -199,23 +243,27 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: mockTopicIds.slice(0,2), 
-          addTopics: mockTopicIds.slice(3,4),
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: mockTopicIds.slice(0, 2),
+          addTopics: mockTopicIds.slice(3, 4),
         })
       );
       expect(res).to.deep.eq("OK");
@@ -227,23 +275,27 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 31).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,30),
+        topics: mockTopicIds.slice(0, 30),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
           removeTopics: [],
-          addTopics: mockTopicIds.slice(30,31),
+          addTopics: mockTopicIds.slice(30, 31),
         })
       );
       expect(res).to.deep.eq(refused());
@@ -255,30 +307,34 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res1 = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: [], 
-          addTopics: mockTopicIds.slice(2,4),
+      const res1 = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: [],
+          addTopics: mockTopicIds.slice(2, 4),
         })
       );
       expect(res1).to.eq("OK");
 
-      const res2 = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: mockTopicIds.slice(0,2), 
+      const res2 = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: mockTopicIds.slice(0, 2),
           addTopics: [],
         })
       );
@@ -291,22 +347,26 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: [], 
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: [],
           addTopics: [],
         })
       );
@@ -319,23 +379,27 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: [...mockTopicIds.slice(0,2), 123], 
-          addTopics: [...mockTopicIds.slice(2,4), 321],
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: [...mockTopicIds.slice(0, 2), 123],
+          addTopics: [...mockTopicIds.slice(2, 4), 321],
         })
       );
       expect(res).to.deep.eq(notfound.topic());
@@ -347,23 +411,27 @@ describe("/api/v1/topic/", () => {
 
       const mockTopicIds = await Promise.all(
         range(0, 4).map(
-          async (i) => (await db.topic({
-            name: {
-              ar: `${faker.animal.bear()}-${i}`,
-              en: `${faker.animal.bird()}-${i}`,
-            }
-          })).id)
+          async (i) =>
+            (
+              await db.topic({
+                name: {
+                  ar: `${faker.animal.bear()}-${i}`,
+                  en: `${faker.animal.bird()}-${i}`,
+                },
+              })
+            ).id
+        )
       );
 
       await topics.registerUserTopics({
         user: student.user.id,
-        topics: mockTopicIds.slice(0,2),
+        topics: mockTopicIds.slice(0, 2),
       });
 
-      const res = await safe(
-        async () => studentApi.atlas.topic.replaceUserTopics({ 
-          removeTopics: [...mockTopicIds.slice(0,2)], 
-          addTopics: [...mockTopicIds.slice(2,3), 123],
+      const res = await safe(async () =>
+        studentApi.atlas.topic.replaceUserTopics({
+          removeTopics: [...mockTopicIds.slice(0, 2)],
+          addTopics: [...mockTopicIds.slice(2, 3), 123],
         })
       );
       expect(res).to.deep.eq(notfound.topic());

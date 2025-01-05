@@ -3,9 +3,9 @@ import { ICoupon } from "@litespace/types";
 
 export class Coupon extends Base {
   async create(payload: ICoupon.CreateApiPayload): Promise<ICoupon.Self> {
-    return this.post({ 
-      route: `/api/v1/coupon`, 
-      payload, 
+    return this.post({
+      route: `/api/v1/coupon`,
+      payload,
     });
   }
 
@@ -13,14 +13,14 @@ export class Coupon extends Base {
     id: number,
     payload: ICoupon.UpdateApiPayload
   ): Promise<ICoupon.Self> {
-    return this.put({ 
-      route: `/api/v1/coupon/${id}`, 
+    return this.put({
+      route: `/api/v1/coupon/${id}`,
       payload,
     });
   }
 
   async delete(id: number): Promise<void> {
-    await this.del({ route: `/api/v1/coupon/${id} `});
+    await this.del({ route: `/api/v1/coupon/${id} ` });
   }
 
   async findById(id: number): Promise<ICoupon.Self> {

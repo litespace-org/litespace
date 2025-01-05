@@ -4,7 +4,7 @@ type Append<T extends { [key: string]: string | Blob }> = (
 ) => void;
 
 export function safeFormData<
-  T extends { [key: string]: string | Blob | undefined }
+  T extends { [key: string]: string | Blob | undefined },
 >() {
   const formData = new FormData();
 

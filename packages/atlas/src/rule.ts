@@ -24,7 +24,10 @@ export class Rule extends Base {
      */
     id: number;
   } & IRule.FindRulesWithSlotsApiQuery): Promise<IRule.FindUserRulesWithSlotsApiResponse> {
-    return await this.get({ route: `/api/v1/rule/slots/${id}`, params: { after, before }});
+    return await this.get({
+      route: `/api/v1/rule/slots/${id}`,
+      params: { after, before },
+    });
   }
 
   /**
@@ -42,7 +45,7 @@ export class Rule extends Base {
       params: {
         start,
         end,
-      }
+      },
     });
   }
 

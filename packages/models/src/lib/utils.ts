@@ -3,7 +3,7 @@ import { randomUUID } from "crypto";
 
 export function asSessionId(id: string) {
   if (!id.startsWith("lesson:") && !id.startsWith("interview:"))
-    throw Error("Invalid session id.")
+    throw Error("Invalid session id.");
   return id as ISession.Id;
 }
 

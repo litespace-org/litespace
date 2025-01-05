@@ -33,11 +33,15 @@ export class Topic extends Base {
     return await this.post({ route: `/api/v1/topic/of/user`, payload });
   }
 
-  async deleteUserTopics(payload: ITopic.DeleteUserTopicsApiPayload): Promise<void> {
+  async deleteUserTopics(
+    payload: ITopic.DeleteUserTopicsApiPayload
+  ): Promise<void> {
     return await this.del({ route: `/api/v1/topic/of/user`, payload });
   }
 
-  async replaceUserTopics(payload: ITopic.ReplaceUserTopicsApiPayload): Promise<void> {
+  async replaceUserTopics(
+    payload: ITopic.ReplaceUserTopicsApiPayload
+  ): Promise<void> {
     return await this.patch({ route: `/api/v1/topic/of/user`, payload });
   }
 }

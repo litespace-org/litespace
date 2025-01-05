@@ -40,8 +40,7 @@ describe("Authorization", () => {
       expect(checker.check({ role: IUser.Role.Student })).to.be.false;
       expect(checker.check({ id: 1 })).to.be.true;
       expect(checker.check({ id: 2 })).to.be.true;
-      expect(checker.check({ id: 2, role: IUser.Role.Studio })).to.be
-        .true;
+      expect(checker.check({ id: 2, role: IUser.Role.Studio })).to.be.true;
       expect(checker.check({})).to.be.false;
     });
 
@@ -50,8 +49,7 @@ describe("Authorization", () => {
       expect(checker.check()).to.be.false;
       expect(checker.check({ role: IUser.Role.SuperAdmin })).to.be.true;
       expect(checker.check({ id: 2 })).to.be.true;
-      expect(checker.check({ id: 2, role: IUser.Role.Studio })).to.be
-        .true;
+      expect(checker.check({ id: 2, role: IUser.Role.Studio })).to.be.true;
     });
   });
 });

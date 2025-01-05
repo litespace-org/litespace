@@ -12,13 +12,7 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { IRating } from "@litespace/types";
-import {
-  isAdmin,
-  isStudio,
-  isStudent,
-  isTutor,
-  isUser,
-} from "@litespace/auth";
+import { isAdmin, isStudio, isStudent, isTutor, isUser } from "@litespace/auth";
 import zod from "zod";
 import { concat } from "lodash";
 
@@ -48,8 +42,7 @@ async function createRating(req: Request, res: Response, next: NextFunction) {
   if (!ratee) return next(notfound.rating());
 
   const eligible =
-    (isStudent(user) && isTutor(ratee)) ||
-    (isTutor(user) && isStudio(ratee));
+    (isStudent(user) && isTutor(ratee)) || (isTutor(user) && isStudio(ratee));
   if (!eligible) return next(forbidden());
 
   const rating = await ratings.findByEntities({

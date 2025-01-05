@@ -57,32 +57,31 @@ const Content: React.FC<{
   }, [intl, toast]);
 
   const makeTabPlans = useMemo(
-    () => (tab: Tab) =>
-      (
-        <Animate key={tab} tab={tab}>
-          <div className="flex gap-6 mt-[124px]">
-            {plans?.[tab].map((plan, idx) => (
-              <div
-                key={plan.id}
-                className={cn("max-w-[368px]", { "-mt-10": idx === 1 })}
-              >
-                <PlanCard
-                  title={intl(PLANS_TITLE_ID_MAP[plan.id])}
-                  description={intl(PLANS_DESC_ID_MAP[plan.id], {
-                    value: plan.weeklyMinutes,
-                  })}
-                  weeklyMinutes={plan.weeklyMinutes}
-                  price={plan.price}
-                  discount={plan.discount}
-                  label={plan.label}
-                  primary={plan.primary}
-                  onBuy={notifyComingSoon}
-                />
-              </div>
-            ))}
-          </div>
-        </Animate>
-      ),
+    () => (tab: Tab) => (
+      <Animate key={tab} tab={tab}>
+        <div className="flex gap-6 mt-[124px]">
+          {plans?.[tab].map((plan, idx) => (
+            <div
+              key={plan.id}
+              className={cn("max-w-[368px]", { "-mt-10": idx === 1 })}
+            >
+              <PlanCard
+                title={intl(PLANS_TITLE_ID_MAP[plan.id])}
+                description={intl(PLANS_DESC_ID_MAP[plan.id], {
+                  value: plan.weeklyMinutes,
+                })}
+                weeklyMinutes={plan.weeklyMinutes}
+                price={plan.price}
+                discount={plan.discount}
+                label={plan.label}
+                primary={plan.primary}
+                onBuy={notifyComingSoon}
+              />
+            </div>
+          ))}
+        </div>
+      </Animate>
+    ),
     [intl, notifyComingSoon, plans]
   );
 

@@ -115,8 +115,8 @@ const Invoice: React.FC<{
             rejected
               ? "invoices.status.rejected"
               : canceledByReceiver
-              ? "invoices.status.canceled-by-receiver"
-              : "invoices.admin.status.cancellation-approved-by-admin"
+                ? "invoices.status.canceled-by-receiver"
+                : "invoices.admin.status.cancellation-approved-by-admin"
           )}
         >
           <p>{intl("invoices.unexpected.status.note")}</p>
