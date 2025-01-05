@@ -30,7 +30,7 @@ const Settings: React.FC = () => {
           {loading ? (
             <div className="w-full h-[908px] pt-[149px] flex justify-center">
               <div className="h-[181px]">
-                <Loader variant="large" text={intl("settings.loading")} />
+                <Loader size="large" text={intl("settings.loading")} />
               </div>
             </div>
           ) : null}
@@ -39,6 +39,7 @@ const Settings: React.FC = () => {
               <div className="h-[181px]">
                 {" "}
                 <LoadingError
+                  size="large"
                   retry={refetch.user}
                   error={intl("settings.error")}
                 />

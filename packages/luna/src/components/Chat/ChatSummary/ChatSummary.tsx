@@ -72,13 +72,17 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
 
       {error && retry && !loading ? (
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
-          <LoadingError error={intl("student-dashboard.error")} retry={retry} />
+          <LoadingError
+            size="medium"
+            error={intl("student-dashboard.error")}
+            retry={retry}
+          />
         </div>
       ) : null}
 
       {loading ? (
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
-          <Loader text={intl("student-dashboard.loading")} />
+          <Loader size="medium" text={intl("student-dashboard.loading")} />
         </div>
       ) : null}
 

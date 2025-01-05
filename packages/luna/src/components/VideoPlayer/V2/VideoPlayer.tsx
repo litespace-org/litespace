@@ -97,7 +97,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             "tw-absolute tw-z-[8] tw-transition-opacity  tw-duration-300 tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
           )}
         >
-          <Loader variant="large" />
+          <Loader size="medium" />
         </span>
       ) : null}
       {status === "error" ? (
