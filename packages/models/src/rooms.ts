@@ -22,8 +22,8 @@ export class Rooms {
    * @param ids - members user ids
    * @returns the created room id
    */
-  async create(ids: number[]): Promise<number> {
-    return await knex.transaction(async (tx: Knex.Transaction) => {
+  async create(ids: number[], tx: Knex.Transaction): Promise<number> {
+    return await tx.transaction(async (tx: Knex.Transaction) => {
       const now = dayjs.utc().toDate();
       const rows = await knex<IRoom.Row>(this.tables.rooms)
         .transacting(tx)

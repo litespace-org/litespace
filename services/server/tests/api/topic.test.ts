@@ -1,4 +1,4 @@
-import { bad, empty, forbidden, notfound, refused } from "@/lib/error";
+import { empty, forbidden, notfound, refused } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";

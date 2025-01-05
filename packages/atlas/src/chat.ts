@@ -2,8 +2,14 @@ import { Base } from "@/base";
 import { IFilter, IMessage, IRoom } from "@litespace/types";
 
 export class Chat extends Base {
-  async createRoom(userId: number): Promise<IRoom.CreateRoomApiResponse> {
-    return await this.post({ route: `/api/v1/chat/${userId}` });
+  async createRoom(
+    userId: number,
+    message?: string
+  ): Promise<IRoom.CreateRoomApiResponse> {
+    return await this.post({
+      route: `/api/v1/chat/new`,
+      payload: { userId, message },
+    });
   }
 
   async findRoomMessages(

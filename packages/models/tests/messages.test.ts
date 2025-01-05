@@ -1,4 +1,4 @@
-import { messages, rooms } from "@/index";
+import { knex, messages, rooms } from "@/index";
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol";
 import { expect } from "chai";
@@ -19,12 +19,18 @@ describe("Messages", () => {
     it("should count total messages for a given user", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const room = await rooms.create([tutor.id, student.id]);
 
-      await messages.create({
-        roomId: room,
-        text: "1",
-        userId: student.id,
+      const room = await knex.transaction(async (tx) => {
+        const room = await rooms.create([tutor.id, student.id], tx);
+        await messages.create(
+          {
+            roomId: room,
+            text: "1",
+            userId: student.id,
+          },
+          tx
+        );
+        return room;
       });
 
       expect(await messages.countUserMessages({ user: student.id })).to.be.eq(
@@ -48,7 +54,9 @@ describe("Messages", () => {
       expect(await messages.findUnreadCount({ room: 10, user: 1 })).to.be.eq(0);
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const room = await fixtures.room([tutor.id, student.id]);
+      const room = await knex.transaction(
+        async (tx) => await fixtures.room(tx, [tutor.id, student.id])
+      );
       expect(
         await messages.findUnreadCount({ room: room, user: student.id })
       ).to.be.eq(0);

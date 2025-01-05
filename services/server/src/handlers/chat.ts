@@ -1,4 +1,4 @@
-import { messages, rooms, users } from "@litespace/models";
+import { knex, messages, rooms, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isEmpty } from "lodash";
@@ -23,7 +23,10 @@ import { IMessage, IRoom } from "@litespace/types";
 import { asFindUserRoomsApiRecord } from "@/lib/chat";
 import { cache } from "@/lib/cache";
 
-const createRoomPayload = zod.object({ userId: id });
+const createRoomPayload = zod.object({
+  userId: id,
+  message: zod.optional(zod.string()),
+});
 const findRoomByMembersPayload = zod.object({ members: zod.array(id) });
 const findUserRoomsQuery = zod.object({
   page: zod.optional(pageNumber),
@@ -43,7 +46,7 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
   const allowed = isUser(currentUser);
   if (!allowed) return next(forbidden());
 
-  const { userId: targetUserId } = createRoomPayload.parse(req.params);
+  const { userId: targetUserId, message } = createRoomPayload.parse(req.body);
   const targetUser = await users.findById(targetUserId);
   if (!targetUser) return next(notfound.user());
 
@@ -65,7 +68,20 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
   const room = await rooms.findRoomByMembers(members);
   if (room) return next(exists.room());
 
-  const roomId = await rooms.create(members);
+  const roomId = await knex.transaction(async (tx) => {
+    const roomId = await rooms.create(members, tx);
+    if (message)
+      await messages.create(
+        {
+          roomId,
+          userId: currentUser.id,
+          text: message,
+        },
+        tx
+      );
+    return roomId;
+  });
+
   const response: IRoom.CreateRoomApiResponse = { roomId };
   res.status(200).json(response);
 }

@@ -2,7 +2,7 @@ import { flush } from "@fixtures/shared";
 import { Api, unexpectedApiSuccess } from "@fixtures/api";
 import { expect } from "chai";
 import db from "@fixtures/db";
-import { messages, rooms } from "@litespace/models";
+import { knex, messages, rooms } from "@litespace/models";
 import { range } from "lodash";
 import { ClientSocket } from "@fixtures/wss";
 import { Wss } from "@litespace/types";
@@ -179,14 +179,22 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     const tutorApi = await Api.forTutor();
     const tutor = await tutorApi.atlas.user.findCurrentUser();
 
-    await Promise.all(
-      ["student-1", "student-2", "student-3"].map(async (name) => {
-        const studnetApi = await Api.forStudent();
-        const student = await studnetApi.findCurrentUser();
-        const room = await db.room([tutor.user.id, student.user.id]);
-        await db.message({ roomId: room, text: `Hello, ${name}` });
-      })
-    );
+    for (const name of ["student-1", "student-2", "student-3"]) {
+      const studnetApi = await Api.forStudent();
+      const student = await studnetApi.findCurrentUser();
+
+      const room = await knex.transaction(async (tx) =>
+        db.room(tx, [tutor.user.id, student.user.id])
+      );
+
+      await knex.transaction(async (tx) =>
+        db.message(tx, {
+          roomId: room,
+          userId: tutor.user.id,
+          text: `Hello, ${name}`,
+        })
+      );
+    }
 
     const tests = [
       { keyword: "Hello", total: 3 },

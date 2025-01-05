@@ -1,6 +1,7 @@
 import { Api } from "@fixtures/api";
 import db, { flush } from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
+import { knex } from "@litespace/models";
 import { IUser, Wss } from "@litespace/types";
 
 describe("Typing", () => {
@@ -19,7 +20,9 @@ describe("Typing", () => {
     const studentApi = await Api.forStudent();
     student = await studentApi.findCurrentUser();
 
-    room = await db.room([student.user.id, tutor.user.id]);
+    room = await knex.transaction(async (tx) =>
+      db.room(tx, [student.user.id, tutor.user.id])
+    );
     tutorSocket = new ClientSocket(tutor.token);
     studentSocket = new ClientSocket(student.token);
   });

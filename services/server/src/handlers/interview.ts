@@ -34,8 +34,6 @@ import { canBook } from "@/lib/session";
 import { platformConfig } from "@/constants";
 import { genSessionId } from "@litespace/sol";
 
-const INTERVIEW_DURATION = 30;
-
 const createInterviewPayload = zod.object({
   interviewerId: id,
   start: datetime,
@@ -101,9 +99,10 @@ async function createInterview(
 
   const members = [interviewer.id, intervieweeId];
   const room = await rooms.findRoomByMembers(members);
-  if (!room) await rooms.create(members);
 
   const interview = await knex.transaction(async (tx) => {
+    if (!room) await rooms.create(members, tx);
+
     const interview = await interviews.create({
       interviewer: interviewerId,
       interviewee: intervieweeId,

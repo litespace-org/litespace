@@ -7,6 +7,7 @@ import { dayjs, nameof } from "@litespace/sol";
 import { IUser } from "@litespace/types";
 import { first, range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";
+import { knex } from "@/query";
 
 const mockUser = {
   id: 0,
@@ -87,10 +88,10 @@ describe(nameof(Tutors), () => {
         range(0, 5).map(() => fixtures.tutor())
       );
 
-      await Promise.all([
-        fixtures.room([student.id, mockTutors[0].id]),
-        fixtures.room([student.id, mockTutors[1].id]),
-      ]);
+      await knex.transaction(async (tx) => {
+        await fixtures.room(tx, [student.id, mockTutors[0].id]);
+        await fixtures.room(tx, [student.id, mockTutors[1].id]);
+      });
 
       const res = await tutors.findUncontactedTutorsForStudent({
         student: student.id,

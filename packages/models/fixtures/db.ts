@@ -366,16 +366,19 @@ export async function makeRatings({
   );
 }
 
-async function makeRoom(payload?: [number, number]) {
+async function makeRoom(tx: Knex.Transaction, payload?: [number, number]) {
   const [firstUserId, secondUserId]: [number, number] = payload || [
     await tutor().then((user) => user.id),
     await student().then((user) => user.id),
   ];
-  return await rooms.create([firstUserId, secondUserId]);
+  return await rooms.create([firstUserId, secondUserId], tx);
 }
 
-async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
-  const roomId: number = payload?.roomId || (await makeRoom());
+async function makeMessage(
+  tx: Knex.Transaction,
+  payload?: Partial<IMessage.CreatePayload>
+) {
+  const roomId: number = payload?.roomId || (await makeRoom(tx));
   const userId: number =
     payload?.userId ||
     (await rooms
