@@ -23,6 +23,115 @@ type MessageStreamAction =
   | { type: MessageStream.Update; message: IMessage.Self }
   | { type: MessageStream.Delete; messageId: number; roomId: number };
 
+type State = {
+  /**
+   * Current active room id
+   */
+  room: number | null;
+  /**
+   * Map from room id to the current room page
+   */
+  pages: Record<number, number | undefined>;
+  /**
+   * Map from room id to its messages from the backend
+   */
+  messages: Record<number, IMessage.ClientSideMessage[] | undefined>;
+  /**
+   * Map from room id to its fresh messages (new messages received since the last page refresh)
+   */
+  freshMessages: Record<number, IMessage.ClientSideMessage[] | undefined>;
+  /**
+   * Map from room id to the total number of messages that the room has.
+   */
+  totals: Record<number, number | undefined>;
+  /**
+   * Map from room id to loading state
+   */
+  loading: Record<number, boolean | undefined>;
+  /**
+   * Map from room id to fetching state
+   */
+  fetching: Record<number, boolean | undefined>;
+  /**
+   * Map from room id to error messages
+   */
+  errors: Record<number, string | null | undefined>;
+};
+
+enum ActionType {
+  AppendRoomMessages,
+  setTotalMessages,
+  SetPage,
+  SetLoading,
+  SetFetching,
+  SetError,
+  PreCall,
+  PostCall,
+  PostCallError,
+  AddPendingMessage,
+  ActivateMessage,
+  AddErrorMessage,
+  AddMessage,
+  UpdateMessage,
+  DeleteMessage,
+}
+
+type Action =
+  | {
+      type: ActionType.AppendRoomMessages;
+      room: number;
+      messages: IMessage.Self[];
+    }
+  | {
+      type: ActionType.setTotalMessages;
+      room: number;
+      total: number;
+    }
+  | {
+      type: ActionType.SetPage;
+      room: number;
+      page: number;
+    }
+  | {
+      type: ActionType.SetLoading;
+      room: number;
+      loading: boolean;
+    }
+  | {
+      type: ActionType.SetError;
+      room: number;
+      error: string | null | undefined;
+    }
+  | { type: ActionType.SetFetching; room: number; fetching: boolean }
+  | {
+      type: ActionType.PreCall;
+      room: number;
+      loading: boolean;
+      fetching: boolean;
+      page: number;
+    }
+  | {
+      type: ActionType.PostCall;
+      messages: IMessage.Self[];
+      room: number;
+      total: number;
+    }
+  | {
+      type: ActionType.AddPendingMessage;
+      message: { text: string; room: number; refId: string; userId: number };
+    }
+  | {
+      type: ActionType.ActivateMessage;
+      message: { refId: string; room: number };
+    }
+  | {
+      type: ActionType.AddErrorMessage;
+      message: { refId: string; room: number; errorMessage?: string };
+    }
+  | MessageStreamAction;
+
+export type OnMessage = (action: Action) => void;
+
 export function useFindRoomMembers(
   roomId: number | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
@@ -90,8 +199,6 @@ export function useUpdateRoom({
   });
 }
 
-export type OnMessage = (action: Action) => void;
-
 /**
  * The hook responsible for integration with the wss server, it allows the user to send
  * delete and update messages.
@@ -112,16 +219,29 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
       userId: number;
     }) => {
       if (!onMessage) return;
-      const id = uniqueId();
-      socket?.emit(Wss.ClientEvent.SendMessage, {
-        roomId,
-        text,
-        refId: id,
-      });
+      const refId = uniqueId();
+      socket?.emit(
+        Wss.ClientEvent.SendMessage,
+        {
+          roomId,
+          text,
+          refId,
+        },
+        (error) => {
+          return onMessage({
+            type: ActionType.AddErrorMessage,
+            message: {
+              room: roomId,
+              refId,
+              errorMessage: error?.message,
+            },
+          });
+        }
+      );
 
       onMessage({
         type: ActionType.AddPendingMessage,
-        message: { text, room: roomId, refId: id, userId },
+        message: { text, room: roomId, refId, userId },
       });
     },
     [socket, onMessage]
@@ -144,13 +264,13 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   const onRoomMessage = useCallback(
     (message: IMessage.Self & { refId?: string }) => {
       if (!onMessage || !userId) return;
-      console.log(message);
 
       if (message.userId === userId)
         return onMessage({
-          type: ActionType.ActivatePendingMessage,
+          type: ActionType.ActivateMessage,
           message: { refId: message.refId!, room: message.roomId },
         });
+
       return onMessage({
         type: MessageStream.Add,
         message,
@@ -197,52 +317,6 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   };
 }
 
-type MessageState = "seen" | "sent" | "pending" | undefined;
-type ClientSideMessage = IMessage.Self & {
-  messageState?: MessageState;
-};
-
-type State = {
-  /**
-   * Current active room id
-   */
-  room: number | null;
-  /**
-   * Map from room id to the current room page
-   */
-  pages: Record<number, number | undefined>;
-  /**
-   * Map from room id to its messages from the backend
-   */
-  messages: Record<number, ClientSideMessage[] | undefined>;
-  /**
-   * Map from room id to its fresh messages (new messages received since the last page refresh)
-   */
-  freshMessages: Record<
-    number,
-    | (ClientSideMessage & {
-        refId?: string;
-      })[]
-    | undefined
-  >;
-  /**
-   * Map from room id to the total number of messages that the room has.
-   */
-  totals: Record<number, number | undefined>;
-  /**
-   * Map from room id to loading state
-   */
-  loading: Record<number, boolean | undefined>;
-  /**
-   * Map from room id to fetching state
-   */
-  fetching: Record<number, boolean | undefined>;
-  /**
-   * Map from room id to error messages
-   */
-  errors: Record<number, string | null | undefined>;
-};
-
 const initial: State = {
   room: 0,
   pages: {},
@@ -253,73 +327,6 @@ const initial: State = {
   fetching: {},
   errors: {},
 };
-
-enum ActionType {
-  AppendRoomMessages,
-  setTotalMessages,
-  SetPage,
-  SetLoading,
-  SetFetching,
-  SetError,
-  PreCall,
-  PostCall,
-  PostCallError,
-  AddPendingMessage,
-  ActivatePendingMessage,
-  AddMessage,
-  UpdateMessage,
-  DeleteMessage,
-}
-
-type Action =
-  | {
-      type: ActionType.AppendRoomMessages;
-      room: number;
-      messages: IMessage.Self[];
-    }
-  | {
-      type: ActionType.setTotalMessages;
-      room: number;
-      total: number;
-    }
-  | {
-      type: ActionType.SetPage;
-      room: number;
-      page: number;
-    }
-  | {
-      type: ActionType.SetLoading;
-      room: number;
-      loading: boolean;
-    }
-  | {
-      type: ActionType.SetError;
-      room: number;
-      error: string | null | undefined;
-    }
-  | { type: ActionType.SetFetching; room: number; fetching: boolean }
-  | {
-      type: ActionType.PreCall;
-      room: number;
-      loading: boolean;
-      fetching: boolean;
-      page: number;
-    }
-  | {
-      type: ActionType.PostCall;
-      messages: IMessage.Self[];
-      room: number;
-      total: number;
-    }
-  | {
-      type: ActionType.AddPendingMessage;
-      message: { text: string; room: number; refId: string; userId: number };
-    }
-  | {
-      type: ActionType.ActivatePendingMessage;
-      message: { refId: string; room: number };
-    }
-  | MessageStreamAction;
 
 function isFreshMessage(id: number, messages: IMessage.Self[]): boolean {
   return !!messages.find((message) => message.id === id);
@@ -332,20 +339,51 @@ function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
   return messages;
 }
 
-// function deleteTemporaryMessage(
-//   incoming: { refId: string; room: number },
-//   messages: (IMessage.Self & { refId?: string })[]
-// ) {
-//   return messages.filter((message) => message.refId !== incoming.refId);
-// }
-
-function activateTemporaryMessage(
+function activateMessage(
   incoming: { refId: string; room: number },
-  messages: (ClientSideMessage & { refId?: string })[]
+  messages: IMessage.ClientSideMessage[]
 ) {
   return messages.map((message) => {
-    if (message.messageState === "pending" && message.refId == incoming.refId) {
+    if (message.refId == incoming.refId) {
       message.messageState = "sent";
+    }
+    return message;
+  });
+}
+
+const pendingMessageCreator = ({
+  text,
+  roomId,
+  refId,
+  userId,
+}: {
+  text: string;
+  roomId: number;
+  userId: number;
+  refId: string;
+}): IMessage.ClientSideMessage => {
+  const now = new Date().toISOString();
+  return {
+    id: 0,
+    userId,
+    roomId,
+    text,
+    refId,
+    messageState: "pending",
+    read: false,
+    deleted: false,
+    createdAt: now,
+    updatedAt: now,
+  };
+};
+
+function makeErrorMessage(
+  incoming: { refId: string; room: number },
+  messages: IMessage.ClientSideMessage[]
+) {
+  return messages.map((message) => {
+    if (message.refId == incoming.refId) {
+      message.messageState = "error";
     }
     return message;
   });
@@ -406,6 +444,16 @@ function reducer(state: State, action: Action) {
     return mutate({ errors, fetching, loading });
   }
 
+  if (action.type === ActionType.AddErrorMessage) {
+    const room = action.message.room;
+    const freshMessages = structuredClone(state.freshMessages);
+    const roomMessages = freshMessages[room] || [];
+
+    freshMessages[room] = makeErrorMessage(action.message, roomMessages);
+
+    return mutate({ freshMessages });
+  }
+
   if (action.type === ActionType.PreCall) {
     const loading = structuredClone(state.loading);
     const fetching = structuredClone(state.fetching);
@@ -443,55 +491,27 @@ function reducer(state: State, action: Action) {
     const room = action.message.room;
     const freshMessages = structuredClone(state.freshMessages);
     const roomMessages = freshMessages[room];
-    const messageCreator = ({
-      text,
-      roomId,
-      refId,
-      userId,
-    }: {
-      text: string;
-      roomId: number;
-      userId: number;
-      refId: string;
-    }) => {
-      const now = new Date().toISOString();
-      return {
-        id: 0,
-        userId,
-        roomId,
-        text,
-        refId,
-        messageState: "pending" as MessageState,
-        read: false,
-        deleted: false,
-        createdAt: now,
-        updatedAt: now,
-      };
-    };
 
-    const newMessage = messageCreator({
+    const newMessage = pendingMessageCreator({
       text: action.message.text,
       refId: action.message.refId,
       roomId: action.message.room,
       userId: action.message.userId,
     });
+
     if (!roomMessages) freshMessages[room] = [newMessage];
     else roomMessages.push(newMessage);
 
     return mutate({ freshMessages });
   }
 
-  if (action.type === ActionType.ActivatePendingMessage) {
+  if (action.type === ActionType.ActivateMessage) {
     const room = action.message.room;
     const freshMessages = structuredClone(state.freshMessages);
-    const roomMessages = freshMessages[room];
-    if (!roomMessages || !freshMessages) return mutate({ freshMessages: [] });
-    const newFreshMessages = activateTemporaryMessage(
-      action.message,
-      roomMessages
-    );
+    const roomMessages = freshMessages[room] || [];
+
+    const newFreshMessages = activateMessage(action.message, roomMessages);
     freshMessages[room] = newFreshMessages;
-    console.log(newFreshMessages);
 
     return mutate({ freshMessages });
   }
@@ -505,7 +525,7 @@ function reducer(state: State, action: Action) {
     else roomMessages.push(action.message);
     return mutate({ freshMessages });
   }
-  // TODO: change this update to either update based on the message id or refId
+
   if (action.type === MessageStream.Update) {
     const room = action.message.roomId;
     const messageId = action.message.id;
@@ -544,7 +564,7 @@ export function useMessages(room: number | null) {
   /**
    * a flag indicating that no more messages can be retrieved
    */
-  const isFull = useCallback(
+  const fetchedAllMessages = useCallback(
     (room: number) => {
       const total = state.totals[room];
       const messages = state.messages[room];
@@ -564,7 +584,7 @@ export function useMessages(room: number | null) {
   const fetcher = useCallback(
     async (room: number | null, page: number) => {
       if (!room) return;
-      const full = isFull(room);
+      const full = fetchedAllMessages(room);
       const done = state.pages[room] === page;
       if (
         full ||
@@ -596,7 +616,7 @@ export function useMessages(room: number | null) {
       }
     },
     [
-      isFull,
+      fetchedAllMessages,
       state.errors,
       state.fetching,
       state.loading,
@@ -609,11 +629,11 @@ export function useMessages(room: number | null) {
   const more = useCallback(() => {
     if (!room) return;
     const page = state.pages[room];
-    if (!page || isFull(room)) return;
+    if (!page || fetchedAllMessages(room)) return;
     return fetcher(room, page + 1);
-  }, [fetcher, isFull, room, state.pages]);
+  }, [fetcher, fetchedAllMessages, room, state.pages]);
 
-  const onMessage = useCallback((action: MessageStreamAction) => {
+  const onMessage = useCallback((action: Action) => {
     dispatch(action);
   }, []);
 
@@ -642,8 +662,6 @@ export function useMessages(room: number | null) {
           messageState: message.messageState,
         };
       }) || [];
-
-    console.log(fresh);
 
     return concat(messages, fresh);
   }, [room, state.freshMessages, state.messages]);

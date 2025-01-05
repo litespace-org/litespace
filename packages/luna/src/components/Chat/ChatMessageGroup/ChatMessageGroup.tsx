@@ -7,16 +7,20 @@ import { motion } from "framer-motion";
 import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
+import { IMessage } from "@litespace/types";
 
 const messageVariants = {
   hidden: { opacity: 0 },
   visible: { opacity: 1, transition: { duration: 0.3 } },
 } as const;
-type MessageState = "seen" | "sent" | "pending" | undefined;
 
 export const ChatMessageGroup: React.FC<{
   sender: { userId: number; name: string | null; image?: string | null };
-  messages: Array<{ id: number; text: string; messageState?: MessageState }>;
+  messages: Array<{
+    id: number;
+    text: string;
+    messageState?: IMessage.MessageState;
+  }>;
   sentAt: string;
   owner?: boolean;
   editMessage: (message: { id: number; text: string }) => void;
@@ -86,6 +90,7 @@ export const ChatMessageGroup: React.FC<{
                 firstMessage={index === 0}
                 message={message}
                 pending={message.messageState === "pending"}
+                error={message.messageState === "error"}
                 owner={owner}
                 editMessage={() => editMessage(message)}
                 deleteMessage={() => deleteMessage(message.id)}

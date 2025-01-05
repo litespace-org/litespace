@@ -33,3 +33,10 @@ export type UpdatePayload = {
 };
 
 export type FindRoomMessagesApiResponse = Paginated<Self>;
+
+export type MessageState = "seen" | "sent" | "pending" | "error" | undefined;
+
+export type ClientSideMessage = Self & {
+  messageState?: MessageState;
+  refId?: string;
+};

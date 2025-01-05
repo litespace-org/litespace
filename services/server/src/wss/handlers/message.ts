@@ -13,7 +13,7 @@ const stdout = logger("wss");
 const sendMessagePayload = zod.object({
   roomId: id,
   text: zod.string(),
-  refId: zod.string(),
+  refId: zod.string().optional(),
 });
 const updateMessagePayload = zod.object({ text: string, id });
 const userTypingPayload = zod.object({ roomId: zod.number() });
@@ -43,8 +43,6 @@ export class Messages extends WssHandler {
     const error = await safe(async () => {
       const user = this.user;
       if (isGhost(user)) return;
-      callback ? stdout.log(callback) : stdout.log("callback isn't defined");
-
       const { roomId, text, refId } = sendMessagePayload.parse(data);
 
       // todo: set a max message length

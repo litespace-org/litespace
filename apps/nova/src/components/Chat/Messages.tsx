@@ -51,7 +51,6 @@ const Messages: React.FC<{
     onMessage: onMessages,
     more,
   } = useMessages(room);
-  console.log({ messages });
 
   const scrollDown = useCallback(() => {
     if (messagesRef.current)
@@ -154,7 +153,6 @@ const Messages: React.FC<{
     },
     [intl]
   );
-  console.log({ messageGroups });
 
   return (
     <div
