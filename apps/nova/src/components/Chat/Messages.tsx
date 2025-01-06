@@ -1,4 +1,4 @@
-import { IRoom } from "@litespace/types";
+import { IRoom, IUser } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -26,6 +26,7 @@ import Trash from "@litespace/assets/Trash";
 import { useUserContext } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
 import { orUndefined } from "@litespace/sol/utils";
+import BookLesson from "@/components/Lessons/BookLesson";
 
 const Messages: React.FC<{
   room: number | null;
@@ -40,6 +41,10 @@ const Messages: React.FC<{
     id: number;
   } | null>(null);
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
+
+  const [open, setOpen] = useState<boolean>(false);
+  const closeDialog = useCallback(() => setOpen(false), []);
+  const openDialog = useCallback(() => setOpen(true), []);
 
   // TODO: retrieve user online status from the server cache
   const [onlineStatus, _] = useState(false);
@@ -166,6 +171,7 @@ const Messages: React.FC<{
       <div className="tw-px-6 tw-pt-8">
         <ChatHeader
           {...otherMember}
+          openDialog={openDialog}
           online={onlineStatus}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
         />
@@ -248,6 +254,9 @@ const Messages: React.FC<{
         close={discardDelete}
         icon={<Trash />}
       />
+      {otherMember.role !== IUser.Role.Student ? (
+        <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
+      ) : null}
     </div>
   );
 };
