@@ -5,7 +5,7 @@ import {
 } from "@litespace/headless/rating";
 import React, { useCallback, useMemo, useState } from "react";
 import { organizeRatings } from "@/lib/ratings";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import {
   DeleteRating,
   RatingDialog,
@@ -48,7 +48,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   id,
   tutorName,
 }) => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();

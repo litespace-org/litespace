@@ -2,7 +2,7 @@ import PageContent from "@/components/Common/PageContent";
 import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useEffect } from "react";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileForm } from "@/components/Settings/ProfileForm";
 import { redirect } from "react-router-dom";
 import { Route } from "@/types/routes";
@@ -10,7 +10,7 @@ import { Loader, LoadingError } from "@litespace/luna/Loading";
 
 const Settings: React.FC = () => {
   const intl = useFormatMessage();
-  const { user, fetching, error, loading, refetch } = useUser();
+  const { user, fetching, error, loading, refetch } = useUserContext();
 
   useEffect(() => {
     if (!user && !!loading && !error) redirect(Route.Login);

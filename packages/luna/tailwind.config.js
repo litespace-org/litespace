@@ -11,7 +11,9 @@ export default {
     },
     extend: {
       zIndex: {
-        quote: 10,
+        "chat-avatar": "1",
+        "online-indicator": "2",
+        quote: "10",
         dialog: "11",
         "select-dropdown": "12",
         tooltip: "13",

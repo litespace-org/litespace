@@ -9,6 +9,7 @@ import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import cn from "classnames";
+import { useUserContext } from "@litespace/headless/context/user";
 
 type Query = UseInfiniteQueryResult<
   InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
@@ -37,6 +38,9 @@ const Rooms: React.FC<{
   togglePin,
 }) => {
   const intl = useFormatMessage();
+  const { user } = useUserContext();
+
+  if (!user) return null;
 
   return (
     <div>
@@ -53,6 +57,12 @@ const Rooms: React.FC<{
           <ChatRoom
             key={room.roomId}
             isActive={room.roomId === roomId}
+            optionsEnabled={!!room.latestMessage}
+            // TODO: It will be replaced with the message State from the backend.
+            messageState={undefined}
+            owner={
+              room.latestMessage ? room.latestMessage.userId === user.id : false
+            }
             isPinned={room.settings.pinned}
             isMuted={room.settings.muted}
             userId={room.otherMember.id}
@@ -68,7 +78,10 @@ const Rooms: React.FC<{
                 : undefined
             }
             name={room.otherMember.name!}
-            message={room.latestMessage?.text || "TODO"}
+            // TODO: replace otherMember.name with member.bio
+            message={
+              room.latestMessage ? room.latestMessage?.text : "TODO: Bio"
+            }
             unreadCount={room.unreadMessagesCount}
             isTyping={false}
             select={() =>

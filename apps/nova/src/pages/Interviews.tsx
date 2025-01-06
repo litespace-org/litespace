@@ -7,10 +7,10 @@ import React, { useCallback } from "react";
 import { useIntl } from "react-intl";
 import Empty from "@/components/Interviews/Empty";
 import { useFindInfinitInterviews } from "@litespace/headless/interviews";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Interviews: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const intl = useIntl();
   const { query: interviews, list, more } = useFindInfinitInterviews(user?.id);
 

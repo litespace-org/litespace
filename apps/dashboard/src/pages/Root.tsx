@@ -19,10 +19,10 @@ import {
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
 import { destructureRole } from "@litespace/sol/user";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Root: React.FC = () => {
-  const { user } = useUser();
+  const { user } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
   const intl = useFormatMessage();

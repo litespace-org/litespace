@@ -15,7 +15,7 @@ import { useUpdateInterview } from "@litespace/headless/interviews";
 import { useToast } from "@litespace/luna/Toast";
 import { Dialog } from "@litespace/luna/Dialog";
 import { UsePaginateResult } from "@/types/query";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 type Interviews = IInterview.FindInterviewsApiResponse["list"];
 type IndividualInterview = IInterview.FindInterviewsApiResponse["list"][number];
@@ -31,7 +31,7 @@ const List: React.FC<{
 }> = ({ query, ...props }) => {
   const intl = useFormatMessage();
   const toast = useToast();
-  const { user } = useUser();
+  const { user } = useUserContext();
   const [interview, setInterview] = useState<IndividualInterview | null>(null);
   const tutor = useMemo(() => {
     // const tutor = interview?.members.find(

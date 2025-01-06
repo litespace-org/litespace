@@ -53,7 +53,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
                 },
               ]}
             >
-              <More />
+              <More className="[&>*]:tw-fill-natural-800" />
             </Menu>
           </div>
         ) : null}

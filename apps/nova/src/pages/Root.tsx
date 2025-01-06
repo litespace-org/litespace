@@ -7,10 +7,10 @@ import UrlPattern from "url-pattern";
 import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
-import { useUser } from "@litespace/headless/context/user";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const Root: React.FC = () => {
-  const { user, meta } = useUser();
+  const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
 
