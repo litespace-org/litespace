@@ -129,11 +129,11 @@ export class Session extends WssHandler {
       });
 
       // notify members that a member has left the session
-      this.socket.broadcast
-        .to(asSessionRoomId(sessionId))
-        .emit(Wss.ServerEvent.MemberLeftSession, {
-          userId: user.id,
-        });
+      this.broadcast(
+        Wss.ServerEvent.MemberLeftSession,
+        asSessionRoomId(sessionId),
+        { userId: user.id }
+      );
     });
     if (result instanceof Error) stdout.error(result.message);
   }

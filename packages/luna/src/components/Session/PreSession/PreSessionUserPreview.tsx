@@ -20,7 +20,7 @@ export const PreSessionUserPreview: React.FC<{
   return (
     <div className="tw-aspect-video tw-w-full tw-grow tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
       {camera ? (
-        <video ref={videoRef} autoPlay muted={false} playsInline />
+        <video ref={videoRef} autoPlay muted playsInline />
       ) : (
         <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-lg">
           <UserAvatar user={user} speaking={speaking} />

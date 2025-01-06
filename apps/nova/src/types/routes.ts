@@ -23,6 +23,7 @@ export enum Route {
   TutorProfile = "/:id/tutor",
   UpcomingLessons = "/upcoming-lessons",
   VerifyEmail = "/verify-email",
+  Lesson = "/lesson/:id",
 }
 
 export enum RoutePatterns {
