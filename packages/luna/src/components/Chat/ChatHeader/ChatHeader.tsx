@@ -6,6 +6,7 @@ import { orUndefined } from "@litespace/sol/utils";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import cn from "classnames";
+import { IUser, Void } from "@litespace/types";
 
 export const ChatHeader: React.FC<{
   name: string | null;
@@ -13,8 +14,11 @@ export const ChatHeader: React.FC<{
   online: boolean;
   lastSeen: string;
   id: number;
-}> = ({ name, image, online, id, lastSeen }) => {
+  role: IUser.Role;
+  openDialog: Void;
+}> = ({ name, image, online, id, lastSeen, role, openDialog }) => {
   const intl = useFormatMessage();
+
   return (
     <div className="tw-flex tw-justify-between">
       <div className="tw-flex tw-gap-4 tw-items-center">
@@ -53,11 +57,17 @@ export const ChatHeader: React.FC<{
           </Typography>
         </div>
       </div>
-      <div className="tw-flex tw-items-center">
-        <Button type={ButtonType.Main} size={ButtonSize.Small}>
-          {intl("chat.book")}
-        </Button>
-      </div>
+      {role !== IUser.Role.Student ? (
+        <div className="tw-flex tw-items-center">
+          <Button
+            onClick={openDialog}
+            type={ButtonType.Main}
+            size={ButtonSize.Small}
+          >
+            {intl("chat.book")}
+          </Button>
+        </div>
+      ) : null}
     </div>
   );
 };
