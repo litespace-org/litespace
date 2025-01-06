@@ -87,6 +87,7 @@ app.use("/api/v1/topic", routes.topic);
 app.use("/api/v1/withdraw-method/", routes.withdrawMethod);
 app.use("/api/v1/asset", routes.asset);
 app.use("/api/v1/cache", routes.cache);
+app.use("/api/v1/session", routes.session);
 app.use(errorHandler);
 
 server.listen(serverConfig.port, serverConfig.host, () =>

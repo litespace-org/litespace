@@ -15,7 +15,6 @@ import { Button, ButtonType, ButtonVariant } from "@/components/Button";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
-import { LocalId } from "@/locales";
 
 export const ConfirmationDialog: React.FC<{
   trigger?: React.ReactNode;
@@ -25,7 +24,7 @@ export const ConfirmationDialog: React.FC<{
   setOpen?: (open: boolean) => void;
   confirm: Void;
   close: Void;
-  labels?: { confirm?: LocalId; cancel?: LocalId };
+  labels?: { confirm?: string; cancel?: string };
   type?: DialogType;
   icon: React.ReactNode;
   loading?: boolean;
@@ -115,7 +114,7 @@ export const ConfirmationDialog: React.FC<{
               loading={loading}
               disabled={loading}
             >
-              {intl(labels?.confirm || "global.labels.confirm")}
+              {labels?.confirm || intl("global.labels.confirm")}
             </Button>
             <Button
               onClick={close}
@@ -124,7 +123,7 @@ export const ConfirmationDialog: React.FC<{
               variant={ButtonVariant.Secondary}
               disabled={loading}
             >
-              {intl(labels?.cancel || "global.labels.cancel")}
+              {labels?.cancel || intl("global.labels.cancel")}
             </Button>
           </div>
         </Content>

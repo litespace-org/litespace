@@ -6,6 +6,9 @@ import { Peer } from "peerjs";
 import { useSocket } from "@/socket";
 import { Wss } from "@litespace/types";
 
+/**
+ * @deprecated should be removed.
+ */
 export const PeerProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {

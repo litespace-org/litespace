@@ -1,7 +1,7 @@
 import { cache } from "@/lib/cache";
-import { canJoinSessionAck } from "@/lib/session";
+import { canAccessSession } from "@/lib/session";
 import { isGhost, isUser } from "@litespace/auth";
-import { asSessionId, logger, safe } from "@litespace/sol";
+import { asSessionId, isSessionId, logger, safe } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
@@ -36,9 +36,23 @@ export class Session extends WssHandler {
     const result = await safe(async () => {
       const { sessionId } = generalSessionPayload.parse(data);
 
-      const ack = await this.canJoinSession(sessionId);
-      this.call(callback, ack);
-      if (ack.code !== Wss.AcknowledgeCode.Ok) return;
+      const user = this.user;
+      if (!isUser(user)) return;
+
+      if (!isSessionId(sessionId))
+        return this.call(callback, {
+          code: Wss.AcknowledgeCode.InvalidSessionId,
+          message: `${sessionId} is not a valid session id`,
+        });
+
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+
+      if (!ok)
+        return this.call(callback, { code: Wss.AcknowledgeCode.Unallowed });
+      else this.call(callback, { code: Wss.AcknowledgeCode.Ok });
 
       // join the user socket to the corresponding session socket.io room
       this.socket.join(asSessionRoomId(sessionId));
@@ -56,12 +70,22 @@ export class Session extends WssHandler {
     const result = await safe(async () => {
       const { sessionId } = generalSessionPayload.parse(data);
 
-      const ack = await this.canJoinSession(sessionId);
-      this.call(callback, ack);
-      if (ack.code !== Wss.AcknowledgeCode.Ok) return;
-
       const user = this.user;
       if (!isUser(user)) return;
+
+      if (!isSessionId(sessionId))
+        return this.call(callback, {
+          code: Wss.AcknowledgeCode.InvalidSessionId,
+          message: `${sessionId} is not a valid session id`,
+        });
+
+      const ok = await canAccessSession({
+        sessionId,
+        userId: user.id,
+      });
+
+      if (!ok)
+        return this.call(callback, { code: Wss.AcknowledgeCode.Unallowed });
 
       // add user to the session by adding its id in the cache
       await cache.session.addMember({
@@ -78,36 +102,6 @@ export class Session extends WssHandler {
       );
     });
     if (result instanceof Error) stdout.error(result.message);
-  }
-
-  /**
-   *  Just an ancillary function for onPreJoinSession and
-   *  onJoinSession to clean (DRY) the code a little.
-   *  @returns null if the user can join the session,
-   *  otherwise returns Wss.AcknowledgePayload
-   */
-  private async canJoinSession(
-    sessionId: string
-  ): Promise<Wss.AcknowledgePayload> {
-    const user = this.user;
-    // todo: add ghost as a member of the session
-    if (!user)
-      return {
-        code: Wss.AcknowledgeCode.Unreachable,
-        message:
-          "something went wrong! user is undefined; check the authentication middleware.",
-      };
-
-    if (isGhost(user))
-      return {
-        code: Wss.AcknowledgeCode.Unallowed,
-        message: "ghost is not supported yet.",
-      };
-
-    return await canJoinSessionAck({
-      userId: user.id,
-      sessionId,
-    });
   }
 
   /*

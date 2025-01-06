@@ -85,9 +85,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             size={ButtonSize.Large}
             onClick={() => onSubmit("mic-and-camera")}
             loading={loading === "mic-and-camera"}
-            disabled={
-              !!loading || !devices.speakers || !devices.camera || !devices.mic
-            }
+            disabled={!!loading || !devices.camera || !devices.mic}
           >
             <Typography>
               {intl("session.permissions.enable-mic-and-camera")}
@@ -99,7 +97,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             variant={ButtonVariant.Secondary}
             onClick={() => onSubmit("mic-only")}
             loading={loading === "mic-only"}
-            disabled={!!loading || !devices.speakers || !devices.mic}
+            disabled={!!loading || !devices.mic}
           >
             <Typography>
               {intl("session.permissions.enable-mic-only")}

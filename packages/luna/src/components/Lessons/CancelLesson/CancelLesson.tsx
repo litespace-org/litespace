@@ -22,8 +22,8 @@ export const CancelLesson: React.FC<{
       title={intl("cancel-lesson.title")}
       description={intl("cancel-lesson.description")}
       labels={{
-        confirm: "cancel-lesson.confirm-and-cancel",
-        cancel: "cancel-lesson.cancel-and-return",
+        confirm: intl("cancel-lesson.confirm-and-cancel"),
+        cancel: intl("cancel-lesson.cancel-and-return"),
       }}
     />
   );

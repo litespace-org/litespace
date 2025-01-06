@@ -83,6 +83,7 @@ export enum AcknowledgeCode {
   NotOwner = "not-owner",
   Unreachable = "unreachable",
   Unallowed = "unallowed",
+  InvalidSessionId = "invalid-session-id",
   Ok = "ok",
 }
 

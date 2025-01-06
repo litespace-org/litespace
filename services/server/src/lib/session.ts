@@ -1,5 +1,5 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { IInterview, ILesson, IRule, Wss } from "@litespace/types";
+import { IInterview, ILesson, IRule, ISession, Wss } from "@litespace/types";
 import { concat, first, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
@@ -62,46 +62,32 @@ export function canBook({
   return false;
 }
 
-// todo: write tests
-/**
- * this function has been written to clean up the wss session handler
- * by seperating this verbose details from the main logic code.
- */
-export async function canJoinSessionAck({
-  userId,
+export async function canAccessSession({
   sessionId,
+  userId,
 }: {
+  sessionId: ISession.Id;
   userId: number;
-  sessionId: string;
-}): Promise<Wss.AcknowledgePayload> {
-  const sessionType = getSessionType(sessionId);
+}) {
+  const type = getSessionType(sessionId);
 
-  if (sessionType === "lesson") {
-    const lesson = await lessons.findBySessionId(asSessionId(sessionId));
-    if (!lesson) return { code: Wss.AcknowledgeCode.LessonNotFound };
+  if (type === "lesson") {
+    const lesson = await lessons.findBySessionId(sessionId);
+    if (!lesson) return false;
 
     const members = await lessons.findLessonMembers([lesson.id]);
-    const member = members.find((member) => member.userId === userId);
-    if (!member)
-      return {
-        code: Wss.AcknowledgeCode.Unallowed,
-        message: "The user is not a member of the lesson.",
-      };
-
-    return { code: Wss.AcknowledgeCode.Ok };
+    const isMember = members.find((member) => member.userId === userId);
+    if (isMember) return true;
   }
 
-  const interview = await interviews.findBySessionId(asSessionId(sessionId));
-  if (!interview) return { code: Wss.AcknowledgeCode.InterviewNotFound };
+  if (type === "interview") {
+    const interview = await interviews.findBySessionId(sessionId);
+    if (!interview) return false;
+    const isMember =
+      interview.ids.interviewer === userId ||
+      interview.ids.interviewee === userId;
+    if (isMember) return true;
+  }
 
-  const member =
-    interview.ids.interviewer === userId ||
-    interview.ids.interviewee === userId;
-  if (!member)
-    return {
-      code: Wss.AcknowledgeCode.Unallowed,
-      message: "The user is not a member of the lesson.",
-    };
-
-  return { code: Wss.AcknowledgeCode.Ok };
+  return false;
 }

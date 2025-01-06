@@ -3,11 +3,17 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { safe } from "@litespace/sol/error";
 import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
-import { MediaConnection } from "peerjs";
+import { MediaConnection, PeerError } from "peerjs";
 import { orUndefined } from "@litespace/sol/utils";
 import zod from "zod";
 import hark from "hark";
-import { uniq } from "lodash";
+import { concat, isEmpty, uniq } from "lodash";
+import { useBackend } from "@/backend";
+import { peers } from "@litespace/atlas";
+import { Peer } from "peerjs";
+import { useAtlas } from "@/atlas";
+import { useQuery } from "@tanstack/react-query";
+import { QueryKey } from "@/constants";
 
 declare module "peerjs" {
   export interface CallOption {
@@ -47,7 +53,7 @@ type UseUserMediaReturn = {
   /**
    * Request user media stream with the provided constrains.
    */
-  start: (
+  capture: (
     /**
      * Flag to enable or disable video in the user media stream.
      */
@@ -85,9 +91,13 @@ type UseUserMediaReturn = {
    * `true` if the user rejected the permission to use his media devices.
    */
   denied: boolean;
+  /**
+   * `true` if the user is actively speaking.
+   */
+  speaking: boolean;
 };
 
-export function useUserMedia(): UseUserMediaReturn {
+export function useUserMedia(onStop?: Void): UseUserMediaReturn {
   const [loading, setLoading] = useState<boolean>(false);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [error, setError] = useState<Error | null>(null);
@@ -121,7 +131,7 @@ export function useUserMedia(): UseUserMediaReturn {
     []
   );
 
-  const start = useCallback(
+  const capture = useCallback(
     async (video?: boolean) => {
       setLoading(true);
       const stream = await getUserMedia(video);
@@ -136,46 +146,26 @@ export function useUserMedia(): UseUserMediaReturn {
         return setStream(null);
       }
 
-      if (!error) {
-        const videoTracks = stream.getVideoTracks();
-        const audioTracks = stream.getAudioTracks();
-
-        if (videoTracks.length !== 0) {
-          setCamera(true);
-          setVideo(true);
-        }
-
-        if (audioTracks.length !== 0) {
-          setMic(true);
-          setAudio(true);
-        }
-
-        videoTracks.forEach((track) => {
-          track.addEventListener("ended", () => {
-            setStream(null);
-            setCamera(false);
-          });
-        });
-
-        audioTracks.forEach((track) => {
-          track.addEventListener("ended", () => {
-            setStream(null);
-            setMic(false);
-          });
-        });
-      }
-
       if (!error) setError(error ? stream : null);
       setStream(error ? null : stream);
     },
     [getUserMedia]
   );
 
+  const onTrackEnd = useCallback(() => {
+    setStream(null);
+    setCamera(false);
+    setMic(false);
+    setVideo(false);
+    setAudio(false);
+    if (onStop) onStop();
+  }, [onStop]);
+
   const stop = useCallback(() => {
     if (!stream) return;
     stream.getTracks().forEach((track) => track.stop());
-    setStream(null);
-  }, [stream]);
+    onTrackEnd();
+  }, [onTrackEnd, stream]);
 
   const toggleMic = useCallback(() => {
     if (!stream) return;
@@ -193,11 +183,42 @@ export function useUserMedia(): UseUserMediaReturn {
     });
   }, [stream]);
 
+  const speaking = useSpeakingV3(stream);
+
+  useEffect(() => {
+    if (!stream) return;
+    const videoTracks = stream.getVideoTracks();
+    const audioTracks = stream.getAudioTracks();
+
+    if (!isEmpty(videoTracks)) {
+      setCamera(true);
+      setVideo(true);
+    }
+
+    if (!isEmpty(audioTracks)) {
+      setMic(true);
+      setAudio(true);
+    }
+
+    const tracks = concat(audioTracks, videoTracks);
+
+    tracks.forEach((track) => {
+      track.addEventListener("ended", onTrackEnd);
+    });
+
+    return () => {
+      tracks.forEach((track) => {
+        track.removeEventListener("ended", onTrackEnd);
+      });
+    };
+  }, [onStop, onTrackEnd, stream]);
+
   return {
+    speaking,
     loading,
     stream,
     error,
-    start,
+    capture,
     stop,
     toggleMic,
     toggleCamera,
@@ -250,7 +271,7 @@ export function useSession({
     useState<MediaConnection | null>(null);
 
   const {
-    start,
+    capture,
     toggleCamera,
     toggleMic,
     stop,
@@ -276,8 +297,12 @@ export function useSession({
 
   const userSpeaking = useSpeaking(mediaConnection, userMediaStream);
   const mateSpeaking = useSpeaking(mediaConnection, mateMediaStream);
-  const { mateAudio, mateVideo, notifyCameraToggle, notifyMicToggle } =
-    useCallEvents(orUndefined(mateMediaStream), session, mateUserId);
+  const {
+    otherMemberAudio,
+    otherMemberVideo,
+    notifyCameraToggle,
+    notifyMicToggle,
+  } = useSessionEvents(mateUserId);
 
   const acknowledgePeer = useCallback(
     (peerId: string) => {
@@ -460,8 +485,8 @@ export function useSession({
           screen: mateScreenStream,
         },
         speaking: mateSpeaking,
-        audio: mateAudio,
-        video: mateVideo,
+        audio: otherMemberAudio,
+        video: otherMemberVideo,
       },
       user: {
         streams: {
@@ -479,7 +504,7 @@ export function useSession({
         speaking: userSpeaking,
       },
       mediaConnection,
-      start,
+      capture,
       stop,
       onToggleCamera,
       onToggleMic,
@@ -489,22 +514,22 @@ export function useSession({
     [
       audio,
       camera,
+      capture,
       denied,
       error,
       loading,
-      mateAudio,
       mateMediaStream,
       mateScreenStream,
       mateSpeaking,
-      mateVideo,
       mediaConnection,
       mic,
       onToggleCamera,
       onToggleMic,
+      otherMemberAudio,
+      otherMemberVideo,
       peer,
       remoteStreams,
       screen,
-      start,
       stop,
       userMediaStream,
       userSpeaking,
@@ -642,83 +667,6 @@ export function useSpeaking(
   }, [mediaConnection, stream, threshold]);
 
   return speaking;
-}
-
-function useStreamState(stream?: MediaStream) {
-  const [video, setVideo] = useState<boolean>(false);
-  const [audio, setAduio] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!stream) return;
-    setVideo(stream.getVideoTracks().some((track) => track.enabled));
-    setAduio(stream.getAudioTracks().some((track) => track.enabled));
-  }, [stream]);
-
-  return { video, audio };
-}
-
-export function useCallEvents(
-  mateStream?: MediaStream,
-  session?: ISession.Id,
-  mateUserId?: number
-) {
-  const [mateVideo, setMateVideo] = useState<boolean>(false);
-  const [mateAudio, setMateAudio] = useState<boolean>(false);
-  const streamState = useStreamState(mateStream);
-  const socket = useSocket();
-
-  const notifyCameraToggle = useCallback(
-    (camera: boolean) => {
-      if (!session || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleCamera, { session, camera });
-    },
-    [session, socket]
-  );
-
-  const notifyMicToggle = useCallback(
-    (mic: boolean) => {
-      if (!session || !socket) return;
-      socket.emit(Wss.ClientEvent.ToggleMic, { session, mic });
-    },
-    [session, socket]
-  );
-
-  const onCameraToggle = useCallback(
-    ({ camera, user }: { camera: boolean; user: number }) => {
-      if (user === mateUserId) setMateVideo(camera);
-    },
-    [mateUserId]
-  );
-
-  const onMicToggle = useCallback(
-    ({ mic, user }: { mic: boolean; user: number }) => {
-      if (user === mateUserId) setMateAudio(mic);
-    },
-    [mateUserId]
-  );
-
-  useEffect(() => {
-    if (!socket) return;
-    socket.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
-    socket.on(Wss.ServerEvent.MicToggled, onMicToggle);
-
-    return () => {
-      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
-      socket.off(Wss.ServerEvent.MicToggled, onMicToggle);
-    };
-  }, [onCameraToggle, onMicToggle, socket]);
-
-  useEffect(() => {
-    setMateVideo(streamState.video);
-    setMateAudio(streamState.audio);
-  }, [streamState.audio, streamState.video]);
-
-  return {
-    notifyCameraToggle,
-    notifyMicToggle,
-    mateAudio,
-    mateVideo,
-  };
 }
 
 const ghostCallMetadata = zod.object({
@@ -936,7 +884,7 @@ export function useSessionV2({
   useEffect(() => {
     if (isGhost || userMedia.stream || userMedia.loading || userMedia.error)
       return;
-    userMedia.start();
+    userMedia.capture();
   }, [isGhost, userMedia]);
 
   useEffect(() => {
@@ -995,11 +943,86 @@ export function useFullScreen<T extends Element>() {
 
 //============================== Session V3 ==============================
 
+function asPeerId(userId: number) {
+  return userId.toString();
+}
+
+function usePeerV3(userId?: number) {
+  const { backend } = useBackend();
+  const [ready, setReady] = useState<boolean>(false);
+
+  const peer = useMemo(() => {
+    if (!userId) return null;
+    const peerServer = peers[backend];
+    return new Peer(asPeerId(userId), {
+      host: peerServer.host,
+      path: peerServer.path,
+      port: peerServer.port,
+      secure: peerServer.secure,
+      key: peerServer.key,
+      /**
+       * todo: add logs only for development and staging
+       * Prints log messages depending on the debug level passed in. Defaults to 0.
+       *  0 Prints no logs.
+       *  1 Prints only errors.
+       *  2 Prints errors and warnings.
+       *  3 Prints all logs.
+       */
+      debug: 1,
+    });
+  }, [backend, userId]);
+
+  const onOpen = useCallback(() => {
+    setReady(true);
+  }, []);
+
+  const onClose = useCallback(() => {
+    setReady(false);
+  }, []);
+
+  const onError = useCallback(
+    (
+      error: PeerError<
+        | "disconnected"
+        | "browser-incompatible"
+        | "invalid-id"
+        | "invalid-key"
+        | "network"
+        | "peer-unavailable"
+        | "ssl-unavailable"
+        | "server-error"
+        | "socket-error"
+        | "socket-closed"
+        | "unavailable-id"
+        | "webrtc"
+      >
+    ) => {
+      // todo: handle errors
+      console.log(error);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!peer) return;
+    peer.on("open", onOpen);
+    peer.on("close", onClose);
+    peer.on("error", onError);
+    return () => {
+      peer.off("open", onOpen);
+      peer.off("close", onClose);
+      peer.off("error", onError);
+    };
+  }, [onClose, onError, onOpen, peer]);
+
+  return useMemo(() => ({ peer, ready }), [peer, ready]);
+}
+
 export function useSpeakingV3(stream: MediaStream | null) {
   const [speadking, setSpeadking] = useState<boolean>(false);
 
   const events = useMemo(() => {
-    if (!stream) return null;
+    if (!stream || isEmpty(stream.getAudioTracks())) return null;
     return hark(stream);
   }, [stream]);
 
@@ -1020,16 +1043,411 @@ export function useSpeakingV3(stream: MediaStream | null) {
   return speadking;
 }
 
-export function useSessionV3() {
-  const userMedia = useUserMedia();
-  const speaking = useSpeakingV3(userMedia.stream);
+export function useSessionEvents(
+  otherMemberId?: number,
+  sessionId?: ISession.Id
+) {
+  const [otherMemberVideo, setOtherMemberVideo] = useState<boolean>(false);
+  const [otherMemberAudio, setOtherMemberAudio] = useState<boolean>(false);
+  const socket = useSocket();
+
+  const notifyCameraToggle = useCallback(
+    (camera: boolean) => {
+      if (!sessionId || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleCamera, { session: sessionId, camera });
+    },
+    [sessionId, socket]
+  );
+
+  const notifyMicToggle = useCallback(
+    (mic: boolean) => {
+      if (!sessionId || !socket) return;
+      socket.emit(Wss.ClientEvent.ToggleMic, { session: sessionId, mic });
+    },
+    [sessionId, socket]
+  );
+
+  const onCameraToggle = useCallback(
+    ({ camera, user }: { camera: boolean; user: number }) => {
+      if (user === otherMemberId) setOtherMemberVideo(camera);
+    },
+    [otherMemberId]
+  );
+
+  const onMicToggle = useCallback(
+    ({ mic, user }: { mic: boolean; user: number }) => {
+      if (user === otherMemberId) setOtherMemberAudio(mic);
+    },
+    [otherMemberId]
+  );
+
+  useEffect(() => {
+    if (!socket) return;
+    socket.on(Wss.ServerEvent.CameraToggled, onCameraToggle);
+    socket.on(Wss.ServerEvent.MicToggled, onMicToggle);
+
+    return () => {
+      socket.off(Wss.ServerEvent.CameraToggled, onCameraToggle);
+      socket.off(Wss.ServerEvent.MicToggled, onMicToggle);
+    };
+  }, [onCameraToggle, onMicToggle, socket]);
+
+  return {
+    notifyCameraToggle,
+    notifyMicToggle,
+    otherMemberAudio,
+    otherMemberVideo,
+  };
+}
+
+export function useShareScreenV3(onStop?: Void) {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [error, setError] = useState<Error | null>(null);
+
+  const share = useCallback(async () => {
+    setLoading(true);
+    const stream = await safe(
+      async () =>
+        await navigator.mediaDevices.getDisplayMedia({
+          audio: true,
+          video: {
+            width: 1280,
+            height: 720,
+          },
+        })
+    );
+    setLoading(false);
+    const error = stream instanceof Error;
+    const denied = error ? isPermissionDenied(stream) : false;
+
+    // user canceled the process.
+    if (denied) {
+      setError(null);
+      return setStream(null);
+    }
+
+    if (!error) setError(error ? stream : null);
+    setStream(error ? null : stream);
+    return stream;
+  }, []);
+
+  const stop = useCallback(() => {
+    if (!stream) return;
+    stream.getTracks().forEach((track) => track.stop());
+    setStream(null);
+    if (onStop) onStop();
+  }, [onStop, stream]);
+
+  useEffect(() => {
+    if (!stream) return;
+    stream.getVideoTracks().map((track) => {
+      track.addEventListener("ended", () => {
+        setStream(null);
+        if (onStop) onStop();
+      });
+    });
+  }, [onStop, stream]);
+
+  return {
+    loading,
+    stream,
+    error,
+    share,
+    stop,
+  };
+}
+
+export type SessionV3Payload = {
+  sessionId?: ISession.Id;
+  isOtherMemberReady: boolean;
+  userIds: {
+    current?: number;
+    other?: number;
+  };
+};
+
+const callMetadata = zod.object({
+  screen: zod.optional(zod.boolean()),
+  owner: zod.number(),
+});
+
+export function useSessionV3({
+  userIds,
+  sessionId,
+  isOtherMemberReady,
+}: SessionV3Payload) {
+  const { peer, ready } = usePeerV3(userIds.current);
+  const [otherMemberStream, setOtherMemberStream] =
+    useState<MediaStream | null>(null);
+  const [otherMemberScreenStream, setOtherMemberScreenStream] =
+    useState<MediaStream | null>(null);
+  const [mainCall, setMainCall] = useState<MediaConnection | null>(null);
+  const [screenCall, setScreenCall] = useState<MediaConnection | null>(null);
+  const {
+    notifyCameraToggle,
+    notifyMicToggle,
+    otherMemberAudio,
+    otherMemberVideo,
+  } = useSessionEvents(userIds.other, sessionId);
+  const otherMemberSpeaking = useSpeakingV3(otherMemberStream);
+
+  /**
+   * Handler to be called whenever the current user screen stream is closed.
+   * 1. User clicked the "Stop Sharing" button from the browser.
+   * 2. User cliecked the "share" toggle button from the session page.
+   * 2. Refresh the page.
+   * 2. Error
+   */
+  const onScreenStreamStop = useCallback(() => {
+    if (!screenCall) return;
+    screenCall.close();
+  }, [screenCall]);
+
+  const onUserMediaStreamStop = useCallback(() => {
+    if (!mainCall) return;
+    mainCall.close();
+  }, [mainCall]);
+
+  const userMedia = useUserMedia(onUserMediaStreamStop);
+  const screen = useShareScreenV3(onScreenStreamStop);
+
+  const notifyUserMediaState = useCallback(() => {
+    notifyCameraToggle(userMedia.video);
+    notifyMicToggle(userMedia.audio);
+  }, [notifyCameraToggle, notifyMicToggle, userMedia.audio, userMedia.video]);
+
+  /**
+   * Handler the main call stream event.
+   */
+  const onMainCallStream = useCallback((stream: MediaStream) => {
+    setOtherMemberStream(stream);
+  }, []);
+
+  /**
+   * Handler for the main call close event.
+   */
+  const onMainCallClose = useCallback(() => {
+    setOtherMemberStream(null);
+    setMainCall(null);
+  }, []);
+
+  /**
+   * Handler for the screen call stream event.
+   */
+  const onScreenCallStream = useCallback((stream: MediaStream) => {
+    setOtherMemberScreenStream(stream);
+  }, []);
+
+  /**
+   * Handler for the screen call close event.
+   *
+   * @note this handler is executed on both sender and receiver sides.
+   */
+  const onScreenCallClose = useCallback(() => {
+    setOtherMemberScreenStream(null);
+    setScreenCall(null);
+    /**
+     * This logic is used when the other user wants to share his screen.
+     *
+     * @note `screenCall` in this function scope refers to the previous screen
+     * call.
+     *
+     * This mean that `screen.stop()` will be called on the previous screen call
+     * owner.
+     */
+    if (!screenCall) return;
+    const owner =
+      callMetadata.parse(screenCall.metadata).owner === userIds.current;
+    if (owner) screen.stop();
+  }, [screen, screenCall, userIds]);
+
+  const onCall = useCallback(
+    (call: MediaConnection) => {
+      if (!userMedia.stream)
+        return console.warn(
+          "Answering calls without a media stream is not supported yet."
+        );
+
+      const metadata = callMetadata.parse(call.metadata);
+
+      /**
+       * In case the other user is sharing his screen with the current user,
+       * there is no need to respond with the current user stream.
+       */
+      call.answer(!metadata.screen ? userMedia.stream : undefined);
+      if (metadata.screen) return setScreenCall(call);
+      setMainCall(call);
+      notifyUserMediaState();
+    },
+    [notifyUserMediaState, userMedia.stream]
+  );
+
+  /**
+   * Handler used to call a user.
+   */
+  const call = useCallback(
+    ({
+      userId,
+      stream,
+      screen,
+    }: {
+      /**
+       * The target user id.
+       */
+      userId: number;
+      /**
+       * The current user media stream.
+       */
+      stream: MediaStream;
+      /**
+       * Flag to indicate that the curren stream is a screen.
+       */
+      screen?: boolean;
+    }) => {
+      if (!peer) return console.warn("Peer is not defined");
+      if (!userIds.current)
+        return console.warn(
+          "Current user id is not defined; should never happen."
+        );
+
+      const call = peer.call(asPeerId(userId), stream, {
+        metadata: { screen, owner: userIds.current },
+      });
+
+      if (screen) setScreenCall(call);
+      else setMainCall(call);
+    },
+    [peer, userIds]
+  );
+
+  const closeScreenCall = useCallback(() => {
+    if (screenCall) screenCall.close();
+  }, [screenCall]);
+
+  /**
+   * Leave session handler.
+   *
+   * The main goal of this handler
+   * 1. Close current calls.
+   * 2. Close streams.
+   * 3. Reset other states.
+   */
+  const leave = useCallback(() => {
+    if (mainCall) mainCall.close();
+    if (screenCall) screenCall.close();
+    if (screen.stream) screen.stop();
+    if (userMedia.stream) userMedia.stop();
+  }, [mainCall, screen, screenCall, userMedia]);
+
+  // listen for calls
+  useEffect(() => {
+    if (!peer) return;
+    peer.on("call", onCall);
+    return () => {
+      peer.off("call", onCall);
+    };
+  }, [onCall, peer]);
+
+  /**
+   * Why sharing the screen stream in a `useEffect`?
+   *
+   * This is becuase the user (student or tutor) can share the screen before the
+   * other user (receiver) join the session or before it is ready to accept peer
+   * connections. That's why this `useEffect` will call the other user whenever
+   * he is in the room and is ready to accept peer connections. Also, it will
+   * work out of the box in case the other user (receiver) left and rejoined the
+   * session again.
+   */
+  useEffect(() => {
+    if (screen.stream && userIds.other && isOtherMemberReady)
+      return call({
+        userId: userIds.other,
+        stream: screen.stream,
+        screen: true,
+      });
+  }, [call, isOtherMemberReady, screen.stream, userIds.other]);
+
+  /**
+   * Handle main call events.
+   */
+  useEffect(() => {
+    if (!mainCall) return;
+    mainCall.on("stream", onMainCallStream);
+    mainCall.on("close", onMainCallClose);
+    return () => {
+      mainCall.off("stream", onMainCallStream);
+      mainCall.off("close", onMainCallClose);
+    };
+  }, [mainCall, onMainCallClose, onMainCallStream]);
+
+  /**
+   * Handle screen call events.
+   *
+   * @note with the current version, we only support one screen call. This mean
+   * that only one user can share his screen.
+   */
+  useEffect(() => {
+    if (!screenCall) return;
+    screenCall.on("stream", onScreenCallStream);
+    screenCall.on("close", onScreenCallClose);
+    return () => {
+      screenCall.off("stream", onScreenCallStream);
+      screenCall.off("close", onScreenCallClose);
+    };
+  }, [onScreenCallClose, onScreenCallStream, screenCall]);
 
   return useMemo(
     () => ({
-      userMedia,
-      speaking,
+      isPeerReady: ready,
+      screen,
+      members: {
+        current: {
+          audio: userMedia.audio,
+          video: userMedia.video,
+          stream: userMedia.stream,
+          speaking: userMedia.speaking,
+          loadingStream: userMedia.loading,
+          screen: screen.stream,
+        },
+        other: {
+          audio: otherMemberAudio,
+          video: otherMemberVideo,
+          stream: otherMemberStream,
+          speaking: otherMemberSpeaking,
+          screen: otherMemberScreenStream,
+        },
+      },
+      call,
+      leave,
+      closeScreenCall,
+      toggleCamera: () => {
+        userMedia.toggleCamera();
+        notifyCameraToggle(!userMedia.video);
+      },
+      toggleMic: () => {
+        userMedia.toggleMic();
+        notifyMicToggle(!userMedia.audio);
+      },
+      notifyUserMediaState,
+      capture: userMedia.capture,
     }),
-    [speaking, userMedia]
+    [
+      call,
+      closeScreenCall,
+      leave,
+      notifyCameraToggle,
+      notifyMicToggle,
+      notifyUserMediaState,
+      otherMemberAudio,
+      otherMemberScreenStream,
+      otherMemberSpeaking,
+      otherMemberStream,
+      otherMemberVideo,
+      ready,
+      screen,
+      userMedia,
+    ]
   );
 }
 
@@ -1175,7 +1593,29 @@ export function useDevices() {
  */
 export function useSessionMembers(sessionId?: ISession.Id) {
   const socket = useSocket();
+  const atlas = useAtlas();
+
   const [members, setMembers] = useState<number[]>([]);
+  const [listening, setListening] = useState<boolean>(false);
+
+  const findSessionMembers = useCallback(async () => {
+    if (!sessionId) return [];
+    return await atlas.session.findMembers(sessionId);
+  }, [atlas.session, sessionId]);
+
+  const sessionMembersQuery = useQuery({
+    queryFn: findSessionMembers,
+    queryKey: [QueryKey.FindSessionMembers, sessionId],
+    enabled: !!sessionId,
+  });
+
+  const listen = useCallback(() => {
+    if (!socket || !sessionId) return;
+    socket.emit(Wss.ClientEvent.PreJoinSession, { sessionId }, (ack) => {
+      if (ack?.code === Wss.AcknowledgeCode.Ok) return setListening(true);
+      return setListening(false);
+    });
+  }, [sessionId, socket]);
 
   const join = useCallback(() => {
     if (!socket || !sessionId) return;
@@ -1205,5 +1645,14 @@ export function useSessionMembers(sessionId?: ISession.Id) {
     };
   }, [onJoinSession, onLeaveSession, socket]);
 
-  return { join, leave, members };
+  useEffect(() => {
+    if (!listening) return listen();
+  }, [listen, listening]);
+
+  useEffect(() => {
+    if (sessionMembersQuery.data && !sessionMembersQuery.isLoading)
+      return setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
+  }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
+
+  return { join, leave, members, listening };
 }

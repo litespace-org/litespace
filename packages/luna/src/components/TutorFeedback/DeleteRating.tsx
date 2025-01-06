@@ -21,7 +21,7 @@ export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
       setOpen={setOpen}
       close={close}
       labels={{
-        confirm: "labels.delete",
+        confirm: intl("labels.delete"),
       }}
       icon={<Trash width={24} height={24} />}
       loading={loading}

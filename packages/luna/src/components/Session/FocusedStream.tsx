@@ -1,14 +1,63 @@
 import React, { useEffect, useRef } from "react";
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { VideoBar } from "@/components/Session/VideoBar";
 import { UserAvatar } from "@/components/Session/UserAvatar";
 import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 
+const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <motion.div
+      initial={{
+        opacity: 0,
+        scale: 0.5,
+      }}
+      animate={{
+        scale: 1,
+        opacity: 1,
+      }}
+      exit={{
+        opacity: 0,
+        scale: 0.5,
+        borderRadius: "32px",
+        overflow: "hidden",
+      }}
+      transition={{
+        duration: 0.4,
+        ease: "easeInOut",
+      }}
+      className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
+    >
+      {children}
+    </motion.div>
+  );
+};
+
+const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
+  stream,
+  muted,
+}) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.srcObject = stream;
+  }, [stream]);
+
+  return (
+    <video
+      ref={videoRef}
+      autoPlay
+      className={cn("tw-w-full tw-aspect-video tw-absolute tw-top-0")}
+      muted={muted}
+      playsInline
+    />
+  );
+};
+
 export const FocusedStream: React.FC<{
   alert?: string;
-  streamMuted: boolean;
+  muted: boolean;
   stream: StreamInfo;
   timer: {
     duration: number;
@@ -18,7 +67,7 @@ export const FocusedStream: React.FC<{
     enabled: boolean;
     toggle: Void;
   };
-}> = ({ stream, timer, alert, fullScreen, streamMuted }) => {
+}> = ({ stream, timer, alert, fullScreen, muted }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
 
   useEffect(() => {
@@ -28,41 +77,23 @@ export const FocusedStream: React.FC<{
 
   return (
     <div className="tw-grow tw-rounded-lg tw-overflow-hidden">
-      <motion.div
-        initial={{
-          opacity: 0,
-          scale: 0,
-        }}
-        animate={{
-          scale: 1,
-          opacity: 1,
-        }}
-        transition={{
-          duration: 0.5,
-          ease: "easeInOut",
-        }}
-        key={stream.user.id}
-        className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
-      >
-        <video
-          ref={videoRef}
-          autoPlay
-          className={cn(
-            "tw-w-full tw-aspect-video tw-absolute tw-top-0",
-            !stream.stream || (!stream.camera && !stream.cast && "tw-opacity-0")
-          )}
-          muted={streamMuted}
-          playsInline
-        />
-        <div
-          className={cn(
-            "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center",
-            (stream.camera || stream.cast) && "tw-opacity-0"
-          )}
-        >
-          <UserAvatar user={stream.user} speaking={stream.speaking} />
-        </div>
-      </motion.div>
+      <AnimatePresence mode="wait">
+        {stream.camera || stream.cast ? (
+          <Animate key="stream">
+            <Stream stream={stream.stream} muted={muted} />
+          </Animate>
+        ) : (
+          <Animate key="avatar">
+            <div
+              className={cn(
+                "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center"
+              )}
+            >
+              <UserAvatar user={stream.user} speaking={stream.speaking} />
+            </div>
+          </Animate>
+        )}
+      </AnimatePresence>
 
       <VideoBar
         alert={alert}
