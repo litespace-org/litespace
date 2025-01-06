@@ -40,6 +40,18 @@ export const EmptyOptions: StoryObj<ISelect> = {
   },
 };
 
+export const WithoutDropdownIcon: StoryObj<ISelect> = {
+  args: {
+    options: range(100).map((_, idx) => ({
+      label: faker.person.fullName(),
+      value: idx,
+    })),
+    placeholder: faker.lorem.words(3),
+    onChange: (value) => console.log(value),
+    showDropdownIcon: false,
+  },
+};
+
 export const ManyOptions: StoryObj<ISelect> = {
   args: {
     options: range(100).map((_, idx) => ({

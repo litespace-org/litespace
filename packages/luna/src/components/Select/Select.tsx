@@ -16,22 +16,25 @@ import {
 } from "@radix-ui/react-select";
 import ArrowDown from "@litespace/assets/ArrowDown";
 import { Typography } from "@/components/Typography";
+import { isEmpty } from "lodash";
 
 export type SelectProps<T extends string | number> = {
   placeholder?: string;
   options?: SelectList<T>;
   value?: T;
-  onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
-  hasIcon?: boolean;
+  showDropdownIcon?: boolean;
+  disabled?: boolean;
+  onChange?: (value: T) => void;
 };
 
 export const Select = <T extends string | number>({
   value,
   placeholder,
   options = [],
-  hasIcon = true,
+  showDropdownIcon = true,
+  disabled = false,
   onChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -54,11 +57,12 @@ export const Select = <T extends string | number>({
 
   return (
     <Root
-      open={options.length ? open : false}
+      open={open}
       onOpenChange={setOpen}
       dir="rtl"
       value={value?.toString()}
       onValueChange={onValueChange}
+      disabled={isEmpty(options) || disabled}
     >
       <Trigger
         data-open={open}
@@ -81,9 +85,9 @@ export const Select = <T extends string | number>({
             ) : null
           }
         >
-          <Typography className={cn("tw-text-natural-950")}>{label}</Typography>
+          <Typography className={cn("tw-text-natural-900")}>{label}</Typography>
         </Value>
-        {hasIcon ? (
+        {showDropdownIcon ? (
           <Icon>
             <ArrowDown
               data-open={open}

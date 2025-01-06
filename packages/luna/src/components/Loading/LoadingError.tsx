@@ -9,7 +9,7 @@ import cn from "classnames";
 export const LoadingError: React.FC<{
   retry: Void;
   error: string;
-  size: "small" | "medium" | "large";
+  size?: "small" | "medium" | "large";
 }> = ({ retry, error, size = "small" }) => {
   const intl = useFormatMessage();
   return (
