@@ -6,6 +6,7 @@ import { ChatMessage } from "@/components/Chat/ChatMessage";
 import { motion } from "framer-motion";
 import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
+import { useFormatMessage } from "@/hooks";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -27,6 +28,7 @@ export const ChatMessageGroup: React.FC<{
   editMessage,
   deleteMessage,
 }) => {
+  const intl = useFormatMessage();
   return (
     <div
       className={cn("tw-flex tw-gap-4", {
@@ -52,7 +54,7 @@ export const ChatMessageGroup: React.FC<{
             element="body"
             className="tw-font-semibold tw-text-natural-950 dark:tw-text-natural-50"
           >
-            {name}
+            {owner ? intl("chat.message.title.you") : name}
           </Typography>
           <Typography
             element="tiny-text"
@@ -62,12 +64,12 @@ export const ChatMessageGroup: React.FC<{
           </Typography>
         </div>
         <div
-          className={cn("tw-flex tw-flex-col tw-gap-y-4", {
+          className={cn("tw-flex tw-flex-col tw-gap-y-2", {
             "tw-items-end": !owner,
             "tw-items-start": owner,
           })}
         >
-          {messages.map((message) => (
+          {messages.map((message, index) => (
             <motion.div
               variants={messageVariants}
               initial="hidden"
@@ -80,6 +82,7 @@ export const ChatMessageGroup: React.FC<{
               key={message.id}
             >
               <ChatMessage
+                firstMessage={index === 0}
                 message={message}
                 owner={owner}
                 editMessage={() => editMessage(message)}

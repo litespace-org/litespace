@@ -432,6 +432,7 @@
   "chat.message.delete.confirm": "حذف",
   "chat.message.delete.cancel": "الرجوع",
   "chat.message.retry": "إرسال مجددا",
+  "chat.message.title.you": "أنت",
   "chat.pin": "تثبيت",
   "chat.unpin": "إلغاء تثبيت",
   "chat.mute": "كتم",

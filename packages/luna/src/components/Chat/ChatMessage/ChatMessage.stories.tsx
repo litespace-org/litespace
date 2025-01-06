@@ -35,6 +35,7 @@ const messageTemplate: IMessage.Self = {
 
 export const OwnerShortMessage: StoryObj<Component> = {
   args: {
+    firstMessage: true,
     message: { ...messageTemplate, text: faker.lorem.words(10) },
     owner: true,
   },
@@ -43,13 +44,42 @@ export const OwnerShortMessage: StoryObj<Component> = {
 export const OwnerLongMessage: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
     owner: true,
+  },
+};
+
+export const Sent: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
+    owner: true,
+    messageState: "sent",
+  },
+};
+
+export const Reached: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
+    owner: true,
+    messageState: "reached",
+  },
+};
+
+export const Seen: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
+    owner: true,
+    messageState: "seen",
   },
 };
 
 export const PendingMessage: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(10) },
+    firstMessage: true,
     owner: true,
     pending: true,
     retry: () => alert("retry sending"),
@@ -58,7 +88,18 @@ export const PendingMessage: StoryObj<Component> = {
 
 export const ErrorMessage: StoryObj<Component> = {
   args: {
-    message: { ...messageTemplate, text: faker.lorem.words(10) },
+    message: { ...messageTemplate, text: faker.lorem.words(5) },
+    firstMessage: true,
+    owner: true,
+    error: true,
+    retry: () => alert("retry sending"),
+  },
+};
+
+export const ErrorLongMessage: StoryObj<Component> = {
+  args: {
+    message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
     owner: true,
     error: true,
     retry: () => alert("retry sending"),
@@ -68,6 +109,7 @@ export const ErrorMessage: StoryObj<Component> = {
 export const ReceiverShortMessage: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(10) },
+    firstMessage: true,
     owner: false,
   },
 };
@@ -75,6 +117,7 @@ export const ReceiverShortMessage: StoryObj<Component> = {
 export const ReceiverLongMessage: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(40) },
+    firstMessage: true,
     owner: false,
   },
 };

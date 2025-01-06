@@ -10,6 +10,8 @@ import { Typography } from "@/components/Typography";
 import MessageCap from "@litespace/assets/MessageCap";
 import AlertCircle from "@litespace/assets/AlertCircle";
 import Send2 from "@litespace/assets/Send2";
+import SingleCheck from "@litespace/assets/SingleCheck";
+import DoubleCheck from "@litespace/assets/DoubleCheck";
 
 /**
  * There are now 4 states of a message:
@@ -45,6 +47,8 @@ export const ChatMessage: React.FC<{
    * @param text message content
    */
   message: { id: number; text: string };
+  messageState?: "seen" | "reached" | "sent";
+  firstMessage?: boolean;
   /**
    * resend message function
    */
@@ -60,16 +64,25 @@ export const ChatMessage: React.FC<{
 }> = ({
   message,
   owner,
-  editMessage,
-  deleteMessage,
   viewOnly,
   pending,
   error,
+  messageState,
+  firstMessage,
   retry,
+  editMessage,
+  deleteMessage,
 }) => {
   const intl = useFormatMessage();
   const [showMenu, setShowMenu] = useState<boolean>(false);
   const [openMenu, setOpenMenu] = useState<boolean>(false);
+
+  const ReadIcon = useMemo(() => {
+    if (messageState === "seen")
+      return <DoubleCheck className="[&>*]:tw-fill-secondary-400" />;
+    if (messageState === "reached") return <DoubleCheck />;
+    return <SingleCheck />;
+  }, [messageState]);
 
   const menuItems = useMemo(() => {
     if (error)
@@ -126,7 +139,7 @@ export const ChatMessage: React.FC<{
               setOpenMenu(open);
             }}
           >
-            <div className="tw-w-6 tw-h-6 tw-flex tw-justify-center tw-items-center">
+            <div className="tw-w-4 tw-h-6 tw-flex tw-justify-center tw-items-center">
               <More className="[&>*]:tw-fill-natural-800 dark:[&>*]:tw-fill-natural-50" />
             </div>
           </Menu>
@@ -135,40 +148,50 @@ export const ChatMessage: React.FC<{
 
       <div
         className={cn(
-          "tw-rounded-[15px] tw-relative tw-px-6 tw-py-3",
-          "tw-flex tw-items-center tw-gap-2 tw-justify-start",
-          pending && "tw-cursor-wait",
+          "tw-rounded-[15px] tw-relative tw-p-2 max-w-[324px]",
+          "tw-flex tw-items-end tw-gap-2 tw-justify-start",
+          pending && "tw-cursor-wait tw-opacity-50",
           {
-            "tw-bg-brand-100 dark:tw-bg-brand-100 tw-rounded-tl-none": !owner,
-            "tw-bg-brand-700 dark:tw-bg-brand-400 tw-rounded-tr-none": owner,
+            "tw-bg-natural-100 dark:tw-bg-brand-100 ": !owner,
+            "tw-bg-brand-100 dark:tw-bg-brand-400": owner,
             "tw-bg-destructive-700": error && !pending,
+          },
+          {
+            "tw-rounded-tl-none": !owner && firstMessage,
+            "tw-rounded-tr-none": owner && firstMessage,
           }
         )}
       >
-        <MessageCap
-          className={cn("-tw-top-1 tw-absolute", {
-            "-tw-right-0 [&>*]:tw-fill-brand-700": owner,
-            "-tw-right-0 [&>*]:tw-fill-destructive-700": error && !pending,
-            "-tw-left-0 tw-scale-x-[-1] [&>*]:tw-fill-brand-100": !owner,
-          })}
-        />
+        {firstMessage ? (
+          <MessageCap
+            className={cn("-tw-top-1 tw-absolute", {
+              "-tw-right-0 [&>*]:tw-fill-brand-100 dark:[&>*]:tw-fill-brand-400":
+                owner,
+              "-tw-right-0 [&>*]:tw-fill-destructive-700": error && !pending,
+              "-tw-left-0 tw-scale-x-[-1] [&>*]:tw-fill-natural-100 dark:[&>*]:tw-fill-brand-100":
+                !owner,
+            })}
+          />
+        ) : null}
         {error ? (
           <div
             className={cn(
-              "tw-w-6 tw-h-6 tw-rounded-full tw-bg-destructive-500 tw-shadow-alert-circle",
+              "tw-w-4 tw-h-4 tw-rounded-full tw-bg-destructive-500 tw-shadow-alert-circle",
               "tw-flex tw-items-center tw-justify-center tw-shrink-0"
             )}
           >
-            <AlertCircle />
+            <AlertCircle className="tw-w-[10px] tw-h-[10px]" />
           </div>
+        ) : null}
+        {owner && !error && !pending ? (
+          <div className="tw-w-4 tw-h-4 tw-shrink-0">{ReadIcon}</div>
         ) : null}
         <Typography
           element="caption"
-          className={cn("tw-font-normal", {
-            "tw-text-natural-950 dark:tw-text-secondary-900": !owner,
-            "tw-text-natural-50 dark:tw-text-secondary-900": owner && !pending,
+          weight="regular"
+          className={cn("tw-flex tw-items-end tw-gap-2", {
+            "tw-text-natural-950": !error,
             "tw-text-natural-50": error && !pending,
-            "tw-text-natural-300": pending,
           })}
         >
           {message.text}
