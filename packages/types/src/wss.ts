@@ -105,6 +105,7 @@ export type ClientEventsMap = {
   [ClientEvent.SendMessage]: EventCallback<{
     roomId: number;
     text: string;
+    refId: string;
   }>;
   [ClientEvent.UpdateMessage]: EventCallback<{ id: number; text: string }>;
   [ClientEvent.DeleteMessage]: EventCallback<{ id: number }>;
@@ -135,7 +136,9 @@ export type ClientEventsMap = {
  * Events emitted by the server
  */
 export type ServerEventsMap = {
-  [ServerEvent.RoomMessage]: EventCallback<IMessage.Self>;
+  [ServerEvent.RoomMessage]: EventCallback<
+    IMessage.Self & { refId: string | undefined }
+  >;
   [ServerEvent.RoomMessageUpdated]: EventCallback<IMessage.Self>;
   [ServerEvent.RoomMessageDeleted]: EventCallback<{
     roomId: number;

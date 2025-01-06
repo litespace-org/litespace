@@ -3,7 +3,11 @@ import { Dayjs } from "dayjs";
 import { isEmpty, maxBy } from "lodash";
 import dayjs from "@/lib/dayjs";
 
-export type DisplayMessage = { id: number; text: string };
+export type DisplayMessage = {
+  id: number;
+  text: string;
+  messageState?: IMessage.MessageState;
+};
 
 export type Sender = {
   userId: number;
@@ -50,7 +54,7 @@ function assignGroup({
   senderId: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   currentUser: IUser.Self;
-  messages: IMessage.Self[];
+  messages: IMessage.ClientSideMessage[];
 }): MessageGroup | null {
   if (isEmpty(messages) || !senderId) return null;
   const sender = asSender({ senderId, currentUser, otherMember });
@@ -67,6 +71,7 @@ function assignGroup({
     messages: messages.map((message) => ({
       id: message.id,
       text: message.text,
+      messageState: message.messageState,
     })),
     sentAt: latest.updatedAt,
   };
@@ -77,7 +82,7 @@ export function asMessageGroups({
   currentUser,
   otherMember,
 }: {
-  messages: IMessage.Self[];
+  messages: IMessage.ClientSideMessage[];
   currentUser: IUser.Self;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) {

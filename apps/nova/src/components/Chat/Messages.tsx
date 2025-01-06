@@ -1,4 +1,4 @@
-import { IFilter, IRoom } from "@litespace/types";
+import { IRoom } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -14,9 +14,8 @@ import {
   EditMessage,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
-import { OnMessage, useChat } from "@/hooks/chat";
+import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/luna/chat";
-import { useMessages } from "@litespace/luna/hooks/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loading } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
@@ -24,8 +23,9 @@ import dayjs from "dayjs";
 import { entries, groupBy } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
-import { useAtlas } from "@litespace/headless/atlas";
 import { useUserContext } from "@litespace/headless/context/user";
+import { InView } from "react-intersection-observer";
+import { orUndefined } from "@litespace/sol/utils";
 
 const Messages: React.FC<{
   room: number | null;
@@ -40,24 +40,17 @@ const Messages: React.FC<{
     id: number;
   } | null>(null);
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
-  const atlas = useAtlas();
 
   // TODO: retrieve user online status from the server cache
   const [onlineStatus, _] = useState(false);
 
-  const findRoomMessages = useCallback(
-    async (id: number, pagination?: IFilter.Pagination) => {
-      return await atlas.chat.findRoomMessages(id, pagination);
-    },
-    [atlas.chat]
-  );
   const {
     messages,
     loading,
     fetching,
-    target,
     onMessage: onMessages,
-  } = useMessages<HTMLDivElement>(findRoomMessages, room);
+    more,
+  } = useMessages(room);
 
   const scrollDown = useCallback(() => {
     if (messagesRef.current)
@@ -72,14 +65,17 @@ const Messages: React.FC<{
     [onMessages, scrollDown]
   );
 
-  const { sendMessage, updateMessage, deleteMessage } = useChat(onMessage);
+  const { sendMessage, updateMessage, deleteMessage } = useChat(
+    onMessage,
+    orUndefined(user?.id)
+  );
 
   const submit = useCallback(
     (text: string) => {
       if (!room) return;
-      return sendMessage({ roomId: room, text });
+      return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
-    [room, sendMessage]
+    [room, sendMessage, user]
   );
 
   const onUpdateMessage = useCallback(
@@ -185,8 +181,7 @@ const Messages: React.FC<{
             ref={messagesRef}
             onScroll={onScroll}
           >
-            <div ref={target} />
-
+            <InView as="div" onChange={more} />
             <Loading
               show={loading || fetching}
               className={cn(
