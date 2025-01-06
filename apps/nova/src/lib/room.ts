@@ -10,6 +10,7 @@ export function asOtherMember(
   return {
     id: otherMember.id,
     name: otherMember.name || null,
+    gender: otherMember.gender || null,
     image: otherMember.image || null,
     role: otherMember.role,
     lastSeen: otherMember.updatedAt,

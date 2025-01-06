@@ -98,6 +98,7 @@ export class Rooms {
       name: users.column("name"),
       image: users.column("image"),
       role: users.column("role"),
+      gender: users.column("gender"),
       pinned: this.column.members("pinned"),
       muted: this.column.members("muted"),
       createdAt: users.column("created_at"),

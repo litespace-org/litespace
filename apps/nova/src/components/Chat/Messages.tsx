@@ -12,6 +12,7 @@ import {
   ChatHeader,
   SendInput,
   EditMessage,
+  UserTyping,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
 import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
@@ -48,7 +49,8 @@ type RetryFnMap = Record<
 const Messages: React.FC<{
   room: number;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
-}> = ({ room, otherMember }) => {
+  isTyping: boolean;
+}> = ({ room, otherMember, isTyping }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -100,7 +102,7 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage } = useChat(
+  const { sendMessage, updateMessage, deleteMessage, typeMessage } = useChat(
     onMessage,
     orUndefined(user?.id)
   );
@@ -316,9 +318,16 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-
-          <div className="px-4 pt-2 pb-6">
-            <SendInput onSubmit={submit} />
+          {isTyping ? (
+            <div className="px-6">
+              <UserTyping {...otherMember} imageUrl={otherMember.image} />
+            </div>
+          ) : null}
+          <div className="px-4 pt-2 pb-6 mt-3">
+            <SendInput
+              typeMessage={() => typeMessage({ roomId: room })}
+              onSubmit={submit}
+            />
           </div>
         </>
       ) : null}

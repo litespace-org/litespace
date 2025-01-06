@@ -1,12 +1,11 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsContainer from "@/components/Chat/RoomsContainer";
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
-import { useFindRoomMembers } from "@litespace/headless/chat";
+import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember } from "@/lib/room";
 import { useUserContext } from "@litespace/headless/context/user";
-
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
@@ -20,6 +19,14 @@ const Chat: React.FC = () => {
   // TODO: read/unread function
   const roomMembers = useFindRoomMembers(selected.room);
   const otherMember = asOtherMember(user?.id, roomMembers.data);
+
+  const { roomsTyping } = useChatStatus();
+
+  const isCurrentRoomTyping = useMemo(() => {
+    if (!selected.room || !otherMember) return false;
+    if (!roomsTyping[selected.room]) return false;
+    return roomsTyping[selected.room][otherMember.id];
+  }, [selected.room, otherMember, roomsTyping]);
 
   const retry = useCallback(() => {
     roomMembers.refetch();
@@ -59,11 +66,20 @@ const Chat: React.FC = () => {
 
   return (
     <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
-      <RoomsContainer selected={selected} select={select} />
+      <RoomsContainer
+        roomsTyping={roomsTyping}
+        selected={selected}
+        select={select}
+      />
 
       {otherMember && selected.room ? (
-        <Messages room={selected.room} otherMember={otherMember} />
+        <Messages
+          isTyping={isCurrentRoomTyping}
+          room={selected.room}
+          otherMember={otherMember}
+        />
       ) : null}
+
       {!selected.room ? (
         <div className="h-full w-full flex items-center justify-center flex-col gap-8">
           <StartMessaging />

@@ -2,17 +2,23 @@ import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { useFormatMessage } from "@/hooks";
 import Send from "@litespace/assets/Send";
 import { Input } from "@/components/Input";
+import { Void } from "@litespace/types";
 
 type InitialMessage = { id: number; text: string };
 export const SendInput: React.FC<{
   initialMessage?: InitialMessage;
   onSubmit: (value: string) => void;
-}> = ({ initialMessage, onSubmit }) => {
+  typeMessage?: Void;
+}> = ({ initialMessage, onSubmit, typeMessage }) => {
   const [value, setValue] = useState<string>(initialMessage?.text || "");
   const intl = useFormatMessage();
-  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  }, []);
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+      typeMessage ? typeMessage() : null;
+    },
+    [typeMessage]
+  );
 
   const handleSubmit = useCallback(() => {
     if (value === "") return;

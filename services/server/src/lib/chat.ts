@@ -30,6 +30,7 @@ export function asFindUserRoomsApiRecord({
       role: otherMember.role,
       lastSeen: otherMember.updatedAt,
       online: otherMemberOnlineStatus,
+      gender: otherMember.gender,
     },
   };
 }

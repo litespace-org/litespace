@@ -19,6 +19,7 @@ const Rooms: React.FC<{
   type: "all" | "pinned";
   query: Query;
   rooms: IRoom.FindUserRoomsApiRecord[] | null;
+  roomsTyping: Record<number, Record<number, boolean>>;
   select: SelectRoom;
   roomId: number | null;
   target: React.RefObject<HTMLDivElement>;
@@ -26,6 +27,7 @@ const Rooms: React.FC<{
   toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
   togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
 }> = ({
+  roomsTyping,
   query,
   rooms,
   select,
@@ -82,7 +84,11 @@ const Rooms: React.FC<{
               room.latestMessage ? room.latestMessage?.text : "TODO: Bio"
             }
             unreadCount={room.unreadMessagesCount}
-            isTyping={false}
+            isTyping={
+              roomsTyping[room.roomId]
+                ? roomsTyping[room.roomId][room.otherMember.id]
+                : false
+            }
             select={() =>
               select({
                 room: room.roomId,

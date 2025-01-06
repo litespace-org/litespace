@@ -3,8 +3,6 @@ import { UserTyping } from "@/components/Chat/UserTyping";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { faker } from "@faker-js/faker/locale/ar";
 import { IUser } from "@litespace/types";
-import { useEffect, useState } from "react";
-import React from "react";
 
 type Component = typeof UserTyping;
 
@@ -20,24 +18,6 @@ export const Primary: StoryObj<Component> = {
     name: faker.person.fullName({ sex: "male" }),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     gender: null,
-  },
-  render(props) {
-    const [seed, setSeed] = useState(1);
-
-    useEffect(() => {
-      const interval = setInterval(
-        () => {
-          setSeed(seed + 1);
-        },
-        faker.number.int({ min: 1, max: 3 }) * 1000
-      );
-
-      return () => {
-        clearInterval(interval);
-      };
-    }, [seed]);
-
-    return <UserTyping {...props} seed={seed} />;
   },
 };
 

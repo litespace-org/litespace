@@ -119,7 +119,7 @@ export const ChatRoom: React.FC<{
             "tw-text-natural-600": !isActive,
           })}
         >
-          {owner && !isActive ? (
+          {owner && !isActive && !isTyping ? (
             <div className="tw-w-[21px] tw-h-[21px] tw-flex tw-items-center tw-justify-center">
               {ReadIcon}
             </div>

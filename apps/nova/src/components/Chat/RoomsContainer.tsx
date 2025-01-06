@@ -12,10 +12,10 @@ import { useRoomManager } from "@/hooks/chat";
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
-}> = ({ select, selected: { room: roomId } }) => {
+  roomsTyping: Record<number, Record<number, boolean>>;
+}> = ({ select, roomsTyping, selected: { room: roomId } }) => {
   const intl = useFormatMessage();
   const { rooms, keyword, update } = useRoomManager();
-
   return (
     <div
       style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
@@ -54,6 +54,7 @@ const RoomsContainer: React.FC<{
         {rooms.pinned.list && rooms.pinned.list.length > 0 && !keyword.value ? (
           <div className="mb-6">
             <Rooms
+              roomsTyping={roomsTyping}
               toggleMute={update.toggleMute}
               togglePin={update.togglePin}
               type="pinned"
@@ -69,6 +70,7 @@ const RoomsContainer: React.FC<{
 
         <Rooms
           type="all"
+          roomsTyping={roomsTyping}
           toggleMute={update.toggleMute}
           togglePin={update.togglePin}
           query={rooms.all.query}

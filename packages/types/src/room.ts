@@ -35,6 +35,7 @@ export type PopulatedMemberRow = {
   muted: MemberRow["muted"];
   email: IUser.Row["email"];
   name: IUser.Row["name"];
+  gender: IUser.Row["gender"];
   image: IUser.Row["image"];
   role: IUser.Row["role"];
   createdAt: IUser.Row["created_at"];
@@ -48,6 +49,7 @@ export type PopulatedMember = {
   muted: Member["muted"];
   email: IUser.Self["email"];
   name: IUser.Self["name"];
+  gender: IUser.Self["gender"];
   image: IUser.Self["image"];
   role: IUser.Self["role"];
   createdAt: IUser.Self["createdAt"];
@@ -79,6 +81,7 @@ export type FindUserRoomsApiRecord = {
     role: IUser.Role;
     lastSeen: string;
     online: boolean;
+    gender: IUser.Gender | null;
   };
 };
 
