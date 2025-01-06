@@ -41,6 +41,12 @@ describe("/api/v1/lesson/", () => {
         title: faker.lorem.words(3),
       });
 
+      const slot = await db.slot({
+        userId: tutor.user.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "day").startOf("day").toISOString(),
+      });
+
       const unpackedRules = unpackRules({
         rules: [rule],
         slots: [],

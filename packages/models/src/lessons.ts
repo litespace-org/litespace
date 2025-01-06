@@ -151,6 +151,24 @@ export class Lessons {
       .where(this.columns.lessons("id"), id);
   }
 
+  async cancelBatch({
+    canceledBy,
+    ids,
+    tx,
+  }: WithOptionalTx<{
+    ids: number[];
+    canceledBy: number;
+  }>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .lessons.update({
+        canceled_by: canceledBy,
+        canceled_at: now,
+        updated_at: now,
+      })
+      .whereIn(this.columns.lessons("id"), ids);
+  }
+
   private async findOneBy<T extends keyof ILesson.Row>(
     key: T,
     value: ILesson.Row[T]

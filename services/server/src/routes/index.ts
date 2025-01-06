@@ -36,4 +36,5 @@ export default {
   topic,
   cache,
   session,
+  availabilitySlot,
 };

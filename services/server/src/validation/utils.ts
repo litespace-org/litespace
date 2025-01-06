@@ -147,3 +147,9 @@ export const pagination = zod.object({
   page: zod.optional(pageNumber).default(1),
   size: zod.optional(pageSize).default(10),
 });
+
+export const skippablePagination = zod.object({
+  page: zod.optional(pageNumber).default(1),
+  size: zod.optional(pageSize).default(10),
+  full: zod.optional(boolean).default(false),
+});

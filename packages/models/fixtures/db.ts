@@ -22,7 +22,7 @@ import {
   ISession,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
-import { entries, range, sample } from "lodash";
+import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
@@ -102,6 +102,22 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
   });
 }
 
+export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
+  const start = dayjs.utc(payload?.start || faker.date.future());
+  const end = start.add(faker.number.int(8), "hours");
+
+  const slots = await availabilitySlots.create([
+    {
+      userId: await or.tutorId(payload?.userId),
+      start: start.toISOString(),
+      end: end.toISOString(),
+    },
+  ]);
+  const slot = first(slots);
+  if (!slot) throw new Error("Slot not found; should never happen");
+  return slot;
+}
+
 const or = {
   async tutorId(id?: number): Promise<number> {
     if (!id) return await tutor().then((tutor) => tutor.id);
@@ -126,6 +142,10 @@ const or = {
   async roomId(roomId?: number): Promise<number> {
     if (!roomId) return await makeRoom();
     return roomId;
+  },
+  async slotId(id?: number): Promise<number> {
+    if (!id) return await slot().then((slot) => slot.id);
+    return id;
   },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();

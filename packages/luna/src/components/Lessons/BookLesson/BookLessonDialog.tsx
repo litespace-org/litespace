@@ -120,10 +120,12 @@ export const BookLessonDialog: React.FC<{
   notice: number | null;
   onBook: ({
     ruleId,
+    slotId,
     start,
     duration,
   }: {
     ruleId: number;
+    slotId: number;
     start: string;
     duration: ILesson.Duration;
   }) => void;
@@ -145,6 +147,7 @@ export const BookLessonDialog: React.FC<{
   const [duration, setDuration] = useState<number>(15);
   const [start, setStart] = useState<string | null>(null);
   const [ruleId, setRuleId] = useState<number | null>(null);
+  const [slotId, setSlotId] = useState<number | null>(null);
   const [date, setDate] = useState<Dayjs>(dayjs());
 
   const dateBounds = useMemo(() => {
@@ -176,6 +179,7 @@ export const BookLessonDialog: React.FC<{
         daySlots.map((rule) => splitRuleEvent(rule, duration))
       ).map((event) => ({
         ruleId: event.id,
+        slotId: event.id,
         start: event.start,
         end: event.end,
         bookable: dayjs(event.start).isAfter(
@@ -205,6 +209,7 @@ export const BookLessonDialog: React.FC<{
     const bookedSlots: AttributedSlot[] = slots
       .map((slot) => ({
         ruleId: slot.ruleId,
+        slotId: slot.ruleId,
         start: slot.start,
         end: dayjs(slot.start).add(slot.duration, "minutes").toISOString(),
         bookable: false,
@@ -290,9 +295,11 @@ export const BookLessonDialog: React.FC<{
                 slots={allSlots}
                 start={start}
                 ruleId={ruleId}
-                select={({ ruleId, start }) => {
+                slotId={ruleId}
+                select={({ slotId, ruleId, start }) => {
                   setStart(start);
                   setRuleId(ruleId);
+                  setSlotId(slotId);
                 }}
               />
             </Animation>
@@ -302,6 +309,7 @@ export const BookLessonDialog: React.FC<{
           step === "confirmation" &&
           start &&
           ruleId &&
+          slotId &&
           !loading ? (
             <Animation key="confimration" id="confirmation">
               <div className="tw-px-6">
@@ -312,7 +320,7 @@ export const BookLessonDialog: React.FC<{
                   start={start}
                   confirmationLoading={confirmationLoading}
                   duration={duration}
-                  onConfrim={() => onBook({ ruleId, start, duration })}
+                  onConfrim={() => onBook({ ruleId, slotId, start, duration })}
                   onEdit={() => {
                     setStep("date-selection");
                   }}

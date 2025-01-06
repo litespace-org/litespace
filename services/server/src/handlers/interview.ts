@@ -6,7 +6,14 @@ import {
   notfound,
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
-import { interviews, rules, users, knex, rooms } from "@litespace/models";
+import {
+  interviews,
+  rules,
+  users,
+  knex,
+  rooms,
+  availabilitySlots,
+} from "@litespace/models";
 import {
   datetime,
   id,

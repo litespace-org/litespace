@@ -1,8 +1,12 @@
+import { Paginated } from "@/utils";
+import { SkippablePagination } from "@/filter";
+
 export type Self = {
   id: number;
   userId: number;
   start: string;
   end: string;
+  deleted: boolean;
   createAt: string;
   updatedAt: string;
 };
@@ -12,6 +16,7 @@ export type Row = {
   user_id: number;
   start: Date;
   end: Date;
+  deleted: boolean;
   created_at: Date;
   updated_at: Date;
 };
@@ -23,8 +28,9 @@ export type CreatePayload = {
 };
 
 export type UpdatePayload = {
-  start: string;
-  end: string;
+  start?: string;
+  end?: string;
+  deleted?: boolean;
 };
 
 export type Slot = {
@@ -40,3 +46,41 @@ export type SubSlot = {
 };
 
 export type GeneralSlot = Slot | SubSlot;
+
+// API Payloads / Queries
+export type FindAvailabilitySlotsApiQuery = {
+  userId: number;
+  after?: string;
+  before?: string;
+} & {
+  pagination?: SkippablePagination;
+};
+
+export type CreateAction = {
+  action: "create";
+  start: string;
+  end: string;
+};
+
+export type UpdateAction = {
+  action: "update";
+  id: number;
+  start?: string;
+  end?: string;
+};
+
+export type DeleteAction = {
+  action: "delete";
+  id: number;
+};
+
+// API Requests
+export type SetAvailabilitySlotsApiPayload = {
+  slots: Array<CreateAction | UpdateAction | DeleteAction>;
+};
+
+// API Responses
+export type FindAvailabilitySlotsApiResponse = Paginated<{
+  slots: Self[];
+  subslots: SubSlot[];
+}>;

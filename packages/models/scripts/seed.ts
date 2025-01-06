@@ -285,6 +285,18 @@ async function main(): Promise<void> {
     monthday: sample(range(1, 31)),
   });
 
+<<<<<<< HEAD
+=======
+  // seeding slots
+  await availabilitySlots.create(
+    addedTutors.map((tutor) => ({
+      userId: tutor.id,
+      start: dayjs.utc().startOf("day").toISOString(),
+      end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
+    }))
+  );
+
+>>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.)
   const times = range(0, 24).map((hour) =>
     [hour.toString().padStart(2, "0"), "00"].join(":")
   );
@@ -401,6 +413,16 @@ async function main(): Promise<void> {
       `created 100 lesson for tutor with id "${tutor.id}" and email "${tutor.email}" `
     );
   }
+
+  const slot = (
+    await availabilitySlots.create([
+      {
+        userId: tutorManager.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().startOf("day").add(1, "days").toISOString(),
+      },
+    ])
+  )[0];
 
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {

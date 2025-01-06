@@ -13,13 +13,7 @@ import {
 import { IRule, Wss } from "@litespace/types";
 import { bad, contradictingRules, forbidden, notfound } from "@/lib/error";
 import { interviews, lessons, rules, tutors } from "@litespace/models";
-import {
-  Rule,
-  Schedule,
-  asRule,
-  asSlots,
-  unpackRules,
-} from "@litespace/sol/rule";
+import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
 import dayjs from "@/lib/dayjs";
@@ -150,7 +144,9 @@ async function findUnpackedUserRules(
 /**
  * Respond with user's (e.g. tutor) IRule.Self objects that lay between two dates,
  * along with the occupied slots.
+ * @deprecated
  */
+/*
 async function findUserRulesWithSlots(
   req: Request,
   res: Response,
@@ -198,6 +194,7 @@ async function findUserRulesWithSlots(
 
   res.status(200).json(response);
 }
+*/
 
 function updateRule(context: ApiContext) {
   return safeRequest(
@@ -278,7 +275,6 @@ function deleteRule(context: ApiContext) {
 export default {
   findUnpackedUserRules: safeRequest(findUnpackedUserRules),
   findUserRules: safeRequest(findUserRules),
-  findUserRulesWithSlots: safeRequest(findUserRulesWithSlots),
   createRule,
   updateRule,
   deleteRule,

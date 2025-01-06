@@ -82,6 +82,24 @@ export class Interviews {
     return this.from(row);
   }
 
+  async cancel({
+    canceledBy,
+    ids,
+    tx,
+  }: WithOptionalTx<{
+    ids: number[];
+    canceledBy: number;
+  }>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .update({
+        canceled_by: canceledBy,
+        canceled_at: now,
+        updated_at: now,
+      })
+      .whereIn(this.column("id"), ids);
+  }
+
   async findOneBy<T extends keyof IInterview.Row>(
     key: T,
     value: IInterview.Row[T]
@@ -139,7 +157,16 @@ export class Interviews {
     signed?: boolean;
     signers?: number[];
     rules?: number[];
+<<<<<<< HEAD
     cancelled?: boolean;
+=======
+    /**
+     * slots ids to be included in the query result
+     */
+    slots?: number[];
+    cancelled?: boolean;
+    pagination?: IFilter.SkippablePagination;
+>>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.)
   } & IFilter.Pagination): Promise<Paginated<IInterview.Self>> {
     const baseBuilder = this.builder(tx);
 
@@ -165,6 +192,8 @@ export class Interviews {
       baseBuilder.whereIn(this.column("signer"), signers);
 
     if (!isEmpty(rules)) baseBuilder.whereIn(this.column("rule_id"), rules);
+
+    if (!isEmpty(slots)) baseBuilder.whereIn(this.column("slot_id"), slots);
 
     if (cancelled === true)
       baseBuilder.where(this.column("canceled_at"), "IS NOT", null);

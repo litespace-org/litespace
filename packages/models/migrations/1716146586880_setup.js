@@ -94,6 +94,7 @@ exports.up = (pgm) => {
     user_id: { type: "INT", notNull: true, references: "users(id)" },
     start: { type: "TIMESTAMP", notNull: true },
     end: { type: "TIMESTAMP", notNull: true },
+    deleted: { type: "BOOLEAN", notNull: true, default: false },
     created_at: { type: "TIMESTAMP", notNull: true },
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
@@ -104,6 +105,14 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
+<<<<<<< HEAD
+=======
+    slot_id: {
+      type: "SERIAL",
+      references: "availability_slots(id)",
+      notNull: true,
+    },
+>>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.)
     session_id: { type: "VARCHAR(50)", notNull: true, primaryKey: true },
     canceled_by: { type: "INT", references: "users(id)", default: null },
     canceled_at: { type: "TIMESTAMP", default: null },
@@ -125,6 +134,11 @@ exports.up = (pgm) => {
     interviewee_feedback: { type: "TEXT", default: null },
     session_id: { type: "TEXT", notNull: true, primaryKey: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
+    slot_id: {
+      type: "SERIAL",
+      references: "availability_slots(id)",
+      notNull: true,
+    },
     note: { type: "TEXT", default: null },
     level: { type: "INT", default: null },
     status: { type: "interview_status", default: "pending" },

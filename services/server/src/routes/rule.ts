@@ -10,7 +10,6 @@ export default function router(context: ApiContext) {
   router.delete("/:ruleId", rule.deleteRule(context));
   router.get("/list/:userId", rule.findUserRules);
   router.get("/list/unpacked/:userId", rule.findUnpackedUserRules);
-  router.get("/slots/:userId", rule.findUserRulesWithSlots);
 
   return router;
 }

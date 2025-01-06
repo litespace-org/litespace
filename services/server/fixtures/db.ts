@@ -102,6 +102,23 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
   });
 }
 
+export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
+  const start = dayjs.utc(payload?.start || faker.date.future());
+  const end = payload?.end
+    ? dayjs.utc(payload.end)
+    : start.add(faker.number.int(8), "hours");
+
+  return (
+    await availabilitySlots.create([
+      {
+        userId: payload?.userId || 1,
+        start: start.toISOString(),
+        end: end.toISOString(),
+      },
+    ])
+  )[0];
+}
+
 async function activatedRule(payload?: Partial<IRule.CreatePayload>) {
   const ruleInfo = await rule(payload);
   return await rules.update(ruleInfo.id, { activated: true });
@@ -124,13 +141,17 @@ const or = {
   async sessionId(type: ISession.Type): Promise<ISession.Id> {
     return `${type}:${randomUUID()}`;
   },
-  async ruleId(id?: number): Promise<number> {
-    if (!id) return await rule().then((rule) => rule.id);
+  async ruleId(id?: number, userId?: number): Promise<number> {
+    if (!id) return await rule({ userId }).then((rule) => rule.id);
     return id;
   },
   async roomId(roomId?: number): Promise<number> {
-    if (!roomId) return makeRoom();
+    if (!roomId) return await makeRoom();
     return roomId;
+  },
+  async slotId(id?: number): Promise<number> {
+    if (!id) return await slot().then((slot) => slot.id);
+    return id;
   },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
@@ -162,7 +183,8 @@ export async function lesson(
             : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
-      rule: await or.ruleId(payload?.rule),
+      rule: await or.ruleId(payload?.rule, payload?.tutor),
+      slot: await or.slotId(payload?.slot),
       student,
       tutor,
       tx,
@@ -180,7 +202,8 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
     interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
     session: await or.sessionId("interview"),
-    rule: await or.ruleId(payload.rule),
+    rule: await or.ruleId(payload.rule, payload.interviewer),
+    slot: await or.slotId(payload.slot),
     start: or.start(payload.start),
   });
 }

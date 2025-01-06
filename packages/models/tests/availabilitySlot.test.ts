@@ -1,4 +1,5 @@
-import { availabilitySlots } from "@/availabilitySlot";
+import { availabilitySlots } from "@/availabilitySlots";
+import { knex } from "@/query";
 import fixtures from "@fixtures/db";
 import { dayjs, nameof, safe } from "@litespace/sol";
 import { expect } from "chai";
@@ -102,13 +103,15 @@ describe("AvailabilitySlots", () => {
         },
       ]);
 
-      const updated = await availabilitySlots.update(slots[0].id, {
+      await availabilitySlots.update(slots[0].id, {
         start: dayjs.utc().add(2, "hour").toISOString(),
         end: dayjs.utc().add(3, "hour").toISOString(),
       });
 
-      const found = first(await availabilitySlots.find({ users: [user.id] }));
-      expect(found).to.deep.eq(updated);
+      const updated = await availabilitySlots.findById(slots[0].id);
+
+      const res = await availabilitySlots.find({ users: [user.id] });
+      expect(first(res.list)).to.deep.eq(updated);
     });
   });
 
@@ -134,8 +137,29 @@ describe("AvailabilitySlots", () => {
       const res = await availabilitySlots.find({ users: [user.id] });
       expect(res).to.have.length(0);
     });
+
+    it("should NOT delete a list of available AvailabilitySlot rows from the database if it has associated lessons/interviews", async () => {
+      const user = await fixtures.user({});
+
+      const created = await availabilitySlots.create([
+        {
+          userId: user.id,
+          start: dayjs.utc().toISOString(),
+          end: dayjs.utc().add(1, "hour").toISOString(),
+        },
+      ]);
+      await fixtures.lesson({ slot: created[0].id });
+
+      const res = await safe(async () =>
+        availabilitySlots.delete(created.map((slot) => slot.id))
+      );
+      expect(res).to.be.instanceof(Error);
+    });
+
     it("should throw an error if the ids list is empty", async () => {
-      const res = await safe(async () => availabilitySlots.delete([]));
+      const res = await safe(async () =>
+        knex.transaction(async (tx) => await availabilitySlots.delete([], tx))
+      );
       expect(res).to.be.instanceOf(Error);
     });
   });

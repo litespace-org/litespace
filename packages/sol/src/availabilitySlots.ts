@@ -1,6 +1,7 @@
-import { IAvailabilitySlot } from "@litespace/types";
+import { IAvailabilitySlot, IInterview, ILesson } from "@litespace/types";
 import { dayjs } from "@/dayjs";
 import { flatten, orderBy } from "lodash";
+import { INTERVIEW_DURATION } from "./constants";
 
 /**
  * Divide list of slots into sub-slots. It is used whenever a user wants to book a lesson
@@ -190,4 +191,40 @@ export function orderSlots(
   dir: "asc" | "desc"
 ): IAvailabilitySlot.GeneralSlot[] {
   return orderBy(slots, [(slot) => dayjs.utc(slot.start)], [dir]);
+}
+
+export function asSlot<T extends ILesson.Self | IInterview.Self>(
+  item: T
+): IAvailabilitySlot.Slot {
+  return {
+    id: "ids" in item ? item.ids.slot : item.slotId,
+    start: item.start,
+    end: dayjs(item.start)
+      .add("duration" in item ? item.duration : INTERVIEW_DURATION)
+      .toISOString(),
+  };
+}
+
+export function asSlots<T extends ILesson.Self | IInterview.Self>(
+  items: T[]
+): IAvailabilitySlot.Slot[] {
+  return items.map((item) => asSlot(item));
+}
+
+export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
+  item: T
+): IAvailabilitySlot.SubSlot {
+  return {
+    parent: "ids" in item ? item.ids.slot : item.slotId,
+    start: item.start,
+    end: dayjs(item.start)
+      .add("duration" in item ? item.duration : INTERVIEW_DURATION)
+      .toISOString(),
+  };
+}
+
+export function asSubSlots<T extends ILesson.Self | IInterview.Self>(
+  items: T[]
+): IAvailabilitySlot.SubSlot[] {
+  return items.map((item) => asSubSlot(item));
 }

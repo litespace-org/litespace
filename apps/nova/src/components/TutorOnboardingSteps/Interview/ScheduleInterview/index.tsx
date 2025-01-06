@@ -163,6 +163,7 @@ const ScheduleInterview: React.FC<{
           mutation.mutate({
             interviewerId: interviewer.data.id,
             ruleId: selectedRule.id,
+            slotId: selectedRule.id,
             start: selectedRule.start,
           });
         }}
