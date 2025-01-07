@@ -55,7 +55,8 @@ const Root: React.FC = () => {
 
     if (!user || (!root && !complete)) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);
-    if (tutor || student) return navigate(Route.UpcomingLessons);
+    if (tutor) return navigate(Route.UpcomingLessons);
+    if (student) return navigate(Route.Dashboard);
     if (tutorManager) return navigate(Route.Interviews);
   }, [navigate, location.pathname, user, meta]);
 

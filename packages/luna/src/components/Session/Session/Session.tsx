@@ -57,7 +57,7 @@ export const Session: React.FC<Props> = ({
 }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-10">
-      <div className="tw-h-full tw-grow tw-flex">
+      <div className="tw-h-full tw-grow tw-flex tw-border tw-border-brand-700 tw-rounded-lg tw-overflow-hidden">
         <SessionStreams
           currentUserId={currentUserId}
           fullScreen={fullScreen}
