@@ -13,18 +13,37 @@ const url = "https://picsum.photos/400";
 
 type Story = StoryObj<Props>;
 
-export const BeforeJoin: Story = {
+export const BeforeJoinForStudent: Story = {
   args: {
     canceled: null,
     start: dayjs.utc().add(15, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
+  },
+};
+
+export const BeforeJoinForTutor: Story = {
+  args: {
+    canceled: null,
+    start: dayjs.utc().add(15, "minutes").toISOString(),
+    duration: 30,
+    member: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      role: "student",
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
@@ -33,13 +52,15 @@ export const CanJoinLesson: Story = {
     canceled: null,
     start: dayjs.utc().add(5, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
@@ -48,13 +69,15 @@ export const CanJoinLessonNow: Story = {
     canceled: null,
     start: dayjs.utc().subtract(2, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
@@ -63,13 +86,15 @@ export const AfterLessonStarted: Story = {
     canceled: null,
     start: dayjs.utc().subtract(5, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
@@ -78,28 +103,49 @@ export const LessonAboutToEnd: Story = {
     canceled: null,
     start: dayjs.utc().subtract(15, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
-export const AfterLessonFinish: Story = {
+export const AfterLessonFinishForStudent: Story = {
   args: {
     canceled: null,
     start: dayjs.utc().subtract(35, "minutes").toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
+  },
+};
+
+export const AfterLessonFinishForTutor: Story = {
+  args: {
+    canceled: null,
+    start: dayjs.utc().subtract(35, "minutes").toISOString(),
+    duration: 30,
+    member: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      role: "student",
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+    onSendMsg: () => console.log("sendMsg"),
   },
 };
 
@@ -108,10 +154,11 @@ export const CanceledByTutor: Story = {
     canceled: "tutor",
     start: new Date().toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),
@@ -123,10 +170,43 @@ export const CanceledByStudent: Story = {
     canceled: "student",
     start: new Date().toISOString(),
     duration: 30,
-    tutor: {
+    member: {
       id: 30,
       name: faker.person.fullName(),
       image: url,
+      role: "student",
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+  },
+};
+
+export const CanceledByCurTutor: Story = {
+  args: {
+    canceled: "tutor",
+    start: new Date().toISOString(),
+    duration: 30,
+    member: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      role: "student",
+    },
+    onJoin: () => console.log("join"),
+    onCancel: () => console.log("cancel"),
+  },
+};
+
+export const CanceledByCurStudent: Story = {
+  args: {
+    canceled: "student",
+    start: new Date().toISOString(),
+    duration: 30,
+    member: {
+      id: 30,
+      name: faker.person.fullName(),
+      image: url,
+      role: "tutor",
     },
     onJoin: () => console.log("join"),
     onCancel: () => console.log("cancel"),

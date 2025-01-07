@@ -5,7 +5,7 @@ import {
   CancelLesson,
 } from "@litespace/luna/Lessons";
 import { asFullAssetUrl } from "@litespace/luna/backend";
-import { ILesson, IUser, Void } from "@litespace/types";
+import { ILesson, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
@@ -16,6 +16,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import BookLesson from "@/components/Lessons/BookLesson";
+import { useUserContext } from "@litespace/headless/context/user";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -31,6 +32,7 @@ export const Content: React.FC<{
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
   const toast = useToast();
+  const { user: currentUser } = useUserContext();
 
   const [tutorId, setTutorId] = useState<number | null>(null);
   const [lessonId, setLessonId] = useState<number | null>(null);
@@ -54,7 +56,7 @@ export const Content: React.FC<{
 
   const canceled = useCallback(
     (item: Lessons[0], tutor: ILesson.PopuldatedMember) => {
-      if (!item.lesson.canceledBy && !item.lesson.canceledBy) return null;
+      if (!item.lesson.canceledBy) return null;
       if (item.lesson.canceledBy === tutor.userId) return "tutor";
       return "student";
     },
@@ -92,10 +94,10 @@ export const Content: React.FC<{
     <div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
         {list.map((item) => {
-          const tutor = item.members.find(
-            (member) => member.role === IUser.Role.Tutor
+          const member = item.members.find(
+            (member) => member.role !== currentUser?.role
           );
-          if (!tutor) return;
+          if (!member) return;
           return (
             <motion.div
               initial={{ opacity: 0 }}
@@ -107,12 +109,17 @@ export const Content: React.FC<{
                 duration={item.lesson.duration}
                 onJoin={() => console.log("join")}
                 onCancel={() => setLessonId(item.lesson.id)}
-                onRebook={() => setTutorId(tutor.userId)}
-                canceled={canceled(item, tutor)}
-                tutor={{
-                  id: tutor.userId,
-                  name: tutor.name,
-                  image: tutor.image ? asFullAssetUrl(tutor.image) : undefined,
+                onRebook={() => setTutorId(member.userId)}
+                // TODO: implement tutor sendMsg button functionality
+                onSendMsg={() => console.log("Not implemented yet!")}
+                canceled={canceled(item, member)}
+                member={{
+                  id: member.userId,
+                  name: member.name,
+                  image: member.image
+                    ? asFullAssetUrl(member.image)
+                    : undefined,
+                  role: member.role === "student" ? "student" : "tutor",
                 }}
               />
             </motion.div>
