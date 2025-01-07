@@ -8,6 +8,7 @@ import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
 import { IMessage } from "@litespace/types";
+import { asFullAssetUrl } from "@/lib";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -44,7 +45,7 @@ export const ChatMessageGroup: React.FC<{
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
         <Avatar
           alt={orUndefined(name)}
-          src={orUndefined(image)}
+          src={image ? asFullAssetUrl(image) : undefined}
           seed={userId.toString()}
         />
       </div>

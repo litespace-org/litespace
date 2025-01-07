@@ -64,11 +64,16 @@ export function useUpdateUser({
       payload,
     }: {
       id: number;
-      payload: IUser.UpdateApiPayload & ITopic.ReplaceUserTopicsApiPayload;
+      payload: IUser.UpdateApiPayload &
+        ITopic.ReplaceUserTopicsApiPayload & {
+          image: File | null;
+        };
     }) => {
-      // TODO: Handle Updating profile Pictures here
       await Promise.all([
         atlas.user.update(id, payload),
+        payload.image
+          ? atlas.user.updateMedia(id, { image: payload.image })
+          : Promise.resolve(null),
         !isEmpty(payload.addTopics) || !isEmpty(payload.removeTopics)
           ? atlas.topic.replaceUserTopics(payload)
           : Promise.resolve(null),

@@ -168,7 +168,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   const onSubmit = useCallback(
     (data: IForm) => {
       if (!canSubmit) return;
-      if (photo) console.log("upload photo");
       if (!user) return;
 
       const addTopics: number[] = topics.filter(
@@ -195,6 +194,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           city: data.city && data.city !== user.city ? data.city : undefined,
           addTopics,
           removeTopics,
+          image: photo,
         },
       });
     },

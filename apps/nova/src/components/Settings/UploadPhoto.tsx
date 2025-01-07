@@ -33,6 +33,7 @@ const UploadPhoto: React.FC<{
           setPhoto(file);
         }}
       />
+
       <div className="w-[102px] h-[102px] rounded-full overflow-hidden">
         <Avatar src={photoUrl} alt={photoUrl} seed={id.toString()} />
       </div>
