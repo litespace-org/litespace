@@ -20,19 +20,29 @@ const Chat: React.FC = () => {
   const roomMembers = useFindRoomMembers(selected.room);
   const otherMember = asOtherMember(user?.id, roomMembers.data);
 
-  const { roomsTyping } = useChatStatus();
+  const { typingMap, usersOnlineMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {
     if (!selected.room || !otherMember) return false;
-    if (!roomsTyping[selected.room]) return false;
-    return roomsTyping[selected.room][otherMember.id];
-  }, [selected.room, otherMember, roomsTyping]);
+    if (!typingMap[selected.room]) return false;
+    return typingMap[selected.room][otherMember.id];
+  }, [selected.room, otherMember, typingMap]);
+
+  const isOtherMemberOnline = useMemo(() => {
+    if (!selected.room || !otherMember) return false;
+    if (
+      !usersOnlineMap[selected.room] ||
+      !usersOnlineMap[selected.room][otherMember.id]
+    )
+      return otherMember.online;
+    return !!usersOnlineMap[selected.room][otherMember.id];
+  }, [selected.room, otherMember, usersOnlineMap]);
 
   const retry = useCallback(() => {
     roomMembers.refetch();
   }, [roomMembers]);
 
-  if (roomMembers.isLoading)
+  if (roomMembers.isLoading && !selected.otherMember)
     return (
       <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6">
         <Typography
@@ -67,7 +77,8 @@ const Chat: React.FC = () => {
   return (
     <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
       <RoomsContainer
-        roomsTyping={roomsTyping}
+        usersOnlineMap={usersOnlineMap}
+        typingMap={typingMap}
         selected={selected}
         select={select}
       />
@@ -75,6 +86,7 @@ const Chat: React.FC = () => {
       {otherMember && selected.room ? (
         <Messages
           isTyping={isCurrentRoomTyping}
+          isOnline={isOtherMemberOnline}
           room={selected.room}
           otherMember={otherMember}
         />

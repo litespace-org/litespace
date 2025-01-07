@@ -50,7 +50,8 @@ const Messages: React.FC<{
   room: number;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   isTyping: boolean;
-}> = ({ room, otherMember, isTyping }) => {
+  isOnline: boolean;
+}> = ({ room, otherMember, isTyping, isOnline }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -64,9 +65,6 @@ const Messages: React.FC<{
   const [open, setOpen] = useState<boolean>(false);
   const closeDialog = useCallback(() => setOpen(false), []);
   const openDialog = useCallback(() => setOpen(true), []);
-
-  // TODO: retrieve user online status from the server cache
-  const [onlineStatus, _] = useState(false);
 
   const {
     messages,
@@ -102,10 +100,8 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage, typeMessage } = useChat(
-    onMessage,
-    orUndefined(user?.id)
-  );
+  const { sendMessage, updateMessage, deleteMessage, userTypingMessage } =
+    useChat(onMessage, orUndefined(user?.id));
 
   const retryFnMap: RetryFnMap = {
     send: (payload) =>
@@ -221,7 +217,7 @@ const Messages: React.FC<{
           {...otherMember}
           image={otherMember.image ? asFullAssetUrl(otherMember.image) : null}
           openDialog={openDialog}
-          online={onlineStatus}
+          online={isOnline}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
         />
       </div>
@@ -325,7 +321,7 @@ const Messages: React.FC<{
           ) : null}
           <div className="px-4 pt-2 pb-6 mt-3">
             <SendInput
-              typeMessage={() => typeMessage({ roomId: room })}
+              typeMessage={() => userTypingMessage({ roomId: room })}
               onSubmit={submit}
             />
           </div>

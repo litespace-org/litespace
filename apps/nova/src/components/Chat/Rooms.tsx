@@ -19,7 +19,8 @@ const Rooms: React.FC<{
   type: "all" | "pinned";
   query: Query;
   rooms: IRoom.FindUserRoomsApiRecord[] | null;
-  roomsTyping: Record<number, Record<number, boolean>>;
+  typingMap: Record<number, Record<number, boolean>>;
+  usersOnlineMap: Record<number, Record<number, boolean>>;
   select: SelectRoom;
   roomId: number | null;
   target: React.RefObject<HTMLDivElement>;
@@ -27,7 +28,8 @@ const Rooms: React.FC<{
   toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
   togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
 }> = ({
-  roomsTyping,
+  typingMap,
+  usersOnlineMap,
   query,
   rooms,
   select,
@@ -42,6 +44,8 @@ const Rooms: React.FC<{
   const { user } = useUserContext();
 
   if (!user) return null;
+
+  console.log(rooms);
 
   return (
     <div>
@@ -64,6 +68,12 @@ const Rooms: React.FC<{
             owner={
               room.latestMessage ? room.latestMessage.userId === user.id : false
             }
+            online={
+              usersOnlineMap[room.roomId] &&
+              usersOnlineMap[room.roomId][room.otherMember.id]
+                ? usersOnlineMap[room.roomId][room.otherMember.id]
+                : room.otherMember.online
+            }
             isPinned={room.settings.pinned}
             isMuted={room.settings.muted}
             userId={room.otherMember.id}
@@ -71,7 +81,10 @@ const Rooms: React.FC<{
               toggleMute({ roomId: room.roomId, muted: !room.settings.muted })
             }
             togglePin={() =>
-              togglePin({ roomId: room.roomId, pinned: !room.settings.pinned })
+              togglePin({
+                roomId: room.roomId,
+                pinned: !room.settings.pinned,
+              })
             }
             image={
               room.otherMember.image
@@ -81,12 +94,12 @@ const Rooms: React.FC<{
             name={room.otherMember.name!}
             // TODO: replace otherMember.name with member.bio
             message={
-              room.latestMessage ? room.latestMessage?.text : "TODO: Bio"
+              room.latestMessage ? room.latestMessage?.text : "TODO: BIO"
             }
             unreadCount={room.unreadMessagesCount}
             isTyping={
-              roomsTyping[room.roomId]
-                ? roomsTyping[room.roomId][room.otherMember.id]
+              typingMap[room.roomId]
+                ? typingMap[room.roomId][room.otherMember.id]
                 : false
             }
             select={() =>

@@ -338,7 +338,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     [socket, onMessage]
   );
 
-  const typeMessage = useCallback(
+  const userTypingMessage = useCallback(
     ({ roomId }: { roomId: number }) => {
       socket?.emit(Wss.ClientEvent.UserTyping, { roomId });
     },
@@ -400,7 +400,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     sendMessage,
     deleteMessage,
     updateMessage,
-    typeMessage,
+    userTypingMessage,
   };
 }
 
@@ -854,40 +854,82 @@ export function useMessages(room: number | null) {
 export function useChatStatus() {
   const socket = useSocket();
 
-  const [roomsTyping, setRoomTyping] = useState<
+  /**
+   * A map from rooms to object containing both users in it and showing
+   * if they are typing currently or not
+   * {
+   *  roomId: {
+   *    userId: true (user is typing)
+   *  }
+   * }
+   */
+  const [typingMap, setTypingMap] = useState<
     Record<number, Record<number, boolean>>
   >({});
-  const typingTimers = useRef<Record<number, Record<number, NodeJS.Timeout>>>(
+
+  /**
+   * A map from rooms to object containing both users in it and showing
+   * if they are online
+   *    {
+   *  roomId: {
+   *    userId: true (user is online)
+   *  }
+   * }
+   */
+  const [usersOnlineMap, setUsersOnlineMap] = useState<
+    Record<number, Record<number, boolean>>
+  >({});
+
+  /**
+   * object containing timers to remove the typing states from rooms (only if we didn't recieve the
+   * UserTyping event from the server)
+   */
+  const typingTimouts = useRef<Record<number, Record<number, NodeJS.Timeout>>>(
     {}
   );
 
   const onUserTyping = useCallback(
-    ({ userId, roomId }: { userId: number; roomId: number }) => {
-      const userIdTimeout = typingTimers.current[roomId]?.[userId];
+    ({ userId, roomId }: Parameters<Wss.ServerEventsMap["UserTyping"]>[0]) => {
+      const userIdTimeout = typingTimouts.current[roomId]?.[userId];
       if (userIdTimeout) {
         clearTimeout(userIdTimeout);
       }
 
-      setRoomTyping((prev) => ({ ...prev, [roomId]: { [userId]: true } }));
+      setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: true } }));
 
       const timeout = setTimeout(() => {
-        setRoomTyping((prev) => ({ ...prev, [roomId]: { [userId]: false } }));
+        setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: false } }));
       }, 1000);
-      typingTimers.current[roomId] = {
-        ...typingTimers.current[roomId],
+      typingTimouts.current[roomId] = {
+        ...typingTimouts.current[roomId],
         [userId]: timeout,
       };
     },
     []
   );
 
+  const onUserStatusChange = useCallback(
+    ({
+      online,
+      userId,
+      roomId,
+    }: Parameters<Wss.ServerEventsMap["UserStatusChanged"]>[0]) =>
+      setUsersOnlineMap((prev) => {
+        const cloned = structuredClone(prev);
+        cloned[roomId] = { ...prev[roomId], [userId]: online };
+        return cloned;
+      }),
+    []
+  );
+
   useEffect(() => {
     socket?.on(Wss.ServerEvent.UserTyping, onUserTyping);
-
+    socket?.on(Wss.ServerEvent.UserStatusChanged, onUserStatusChange);
     return () => {
       socket?.off(Wss.ServerEvent.UserTyping, onUserTyping);
+      socket?.off(Wss.ServerEvent.UserStatusChanged, onUserStatusChange);
     };
-  }, [socket, onUserTyping]);
+  }, [socket, onUserTyping, onUserStatusChange]);
 
-  return { roomsTyping };
+  return { typingMap, usersOnlineMap };
 }
