@@ -17,6 +17,14 @@ import { isAllowedOrigin } from "@/lib/cors";
 import { cache } from "@/lib/cache";
 import "colors";
 
+// global error handling
+// this is needed to prevent the server process from exit.
+process.on("uncaughtException", (error) => {
+  console.log("Uncaught exception");
+  console.error(error);
+  // TODO: notify errors
+});
+
 // Stablish connection with the redis cache.
 cache.connect().then(() => {
   // Flush the cache as the data in cache might not be compatible with the changes

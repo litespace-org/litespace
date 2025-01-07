@@ -22,29 +22,27 @@ export class Rooms {
    * @param ids - members user ids
    * @returns the created room id
    */
-  async create(ids: number[]): Promise<number> {
-    return await knex.transaction(async (tx: Knex.Transaction) => {
-      const now = dayjs.utc().toDate();
-      const rows = await knex<IRoom.Row>(this.tables.rooms)
-        .transacting(tx)
-        .insert({ created_at: now })
-        .returning("*");
+  async create(ids: number[], tx: Knex.Transaction): Promise<number> {
+    const now = dayjs.utc().toDate();
+    const rows = await knex<IRoom.Row>(this.tables.rooms)
+      .transacting(tx)
+      .insert({ created_at: now })
+      .returning("*");
 
-      const room = first(rows);
-      if (!room) throw new Error("Room not found; should never happen");
+    const room = first(rows);
+    if (!room) throw new Error("Room not found; should never happen");
 
-      await knex<IRoom.MemberRow>(this.tables.members)
-        .transacting(tx)
-        .insert(
-          ids.map((id) => ({
-            user_id: id,
-            room_id: room.id,
-            created_at: now,
-            updated_at: now,
-          }))
-        );
-      return room.id;
-    });
+    await knex<IRoom.MemberRow>(this.tables.members)
+      .transacting(tx)
+      .insert(
+        ids.map((id) => ({
+          user_id: id,
+          room_id: room.id,
+          created_at: now,
+          updated_at: now,
+        }))
+      );
+    return room.id;
   }
 
   async update({

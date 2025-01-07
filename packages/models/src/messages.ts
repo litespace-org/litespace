@@ -13,10 +13,13 @@ import { Knex } from "knex";
 export class Messages {
   readonly table = "messages" as const;
 
-  async create(payload: IMessage.CreatePayload): Promise<IMessage.Self> {
+  async create(
+    payload: IMessage.CreatePayload,
+    tx?: Knex.Transaction
+  ): Promise<IMessage.Self> {
     const now = dayjs.utc().toDate();
-    const rows: IMessage.Row[] = await knex<IMessage.Row>(this.table)
-      .insert({
+    const rows: IMessage.Row[] = await this.builder(tx)
+      .insert<IMessage.Row>({
         user_id: payload.userId,
         room_id: payload.roomId,
         text: payload.text,

@@ -9,7 +9,6 @@ import { cache } from "@/lib/cache";
 import db from "@fixtures/db";
 import { forbidden, notfound } from "@/lib/error";
 import { safe } from "@litespace/sol";
-import { first } from "lodash";
 
 describe("/api/v1/lesson/", () => {
   beforeAll(async () => {

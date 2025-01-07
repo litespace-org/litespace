@@ -67,10 +67,6 @@ function create(context: ApiContext) {
         payload.duration
       );
 
-      const roomMembers = [user.id, tutor.id];
-      const room = await rooms.findRoomByMembers(roomMembers);
-      if (!room) await rooms.create(roomMembers);
-
       const ruleLessons = await lessons.find({
         rules: [rule.id],
         full: true,
@@ -84,8 +80,12 @@ function create(context: ApiContext) {
       });
       if (!canBookLesson) return next(busyTutor());
 
+      const roomMembers = [user.id, tutor.id];
+      const room = await rooms.findRoomByMembers(roomMembers);
+
       const { lesson } = await knex.transaction(
         async (tx: Knex.Transaction) => {
+          if (!room) await rooms.create(roomMembers, tx);
           const lesson = await lessons.create({
             tutor: payload.tutorId,
             student: user.id,

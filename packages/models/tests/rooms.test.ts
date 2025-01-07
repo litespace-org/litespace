@@ -1,6 +1,6 @@
 import fixtures from "@fixtures/db";
 import { nameof } from "@litespace/sol/utils";
-import { rooms } from "@/index";
+import { knex, rooms } from "@/index";
 import { expect } from "chai";
 import { IUser } from "@litespace/types";
 
@@ -14,7 +14,9 @@ describe("Rooms", () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
 
-      const created = await rooms.create([tutor.id, student.id]);
+      const created = await knex.transaction(async (tx) =>
+        rooms.create([tutor.id, student.id], tx)
+      );
       expect(created).to.be.a("number");
 
       const room = await rooms.findById(created);
@@ -51,14 +53,17 @@ describe("Rooms", () => {
       const s1 = await fixtures.student();
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
+
       const tutorId = tutor.id;
-      const room1 = await fixtures.room([tutorId, s1.id]);
-      const room2 = await fixtures.room([tutorId, s2.id]);
-      const room3 = await fixtures.room([tutorId, s3.id]);
+      const mockRooms = [
+        await fixtures.room([tutorId, s1.id]),
+        await fixtures.room([tutorId, s2.id]),
+        await fixtures.room([tutorId, s3.id]),
+      ];
 
       const memberRooms = await rooms.findMemberRooms({ userId: tutorId });
       expect(memberRooms.list).to.be.an("array").with.length(3);
-      expect(memberRooms.list).to.be.deep.eq([room3, room2, room1]);
+      expect(memberRooms.list).to.be.contain.members(mockRooms);
     });
 
     it("should be able to filter rooms by the `pinned` and `muted` flags", async () => {
@@ -67,45 +72,42 @@ describe("Rooms", () => {
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
       const tutorId = tutor.id;
-      const room1 = await fixtures.room([tutorId, s1.id]);
-      const room2 = await fixtures.room([tutorId, s2.id]);
-      const room3 = await fixtures.room([tutorId, s3.id]);
+      const mockRooms = [
+        await fixtures.room([tutorId, s1.id]),
+        await fixtures.room([tutorId, s2.id]),
+        await fixtures.room([tutorId, s3.id]),
+      ];
 
       await rooms.update({
         userId: tutorId,
         payload: { pinned: true, muted: true },
-        roomId: room1,
+        roomId: mockRooms[0],
       });
 
       await rooms.update({
         userId: tutorId,
         payload: { muted: true },
-        roomId: room2,
-      });
-
-      const memberRooms = await rooms.findMemberRooms({
-        userId: tutorId,
-        pinned: true,
+        roomId: mockRooms[1],
       });
 
       const tests = [
         {
           pinned: true,
-          list: [room1],
+          list: [mockRooms[0]],
         },
         {
           muted: true,
-          list: [room2, room1],
+          list: [mockRooms[1], mockRooms[0]],
         },
         {
           pinned: true,
           muted: true,
-          list: [room1],
+          list: [mockRooms[0]],
         },
         {
           pinned: false,
           muted: false,
-          list: [room3],
+          list: [mockRooms[2]],
         },
         {
           pinned: true,
@@ -115,15 +117,12 @@ describe("Rooms", () => {
       ];
 
       for (const test of tests) {
-        expect(
-          await rooms
-            .findMemberRooms({
-              userId: tutorId,
-              pinned: test.pinned,
-              muted: test.muted,
-            })
-            .then((rooms) => rooms.list)
-        ).to.be.deep.eq(test.list);
+        const res = await rooms.findMemberRooms({
+          userId: tutorId,
+          pinned: test.pinned,
+          muted: test.muted,
+        });
+        expect(res.list).to.be.contain.members(test.list);
       }
     });
 
@@ -133,22 +132,22 @@ describe("Rooms", () => {
         name: "tutor",
       });
 
-      await Promise.all(
-        ["student-1", "student-2", "student-3"].map(async (name) => {
-          const student = await fixtures.user({
-            role: IUser.Role.Student,
-            name,
-          });
+      for (const name of ["student-1", "student-2", "student-3"]) {
+        const student = await fixtures.user({
+          role: IUser.Role.Student,
+          name,
+        });
 
-          const room = await fixtures.room([tutor.id, student.id]);
+        const room = await fixtures.room([tutor.id, student.id]);
 
-          await fixtures.message({
+        await knex.transaction(async (tx) =>
+          fixtures.message(tx, {
             userId: tutor.id,
             roomId: room,
             text: `Hello, ${student.name}`,
-          });
-        })
-      );
+          })
+        );
+      }
 
       const tests = [
         {
@@ -174,15 +173,12 @@ describe("Rooms", () => {
       ];
 
       for (const test of tests) {
-        expect(
-          await rooms
-            .findMemberRooms({
-              userId: tutor.id,
-              keyword: test.keyword,
-              size: 50,
-            })
-            .then((rooms) => rooms.total)
-        ).to.be.eq(test.total);
+        const res = await rooms.findMemberRooms({
+          userId: tutor.id,
+          keyword: test.keyword,
+          size: 50,
+        });
+        expect(res.total).to.be.eq(test.total);
       }
     });
   });

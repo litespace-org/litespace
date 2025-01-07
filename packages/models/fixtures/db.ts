@@ -123,6 +123,10 @@ const or = {
     if (!id) return await rule().then((rule) => rule.id);
     return id;
   },
+  async roomId(roomId?: number): Promise<number> {
+    if (!roomId) return await makeRoom();
+    return roomId;
+  },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
     return start;
@@ -371,11 +375,16 @@ async function makeRoom(payload?: [number, number]) {
     await tutor().then((user) => user.id),
     await student().then((user) => user.id),
   ];
-  return await rooms.create([firstUserId, secondUserId]);
+  return await knex.transaction(async (tx) => {
+    return await rooms.create([firstUserId, secondUserId], tx);
+  });
 }
 
-async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
-  const roomId: number = payload?.roomId || (await makeRoom());
+async function makeMessage(
+  tx: Knex.Transaction,
+  payload?: Partial<IMessage.CreatePayload>
+) {
+  const roomId: number = await or.roomId(payload?.roomId);
   const userId: number =
     payload?.userId ||
     (await rooms

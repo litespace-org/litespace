@@ -128,6 +128,10 @@ const or = {
     if (!id) return await rule().then((rule) => rule.id);
     return id;
   },
+  async roomId(roomId?: number): Promise<number> {
+    if (!roomId) return makeRoom();
+    return roomId;
+  },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
     return start;
@@ -401,15 +405,20 @@ export async function makeRatings({
 }
 
 async function makeRoom(payload?: [number, number]) {
-  const [firstUserId, secondUserId]: [number, number] = payload || [
-    await tutor().then((user) => user.id),
-    await student().then((user) => user.id),
-  ];
-  return await rooms.create([firstUserId, secondUserId]);
+  return await knex.transaction(async (tx) => {
+    const [firstUserId, secondUserId]: [number, number] = payload || [
+      await tutor().then((user) => user.id),
+      await student().then((user) => user.id),
+    ];
+    return await rooms.create([firstUserId, secondUserId], tx);
+  });
 }
 
-async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
-  const roomId: number = payload?.roomId || (await makeRoom());
+async function makeMessage(
+  tx: Knex.Transaction,
+  payload?: Partial<IMessage.CreatePayload>
+) {
+  const roomId: number = await or.roomId(payload?.roomId);
   const userId: number =
     payload?.userId ||
     (await rooms
