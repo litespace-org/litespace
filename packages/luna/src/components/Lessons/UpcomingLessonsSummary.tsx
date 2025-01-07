@@ -1,15 +1,17 @@
-import React from "react";
+import { Avatar } from "@/components/Avatar";
+import { Button, ButtonSize } from "@/components/Button";
+import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
-import { Link } from "react-router-dom";
-import Video from "@litespace/assets/Video";
-import { Button, ButtonSize } from "@/components/Button";
-import ArrowLeft from "@litespace/assets/ArrowLeft";
-import cn from "classnames";
 import dayjs from "@/lib/dayjs";
+import ArrowLeft from "@litespace/assets/ArrowLeft";
 import EmptyUpcomingLessons from "@litespace/assets/EmptyUpcomingLessons";
-import { Loader, LoadingError } from "@/components/Loading";
+import { orUndefined } from "@litespace/sol/utils";
 import { Void } from "@litespace/types";
+import cn from "classnames";
+import React from "react";
+import { Link } from "react-router-dom";
+import { Tooltip } from "@/components/Tooltip";
 
 type Props = {
   lessons: Array<{
@@ -17,7 +19,22 @@ type Props = {
      * Lesson start datetime in ISO UTC format.
      */
     start: string;
-    tutorName: string | null;
+    /**
+     * Lesson end datetime in ISO UTC format.
+     */
+    end: string;
+    /**
+     * tutor or student name
+     */
+    name?: string | null;
+    /**
+     * tutor or student id
+     */
+    userId?: number;
+    /**
+     * tutor or student image url
+     */
+    imageUrl?: string | null;
     /**
      * Link to join the lesson.
      */
@@ -85,8 +102,12 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                   to={lesson.url}
                   className="tw-flex tw-gap-2 tw-items-center"
                 >
-                  <div className="tw-bg-brand-500 tw-w-[43px] tw-h-[43px] tw-flex tw-justify-center tw-items-center tw-rounded-[4px]">
-                    <Video className="[&>*]:tw-stroke-natural-50" />
+                  <div className="tw-w-[43px] tw-h-[43px] tw-rounded-[4px] tw-overflow-hidden">
+                    <Avatar
+                      alt={orUndefined(lesson.name)}
+                      src={orUndefined(lesson.imageUrl)}
+                      seed={lesson.userId?.toString()}
+                    />
                   </div>
                   <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
                     <Typography
@@ -96,13 +117,34 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                     >
                       {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
                     </Typography>
-                    <Typography
-                      element="tiny-text"
-                      weight="regular"
-                      className="tw-text-natural-600"
-                    >
-                      {lesson.tutorName}
-                    </Typography>
+                    <div className="tw-flex tw-justify-between">
+                      <Tooltip
+                        content={
+                          <Typography className="tw-text-natuarl-950">
+                            {lesson.name}
+                          </Typography>
+                        }
+                      >
+                        <div>
+                          <Typography
+                            element="tiny-text"
+                            weight="regular"
+                            className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16"
+                          >
+                            {lesson.name}
+                          </Typography>
+                        </div>
+                      </Tooltip>
+                      <Typography
+                        element="tiny-text"
+                        weight="regular"
+                        className="tw-block tw-text-natural-600 tw-ms-[18px]"
+                      >
+                        {dayjs(lesson.start).format("h:mm")}
+                        {" - "}
+                        {dayjs(lesson.end).format("h:mm a")}
+                      </Typography>
+                    </div>
                   </div>
                   <div className="tw-w-6 tw-h-6 tw-mr-auto">
                     <ArrowLeft className="[&>*]:tw-stroke-natural-950" />
