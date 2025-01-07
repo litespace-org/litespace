@@ -54,9 +54,7 @@ describe("Messages", () => {
       expect(await messages.findUnreadCount({ room: 10, user: 1 })).to.be.eq(0);
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const room = await knex.transaction(
-        async (tx) => await fixtures.room(tx, [tutor.id, student.id])
-      );
+      const room = await fixtures.room([tutor.id, student.id]);
       expect(
         await messages.findUnreadCount({ room: room, user: student.id })
       ).to.be.eq(0);

@@ -88,10 +88,8 @@ describe(nameof(Tutors), () => {
         range(0, 5).map(() => fixtures.tutor())
       );
 
-      await knex.transaction(async (tx) => {
-        await fixtures.room(tx, [student.id, mockTutors[0].id]);
-        await fixtures.room(tx, [student.id, mockTutors[1].id]);
-      });
+      await fixtures.room([student.id, mockTutors[0].id]);
+      await fixtures.room([student.id, mockTutors[1].id]);
 
       const res = await tutors.findUncontactedTutorsForStudent({
         student: student.id,

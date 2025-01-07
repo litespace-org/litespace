@@ -183,9 +183,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
       const studnetApi = await Api.forStudent();
       const student = await studnetApi.findCurrentUser();
 
-      const room = await knex.transaction(async (tx) =>
-        db.room(tx, [tutor.user.id, student.user.id])
-      );
+      const room = await db.room([tutor.user.id, student.user.id]);
 
       await knex.transaction(async (tx) =>
         db.message(tx, {

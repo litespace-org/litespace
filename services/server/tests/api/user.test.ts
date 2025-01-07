@@ -260,10 +260,8 @@ describe("/api/v1/user/", () => {
 
       const mockTutors = await Promise.all(range(0, 5).map(() => db.tutor()));
 
-      await knex.transaction(async (tx) => {
-        await db.room(tx, [student.id, mockTutors[0].id]);
-        await db.room(tx, [student.id, mockTutors[1].id]);
-      });
+      await db.room([student.id, mockTutors[0].id]);
+      await db.room([student.id, mockTutors[1].id]);
 
       const res = await studentApi.atlas.user.findUncontactedTutors();
 

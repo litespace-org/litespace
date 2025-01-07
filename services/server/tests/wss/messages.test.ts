@@ -49,9 +49,7 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id, student.user.id], tx)
-      );
+      const roomId = await db.room([tutor.user.id, student.user.id]);
 
       const studentSocket = new ClientSocket(student.token);
       const res = await studentSocket.sendMessage(roomId, "Hello.");
@@ -69,9 +67,7 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id, student.user.id], tx)
-      );
+      const roomId = await db.room([tutor.user.id, student.user.id]);
 
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);
@@ -188,9 +184,7 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id, student.user.id], tx)
-      );
+      const roomId = await db.room([tutor.user.id, student.user.id]);
 
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);
@@ -251,9 +245,7 @@ describe("wss message test suite", () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
 
-      const roomId = await knex.transaction(async (tx) =>
-        rooms.create([tutor.user.id, student.user.id], tx)
-      );
+      const roomId = await db.room([tutor.user.id, student.user.id]);
 
       const tutorSocket = new ClientSocket(tutor.token);
       const studentSocket = new ClientSocket(student.token);

@@ -29,9 +29,7 @@ describe("Rooms", () => {
     it("should find room members", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const created = await knex.transaction(async (tx) =>
-        fixtures.room(tx, [tutor.id, student.id])
-      );
+      const created = await fixtures.room([tutor.id, student.id]);
       const members = await rooms.findRoomMembers({ roomIds: [created] });
 
       expect(members).to.be.an("array").with.length(2);
@@ -43,9 +41,7 @@ describe("Rooms", () => {
     it("should find the room by member ids", async () => {
       const t = await fixtures.tutor();
       const s = await fixtures.student();
-      const created = await knex.transaction(async (tx) =>
-        fixtures.room(tx, [t.id, s.id])
-      );
+      const created = await fixtures.room([t.id, s.id]);
       const room = await rooms.findRoomByMembers([t.id, s.id]);
       expect(room).to.be.eq(created);
     });
@@ -59,13 +55,11 @@ describe("Rooms", () => {
       const s3 = await fixtures.student();
 
       const tutorId = tutor.id;
-      const mockRooms = await knex.transaction(async (tx) => {
-        return [
-          await fixtures.room(tx, [tutorId, s1.id]),
-          await fixtures.room(tx, [tutorId, s2.id]),
-          await fixtures.room(tx, [tutorId, s3.id]),
-        ];
-      });
+      const mockRooms = [
+        await fixtures.room([tutorId, s1.id]),
+        await fixtures.room([tutorId, s2.id]),
+        await fixtures.room([tutorId, s3.id]),
+      ];
 
       const memberRooms = await rooms.findMemberRooms({ userId: tutorId });
       expect(memberRooms.list).to.be.an("array").with.length(3);
@@ -78,13 +72,11 @@ describe("Rooms", () => {
       const s2 = await fixtures.student();
       const s3 = await fixtures.student();
       const tutorId = tutor.id;
-      const mockRooms = await knex.transaction(async (tx) => {
-        return [
-          await fixtures.room(tx, [tutorId, s1.id]),
-          await fixtures.room(tx, [tutorId, s2.id]),
-          await fixtures.room(tx, [tutorId, s3.id]),
-        ];
-      });
+      const mockRooms = [
+        await fixtures.room([tutorId, s1.id]),
+        await fixtures.room([tutorId, s2.id]),
+        await fixtures.room([tutorId, s3.id]),
+      ];
 
       await rooms.update({
         userId: tutorId,
@@ -146,9 +138,7 @@ describe("Rooms", () => {
           name,
         });
 
-        const room = await knex.transaction(async (tx) =>
-          fixtures.room(tx, [tutor.id, student.id])
-        );
+        const room = await fixtures.room([tutor.id, student.id]);
 
         await knex.transaction(async (tx) =>
           fixtures.message(tx, {
@@ -197,9 +187,7 @@ describe("Rooms", () => {
     it("should update room settings per member", async () => {
       const tutor = await fixtures.tutor();
       const student = await fixtures.student();
-      const roomId = await knex.transaction(async (tx) =>
-        fixtures.room(tx, [tutor.id, student.id])
-      );
+      const roomId = await fixtures.room([tutor.id, student.id]);
 
       const [tutorCurrentRoom, studentCurrentRoom] =
         await rooms.findRoomMembers({
