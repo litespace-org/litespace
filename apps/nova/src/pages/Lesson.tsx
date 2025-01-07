@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   PreSession,
   Session,
@@ -25,6 +25,7 @@ import {
  * 1. Only "join" the session in case the user is listening and the peer is ready.
  * 2. Handle loading & errors.
  * 3. Improve and align terminology.
+ * 4. Leave the session on permission-state changed.
  */
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -57,6 +58,8 @@ const Lesson: React.FC = () => {
 
   // ============================ Session/Streams ================================
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
+  const [caller, setCaller] = useState<boolean>(false);
+  const [requestPermission, setRequestPermission] = useState<boolean>(false);
   const [showShareScreenDialog, setShowScreenDialog] = useState<boolean>(false);
   const sessionManager = useSessionMembers(lesson.data?.lesson.sessionId);
   const sessionPayload = useMemo((): SessionV3Payload => {
@@ -65,15 +68,26 @@ const Lesson: React.FC = () => {
       !!other && sessionManager.members.includes(other);
     return {
       sessionId: lesson.data?.lesson.sessionId,
+      isCaller: caller,
       isOtherMemberReady,
       userIds: {
         current: lessonMembers?.current.userId,
         other,
       },
     };
-  }, [lesson.data?.lesson.sessionId, lessonMembers, sessionManager.members]);
+  }, [
+    caller,
+    lesson.data?.lesson.sessionId,
+    lessonMembers,
+    sessionManager.members,
+  ]);
   const session = useSessionV3(sessionPayload);
   const devices = useDevices();
+
+  const onCameraToggle = useCallback(() => {
+    if (!devices.info.camera.permissioned) return setRequestPermission(true);
+    return session.toggleCamera();
+  }, [devices.info.camera.permissioned, session]);
 
   const streams = useMemo((): StreamInfo[] => {
     if (!lessonMembers) return [];
@@ -138,6 +152,21 @@ const Lesson: React.FC = () => {
     return streams;
   }, [lessonMembers, session.members]);
 
+  const cameraConfig = useMemo(
+    () => ({
+      enabled: session.members.current.video,
+      toggle: onCameraToggle,
+      error:
+        !devices.info.camera.connected || !devices.info.camera.permissioned,
+    }),
+    [
+      devices.info.camera.connected,
+      devices.info.camera.permissioned,
+      onCameraToggle,
+      session.members,
+    ]
+  );
+
   useEffect(() => {
     if (
       devices.info.microphone.permissioned &&
@@ -179,9 +208,21 @@ const Lesson: React.FC = () => {
       <PermissionsDialog
         onSubmit={(permission) => {
           const enableVideoStream = permission === "mic-and-camera";
-          session.capture(enableVideoStream).then(() => {
-            devices.recheck();
-          });
+          session
+            .capture(enableVideoStream)
+            .then((result: MediaStream | Error) => {
+              const error = result instanceof Error;
+              if (error) return;
+
+              const call =
+                requestPermission &&
+                !error &&
+                lessonMembers.other.userId &&
+                sessionManager.members.includes(lessonMembers.other.userId);
+
+              if (call) setCaller(true);
+              setRequestPermission(false);
+            });
           setPermission(permission);
         }}
         loading={
@@ -189,12 +230,19 @@ const Lesson: React.FC = () => {
             ? permission
             : undefined
         }
-        open={!devices.info.microphone.permissioned}
+        open={!devices.info.microphone.permissioned || requestPermission}
         devices={{
           mic: devices.info.microphone.connected,
           camera: devices.info.camera.connected,
           speakers: devices.info.speakers.connected,
         }}
+        close={
+          requestPermission
+            ? () => {
+                setRequestPermission(false);
+              }
+            : undefined
+        }
       />
 
       <ShareScreenDialog
@@ -232,30 +280,28 @@ const Lesson: React.FC = () => {
             incall: sessionManager.members.includes(lessonMembers.other.userId),
             role: lessonMembers.other.role,
           }}
-          camera={{
-            enabled: session.members.current.video,
-            toggle: session.toggleCamera,
-            error: !devices.info.camera.connected,
-          }}
+          camera={cameraConfig}
           mic={{
             enabled: session.members.current.audio,
             toggle: session.toggleMic,
-            error: !devices.info.microphone.connected,
+            error:
+              !devices.info.microphone.connected ||
+              !devices.info.microphone.permissioned,
           }}
           speaking={session.members.current.speaking}
           join={() => {
             sessionManager.join();
             if (
-              !sessionManager.members.includes(lessonMembers.other.userId) ||
-              !session.members.current.stream
+              sessionManager.members.includes(lessonMembers.other.userId) &&
+              session.members.current.stream
             )
-              return;
+              return setCaller(true);
 
-            session.call({
-              userId: lessonMembers.other.userId,
-              stream: session.members.current.stream,
-            });
-            session.notifyUserMediaState();
+            // session.call({
+            //   userId: lessonMembers.other.userId,
+            //   stream: session.members.current.stream,
+            // });
+            // session.notifyUserMediaState();
           }}
         />
       ) : (
@@ -263,11 +309,7 @@ const Lesson: React.FC = () => {
           streams={streams}
           currentUserId={lessonMembers.current.userId}
           chat={{ enabled: false, toggle: () => alert("todo") }}
-          camera={{
-            enabled: session.members.current.video,
-            toggle: session.toggleCamera,
-            error: !devices.info.camera.connected,
-          }}
+          camera={cameraConfig}
           mic={{
             enabled: session.members.current.audio,
             toggle: session.toggleMic,
@@ -293,6 +335,7 @@ const Lesson: React.FC = () => {
           }}
           leave={() => {
             session.leave();
+            sessionManager.leave();
           }}
         />
       )}

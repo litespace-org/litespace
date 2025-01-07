@@ -5,9 +5,11 @@ import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 import cn from "classnames";
+import { Void } from "@litespace/types";
 
 export type Props = {
   onSubmit: (permission: "mic-and-camera" | "mic-only") => void;
+  close?: Void;
   loading?: "mic-and-camera" | "mic-only";
   open: boolean;
   devices: {
@@ -31,6 +33,7 @@ export const PermissionsDialog: React.FC<Props> = ({
   loading,
   open,
   devices,
+  close,
 }) => {
   const intl = useFormatMessage();
 
@@ -43,7 +46,7 @@ export const PermissionsDialog: React.FC<Props> = ({
   }, [devices.camera, devices.mic, devices.speakers, intl]);
 
   return (
-    <Dialog open={open}>
+    <Dialog open={open} close={close}>
       <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
         <div className="tw-mb-8">
           <Devices />

@@ -38,8 +38,11 @@ export const SessionStreams: React.FC<{
     <div
       ref={containerRef}
       className={cn(
-        "tw-relative tw-w-full tw-rounded-lg tw-h-full tw-bg-brand-100 tw-grid tw-gap-6",
-        chat && "tw-p-6 tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg "
+        "tw-relative tw-w-full tw-h-full tw-bg-brand-100 tw-gap-6 tw-overflow-hidden",
+        {
+          "tw-p-6 tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg": chat,
+          "tw-rounded-lg": !chat,
+        }
       )}
     >
       <FocusedStream

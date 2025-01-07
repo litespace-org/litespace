@@ -58,7 +58,7 @@ type UseUserMediaReturn = {
      * Flag to enable or disable video in the user media stream.
      */
     video?: boolean
-  ) => Promise<void>;
+  ) => Promise<MediaStream | Error>;
   /**
    * Stop all tracks in the media stream.
    */
@@ -131,27 +131,6 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
     []
   );
 
-  const capture = useCallback(
-    async (video?: boolean) => {
-      setLoading(true);
-      const stream = await getUserMedia(video);
-      setLoading(false);
-      const error = stream instanceof Error;
-      const denied = error ? isPermissionDenied(stream) : false;
-
-      // user canceled the process.
-      if (denied) {
-        setError(null);
-        setUserDenied(true);
-        return setStream(null);
-      }
-
-      if (!error) setError(error ? stream : null);
-      setStream(error ? null : stream);
-    },
-    [getUserMedia]
-  );
-
   const onTrackEnd = useCallback(() => {
     setStream(null);
     setCamera(false);
@@ -166,6 +145,34 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
     stream.getTracks().forEach((track) => track.stop());
     onTrackEnd();
   }, [onTrackEnd, stream]);
+
+  const capture = useCallback(
+    async (video?: boolean) => {
+      setLoading(true);
+      const capturedStream = await getUserMedia(video);
+      setLoading(false);
+      const error = capturedStream instanceof Error;
+      const denied = error ? isPermissionDenied(capturedStream) : false;
+
+      /**
+       * Stopping the previous stream incase we got a new stream.
+       */
+      if (!error) stop();
+
+      // user canceled the process.
+      if (denied) {
+        setError(null);
+        setUserDenied(true);
+        setStream(null);
+        return capturedStream;
+      }
+
+      if (!error) setError(error ? capturedStream : null);
+      setStream(error ? null : capturedStream);
+      return capturedStream;
+    },
+    [getUserMedia, stop]
+  );
 
   const toggleMic = useCallback(() => {
     if (!stream) return;
@@ -190,15 +197,11 @@ export function useUserMedia(onStop?: Void): UseUserMediaReturn {
     const videoTracks = stream.getVideoTracks();
     const audioTracks = stream.getAudioTracks();
 
-    if (!isEmpty(videoTracks)) {
-      setCamera(true);
-      setVideo(true);
-    }
+    if (!isEmpty(videoTracks)) setCamera(true);
+    if (!isEmpty(audioTracks)) setMic(true);
 
-    if (!isEmpty(audioTracks)) {
-      setMic(true);
-      setAudio(true);
-    }
+    setAudio(!!audioTracks.find((track) => track.enabled));
+    setVideo(!!videoTracks.find((track) => track.enabled));
 
     const tracks = concat(audioTracks, videoTracks);
 
@@ -1161,6 +1164,10 @@ export function useShareScreenV3(onStop?: Void) {
 export type SessionV3Payload = {
   sessionId?: ISession.Id;
   isOtherMemberReady: boolean;
+  /**
+   * It should be true incase the current user should call the other user.
+   */
+  isCaller: boolean;
   userIds: {
     current?: number;
     other?: number;
@@ -1176,6 +1183,7 @@ export function useSessionV3({
   userIds,
   sessionId,
   isOtherMemberReady,
+  isCaller,
 }: SessionV3Payload) {
   const { peer, ready } = usePeerV3(userIds.current);
   const [otherMemberStream, setOtherMemberStream] =
@@ -1367,6 +1375,15 @@ export function useSessionV3({
         screen: true,
       });
   }, [call, isOtherMemberReady, screen.stream, userIds.other]);
+
+  useEffect(() => {
+    if (!isCaller || !userIds.other || !userMedia.stream) return;
+    call({
+      userId: userIds.other,
+      stream: userMedia.stream,
+    });
+    notifyUserMediaState();
+  }, [call, isCaller, notifyUserMediaState, userIds.other, userMedia.stream]);
 
   /**
    * Handle main call events.
