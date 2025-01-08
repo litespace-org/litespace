@@ -454,6 +454,8 @@
   "chat.update-settings.error": "حدث خطاء، الرجاء المحاولة لاحقا",
   "chat.unmute": "إلغاء كتم",
   "chat.title": "المحادثات",
+  "chat.all-tutors.title": "جميع المعلمين",
+  "chat.create.room.error": "حدث خطا أثناء بدء المحادثة برجاء المحاولة مرة أخرى",
   "chat.pinned.title": "المحادثات المثبتة",
   "chat.all": "جميع الرسائل",
   "chat.search": "ابحث هنا",

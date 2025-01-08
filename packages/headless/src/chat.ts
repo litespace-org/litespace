@@ -1,5 +1,14 @@
 import { useAtlas } from "@/atlas";
-import { IRoom, Wss, IMessage, Void, IFilter } from "@litespace/types";
+import {
+  IRoom,
+  Wss,
+  IMessage,
+  Void,
+  IFilter,
+  ITutor,
+  Paginated,
+} from "@litespace/types";
+
 import {
   useCallback,
   useEffect,
@@ -13,7 +22,13 @@ import {
   UseInfinitePaginationQueryResult,
 } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  UseInfiniteQueryResult,
+  useMutation,
+  useQuery,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
 
@@ -177,6 +192,51 @@ type Action =
   | MessageStreamAction;
 
 export type OnMessage = (action: MessageStreamAction) => void;
+
+export function useFindUncontactedTutors(): {
+  query: UseInfiniteQueryResult<
+    InfiniteData<Paginated<ITutor.UncontactedTutorInfo>, unknown>,
+    Error
+  >;
+  list: ITutor.UncontactedTutorInfo[] | null;
+  more: () => void;
+} {
+  const atlas = useAtlas();
+
+  const findUncontactedTutors = useCallback(
+    ({ pageParam }: { pageParam: number }) => {
+      return atlas.user.findUncontactedTutors({ page: pageParam });
+    },
+    [atlas.user]
+  );
+
+  return useInfinitePaginationQuery(findUncontactedTutors, [
+    QueryKey.FindUncontactedTutors,
+  ]);
+}
+
+export function useCreateRoom({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
+  onError: Void;
+}) {
+  const atlas = useAtlas();
+  const createRoom = useCallback(
+    async (id: number) => {
+      return await atlas.chat.createRoom(id);
+    },
+    [atlas.chat]
+  );
+
+  return useMutation({
+    mutationFn: createRoom,
+    onSuccess,
+    onError,
+    mutationKey: [MutationKey.CreateRoom],
+  });
+}
 
 export function useFindRoomMembers(
   roomId: number | null

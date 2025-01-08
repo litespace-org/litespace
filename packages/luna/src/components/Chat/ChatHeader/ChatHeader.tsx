@@ -12,7 +12,7 @@ export const ChatHeader: React.FC<{
   name: string | null;
   image: string | null;
   online: boolean;
-  lastSeen: string;
+  lastSeen?: string;
   id: number;
   role: IUser.Role;
   openDialog: Void;
@@ -44,17 +44,19 @@ export const ChatHeader: React.FC<{
           >
             {name}
           </Typography>
-          <Typography
-            element="caption"
-            className={cn({
-              "tw-text-primary-700": online,
-              "tw-text-natural-700": !online,
-            })}
-          >
-            {online
-              ? intl("chat.online")
-              : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
-          </Typography>
+          {lastSeen ? (
+            <Typography
+              element="caption"
+              className={cn({
+                "tw-text-primary-700": online,
+                "tw-text-natural-700": !online,
+              })}
+            >
+              {online
+                ? intl("chat.online")
+                : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
+            </Typography>
+          ) : null}
         </div>
       </div>
       {role !== IUser.Role.Student ? (

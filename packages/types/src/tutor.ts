@@ -64,6 +64,7 @@ export type UpdatePayload = {
 
 export type UncontactedTutorInfo = {
   id: number;
+  name: string | null;
   image: string | null;
   bio: string | null;
 };

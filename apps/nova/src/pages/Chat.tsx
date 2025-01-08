@@ -1,6 +1,8 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsContainer from "@/components/Chat/RoomsContainer";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import React, { useState } from "react";
+import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember } from "@/lib/room";
@@ -9,10 +11,13 @@ import StartMessaging from "@litespace/assets/StartMessaging";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
+import { ITutor } from "@litespace/types";
 
 const Chat: React.FC = () => {
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const [loading, setLoading] = useState(false);
+  const [temporaryTutor, setTemporaryTutor] =
+    useState<ITutor.UncontactedTutorInfo | null>(null);
 
   const { select, selected } = useSelectedRoom();
   // TODO: read/unread function
@@ -74,22 +79,15 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className="flex flex-row min-h-screen overflow-hidden max-w-screen-3xl mx-auto w-full">
+    <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
       <RoomsContainer
         usersOnlineMap={usersOnlineMap}
         typingMap={typingMap}
+        setTemporaryTutor={setTemporaryTutor}
+        setLoading={setLoading}
         selected={selected}
         select={select}
       />
-
-      {otherMember && selected.room ? (
-        <Messages
-          isTyping={isCurrentRoomTyping}
-          isOnline={isOtherMemberOnline}
-          room={selected.room}
-          otherMember={otherMember}
-        />
-      ) : null}
 
       {!selected.room ? (
         <div className="h-full w-full flex items-center justify-center flex-col gap-8">
@@ -102,6 +100,17 @@ const Chat: React.FC = () => {
             {intl("chat.start-message")}
           </Typography>
         </div>
+      ) : null}
+
+      {otherMember || temporaryTutor ? (
+        <Messages
+          selectionLoading={loading}
+          room={selected.room}
+          otherMember={otherMember}
+          temporaryTutor={temporaryTutor}
+          isTyping={isCurrentRoomTyping}
+          isOnline={isOtherMemberOnline}
+        />
       ) : null}
     </div>
   );

@@ -1,4 +1,4 @@
-import { IRoom, IUser } from "@litespace/types";
+import { IRoom, ITutor, IUser } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -30,7 +30,6 @@ import { orUndefined } from "@litespace/sol/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -47,11 +46,14 @@ type RetryFnMap = Record<
 >;
 
 const Messages: React.FC<{
-  room: number;
-  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
+  room: number | null;
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
   isTyping: boolean;
   isOnline: boolean;
+  temporaryTutor: ITutor.UncontactedTutorInfo | null;
+  selectionLoading: boolean;
 }> = ({ room, otherMember, isTyping, isOnline }) => {
+
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -170,11 +172,13 @@ const Messages: React.FC<{
   const messageGroups = useMemo(() => {
     if (!user) return [];
 
-    const groups = asMessageGroups({
-      currentUser: user,
-      messages,
-      otherMember,
-    });
+    const groups = otherMember
+      ? asMessageGroups({
+          currentUser: user,
+          messages,
+          otherMember,
+        })
+      : [];
 
     const map = groupBy(groups, (group) =>
       dayjs(group.sentAt).format("YYYY-MM-DD")
@@ -220,11 +224,38 @@ const Messages: React.FC<{
         }}
       >
         <ChatHeader
-          {...otherMember}
-          image={otherMember.image ? asFullAssetUrl(otherMember.image) : null}
+          role={otherMember ? otherMember.role : IUser.Role.Tutor}
+          id={
+            temporaryTutor
+              ? temporaryTutor.id
+              : otherMember
+                ? otherMember.id
+                : 0
+          }
+          name={
+            temporaryTutor
+              ? temporaryTutor.name
+              : otherMember
+                ? otherMember.name
+                : null
+          }
+          image={
+            temporaryTutor
+              ? temporaryTutor.image
+              : otherMember
+                ? otherMember.image
+                : null
+          }
           openDialog={openDialog}
+<<<<<<< HEAD
           online={isOnline}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
+=======
+          online={onlineStatus}
+          lastSeen={
+            otherMember ? dayjs(otherMember.lastSeen).fromNow() : undefined
+          }
+>>>>>>> cad7d933 (feat(ui): added all tutors section to chat page)
         />
       </div>
 
@@ -239,7 +270,7 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <InView as="div" onChange={more} />
-            {loading ? (
+            {loading || selectionLoading ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
               </div>
@@ -358,7 +389,7 @@ const Messages: React.FC<{
         close={discardDelete}
         icon={<Trash />}
       />
-      {otherMember.role !== IUser.Role.Student ? (
+      {otherMember && otherMember.role !== IUser.Role.Student ? (
         <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
       ) : null}
     </div>
