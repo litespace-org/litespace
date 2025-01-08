@@ -1608,12 +1608,21 @@ export function useDevices() {
 /**
  * Reflect and manage session members in real-time.
  */
-export function useSessionMembers(sessionId?: ISession.Id) {
+export function useSessionMembers(
+  sessionId?: ISession.Id,
+  currentUserId?: number
+) {
   const socket = useSocket();
   const atlas = useAtlas();
 
   const [members, setMembers] = useState<number[]>([]);
   const [listening, setListening] = useState<boolean>(false);
+  const [joining, setJoining] = useState<boolean>(false);
+
+  const joined = useMemo(
+    () => !!currentUserId && members.includes(currentUserId),
+    [currentUserId, members]
+  );
 
   const findSessionMembers = useCallback(async () => {
     if (!sessionId) return [];
@@ -1637,16 +1646,22 @@ export function useSessionMembers(sessionId?: ISession.Id) {
   const join = useCallback(() => {
     if (!socket || !sessionId) return;
     socket.emit(Wss.ClientEvent.JoinSession, { sessionId });
+    setJoining(true);
   }, [sessionId, socket]);
 
   const leave = useCallback(() => {
     if (!socket || !sessionId) return;
     socket.emit(Wss.ClientEvent.LeaveSession, { sessionId });
+    setJoining(false);
   }, [sessionId, socket]);
 
-  const onJoinSession = useCallback(({ userId }: { userId: number }) => {
-    setMembers((prev) => uniq([...prev, userId]));
-  }, []);
+  const onJoinSession = useCallback(
+    ({ userId }: { userId: number }) => {
+      if (currentUserId === userId) setJoining(false);
+      setMembers((prev) => uniq([...prev, userId]));
+    },
+    [currentUserId]
+  );
 
   const onLeaveSession = useCallback(({ userId }: { userId: number }) => {
     setMembers((prev) => [...prev].filter((member) => member !== userId));
@@ -1671,5 +1686,5 @@ export function useSessionMembers(sessionId?: ISession.Id) {
       return setMembers((prev) => uniq([...prev, ...sessionMembersQuery.data]));
   }, [sessionMembersQuery.data, sessionMembersQuery.isLoading]);
 
-  return { join, leave, members, listening };
+  return { join, leave, members, listening, joining, joined };
 }

@@ -23,40 +23,41 @@ export const Ready: React.FC<{
     id: number;
   };
   join: Void;
-  mic: boolean;
-}> = ({ currentMember, otherMember, join, mic }) => {
+  loading?: boolean;
+  disabled?: boolean;
+}> = ({ currentMember, otherMember, join, loading, disabled }) => {
   const intl = useFormatMessage();
 
   // TODO: add type of call to intl to differentiate between lessons and interview
   const explaination = useMemo(() => {
     const isCurrentMemberTutor = currentMember.role === IUser.Role.Tutor;
     if (!otherMember.incall && isCurrentMemberTutor)
-      return intl("call.ready.explaination.empty.student");
+      return intl("session.ready.explaination.empty.student");
 
     if (!otherMember.incall && !isCurrentMemberTutor)
-      return intl("call.ready.explaination.empty.tutor");
+      return intl("session.ready.explaination.empty.tutor");
 
     if (
       otherMember.role === IUser.Role.Tutor &&
       otherMember.gender === IUser.Gender.Male
     )
-      return intl("call.ready.explaination.full.male-tutor");
+      return intl("session.ready.explaination.full.male-tutor");
     if (
       otherMember.role === IUser.Role.Tutor &&
       otherMember.gender !== IUser.Gender.Male
     )
-      return intl("call.ready.explaination.full.female-tutor");
+      return intl("session.ready.explaination.full.female-tutor");
 
     if (
       otherMember.role === IUser.Role.Student &&
       otherMember.gender === IUser.Gender.Male
     )
-      return intl("call.ready.explaination.full.male-student");
+      return intl("session.ready.explaination.full.male-student");
     if (
       otherMember.role === IUser.Role.Student &&
       otherMember.gender !== IUser.Gender.Male
     )
-      return intl("call.ready.explaination.full.female-student");
+      return intl("session.ready.explaination.full.female-student");
   }, [
     otherMember.incall,
     otherMember.role,
@@ -66,13 +67,13 @@ export const Ready: React.FC<{
   ]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-max-w-[278px] tw-text-center">
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-w-full tw-text-center">
       <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
         <Typography
           element="subtitle-1"
           className="tw-font-bold tw-text-natural-950"
         >
-          {intl("call.ready.title")}
+          {intl("session.ready.title")}
         </Typography>
         <Typography
           element="caption"
@@ -91,14 +92,14 @@ export const Ready: React.FC<{
         </div>
         <Typography element="subtitle-1">{otherMember.name}</Typography>
       </div>
-      <Button size={ButtonSize.Large} onClick={join} disabled={!mic}>
-        {intl("call.ready.join")}
+      <Button
+        size={ButtonSize.Large}
+        onClick={join}
+        disabled={disabled || loading}
+        loading={loading}
+      >
+        {intl("session.ready.join")}
       </Button>
-      {!mic ? (
-        <Typography element="caption" className="tw-text-destructive-700">
-          {intl("call.ready.cannot-join")}
-        </Typography>
-      ) : null}
     </div>
   );
 };

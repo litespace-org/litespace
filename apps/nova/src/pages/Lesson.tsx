@@ -19,6 +19,7 @@ import {
   useDevices,
   useSessionMembers,
 } from "@litespace/headless/sessions";
+import { Loader, LoadingError } from "@litespace/luna/Loading";
 
 /**
  * @todos
@@ -61,7 +62,10 @@ const Lesson: React.FC = () => {
   const [caller, setCaller] = useState<boolean>(false);
   const [requestPermission, setRequestPermission] = useState<boolean>(false);
   const [showShareScreenDialog, setShowScreenDialog] = useState<boolean>(false);
-  const sessionManager = useSessionMembers(lesson.data?.lesson.sessionId);
+  const sessionManager = useSessionMembers(
+    lesson.data?.lesson.sessionId,
+    user?.id
+  );
   const sessionPayload = useMemo((): SessionV3Payload => {
     const other = lessonMembers?.other.userId;
     const isOtherMemberReady =
@@ -181,8 +185,6 @@ const Lesson: React.FC = () => {
     session,
   ]);
 
-  if (!lessonMembers || !lesson.data) return null;
-
   return (
     <div className="max-w-screen-3xl mx-auto w-full p-6">
       <div className="mb-6 flex flex-row items-center justify-start gap-1">
@@ -192,9 +194,9 @@ const Lesson: React.FC = () => {
           className="text-natural-950"
         >
           {intl("lesson.title")}
-          {lessonMembers.other.name ? "/" : null}
+          {lessonMembers?.other.name ? "/" : null}
         </Typography>
-        {lessonMembers.other.name ? (
+        {lessonMembers?.other.name ? (
           <Typography
             element="subtitle-2"
             weight="bold"
@@ -217,8 +219,8 @@ const Lesson: React.FC = () => {
               const call =
                 requestPermission &&
                 !error &&
-                lessonMembers.other.userId &&
-                sessionManager.members.includes(lessonMembers.other.userId);
+                lessonMembers?.other.userId &&
+                sessionManager.members.includes(lessonMembers?.other.userId);
 
               if (call) setCaller(true);
               setRequestPermission(false);
@@ -257,7 +259,23 @@ const Lesson: React.FC = () => {
         loading={session.screen.loading}
       />
 
-      {!sessionManager.members.includes(lessonMembers.current.userId) ? (
+      {lesson.isLoading ? (
+        <div className="mt-[15vh]">
+          <Loader size="large" text={intl("session.loading")} />
+        </div>
+      ) : null}
+
+      {lesson.isError ? (
+        <div className="mt-[15vh]">
+          <LoadingError
+            size="large"
+            error={intl("session.loading-error")}
+            retry={lesson.refetch}
+          />
+        </div>
+      ) : null}
+
+      {!sessionManager.joined && lessonMembers && !lesson.isLoading ? (
         <PreSession
           stream={session.members.current.stream}
           currentMember={{
@@ -296,15 +314,15 @@ const Lesson: React.FC = () => {
               session.members.current.stream
             )
               return setCaller(true);
-
-            // session.call({
-            //   userId: lessonMembers.other.userId,
-            //   stream: session.members.current.stream,
-            // });
-            // session.notifyUserMediaState();
           }}
+          joining={sessionManager.joining}
         />
-      ) : (
+      ) : null}
+
+      {lessonMembers &&
+      lesson.data &&
+      !lesson.isLoading &&
+      sessionManager.joined ? (
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
@@ -338,7 +356,7 @@ const Lesson: React.FC = () => {
             sessionManager.leave();
           }}
         />
-      )}
+      ) : null}
     </div>
   );
 };

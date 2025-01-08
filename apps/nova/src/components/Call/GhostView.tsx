@@ -11,7 +11,7 @@ const GhostView: React.FC<{ streams: RemoteStream[] }> = ({ streams }) => {
   if (isEmpty(streams))
     return (
       <div className="flex items-center justify-center w-full h-full">
-        <Typography element="subtitle-1">{intl("call.empty")}</Typography>
+        <Typography element="subtitle-1">{intl("session.empty")}</Typography>
       </div>
     );
 

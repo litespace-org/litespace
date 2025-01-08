@@ -35,6 +35,7 @@ export type Props = {
     error?: boolean;
   };
   speaking: boolean;
+  joining: boolean;
   join: Void;
 };
 
@@ -45,11 +46,12 @@ export const PreSession: React.FC<Props> = ({
   camera,
   mic,
   speaking,
+  joining,
   join,
 }) => {
   return (
     <div className="tw-rounded-2xl tw-w-full tw-p-10 tw-border tw-border-natural-100 tw-bg-natural-50 tw-shadow-pre-call tw-flex tw-items-center tw-justify-between tw-gap-[76px]">
-      <div className="tw-flex tw-grow tw-flex-col tw-justify-center tw-gap-10 tw-max-w-[calc(100%-341px)]">
+      <div className="tw-flex tw-grow tw-flex-col tw-justify-center tw-gap-10 tw-max-w-[calc(100%-280px)]">
         <PreSessionUserPreview
           camera={camera.enabled}
           stream={stream}
@@ -77,12 +79,13 @@ export const PreSession: React.FC<Props> = ({
         />
       </div>
 
-      <div className="tw-shrink-0">
+      <div className="tw-shrink-0 tw-w-[280px]">
         <Ready
           currentMember={currentMember}
           otherMember={otherMember}
-          mic={!mic.error}
+          disabled={mic.error}
           join={join}
+          loading={joining}
         />
       </div>
     </div>

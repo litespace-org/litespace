@@ -61,7 +61,7 @@ export const RateLesson: React.FC<{
             weight="bold"
             className="tw-text-natural-950"
           >
-            {intl("call.rating.title")}
+            {intl("session.rating.title")}
           </Typography>
         </div>
       }
@@ -74,7 +74,7 @@ export const RateLesson: React.FC<{
           className="tw-text-natural-950 tw-text-center"
         >
           {type === "session"
-            ? intl("call.rating.question", { tutor: tutorName })
+            ? intl("session.rating.question", { tutor: tutorName })
             : intl("platform.rating.question")}
         </Typography>
         <Typography
@@ -83,7 +83,7 @@ export const RateLesson: React.FC<{
           className="tw-text-natural-950 tw-text-center"
         >
           {type === "session"
-            ? intl("call.rating.question.description")
+            ? intl("session.rating.question.description")
             : intl("platform.rating.question.description")}
         </Typography>
 
@@ -95,7 +95,7 @@ export const RateLesson: React.FC<{
         />
 
         <Textarea
-          placeholder={intl("call.rating.text.placeholder")}
+          placeholder={intl("session.rating.text.placeholder")}
           className="tw-min-h-[138px] !tw-w-[696px]"
           disabled={rateLoading}
           value={feedback}
@@ -109,7 +109,7 @@ export const RateLesson: React.FC<{
           disabled={rateLoading}
           className="tw-w-full"
         >
-          {intl("call.rating.send-rating")}
+          {intl("session.rating.send-rating")}
         </Button>
       </div>
     </Dialog>
