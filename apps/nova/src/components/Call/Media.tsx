@@ -119,9 +119,9 @@ const Media: React.FC<{
       {loadingUserStream ? (
         <Loading />
       ) : userDenided ? (
-        <p className="text-center">{intl("call.user.denided")}</p>
+        <p className="text-center">{intl("session.user.denided")}</p>
       ) : !userMediaStream ? (
-        <p className="text-center">{intl("call.no.user.stream")}</p>
+        <p className="text-center">{intl("session.no.user.stream")}</p>
       ) : null}
 
       {remoteMediaStream && !screen ? (
