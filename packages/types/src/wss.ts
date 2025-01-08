@@ -137,9 +137,7 @@ export type ClientEventsMap = {
  * Events emitted by the server
  */
 export type ServerEventsMap = {
-  [ServerEvent.RoomMessage]: EventCallback<
-    IMessage.Self & { refId: string | undefined }
-  >;
+  [ServerEvent.RoomMessage]: EventCallback<IMessage.Self & { refId: string }>;
   [ServerEvent.RoomMessageUpdated]: EventCallback<IMessage.Self>;
   [ServerEvent.RoomMessageDeleted]: EventCallback<{
     roomId: number;

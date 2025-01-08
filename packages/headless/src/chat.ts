@@ -122,11 +122,15 @@ type Action =
     }
   | {
       type: ActionType.ActivateMessage;
-      message: { refId: string; room: number };
+      message: IMessage.Self & { refId: string; room: number };
     }
   | {
       type: ActionType.AddErrorMessage;
-      message: { refId: string; room: number; errorMessage?: string };
+      message: {
+        refId: string;
+        room: number;
+        errorMessage?: string;
+      };
     }
   | MessageStreamAction;
 
@@ -239,7 +243,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
         }
       );
 
-      onMessage({
+      return onMessage({
         type: ActionType.AddPendingMessage,
         message: { text, room: roomId, refId, userId },
       });
@@ -262,13 +266,13 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   );
 
   const onRoomMessage = useCallback(
-    (message: IMessage.Self & { refId?: string }) => {
+    (message: IMessage.Self & { refId: string }) => {
       if (!onMessage || !userId) return;
 
       if (message.userId === userId)
         return onMessage({
           type: ActionType.ActivateMessage,
-          message: { refId: message.refId!, room: message.roomId },
+          message: { room: message.roomId, ...message },
         });
 
       return onMessage({
@@ -340,12 +344,14 @@ function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
 }
 
 function activateMessage(
-  incoming: { refId: string; room: number },
+  incoming: IMessage.Self & { refId: string; room: number },
   messages: IMessage.ClientSideMessage[]
 ) {
   return messages.map((message) => {
     if (message.refId == incoming.refId) {
-      message.messageState = "sent";
+      return {
+        ...incoming,
+      };
     }
     return message;
   });
