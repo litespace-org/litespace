@@ -52,8 +52,7 @@ const Messages: React.FC<{
   isOnline: boolean;
   temporaryTutor: ITutor.UncontactedTutorInfo | null;
   selectionLoading: boolean;
-}> = ({ room, otherMember, isTyping, isOnline }) => {
-
+}> = ({ room, otherMember, isTyping, isOnline, temporaryTutor }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -247,15 +246,8 @@ const Messages: React.FC<{
                 : null
           }
           openDialog={openDialog}
-<<<<<<< HEAD
           online={isOnline}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
-=======
-          online={onlineStatus}
-          lastSeen={
-            otherMember ? dayjs(otherMember.lastSeen).fromNow() : undefined
-          }
->>>>>>> cad7d933 (feat(ui): added all tutors section to chat page)
         />
       </div>
 

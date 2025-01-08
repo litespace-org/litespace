@@ -9,7 +9,7 @@ import { RecordAttributes } from "@litespace/types";
  */
 export function asAttributesQuery<
   Row extends object,
-  Result extends RecordAttributes[],
+  Result extends RecordAttributes[]
 >(table: string, columns: Record<string, string>) {
   const prefixed = (column: string) => [table, column].join(".");
   return knex<Row>(table)
@@ -32,7 +32,7 @@ export function asAttributesQuery<
 
 export function mapAttributesQuery<
   T extends RecordAttributes,
-  M extends object,
+  M extends object
 >(list: T[], mapper: (item: T) => M) {
   return list.map((item) =>
     omit(

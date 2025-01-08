@@ -130,12 +130,12 @@ const Lesson: React.FC<
                   since: canceledSince,
                 })
               : isMemberCanceled
-                ? intl("page.lessons.lesson.canceled.by.other", {
-                    name: canceller?.name || "",
-                    date: canceledAt,
-                    since: canceledSince,
-                  })
-                : intl("page.lessons.lesson.canceled")}
+              ? intl("page.lessons.lesson.canceled.by.other", {
+                  name: canceller?.name || "",
+                  date: canceledAt,
+                  since: canceledSince,
+                })
+              : intl("page.lessons.lesson.canceled")}
           </IconField>
         ) : null}
       </ul>

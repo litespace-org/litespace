@@ -38,10 +38,10 @@ const Tutor: React.FC<{
         image && video
           ? { image, video }
           : image
-            ? { image }
-            : video
-              ? { video }
-              : null;
+          ? { image }
+          : video
+          ? { video }
+          : null;
 
       if (!payload) return;
       return atlas.user.updateMedia(tutor.id, payload);

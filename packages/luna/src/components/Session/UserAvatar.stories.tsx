@@ -42,12 +42,9 @@ export const Speaking2: StoryObj<Component> = {
   }) {
     const [speaking, setSpeaking] = useState<boolean>(true);
     useEffect(() => {
-      const interval = setInterval(
-        () => {
-          setSpeaking((prev) => !prev);
-        },
-        faker.number.int({ min: 3, max: 10 }) * 1_000
-      );
+      const interval = setInterval(() => {
+        setSpeaking((prev) => !prev);
+      }, faker.number.int({ min: 3, max: 10 }) * 1_000);
 
       return () => {
         clearInterval(interval);

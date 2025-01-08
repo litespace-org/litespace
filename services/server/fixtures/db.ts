@@ -183,8 +183,8 @@ export async function lesson(
         payload?.timing === "future"
           ? faker.date.future().toISOString()
           : payload?.timing === "past"
-            ? faker.date.past().toISOString()
-            : payload?.start || faker.date.soon().toISOString(),
+          ? faker.date.past().toISOString()
+          : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
       rule: await or.ruleId(payload?.rule, payload?.tutor),
@@ -478,7 +478,7 @@ async function makeInterviews(payload: {
       interviewees: number[];
       statuses: IInterview.Status[];
       levels: IInterview.Self["level"][];
-    },
+    }
   ];
 }) {
   for (const { interviewer, interviewees, statuses, levels } of payload.data) {

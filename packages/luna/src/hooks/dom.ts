@@ -3,7 +3,7 @@ import { useRender } from "@/hooks/common";
 
 export function useClosableRef<
   T extends HTMLElement = HTMLElement,
-  E extends HTMLElement = HTMLElement,
+  E extends HTMLElement = HTMLElement
 >(exclude?: E | null) {
   const ref = useRef<T>(null);
   const { toggle, hide, show, open } = useRender();
