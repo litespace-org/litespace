@@ -20,7 +20,15 @@ enum MessageStream {
 }
 type MessageStreamAction =
   | { type: MessageStream.Add; message: IMessage.Self }
-  | { type: MessageStream.Update; message: IMessage.Self }
+  | {
+      type: MessageStream.Update;
+      message: {
+        id: number;
+        text: string;
+        roomId: number;
+      };
+      pending?: boolean;
+    }
   | { type: MessageStream.Delete; messageId: number; roomId: number };
 
 type State = {
@@ -252,17 +260,30 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   );
 
   const updateMessage = useCallback(
-    ({ id, text }: { id: number; text: string }) => {
-      socket?.emit(Wss.ClientEvent.UpdateMessage, { id, text });
+    (message: { id: number; text: string; roomId: number }) => {
+      if (!onMessage) return;
+      socket?.emit(Wss.ClientEvent.UpdateMessage, {
+        id: message.id,
+        text: message.text,
+      });
+
+      return onMessage({
+        type: MessageStream.Update,
+        message,
+        pending: true,
+      });
     },
-    [socket]
+    [socket, onMessage]
   );
 
   const deleteMessage = useCallback(
-    (id: number) => {
-      socket?.emit(Wss.ClientEvent.DeleteMessage, { id });
+    (messageId: number, roomId: number) => {
+      if (!onMessage) return;
+
+      socket?.emit(Wss.ClientEvent.DeleteMessage, { id: messageId });
+      return onMessage({ type: MessageStream.Delete, roomId, messageId });
     },
-    [socket]
+    [socket, onMessage]
   );
 
   const onRoomMessage = useCallback(
@@ -336,11 +357,23 @@ function isFreshMessage(id: number, messages: IMessage.Self[]): boolean {
   return !!messages.find((message) => message.id === id);
 }
 
-function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
-  const index = messages.findIndex((message) => message.id === incoming.id);
-  if (index === -1) return;
-  messages.splice(index, 1, incoming);
-  return messages;
+function replaceMessage(
+  incoming: { id: number; text: string; roomId: number },
+  messages: IMessage.ClientSideMessage[],
+  pending?: boolean
+) {
+  const newMessages = messages.map((message) => {
+    if (message.id === incoming.id) {
+      return {
+        ...message,
+        ...incoming,
+        messageState: (pending ? "pending" : "sent") as IMessage.MessageState,
+      };
+    }
+    return message;
+  });
+
+  return newMessages;
 }
 
 function activateMessage(
@@ -541,7 +574,12 @@ function reducer(state: State, action: Action) {
       : structuredClone(state.messages);
 
     const roomMessages = messages[room] || [];
-    messages[room] = replaceMessage(action.message, roomMessages);
+    messages[room] = replaceMessage(
+      action.message,
+      roomMessages,
+      action.pending
+    );
+
     if (fresh) return mutate({ freshMessages: messages });
     return mutate({ messages });
   }

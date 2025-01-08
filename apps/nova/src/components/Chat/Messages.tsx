@@ -98,11 +98,15 @@ const Messages: React.FC<{
 
   const onUpdateMessage = useCallback(
     (text: string) => {
-      if (!updatableMessage) return;
+      if (!updatableMessage || !room) return;
       setUpdatableMessage(null);
-      updateMessage({ id: updatableMessage.id, text });
+      updateMessage({
+        id: updatableMessage.id,
+        text,
+        roomId: room,
+      });
     },
-    [updatableMessage, updateMessage]
+    [updatableMessage, updateMessage, room]
   );
 
   const onUpdate = useCallback(
@@ -118,10 +122,10 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage) return;
-    deleteMessage(deletableMessage);
+    if (!deletableMessage || !room) return;
+    deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
-  }, [deletableMessage, deleteMessage]);
+  }, [deletableMessage, deleteMessage, room]);
 
   const discardDelete = useCallback(() => {
     setDeletableMessage(null);
