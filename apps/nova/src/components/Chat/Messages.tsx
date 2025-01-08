@@ -46,12 +46,23 @@ type RetryFnMap = Record<
 >;
 
 const Messages: React.FC<{
+  /**
+   * Room id
+   */
   room: number | null;
+  /**
+   * other member data in the current room
+   * this will be used if there is an actual room between both users
+   */
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
   isTyping: boolean;
   isOnline: boolean;
   temporaryTutor: ITutor.UncontactedTutorInfo | null;
   selectionLoading: boolean;
+  /**
+   * temporary tutor data used until we create a room between users
+   */
+  temporaryTutor: ITutor.UncontactedTutorInfo | null;
 }> = ({ room, otherMember, isTyping, isOnline, temporaryTutor }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
@@ -208,6 +219,39 @@ const Messages: React.FC<{
     if (!el) return;
     el.scrollTop += 100;
   }, [messageGroups]);
+  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> =
+    useMemo(() => {
+      if (temporaryTutor)
+        return {
+          id: temporaryTutor.id,
+          name: temporaryTutor.name,
+          image: temporaryTutor.image,
+          role: IUser.Role.Tutor,
+          online: false,
+          lastSeen: "",
+          openDialog: openDialog,
+        };
+      if (otherMember)
+        return {
+          id: otherMember.id,
+          name: otherMember.name,
+          image: otherMember.image,
+          role: otherMember.role,
+          online: otherMember.online,
+          lastSeen: dayjs(otherMember.lastSeen).fromNow(),
+          openDialog: openDialog,
+        };
+
+      return {
+        id: 0,
+        name: "",
+        image: "",
+        role: IUser.Role.Tutor,
+        online: false,
+        lastSeen: "",
+        openDialog: openDialog,
+      };
+    }, [temporaryTutor, otherMember, openDialog]);
 
   return (
     <div
@@ -216,39 +260,8 @@ const Messages: React.FC<{
     >
       {room === null ? <NoSelection /> : null}
 
-      <div
-        className="tw-px-6 tw-pt-8 bg-natural-50"
-        style={{
-          boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <ChatHeader
-          role={otherMember ? otherMember.role : IUser.Role.Tutor}
-          id={
-            temporaryTutor
-              ? temporaryTutor.id
-              : otherMember
-                ? otherMember.id
-                : 0
-          }
-          name={
-            temporaryTutor
-              ? temporaryTutor.name
-              : otherMember
-                ? otherMember.name
-                : null
-          }
-          image={
-            temporaryTutor
-              ? temporaryTutor.image
-              : otherMember
-                ? otherMember.image
-                : null
-          }
-          openDialog={openDialog}
-          online={isOnline}
-          lastSeen={dayjs(otherMember.lastSeen).fromNow()}
-        />
+      <div className="tw-px-6 tw-pt-8">
+        <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
       </div>
 
       {room ? (
@@ -262,7 +275,7 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <InView as="div" onChange={more} />
-            {loading || selectionLoading ? (
+            {loading ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
               </div>

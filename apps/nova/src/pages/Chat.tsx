@@ -15,7 +15,6 @@ import { ITutor } from "@litespace/types";
 
 const Chat: React.FC = () => {
   const { user } = useUserContext();
-  const [loading, setLoading] = useState(false);
   const [temporaryTutor, setTemporaryTutor] =
     useState<ITutor.UncontactedTutorInfo | null>(null);
 
@@ -84,7 +83,6 @@ const Chat: React.FC = () => {
         usersOnlineMap={usersOnlineMap}
         typingMap={typingMap}
         setTemporaryTutor={setTemporaryTutor}
-        setLoading={setLoading}
         selected={selected}
         select={select}
       />
@@ -104,7 +102,6 @@ const Chat: React.FC = () => {
 
       {otherMember || temporaryTutor ? (
         <Messages
-          selectionLoading={loading}
           room={selected.room}
           otherMember={otherMember}
           temporaryTutor={temporaryTutor}

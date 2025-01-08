@@ -61,8 +61,8 @@ const EventCard: React.FC<{
       event.wrapper === false
         ? dimensions.childWidth - 1
         : event.wrapper
-        ? dimensions.parentWidth - 1
-        : dimensions.width - 3;
+          ? dimensions.parentWidth - 1
+          : dimensions.width - 3;
 
     return {
       top: hoursToPixelsHight(hour) + minutesToPixelsHight(minutes),

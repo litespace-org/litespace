@@ -173,8 +173,8 @@ export class Rules {
         typeof row.weekdays === "string"
           ? JSON.parse(row.weekdays)
           : Array.isArray(row.weekdays)
-          ? row.weekdays
-          : [],
+            ? row.weekdays
+            : [],
       monthday: row.monthday,
       activated: row.activated,
       deleted: row.deleted,

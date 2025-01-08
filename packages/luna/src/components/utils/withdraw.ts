@@ -16,6 +16,6 @@ export function getWithdrawMethodIntlId(
   return instapay
     ? messages["withdraw.methods.instapay"]
     : bank
-    ? messages["withdraw.methods.bank"]
-    : messages["withdraw.methods.wallet"];
+      ? messages["withdraw.methods.bank"]
+      : messages["withdraw.methods.wallet"];
 }

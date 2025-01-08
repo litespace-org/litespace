@@ -20,11 +20,9 @@ const RoomsContainer: React.FC<{
   select: SelectRoom;
   typingMap: RoomsMap;
   usersOnlineMap: RoomsMap;
-  setLoading: (loading: boolean) => void;
   setTemporaryTutor: (payload: ITutor.UncontactedTutorInfo | null) => void;
 }> = ({
   select,
-  setLoading,
   setTemporaryTutor,
   typingMap,
   usersOnlineMap,
@@ -48,7 +46,7 @@ const RoomsContainer: React.FC<{
           selectedRoom = room;
         });
         if (!selectedRoom) return;
-        setLoading(false);
+        setTemporaryTutor(null);
         select({
           room: selectedRoom.roomId,
           otherMember: selectedRoom.otherMember,
@@ -56,7 +54,7 @@ const RoomsContainer: React.FC<{
       });
       rooms.uncontactedTutors.query.refetch();
     },
-    [rooms.all, rooms.uncontactedTutors, select, setLoading]
+    [rooms.all, rooms.uncontactedTutors, select, setTemporaryTutor]
   );
 
   const onError = useCallback(() => {
@@ -64,18 +62,16 @@ const RoomsContainer: React.FC<{
       title: intl("chat.create.room.error"),
     });
     setTemporaryTutor(null);
-    setLoading(false);
-  }, [toast, intl, setTemporaryTutor, setLoading]);
+  }, [toast, intl, setTemporaryTutor]);
 
   const createRoom = useCreateRoom({ onSuccess, onError });
 
   const handleCreation = useCallback(
     (tutor: ITutor.UncontactedTutorInfo) => {
-      setLoading(true);
       setTemporaryTutor(tutor);
       createRoom.mutate(tutor.id);
     },
-    [createRoom, setLoading, setTemporaryTutor]
+    [createRoom, setTemporaryTutor]
   );
 
   return (
@@ -151,7 +147,7 @@ const RoomsContainer: React.FC<{
           <Rooms
             type="uncontactedTutors"
             query={rooms.uncontactedTutors.query}
-            tutors={rooms.uncontactedTutors.list}
+            rooms={rooms.uncontactedTutors.list}
             target={rooms.all.target}
             enabled={rooms.uncontactedTutors.enabled}
             createRoom={handleCreation}
