@@ -65,6 +65,10 @@
       "import": "./dist/esm/lesson.js",
       "require": "./dist/cjs/lesson.js"
     },
+    "./query": {
+      "import": "./dist/esm/query.js",
+      "require": "./dist/cjs/query.js"
+    },
     "./log": {
       "import": "./dist/esm/log.js",
       "require": "./dist/cjs/log.js"

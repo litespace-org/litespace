@@ -77,7 +77,10 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
         <Button
           size={ButtonSize.Large}
           onClick={() =>
-            onSubmit({ value: newRating, feedback: newFeedback || null })
+            onSubmit({
+              value: newRating,
+              feedback: newFeedback || null,
+            })
           }
           disabled={
             loading || (newFeedback === feedback && newRating === rating)

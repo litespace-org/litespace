@@ -13,10 +13,6 @@ export class User extends Base {
     return data;
   }
 
-  async findTutorById(id: number): Promise<ITutor.FullTutor> {
-    throw new Error("Not impelmented yet");
-  }
-
   async findCurrentUser(): Promise<IUser.FindCurrentUserApiResponse> {
     return await this.get({ route: "/api/v1/user/current" });
   }
