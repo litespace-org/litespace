@@ -12,6 +12,7 @@ function messages(count: number) {
   return range(count).map((idx) => ({
     id: idx,
     text: faker.lorem.words({ min: 5, max: 50 }),
+    deleted: false,
   }));
 }
 
@@ -105,6 +106,7 @@ export const MessagingSimulation: StoryObj<Component> = {
             {
               id: prev.length,
               text: faker.lorem.words({ min: 10, max: 50 }),
+              deleted: false,
             },
           ]);
 

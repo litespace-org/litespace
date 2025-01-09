@@ -6,42 +6,15 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Input } from "@litespace/luna/Input";
 import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
-import { IRoom, Paginated } from "@litespace/types";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 import { HEADER_HEIGHT } from "@/constants/ui";
-
-type Rooms = {
-  list: IRoom.FindUserRoomsApiRecord[] | null;
-  query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
-    Error
-  >;
-  target: React.RefObject<HTMLDivElement>;
-  enabled: boolean;
-};
+import { useRoomManager } from "@/hooks/chat";
 
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
-  toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
-  togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
-  keyword: {
-    value: string;
-    set: (keyword: string) => void;
-  };
-  rooms: {
-    all: Rooms;
-    pinned: Rooms;
-  };
-}> = ({
-  select,
-  selected: { room: roomId },
-  toggleMute,
-  togglePin,
-  keyword,
-  rooms,
-}) => {
+}> = ({ select, selected: { room: roomId } }) => {
   const intl = useFormatMessage();
+  const { rooms, keyword, update } = useRoomManager();
 
   return (
     <div
@@ -81,8 +54,8 @@ const RoomsContainer: React.FC<{
         {rooms.pinned.list && rooms.pinned.list.length > 0 && !keyword.value ? (
           <div className="mb-6">
             <Rooms
-              toggleMute={toggleMute}
-              togglePin={togglePin}
+              toggleMute={update.toggleMute}
+              togglePin={update.togglePin}
               type="pinned"
               query={rooms.pinned.query}
               rooms={rooms.pinned.list}
@@ -96,8 +69,8 @@ const RoomsContainer: React.FC<{
 
         <Rooms
           type="all"
-          toggleMute={toggleMute}
-          togglePin={togglePin}
+          toggleMute={update.toggleMute}
+          togglePin={update.togglePin}
           query={rooms.all.query}
           rooms={rooms.all.list}
           target={rooms.all.target}

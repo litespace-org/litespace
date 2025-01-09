@@ -1,6 +1,7 @@
 import { io, Socket } from "socket.io-client";
 import { sockets } from "@litespace/atlas";
 import { Backend, ISession, Wss } from "@litespace/types";
+import { uniqueId } from "lodash";
 
 export class ClientSocket {
   public readonly client: Socket<Wss.ServerEventsMap, Wss.ClientEventsMap>;
@@ -29,7 +30,8 @@ export class ClientSocket {
   }
 
   sendMessage(roomId: number, text: string) {
-    return this.emit(Wss.ClientEvent.SendMessage, { roomId, text });
+    const refId = uniqueId();
+    return this.emit(Wss.ClientEvent.SendMessage, { roomId, text, refId });
   }
 
   deleteMessage(msgId: number) {

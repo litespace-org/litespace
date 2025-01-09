@@ -10,7 +10,6 @@ import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import { useRoomManager } from "@/hooks/chat";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 
 const Chat: React.FC = () => {
@@ -21,19 +20,12 @@ const Chat: React.FC = () => {
   // TODO: read/unread function
   const roomMembers = useFindRoomMembers(selected.room);
   const otherMember = asOtherMember(user?.id, roomMembers.data);
-  const { rooms, keyword, update } = useRoomManager();
 
   const retry = useCallback(() => {
     roomMembers.refetch();
-    rooms.all.query.refetch();
-    rooms.pinned.query.refetch();
-  }, [rooms.all, roomMembers, rooms.pinned]);
+  }, [roomMembers]);
 
-  if (
-    roomMembers.isPending &&
-    rooms.all.query.isPending &&
-    rooms.pinned.query.isPending
-  )
+  if (roomMembers.isLoading)
     return (
       <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6">
         <Typography
@@ -49,11 +41,7 @@ const Chat: React.FC = () => {
       </div>
     );
 
-  if (
-    roomMembers.isError &&
-    rooms.all.query.isError &&
-    rooms.pinned.query.isError
-  )
+  if (roomMembers.isError)
     return (
       <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6">
         <Typography
@@ -70,15 +58,9 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className={cn("flex flex-row")}>
-      <RoomsContainer
-        rooms={rooms}
-        keyword={keyword}
-        toggleMute={update.toggleMute}
-        togglePin={update.togglePin}
-        selected={selected}
-        select={select}
-      />
+    <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
+      <RoomsContainer selected={selected} select={select} />
+
       {otherMember && selected.room ? (
         <Messages room={selected.room} otherMember={otherMember} />
       ) : null}

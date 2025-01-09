@@ -55,7 +55,7 @@ function assignGroup({
   senderId: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   currentUser: IUser.Self;
-  messages: IMessage.ClientSideMessage[];
+  messages: IMessage.AttributedMessage[];
 }): MessageGroup | null {
   if (isEmpty(messages) || !senderId) return null;
   const sender = asSender({ senderId, currentUser, otherMember });
@@ -84,7 +84,7 @@ export function asMessageGroups({
   currentUser,
   otherMember,
 }: {
-  messages: IMessage.ClientSideMessage[];
+  messages: IMessage.AttributedMessage[];
   currentUser: IUser.Self;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) {

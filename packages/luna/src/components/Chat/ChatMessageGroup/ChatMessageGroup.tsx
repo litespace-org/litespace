@@ -15,15 +15,37 @@ const messageVariants = {
   visible: { opacity: 1, transition: { duration: 0.3 } },
 } as const;
 
+export type RetryFnMap = Record<
+  "send" | "update" | "delete",
+  (
+    payload:
+      | { roomId: number; text: string; userId: number }
+      | {
+          id: number;
+          text: string;
+          roomId: number;
+        }
+      | number
+  ) => void
+>;
+type ErrorType = "send" | "update" | "delete";
+type RoomErrors = Record<string | number, ErrorType>;
+
 export const ChatMessageGroup: React.FC<{
   sender: { userId: number; name: string | null; image?: string | null };
   messages: DisplayMessage[];
+  roomId: number;
   sentAt: string;
   owner?: boolean;
+  retryFnMap: RetryFnMap;
+  roomErrors: RoomErrors;
   editMessage: (message: { id: number; text: string }) => void;
   deleteMessage: (id: number) => void;
 }> = ({
   sentAt,
+  retryFnMap,
+  roomId,
+  roomErrors,
   messages,
   sender: { image, name, userId },
   owner,
@@ -71,8 +93,29 @@ export const ChatMessageGroup: React.FC<{
             "tw-items-start": owner,
           })}
         >
-          {messages.map((message, index) =>
-            message.deleted ? null : (
+          {messages.map((message, index) => {
+            const retry = () => {
+              const messageErrorType = roomErrors[message.id];
+              if (!messageErrorType) return null;
+
+              if (messageErrorType === "update")
+                return retryFnMap[messageErrorType]({
+                  id: message.id,
+                  roomId,
+                  text: message.text,
+                });
+
+              if (messageErrorType === "delete")
+                return retryFnMap[messageErrorType](message.id);
+
+              return retryFnMap[messageErrorType]({
+                roomId,
+                text: message.text,
+                userId,
+              });
+            };
+
+            return message.deleted ? null : (
               <motion.div
                 variants={messageVariants}
                 initial="hidden"
@@ -90,12 +133,13 @@ export const ChatMessageGroup: React.FC<{
                   pending={message.messageState === "pending"}
                   error={message.messageState === "error"}
                   owner={owner}
+                  retry={retry}
                   editMessage={() => editMessage(message)}
                   deleteMessage={() => deleteMessage(message.id)}
                 />
               </motion.div>
-            )
-          )}
+            );
+          })}
         </div>
       </div>
     </div>
