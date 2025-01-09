@@ -224,6 +224,7 @@ const Lesson: React.FC = () => {
 
               if (call) setCaller(true);
               setRequestPermission(false);
+              devices.recheck();
             });
           setPermission(permission);
         }}
