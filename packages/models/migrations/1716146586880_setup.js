@@ -367,7 +367,6 @@ exports.down = (pgm) => {
   pgm.dropIndex("users", "id", { ifExists: true });
 
   // tables
-  pgm.dropTable("availability_slots", { ifExists: true });
   pgm.dropTable("user_topics", { ifExists: true });
   pgm.dropTable("topics", { ifExists: true });
   pgm.dropTable("withdraw_methods", { ifExists: true });
@@ -388,6 +387,7 @@ exports.down = (pgm) => {
   pgm.dropTable("lessons", { ifExists: true });
   pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
+  pgm.dropTable("availability_slots", { ifExists: true });
   pgm.dropTable("users", { ifExists: true, cascade: true });
 
   // types

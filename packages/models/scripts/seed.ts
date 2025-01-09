@@ -116,7 +116,7 @@ async function main(): Promise<void> {
     )
   );
 
-  const studio = await users.create({
+  await users.create({
     role: IUser.Role.Studio,
     email: "media@litespace.org",
     name: faker.person.fullName(),
@@ -258,7 +258,7 @@ async function main(): Promise<void> {
   // seeding topics data
   stdout.info(`Inserting at most 50 random topics in the database.`);
   await Promise.all(
-    range(100).map(async (idx) => {
+    range(100).map(async () => {
       try {
         const ar = faker.lorem.words(2);
         const en = fakerEn.lorem.words(2);
@@ -384,10 +384,12 @@ async function main(): Promise<void> {
   let start = dayjs().utc().startOf("day");
   for (const tutor of addedTutors) {
     // create chat room tutor-student
-    await rooms.create([tutor.id, student.id]);
+    await knex.transaction(async (tx) =>
+      rooms.create([tutor.id, student.id], tx)
+    );
 
     for (const _ of range(1, 100)) {
-      const lesson = await createRandomLesson({
+      await createRandomLesson({
         tutorId: tutor.id,
         start: start.toISOString(),
       });
@@ -555,18 +557,26 @@ async function main(): Promise<void> {
     reportId: 1,
   });
 
-  const roomId = await rooms.create([tutor.id, tutorManager.id]);
+  await knex.transaction(async (tx) => {
+    const roomId = await rooms.create([tutor.id, tutorManager.id], tx);
 
-  await messages.create({
-    userId: tutor.id,
-    text: "Hello!",
-    roomId,
-  });
+    await messages.create(
+      {
+        userId: tutor.id,
+        text: "Hello!",
+        roomId,
+      },
+      tx
+    );
 
-  await messages.create({
-    userId: tutorManager.id,
-    text: "Nice to meet you!",
-    roomId,
+    await messages.create(
+      {
+        userId: tutorManager.id,
+        text: "Nice to meet you!",
+        roomId,
+      },
+      tx
+    );
   });
 
   const lessonsTotal = await lessons.sumPrice({});
