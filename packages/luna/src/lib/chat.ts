@@ -7,6 +7,7 @@ export type DisplayMessage = {
   id: number;
   text: string;
   messageState?: IMessage.MessageState;
+  deleted: boolean;
 };
 
 export type Sender = {
@@ -72,6 +73,7 @@ function assignGroup({
       id: message.id,
       text: message.text,
       messageState: message.messageState,
+      deleted: message.deleted,
     })),
     sentAt: latest.updatedAt,
   };

@@ -61,7 +61,7 @@ type State = {
    */
   fetching: Record<number, boolean | undefined>;
   /**
-   * Map from room id to error messages
+   * Map from room id to error messages (indicating problem with entire chat)
    */
   errors: Record<number, string | null | undefined>;
 };
@@ -79,6 +79,7 @@ enum ActionType {
   AddPendingMessage,
   ActivateMessage,
   AddErrorMessage,
+  UpdateWithError,
   AddMessage,
   UpdateMessage,
   DeleteMessage,
@@ -136,6 +137,14 @@ type Action =
       type: ActionType.AddErrorMessage;
       message: {
         refId: string;
+        room: number;
+        errorMessage?: string;
+      };
+    }
+  | {
+      type: ActionType.UpdateWithError;
+      message: {
+        id: number;
         room: number;
         errorMessage?: string;
       };
@@ -262,10 +271,19 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   const updateMessage = useCallback(
     (message: { id: number; text: string; roomId: number }) => {
       if (!onMessage) return;
-      socket?.emit(Wss.ClientEvent.UpdateMessage, {
-        id: message.id,
-        text: message.text,
-      });
+      socket?.emit(
+        Wss.ClientEvent.UpdateMessage,
+        {
+          id: message.id,
+          text: message.text,
+        },
+        () => {
+          onMessage({
+            type: ActionType.UpdateWithError,
+            message: { id: message.id, room: message.roomId },
+          });
+        }
+      );
 
       return onMessage({
         type: MessageStream.Update,
@@ -280,7 +298,12 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     (messageId: number, roomId: number) => {
       if (!onMessage) return;
 
-      socket?.emit(Wss.ClientEvent.DeleteMessage, { id: messageId });
+      socket?.emit(Wss.ClientEvent.DeleteMessage, { id: 888888 }, () => {
+        return onMessage({
+          type: ActionType.UpdateWithError,
+          message: { id: messageId, room: roomId },
+        });
+      });
       return onMessage({ type: MessageStream.Delete, roomId, messageId });
     },
     [socket, onMessage]
@@ -417,12 +440,29 @@ const pendingMessageCreator = ({
 };
 
 function makeErrorMessage(
-  incoming: { refId: string; room: number },
+  incoming: { refId: string; room: number } | { id: number; room: number },
   messages: IMessage.ClientSideMessage[]
 ) {
   return messages.map((message) => {
-    if (message.refId == incoming.refId) {
+    if ("refId" in incoming && message.refId == incoming.refId) {
       message.messageState = "error";
+      message.deleted = false;
+    }
+    if ("id" in incoming && message.id == incoming.id) {
+      message.messageState = "error";
+      message.deleted = false;
+    }
+    return message;
+  });
+}
+
+function deleteMessage(
+  incomingId: number,
+  messages: IMessage.ClientSideMessage[]
+) {
+  return messages.map((message) => {
+    if (message.id === incomingId) {
+      message.deleted = true;
     }
     return message;
   });
@@ -491,6 +531,22 @@ function reducer(state: State, action: Action) {
     freshMessages[room] = makeErrorMessage(action.message, roomMessages);
 
     return mutate({ freshMessages });
+  }
+
+  if (action.type === ActionType.UpdateWithError) {
+    const room = action.message.room;
+    const fresh = isFreshMessage(
+      action.message.id,
+      state.freshMessages[room] || []
+    );
+    const messages = fresh
+      ? structuredClone(state.freshMessages)
+      : structuredClone(state.messages);
+    const roomMessages = messages[room] || [];
+
+    messages[room] = makeErrorMessage(action.message, roomMessages);
+    if (fresh) return mutate({ freshMessages: messages });
+    return mutate({ messages });
   }
 
   if (action.type === ActionType.PreCall) {
@@ -592,7 +648,7 @@ function reducer(state: State, action: Action) {
       ? structuredClone(state.freshMessages)
       : structuredClone(state.messages);
     const roomMessages = messages[room] || [];
-    messages[room] = roomMessages.filter((message) => message.id !== messageId);
+    messages[room] = deleteMessage(action.messageId, roomMessages);
     if (fresh) return mutate({ freshMessages: messages });
     return mutate({ messages });
   }

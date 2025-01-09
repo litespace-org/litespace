@@ -7,8 +7,8 @@ import { motion } from "framer-motion";
 import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
-import { IMessage } from "@litespace/types";
 import { asFullAssetUrl } from "@/lib";
+import { DisplayMessage } from "@/lib/chat";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -17,11 +17,7 @@ const messageVariants = {
 
 export const ChatMessageGroup: React.FC<{
   sender: { userId: number; name: string | null; image?: string | null };
-  messages: Array<{
-    id: number;
-    text: string;
-    messageState?: IMessage.MessageState;
-  }>;
+  messages: DisplayMessage[];
   sentAt: string;
   owner?: boolean;
   editMessage: (message: { id: number; text: string }) => void;
@@ -75,29 +71,31 @@ export const ChatMessageGroup: React.FC<{
             "tw-items-start": owner,
           })}
         >
-          {messages.map((message, index) => (
-            <motion.div
-              variants={messageVariants}
-              initial="hidden"
-              animate="visible"
-              exit="hidden"
-              className={cn("w-full mt-1 tw-flex", {
-                "tw-justify-end": !owner,
-                "tw-justify-start": owner,
-              })}
-              key={message.id}
-            >
-              <ChatMessage
-                firstMessage={index === 0}
-                message={message}
-                pending={message.messageState === "pending"}
-                error={message.messageState === "error"}
-                owner={owner}
-                editMessage={() => editMessage(message)}
-                deleteMessage={() => deleteMessage(message.id)}
-              />
-            </motion.div>
-          ))}
+          {messages.map((message, index) =>
+            message.deleted ? null : (
+              <motion.div
+                variants={messageVariants}
+                initial="hidden"
+                animate="visible"
+                exit="hidden"
+                className={cn("w-full mt-1 tw-flex", {
+                  "tw-justify-end": !owner,
+                  "tw-justify-start": owner,
+                })}
+                key={message.id}
+              >
+                <ChatMessage
+                  firstMessage={index === 0}
+                  message={message}
+                  pending={message.messageState === "pending"}
+                  error={message.messageState === "error"}
+                  owner={owner}
+                  editMessage={() => editMessage(message)}
+                  deleteMessage={() => deleteMessage(message.id)}
+                />
+              </motion.div>
+            )
+          )}
         </div>
       </div>
     </div>
