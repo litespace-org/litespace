@@ -25,7 +25,7 @@ const makelesson = () => ({
   end: faker.date.future().toISOString(),
   name: faker.person.fullName(),
   imgUrl: faker.image.urlPicsumPhotos({ width: 100, height: 100 }),
-  id: faker.number.int(),
+  userId: faker.number.int(),
   url: "/",
 });
 
