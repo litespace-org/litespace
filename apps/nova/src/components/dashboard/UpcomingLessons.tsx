@@ -1,23 +1,32 @@
+import dayjs from "@/lib/dayjs";
 import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 import { UpcomingLessonsSummary as Summary } from "@litespace/luna/Lessons";
 import { ILesson, IUser } from "@litespace/types";
-import dayjs from "dayjs";
 import { useMemo } from "react";
 
 function asUpcomingLessons(
-  list: ILesson.FindUserLessonsApiResponse["list"] | null
+  list: ILesson.FindUserLessonsApiResponse["list"] | null,
+  userRole?: IUser.Role
 ) {
-  if (!list) return [];
+  if (!list || !userRole) return [];
 
-  return list.map((item) => ({
-    start: item.lesson.start,
-    tutorName:
-      item.members.find((member) => member.role === IUser.Role.Tutor)?.name ||
-      null,
-    url: Route.Call,
-  }));
+  return list.map((item) => {
+    const member = item.members.find((member) => member.role !== userRole);
+
+    return {
+      start: item.lesson.start,
+      end: dayjs(item.lesson.start)
+        .add(item.lesson.duration, "minutes")
+        .toISOString(),
+      name: member?.name || null,
+      id: member?.userId || 0,
+      imageUrl: member?.image ? asFullAssetUrl(member.image) : null,
+      url: Route.Call,
+    };
+  });
 }
 
 export const UpcomingLessons = () => {
@@ -31,8 +40,8 @@ export const UpcomingLessons = () => {
     size: 4,
   });
   const lessons = useMemo(
-    () => asUpcomingLessons(lessonsQuery.list),
-    [lessonsQuery.list]
+    () => asUpcomingLessons(lessonsQuery.list, user?.role),
+    [lessonsQuery.list, user?.role]
   );
   return (
     <Summary
