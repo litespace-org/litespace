@@ -11,39 +11,53 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
-import { Tooltip } from "@/components/Tooltip";
 
 export type Props = {
   start: string;
   duration: number;
   canceled: "tutor" | "student" | null;
-  tutor: {
+  member: {
     id: number;
     name: string | null;
     image: string | undefined;
+    /**
+     * @note role shall be `student` when the current user is tutor and vice versa
+     */
+    role: "tutor" | "student";
   };
   onRebook: Void;
   onJoin: Void;
   onCancel: Void;
+  onSendMsg: Void;
 };
 
 export const LessonCard: React.FC<Props> = ({
   start,
   duration,
-  tutor,
+  member,
   canceled,
   onJoin,
   onCancel,
   onRebook,
+  onSendMsg,
 }) => {
   const intl = useFormatMessage();
   const end = dayjs(start).add(duration, "minutes");
+
+  // for code readability
+  const currentUserRole = useMemo(() => {
+    return member.role === "student" ? "tutor" : "student";
+  }, [member]);
+
   const [title, setTitle] = useState<string | undefined>(() => {
     const now = dayjs();
-    // canceled by tutor
+    // canceled by the current user
+    if (canceled === currentUserRole) return intl("lessons.canceled-by-you");
+
+    // canceled by the tutor and the current user is the student
     if (canceled === "tutor") return intl("lessons.canceled-by-tutor");
 
-    // canceled by tutor
+    // canceled by the student and the current user is the tutor
     if (canceled === "student") return intl("lessons.canceled-by-student");
 
     // before the lesson started
@@ -101,14 +115,21 @@ export const LessonCard: React.FC<Props> = ({
   }, [end, start]);
 
   const canRebook = useMemo(() => {
-    return dayjs().isAfter(end) || canceled;
-  }, [canceled, end]);
+    return currentUserRole === "student" && (dayjs().isAfter(end) || canceled);
+  }, [canceled, end, currentUserRole]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       const now = dayjs();
-      // canceled
-      if (canceled) setTitle(intl("lessons.canceled-by-tutor"));
+      // canceled by the cur user
+      if (canceled === currentUserRole)
+        setTitle(intl("lessons.canceled-by-you"));
+
+      // canceled by the tutor and the cur user is the student
+      if (canceled === "tutor") setTitle(intl("lessons.canceled-by-tutor"));
+
+      // canceled by the student and the cur user is the tutor
+      if (canceled === "student") setTitle(intl("lessons.canceled-by-student"));
 
       // before start of lesson
       if (!canceled && now.isBefore(start, "second"))
@@ -162,23 +183,46 @@ export const LessonCard: React.FC<Props> = ({
       if (!canceled && now.isAfter(end)) setTitle("lessons.end");
     }, 60_000);
     return () => clearInterval(interval);
-  }, [start, end, canceled, title, intl, duration]);
+  }, [start, end, canceled, title, intl, duration, currentUserRole]);
 
   const actions: MenuAction[] = useMemo(
-    () => [
-      {
-        label: intl("lessons.menu.edit"),
-        icon: <CalendarEdit />,
-        onClick: () => console.log("edit"),
-      },
-      {
-        label: intl("lessons.menu.cancel"),
-        icon: <CalendarRemove />,
-        onClick: () => onCancel(),
-      },
-    ],
-    [intl, onCancel]
+    () =>
+      currentUserRole === "student"
+        ? [
+            // Student related actions
+            {
+              label: intl("lessons.menu.edit"),
+              icon: <CalendarEdit />,
+              onClick: () => console.log("edit"),
+            },
+            {
+              label: intl("lessons.menu.cancel"),
+              icon: <CalendarRemove />,
+              onClick: () => onCancel(),
+            },
+          ]
+        : [
+            // Tutor related actions
+            {
+              label: intl("lessons.menu.cancel"),
+              icon: <CalendarRemove />,
+              onClick: () => onCancel(),
+            },
+          ],
+    [intl, onCancel, currentUserRole]
   );
+
+  const mainBtnHandler = useMemo(() => {
+    if (!canceled) return onJoin;
+    if (currentUserRole === "student") return onRebook;
+    else return onSendMsg;
+  }, [canceled, onJoin, onRebook, onSendMsg]);
+
+  const mainBtnText = useMemo(() => {
+    if (!canceled) return intl("lessons.button.join");
+    if (currentUserRole === "student") return intl("lessons.button.rebook");
+    else return intl("lessons.button.send-message");
+  }, [canceled, currentUserRole]);
 
   const button = (
     <Button
@@ -187,11 +231,9 @@ export const LessonCard: React.FC<Props> = ({
         "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto"
       )}
       disabled={!canJoin && !canRebook}
-      onClick={canceled ? onRebook : onJoin}
+      onClick={mainBtnHandler}
     >
-      {canceled || dayjs().isAfter(end)
-        ? intl("lessons.button.rebook")
-        : intl("lessons.button.join")}
+      {mainBtnText}
     </Button>
   );
 
@@ -238,9 +280,9 @@ export const LessonCard: React.FC<Props> = ({
         <div className="tw-flex tw-gap-2">
           <div className="tw-w-[65px] tw-h-[65px] tw-rounded-full tw-overflow-hidden">
             <Avatar
-              src={tutor.image}
-              seed={tutor.id.toString()}
-              alt={tutor.image}
+              src={member.image}
+              seed={member.id.toString()}
+              alt={member.image}
             />
           </div>
           <div className="tw-flex tw-flex-col tw-gap-1">
@@ -249,7 +291,7 @@ export const LessonCard: React.FC<Props> = ({
               weight="bold"
               className="tw-text-[14px] tw-leading-[21px] tw-text-natural-950"
             >
-              {tutor.name}
+              {member.name}
             </Typography>
             <Typography
               element="tiny-text"
@@ -269,19 +311,7 @@ export const LessonCard: React.FC<Props> = ({
             </Typography>
           </div>
         </div>
-        {!canJoin ? (
-          <Tooltip
-            content={
-              <Typography className="tw-w-full tw-max-w-44">
-                {intl("lessons.join-lesson-note")}
-              </Typography>
-            }
-          >
-            <div>{button}</div>
-          </Tooltip>
-        ) : (
-          button
-        )}
+        {button}
       </div>
     </div>
   );
