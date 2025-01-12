@@ -1,20 +1,15 @@
-import * as Tabs from "@radix-ui/react-tabs";
+import { useMemo, useState } from "react";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import * as Tabs from "@radix-ui/react-tabs";
 import { Typography } from "@litespace/luna/Typography";
-import { ITutor } from "@litespace/types";
-import React, { useMemo, useState } from "react";
 import { LocalId } from "@litespace/luna/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
-import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
-import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
 
-type Tab = "profile" | "ratings";
+type Tab = "profile" | "settings";
 
-export const TutorTabs: React.FC<{
-  tutor: ITutor.FindTutorInfoApiResponse;
-}> = ({ tutor }) => {
+export const TutorSettingsTabs = () => {
   const intl = useFormatMessage();
   const [tab, setTab] = useState<Tab>("profile");
 
@@ -25,8 +20,8 @@ export const TutorTabs: React.FC<{
         label: "tutor.profile.tabs.profile",
       },
       {
-        value: "ratings",
-        label: "tutor.profile.tabs.reviews",
+        value: "settings",
+        label: "settings.profile.title",
       },
     ];
   }, []);
@@ -75,16 +70,12 @@ export const TutorTabs: React.FC<{
       <AnimatePresence initial={false} mode="wait">
         {tab === "profile" ? (
           <Animate key="profile">
-            <ProfileInfo
-              about={tutor.about}
-              topics={tutor.topics}
-              video={tutor.video}
-            />
+            <div className="p-10">profile</div>
           </Animate>
         ) : null}
-        {tab === "ratings" ? (
-          <Animate key="ratings">
-            <Ratings tutorName={tutor.name} id={tutor.id} />
+        {tab === "settings" ? (
+          <Animate key="settings">
+            <div className="p-10">Settings</div>{" "}
           </Animate>
         ) : null}
       </AnimatePresence>

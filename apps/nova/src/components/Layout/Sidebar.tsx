@@ -14,6 +14,7 @@ import cn from "classnames";
 import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
+import { IUser } from "@litespace/types";
 
 const SidebarItem = ({
   to,
@@ -61,7 +62,7 @@ const SidebarItem = ({
 const Sidebar = () => {
   const intl = useFormatMessage();
   const location = useLocation();
-  const { logout } = useUserContext();
+  const { logout, user } = useUserContext();
 
   const mainPages = useMemo(() => {
     return [
@@ -145,12 +146,21 @@ const Sidebar = () => {
           {intl("sidebar.settings")}
         </Typography>
         <ul className="flex flex-col gap-2">
-          <SidebarItem
-            to={Route.Settings}
-            Icon={Settings}
-            label={intl("sidebar.settings")}
-            active={location.pathname === Route.Settings}
-          />
+          {user ? (
+            <SidebarItem
+              to={
+                user.role === IUser.Role.Student
+                  ? Route.StudentSettings
+                  : Route.TutorSettings
+              }
+              Icon={Settings}
+              label={intl("sidebar.settings")}
+              active={
+                location.pathname === Route.TutorSettings ||
+                location.pathname === Route.StudentSettings
+              }
+            />
+          ) : null}
           <button
             onClick={logout}
             className={cn(
