@@ -25,19 +25,19 @@ type Props = {
    */
   totalLearningTime: number;
   /**
-   * number of tutors
+   * number of students
    */
-  tutorCount: number;
+  studentCount: number;
   loading?: boolean;
   error?: boolean;
   retry?: Void;
 };
 
-export const StudentOverview: React.FC<Props> = ({
+export const TutorOverview: React.FC<Props> = ({
   totalLessonCount,
   completedLessonCount,
   totalLearningTime,
-  tutorCount,
+  studentCount,
   loading,
   error,
   retry,
@@ -45,7 +45,8 @@ export const StudentOverview: React.FC<Props> = ({
   const intl = useFormatMessage();
   const learningTime = useMemo(() => {
     if (totalLearningTime === 0) return "0";
-    return intl("student-dashboard.overview.total-learning-time.unit.minute", {
+
+    return intl("tutor-dashboard.overview.total-learning-time.unit.minute", {
       value: formatNumber(totalLearningTime),
     });
   }, [intl, totalLearningTime]);
@@ -53,10 +54,7 @@ export const StudentOverview: React.FC<Props> = ({
   if (loading)
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
-        <Loader
-          size="medium"
-          text={intl("student-dashboard.overview.loading")}
-        />
+        <Loader size="medium" text={intl("tutor-dashboard.overview.loading")} />
       </div>
     );
 
@@ -65,7 +63,7 @@ export const StudentOverview: React.FC<Props> = ({
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <LoadingError
           size="medium"
-          error={intl("student-dashboard.overview.error")}
+          error={intl("tutor-dashboard.overview.error")}
           retry={retry}
         />
       </div>
@@ -77,27 +75,28 @@ export const StudentOverview: React.FC<Props> = ({
         icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" />}
         value={formatNumber(totalLessonCount)}
         color="brand"
-        title="student-dashboard.overview.total-lessons"
+        title="tutor-dashboard.overview.total-lessons"
       />
+
       <Card
         icon={<Check16X16 className="[&]*:tw-stroke-natural-50" />}
         value={formatNumber(completedLessonCount)}
         color="secondary"
-        title="student-dashboard.overview.completed-lessons"
+        title="tutor-dashboard.overview.completed-lessons"
       />
 
       <Card
         icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
         value={learningTime}
         color="warning"
-        title="student-dashboard.overview.total-learning-time"
+        title="tutor-dashboard.overview.total-learning-time"
       />
 
       <Card
         icon={<People className="[&>*]:tw-stroke-natural-50" />}
-        value={formatNumber(tutorCount)}
+        value={formatNumber(studentCount)}
         color="destructive"
-        title="student-dashboard.overview.teachers"
+        title="tutor-dashboard.overview.students"
       />
     </div>
   );
@@ -165,4 +164,4 @@ export const Card: React.FC<{
   );
 };
 
-export default StudentOverview;
+export default TutorOverview;

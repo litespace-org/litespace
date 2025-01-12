@@ -105,6 +105,13 @@
   "tutor.rating.delete.error": "حدث خطأ أثناء حذف التعليق، برجاء المحاولة مرة أخرى",
   "tutor.rating.edit.error": "حدث خطأ أثناء تعديل التعليق، برجاء المحاولة مرة أخرى",
   "tutor.profile.error": " عذرًا، حدث خطأ أثناء تحميل المحتوى. برجاء المحاولة مرة أخرى",
+  "tutor-dashboard.overview.total-lessons": "اجمالي الحصص",
+  "tutor-dashboard.overview.completed-lessons": "الحصص المكتملة",
+  "tutor-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
+  "tutor-dashboard.overview.students": "عدد الطلاب",
+  "tutor-dashboard.overview.total-learning-time.unit.minute": "{value} د",
+  "tutor-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",
+  "tutor-dashboard.overview.error": "عذرًا، حدث خطأ أثناء تحميل الاحصائيات العامة، برجاء المحاولة مرة أخرى",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
@@ -528,8 +535,14 @@
   "student-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
   "student-dashboard.overview.total-learning-time.unit.minute": "{value} د",
   "student-dashboard.overview.teachers": "عدد المعلمين",
-  "student-dashboard.loading": "برجاء الانتظار... جاري تحميل بيانات لوحتك الرئيسية!",
-  "student-dashboard.error": " عذرًا، حدث خطأ أثناء تحميل الصفحة. برجاء المحاولة مرة أخرى",
+  "student-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",
+  "student-dashboard.overview.error": "عذرًا، حدث خطأ أثناء تحميل الاحصائيات العامة، برجاء المحاولة مرة أخرى",
+  "student-dashboard.chat-summary.loading": "برجاء الانتظار... جاري تحميل المحادثات!",
+  "student-dashboard.chat-summary.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "student-dashboard.upcoming-lessons-summary.loading": "برجاء الانتظار... جاري تحميل الحصص القادمة!",
+  "student-dashboard.upcoming-lessons-summary.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "student-dashboard.past-lessons.loading": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "student-dashboard.past-lessons.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
   "rating.bad": "سئ",
   "rating.accepted": "مقبول",
   "rating.good": "جيد",
