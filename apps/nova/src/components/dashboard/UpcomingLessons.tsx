@@ -22,7 +22,7 @@ function asUpcomingLessons(
         .add(item.lesson.duration, "minutes")
         .toISOString(),
       name: member?.name || null,
-      id: member?.userId || 0,
+      userId: member?.userId || 0,
       imageUrl: member?.image ? asFullAssetUrl(member.image) : null,
       url: Route.Call,
     };
