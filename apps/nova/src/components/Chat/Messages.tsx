@@ -113,6 +113,10 @@ const Messages: React.FC<{
     delete: (payload) =>
       typeof payload === "number" && deleteMessage(payload, room),
   };
+  const typingMessage = useCallback(
+    () => userTypingMessage({ roomId: room }),
+    [room, userTypingMessage]
+  );
 
   const submit = useCallback(
     (text: string) => {
@@ -320,10 +324,7 @@ const Messages: React.FC<{
             </div>
           ) : null}
           <div className="px-4 pt-2 pb-6 mt-3">
-            <SendInput
-              typeMessage={() => userTypingMessage({ roomId: room })}
-              onSubmit={submit}
-            />
+            <SendInput typeMessage={typingMessage} onSubmit={submit} />
           </div>
         </>
       ) : null}

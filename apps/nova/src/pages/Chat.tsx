@@ -1,7 +1,6 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsContainer from "@/components/Chat/RoomsContainer";
 import React, { useCallback, useMemo } from "react";
-import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember } from "@/lib/room";
@@ -44,7 +43,7 @@ const Chat: React.FC = () => {
 
   if (roomMembers.isLoading && !selected.otherMember)
     return (
-      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6">
+      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6 max-w-screen-3xl mx-auto">
         <Typography
           weight="bold"
           element="subtitle-2"
@@ -60,7 +59,7 @@ const Chat: React.FC = () => {
 
   if (roomMembers.isError)
     return (
-      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6">
+      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6 max-w-screen-3xl mx-auto">
         <Typography
           weight="bold"
           element="subtitle-2"
@@ -75,7 +74,7 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
+    <div className="flex flex-row min-h-screen overflow-hidden max-w-screen-3xl mx-auto w-full">
       <RoomsContainer
         usersOnlineMap={usersOnlineMap}
         typingMap={typingMap}

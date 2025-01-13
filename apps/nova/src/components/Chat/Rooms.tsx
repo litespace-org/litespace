@@ -9,6 +9,7 @@ import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
+import { isOnline, isTyping, RoomsMap } from "@/lib/room";
 
 type Query = UseInfiniteQueryResult<
   InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
@@ -19,8 +20,8 @@ const Rooms: React.FC<{
   type: "all" | "pinned";
   query: Query;
   rooms: IRoom.FindUserRoomsApiRecord[] | null;
-  typingMap: Record<number, Record<number, boolean>>;
-  usersOnlineMap: Record<number, Record<number, boolean>>;
+  typingMap: RoomsMap;
+  usersOnlineMap: RoomsMap;
   select: SelectRoom;
   roomId: number | null;
   target: React.RefObject<HTMLDivElement>;
@@ -45,8 +46,6 @@ const Rooms: React.FC<{
 
   if (!user) return null;
 
-  console.log(rooms);
-
   return (
     <div>
       <div className="flex flex-row items-center justify-start gap-2 mb-4">
@@ -68,12 +67,7 @@ const Rooms: React.FC<{
             owner={
               room.latestMessage ? room.latestMessage.userId === user.id : false
             }
-            online={
-              usersOnlineMap[room.roomId] &&
-              usersOnlineMap[room.roomId][room.otherMember.id]
-                ? usersOnlineMap[room.roomId][room.otherMember.id]
-                : room.otherMember.online
-            }
+            online={isOnline(usersOnlineMap, room.roomId, room.otherMember)}
             isPinned={room.settings.pinned}
             isMuted={room.settings.muted}
             userId={room.otherMember.id}
@@ -97,11 +91,7 @@ const Rooms: React.FC<{
               room.latestMessage ? room.latestMessage?.text : "TODO: BIO"
             }
             unreadCount={room.unreadMessagesCount}
-            isTyping={
-              typingMap[room.roomId]
-                ? typingMap[room.roomId][room.otherMember.id]
-                : false
-            }
+            isTyping={isTyping(typingMap, room.roomId, room.otherMember.id)}
             select={() =>
               select({
                 room: room.roomId,

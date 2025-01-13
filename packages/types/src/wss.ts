@@ -177,3 +177,9 @@ export type ServerEventsMap = {
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
   [ServerEvent.UserTyping]: EventCallback<{ roomId: number; userId: number }>;
 };
+
+// Generic types to extract the payload of the events
+export type ServerEventPayload<T extends keyof ServerEventsMap> =
+  ServerEventsMap[T] extends EventCallback<infer P> ? P : never;
+export type ClientEventPayload<T extends keyof ClientEventsMap> =
+  ClientEventsMap[T] extends EventCallback<infer P> ? P : never;

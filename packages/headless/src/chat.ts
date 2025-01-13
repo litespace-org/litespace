@@ -16,6 +16,7 @@ import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
+import { ServerEvent, ServerEventPayload } from "@litespace/types/dist/esm/wss";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -851,57 +852,57 @@ export function useMessages(room: number | null) {
   ]);
 }
 
+type RoomId = number;
+type UserId = number;
+
 export function useChatStatus() {
   const socket = useSocket();
 
   /**
    * A map from rooms to object containing both users in it and showing
    * if they are typing currently or not
-   * {
-   *  roomId: {
-   *    userId: true (user is typing)
-   *  }
-   * }
+   * ```ts
+   * type TypingStaus = boolean; // true in case the user is typing.
+   * type TypingMap = Record<RoomId, Record<UserId, TypingStatus>>;
+   * ```
    */
-  const [typingMap, setTypingMap] = useState<
-    Record<number, Record<number, boolean>>
-  >({});
+  const [typingMap, setTypingMap] = useState<{
+    [roomId: number]: { [userId: number]: boolean };
+  }>({});
 
   /**
    * A map from rooms to object containing both users in it and showing
    * if they are online
-   *    {
-   *  roomId: {
-   *    userId: true (user is online)
-   *  }
-   * }
+   * ```ts
+   * type OnlineStaus = boolean; // true in case the user is typing.
+   * type OnlineMap = Record<RoomId, Record<UserId, OnlineStaus>>;
+   * ```
    */
-  const [usersOnlineMap, setUsersOnlineMap] = useState<
-    Record<number, Record<number, boolean>>
-  >({});
+  const [usersOnlineMap, setUsersOnlineMap] = useState<{
+    [roomId: number]: { [userId: number]: boolean };
+  }>({});
 
   /**
    * object containing timers to remove the typing states from rooms (only if we didn't recieve the
    * UserTyping event from the server)
    */
-  const typingTimouts = useRef<Record<number, Record<number, NodeJS.Timeout>>>(
+  const typingTimeouts = useRef<Record<RoomId, Record<UserId, NodeJS.Timeout>>>(
     {}
   );
 
   const onUserTyping = useCallback(
-    ({ userId, roomId }: Parameters<Wss.ServerEventsMap["UserTyping"]>[0]) => {
-      const userIdTimeout = typingTimouts.current[roomId]?.[userId];
-      if (userIdTimeout) {
-        clearTimeout(userIdTimeout);
-      }
+    ({ userId, roomId }: ServerEventPayload<ServerEvent.UserTyping>) => {
+      const userIdTimeout = typingTimeouts.current[roomId]?.[userId];
+      if (userIdTimeout) clearTimeout(userIdTimeout);
 
       setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: true } }));
 
       const timeout = setTimeout(() => {
         setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: false } }));
       }, 1000);
-      typingTimouts.current[roomId] = {
-        ...typingTimouts.current[roomId],
+
+      typingTimeouts.current[roomId] = {
+        ...typingTimeouts.current[roomId],
         [userId]: timeout,
       };
     },
@@ -913,7 +914,7 @@ export function useChatStatus() {
       online,
       userId,
       roomId,
-    }: Parameters<Wss.ServerEventsMap["UserStatusChanged"]>[0]) =>
+    }: ServerEventPayload<ServerEvent.UserStatusChanged>) =>
       setUsersOnlineMap((prev) => {
         const cloned = structuredClone(prev);
         cloned[roomId] = { ...prev[roomId], [userId]: online };
