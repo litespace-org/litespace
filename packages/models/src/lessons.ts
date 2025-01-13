@@ -56,6 +56,10 @@ type SearchFilter = {
    * Filter only lessons that blogs to the provided rule ids.
    */
   rules?: number[];
+  /**
+   * Filter only lessons that blogs to the provided slot ids.
+   */
+  slots?: number[];
 };
 
 type BaseAggregateParams = SearchFilter & { tx?: Knex.Transaction };
@@ -88,6 +92,7 @@ export class Lessons {
       duration: this.columns.lessons("duration"),
       price: this.columns.lessons("price"),
       rule_id: this.columns.lessons("rule_id"),
+      slot_id: this.columns.lessons("slot_id"),
       session_id: this.columns.lessons("session_id"),
       canceled_by: this.columns.lessons("canceled_by"),
       canceled_at: this.columns.lessons("canceled_at"),
@@ -108,6 +113,7 @@ export class Lessons {
         start: dayjs.utc(payload.start).toDate(),
         duration: payload.duration,
         rule_id: payload.rule,
+        slot_id: payload.slot,
         session_id: payload.session,
         price: payload.price,
         created_at: now,
@@ -134,24 +140,6 @@ export class Lessons {
   }
 
   async cancel({
-    canceledBy,
-    id,
-    tx,
-  }: WithOptionalTx<{
-    id: number;
-    canceledBy: number;
-  }>): Promise<void> {
-    const now = dayjs.utc().toDate();
-    await this.builder(tx)
-      .lessons.update({
-        canceled_by: canceledBy,
-        canceled_at: now,
-        updated_at: now,
-      })
-      .where(this.columns.lessons("id"), id);
-  }
-
-  async cancelBatch({
     canceledBy,
     ids,
     tx,
@@ -254,6 +242,7 @@ export class Lessons {
     after,
     before,
     rules,
+    slots,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
     Paginated<ILesson.Self>
@@ -268,6 +257,7 @@ export class Lessons {
       after,
       before,
       rules,
+      slots,
     });
 
     const total = await countRows(baseBuilder.clone(), {
@@ -487,6 +477,7 @@ export class Lessons {
       after,
       before,
       rules = [],
+      slots = [],
     }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     //! Because of the one-to-many relationship between the lesson and its
@@ -536,6 +527,9 @@ export class Lessons {
     if (!isEmpty(rules))
       builder.whereIn(this.columns.lessons("rule_id"), rules);
 
+    if (!isEmpty(slots))
+      builder.whereIn(this.columns.lessons("slot_id"), slots);
+
     return builder;
   }
 
@@ -546,6 +540,7 @@ export class Lessons {
       duration: row.duration,
       price: row.price,
       ruleId: row.rule_id,
+      slotId: row.slot_id,
       sessionId: row.session_id,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,

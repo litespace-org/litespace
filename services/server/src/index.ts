@@ -83,6 +83,7 @@ app.use("/api/v1/user", routes.user(context));
 app.use("/api/v1/rule", routes.rule(context));
 app.use("/api/v1/lesson", routes.lesson(context));
 app.use("/api/v1/interview", routes.interview);
+app.use("/api/v1/availability-slot", routes.availabilitySlot);
 app.use("/api/v1/rating", routes.rating);
 app.use("/api/v1/chat", routes.chat);
 app.use("/api/v1/plan", routes.plan);

@@ -1,5 +1,5 @@
 import { Api } from "@fixtures/api";
-import { flush } from "@fixtures/db";
+import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -26,7 +26,7 @@ describe("sessions test suite", () => {
   });
 
   beforeEach(async () => {
-    await flush();
+    await db.flush();
     await cache.flush();
 
     tutorApi = await Api.forTutor();
@@ -126,6 +126,7 @@ describe("sessions test suite", () => {
       start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
+      slotId: slot.id,
       tutorId: tutor.user.id,
     });
 
@@ -183,6 +184,7 @@ describe("sessions test suite", () => {
       start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
+      slotId: slot.id,
       tutorId: tutor.user.id,
     });
 

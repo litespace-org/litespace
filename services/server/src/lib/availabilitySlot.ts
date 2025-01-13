@@ -1,4 +1,6 @@
 import { availabilitySlots, interviews, lessons } from "@litespace/models";
+import { asSubSlots } from "@litespace/sol";
+import { IAvailabilitySlot } from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty } from "lodash";
 
@@ -9,7 +11,7 @@ export async function deleteSlots({
 }: {
   currentUserId: number;
   ids: number[];
-  tx?: Knex.Transaction;
+  tx: Knex.Transaction;
 }): Promise<void> {
   if (isEmpty(ids)) return;
 
@@ -19,15 +21,45 @@ export async function deleteSlots({
 
   if (associatesCount <= 0) return await availabilitySlots.delete(ids, tx);
 
-  await lessons.cancelBatch({
-    ids: associatedLessons.list.map((l) => l.id),
-    canceledBy: currentUserId,
-    tx,
+  await Promise.all([
+    lessons.cancel({
+      ids: associatedLessons.list.map((l) => l.id),
+      canceledBy: currentUserId,
+      tx,
+    }),
+
+    interviews.cancel({
+      ids: associatedInterviews.list.map((i) => i.ids.self),
+      canceledBy: currentUserId,
+      tx,
+    }),
+
+    availabilitySlots.markAsDeleted({ ids: ids, tx }),
+  ]);
+}
+
+export async function getSubslots({
+  slotIds,
+  userId,
+  after,
+  before,
+}: {
+  slotIds: number[];
+  userId: number;
+  after: string;
+  before: string;
+}): Promise<IAvailabilitySlot.SubSlot[]> {
+  const paginatedLessons = await lessons.find({
+    users: [userId],
+    slots: slotIds,
+    after,
+    before,
   });
-  await interviews.cancel({
-    ids: associatedInterviews.list.map((i) => i.ids.self),
-    canceledBy: currentUserId,
-    tx,
+
+  const paginatedInterviews = await interviews.find({
+    users: [userId],
+    slots: slotIds,
   });
-  await availabilitySlots.markAsDeleted({ ids: ids, tx });
+
+  return asSubSlots([...paginatedLessons.list, ...paginatedInterviews.list]);
 }

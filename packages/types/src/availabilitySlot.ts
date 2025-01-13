@@ -80,7 +80,7 @@ export type SetAvailabilitySlotsApiPayload = {
 };
 
 // API Responses
-export type FindAvailabilitySlotsApiResponse = Paginated<{
-  slots: Self[];
+export type FindAvailabilitySlotsApiResponse = {
+  slots: Paginated<Self>;
   subslots: SubSlot[];
-}>;
+};

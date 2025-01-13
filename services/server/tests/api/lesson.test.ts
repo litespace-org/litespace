@@ -59,6 +59,7 @@ describe("/api/v1/lesson/", () => {
         await studentApi.atlas.lesson.create({
           start: rule.start,
           ruleId: rule.id,
+          slotId: slot.id,
           duration: 30,
           tutorId: tutor.user.id,
         });
@@ -125,11 +126,18 @@ describe("/api/v1/lesson/", () => {
         end: dayjs.utc().add(10, "days").toISOString(),
       });
 
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
       const lesson = await db.lesson({
         tutor: tutor.id,
         student: student.id,
         timing: "future",
         rule: rule.id,
+        slot: slot.id,
       });
 
       const studentApi = await Api.forStudent();
@@ -151,11 +159,18 @@ describe("/api/v1/lesson/", () => {
         end: dayjs.utc().add(10, "days").toISOString(),
       });
 
+      const slot = await db.slot({
+        userId: tutor.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().add(10, "days").toISOString(),
+      });
+
       const lesson = await db.lesson({
         tutor: tutor.id,
         student: student.user.id,
         timing: "future",
         rule: rule.id,
+        slot: slot.id,
       });
 
       const res = await safe(async () =>

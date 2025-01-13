@@ -10,6 +10,7 @@ import {
   users,
   ratings,
   tutors,
+  availabilitySlots,
 } from "@/index";
 import {
   IInterview,
@@ -20,18 +21,17 @@ import {
   IRating,
   IMessage,
   ISession,
+  IAvailabilitySlot,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
 import { Time } from "@litespace/sol/time";
-import { availabilitySlots } from "@/availabilitySlot";
 import { randomUUID } from "crypto";
 
 export async function flush() {
   await knex.transaction(async (tx) => {
-    await availabilitySlots.builder(tx).del();
     await topics.builder(tx).userTopics.del();
     await topics.builder(tx).topics.del();
     await messages.builder(tx).del();
@@ -44,6 +44,7 @@ export async function flush() {
     await rules.builder(tx).del();
     await ratings.builder(tx).del();
     await tutors.builder(tx).del();
+    await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();
   });
 }
@@ -178,13 +179,18 @@ export async function lesson(
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
       rule: await or.ruleId(payload?.rule),
+      slot: await or.slotId(payload?.slot),
       student,
       tutor,
       tx,
     });
 
     if (payload?.canceled)
-      await lessons.cancel({ canceledBy: tutor, id: data.lesson.id, tx });
+      await lessons.cancel({
+        canceledBy: tutor,
+        ids: [data.lesson.id],
+        tx,
+      });
 
     return data;
   });
@@ -196,6 +202,7 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
     interviewee: await or.tutorId(payload.interviewee),
     session: await or.sessionId("interview"),
     rule: await or.ruleId(payload.rule),
+    slot: await or.slotId(payload.slot),
     start: or.start(payload.start),
   });
 }
@@ -312,7 +319,10 @@ async function makeLessons({
       range(0, canceledFutureLessonCount).map(async (i) => {
         const info = futureLessons[i];
         if (!lesson) throw new Error("invalid future lesson index");
-        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        await lessons.cancel({
+          canceledBy: tutor,
+          ids: [info.lesson.id],
+        });
         return info;
       })
     );
@@ -322,7 +332,10 @@ async function makeLessons({
       range(0, canceledPastLessonCount).map(async (i) => {
         const info = pastLessons[i];
         if (!info) throw new Error("invalid past lesson index");
-        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        await lessons.cancel({
+          canceledBy: tutor,
+          ids: [info.lesson.id],
+        });
         return info;
       })
     );
@@ -464,6 +477,7 @@ export default {
   flush,
   topic,
   rule,
+  slot,
   room: makeRoom,
   rating: makeRating,
   message: makeMessage,

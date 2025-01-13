@@ -2,25 +2,20 @@ import { bad, conflict, forbidden, notfound } from "@/lib/error";
 import { datetime, id, skippablePagination } from "@/validation/utils";
 import { isTutor, isTutorManager, isUser } from "@litespace/auth";
 import { IAvailabilitySlot } from "@litespace/types";
-import {
-  availabilitySlots,
-  interviews,
-  knex,
-  lessons,
-} from "@litespace/models";
+import { availabilitySlots, knex } from "@litespace/models";
 import dayjs from "@/lib/dayjs";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { asSubSlots, isIntersecting } from "@litespace/sol";
+import { isIntersecting } from "@litespace/sol";
 import zod from "zod";
 import { isEmpty } from "lodash";
-import { deleteSlots } from "@/lib/availabilitySlot";
+import { deleteSlots, getSubslots } from "@/lib/availabilitySlot";
+import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findPayload = zod.object({
   userId: id,
   after: datetime,
   before: datetime,
-  slotsOnly: zod.boolean().optional().default(false),
   pagination: skippablePagination.optional(),
 });
 
@@ -50,61 +45,40 @@ async function find(req: Request, res: Response, next: NextFunction) {
   const user = req.user;
   if (!isUser(user)) return next(forbidden());
 
-  const { userId, after, before, slotsOnly, pagination } = findPayload.parse(
-    req.query
-  );
+  const { userId, after, before, pagination } = findPayload.parse(req.query);
 
   const diff = dayjs(before).diff(after, "days");
   if (diff < 0) return next(bad());
+
   const canUseFullFlag =
-    after && before && dayjs.utc(before).diff(after, "days") <= 30;
+    after &&
+    before &&
+    dayjs.utc(before).diff(after, "days") <= MAX_FULL_FLAG_DAYS;
+
+  if (pagination?.full && !canUseFullFlag) return next(bad());
 
   const paginatedSlots = await availabilitySlots.find({
     users: [userId],
     after,
     before,
-    pagination: {
-      page: pagination?.page || 1,
-      size: pagination?.size || 10,
-      full: pagination?.full || !!canUseFullFlag,
-    },
+    pagination,
   });
 
-  // return only-slots only if the user is a tutor
-  if (slotsOnly && (isTutor(user.role) || isTutorManager(user.role))) {
-    const result = {
-      list: [{ slots: paginatedSlots.list, subslots: [] }],
-      total: paginatedSlots.total,
-    };
-    res.status(200).json(result);
-    return;
-  }
-
+  // NOTE: return only-slots only if the user is a tutor
   const slotIds = paginatedSlots.list.map((slot) => slot.id);
-
-  const paginatedLessons = await lessons.find({
-    users: [userId],
-    slots: slotIds,
-    after,
-    before,
-  });
-
-  const userInterviews = await interviews.find({
-    users: [userId],
-    slots: slotIds,
-  });
+  const subslots =
+    isTutor(user) || isTutorManager(user)
+      ? []
+      : await getSubslots({
+          slotIds,
+          userId,
+          after,
+          before,
+        });
 
   const result: IAvailabilitySlot.FindAvailabilitySlotsApiResponse = {
-    list: [
-      {
-        slots: paginatedSlots.list,
-        subslots: asSubSlots([
-          ...paginatedLessons.list,
-          ...userInterviews.list,
-        ]),
-      },
-    ],
-    total: paginatedSlots.total,
+    slots: paginatedSlots,
+    subslots,
   };
 
   res.status(200).json(result);
@@ -146,6 +120,39 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
     if (!isOwner) return forbidden();
 
+    // validations for creates and updates
+    const mySlots = await availabilitySlots.find({
+      users: [user.id],
+      deleted: false,
+      tx,
+    });
+
+    for (const slot of [...creates, ...updates]) {
+      const start = dayjs.utc(slot.start);
+      const end = dayjs.utc(slot.end);
+      // all updates and creates should be in the future
+      if (start.isBefore(dayjs.utc())) {
+        return next(bad());
+      }
+      // and the end date should be after the start
+      if (end.isBefore(start) || end.isSame(start)) {
+        return next(bad());
+      }
+      // check for confliction with existing slots
+      if (!slot.start || !slot.end) continue;
+
+      const intersecting = isIntersecting(
+        {
+          id: 0,
+          start: slot.start,
+          end: slot.end,
+        },
+        mySlots.list
+      );
+
+      if (intersecting) return next(conflict());
+    }
+
     // delete slots
     await deleteSlots({
       currentUserId: user.id,
@@ -165,26 +172,8 @@ async function set(req: Request, res: Response, next: NextFunction) {
       );
     }
 
-    if (isEmpty(creates)) return;
-
-    // check for confliction in creates list
-    const mySlots = await availabilitySlots.find({
-      users: [user.id],
-      deleted: false,
-    });
-    const intersecting = creates.find((create) =>
-      isIntersecting(
-        {
-          id: 0,
-          start: create.start,
-          end: create.end,
-        },
-        mySlots.list
-      )
-    );
-    if (intersecting) return conflict();
-
     // create slots
+    if (isEmpty(creates)) return;
     await availabilitySlots.create(
       creates.map(({ start, end }) => ({
         userId: user.id,

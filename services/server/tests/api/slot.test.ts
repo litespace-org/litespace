@@ -58,16 +58,15 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
       const mock = await genMockData(tutor.id, now);
 
-      const res = await studentApi.atlas.availabilitySlot.find({
+      const { slots, subslots } = await studentApi.atlas.availabilitySlot.find({
         userId: tutor.id,
         after: now.toISOString(),
         before: now.add(2, "days").toISOString(),
         pagination: {},
       });
 
-      const { slots, subslots } = res.list[0];
-      expect(res.total).to.eq(2);
-      expect(slots).to.deep.eq(mock.slots);
+      expect(slots.total).to.eq(2);
+      expect(slots.list).to.deep.eq(mock.slots);
       expect(subslots).to.have.length(
         mock.lessons.length + mock.interviews.length
       );
@@ -119,7 +118,7 @@ describe("/api/v1/availability-slot/", () => {
         slots: [
           {
             action: "create",
-            start: now.toISOString(),
+            start: now.add(1, "hour").toISOString(),
             end: now.add(6, "hours").toISOString(),
           },
         ],
@@ -130,7 +129,7 @@ describe("/api/v1/availability-slot/", () => {
 
       const c1 = {
         userId: tutor.user.id,
-        start: now.toISOString(),
+        start: now.add(1, "hour").toISOString(),
         end: now.add(6, "hours").toISOString(),
       };
       const c2 = {
@@ -152,7 +151,7 @@ describe("/api/v1/availability-slot/", () => {
           slots: [
             {
               action: "create",
-              start: now.toISOString(),
+              start: now.add(1, "hour").toISOString(),
               end: now.add(6, "hours").toISOString(),
             },
           ],
@@ -160,6 +159,44 @@ describe("/api/v1/availability-slot/", () => {
       );
 
       expect(res).to.deep.eq(conflict());
+    });
+
+    it("should respond with bad request if the slot is not in the future", async () => {
+      const tutorApi = await Api.forTutor();
+      const now = dayjs.utc();
+
+      const res = await safe(async () =>
+        tutorApi.atlas.availabilitySlot.set({
+          slots: [
+            {
+              action: "create",
+              start: now.subtract(1, "hour").toISOString(),
+              end: now.add(6, "hours").toISOString(),
+            },
+          ],
+        })
+      );
+
+      expect(res).to.deep.eq(bad());
+    });
+
+    it("should respond with bad request if the slot is not well structured", async () => {
+      const tutorApi = await Api.forTutor();
+      const now = dayjs.utc();
+
+      const res = await safe(async () =>
+        tutorApi.atlas.availabilitySlot.set({
+          slots: [
+            {
+              action: "create",
+              start: now.add(4, "hours").toISOString(),
+              end: now.add(2, "hours").toISOString(),
+            },
+          ],
+        })
+      );
+
+      expect(res).to.deep.eq(bad());
     });
 
     it("should successfully update an existing slot", async () => {

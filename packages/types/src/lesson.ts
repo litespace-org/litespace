@@ -6,6 +6,7 @@ export type Row = {
   duration: number;
   price: number;
   rule_id: number;
+  slot_id: number;
   session_id: ISession.Id;
   canceled_by: number | null;
   canceled_at: Date | null;
@@ -30,6 +31,7 @@ export type Self = {
    */
   price: number;
   ruleId: number;
+  slotId: number;
   sessionId: ISession.Id;
   /**
    * ID of the member who canceled the lesson.
@@ -91,6 +93,7 @@ export type CreatePayload = {
   tutor: number;
   student: number;
   rule: number;
+  slot: number;
   session: ISession.Id;
   /**
    * Lesson price scaled to the power of 2.
@@ -101,6 +104,7 @@ export type CreatePayload = {
 export type CreateApiPayload = {
   tutorId: number;
   ruleId: number;
+  slotId: number;
   start: string;
   duration: Duration;
 };

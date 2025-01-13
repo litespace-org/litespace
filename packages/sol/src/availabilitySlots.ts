@@ -1,7 +1,7 @@
 import { IAvailabilitySlot, IInterview, ILesson } from "@litespace/types";
 import { dayjs } from "@/dayjs";
 import { flatten, orderBy } from "lodash";
-import { INTERVIEW_DURATION } from "./constants";
+import { INTERVIEW_DURATION } from "@/constants";
 
 /**
  * Divide list of slots into sub-slots. It is used whenever a user wants to book a lesson

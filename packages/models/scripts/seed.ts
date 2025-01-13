@@ -17,6 +17,7 @@ import {
   invoices,
   hashPassword,
   topics,
+  availabilitySlots,
 } from "@litespace/models";
 import { IInterview, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
 import dayjs from "dayjs";
@@ -285,8 +286,6 @@ async function main(): Promise<void> {
     monthday: sample(range(1, 31)),
   });
 
-<<<<<<< HEAD
-=======
   // seeding slots
   await availabilitySlots.create(
     addedTutors.map((tutor) => ({
@@ -296,7 +295,6 @@ async function main(): Promise<void> {
     }))
   );
 
->>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.)
   const times = range(0, 24).map((hour) =>
     [hour.toString().padStart(2, "0"), "00"].join(":")
   );
@@ -379,12 +377,13 @@ async function main(): Promise<void> {
         start,
         duration,
         rule: 1,
+        slot: 1,
         tx,
       });
 
       if (sample([0, 1]))
         await lessons.cancel({
-          id: lesson.id,
+          ids: [lesson.id],
           canceledBy: sample([tutorId, student.id]),
           tx,
         });
@@ -432,6 +431,7 @@ async function main(): Promise<void> {
         interviewer: tutorManager.id,
         start: randomStart(),
         rule: rule.id,
+        slot: slot.id,
         tx,
       });
 

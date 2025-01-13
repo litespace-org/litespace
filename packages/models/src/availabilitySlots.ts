@@ -1,13 +1,7 @@
-import { IAvailabilitySlot } from "@litespace/types";
+import { IAvailabilitySlot, IFilter, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 import { first, isEmpty } from "lodash";
-<<<<<<< HEAD:packages/models/src/availabilitySlot.ts
-import { knex, column, WithOptionalTx } from "@/query";
-
-type SearchFilter = {
-  /**
-=======
 import {
   knex,
   column,
@@ -22,7 +16,6 @@ type SearchFilter = {
    */
   slots?: number[];
   /**
->>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.):packages/models/src/availabilitySlots.ts
    * User ids to be included in the search query.
    */
   users?: number[];
@@ -36,11 +29,8 @@ type SearchFilter = {
    * All slots before (or the same as) this date will be included.
    */
   before?: string;
-<<<<<<< HEAD:packages/models/src/availabilitySlot.ts
-=======
   deleted?: boolean;
   pagination?: IFilter.SkippablePagination;
->>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.):packages/models/src/availabilitySlots.ts
 };
 
 export class AvailabilitySlots {
@@ -106,18 +96,17 @@ export class AvailabilitySlots {
   async find({
     tx,
     users,
+    slots,
     after,
     before,
-  }: WithOptionalTx<SearchFilter>): Promise<IAvailabilitySlot.Self[]> {
+    pagination,
+  }: WithOptionalTx<SearchFilter>): Promise<Paginated<IAvailabilitySlot.Self>> {
     const baseBuilder = this.applySearchFilter(this.builder(tx), {
       users,
+      slots,
       after,
       before,
     });
-<<<<<<< HEAD:packages/models/src/availabilitySlot.ts
-    const rows = await baseBuilder.clone().select();
-    return rows.map((row) => this.from(row));
-=======
     const total = await countRows(baseBuilder.clone());
     const rows = await withSkippablePagination(baseBuilder.clone(), pagination);
     return {
@@ -132,7 +121,6 @@ export class AvailabilitySlots {
   ): Promise<IAvailabilitySlot.Self | null> {
     const { list } = await this.find({ slots: [id], tx });
     return first(list) || null;
->>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.):packages/models/src/availabilitySlots.ts
   }
 
   async isOwner({
@@ -151,9 +139,14 @@ export class AvailabilitySlots {
     return count === slots.length;
   }
 
+  /**
+   * NOTE: this function filters out the marked-as-deleted rows
+   */
   async allExist(slots: number[], tx?: Knex.Transaction): Promise<boolean> {
     if (isEmpty(slots)) return true;
-    const builder = this.builder(tx).whereIn(this.column("id"), slots);
+    const builder = this.builder(tx)
+      .where(this.column("deleted"), false)
+      .whereIn(this.column("id"), slots);
     const count = await countRows(builder.clone());
     return Number(count) === slots.length;
   }

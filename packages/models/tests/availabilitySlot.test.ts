@@ -1,5 +1,4 @@
 import { availabilitySlots } from "@/availabilitySlots";
-import { knex } from "@/query";
 import fixtures from "@fixtures/db";
 import { dayjs, nameof, safe } from "@litespace/sol";
 import { expect } from "chai";
@@ -57,8 +56,8 @@ describe("AvailabilitySlots", () => {
       ]);
 
       const res = await availabilitySlots.find({ users: [user1.id, user2.id] });
-      expect(res).to.have.length(3);
-      expect(res).to.deep.eq(slots);
+      expect(res.total).to.eq(3);
+      expect(res.list).to.deep.eq(slots);
     });
     it("should retieve AvailabilitySlot rows between two dates", async () => {
       const user = await fixtures.user({});
@@ -86,8 +85,8 @@ describe("AvailabilitySlots", () => {
         before: slots[1].end,
       });
 
-      expect(res).to.have.length(2);
-      expect(res).to.deep.eq(slots.slice(0, 2));
+      expect(res.total).to.eq(2);
+      expect(res.list).to.deep.eq(slots.slice(0, 2));
     });
   });
 
@@ -135,7 +134,7 @@ describe("AvailabilitySlots", () => {
       await availabilitySlots.delete(created.map((slot) => slot.id));
 
       const res = await availabilitySlots.find({ users: [user.id] });
-      expect(res).to.have.length(0);
+      expect(res.total).to.eql(0);
     });
 
     it("should NOT delete a list of available AvailabilitySlot rows from the database if it has associated lessons/interviews", async () => {
@@ -154,13 +153,6 @@ describe("AvailabilitySlots", () => {
         availabilitySlots.delete(created.map((slot) => slot.id))
       );
       expect(res).to.be.instanceof(Error);
-    });
-
-    it("should throw an error if the ids list is empty", async () => {
-      const res = await safe(async () =>
-        knex.transaction(async (tx) => await availabilitySlots.delete([], tx))
-      );
-      expect(res).to.be.instanceOf(Error);
     });
   });
 });

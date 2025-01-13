@@ -105,14 +105,11 @@ exports.up = (pgm) => {
     duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
     rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
-<<<<<<< HEAD
-=======
     slot_id: {
       type: "SERIAL",
       references: "availability_slots(id)",
       notNull: true,
     },
->>>>>>> 1861159d (add: find and set handlers for availability slots with unit tests.)
     session_id: { type: "VARCHAR(50)", notNull: true, primaryKey: true },
     canceled_by: { type: "INT", references: "users(id)", default: null },
     canceled_at: { type: "TIMESTAMP", default: null },
