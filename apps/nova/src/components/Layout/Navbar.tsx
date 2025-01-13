@@ -13,8 +13,12 @@ const Navbar: React.FC = () => {
 
   return (
     <div
+      style={{
+        boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
+        zIndex: 1,
+      }}
       className={cn(
-        "flex justify-between gap-8 items-center px-6 pt-8 max-w-screen-3xl mx-auto w-full"
+        "flex justify-between gap-8 items-center p-6 max-w-screen-3xl mx-auto w-full"
       )}
     >
       <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />

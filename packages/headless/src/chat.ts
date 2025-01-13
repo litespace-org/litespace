@@ -673,6 +673,15 @@ export function useMessages(room: number | null) {
       fetching: room ? state.fetching[room] : false,
       more,
       onMessage,
+      error: room ? state.errors[room] : undefined,
     };
-  }, [messages, onMessage, room, state.fetching, state.loading, more]);
+  }, [
+    messages,
+    onMessage,
+    room,
+    state.fetching,
+    state.loading,
+    state.errors,
+    more,
+  ]);
 }

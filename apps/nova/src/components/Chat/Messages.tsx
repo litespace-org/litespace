@@ -17,7 +17,7 @@ import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
 import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Loading } from "@litespace/luna/Loading";
+import { Loader, LoadingError } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
 import dayjs from "dayjs";
 import { entries, groupBy } from "lodash";
@@ -27,6 +27,8 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
 import { orUndefined } from "@litespace/sol/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
+import StartNewMessage from "@litespace/assets/StartNewMessage";
+import { HEADER_HEIGHT } from "@/constants/ui";
 
 const Messages: React.FC<{
   room: number | null;
@@ -55,19 +57,29 @@ const Messages: React.FC<{
     fetching,
     onMessage: onMessages,
     more,
+    error,
   } = useMessages(room);
 
-  const scrollDown = useCallback(() => {
+  const onScroll = useCallback(() => {
+    const el = messagesRef.current;
+    if (!el) return;
+    const scrollTop = el.scrollTop + 100;
+    const diff = el.scrollHeight - el.offsetHeight;
+    const scrolled = scrollTop < diff;
+    setUserScolled(scrolled);
+  }, []);
+
+  const resetScroll = useCallback(() => {
     if (messagesRef.current)
       messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
   }, []);
 
   const onMessage: OnMessage = useCallback(
     (action) => {
-      scrollDown();
+      resetScroll();
       onMessages(action);
     },
-    [onMessages, scrollDown]
+    [onMessages, resetScroll]
   );
 
   const { sendMessage, updateMessage, deleteMessage } = useChat(
@@ -114,20 +126,6 @@ const Messages: React.FC<{
     setDeletableMessage(null);
   }, []);
 
-  const onScroll = useCallback(() => {
-    const el = messagesRef.current;
-    if (!el) return;
-    const scrollTop = el.scrollTop + 100;
-    const diff = el.scrollHeight - el.offsetHeight;
-    const scrolled = scrollTop < diff;
-    setUserScolled(scrolled);
-  }, []);
-
-  const resetScroll = useCallback(() => {
-    if (messagesRef.current)
-      messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
-  }, []);
-
   useEffect(() => {
     if (!userScrolled) resetScroll();
   }, [messages, resetScroll, userScrolled]);
@@ -159,16 +157,30 @@ const Messages: React.FC<{
     [intl]
   );
 
+  useEffect(() => {
+    if (!messagesRef.current) return;
+    resetScroll();
+  }, [resetScroll]);
+
+  useEffect(() => {
+    const el = messagesRef.current;
+    if (!el) return;
+    el.scrollTop += 100;
+  }, [messageGroups]);
+
   return (
     <div
-      className={cn(
-        "flex-1 border-r border-border-strong h-full max-h-screen",
-        "flex flex-col"
-      )}
+      style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
+      className="flex-1 border-r border-border-strong flex flex-col"
     >
       {room === null ? <NoSelection /> : null}
 
-      <div className="tw-px-6 tw-pt-8">
+      <div
+        className="tw-px-6 tw-pt-8 bg-natural-50"
+        style={{
+          boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
+        }}
+      >
         <ChatHeader
           {...otherMember}
           openDialog={openDialog}
@@ -188,42 +200,75 @@ const Messages: React.FC<{
             onScroll={onScroll}
           >
             <InView as="div" onChange={more} />
-            <Loading
-              show={loading || fetching}
-              className={cn(
-                loading ? "h-full" : fetching ? "h-full shrink-0" : ""
-              )}
-            />
-
-            {!loading ? (
-              <ul className="flex flex-col gap-4 overflow-auto">
-                {messageGroups.map(({ date, groups }) => {
-                  return (
-                    <div key={date} className="w-full">
-                      <div className="bg-natural-50 rounded-[40px] p-3 mx-auto w-fit shadow-chat-date">
-                        <Typography
-                          element="caption"
-                          className="text-natural-950"
-                        >
-                          {asDisplayDate(date)}
-                        </Typography>
-                      </div>
-
-                      {groups.map((group) => (
-                        <div className="mb-6" key={group.id}>
-                          <ChatMessageGroup
-                            {...group}
-                            deleteMessage={onDelete}
-                            editMessage={onUpdate}
-                            owner={group.sender.userId === user?.id}
-                          />
+            {loading ? (
+              <div className="w-full h-full flex justify-center items-center">
+                <Loader size="large" text={intl("chat.message.loading")} />
+              </div>
+            ) : (
+              <ul className="h-full flex flex-col gap-4 overflow-auto grow">
+                {error && !fetching ? (
+                  <div className="max-w-[192px] mx-auto">
+                    <LoadingError
+                      size="small"
+                      error={intl("chat.message.error")}
+                      retry={more}
+                    />
+                  </div>
+                ) : null}
+                {fetching ? (
+                  <div className="w-full my-4">
+                    <Loader size="small" />
+                  </div>
+                ) : null}
+                {messageGroups.length > 0 ? (
+                  messageGroups.map(({ date, groups }) => {
+                    return (
+                      <div key={date} className="w-full">
+                        <div className="bg-natural-50 rounded-[40px] p-3 mx-auto w-fit shadow-chat-date">
+                          <Typography
+                            element="caption"
+                            className="text-natural-950"
+                          >
+                            {asDisplayDate(date)}
+                          </Typography>
                         </div>
-                      ))}
+
+                        {groups.map((group) => (
+                          <div className="mb-6" key={group.id}>
+                            <ChatMessageGroup
+                              {...group}
+                              deleteMessage={onDelete}
+                              editMessage={onUpdate}
+                              owner={group.sender.userId === user?.id}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="w-full h-full flex flex-col justify-center items-center gap-10">
+                    <div className="flex flex-col gap-2 justify-center items-center">
+                      <Typography
+                        element="subtitle-2"
+                        weight="bold"
+                        className="text-natural-950"
+                      >
+                        {intl("chat.message.no-message")}
+                      </Typography>
+                      <Typography
+                        element="body"
+                        weight="semibold"
+                        className="text-natural-500"
+                      >
+                        {intl("chat.message.start-chat")}
+                      </Typography>
                     </div>
-                  );
-                })}
+                    <StartNewMessage />
+                  </div>
+                )}
               </ul>
-            ) : null}
+            )}
           </div>
 
           <div className="px-4 pt-2 pb-6">
