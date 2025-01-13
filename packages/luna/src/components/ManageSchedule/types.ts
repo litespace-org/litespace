@@ -1,3 +1,5 @@
+export type SlotState = "unchanged" | "updated" | "created" | "removed";
+
 export type Slot = {
   /**
    * 0 incase the slot is still new.
@@ -15,5 +17,6 @@ export type Slot = {
    * The day that the slot belongs to in ISO format.
    */
   day: string;
-  state: "unchanged" | "updated" | "new";
+  state: SlotState;
+  original?: Readonly<{ start: string; end: string }>;
 };

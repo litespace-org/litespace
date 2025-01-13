@@ -66,6 +66,7 @@ export const Select = <T extends string | number>({
     >
       <Trigger
         data-open={open}
+        disabled={disabled}
         className={cn(
           "tw-flex tw-flex-row tw-justify-between tw-items-center",
           "tw-w-full tw-h-14 tw-rounded-lg tw-p-2 tw-transition-colors tw-duration-200",
@@ -73,7 +74,8 @@ export const Select = <T extends string | number>({
           "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-x-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
           "focus:tw-outline-none focus:tw-shadow-ls-x-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
           "tw-bg-natural-50 hover:tw-bg-brand-50",
-          "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
+          "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500",
+          "disabled:tw-cursor-not-allowed"
         )}
       >
         <Value

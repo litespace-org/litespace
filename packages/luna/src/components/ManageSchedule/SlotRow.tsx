@@ -1,95 +1,116 @@
 import { useFormatMessage } from "@/hooks";
-import { Void } from "@litespace/types";
-import React, { useCallback, useMemo, useState } from "react";
+import { IAvailabilitySlot, Void } from "@litespace/types";
+import React, { useMemo } from "react";
 import dayjs from "@/lib/dayjs";
 import Close from "@litespace/assets/Close";
 import AddCircle from "@litespace/assets/AddCircle";
 import { Typography } from "@/components/Typography";
-import { Dayjs } from "dayjs";
 import { Select, SelectList } from "@/components/Select";
+import { AnimatePresence, motion } from "framer-motion";
+import { getSubSlotsBatch, orderSlots } from "@litespace/sol";
 
-function asOptions(start: Dayjs, end: Dayjs): SelectList<string> {
-  const options: SelectList<string> = [];
-  let currentSelection = start;
+const variants = {
+  hidden: { opacity: 0 },
+  visible: { opacity: 1, transition: { duration: 0.3 } },
+};
 
-  while (currentSelection.isBefore(end)) {
-    options.push({
-      label: currentSelection.format("hh:mm a"),
-      value: currentSelection.toISOString(),
-    });
-    currentSelection = currentSelection.add(30, "minutes");
-  }
-
-  options.push({
-    label: currentSelection.format("hh:mm a"),
-    value: currentSelection.toISOString(),
-  });
-
-  return options;
-}
+const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <motion.div
+      variants={variants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const SlotRow: React.FC<{
-  day?: string;
+  freeSubSlots: IAvailabilitySlot.SubSlot[];
   start?: string;
   end?: string;
+  disabled?: boolean;
   remove?: Void;
-  add?: (startOfOptions?: string, endOfOptions?: string) => void;
+  add?: Void;
   onFromChange?: (value: string) => void;
   onToChange?: (value: string) => void;
-}> = ({ day, start, end, remove, add, onFromChange, onToChange }) => {
+}> = ({
+  freeSubSlots,
+  start,
+  end,
+  disabled,
+  remove,
+  add,
+  onFromChange,
+  onToChange,
+}) => {
   const intl = useFormatMessage();
 
-  const [startOfOptions, setStartOfOptions] = useState<string | undefined>(
-    start
-  );
-  const [endOfOptions, setEndOfOptions] = useState<string | undefined>(end);
+  const subslots = useMemo(() => {
+    return orderSlots(getSubSlotsBatch(freeSubSlots, 30), "asc");
+  }, [freeSubSlots]);
 
-  const fromOptions = useMemo(() => {
-    const startOfSelection = dayjs(day);
-    const endOfSelection = endOfOptions
-      ? dayjs(endOfOptions)
-      : startOfSelection.add(1, "day");
+  const earliestStart = useMemo(() => {
+    if (!end) return;
+    const slot = freeSubSlots.find((slot) =>
+      dayjs(end).isBetween(slot.start, slot.end, "ms", "(]")
+    );
+    return slot?.start;
+  }, [end, freeSubSlots]);
 
-    return asOptions(startOfSelection, endOfSelection);
-  }, [day, endOfOptions]);
+  const farthestEnd = useMemo(() => {
+    if (!start) return;
+    const slot = freeSubSlots.find((slot) =>
+      dayjs(start).isBetween(slot.start, slot.end, "ms", "[)")
+    );
+    return slot?.end;
+  }, [freeSubSlots, start]);
 
-  const toOptions = useMemo(() => {
-    const startOfSelection = startOfOptions
-      ? dayjs(startOfOptions)
-      : dayjs(day);
-    const endOfSelection = dayjs(day).endOf("day");
+  const fromOptions: SelectList<string> = useMemo(() => {
+    const all = subslots.map((subslot) => ({
+      label: dayjs(subslot.start).format("hh:mm a"),
+      value: dayjs(subslot.start).toISOString(),
+    }));
+    if (!end) return all;
+    return all.filter((option) => {
+      const value = dayjs(option.value);
+      const afterEarliestStart =
+        !earliestStart ||
+        value.isAfter(earliestStart) ||
+        value.isSame(earliestStart);
+      return value.isBefore(end) && afterEarliestStart;
+    });
+  }, [subslots, end, earliestStart]);
 
-    return asOptions(startOfSelection.add(30, "minutes"), endOfSelection);
-  }, [day, startOfOptions]);
-
-  const handleFromChange = useCallback(
-    (value: string) => {
-      setStartOfOptions(value);
-      if (!onFromChange) return;
-      onFromChange(value);
-    },
-    [onFromChange]
-  );
-
-  const handleToChange = useCallback(
-    (value: string) => {
-      setEndOfOptions(value);
-      if (!onToChange) return;
-      onToChange(value);
-    },
-    [onToChange]
-  );
+  const toOptions: SelectList<string> = useMemo(() => {
+    const all = subslots.map((subslot) => ({
+      label: dayjs(subslot.end).format("hh:mm a"),
+      value: dayjs(subslot.end).toISOString(),
+    }));
+    if (!start) return all;
+    return all.filter((option) => {
+      const value = dayjs(option.value);
+      const beforeFarthestEnd =
+        !farthestEnd ||
+        value.isBefore(farthestEnd) ||
+        value.isSame(farthestEnd);
+      return value.isAfter(start) && beforeFarthestEnd;
+    });
+  }, [farthestEnd, start, subslots]);
 
   return (
     <div className="tw-flex tw-items-center tw-gap-6 tw-w-[400px]">
       <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
         <div className="tw-w-[136px]">
           <Select
-            value={startOfOptions}
+            value={start}
             options={fromOptions}
             showDropdownIcon={false}
             placeholder={intl("placeholders.from")}
-            onChange={handleFromChange}
+            onChange={onFromChange}
+            disabled={disabled}
           />
         </div>
         <Typography
@@ -101,30 +122,34 @@ const SlotRow: React.FC<{
         </Typography>
         <div className="tw-w-[136px]">
           <Select
-            value={endOfOptions}
+            value={end}
             options={toOptions}
             showDropdownIcon={false}
             placeholder={intl("placeholders.to")}
-            onChange={handleToChange}
+            onChange={onToChange}
+            disabled={disabled}
           />
         </div>
       </div>
 
       <div className="tw-flex tw-gap-4">
-        {remove ? (
-          <button type="button" onClick={remove}>
-            <Close />
-          </button>
-        ) : null}
+        <AnimatePresence initial={false}>
+          {remove ? (
+            <Animate key="remove">
+              <button type="button" onClick={remove}>
+                <Close />
+              </button>
+            </Animate>
+          ) : null}
 
-        {add ? (
-          <button
-            type="button"
-            onClick={() => add(startOfOptions, endOfOptions)}
-          >
-            <AddCircle className="tw-w-6 tw-h-6" />
-          </button>
-        ) : null}
+          {add ? (
+            <Animate key="add">
+              <button type="button" onClick={add}>
+                <AddCircle className="tw-w-6 tw-h-6" />
+              </button>
+            </Animate>
+          ) : null}
+        </AnimatePresence>
       </div>
     </div>
   );

@@ -11,7 +11,7 @@ export function getSubSlotsBatch(
   /**
    * list of the slots to be divided.
    */
-  slots: IAvailabilitySlot.Slot[],
+  slots: IAvailabilitySlot.Slot[] | IAvailabilitySlot.SubSlot[],
   /**
    * the duration of each subslot in minutes.
    */
@@ -21,7 +21,7 @@ export function getSubSlotsBatch(
 }
 
 export function getSubSlots(
-  slot: IAvailabilitySlot.Slot,
+  slot: IAvailabilitySlot.Slot | IAvailabilitySlot.SubSlot,
   duration: number
 ): IAvailabilitySlot.SubSlot[] {
   let start = dayjs.utc(slot.start);
@@ -29,7 +29,7 @@ export function getSubSlots(
   const subslots: IAvailabilitySlot.SubSlot[] = [];
   while (end.isBefore(dayjs.utc(slot.end)) || end.isSame(dayjs.utc(slot.end))) {
     subslots.push({
-      parent: slot.id,
+      parent: "id" in slot ? slot.id : slot.parent,
       start: start.toISOString(),
       end: end.toISOString(),
     });
