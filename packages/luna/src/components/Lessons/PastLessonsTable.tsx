@@ -52,7 +52,10 @@ export const PastLessonsTable: React.FC<Props> = ({
   if (loading)
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
-        <Loader size="medium" text={intl("student-dashboard.loading")} />
+        <Loader
+          size="medium"
+          text={intl("student-dashboard.past-lessons.loading")}
+        />
       </div>
     );
 
@@ -61,7 +64,7 @@ export const PastLessonsTable: React.FC<Props> = ({
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <LoadingError
           size="medium"
-          error={intl("student-dashboard.error")}
+          error={intl("student-dashboard.past-lessons.error")}
           retry={retry}
         />
       </div>

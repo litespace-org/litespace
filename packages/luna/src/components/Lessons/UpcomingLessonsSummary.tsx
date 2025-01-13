@@ -80,7 +80,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
           <LoadingError
             size="medium"
-            error={intl("student-dashboard.error")}
+            error={intl("student-dashboard.upcoming-lessons-summary.error")}
             retry={retry}
           />
         </div>
@@ -88,7 +88,10 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
 
       {loading ? (
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
-          <Loader size="medium" text={intl("student-dashboard.loading")} />
+          <Loader
+            size="medium"
+            text={intl("student-dashboard.upcoming-lessons-summary.loading")}
+          />
         </div>
       ) : null}
 
