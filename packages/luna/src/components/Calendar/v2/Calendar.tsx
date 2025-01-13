@@ -1,16 +1,27 @@
 import React from "react";
 import { Dayjs } from "dayjs";
 import { Hours } from "@/components/Calendar/v2/Hours";
-import { WeekHours } from "@/components/Calendar/v2/WeekHours";
-import { HourView } from "@/components/Calendar/v2/types";
+import {
+  AvailabilitySlotProps,
+  HourView,
+  SlotActions,
+} from "@/components/Calendar/v2/types";
 import cn from "classnames";
+import { WeekTable } from "@/components/Calendar/v2/WeekTable";
 
 interface Props {
   date: Dayjs;
   HourView?: HourView;
+  slots?: AvailabilitySlotProps[];
+  slotActions?: SlotActions;
 }
 
-export const Calendar: React.FC<Props> = ({ date, HourView }) => {
+export const Calendar: React.FC<Props> = ({
+  date,
+  HourView,
+  slots,
+  slotActions,
+}) => {
   return (
     <div className="tw-w-full">
       <div
@@ -21,7 +32,12 @@ export const Calendar: React.FC<Props> = ({ date, HourView }) => {
       >
         <Hours day={date} />
         <div className="tw-grid tw-grid-cols-7 tw-w-full tw-rounded-tl-3xl">
-          <WeekHours day={date} HourView={HourView} />
+          <WeekTable
+            day={date}
+            slots={slots}
+            slotActions={slotActions}
+            HourView={HourView}
+          />
         </div>
       </div>
     </div>

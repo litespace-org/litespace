@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { range } from "lodash";
 import {
+  HOUR_HEIGHT,
   HOURS_IN_DAY,
   MINUTES_IN_HOUR,
 } from "@/components/Calendar/v2/constants";
@@ -14,7 +15,7 @@ export const Hours: React.FC<{
   const hours: Dayjs[] = useMemo(() => {
     const start = day.startOf("day");
     // skip 12am (first hour of the day) because of the design
-    return range(1, HOURS_IN_DAY).map((hour) => start.add(hour, "hour"));
+    return range(1, HOURS_IN_DAY + 1).map((hour) => start.add(hour, "hour"));
   }, [day]);
 
   const timezone = useMemo(() => {
@@ -38,11 +39,16 @@ export const Hours: React.FC<{
       </div>
 
       <ul className="tw-flex tw-flex-col">
-        {hours.map((hour) => {
+        {hours.map((hour, i) => {
           const display = hour.format("h a");
           const key = hour.toISOString();
+          const last = i === hours.length - 1;
           return (
-            <li className="tw-px-5 tw-h-[5.5rem] tw-relative" key={key}>
+            <li
+              key={key}
+              className="tw-px-5 tw-relative"
+              style={{ height: HOUR_HEIGHT }}
+            >
               <Typography
                 className={cn(
                   "tw-text-natural-700 tw-text-center",
@@ -51,7 +57,7 @@ export const Hours: React.FC<{
                 element="body"
                 weight="regular"
               >
-                {display}
+                {!last ? display : null}
               </Typography>
             </li>
           );

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Lessons } from "@/components/Calendar/v2/Events/Lessons";
+import { Lessons } from "@/components/Calendar/v2/Events/Lessons/Lessons";
 import { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "@/lib/dayjs";
 
@@ -30,7 +30,7 @@ export const SingleLessonWithAvatar: StoryObj<Component> = {
           image: "https://picsum.photos/200",
           name: faker.person.fullName(),
         },
-        start: dayjs().startOf("hour").toString(),
+        start: dayjs().startOf("hour").toISOString(),
         end: dayjs().startOf("hour").add(30, "minute").toISOString(),
         canceled: false,
       },
