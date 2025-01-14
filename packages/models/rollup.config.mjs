@@ -4,6 +4,7 @@ import typescript from "@rollup/plugin-typescript";
 import alias from "@rollup/plugin-alias";
 import { dts } from "rollup-plugin-dts";
 import json from "@rollup/plugin-json";
+// eslint-disable-next-line no-restricted-imports
 import pkg from "./package.json" assert { type: "json" };
 import path from "node:path";
 

@@ -45,7 +45,12 @@ export class ClientSocket {
     data: Parameters<Wss.ClientEventsMap[T]>[0]
   ): Promise<Wss.AcknowledgePayload> {
     return new Promise((resolve, _) => {
-      this.client.emit(event, data as any, (ack) => ack && resolve(ack));
+      this.client.emit(
+        event,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data as any,
+        (ack) => ack && resolve(ack)
+      );
       setTimeout(() => resolve({ code: Wss.AcknowledgeCode.Ok }), 2_000);
     });
   }
@@ -57,9 +62,10 @@ export class ClientSocket {
    */
   async wait<T extends keyof Wss.ServerEventsMap>(
     event: T
+    // todo: use `EventPayload` from `Wss.EventPayload`
   ): Promise<Parameters<Wss.ServerEventsMap[T]>[0]> {
     return new Promise((resolve, reject) => {
-      // @ts-ignore
+      // @ts-expect-error ignored due to the complex type of the events map.
       this.client.on(event, resolve);
       setTimeout(() => reject(new Error("TIMEOUT")), 2_000);
     });

@@ -216,13 +216,13 @@ export const LessonCard: React.FC<Props> = ({
     if (!canceled) return onJoin;
     if (currentUserRole === "student") return onRebook;
     else return onSendMsg;
-  }, [canceled, onJoin, onRebook, onSendMsg]);
+  }, [canceled, currentUserRole, onJoin, onRebook, onSendMsg]);
 
   const mainBtnText = useMemo(() => {
     if (!canceled) return intl("lessons.button.join");
     if (currentUserRole === "student") return intl("lessons.button.rebook");
     else return intl("lessons.button.send-message");
-  }, [canceled, currentUserRole]);
+  }, [canceled, currentUserRole, intl]);
 
   const button = (
     <Button

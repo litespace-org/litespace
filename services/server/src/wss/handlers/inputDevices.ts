@@ -3,8 +3,8 @@ import { isGhost } from "@litespace/auth";
 import { Wss } from "@litespace/types";
 import { boolean, sessionId } from "@/validation/utils";
 import { WssHandler } from "@/wss/handlers/base";
+import { asSessionRoomId } from "@/wss/utils";
 import zod from "zod";
-import { asSessionRoomId } from "../utils";
 
 const toggleCameraPayload = zod.object({ session: sessionId, camera: boolean });
 const toggleMicPayload = zod.object({ session: sessionId, mic: boolean });

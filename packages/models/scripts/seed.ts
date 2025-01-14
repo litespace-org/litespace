@@ -25,7 +25,7 @@ import { calculateLessonPrice } from "@litespace/sol/lesson";
 import { logger } from "@litespace/sol/log";
 import { price } from "@litespace/sol/value";
 import { IDate, IRule } from "@litespace/types";
-import { first, random, range, sample } from "lodash";
+import { first, range, sample } from "lodash";
 import { Knex } from "knex";
 import utc from "dayjs/plugin/utc";
 import { faker } from "@faker-js/faker/locale/ar";
@@ -263,7 +263,9 @@ async function main(): Promise<void> {
         const ar = faker.lorem.words(2);
         const en = fakerEn.lorem.words(2);
         await topics.create({ name: { ar, en } });
-      } catch (_) {} // ignore errors (duplicate topics)
+      } catch (_) {
+        // ignore errors (duplicate topics)
+      }
     })
   );
 
@@ -330,24 +332,6 @@ async function main(): Promise<void> {
     IWithdrawMethod.Type.Bank,
     IWithdrawMethod.Type.Instapay,
   ];
-
-  function randomWithdrawMethod() {
-    const method = sample(methods)!;
-    return {
-      amount: random(1000_00, 100_000_00),
-      bank: method === IWithdrawMethod.Type.Bank ? "cib" : null,
-      method,
-      receiver:
-        method === IWithdrawMethod.Type.Bank
-          ? random(1_000_000_000, 5_000_000_000).toString()
-          : method === IWithdrawMethod.Type.Wallet
-            ? [
-                sample(["015", "010", "011"])!,
-                random(1_000_000_0, 9_999_999_9),
-              ].join("")
-            : Math.random().toString(36).slice(2),
-    };
-  }
 
   async function createRandomLesson({
     tutorId,

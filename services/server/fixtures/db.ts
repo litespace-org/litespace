@@ -414,10 +414,7 @@ async function makeRoom(payload?: [number, number]) {
   });
 }
 
-async function makeMessage(
-  tx: Knex.Transaction,
-  payload?: Partial<IMessage.CreatePayload>
-) {
+async function makeMessage(payload?: Partial<IMessage.CreatePayload>) {
   const roomId: number = await or.roomId(payload?.roomId);
   const userId: number =
     payload?.userId ||

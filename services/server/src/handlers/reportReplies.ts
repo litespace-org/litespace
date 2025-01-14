@@ -58,7 +58,7 @@ async function findByReportId(req: Request, res: Response) {
   res.status(200).json(replies);
 }
 
-async function findAll(req: Request, res: Response) {
+async function findAll(_req: Request, res: Response) {
   const list = await reports.findAll();
   res.status(200).json(list);
 }

@@ -2,7 +2,7 @@ import { flush } from "@fixtures/shared";
 import { Api, unexpectedApiSuccess } from "@fixtures/api";
 import { expect } from "chai";
 import db from "@fixtures/db";
-import { knex, messages, rooms } from "@litespace/models";
+import { messages, rooms } from "@litespace/models";
 import { range } from "lodash";
 import { ClientSocket } from "@fixtures/wss";
 import { Wss } from "@litespace/types";
@@ -79,18 +79,18 @@ describe("/api/v1/chat", () => {
       const [firstMember, secondMember] = await rooms.findRoomMembers({
         roomIds: [room],
       });
-      expect(firstMember.muted).to.be.false;
-      expect(firstMember.pinned).to.be.false;
-      expect(secondMember.muted).to.be.false;
-      expect(secondMember.pinned).to.be.false;
+      expect(firstMember.muted).to.be.eq(false);
+      expect(firstMember.pinned).to.be.eq(false);
+      expect(secondMember.muted).to.be.eq(false);
+      expect(secondMember.pinned).to.be.eq(false);
 
       const updated = await studentApi.atlas.chat.updateRoom(room, {
         pinned: true,
         muted: true,
       });
 
-      expect(updated.muted).to.be.true;
-      expect(updated.pinned).to.be.true;
+      expect(updated.muted).to.be.eq(true);
+      expect(updated.pinned).to.be.eq(true);
     });
   });
 });
@@ -185,13 +185,11 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
 
       const room = await db.room([tutor.user.id, student.user.id]);
 
-      await knex.transaction(async (tx) =>
-        db.message(tx, {
-          roomId: room,
-          userId: tutor.user.id,
-          text: `Hello, ${name}`,
-        })
-      );
+      db.message({
+        roomId: room,
+        userId: tutor.user.id,
+        text: `Hello, ${name}`,
+      });
     }
 
     const tests = [

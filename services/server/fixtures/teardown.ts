@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import { down } from "./shared";
 import { knex } from "@litespace/models";
 

@@ -19,7 +19,8 @@
     "reseed": "pnpm migrate down && pnpm migrate up && pnpm seed",
     "test": "jest --runInBand --detectOpenHandles --forceExit",
     "test:local": "env-cmd -f .env.test pnpm run test",
-    "test:ci": "env-cmd -f .env.test.ci pnpm run test"
+    "test:ci": "env-cmd -f .env.test.ci pnpm run test",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
   },
   "devDependencies": {
     "@litespace/models": "workspace:^",
@@ -33,6 +34,12 @@
     "@rollup/plugin-typescript": "^11.1.6",
     "@types/chai": "^4.3.16",
     "@types/jest": "^29.5.12",
+    "@eslint/compat": "^1.2.2",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "eslint": "^9.14.0",
     "babel-jest": "^29.7.0",
     "chai": "^5.1.1",
     "colors": "^1.4.0",
@@ -47,6 +54,7 @@
     "ts-jest": "^29.2.4",
     "ts-node": "^10.9.2",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^8.0.1",
     "vite-node": "^2.1.2",
     "aripsum": "^0.2.0",
     "lodash": "^4.17.21",

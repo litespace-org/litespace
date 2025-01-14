@@ -19,7 +19,8 @@
     "docker": "docker compose up -d",
     "docker:linux": "sudo docker compose up -d",
     "check": "tsc --noEmit",
-    "wait": "wait-on tcp:8080"
+    "wait": "wait-on tcp:8080",
+    "lint": "eslint . --report-unused-disable-directives --max-warnings 0"
   },
   "devDependencies": {
     "@babel/core": "^7.24.9",
@@ -42,6 +43,12 @@
     "@types/pg": "^8.11.6",
     "@types/pg-format": "^1.0.5",
     "@types/pidusage": "^2.0.5",
+    "@eslint/compat": "^1.2.2",
+    "@eslint/eslintrc": "^3.1.0",
+    "@eslint/js": "^9.9.0",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "eslint": "^9.14.0",
     "babel-jest": "^29.7.0",
     "chai": "^5.1.1",
     "env-cmd": "^10.1.0",
@@ -54,6 +61,7 @@
     "tsc-alias": "^1.8.10",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.4.5",
+    "typescript-eslint": "^8.0.1",
     "wait-on": "^8.0.1"
   },
   "dependencies": {

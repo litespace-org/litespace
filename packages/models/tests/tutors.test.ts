@@ -7,7 +7,6 @@ import { dayjs, nameof } from "@litespace/sol";
 import { IUser } from "@litespace/types";
 import { first, range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";
-import { knex } from "@/query";
 
 const mockUser = {
   id: 0,

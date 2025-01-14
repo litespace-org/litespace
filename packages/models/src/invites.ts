@@ -1,6 +1,6 @@
 import { IFilter, IInvite, Paginated } from "@litespace/types";
 import { column, countRows, knex, withPagination } from "@/query";
-import { first, omit } from "lodash";
+import { first } from "lodash";
 import { asAttributesQuery, mapAttributesQuery } from "@/lib/query";
 import { Knex } from "knex";
 

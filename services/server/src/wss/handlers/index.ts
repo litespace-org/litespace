@@ -4,7 +4,7 @@ import { IUser } from "@litespace/types";
 import { Session } from "@/wss/handlers/session";
 import { Connection } from "@/wss/handlers/connection";
 import { Messages } from "@/wss/handlers/message";
-import { InputDevices } from "./inputDevices";
+import { InputDevices } from "@/wss/handlers/inputDevices";
 
 export class WssHandlers {
   public readonly connection: Connection;

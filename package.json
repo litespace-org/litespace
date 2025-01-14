@@ -40,12 +40,7 @@
     "deploy:luna:vercel": "pnpm --filter @litespace/luna deploy:vercel",
     "deploy:nebula:vercel": "pnpm --filter @litespace/nebula deploy:vercel",
     "deploy:dashboard:vercel": "pnpm --filter @litespace/dashboard deploy:vercel",
-    "lint:nova": "pnpm --filter @litespace/nova lint",
-    "lint:mobile": "pnpm --filter @litespace/mobile lint",
-    "lint:nebula": "pnpm --filter @litespace/nebula lint",
-    "lint:dashboard": "pnpm --filter @litespace/dashboard lint",
-    "lint:headless": "pnpm --filter @litespace/headless lint",
-    "lint:all": "pnpm lint:headless && pnpm lint:nova && pnpm lint:mobile && pnpm lint:nebula && pnpm lint:dashboard",
+    "lint:all": "pnpm luna lint &&  pnpm headless lint && pnpm models lint && pnpm nova lint && pnpm mobile lint && pnpm nebula lint && pnpm dashboard lint && pnpm run server lint",
     "check:all": "pnpm atlas check && pnpm auth check && pnpm emails check && pnpm headless check && pnpm luna check && pnpm models check && pnpm sol check && pnpm types check",
     "storybook": "pnpm --filter @litespace/luna storybook",
     "vercel": "env-cmd vite-node scripts/vercel.ts",
@@ -71,6 +66,8 @@
     "types": "pnpm --filter @litespace/types",
     "server": "pnpm --filter @litespace/server",
     "nova": "pnpm --filter @litespace/nova",
+    "mobile": "pnpm --filter @litespace/mobile",
+    "nebula": "pnpm --filter @litespace/nebula",
     "dashboard": "pnpm --filter @litespace/dashboard"
   },
   "devDependencies": {

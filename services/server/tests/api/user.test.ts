@@ -7,7 +7,7 @@ import { safe } from "@litespace/sol/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
-import { knex, tutors, users } from "@litespace/models";
+import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
@@ -220,7 +220,7 @@ describe("/api/v1/user/", () => {
           },
         ];
 
-        for (let data of mockData) {
+        for (const data of mockData) {
           const newTutor = await db.tutor({ name: data.name });
           await users.update(newTutor.id, {
             verified: true,
