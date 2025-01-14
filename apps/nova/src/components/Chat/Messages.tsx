@@ -100,8 +100,10 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage, userTypingMessage } =
-    useChat(onMessage, orUndefined(user?.id));
+  const { sendMessage, updateMessage, deleteMessage, ackUserTyping } = useChat(
+    onMessage,
+    orUndefined(user?.id)
+  );
 
   const retryFnMap: RetryFnMap = {
     send: (payload) =>
@@ -114,8 +116,8 @@ const Messages: React.FC<{
       typeof payload === "number" && deleteMessage(payload, room),
   };
   const typingMessage = useCallback(
-    () => userTypingMessage({ roomId: room }),
-    [room, userTypingMessage]
+    () => ackUserTyping({ roomId: room }),
+    [room, ackUserTyping]
   );
 
   const submit = useCallback(
@@ -320,11 +322,16 @@ const Messages: React.FC<{
           </div>
           {isTyping ? (
             <div className="px-6">
-              <UserTyping {...otherMember} imageUrl={otherMember.image} />
+              <UserTyping
+                id={otherMember.id}
+                name={otherMember.name}
+                gender={otherMember.gender}
+                imageUrl={otherMember.image}
+              />
             </div>
           ) : null}
           <div className="px-4 pt-2 pb-6 mt-3">
-            <SendInput typeMessage={typingMessage} onSubmit={submit} />
+            <SendInput typingMessage={typingMessage} onSubmit={submit} />
           </div>
         </>
       ) : null}

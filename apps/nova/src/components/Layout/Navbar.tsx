@@ -11,19 +11,17 @@ const Navbar: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="">
-      <div className="flex justify-between gap-8 shadow-app-navbar w-full items-center p-6 max-w-screen-3xl mx-auto z-navbar">
-        <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />
-        <div className="w-[386px]">
-          <SearchInput />
-        </div>
-        <ProfileInfo
-          imageUrl={user.image}
-          name={user.name}
-          email={user.email}
-          id={user.id}
-        />
+    <div className="flex justify-between gap-8 shadow-app-navbar w-full items-center p-6 max-w-screen-3xl mx-auto z-navbar">
+      <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />
+      <div className="w-[386px]">
+        <SearchInput />
       </div>
+      <ProfileInfo
+        imageUrl={user.image}
+        name={user.name}
+        email={user.email}
+        id={user.id}
+      />
     </div>
   );
 };

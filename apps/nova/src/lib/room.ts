@@ -1,3 +1,4 @@
+import { RoomsMap } from "@litespace/headless/chat";
 import { IRoom, IUser } from "@litespace/types";
 
 type OtherMember = {
@@ -9,8 +10,6 @@ type OtherMember = {
   online: boolean;
   gender: IUser.Gender | null;
 };
-
-export type RoomsMap = { [roomId: number]: { [userId: number]: boolean } };
 
 export function asOtherMember(
   currentUserId?: number,
@@ -35,11 +34,13 @@ export function isOnline(
   roomId: number,
   otherMember: OtherMember
 ): boolean {
-  if (map[roomId] && map[roomId][otherMember.id])
-    return map[roomId][otherMember.id];
-  return otherMember.online;
+  return map[roomId]?.[otherMember.id] || otherMember.online;
 }
 
-export function isTyping(map: RoomsMap, roomId: number, otherMemberId: number) {
-  return map[roomId] ? map[roomId][otherMemberId] : false;
+export function isTyping(
+  map: RoomsMap,
+  roomId: number,
+  otherMemberId: number
+): boolean {
+  return map[roomId]?.[otherMemberId] || false;
 }

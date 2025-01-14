@@ -9,7 +9,8 @@ import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
-import { isOnline, isTyping, RoomsMap } from "@/lib/room";
+import { isOnline, isTyping } from "@/lib/room";
+import { RoomsMap } from "@litespace/headless/chat";
 
 type Query = UseInfiniteQueryResult<
   InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,

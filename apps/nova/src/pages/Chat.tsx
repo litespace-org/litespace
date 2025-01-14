@@ -23,18 +23,18 @@ const Chat: React.FC = () => {
 
   const isCurrentRoomTyping = useMemo(() => {
     if (!selected.room || !otherMember) return false;
-    if (!typingMap[selected.room]) return false;
-    return typingMap[selected.room][otherMember.id];
+    if (!typingMap) return false;
+    return !!typingMap[selected.room]?.[otherMember.id];
   }, [selected.room, otherMember, typingMap]);
 
   const isOtherMemberOnline = useMemo(() => {
     if (!selected.room || !otherMember) return false;
     if (
       !usersOnlineMap[selected.room] ||
-      !usersOnlineMap[selected.room][otherMember.id]
+      !usersOnlineMap[selected.room]?.[otherMember.id]
     )
       return otherMember.online;
-    return !!usersOnlineMap[selected.room][otherMember.id];
+    return !!usersOnlineMap[selected.room]?.[otherMember.id];
   }, [selected.room, otherMember, usersOnlineMap]);
 
   const retry = useCallback(() => {

@@ -17,18 +17,18 @@ export const SendInput: React.FC<{
   initialMessage?: InitialMessage;
   onSubmit: (value: string) => void;
   /**
-   * wss event fired when a user is typing
+   * wss event fired when the user is typing
    */
-  typeMessage?: Void;
-}> = ({ initialMessage, onSubmit, typeMessage }) => {
+  typingMessage?: Void;
+}> = ({ initialMessage, onSubmit, typingMessage }) => {
   const [value, setValue] = useState<string>(initialMessage?.text || "");
   const intl = useFormatMessage();
 
   const throttledTyping = useMemo(() => {
     return throttle(() => {
-      if (typeMessage) typeMessage();
+      if (typingMessage) typingMessage();
     }, 750);
-  }, [typeMessage]);
+  }, [typingMessage]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
@@ -44,15 +44,15 @@ export const SendInput: React.FC<{
     onSubmit(value);
   }, [onSubmit, value]);
 
-  const handleSubmitByEnter = useCallback(
+  const onKeyDown = useCallback(
     (e: KeyboardEvent) => e.key === "Enter" && handleSubmit(),
     [handleSubmit]
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", handleSubmitByEnter);
-    return () => document.removeEventListener("keydown", handleSubmitByEnter);
-  }, [handleSubmitByEnter]);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onKeyDown]);
 
   return (
     <Input

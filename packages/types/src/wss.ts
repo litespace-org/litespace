@@ -179,7 +179,12 @@ export type ServerEventsMap = {
 };
 
 // Generic types to extract the payload of the events
-export type ServerEventPayload<T extends keyof ServerEventsMap> =
-  ServerEventsMap[T] extends EventCallback<infer P> ? P : never;
-export type ClientEventPayload<T extends keyof ClientEventsMap> =
-  ClientEventsMap[T] extends EventCallback<infer P> ? P : never;
+type EventCallbackPayload<T> = T extends EventCallback<infer P> ? P : never;
+
+export type EventPayload<
+  T extends keyof ClientEventsMap | keyof ServerEventsMap,
+> = T extends keyof ClientEventsMap
+  ? EventCallbackPayload<ClientEventsMap[T]>
+  : T extends keyof ServerEventsMap
+    ? EventCallbackPayload<ServerEventsMap[T]>
+    : never;

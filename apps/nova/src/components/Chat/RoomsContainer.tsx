@@ -8,12 +8,13 @@ import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useRoomManager } from "@/hooks/chat";
+import { RoomsMap } from "@litespace/headless/chat";
 
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
-  typingMap: Record<number, Record<number, boolean>>;
-  usersOnlineMap: Record<number, Record<number, boolean>>;
+  typingMap: RoomsMap;
+  usersOnlineMap: RoomsMap;
 }> = ({ select, typingMap, usersOnlineMap, selected: { room: roomId } }) => {
   const intl = useFormatMessage();
   const { rooms, keyword, update } = useRoomManager();

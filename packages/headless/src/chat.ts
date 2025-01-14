@@ -16,7 +16,6 @@ import { MutationKey, QueryKey } from "@/constants";
 import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
-import { ServerEvent, ServerEventPayload } from "@litespace/types/dist/esm/wss";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -66,6 +65,7 @@ type MessageStreamAction =
       };
     };
 
+type UserId = number;
 type RoomId = number;
 type RefId = string;
 type MessageId = number;
@@ -339,7 +339,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     [socket, onMessage]
   );
 
-  const userTypingMessage = useCallback(
+  const ackUserTyping = useCallback(
     ({ roomId }: { roomId: number }) => {
       socket?.emit(Wss.ClientEvent.UserTyping, { roomId });
     },
@@ -401,7 +401,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     sendMessage,
     deleteMessage,
     updateMessage,
-    userTypingMessage,
+    ackUserTyping,
   };
 }
 
@@ -852,8 +852,9 @@ export function useMessages(room: number | null) {
   ]);
 }
 
-type RoomId = number;
-type UserId = number;
+export type RoomsMap = Partial<{
+  [roomId: number]: { [userId: number]: boolean };
+}>;
 
 export function useChatStatus() {
   const socket = useSocket();
@@ -866,9 +867,7 @@ export function useChatStatus() {
    * type TypingMap = Record<RoomId, Record<UserId, TypingStatus>>;
    * ```
    */
-  const [typingMap, setTypingMap] = useState<{
-    [roomId: number]: { [userId: number]: boolean };
-  }>({});
+  const [typingMap, setTypingMap] = useState<RoomsMap>({});
 
   /**
    * A map from rooms to object containing both users in it and showing
@@ -878,9 +877,7 @@ export function useChatStatus() {
    * type OnlineMap = Record<RoomId, Record<UserId, OnlineStaus>>;
    * ```
    */
-  const [usersOnlineMap, setUsersOnlineMap] = useState<{
-    [roomId: number]: { [userId: number]: boolean };
-  }>({});
+  const [usersOnlineMap, setUsersOnlineMap] = useState<RoomsMap>({});
 
   /**
    * object containing timers to remove the typing states from rooms (only if we didn't recieve the
@@ -891,7 +888,7 @@ export function useChatStatus() {
   );
 
   const onUserTyping = useCallback(
-    ({ userId, roomId }: ServerEventPayload<ServerEvent.UserTyping>) => {
+    ({ userId, roomId }: Wss.EventPayload<Wss.ServerEvent.UserTyping>) => {
       const userIdTimeout = typingTimeouts.current[roomId]?.[userId];
       if (userIdTimeout) clearTimeout(userIdTimeout);
 
@@ -914,10 +911,10 @@ export function useChatStatus() {
       online,
       userId,
       roomId,
-    }: ServerEventPayload<ServerEvent.UserStatusChanged>) =>
+    }: Wss.EventPayload<Wss.ServerEvent.UserStatusChanged>) =>
       setUsersOnlineMap((prev) => {
         const cloned = structuredClone(prev);
-        cloned[roomId] = { ...prev[roomId], [userId]: online };
+        cloned[roomId] = { ...cloned[roomId], [userId]: online };
         return cloned;
       }),
     []
