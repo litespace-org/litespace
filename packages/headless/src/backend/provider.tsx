@@ -13,21 +13,24 @@ export const BackendProvider: React.FC<{
     cache.load(CacheKey.AuthToken)
   );
 
-  const setAuthToken = useCallback((token: AuthToken) => {
-    setToken(token);
-    cache.save(CacheKey.AuthToken, token);
-  }, []);
+  const setAuthToken = useCallback(
+    (token: AuthToken, remember: boolean = true) => {
+      setToken(token);
+      if (remember) cache.save(CacheKey.AuthToken, token);
+    },
+    []
+  );
 
   const setBearerToken = useCallback(
-    (value: string) => {
-      setAuthToken({ type: TokenType.Bearer, value });
+    (value: string, remember: boolean = true) => {
+      setAuthToken({ type: TokenType.Bearer, value }, remember);
     },
     [setAuthToken]
   );
 
   const setBasicToken = useCallback(
-    (value: string) => {
-      setAuthToken({ type: TokenType.Basic, value });
+    (value: string, remember: boolean = true) => {
+      setAuthToken({ type: TokenType.Basic, value }, remember);
     },
     [setAuthToken]
   );

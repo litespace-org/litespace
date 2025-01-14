@@ -5,9 +5,9 @@ import React, { useContext } from "react";
 export type Context = {
   backend: Backend;
   token: AuthToken | null;
-  setAuthToken(token: AuthToken): void;
-  setBearerToken(token: string): void;
-  setBasicToken(token: string): void;
+  setAuthToken(token: AuthToken, remember?: boolean): void;
+  setBearerToken(token: string, remember?: boolean): void;
+  setBasicToken(token: string, remember?: boolean): void;
   removeToken: Void;
 };
 

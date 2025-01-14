@@ -12,6 +12,7 @@ export type Context = {
     user?: IUser.Self;
     meta?: ITutor.Self;
     token?: string;
+    remember?: boolean;
   }) => void;
   logout: Void;
 };
