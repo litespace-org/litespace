@@ -8,6 +8,7 @@ import { Button } from "@/components/Button";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
 import { Loader, LoadingError } from "@/components/Loading";
+import cn from "classnames";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -19,6 +20,7 @@ export const TutorProfileCard: React.FC<{
   studentCount: number;
   lessonCount: number;
   avgRating: number;
+  variant?: "small" | "large";
   onBook?: Void;
   loading?: boolean;
   error?: boolean;
@@ -31,6 +33,7 @@ export const TutorProfileCard: React.FC<{
   studentCount,
   lessonCount,
   avgRating,
+  variant = "large",
   onBook,
   loading,
   error,
@@ -57,8 +60,18 @@ export const TutorProfileCard: React.FC<{
     );
 
   return (
-    <div className="tw-flex tw-gap-10 tw-items-center tw-p-10">
-      <div className="tw-w-[242px] tw-aspect-square tw-rounded-full tw-overflow-hidden">
+    <div
+      className={cn("tw-flex tw-items-center", {
+        "tw-gap-10 tw-p-10": variant === "large",
+        "tw-gap-4": variant === "small",
+      })}
+    >
+      <div
+        className={cn("tw-aspect-square tw-rounded-full tw-overflow-hidden", {
+          "tw-w-[242px]": variant === "large",
+          "tw-w-[174px]": variant === "small",
+        })}
+      >
         <Avatar
           src={orUndefined(image)}
           alt={orUndefined(name)}
@@ -66,7 +79,12 @@ export const TutorProfileCard: React.FC<{
         />
       </div>
       <div>
-        <div className="tw-flex tw-flex-col tw-gap-2">
+        <div
+          className={cn("tw-flex tw-flex-col", {
+            "tw-gap-2": variant === "large",
+            "tw-gap-1": variant === "small",
+          })}
+        >
           <Typography
             element="h2"
             className="tw-font-bold tw-text-natural-950 dark:tw-text-natural-50"
@@ -106,9 +124,11 @@ export const TutorProfileCard: React.FC<{
             </div>
           ) : null}
         </div>
-        <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
-          {intl("tutor.book")}
-        </Button>
+        {onBook ? (
+          <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
+            {intl("tutor.book")}
+          </Button>
+        ) : null}
       </div>
     </div>
   );

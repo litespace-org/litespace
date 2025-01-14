@@ -24,6 +24,19 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const Small: StoryObj<Component> = {
+  args: {
+    id: 1,
+    name: faker.person.fullName(),
+    bio: faker.lorem.words(10),
+    studentCount: 12,
+    lessonCount: 40,
+    avgRating: 4.85,
+    image: "https://picsum.photos/200",
+    variant: "small",
+  },
+};
+
 export const Loading: StoryObj<Component> = {
   args: {
     loading: true,
