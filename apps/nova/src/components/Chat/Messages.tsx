@@ -29,6 +29,7 @@ import { orUndefined } from "@litespace/sol/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 
 const Messages: React.FC<{
   room: number | null;
@@ -183,6 +184,7 @@ const Messages: React.FC<{
       >
         <ChatHeader
           {...otherMember}
+          image={otherMember.image ? asFullAssetUrl(otherMember.image) : null}
           openDialog={openDialog}
           online={onlineStatus}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
