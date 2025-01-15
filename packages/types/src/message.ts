@@ -36,7 +36,7 @@ export type FindRoomMessagesApiResponse = Paginated<Self>;
 
 export type MessageState = "seen" | "sent" | "pending" | "error" | undefined;
 
-export type ClientSideMessage = Self & {
+export type AttributedMessage = Self & {
   messageState?: MessageState;
   refId?: string;
 };

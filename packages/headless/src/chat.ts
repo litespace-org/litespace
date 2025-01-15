@@ -18,45 +18,90 @@ enum MessageStream {
   Update = "update",
   Delete = "delete",
 }
+
 type MessageStreamAction =
   | { type: MessageStream.Add; message: IMessage.Self }
-  | { type: MessageStream.Update; message: IMessage.Self }
-  | { type: MessageStream.Delete; messageId: number; roomId: number };
+  | {
+      type: MessageStream.Update;
+      message: {
+        id: number;
+        text: string;
+        roomId: number;
+      };
+      pending: boolean;
+    }
+  | { type: MessageStream.Delete; messageId: number; roomId: number }
+  | {
+      type: ActionType.AddPendingMessage;
+      message: { text: string; room: number; refId: string; userId: number };
+    }
+  | {
+      type: ActionType.ActivateMessage;
+      message: IMessage.AttributedMessage;
+    }
+  | {
+      type: ActionType.SendMessageFailure;
+      message: {
+        refId: string;
+        room: number;
+        errorMessage?: string;
+      };
+    }
+  | {
+      type: ActionType.UpdateMessageFailure;
+      message: {
+        id: number;
+        room: number;
+        errorType: ErrorType;
+        errorMessage?: string;
+      };
+    };
+
+type RoomId = number;
+type RefId = string;
+type MessageId = number;
 
 type State = {
   /**
    * Current active room id
    */
-  room: number | null;
+  room: RoomId | null;
   /**
    * Map from room id to the current room page
    */
-  pages: Record<number, number | undefined>;
+  pages: Record<RoomId, number | undefined>;
   /**
    * Map from room id to its messages from the backend
    */
-  messages: Record<number, IMessage.ClientSideMessage[] | undefined>;
+  messages: Record<RoomId, IMessage.AttributedMessage[] | undefined>;
   /**
    * Map from room id to its fresh messages (new messages received since the last page refresh)
    */
-  freshMessages: Record<number, IMessage.ClientSideMessage[] | undefined>;
+  freshMessages: Record<RoomId, IMessage.AttributedMessage[] | undefined>;
   /**
    * Map from room id to the total number of messages that the room has.
    */
-  totals: Record<number, number | undefined>;
+  totals: Record<RoomId, number | undefined>;
   /**
    * Map from room id to loading state
    */
-  loading: Record<number, boolean | undefined>;
+  loading: Record<RoomId, boolean | undefined>;
   /**
    * Map from room id to fetching state
    */
-  fetching: Record<number, boolean | undefined>;
+  fetching: Record<RoomId, boolean | undefined>;
   /**
-   * Map from room id to error messages
+   * Map from room id to error messages (indicating problem with entire chat)
    */
-  errors: Record<number, string | null | undefined>;
+  roomErrors: Record<RoomId, string | null | undefined>;
+  /**
+   * Map from room id to roomMessages to show the type of error that happened
+   * will be used to determine the type of retry function in the front end
+   */
+  messageErrors: Record<RoomId, Record<MessageId | RefId, ErrorType>>;
 };
+
+type ErrorType = "send" | "update" | "delete";
 
 enum ActionType {
   AppendRoomMessages,
@@ -70,10 +115,14 @@ enum ActionType {
   PostCallError,
   AddPendingMessage,
   ActivateMessage,
-  AddErrorMessage,
-  AddMessage,
-  UpdateMessage,
-  DeleteMessage,
+  /**
+   * For when a send message fails
+   */
+  SendMessageFailure,
+  /**
+   * For when a delete/update message fails
+   */
+  UpdateMessageFailure,
 }
 
 type Action =
@@ -116,21 +165,9 @@ type Action =
       room: number;
       total: number;
     }
-  | {
-      type: ActionType.AddPendingMessage;
-      message: { text: string; room: number; refId: string; userId: number };
-    }
-  | {
-      type: ActionType.ActivateMessage;
-      message: { refId: string; room: number };
-    }
-  | {
-      type: ActionType.AddErrorMessage;
-      message: { refId: string; room: number; errorMessage?: string };
-    }
   | MessageStreamAction;
 
-export type OnMessage = (action: Action) => void;
+export type OnMessage = (action: MessageStreamAction) => void;
 
 export function useFindRoomMembers(
   roomId: number | null
@@ -200,14 +237,15 @@ export function useUpdateRoom({
 }
 
 /**
- * The hook responsible for integration with the wss server, it allows the user to send
- * delete and update messages.
+ * The hook responsible for integration with the wss server, it allows the user
+ * to send delete and update messages. Each Socket Event takes 3 params: the
+ * event, the payload, the callback which will be invoked in case of an error.
+ *
  * @param onMessage : The action the user has done
  * @returns Send, update, delete functions which are wss emitters
  */
 export function useChat(onMessage?: OnMessage, userId?: number) {
   const socket = useSocket();
-
   const sendMessage = useCallback(
     ({
       roomId,
@@ -218,9 +256,9 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
       text: string;
       userId: number;
     }) => {
-      if (!onMessage) return;
+      if (!onMessage || !socket) return;
       const refId = uniqueId();
-      socket?.emit(
+      socket.emit(
         Wss.ClientEvent.SendMessage,
         {
           roomId,
@@ -229,7 +267,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
         },
         (error) => {
           return onMessage({
-            type: ActionType.AddErrorMessage,
+            type: ActionType.SendMessageFailure,
             message: {
               room: roomId,
               refId,
@@ -239,7 +277,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
         }
       );
 
-      onMessage({
+      return onMessage({
         type: ActionType.AddPendingMessage,
         message: { text, room: roomId, refId, userId },
       });
@@ -248,27 +286,59 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
   );
 
   const updateMessage = useCallback(
-    ({ id, text }: { id: number; text: string }) => {
-      socket?.emit(Wss.ClientEvent.UpdateMessage, { id, text });
+    (message: { id: number; text: string; roomId: number }) => {
+      if (!onMessage || !socket) return;
+      socket.emit(
+        Wss.ClientEvent.UpdateMessage,
+        {
+          id: message.id,
+          text: message.text,
+        },
+        () => {
+          onMessage({
+            type: ActionType.UpdateMessageFailure,
+            message: {
+              id: message.id,
+              room: message.roomId,
+              errorType: "update",
+            },
+          });
+        }
+      );
+
+      return onMessage({
+        type: MessageStream.Update,
+        message,
+        pending: true,
+      });
     },
-    [socket]
+    [socket, onMessage]
   );
 
   const deleteMessage = useCallback(
-    (id: number) => {
-      socket?.emit(Wss.ClientEvent.DeleteMessage, { id });
+    (messageId: number, roomId: number) => {
+      if (!onMessage || !socket) return;
+
+      socket.emit(Wss.ClientEvent.DeleteMessage, { id: messageId }, () => {
+        return onMessage({
+          type: ActionType.UpdateMessageFailure,
+          message: { id: messageId, room: roomId, errorType: "delete" },
+        });
+      });
+      return onMessage({ type: MessageStream.Delete, roomId, messageId });
     },
-    [socket]
+    [socket, onMessage]
   );
 
   const onRoomMessage = useCallback(
-    (message: IMessage.Self & { refId?: string }) => {
+    (message: IMessage.AttributedMessage) => {
       if (!onMessage || !userId) return;
 
+      // This is current user's message, so we activate the message from the pending state
       if (message.userId === userId)
         return onMessage({
           type: ActionType.ActivateMessage,
-          message: { refId: message.refId!, room: message.roomId },
+          message,
         });
 
       return onMessage({
@@ -285,6 +355,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
       return onMessage({
         type: MessageStream.Update,
         message,
+        pending: false,
       });
     },
     [onMessage]
@@ -325,27 +396,41 @@ const initial: State = {
   totals: {},
   loading: {},
   fetching: {},
-  errors: {},
+  roomErrors: {},
+  messageErrors: {},
 };
 
 function isFreshMessage(id: number, messages: IMessage.Self[]): boolean {
   return !!messages.find((message) => message.id === id);
 }
 
-function replaceMessage(incoming: IMessage.Self, messages: IMessage.Self[]) {
-  const index = messages.findIndex((message) => message.id === incoming.id);
-  if (index === -1) return;
-  messages.splice(index, 1, incoming);
-  return messages;
+// utility function used in updating the messages
+function replaceMessage(
+  incoming: { id: number; text: string; roomId: number },
+  messages: IMessage.AttributedMessage[],
+  pending?: boolean
+) {
+  const newMessages = messages.map((message) => {
+    if (message.id === incoming.id) {
+      return {
+        ...message,
+        ...incoming,
+        messageState: (pending ? "pending" : "sent") as IMessage.MessageState,
+      };
+    }
+    return message;
+  });
+
+  return newMessages;
 }
 
 function activateMessage(
-  incoming: { refId: string; room: number },
-  messages: IMessage.ClientSideMessage[]
+  incoming: IMessage.AttributedMessage,
+  messages: IMessage.AttributedMessage[]
 ) {
   return messages.map((message) => {
     if (message.refId == incoming.refId) {
-      message.messageState = "sent";
+      return incoming;
     }
     return message;
   });
@@ -361,7 +446,7 @@ const pendingMessageCreator = ({
   roomId: number;
   userId: number;
   refId: string;
-}): IMessage.ClientSideMessage => {
+}): IMessage.AttributedMessage => {
   const now = new Date().toISOString();
   return {
     id: 0,
@@ -378,12 +463,35 @@ const pendingMessageCreator = ({
 };
 
 function makeErrorMessage(
-  incoming: { refId: string; room: number },
-  messages: IMessage.ClientSideMessage[]
+  /**
+   * the incoming message is either from a sending event (first type) or update or delete event (second type)
+   */
+  incoming: { refId: string; room: number } | { id: number; room: number },
+  messages: IMessage.AttributedMessage[]
 ) {
   return messages.map((message) => {
-    if (message.refId == incoming.refId) {
+    if (
+      ("refId" in incoming && message.refId == incoming.refId) ||
+      ("id" in incoming && message.id == incoming.id)
+    ) {
       message.messageState = "error";
+      message.deleted = false;
+    }
+    return message;
+  });
+}
+
+/**
+ * we set a deleted flag to true and don't outright delete the message becuase if an error has occured,
+ * we can retrieve the message directly
+ */
+function deleteMessage(
+  incomingId: number,
+  messages: IMessage.AttributedMessage[]
+) {
+  return messages.map((message) => {
+    if (message.id === incomingId) {
+      message.deleted = true;
     }
     return message;
   });
@@ -433,25 +541,52 @@ function reducer(state: State, action: Action) {
   }
 
   if (action.type === ActionType.SetError) {
-    const errors = structuredClone(state.errors);
+    const roomErrors = structuredClone(state.roomErrors);
     const fetching = structuredClone(state.fetching);
     const loading = structuredClone(state.loading);
 
-    errors[action.room] = action.error;
+    roomErrors[action.room] = action.error;
     fetching[action.room] = false;
     loading[action.room] = false;
 
-    return mutate({ errors, fetching, loading });
+    return mutate({ roomErrors, fetching, loading });
   }
 
-  if (action.type === ActionType.AddErrorMessage) {
+  if (action.type === ActionType.SendMessageFailure) {
     const room = action.message.room;
+    const ref = action.message.refId;
     const freshMessages = structuredClone(state.freshMessages);
+    const messageErrors = structuredClone(state.messageErrors);
+    const roomErrors = messageErrors[room] || {};
+    roomErrors[ref] = "send";
     const roomMessages = freshMessages[room] || [];
 
     freshMessages[room] = makeErrorMessage(action.message, roomMessages);
+    messageErrors[room] = roomErrors;
 
-    return mutate({ freshMessages });
+    return mutate({ freshMessages, messageErrors });
+  }
+
+  if (action.type === ActionType.UpdateMessageFailure) {
+    const room = action.message.room;
+    const fresh = isFreshMessage(
+      action.message.id,
+      state.freshMessages[room] || []
+    );
+    const messages = fresh
+      ? structuredClone(state.freshMessages)
+      : structuredClone(state.messages);
+
+    const roomMessages = messages[room] || [];
+    messages[room] = makeErrorMessage(action.message, roomMessages);
+
+    const messageErrors = structuredClone(state.messageErrors);
+    const roomErrors = messageErrors[room] || {};
+    roomErrors[action.message.id] = action.message.errorType;
+    messageErrors[room] = roomErrors;
+
+    if (fresh) return mutate({ freshMessages: messages, messageErrors });
+    return mutate({ messages, messageErrors });
   }
 
   if (action.type === ActionType.PreCall) {
@@ -475,8 +610,8 @@ function reducer(state: State, action: Action) {
     if (!roomMessages) messages[action.room] = action.messages;
     else roomMessages.push(...action.messages);
 
-    const errors = structuredClone(state.errors);
-    errors[action.room] = null;
+    const roomErrors = structuredClone(state.roomErrors);
+    roomErrors[action.room] = null;
 
     const fetching = structuredClone(state.fetching);
     fetching[action.room] = false;
@@ -484,7 +619,7 @@ function reducer(state: State, action: Action) {
     const loading = structuredClone(state.loading);
     loading[action.room] = false;
 
-    return mutate({ totals, messages, errors, fetching, loading });
+    return mutate({ totals, messages, roomErrors, fetching, loading });
   }
 
   if (action.type === ActionType.AddPendingMessage) {
@@ -506,7 +641,7 @@ function reducer(state: State, action: Action) {
   }
 
   if (action.type === ActionType.ActivateMessage) {
-    const room = action.message.room;
+    const room = action.message.roomId;
     const freshMessages = structuredClone(state.freshMessages);
     const roomMessages = freshMessages[room] || [];
 
@@ -535,7 +670,12 @@ function reducer(state: State, action: Action) {
       : structuredClone(state.messages);
 
     const roomMessages = messages[room] || [];
-    messages[room] = replaceMessage(action.message, roomMessages);
+    messages[room] = replaceMessage(
+      action.message,
+      roomMessages,
+      action.pending
+    );
+
     if (fresh) return mutate({ freshMessages: messages });
     return mutate({ messages });
   }
@@ -548,7 +688,7 @@ function reducer(state: State, action: Action) {
       ? structuredClone(state.freshMessages)
       : structuredClone(state.messages);
     const roomMessages = messages[room] || [];
-    messages[room] = roomMessages.filter((message) => message.id !== messageId);
+    messages[room] = deleteMessage(action.messageId, roomMessages);
     if (fresh) return mutate({ freshMessages: messages });
     return mutate({ messages });
   }
@@ -590,7 +730,7 @@ export function useMessages(room: number | null) {
         full ||
         done ||
         state.loading[room] ||
-        state.errors[room] ||
+        state.roomErrors[room] ||
         state.fetching[room]
       )
         return;
@@ -617,7 +757,7 @@ export function useMessages(room: number | null) {
     },
     [
       fetchedAllMessages,
-      state.errors,
+      state.roomErrors,
       state.fetching,
       state.loading,
       state.messages,
@@ -644,10 +784,17 @@ export function useMessages(room: number | null) {
       !state.pages[room] &&
       !state.messages[room] &&
       !state.loading[room] &&
-      !state.errors[room]
+      !state.roomErrors[room]
     )
       fetcher(room, page);
-  }, [fetcher, room, state.errors, state.loading, state.messages, state.pages]);
+  }, [
+    fetcher,
+    room,
+    state.roomErrors,
+    state.loading,
+    state.messages,
+    state.pages,
+  ]);
 
   /**
    * list of messages in the chat
@@ -671,9 +818,10 @@ export function useMessages(room: number | null) {
       messages,
       loading: room ? state.loading[room] : false,
       fetching: room ? state.fetching[room] : false,
+      messageErrors: state.messageErrors,
       more,
       onMessage,
-      error: room ? state.errors[room] : undefined,
+      error: room ? state.roomErrors[room] : undefined,
     };
   }, [
     messages,
@@ -681,7 +829,8 @@ export function useMessages(room: number | null) {
     room,
     state.fetching,
     state.loading,
-    state.errors,
+    state.roomErrors,
+    state.messageErrors,
     more,
   ]);
 }

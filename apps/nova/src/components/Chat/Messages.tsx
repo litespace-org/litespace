@@ -20,7 +20,7 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
 import dayjs from "dayjs";
-import { entries, groupBy } from "lodash";
+import { entries, groupBy, isEmpty } from "lodash";
 import { Typography } from "@litespace/luna/Typography";
 import Trash from "@litespace/assets/Trash";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -31,8 +31,22 @@ import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 
+type RetryFnMap = Record<
+  "send" | "update" | "delete",
+  (
+    payload:
+      | { roomId: number; text: string; userId: number }
+      | {
+          id: number;
+          text: string;
+          roomId: number;
+        }
+      | number
+  ) => void
+>;
+
 const Messages: React.FC<{
-  room: number | null;
+  room: number;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }> = ({ room, otherMember }) => {
   const { user } = useUserContext();
@@ -56,10 +70,13 @@ const Messages: React.FC<{
     messages,
     loading,
     fetching,
+    messageErrors,
     onMessage: onMessages,
     more,
     error,
   } = useMessages(room);
+
+  const roomErrors = messageErrors[room];
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -88,6 +105,17 @@ const Messages: React.FC<{
     orUndefined(user?.id)
   );
 
+  const retryFnMap: RetryFnMap = {
+    send: (payload) =>
+      typeof payload !== "number" &&
+      "userId" in payload &&
+      sendMessage(payload),
+    update: (payload) =>
+      typeof payload !== "number" && "id" in payload && updateMessage(payload),
+    delete: (payload) =>
+      typeof payload === "number" && deleteMessage(payload, room),
+  };
+
   const submit = useCallback(
     (text: string) => {
       if (!room) return;
@@ -98,11 +126,15 @@ const Messages: React.FC<{
 
   const onUpdateMessage = useCallback(
     (text: string) => {
-      if (!updatableMessage) return;
+      if (!updatableMessage || !room) return;
       setUpdatableMessage(null);
-      updateMessage({ id: updatableMessage.id, text });
+      updateMessage({
+        id: updatableMessage.id,
+        text,
+        roomId: room,
+      });
     },
-    [updatableMessage, updateMessage]
+    [updatableMessage, updateMessage, room]
   );
 
   const onUpdate = useCallback(
@@ -118,10 +150,10 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage) return;
-    deleteMessage(deletableMessage);
+    if (!deletableMessage || !room) return;
+    deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
-  }, [deletableMessage, deleteMessage]);
+  }, [deletableMessage, deleteMessage, room]);
 
   const discardDelete = useCallback(() => {
     setDeletableMessage(null);
@@ -143,6 +175,7 @@ const Messages: React.FC<{
     const map = groupBy(groups, (group) =>
       dayjs(group.sentAt).format("YYYY-MM-DD")
     );
+
     return entries(map).map(([date, groups]) => ({ date, groups }));
   }, [user, messages, otherMember]);
 
@@ -222,6 +255,7 @@ const Messages: React.FC<{
                     <Loader size="small" />
                   </div>
                 ) : null}
+
                 {messageGroups.length > 0 ? (
                   messageGroups.map(({ date, groups }) => {
                     return (
@@ -235,16 +269,26 @@ const Messages: React.FC<{
                           </Typography>
                         </div>
 
-                        {groups.map((group) => (
-                          <div className="mb-6" key={group.id}>
-                            <ChatMessageGroup
-                              {...group}
-                              deleteMessage={onDelete}
-                              editMessage={onUpdate}
-                              owner={group.sender.userId === user?.id}
-                            />
-                          </div>
-                        ))}
+                        {groups
+                          .filter(
+                            (group) =>
+                              !isEmpty(
+                                group.messages.filter((msg) => !msg.deleted)
+                              )
+                          )
+                          .map((group) => (
+                            <div className="mb-6" key={group.id}>
+                              <ChatMessageGroup
+                                {...group}
+                                roomErrors={roomErrors}
+                                retryFnMap={retryFnMap}
+                                roomId={room}
+                                deleteMessage={onDelete}
+                                editMessage={onUpdate}
+                                owner={group.sender.userId === user?.id}
+                              />
+                            </div>
+                          ))}
                       </div>
                     );
                   })

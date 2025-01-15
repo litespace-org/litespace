@@ -7,6 +7,7 @@ export type DisplayMessage = {
   id: number;
   text: string;
   messageState?: IMessage.MessageState;
+  deleted: boolean;
 };
 
 export type Sender = {
@@ -54,7 +55,7 @@ function assignGroup({
   senderId: number | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
   currentUser: IUser.Self;
-  messages: IMessage.ClientSideMessage[];
+  messages: IMessage.AttributedMessage[];
 }): MessageGroup | null {
   if (isEmpty(messages) || !senderId) return null;
   const sender = asSender({ senderId, currentUser, otherMember });
@@ -72,6 +73,7 @@ function assignGroup({
       id: message.id,
       text: message.text,
       messageState: message.messageState,
+      deleted: message.deleted,
     })),
     sentAt: latest.updatedAt,
   };
@@ -82,7 +84,7 @@ export function asMessageGroups({
   currentUser,
   otherMember,
 }: {
-  messages: IMessage.ClientSideMessage[];
+  messages: IMessage.AttributedMessage[];
   currentUser: IUser.Self;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) {

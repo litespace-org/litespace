@@ -13,7 +13,7 @@ const stdout = logger("wss");
 const sendMessagePayload = zod.object({
   roomId: id,
   text: zod.string(),
-  refId: zod.string().optional(),
+  refId: zod.string(),
 });
 const updateMessagePayload = zod.object({ text: string, id });
 const userTypingPayload = zod.object({ roomId: zod.number() });
@@ -109,7 +109,7 @@ export class Messages extends WssHandler {
       if (!text)
         return this.call(callback, {
           code: Wss.AcknowledgeCode.EmptyText,
-          message: "Cannot send an empty message.",
+          message: "Cannot update with an empty message.",
         });
 
       const updated = await messages.update(id, { text });

@@ -52,7 +52,7 @@ export const ChatMessage: React.FC<{
   /**
    * resend message function
    */
-  retry?: Void;
+  retry?: Void | null;
   /**
    * edit message function, used to open the edit dialog
    */
@@ -89,7 +89,7 @@ export const ChatMessage: React.FC<{
       return [
         {
           label: intl("chat.message.retry"),
-          onClick: retry,
+          onClick: () => retry && retry(),
           icon: <Send2 className="tw-w-4 tw-h-4" />,
         },
       ];
