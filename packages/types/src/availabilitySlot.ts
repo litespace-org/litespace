@@ -77,6 +77,8 @@ export type DeleteAction = {
   id: number;
 };
 
+export type Action = CreateAction | UpdateAction | DeleteAction;
+
 // API Requests
 export type SetAvailabilitySlotsApiPayload = {
   slots: Array<CreateAction | UpdateAction | DeleteAction>;

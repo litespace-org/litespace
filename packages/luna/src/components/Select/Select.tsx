@@ -16,20 +16,25 @@ import {
 } from "@radix-ui/react-select";
 import ArrowDown from "@litespace/assets/ArrowDown";
 import { Typography } from "@/components/Typography";
+import { isEmpty } from "lodash";
 
 export type SelectProps<T extends string | number> = {
   placeholder?: string;
   options?: SelectList<T>;
   value?: T;
-  onChange?: (value: T) => void;
   placement?: SelectPlacement;
   children?: React.ReactNode;
+  showDropdownIcon?: boolean;
+  disabled?: boolean;
+  onChange?: (value: T) => void;
 };
 
 export const Select = <T extends string | number>({
   value,
   placeholder,
   options = [],
+  showDropdownIcon = true,
+  disabled = false,
   onChange,
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
@@ -45,7 +50,7 @@ export const Select = <T extends string | number>({
     [onChange, options]
   );
 
-  const lable = useMemo(
+  const label = useMemo(
     () => options.find((option) => option.value === value)?.label,
     [options, value]
   );
@@ -57,9 +62,11 @@ export const Select = <T extends string | number>({
       dir="rtl"
       value={value?.toString()}
       onValueChange={onValueChange}
+      disabled={isEmpty(options) || disabled}
     >
       <Trigger
         data-open={open}
+        disabled={disabled}
         className={cn(
           "tw-flex tw-flex-row tw-justify-between tw-items-center",
           "tw-w-full tw-h-14 tw-rounded-lg tw-p-2 tw-transition-colors tw-duration-200",
@@ -67,27 +74,32 @@ export const Select = <T extends string | number>({
           "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-x-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
           "focus:tw-outline-none focus:tw-shadow-ls-x-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
           "tw-bg-natural-50 hover:tw-bg-brand-50",
-          "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
+          "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500",
+          "disabled:tw-cursor-not-allowed"
         )}
       >
-        <Value>
-          <Typography
-            className={cn(
-              lable ? "tw-text-natural-950" : "tw-text-natural-400"
-            )}
-          >
-            {lable || placeholder}
-          </Typography>
+        <Value
+          placeholder={
+            placeholder ? (
+              <Typography className={cn("tw-text-natural-400")}>
+                {placeholder}
+              </Typography>
+            ) : null
+          }
+        >
+          <Typography className={cn("tw-text-natural-900")}>{label}</Typography>
         </Value>
-        <Icon>
-          <ArrowDown
-            data-open={open}
-            className={cn(
-              "tw-justify-self-end",
-              "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
-            )}
-          />
-        </Icon>
+        {showDropdownIcon ? (
+          <Icon>
+            <ArrowDown
+              data-open={open}
+              className={cn(
+                "tw-justify-self-end",
+                "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+              )}
+            />
+          </Icon>
+        ) : null}
       </Trigger>
       <Portal>
         <Content

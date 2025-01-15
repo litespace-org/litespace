@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
-import utc from "dayjs/plugin/utc";
-import timezone from "dayjs/plugin/timezone";
-import relative from "dayjs/plugin/relativeTime";
 import isBetween from "dayjs/plugin/isBetween";
+import relative from "dayjs/plugin/relativeTime";
+import timezone from "dayjs/plugin/timezone";
+import utc from "dayjs/plugin/utc";
 import "dayjs/locale/ar";
 
 dayjs.locale("ar");

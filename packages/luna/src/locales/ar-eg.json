@@ -93,6 +93,11 @@
   "tutors.coming-soon": "فرص تعلم جديدة تقترب... معلمون مميزون سينضمون قريبًا!",
   "tutors.coming.set-notifications": "أخبرني عند التوفر",
   "tutors.coming-soon.notification-description": "سوف يتم اشعارك بجميع المعلمين الجدد",
+  "tutors.schedule.manage": "إدارة الجدول",
+  "tutors.schedule.available-days": "أيام الأسبوع المتاحة",
+  "tutors.schedule.buttons.save": "حفظ الجدول",
+  "tutors.schedule.loading.message": "برجاء الانتظار... جاري تحميل الجدول",
+  "tutors.schedule.error.message": " عذرًا، حدث خطأ أثناء تحميل الجدول، برجاء المحاولة مرة أخرى",
   "tutor.profile.tabs.profile": "الملف الشخصى",
   "tutor.profile.tabs.profile.about": "حول المعلم",
   "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
@@ -646,6 +651,9 @@
   "labels.share": "مشاركة",
   "labels.go-back": "الرجوع",
   "labels.coming-soon": "قريبا 🎉",
+  "labels.cancel": "إلغاء",
+  "placeholders.from": "من",
+  "placeholders.to": "إلي",
   "global.created-at": "تاريخ الإنشاء",
   "global.updated-at": "تاريخ التعديل",
   "global.form.email.label": "الإيميل/البريد الإليكتروني",

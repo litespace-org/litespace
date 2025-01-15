@@ -5,7 +5,7 @@ import { Void } from "@litespace/types";
 
 export const Checkbox: React.FC<{
   id?: string;
-  label?: string;
+  label?: React.ReactNode;
   checked?: boolean;
   onCheckedChange?: Void;
   disabled?: boolean;
