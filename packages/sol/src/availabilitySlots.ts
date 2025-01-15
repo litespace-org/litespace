@@ -143,10 +143,10 @@ export function subtractSlots(
  * checks if a specific slot intersects with at least one slot of the passed list.
  * the boundaries are excluded in the intersection.
  */
-export function isIntersecting(
-  target: IAvailabilitySlot.GeneralSlot,
-  slots: IAvailabilitySlot.GeneralSlot[]
-): boolean {
+export function isIntersecting<
+  T extends IAvailabilitySlot.Base,
+  S extends IAvailabilitySlot.Base,
+>(target: T, slots: S[]): boolean {
   for (const slot of slots) {
     // target slot started after the current slot.
     const startedAfterCurrentSlot =

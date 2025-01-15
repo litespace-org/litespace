@@ -166,16 +166,19 @@ describe("AvailabilitySlot", () => {
       start: now.toISOString(),
       end: now.add(1, "hours").toISOString(),
     };
+
     const b: IAvailabilitySlot.Slot = {
       id: 2,
       start: now.add(2, "hours").toISOString(),
       end: now.add(3, "hours").toISOString(),
     };
+
     const c: IAvailabilitySlot.Slot = {
       id: 3,
       start: now.add(3, "hours").toISOString(),
       end: now.add(4, "hours").toISOString(),
     };
+
     const target: IAvailabilitySlot.SubSlot = {
       parent: 4,
       start: now.add(30, "minutes").toISOString(),

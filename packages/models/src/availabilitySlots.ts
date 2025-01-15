@@ -16,6 +16,10 @@ type SearchFilter = {
    */
   slots?: number[];
   /**
+   * Slot ids to be execluded from th search query.
+   */
+  execludeSlots?: number[];
+  /**
    * User ids to be included in the search query.
    */
   users?: number[];
@@ -30,7 +34,6 @@ type SearchFilter = {
    */
   before?: string;
   deleted?: boolean;
-  pagination?: IFilter.SkippablePagination;
 };
 
 export class AvailabilitySlots {
@@ -99,16 +102,28 @@ export class AvailabilitySlots {
     slots,
     after,
     before,
-    pagination,
-  }: WithOptionalTx<SearchFilter>): Promise<Paginated<IAvailabilitySlot.Self>> {
+    page,
+    size,
+    full,
+    deleted,
+    execludeSlots,
+  }: WithOptionalTx<SearchFilter & IFilter.SkippablePagination>): Promise<
+    Paginated<IAvailabilitySlot.Self>
+  > {
     const baseBuilder = this.applySearchFilter(this.builder(tx), {
       users,
       slots,
       after,
       before,
+      deleted,
+      execludeSlots,
     });
     const total = await countRows(baseBuilder.clone());
-    const rows = await withSkippablePagination(baseBuilder.clone(), pagination);
+    const rows = await withSkippablePagination(baseBuilder.clone(), {
+      page,
+      size,
+      full,
+    });
     return {
       list: rows.map((row) => this.from(row)),
       total,
@@ -153,9 +168,12 @@ export class AvailabilitySlots {
 
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
-    { slots, users, after, before, deleted }: SearchFilter
+    { slots, users, after, before, deleted, execludeSlots }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
     if (slots && !isEmpty(slots)) builder.whereIn(this.column("id"), slots);
+
+    if (execludeSlots && !isEmpty(execludeSlots))
+      builder.whereNotIn(this.column("id"), execludeSlots);
 
     if (users && !isEmpty(users))
       builder.whereIn(this.column("user_id"), users);

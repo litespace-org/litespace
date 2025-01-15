@@ -140,18 +140,17 @@ describe("AvailabilitySlots", () => {
     it("should NOT delete a list of available AvailabilitySlot rows from the database if it has associated lessons/interviews", async () => {
       const user = await fixtures.user({});
 
-      const created = await availabilitySlots.create([
+      const [slot] = await availabilitySlots.create([
         {
           userId: user.id,
           start: dayjs.utc().toISOString(),
           end: dayjs.utc().add(1, "hour").toISOString(),
         },
       ]);
-      await fixtures.lesson({ slot: created[0].id });
 
-      const res = await safe(async () =>
-        availabilitySlots.delete(created.map((slot) => slot.id))
-      );
+      await fixtures.lesson({ slot: slot.id });
+
+      const res = await safe(async () => availabilitySlots.delete([slot.id]));
       expect(res).to.be.instanceof(Error);
     });
   });

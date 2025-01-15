@@ -45,15 +45,18 @@ export type SubSlot = {
   end: string;
 };
 
+export type Base = {
+  start: string;
+  end: string;
+};
+
 export type GeneralSlot = Slot | SubSlot;
 
 // API Payloads / Queries
-export type FindAvailabilitySlotsApiQuery = {
+export type FindAvailabilitySlotsApiQuery = SkippablePagination & {
   userId: number;
   after?: string;
   before?: string;
-} & {
-  pagination?: SkippablePagination;
 };
 
 export type CreateAction = {

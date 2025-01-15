@@ -62,7 +62,6 @@ describe("/api/v1/availability-slot/", () => {
         userId: tutor.id,
         after: now.toISOString(),
         before: now.add(2, "days").toISOString(),
-        pagination: {},
       });
 
       expect(slots.total).to.eq(2);
@@ -75,15 +74,12 @@ describe("/api/v1/availability-slot/", () => {
     it("should respond with bad request if the `after` date is before the `before` date", async () => {
       const studentApi = await Api.forStudent();
       const tutor = await db.tutor();
-
       const now = dayjs.utc();
-
       const res = await safe(async () =>
         studentApi.atlas.availabilitySlot.find({
           userId: tutor.id,
           after: now.add(2, "days").toISOString(),
           before: now.toISOString(),
-          pagination: {},
         })
       );
 
@@ -177,7 +173,7 @@ describe("/api/v1/availability-slot/", () => {
         })
       );
 
-      expect(res).to.deep.eq(bad());
+      expect(res).to.deep.eq(conflict());
     });
 
     it("should respond with bad request if the slot is not well structured", async () => {
@@ -196,7 +192,7 @@ describe("/api/v1/availability-slot/", () => {
         })
       );
 
-      expect(res).to.deep.eq(bad());
+      expect(res).to.deep.eq(conflict());
     });
 
     it("should successfully update an existing slot", async () => {
