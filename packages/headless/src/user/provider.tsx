@@ -39,14 +39,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   const meta = useFindTutorMeta(tutorId);
 
   const setData: Context["set"] = useCallback(
-    (payload) => {
-      if (payload.token) setBearerToken(payload.token);
+    ({ user, meta, token, remember = true }) => {
+      if (token) setBearerToken(token, remember);
       setUserData((prev) => {
         const data: Data = {
-          user: payload.user || prev.user,
-          meta: payload.meta || prev.meta,
+          user: user || prev.user,
+          meta: meta || prev.meta,
         };
-        cache.save(CacheKey.User, data);
+        if (remember) cache.save(CacheKey.User, data);
         return data;
       });
     },
