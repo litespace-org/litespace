@@ -1,10 +1,24 @@
-import { IAvailabilitySlot } from "@litespace/types";
+import { IAvailabilitySlot, IFilter, Paginated } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { Knex } from "knex";
 import { first, isEmpty } from "lodash";
-import { knex, column, WithOptionalTx } from "@/query";
+import {
+  knex,
+  column,
+  countRows,
+  WithOptionalTx,
+  withSkippablePagination,
+} from "@/query";
 
 type SearchFilter = {
+  /**
+   * Slot ids to be included in the search query.
+   */
+  slots?: number[];
+  /**
+   * Slot ids to be execluded from th search query.
+   */
+  execludeSlots?: number[];
   /**
    * User ids to be included in the search query.
    */
@@ -19,6 +33,7 @@ type SearchFilter = {
    * All slots before (or the same as) this date will be included.
    */
   before?: string;
+  deleted?: boolean;
 };
 
 export class AvailabilitySlots {
@@ -47,58 +62,119 @@ export class AvailabilitySlots {
     return rows.map((row) => this.from(row));
   }
 
-  async delete(
-    ids: number[],
-    tx?: Knex.Transaction
-  ): Promise<IAvailabilitySlot.Self[]> {
+  async delete(ids: number[], tx?: Knex.Transaction) {
     if (isEmpty(ids)) throw new Error("At least one id must be passed.");
-
-    const rows = await this.builder(tx)
-      .whereIn(this.column("id"), ids)
-      .delete()
-      .returning("*");
-
-    return rows.map((row) => this.from(row));
+    await this.builder(tx).whereIn(this.column("id"), ids).del();
   }
 
   async update(
     id: number,
     payload: IAvailabilitySlot.UpdatePayload,
     tx?: Knex.Transaction
-  ): Promise<IAvailabilitySlot.Self> {
-    const rows = await this.builder(tx)
+  ) {
+    await this.builder(tx)
       .update({
         start: payload.start ? dayjs.utc(payload.start).toDate() : undefined,
         end: payload.end ? dayjs.utc(payload.end).toDate() : undefined,
         updated_at: dayjs.utc().toDate(),
       })
-      .where("id", id)
-      .returning("*");
+      .where("id", id);
+  }
 
-    const row = first(rows);
-    if (!row) throw new Error("Slot not found; should never happen.");
-    return this.from(row);
+  async markAsDeleted({
+    ids,
+    tx,
+  }: WithOptionalTx<{
+    ids: number[];
+  }>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .update({
+        deleted: true,
+        updated_at: now,
+      })
+      .whereIn(this.column("id"), ids);
   }
 
   async find({
     tx,
     users,
+    slots,
     after,
     before,
-  }: WithOptionalTx<SearchFilter>): Promise<IAvailabilitySlot.Self[]> {
+    page,
+    size,
+    full,
+    deleted,
+    execludeSlots,
+  }: WithOptionalTx<SearchFilter & IFilter.SkippablePagination>): Promise<
+    Paginated<IAvailabilitySlot.Self>
+  > {
     const baseBuilder = this.applySearchFilter(this.builder(tx), {
       users,
+      slots,
       after,
       before,
+      deleted,
+      execludeSlots,
     });
-    const rows = await baseBuilder.clone().select();
-    return rows.map((row) => this.from(row));
+    const total = await countRows(baseBuilder.clone());
+    const rows = await withSkippablePagination(baseBuilder.clone(), {
+      page,
+      size,
+      full,
+    });
+    return {
+      list: rows.map((row) => this.from(row)),
+      total,
+    };
+  }
+
+  async findById(
+    id: number,
+    tx?: Knex.Transaction
+  ): Promise<IAvailabilitySlot.Self | null> {
+    const { list } = await this.find({ slots: [id], tx });
+    return first(list) || null;
+  }
+
+  async isOwner({
+    slots,
+    owner,
+    tx,
+  }: WithOptionalTx<{
+    slots: number[];
+    owner: number;
+  }>): Promise<boolean> {
+    if (isEmpty(slots)) return true;
+    const builder = this.builder(tx)
+      .whereIn(this.column("id"), slots)
+      .where(this.column("user_id"), owner);
+    const count = await countRows(builder);
+    return count === slots.length;
+  }
+
+  /**
+   * NOTE: this function filters out the marked-as-deleted rows
+   */
+  async allExist(slots: number[], tx?: Knex.Transaction): Promise<boolean> {
+    if (isEmpty(slots)) return true;
+    const builder = this.builder(tx)
+      .where(this.column("deleted"), false)
+      .whereIn(this.column("id"), slots);
+    const count = await countRows(builder.clone());
+    return Number(count) === slots.length;
   }
 
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
-    { users, after, before }: SearchFilter
+    { slots, users, after, before, deleted, execludeSlots }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
+    if (slots && !isEmpty(slots)) builder.whereIn(this.column("id"), slots);
+
+    if (execludeSlots && !isEmpty(execludeSlots))
+      builder.whereNotIn(this.column("id"), execludeSlots);
+
     if (users && !isEmpty(users))
       builder.whereIn(this.column("user_id"), users);
 
@@ -107,6 +183,8 @@ export class AvailabilitySlots {
     if (before)
       builder.where(this.column("end"), "<=", dayjs.utc(before).toDate());
 
+    if (deleted) builder.where(this.column("deleted"), deleted);
+
     return builder;
   }
 
@@ -114,6 +192,7 @@ export class AvailabilitySlots {
     return {
       id: row.id,
       userId: row.user_id,
+      deleted: row.deleted,
       start: row.start.toISOString(),
       end: row.end.toISOString(),
       createAt: row.created_at.toISOString(),

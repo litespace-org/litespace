@@ -36,6 +36,8 @@ export const refused = () =>
 
 export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
 
+export const conflict = () => error(ApiError.Conflict, "Conflict", 409);
+
 export const empty = () => error(ApiError.EmptyRequest, "Empty request", 400);
 
 export const busyTutor = () =>
@@ -83,6 +85,7 @@ export const notfound = {
   base: () => error(ApiError.NotFound, "Resource not found", 404),
   user: () => error(ApiError.UserNotFound, "User not found", 404),
   rule: () => error(ApiError.RuleNotFound, "Rule not found", 404),
+  slot: () => error(ApiError.SlotNotFound, "Slot not found", 404),
   tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
   student: () => error(ApiError.StudentNotFound, "Student not found", 404),
   session: () => error(ApiError.SessionNotFound, "Session not found", 404),

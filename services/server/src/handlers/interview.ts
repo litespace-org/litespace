@@ -6,7 +6,14 @@ import {
   notfound,
 } from "@/lib/error";
 import { canBeInterviewed } from "@/lib/interview";
-import { interviews, rules, users, knex, rooms } from "@litespace/models";
+import {
+  interviews,
+  rules,
+  users,
+  knex,
+  rooms,
+  availabilitySlots,
+} from "@litespace/models";
 import {
   datetime,
   id,
@@ -38,6 +45,7 @@ const createInterviewPayload = zod.object({
   interviewerId: id,
   start: datetime,
   ruleId: id,
+  slotId: id,
 });
 
 const updateInterviewPayload = zod.object({
@@ -73,7 +81,7 @@ async function createInterview(
   if (!allowed) return next(forbidden());
 
   const intervieweeId = user.id;
-  const { interviewerId, start, ruleId }: IInterview.CreateApiPayload =
+  const { interviewerId, start, ruleId, slotId }: IInterview.CreateApiPayload =
     createInterviewPayload.parse(req.body);
 
   const interviewer = await users.findById(interviewerId);
@@ -86,6 +94,9 @@ async function createInterview(
 
   const rule = await rules.findById(ruleId);
   if (!rule) return next(notfound.rule());
+
+  const slot = await availabilitySlots.findById(slotId);
+  if (!slot) return next(notfound.slot());
 
   // Find rule interviews to check if the incoming interview is contradicting with existing ones.
   const ruleInterviews = await interviews.findByRuleId(rule.id);
@@ -108,6 +119,7 @@ async function createInterview(
       interviewee: intervieweeId,
       session: genSessionId("interview"),
       rule: rule.id,
+      slot: slot.id,
       start,
       tx,
     });

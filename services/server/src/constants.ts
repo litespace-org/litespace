@@ -116,3 +116,5 @@ export const platformConfig = {
    */
   interviewDuration: 30,
 };
+
+export const MAX_FULL_FLAG_DAYS = 14;

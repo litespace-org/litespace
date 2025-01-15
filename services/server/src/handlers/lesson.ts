@@ -19,7 +19,7 @@ import { calculateLessonPrice } from "@litespace/sol/lesson";
 import { safe } from "@litespace/sol/error";
 import { unpackRules } from "@litespace/sol/rule";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
-import { platformConfig } from "@/constants";
+import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/session";
 import { concat, isEmpty, isEqual } from "lodash";
@@ -28,6 +28,7 @@ import { genSessionId } from "@litespace/sol";
 const createLessonPayload = zod.object({
   tutorId: id,
   ruleId: id,
+  slotId: id,
   start: datetime,
   duration,
 });
@@ -92,6 +93,7 @@ function create(context: ApiContext) {
             start: payload.start,
             duration: payload.duration,
             rule: payload.ruleId,
+            slot: payload.slotId,
             session: genSessionId("lesson"),
             price,
             tx,
@@ -155,7 +157,7 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
   const canUseFullFlag =
     query.after &&
     query.before &&
-    dayjs.utc(query.before).diff(query.after, "days") <= 14;
+    dayjs.utc(query.before).diff(query.after, "days") <= MAX_FULL_FLAG_DAYS;
 
   if (query.full && !canUseFullFlag) return next(bad());
 
@@ -229,7 +231,7 @@ function cancel(context: ApiContext) {
 
       await lessons.cancel({
         canceledBy: user.id,
-        id: lessonId,
+        ids: [lessonId],
       });
 
       res.status(200).send();

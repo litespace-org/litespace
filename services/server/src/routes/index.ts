@@ -1,5 +1,6 @@
 import user from "@/routes/user";
 import interview from "@/routes/interview";
+import availabilitySlot from "@/routes/availabilitySlot";
 import rating from "@/routes/rating";
 import chat from "@/routes/chat";
 import plan from "@/routes/plan";
@@ -36,4 +37,5 @@ export default {
   topic,
   cache,
   session,
+  availabilitySlot,
 };

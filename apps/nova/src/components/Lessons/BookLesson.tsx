@@ -64,13 +64,16 @@ const BookLesson = ({
   const onBook = useCallback(
     ({
       ruleId,
+      slotId,
       start,
       duration,
     }: {
       ruleId: number;
+      slotId: number;
       start: string;
       duration: ILesson.Duration;
-    }) => bookLessonMutation.mutate({ tutorId, ruleId, start, duration }),
+    }) =>
+      bookLessonMutation.mutate({ tutorId, ruleId, slotId, start, duration }),
     [bookLessonMutation, tutorId]
   );
 

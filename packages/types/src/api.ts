@@ -17,6 +17,7 @@ export enum ApiError {
   StudentNotFound = "student-not-found",
   LessonNotFound = "lesson-not-found",
   RuleNotFound = "rule-not-found",
+  SlotNotFound = "slot-not-found",
   RatingNotFound = "rating-not-found",
   CouponNotFound = "coupon-not-found",
   AssetNotFound = "asset-not-found",
@@ -38,6 +39,7 @@ export enum ApiError {
   EmptyRequest = "empty-request",
   UserAlreadyVerified = "user-already-verified",
   WrongPassword = "wrong-password",
+  Conflict = "conflict",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

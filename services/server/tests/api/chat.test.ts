@@ -1,4 +1,3 @@
-import { flush } from "@fixtures/shared";
 import { Api, unexpectedApiSuccess } from "@fixtures/api";
 import { expect } from "chai";
 import db from "@fixtures/db";
@@ -9,7 +8,7 @@ import { Wss } from "@litespace/types";
 
 describe("/api/v1/chat", () => {
   beforeEach(async () => {
-    await flush();
+    await db.flush();
   });
 
   describe("PUT /api/v1/chat/room/:roomId", () => {

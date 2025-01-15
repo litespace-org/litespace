@@ -17,6 +17,7 @@ import {
   invoices,
   hashPassword,
   topics,
+  availabilitySlots,
 } from "@litespace/models";
 import { IInterview, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
 import dayjs from "dayjs";
@@ -285,6 +286,15 @@ async function main(): Promise<void> {
     monthday: sample(range(1, 31)),
   });
 
+  // seeding slots
+  await availabilitySlots.create(
+    addedTutors.map((tutor) => ({
+      userId: tutor.id,
+      start: dayjs.utc().startOf("day").toISOString(),
+      end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
+    }))
+  );
+
   const times = range(0, 24).map((hour) =>
     [hour.toString().padStart(2, "0"), "00"].join(":")
   );
@@ -367,12 +377,13 @@ async function main(): Promise<void> {
         start,
         duration,
         rule: 1,
+        slot: 1,
         tx,
       });
 
       if (sample([0, 1]))
         await lessons.cancel({
-          id: lesson.id,
+          ids: [lesson.id],
           canceledBy: sample([tutorId, student.id]),
           tx,
         });
@@ -402,6 +413,16 @@ async function main(): Promise<void> {
     );
   }
 
+  const slot = (
+    await availabilitySlots.create([
+      {
+        userId: tutorManager.id,
+        start: dayjs.utc().startOf("day").toISOString(),
+        end: dayjs.utc().startOf("day").add(1, "days").toISOString(),
+      },
+    ])
+  )[0];
+
   for (const tutor of addedTutors) {
     await knex.transaction(async (tx: Knex.Transaction) => {
       const interview = await interviews.create({
@@ -410,6 +431,7 @@ async function main(): Promise<void> {
         interviewer: tutorManager.id,
         start: randomStart(),
         rule: rule.id,
+        slot: slot.id,
         tx,
       });
 

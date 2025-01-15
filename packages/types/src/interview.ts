@@ -22,6 +22,7 @@ export type Self = {
      */
     interviewee: number;
     rule: number;
+    slot: number;
     session: ISession.Id;
   };
   /**
@@ -52,6 +53,7 @@ export type Row = {
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
   rule_id: number;
+  slot_id: number;
   session_id: ISession.Id;
   note: string | null;
   level: number | null;
@@ -70,6 +72,7 @@ export type CreatePayload = {
   start: string;
   session: ISession.Id;
   rule: number;
+  slot: number;
   interviewer: number;
   interviewee: number;
 };
@@ -81,6 +84,7 @@ export type CreateApiPayload = {
    */
   start: string;
   ruleId: number;
+  slotId: number;
 };
 
 export type CreateInterviewApiResponse = Self;

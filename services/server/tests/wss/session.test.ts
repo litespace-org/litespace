@@ -1,5 +1,5 @@
 import { Api } from "@fixtures/api";
-import { flush } from "@fixtures/db";
+import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
@@ -26,7 +26,7 @@ describe("sessions test suite", () => {
   });
 
   beforeEach(async () => {
-    await flush();
+    await db.flush();
     await cache.flush();
 
     tutorApi = await Api.forTutor();
@@ -59,10 +59,17 @@ describe("sessions test suite", () => {
 
     const selectedRuleEvent = unpackedRules[0];
 
+    const slot = await db.slot({
+      userId: tutor.user.id,
+      start: now.utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+    });
+
     const lesson = await studentApi.atlas.lesson.create({
       start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
+      slotId: slot.id,
       tutorId: tutor.user.id,
     });
 
@@ -100,6 +107,12 @@ describe("sessions test suite", () => {
       title: faker.lorem.words(3),
     });
 
+    const slot = await db.slot({
+      userId: tutor.user.id,
+      start: now.utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+    });
+
     const unpackedRules = unpackRules({
       rules: [rule],
       slots: [],
@@ -113,6 +126,7 @@ describe("sessions test suite", () => {
       start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
+      slotId: slot.id,
       tutorId: tutor.user.id,
     });
 
@@ -152,6 +166,12 @@ describe("sessions test suite", () => {
       title: faker.lorem.words(3),
     });
 
+    const slot = await db.slot({
+      userId: tutor.user.id,
+      start: now.utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+    });
+
     const unpackedRules = unpackRules({
       rules: [rule],
       slots: [],
@@ -164,6 +184,7 @@ describe("sessions test suite", () => {
       start: selectedRuleEvent.start,
       duration: 30,
       ruleId: rule.id,
+      slotId: slot.id,
       tutorId: tutor.user.id,
     });
 
@@ -173,8 +194,64 @@ describe("sessions test suite", () => {
     const tutorSocket = new ClientSocket(newTutor.token);
     const studentSocket = new ClientSocket(student.token);
 
-    const ack = await tutorSocket.joinSession(lesson.sessionId);
-    expect(ack.code).to.eq(Wss.AcknowledgeCode.Unallowed);
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
+
+    await result
+      .then(() => expect(false))
+      .catch((e) => expect(e.message).to.be.eq("TIMEOUT"));
+
+    tutorSocket.client.disconnect();
+    studentSocket.client.disconnect();
+  });
+
+  it("should NOT broadcast when user tries to join a session before its start", async () => {
+    const now = dayjs();
+    const rule = await tutorApi.atlas.rule.create({
+      start: now.add(1, "day").utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      duration: 8 * 60,
+      frequency: IRule.Frequency.Daily,
+      time: Time.from(now.hour() + ":" + now.minute())
+        .utc()
+        .format("railway"),
+      title: faker.lorem.words(3),
+    });
+
+    const slot = await db.slot({
+      userId: tutor.user.id,
+      start: now.add(1, "day").utc().startOf("day").toISOString(),
+      end: now.utc().add(10, "day").startOf("day").toISOString(),
+    });
+
+    const unpackedRules = unpackRules({
+      rules: [rule],
+      slots: [],
+      start: rule.start,
+      end: rule.end,
+    });
+    const selectedRuleEvent = unpackedRules[0];
+
+    const lesson = await studentApi.atlas.lesson.create({
+      start: selectedRuleEvent.start,
+      duration: 30,
+      ruleId: rule.id,
+      slotId: slot.id,
+      tutorId: tutor.user.id,
+    });
+
+    const newTutorApi = await Api.forTutor();
+    const newTutor = await newTutorApi.findCurrentUser();
+
+    const tutorSocket = new ClientSocket(newTutor.token);
+    const studentSocket = new ClientSocket(student.token);
+
+    const result = studentSocket.wait(Wss.ServerEvent.MemberJoinedSession);
+    tutorSocket.joinSession(lesson.sessionId);
+
+    await result
+      .then(() => expect(false))
+      .catch((e) => expect(e.message).to.be.eq("TIMEOUT"));
 
     tutorSocket.client.disconnect();
     studentSocket.client.disconnect();

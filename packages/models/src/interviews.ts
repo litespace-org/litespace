@@ -21,6 +21,7 @@ export class Interviews {
     interviewer_feedback: this.column("interviewer_feedback"),
     interviewee_feedback: this.column("interviewee_feedback"),
     rule_id: this.column("rule_id"),
+    slot_id: this.column("slot_id"),
     session_id: this.column("session_id"),
     note: this.column("note"),
     level: this.column("level"),
@@ -44,6 +45,7 @@ export class Interviews {
         interviewee_id: payload.interviewee,
         session_id: payload.session,
         rule_id: payload.rule,
+        slot_id: payload.slot,
         created_at: now,
         updated_at: now,
       })
@@ -80,6 +82,24 @@ export class Interviews {
     const row = first(rows);
     if (!row) throw new Error("Interview not found; should never happen");
     return this.from(row);
+  }
+
+  async cancel({
+    canceledBy,
+    ids,
+    tx,
+  }: WithOptionalTx<{
+    ids: number[];
+    canceledBy: number;
+  }>): Promise<void> {
+    const now = dayjs.utc().toDate();
+    await this.builder(tx)
+      .update({
+        canceled_by: canceledBy,
+        canceled_at: now,
+        updated_at: now,
+      })
+      .whereIn(this.column("id"), ids);
   }
 
   async findOneBy<T extends keyof IInterview.Row>(
@@ -120,6 +140,10 @@ export class Interviews {
     return await this.findManyBy("rule_id", id);
   }
 
+  async findBySlotId(id: number): Promise<IInterview.Self[]> {
+    return await this.findManyBy("slot_id", id);
+  }
+
   async find({
     statuses,
     signers,
@@ -129,6 +153,7 @@ export class Interviews {
     page,
     size,
     rules = [],
+    slots = [],
     cancelled,
     tx,
   }: {
@@ -139,7 +164,12 @@ export class Interviews {
     signed?: boolean;
     signers?: number[];
     rules?: number[];
+    /**
+     * slots ids to be included in the query result
+     */
+    slots?: number[];
     cancelled?: boolean;
+    pagination?: IFilter.SkippablePagination;
   } & IFilter.Pagination): Promise<Paginated<IInterview.Self>> {
     const baseBuilder = this.builder(tx);
 
@@ -166,6 +196,8 @@ export class Interviews {
 
     if (!isEmpty(rules)) baseBuilder.whereIn(this.column("rule_id"), rules);
 
+    if (!isEmpty(slots)) baseBuilder.whereIn(this.column("slot_id"), slots);
+
     if (cancelled === true)
       baseBuilder.where(this.column("canceled_at"), "IS NOT", null);
     else if (cancelled === false)
@@ -188,6 +220,7 @@ export class Interviews {
         interviewer: row.interviewer_id,
         interviewee: row.interviewee_id,
         rule: row.rule_id,
+        slot: row.slot_id,
         session: row.session_id,
       },
       feedback: {

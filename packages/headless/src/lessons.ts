@@ -90,11 +90,13 @@ export function useCreateLesson({
     async ({
       tutorId,
       ruleId,
+      slotId,
       start,
       duration,
     }: {
       tutorId: number;
       ruleId: number;
+      slotId: number;
       start: string;
       duration: ILesson.Duration;
     }) => {
@@ -102,6 +104,7 @@ export function useCreateLesson({
         tutorId,
         duration,
         ruleId,
+        slotId,
         start,
       });
     },

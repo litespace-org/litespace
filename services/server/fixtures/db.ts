@@ -10,6 +10,7 @@ import {
   users,
   ratings,
   tutors,
+  availabilitySlots,
 } from "@litespace/models";
 import {
   IInterview,
@@ -20,9 +21,10 @@ import {
   IRating,
   IMessage,
   ISession,
+  IAvailabilitySlot,
 } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
-import { entries, range, sample } from "lodash";
+import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
 import { Time } from "@litespace/sol/time";
 export { faker } from "@faker-js/faker/locale/ar";
@@ -46,6 +48,7 @@ export async function flush() {
     await rules.builder(tx).del();
     await ratings.builder(tx).del();
     await tutors.builder(tx).del();
+    await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();
   });
 }
@@ -102,6 +105,24 @@ export async function rule(payload?: Partial<IRule.CreatePayload>) {
   });
 }
 
+export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
+  const start = dayjs.utc(payload?.start || faker.date.future());
+  const end = payload?.end
+    ? dayjs.utc(payload.end)
+    : start.add(faker.number.int(8), "hours");
+
+  const newSlots = await availabilitySlots.create([
+    {
+      userId: payload?.userId || 1,
+      start: start.toISOString(),
+      end: end.toISOString(),
+    },
+  ]);
+  const res = first(newSlots);
+  if (!res) throw Error("error: couldn't insert new slot.");
+  return res;
+}
+
 async function activatedRule(payload?: Partial<IRule.CreatePayload>) {
   const ruleInfo = await rule(payload);
   return await rules.update(ruleInfo.id, { activated: true });
@@ -124,13 +145,17 @@ const or = {
   async sessionId(type: ISession.Type): Promise<ISession.Id> {
     return `${type}:${randomUUID()}`;
   },
-  async ruleId(id?: number): Promise<number> {
-    if (!id) return await rule().then((rule) => rule.id);
+  async ruleId(id?: number, userId?: number): Promise<number> {
+    if (!id) return await rule({ userId }).then((rule) => rule.id);
     return id;
   },
   async roomId(roomId?: number): Promise<number> {
-    if (!roomId) return makeRoom();
+    if (!roomId) return await makeRoom();
     return roomId;
+  },
+  async slotId(id?: number, userId?: number): Promise<number> {
+    if (!id) return await slot({ userId }).then((slot) => slot.id);
+    return id;
   },
   start(start?: string): string {
     if (!start) return faker.date.soon().toISOString();
@@ -162,14 +187,19 @@ export async function lesson(
             : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
-      rule: await or.ruleId(payload?.rule),
+      rule: await or.ruleId(payload?.rule, payload?.tutor),
+      slot: await or.slotId(payload?.slot, payload?.tutor),
       student,
       tutor,
       tx,
     });
 
     if (payload?.canceled)
-      await lessons.cancel({ canceledBy: tutor, id: data.lesson.id, tx });
+      await lessons.cancel({
+        canceledBy: tutor,
+        ids: [data.lesson.id],
+        tx,
+      });
 
     return data;
   });
@@ -180,7 +210,8 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
     interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
     session: await or.sessionId("interview"),
-    rule: await or.ruleId(payload.rule),
+    rule: await or.ruleId(payload.rule, payload.interviewer),
+    slot: await or.slotId(payload.slot, payload.interviewer),
     start: or.start(payload.start),
   });
 }
@@ -319,7 +350,10 @@ async function makeLessons({
       range(0, canceledFutureLessonCount).map(async (i) => {
         const info = futureLessons[i];
         if (!lesson) throw new Error("invalid future lesson index");
-        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        await lessons.cancel({
+          canceledBy: tutor,
+          ids: [info.lesson.id],
+        });
         return info;
       })
     );
@@ -329,7 +363,10 @@ async function makeLessons({
       range(0, canceledPastLessonCount).map(async (i) => {
         const info = pastLessons[i];
         if (!info) throw new Error("invalid past lesson index");
-        await lessons.cancel({ canceledBy: tutor, id: info.lesson.id });
+        await lessons.cancel({
+          canceledBy: tutor,
+          ids: [info.lesson.id],
+        });
         return info;
       })
     );
@@ -415,7 +452,7 @@ async function makeRoom(payload?: [number, number]) {
 }
 
 async function makeMessage(
-  tx: Knex.Transaction,
+  _: Knex.Transaction,
   payload?: Partial<IMessage.CreatePayload>
 ) {
   const roomId: number = await or.roomId(payload?.roomId);
@@ -480,6 +517,7 @@ export default {
   flush,
   topic,
   rule,
+  slot,
   room: makeRoom,
   message: makeMessage,
   make: {

@@ -1,4 +1,4 @@
-import { availabilitySlots } from "@/availabilitySlot";
+import { availabilitySlots } from "@/availabilitySlots";
 import fixtures from "@fixtures/db";
 import { dayjs, nameof, safe } from "@litespace/sol";
 import { expect } from "chai";
@@ -56,8 +56,8 @@ describe("AvailabilitySlots", () => {
       ]);
 
       const res = await availabilitySlots.find({ users: [user1.id, user2.id] });
-      expect(res).to.have.length(3);
-      expect(res).to.deep.eq(slots);
+      expect(res.total).to.eq(3);
+      expect(res.list).to.deep.eq(slots);
     });
     it("should retieve AvailabilitySlot rows between two dates", async () => {
       const user = await fixtures.user({});
@@ -85,8 +85,8 @@ describe("AvailabilitySlots", () => {
         before: slots[1].end,
       });
 
-      expect(res).to.have.length(2);
-      expect(res).to.deep.eq(slots.slice(0, 2));
+      expect(res.total).to.eq(2);
+      expect(res.list).to.deep.eq(slots.slice(0, 2));
     });
   });
 
@@ -102,13 +102,15 @@ describe("AvailabilitySlots", () => {
         },
       ]);
 
-      const updated = await availabilitySlots.update(slots[0].id, {
+      await availabilitySlots.update(slots[0].id, {
         start: dayjs.utc().add(2, "hour").toISOString(),
         end: dayjs.utc().add(3, "hour").toISOString(),
       });
 
-      const found = first(await availabilitySlots.find({ users: [user.id] }));
-      expect(found).to.deep.eq(updated);
+      const updated = await availabilitySlots.findById(slots[0].id);
+
+      const res = await availabilitySlots.find({ users: [user.id] });
+      expect(first(res.list)).to.deep.eq(updated);
     });
   });
 
@@ -132,11 +134,24 @@ describe("AvailabilitySlots", () => {
       await availabilitySlots.delete(created.map((slot) => slot.id));
 
       const res = await availabilitySlots.find({ users: [user.id] });
-      expect(res).to.have.length(0);
+      expect(res.total).to.eql(0);
     });
-    it("should throw an error if the ids list is empty", async () => {
-      const res = await safe(async () => availabilitySlots.delete([]));
-      expect(res).to.be.instanceOf(Error);
+
+    it("should NOT delete a list of available AvailabilitySlot rows from the database if it has associated lessons/interviews", async () => {
+      const user = await fixtures.user({});
+
+      const [slot] = await availabilitySlots.create([
+        {
+          userId: user.id,
+          start: dayjs.utc().toISOString(),
+          end: dayjs.utc().add(1, "hour").toISOString(),
+        },
+      ]);
+
+      await fixtures.lesson({ slot: slot.id });
+
+      const res = await safe(async () => availabilitySlots.delete([slot.id]));
+      expect(res).to.be.instanceof(Error);
     });
   });
 });

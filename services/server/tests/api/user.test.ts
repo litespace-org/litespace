@@ -1,4 +1,3 @@
-import { flush } from "@fixtures/shared";
 import { IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
@@ -7,14 +6,14 @@ import { safe } from "@litespace/sol/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";
-import { knex, tutors, users } from "@litespace/models";
+import { tutors, users } from "@litespace/models";
 import { Role } from "@litespace/types/dist/esm/user";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 
 describe("/api/v1/user/", () => {
   beforeEach(async () => {
-    await flush();
+    await db.flush();
   });
 
   describe("POST /api/v1/user", () => {
@@ -82,7 +81,7 @@ describe("/api/v1/user/", () => {
       });
 
       beforeEach(async () => {
-        await flush();
+        await db.flush();
         await cache.flush();
       });
 
@@ -251,7 +250,7 @@ describe("/api/v1/user/", () => {
 
   describe("GET /api/v1/user/tutor/list/uncontacted", () => {
     beforeEach(async () => {
-      await flush();
+      await db.flush();
     });
 
     it("should successfully retrieve list of tutors with which the student has not chat room yet.", async () => {
@@ -288,7 +287,7 @@ describe("/api/v1/user/", () => {
     });
 
     beforeEach(async () => {
-      await flush();
+      await db.flush();
       await cache.flush();
     });
 
@@ -365,7 +364,7 @@ describe("/api/v1/user/", () => {
 
   describe("GET /api/v1/user/tutor/stats/personalized", () => {
     beforeEach(async () => {
-      await flush();
+      await db.flush();
     });
 
     it("should retrieve tutor stats by current logged-in user id.", async () => {
@@ -445,12 +444,16 @@ describe("/api/v1/user/", () => {
 
   describe("GET /api/v1/user/student/stats/personalized", () => {
     beforeEach(async () => {
-      await flush();
+      await db.flush();
     });
 
     it("should retrieve student stats by current logged-in user id.", async () => {
       const studentApi = await Api.forStudent();
       const student = await studentApi.findCurrentUser();
+
+      const tutor1 = await db.tutor();
+      const tutor2 = await db.tutor();
+      const tutor3 = await db.tutor();
 
       const rule1 = await db.rule({
         userId: student.user.id,
@@ -467,17 +470,20 @@ describe("/api/v1/user/", () => {
 
       const lesson1 = await db.lesson({
         student: student.user.id,
+        tutor: tutor1.id,
         rule: rule1.id,
         start: rule1.start,
       });
 
       await db.lesson({
         student: student.user.id,
+        tutor: tutor2.id,
         rule: rule2.id,
       });
 
       await db.lesson({
         student: student.user.id,
+        tutor: tutor3.id,
         rule: rule3.id,
         canceled: true,
       });

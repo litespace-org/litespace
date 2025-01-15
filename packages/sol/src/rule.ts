@@ -489,19 +489,3 @@ export function toUtcDate(value: string | Dayjs) {
     date.second()
   );
 }
-
-export function asSlot<T extends ILesson.Self | IInterview.Self>(
-  item: T
-): IRule.Slot {
-  return {
-    ruleId: "ids" in item ? item.ids.rule : item.ruleId,
-    start: item.start,
-    duration: "duration" in item ? item.duration : INTERVIEW_DURATION,
-  };
-}
-
-export function asSlots<T extends ILesson.Self | IInterview.Self>(
-  items: T[]
-): IRule.Slot[] {
-  return items.map((item) => asSlot(item));
-}

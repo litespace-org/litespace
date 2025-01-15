@@ -1,5 +1,6 @@
 import { User } from "@/user";
 import { Auth } from "@/auth";
+import { AvailabilitySlot } from "@/availabilitySlot";
 import { Backend } from "@litespace/types";
 import { Plan } from "@/plan";
 import { Coupon } from "@/coupon";
@@ -22,6 +23,7 @@ import { Session } from "@/session";
 export class Atlas {
   public readonly user: User;
   public readonly auth: Auth;
+  public readonly availabilitySlot: AvailabilitySlot;
   public readonly plan: Plan;
   public readonly coupon: Coupon;
   public readonly invite: Invite;
@@ -42,6 +44,7 @@ export class Atlas {
   constructor(backend: Backend, token: AuthToken | null) {
     this.user = new User(backend, token);
     this.auth = new Auth(backend, token);
+    this.availabilitySlot = new AvailabilitySlot(backend, token);
     this.plan = new Plan(backend, token);
     this.coupon = new Coupon(backend, token);
     this.invite = new Invite(backend, token);
