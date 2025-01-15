@@ -1,18 +1,42 @@
-import React, { ChangeEvent, useCallback, useEffect, useState } from "react";
+import React, {
+  ChangeEvent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useFormatMessage } from "@/hooks";
 import Send from "@litespace/assets/Send";
 import { Input } from "@/components/Input";
+import { Void } from "@litespace/types";
+import { throttle } from "lodash";
 
 type InitialMessage = { id: number; text: string };
+
 export const SendInput: React.FC<{
   initialMessage?: InitialMessage;
   onSubmit: (value: string) => void;
-}> = ({ initialMessage, onSubmit }) => {
+  /**
+   * wss event fired when the user is typing
+   */
+  typingMessage?: Void;
+}> = ({ initialMessage, onSubmit, typingMessage }) => {
   const [value, setValue] = useState<string>(initialMessage?.text || "");
   const intl = useFormatMessage();
-  const handleChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  }, []);
+
+  const throttledTyping = useMemo(() => {
+    return throttle(() => {
+      if (typingMessage) typingMessage();
+    }, 750);
+  }, [typingMessage]);
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.target.value);
+      throttledTyping();
+    },
+    [throttledTyping]
+  );
 
   const handleSubmit = useCallback(() => {
     if (value === "") return;
@@ -20,15 +44,15 @@ export const SendInput: React.FC<{
     onSubmit(value);
   }, [onSubmit, value]);
 
-  const handleSubmitByEnter = useCallback(
+  const onKeyDown = useCallback(
     (e: KeyboardEvent) => e.key === "Enter" && handleSubmit(),
     [handleSubmit]
   );
 
   useEffect(() => {
-    document.addEventListener("keypress", handleSubmitByEnter);
-    return () => document.removeEventListener("keypress", handleSubmitByEnter);
-  }, [handleSubmitByEnter]);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [onKeyDown]);
 
   return (
     <Input

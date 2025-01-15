@@ -1,6 +1,13 @@
 import { useAtlas } from "@/atlas";
 import { IRoom, Wss, IMessage, Void, IFilter } from "@litespace/types";
-import { useCallback, useEffect, useMemo, useReducer } from "react";
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import {
   useInfinitePaginationQuery,
   UseInfinitePaginationQueryResult,
@@ -17,6 +24,7 @@ enum MessageStream {
   Add = "add",
   Update = "update",
   Delete = "delete",
+  Typing = "typing",
 }
 
 type MessageStreamAction =
@@ -57,6 +65,7 @@ type MessageStreamAction =
       };
     };
 
+type UserId = number;
 type RoomId = number;
 type RefId = string;
 type MessageId = number;
@@ -330,6 +339,13 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     [socket, onMessage]
   );
 
+  const ackUserTyping = useCallback(
+    ({ roomId }: { roomId: number }) => {
+      socket?.emit(Wss.ClientEvent.UserTyping, { roomId });
+    },
+    [socket]
+  );
+
   const onRoomMessage = useCallback(
     (message: IMessage.AttributedMessage) => {
       if (!onMessage || !userId) return;
@@ -385,6 +401,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     sendMessage,
     deleteMessage,
     updateMessage,
+    ackUserTyping,
   };
 }
 
@@ -833,4 +850,84 @@ export function useMessages(room: number | null) {
     state.messageErrors,
     more,
   ]);
+}
+
+export type RoomsMap = Partial<{
+  [roomId: number]: { [userId: number]: boolean };
+}>;
+
+export function useChatStatus() {
+  const socket = useSocket();
+
+  /**
+   * A map from rooms to object containing both users in it and showing
+   * if they are typing currently or not
+   * ```ts
+   * type TypingStaus = boolean; // true in case the user is typing.
+   * type TypingMap = Record<RoomId, Record<UserId, TypingStatus>>;
+   * ```
+   */
+  const [typingMap, setTypingMap] = useState<RoomsMap>({});
+
+  /**
+   * A map from rooms to object containing both users in it and showing
+   * if they are online
+   * ```ts
+   * type OnlineStaus = boolean; // true in case the user is typing.
+   * type OnlineMap = Record<RoomId, Record<UserId, OnlineStaus>>;
+   * ```
+   */
+  const [usersOnlineMap, setUsersOnlineMap] = useState<RoomsMap>({});
+
+  /**
+   * object containing timers to remove the typing states from rooms (only if we didn't recieve the
+   * UserTyping event from the server)
+   */
+  const typingTimeouts = useRef<Record<RoomId, Record<UserId, NodeJS.Timeout>>>(
+    {}
+  );
+
+  const onUserTyping = useCallback(
+    ({ userId, roomId }: Wss.EventPayload<Wss.ServerEvent.UserTyping>) => {
+      const userIdTimeout = typingTimeouts.current[roomId]?.[userId];
+      if (userIdTimeout) clearTimeout(userIdTimeout);
+
+      setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: true } }));
+
+      const timeout = setTimeout(() => {
+        setTypingMap((prev) => ({ ...prev, [roomId]: { [userId]: false } }));
+      }, 1000);
+
+      typingTimeouts.current[roomId] = {
+        ...typingTimeouts.current[roomId],
+        [userId]: timeout,
+      };
+    },
+    []
+  );
+
+  const onUserStatusChange = useCallback(
+    ({
+      online,
+      userId,
+      roomId,
+    }: Wss.EventPayload<Wss.ServerEvent.UserStatusChanged>) =>
+      setUsersOnlineMap((prev) => {
+        const cloned = structuredClone(prev);
+        cloned[roomId] = { ...cloned[roomId], [userId]: online };
+        return cloned;
+      }),
+    []
+  );
+
+  useEffect(() => {
+    socket?.on(Wss.ServerEvent.UserTyping, onUserTyping);
+    socket?.on(Wss.ServerEvent.UserStatusChanged, onUserStatusChange);
+    return () => {
+      socket?.off(Wss.ServerEvent.UserTyping, onUserTyping);
+      socket?.off(Wss.ServerEvent.UserStatusChanged, onUserStatusChange);
+    };
+  }, [socket, onUserTyping, onUserStatusChange]);
+
+  return { typingMap, usersOnlineMap };
 }

@@ -4,7 +4,7 @@ import { useFormatMessage } from "@/hooks";
 import { orUndefined } from "@litespace/sol/utils";
 import { IUser } from "@litespace/types";
 import { AnimatePresence } from "framer-motion";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 
 export const UserTyping: React.FC<{
@@ -29,15 +29,9 @@ export const UserTyping: React.FC<{
    */
   gender: IUser.Gender | null;
   /**
-   * Random id used to force the component to re-render.
-   */
-  seed?: number;
-  /**
    * @description display time offset in milliseconds.
-   *
    * How long the component should be rendered before it is unmounted.
-   *
-   * @default 1000 // one second
+   * @default 1.5 // one and half second
    */
   offset?: number;
 }> = ({
@@ -45,57 +39,44 @@ export const UserTyping: React.FC<{
   name,
   imageUrl,
   gender,
-  seed,
-  offset = 1_000, // 1 second
+  offset = 1.5, // 1.5 second
 }) => {
   const intl = useFormatMessage();
-  const [show, setShow] = useState<boolean>(false);
-
-  useEffect(() => {
-    if (!seed) return;
-
-    setShow(true);
-
-    const timeout = setTimeout(() => {
-      setShow(false);
-    }, offset);
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [offset, seed]);
 
   return (
     <AnimatePresence mode="wait">
-      {show ? (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="tw-flex tw-flex-row tw-items-end tw-gap-2"
-        >
-          <div className="tw-animate-pulse tw-duration-150">
-            {name ? (
-              <Typography element="caption" className="tw-text-natural-950">
-                {name}
-              </Typography>
-            ) : null}
-            &nbsp;
-            <Typography element="caption" className="tw-text-natural-400">
-              {gender === IUser.Gender.Male || gender === null
-                ? intl("chat.typing-now.male")
-                : intl("chat.typing-now.female")}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: [0, 0.7, 1, 1, 0.7, 0] }}
+        transition={{
+          repeat: Infinity,
+          duration: offset,
+          ease: "linear",
+        }}
+        exit={{ opacity: 0 }}
+        className="tw-flex tw-flex-row tw-items-center tw-gap-2"
+      >
+        <div className="tw-w-7 tw-h-7 tw-rounded-full tw-overflow-hidden">
+          <Avatar
+            src={orUndefined(imageUrl)}
+            alt={orUndefined(name)}
+            seed={id.toString()}
+          />
+        </div>
+        <div>
+          {name ? (
+            <Typography element="caption" className="tw-text-natural-950">
+              {name}
             </Typography>
-          </div>
-          <div className="tw-w-7 tw-h-7 tw-rounded-full tw-overflow-hidden">
-            <Avatar
-              src={orUndefined(imageUrl)}
-              alt={orUndefined(name)}
-              seed={id.toString()}
-            />
-          </div>
-        </motion.div>
-      ) : null}
+          ) : null}
+          &nbsp;
+          <Typography element="caption" className="tw-text-natural-400">
+            {gender === IUser.Gender.Male || gender === null
+              ? intl("chat.typing-now.male")
+              : intl("chat.typing-now.female")}
+          </Typography>
+        </div>
+      </motion.div>
     </AnimatePresence>
   );
 };

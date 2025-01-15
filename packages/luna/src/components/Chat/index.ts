@@ -8,3 +8,4 @@ export {
   ChatSummary,
   type ChatSummaryProps,
 } from "@/components/Chat/ChatSummary/ChatSummary";
+export { UserTyping } from "@/components/Chat/UserTyping";

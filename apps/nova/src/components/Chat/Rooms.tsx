@@ -9,6 +9,8 @@ import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
+import { isOnline, isTyping } from "@/lib/room";
+import { RoomsMap } from "@litespace/headless/chat";
 
 type Query = UseInfiniteQueryResult<
   InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
@@ -19,6 +21,8 @@ const Rooms: React.FC<{
   type: "all" | "pinned";
   query: Query;
   rooms: IRoom.FindUserRoomsApiRecord[] | null;
+  typingMap: RoomsMap;
+  usersOnlineMap: RoomsMap;
   select: SelectRoom;
   roomId: number | null;
   target: React.RefObject<HTMLDivElement>;
@@ -26,6 +30,8 @@ const Rooms: React.FC<{
   toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
   togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
 }> = ({
+  typingMap,
+  usersOnlineMap,
   query,
   rooms,
   select,
@@ -62,6 +68,7 @@ const Rooms: React.FC<{
             owner={
               room.latestMessage ? room.latestMessage.userId === user.id : false
             }
+            online={isOnline(usersOnlineMap, room.roomId, room.otherMember)}
             isPinned={room.settings.pinned}
             isMuted={room.settings.muted}
             userId={room.otherMember.id}
@@ -69,7 +76,10 @@ const Rooms: React.FC<{
               toggleMute({ roomId: room.roomId, muted: !room.settings.muted })
             }
             togglePin={() =>
-              togglePin({ roomId: room.roomId, pinned: !room.settings.pinned })
+              togglePin({
+                roomId: room.roomId,
+                pinned: !room.settings.pinned,
+              })
             }
             image={
               room.otherMember.image
@@ -79,10 +89,10 @@ const Rooms: React.FC<{
             name={room.otherMember.name!}
             // TODO: replace otherMember.name with member.bio
             message={
-              room.latestMessage ? room.latestMessage?.text : "TODO: Bio"
+              room.latestMessage ? room.latestMessage?.text : "TODO: BIO"
             }
             unreadCount={room.unreadMessagesCount}
-            isTyping={false}
+            isTyping={isTyping(typingMap, room.roomId, room.otherMember.id)}
             select={() =>
               select({
                 room: room.roomId,

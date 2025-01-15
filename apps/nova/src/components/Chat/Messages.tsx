@@ -12,6 +12,7 @@ import {
   ChatHeader,
   SendInput,
   EditMessage,
+  UserTyping,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
 import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
@@ -48,7 +49,9 @@ type RetryFnMap = Record<
 const Messages: React.FC<{
   room: number;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
-}> = ({ room, otherMember }) => {
+  isTyping: boolean;
+  isOnline: boolean;
+}> = ({ room, otherMember, isTyping, isOnline }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -62,9 +65,6 @@ const Messages: React.FC<{
   const [open, setOpen] = useState<boolean>(false);
   const closeDialog = useCallback(() => setOpen(false), []);
   const openDialog = useCallback(() => setOpen(true), []);
-
-  // TODO: retrieve user online status from the server cache
-  const [onlineStatus, _] = useState(false);
 
   const {
     messages,
@@ -100,7 +100,7 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage } = useChat(
+  const { sendMessage, updateMessage, deleteMessage, ackUserTyping } = useChat(
     onMessage,
     orUndefined(user?.id)
   );
@@ -115,6 +115,10 @@ const Messages: React.FC<{
     delete: (payload) =>
       typeof payload === "number" && deleteMessage(payload, room),
   };
+  const typingMessage = useCallback(
+    () => ackUserTyping({ roomId: room }),
+    [room, ackUserTyping]
+  );
 
   const submit = useCallback(
     (text: string) => {
@@ -219,7 +223,7 @@ const Messages: React.FC<{
           {...otherMember}
           image={otherMember.image ? asFullAssetUrl(otherMember.image) : null}
           openDialog={openDialog}
-          online={onlineStatus}
+          online={isOnline}
           lastSeen={dayjs(otherMember.lastSeen).fromNow()}
         />
       </div>
@@ -316,9 +320,18 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-
-          <div className="px-4 pt-2 pb-6">
-            <SendInput onSubmit={submit} />
+          {isTyping ? (
+            <div className="px-6">
+              <UserTyping
+                id={otherMember.id}
+                name={otherMember.name}
+                gender={otherMember.gender}
+                imageUrl={otherMember.image}
+              />
+            </div>
+          ) : null}
+          <div className="px-4 pt-2 pb-6 mt-3">
+            <SendInput typingMessage={typingMessage} onSubmit={submit} />
           </div>
         </>
       ) : null}

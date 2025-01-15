@@ -8,11 +8,14 @@ import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useRoomManager } from "@/hooks/chat";
+import { RoomsMap } from "@litespace/headless/chat";
 
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
-}> = ({ select, selected: { room: roomId } }) => {
+  typingMap: RoomsMap;
+  usersOnlineMap: RoomsMap;
+}> = ({ select, typingMap, usersOnlineMap, selected: { room: roomId } }) => {
   const intl = useFormatMessage();
   const { rooms, keyword, update } = useRoomManager();
 
@@ -54,6 +57,8 @@ const RoomsContainer: React.FC<{
         {rooms.pinned.list && rooms.pinned.list.length > 0 && !keyword.value ? (
           <div className="mb-6">
             <Rooms
+              usersOnlineMap={usersOnlineMap}
+              typingMap={typingMap}
               toggleMute={update.toggleMute}
               togglePin={update.togglePin}
               type="pinned"
@@ -69,6 +74,8 @@ const RoomsContainer: React.FC<{
 
         <Rooms
           type="all"
+          typingMap={typingMap}
+          usersOnlineMap={usersOnlineMap}
           toggleMute={update.toggleMute}
           togglePin={update.togglePin}
           query={rooms.all.query}

@@ -12,6 +12,7 @@ describe(nameof(asOtherMember), () => {
     online: false,
     image: faker.image.urlPicsumPhotos(),
     createdAt: faker.date.past().toISOString(),
+    gender: IUser.Gender.Male,
     updatedAt: faker.date.past().toISOString(),
     muted: false,
     pinned: false,
@@ -26,6 +27,7 @@ describe(nameof(asOtherMember), () => {
     online: false,
     image: faker.image.urlPicsumPhotos(),
     createdAt: faker.date.past().toISOString(),
+    gender: IUser.Gender.Female,
     updatedAt: faker.date.past().toISOString(),
     muted: false,
     pinned: false,
@@ -40,6 +42,7 @@ describe(nameof(asOtherMember), () => {
       image: other.image,
       online: other.online,
       role: other.role,
+      gender: other.gender,
       lastSeen: other.updatedAt,
     });
   });
