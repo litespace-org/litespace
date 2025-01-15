@@ -10,6 +10,8 @@ import People from "@litespace/assets/People";
 import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
+import ScheduleManagement from "@litespace/assets/ScheduleManagement";
+import ProfileAvatar from "@litespace/assets/ProfileAvatar";
 import cn from "classnames";
 import React, { SVGProps, useMemo } from "react";
 import { Link, useLocation } from "react-router-dom";
@@ -40,7 +42,7 @@ const SidebarItem = ({
     >
       <Icon
         className={cn(
-          "[&_*]:transition-all [&_*]:duration-200  group-hover:[&_*]:stroke-natural-50",
+          "[&_*]:transition-all [&_*]:duration-200  group-hover:[&_*]:stroke-natural-50 h-6 w-6",
           active ? "[&_*]:stroke-natural-50" : "[&_*]:stroke-natural-700"
         )}
       />
@@ -62,42 +64,69 @@ const SidebarItem = ({
 const Sidebar = () => {
   const intl = useFormatMessage();
   const location = useLocation();
-  const { logout, user } = useUserContext();
+  const { user, logout } = useUserContext();
 
   const mainPages = useMemo(() => {
-    return [
-      {
-        label: intl("sidebar.dashboard"),
-        route: Route.Dashboard,
-        Icon: Home,
-      },
-      {
-        label: intl("sidebar.upcoming-lessons"),
-        route: Route.UpcomingLessons,
-        Icon: Video,
-      },
-      {
-        label: intl("sidebar.tutors"),
-        route: Route.Tutors,
-        Icon: People,
-      },
-      {
-        label: intl("sidebar.schedule"),
-        route: Route.Schedule,
-        Icon: Calendar,
-      },
-      {
-        label: intl("sidebar.chat"),
-        route: Route.Chat,
-        Icon: Chat,
-      },
-      {
-        label: intl("sidebar.subscriptions"),
-        route: Route.Subscription,
-        Icon: Tag,
-      },
-    ];
-  }, [intl]);
+    const dashboard = {
+      label: intl("sidebar.dashboard"),
+      route: Route.Dashboard,
+      Icon: Home,
+    };
+
+    const schedule = {
+      label: intl("sidebar.schedule"),
+      route: Route.Schedule,
+      Icon: Calendar,
+    };
+
+    const upcomingLessons = {
+      label: intl("sidebar.upcoming-lessons"),
+      route: Route.UpcomingLessons,
+      Icon: Video,
+    };
+
+    const chat = {
+      label: intl("sidebar.chat"),
+      route: Route.Chat,
+      Icon: Chat,
+    };
+
+    const scheduleManagement = {
+      label: intl("sidebar.schedule-management"),
+      route: Route.ScheduleManagement,
+      Icon: ScheduleManagement,
+    };
+
+    const tutors = {
+      label: intl("sidebar.tutors"),
+      route: Route.Tutors,
+      Icon: People,
+    };
+
+    const subscribtions = {
+      label: intl("sidebar.subscriptions"),
+      route: Route.Subscription,
+      Icon: Tag,
+    };
+
+    if (
+      user?.role === IUser.Role.Tutor ||
+      user?.role === IUser.Role.TutorManager
+    )
+      return [dashboard, upcomingLessons, schedule, scheduleManagement, chat];
+
+    if (user?.role === IUser.Role.Student)
+      return [
+        dashboard,
+        upcomingLessons,
+        tutors,
+        schedule,
+        chat,
+        subscribtions,
+      ];
+
+    return [];
+  }, [intl, user?.role]);
 
   return (
     <div className="fixed top-0 bottom-0 start-0 flex flex-col gap-10 w-60 p-6 shadow-app-sidebar z-sidebar">
@@ -141,18 +170,25 @@ const Sidebar = () => {
           {user ? (
             <SidebarItem
               to={
-                user.role === IUser.Role.Student
+                user?.role === IUser.Role.Student
                   ? Route.StudentSettings
                   : Route.TutorSettings
               }
-              Icon={Settings}
-              label={intl("sidebar.settings")}
+              Icon={
+                user?.role === IUser.Role.Student ? Settings : ProfileAvatar
+              }
+              label={
+                user?.role === IUser.Role.Student
+                  ? intl("sidebar.settings")
+                  : intl("sidebar.profile")
+              }
               active={
                 location.pathname === Route.TutorSettings ||
                 location.pathname === Route.StudentSettings
               }
             />
           ) : null}
+
           <button
             onClick={logout}
             className={cn(

@@ -24,6 +24,7 @@ import UpcomingLessons from "@/pages/UpcomingLessons";
 import Plans from "@/pages/Plans";
 import Lesson from "@/pages/Lesson";
 import TutorSettings from "@/pages/TutorSettings";
+import ScheduleManagement from "@/pages/ScheduleManagement";
 
 const router = createBrowserRouter([
   {
@@ -44,6 +45,7 @@ const router = createBrowserRouter([
       { path: Route.StudentSettings, element: <Settings /> },
       { path: Route.TutorSettings, element: <TutorSettings /> },
       { path: Route.Schedule, element: <Schedule /> },
+      { path: Route.ScheduleManagement, element: <ScheduleManagement /> },
       { path: Route.Subscription, element: <Plans /> },
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
       { path: Route.TutorProfile, element: <TutorProfile /> },

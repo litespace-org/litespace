@@ -13,6 +13,7 @@ export enum Route {
   ResetPassword = "/reset-password",
   Root = "/",
   Schedule = "/schedule",
+  ScheduleManagement = "/schedule-management",
   SelectUserType = "/select",
   SelectUserGender = "/gender",
   SetUserName = "/name",

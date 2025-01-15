@@ -1,13 +1,13 @@
-import { Slot } from "@/components/ManageSchedule/types";
-import { orUndefined } from "@litespace/sol/utils";
-import cn from "classnames";
-import { isEmpty } from "lodash";
-import React, { useCallback } from "react";
 import SlotRow from "@/components/ManageSchedule/SlotRow";
-import { IAvailabilitySlot } from "@litespace/types";
+import { Slot } from "@/components/ManageSchedule/types";
 import dayjs from "@/lib/dayjs";
 import { subtractSlots } from "@litespace/sol";
-import { AnimatePresence, motion, useIsPresent } from "framer-motion";
+import { orUndefined } from "@litespace/sol/utils";
+import { IAvailabilitySlot } from "@litespace/types";
+import cn from "classnames";
+import { AnimatePresence, motion } from "framer-motion";
+import { isEmpty } from "lodash";
+import React, { useCallback } from "react";
 
 function asSubSlots(slots: Slot[]) {
   const subslots: IAvailabilitySlot.SubSlot[] = [];
