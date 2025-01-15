@@ -148,7 +148,7 @@ export const ChatMessage: React.FC<{
 
       <div
         className={cn(
-          "tw-rounded-[15px] tw-relative tw-p-2 max-w-[324px]",
+          "tw-rounded-[15px] tw-relative tw-p-2 tw-max-w-[324px]",
           "tw-flex tw-items-end tw-gap-2 tw-justify-start",
           pending && "tw-cursor-wait tw-opacity-50",
           {
@@ -189,7 +189,10 @@ export const ChatMessage: React.FC<{
         <Typography
           element="caption"
           weight="regular"
-          className={cn("tw-flex tw-items-end tw-gap-2", {
+          style={{
+            lineBreak: "anywhere",
+          }}
+          className={cn("tw-flex tw-items-end tw-gap-2 tw-max-w-[310px]", {
             "tw-text-natural-950": !error,
             "tw-text-natural-50": error && !pending,
           })}

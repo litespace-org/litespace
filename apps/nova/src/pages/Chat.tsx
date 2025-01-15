@@ -4,7 +4,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
-import { asOtherMember } from "@/lib/room";
+import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/luna/Typography";
@@ -28,21 +28,24 @@ const Chat: React.FC = () => {
   const { typingMap, usersOnlineMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {
-    if (!selected.room || selected.room === "temporary" || !otherMember)
-      return false;
-    if (!typingMap) return false;
-    return !!typingMap[selected.room]?.[otherMember.id];
+    return otherMember
+      ? isTyping({
+          map: typingMap,
+          roomId: selected.room,
+          otherMemberId: otherMember.id,
+        })
+      : false;
   }, [selected.room, otherMember, typingMap]);
 
   const isOtherMemberOnline = useMemo(() => {
-    if (!selected.room || selected.room === "temporary" || !otherMember)
-      return false;
-    if (
-      !usersOnlineMap[selected.room] ||
-      !usersOnlineMap[selected.room]?.[otherMember.id]
-    )
-      return otherMember.online;
-    return !!usersOnlineMap[selected.room]?.[otherMember.id];
+    return otherMember
+      ? isOnline({
+          map: usersOnlineMap,
+          roomId: selected.room,
+          otherMemberStatus: otherMember.online,
+          otherMemberId: otherMember.id,
+        })
+      : false;
   }, [selected.room, otherMember, usersOnlineMap]);
 
   const retry = useCallback(() => {

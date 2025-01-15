@@ -45,8 +45,9 @@ const RoomsContainer: React.FC<{
       if (!select || !room || !otherMember) return;
       select({ room, otherMember });
       setTemporaryTutor(null);
+      keyword.set("");
     },
-    [select, setTemporaryTutor]
+    [select, setTemporaryTutor, keyword]
   );
 
   return (

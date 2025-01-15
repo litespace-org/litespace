@@ -290,6 +290,7 @@ export default {
       "unread-count": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
       "unread-count-dark": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
       "chat-date": "0px 4px 15px 0px rgba(0, 0, 0, 0.15)",
+      "chat-header": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
       tooltip: "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "plan-tooltip": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
       "feedback-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",

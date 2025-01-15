@@ -83,7 +83,9 @@ const Rooms: React.FC<{
    * map from either unconctacted tutors or chatRooms to list of props
    * we are doing this to avoid making prop definition unread
    */
-  const chatRoomProps: React.ComponentProps<typeof ChatRoom>[] = useMemo(
+  const chatRoomProps: (React.ComponentProps<typeof ChatRoom> & {
+    roomId: number | null;
+  })[] = useMemo(
     () =>
       asChatRoomProps({
         roomId,
@@ -123,16 +125,17 @@ const Rooms: React.FC<{
         {chatRoomProps.map((chatRoom) => (
           <ChatRoom
             {...chatRoom}
-            online={
-              usersOnlineMap && roomId && roomId !== "temporary"
-                ? isOnline(usersOnlineMap, roomId, chatRoom.userId)
-                : false
-            }
-            isTyping={
-              typingMap && roomId && roomId !== "temporary"
-                ? isTyping(typingMap, roomId, chatRoom.userId)
-                : false
-            }
+            online={isOnline({
+              map: usersOnlineMap,
+              roomId: chatRoom.roomId,
+              otherMemberStatus: chatRoom.online,
+              otherMemberId: chatRoom.userId,
+            })}
+            isTyping={isTyping({
+              map: typingMap,
+              roomId: chatRoom.roomId,
+              otherMemberId: chatRoom.userId,
+            })}
           />
         ))}
       </div>

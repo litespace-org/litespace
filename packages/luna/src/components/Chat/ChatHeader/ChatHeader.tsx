@@ -11,7 +11,7 @@ import { IUser, Void } from "@litespace/types";
 export const ChatHeader: React.FC<{
   name: string | null;
   image: string | null;
-  online: boolean;
+  online: boolean | undefined;
   lastSeen: string;
   id: number;
   role: IUser.Role;
@@ -20,7 +20,7 @@ export const ChatHeader: React.FC<{
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-justify-between">
+    <div className="tw-flex tw-justify-between tw-px-6 tw-py-4 tw-shadow-chat-header">
       <div className="tw-flex tw-gap-4 tw-items-center">
         <div
           className={cn(

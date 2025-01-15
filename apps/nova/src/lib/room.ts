@@ -35,20 +35,33 @@ export function asOtherMember(
   };
 }
 
-export function isOnline(
-  map: RoomsMap,
-  roomId: number,
-  otherMember: number
-): boolean {
-  return map[roomId]?.[otherMember] || false;
+export function isOnline({
+  map,
+  roomId,
+  otherMemberId,
+  otherMemberStatus,
+}: {
+  map: RoomsMap | undefined;
+  roomId: number | "temporary" | null;
+  otherMemberStatus: boolean | undefined;
+  otherMemberId: number;
+}): boolean | undefined {
+  if (!roomId || roomId === "temporary" || !map) return !!otherMemberStatus;
+  if (!map[roomId]) return otherMemberStatus;
+  return map[roomId]?.[otherMemberId];
 }
 
-export function isTyping(
-  map: RoomsMap,
-  roomId: number,
-  otherMemberId: number
-): boolean {
-  return map[roomId]?.[otherMemberId] || false;
+export function isTyping({
+  map,
+  roomId,
+  otherMemberId,
+}: {
+  map: RoomsMap | undefined;
+  roomId: number | "temporary" | null;
+  otherMemberId: number;
+}): boolean {
+  if (!roomId || roomId === "temporary" || !map) return false;
+  return !!map[roomId]?.[otherMemberId];
 }
 
 export function asChatRoomProps({
@@ -74,7 +87,7 @@ export function asChatRoomProps({
   intl: (id: keyof LocalMap, values?: Record<string, PrimitiveType>) => string;
 }) {
   if (!rooms) return [];
-  return rooms?.map((room, index) => {
+  return rooms?.map((room) => {
     // in case the component was given chat rooms
     if ("roomId" in room)
       return {
@@ -105,6 +118,7 @@ export function asChatRoomProps({
             : intl("chat.offline", {
                 time: dayjs(room.otherMember.lastSeen).fromNow(),
               })),
+        online: room.otherMember.online,
         unreadCount: room.unreadMessagesCount,
         select: () =>
           select &&
@@ -112,9 +126,10 @@ export function asChatRoomProps({
             room: room.roomId,
             otherMember: room.otherMember,
           }),
+        roomId: room.roomId,
       };
     // in case the component was given uncontacted tutors
-    if ("id" in room)
+    else
       return {
         key: room.id,
         optionsEnabled: false,
@@ -122,23 +137,13 @@ export function asChatRoomProps({
         image: orUndefined(asFullAssetUrl(room.image || "")),
         message: room.bio || "",
         name: room.name || "",
+        online: room.online,
+        role: room.role,
         unreadCount: 0,
+        roomId: null,
         select: () => selectUncontacted && selectUncontacted(room),
         toggleMute: () => {},
         togglePin: () => {},
       };
-    // default case: SHOULD NEVER HAPPEN
-    return {
-      key: index,
-      optionsEnabled: false,
-      userId: 0,
-      image: "",
-      message: "",
-      name: "",
-      unreadCount: 0,
-      select: () => {},
-      toggleMute: () => {},
-      togglePin: () => {},
-    };
   });
 }

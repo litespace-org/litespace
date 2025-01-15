@@ -31,6 +31,7 @@ import {
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
+import { useUserContext } from "@/user/index";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -334,6 +335,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
           text,
           refId,
         },
+        // on failure of sending message
         (error) => {
           return onMessage({
             type: ActionType.SendMessageFailure,
@@ -773,7 +775,11 @@ function reducer(state: State, action: Action) {
   return mutate();
 }
 
-// use the findRoom atlas function instead of the finder
+/**
+ *
+ * @param room
+ * @returns
+ */
 export function useMessages(room: number | "temporary" | null) {
   const atlas = useAtlas();
   const [state, dispatch] = useReducer(reducer, initial);
@@ -919,6 +925,8 @@ export type RoomsMap = Partial<{
 
 export function useChatStatus() {
   const socket = useSocket();
+  const { user } = useUserContext();
+  const userRooms = useFindUserRooms(user?.id);
 
   /**
    * A map from rooms to object containing both users in it and showing
@@ -980,6 +988,17 @@ export function useChatStatus() {
       }),
     []
   );
+
+  // populate the map with data from the server
+  useEffect(() => {
+    const rooms: RoomsMap = {};
+    userRooms.list?.forEach((room) => {
+      rooms[room.roomId] = {
+        [room.otherMember.id]: room.otherMember.online,
+      };
+    });
+    setUsersOnlineMap(rooms);
+  }, [userRooms.list]);
 
   useEffect(() => {
     socket?.on(Wss.ServerEvent.UserTyping, onUserTyping);
