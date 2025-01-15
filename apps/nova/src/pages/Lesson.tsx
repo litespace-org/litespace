@@ -21,7 +21,7 @@ import {
 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { Route } from "@/types/routes";
-import { asRateLessonQuery } from "@litespace/sol/query";
+import { asRateLessonQuery } from "@/lib/query";
 
 /**
  * @todos
@@ -358,12 +358,13 @@ const Lesson: React.FC = () => {
           leave={() => {
             session.leave();
             sessionManager.leave();
-            if (lessonMembers.current.role === "student") {
-              const lessonId = lesson.data?.lesson.id || 0;
-              const tutorId = lessonMembers.other.userId || 0;
-              navigate(
-                `${Route.UpcomingLessons}?${asRateLessonQuery({ lessonId, tutorId })}`
-              );
+            if (lessonMembers.current.role === IUser.Role.Student) {
+              const query = asRateLessonQuery({
+                lessonId: lessonMembers.current.lessonId,
+                tutorId: lessonMembers.other.userId,
+                tutorName: lessonMembers.other.name,
+              });
+              navigate(`${Route.UpcomingLessons}?${query}`);
             }
           }}
         />

@@ -7,22 +7,28 @@ import {
   useCreateRatingTutor,
   useFindTutorRatings,
 } from "@litespace/headless/rating";
-import { useFindTutorInfo } from "@litespace/headless/tutor";
-import { getLessonQuery } from "@litespace/sol/query";
+import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { RatingDialog } from "@litespace/luna/TutorFeedback";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/luna/Toast";
 import { first } from "lodash";
+import { IUser } from "@litespace/types";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 
 type RateDialogInfo = {
   tutorId: number | null;
   lessonId: number | null;
-  rateId: number | null;
-  rateValue: number | null;
-  rateFeedback: string | null;
-  enabled: boolean;
+  tutorName: string | null;
+  canRate: boolean;
+};
+
+const defaultRateDialogInfo: RateDialogInfo = {
+  tutorId: null,
+  lessonId: null,
+  tutorName: null,
+  canRate: false,
 };
 
 const UpcomingLessons: React.FC = () => {
@@ -31,25 +37,11 @@ const UpcomingLessons: React.FC = () => {
   const { user } = useUserContext();
   const toast = useToast();
 
-  const onRateError = useCallback(
-    () =>
-      toast.error({
-        title: intl("tutor.rate.error"),
-      }),
-    [intl, toast]
+  const [params, setParams] = useSearchParams();
+  const [rateDialogInfo, setRateDialogInfo] = useState<RateDialogInfo>(
+    defaultRateDialogInfo
   );
 
-  const [params, setParams] = useSearchParams();
-  const [rateDialogInfo, setRateDialogInfo] = useState<RateDialogInfo>({
-    tutorId: null,
-    lessonId: null,
-    rateId: null,
-    rateValue: null,
-    rateFeedback: null,
-    enabled: false,
-  });
-
-  const tutorQuery = useFindTutorInfo(rateDialogInfo.tutorId);
   const ratingQuery = useFindTutorRatings(rateDialogInfo.tutorId, {
     page: 1,
     size: 1,
@@ -64,9 +56,12 @@ const UpcomingLessons: React.FC = () => {
     canceled: true,
   });
 
-  const { mutate: createRating } = useCreateRatingTutor({
-    onSuccess: () => setRateDialogInfo((prev) => ({ ...prev, enabled: false })),
-    onError: onRateError,
+  const rateTutor = useCreateRatingTutor({
+    onSuccess: () => setRateDialogInfo(defaultRateDialogInfo),
+    onError: () =>
+      toast.error({
+        title: intl("tutor.rate.error"),
+      }),
   });
 
   useEffect(() => {
@@ -74,12 +69,20 @@ const UpcomingLessons: React.FC = () => {
   }, [navigate, user]);
 
   useEffect(() => {
-    if (params.toString() === "") return;
-    if (user?.role !== "student") return;
-    const { tutorId, lessonId } = getLessonQuery(params);
-    setRateDialogInfo((prev) => ({ ...prev, tutorId, lessonId }));
-    // reset the url as the data is already captured in the local state.
-  }, [setParams, params, user?.role]);
+    const student = user?.role == IUser.Role.Student;
+    const data = !!rateDialogInfo.tutorId && !!rateDialogInfo.lessonId;
+    if (!student || data) return;
+    const { tutorId, lessonId, tutorName } = getRateLessonQuery(params);
+    setRateDialogInfo((prev) => ({ ...prev, tutorId, lessonId, tutorName }));
+    // Reste url search params
+    setParams({});
+  }, [
+    setParams,
+    params,
+    user?.role,
+    rateDialogInfo.tutorId,
+    rateDialogInfo.lessonId,
+  ]);
 
   useEffect(() => {
     if (
@@ -90,8 +93,8 @@ const UpcomingLessons: React.FC = () => {
     )
       return;
     const rating = first(ratingQuery.data.list);
-    const enabled = !!(rating && rating.userId !== user.id);
-    setRateDialogInfo((prev) => ({ ...prev, enabled }));
+    const canRate = !rating || rating.userId !== user.id;
+    setRateDialogInfo((prev) => ({ ...prev, canRate }));
   }, [ratingQuery.data, ratingQuery.isPending, user]);
 
   return (
@@ -106,27 +109,23 @@ const UpcomingLessons: React.FC = () => {
         hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
         refetch={lessons.query.refetch}
       />
-      {user &&
-      user.name &&
-      tutorQuery.data &&
-      tutorQuery.data.name &&
-      tutorQuery.data.image ? (
+
+      {rateDialogInfo.lessonId &&
+      rateDialogInfo.tutorId &&
+      rateDialogInfo.canRate &&
+      user ? (
         <RatingDialog
-          open={rateDialogInfo.enabled}
-          loading={ratingQuery.isPending}
+          open
+          loading={rateTutor.isPending}
           studentId={user.id}
           studentName={user.name}
-          tutorName={tutorQuery.data.name}
-          imageUrl={tutorQuery.data.image}
-          feedback={rateDialogInfo.rateFeedback}
-          rating={rateDialogInfo.rateValue || 0}
-          onClose={() =>
-            setRateDialogInfo((prev) => ({ ...prev, enabled: false }))
-          }
+          tutorName={rateDialogInfo.tutorName}
+          imageUrl={user.image ? asFullAssetUrl(user.image) : undefined}
+          onClose={() => setRateDialogInfo(defaultRateDialogInfo)}
           onSubmit={(payload) => {
-            if (!tutorQuery.data) return;
-            createRating({
-              rateeId: tutorQuery.data.id,
+            if (!rateDialogInfo.tutorId) return;
+            rateTutor.mutate({
+              rateeId: rateDialogInfo.tutorId,
               value: payload.value,
               feedback: payload.feedback,
             });

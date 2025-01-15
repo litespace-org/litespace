@@ -27,7 +27,9 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
   onSubmit,
 }) => {
   const intl = useFormatMessage();
-  const [newFeedback, setNewFeedback] = useState<string | null>(feedback);
+  const [newFeedback, setNewFeedback] = useState<string | null>(
+    feedback || null
+  );
   const [newRating, setNewRating] = useState<number>(rating || 0);
 
   return (
