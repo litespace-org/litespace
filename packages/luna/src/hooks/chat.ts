@@ -3,12 +3,12 @@ import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
 export type SelectedRoom = {
-  room: number | null;
+  room: number | "temporary" | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
 };
 
 export type SelectRoom = (payload: {
-  room: number;
+  room: number | "temporary";
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) => void;
 
@@ -53,7 +53,7 @@ export function useSelectedRoom() {
 
   const select: SelectRoom = useCallback(
     (payload) => {
-      saveRoom(payload.room);
+      if (payload.room !== "temporary") saveRoom(payload.room);
       setSelected(payload);
       setParams({
         [ROOM_URL_PARAM]: payload.room.toString(),

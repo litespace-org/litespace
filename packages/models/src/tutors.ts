@@ -253,6 +253,9 @@ export class Tutors {
       image: users.column("image"),
       bio: this.column("bio"),
       name: users.column("name"),
+      gender: users.column("gender"),
+      role: users.column("role"),
+      lastSeen: users.column("updated_at"),
     };
 
     // NOTE: pagination is applied in the inner select query

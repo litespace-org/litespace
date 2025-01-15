@@ -33,9 +33,13 @@ const Rooms: React.FC<{
   query: Query;
   typingMap?: RoomsMap;
   usersOnlineMap?: RoomsMap;
-  rooms: IRoom.FindUserRoomsApiRecord[] | ITutor.UncontactedTutorInfo[] | null;
-  createRoom?: (tutor: ITutor.UncontactedTutorInfo) => void;
+  rooms:
+    | IRoom.FindUserRoomsApiRecord[]
+    | ITutor.FullUncontactedTutorInfo[]
+    | null;
+  selectUncontacted?: (tutor: ITutor.FullUncontactedTutorInfo) => void;
   select?: SelectRoom;
+  roomId: number | "temporary" | null;
   target: React.RefObject<HTMLDivElement>;
   enabled: boolean;
   toggleMute?: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
@@ -46,7 +50,7 @@ const Rooms: React.FC<{
   query,
   rooms,
   select,
-  createRoom,
+  selectUncontacted,
   target,
   roomId,
   type,
@@ -84,13 +88,23 @@ const Rooms: React.FC<{
       asChatRoomProps({
         roomId,
         rooms,
-        createRoom,
+        selectUncontacted,
         currentUserId: user?.id,
         select,
         toggleMute,
         togglePin,
+        intl,
       }),
-    [rooms, createRoom, roomId, select, toggleMute, togglePin, user?.id]
+    [
+      rooms,
+      selectUncontacted,
+      roomId,
+      select,
+      toggleMute,
+      togglePin,
+      user?.id,
+      intl,
+    ]
   );
 
   if (!user) return null;
@@ -106,11 +120,19 @@ const Rooms: React.FC<{
       </div>
 
       <div className="flex flex-col justify-stretch gap-4">
-        {rooms?.map((_, index) => (
+        {chatRoomProps.map((chatRoom) => (
           <ChatRoom
-            {...chatRoomProps[index]}
-            online={isOnline(usersOnlineMap, room.roomId, room.otherMember)}
-            isTyping={isTyping(typingMap, room.roomId, room.otherMember.id)}
+            {...chatRoom}
+            online={
+              usersOnlineMap && roomId && roomId !== "temporary"
+                ? isOnline(usersOnlineMap, roomId, chatRoom.userId)
+                : false
+            }
+            isTyping={
+              typingMap && roomId && roomId !== "temporary"
+                ? isTyping(typingMap, roomId, chatRoom.userId)
+                : false
+            }
           />
         ))}
       </div>

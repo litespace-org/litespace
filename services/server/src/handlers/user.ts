@@ -792,13 +792,25 @@ async function findUncontactedTutors(
   if (!allowed) return next(forbidden());
 
   const pagination = findUncontactedTutorsQuery.parse(req.query);
-  const response: ITutor.FindUncontactedTutorsApiResponse =
+  const { list, total }: ITutor.FindUncontactedTutors =
     await tutors.findUncontactedTutorsForStudent({
       student: user.id,
       pagination,
     });
 
-  res.status(200).json(response);
+  const onlineStatuses = await cache.onlineStatus.isOnlineBatch(
+    list.map((t) => t.id)
+  );
+
+  const tutorsList: ITutor.FindFullUncontactedTutorsApiResponse = {
+    list: list.map((tutor) => ({
+      ...tutor,
+      online: onlineStatuses.get(tutor.id) || false,
+    })),
+    total,
+  };
+
+  res.status(200).json(tutorsList);
 }
 
 export default {

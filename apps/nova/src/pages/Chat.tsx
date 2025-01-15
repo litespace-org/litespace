@@ -1,38 +1,42 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsContainer from "@/components/Chat/RoomsContainer";
 import React, { useCallback, useMemo, useState } from "react";
-import React, { useState } from "react";
 import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
 import { asOtherMember } from "@/lib/room";
 import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { ITutor } from "@litespace/types";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Chat: React.FC = () => {
   const { user } = useUserContext();
+  const intl = useFormatMessage();
   const [temporaryTutor, setTemporaryTutor] =
-    useState<ITutor.UncontactedTutorInfo | null>(null);
+    useState<ITutor.FullUncontactedTutorInfo | null>(null);
 
   const { select, selected } = useSelectedRoom();
   // TODO: read/unread function
   const roomMembers = useFindRoomMembers(selected.room);
-  const otherMember = asOtherMember(user?.id, roomMembers.data);
-
+  const otherMember = useMemo(
+    () => asOtherMember(user?.id, roomMembers.data),
+    [user?.id, roomMembers.data]
+  );
   const { typingMap, usersOnlineMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {
-    if (!selected.room || !otherMember) return false;
+    if (!selected.room || selected.room === "temporary" || !otherMember)
+      return false;
     if (!typingMap) return false;
     return !!typingMap[selected.room]?.[otherMember.id];
   }, [selected.room, otherMember, typingMap]);
 
   const isOtherMemberOnline = useMemo(() => {
-    if (!selected.room || !otherMember) return false;
+    if (!selected.room || selected.room === "temporary" || !otherMember)
+      return false;
     if (
       !usersOnlineMap[selected.room] ||
       !usersOnlineMap[selected.room]?.[otherMember.id]
@@ -78,7 +82,7 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className={cn("flex flex-row min-h-screen overflow-hidden")}>
+    <div className={cn("flex flex-row overflow-hidden")}>
       <RoomsContainer
         usersOnlineMap={usersOnlineMap}
         typingMap={typingMap}
@@ -100,13 +104,14 @@ const Chat: React.FC = () => {
         </div>
       ) : null}
 
-      {otherMember || temporaryTutor ? (
+      {temporaryTutor || otherMember ? (
         <Messages
-          room={selected.room}
-          otherMember={otherMember}
-          temporaryTutor={temporaryTutor}
           isTyping={isCurrentRoomTyping}
           isOnline={isOtherMemberOnline}
+          room={selected.room}
+          otherMember={temporaryTutor || otherMember}
+          setTemporaryTutor={setTemporaryTutor}
+          select={select}
         />
       ) : null}
     </div>

@@ -1,9 +1,11 @@
 import { RoomsMap } from "@litespace/headless/chat";
 import { IRoom, IUser, ITutor } from "@litespace/types";
-
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { SelectRoom } from "@litespace/luna/hooks/chat";
+import { LocalMap } from "@litespace/luna/locales";
 import { orUndefined } from "@litespace/sol/utils";
+import dayjs from "dayjs";
+import { PrimitiveType } from "react-intl";
 
 type OtherMember = {
   id: number;
@@ -36,9 +38,9 @@ export function asOtherMember(
 export function isOnline(
   map: RoomsMap,
   roomId: number,
-  otherMember: OtherMember
+  otherMember: number
 ): boolean {
-  return map[roomId]?.[otherMember.id] || otherMember.online;
+  return map[roomId]?.[otherMember] || false;
 }
 
 export function isTyping(
@@ -56,15 +58,20 @@ export function asChatRoomProps({
   toggleMute,
   togglePin,
   select,
-  createRoom,
+  selectUncontacted,
+  intl,
 }: {
-  rooms: IRoom.FindUserRoomsApiRecord[] | ITutor.UncontactedTutorInfo[] | null;
-  roomId: number | null;
+  rooms:
+    | IRoom.FindUserRoomsApiRecord[]
+    | ITutor.FullUncontactedTutorInfo[]
+    | null;
+  roomId: number | "temporary" | null;
   currentUserId?: number;
   togglePin?: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
   toggleMute?: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
-  createRoom?: (tutor: ITutor.UncontactedTutorInfo) => void;
+  selectUncontacted?: (tutor: ITutor.FullUncontactedTutorInfo) => void;
   select?: SelectRoom;
+  intl: (id: keyof LocalMap, values?: Record<string, PrimitiveType>) => string;
 }) {
   if (!rooms) return [];
   return rooms?.map((room, index) => {
@@ -85,13 +92,20 @@ export function asChatRoomProps({
         togglePin: () =>
           togglePin &&
           togglePin({ roomId: room.roomId, pinned: !room.settings.pinned }),
-        image: orUndefined(asFullAssetUrl(room.otherMember.image || "")),
+        image: room.otherMember.image
+          ? asFullAssetUrl(room.otherMember.image)
+          : undefined,
 
         name: room.otherMember.name!,
         // TODO: replace otherMember.name with member.bio
-        message: room.latestMessage?.text || "TODO: Bio",
+        message:
+          room.latestMessage?.text ||
+          (room.otherMember.online
+            ? intl("chat.online")
+            : intl("chat.offline", {
+                time: dayjs(room.otherMember.lastSeen).fromNow(),
+              })),
         unreadCount: room.unreadMessagesCount,
-        isTyping: false,
         select: () =>
           select &&
           select({
@@ -109,7 +123,7 @@ export function asChatRoomProps({
         message: room.bio || "",
         name: room.name || "",
         unreadCount: 0,
-        select: () => createRoom && createRoom(room),
+        select: () => selectUncontacted && selectUncontacted(room),
         toggleMute: () => {},
         togglePin: () => {},
       };

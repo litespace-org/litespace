@@ -9,10 +9,8 @@ import Rooms from "@/components/Chat/Rooms";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useRoomManager } from "@/hooks/chat";
 import { RoomsMap } from "@litespace/headless/chat";
-import { useCreateRoom } from "@litespace/headless/chat";
-import { useToast } from "@litespace/luna/Toast";
 import { isEmpty } from "lodash";
-import { IRoom, ITutor, IUser } from "@litespace/types";
+import { ITutor, IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
 
 const RoomsContainer: React.FC<{
@@ -20,7 +18,7 @@ const RoomsContainer: React.FC<{
   select: SelectRoom;
   typingMap: RoomsMap;
   usersOnlineMap: RoomsMap;
-  setTemporaryTutor: (payload: ITutor.UncontactedTutorInfo | null) => void;
+  setTemporaryTutor: (payload: ITutor.FullUncontactedTutorInfo | null) => void;
 }> = ({
   select,
   setTemporaryTutor,
@@ -31,47 +29,24 @@ const RoomsContainer: React.FC<{
   const intl = useFormatMessage();
 
   const { user } = useUserContext();
-  const toast = useToast();
+
   const { rooms, keyword, update } = useRoomManager();
 
-  const onSuccess = useCallback(
-    (response: IRoom.CreateRoomApiResponse) => {
-      let selectedRoom: IRoom.FindUserRoomsApiRecord | null = null;
-      rooms.all.query.refetch().then((res) => {
-        res.data?.pages.forEach((page) => {
-          const room = page.list.find(
-            (room) => room.roomId === response.roomId
-          );
-          if (!room) return;
-          selectedRoom = room;
-        });
-        if (!selectedRoom) return;
-        setTemporaryTutor(null);
-        select({
-          room: selectedRoom.roomId,
-          otherMember: selectedRoom.otherMember,
-        });
-      });
-      rooms.uncontactedTutors.query.refetch();
+  const selectTemporary = useCallback(
+    (tutor: ITutor.FullUncontactedTutorInfo) => {
+      setTemporaryTutor(tutor);
+      select({ room: "temporary", otherMember: tutor });
     },
-    [rooms.all, rooms.uncontactedTutors, select, setTemporaryTutor]
+    [setTemporaryTutor, select]
   );
 
-  const onError = useCallback(() => {
-    toast.error({
-      title: intl("chat.create.room.error"),
-    });
-    setTemporaryTutor(null);
-  }, [toast, intl, setTemporaryTutor]);
-
-  const createRoom = useCreateRoom({ onSuccess, onError });
-
-  const handleCreation = useCallback(
-    (tutor: ITutor.UncontactedTutorInfo) => {
-      setTemporaryTutor(tutor);
-      createRoom.mutate(tutor.id);
+  const selectRoom = useCallback(
+    ({ room, otherMember }: SelectedRoom) => {
+      if (!select || !room || !otherMember) return;
+      select({ room, otherMember });
+      setTemporaryTutor(null);
     },
-    [createRoom, setTemporaryTutor]
+    [select, setTemporaryTutor]
   );
 
   return (
@@ -101,9 +76,6 @@ const RoomsContainer: React.FC<{
               {
                 id: 1,
                 Icon: Search,
-                onClick() {
-                  alert("Clicked!");
-                },
               },
             ]}
           />
@@ -120,7 +92,7 @@ const RoomsContainer: React.FC<{
               query={rooms.pinned.query}
               rooms={rooms.pinned.list}
               target={rooms.pinned.target}
-              select={select}
+              select={selectRoom}
               roomId={roomId}
               enabled={rooms.pinned.enabled}
             />
@@ -138,7 +110,7 @@ const RoomsContainer: React.FC<{
             rooms={rooms.all.list}
             target={rooms.all.target}
             roomId={roomId}
-            select={select}
+            select={selectRoom}
             enabled={rooms.all.enabled}
           />
         ) : null}
@@ -150,7 +122,7 @@ const RoomsContainer: React.FC<{
             rooms={rooms.uncontactedTutors.list}
             target={rooms.all.target}
             enabled={rooms.uncontactedTutors.enabled}
-            createRoom={handleCreation}
+            selectUncontacted={selectTemporary}
             roomId={null}
           />
         ) : null}

@@ -195,10 +195,10 @@ export type OnMessage = (action: MessageStreamAction) => void;
 
 export function useFindUncontactedTutors(): {
   query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<ITutor.UncontactedTutorInfo>, unknown>,
+    InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
     Error
   >;
-  list: ITutor.UncontactedTutorInfo[] | null;
+  list: ITutor.FullUncontactedTutorInfo[] | null;
   more: () => void;
 } {
   const atlas = useAtlas();
@@ -224,8 +224,8 @@ export function useCreateRoom({
 }) {
   const atlas = useAtlas();
   const createRoom = useCallback(
-    async (id: number) => {
-      return await atlas.chat.createRoom(id);
+    async ({ id, message }: { id: number; message?: string }) => {
+      return await atlas.chat.createRoom(id, message);
     },
     [atlas.chat]
   );
@@ -239,11 +239,11 @@ export function useCreateRoom({
 }
 
 export function useFindRoomMembers(
-  roomId: number | null
+  roomId: number | "temporary" | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
   const atlas = useAtlas();
   const findRoomMembers = useCallback(async () => {
-    if (!roomId) return [];
+    if (!roomId || roomId === "temporary") return [];
     return await atlas.chat.findRoomMembers(roomId);
   }, [atlas.chat, roomId]);
 
@@ -774,7 +774,7 @@ function reducer(state: State, action: Action) {
 }
 
 // use the findRoom atlas function instead of the finder
-export function useMessages(room: number | null) {
+export function useMessages(room: number | "temporary" | null) {
   const atlas = useAtlas();
   const [state, dispatch] = useReducer(reducer, initial);
 
@@ -799,8 +799,8 @@ export function useMessages(room: number | null) {
   );
 
   const fetcher = useCallback(
-    async (room: number | null, page: number) => {
-      if (!room) return;
+    async (room: number | "temporary" | null, page: number) => {
+      if (!room || room === "temporary") return;
       const full = fetchedAllMessages(room);
       const done = state.pages[room] === page;
       if (
@@ -844,7 +844,7 @@ export function useMessages(room: number | null) {
   );
 
   const more = useCallback(() => {
-    if (!room) return;
+    if (!room || room === "temporary") return;
     const page = state.pages[room];
     if (!page || fetchedAllMessages(room)) return;
     return fetcher(room, page + 1);
@@ -858,6 +858,7 @@ export function useMessages(room: number | null) {
     const page = 1;
     if (
       !!room &&
+      room !== "temporary" &&
       !state.pages[room] &&
       !state.messages[room] &&
       !state.loading[room] &&
@@ -877,7 +878,7 @@ export function useMessages(room: number | null) {
    * list of messages in the chat
    */
   const messages = useMemo(() => {
-    if (!room) return [];
+    if (!room || room === "temporary") return [];
     const messages = state.messages[room] || [];
     const fresh =
       state.freshMessages[room]?.map((message) => {
@@ -893,12 +894,12 @@ export function useMessages(room: number | null) {
   return useMemo(() => {
     return {
       messages,
-      loading: room ? state.loading[room] : false,
-      fetching: room ? state.fetching[room] : false,
+      loading: room && room !== "temporary" ? state.loading[room] : false,
+      fetching: room && room !== "temporary" ? state.fetching[room] : false,
       messageErrors: state.messageErrors,
       more,
       onMessage,
-      error: room ? state.roomErrors[room] : undefined,
+      error: room && room !== "temporary" ? state.roomErrors[room] : undefined,
     };
   }, [
     messages,

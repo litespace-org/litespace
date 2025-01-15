@@ -15,7 +15,12 @@ import {
   UserTyping,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
-import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
+import {
+  OnMessage,
+  useChat,
+  useCreateRoom,
+  useMessages,
+} from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
@@ -30,6 +35,9 @@ import { orUndefined } from "@litespace/sol/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
+import { useToast } from "@litespace/luna/Toast";
+import { SelectRoom } from "@litespace/luna/hooks/chat";
+import { useRoomManager } from "@/hooks/chat";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -49,21 +57,21 @@ const Messages: React.FC<{
   /**
    * Room id
    */
-  room: number | null;
-  /**
-   * other member data in the current room
-   * this will be used if there is an actual room between both users
-   */
-  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
+  room: number | "temporary" | null;
   isTyping: boolean;
   isOnline: boolean;
-  temporaryTutor: ITutor.UncontactedTutorInfo | null;
-  selectionLoading: boolean;
   /**
-   * temporary tutor data used until we create a room between users
+   * other member data in the current room || temporary tutor data used until we
+   * create a room between users this will be used if there is an actual room
+   * between both users
    */
-  temporaryTutor: ITutor.UncontactedTutorInfo | null;
-}> = ({ room, otherMember, isTyping, isOnline, temporaryTutor }) => {
+  otherMember:
+    | IRoom.FindUserRoomsApiRecord["otherMember"]
+    | ITutor.FullUncontactedTutorInfo
+    | null;
+  setTemporaryTutor: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
+  select: SelectRoom;
+}> = ({ room, otherMember, setTemporaryTutor, select, isTyping, isOnline }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -116,6 +124,36 @@ const Messages: React.FC<{
     onMessage,
     orUndefined(user?.id)
   );
+  const { rooms } = useRoomManager();
+  const toast = useToast();
+
+  const onSuccess = useCallback(
+    (response: IRoom.CreateRoomApiResponse) => {
+      if (!otherMember) return;
+      select({
+        room: response.roomId,
+        otherMember: otherMember,
+      });
+      setTemporaryTutor(null);
+      rooms.all.query.refetch();
+      rooms.uncontactedTutors.query.refetch();
+    },
+    [
+      select,
+      setTemporaryTutor,
+      otherMember,
+      rooms.all.query,
+      rooms.uncontactedTutors.query,
+    ]
+  );
+
+  const onError = useCallback(() => {
+    toast.error({
+      title: intl("chat.create.room.error"),
+    });
+  }, [toast, intl]);
+
+  const createRoom = useCreateRoom({ onSuccess, onError });
 
   const retryFnMap: RetryFnMap = {
     send: (payload) =>
@@ -128,16 +166,19 @@ const Messages: React.FC<{
       typeof payload === "number" && deleteMessage(payload, room),
   };
   const typingMessage = useCallback(
-    () => ackUserTyping({ roomId: room }),
+    () => room && room !== "temporary" && ackUserTyping({ roomId: room }),
     [room, ackUserTyping]
   );
 
   const submit = useCallback(
     (text: string) => {
-      if (!room) return;
+      if (!room || !otherMember) return;
+      if (room === "temporary") {
+        return createRoom.mutate({ id: otherMember.id, message: text });
+      }
       return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
-    [room, sendMessage, user]
+    [room, sendMessage, user, otherMember, createRoom]
   );
 
   const onUpdateMessage = useCallback(
@@ -166,7 +207,7 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage || !room) return;
+    if (!deletableMessage || !room || room !== "temporary") return;
     deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
   }, [deletableMessage, deleteMessage, room]);
@@ -219,39 +260,20 @@ const Messages: React.FC<{
     if (!el) return;
     el.scrollTop += 100;
   }, [messageGroups]);
-  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> =
+  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> | null =
     useMemo(() => {
-      if (temporaryTutor)
-        return {
-          id: temporaryTutor.id,
-          name: temporaryTutor.name,
-          image: temporaryTutor.image,
-          role: IUser.Role.Tutor,
-          online: false,
-          lastSeen: "",
-          openDialog: openDialog,
-        };
-      if (otherMember)
-        return {
-          id: otherMember.id,
-          name: otherMember.name,
-          image: otherMember.image,
-          role: otherMember.role,
-          online: otherMember.online,
-          lastSeen: dayjs(otherMember.lastSeen).fromNow(),
-          openDialog: openDialog,
-        };
+      if (!otherMember) return null;
 
       return {
-        id: 0,
-        name: "",
-        image: "",
-        role: IUser.Role.Tutor,
-        online: false,
-        lastSeen: "",
+        id: otherMember.id,
+        name: otherMember.name,
+        image: otherMember.image,
+        role: otherMember.role,
+        online: isOnline,
+        lastSeen: dayjs(otherMember.lastSeen).fromNow(),
         openDialog: openDialog,
       };
-    }, [temporaryTutor, otherMember, openDialog]);
+    }, [otherMember, openDialog, isOnline]);
 
   return (
     <div
@@ -261,7 +283,9 @@ const Messages: React.FC<{
       {room === null ? <NoSelection /> : null}
 
       <div className="tw-px-6 tw-pt-8">
-        <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
+        {chatHeaderProps ? (
+          <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
+        ) : null}
       </div>
 
       {room ? (

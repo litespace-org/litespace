@@ -67,6 +67,13 @@ export type UncontactedTutorInfo = {
   name: string | null;
   image: string | null;
   bio: string | null;
+  role: IUser.Role;
+  gender: IUser.Gender;
+  lastSeen: string;
+};
+
+export type FullUncontactedTutorInfo = UncontactedTutorInfo & {
+  online: boolean;
 };
 
 export type FindOnboardedTutorsParams = IFilter.Pagination & {
@@ -150,4 +157,6 @@ export type FindPersonalizedTutorStatsApiResponse = {
   studentCount: number;
 };
 
-export type FindUncontactedTutorsApiResponse = Paginated<UncontactedTutorInfo>;
+export type FindUncontactedTutors = Paginated<UncontactedTutorInfo>;
+export type FindFullUncontactedTutorsApiResponse =
+  Paginated<FullUncontactedTutorInfo>;
