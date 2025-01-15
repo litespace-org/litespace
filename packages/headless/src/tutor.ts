@@ -30,24 +30,6 @@ export function useTutors() {
   return useInfinitePaginationQuery(findTutors, [QueryKey.FindTutors]);
 }
 
-export function useFindTutorById(
-  id: number | null
-): UseQueryResult<ITutor.FullTutor | null, Error> {
-  const atlas = useAtlas();
-
-  const findTutoById = useCallback(() => {
-    if (!id) return null;
-    return atlas.user.findTutorById(id);
-  }, [atlas.user, id]);
-
-  return useQuery({
-    queryKey: [QueryKey.FindTutorById, id],
-    queryFn: findTutoById,
-    retry: false,
-    enabled: !!id,
-  });
-}
-
 export function useFindTutorStats(
   id: number | null
 ): UseQueryResult<ITutor.FindTutorStatsApiResponse | null, Error> {

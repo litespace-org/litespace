@@ -10,7 +10,7 @@ import {
 } from "@litespace/luna/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import {
@@ -20,6 +20,8 @@ import {
   useSessionMembers,
 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
+import { Route } from "@/types/routes";
+import { asRateLessonQuery } from "@/lib/query";
 
 /**
  * @todos
@@ -32,6 +34,7 @@ const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const { user } = useUserContext();
+  const navigate = useNavigate();
 
   // ============================ Lesson ================================
   const lessonId = useMemo(() => {
@@ -355,6 +358,14 @@ const Lesson: React.FC = () => {
           leave={() => {
             session.leave();
             sessionManager.leave();
+            if (lessonMembers.current.role === IUser.Role.Student) {
+              const query = asRateLessonQuery({
+                lessonId: lessonMembers.current.lessonId,
+                tutorId: lessonMembers.other.userId,
+                tutorName: lessonMembers.other.name,
+              });
+              navigate(`${Route.UpcomingLessons}?${query}`);
+            }
           }}
         />
       ) : null}

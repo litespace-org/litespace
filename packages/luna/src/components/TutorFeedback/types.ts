@@ -38,7 +38,7 @@ export type RateDialogProps = {
   /**
    * name of the owner of the rating
    */
-  studentName: string;
+  studentName: string | null;
   /**
    * id of the owner of the comment
    */
@@ -46,11 +46,11 @@ export type RateDialogProps = {
   /**
    * image url for student own the comment
    */
-  imageUrl: string;
+  imageUrl?: string;
   /**
    * student comment about the tutor
    */
-  feedback: string | null;
+  feedback?: string | null;
   /**
    * rating of the tutor bet 1, 5
    */
@@ -58,7 +58,7 @@ export type RateDialogProps = {
   /**
    * tutor name who is being rated
    */
-  tutorName: string;
+  tutorName: string | null;
   /**
    * boolean represent the state of the dialog wheather opened or not
    */

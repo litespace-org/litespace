@@ -14,7 +14,6 @@ import {
 import { IRating } from "@litespace/types";
 import { isAdmin, isStudio, isStudent, isTutor, isUser } from "@litespace/auth";
 import zod from "zod";
-import { concat } from "lodash";
 
 const createRatingPayload = zod.object({
   rateeId: id,
