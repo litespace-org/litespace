@@ -94,7 +94,7 @@ export const StudentOverview: React.FC<Props> = ({
       />
 
       <Card
-        icon={<People className="[&>*]:tw-stroke-natural-50" />}
+        icon={<People className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />}
         value={formatNumber(tutorCount)}
         color="destructive"
         title="student-dashboard.overview.teachers"
