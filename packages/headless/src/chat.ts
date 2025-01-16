@@ -41,6 +41,7 @@ enum MessageStream {
   Update = "update",
   Delete = "delete",
   Typing = "typing",
+  Read = "read",
 }
 
 type MessageStreamAction =
@@ -79,6 +80,11 @@ type MessageStreamAction =
         errorType: ErrorType;
         errorMessage?: string;
       };
+    }
+  | {
+      type: MessageStream.Read;
+      messageId: number;
+      roomId: number;
     };
 
 type UserId = number;
@@ -401,6 +407,14 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     [socket, onMessage]
   );
 
+  const readMessage = useCallback(
+    (id: number) => {
+      if (!socket) return;
+      socket?.emit(Wss.ClientEvent.MarkMessageAsRead, { id });
+    },
+    [socket]
+  );
+
   const ackUserTyping = useCallback(
     ({ roomId }: { roomId: number }) => {
       socket?.emit(Wss.ClientEvent.UserTyping, { roomId });
@@ -447,22 +461,40 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
     [onMessage]
   );
 
+  const onReadMessage = useCallback(
+    ({ messageId, roomId }: { messageId: number; roomId: number }) => {
+      if (!onMessage) return;
+      onMessage({ type: MessageStream.Read, messageId, roomId });
+    },
+    [onMessage]
+  );
+
   useEffect(() => {
     if (!onMessage || !socket) return;
     socket.on(Wss.ServerEvent.RoomMessage, onRoomMessage);
     socket.on(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
     socket.on(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
+    socket.on(Wss.ServerEvent.RoomMessageRead, onReadMessage);
     return () => {
       socket.off(Wss.ServerEvent.RoomMessage, onRoomMessage);
       socket.off(Wss.ServerEvent.RoomMessageUpdated, onUpdateMessage);
       socket.off(Wss.ServerEvent.RoomMessageDeleted, onDeleteMessage);
+      socket.off(Wss.ServerEvent.RoomMessageRead, onReadMessage);
     };
-  }, [onDeleteMessage, onMessage, onRoomMessage, onUpdateMessage, socket]);
+  }, [
+    onDeleteMessage,
+    onMessage,
+    onRoomMessage,
+    onUpdateMessage,
+    onReadMessage,
+    socket,
+  ]);
 
   return {
     sendMessage,
     deleteMessage,
     updateMessage,
+    readMessage,
     ackUserTyping,
   };
 }
@@ -699,6 +731,24 @@ function reducer(state: State, action: Action) {
     loading[action.room] = false;
 
     return mutate({ totals, messages, roomErrors, fetching, loading });
+  }
+
+  if (action.type === MessageStream.Read) {
+    const room = action.roomId;
+    const messageId = action.messageId;
+    const isFresh = isFreshMessage(messageId, state.freshMessages[room] || []);
+    const messages = isFresh
+      ? structuredClone(state.freshMessages)
+      : structuredClone(state.messages);
+    messages[room]?.map((message) => {
+      if (message.id === messageId) {
+        message.read = true;
+      }
+      return message;
+    });
+
+    if (isFresh) return mutate({ freshMessages: messages });
+    return mutate({ messages });
   }
 
   if (action.type === ActionType.AddPendingMessage) {
