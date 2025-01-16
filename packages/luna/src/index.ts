@@ -41,6 +41,7 @@ export { messages, locales, type LocalMap, type LocalId } from "@/locales";
 export { IconField } from "@/components/IconField";
 export { Gender } from "@/components/Gender";
 export * as TutorFeedback from "@/components/TutorFeedback";
+export * as TutorProfile from "@/components/TutorProfile";
 export * as Invoices from "@/components/Invoices";
 export * as Interviews from "@/components/Interviews";
 export {

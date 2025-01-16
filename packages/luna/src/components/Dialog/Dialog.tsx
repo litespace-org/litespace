@@ -7,7 +7,7 @@ export const Dialog: React.FC<{
   trigger?: React.ReactNode;
   title: React.ReactNode;
   children?: React.ReactNode;
-  description?: string;
+  description?: React.ReactNode;
   open?: boolean;
   className?: string;
   setOpen?: (open: boolean) => void;
