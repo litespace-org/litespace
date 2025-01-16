@@ -4,7 +4,12 @@ import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { faker } from "@faker-js/faker/locale/en";
-import { AvailabilitySlotProps } from "./types";
+import {
+  AvailabilitySlotProps,
+  LessonProps,
+  SlotActions,
+  LessonActions,
+} from "@/components/Calendar/v2/types";
 import { random, range, sample } from "lodash";
 
 type Component = typeof Calendar;
@@ -24,11 +29,54 @@ const meta: Meta<Component> = {
   },
 };
 
-const HourView: React.FC<{ date: Dayjs }> = ({ date }) => {
-  if (Math.random() > 0.5) return null;
-  return (
-    <div className="tw-p-1 tw-text-natural-950">{date.format("hh:mm a")}</div>
-  );
+const slotActions: SlotActions = {
+  onDelete(id) {
+    alert(`Delete ${id}`);
+  },
+  onEdit(id) {
+    alert(`Edit ${id}`);
+  },
+};
+
+const lessonActions: LessonActions = {
+  onJoin(id) {
+    alert(`Join ${id}`);
+  },
+  onRebook(id) {
+    alert(`Rebook ${id}`);
+  },
+  onCancel(id) {
+    alert(`Cancel ${id}`);
+  },
+  onEdit(id) {
+    alert(`Edit ${id}`);
+  },
+};
+
+const makeLesson = ({
+  hour,
+  duration,
+  date,
+}: {
+  hour: number;
+  duration: number;
+  date: Dayjs;
+}): LessonProps => {
+  const start = date.startOf("day").add(hour, "hours");
+  return {
+    id: random(1000),
+    start: start.toISOString(),
+    end: start.add(duration, "hours").toISOString(),
+    otherMember: {
+      id: faker.number.int(),
+      name: faker.person.fullName(),
+      image: sample([
+        null,
+        faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+      ]),
+    },
+    canceled: false,
+  };
 };
 
 const makeSlot = ({
@@ -58,14 +106,27 @@ const makeSlot = ({
   };
 };
 
+const date = dayjs().startOf("week");
+
 export const HourViewCalender: StoryObj<Component> = {
   args: {
-    HourView,
     date: dayjs().startOf("week"),
+    lessons: [
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 3, duration: 2, date }),
+      makeLesson({ hour: 3, duration: 8, date: date.add(1, "day") }),
+      makeLesson({ hour: 12, duration: 12, date: date.add(2, "day") }),
+      makeLesson({ hour: 1, duration: 0.5, date: date.add(3, "day") }),
+      makeLesson({ hour: 1, duration: 10, date: date.add(6, "day") }),
+    ],
+    lessonActions,
   },
 };
-
-const date = dayjs().startOf("week");
 
 export const DayViewCalender: StoryObj<Component> = {
   args: {
@@ -98,14 +159,7 @@ export const DayViewCalender: StoryObj<Component> = {
       }),
     ],
     date,
-    slotActions: {
-      onDelete(id) {
-        alert(`Delete ${id}`);
-      },
-      onEdit(id) {
-        alert(`Edit ${id}`);
-      },
-    },
+    slotActions,
   },
 };
 

@@ -1,11 +1,10 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Calendar } from "@litespace/luna/Calendar/v2";
 import dayjs from "@/lib/dayjs";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import Header, { View } from "@/components/Schedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
-import { Lessons } from "@litespace/luna/Calendar/v2/Events";
 import { useUserContext } from "@litespace/headless/context/user";
 
 const variants = {
@@ -25,6 +24,36 @@ const Schedule: React.FC = () => {
     before: date.add(1, "week").toISOString(),
     full: true,
   });
+
+  const filteredLessons = useMemo(() => {
+    if (!lessons.list || !user) return [];
+    const filtered = lessons.list.filter(({ lesson }) =>
+      dayjs(lesson.start).isBetween(
+        date,
+        date.add(1, "hour"),
+        "milliseconds",
+        "[]"
+      )
+    );
+    return filtered.map(({ lesson, members }) => {
+      const otherMember = members.find((member) => member.userId !== user?.id);
+
+      if (!otherMember)
+        throw new Error("Other member not found; should never happen");
+
+      return {
+        id: lesson.id,
+        otherMember: {
+          id: otherMember.userId,
+          image: otherMember.image,
+          name: otherMember.name,
+        },
+        canceled: !!lesson.canceledBy,
+        start: lesson.start,
+        end: dayjs(lesson.start).add(lesson.duration, "minutes").toISOString(),
+      };
+    });
+  }, [lessons.list, user, date]);
 
   return (
     <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
@@ -49,58 +78,7 @@ const Schedule: React.FC = () => {
             animate="visible"
             exit="hidden"
           >
-            <Calendar
-              key="calendar"
-              HourView={({ date }) => {
-                if (!lessons.list || !user) return null;
-                const list = lessons.list.filter(({ lesson }) =>
-                  dayjs(lesson.start).isBetween(
-                    date,
-                    date.add(1, "hour"),
-                    "milliseconds",
-                    "[]"
-                  )
-                );
-
-                if (!list.length) return null;
-
-                return (
-                  <div className="p-1">
-                    <Lessons
-                      lessons={list.map(({ lesson, members }) => {
-                        const otherMember = members.find(
-                          (member) => member.userId !== user.id
-                        );
-
-                        if (!otherMember)
-                          throw new Error(
-                            "Other member not found; should never happen"
-                          );
-
-                        return {
-                          id: lesson.id,
-                          otherMember: {
-                            id: otherMember.userId,
-                            image: otherMember.image,
-                            name: otherMember.name,
-                          },
-                          canceled: !!lesson.canceledBy,
-                          start: lesson.start,
-                          end: dayjs(lesson.start)
-                            .add(lesson.duration, "minutes")
-                            .toISOString(),
-                        };
-                      })}
-                      onCancel={() => alert("todo")}
-                      onEdit={() => alert("todo")}
-                      onRebook={() => alert("todo")}
-                      onJoin={() => alert("todo")}
-                    />
-                  </div>
-                );
-              }}
-              date={date}
-            />
+            <Calendar date={date} key="calendar" lessons={filteredLessons} />
           </motion.div>
         ) : null}
       </AnimatePresence>
