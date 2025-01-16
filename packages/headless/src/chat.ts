@@ -718,8 +718,8 @@ function reducer(state: State, action: Action) {
 
     const messages = structuredClone(state.messages);
     const roomMessages = messages[action.room];
-    if (!roomMessages) messages[action.room] = action.messages;
-    else roomMessages.push(...action.messages);
+    if (!roomMessages) messages[action.room] = action.messages.reverse();
+    else roomMessages.unshift(...action.messages.reverse());
 
     const roomErrors = structuredClone(state.roomErrors);
     roomErrors[action.room] = null;

@@ -7,6 +7,9 @@ export type WithOptionalTx<T> = T & { tx?: Knex.Transaction };
 export type WithTx<T> = T & { tx: Knex.Transaction };
 export type withPaginationObj<T> = T & IFilter.Pagination;
 
+export const DEFAULT_PAGE = 1;
+export const DEFAULT_SIZE = 10;
+
 const connection = {
   user: zod.string({ message: "Missing PG_USER" }).parse(process.env.PG_USER),
   password: zod
@@ -102,8 +105,8 @@ export function withPagination<Row extends object, Result = Row[]>(
   builder: Knex.QueryBuilder<Row, Result>,
   pagination: IFilter.Pagination = {}
 ): Knex.QueryBuilder<Row, Result> {
-  const page = pagination.page || 1;
-  const size = pagination.size || 10;
+  const page = pagination.page || DEFAULT_PAGE;
+  const size = pagination.size || DEFAULT_SIZE;
   const offset = size * (page - 1);
   builder.offset(offset).limit(size);
   return builder;
