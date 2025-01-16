@@ -1,5 +1,14 @@
 import { useAtlas } from "@/atlas";
-import { IRoom, Wss, IMessage, Void, IFilter } from "@litespace/types";
+import {
+  IRoom,
+  Wss,
+  IMessage,
+  Void,
+  IFilter,
+  ITutor,
+  Paginated,
+} from "@litespace/types";
+
 import {
   useCallback,
   useEffect,
@@ -13,9 +22,16 @@ import {
   UseInfinitePaginationQueryResult,
 } from "@/query";
 import { MutationKey, QueryKey } from "@/constants";
-import { useMutation, useQuery, UseQueryResult } from "@tanstack/react-query";
+import {
+  InfiniteData,
+  UseInfiniteQueryResult,
+  useMutation,
+  useQuery,
+  UseQueryResult,
+} from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
+import { useUserContext } from "@/user/index";
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -178,12 +194,57 @@ type Action =
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
+export function useFindUncontactedTutors(): {
+  query: UseInfiniteQueryResult<
+    InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
+    Error
+  >;
+  list: ITutor.FullUncontactedTutorInfo[] | null;
+  more: () => void;
+} {
+  const atlas = useAtlas();
+
+  const findUncontactedTutors = useCallback(
+    ({ pageParam }: { pageParam: number }) => {
+      return atlas.user.findUncontactedTutors({ page: pageParam });
+    },
+    [atlas.user]
+  );
+
+  return useInfinitePaginationQuery(findUncontactedTutors, [
+    QueryKey.FindUncontactedTutors,
+  ]);
+}
+
+export function useCreateRoom({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
+  onError: Void;
+}) {
+  const atlas = useAtlas();
+  const createRoom = useCallback(
+    async ({ id, message }: { id: number; message?: string }) => {
+      return await atlas.chat.createRoom(id, message);
+    },
+    [atlas.chat]
+  );
+
+  return useMutation({
+    mutationFn: createRoom,
+    onSuccess,
+    onError,
+    mutationKey: [MutationKey.CreateRoom],
+  });
+}
+
 export function useFindRoomMembers(
-  roomId: number | null
+  roomId: number | "temporary" | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
   const atlas = useAtlas();
   const findRoomMembers = useCallback(async () => {
-    if (!roomId) return [];
+    if (!roomId || roomId === "temporary") return [];
     return await atlas.chat.findRoomMembers(roomId);
   }, [atlas.chat, roomId]);
 
@@ -274,6 +335,7 @@ export function useChat(onMessage?: OnMessage, userId?: number) {
           text,
           refId,
         },
+        // on failure of sending message
         (error) => {
           return onMessage({
             type: ActionType.SendMessageFailure,
@@ -713,8 +775,12 @@ function reducer(state: State, action: Action) {
   return mutate();
 }
 
-// use the findRoom atlas function instead of the finder
-export function useMessages(room: number | null) {
+/**
+ *
+ * @param room
+ * @returns
+ */
+export function useMessages(room: number | "temporary" | null) {
   const atlas = useAtlas();
   const [state, dispatch] = useReducer(reducer, initial);
 
@@ -739,8 +805,8 @@ export function useMessages(room: number | null) {
   );
 
   const fetcher = useCallback(
-    async (room: number | null, page: number) => {
-      if (!room) return;
+    async (room: number | "temporary" | null, page: number) => {
+      if (!room || room === "temporary") return;
       const full = fetchedAllMessages(room);
       const done = state.pages[room] === page;
       if (
@@ -784,7 +850,7 @@ export function useMessages(room: number | null) {
   );
 
   const more = useCallback(() => {
-    if (!room) return;
+    if (!room || room === "temporary") return;
     const page = state.pages[room];
     if (!page || fetchedAllMessages(room)) return;
     return fetcher(room, page + 1);
@@ -798,6 +864,7 @@ export function useMessages(room: number | null) {
     const page = 1;
     if (
       !!room &&
+      room !== "temporary" &&
       !state.pages[room] &&
       !state.messages[room] &&
       !state.loading[room] &&
@@ -817,7 +884,7 @@ export function useMessages(room: number | null) {
    * list of messages in the chat
    */
   const messages = useMemo(() => {
-    if (!room) return [];
+    if (!room || room === "temporary") return [];
     const messages = state.messages[room] || [];
     const fresh =
       state.freshMessages[room]?.map((message) => {
@@ -833,12 +900,12 @@ export function useMessages(room: number | null) {
   return useMemo(() => {
     return {
       messages,
-      loading: room ? state.loading[room] : false,
-      fetching: room ? state.fetching[room] : false,
+      loading: room && room !== "temporary" ? state.loading[room] : false,
+      fetching: room && room !== "temporary" ? state.fetching[room] : false,
       messageErrors: state.messageErrors,
       more,
       onMessage,
-      error: room ? state.roomErrors[room] : undefined,
+      error: room && room !== "temporary" ? state.roomErrors[room] : undefined,
     };
   }, [
     messages,
@@ -858,6 +925,8 @@ export type RoomsMap = Partial<{
 
 export function useChatStatus() {
   const socket = useSocket();
+  const { user } = useUserContext();
+  const userRooms = useFindUserRooms(user?.id);
 
   /**
    * A map from rooms to object containing both users in it and showing
@@ -919,6 +988,17 @@ export function useChatStatus() {
       }),
     []
   );
+
+  // populate the map with data from the server
+  useEffect(() => {
+    const rooms: RoomsMap = {};
+    userRooms.list?.forEach((room) => {
+      rooms[room.roomId] = {
+        [room.otherMember.id]: room.otherMember.online,
+      };
+    });
+    setUsersOnlineMap(rooms);
+  }, [userRooms.list]);
 
   useEffect(() => {
     socket?.on(Wss.ServerEvent.UserTyping, onUserTyping);

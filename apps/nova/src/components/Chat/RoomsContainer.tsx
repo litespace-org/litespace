@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
 import cn from "classnames";
 import { Typography } from "@litespace/luna/Typography";
@@ -9,22 +9,53 @@ import Rooms from "@/components/Chat/Rooms";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useRoomManager } from "@/hooks/chat";
 import { RoomsMap } from "@litespace/headless/chat";
+import { isEmpty } from "lodash";
+import { ITutor, IUser } from "@litespace/types";
+import { useUserContext } from "@litespace/headless/context/user";
 
 const RoomsContainer: React.FC<{
   selected: SelectedRoom;
   select: SelectRoom;
   typingMap: RoomsMap;
   usersOnlineMap: RoomsMap;
-}> = ({ select, typingMap, usersOnlineMap, selected: { room: roomId } }) => {
+  setTemporaryTutor: (payload: ITutor.FullUncontactedTutorInfo | null) => void;
+}> = ({
+  select,
+  setTemporaryTutor,
+  typingMap,
+  usersOnlineMap,
+  selected: { room: roomId },
+}) => {
   const intl = useFormatMessage();
+
+  const { user } = useUserContext();
+
   const { rooms, keyword, update } = useRoomManager();
+
+  const selectTemporary = useCallback(
+    (tutor: ITutor.FullUncontactedTutorInfo) => {
+      setTemporaryTutor(tutor);
+      select({ room: "temporary", otherMember: tutor });
+    },
+    [setTemporaryTutor, select]
+  );
+
+  const selectRoom = useCallback(
+    ({ room, otherMember }: SelectedRoom) => {
+      if (!select || !room || !otherMember) return;
+      select({ room, otherMember });
+      setTemporaryTutor(null);
+      keyword.set("");
+    },
+    [select, setTemporaryTutor, keyword]
+  );
 
   return (
     <div
       style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       className={cn(
-        "flex flex-col overflow-auto",
-        "w-[400px] border-l border-natural-200",
+        "flex flex-col overflow-auto h-screen gap-6",
+        "w-[400px] border border-natural-200",
         "px-6 pt-8",
         "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-100"
       )}
@@ -46,9 +77,6 @@ const RoomsContainer: React.FC<{
               {
                 id: 1,
                 Icon: Search,
-                onClick() {
-                  alert("Clicked!");
-                },
               },
             ]}
           />
@@ -65,26 +93,40 @@ const RoomsContainer: React.FC<{
               query={rooms.pinned.query}
               rooms={rooms.pinned.list}
               target={rooms.pinned.target}
-              select={select}
+              select={selectRoom}
               roomId={roomId}
               enabled={rooms.pinned.enabled}
             />
           </div>
         ) : null}
 
-        <Rooms
-          type="all"
-          typingMap={typingMap}
-          usersOnlineMap={usersOnlineMap}
-          toggleMute={update.toggleMute}
-          togglePin={update.togglePin}
-          query={rooms.all.query}
-          rooms={rooms.all.list}
-          target={rooms.all.target}
-          roomId={roomId}
-          select={select}
-          enabled={rooms.all.enabled}
-        />
+        {!isEmpty(rooms.all.list) ? (
+          <Rooms
+            type="all"
+            typingMap={typingMap}
+            usersOnlineMap={usersOnlineMap}
+            toggleMute={update.toggleMute}
+            togglePin={update.togglePin}
+            query={rooms.all.query}
+            rooms={rooms.all.list}
+            target={rooms.all.target}
+            roomId={roomId}
+            select={selectRoom}
+            enabled={rooms.all.enabled}
+          />
+        ) : null}
+
+        {user?.role === IUser.Role.Student ? (
+          <Rooms
+            type="uncontactedTutors"
+            query={rooms.uncontactedTutors.query}
+            rooms={rooms.uncontactedTutors.list}
+            target={rooms.all.target}
+            enabled={rooms.uncontactedTutors.enabled}
+            selectUncontacted={selectTemporary}
+            roomId={null}
+          />
+        ) : null}
       </div>
     </div>
   );

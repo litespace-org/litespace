@@ -1,6 +1,10 @@
-import { IRoom } from "@litespace/types";
+import { IRoom, ITutor } from "@litespace/types";
 import { useCallback, useMemo, useState } from "react";
-import { useFindUserRooms, useUpdateRoom } from "@litespace/headless/chat";
+import {
+  useFindUncontactedTutors,
+  useFindUserRooms,
+  useUpdateRoom,
+} from "@litespace/headless/chat";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { useInfinteScroll } from "@litespace/luna/hooks/common";
 import { useToast } from "@litespace/luna/Toast";
@@ -22,9 +26,13 @@ export function useRoomManager() {
     keyword,
   });
 
+  const uncontactedTutors = useFindUncontactedTutors();
+
   const isEnabled = useCallback(
     (
-      query: UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord>["query"]
+      query: UseInfinitePaginationQueryResult<
+        IRoom.FindUserRoomsApiRecord | ITutor.UncontactedTutorInfo
+      >["query"]
     ) => query.hasNextPage && !query.isLoading && !query.isFetching,
     []
   );
@@ -39,6 +47,11 @@ export function useRoomManager() {
     [pinnedRooms.query, isEnabled]
   );
 
+  const uncontactedTutorsEnabled = useMemo(
+    () => isEnabled(uncontactedTutors.query),
+    [uncontactedTutors.query, isEnabled]
+  );
+
   const { target: allRoomsTarget } = useInfinteScroll<HTMLDivElement>(
     allRooms.more,
     allRoomsEnabled
@@ -47,6 +60,11 @@ export function useRoomManager() {
   const { target: pinnedRoomsTarget } = useInfinteScroll<HTMLDivElement>(
     pinnedRooms.more,
     pinnedRoomsEnabled
+  );
+
+  const { target: uncontactedTutorsTarget } = useInfinteScroll<HTMLDivElement>(
+    uncontactedTutors.more,
+    uncontactedTutorsEnabled
   );
 
   const update = useUpdateRoom({
@@ -72,6 +90,12 @@ export function useRoomManager() {
         list: pinnedRooms.list,
         target: pinnedRoomsTarget,
         enabled: pinnedRoomsEnabled,
+      },
+      uncontactedTutors: {
+        list: uncontactedTutors.list,
+        query: uncontactedTutors.query,
+        target: uncontactedTutorsTarget,
+        enabled: uncontactedTutorsEnabled,
       },
     },
     keyword: {

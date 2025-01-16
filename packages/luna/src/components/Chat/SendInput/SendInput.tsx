@@ -20,7 +20,8 @@ export const SendInput: React.FC<{
    * wss event fired when the user is typing
    */
   typingMessage?: Void;
-}> = ({ initialMessage, onSubmit, typingMessage }) => {
+  disabled?: boolean;
+}> = ({ initialMessage, onSubmit, typingMessage, disabled }) => {
   const [value, setValue] = useState<string>(initialMessage?.text || "");
   const intl = useFormatMessage();
 
@@ -39,10 +40,10 @@ export const SendInput: React.FC<{
   );
 
   const handleSubmit = useCallback(() => {
-    if (value === "") return;
+    if (value === "" || disabled) return;
     setValue("");
     onSubmit(value);
-  }, [onSubmit, value]);
+  }, [onSubmit, value, disabled]);
 
   const onKeyDown = useCallback(
     (e: KeyboardEvent) => e.key === "Enter" && handleSubmit(),
@@ -56,6 +57,7 @@ export const SendInput: React.FC<{
 
   return (
     <Input
+      disabled={disabled}
       endActions={[
         {
           id: 1,

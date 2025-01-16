@@ -24,4 +24,11 @@ export const PrimaryWithInitial: StoryObj<Component> = {
   },
 };
 
+export const Disabled: StoryObj<Component> = {
+  args: {
+    onSubmit: () => {},
+    disabled: true,
+  },
+};
+
 export default meta;

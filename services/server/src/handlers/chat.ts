@@ -59,6 +59,7 @@ async function createRoom(req: Request, res: Response, next: NextFunction) {
    */
   const eligible =
     (isStudent(currentUser) && isTutor(targetUser)) ||
+    (isStudent(currentUser) && isTutorManager(targetUser)) ||
     (isTutor(currentUser) && isTutorManager(targetUser)) ||
     (isTutorManager(currentUser) && isTutor(targetUser));
 

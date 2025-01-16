@@ -112,7 +112,7 @@ export class User extends Base {
 
   async findUncontactedTutors(
     pagination?: IFilter.Pagination
-  ): Promise<ITutor.FindUncontactedTutorsApiResponse> {
+  ): Promise<ITutor.FindFullUncontactedTutorsApiResponse> {
     return await this.get({
       route: `/api/v1/user/tutor/list/uncontacted`,
       params: pagination,

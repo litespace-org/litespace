@@ -2,39 +2,55 @@ import { ChatRoom } from "@litespace/luna/Chat";
 import { SelectRoom } from "@litespace/luna/hooks/chat";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { Typography } from "@litespace/luna/Typography";
-import { IRoom, Paginated } from "@litespace/types";
+import { IRoom, ITutor, Paginated } from "@litespace/types";
 import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
 import { isOnline, isTyping } from "@/lib/room";
 import { RoomsMap } from "@litespace/headless/chat";
+import React, { useMemo } from "react";
+import { LocalId } from "@litespace/luna/locales";
+import People from "@litespace/assets/People";
+import { asChatRoomProps } from "@/lib/room";
 
 type Query = UseInfiniteQueryResult<
-  InfiniteData<Paginated<IRoom.FindUserRoomsApiRecord>, unknown>,
+  InfiniteData<
+    Paginated<IRoom.FindUserRoomsApiRecord | ITutor.UncontactedTutorInfo>,
+    unknown
+  >,
   Error
 >;
 
+type RoomsData = {
+  Icon: React.ReactNode;
+  label: LocalId;
+};
+
 const Rooms: React.FC<{
-  type: "all" | "pinned";
+  type: "all" | "pinned" | "uncontactedTutors";
   query: Query;
-  rooms: IRoom.FindUserRoomsApiRecord[] | null;
-  typingMap: RoomsMap;
-  usersOnlineMap: RoomsMap;
-  select: SelectRoom;
-  roomId: number | null;
+  typingMap?: RoomsMap;
+  usersOnlineMap?: RoomsMap;
+  rooms:
+    | IRoom.FindUserRoomsApiRecord[]
+    | ITutor.FullUncontactedTutorInfo[]
+    | null;
+  selectUncontacted?: (tutor: ITutor.FullUncontactedTutorInfo) => void;
+  select?: SelectRoom;
+  roomId: number | "temporary" | null;
   target: React.RefObject<HTMLDivElement>;
   enabled: boolean;
-  toggleMute: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
-  togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
+  toggleMute?: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
+  togglePin?: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
 }> = ({
   typingMap,
   usersOnlineMap,
   query,
   rooms,
   select,
+  selectUncontacted,
   target,
   roomId,
   type,
@@ -45,60 +61,81 @@ const Rooms: React.FC<{
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
+  const roomsData: RoomsData = useMemo(() => {
+    if (type === "all")
+      return {
+        Icon: <AllMessages />,
+        label: "chat.all",
+      };
+    if (type === "pinned")
+      return {
+        Icon: <Pin />,
+        label: "chat.pinned.title",
+      };
+
+    return {
+      Icon: <People className="[&>*]:stroke-natural-600" />,
+      label: "chat.all-tutors.title",
+    };
+  }, [type]);
+
+  /**
+   * map from either unconctacted tutors or chatRooms to list of props
+   * we are doing this to avoid making prop definition unread
+   */
+  const chatRoomProps: (React.ComponentProps<typeof ChatRoom> & {
+    roomId: number | null;
+  })[] = useMemo(
+    () =>
+      asChatRoomProps({
+        roomId,
+        rooms,
+        selectUncontacted,
+        currentUserId: user?.id,
+        select,
+        toggleMute,
+        togglePin,
+        intl,
+      }),
+    [
+      rooms,
+      selectUncontacted,
+      roomId,
+      select,
+      toggleMute,
+      togglePin,
+      user?.id,
+      intl,
+    ]
+  );
+
   if (!user) return null;
 
   return (
     <div>
       <div className="flex flex-row items-center justify-start gap-2 mb-4">
-        {type === "all" ? <AllMessages /> : <Pin />}
+        {roomsData.Icon}
 
         <Typography element="caption" className="text-natural-600">
-          {type === "all" ? intl("chat.all") : intl("chat.pinned.title")}
+          {intl(roomsData.label)}
         </Typography>
       </div>
 
       <div className="flex flex-col justify-stretch gap-4">
-        {rooms?.map((room) => (
+        {chatRoomProps.map((chatRoom) => (
           <ChatRoom
-            key={room.roomId}
-            isActive={room.roomId === roomId}
-            optionsEnabled={!!room.latestMessage}
-            // TODO: It will be replaced with the message State from the backend.
-            messageState={undefined}
-            owner={
-              room.latestMessage ? room.latestMessage.userId === user.id : false
-            }
-            online={isOnline(usersOnlineMap, room.roomId, room.otherMember)}
-            isPinned={room.settings.pinned}
-            isMuted={room.settings.muted}
-            userId={room.otherMember.id}
-            toggleMute={() =>
-              toggleMute({ roomId: room.roomId, muted: !room.settings.muted })
-            }
-            togglePin={() =>
-              togglePin({
-                roomId: room.roomId,
-                pinned: !room.settings.pinned,
-              })
-            }
-            image={
-              room.otherMember.image
-                ? asFullAssetUrl(room.otherMember.image)
-                : undefined
-            }
-            name={room.otherMember.name!}
-            // TODO: replace otherMember.name with member.bio
-            message={
-              room.latestMessage ? room.latestMessage?.text : "TODO: BIO"
-            }
-            unreadCount={room.unreadMessagesCount}
-            isTyping={isTyping(typingMap, room.roomId, room.otherMember.id)}
-            select={() =>
-              select({
-                room: room.roomId,
-                otherMember: room.otherMember,
-              })
-            }
+            {...chatRoom}
+            online={isOnline({
+              map: usersOnlineMap,
+              roomId: chatRoom.roomId,
+              otherMemberStatus: chatRoom.online,
+              otherMemberId: chatRoom.userId,
+            })}
+            isTyping={isTyping({
+              map: typingMap,
+              roomId: chatRoom.roomId,
+              otherMemberId: chatRoom.userId,
+            })}
           />
         ))}
       </div>

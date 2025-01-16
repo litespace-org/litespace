@@ -1,40 +1,51 @@
 import Messages from "@/components/Chat/Messages";
 import RoomsContainer from "@/components/Chat/RoomsContainer";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
+import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
 import { useChatStatus, useFindRoomMembers } from "@litespace/headless/chat";
-import { asOtherMember } from "@/lib/room";
+import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { useUserContext } from "@litespace/headless/context/user";
 import StartMessaging from "@litespace/assets/StartMessaging";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
+import { ITutor } from "@litespace/types";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Chat: React.FC = () => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
+  const [temporaryTutor, setTemporaryTutor] =
+    useState<ITutor.FullUncontactedTutorInfo | null>(null);
 
   const { select, selected } = useSelectedRoom();
   // TODO: read/unread function
   const roomMembers = useFindRoomMembers(selected.room);
-  const otherMember = asOtherMember(user?.id, roomMembers.data);
-
+  const otherMember = useMemo(
+    () => asOtherMember(user?.id, roomMembers.data),
+    [user?.id, roomMembers.data]
+  );
   const { typingMap, usersOnlineMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {
-    if (!selected.room || !otherMember) return false;
-    if (!typingMap) return false;
-    return !!typingMap[selected.room]?.[otherMember.id];
+    return otherMember
+      ? isTyping({
+          map: typingMap,
+          roomId: selected.room,
+          otherMemberId: otherMember.id,
+        })
+      : false;
   }, [selected.room, otherMember, typingMap]);
 
   const isOtherMemberOnline = useMemo(() => {
-    if (!selected.room || !otherMember) return false;
-    if (
-      !usersOnlineMap[selected.room] ||
-      !usersOnlineMap[selected.room]?.[otherMember.id]
-    )
-      return otherMember.online;
-    return !!usersOnlineMap[selected.room]?.[otherMember.id];
+    return otherMember
+      ? isOnline({
+          map: usersOnlineMap,
+          roomId: selected.room,
+          otherMemberStatus: otherMember.online,
+          otherMemberId: otherMember.id,
+        })
+      : false;
   }, [selected.room, otherMember, usersOnlineMap]);
 
   const retry = useCallback(() => {
@@ -74,22 +85,14 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className="flex flex-row min-h-screen overflow-hidden max-w-screen-3xl mx-auto w-full">
+    <div className={cn("flex flex-row overflow-hidden")}>
       <RoomsContainer
         usersOnlineMap={usersOnlineMap}
         typingMap={typingMap}
+        setTemporaryTutor={setTemporaryTutor}
         selected={selected}
         select={select}
       />
-
-      {otherMember && selected.room ? (
-        <Messages
-          isTyping={isCurrentRoomTyping}
-          isOnline={isOtherMemberOnline}
-          room={selected.room}
-          otherMember={otherMember}
-        />
-      ) : null}
 
       {!selected.room ? (
         <div className="h-full w-full flex items-center justify-center flex-col gap-8">
@@ -102,6 +105,17 @@ const Chat: React.FC = () => {
             {intl("chat.start-message")}
           </Typography>
         </div>
+      ) : null}
+
+      {temporaryTutor || otherMember ? (
+        <Messages
+          isTyping={isCurrentRoomTyping}
+          isOnline={isOtherMemberOnline}
+          room={selected.room}
+          otherMember={temporaryTutor || otherMember}
+          setTemporaryTutor={setTemporaryTutor}
+          select={select}
+        />
       ) : null}
     </div>
   );

@@ -1,4 +1,4 @@
-import { IRoom, IUser } from "@litespace/types";
+import { IRoom, ITutor, IUser } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -15,7 +15,12 @@ import {
   UserTyping,
 } from "@litespace/luna/Chat";
 import { ConfirmationDialog } from "@litespace/luna/ConfirmationDialog";
-import { OnMessage, useChat, useMessages } from "@litespace/headless/chat";
+import {
+  OnMessage,
+  useChat,
+  useCreateRoom,
+  useMessages,
+} from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/luna/chat";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
@@ -30,7 +35,9 @@ import { orUndefined } from "@litespace/sol/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
-import { asFullAssetUrl } from "@litespace/luna/backend";
+import { useToast } from "@litespace/luna/Toast";
+import { SelectRoom } from "@litespace/luna/hooks/chat";
+import { useRoomManager } from "@/hooks/chat";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -47,11 +54,24 @@ type RetryFnMap = Record<
 >;
 
 const Messages: React.FC<{
-  room: number;
-  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
+  /**
+   * Room id
+   */
+  room: number | "temporary" | null;
   isTyping: boolean;
-  isOnline: boolean;
-}> = ({ room, otherMember, isTyping, isOnline }) => {
+  isOnline: boolean | undefined;
+  /**
+   * other member data in the current room || temporary tutor data used until we
+   * create a room between users this will be used if there is an actual room
+   * between both users
+   */
+  otherMember:
+    | IRoom.FindUserRoomsApiRecord["otherMember"]
+    | ITutor.FullUncontactedTutorInfo
+    | null;
+  setTemporaryTutor: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
+  select: SelectRoom;
+}> = ({ room, otherMember, setTemporaryTutor, select, isTyping, isOnline }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLDivElement>(null);
@@ -76,7 +96,7 @@ const Messages: React.FC<{
     error,
   } = useMessages(room);
 
-  const roomErrors = messageErrors[room];
+  const roomErrors = room && room !== "temporary" ? messageErrors[room] : {};
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -104,6 +124,36 @@ const Messages: React.FC<{
     onMessage,
     orUndefined(user?.id)
   );
+  const { rooms } = useRoomManager();
+  const toast = useToast();
+
+  const onSuccess = useCallback(
+    (response: IRoom.CreateRoomApiResponse) => {
+      if (!otherMember) return;
+      select({
+        room: response.roomId,
+        otherMember: otherMember,
+      });
+      setTemporaryTutor(null);
+      rooms.all.query.refetch();
+      rooms.uncontactedTutors.query.refetch();
+    },
+    [
+      select,
+      setTemporaryTutor,
+      otherMember,
+      rooms.all.query,
+      rooms.uncontactedTutors.query,
+    ]
+  );
+
+  const onError = useCallback(() => {
+    toast.error({
+      title: intl("chat.create.room.error"),
+    });
+  }, [toast, intl]);
+
+  const createRoom = useCreateRoom({ onSuccess, onError });
 
   const retryFnMap: RetryFnMap = {
     send: (payload) =>
@@ -113,24 +163,30 @@ const Messages: React.FC<{
     update: (payload) =>
       typeof payload !== "number" && "id" in payload && updateMessage(payload),
     delete: (payload) =>
-      typeof payload === "number" && deleteMessage(payload, room),
+      typeof payload === "number" &&
+      room &&
+      room !== "temporary" &&
+      deleteMessage(payload, room),
   };
   const typingMessage = useCallback(
-    () => ackUserTyping({ roomId: room }),
+    () => room && room !== "temporary" && ackUserTyping({ roomId: room }),
     [room, ackUserTyping]
   );
 
   const submit = useCallback(
     (text: string) => {
-      if (!room) return;
+      if (!room || !otherMember) return;
+      if (room === "temporary") {
+        return createRoom.mutate({ id: otherMember.id, message: text });
+      }
       return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
-    [room, sendMessage, user]
+    [room, sendMessage, user, otherMember, createRoom]
   );
 
   const onUpdateMessage = useCallback(
     (text: string) => {
-      if (!updatableMessage || !room) return;
+      if (!updatableMessage || !room || room === "temporary") return;
       setUpdatableMessage(null);
       updateMessage({
         id: updatableMessage.id,
@@ -154,7 +210,7 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage || !room) return;
+    if (!deletableMessage || !room || room === "temporary") return;
     deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
   }, [deletableMessage, deleteMessage, room]);
@@ -170,11 +226,13 @@ const Messages: React.FC<{
   const messageGroups = useMemo(() => {
     if (!user) return [];
 
-    const groups = asMessageGroups({
-      currentUser: user,
-      messages,
-      otherMember,
-    });
+    const groups = otherMember
+      ? asMessageGroups({
+          currentUser: user,
+          messages,
+          otherMember,
+        })
+      : [];
 
     const map = groupBy(groups, (group) =>
       dayjs(group.sentAt).format("YYYY-MM-DD")
@@ -205,6 +263,20 @@ const Messages: React.FC<{
     if (!el) return;
     el.scrollTop += 100;
   }, [messageGroups]);
+  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> | null =
+    useMemo(() => {
+      if (!otherMember) return null;
+
+      return {
+        id: otherMember.id,
+        name: otherMember.name,
+        image: otherMember.image,
+        role: otherMember.role,
+        online: isOnline,
+        lastSeen: dayjs(otherMember.lastSeen).fromNow(),
+        openDialog: openDialog,
+      };
+    }, [otherMember, openDialog, isOnline]);
 
   return (
     <div
@@ -213,20 +285,9 @@ const Messages: React.FC<{
     >
       {room === null ? <NoSelection /> : null}
 
-      <div
-        className="tw-px-6 tw-pt-8 bg-natural-50"
-        style={{
-          boxShadow: "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
-        }}
-      >
-        <ChatHeader
-          {...otherMember}
-          image={otherMember.image ? asFullAssetUrl(otherMember.image) : null}
-          openDialog={openDialog}
-          online={isOnline}
-          lastSeen={dayjs(otherMember.lastSeen).fromNow()}
-        />
-      </div>
+      {chatHeaderProps ? (
+        <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
+      ) : null}
 
       {room ? (
         <>
@@ -260,7 +321,7 @@ const Messages: React.FC<{
                   </div>
                 ) : null}
 
-                {messageGroups.length > 0 ? (
+                {room !== "temporary" && messageGroups.length > 0 ? (
                   messageGroups.map(({ date, groups }) => {
                     return (
                       <div key={date} className="w-full">
@@ -320,7 +381,7 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-          {isTyping ? (
+          {isTyping && otherMember ? (
             <div className="px-6">
               <UserTyping
                 id={otherMember.id}
@@ -358,7 +419,7 @@ const Messages: React.FC<{
         close={discardDelete}
         icon={<Trash />}
       />
-      {otherMember.role !== IUser.Role.Student ? (
+      {otherMember && otherMember.role !== IUser.Role.Student ? (
         <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
       ) : null}
     </div>

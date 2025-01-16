@@ -23,6 +23,7 @@ export enum QueryKey {
   FindTopic = "find-topic",
   FindPeerId = "find-peer-id",
   FindAsset = "find-asset",
+  FindUncontactedTutors = "find-uncontacted-tutors",
   FindUserRooms = "find-user-rooms",
   FindRoomMembers = "find-room-members",
   FindCallMembers = "find-call-members",

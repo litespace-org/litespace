@@ -144,7 +144,12 @@ export const ChatRoom: React.FC<{
               </Typography>
             </div>
           ) : (
-            <span className="tw-line-clamp-1">{message}</span>
+            <span
+              style={{ lineBreak: "anywhere" }}
+              className="tw-line-clamp-1 "
+            >
+              {message}
+            </span>
           )}
         </Typography>
       </div>
