@@ -1,12 +1,17 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { range } from "lodash";
 import {
+  HOUR_HEIGHT,
   HOURS_IN_DAY,
   MINUTES_IN_HOUR,
 } from "@/components/Calendar/v2/constants";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
+import { Link } from "react-router-dom";
+
+export const asHourId = (hour: number) => `#h-${hour}`;
+export const isHourId = (id: string) => Number(id.replace("#h-", "")) <= 23;
 
 export const Hours: React.FC<{
   day: Dayjs;
@@ -14,7 +19,7 @@ export const Hours: React.FC<{
   const hours: Dayjs[] = useMemo(() => {
     const start = day.startOf("day");
     // skip 12am (first hour of the day) because of the design
-    return range(1, HOURS_IN_DAY).map((hour) => start.add(hour, "hour"));
+    return range(1, HOURS_IN_DAY + 1).map((hour) => start.add(hour, "hour"));
   }, [day]);
 
   const timezone = useMemo(() => {
@@ -24,6 +29,11 @@ export const Hours: React.FC<{
       .padStart(2, "0");
     return `GMT+${offsetHours}`;
   }, [day]);
+
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (isHourId(hash)) document.getElementById(hash)?.scrollIntoView(true);
+  }, []);
 
   return (
     <div>
@@ -38,21 +48,32 @@ export const Hours: React.FC<{
       </div>
 
       <ul className="tw-flex tw-flex-col">
-        {hours.map((hour) => {
+        {hours.map((hour, i) => {
           const display = hour.format("h a");
           const key = hour.toISOString();
+          const last = i === hours.length - 1;
+          const id = asHourId(hour.hour());
           return (
-            <li className="tw-px-5 tw-h-[5.5rem] tw-relative" key={key}>
-              <Typography
+            <li
+              key={key}
+              className="tw-px-5 tw-relative"
+              style={{ height: HOUR_HEIGHT }}
+            >
+              <Link
+                id={id}
+                to={id}
                 className={cn(
-                  "tw-text-natural-700 tw-text-center",
-                  "tw-absolute tw-bottom-0 tw-left-1/2 tw-translate-y-1/2 -tw-translate-x-1/2"
+                  "tw-absolute tw-z-calendar-hour tw-bottom-0 tw-left-1/2 tw-translate-y-1/2 -tw-translate-x-1/2"
                 )}
-                element="body"
-                weight="regular"
               >
-                {display}
-              </Typography>
+                <Typography
+                  className={cn("tw-text-natural-700 tw-text-center")}
+                  element="body"
+                  weight="regular"
+                >
+                  {!last ? display : null}
+                </Typography>
+              </Link>
             </li>
           );
         })}
