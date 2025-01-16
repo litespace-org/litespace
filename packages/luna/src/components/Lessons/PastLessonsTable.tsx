@@ -29,6 +29,7 @@ export type Props = {
       name: string | null;
       imageUrl: string | null;
     };
+    peerId: number;
   }>;
   tutorsRoute: string;
   /**

@@ -38,6 +38,7 @@ const makeLesson = () => ({
       null,
     ])!,
   },
+  peerId: faker.number.int(),
 });
 
 export const UserIsTutor: Story = {

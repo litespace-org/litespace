@@ -55,6 +55,9 @@ function asLessons(
             ? tutor?.image || null
             : student?.image || null,
       },
+      /**
+       * id of the other member in the lesson: student when user is tutor and vice versa
+       */
     };
   });
 }
