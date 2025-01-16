@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Dayjs } from "dayjs";
 import { range } from "lodash";
 import {
@@ -8,6 +8,10 @@ import {
 } from "@/components/Calendar/v2/constants";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
+import { Link } from "react-router-dom";
+
+export const asHourId = (hour: number) => `#h-${hour}`;
+export const isHourId = (id: string) => Number(id.replace("#h-", "")) <= 23;
 
 export const Hours: React.FC<{
   day: Dayjs;
@@ -26,6 +30,11 @@ export const Hours: React.FC<{
     return `GMT+${offsetHours}`;
   }, [day]);
 
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (isHourId(hash)) document.getElementById(hash)?.scrollIntoView(true);
+  }, []);
+
   return (
     <div>
       <div className="tw-h-16 tw-bg-natural-50 tw-flex tw-items-center tw-justify-center tw-px-3 tw-border-b tw-border-natural-300 tw-rounded-tr-2xl">
@@ -43,22 +52,28 @@ export const Hours: React.FC<{
           const display = hour.format("h a");
           const key = hour.toISOString();
           const last = i === hours.length - 1;
+          const id = asHourId(hour.hour());
           return (
             <li
               key={key}
               className="tw-px-5 tw-relative"
               style={{ height: HOUR_HEIGHT }}
             >
-              <Typography
+              <Link
+                id={id}
+                to={id}
                 className={cn(
-                  "tw-text-natural-700 tw-text-center",
-                  "tw-absolute tw-bottom-0 tw-left-1/2 tw-translate-y-1/2 -tw-translate-x-1/2"
+                  "tw-absolute tw-z-calendar-hour tw-bottom-0 tw-left-1/2 tw-translate-y-1/2 -tw-translate-x-1/2"
                 )}
-                element="body"
-                weight="regular"
               >
-                {!last ? display : null}
-              </Typography>
+                <Typography
+                  className={cn("tw-text-natural-700 tw-text-center")}
+                  element="body"
+                  weight="regular"
+                >
+                  {!last ? display : null}
+                </Typography>
+              </Link>
             </li>
           );
         })}

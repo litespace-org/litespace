@@ -47,7 +47,6 @@ export type AvailabilitySlotProps = EventProps & {
     image: string | null;
     name: string | null;
   }>;
-  avatarsCount?: number;
 };
 
 export type HourView = React.FC<{ date: Dayjs }>;

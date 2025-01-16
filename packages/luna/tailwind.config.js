@@ -12,6 +12,7 @@ export default {
     extend: {
       zIndex: {
         "chat-avatar": "1",
+        "calendar-hour": "1",
         navbar: "1",
         sidebar: "2",
         "online-indicator": "2",

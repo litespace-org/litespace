@@ -5,6 +5,7 @@ import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
 import { faker } from "@faker-js/faker/locale/en";
 import { AvailabilitySlotProps } from "./types";
+import { random, range, sample } from "lodash";
 
 type Component = typeof Calendar;
 
@@ -30,39 +31,30 @@ const HourView: React.FC<{ date: Dayjs }> = ({ date }) => {
   );
 };
 
-const getRandSlots = (): AvailabilitySlotProps[] => {
-  const res: AvailabilitySlotProps[] = [];
-  const count = faker.number.int({ min: 3, max: 10 });
-  for (let i = 0; i < count; i++) {
-    res.push(getRandSlot({}));
-  }
-  return res;
-};
-
-const getRandSlot = ({
-  from,
-  to,
+const makeSlot = ({
+  hour,
+  duration,
+  date,
+  membersCount = 2,
 }: {
-  from?: number;
-  to?: number;
+  hour: number;
+  duration: number;
+  date: Dayjs;
+  membersCount?: number;
 }): AvailabilitySlotProps => {
-  const afterDays = faker.number.int({ min: 0, max: 6 });
-  const date = dayjs().startOf("week").add(afterDays, "days");
-
-  const min = from && from < 23 ? from : 1;
-  const max = to && to < 23 ? to : 23;
-
-  const randInt = faker.number.int({ min, max });
-
+  const start = date.startOf("day").add(hour, "hours");
   return {
-    id: 1,
-    start: date.startOf("day").add(randInt, "hours").toString(),
-    end: date
-      .startOf("day")
-      .add(faker.number.int({ min: randInt, max: max + 1 }), "hours")
-      .toString(),
-    members: [],
-    avatarsCount: 3,
+    id: random(1000),
+    start: start.toISOString(),
+    end: start.add(duration, "hours").toISOString(),
+    members: range(membersCount).map((idx) => ({
+      id: idx,
+      name: faker.person.fullName(),
+      image: sample([
+        null,
+        faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+      ]),
+    })),
   };
 };
 
@@ -73,10 +65,47 @@ export const HourViewCalender: StoryObj<Component> = {
   },
 };
 
+const date = dayjs().startOf("week");
+
 export const DayViewCalender: StoryObj<Component> = {
   args: {
-    slots: getRandSlots(),
-    date: dayjs().startOf("week"),
+    slots: [
+      makeSlot({ hour: 1, duration: 2, date, membersCount: 2 }),
+      makeSlot({ hour: 3, duration: 2, date, membersCount: 7 }),
+      makeSlot({
+        hour: 3,
+        duration: 8,
+        date: date.add(1, "day"),
+        membersCount: 3,
+      }),
+      makeSlot({
+        hour: 12,
+        duration: 12,
+        date: date.add(2, "day"),
+        membersCount: 4,
+      }),
+      makeSlot({
+        hour: 1,
+        duration: 0.5,
+        date: date.add(3, "day"),
+        membersCount: 3,
+      }),
+      makeSlot({
+        hour: 1,
+        duration: 10,
+        date: date.add(6, "day"),
+        membersCount: 3,
+      }),
+    ],
+    date,
+    slotActions: {
+      onDelete(id) {
+        alert(`Delete ${id}`);
+      },
+      onEdit(id) {
+        alert(`Edit ${id}`);
+      },
+    },
   },
 };
 

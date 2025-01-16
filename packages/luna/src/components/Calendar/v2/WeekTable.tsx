@@ -75,15 +75,20 @@ export const WeekTable: React.FC<{
             </div>
 
             {slots
-              ? slots.map((slot) => {
-                  if (!dayjs(slot.start).startOf("day").isSame(day))
-                    return null;
-                  return (
-                    <div className="tw-absolute tw-w-full tw-p-2">
-                      <AvailabilitySlot {...slot} {...slotActions} />
-                    </div>
-                  );
-                })
+              ? slots
+                  .filter((slot) =>
+                    dayjs(slot.start).startOf("day").isSame(day)
+                  )
+                  .map((slot) => {
+                    return (
+                      <div
+                        key={slot.id}
+                        className="tw-absolute tw-w-full tw-h-full tw-p-1"
+                      >
+                        <AvailabilitySlot {...slot} {...slotActions} />
+                      </div>
+                    );
+                  })
               : null}
           </div>
         );
