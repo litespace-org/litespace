@@ -120,10 +120,13 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage, ackUserTyping } = useChat(
-    onMessage,
-    orUndefined(user?.id)
-  );
+  const {
+    sendMessage,
+    updateMessage,
+    deleteMessage,
+    ackUserTyping,
+    readMessage,
+  } = useChat(onMessage, orUndefined(user?.id));
   const { rooms } = useRoomManager();
   const toast = useToast();
 
@@ -299,13 +302,13 @@ const Messages: React.FC<{
             ref={messagesRef}
             onScroll={onScroll}
           >
-            <InView as="div" onChange={more} />
             {loading ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
               </div>
             ) : (
               <ul className="h-full flex flex-col gap-4 overflow-auto grow">
+                <InView as="div" onChange={more} />
                 {error && !fetching ? (
                   <div className="max-w-[192px] mx-auto">
                     <LoadingError
@@ -345,6 +348,7 @@ const Messages: React.FC<{
                             <div className="mb-6" key={group.id}>
                               <ChatMessageGroup
                                 {...group}
+                                readMessage={readMessage}
                                 roomErrors={roomErrors}
                                 retryFnMap={retryFnMap}
                                 roomId={room}

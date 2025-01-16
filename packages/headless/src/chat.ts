@@ -743,6 +743,7 @@ function reducer(state: State, action: Action) {
     messages[room]?.map((message) => {
       if (message.id === messageId) {
         message.read = true;
+        message.messageState = "seen";
       }
       return message;
     });
