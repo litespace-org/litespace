@@ -5,11 +5,13 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { PastLessonsTable } from "@litespace/luna/Lessons";
 import { Typography } from "@litespace/luna/Typography";
 import { ILesson, IUser } from "@litespace/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
-import dayjs from "dayjs";
+import dayjs from "@/lib/dayjs";
 import { Loading } from "@litespace/luna/Loading";
+import { useFindRoomByMembers } from "@litespace/headless/chat";
+import { useNavigate } from "react-router-dom";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -65,6 +67,7 @@ function asLessons(
 export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<number | null>(null);
+  const [members, setMembers] = useState<number[]>([]);
 
   const closeRebookingDialog = useCallback(() => {
     setTutor(null);
@@ -88,7 +91,24 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user?.role]
   );
 
+  const findRoom = useFindRoomByMembers(members);
   const [sendingMessage, setSendingMessage] = useState(0);
+
+  const navigate = useNavigate();
+
+  const handleSendMessage = useCallback(
+    (lessonId: number, members: number[]) => {
+      setMembers(members);
+      setSendingMessage(lessonId);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!findRoom.data?.room) return;
+    setSendingMessage(0);
+    navigate(`/chat?room=${findRoom.data?.room}`);
+  }, [findRoom.data?.room, navigate]);
 
   return (
     <div className="grid gap-6 ">
@@ -111,9 +131,9 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.Tutor ||
           user?.role === IUser.Role.TutorManager
         }
-        onSendMessage={() => {}}
+        onSendMessage={handleSendMessage}
         sendingMessage={sendingMessage}
-        setSendingMessage={setSendingMessage}
+        // setSendingMessage={setSendingMessage}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (

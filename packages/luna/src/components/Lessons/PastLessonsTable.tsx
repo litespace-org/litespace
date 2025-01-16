@@ -29,7 +29,6 @@ export type Props = {
       name: string | null;
       imageUrl: string | null;
     };
-    peerId: number;
   }>;
   tutorsRoute: string;
   /**
@@ -47,7 +46,7 @@ export type Props = {
    */
   onRebook?: (tutorId: number) => void;
   // setSendingMessage: (lessonId: number) => void;
-  onSendMessage?: (members: number[]) => void;
+  onSendMessage?: (lessonId: number, members: number[]) => void;
   retry?: Void;
 };
 
@@ -170,7 +169,7 @@ export const PastLessonsTable: React.FC<Props> = ({
                     // setSendingMessage(lesson.id);
 
                     if (onSendMessage && isTutor)
-                      return onSendMessage([
+                      return onSendMessage(lesson.id, [
                         lesson.otherMember.id,
                         lesson.currentMember,
                       ]);
