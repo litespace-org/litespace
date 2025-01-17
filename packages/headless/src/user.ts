@@ -90,6 +90,28 @@ export function useUpdateUser({
   });
 }
 
+export function useUpdateUserPersonalInfo({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IUser.Self>;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+  const update = useCallback(
+    async ({ id, payload }: { id: number; payload: IUser.UpdateApiPayload }) =>
+      atlas.user.update(id, payload),
+    [atlas.user]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UpdateUserPersonalInfo],
+    onSuccess,
+    onError,
+  });
+}
+
 export function useCurrentUser(enabled: boolean = true) {
   const atlas = useAtlas();
 

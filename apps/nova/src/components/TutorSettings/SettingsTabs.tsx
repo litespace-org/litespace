@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Typography } from "@litespace/luna/Typography";
@@ -6,10 +6,22 @@ import { LocalId } from "@litespace/luna/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Animate } from "@/components/Common/Animate";
+import { TutorPersonalInfoSettings } from "@/components/TutorSettings/TutorPersonalInfoSettings";
 
 type Tab = "profile" | "settings";
 
-export const TutorSettingsTabs = () => {
+export const TutorSettingsTabs: React.FC<{
+  update: (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => void;
+  tutor: {
+    video: string | null;
+    name: string | null;
+    bio: string | null;
+    about: string | null;
+    topics: string[];
+  };
+}> = ({ tutor, update }) => {
   const intl = useFormatMessage();
   const [tab, setTab] = useState<Tab>("profile");
 
@@ -69,13 +81,13 @@ export const TutorSettingsTabs = () => {
 
       <AnimatePresence initial={false} mode="wait">
         {tab === "profile" ? (
-          <Animate key="profile">
-            <div className="p-10">profile</div>
+          <Animate name="profile">
+            <TutorPersonalInfoSettings {...tutor} update={update} />
           </Animate>
         ) : null}
         {tab === "settings" ? (
-          <Animate key="settings">
-            <div className="p-10">Settings</div>{" "}
+          <Animate name="settings">
+            <div className="p-10">Settings</div>
           </Animate>
         ) : null}
       </AnimatePresence>
