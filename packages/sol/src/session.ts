@@ -1,22 +1,33 @@
 import { ISession } from "@litespace/types";
-import { first } from "lodash";
 import { v4 as uuidv4 } from "uuid";
 
 export function asSessionId(id: string) {
-  if (!id.startsWith("lesson:") && !id.startsWith("interview:"))
+  const parts = id.split(":");
+  if (
+    parts.length !== 3 ||
+    !["lesson", "interview"].includes(parts[1]) ||
+    isNaN(Number(parts[0]))
+  )
     throw Error("Invalid session id.");
   return id as ISession.Id;
 }
 
 export function isSessionId(id: string): id is ISession.Id {
-  const [prefix, uuid] = id.split(":");
-  return (prefix === "lesson" || prefix === "interview") && !!uuid;
+  const parts = id.split(":");
+  return (
+    parts.length === 3 &&
+    ["lesson", "interview"].includes(parts[1]) &&
+    !isNaN(Number(parts[0]))
+  );
 }
 
-export function genSessionId(type: ISession.Type): ISession.Id {
+export function genSessionRowId(type: ISession.Type): ISession.RowId {
   return `${type}:${uuidv4()}`;
 }
 
-export function getSessionType(id: ISession.Id): ISession.Type {
-  return first(id.split(":")) as ISession.Type;
+export function getSessionType(
+  id: ISession.RowId | ISession.Id
+): ISession.Type {
+  const parts = id.split(":");
+  return parts[parts.length - 2] as ISession.Type;
 }

@@ -5,13 +5,12 @@ import { asSessionId, isSessionId, logger, safe } from "@litespace/sol";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { asSessionRoomId } from "@/wss/utils";
-
 import zod from "zod";
-import { sessionId } from "@/validation/utils";
+import { string } from "@/validation/utils";
 
 const stdout = logger("wss");
 
-const generalSessionPayload = zod.object({ sessionId: sessionId });
+const generalSessionPayload = zod.object({ sessionId: string });
 
 export class Session extends WssHandler {
   public init(): Session {

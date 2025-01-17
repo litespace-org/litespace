@@ -23,7 +23,7 @@ import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/session";
 import { concat, isEmpty, isEqual } from "lodash";
-import { genSessionId } from "@litespace/sol";
+import { genSessionRowId } from "@litespace/sol";
 
 const createLessonPayload = zod.object({
   tutorId: id,
@@ -94,7 +94,7 @@ function create(context: ApiContext) {
             duration: payload.duration,
             rule: payload.ruleId,
             slot: payload.slotId,
-            session: genSessionId("lesson"),
+            session: genSessionRowId("lesson"),
             price,
             tx,
           });

@@ -175,7 +175,7 @@ export class Lessons {
     return rows.map((row) => this.from(row));
   }
 
-  async findBySessionId(id: ISession.Id): Promise<ILesson.Self | null> {
+  async findBySessionId(id: ISession.RowId): Promise<ILesson.Self | null> {
     return await this.findOneBy("session_id", id);
   }
 
@@ -541,7 +541,7 @@ export class Lessons {
       price: row.price,
       ruleId: row.rule_id,
       slotId: row.slot_id,
-      sessionId: row.session_id,
+      sessionId: `${row.id}:${row.session_id}`,
       canceledBy: row.canceled_by,
       canceledAt: row.canceled_at ? row.canceled_at.toISOString() : null,
       createdAt: row.created_at.toISOString(),

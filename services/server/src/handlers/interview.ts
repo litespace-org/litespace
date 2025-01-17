@@ -39,7 +39,7 @@ import {
 import { isEqual } from "lodash";
 import { canBook } from "@/lib/session";
 import { platformConfig } from "@/constants";
-import { genSessionId } from "@litespace/sol";
+import { genSessionRowId } from "@litespace/sol";
 
 const createInterviewPayload = zod.object({
   interviewerId: id,
@@ -117,7 +117,7 @@ async function createInterview(
     const interview = await interviews.create({
       interviewer: interviewerId,
       interviewee: intervieweeId,
-      session: genSessionId("interview"),
+      session: genSessionRowId("interview"),
       rule: rule.id,
       slot: slot.id,
       start,

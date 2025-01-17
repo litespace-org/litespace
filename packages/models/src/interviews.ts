@@ -124,7 +124,7 @@ export class Interviews {
     return await this.findOneBy("id", id);
   }
 
-  async findBySessionId(id: ISession.Id): Promise<IInterview.Self | null> {
+  async findBySessionId(id: ISession.RowId): Promise<IInterview.Self | null> {
     return await this.findOneBy("session_id", id);
   }
 
@@ -221,7 +221,7 @@ export class Interviews {
         interviewee: row.interviewee_id,
         rule: row.rule_id,
         slot: row.slot_id,
-        session: row.session_id,
+        session: `${row.id}:${row.session_id}`,
       },
       feedback: {
         interviewer: row.interviewer_feedback,

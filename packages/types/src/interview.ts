@@ -54,7 +54,7 @@ export type Row = {
   interviewee_feedback: string | null;
   rule_id: number;
   slot_id: number;
-  session_id: ISession.Id;
+  session_id: ISession.RowId;
   note: string | null;
   level: number | null;
   status: Status;
@@ -70,7 +70,7 @@ export type CreatePayload = {
    * ISO UTC datetime.
    */
   start: string;
-  session: ISession.Id;
+  session: ISession.RowId;
   rule: number;
   slot: number;
   interviewer: number;

@@ -1,10 +1,9 @@
 import { unpackRules } from "@litespace/sol/rule";
-import { IInterview, ILesson, IRule, ISession, Wss } from "@litespace/types";
-import { concat, first, isEmpty } from "lodash";
+import { IInterview, ILesson, IRule, ISession } from "@litespace/types";
+import { concat, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
 import { interviews, lessons } from "@litespace/models";
-import { asSessionId, getSessionType } from "@litespace/sol";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
@@ -69,10 +68,10 @@ export async function canAccessSession({
   sessionId: ISession.Id;
   userId: number;
 }) {
-  const type = getSessionType(sessionId);
+  const [id, type, _] = sessionId.split(":");
 
   if (type === "lesson") {
-    const lesson = await lessons.findBySessionId(sessionId);
+    const lesson = await lessons.findById(Number(id));
     if (!lesson) return false;
 
     const members = await lessons.findLessonMembers([lesson.id]);
@@ -81,7 +80,7 @@ export async function canAccessSession({
   }
 
   if (type === "interview") {
-    const interview = await interviews.findBySessionId(sessionId);
+    const interview = await interviews.findById(Number(id));
     if (!interview) return false;
     const isMember =
       interview.ids.interviewer === userId ||

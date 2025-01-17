@@ -7,7 +7,7 @@ export type Row = {
   price: number;
   rule_id: number;
   slot_id: number;
-  session_id: ISession.Id;
+  session_id: ISession.RowId;
   canceled_by: number | null;
   canceled_at: Date | null;
   created_at: Date;
@@ -94,7 +94,7 @@ export type CreatePayload = {
   student: number;
   rule: number;
   slot: number;
-  session: ISession.Id;
+  session: ISession.RowId;
   /**
    * Lesson price scaled to the power of 2.
    */

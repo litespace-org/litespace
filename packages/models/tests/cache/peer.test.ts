@@ -1,5 +1,5 @@
 import { cache } from "@fixtures/cache";
-import { genSessionId } from "@litespace/sol";
+import { genSessionRowId } from "@litespace/sol";
 import { expect } from "chai";
 
 describe("Testing cache/peer functions", () => {
@@ -22,14 +22,14 @@ describe("Testing cache/peer functions", () => {
   });
 
   it("should set/retrieve ghost peer id in/from the cache", async () => {
-    const sessId = genSessionId("lesson");
+    const sessId = genSessionRowId("lesson");
     await cache.peer.setGhostPeerId(sessId, "testing");
     const res = await cache.peer.getGhostPeerId(sessId);
     expect(res).to.eq("testing");
   });
 
   it("should NOT exist overridding between the ghost and the user", async () => {
-    const sessId = genSessionId("lesson");
+    const sessId = genSessionRowId("lesson");
     await cache.peer.setGhostPeerId(sessId, "dump");
     // checking if user overrides the ghost or vice versa
     await cache.peer.setUserPeerId(1, "user testing");
@@ -50,7 +50,7 @@ describe("Testing cache/peer functions", () => {
   });
 
   it("should remove ghost peer id from the cache", async () => {
-    const sessId = genSessionId("lesson");
+    const sessId = genSessionRowId("lesson");
     await cache.peer.setGhostPeerId(sessId, "testing");
     await cache.peer.removeGhostPeerId(sessId);
     const res = await cache.peer.getGhostPeerId(sessId);
