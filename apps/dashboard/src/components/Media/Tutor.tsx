@@ -135,7 +135,7 @@ const Tutor: React.FC<{
           loading={mutation.isPending}
           size={ButtonSize.Small}
         >
-          {intl("global.labels.confirm")}
+          {intl("labels.confirm")}
         </Button>
         <Button
           onClick={reset}

@@ -37,7 +37,7 @@ const Login: React.FC = () => {
     },
     onError(error) {
       toast.error({
-        title: intl("page.login.failed"),
+        title: intl("login.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -96,7 +96,7 @@ const Login: React.FC = () => {
                 disabled={mutation.isPending}
                 loading={mutation.isPending}
               >
-                {intl("page.login.form.button.submit.label")}
+                {intl("login.button.label")}
               </Button>
             </div>
           </Form>

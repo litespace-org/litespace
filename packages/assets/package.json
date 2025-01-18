@@ -60,6 +60,7 @@
     "./EyeSlash": "./dist/EyeSlash.tsx",
     "./Eye": "./dist/Eye.tsx",
     "./FullScreen": "./dist/FullScreen.tsx",
+    "./Google": "./dist/Google.tsx",
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
     "./LeftArrowHead": "./dist/LeftArrowHead.tsx",

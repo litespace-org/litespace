@@ -73,9 +73,6 @@ export const serverConfig = {
   build: __dirname,
 } as const;
 
-export const passwordRegex =
-  /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/;
-
 export const jwtSecret = zod
   .string({ message: "Missing JWT Scret" })
   .parse(process.env.JWT_SECRET)

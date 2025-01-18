@@ -8,23 +8,16 @@ import React, { useCallback, useState } from "react";
 import cn from "classnames";
 import { safe } from "@litespace/sol/error";
 import { IUser } from "@litespace/types";
-import { useNavigate } from "react-router-dom";
-import { Route } from "@/types/routes";
-import { useAtlas } from "@litespace/headless/atlas";
-import { useUserContext } from "@litespace/headless/context/user";
 
 const GoogleAuth: React.FC<{
   purpose: "login" | "register";
   role?: typeof IUser.Role.Tutor | typeof IUser.Role.Student;
-}> = ({ purpose, role }) => {
+}> = ({ purpose }) => {
   const intl = useFormatMessage();
   const media = useMediaQueries();
   const { theme } = useTheme();
-  const navigate = useNavigate();
   const [loading, setLoading] = useState<boolean>(false);
-  const atlas = useAtlas();
   const toast = useToast();
-  const user = useUserContext();
 
   const onGoogleSuccess = useCallback(
     async (response: CredentialResponse) => {
@@ -34,36 +27,39 @@ const GoogleAuth: React.FC<{
           throw new Error(
             "Cannot authenticate using Google. Missing token credentials"
           );
-        const info = await atlas.auth.google(response.credential, role);
-        user.set(info);
-        navigate(Route.Root);
+        // const info = await atlas.auth.google(response.credential, role);
+        // user.set(info);
+        // navigate(Route.Root);
       });
       setLoading(false);
 
       if (error)
         toast.error({
-          title: intl(
-            purpose === "login" ? "page.login.failed" : "page.register.failed"
-          ),
+          title: intl(purpose === "login" ? "login.error" : "register.error"),
           description: error.message,
         });
     },
-    [atlas.auth, intl, navigate, purpose, role, toast, user]
+    [intl, purpose, toast]
   );
 
   const onGoogleError = useCallback(() => {}, []);
 
   return (
     <div className="relative">
-      <div className={cn(loading && "opacity-50")}>
+      <div
+        className={cn(
+          "flex items-center justify-center",
+          loading && "opacity-50"
+        )}
+      >
         <GoogleLogin
           onSuccess={onGoogleSuccess}
           onError={onGoogleError}
           auto_select
           theme={theme === "light" ? "outline" : "filled_black"}
           size="large"
-          shape="square"
-          width={media.sm ? "384" : "330"}
+          shape="rectangular"
+          width={media.sm ? "450" : "330"}
           context={purpose === "register" ? "signup" : "signin"}
           text={purpose === "register" ? "continue_with" : "signin_with"}
           useOneTap

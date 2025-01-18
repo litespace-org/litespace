@@ -12,20 +12,17 @@ export class Auth extends Base {
   }
 
   async google(
-    token: string,
-    role?: typeof IUser.Role.Student | typeof IUser.Role.Tutor
+    payload: IUser.GoogleAuthPayload
   ): Promise<IUser.LoginApiResponse> {
     return this.post({
       route: "/api/v1/auth/google",
-      payload: { token, role },
+      payload,
     });
   }
 
-  async forgotPassword(
-    payload: IUser.ForegetPasswordApiPayload
-  ): Promise<void> {
+  async forgetPassword(payload: IUser.ForgetPasswordApiPayload): Promise<void> {
     await this.post({
-      route: "/api/v1/auth/password/forgot",
+      route: "/api/v1/auth/password/forget",
       payload,
     });
   }

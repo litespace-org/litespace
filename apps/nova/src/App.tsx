@@ -13,9 +13,7 @@ import Dashboard from "@/pages/Dashboard";
 import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
-import EditSchedule from "@/pages/EditSchedule";
 import Tutors from "@/pages/Tutors";
-import Interviews from "@/pages/Interviews";
 import Invoices from "@/pages/Invoices";
 import Chat from "@/pages/Chat";
 import ResetPassword from "@/pages/ResetPassword";
@@ -25,6 +23,7 @@ import Plans from "@/pages/Plans";
 import Lesson from "@/pages/Lesson";
 import TutorSettings from "@/pages/TutorSettings";
 import ScheduleManagement from "@/pages/ScheduleManagement";
+import ForgetPassword from "@/pages/ForgetPassword";
 
 const router = createBrowserRouter([
   {
@@ -35,8 +34,6 @@ const router = createBrowserRouter([
       { path: Route.Chat, element: <Chat /> },
       { path: Route.Complete, element: <Complete /> },
       { path: Route.Dashboard, element: <Dashboard /> },
-      { path: Route.EditSchedule, element: <EditSchedule /> },
-      { path: Route.Interviews, element: <Interviews /> },
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Login, element: <Login /> },
       { path: Route.Payments, element: <Payments /> },
@@ -53,6 +50,7 @@ const router = createBrowserRouter([
       { path: Route.UpcomingLessons, element: <UpcomingLessons /> },
       { path: Route.Lesson, element: <Lesson /> },
       { path: Route.VerifyEmail, element: <VerifyEmail /> },
+      { path: Route.ForgetPassword, element: <ForgetPassword /> },
     ],
     errorElement: <ErrorPage />,
   },

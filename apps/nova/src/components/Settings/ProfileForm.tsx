@@ -15,7 +15,7 @@ import {
   useValidateEmail,
   useValidatePassword,
   useValidatePhoneNumber,
-  useValidateUsername,
+  useValidateUserName,
 } from "@litespace/luna/hooks/validation";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
@@ -85,7 +85,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   }, [userTopics, form]);
 
   const invalidateQuery = useInvalidateQuery();
-  const validateUsername = useValidateUsername();
+  const validateUserName = useValidateUserName();
   const validateEmail = useValidateEmail();
   const validatePhoneNumber = useValidatePhoneNumber();
   const validatePassword = useValidatePassword();
@@ -233,7 +233,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             placeholder={intl("settings.edit.personal.name.placeholder")}
             value={form.watch("name")}
             control={form.control}
-            rules={{ validate: validateUsername }}
+            rules={{ validate: validateUserName }}
             autoComplete="off"
             name="name"
           />

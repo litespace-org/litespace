@@ -68,7 +68,7 @@ const Cache: React.FC = () => {
             loading={flush.isPending}
             disabled={flush.isPending}
           >
-            {intl("global.labels.confirm")}
+            {intl("labels.confirm")}
           </Button>
 
           <Button
@@ -76,7 +76,7 @@ const Cache: React.FC = () => {
             variant={ButtonVariant.Secondary}
             onClick={() => setOpen(false)}
           >
-            {intl("global.labels.cancel")}
+            {intl("labels.cancel")}
           </Button>
         </div>
       </Dialog>

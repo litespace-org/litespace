@@ -1,26 +1,25 @@
 import { useCallback } from "react";
 import { useAtlas } from "@/atlas/index";
-import { IUser, Void } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { useMutation } from "@tanstack/react-query";
 import { MutationKey } from "@/constants";
+import { OnError, OnSuccess } from "@/types/query";
 
-export type OnSuccess = Void;
 export type OnResetPasswordSuccess = (
   response: IUser.ResetPasswordApiResponse
 ) => void;
-export type OnError = (error: Error) => void;
 
 export function useForgetPassword({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
-  onError: OnError;
+  onSuccess?: OnSuccess<void>;
+  onError?: OnError;
 }) {
   const atlas = useAtlas();
   const forgetPassword = useCallback(
-    async (credentials: IUser.ForegetPasswordApiPayload) => {
-      return atlas.auth.forgotPassword(credentials);
+    async (credentials: IUser.ForgetPasswordApiPayload) => {
+      return await atlas.auth.forgetPassword(credentials);
     },
     [atlas.auth]
   );
@@ -61,7 +60,7 @@ export function useVerifyEmail({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
+  onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
   const atlas = useAtlas();
@@ -84,7 +83,7 @@ export function useSendVerifyEmail({
   onSuccess,
   onError,
 }: {
-  onSuccess: OnSuccess;
+  onSuccess: OnSuccess<void>;
   onError: OnError;
 }) {
   const atlas = useAtlas();

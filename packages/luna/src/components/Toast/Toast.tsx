@@ -23,9 +23,9 @@ const IconMap: Record<
 
 export const Toast: React.FC<{
   open?: boolean;
-  title: string;
+  title: React.ReactNode;
   type: ToastType;
-  description?: string;
+  description?: React.ReactNode;
   onOpenChange?: (value: boolean) => void;
   toastKey?: number;
 }> = ({ open, onOpenChange, title, description, toastKey, type }) => {

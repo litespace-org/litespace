@@ -1,22 +1,41 @@
 {
-  "page.register.tutor.title": "إنشاء حساب جديد كمعلم",
-  "page.register.student.title": "إنشاء حساب جديد كطالب",
-  "page.register.form.button.submit.label": "انشاء حساب جدبد",
-  "page.register.success": "تم إنشاء حسابك بنجاح",
-  "page.register.failed": "لديك مشكلة في إنشاء الحساب",
   "page.verify.email.success": "تم تأكيد بريدك الإليكترونى بنجاح",
   "page.verify.email.failure": "حدث خطأ أثناء تأكيد بريدك الإليكترونى، برجاء المحاولة مرة أخرى",
   "page.verify.email.redirect": "سوف يتم إعادة توجيهك للصفحة الرئسية خلال 5 ثواني...",
   "page.login.form.title": "تسجيل الدخول",
-  "page.login.form.button.submit.label": "تسجيل الدخول",
-  "page.login.slogan": "أفضل منصة لتعليم اللغة الانجليزية",
-  "page.login.failed": "لديك مشكلة في تسجيل الدخول",
-  "page.login.forget.password": "هل نسيت كلمة السر؟",
   "page.login.forget.password.button.submit": "إعادة تعيين كلمة السر",
   "page.login.forget.password.title": "تغيير كلمة السر",
   "page.login.forget.password.success": "سوف يتم إرسال بريد الكترونى إلي حسابك لتعيين كلمة سر جديدة، برجاء التأكد منه",
-  "page.login.forget.password.compelete": "تم تغيير كلمة السر بنجاح، أهلا بك!",
-  "page.login.forget.password.mismatch": "كلمتى السر غير متطابقتين",
+  "login.button.label": "تسجيل الدخول",
+  "login.welcome": "مرحبًا بك! يرجى ملء بياناتك للمتابعة إلى حسابك",
+  "login.with-google": "تسجيل الدخول باستخدام جوجل",
+  "login.has-no-account": "ليس لديك حساب؟ {link}",
+  "login.create-account": "انشاء حساب",
+  "login.error": "لديك مشكلة في تسجيل الدخول",
+  "login.forget-password": "نسيت كلمة المرور؟",
+  "register.welcome": "أنشئ حسابك وابدأ تطوير مهاراتك في الإنجليزية",
+  "register.has-account": "لديك حساب بالفعل؟ {link}",
+  "register.login": "تسجيل الدخول",
+  "register.with-google": "انشاء حساب باستخدام جوجل",
+  "register.confirm-password": "تأكيد كلمة المرور",
+  "register.full-name": "الأسم بالكامل",
+  "register.create-account": "انشاء الحساب",
+  "register.password-not-the-same": "كملة المرور غير مطابقة",
+  "register.error": "لديك مشكلة في إنشاء الحساب",
+  "forget-password.title": "نسيت كلمة المرور؟",
+  "forget-password.description": "ادخل برديك الالكتروني و سنرسل لك تعليمات لاعاده تعيين كلمه المرور الخاصة بك",
+  "forget-password.send-link": "ارسال الرابط",
+  "forget-password.check-inbox": "تفقد البريد الالكتروني الخاص بك!",
+  "forget-password.check-inbox.description": "لقد قمنا بإرسال رابط لإعادة تعيين كلمة المرور إلى بريدك الإلكتروني. يُرجى التحقق من بريدك الوارد واتباع التعليمات لاستعادة حسابك.",
+  "forget-password.re-send-email": "اعادة ارسال البريد؟",
+  "forget-password.error": "حدثت مشكلة أثناء ارسال البريد الالكتروني",
+  "reset-password.setting-password": "برجاء الانتظار! جاري تعين كلمة المرور الجديدة.",
+  "reset-password.title": "انشاء كلمة مرور جديدة",
+  "reset-password.description": "قم بأنشاء كلمه مرور جديدة لحسابك",
+  "reset-password.error": "مشكلة في تعين كلمة المرور",
+  "reset-password.new-password": "كلمة المرور الجديدة",
+  "reset-password.confirm-new-password": "اعادة تأكيد كلمة المرور الجديدة",
+  "reset-password.login": "تسجيل الدخول",
   "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
   "page.tutor.onboarding.steps.first.booked.interview.description": "عندك انترفيو مع {interviewer} يوم {day} الموافق {date} بداء من الساعه {start} الي تمام الساعه {end}.",
   "page.tutor.onboarding.steps.first.booked.interview.note.1": "بامكانك تلغي الانترفيو وتجدد موعدها بشرط ان يكون باقي علي معادها مش أقل من 24 ساعة.",
@@ -120,38 +139,7 @@
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
-  "page.schedule.add": "إضافة مواعيد",
-  "page.schedule.add.dialog.title": "إضافة مواعيد جديدة الي جدولي",
-  "page.schedule.add.dialog.form.fields.title.label": "إسم مميز",
-  "page.schedule.add.dialog.form.fields.title.placeholder": "أساسي",
-  "page.schedule.add.dialog.form.fields.start-date.label": "تاريخ البدء",
-  "page.schedule.add.dialog.form.fields.start-date.placeholder": "2024-08-01",
-  "page.schedule.add.dialog.form.fields.start-time.label": "موعد البدء",
-  "page.schedule.add.dialog.form.fields.duration.label": "المدة",
-  "page.schedule.add.dialog.form.fields.end-date.label": "تاريخ الإنتهاء",
-  "page.schedule.add.dialog.form.fields.end-date.placeholder": "2024-09-01",
-  "page.schedule.add.dialog.form.fields.repeat.label": "التكرار",
-  "page.schedule.add.dialog.form.fields.weekdays.label": "أيام الأسبوع",
-  "page.schedule.add.dialog.form.fields.weekdays.placeholder": "الخميس والجمعة",
-  "page.schedule.update.dialog.title": "تعديل موعد",
-  "page.schedule.update.alert.title": "أنت علي وشك تعديل جدولك",
-  "page.schedule.update.alert.description": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك حتي بعد تعديل الجدول.",
-  "page.schedule.delete.dialog.title": "حذف موعد",
-  "page.schedule.delete.dialog.alert.title": "حذف \"{title}\"",
-  "page.schedule.delete.dialog.alert.description.0": "بعد حذف أي موعد:",
-  "page.schedule.delete.dialog.alert.description.1": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك.",
-  "page.schedule.delete.dialog.alert.description.2": "لن يتمكن طلابك من حجز المزيد من المواعيد معك خلال هذه الأوقات.",
-  "page.schedule.delete.dialog.alert.button.label": "فهمتك، تأكيد",
-  "page.schedule.deactivate.dialog.title": "إلغاء تفعيل الموعد:",
-  "page.schedule.deactivate.alert.title": "إلغاء تفيل \"{title}\"",
-  "page.schedule.deactivate.alert.description.1": "تذكر أنه سوف يتعين عليك الإلتزام بالحصص المحجوزه معك حتي بعد إالغاء التفعيل.",
-  "page.schedule.deactivate.alert.description.2": "بمجرد إلغاء التفعيل لن يمكنك تلقي حصص جديدة خلال هذه المواعيد.",
-  "page.schedule.deactivate.alert.button.label": "فهمتك، لا أزال أود إلغاء الموعد!",
-  "page.schedule.list.actions.visualize": "عرض",
-  "page.schedule.list.actions.update": "تعديل",
   "page.schedule.list.actions.delete": "حذف",
-  "page.schedule.list.actions.activate": "تفعيل",
-  "page.schedule.list.actions.deactivate": "إلغاء",
   "schedule.lesson.edit": "تعديل الموعد",
   "schedule.lesson.cancel": "الغاء الحصة",
   "schedule.lesson.rebook": "حجز حصة اخري",
@@ -159,11 +147,6 @@
   "schedule.lesson.canceled-by-tutor": "لقد تم الغاء الحصة من قبل المعلم",
   "manage-schedule.slot.edit": "تعديل الجدول",
   "manage-schedule.slot.delete": "مسح الجدول",
-  "page.lessons.empty.title": "لا يوجد لديك سجل حصص بعد",
-  "page.lessons.empty.tutor.description": "إبدا بانشاء وتفعيل جدولك الخاص حتي يتمكن طلابك من حجز الحصص معك",
-  "page.lessons.empty.student.description": "احجز حصتك الان مع معلمك المفضل",
-  "page.lessons.empty.tutor.action": "إضافة جدول حصص",
-  "page.lessons.empty.student.action": "إحجز حصة",
   "page.lessons.lesson.start.with.duration": "بداء من الساعة {start} ولمدة {duration} دقيقة",
   "page.lessons.lesson.join": "إلتحق، متبقي علي الحصة {duration}",
   "page.lessons.lesson.join.inprogress": "بدات الحصه منذ {duration}، إلتحق الأن!",
@@ -171,39 +154,8 @@
   "page.lessons.lesson.canceled": "تم إلغاء الحصة",
   "page.lessons.lesson.canceled.by.you": "لقد ألغيت الحصه يوم {date} {since}",
   "page.lessons.lesson.canceled.by.other": "{name} الغي الحصة يوم {date} ({since})",
-  "page.interviews.join.future": "إلتحق (سوف تبداء المقابلة بعد {duration})",
-  "page.interviews.join.past": "لقد بداءت المقابلة منذ {duration}، إنضم الان!",
-  "page.interviews.actions.edit": "تعديل المقابلة",
-  "page.interviews.actions.watch": "مشاهدة المقابلة",
-  "page.interviews.actions.download": "تحميل المقابلة",
-  "page.interviews.update.title": "مقابلة {name}",
-  "page.interviews.update.form.status.label": "نتيجة المقابلة",
-  "page.interviews.update.form.feedback.label": "تقيم/رسالة للمعلم",
-  "page.interviews.update.form.note.label": "ملحوظات",
-  "page.interviews.update.form.note.desc": "لن يتمكن المعلم من الإطلاع علي ملحوظاتك. يمكن كتابة أي محلوظه حتي يمكنك مراجتها لاحقا أو لمناقشتها مع الإدارة.",
-  "page.interviews.update.form.level.label": "مستوي المعلم",
-  "page.interviews.update.error": "لديك مشكلة في تحديث بيانات المقابلة",
-  "page.interviews.update.success": "تم تحديث بيانات المبقالة بنجاح",
   "page.interviews.interviewer.feedback": "تقيمك/رسالتك للمعلم",
   "page.interviews.tutor.feedback": "رسالة من المعلم",
-  "page.interviews.status.passed": "قبول المعلم",
-  "page.interviews.status.passed.desc.header": "معاير قبول المعلم:",
-  "page.interviews.status.passed.desc.1": "التمكن من إستخدام اللغة الانجليزية بطلاقه بدون اي صعوبات تًذكر.",
-  "page.interviews.status.passed.desc.2": "بإمكانه التواصل والتفاعل مع الطلاب بكل سلاسه.",
-  "page.interviews.status.passed.desc.3": "لديه وعي كافي وقبول للطريقة التعليمية المتبعه علي المنصة.",
-  "page.interviews.status.passed.desc.4": "لدية سرعة انترنت مناسبه وصوت نقي وجودة صورة عالية",
-  "page.interviews.status.rejected": "رفض المعلم",
-  "page.interviews.status.rejected.desc.header": "أنت علي وشك رفض المعلم، يتم رفض المعلم في حالة عدم التوفر الكامل لمعاير القبول علي المنصة:",
-  "page.interviews.status.rejected.desc.1": "ظهور أحد مظاهر العجز وفقدان التمكن في اللغة",
-  "page.interviews.status.rejected.desc.2": "عدم القدرة علي التواصل بشكل فعال",
-  "page.interviews.status.rejected.desc.3": "لدية مشاكل في سرعة الانترنت أو الصوت أو الصورة",
-  "page.interviews.status.canceled": "إلغاء المقابلة",
-  "page.interviews.status.canceled.desc.header": "أنت علي وشك إلغاء المقابلة",
-  "page.interviews.status.canceled.desc.1": "سوف يتمكن المعلم من حجز مقابلة اخري في موعد اخر مناسب",
-  "page.interviews.status.canceled.desc.2": "يفضل كتابة سبب إلقاء المقابلة للمعلم",
-  "page.interviews.empty.title": "ليس لديك أي مقابلة بعد",
-  "page.interviews.empty.desc": "تاكد من جدولك حتي تتمكن من تلقي المقابلات",
-  "page.interviews.empty.action": "جدولي",
   "stats.tutor.teaching.hours": "ساعات التدريس",
   "stats.tutor.student.count": "عدد الطلاب",
   "stats.tutor.lesson.count": "عدد الحصص",
@@ -641,15 +593,14 @@
   "labels.activity.many.lessons": "أعطي {count} حصص",
   "labels.email": "الإيميل",
   "labels.email.placeholder": "you@example.com",
-  "labels.password": "كلمة السر",
+  "labels.password": "كلمة المرور",
+  "labels.passwords-not-the-same": "كملة المرور غير مطابقة",
   "labels.about": "أكتب نبذه عن نفسك",
   "labels.about.short": "نبذه",
   "labels.create": "إنشاء",
   "labels.update": "تعديل",
   "labels.uploaded": "مرفق",
   "labels.not.uplaoded": "غير مرفق",
-  "labels.new.password": "كلمة السر الجديدة",
-  "labels.repeat.new.password": "أعد كتابة كلمة السر الجديدة",
   "labels.invoice.receipt": "الإيصال",
   "labels.invoice.receipt.upload": "إرفاق الإيصال",
   "labels.litespace": "لايت سبيس",
@@ -658,6 +609,8 @@
   "labels.go-back": "الرجوع",
   "labels.coming-soon": "قريبا 🎉",
   "labels.cancel": "إلغاء",
+  "labels.back-to-site": "الرجوع الي الموقع",
+  "labels.confirm": "تاكيد",
   "placeholders.from": "من",
   "placeholders.to": "إلي",
   "global.created-at": "تاريخ الإنشاء",
@@ -674,10 +627,7 @@
   "global.labels.logout": "تسجيل خروج",
   "global.labels.edit": "تعديل",
   "global.labels.delete": "حذف",
-  "global.labels.update": "تحديث",
   "global.labels.retry": "إعادة المحاولة",
-  "global.labels.my-schedule": "جدولي",
-  "global.labels.confirm": "تاكيد",
   "global.labels.today": "اليوم",
   "global.labels.am": "صباحاً",
   "global.labels.pm": "مساءً",
@@ -690,9 +640,6 @@
   "global.labels.id": "الرقم التعريفي",
   "global.labels.yes": "نعم",
   "global.labels.no": "لا",
-  "global.schedule.freq.daily": "بشكل يومي",
-  "global.schedule.freq.weekly": "بشكل اسبوعي",
-  "global.schedule.freq.monthly": "بشكل شهري",
   "global.schedule.rule.format.freq.daily": "كل يوم",
   "global.schedule.rule.format.freq.weekly": "كل أسبوع",
   "global.schedule.rule.format.freq.monthly": "كل شهر",
@@ -705,11 +652,6 @@
   "global.schedule.rule.format.day": "يوم",
   "global.schedule.rule.format.weekday.seperator": "و",
   "global.retry": "حاول مرة اخري",
-  "global.tutor.level.1": "ضعيف جدا",
-  "global.tutor.level.2": "متواضع",
-  "global.tutor.level.3": "متوسط",
-  "global.tutor.level.4": "جيد",
-  "global.tutor.level.5": "مميز",
   "global.governorates.cairo": "القاهرة",
   "global.governorates.alexandria": "الإسكندرية",
   "global.governorates.giza": "الجيزة",
@@ -806,7 +748,7 @@
   "error.plan.title.short": "عنوان قصير جدا",
   "error.plan.title.long": "عنوان طويل جدا",
   "error.plan.price.absent": "لابد من تحديد السعر",
-  "error.password.short": "رقم سري قصير",
-  "error.password.long": "رقم سري طويل",
-  "error.password.invalid": "يجب أن يحتوي علي أرقام، حروف ، رموز"
+  "error.password.short": "كلمة مرور قصيرة",
+  "error.password.long": "كلمة مرور طويلة",
+  "error.password.invalid": "يجب أن يحتوي علي أرقام و حروف و رموز"
 }

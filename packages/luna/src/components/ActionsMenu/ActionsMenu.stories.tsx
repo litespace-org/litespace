@@ -15,14 +15,14 @@ const meta: Meta<Component> = {
 const actions = [
   {
     id: 1,
-    label: ar["page.login.form.button.submit.label"],
+    label: ar["labels.share"],
     onClick() {
       alert("Clicked 1!!");
     },
   },
   {
     id: 2,
-    label: ar["page.register.form.button.submit.label"],
+    label: ar["labels.go-back"],
     onClick() {
       alert("Clicked 2!!");
     },

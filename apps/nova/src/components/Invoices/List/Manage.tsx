@@ -259,7 +259,7 @@ const ManageInvoice: React.FC<{
             disabled={create.isPending || update.isPending || disabled}
             loading={create.isPending || update.isPending}
           >
-            {intl(invoice ? "global.labels.edit" : "global.labels.confirm")}
+            {intl(invoice ? "global.labels.edit" : "labels.confirm")}
           </Button>
         </div>
       </Form>

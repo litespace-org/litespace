@@ -1,9 +1,9 @@
 export enum Route {
+  Root = "/",
   Call = "/call/:id/:type",
   Chat = "/chat",
   Complete = "/complete",
   Dashboard = "/dashboard",
-  EditSchedule = "/schedule/edit",
   Interviews = "/interviews",
   Invoices = "/invoices",
   Login = "/login",
@@ -11,7 +11,6 @@ export enum Route {
   Profile = "/profile",
   Register = "/:role/register",
   ResetPassword = "/reset-password",
-  Root = "/",
   Schedule = "/schedule",
   ScheduleManagement = "/schedule-management",
   SelectUserType = "/select",
@@ -25,6 +24,7 @@ export enum Route {
   TutorProfile = "/:id/tutor",
   UpcomingLessons = "/upcoming-lessons",
   VerifyEmail = "/verify-email",
+  ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
 }
 

@@ -24,7 +24,7 @@ export function useRequired() {
   );
 }
 
-export function useValidatePassword() {
+export function useValidatePassword(required?: boolean) {
   const intl = useFormatMessage();
 
   const errorMap: Record<
@@ -42,7 +42,8 @@ export function useValidatePassword() {
   );
   return useCallback(
     (value: unknown) => {
-      if (typeof value === "string" && !value) return true;
+      if (!value && required) return intl("error.required");
+      if (typeof value === "string" && !value && !required) return true;
       const valid = isValidPassword(value);
       if (valid !== true) return intl(errorMap[valid]);
       return true;
@@ -51,9 +52,8 @@ export function useValidatePassword() {
   );
 }
 
-export function useValidateUsername(create: boolean = false) {
+export function useValidateUserName(required: boolean = false) {
   const intl = useFormatMessage();
-  const required = useRequired();
 
   const errorMap: Record<
     | FieldError.InvalidUserName
@@ -71,27 +71,26 @@ export function useValidateUsername(create: boolean = false) {
 
   return useCallback(
     (value: unknown) => {
-      if (create && !value) return required.message;
+      if (required && !value) return intl("error.required");
       const valid = isValidUserName(value);
       if (valid !== true) return intl(errorMap[valid]);
       return true;
     },
-    [create, errorMap, intl, required]
+    [required, errorMap, intl, required]
   );
 }
 
-export function useValidateEmail(create: boolean = false) {
+export function useValidateEmail(required: boolean = false) {
   const intl = useFormatMessage();
-  const required = useRequired();
 
   return useCallback(
     (value: unknown) => {
       const valid = isValidEmail(value);
-      if (create && !value) return required.message;
+      if (required && !value) return intl("error.required");
       if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
       return true;
     },
-    [create, intl, required]
+    [required, intl, required]
   );
 }
 

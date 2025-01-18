@@ -37,6 +37,7 @@ export class Users {
         birth_year: user.birthYear,
         gender: user.gender,
         role: user.role,
+        verified: user.verified,
         created_at: now,
         updated_at: now,
       },
