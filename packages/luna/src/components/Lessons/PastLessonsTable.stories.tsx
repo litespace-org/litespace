@@ -52,54 +52,6 @@ export const UserIsTutor: Story = {
   },
 };
 
-export const UserIsTutorManager: Story = {
-  args: {
-    lessons: range(10).map(() => makeLesson()),
-    tutorsRoute: "/",
-    isTutor: true,
-    loading: false,
-    error: false,
-    onSendMessage: () => alert("sending message..."),
-    retry: () => alert("retrying..."),
-  },
-};
-
-export const SendMessageBtnLoading: Story = {
-  args: {
-    lessons: range(10).map(() => makeLesson()),
-    tutorsRoute: "/",
-    isTutor: true,
-    loading: false,
-    error: false,
-    onSendMessage: () => alert("sending message..."),
-    retry: () => alert("retrying..."),
-  },
-};
-
-export const SendMessageBtnDisabled: Story = {
-  args: {
-    lessons: range(10).map(() => makeLesson()),
-    tutorsRoute: "/",
-    isTutor: true,
-    loading: false,
-    error: false,
-    onSendMessage: () => alert("sending message..."),
-    retry: () => alert("retrying..."),
-  },
-};
-
-export const SendMessageBtnDisabledOnLoading: Story = {
-  args: {
-    lessons: range(10).map(() => makeLesson()),
-    tutorsRoute: "/",
-    isTutor: true,
-    loading: false,
-    error: false,
-    onSendMessage: () => alert("sending message..."),
-    retry: () => alert("retrying..."),
-  },
-};
-
 export const UserIsStudent: Story = {
   args: {
     lessons: range(10).map(() => makeLesson()),

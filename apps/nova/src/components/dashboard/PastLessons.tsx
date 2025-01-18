@@ -85,8 +85,6 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user?.role]
   );
 
-  const [sendingMessage, setSendingMessage] = useState(0);
-
   return (
     <div className="grid gap-6 ">
       <Typography
@@ -109,8 +107,7 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.TutorManager
         }
         onSendMessage={() => {}}
-        sendingMessage={sendingMessage}
-        setSendingMessage={setSendingMessage}
+        sendingMessage={0}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (

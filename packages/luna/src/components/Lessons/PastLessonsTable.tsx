@@ -45,7 +45,6 @@ export type Props = {
    * State of sending message disable present in the end of each row of the table.
    */
   onRebook?: (tutorId: number) => void;
-  // setSendingMessage: (lessonId: number) => void;
   onSendMessage?: (members: number[]) => void;
   retry?: Void;
 };
@@ -58,7 +57,6 @@ export const PastLessonsTable: React.FC<Props> = ({
   error,
   sendingMessage,
   onRebook,
-  // setSendingMessage,
   onSendMessage,
   retry,
 }) => {
@@ -165,8 +163,6 @@ export const PastLessonsTable: React.FC<Props> = ({
                   onClick={() => {
                     if (onRebook && !isTutor)
                       return onRebook(lesson.otherMember.id);
-
-                    // setSendingMessage(lesson.id);
 
                     if (onSendMessage && isTutor)
                       return onSendMessage([
