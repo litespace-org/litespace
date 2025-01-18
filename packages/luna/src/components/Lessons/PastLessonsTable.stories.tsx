@@ -26,7 +26,8 @@ const makeLesson = () => ({
   id: faker.number.int(),
   start: faker.date.past().toISOString(),
   duration: sample([15, 30]),
-  tutor: {
+  currentMember: faker.number.int(),
+  otherMember: {
     id: faker.number.int(),
     name: sample([faker.person.fullName(), null])!,
     imageUrl: sample([
@@ -39,13 +40,77 @@ const makeLesson = () => ({
   },
 });
 
-export const Primary: Story = {
+export const UserIsTutor: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    tutorsRoute: "/",
+    isTutor: true,
+    loading: false,
+    error: false,
+    onSendMessage: () => alert("sending message..."),
+    retry: () => alert("retrying..."),
+  },
+};
+
+export const UserIsTutorManager: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    tutorsRoute: "/",
+    isTutor: true,
+    loading: false,
+    error: false,
+    onSendMessage: () => alert("sending message..."),
+    retry: () => alert("retrying..."),
+  },
+};
+
+export const SendMessageBtnLoading: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    tutorsRoute: "/",
+    isTutor: true,
+    loading: false,
+    error: false,
+    onSendMessage: () => alert("sending message..."),
+    retry: () => alert("retrying..."),
+  },
+};
+
+export const SendMessageBtnDisabled: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    tutorsRoute: "/",
+    isTutor: true,
+    loading: false,
+    error: false,
+    onSendMessage: () => alert("sending message..."),
+    retry: () => alert("retrying..."),
+  },
+};
+
+export const SendMessageBtnDisabledOnLoading: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    tutorsRoute: "/",
+    isTutor: true,
+    loading: false,
+    error: false,
+    onSendMessage: () => alert("sending message..."),
+    retry: () => alert("retrying..."),
+  },
+};
+
+export const UserIsStudent: Story = {
   args: {
     lessons: range(10).map(() => makeLesson()),
     onRebook(tutorId) {
       alert(`Rebook with tutor id ${tutorId}`);
     },
     tutorsRoute: "/",
+    isTutor: false,
+    loading: false,
+    error: false,
+    retry: () => alert("retrying..."),
   },
 };
 
