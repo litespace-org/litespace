@@ -11,27 +11,55 @@ import { InView } from "react-intersection-observer";
 import dayjs from "dayjs";
 import { Loading } from "@litespace/luna/Loading";
 
-function asLessons(list: ILesson.FindUserLessonsApiResponse["list"] | null) {
+function asLessons(
+  list: ILesson.FindUserLessonsApiResponse["list"] | null,
+  userRole: IUser.Role
+) {
   if (!list) return [];
 
   return list.map((lesson) => {
-    const teacher = lesson.members.find(
-      (member) => member.role === IUser.Role.Tutor
+    const tutor = lesson.members.find(
+      (member) =>
+        member.role === IUser.Role.Tutor ||
+        member.role === IUser.Role.TutorManager
     );
+
+    const student = lesson.members.find(
+      (member) => member.role === IUser.Role.Student
+    );
+
     return {
       id: lesson.lesson.id,
       start: lesson.lesson.start,
       duration: lesson.lesson.duration,
-      tutor: {
-        id: teacher?.userId || 0,
-        name: teacher?.name || null,
-        imageUrl: teacher?.image || null,
+      isTutor:
+        userRole === IUser.Role.Tutor || userRole === IUser.Role.TutorManager,
+      currentMember:
+        userRole === IUser.Role.Student
+          ? student?.userId || 0
+          : tutor?.userId || 0,
+      otherMember: {
+        /**
+         * Id of the user wheather student or tutor or tutor manager
+         */
+        id:
+          userRole === IUser.Role.Student
+            ? tutor?.userId || 0
+            : student?.userId || 0,
+        name:
+          userRole === IUser.Role.Student
+            ? tutor?.name || null
+            : student?.name || null,
+        imageUrl:
+          userRole === IUser.Role.Student
+            ? tutor?.image || null
+            : student?.image || null,
       },
     };
   });
 }
 
-export const PastLessons = () => {
+export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<number | null>(null);
 
@@ -53,9 +81,11 @@ export const PastLessons = () => {
   });
 
   const lessons = useMemo(
-    () => asLessons(lessonsQuery.list),
-    [lessonsQuery.list]
+    () => (user?.role ? asLessons(lessonsQuery.list, user.role) : []),
+    [lessonsQuery.list, user?.role]
   );
+
+  const [sendingMessage, setSendingMessage] = useState(0);
 
   return (
     <div className="grid gap-6 ">
@@ -74,6 +104,13 @@ export const PastLessons = () => {
         loading={lessonsQuery.query.isPending}
         error={lessonsQuery.query.isError}
         retry={lessonsQuery.query.refetch}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        onSendMessage={() => {}}
+        sendingMessage={sendingMessage}
+        setSendingMessage={setSendingMessage}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (
