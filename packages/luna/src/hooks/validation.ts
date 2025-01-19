@@ -151,7 +151,7 @@ export function useValidation() {
           length: { min: 3, max: 50 },
           errors: {
             match: intl.formatMessage({
-              id: english ? "remove me" : "remove me too",
+              id: messages["error.name.invalid"],
             }),
             min: intl.formatMessage({
               id: messages["error.name.length.short"],

@@ -7,21 +7,21 @@ import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Animate } from "@/components/Common/Animate";
 import { TutorPersonalInfoSettings } from "@/components/TutorSettings/TutorPersonalInfoSettings";
+import { UseFormReturn } from "react-hook-form";
+import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 
 type Tab = "profile" | "settings";
 
 export const TutorSettingsTabs: React.FC<{
-  update: (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
+  form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
   tutor: {
     video: string | null;
     name: string | null;
     bio: string | null;
     about: string | null;
-    topics: string[];
+    topics: { id: number; label: string }[];
   };
-}> = ({ tutor, update }) => {
+}> = ({ tutor, form }) => {
   const intl = useFormatMessage();
   const [tab, setTab] = useState<Tab>("profile");
 
@@ -81,12 +81,12 @@ export const TutorSettingsTabs: React.FC<{
 
       <AnimatePresence initial={false} mode="wait">
         {tab === "profile" ? (
-          <Animate name="profile">
-            <TutorPersonalInfoSettings {...tutor} update={update} />
+          <Animate key="profile">
+            <TutorPersonalInfoSettings tutor={tutor} form={form} />
           </Animate>
         ) : null}
         {tab === "settings" ? (
-          <Animate name="settings">
+          <Animate key="settings">
             <div className="p-10">Settings</div>
           </Animate>
         ) : null}

@@ -74,7 +74,7 @@ export const TutorTabs: React.FC<{
 
       <AnimatePresence initial={false} mode="wait">
         {tab === "profile" ? (
-          <Animate name="profile">
+          <Animate key="profile">
             <ProfileInfo
               about={tutor.about}
               topics={tutor.topics}
@@ -83,7 +83,7 @@ export const TutorTabs: React.FC<{
           </Animate>
         ) : null}
         {tab === "ratings" ? (
-          <Animate name="ratings">
+          <Animate key="ratings">
             <Ratings tutorName={tutor.name} id={tutor.id} />
           </Animate>
         ) : null}

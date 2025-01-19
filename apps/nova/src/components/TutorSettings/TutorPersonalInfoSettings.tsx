@@ -1,22 +1,86 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
-import { Label } from "@litespace/luna/Form";
+import { Controller, Label } from "@litespace/luna/Form";
 import { VideoPlayer } from "@litespace/luna/VideoPlayer";
 import Edit from "@litespace/assets/Edit";
-import { Input } from "@litespace/luna/Input";
-import { Textarea } from "@litespace/luna/Textarea";
+import { TopicSelectionDialog } from "@litespace/luna/TopicSelectionDialog";
+import { useCallback, useMemo, useState } from "react";
+import { useTopics } from "@litespace/headless/topic";
+import { useUpdateUserTopics } from "@litespace/headless/user";
+import { useToast } from "@litespace/luna/Toast";
+import { useValidation } from "@litespace/luna/hooks/validation";
+import { UseFormReturn } from "react-hook-form";
+import { ITutorSettingsForm } from "@/components/TutorSettings/types";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKey } from "@litespace/headless/constants";
 
 export const TutorPersonalInfoSettings: React.FC<{
-  video: string | null;
-  name: string | null;
-  bio: string | null;
-  about: string | null;
-  topics: string[];
-  update: (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => void;
-}> = ({ name, bio, about, video, update }) => {
+  tutor: {
+    video: string | null;
+    name: string | null;
+    bio: string | null;
+    about: string | null;
+    topics: { id: number; label: string }[];
+  };
+  form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
+}> = ({ tutor, form }) => {
   const intl = useFormatMessage();
+  const toast = useToast();
+  const [topicsDialogOpen, setTopicsDialogOpen] = useState<boolean>(false);
+
+  const closeDialog = useCallback(() => setTopicsDialogOpen(false), []);
+  const openDialog = useCallback(() => setTopicsDialogOpen(true), []);
+
+  const validate = useValidation();
+  const invalidateQuery = useInvalidateQuery();
+
+  const topics = useTopics({});
+
+  const allTopics = useMemo(() => {
+    if (!topics.query.data) return [];
+    return topics.query.data.list.map((topic) => ({
+      id: topic.id,
+      label: topic.name.ar,
+    }));
+  }, [topics.query.data]);
+
+  const userTopicsIds = useMemo(() => {
+    return tutor.topics.map((topic) => topic.id);
+  }, [tutor.topics]);
+
+  const onTopicChangeSuccess = useCallback(() => {
+    invalidateQuery([QueryKey.FindUserTopics]);
+    closeDialog();
+  }, [invalidateQuery, closeDialog]);
+
+  const onTopicChangeError = useCallback(() => {
+    toast.error({
+      title: intl("tutor-settings.personal-info.update-topics-error"),
+    });
+  }, [intl, toast]);
+
+  const updateTopics = useUpdateUserTopics({
+    onSuccess: onTopicChangeSuccess,
+    onError: onTopicChangeError,
+  });
+
+  const changeTopics = useCallback(
+    (topicsIds: number[]) => {
+      const addTopics: number[] = topicsIds.filter(
+        (topic) => !userTopicsIds.includes(topic)
+      );
+
+      const removeTopics: number[] = userTopicsIds.filter(
+        (topic) => !topicsIds.includes(topic)
+      );
+
+      updateTopics.mutate({
+        removeTopics,
+        addTopics,
+      });
+    },
+    [updateTopics, userTopicsIds]
+  );
 
   return (
     <div className="flex flex-col gap-6 p-10">
@@ -28,22 +92,24 @@ export const TutorPersonalInfoSettings: React.FC<{
         {intl("tutor-settings.personal-info.title")}
       </Typography>
       <div className="flex items-center gap-8">
-        <div className="grow flex flex-col gap-2">
+        <div className="grow flex flex-col">
           <Label>{intl("tutor-settings.personal-info.name")}</Label>
-          <Input
-            onChange={update}
-            name="name"
-            defaultValue={name || ""}
+          <Controller.Input
+            value={form.watch("name")}
+            control={form.control}
+            rules={{ ...validate.name.ar }}
             autoComplete="off"
+            name="name"
           />
         </div>
-        <div className="grow flex flex-col gap-2">
+        <div className="grow flex flex-col">
           <Label>{intl("tutor-settings.personal-info.bio")}</Label>
-          <Input
-            onChange={update}
-            name="bio"
-            defaultValue={bio || ""}
+          <Controller.Input
+            value={form.watch("bio")}
+            control={form.control}
+            rules={{ ...validate.bio }}
             autoComplete="off"
+            name="bio"
           />
         </div>
       </div>
@@ -56,7 +122,11 @@ export const TutorPersonalInfoSettings: React.FC<{
           >
             {intl("tutor-settings.personal-info.topics")}
           </Typography>
-          <div role="button" className="flex gap-2 items-center">
+          <div
+            role="button"
+            onClick={openDialog}
+            className="flex gap-2 items-center"
+          >
             <Typography
               element="caption"
               weight="semibold"
@@ -67,7 +137,15 @@ export const TutorPersonalInfoSettings: React.FC<{
             <Edit className="[&>*]:stroke-brand-700" />
           </div>
         </div>
-        <div>TOPICS</div>
+        <div className="flex gap-4 flex-wrap mt-[21px]">
+          {tutor.topics.map((topic, index) => (
+            <div className="bg-brand-700  rounded-3xl py-3 px-4" key={index}>
+              <Typography className="text-natural-50" element="caption">
+                {topic.label}
+              </Typography>
+            </div>
+          ))}
+        </div>
       </div>
       <Typography
         element="subtitle-1"
@@ -77,12 +155,13 @@ export const TutorPersonalInfoSettings: React.FC<{
         {intl("tutor-settings.personal-info.about")}
       </Typography>
 
-      <Textarea
-        onChange={update}
+      <Controller.Textarea
+        value={form.watch("about")}
+        control={form.control}
+        autoComplete="off"
+        rules={{ ...validate.about }}
         name="about"
         className="min-h-[172px]"
-        defaultValue={about || ""}
-        autoComplete="off"
       />
       <Typography
         element="subtitle-1"
@@ -91,7 +170,15 @@ export const TutorPersonalInfoSettings: React.FC<{
       >
         {intl("tutor-settings.personal-info.video")}
       </Typography>
-      <VideoPlayer src={video || ""} />
+      <VideoPlayer src={tutor.video || ""} />
+      <TopicSelectionDialog
+        confirm={changeTopics}
+        topics={allTopics}
+        selectedTopicIds={userTopicsIds}
+        close={closeDialog}
+        opened={topicsDialogOpen}
+        retry={() => topics.query.refetch()}
+      />
     </div>
   );
 };

@@ -1,13 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-export const Animate: React.FC<{ children: React.ReactNode; name: string }> = ({
+export const Animate: React.FC<{ children: React.ReactNode }> = ({
   children,
-  name,
 }) => {
   return (
     <motion.div
-      key={name}
       initial={{
         opacity: 0,
       }}
