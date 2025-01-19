@@ -48,6 +48,18 @@ export function useFindTutorStats(
   });
 }
 
+export function useFindPersonalizedTutorStats() {
+  const atlas = useAtlas();
+  const findStats = useCallback(async () => {
+    return await atlas.user.findPersonalizedTutorStats();
+  }, [atlas.user]);
+
+  return useQuery({
+    queryKey: ["find-tutor-stats"],
+    queryFn: findStats,
+  });
+}
+
 export function useFindTutorActivityScore(
   id: number | null
 ): UseQueryResult<ITutor.ActivityScoreMap | null, Error> {

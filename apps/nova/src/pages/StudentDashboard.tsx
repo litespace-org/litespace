@@ -4,7 +4,7 @@ import { UpcomingLessons } from "@/components/dashboard/UpcomingLessons";
 import { PastLessons } from "@/components/dashboard/PastLessons";
 import { StudentOverview } from "@/components/dashboard/StudentOverview";
 
-const Dashboard: React.FC = () => {
+const StudentDashboard: React.FC = () => {
   return (
     <div className="flex flex-row p-6 gap-6 max-w-screen-3xl mx-auto w-full">
       <div className="flex flex-col gap-6 w-full">
@@ -19,4 +19,4 @@ const Dashboard: React.FC = () => {
   );
 };
 
-export default Dashboard;
+export default StudentDashboard;

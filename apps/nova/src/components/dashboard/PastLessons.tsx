@@ -5,12 +5,14 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { PastLessonsTable } from "@litespace/luna/Lessons";
 import { Typography } from "@litespace/luna/Typography";
 import { ILesson, IUser } from "@litespace/types";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
 import dayjs from "dayjs";
 import { Loading } from "@litespace/luna/Loading";
 import { asFullAssetUrl } from "@litespace/luna/backend";
+import { useNavigate } from "react-router-dom";
+import { useFindRoomByMembers } from "@litespace/headless/chat";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -49,6 +51,7 @@ function asLessons(
 export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<number | null>(null);
+  const [members, setMembers] = useState<number[]>([]);
 
   const closeRebookingDialog = useCallback(() => {
     setTutor(null);
@@ -72,6 +75,25 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user]
   );
 
+  const findRoom = useFindRoomByMembers(members);
+  const [sendingMessage, setSendingMessage] = useState(0);
+
+  const navigate = useNavigate();
+
+  const handleSendMessage = useCallback(
+    (lessonId: number, members: number[]) => {
+      setMembers(members);
+      setSendingMessage(lessonId);
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!findRoom.data?.room) return;
+    setSendingMessage(0);
+    navigate(`/chat?room=${findRoom.data?.room}`);
+  }, [findRoom.data?.room, navigate]);
+
   return (
     <div className="grid gap-6 ">
       <Typography
@@ -79,7 +101,9 @@ export const PastLessons: React.FC = () => {
         weight="bold"
         className="text-natural-950 "
       >
-        {intl("student-dashboard.previous-lessons.title")}
+        {user?.role === IUser.Role.Student
+          ? intl("student-dashboard.previous-lessons.title")
+          : intl("tutor-dashboard.past-lessons.title")}
       </Typography>
 
       <PastLessonsTable
@@ -93,8 +117,8 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.Tutor ||
           user?.role === IUser.Role.TutorManager
         }
-        onSendMessage={() => {}}
-        sendingMessage={0}
+        onSendMessage={handleSendMessage}
+        sendingMessage={sendingMessage}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (

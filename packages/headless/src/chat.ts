@@ -1062,3 +1062,16 @@ export function useChatStatus() {
 
   return { typingMap, usersOnlineMap };
 }
+
+export function useFindRoomByMembers(members: number[]) {
+  const atlas = useAtlas();
+
+  const findRoom = useCallback(async () => {
+    return await atlas.chat.findRoomByMembers(members);
+  }, [atlas.chat, members]);
+
+  return useQuery({
+    queryKey: ["find-room", members],
+    queryFn: findRoom,
+  });
+}

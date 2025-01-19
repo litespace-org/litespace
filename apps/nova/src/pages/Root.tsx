@@ -30,7 +30,7 @@ const Root: React.FC = () => {
     if (!user || !root) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);
     if (tutor) return navigate(Route.UpcomingLessons);
-    if (student) return navigate(Route.Dashboard);
+    if (student) return navigate(Route.StudentDashboard);
     if (tutorManager) return navigate(Route.Interviews);
   }, [navigate, location.pathname, user, meta]);
 
