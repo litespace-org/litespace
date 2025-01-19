@@ -117,6 +117,7 @@
   "tutors.coming.set-notifications": "أخبرني عند التوفر",
   "tutors.coming-soon.notification-description": "سوف يتم اشعارك بجميع المعلمين الجدد",
   "tutors.schedule.manage": "إدارة الجدول",
+  "tutors.schedule.edit": "تعديل الجدول",
   "tutors.schedule.available-days": "أيام الأسبوع المتاحة",
   "tutors.schedule.buttons.save": "حفظ الجدول",
   "tutors.schedule.loading.message": "برجاء الانتظار... جاري تحميل الجدول",
