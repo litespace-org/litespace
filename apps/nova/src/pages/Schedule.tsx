@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { Calendar } from "@litespace/luna/Calendar/v2";
+import { Calendar } from "@litespace/luna/Calendar";
 import dayjs from "@/lib/dayjs";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import Header, { View } from "@/components/Schedule/Header";

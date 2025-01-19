@@ -1,6 +1,6 @@
 import { range } from "lodash";
 import React, { useMemo } from "react";
-import { DAYS_IN_WEEK, HOUR_HEIGHT } from "@/components/Calendar/v2/constants";
+import { DAYS_IN_WEEK, HOUR_HEIGHT } from "@/components/Calendar/constants";
 import { Dayjs } from "dayjs";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
@@ -10,10 +10,10 @@ import {
   SlotActions,
   LessonActions,
   LessonProps,
-} from "@/components/Calendar/v2/types";
+} from "@/components/Calendar/types";
 import { HOURS_IN_DAY } from "@litespace/sol/constants";
-import { AvailabilitySlot } from "@/components/Calendar/v2/Events";
-import { LessonSlot } from "@/components/Calendar/v2/Events/LessonSlot/LessonSlot";
+import { AvailabilitySlot } from "./Events";
+import { LessonSlot } from "./Events/LessonSlot/LessonSlot";
 
 export const WeekTable: React.FC<{
   day: Dayjs;

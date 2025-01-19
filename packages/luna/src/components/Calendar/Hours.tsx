@@ -5,7 +5,7 @@ import {
   HOUR_HEIGHT,
   HOURS_IN_DAY,
   MINUTES_IN_HOUR,
-} from "@/components/Calendar/v2/constants";
+} from "@/components/Calendar/constants";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { Link } from "react-router-dom";
