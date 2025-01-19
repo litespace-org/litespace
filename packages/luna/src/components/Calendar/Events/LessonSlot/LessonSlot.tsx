@@ -221,7 +221,7 @@ const OptionsMenu: React.FC<
         },
       },
       {
-        icon: <CalendarRemove />,
+        icon: <CalendarRemove height={16} width={16} />,
         label: intl("schedule.lesson.cancel"),
         onClick: () => {
           if (!onCancel) console.warn("onCancel is undefined.");
