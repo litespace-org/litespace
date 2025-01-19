@@ -1,5 +1,5 @@
 import { Button, ButtonSize } from "@/components/Button";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { Input } from "@/components/Input";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
 import { TutorRatingCard } from "@/components/TutorFeedback";

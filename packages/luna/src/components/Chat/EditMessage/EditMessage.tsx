@@ -3,7 +3,7 @@ import EditMessageIcon from "@litespace/assets/EditMessage";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { ChatMessage, SendInput } from "@/components/Chat";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { Void } from "@litespace/types";
 
 export const EditMessage: React.FC<{

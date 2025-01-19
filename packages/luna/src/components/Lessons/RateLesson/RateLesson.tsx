@@ -1,4 +1,4 @@
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks/intl";
 import { Void } from "@litespace/types";

@@ -1,46 +1,51 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Dialog } from "@/components/Dialog";
-import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
 import React from "react";
+import { DarkStoryWrapper } from "@/internal/DarkWrapper";
+import { Typography } from "@/components/Typography";
+import EditMessageIcon from "@litespace/assets/EditMessage";
+import { faker } from "@faker-js/faker/locale/ar";
+import { SendInput, ChatMessage } from "@/components/Chat";
 
 const meta: Meta<typeof Dialog> = {
-  title: "Dialog/V1",
+  title: "Dialog",
   component: Dialog,
-  decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-w-full tw-min-h-screen tw-px-10 tw-py-10">
-          <Story />
-        </div>
-      </Direction>
-    ),
-  ],
+  decorators: [DarkStoryWrapper],
 };
 
 export const Primary: StoryObj<typeof Dialog> = {
   args: {
     trigger: <button>trigger</button>,
-    children: (
-      <div className="tw-text-foreground-light">
-        {ar["error.tutor.bio.arabic.only"]}
+    className: "tw-w-[600px]",
+    title: (
+      <div className="tw-flex tw-flex-row tw-items-center tw-gap-2">
+        <div className="tw-shrink-0">
+          <EditMessageIcon className="[&>*]:tw-stroke-natural-950" />
+        </div>
+        <Typography
+          element="subtitle-2"
+          weight="bold"
+          className=" tw-text-natural-950"
+        >
+          {faker.lorem.words(5)}
+        </Typography>
       </div>
     ),
-    title: ar["error.update.data"],
-    description: "hello",
-  },
-};
-
-export const WithoutTrigger: StoryObj<typeof Dialog> = {
-  args: {
-    open: true,
     children: (
-      <div className="tw-text-foreground-light">
-        {ar["error.tutor.bio.arabic.only"]}
+      <div>
+        <div className="tw-my-14">
+          <ChatMessage
+            message={{ text: faker.lorem.word(10), id: 5 }}
+            owner={true}
+            viewOnly
+          />
+        </div>
+        <SendInput
+          initialMessage={{ text: faker.lorem.word(5), id: 5 }}
+          onSubmit={() => {}}
+        />
       </div>
     ),
-    title: ar["error.update.data"],
-    description: "hello",
   },
 };
 

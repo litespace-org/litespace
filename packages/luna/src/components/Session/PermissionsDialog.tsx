@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import Devices from "@litespace/assets/Devices";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
