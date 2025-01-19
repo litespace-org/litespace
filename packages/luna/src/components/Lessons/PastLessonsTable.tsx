@@ -67,9 +67,7 @@ export const PastLessonsTable: React.FC<Props> = ({
     const duration = intl("student-dashboard.table.duration");
     const tutor = intl("student-dashboard.table.tutor");
     const student = intl("tutor-dashboard.table.student");
-
     if (isTutor) return [date, duration, student];
-
     return [date, duration, tutor];
   }, [intl, isTutor]);
 

@@ -10,23 +10,22 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
 import dayjs from "dayjs";
 import { Loading } from "@litespace/luna/Loading";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
-  userRole: IUser.Role
+  userRole: IUser.Role,
+  userId: number
 ) {
   if (!list) return [];
 
   return list.map((lesson) => {
-    const tutor = lesson.members.find(
-      (member) =>
-        member.role === IUser.Role.Tutor ||
-        member.role === IUser.Role.TutorManager
+    const otherMember = lesson.members.find(
+      (member) => member.userId !== userId
     );
 
-    const student = lesson.members.find(
-      (member) => member.role === IUser.Role.Student
-    );
+    if (!otherMember)
+      throw new Error("Other member not found; should never happen.");
 
     return {
       id: lesson.lesson.id,
@@ -34,26 +33,14 @@ function asLessons(
       duration: lesson.lesson.duration,
       isTutor:
         userRole === IUser.Role.Tutor || userRole === IUser.Role.TutorManager,
-      currentMember:
-        userRole === IUser.Role.Student
-          ? student?.userId || 0
-          : tutor?.userId || 0,
+      currentMember: userId,
       otherMember: {
         /**
          * Id of the user wheather student or tutor or tutor manager
          */
-        id:
-          userRole === IUser.Role.Student
-            ? tutor?.userId || 0
-            : student?.userId || 0,
-        name:
-          userRole === IUser.Role.Student
-            ? tutor?.name || null
-            : student?.name || null,
-        imageUrl:
-          userRole === IUser.Role.Student
-            ? tutor?.image || null
-            : student?.image || null,
+        id: otherMember.userId,
+        name: otherMember.name,
+        imageUrl: otherMember.image ? asFullAssetUrl(otherMember.image) : null,
       },
     };
   });
@@ -81,8 +68,8 @@ export const PastLessons: React.FC = () => {
   });
 
   const lessons = useMemo(
-    () => (user?.role ? asLessons(lessonsQuery.list, user.role) : []),
-    [lessonsQuery.list, user?.role]
+    () => (user ? asLessons(lessonsQuery.list, user.role, user.id) : []),
+    [lessonsQuery.list, user]
   );
 
   return (

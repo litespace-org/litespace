@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from "@storybook/react";
 import { PastLessonsTable } from "@/components/Lessons/PastLessonsTable";
 import { faker } from "@faker-js/faker/locale/ar";
-import { range, sample } from "lodash";
+import { concat, range, sample } from "lodash";
 import React from "react";
 
 type Component = typeof PastLessonsTable;
@@ -74,6 +74,23 @@ export const Loading: Story = {
     },
     tutorsRoute: "/",
     loading: true,
+  },
+};
+
+const lesson = makeLesson();
+
+export const SendingMessage: Story = {
+  args: {
+    lessons: concat(
+      lesson,
+      range(10).map(() => makeLesson())
+    ),
+    onSendMessage() {
+      alert("Send message...");
+    },
+    sendingMessage: lesson.id,
+    isTutor: true,
+    tutorsRoute: "/",
   },
 };
 
