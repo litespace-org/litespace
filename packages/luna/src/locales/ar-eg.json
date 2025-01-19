@@ -67,6 +67,10 @@
   "tutor.rating.group-names.one-more": "{names} و 1 اخر",
   "tutor.rating.group-names.others": "{names} و {count} اخرون",
   "tutor.rating.group-names.n-students": "{count} من طلاب {tutor}",
+  "tutor-settings.topics.selection-dialog.title": "شارك خبراتك لتجذب الطلاب الذين يشاركونك الشغف!",
+  "tutor-settings.topics.selection-dialog.description": "حدد المجالات التي تبرع فيها أو تهتم بها، مثل الرياضة أو التكنولوجيا أو علم النفس، لنساعدك في تخصيص تجربة تدريسية تناسب اهتمامات طلابك وتزيد من تفاعلهم وحماسهم للتعلم.",
+  "tutor-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المجالات المتاحة!",
+  "tutor-settings.topics.selection-dialog.error": "عذرًا، حدث خطأ أثناء تحميل  المجالات المتاحة، برجاء المحاولة مرة أخرى",
   "student-dashboard.rating-dialog.add-comment-placeholder": "اكتب تعليقك هنا",
   "rating.form.rule.feedback.less": "يجب ألا يقل التقييم عن 10 حروف",
   "rating.form.rule.feedback.more": "لا ينبغى أن يزيد التقييم عن 1000 حرف",
@@ -612,6 +616,7 @@
   "labels.share": "مشاركة",
   "labels.go-back": "الرجوع",
   "labels.coming-soon": "قريبا 🎉",
+  "labels.confirm": "تاكيد",
   "labels.cancel": "إلغاء",
   "labels.back-to-site": "الرجوع الي الموقع",
   "labels.confirm": "تاكيد",
