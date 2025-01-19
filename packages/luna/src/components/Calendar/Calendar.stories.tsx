@@ -1,66 +1,165 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Calendar } from "@/components/Calendar";
-import { Direction } from "@/components/Direction";
-import { IEvent } from "@/components/Calendar/types";
-import ar from "@/locales/ar-eg.json";
+import { Calendar } from "@/components/Calendar/Calendar";
+import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
+import { faker } from "@faker-js/faker/locale/en";
+import {
+  AvailabilitySlotProps,
+  LessonProps,
+  SlotActions,
+  LessonActions,
+} from "@/components/Calendar/types";
+import { random, range, sample } from "lodash";
 
 type Component = typeof Calendar;
 
 const meta: Meta<Component> = {
-  title: "Calendar/V1",
+  title: "Calendar",
   component: Calendar,
   decorators: [
-    (Story: React.FC) => (
-      <Direction>
-        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-w-full tw-min-h-screen tw-flex tw-text-center tw-justify-center">
-          <Story />
-        </div>
-      </Direction>
+    (Story) => (
+      <div className="tw-p-4">
+        <Story />
+      </div>
     ),
   ],
-};
-
-const events: IEvent[] = [
-  {
-    id: 0,
-    wrapper: false,
-    title: ar["banks.labels.cib"],
-    start: dayjs().startOf("day").add(1, "hour").toISOString(),
-    end: dayjs().startOf("day").add(5, "hours").toISOString(),
-  },
-  {
-    id: 1,
-    wrapper: false,
-    title: ar["banks.labels.alex"],
-    start: dayjs().add(1, "day").startOf("day").add(10, "hour").toISOString(),
-    end: dayjs().add(1, "day").startOf("day").add(15, "hours").toISOString(),
-  },
-];
-
-export const Primary: StoryObj<Component> = {
-  args: {
-    events,
-    onNextWeek(day: Dayjs) {
-      console.log("Next week:", day.format("YYYY-MM-DD"));
-    },
-    onPrevWeek(day: Dayjs) {
-      console.log("Prev. week", day.format("YYYY-MM-DD"));
-    },
-    onNextMonth(day: Dayjs) {
-      console.log("Next month", day.format("MMMM"));
-    },
-    onPrevMonth(day: Dayjs) {
-      console.log("Prev. month", day.format("MMMM"));
-    },
+  parameters: {
+    layout: null,
   },
 };
 
-export const Loading: StoryObj<Component> = {
+const slotActions: SlotActions = {
+  onDelete(id) {
+    alert(`Delete ${id}`);
+  },
+  onEdit(id) {
+    alert(`Edit ${id}`);
+  },
+};
+
+const lessonActions: LessonActions = {
+  onJoin(id) {
+    alert(`Join ${id}`);
+  },
+  onRebook(id) {
+    alert(`Rebook ${id}`);
+  },
+  onCancel(id) {
+    alert(`Cancel ${id}`);
+  },
+  onEdit(id) {
+    alert(`Edit ${id}`);
+  },
+};
+
+const makeLesson = ({
+  hour,
+  duration,
+  date,
+}: {
+  hour: number;
+  duration: number;
+  date: Dayjs;
+}): LessonProps => {
+  const start = date.startOf("day").add(hour, "hours");
+  return {
+    id: random(1000),
+    start: start.toISOString(),
+    end: start.add(duration, "hours").toISOString(),
+    otherMember: {
+      id: faker.number.int(),
+      name: faker.person.fullName(),
+      image: sample([
+        null,
+        faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+      ]),
+    },
+    canceled: false,
+  };
+};
+
+const makeSlot = ({
+  hour,
+  duration,
+  date,
+  membersCount = 2,
+}: {
+  hour: number;
+  duration: number;
+  date: Dayjs;
+  membersCount?: number;
+}): AvailabilitySlotProps => {
+  const start = date.startOf("day").add(hour, "hours");
+  return {
+    id: random(1000),
+    start: start.toISOString(),
+    end: start.add(duration, "hours").toISOString(),
+    members: range(membersCount).map((idx) => ({
+      id: idx,
+      name: faker.person.fullName(),
+      image: sample([
+        null,
+        faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
+      ]),
+    })),
+  };
+};
+
+const date = dayjs().startOf("week");
+
+export const HourViewCalender: StoryObj<Component> = {
   args: {
-    events,
-    loading: true,
+    date: dayjs().startOf("week"),
+    lessons: [
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 2, date }),
+      makeLesson({ hour: 3, duration: 2, date }),
+      makeLesson({ hour: 3, duration: 8, date: date.add(1, "day") }),
+      makeLesson({ hour: 12, duration: 12, date: date.add(2, "day") }),
+      makeLesson({ hour: 1, duration: 0.5, date: date.add(3, "day") }),
+      makeLesson({ hour: 1, duration: 10, date: date.add(6, "day") }),
+    ],
+    lessonActions,
+  },
+};
+
+export const DayViewCalender: StoryObj<Component> = {
+  args: {
+    slots: [
+      makeSlot({ hour: 1, duration: 2, date, membersCount: 2 }),
+      makeSlot({ hour: 3, duration: 2, date, membersCount: 7 }),
+      makeSlot({
+        hour: 3,
+        duration: 8,
+        date: date.add(1, "day"),
+        membersCount: 3,
+      }),
+      makeSlot({
+        hour: 12,
+        duration: 12,
+        date: date.add(2, "day"),
+        membersCount: 4,
+      }),
+      makeSlot({
+        hour: 1,
+        duration: 0.5,
+        date: date.add(3, "day"),
+        membersCount: 3,
+      }),
+      makeSlot({
+        hour: 1,
+        duration: 10,
+        date: date.add(6, "day"),
+        membersCount: 3,
+      }),
+    ],
+    date,
+    slotActions,
   },
 };
 

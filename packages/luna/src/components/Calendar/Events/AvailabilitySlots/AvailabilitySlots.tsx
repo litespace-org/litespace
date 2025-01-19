@@ -4,13 +4,13 @@ import { motion } from "framer-motion";
 import {
   AvailabilitySlotProps,
   SlotActions,
-} from "@/components/Calendar/v2/types";
+} from "@/components/Calendar/types";
 
 import {
   MemberAvatar,
   EventSpan,
   Card,
-} from "@/components/Calendar/v2/Events/shared";
+} from "@/components/Calendar/Events/shared";
 
 import dayjs from "@/lib/dayjs";
 import { Typography } from "@/components/Typography";
@@ -19,7 +19,7 @@ import {
   AVATARS_OVERLAPPING,
   CARD_PADDING,
   HOUR_HEIGHT,
-} from "@/components/Calendar/v2/constants";
+} from "@/components/Calendar/constants";
 
 import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";

@@ -12,8 +12,6 @@
     "./Avatar": "./dist/components/Avatar/index.js",
     "./Button": "./dist/components/Button/index.js",
     "./Calendar": "./dist/components/Calendar/index.js",
-    "./Calendar/v2": "./dist/components/Calendar/v2/index.js",
-    "./Calendar/v2/Events": "./dist/components/Calendar/v2/Events/index.js",
     "./Session": "./dist/components/Session/index.js",
     "./Card": "./dist/components/Card/index.js",
     "./Chat": "./dist/components/Chat/index.js",

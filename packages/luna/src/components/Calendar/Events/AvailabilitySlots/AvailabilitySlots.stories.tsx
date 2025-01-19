@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { AvailabilitySlot } from "@/components/Calendar/v2/Events/AvailabilitySlots/AvailabilitySlots";
+import { AvailabilitySlot } from "@/components/Calendar/Events/AvailabilitySlots/AvailabilitySlots";
 import dayjs from "@/lib/dayjs";
 import { faker } from "@faker-js/faker/locale/ar";
 
