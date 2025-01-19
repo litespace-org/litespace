@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker/locale/ar";
 import { Meta, StoryObj } from "@storybook/react";
 import { TopicSelectionDialog } from "@/components/TopicSelectionDialog";
@@ -84,6 +84,30 @@ export const Confirming: Story = {
     opened: true,
     confirming: true,
     ...actions,
+  },
+};
+
+export const Simulation: Story = {
+  args: {
+    topics: faker.lorem
+      .words(100)
+      .split(" ")
+      .map((word, i) => ({ id: i, label: word })),
+    selectedTopicIds: [1, 4, 8],
+    opened: true,
+    ...actions,
+  },
+  render(props) {
+    const [loading, setLoading] = useState<boolean>(true);
+    useEffect(() => {
+      const id = setTimeout(() => {
+        setLoading(false);
+      }, 1_500);
+      return () => {
+        clearTimeout(id);
+      };
+    });
+    return <TopicSelectionDialog {...props} loading={loading} />;
   },
 };
 
