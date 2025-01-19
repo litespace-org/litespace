@@ -70,9 +70,18 @@ const Messages: React.FC<{
     | IRoom.FindUserRoomsApiRecord["otherMember"]
     | ITutor.FullUncontactedTutorInfo
     | null;
-  setTemporaryTutor: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
-  select: SelectRoom;
-}> = ({ room, otherMember, setTemporaryTutor, select, isTyping, isOnline }) => {
+  setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
+  select?: SelectRoom;
+  inCall?: boolean;
+}> = ({
+  room,
+  otherMember,
+  setTemporaryTutor,
+  select,
+  isTyping,
+  isOnline,
+  inCall,
+}) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
@@ -134,11 +143,12 @@ const Messages: React.FC<{
   const onSuccess = useCallback(
     (response: IRoom.CreateRoomApiResponse) => {
       if (!otherMember) return;
-      select({
-        room: response.roomId,
-        otherMember: otherMember,
-      });
-      setTemporaryTutor(null);
+      if (select)
+        select({
+          room: response.roomId,
+          otherMember: otherMember,
+        });
+      if (setTemporaryTutor) setTemporaryTutor(null);
       invdalidate([QueryKey.FindUserRooms, QueryKey.FindUncontactedTutors]);
     },
     [otherMember, select, setTemporaryTutor, invdalidate]
@@ -278,20 +288,26 @@ const Messages: React.FC<{
 
   return (
     <div
-      style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
-      className="flex-1 border-r border-border-strong flex flex-col"
+      style={{
+        height: !inCall ? `calc(100vh - ${HEADER_HEIGHT}px)` : "",
+      }}
+      className="flex-1 border-r border-border-strong flex flex-col h-full"
     >
       {room === null ? <NoSelection /> : null}
 
       {chatHeaderProps ? (
-        <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
+        <ChatHeader
+          {...chatHeaderProps}
+          openDialog={openDialog}
+          inCall={inCall}
+        />
       ) : null}
 
       {room ? (
         <>
           <div
             className={cn(
-              "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
+              "grow overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
               "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
             )}
           >
@@ -301,7 +317,10 @@ const Messages: React.FC<{
               </div>
             ) : (
               <ul
-                className="h-full flex flex-col gap-4 overflow-auto grow"
+                className={cn(
+                  "flex flex-col gap-4 overflow-auto grow",
+                  inCall ? "h-[380px]" : "h-full"
+                )}
                 onScroll={onScroll}
                 ref={messagesRef}
               >
@@ -392,7 +411,7 @@ const Messages: React.FC<{
               />
             </div>
           ) : null}
-          <div className="px-4 pt-2 pb-6 mt-3">
+          <div className={cn("px-4 pt-2 pb-6 mt-3", inCall && "-mt-6")}>
             <SendInput typingMessage={typingMessage} onSubmit={submit} />
           </div>
         </>

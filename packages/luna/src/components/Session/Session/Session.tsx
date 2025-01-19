@@ -9,6 +9,7 @@ import CastScreen from "@litespace/assets/CastScreen";
 import { ActionsBar } from "@/components/Session/ActionsBar";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
+import cn from "classnames";
 
 type Props = {
   streams: StreamInfo[];
@@ -57,7 +58,13 @@ export const Session: React.FC<Props> = ({
 }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-10">
-      <div className="tw-h-full tw-grow tw-flex tw-border tw-border-brand-700 tw-rounded-lg tw-overflow-hidden">
+      <div
+        className={cn(
+          "tw-w-full tw-aspect-video tw-max-h-[648px] tw-grow tw-border tw-border-brand-700",
+          "tw-rounded-lg tw-overflow-hidden tw-grid",
+          chat.enabled ? "tw-grid-cols-[70%,30%]" : ""
+        )}
+      >
         <SessionStreams
           currentUserId={currentUserId}
           fullScreen={fullScreen}

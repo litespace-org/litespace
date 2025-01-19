@@ -22,6 +22,13 @@ import {
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { Route } from "@/types/routes";
 import { asRateLessonQuery } from "@/lib/query";
+import Messages from "@/components/Chat/Messages";
+import {
+  useChatStatus,
+  useFindRoomByMembers,
+  useFindRoomMembers,
+} from "@litespace/headless/chat";
+import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 
 /**
  * @todos
@@ -59,6 +66,50 @@ const Lesson: React.FC = () => {
     if (!current || !other) return null;
     return { current, other };
   }, [lesson.data, user]);
+
+  // ============================ Chat ==================================
+
+  const [chatEnabled, setChatEnabled] = useState<boolean>(false);
+
+  const toggleChat = useCallback(() => {
+    setChatEnabled((prev) => !prev);
+  }, []);
+
+  const chatRoomQuery = useFindRoomByMembers({
+    userIds: lessonMembers
+      ? [lessonMembers?.current.userId, lessonMembers?.other.userId]
+      : null,
+  });
+
+  const room = chatRoomQuery.data?.room || null;
+  const roomMembers = useFindRoomMembers(room);
+  const chatOtherMember = useMemo(
+    () => asOtherMember(user?.id, roomMembers.data),
+    [user?.id, roomMembers.data]
+  );
+
+  const { typingMap, usersOnlineMap } = useChatStatus();
+
+  const isOtherMemberTyping = useMemo(() => {
+    return chatOtherMember
+      ? isTyping({
+          map: typingMap,
+          roomId: room,
+          otherMemberId: chatOtherMember.id,
+        })
+      : false;
+  }, [room, chatOtherMember, typingMap]);
+
+  const isOtherMemberOnline = useMemo(() => {
+    return chatOtherMember
+      ? isOnline({
+          map: usersOnlineMap,
+          roomId: room,
+          otherMemberStatus: chatOtherMember.online,
+          otherMemberId: chatOtherMember.id,
+        })
+      : false;
+  }, [room, chatOtherMember, usersOnlineMap]);
 
   // ============================ Session/Streams ================================
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();
@@ -330,7 +381,7 @@ const Lesson: React.FC = () => {
         <Session
           streams={streams}
           currentUserId={lessonMembers.current.userId}
-          chat={{ enabled: false, toggle: () => alert("todo") }}
+          chat={{ enabled: chatEnabled, toggle: toggleChat }}
           camera={cameraConfig}
           mic={{
             enabled: session.members.current.audio,
@@ -367,6 +418,17 @@ const Lesson: React.FC = () => {
               navigate(`${Route.UpcomingLessons}?${query}`);
             }
           }}
+          chatPanel={
+            <Messages
+              inCall={true}
+              room={room}
+              isTyping={isOtherMemberTyping}
+              isOnline={isOtherMemberOnline}
+              otherMember={chatOtherMember}
+              select={() => {}}
+              setTemporaryTutor={() => {}}
+            />
+          }
         />
       ) : null}
     </div>

@@ -27,11 +27,11 @@ export enum QueryKey {
   FindUncontactedTutors = "find-uncontacted-tutors",
   FindUserRooms = "find-user-rooms",
   FindRoomMembers = "find-room-members",
-  FindRoomByMembers = "find-room-by-members",
   FindCallMembers = "find-call-members",
   FindCurrentUser = "find-current-user",
   FindTutorInfo = "find-tutor-info",
   FindRulesWithSlots = "find-rules-with-slots",
   FindUserTopics = "find-user-topics",
   FindSessionMembers = "find-session-members",
+  FindRoomByMembers = "find-room-by-members",
 }

@@ -30,8 +30,10 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
-import { concat, isEmpty, uniqueId } from "lodash";
+import { concat, uniqueId } from "lodash";
 import { useUserContext } from "@/user/index";
+
+// ========================== Chat System Functionalities =========================
 
 type OnSuccess = Void;
 type OnError = (err: Error) => void;
@@ -199,120 +201,6 @@ type Action =
   | MessageStreamAction;
 
 export type OnMessage = (action: MessageStreamAction) => void;
-
-export function useFindUncontactedTutors(enabled?: boolean): {
-  query: UseInfiniteQueryResult<
-    InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
-    Error
-  >;
-  list: ITutor.FullUncontactedTutorInfo[] | null;
-  more: () => void;
-} {
-  const atlas = useAtlas();
-
-  const findUncontactedTutors = useCallback(
-    ({ pageParam }: { pageParam: number }) => {
-      return atlas.user.findUncontactedTutors({ page: pageParam });
-    },
-    [atlas.user]
-  );
-
-  return useInfinitePaginationQuery(
-    findUncontactedTutors,
-    [QueryKey.FindUncontactedTutors],
-    enabled
-  );
-}
-
-export function useCreateRoom({
-  onSuccess,
-  onError,
-}: {
-  onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
-  onError: Void;
-}) {
-  const atlas = useAtlas();
-  const createRoom = useCallback(
-    async ({ id, message }: { id: number; message?: string }) => {
-      return await atlas.chat.createRoom(id, message);
-    },
-    [atlas.chat]
-  );
-
-  return useMutation({
-    mutationFn: createRoom,
-    onSuccess,
-    onError,
-    mutationKey: [MutationKey.CreateRoom],
-  });
-}
-
-export function useFindRoomMembers(
-  roomId: number | "temporary" | null
-): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
-  const atlas = useAtlas();
-  const findRoomMembers = useCallback(async () => {
-    if (!roomId || roomId === "temporary") return [];
-    return await atlas.chat.findRoomMembers(roomId);
-  }, [atlas.chat, roomId]);
-
-  return useQuery({
-    queryFn: findRoomMembers,
-    queryKey: [QueryKey.FindRoomMembers, roomId],
-    enabled: !!roomId,
-  });
-}
-
-export function useFindUserRooms(
-  userId?: number,
-  payload?: IRoom.FindUserRoomsApiQuery
-): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
-  const atlas = useAtlas();
-  const findUserRooms = useCallback(
-    async ({ pageParam }: { pageParam: number }) => {
-      if (!userId) return { list: [], total: 0 };
-      return await atlas.chat.findRooms(userId, {
-        page: pageParam,
-        ...payload,
-      });
-    },
-    [atlas.chat, userId, payload]
-  );
-
-  return useInfinitePaginationQuery(findUserRooms, [
-    QueryKey.FindUserRooms,
-    payload,
-  ]);
-}
-
-export function useUpdateRoom({
-  onSuccess,
-  onError,
-}: {
-  onSuccess?: OnSuccess;
-  onError?: OnError;
-}) {
-  const atlas = useAtlas();
-  const pinRoom = useCallback(
-    async ({
-      roomId,
-      payload,
-    }: {
-      roomId: number;
-      payload: IRoom.UpdateRoomApiPayload;
-    }) => {
-      await atlas.chat.updateRoom(roomId, payload);
-    },
-    [atlas.chat]
-  );
-
-  return useMutation({
-    mutationFn: pinRoom,
-    mutationKey: [MutationKey.UpdateRoom],
-    onSuccess,
-    onError,
-  });
-}
 
 /**
  * The hook responsible for integration with the wss server, it allows the user
@@ -1065,16 +953,135 @@ export function useChatStatus() {
   return { typingMap, usersOnlineMap };
 }
 
-export function useFindRoomByMembers(members: number[]) {
+// ========================== Room Functionalities =========================
+
+export function useFindUncontactedTutors(enabled?: boolean): {
+  query: UseInfiniteQueryResult<
+    InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
+    Error
+  >;
+  list: ITutor.FullUncontactedTutorInfo[] | null;
+  more: () => void;
+} {
   const atlas = useAtlas();
 
-  const findRoom = useCallback(async () => {
-    return await atlas.chat.findRoomByMembers(members);
-  }, [atlas.chat, members]);
+  const findUncontactedTutors = useCallback(
+    ({ pageParam }: { pageParam: number }) => {
+      return atlas.user.findUncontactedTutors({ page: pageParam });
+    },
+    [atlas.user]
+  );
+
+  return useInfinitePaginationQuery(
+    findUncontactedTutors,
+    [QueryKey.FindUncontactedTutors],
+    enabled
+  );
+}
+
+export function useCreateRoom({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
+  onError: Void;
+}) {
+  const atlas = useAtlas();
+  const createRoom = useCallback(
+    async ({ id, message }: { id: number; message?: string }) => {
+      return await atlas.chat.createRoom(id, message);
+    },
+    [atlas.chat]
+  );
+
+  return useMutation({
+    mutationFn: createRoom,
+    onSuccess,
+    onError,
+    mutationKey: [MutationKey.CreateRoom],
+  });
+}
+
+export function useFindRoomMembers(
+  roomId: number | "temporary" | null
+): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
+  const atlas = useAtlas();
+  const findRoomMembers = useCallback(async () => {
+    if (!roomId || roomId === "temporary") return [];
+    return await atlas.chat.findRoomMembers(roomId);
+  }, [atlas.chat, roomId]);
 
   return useQuery({
-    queryKey: [QueryKey.FindRoomByMembers, members],
-    queryFn: findRoom,
-    enabled: !isEmpty(members),
+    queryFn: findRoomMembers,
+    queryKey: [QueryKey.FindRoomMembers, roomId],
+    enabled: !!roomId,
+  });
+}
+
+export function useFindUserRooms(
+  userId?: number,
+  payload?: IRoom.FindUserRoomsApiQuery
+): UseInfinitePaginationQueryResult<IRoom.FindUserRoomsApiRecord> {
+  const atlas = useAtlas();
+  const findUserRooms = useCallback(
+    async ({ pageParam }: { pageParam: number }) => {
+      if (!userId) return { list: [], total: 0 };
+      return await atlas.chat.findRooms(userId, {
+        page: pageParam,
+        ...payload,
+      });
+    },
+    [atlas.chat, userId, payload]
+  );
+
+  return useInfinitePaginationQuery(findUserRooms, [
+    QueryKey.FindUserRooms,
+    payload,
+  ]);
+}
+
+export function useUpdateRoom({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+  const pinRoom = useCallback(
+    async ({
+      roomId,
+      payload,
+    }: {
+      roomId: number;
+      payload: IRoom.UpdateRoomApiPayload;
+    }) => {
+      await atlas.chat.updateRoom(roomId, payload);
+    },
+    [atlas.chat]
+  );
+
+  return useMutation({
+    mutationFn: pinRoom,
+    mutationKey: [MutationKey.UpdateRoom],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useFindRoomByMembers({
+  userIds,
+}: {
+  userIds: number[] | null;
+}) {
+  const atlas = useAtlas();
+  const findRoomByMembers = useCallback(async () => {
+    if (!userIds) return null;
+    return atlas.chat.findRoomByMembers(userIds);
+  }, [atlas.chat, userIds]);
+
+  return useQuery({
+    queryFn: findRoomByMembers,
+    queryKey: [QueryKey.FindRoomByMembers, userIds],
   });
 }
