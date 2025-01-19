@@ -1,5 +1,5 @@
 import { Button, ButtonVariant } from "@/components/Button";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { Loader, LoadingError } from "@/components/Loading";
 import DaySlots from "@/components/ManageSchedule/DaySlots";
 import { Slot } from "@/components/ManageSchedule/types";

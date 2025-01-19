@@ -3,7 +3,7 @@ import cn from "classnames";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { keys } from "lodash";

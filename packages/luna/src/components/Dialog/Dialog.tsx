@@ -1,61 +1,62 @@
-import * as RadixDialog from "@radix-ui/react-dialog";
+import {
+  Root,
+  Title,
+  Trigger,
+  Overlay,
+  Content,
+  Close,
+  Portal,
+} from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
-import { Cross2Icon } from "@radix-ui/react-icons";
+import X from "@litespace/assets/X";
+import { Void } from "@litespace/types";
 
 export const Dialog: React.FC<{
   trigger?: React.ReactNode;
-  title: React.ReactNode;
+  title?: React.ReactNode;
   children?: React.ReactNode;
-  description?: React.ReactNode;
-  open?: boolean;
   className?: string;
+  open?: boolean;
   setOpen?: (open: boolean) => void;
-  close: () => void;
+  close?: Void;
+  description?: string;
 }> = ({
   trigger,
   title,
   children,
-  description,
   className,
-  close,
   open,
+  description,
   setOpen,
+  close,
 }) => {
   return (
-    <RadixDialog.Root open={open} onOpenChange={setOpen}>
-      {trigger ? <RadixDialog.Trigger>{trigger}</RadixDialog.Trigger> : null}
-      <RadixDialog.Portal>
-        <RadixDialog.Overlay className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm" />
-        <RadixDialog.Content
+    <Root open={open} onOpenChange={setOpen}>
+      {trigger ? <Trigger>{trigger}</Trigger> : null}
+      <Portal>
+        <Overlay className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-10" />
+        <Content
+          aria-describedby={description}
           dir="rtl"
           className={cn(
-            "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-background-dialog",
-            "tw-border tw-border-border-strong tw-rounded-md tw-px-5 tw-py-4 tw-shadow-lg tw-min-w-96",
+            "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
+            "tw-rounded-[32px] tw-p-6 tw-min-w-96 tw-z-dialog",
             className
           )}
         >
-          <div className="tw-flex tw-justify-between mb-4">
-            <RadixDialog.Title className="tw-font-semibold">
-              {title}
-            </RadixDialog.Title>
-            <RadixDialog.Close
-              onClick={close}
-              className="hover:tw-bg-background-selection tw-rounded-md"
-            >
-              <Cross2Icon className="tw-cursor-pointer tw-w-6 tw-h-6 tw-p-0.5" />
-            </RadixDialog.Close>
+          <div className="tw-flex tw-justify-between tw-items-center tw-w-full">
+            <Title>{title}</Title>
+            {close ? (
+              <Close onClick={close}>
+                <X className="tw-cursor-pointer" />
+              </Close>
+            ) : null}
           </div>
 
-          {description ? (
-            <RadixDialog.Description className="tw-mb-4">
-              {description}
-            </RadixDialog.Description>
-          ) : null}
-
           {children}
-        </RadixDialog.Content>
-      </RadixDialog.Portal>
-    </RadixDialog.Root>
+        </Content>
+      </Portal>
+    </Root>
   );
 };

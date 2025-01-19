@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { Dialog } from "@/components/Dialog/V2";
+import { Dialog } from "@/components/Dialog";
 import { ILesson, IRule, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
