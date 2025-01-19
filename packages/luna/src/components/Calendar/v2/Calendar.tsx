@@ -12,10 +12,8 @@ import { WeekTable } from "@/components/Calendar/v2/WeekTable";
 
 interface Props {
   date: Dayjs;
-
   lessons?: LessonProps[];
   lessonActions?: LessonActions;
-
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
 }

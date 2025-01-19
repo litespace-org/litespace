@@ -3,7 +3,6 @@ import cn from "classnames";
 import dayjs from "@/lib/dayjs";
 import { first, isEmpty, maxBy, minBy } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
-
 import { Typography } from "@/components/Typography";
 import {
   EventSpan,
@@ -11,7 +10,6 @@ import {
   Card,
 } from "@/components/Calendar/v2/Events/shared";
 import { LessonActions, LessonProps } from "@/components/Calendar/v2/types";
-
 import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
@@ -27,15 +25,13 @@ type Props = Partial<LessonActions> & {
 };
 
 export const LessonSlot: React.FC<Props> = ({ lessons, ...actions }) => {
-  if (isEmpty(lessons)) return null;
-
   const lesson = useMemo(() => {
     if (lessons.length > 1) return;
     return first(lessons);
   }, [lessons]);
 
+  if (isEmpty(lessons)) return null;
   if (lesson) return <SingleLesson {...lesson} {...actions} />;
-
   return (
     <Card>
       <MultipleLessons lessons={lessons} {...actions} />
@@ -115,17 +111,16 @@ const MultipleLessons: React.FC<
 
       <div className="tw-flex tw-relative tw-h-9">
         {lessons.map((lesson, idx) => {
+          // 36px: the avatar width
+          // 8px: the overlapping between avatars
+          const x = idx >= 1 ? -idx * (36 - 8) : 0;
           return (
             <motion.div
               key={lesson.start}
-              initial={{
-                // 36px: the avatar width
-                // 8px: the overlapping between avatars
-                x: idx >= 1 ? -idx * (36 - 8) : 0,
-              }}
+              initial={{ x }}
               style={{
                 position: "absolute",
-                zIndex: idx === 0 ? 1 : 0,
+                zIndex: menuOpened ? 4 : idx === 0 ? 0 : 1,
               }}
               whileHover={{
                 zIndex: 4,
@@ -157,7 +152,7 @@ const MultipleLessons: React.FC<
                 </motion.button>
                 <AnimatePresence>
                   {show === lesson.id ? (
-                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-10">
+                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-40">
                       <EventGroupItem
                         {...lesson}
                         {...actions}

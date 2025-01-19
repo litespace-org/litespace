@@ -3,7 +3,7 @@ import { Calendar } from "@/components/Calendar/v2/Calendar";
 import React from "react";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
-import { faker } from "@faker-js/faker/locale/en";
+import { faker } from "@faker-js/faker/locale/ar";
 import {
   AvailabilitySlotProps,
   LessonProps,
@@ -112,13 +112,13 @@ export const HourViewCalender: StoryObj<Component> = {
   args: {
     date: dayjs().startOf("week"),
     lessons: [
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 1, duration: 2, date }),
-      makeLesson({ hour: 3, duration: 2, date }),
+      makeLesson({ hour: 1, duration: 0.25, date }),
+      makeLesson({ hour: 1, duration: 0.25, date }),
+      makeLesson({ hour: 1, duration: 0.25, date }),
+      makeLesson({ hour: 2, duration: 0.25, date }),
+      makeLesson({ hour: 2, duration: 0.5, date }),
+      makeLesson({ hour: 2, duration: 0.5, date }),
+      makeLesson({ hour: 3, duration: 0.5, date }),
       makeLesson({ hour: 3, duration: 8, date: date.add(1, "day") }),
       makeLesson({ hour: 12, duration: 12, date: date.add(2, "day") }),
       makeLesson({ hour: 1, duration: 0.5, date: date.add(3, "day") }),
