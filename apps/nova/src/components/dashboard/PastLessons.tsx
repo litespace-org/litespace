@@ -10,28 +10,43 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
 import dayjs from "dayjs";
 import { Loading } from "@litespace/luna/Loading";
+import { asFullAssetUrl } from "@litespace/luna/backend";
 
-function asLessons(list: ILesson.FindUserLessonsApiResponse["list"] | null) {
+function asLessons(
+  list: ILesson.FindUserLessonsApiResponse["list"] | null,
+  userRole: IUser.Role,
+  userId: number
+) {
   if (!list) return [];
 
   return list.map((lesson) => {
-    const teacher = lesson.members.find(
-      (member) => member.role === IUser.Role.Tutor
+    const otherMember = lesson.members.find(
+      (member) => member.userId !== userId
     );
+
+    if (!otherMember)
+      throw new Error("Other member not found; should never happen.");
+
     return {
       id: lesson.lesson.id,
       start: lesson.lesson.start,
       duration: lesson.lesson.duration,
-      tutor: {
-        id: teacher?.userId || 0,
-        name: teacher?.name || null,
-        imageUrl: teacher?.image || null,
+      isTutor:
+        userRole === IUser.Role.Tutor || userRole === IUser.Role.TutorManager,
+      currentMember: userId,
+      otherMember: {
+        /**
+         * Id of the user wheather student or tutor or tutor manager
+         */
+        id: otherMember.userId,
+        name: otherMember.name,
+        imageUrl: otherMember.image ? asFullAssetUrl(otherMember.image) : null,
       },
     };
   });
 }
 
-export const PastLessons = () => {
+export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const [tutor, setTutor] = useState<number | null>(null);
 
@@ -53,8 +68,8 @@ export const PastLessons = () => {
   });
 
   const lessons = useMemo(
-    () => asLessons(lessonsQuery.list),
-    [lessonsQuery.list]
+    () => (user ? asLessons(lessonsQuery.list, user.role, user.id) : []),
+    [lessonsQuery.list, user]
   );
 
   return (
@@ -74,6 +89,12 @@ export const PastLessons = () => {
         loading={lessonsQuery.query.isPending}
         error={lessonsQuery.query.isError}
         retry={lessonsQuery.query.refetch}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        onSendMessage={() => {}}
+        sendingMessage={0}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (

@@ -1,60 +1,86 @@
-import { useFormatMessage } from "@/hooks";
-import React, { useMemo } from "react";
-import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 import { Avatar } from "@/components/Avatar";
-import { orUndefined } from "@litespace/sol/utils";
+import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
+import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { formatMinutes } from "@/components/utils";
+import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
-import { isEmpty } from "lodash";
 import EmptyLessons from "@litespace/assets/EmptyLesson2";
-import { Link } from "react-router-dom";
-import { Loader, LoadingError } from "@/components/Loading";
+import { orUndefined } from "@litespace/sol/utils";
 import { Void } from "@litespace/types";
+import { isEmpty } from "lodash";
+import React, { useMemo } from "react";
+import { Link } from "react-router-dom";
 
 export type Props = {
   lessons: Array<{
     id: number;
     start: string;
     duration: number;
-    tutor: {
+    /**
+     * Current user id
+     */
+    currentMember: number;
+    /**
+     * Student in case user is tutor and vice versa
+     */
+    otherMember: {
       id: number;
       name: string | null;
       imageUrl: string | null;
     };
   }>;
-  onRebook?: (tutorId: number) => void;
   tutorsRoute: string;
+  /**
+   * `true` in case the current user is a tutor or tutor manager.
+   */
+  isTutor?: boolean;
   loading?: boolean;
   error?: boolean;
+  /**
+   * The lesson with the same id as `sendingMessage` will have the loading button state.
+   */
+  sendingMessage?: number;
+  /**
+   * State of sending message disable present in the end of each row of the table.
+   */
+  onRebook?: (tutorId: number) => void;
+  onSendMessage?: (members: number[]) => void;
   retry?: Void;
 };
 
 export const PastLessonsTable: React.FC<Props> = ({
   lessons,
   tutorsRoute,
-  onRebook,
+  isTutor,
   loading,
   error,
+  sendingMessage,
+  onRebook,
+  onSendMessage,
   retry,
 }) => {
   const intl = useFormatMessage();
 
-  const columns = useMemo(
-    () => [
-      intl("student-dashboard.table.date"),
-      intl("student-dashboard.table.duration"),
-      intl("student-dashboard.table.tutor"),
-    ],
-    [intl]
-  );
+  const columns = useMemo(() => {
+    const date = intl("student-dashboard.table.date");
+    const duration = intl("student-dashboard.table.duration");
+    const tutor = intl("student-dashboard.table.tutor");
+    const student = intl("tutor-dashboard.table.student");
+    if (isTutor) return [date, duration, student];
+    return [date, duration, tutor];
+  }, [intl, isTutor]);
 
   if (loading)
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <Loader
           size="medium"
-          text={intl("student-dashboard.past-lessons.loading")}
+          text={
+            isTutor
+              ? intl("tutor-dashboard.past-lessons.loading")
+              : intl("student-dashboard.past-lessons.loading")
+          }
         />
       </div>
     );
@@ -64,7 +90,11 @@ export const PastLessonsTable: React.FC<Props> = ({
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <LoadingError
           size="medium"
-          error={intl("student-dashboard.past-lessons.error")}
+          error={
+            isTutor
+              ? intl("tutor-dashboard.past-lessons.error")
+              : intl("student-dashboard.past-lessons.error")
+          }
           retry={retry}
         />
       </div>
@@ -116,23 +146,36 @@ export const PastLessonsTable: React.FC<Props> = ({
                 <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
                   <div className="tw-w-10 tw-h-10 tw-rounded-lg tw-overflow-hidden">
                     <Avatar
-                      src={orUndefined(lesson.tutor.imageUrl)}
-                      alt={orUndefined(lesson.tutor.name)}
-                      seed={lesson.tutor.id.toString()}
+                      src={orUndefined(lesson.otherMember.imageUrl)}
+                      alt={orUndefined(lesson.otherMember.name)}
+                      seed={lesson.otherMember.id.toString()}
                     />
                   </div>
                   <Typography className="tw-text-natural-950">
-                    {lesson.tutor.name}
+                    {lesson.otherMember.name}
                   </Typography>
                 </div>
               </div>
               <div>
                 <Button
-                  onClick={() => onRebook && onRebook(lesson.tutor.id)}
+                  onClick={() => {
+                    if (onRebook && !isTutor)
+                      return onRebook(lesson.otherMember.id);
+
+                    if (onSendMessage && isTutor)
+                      return onSendMessage([
+                        lesson.otherMember.id,
+                        lesson.currentMember,
+                      ]);
+                  }}
                   variant={ButtonVariant.Secondary}
                   size={ButtonSize.Tiny}
+                  disabled={!!sendingMessage}
+                  loading={sendingMessage === lesson.id}
                 >
-                  {intl("student-dashboard.table.rebook")}
+                  {isTutor
+                    ? intl("tutor-dashboard.table.send-message")
+                    : intl("student-dashboard.table.rebook")}
                 </Button>
               </div>
             </React.Fragment>
