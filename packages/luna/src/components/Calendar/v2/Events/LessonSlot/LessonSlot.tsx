@@ -1,9 +1,8 @@
 import React, { useMemo, useState } from "react";
 import cn from "classnames";
 import dayjs from "@/lib/dayjs";
-import { first, maxBy, minBy } from "lodash";
+import { first, isEmpty, maxBy, minBy } from "lodash";
 import { AnimatePresence, motion } from "framer-motion";
-
 import { Typography } from "@/components/Typography";
 import {
   EventSpan,
@@ -11,7 +10,6 @@ import {
   Card,
 } from "@/components/Calendar/v2/Events/shared";
 import { LessonActions, LessonProps } from "@/components/Calendar/v2/types";
-
 import { Menu, MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
@@ -22,11 +20,26 @@ import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/sol/utils";
 import Clock from "@litespace/assets/Clock16X16";
 
-interface Props extends LessonActions {
+type Props = Partial<LessonActions> & {
   lessons: Array<LessonProps>;
-}
+};
 
-const SingleLesson: React.FC<LessonProps & LessonActions> = ({
+export const LessonSlot: React.FC<Props> = ({ lessons, ...actions }) => {
+  const lesson = useMemo(() => {
+    if (lessons.length > 1) return;
+    return first(lessons);
+  }, [lessons]);
+
+  if (isEmpty(lessons)) return null;
+  if (lesson) return <SingleLesson {...lesson} {...actions} />;
+  return (
+    <Card>
+      <MultipleLessons lessons={lessons} {...actions} />
+    </Card>
+  );
+};
+
+const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
   otherMember,
   start,
   end,
@@ -76,10 +89,9 @@ const SingleLesson: React.FC<LessonProps & LessonActions> = ({
   );
 };
 
-const MultipleLessons: React.FC<LessonActions & { lessons: LessonProps[] }> = ({
-  lessons,
-  ...actions
-}) => {
+const MultipleLessons: React.FC<
+  Partial<LessonActions> & { lessons: LessonProps[] }
+> = ({ lessons, ...actions }) => {
   const [show, setShow] = useState<number | null>(null);
   const [menuOpened, setMenuOpened] = useState<boolean>(false);
 
@@ -99,17 +111,16 @@ const MultipleLessons: React.FC<LessonActions & { lessons: LessonProps[] }> = ({
 
       <div className="tw-flex tw-relative tw-h-9">
         {lessons.map((lesson, idx) => {
+          // 36px: the avatar width
+          // 8px: the overlapping between avatars
+          const x = idx >= 1 ? -idx * (36 - 8) : 0;
           return (
             <motion.div
               key={lesson.start}
-              initial={{
-                // 36px: the avatar width
-                // 8px: the overlapping between avatars
-                x: idx >= 1 ? -idx * (36 - 8) : 0,
-              }}
+              initial={{ x }}
               style={{
                 position: "absolute",
-                zIndex: idx === 0 ? 1 : 0,
+                zIndex: menuOpened ? 4 : idx === 0 ? 0 : 1,
               }}
               whileHover={{
                 zIndex: 4,
@@ -141,7 +152,7 @@ const MultipleLessons: React.FC<LessonActions & { lessons: LessonProps[] }> = ({
                 </motion.button>
                 <AnimatePresence>
                   {show === lesson.id ? (
-                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-10">
+                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-40">
                       <EventGroupItem
                         {...lesson}
                         {...actions}
@@ -167,24 +178,8 @@ const MultipleLessons: React.FC<LessonActions & { lessons: LessonProps[] }> = ({
   );
 };
 
-export const Lessons: React.FC<Props> = ({ lessons, ...actions }) => {
-  const lesson = useMemo(() => {
-    const lesson = first(lessons);
-    if (!lesson || lessons.length > 1) return;
-    return lesson;
-  }, [lessons]);
-
-  if (lesson) return <SingleLesson {...lesson} {...actions} />;
-
-  return (
-    <Card>
-      <MultipleLessons lessons={lessons} {...actions} />
-    </Card>
-  );
-};
-
 const OptionsMenu: React.FC<
-  LessonActions & {
+  Partial<LessonActions> & {
     canceled: boolean;
     id: number;
     open?: boolean;
@@ -199,24 +194,36 @@ const OptionsMenu: React.FC<
         {
           icon: <CalendarEdit />,
           label: intl("schedule.lesson.rebook"),
-          onClick: () => onRebook(id),
+          onClick: () => {
+            if (!onRebook) console.warn("onRebook is undefined.");
+            if (onRebook) onRebook(id);
+          },
         },
       ];
     return [
       {
         icon: <Video width={16} height={16} />,
         label: intl("schedule.lesson.join"),
-        onClick: () => onJoin(id),
+        onClick: () => {
+          if (!onJoin) console.warn("onJoin is undefined.");
+          if (onJoin) onJoin(id);
+        },
       },
       {
         icon: <CalendarEdit />,
         label: intl("schedule.lesson.edit"),
-        onClick: () => onEdit(id),
+        onClick: () => {
+          if (!onEdit) console.warn("onEdit is undefined.");
+          if (onEdit) onEdit(id);
+        },
       },
       {
         icon: <CalendarRemove />,
         label: intl("schedule.lesson.cancel"),
-        onClick: () => onCancel(id),
+        onClick: () => {
+          if (!onCancel) console.warn("onCancel is undefined.");
+          if (onCancel) onCancel(id);
+        },
       },
     ];
   }, [canceled, intl, onRebook, id, onJoin, onEdit, onCancel]);
@@ -238,7 +245,7 @@ const OptionsMenu: React.FC<
 
 const EventGroupItem: React.FC<
   LessonProps &
-    LessonActions & {
+    Partial<LessonActions> & {
       otherMember: {
         id: number;
         image: string | null;

@@ -3,7 +3,8 @@ import { Dayjs } from "dayjs";
 import { Hours } from "@/components/Calendar/v2/Hours";
 import {
   AvailabilitySlotProps,
-  HourView,
+  LessonActions,
+  LessonProps,
   SlotActions,
 } from "@/components/Calendar/v2/types";
 import cn from "classnames";
@@ -11,14 +12,16 @@ import { WeekTable } from "@/components/Calendar/v2/WeekTable";
 
 interface Props {
   date: Dayjs;
-  HourView?: HourView;
+  lessons?: LessonProps[];
+  lessonActions?: LessonActions;
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
 }
 
 export const Calendar: React.FC<Props> = ({
   date,
-  HourView,
+  lessons,
+  lessonActions,
   slots,
   slotActions,
 }) => {
@@ -36,7 +39,8 @@ export const Calendar: React.FC<Props> = ({
             day={date}
             slots={slots}
             slotActions={slotActions}
-            HourView={HourView}
+            lessons={lessons}
+            lessonActions={lessonActions}
           />
         </div>
       </div>

@@ -1,2 +1,2 @@
-export { Lessons } from "@/components/Calendar/v2/Events/Lessons/Lessons";
+export { LessonSlot } from "@/components/Calendar/v2/Events/LessonSlot/LessonSlot";
 export { AvailabilitySlot } from "@/components/Calendar/v2/Events/AvailabilitySlots/AvailabilitySlots";

@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Lessons } from "@/components/Calendar/v2/Events/Lessons/Lessons";
+import { LessonSlot } from "@/components/Calendar/v2/Events/LessonSlot/LessonSlot";
 import { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "@/lib/dayjs";
 
-type Component = typeof Lessons;
+type Component = typeof LessonSlot;
 
 const meta: Meta<Component> = {
-  title: "Calendar/Lessons",
-  component: Lessons,
+  title: "Calendar/LessonSlot",
+  component: LessonSlot,
   parameters: { layout: "centered" },
   decorators: [],
 };

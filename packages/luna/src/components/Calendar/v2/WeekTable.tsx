@@ -7,18 +7,21 @@ import dayjs from "@/lib/dayjs";
 import { Typography } from "@/components/Typography";
 import {
   AvailabilitySlotProps,
-  HourView,
   SlotActions,
+  LessonActions,
+  LessonProps,
 } from "@/components/Calendar/v2/types";
 import { HOURS_IN_DAY } from "@litespace/sol/constants";
-import { AvailabilitySlot } from "./Events";
+import { AvailabilitySlot } from "@/components/Calendar/v2/Events";
+import { LessonSlot } from "@/components/Calendar/v2/Events/LessonSlot/LessonSlot";
 
 export const WeekTable: React.FC<{
   day: Dayjs;
+  lessons?: LessonProps[];
+  lessonActions?: LessonActions;
   slots?: AvailabilitySlotProps[];
-  HourView?: HourView;
   slotActions?: SlotActions;
-}> = ({ day, slots, HourView, slotActions }) => {
+}> = ({ day, lessons, lessonActions, slots, slotActions }) => {
   const week = useMemo(() => {
     const weekStart = day.startOf("week");
     return range(DAYS_IN_WEEK).map((day) => {
@@ -63,12 +66,19 @@ export const WeekTable: React.FC<{
                   <div
                     key={hour.toISOString()}
                     className={cn(
-                      "tw-border-natural-300",
+                      "tw-border-natural-300 tw-p-2",
                       !lastHour && "tw-border-b"
                     )}
                     style={{ height: HOUR_HEIGHT }}
                   >
-                    {HourView ? <HourView date={hour} /> : null}
+                    {lessons ? (
+                      <LessonSlot
+                        lessons={lessons.filter((lesson) =>
+                          hour.isSame(lesson.start)
+                        )}
+                        {...lessonActions}
+                      />
+                    ) : null}
                   </div>
                 );
               })}
