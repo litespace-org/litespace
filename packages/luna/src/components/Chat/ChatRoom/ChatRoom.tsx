@@ -10,7 +10,7 @@ import Muted from "@litespace/assets/Muted";
 import SingleCheck from "@litespace/assets/SingleCheck";
 import DoubleCheck from "@litespace/assets/DoubleCheck";
 import { Avatar } from "@/components/Avatar";
-import { Void } from "@litespace/types";
+import { IMessage, Void } from "@litespace/types";
 import { Menu, type MenuAction } from "@/components/Menu";
 
 export const ChatRoom: React.FC<{
@@ -25,7 +25,7 @@ export const ChatRoom: React.FC<{
   owner?: boolean;
   online?: boolean;
   optionsEnabled?: boolean;
-  messageState?: "sent" | "seen" | "reached";
+  messageState?: IMessage.MessageState;
   isMuted?: boolean;
   select: Void;
   toggleMute: Void;
@@ -69,7 +69,6 @@ export const ChatRoom: React.FC<{
   const ReadIcon = useMemo(() => {
     if (messageState === "seen")
       return <DoubleCheck className="[&>*]:tw-fill-secondary-400" />;
-    if (messageState === "reached") return <DoubleCheck />;
     return <SingleCheck />;
   }, [messageState]);
 

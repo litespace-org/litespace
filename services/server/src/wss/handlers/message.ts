@@ -228,7 +228,7 @@ export class Messages extends WssHandler {
       this.broadcast(
         Wss.ServerEvent.RoomMessageRead,
         asChatRoomId(message.roomId),
-        { userId: user.id }
+        { userId: user.id, messageId: message.id, roomId: message.roomId }
       );
     });
     if (error instanceof Error) stdout.error(error.message);

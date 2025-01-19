@@ -143,7 +143,11 @@ export type ServerEventsMap = {
     roomId: number;
     messageId: number;
   }>;
-  [ServerEvent.RoomMessageRead]: EventCallback<{ userId: number }>;
+  [ServerEvent.RoomMessageRead]: EventCallback<{
+    userId: number;
+    messageId: number;
+    roomId: number;
+  }>;
 
   [ServerEvent.UserJoinedSession]: EventCallback<{ peerId: string }>;
 

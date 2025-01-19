@@ -58,15 +58,6 @@ export const Sent: StoryObj<Component> = {
   },
 };
 
-export const Reached: StoryObj<Component> = {
-  args: {
-    message: { ...messageTemplate, text: faker.lorem.words(40) },
-    firstMessage: true,
-    owner: true,
-    messageState: "reached",
-  },
-};
-
 export const Seen: StoryObj<Component> = {
   args: {
     message: { ...messageTemplate, text: faker.lorem.words(40) },

@@ -1,5 +1,5 @@
 import { RoomsMap } from "@litespace/headless/chat";
-import { IRoom, IUser, ITutor } from "@litespace/types";
+import { IRoom, IUser, ITutor, IMessage } from "@litespace/types";
 import { asFullAssetUrl } from "@litespace/luna/backend";
 import { SelectRoom } from "@litespace/luna/hooks/chat";
 import { LocalMap } from "@litespace/luna/locales";
@@ -127,6 +127,9 @@ export function asChatRoomProps({
             otherMember: room.otherMember,
           }),
         roomId: room.roomId,
+        messageState: room.latestMessage?.read
+          ? "seen"
+          : ("sent" as IMessage.MessageState),
       };
     // in case the component was given uncontacted tutors
     else

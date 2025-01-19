@@ -72,7 +72,7 @@ function assignGroup({
     messages: messages.map((message) => ({
       id: message.id,
       text: message.text,
-      messageState: message.messageState,
+      messageState: message.read ? "seen" : message.messageState,
       deleted: message.deleted,
     })),
     sentAt: latest.updatedAt,

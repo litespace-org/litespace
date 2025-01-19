@@ -74,7 +74,7 @@ const Messages: React.FC<{
 }> = ({ room, otherMember, setTemporaryTutor, select, isTyping, isOnline }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
-  const messagesRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLUListElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] = useState<{
     text: string;
@@ -120,10 +120,13 @@ const Messages: React.FC<{
     [onMessages, resetScroll]
   );
 
-  const { sendMessage, updateMessage, deleteMessage, ackUserTyping } = useChat(
-    onMessage,
-    orUndefined(user?.id)
-  );
+  const {
+    sendMessage,
+    updateMessage,
+    deleteMessage,
+    ackUserTyping,
+    readMessage,
+  } = useChat(onMessage, orUndefined(user?.id));
   const { rooms } = useRoomManager();
   const toast = useToast();
 
@@ -263,6 +266,7 @@ const Messages: React.FC<{
     if (!el) return;
     el.scrollTop += 100;
   }, [messageGroups]);
+
   const chatHeaderProps: React.ComponentProps<typeof ChatHeader> | null =
     useMemo(() => {
       if (!otherMember) return null;
@@ -296,16 +300,18 @@ const Messages: React.FC<{
               "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
               "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
             )}
-            ref={messagesRef}
-            onScroll={onScroll}
           >
-            <InView as="div" onChange={more} />
             {loading ? (
               <div className="w-full h-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
               </div>
             ) : (
-              <ul className="h-full flex flex-col gap-4 overflow-auto grow">
+              <ul
+                className="h-full flex flex-col gap-4 overflow-auto grow"
+                onScroll={onScroll}
+                ref={messagesRef}
+              >
+                <InView onChange={more} />
                 {error && !fetching ? (
                   <div className="max-w-[192px] mx-auto">
                     <LoadingError
@@ -322,9 +328,9 @@ const Messages: React.FC<{
                 ) : null}
 
                 {room !== "temporary" && messageGroups.length > 0 ? (
-                  messageGroups.map(({ date, groups }) => {
+                  messageGroups.map(({ date, groups }, index) => {
                     return (
-                      <div key={date} className="w-full">
+                      <div key={index} className="w-full">
                         <div className="bg-natural-50 rounded-[40px] p-3 mx-auto w-fit shadow-chat-date">
                           <Typography
                             element="caption"
@@ -341,10 +347,11 @@ const Messages: React.FC<{
                                 group.messages.filter((msg) => !msg.deleted)
                               )
                           )
-                          .map((group) => (
-                            <div className="mb-6" key={group.id}>
+                          .map((group, index) => (
+                            <div className="mb-6" key={index}>
                               <ChatMessageGroup
                                 {...group}
+                                readMessage={readMessage}
                                 roomErrors={roomErrors}
                                 retryFnMap={retryFnMap}
                                 roomId={room}

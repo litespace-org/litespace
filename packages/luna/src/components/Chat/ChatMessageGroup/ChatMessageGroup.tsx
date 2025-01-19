@@ -9,6 +9,7 @@ import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
 import { asFullAssetUrl } from "@/lib";
 import { DisplayMessage } from "@/lib/chat";
+import { InView } from "react-intersection-observer";
 
 const messageVariants = {
   hidden: { opacity: 0 },
@@ -39,6 +40,7 @@ export const ChatMessageGroup: React.FC<{
   owner?: boolean;
   retryFnMap: RetryFnMap;
   roomErrors: RoomErrors;
+  readMessage: (id: number) => void;
   editMessage: (message: { id: number; text: string }) => void;
   deleteMessage: (id: number) => void;
 }> = ({
@@ -49,6 +51,7 @@ export const ChatMessageGroup: React.FC<{
   messages,
   sender: { image, name, userId },
   owner,
+  readMessage,
   editMessage,
   deleteMessage,
 }) => {
@@ -127,16 +130,26 @@ export const ChatMessageGroup: React.FC<{
                 })}
                 key={message.id}
               >
-                <ChatMessage
-                  firstMessage={index === 0}
-                  message={message}
-                  pending={message.messageState === "pending"}
-                  error={message.messageState === "error"}
-                  owner={owner}
-                  retry={retry}
-                  editMessage={() => editMessage(message)}
-                  deleteMessage={() => deleteMessage(message.id)}
-                />
+                <InView
+                  as="div"
+                  onChange={() =>
+                    !owner &&
+                    message.messageState !== "seen" &&
+                    readMessage(message.id)
+                  }
+                >
+                  <ChatMessage
+                    messageState={message.messageState}
+                    firstMessage={index === 0}
+                    message={message}
+                    pending={message.messageState === "pending"}
+                    error={message.messageState === "error"}
+                    owner={owner}
+                    retry={retry}
+                    editMessage={() => editMessage(message)}
+                    deleteMessage={() => deleteMessage(message.id)}
+                  />
+                </InView>
               </motion.div>
             );
           })}

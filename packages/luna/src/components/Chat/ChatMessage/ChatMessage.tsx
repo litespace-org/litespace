@@ -1,4 +1,4 @@
-import { Void } from "@litespace/types";
+import { IMessage, Void } from "@litespace/types";
 import React, { useMemo, useState } from "react";
 import cn from "classnames";
 import More from "@litespace/assets/More";
@@ -47,7 +47,7 @@ export const ChatMessage: React.FC<{
    * @param text message content
    */
   message: { id: number; text: string };
-  messageState?: "seen" | "reached" | "sent";
+  messageState?: IMessage.MessageState;
   firstMessage?: boolean;
   /**
    * resend message function
@@ -80,7 +80,6 @@ export const ChatMessage: React.FC<{
   const ReadIcon = useMemo(() => {
     if (messageState === "seen")
       return <DoubleCheck className="[&>*]:tw-fill-secondary-400" />;
-    if (messageState === "reached") return <DoubleCheck />;
     return <SingleCheck />;
   }, [messageState]);
 

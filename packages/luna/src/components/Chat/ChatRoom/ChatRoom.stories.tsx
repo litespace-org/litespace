@@ -206,23 +206,6 @@ export const Sent: StoryObj<Component> = {
   },
 };
 
-export const Reached: StoryObj<Component> = {
-  args: {
-    userId: 1,
-    optionsEnabled: true,
-    togglePin: () => {},
-    toggleMute: () => {},
-    select: () => {},
-    name: faker.person.fullName(),
-    message: faker.lorem.words(5),
-    isTyping: false,
-    unreadCount: 0,
-    image: "https://picsum.photos/700",
-    owner: true,
-    messageState: "reached",
-  },
-};
-
 export const Seen: StoryObj<Component> = {
   args: {
     userId: 1,

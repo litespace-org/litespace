@@ -74,7 +74,7 @@ const Rooms: React.FC<{
       };
 
     return {
-      Icon: <People className="[&>*]:stroke-natural-600" />,
+      Icon: <People className="[&>*]:stroke-natural-600 w-4 h-4" />,
       label: "chat.all-tutors.title",
     };
   }, [type]);
