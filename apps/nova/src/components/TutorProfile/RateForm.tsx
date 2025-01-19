@@ -119,7 +119,7 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
         loading={rateTutor.isPending || editRateTutor.isPending}
         size={ButtonSize.Small}
       >
-        {intl(rate ? "global.labels.update" : "global.labels.confirm")}
+        {intl(rate ? "labels.update" : "labels.confirm")}
       </Button>
     </Form>
   );

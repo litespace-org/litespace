@@ -1,5 +1,5 @@
 import { Paginated } from "@/utils";
-import { IFilter } from "@/index";
+import { IFilter, IUser } from "@/index";
 
 export enum Role {
   SuperAdmin = "super-admin",
@@ -90,6 +90,7 @@ export type Credentials = {
 export type CreatePayload = {
   role?: Role;
   email?: string;
+  verified?: boolean;
   password?: string;
   name?: string;
   birthYear?: number;
@@ -155,7 +156,7 @@ export type LoginWithAuthTokenApiResponse = LoginApiResponse;
 
 export type FindCurrentUserApiResponse = LoginApiResponse;
 
-export type ForegetPasswordApiPayload = {
+export type ForgetPasswordApiPayload = {
   email: string;
   callbackUrl: string;
 };
@@ -222,3 +223,9 @@ export type FindPersonalizedStudentStatsApiResponse = {
 };
 
 export type Ghost = `ghost:${string}`;
+
+export type GoogleAuthPayload = {
+  token: string;
+  type: "bearer" | "id-token";
+  role?: Role.Student | Role.Tutor | Role.TutorManager;
+};

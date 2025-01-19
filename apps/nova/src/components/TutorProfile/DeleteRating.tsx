@@ -46,7 +46,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
 
   const action = useMemo(() => {
     return {
-      label: intl("global.labels.confirm"),
+      label: intl("labels.confirm"),
       onClick: () => deleteRating.mutate(id),
       disabled: deleteRating.isPending,
       loading: deleteRating.isPending,

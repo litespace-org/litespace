@@ -2,8 +2,8 @@ import { createContext, useCallback, useContext } from "react";
 import { ToastType } from "@/components/Toast/types";
 
 export type AddToastData = {
-  title: string;
-  description?: string;
+  title: React.ReactNode;
+  description?: React.ReactNode;
 };
 
 export type ToastData = AddToastData & { id: number; type: ToastType };

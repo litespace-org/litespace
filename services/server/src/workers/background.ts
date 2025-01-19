@@ -30,7 +30,7 @@ async function sendAuthTokenEmail({
   email: string;
   user: number;
   callbackUrl: string;
-  type: IToken.Type.ForgotPassword | IToken.Type.VerifyEmail;
+  type: IToken.Type.ForgetPassword | IToken.Type.VerifyEmail;
 }) {
   const error = await safe(async () => {
     const payload: IToken.AuthTokenEmail = { type, user };
@@ -92,7 +92,7 @@ parentPort?.on("message", async (message: WorkerMessage) => {
       type:
         message.type === WorkerMessageType.SendUserVerificationEmail
           ? IToken.Type.VerifyEmail
-          : IToken.Type.ForgotPassword,
+          : IToken.Type.ForgetPassword,
     });
 });
 

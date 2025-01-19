@@ -1,21 +1,31 @@
-import { Form, Field, Label, Controller } from "@litespace/luna/Form";
-import { Button, ButtonSize } from "@litespace/luna/Button";
+import { Form, Label, Controller } from "@litespace/luna/Form";
+import { Button, ButtonSize, ButtonVariant } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
-import RegisterLight from "@litespace/assets/RegisterLight";
-import RegisterDark from "@litespace/assets/RegisterDark";
-import GoogleAuth from "@/components/Common/GoogleAuth";
 import { useRegisterUser } from "@litespace/headless/user";
 import { useUserContext } from "@litespace/headless/context/user";
+import Aside from "@/components/Auth/Aside";
+import Header from "@/components/Auth/Header";
+import Logo from "@litespace/assets/Logo";
+import { Typography } from "@litespace/luna/Typography";
+import {
+  useValidateEmail,
+  useValidatePassword,
+  useValidateUserName,
+} from "@litespace/luna/hooks/validation";
+import { useGoogle } from "@/hooks/google";
+import Google from "@litespace/assets/Google";
 
 interface IForm {
+  name: string;
   email: string;
   password: string;
+  confirmedPassword: string;
 }
 
 type Role = (typeof roles)[number];
@@ -31,20 +41,24 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { role } = useParams<{ role: Role }>();
-  const {
-    watch,
-    handleSubmit,
-    formState: { errors },
-    control,
-  } = useForm<IForm>({
+  const { watch, handleSubmit, control } = useForm<IForm>({
     defaultValues: {
-      email: "me@ahmedibrahim.dev",
-      password: "LiteSpace432%^&",
+      name: "",
+      email: "",
+      password: "",
+      confirmedPassword: "",
     },
   });
 
+  const validateUserName = useValidateUserName(true);
+  const validateEmail = useValidateEmail(true);
+  const validatePassword = useValidatePassword(true);
   const isValidRole = useMemo(() => role && roles.includes(role), [role]);
-  const tutor = useMemo(() => role === IUser.Role.Tutor, [role]);
+  const google = useGoogle({ role: isValidRole ? role : undefined });
+  const name = watch("name");
+  const email = watch("email");
+  const password = watch("password");
+  const confirmedPassword = watch("confirmedPassword");
 
   useEffect(() => {
     if (!isValidRole) return navigate(Route.Root);
@@ -52,17 +66,16 @@ const Register: React.FC = () => {
 
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
-      toast.success({ title: intl("page.register.success") });
       user.set({ user: info, token });
       navigate(Route.Root);
     },
-    [intl, navigate, toast, user]
+    [navigate, user]
   );
 
   const onError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl("page.register.failed"),
+        title: intl("register.error"),
         description: error instanceof Error ? error.message : undefined,
       });
     },
@@ -85,76 +98,130 @@ const Register: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row flex-1 h-full">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 px-5 pt-16 pb-8 text-right border-l shadow-lg bg-studio border-border">
-        <div className="flex-1 flex flex-col justify-center w-[330px] sm:w-[384px]">
-          <div className="mb-4">
-            <h1 className="text-3xl font-simi-bold">
-              {intl(
-                tutor
-                  ? "page.register.tutor.title"
-                  : "page.register.student.title"
-              )}
-            </h1>
+    <div className="flex flex-row gap-8 h-full p-6">
+      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+        <Header />
+        <div className="flex-1 flex flex-col justify-center max-w-[404px] w-full">
+          <div className="flex flex-row items-center justify-center gap-4 mb-8">
+            <Logo className="h-[87px]" />
+            <div className="flex flex-col gap-2 items-start justify-center">
+              <Typography element="h3" weight="bold" className="text-brand-500">
+                {intl("labels.litespace")}
+              </Typography>
+              <Typography element="body" className="text-natural-700">
+                {intl("register.welcome")}
+              </Typography>
+            </div>
           </div>
-
           <Form onSubmit={onSubmit}>
-            <div className="flex flex-col items-start justify-start gap-4">
-              <Field
-                label={<Label>{intl("global.form.email.label")}</Label>}
-                field={
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col">
+                  <Label id="email">{intl("register.full-name")}</Label>
+                  <Controller.Input
+                    control={control}
+                    name="name"
+                    value={name}
+                    autoComplete="off"
+                    rules={{ validate: validateUserName }}
+                    placeholder={intl("register.full-name")}
+                    disabled={mutation.isPending || google.loading}
+                    idleDir="rtl"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <Label id="email">{intl("labels.email")}</Label>
                   <Controller.Input
                     control={control}
                     name="email"
-                    placeholder={intl("global.form.email.placeholder")}
-                    value={watch("email")}
-                    error={!!errors["email"]?.message}
-                    helper={errors["email"]?.message}
+                    value={email}
                     autoComplete="off"
-                    disabled={mutation.isPending}
+                    rules={{ validate: validateEmail }}
+                    placeholder={intl("labels.email.placeholder")}
+                    disabled={mutation.isPending || google.loading}
+                    idleDir="ltr"
                   />
-                }
-              />
+                </div>
 
-              <Field
-                label={<Label>{intl("global.form.password.label")}</Label>}
-                field={
+                <div className="flex flex-col">
+                  <Label id="password">{intl("labels.password")}</Label>
                   <Controller.Password
                     control={control}
                     name="password"
-                    value={watch("password")}
-                    disabled={mutation.isPending}
+                    value={password}
+                    rules={{ validate: validatePassword }}
+                    disabled={mutation.isPending || google.loading}
                   />
-                }
-              />
+                </div>
+                <div className="flex flex-col">
+                  <Label id="password">
+                    {intl("register.confirm-password")}
+                  </Label>
+                  <Controller.Password
+                    control={control}
+                    name="confirmedPassword"
+                    value={confirmedPassword}
+                    rules={{
+                      validate: (value) => {
+                        if (value !== watch("password"))
+                          return intl("register.password-not-the-same");
+                        return validatePassword(value);
+                      },
+                    }}
+                    disabled={mutation.isPending || google.loading}
+                  />
+                </div>
+              </div>
 
-              <Button
-                loading={mutation.isPending}
-                htmlType="submit"
-                className="w-full mt-2"
-                size={ButtonSize.Small}
-              >
-                {intl("page.register.form.button.submit.label")}
-              </Button>
+              <div className="flex flex-col gap-4">
+                <Button
+                  size={ButtonSize.Small}
+                  disabled={mutation.isPending || google.loading}
+                  loading={mutation.isPending}
+                  className="w-full"
+                  htmlType="submit"
+                >
+                  {intl("register.create-account")}
+                </Button>
+
+                <Button
+                  variant={ButtonVariant.Secondary}
+                  size={ButtonSize.Small}
+                  className="w-full"
+                  endIcon={<Google />}
+                  onClick={google.login}
+                  htmlType="button"
+                  loading={google.loading}
+                  disabled={google.loading || mutation.isPending}
+                >
+                  {intl("register.with-google")}
+                </Button>
+
+                <Typography
+                  element="caption"
+                  weight="medium"
+                  className="text-natural-950 text-center"
+                >
+                  {intl.node("register.has-account", {
+                    link: (
+                      <Link to={Route.Login}>
+                        <Typography
+                          element="caption"
+                          weight="medium"
+                          className="text-brand-700"
+                        >
+                          {intl("register.login")}
+                        </Typography>
+                      </Link>
+                    ),
+                  })}
+                </Typography>
+              </div>
             </div>
           </Form>
-          <div className="mt-4">
-            <GoogleAuth purpose="register" role={role} />
-          </div>
         </div>
       </main>
-      <aside className="flex-col items-center justify-center flex-1 flex-shrink hidden basis-1/4 xl:flex bg-alternative">
-        <div className="flex flex-col gap-4 text-center mb-14">
-          <p className="text-7xl">LiteSpace</p>
-          <p className="text-3xl text-foreground-light">
-            {intl("page.login.slogan")}
-          </p>
-        </div>
-        <div className="w-3/4 p-6">
-          <RegisterLight className="block dark:hidden" />
-          <RegisterDark className="hidden dark:block" />
-        </div>
-      </aside>
+      <Aside />
     </div>
   );
 };

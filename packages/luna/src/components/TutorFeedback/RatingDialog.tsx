@@ -94,7 +94,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
             weight="bold"
             className="tw-text-natural-50"
           >
-            {intl("global.labels.confirm")}
+            {intl("labels.confirm")}
           </Typography>
         </Button>
       </div>

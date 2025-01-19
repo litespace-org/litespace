@@ -33,7 +33,7 @@ const DeleteTopic: React.FC<{
   const action = useMemo(() => {
     if (!topic) return;
     return {
-      label: intl("global.labels.confirm"),
+      label: intl("labels.confirm"),
       onClick: () => {
         deleteTopic.mutate({ id: topic.id });
       },

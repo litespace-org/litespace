@@ -4,13 +4,10 @@ import {
   ButtonType,
   ButtonVariant,
 } from "@litespace/luna/Button";
-import { Field, Label, Controller } from "@litespace/luna/Form";
+import { Label, Controller } from "@litespace/luna/Form";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import {
-  useRequired,
-  useValidatePassword,
-} from "@litespace/luna/hooks/validation";
+import { useValidatePassword } from "@litespace/luna/hooks/validation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useResetPassword } from "@litespace/headless/auth";
@@ -18,17 +15,40 @@ import { Form, useNavigate, useSearchParams } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
+import Header from "@/components/Auth/Header";
+import Aside from "@/components/Auth/Aside";
+import { Typography } from "@litespace/luna/Typography";
+import Spinner from "@litespace/assets/Spinner";
+import { motion, AnimatePresence } from "framer-motion";
+
+const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: 1,
+        transition: {
+          duration: 0.3,
+          ease: "linear",
+        },
+      }}
+      exit={{ opacity: 0 }}
+      className="w-full"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 interface IForm {
   password: string;
-  newPassword: string;
+  confirmedPassword: string;
 }
 
 const ResetPassword = () => {
   const intl = useFormatMessage();
   const navigate = useNavigate();
-  const validatePassword = useValidatePassword();
-  const required = useRequired();
+  const validatePassword = useValidatePassword(true);
   const toast = useToast();
   const user = useUserContext();
 
@@ -43,102 +63,144 @@ const ResetPassword = () => {
     setSearchParams({});
   }, [navigate, searchParams, setSearchParams, token]);
 
-  const { control, watch, handleSubmit } = useForm<IForm>({
+  const { control, watch, handleSubmit, reset } = useForm<IForm>({
     mode: "onSubmit",
     defaultValues: {
       password: "",
-      newPassword: "",
+      confirmedPassword: "",
     },
   });
 
   const password = watch("password");
-  const newPassword = watch("newPassword");
+  const confirmedPassword = watch("confirmedPassword");
 
   const onSuccess = useCallback(
     (profile: IUser.ResetPasswordApiResponse) => {
-      toast.success({ title: intl("page.login.forget.password.compelete") });
+      reset();
       user.set({ user: profile.user, token: profile.token });
-      return navigate(Route.Root);
     },
-    [intl, navigate, toast, user]
+    [reset, user]
   );
 
   const onError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl("error.unexpected"),
+        title: intl("reset-password.error"),
         description: error.message,
       });
     },
     [intl, toast]
   );
 
-  const mutation = useResetPassword({ onSuccess, onError });
+  const resetPassword = useResetPassword({ onSuccess, onError });
 
   const onSubmit = useMemo(() => {
     return handleSubmit(() => {
-      if (password !== newPassword || !token) return;
-      mutation.mutate({ token, password });
+      if (password !== confirmedPassword || !token) return;
+      resetPassword.mutate({ token, password });
     });
-  }, [handleSubmit, password, newPassword, token, mutation]);
+  }, [handleSubmit, password, confirmedPassword, token, resetPassword]);
 
   return (
-    <div className="flex items-center justify-center p-10">
-      <Form
-        onSubmit={onSubmit}
-        className="flex flex-col items-center justify-center w-1/2 gap-4 mx-auto"
-      >
-        <Field
-          label={<Label id="new-password">{intl("labels.new.password")}</Label>}
-          field={
-            <Controller.Password
-              required={true}
-              disabled={mutation.isPending}
-              value={password}
-              id="new-password"
-              control={control}
-              rules={{ validate: validatePassword }}
-              name="password"
-            />
-          }
-        />
-        <Field
-          label={
-            <Label id="repeat-new-password">
-              {intl("labels.repeat.new.password")}
-            </Label>
-          }
-          field={
-            <Controller.Password
-              disabled={mutation.isPending}
-              required={true}
-              value={newPassword}
-              rules={{
-                required,
-                validate(value, formData) {
-                  if (!value || value !== formData.password)
-                    return intl("page.login.forget.password.mismatch");
-                  return true;
-                },
-              }}
-              id="repeat-new-password"
-              control={control}
-              placeholder={intl("labels.new.password")}
-              autoComplete="off"
-              name="newPassword"
-            />
-          }
-        />
-        <Button
-          disabled={mutation.isPending}
-          loading={mutation.isPending}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
-          size={ButtonSize.Small}
-        >
-          {intl("page.login.forget.password.button.submit")}
-        </Button>
-      </Form>
+    <div className="flex flex-row gap-8 h-full p-6">
+      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+        <Header />
+        <div className="flex-1 flex flex-col items-center w-full max-w-[554px]">
+          <div className="mt-[calc(50vh-50%)] w-full">
+            <div className="flex flex-col items-center justify-center gap-2 text-center max-w-[363px] mb-10 mx-auto">
+              <Typography
+                element="h4"
+                weight="semibold"
+                className="text-natural-950"
+              >
+                {intl("reset-password.title")}
+              </Typography>
+              <Typography element="body" className="text-natural-700">
+                {intl("reset-password.description")}
+              </Typography>
+            </div>
+
+            <AnimatePresence initial={false} mode="wait">
+              {resetPassword.isPending ? (
+                <Animate key="submitting">
+                  <div className="flex flex-col items-center justify-center gap-6">
+                    <Spinner className="w-[110px] fill-brand-700" />
+                    <Typography element="body" className="text-natural-700">
+                      {intl("reset-password.setting-password")}
+                    </Typography>
+                  </div>
+                </Animate>
+              ) : null}
+
+              {resetPassword.isSuccess ? (
+                <Animate key="success">
+                  <Button
+                    className="w-full"
+                    onClick={() => navigate(Route.Root)}
+                  >
+                    {intl("reset-password.login")}
+                  </Button>
+                </Animate>
+              ) : null}
+
+              {!resetPassword.isPending && !resetPassword.isSuccess ? (
+                <Animate key="form">
+                  <Form
+                    onSubmit={onSubmit}
+                    className="flex flex-col gap-8 w-full"
+                  >
+                    <div>
+                      <Label id="new-password">
+                        {intl("reset-password.new-password")}
+                      </Label>
+                      <Controller.Password
+                        disabled={resetPassword.isPending}
+                        value={password}
+                        id="new-password"
+                        control={control}
+                        rules={{ validate: validatePassword }}
+                        name="password"
+                      />
+                    </div>
+                    <div>
+                      <Label id="repeat-new-password">
+                        {intl("reset-password.confirm-new-password")}
+                      </Label>
+                      <Controller.Password
+                        id="repeat-new-password"
+                        disabled={resetPassword.isPending}
+                        value={confirmedPassword}
+                        rules={{
+                          validate(value, formData) {
+                            if (!value) return intl("error.required");
+                            if (!value || value !== formData.password)
+                              return intl("labels.passwords-not-the-same");
+                            return validatePassword(value);
+                          },
+                        }}
+                        control={control}
+                        autoComplete="off"
+                        name="confirmedPassword"
+                      />
+                    </div>
+                    <Button
+                      disabled={resetPassword.isPending}
+                      loading={resetPassword.isPending}
+                      type={ButtonType.Main}
+                      variant={ButtonVariant.Primary}
+                      size={ButtonSize.Small}
+                      className="w-full"
+                    >
+                      {intl("labels.confirm")}
+                    </Button>
+                  </Form>
+                </Animate>
+              ) : null}
+            </AnimatePresence>
+          </div>
+        </div>
+      </main>
+      <Aside />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { passwordRegex } from "@/constants";
+import { PASSWORD_REGEX } from "@litespace/sol";
 import {
   IUser,
   IRule,
@@ -25,7 +25,7 @@ export const sessionId = zod
 
 export const password = zod
   .string({ message: "Invalid password" })
-  .regex(passwordRegex, "Password doesn't meet the requirements");
+  .regex(PASSWORD_REGEX, "Password doesn't meet the requirements");
 
 export const email = zod.string().trim().email("Invalid email");
 

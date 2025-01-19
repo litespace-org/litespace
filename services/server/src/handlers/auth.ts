@@ -18,6 +18,7 @@ import zod from "zod";
 import jwt from "jsonwebtoken";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
+import axios from "axios";
 
 const credentials = zod.object({
   email: zod.string().email(),
@@ -26,7 +27,13 @@ const credentials = zod.object({
 
 const authGooglePayload = zod.object({
   token: zod.string(),
+  type: zod.union([zod.literal("bearer"), zod.literal("id-token")]),
   role: zod.optional(zod.enum([IUser.Role.Tutor, IUser.Role.Student])),
+});
+
+const googleUserInfo = zod.object({
+  email: zod.string().email(),
+  email_verified: zod.boolean().optional(),
 });
 
 const forgotPasswordPayload = zod.object({ email, callbackUrl: url });
@@ -39,7 +46,7 @@ const verifyEmailJwtPayload = zod.object({
 });
 
 const foregetPasswordJwtPayload = zod.object({
-  type: zod.literal(IToken.Type.ForgotPassword),
+  type: zod.literal(IToken.Type.ForgetPassword),
   user: id,
 });
 
@@ -60,22 +67,51 @@ async function loginWithPassword(
   res.status(200).json(response);
 }
 
+async function getGoogleEmail({
+  token,
+  type,
+}: {
+  token: string;
+  type: "bearer" | "id-token";
+}): Promise<{ email: string; verified: boolean } | null> {
+  const client = new OAuth2Client();
+  if (type === "id-token") {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: googleConfig.clientId,
+    });
+
+    const payload = googleUserInfo.parse(ticket.getPayload());
+    return {
+      email: payload.email,
+      verified: !!payload.email_verified,
+    };
+  }
+
+  const { data } = await axios.get(
+    "https://www.googleapis.com/oauth2/v3/userinfo",
+    {
+      params: {
+        access_token: token,
+      },
+    }
+  );
+
+  const { email, email_verified: verified } = googleUserInfo.parse(data);
+  return { email, verified: !!verified };
+}
+
+// https://stackoverflow.com/questions/16501895/how-do-i-get-user-profile-using-google-access-token
 async function loginWithGoogle(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const client = new OAuth2Client();
   // register user in case the `role` field is provided
-  const { token, role } = authGooglePayload.parse(req.body);
+  const { token, type, role } = authGooglePayload.parse(req.body);
 
-  const ticket = await client.verifyIdToken({
-    idToken: token,
-    audience: googleConfig.clientId,
-  });
-
-  const payload = ticket.getPayload();
-  if (!payload || !payload.email) return next(bad());
+  const data = await getGoogleEmail({ token, type });
+  if (!data) return next(bad());
 
   const success = (user: IUser.Self) => {
     const token = encodeAuthJwt(user.id, jwtSecret);
@@ -83,13 +119,16 @@ async function loginWithGoogle(
     res.status(200).json(response);
   };
 
-  const user = await users.findByEmail(payload.email);
-  if (user && (!role || role === user.role)) return success(user);
+  const user = await users.findByEmail(data.email);
   if (user && role && role !== user.role) return next(bad());
+  if (user && (!role || role === user.role)) return success(user);
 
   if (role) {
     const freshUser = await knex.transaction(async (tx) => {
-      const user = await users.create({ email: payload.email, role }, tx);
+      const user = await users.create(
+        { email: data.email, role, verified: data.verified },
+        tx
+      );
       if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
       return user;
     });
@@ -117,8 +156,8 @@ async function loginWithAuthToken(
   res.status(200).json(response);
 }
 
-async function forgotPassword(req: Request, res: Response) {
-  const { email, callbackUrl }: IUser.ForegetPasswordApiPayload =
+async function forgetPassword(req: Request, res: Response) {
+  const { email, callbackUrl }: IUser.ForgetPasswordApiPayload =
     forgotPasswordPayload.parse(req.body);
   const user = await users.findByEmail(email);
 
@@ -138,7 +177,7 @@ async function resetPassword(req: Request, res: Response, next: NextFunction) {
   const { password, token } = resetPasswordPayload.parse(req.body);
   const jwtPayload = jwt.verify(token, jwtSecret);
   const { type, user: id } = foregetPasswordJwtPayload.parse(jwtPayload);
-  if (type !== IToken.Type.ForgotPassword) return next(bad());
+  if (type !== IToken.Type.ForgetPassword) return next(bad());
 
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
@@ -198,7 +237,7 @@ export default {
   loginWithGoogle: safeRequest(loginWithGoogle),
   loginWithPassword: safeRequest(loginWithPassword),
   loginWithAuthToken: safeRequest(loginWithAuthToken),
-  forgotPassword: safeRequest(forgotPassword),
+  forgetPassword: safeRequest(forgetPassword),
   resetPassword: safeRequest(resetPassword),
   verifyEmail: safeRequest(verifyEmail),
   sendVerificationEmail: safeRequest(sendVerificationEmail),

@@ -1,5 +1,5 @@
 export enum Type {
-  ForgotPassword = "forgot-password",
+  ForgetPassword = "forget-password",
   VerifyEmail = "verify-email",
 }
 
@@ -33,7 +33,7 @@ export type CreatePayload = {
 };
 
 export type AuthTokenEmail = {
-  type: Type.VerifyEmail | Type.ForgotPassword;
+  type: Type.VerifyEmail | Type.ForgetPassword;
   user: number;
 };
 
@@ -43,6 +43,6 @@ export type VerifyEmailJwtPayload = {
 };
 
 export type ResetPasswordJwtPayload = {
-  type: Type.ForgotPassword;
+  type: Type.ForgetPassword;
   user: number;
 };

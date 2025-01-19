@@ -114,7 +114,7 @@ export const ConfirmationDialog: React.FC<{
               loading={loading}
               disabled={loading}
             >
-              {labels?.confirm || intl("global.labels.confirm")}
+              {labels?.confirm || intl("labels.confirm")}
             </Button>
             <Button
               onClick={close}

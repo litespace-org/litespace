@@ -8,6 +8,7 @@
     "skipLibCheck": true,
     "module": "nodenext",
     "declaration": true,
+    "declarationMap": true,
     "declarationDir": "types",
     "sourceMap": true,
     "outDir": "dist",

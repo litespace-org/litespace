@@ -14,7 +14,7 @@ import ScheduleManagement from "@litespace/assets/ScheduleManagement";
 import ProfileAvatar from "@litespace/assets/ProfileAvatar";
 import cn from "classnames";
 import React, { SVGProps, useMemo } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
 import { IUser } from "@litespace/types";
 
@@ -36,24 +36,23 @@ const SidebarItem = ({
       className={cn(
         "flex flex-row gap-4 px-[14px] py-2 items-center",
         "rounded-lg transition-colors duration-200 group",
-        active ? "bg-brand-700" : "bg-transparent hover:bg-natural-400"
+        {
+          "bg-brand-700": active,
+          "bg-transparent hover:bg-natural-100": !active,
+        }
       )}
       to={to}
     >
       <Icon
-        className={cn(
-          "[&_*]:transition-all [&_*]:duration-200  group-hover:[&_*]:stroke-natural-50 h-6 w-6",
-          active ? "[&_*]:stroke-natural-50" : "[&_*]:stroke-natural-700"
-        )}
+        className={cn("[&_*]:transition-all [&_*]:duration-200 h-6 w-6", {
+          "[&_*]:stroke-natural-50": active,
+          "[&_*]:stroke-natural-700": !active,
+        })}
       />
       <Typography
         element="caption"
         weight="semibold"
-        className={cn(
-          active
-            ? "text-natural-50"
-            : "text-natural-700 group-hover:text-natural-50"
-        )}
+        className={cn(active ? "text-natural-50" : "text-natural-700")}
       >
         {label}
       </Typography>
@@ -64,6 +63,7 @@ const SidebarItem = ({
 const Sidebar = () => {
   const intl = useFormatMessage();
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, logout } = useUserContext();
 
   const mainPages = useMemo(() => {
@@ -190,7 +190,10 @@ const Sidebar = () => {
           ) : null}
 
           <button
-            onClick={logout}
+            onClick={() => {
+              navigate(Route.Login);
+              logout();
+            }}
             className={cn(
               "flex gap-4 px-[14px] py-2 rounded-lg",
               "hover:text-destructive-400 hover:bg-destructive-100",
