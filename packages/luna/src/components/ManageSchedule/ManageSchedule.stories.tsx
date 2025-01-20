@@ -202,4 +202,15 @@ export const Simulated: Story = {
   },
 };
 
+export const SingleDay: Story = {
+  args: {
+    open: true,
+    initialSlots: [],
+    singleDay: true,
+    close,
+    save,
+  },
+  render,
+};
+
 export default meta;

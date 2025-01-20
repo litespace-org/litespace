@@ -26,6 +26,11 @@ export type Props = {
   date: string;
   nextWeek: Void;
   prevWeek: Void;
+  /**
+   * `true` in case user is about to manage a single-day slots.
+   * the data at the `date` prop will be taken as the desired date.
+   */
+  singleDay?: boolean;
   save: (actions: IAvailabilitySlot.Action[]) => void;
   close: Void;
 };
@@ -70,6 +75,7 @@ export const ManageSchedule: React.FC<Props> = ({
   error,
   initialSlots,
   saving,
+  singleDay,
   nextWeek,
   prevWeek,
   retry,
@@ -81,12 +87,17 @@ export const ManageSchedule: React.FC<Props> = ({
   const weekStart = useMemo(() => dayjs(date).startOf("week"), [date]);
 
   const days = useMemo(() => {
+    if (singleDay) {
+      const day = dayjs(date).startOf("day");
+      const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
+      return [{ day, slots: daySlots }];
+    }
     return range(WEEK_DAYS).map((index) => {
       const day = weekStart.add(index, "day").startOf("day");
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
-  }, [slots, weekStart]);
+  }, [date, singleDay, slots, weekStart]);
 
   useEffect(() => {
     setSlots((prev) => {
@@ -192,44 +203,55 @@ export const ManageSchedule: React.FC<Props> = ({
     <Dialog
       open={open}
       close={close}
-      title={<DialogTitle />}
+      title={
+        <Typography
+          element="subtitle-2"
+          tag="div"
+          weight="bold"
+          className="tw-text-natural-950"
+        >
+          {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
+        </Typography>
+      }
       className="tw-overflow-y-auto"
     >
-      <div className="tw-pt-6">
-        <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
-          <button
-            type="button"
-            onClick={prevWeek}
-            disabled={loading}
-            className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
-          >
-            <ArrowRight className="[&>*]:tw-stroke-brand-700" />
-          </button>
+      {!singleDay ? (
+        <div className="tw-pt-6">
+          <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
+            <button
+              type="button"
+              onClick={prevWeek}
+              disabled={loading}
+              className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
+            >
+              <ArrowRight className="[&>*]:tw-stroke-brand-700" />
+            </button>
+            <Typography
+              element="body"
+              weight="bold"
+              className="tw-text-natural-950"
+            >
+              {weekStart.format("D MMMM")} -{" "}
+              {weekStart.add(6, "days").format("D MMMM")}
+            </Typography>
+            <button
+              type="button"
+              onClick={nextWeek}
+              disabled={loading}
+              className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
+            >
+              <ArrowLeft className="[&>*]:tw-stroke-brand-700" />
+            </button>
+          </div>
           <Typography
             element="body"
             weight="bold"
-            className="tw-text-natural-950"
+            className="tw-text-natural-950 tw-mb-4 tw-mt-6"
           >
-            {weekStart.format("D MMMM")} -{" "}
-            {weekStart.add(6, "days").format("D MMMM")}
+            {intl("manage-schedule.manage-dialog.available-days")}
           </Typography>
-          <button
-            type="button"
-            onClick={nextWeek}
-            disabled={loading}
-            className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
-          >
-            <ArrowLeft className="[&>*]:tw-stroke-brand-700" />
-          </button>
         </div>
-        <Typography
-          element="body"
-          weight="bold"
-          className="tw-text-natural-950 tw-mb-4 tw-mt-6"
-        >
-          {intl("tutors.schedule.available-days")}
-        </Typography>
-      </div>
+      ) : null}
 
       <div
         className={cn(
@@ -241,7 +263,8 @@ export const ManageSchedule: React.FC<Props> = ({
            * 190px - the sum of the rest of the dialog elements (e.g., dialog title, dates, ...).
            */
           "tw-max-h-[calc(100vh-160px-190px)] tw-overflow-y-auto",
-          "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+          "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent",
+          { "tw-mt-6": singleDay }
         )}
       >
         <AnimatePresence initial={false} mode="wait">
@@ -250,7 +273,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="tw-w-[517px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
                 <Loader
                   size="medium"
-                  text={intl("tutors.schedule.loading.message")}
+                  text={intl("manage-schedule.manage-dialog.loading.message")}
                 />
               </div>
             </Animate>
@@ -261,7 +284,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="tw-w-[342px] tw-mx-[103px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
                 <LoadingError
                   size="medium"
-                  error={intl("tutors.schedule.error.message")}
+                  error={intl("manage-schedule.manage-dialog.error.message")}
                   retry={retry}
                 />
               </div>
@@ -312,7 +335,7 @@ export const ManageSchedule: React.FC<Props> = ({
             weight="semibold"
             className="tw-text-natural-50"
           >
-            {intl("tutors.schedule.buttons.save")}
+            {intl("manage-schedule.save")}
           </Typography>
         </Button>
         <Button
@@ -331,19 +354,5 @@ export const ManageSchedule: React.FC<Props> = ({
         </Button>
       </div>
     </Dialog>
-  );
-};
-
-const DialogTitle: React.FC = () => {
-  const intl = useFormatMessage();
-  return (
-    <Typography
-      element="subtitle-2"
-      tag="div"
-      weight="bold"
-      className="tw-text-natural-950"
-    >
-      {intl("tutors.schedule.manage")}
-    </Typography>
   );
 };
