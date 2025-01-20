@@ -97,7 +97,7 @@ export const ManageSchedule: React.FC<Props> = ({
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
-  }, [slots, weekStart]);
+  }, [date, singleDay, slots, weekStart]);
 
   useEffect(() => {
     setSlots((prev) => {
@@ -210,7 +210,7 @@ export const ManageSchedule: React.FC<Props> = ({
           weight="bold"
           className="tw-text-natural-950"
         >
-          {intl(singleDay ? "tutors.schedule.edit" : "tutors.schedule.manage")}
+          {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
       }
       className="tw-overflow-y-auto"
@@ -248,7 +248,7 @@ export const ManageSchedule: React.FC<Props> = ({
             weight="bold"
             className="tw-text-natural-950 tw-mb-4 tw-mt-6"
           >
-            {intl("tutors.schedule.available-days")}
+            {intl("manage-schedule.manage-dialog.available-days")}
           </Typography>
         </div>
       ) : null}
@@ -273,7 +273,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="tw-w-[517px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
                 <Loader
                   size="medium"
-                  text={intl("tutors.schedule.loading.message")}
+                  text={intl("manage-schedule.manage-dialog.loading.message")}
                 />
               </div>
             </Animate>
@@ -284,7 +284,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="tw-w-[342px] tw-mx-[103px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
                 <LoadingError
                   size="medium"
-                  error={intl("tutors.schedule.error.message")}
+                  error={intl("manage-schedule.manage-dialog.error.message")}
                   retry={retry}
                 />
               </div>
@@ -335,7 +335,7 @@ export const ManageSchedule: React.FC<Props> = ({
             weight="semibold"
             className="tw-text-natural-50"
           >
-            {intl("tutors.schedule.buttons.save")}
+            {intl("manage-schedule.save")}
           </Typography>
         </Button>
         <Button
