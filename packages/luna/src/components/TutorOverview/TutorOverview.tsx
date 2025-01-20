@@ -71,28 +71,28 @@ export const TutorOverview: React.FC<Props> = ({
   return (
     <div className="tw-flex tw-gap-6 tw-flex-wrap tw-w-full">
       <Card
-        icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" />}
+        icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.total-lessons"
         value={formatNumber(totalLessonCount)}
         color="brand"
       />
 
       <Card
-        icon={<Check16X16 className="[&]*:tw-stroke-natural-50" />}
+        icon={<Check16X16 className="[&]*:tw-stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.completed-lessons"
         value={formatNumber(completedLessonCount)}
         color="secondary"
       />
 
       <Card
-        icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
+        icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.tutoring-time"
         value={tutoringTime}
         color="warning"
       />
 
       <Card
-        icon={<People className="[&>*]:tw-stroke-natural-50" />}
+        icon={<People className="[&>*]:tw-stroke-natural-50" width={16} />}
         value={formatNumber(studentCount)}
         title="tutor-dashboard.overview.students"
         color="destructive"
