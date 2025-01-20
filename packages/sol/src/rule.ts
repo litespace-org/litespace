@@ -3,8 +3,7 @@ import { dayjs } from "@/dayjs";
 import { FormatterMap, RawTime, Time } from "@/time";
 import { orderBy, isEmpty, minBy, maxBy } from "lodash";
 import { Dayjs } from "dayjs";
-import { IDate, IInterview, ILesson, IRule } from "@litespace/types";
-import { INTERVIEW_DURATION } from "@/constants";
+import { IDate, IRule } from "@litespace/types";
 
 /**
  * ### Notes

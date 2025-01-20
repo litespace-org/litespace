@@ -48,7 +48,7 @@ export function useValidatePassword(required?: boolean) {
       if (valid !== true) return intl(errorMap[valid]);
       return true;
     },
-    [errorMap, intl]
+    [errorMap, intl, required]
   );
 }
 
@@ -76,7 +76,7 @@ export function useValidateUserName(required: boolean = false) {
       if (valid !== true) return intl(errorMap[valid]);
       return true;
     },
-    [required, errorMap, intl, required]
+    [required, errorMap, intl]
   );
 }
 
@@ -90,7 +90,7 @@ export function useValidateEmail(required: boolean = false) {
       if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
       return true;
     },
-    [required, intl, required]
+    [required, intl]
   );
 }
 

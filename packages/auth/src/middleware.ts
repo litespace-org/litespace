@@ -14,7 +14,7 @@ export function authMiddleware({
   ghostPassword: string;
 }) {
   return safeRequest(
-    async (req: Request, res: Response, next: NextFunction) => {
+    async (req: Request, _res: Response, next: NextFunction) => {
       const header = req.headers.authorization || req.headers["Authorization"];
       if (!header || typeof header !== "string") return next();
 

@@ -8,3 +8,5 @@ export function ForgetPassword({ url }: { url: string }) {
     </Html>
   );
 }
+
+export default ForgetPassword;

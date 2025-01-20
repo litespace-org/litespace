@@ -30,7 +30,7 @@ export const MIN_TUTOR_NOTICE_DURATION = 0;
 export const MAX_TUTOR_NOTICE_DURATION = 24 * 60;
 export const MAX_RULE_TITLE_LENGTH = 255;
 export const MIN_RULE_TITLE_LENGTH = 5;
-export const RULE_TITLE_REGEX = /^[\u0600-\u06ff\s\d\.]+$/;
+export const RULE_TITLE_REGEX = /^[\u0600-\u06ff\s\d.]+$/;
 /**
  * Rule period between start and end date
  */
@@ -51,9 +51,9 @@ export const PASSWORD_LETTERS_REGEX = /[\W\w][^\d]+/;
 export const HTML_TAGS_REGEX = /<[^>]*>/g;
 export const HTML_REGEX = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/;
 export const COUPON_REGEX = /[a-zA-Z0-9!@#$%^&*()_+=-}{?.,]/;
-export const EMAIL_REGEX = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
 export const USER_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
-export const ARABIC_LETTERS_REGEX = /^[\u0600-\u06ff\s\d\.]+$/;
+export const ARABIC_LETTERS_REGEX = /^[\u0600-\u06ff\s\d.]+$/;
 export const PHONE_NUMBER_REGEX = /^01[0125]\d{8}$/;
 export const INSTAPAY_REGEX = /\w+@instapay/;
 export const ARABIC_LETTERS_ONLY_REGEX = /^[\u0600-\u06ff\s]+$/;

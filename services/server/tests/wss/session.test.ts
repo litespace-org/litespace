@@ -76,7 +76,7 @@ describe("sessions test suite", () => {
     const tutorSocket = new ClientSocket(tutor.token);
     let ack = await tutorSocket.preJoinSession(lesson.sessionId);
 
-    let sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
+    const sessionMembersIds = await cache.session.getMembers(lesson.sessionId);
     expect(ack.code).to.eq(Wss.AcknowledgeCode.Ok);
     expect(sessionMembersIds).to.be.of.length(0);
 

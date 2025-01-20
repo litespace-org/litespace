@@ -85,7 +85,7 @@ export class ReportReplies {
   mapAttributesQuery(
     list: IReportReply.Attributed[]
   ): IReportReply.MappedAttributes[] {
-    return mapAttributesQuery(list, (item) => ({}));
+    return mapAttributesQuery(list, () => ({}));
   }
 
   from(row: IReportReply.Row): IReportReply.Self {

@@ -1,5 +1,5 @@
 export function isAllowedOrigin(
-  origin: string | undefined,
+  _origin: string | undefined,
   callback: (error: Error | null, origin?: boolean | string) => void
 ) {
   // allow all origins for now

@@ -11,14 +11,12 @@ import {
   weekday,
 } from "@/validation/utils";
 import { IRule, Wss } from "@litespace/types";
-import { bad, contradictingRules, forbidden, notfound } from "@/lib/error";
-import { interviews, lessons, rules, tutors } from "@litespace/models";
+import { contradictingRules, forbidden, notfound } from "@/lib/error";
+import { lessons, rules } from "@litespace/models";
 import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
-import dayjs from "@/lib/dayjs";
 import { isTutorManager, isTutor, isUser } from "@litespace/auth";
-import { isOnboard } from "@/lib/tutor";
 
 const title = zod.string().min(5).max(255);
 const createRulePayload = zod.object({
@@ -36,12 +34,6 @@ const findUserRulesPayload = zod.object({ userId: id });
 
 const findUnpackedUserRulesParams = zod.object({ userId: id });
 const findUnpackedUserRulesQuery = zod.object({ start: date, end: date });
-
-const findUserRulesWithSlotsParams = zod.object({ userId: id });
-const findUserRulesWithSlotsQuery = zod.object({
-  after: datetime,
-  before: datetime,
-});
 
 const updateRuleParams = zod.object({ ruleId: id });
 const updateRulePayload = zod.object({

@@ -19,6 +19,6 @@ export function useFormatMessage() {
           values?: Record<string, PrimitiveType | React.ReactNode>
         ): React.ReactNode => intl.formatMessage({ id: messages[id] }, values),
       }),
-    []
+    [format, intl]
   );
 }

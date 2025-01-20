@@ -9,7 +9,7 @@ export function orNull<T>(value: T): NonNullable<T> | null {
   return value || null;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
+// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function nameof<T extends Function>(f: T): string {
   return f.name;
 }

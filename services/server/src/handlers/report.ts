@@ -80,7 +80,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(report);
 }
 
-async function findAll(req: Request, res: Response) {
+async function findAll(_req: Request, res: Response) {
   const list = await reports.findAll();
   res.status(200).json(list);
 }

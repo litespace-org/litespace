@@ -219,7 +219,7 @@ describe("/api/v1/user/", () => {
           },
         ];
 
-        for (let data of mockData) {
+        for (const data of mockData) {
           const newTutor = await db.tutor({ name: data.name });
           await users.update(newTutor.id, {
             verified: true,

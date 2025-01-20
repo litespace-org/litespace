@@ -9,9 +9,7 @@ import {
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { Link } from "react-router-dom";
-
-export const asHourId = (hour: number) => `#h-${hour}`;
-export const isHourId = (id: string) => Number(id.replace("#h-", "")) <= 23;
+import { asHourId, isHourId } from "@/components/Calendar/utils";
 
 export const Hours: React.FC<{
   day: Dayjs;

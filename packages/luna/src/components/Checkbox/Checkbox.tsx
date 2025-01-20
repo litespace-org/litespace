@@ -36,7 +36,7 @@ export const Checkbox: React.FC<{
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
-            onCheckedChange && onCheckedChange();
+            if (onCheckedChange) onCheckedChange();
           }
         }}
         className="hover:tw-bg-brand-100 tw-rounded-full tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center active:tw-bg-brand-200"
