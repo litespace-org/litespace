@@ -19,7 +19,6 @@ export const TutorSettingsTabs: React.FC<{
     name: string | null;
     bio: string | null;
     about: string | null;
-    topics: { id: number; label: string }[];
   };
 }> = ({ tutor, form }) => {
   const intl = useFormatMessage();

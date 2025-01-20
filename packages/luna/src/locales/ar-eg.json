@@ -449,7 +449,7 @@
   "tutor-settings.personal-info.title": "المعلومات الشخصية",
   "tutor-settings.personal-info.name": "الاسم بالكامل",
   "tutor-settings.personal-info.bio": "النبذة المختصرة",
-  "tutor-settings.personal-info.topics": "مجالات خبرة المعلم",
+  "tutor-settings.personal-info.topics": "مجالات الخبرة",
   "tutor-settings.personal-info.update-topics-error": "عذرًا، حدث خطأ أثناء تحديث مجالات خبرتك، برجاء المحاولة مرة أخرى!",
   "tutor-settings.personal-info.about": "السيرة الذاتية",
   "tutor-settings.personal-info.video": "الفيديو التعريفي",
@@ -774,5 +774,9 @@
   "error.plan.price.absent": "لابد من تحديد السعر",
   "error.password.short": "كلمة مرور قصيرة",
   "error.password.long": "كلمة مرور طويلة",
-  "error.password.invalid": "يجب أن يحتوي علي أرقام و حروف و رموز"
+  "error.password.invalid": "يجب أن يحتوي علي أرقام و حروف و رموز",
+  "error.bio.empty": "صف نفسك في كلمات موجزه.",
+  "error.bio.short": "محتوي البايو قصير للغاية.",
+  "error.bio.long": "تخطي البايو الحد الأقصي من الكلمات.",
+  "error.bio.invalid": "يحتوي البايو علي محتوي غير مناسب."
 }

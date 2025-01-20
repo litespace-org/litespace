@@ -1,6 +1,7 @@
 import React from "react";
 import { VideoPlayer } from "@/components/VideoPlayer";
 import { asFullAssetUrl } from "@/lib/backend";
+import { orUndefined } from "@litespace/sol";
 
 const Video: React.FC<{
   video?: string | null;
@@ -9,7 +10,7 @@ const Video: React.FC<{
   if (!video || !name) return;
   return (
     <div className="tw-aspect-[9/16]">
-      <VideoPlayer src={asFullAssetUrl(video)} />
+      <VideoPlayer src={orUndefined(asFullAssetUrl(video))} />
     </div>
   );
 };

@@ -35,7 +35,7 @@ const Rating: React.FC<{
               className="object-cover w-full h-full"
               src={
                 rating.rater.image
-                  ? asFullAssetUrl(rating.rater.image)
+                  ? asFullAssetUrl(rating.rater.image) || ""
                   : "/avatar-1.png"
               }
             />

@@ -24,4 +24,5 @@ export {
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
   useValidateDiscount,
+  useValidateBio,
 } from "@/hooks/validation";

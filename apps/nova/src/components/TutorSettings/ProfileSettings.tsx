@@ -1,5 +1,5 @@
 import { TutorProfileCard } from "@litespace/luna/TutorProfile";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
@@ -10,35 +10,49 @@ import { Form } from "@litespace/luna/Form";
 import { useForm } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { ITutor } from "@litespace/types";
-import { useUserTopics } from "@litespace/headless/topic";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { orNull } from "@litespace/sol/utils";
 
-export const ProfileSettings: React.FC<{
-  tutorInfo: ITutor.FindTutorInfoApiResponse;
-}> = ({ tutorInfo }) => {
-  const userTopics = useUserTopics();
+export const ProfileSettings: React.FC<ITutor.FindTutorInfoApiResponse> = ({
+  ...info
+}) => {
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
 
   const form = useForm<ITutorSettingsForm>({
     defaultValues: {
-      name: tutorInfo.name || "",
-      bio: tutorInfo.bio || "",
-      about: tutorInfo.about || "",
+      name: info.name || "",
+      bio: info.bio || "",
+      about: info.about || "",
     },
   });
+
+  useEffect(() => {
+    if (info.name) form.setValue("name", info.name);
+    if (info.bio) form.setValue("bio", info.bio);
+    if (info.about) form.setValue("about", info.about);
+  }, [form, info.about, info.bio, info.name]);
 
   const name = form.watch("name");
   const bio = form.watch("bio");
   const about = form.watch("about");
 
-  const refetchTutorInfo = useCallback(() => {
-    invalidateQuery([QueryKey.FindTutorInfo, tutorInfo.id]);
+  const dataChanged = useMemo(
+    () =>
+      orNull(name.trim()) !== info.name ||
+      orNull(bio.trim()) !== info.bio ||
+      orNull(about.trim()) !== info.about,
+    [about, bio, info.about, info.bio, info.name, name]
+  );
+
+  const onSuccess = useCallback(() => {
+    invalidateQuery([QueryKey.FindTutorInfo, info.id]);
     invalidateQuery([QueryKey.FindCurrentUser]);
     invalidateQuery([QueryKey.FindUserTopics]);
-  }, [invalidateQuery, tutorInfo.id]);
+  }, [info.id, invalidateQuery]);
 
   const onError = useCallback(
     (error: Error) => {
@@ -52,44 +66,41 @@ export const ProfileSettings: React.FC<{
 
   const updateTutor = useUpdateUser({
     onError,
-    onSuccess: refetchTutorInfo,
+    onSuccess,
   });
 
-  const selectedTopics = useMemo(() => {
-    if (!userTopics.data) return [];
-    return userTopics.data.map((topic) => ({
-      id: topic.id,
-      label: topic.name.ar,
-    }));
-  }, [userTopics.data]);
-
-  const saveTutorInfoChanges = useCallback(
+  const submit = useCallback(
     (data: ITutorSettingsForm) => {
       return updateTutor.mutate({
-        id: tutorInfo.id,
+        id: info.id,
         payload: {
-          name: data.name,
-          bio: data.bio,
-          about: data.about,
+          name: data.name.trim() !== info.name ? data.name.trim() : undefined,
+          bio: data.bio.trim() !== info.bio ? data.bio.trim() : undefined,
+          about: data.about.trim() !== info.bio ? data.about.trim() : undefined,
         },
       });
     },
-    [tutorInfo.id, updateTutor]
+    [info.bio, info.id, info.name, updateTutor]
   );
 
-  if (!tutorInfo) return null;
-
   return (
-    <Form
-      onSubmit={form.handleSubmit(saveTutorInfoChanges)}
-      className="flex flex-col gap-10"
-    >
+    <Form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-10">
       <div className="p-10 pb-0 flex justify-between">
-        <TutorProfileCard variant="small" {...tutorInfo} />
+        <TutorProfileCard
+          variant="small"
+          image={asFullAssetUrl(info.image)}
+          name={info.name}
+          id={info.id}
+          bio={info.bio}
+          studentCount={info.studentCount}
+          lessonCount={info.studentCount}
+          avgRating={info.avgRating}
+        />
+
         <Button
           htmlType="submit"
           loading={updateTutor.isPending}
-          disabled={updateTutor.isPending}
+          disabled={updateTutor.isPending || !dataChanged}
           size={ButtonSize.Small}
         >
           {intl("settings.save")}
@@ -101,8 +112,7 @@ export const ProfileSettings: React.FC<{
           name,
           bio,
           about,
-          video: tutorInfo.video,
-          topics: selectedTopics,
+          video: info.video,
         }}
       />
     </Form>

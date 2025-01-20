@@ -12,7 +12,6 @@ import { useFindTutorInfo } from "@litespace/headless/tutor";
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
   const { user, fetching, error, loading, refetch } = useUserContext();
-
   const tutorInfo = useFindTutorInfo(user?.id || null);
 
   useEffect(() => {
@@ -52,7 +51,7 @@ const TutorSettings: React.FC = () => {
         ) : null}
         <PageContent>
           {tutorInfo.data && !error && !loading ? (
-            <ProfileSettings tutorInfo={tutorInfo.data} />
+            <ProfileSettings {...tutorInfo.data} />
           ) : null}
         </PageContent>
       </div>

@@ -10,6 +10,7 @@ import {
   isValidEmail,
   isValidPassword,
   isValidPhoneNumber,
+  isValidTutorBio,
   isValidUserName,
 } from "@litespace/sol/verification";
 
@@ -42,6 +43,7 @@ export function useValidatePassword(required?: boolean) {
   );
   return useCallback(
     (value: unknown) => {
+      if (!value && !required) return true;
       if (!value && required) return intl("error.required");
       if (typeof value === "string" && !value && !required) return true;
       const valid = isValidPassword(value);
@@ -71,7 +73,8 @@ export function useValidateUserName(required: boolean = false) {
 
   return useCallback(
     (value: unknown) => {
-      if (required && !value) return intl("error.required");
+      if (!value && !required) return true;
+      if (!value && required) return intl("error.required");
       const valid = isValidUserName(value);
       if (valid !== true) return intl(errorMap[valid]);
       return true;
@@ -86,11 +89,43 @@ export function useValidateEmail(required: boolean = false) {
   return useCallback(
     (value: unknown) => {
       const valid = isValidEmail(value);
+      if (!required && !value) return true;
       if (required && !value) return intl("error.required");
       if (valid === FieldError.InvalidEmail) return intl("error.email.invlaid");
       return true;
     },
     [required, intl]
+  );
+}
+
+export function useValidateBio(required: boolean = false) {
+  const intl = useFormatMessage();
+
+  const errorMap = useMemo(
+    (): Record<
+      | FieldError.EmptyBio
+      | FieldError.ShortBio
+      | FieldError.LongBio
+      | FieldError.InvalidBio,
+      LocalId
+    > => ({
+      [FieldError.EmptyBio]: "error.bio.empty",
+      [FieldError.ShortBio]: "error.bio.short",
+      [FieldError.LongBio]: "error.bio.long",
+      [FieldError.InvalidBio]: "error.bio.invalid",
+    }),
+    []
+  );
+
+  return useCallback(
+    (value: unknown) => {
+      if (!required && !value) return true;
+      if (required && !value) return intl("error.required");
+      const valid = isValidTutorBio(value);
+      if (valid !== true) return intl(errorMap[valid]);
+      return true;
+    },
+    [required, intl, errorMap]
   );
 }
 
