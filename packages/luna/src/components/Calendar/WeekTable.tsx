@@ -12,8 +12,8 @@ import {
   LessonProps,
 } from "@/components/Calendar/types";
 import { HOURS_IN_DAY } from "@litespace/sol/constants";
-import { AvailabilitySlot } from "./Events";
-import { LessonSlot } from "./Events/LessonSlot/LessonSlot";
+import { AvailabilitySlot } from "@/components/Calendar/Events";
+import { LessonSlot } from "@/components/Calendar/Events/LessonSlot/LessonSlot";
 
 export const WeekTable: React.FC<{
   day: Dayjs;

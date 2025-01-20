@@ -44,9 +44,10 @@ export class ClientSocket {
 
   async emit<T extends keyof Wss.ClientEventsMap>(
     event: keyof Wss.ClientEventsMap,
-    data: Parameters<Wss.ClientEventsMap[T]>[0]
+    data: Wss.EventPayload<T>
   ): Promise<Wss.AcknowledgePayload> {
     return new Promise((resolve, _) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.client.emit(event, data as any, (ack) => ack && resolve(ack));
       setTimeout(() => resolve({ code: Wss.AcknowledgeCode.Ok }), 2_000);
     });
@@ -59,9 +60,9 @@ export class ClientSocket {
    */
   async wait<T extends keyof Wss.ServerEventsMap>(
     event: T
-  ): Promise<Parameters<Wss.ServerEventsMap[T]>[0]> {
+  ): Promise<Wss.EventPayload<T>> {
     return new Promise((resolve, reject) => {
-      // @ts-ignore
+      // @ts-expect-error it hard to get the `event` type to match what socket.io expects
       this.client.on(event, resolve);
       setTimeout(() => reject(new Error("TIMEOUT")), 2_000);
     });

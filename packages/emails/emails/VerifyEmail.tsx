@@ -8,3 +8,5 @@ export function VerifyEmail({ url }: { url: string }) {
     </Html>
   );
 }
+
+export default VerifyEmail;

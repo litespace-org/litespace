@@ -88,15 +88,6 @@ describe("Schedule", () => {
     });
 
     it("should handle rules with weekdays", () => {
-      const rule: Rule = {
-        frequency: IRule.Frequency.Daily,
-        start: dayjs.utc("2024-08-01").startOf("day").toISOString(),
-        end: dayjs.utc("2024-08-30").startOf("day").toISOString(),
-        time: Time.from("12pm"),
-        duration: 60, // ends at 1pm
-        weekday: [IDate.Weekday.Monday],
-      };
-
       expect(
         Schedule.from({
           frequency: IRule.Frequency.Daily,

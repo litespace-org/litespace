@@ -63,7 +63,7 @@ describe("Lessons", () => {
         const tutor = await fixtures.tutor();
         const student = await fixtures.student();
 
-        const l = await fixtures.lesson({
+        await fixtures.lesson({
           timing: "future",
           canceled: false,
           tutor: tutor.id,
@@ -163,9 +163,7 @@ describe("Lessons", () => {
           rule: rule.id,
         });
 
-        for (const [key, student] of entries(students)) {
-          const index = Number(key);
-
+        for (const [_, student] of entries(students)) {
           expect(
             await lessons.countCounterpartMembers({
               user: student.id,

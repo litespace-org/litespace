@@ -27,15 +27,13 @@ type Props = Partial<LessonActions> & {
 };
 
 export const LessonSlot: React.FC<Props> = ({ lessons, ...actions }) => {
-  if (isEmpty(lessons)) return null;
-
   const lesson = useMemo(() => {
     if (lessons.length > 1) return;
     return first(lessons);
   }, [lessons]);
 
+  if (isEmpty(lessons)) return null;
   if (lesson) return <SingleLesson {...lesson} {...actions} />;
-
   return (
     <Card>
       <MultipleLessons lessons={lessons} {...actions} />

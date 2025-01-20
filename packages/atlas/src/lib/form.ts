@@ -1,8 +1,3 @@
-type Append<T extends { [key: string]: string | Blob }> = (
-  key: keyof T,
-  vaue: T[keyof T]
-) => void;
-
 export function safeFormData<
   T extends { [key: string]: string | Blob | undefined },
 >() {

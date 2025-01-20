@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 import { render } from "@react-email/components";
-import { EmailTemplate, ForgetPassword, VerifyEmail } from "./emails";
+import { EmailTemplate, ForgetPassword, VerifyEmail } from "@/emails";
 
 function makeTransporter(user: string, pass: string): nodemailer.Transporter {
   return nodemailer.createTransport({

@@ -140,13 +140,11 @@ describe("Rooms", () => {
 
         const room = await fixtures.room([tutor.id, student.id]);
 
-        await knex.transaction(async (tx) =>
-          fixtures.message(tx, {
-            userId: tutor.id,
-            roomId: room,
-            text: `Hello, ${student.name}`,
-          })
-        );
+        await fixtures.message({
+          userId: tutor.id,
+          roomId: room,
+          text: `Hello, ${student.name}`,
+        });
       }
 
       const tests = [

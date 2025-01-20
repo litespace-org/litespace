@@ -7,9 +7,9 @@ import { globSync } from "glob";
 import { last } from "lodash";
 
 const rootDir = "luna/";
-const classNameRegex = /className=["']([\w\s\[\]!:-]+)["']/g;
+const classNameRegex = /className=["']([\w\s[\]!:-]+)["']/g;
 // ref: https://regex101.com/r/5u2FAD/1
-const classnamesRegex = /cn\((\s*["']([\w\s\[\]!:&_=-]+)["'],?\s*)*\)/g;
+const classnamesRegex = /cn\((\s*["']([\w\s[\]!:&_=-]+)["'],?\s*)*\)/g;
 const files = globSync(["src/{components,internal}/**/*.tsx"], {
   cwd: rootDir,
 });

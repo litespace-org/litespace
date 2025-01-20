@@ -1,9 +1,8 @@
 import { cache } from "@/lib/cache";
-import { bad, forbidden, notfound } from "@/lib/error";
+import { bad, forbidden } from "@/lib/error";
 import { canAccessSession } from "@/lib/session";
 import { isUser } from "@litespace/auth";
-import { interviews, lessons } from "@litespace/models";
-import { getSessionType, isSessionId } from "@litespace/sol";
+import { isSessionId } from "@litespace/sol";
 import { ISession } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
