@@ -95,7 +95,6 @@ export function asChatRoomProps({
         isActive: room.roomId === roomId,
         optionsEnabled: !!room.latestMessage,
         owner: room.latestMessage?.userId === currentUserId,
-
         isPinned: room.settings.pinned,
         isMuted: room.settings.muted,
         userId: room.otherMember.id,
@@ -105,10 +104,7 @@ export function asChatRoomProps({
         togglePin: () =>
           togglePin &&
           togglePin({ roomId: room.roomId, pinned: !room.settings.pinned }),
-        image: room.otherMember.image
-          ? asFullAssetUrl(room.otherMember.image)
-          : undefined,
-
+        image: orUndefined(asFullAssetUrl(room.otherMember.image)),
         name: room.otherMember.name!,
         // TODO: replace otherMember.name with member.bio
         message:

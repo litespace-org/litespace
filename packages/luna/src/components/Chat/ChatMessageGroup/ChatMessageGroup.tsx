@@ -66,7 +66,7 @@ export const ChatMessageGroup: React.FC<{
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
         <Avatar
           alt={orUndefined(name)}
-          src={image ? asFullAssetUrl(image) : undefined}
+          src={orUndefined(asFullAssetUrl(image))}
           seed={userId.toString()}
         />
       </div>

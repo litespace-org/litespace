@@ -6,7 +6,7 @@ import { Void } from "@litespace/types";
 import { Dialog } from "@/components/Dialog";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
-import { keys } from "lodash";
+import { concat, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/sol";
 import { Animate } from "@/components/Animate";
 import { AnimatePresence } from "framer-motion";
@@ -20,18 +20,15 @@ type Props = {
   retry: Void;
   confirm: (topicIds: number[]) => void;
   opened: boolean;
-  selectedTopicIds?: Array<number>;
+  initialTopics?: number[];
   confirming?: boolean;
   loading?: boolean;
   error?: boolean;
 };
 
-type TopicId = number;
-type SelectionMap = Partial<Record<TopicId, boolean>>;
-
 export const TopicSelectionDialog: React.FC<Props> = ({
   topics,
-  selectedTopicIds,
+  initialTopics,
   close,
   confirm,
   retry,
@@ -41,36 +38,47 @@ export const TopicSelectionDialog: React.FC<Props> = ({
   error,
 }) => {
   const intl = useFormatMessage();
-  const [selectionMap, setSelectionRecord] = useState<SelectionMap>({});
+  const [selection, setSelection] = useState<number[]>([]);
 
   useEffect(() => {
-    if (!selectedTopicIds) return;
-    setSelectionRecord((prev) => {
+    if (!initialTopics) return;
+    setSelection((prev) => {
       const cloned = structuredClone(prev);
-      selectedTopicIds.forEach((id) => {
-        cloned[id] = true;
-      });
-      return cloned;
+      return uniq(concat(cloned, initialTopics));
     });
-  }, [selectedTopicIds]);
+  }, [initialTopics]);
 
   const disableSelection = useMemo(
-    () => keys(selectionMap).length >= MAX_TOPICS_COUNT,
-    [selectionMap]
+    () => selection.length >= MAX_TOPICS_COUNT,
+    [selection]
   );
+
+  const dataChanged = useMemo(() => {
+    return (
+      !initialTopics ||
+      selection.some((id) => !initialTopics.includes(id)) ||
+      initialTopics.some((id) => !selection.includes(id))
+    );
+  }, [initialTopics, selection]);
 
   const onSelect = useCallback(
     (id: number) => {
-      if (disableSelection && !selectionMap[id]) return;
-      setSelectionRecord((prev) => {
+      if (disableSelection && !selection[id]) return;
+      setSelection((prev) => {
         const cloned = structuredClone(prev);
-        if (cloned[id]) delete cloned[id];
-        else cloned[id] = !prev[id];
-        return cloned;
+        const updated = cloned.includes(id)
+          ? cloned.filter((topic) => topic !== id)
+          : concat(cloned, id);
+        return uniq(updated);
       });
     },
-    [disableSelection, selectionMap]
+    [disableSelection, selection]
   );
+
+  const onClose = useCallback(() => {
+    close();
+    setSelection([]);
+  }, [close]);
 
   return (
     <Dialog
@@ -84,7 +92,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {intl("tutor-settings.topics.selection-dialog.title")}
         </Typography>
       }
-      close={confirming ? undefined : close}
+      close={confirming ? undefined : onClose}
       open={opened}
     >
       <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-w-[744px]">
@@ -134,16 +142,17 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                 <button
                   key={i}
                   disabled={
-                    confirming || (disableSelection && !selectionMap[topic.id])
+                    confirming ||
+                    (disableSelection && !selection.includes(topic.id))
                   }
                   className={cn(
                     "tw-rounded-2xl tw-p-4 tw-transition-colors tw-duration-200",
                     "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
                     {
                       "tw-bg-natural-100 tw-text-natural-950":
-                        !selectionMap[topic.id],
+                        !selection.includes(topic.id),
                       "tw-bg-brand-700 tw-text-natural-50":
-                        !!selectionMap[topic.id],
+                        !!selection.includes(topic.id),
                     }
                   )}
                   onClick={() => onSelect(topic.id)}
@@ -159,19 +168,17 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           <div className="tw-flex tw-flex-row tw-w-full tw-gap-6">
             <Button
               size={ButtonSize.Large}
-              onClick={() =>
-                confirm(keys(selectionMap).map((key) => Number(key)))
-              }
+              onClick={() => confirm(selection)}
               className="tw-w-full"
               loading={confirming}
-              disabled={loading || error || confirming}
+              disabled={loading || error || confirming || !dataChanged}
             >
               {intl("labels.confirm")}
             </Button>
             <Button
               variant={ButtonVariant.Secondary}
               size={ButtonSize.Large}
-              onClick={close}
+              onClick={onClose}
               className="tw-w-full"
               disabled={confirming}
             >

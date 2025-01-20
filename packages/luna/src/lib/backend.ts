@@ -6,10 +6,17 @@ export const backend = zod
   .enum([Backend.Local, Backend.Production, Backend.Staging])
   .parse(import.meta.env.VITE_BACKEND);
 
-export function asFullAssetUrl(name: string) {
+function asFullAssetUrlBase(name?: string | null): string | null {
+  if (!name) return null;
   return asAssetUrl(backend, name);
 }
+
+export const asFullAssetUrl = Object.assign(asFullAssetUrlBase, {
+  of: (name: string) => asAssetUrl(backend, name),
+});
 
 export function asFullRecriptUrl(name: string) {
   return asRecriptUrl(backend, name);
 }
+
+export {};

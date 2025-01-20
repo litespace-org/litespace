@@ -66,6 +66,7 @@
     "./Tooltip": "./dist/components/Tooltip/index.js",
     "./TutorCard": "./dist/components/TutorCard/index.js",
     "./TutorOverview": "./dist/components/TutorOverview/index.js",
+    "./TopicSelectionDialog": "./dist/components/TopicSelectionDialog/index.js",
     "./HoverCard": "./dist/components/HoverCard/index.js",
     "./Spinner": "./dist/icons/Spinner.jsx",
     "./utils": "./dist/components/utils/index.js",

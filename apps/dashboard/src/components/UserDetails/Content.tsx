@@ -45,7 +45,7 @@ const Content: React.FC<{
           {user.image ? (
             <div className="overflow-hidden border-2 border-white rounded-full">
               <img
-                src={asFullAssetUrl(user.image)}
+                src={asFullAssetUrl.of(user.image)}
                 className="rounded-full w-14 h-14"
               />
             </div>

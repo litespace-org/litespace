@@ -126,6 +126,8 @@ export const ChatRoom: React.FC<{
           {isTyping ? (
             <div className="tw-flex tw-gap-2 tw-items-center">
               <Edit
+                width={16}
+                height={16}
                 className={cn({
                   "[&>*]:tw-stroke-brand-700 dark:[&>*]:tw-stroke-brand-400":
                     !isActive,

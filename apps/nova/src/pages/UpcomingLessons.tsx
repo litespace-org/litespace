@@ -16,6 +16,7 @@ import { useToast } from "@litespace/luna/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
 import { asFullAssetUrl } from "@litespace/luna/backend";
+import { orUndefined } from "@litespace/sol/utils";
 
 type RateDialogInfo = {
   tutorId: number | null;
@@ -120,7 +121,7 @@ const UpcomingLessons: React.FC = () => {
           studentId={user.id}
           studentName={user.name}
           tutorName={rateDialogInfo.tutorName}
-          imageUrl={user.image ? asFullAssetUrl(user.image) : undefined}
+          imageUrl={orUndefined(asFullAssetUrl(user.image))}
           onClose={() => setRateDialogInfo(defaultRateDialogInfo)}
           onSubmit={(payload) => {
             if (!rateDialogInfo.tutorId) return;

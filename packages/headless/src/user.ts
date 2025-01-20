@@ -50,7 +50,7 @@ export function useRegisterUser({
 /**
  * Update all user data in one mutation.
  */
-export function useUpdateUser({
+export function useUpdateFullUser({
   onSuccess,
   onError,
 }: {
@@ -85,6 +85,52 @@ export function useUpdateUser({
   return useMutation({
     mutationFn: update,
     mutationKey: [MutationKey.UpdateUser],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useUpdateUser({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<IUser.Self>;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+
+  const update = useCallback(
+    async ({ id, payload }: { id: number; payload: IUser.UpdateApiPayload }) =>
+      atlas.user.update(id, payload),
+    [atlas.user]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UpdateUserPersonalInfo],
+    onSuccess,
+    onError,
+  });
+}
+
+export function useUpdateUserTopics({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<void>;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+
+  const update = useCallback(
+    async (payload: ITopic.ReplaceUserTopicsApiPayload) =>
+      await atlas.topic.replaceUserTopics(payload),
+    [atlas.topic]
+  );
+
+  return useMutation({
+    mutationFn: update,
+    mutationKey: [MutationKey.UpdateTutorTopics],
     onSuccess,
     onError,
   });

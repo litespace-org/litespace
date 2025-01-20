@@ -106,13 +106,14 @@ export function isValidUserBirthYear(
 }
 
 export function isValidTutorBio(
-  bio: string
+  bio: unknown
 ):
   | FieldError.EmptyBio
   | FieldError.ShortBio
   | FieldError.LongBio
   | FieldError.InvalidBio
   | true {
+  if (typeof bio !== "string") return FieldError.InvalidBio;
   if (!bio.length) return FieldError.EmptyBio;
   if (bio.length < MIN_BIO_LEGNTH) return FieldError.ShortBio;
   if (!BIO_REGEX.test(bio)) return FieldError.InvalidBio;

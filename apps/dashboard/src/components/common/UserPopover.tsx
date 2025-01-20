@@ -31,7 +31,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
                 <div>
                   {user.data.image ? (
                     <img
-                      src={asFullAssetUrl(user.data.image)}
+                      src={asFullAssetUrl.of(user.data.image)}
                       className="w-16 h-16 rounded-full shadow-2xl"
                     />
                   ) : (

@@ -11,6 +11,7 @@ import { Menu, type MenuAction } from "@/components/Menu";
 import CalendarEdit from "@litespace/assets/CalendarEdit";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import CheckCircle from "@litespace/assets/CheckCircle";
+import { orUndefined } from "@litespace/sol";
 
 export type Props = {
   start: string;
@@ -19,7 +20,7 @@ export type Props = {
   member: {
     id: number;
     name: string | null;
-    image: string | undefined;
+    image: string | null;
     /**
      * @note role shall be `student` when the current user is tutor and vice versa
      */
@@ -280,9 +281,9 @@ export const LessonCard: React.FC<Props> = ({
         <div className="tw-flex tw-gap-2">
           <div className="tw-w-[65px] tw-h-[65px] tw-rounded-full tw-overflow-hidden">
             <Avatar
-              src={member.image}
+              src={orUndefined(member.image)}
+              alt={orUndefined(member.name)}
               seed={member.id.toString()}
-              alt={member.image}
             />
           </div>
           <div className="tw-flex tw-flex-col tw-gap-1">

@@ -58,7 +58,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
     id: number;
     studentName: string;
     studentId: number;
-    imageUrl: string;
+    imageUrl: string | null;
     feedback: string | null;
     rating: number;
   } | null>(null);
@@ -163,7 +163,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                       id: rating.id,
                       studentName: rating.name || "",
                       studentId: rating.userId,
-                      imageUrl: asFullAssetUrl(rating.image || ""),
+                      imageUrl: asFullAssetUrl(rating.image),
                       feedback: rating.feedback,
                       rating: rating.value,
                     })
@@ -200,7 +200,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
       {editDialog ? (
         <RatingDialog
           {...editDialog}
-          tutorName={tutorName || ""}
+          tutorName={tutorName}
           onClose={closeEdit}
           loading={editMutation.isPending}
           open={!!editDialog}

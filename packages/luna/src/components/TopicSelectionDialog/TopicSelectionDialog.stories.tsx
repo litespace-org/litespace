@@ -51,7 +51,7 @@ export const WithSelectedTopics: Story = {
       .split(" ")
       .map((word, i) => ({ id: i, label: word })),
     opened: true,
-    selectedTopicIds: [1, 5],
+    initialTopics: [1, 5],
     ...actions,
   },
 };
@@ -80,7 +80,7 @@ export const Confirming: Story = {
       .words(10)
       .split(" ")
       .map((word, i) => ({ id: i, label: word })),
-    selectedTopicIds: [1, 4, 8],
+    initialTopics: [1, 4, 8],
     opened: true,
     confirming: true,
     ...actions,
@@ -93,7 +93,7 @@ export const Simulation: Story = {
       .words(100)
       .split(" ")
       .map((word, i) => ({ id: i, label: word })),
-    selectedTopicIds: [1, 4, 8],
+    initialTopics: [1, 4, 8],
     opened: true,
     ...actions,
   },

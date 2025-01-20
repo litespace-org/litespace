@@ -46,7 +46,7 @@ export type RateDialogProps = {
   /**
    * image url for student own the comment
    */
-  imageUrl?: string;
+  imageUrl?: string | null;
   /**
    * student comment about the tutor
    */

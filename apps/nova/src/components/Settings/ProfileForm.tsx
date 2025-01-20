@@ -18,7 +18,7 @@ import {
   useValidateUserName,
 } from "@litespace/luna/hooks/validation";
 import { QueryKey } from "@litespace/headless/constants";
-import { useUpdateUser } from "@litespace/headless/user";
+import { useUpdateFullUser } from "@litespace/headless/user";
 import TopicSelector from "@/components/Settings/TopicSelector";
 import { isEqual } from "lodash";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
@@ -156,7 +156,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     [intl]
   );
 
-  const profileMutation = useUpdateUser({ onSuccess, onError });
+  const profileMutation = useUpdateFullUser({ onSuccess, onError });
 
   const notifyComingSoon = useCallback(() => {
     toast.success({
