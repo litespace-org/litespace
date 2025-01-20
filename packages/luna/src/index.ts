@@ -20,6 +20,7 @@ export {
   type GridDay,
 } from "@/components/ActivityGrid";
 export { Dialog } from "@/components/Dialog";
+export { DeleteSlotDialog } from "@/components/DeleteSlotDialog";
 export { Drawer } from "@/components/Drawer";
 export { Select, type SelectList } from "@/components/Select";
 export { Avatar } from "@/components/Avatar";

@@ -97,7 +97,7 @@ export const ConfirmationDialog: React.FC<{
               </Title>
               <Typography
                 element="caption"
-                className="tw-text-natural-750"
+                className="tw-text-natural-700"
                 weight="regular"
               >
                 {description}

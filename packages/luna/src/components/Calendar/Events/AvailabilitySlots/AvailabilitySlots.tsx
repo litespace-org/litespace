@@ -130,7 +130,7 @@ const OptionsMenu: React.FC<{
         onClick: onEdit,
       },
       {
-        icon: <CalendarRemove />,
+        icon: <CalendarRemove height={16} width={16} />,
         label: intl("manage-schedule.slot.delete"),
         onClick: onDelete,
       },
