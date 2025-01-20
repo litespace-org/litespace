@@ -30,7 +30,7 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
-import { concat, uniqueId } from "lodash";
+import { concat, isEmpty, uniqueId } from "lodash";
 import { useUserContext } from "@/user/index";
 
 type OnSuccess = Void;
@@ -200,7 +200,7 @@ type Action =
 
 export type OnMessage = (action: MessageStreamAction) => void;
 
-export function useFindUncontactedTutors(): {
+export function useFindUncontactedTutors(enabled?: boolean): {
   query: UseInfiniteQueryResult<
     InfiniteData<Paginated<ITutor.FullUncontactedTutorInfo>, unknown>,
     Error
@@ -217,9 +217,11 @@ export function useFindUncontactedTutors(): {
     [atlas.user]
   );
 
-  return useInfinitePaginationQuery(findUncontactedTutors, [
-    QueryKey.FindUncontactedTutors,
-  ]);
+  return useInfinitePaginationQuery(
+    findUncontactedTutors,
+    [QueryKey.FindUncontactedTutors],
+    enabled
+  );
 }
 
 export function useCreateRoom({
@@ -1071,7 +1073,8 @@ export function useFindRoomByMembers(members: number[]) {
   }, [atlas.chat, members]);
 
   return useQuery({
-    queryKey: ["find-room", members],
+    queryKey: [QueryKey.FindRoomByMembers, members],
     queryFn: findRoom,
+    enabled: !isEmpty(members),
   });
 }

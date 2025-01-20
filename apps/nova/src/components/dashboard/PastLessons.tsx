@@ -80,18 +80,15 @@ export const PastLessons: React.FC = () => {
 
   const navigate = useNavigate();
 
-  const handleSendMessage = useCallback(
-    (lessonId: number, members: number[]) => {
-      setMembers(members);
-      setSendingMessage(lessonId);
-    },
-    []
-  );
+  const onSendMessage = useCallback((lessonId: number, members: number[]) => {
+    setMembers(members);
+    setSendingMessage(lessonId);
+  }, []);
 
   useEffect(() => {
     if (!findRoom.data?.room) return;
     setSendingMessage(0);
-    navigate(`/chat?room=${findRoom.data?.room}`);
+    navigate(`${Route.Chat}?room=${findRoom.data.room}`);
   }, [findRoom.data?.room, navigate]);
 
   return (
@@ -102,7 +99,7 @@ export const PastLessons: React.FC = () => {
         className="text-natural-950 "
       >
         {user?.role === IUser.Role.Student
-          ? intl("student-dashboard.previous-lessons.title")
+          ? intl("student-dashboard.past-lessons.title")
           : intl("tutor-dashboard.past-lessons.title")}
       </Typography>
 
@@ -117,7 +114,7 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.Tutor ||
           user?.role === IUser.Role.TutorManager
         }
-        onSendMessage={handleSendMessage}
+        onSendMessage={onSendMessage}
         sendingMessage={sendingMessage}
       />
 

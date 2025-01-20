@@ -21,7 +21,7 @@ export function useFindStudentStats(
   });
 }
 
-export function useFindPublicStudentStats() {
+export function useFindPersonalizedStudentStats() {
   const atlas = useAtlas();
 
   const findStats = useCallback(async () => {
@@ -30,6 +30,6 @@ export function useFindPublicStudentStats() {
 
   return useQuery({
     queryFn: findStats,
-    queryKey: [QueryKey.FindPublicStudentStats],
+    queryKey: [QueryKey.FindPersonalizedStudentStats],
   });
 }

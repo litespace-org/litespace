@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useMemo } from "react";
 import { SelectedRoom, SelectRoom } from "@litespace/luna/hooks/chat";
 import cn from "classnames";
 import { Typography } from "@litespace/luna/Typography";
@@ -27,10 +27,12 @@ const RoomsContainer: React.FC<{
   selected: { room: roomId },
 }) => {
   const intl = useFormatMessage();
-
   const { user } = useUserContext();
-
-  const { rooms, keyword, update } = useRoomManager();
+  const isStudent = useMemo(
+    () => !!user && user.role === IUser.Role.Student,
+    [user]
+  );
+  const { rooms, keyword, update } = useRoomManager(isStudent);
 
   const selectTemporary = useCallback(
     (tutor: ITutor.FullUncontactedTutorInfo) => {

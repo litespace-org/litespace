@@ -55,7 +55,7 @@ export function useFindPersonalizedTutorStats() {
   }, [atlas.user]);
 
   return useQuery({
-    queryKey: ["find-tutor-stats"],
+    queryKey: [QueryKey.FindPersonalizedTutorStats],
     queryFn: findStats,
   });
 }

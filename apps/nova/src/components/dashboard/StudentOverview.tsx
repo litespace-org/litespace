@@ -1,12 +1,11 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { StudentOverview as Overview } from "@litespace/luna/StudentOverview";
 import { Typography } from "@litespace/luna/Typography";
-import { useFindPublicStudentStats } from "@litespace/headless/student";
+import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
 
-export const StudentOverview = () => {
+export const StudentOverview: React.FC = () => {
   const intl = useFormatMessage();
-
-  const statsQuery = useFindPublicStudentStats();
+  const statsQuery = useFindPersonalizedStudentStats();
 
   return (
     <div className="grid gap-6 justify-items-start w-full">

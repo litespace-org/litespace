@@ -13,19 +13,19 @@ import { Loader, LoadingError } from "@/components/Loading";
 
 type Props = {
   /**
-   * total number of lessons
+   * Total number of lessons
    */
   totalLessonCount: number;
   /**
-   * number of completed lessons
+   * Number of completed lessons
    */
   completedLessonCount: number;
   /**
-   * total learning time in minutes
+   * Total tutoring time in minutes
    */
-  totalLearningTime: number;
+  totalTutoringTime: number;
   /**
-   * number of students
+   * Number of students
    */
   studentCount: number;
   loading?: boolean;
@@ -36,20 +36,19 @@ type Props = {
 export const TutorOverview: React.FC<Props> = ({
   totalLessonCount,
   completedLessonCount,
-  totalLearningTime,
+  totalTutoringTime,
   studentCount,
   loading,
   error,
   retry,
 }) => {
   const intl = useFormatMessage();
-  const learningTime = useMemo(() => {
-    if (totalLearningTime === 0) return "0";
-
+  const tutoringTime = useMemo(() => {
+    if (totalTutoringTime === 0) return "0";
     return intl("tutor-dashboard.overview.total-learning-time.unit.minute", {
-      value: formatNumber(totalLearningTime),
+      value: formatNumber(totalTutoringTime),
     });
-  }, [intl, totalLearningTime]);
+  }, [intl, totalTutoringTime]);
 
   if (loading)
     return (
@@ -73,30 +72,30 @@ export const TutorOverview: React.FC<Props> = ({
     <div className="tw-flex tw-gap-6 tw-flex-wrap tw-w-full">
       <Card
         icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" />}
+        title="tutor-dashboard.overview.total-lessons"
         value={formatNumber(totalLessonCount)}
         color="brand"
-        title="tutor-dashboard.overview.total-lessons"
       />
 
       <Card
         icon={<Check16X16 className="[&]*:tw-stroke-natural-50" />}
+        title="tutor-dashboard.overview.completed-lessons"
         value={formatNumber(completedLessonCount)}
         color="secondary"
-        title="tutor-dashboard.overview.completed-lessons"
       />
 
       <Card
         icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
-        value={learningTime}
+        title="tutor-dashboard.overview.tutoring-time"
+        value={tutoringTime}
         color="warning"
-        title="tutor-dashboard.overview.total-learning-time"
       />
 
       <Card
         icon={<People className="[&>*]:tw-stroke-natural-50" />}
         value={formatNumber(studentCount)}
-        color="destructive"
         title="tutor-dashboard.overview.students"
+        color="destructive"
       />
     </div>
   );

@@ -25,13 +25,12 @@ const Root: React.FC = () => {
       Route.ForgetPassword,
       ...registerRoutes,
     ];
-    const ignore = routes.some((route) => route !== location.pathname);
+    const ignore = routes.some((route) => route === location.pathname);
     if (!user && !ignore) return navigate(Route.Login);
     if (!user || !root) return;
     const { tutor, student, tutorManager } = destructureRole(user.role);
-    if (tutor) return navigate(Route.UpcomingLessons);
+    if (tutor || tutorManager) return navigate(Route.TutorDashboard);
     if (student) return navigate(Route.StudentDashboard);
-    if (tutorManager) return navigate(Route.Interviews);
   }, [navigate, location.pathname, user, meta]);
 
   const showNaviation = useMemo(() => {
