@@ -144,9 +144,9 @@ export type FindPersonalizedTutorStatsApiResponse = {
    */
   totalLessonCount: number;
   /**
-   * Future but not canceled lessons.
+   * Total tutoring time in minutes.
    */
-  upcomingLessonCount: number;
+  totalTutoringTime: number;
   /**
    * Count for completed lessons only.
    */

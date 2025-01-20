@@ -405,7 +405,7 @@ describe("/api/v1/user/", () => {
       // inserting lessons
       const students = await db.students(3);
 
-      await db.lesson({
+      const { lesson: lesson1 } = await db.lesson({
         tutor: tutor.user.id,
         student: students[0].id,
         rule: rule1.id,
@@ -428,9 +428,9 @@ describe("/api/v1/user/", () => {
       const res = await tutorApi.atlas.user.findPersonalizedTutorStats();
 
       expect(res.studentCount).to.eq(2);
-      expect(res.upcomingLessonCount).to.eq(1);
       expect(res.completedLessonCount).to.eq(1);
       expect(res.totalLessonCount).to.eq(2);
+      expect(res.totalTutoringTime).to.eq(lesson1.duration);
     });
 
     it("should respond with forbidden if the user is not a tutor.", async () => {

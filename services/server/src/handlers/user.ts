@@ -503,34 +503,41 @@ async function findPersonalizedTutorStats(
   if (!tutor || !isOnboard(tutor)) return next(notfound.tutor());
 
   const now = dayjs.utc().toISOString();
-  const [studentCount, upcomingLessonCount, completedLessonCount] =
-    await Promise.all([
-      lessons.countCounterpartMembers({
-        user: id,
-        ratified: true,
-        canceled: false,
-      }),
-      lessons.countLessons({
-        users: [id],
-        ratified: true,
-        canceled: false,
-        after: now,
-      }),
-      lessons.countLessons({
-        users: [id],
-        ratified: true,
-        canceled: false,
-        before: now,
-      }),
-    ]);
-
-  const totalLessonCount = completedLessonCount + upcomingLessonCount;
+  const [
+    studentCount,
+    totalLessonCount,
+    completedLessonCount,
+    totalTutoringTime,
+  ] = await Promise.all([
+    lessons.countCounterpartMembers({
+      user: id,
+      ratified: true,
+      canceled: false,
+    }),
+    lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+    }),
+    lessons.countLessons({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      before: now,
+    }),
+    lessons.sumDuration({
+      users: [id],
+      ratified: true,
+      canceled: false,
+      before: now,
+    }),
+  ]);
 
   const response: ITutor.FindPersonalizedTutorStatsApiResponse = {
     studentCount,
     completedLessonCount,
-    upcomingLessonCount,
     totalLessonCount,
+    totalTutoringTime,
   };
 
   res.status(200).json(response);
