@@ -18,9 +18,10 @@ export const Dialog: React.FC<{
   children?: React.ReactNode;
   className?: string;
   open?: boolean;
+  description?: string;
+  position?: "center" | "bottom";
   setOpen?: (open: boolean) => void;
   close?: Void;
-  description?: string;
 }> = ({
   trigger,
   title,
@@ -28,6 +29,7 @@ export const Dialog: React.FC<{
   className,
   open,
   description,
+  position = "center",
   setOpen,
   close,
 }) => {
@@ -40,8 +42,14 @@ export const Dialog: React.FC<{
           aria-describedby={description}
           dir="rtl"
           className={cn(
-            "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
-            "tw-rounded-[32px] tw-p-6 tw-min-w-96 tw-z-dialog",
+            "tw-fixed tw-bg-natural-50",
+            "tw-p-6 tw-min-w-96 tw-z-dialog",
+            {
+              "tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-rounded-[32px]":
+                position === "center",
+              "tw-bottom-0 tw-left-1/2 -tw-translate-x-1/2 tw-rounded-t-[24px]":
+                position === "bottom",
+            },
             className
           )}
         >
