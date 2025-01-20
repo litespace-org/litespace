@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Lottie from "lottie-react";
 import dark from "@/animations/speaking-dark.json";
 import light from "@/animations/speaking-light.json";
+import { orUndefined } from "@litespace/sol/utils";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -75,7 +76,7 @@ const UserMedia: React.FC<{
             <div className="w-16 h-16 @3xs:w-[5rem] @3xs:h-[5rem] @2xs:w-24 @2xs:h-24 @xs:w-32 @xs:h-32 @sm:w-44 @sm:h-44 @lg:w-60 @lg:h-60  @xl:w-64 @xl:h-64 rounded-full ring-4 ring-border-strong overflow-hidden">
               <img
                 className="object-cover w-full h-full"
-                src={image ? asFullAssetUrl(image) : "/avatar-1.png"}
+                src={orUndefined(asFullAssetUrl(image))}
               />
             </div>
           </motion.div>

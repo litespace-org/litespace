@@ -16,7 +16,7 @@ const UploadPhoto: React.FC<{
 
   const photoUrl = useMemo(() => {
     if (!photo) return undefined;
-    if (typeof photo === "string") return asFullAssetUrl(photo);
+    if (typeof photo === "string") return asFullAssetUrl.of(photo);
     return URL.createObjectURL(photo);
   }, [photo]);
 

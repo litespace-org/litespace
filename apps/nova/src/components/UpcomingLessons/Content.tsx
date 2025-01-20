@@ -116,9 +116,7 @@ export const Content: React.FC<{
                 member={{
                   id: member.userId,
                   name: member.name,
-                  image: member.image
-                    ? asFullAssetUrl(member.image)
-                    : undefined,
+                  image: asFullAssetUrl(member.image),
                   role: member.role === "student" ? "student" : "tutor",
                 }}
               />
