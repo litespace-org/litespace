@@ -11,7 +11,7 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useToast } from "@litespace/luna/Toast";
 import { useCallback, useMemo, useState } from "react";
 
-export function useRoomManager() {
+export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
   const intl = useFormatMessage();
   const [keyword, setKeyword] = useState("");
@@ -26,7 +26,7 @@ export function useRoomManager() {
     keyword,
   });
 
-  const uncontactedTutors = useFindUncontactedTutors();
+  const uncontactedTutors = useFindUncontactedTutors(isStudent);
 
   const isEnabled = useCallback(
     (

@@ -1,26 +1,27 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { StudentOverview as Overview } from "@litespace/luna/StudentOverview";
+import { TutorOverview as Overview } from "@litespace/luna/TutorOverview";
 import { Typography } from "@litespace/luna/Typography";
-import { useFindPersonalizedStudentStats } from "@litespace/headless/student";
+import { useFindPersonalizedTutorStats } from "@litespace/headless/tutor";
+import React from "react";
 
-export const StudentOverview: React.FC = () => {
+export const TutorOverview: React.FC = () => {
   const intl = useFormatMessage();
-  const statsQuery = useFindPersonalizedStudentStats();
+  const statsQuery = useFindPersonalizedTutorStats();
 
   return (
-    <div className="grid gap-6 justify-items-start w-full">
+    <div className="flex flex-col gap-6 justify-items-start w-full">
       <Typography
         element="subtitle-2"
         weight="bold"
         className="text-natural-950"
       >
-        {intl("student-dashboard.overview.title")}
+        {intl("tutor-dashboard.overview.title")}
       </Typography>
 
       <Overview
-        tutorCount={statsQuery.data?.tutorCount || 0}
+        studentCount={statsQuery.data?.studentCount || 0}
         completedLessonCount={statsQuery.data?.completedLessonCount || 0}
-        totalLearningTime={statsQuery.data?.totalLearningTime || 0}
+        totalTutoringTime={0}
         totalLessonCount={statsQuery.data?.completedLessonCount || 0}
         loading={statsQuery.isPending}
         error={statsQuery.isError}
@@ -29,3 +30,5 @@ export const StudentOverview: React.FC = () => {
     </div>
   );
 };
+
+export default TutorOverview;

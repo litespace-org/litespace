@@ -105,7 +105,7 @@
   "platform.rating.question": "شاركنا رأيك لتحسين تجربتك!",
   "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
   "student-dashboard.overview.title": "نظرة عامة",
-  "student-dashboard.previous-lessons.title": "الدروس السابقة",
+  "student-dashboard.past-lessons.title": "الدروس السابقة",
   "tutors.title": "كل المعلمين",
   "tutors.card.book-button.label": "احجز الآن",
   "tutors.card.profile-button.label": "عرض الملف",
@@ -133,15 +133,17 @@
   "tutor.rating.delete.error": "حدث خطأ أثناء حذف التعليق، برجاء المحاولة مرة أخرى",
   "tutor.rating.edit.error": "حدث خطأ أثناء تعديل التعليق، برجاء المحاولة مرة أخرى",
   "tutor.profile.error": " عذرًا، حدث خطأ أثناء تحميل المحتوى. برجاء المحاولة مرة أخرى",
+  "tutor-dashboard.overview.title": "نظرة عامة",
   "tutor-dashboard.overview.total-lessons": "اجمالي الحصص",
   "tutor-dashboard.overview.completed-lessons": "الحصص المكتملة",
-  "tutor-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
+  "tutor-dashboard.overview.tutoring-time": "وقت التعليم",
   "tutor-dashboard.overview.students": "عدد الطلاب",
   "tutor-dashboard.overview.total-learning-time.unit.minute": "{value} د",
   "tutor-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",
   "tutor-dashboard.overview.error": "عذرًا، حدث خطأ أثناء تحميل الاحصائيات العامة، برجاء المحاولة مرة أخرى",
   "tutor-dashboard.table.student": "الطالب",
   "tutor-dashboard.table.send-message": "إرسال رسالة",
+  "tutor-dashboard.past-lessons.title": "الحصص السابقة",
   "tutor-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
   "tutor-dashboard.past-lessons.error": " عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",

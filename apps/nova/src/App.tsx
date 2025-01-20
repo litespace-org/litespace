@@ -9,7 +9,7 @@ import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Call from "@/pages/Call";
 import Complete from "@/pages/Complete";
-import Dashboard from "@/pages/Dashboard";
+import StudentDashboard from "@/pages/StudentDashboard";
 import Schedule from "@/pages/Schedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
@@ -24,6 +24,7 @@ import Lesson from "@/pages/Lesson";
 import TutorSettings from "@/pages/TutorSettings";
 import ScheduleManagement from "@/pages/ScheduleManagement";
 import ForgetPassword from "@/pages/ForgetPassword";
+import TutorDashboard from "@/pages/TutorDashboard";
 
 const router = createBrowserRouter([
   {
@@ -33,13 +34,14 @@ const router = createBrowserRouter([
       { path: Route.Call, element: <Call /> },
       { path: Route.Chat, element: <Chat /> },
       { path: Route.Complete, element: <Complete /> },
-      { path: Route.Dashboard, element: <Dashboard /> },
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Login, element: <Login /> },
       { path: Route.Payments, element: <Payments /> },
       { path: Route.Register, element: <Register /> },
       { path: Route.ResetPassword, element: <ResetPassword /> },
+      { path: Route.StudentDashboard, element: <StudentDashboard /> },
       { path: Route.StudentSettings, element: <Settings /> },
+      { path: Route.TutorDashboard, element: <TutorDashboard /> },
       { path: Route.TutorSettings, element: <TutorSettings /> },
       { path: Route.Schedule, element: <Schedule /> },
       { path: Route.ScheduleManagement, element: <ScheduleManagement /> },

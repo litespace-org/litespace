@@ -69,7 +69,10 @@ const Sidebar = () => {
   const mainPages = useMemo(() => {
     const dashboard = {
       label: intl("sidebar.dashboard"),
-      route: Route.Dashboard,
+      route:
+        user?.role === IUser.Role.Student
+          ? Route.StudentDashboard
+          : Route.TutorDashboard,
       Icon: Home,
     };
 

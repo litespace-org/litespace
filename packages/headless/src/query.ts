@@ -30,7 +30,8 @@ export type InfiniteQueryHandler<T> = ({
 
 export function useInfinitePaginationQuery<T, K>(
   handler: InfiniteQueryHandler<T>,
-  key: K[]
+  key: K[],
+  enabled?: boolean
 ) {
   const getNextPageParam = useCallback(
     (last: Paginated<T>, all: Paginated<T>[], lastPageParam: number) => {
@@ -47,6 +48,7 @@ export function useInfinitePaginationQuery<T, K>(
     queryKey: key,
     initialPageParam: 1,
     getNextPageParam,
+    enabled,
   });
 
   const list = useMemo(() => {

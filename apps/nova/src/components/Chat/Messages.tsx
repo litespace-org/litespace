@@ -37,7 +37,8 @@ import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useToast } from "@litespace/luna/Toast";
 import { SelectRoom } from "@litespace/luna/hooks/chat";
-import { useRoomManager } from "@/hooks/chat";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKey } from "@litespace/headless/constants";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -127,7 +128,7 @@ const Messages: React.FC<{
     ackUserTyping,
     readMessage,
   } = useChat(onMessage, orUndefined(user?.id));
-  const { rooms } = useRoomManager();
+  const invdalidate = useInvalidateQuery();
   const toast = useToast();
 
   const onSuccess = useCallback(
@@ -138,16 +139,9 @@ const Messages: React.FC<{
         otherMember: otherMember,
       });
       setTemporaryTutor(null);
-      rooms.all.query.refetch();
-      rooms.uncontactedTutors.query.refetch();
+      invdalidate([QueryKey.FindUserRooms, QueryKey.FindUncontactedTutors]);
     },
-    [
-      select,
-      setTemporaryTutor,
-      otherMember,
-      rooms.all.query,
-      rooms.uncontactedTutors.query,
-    ]
+    [otherMember, select, setTemporaryTutor, invdalidate]
   );
 
   const onError = useCallback(() => {
