@@ -1,5 +1,4 @@
-import { Dayjs } from "dayjs";
-import React from "react";
+import { IAvailabilitySlot } from "@litespace/types";
 
 export type LessonActions = {
   onCancel(id: number): void;
@@ -9,7 +8,7 @@ export type LessonActions = {
 };
 
 export type SlotActions = {
-  onEdit(id: number): void;
+  onEdit(slot: IAvailabilitySlot.Slot): void;
   onDelete(id: number): void;
 };
 
@@ -48,8 +47,6 @@ export type AvailabilitySlotProps = EventProps & {
     name: string | null;
   }>;
 };
-
-export type HourView = React.FC<{ date: Dayjs }>;
 
 /**
  * @deprecated

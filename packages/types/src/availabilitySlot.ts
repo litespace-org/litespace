@@ -60,20 +60,20 @@ export type FindAvailabilitySlotsApiQuery = SkippablePagination & {
 };
 
 export type CreateAction = {
-  action: "create";
+  type: "create";
   start: string;
   end: string;
 };
 
 export type UpdateAction = {
-  action: "update";
+  type: "update";
   id: number;
   start?: string;
   end?: string;
 };
 
 export type DeleteAction = {
-  action: "delete";
+  type: "delete";
   id: number;
 };
 
@@ -81,7 +81,7 @@ export type Action = CreateAction | UpdateAction | DeleteAction;
 
 // API Requests
 export type SetAvailabilitySlotsApiPayload = {
-  slots: Array<CreateAction | UpdateAction | DeleteAction>;
+  actions: Array<Action>;
 };
 
 // API Responses

@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from "react";
-import { Calendar } from "@litespace/luna/Calendar";
+import React, { useCallback, useMemo, useState } from "react";
+import { Calendar, LessonProps } from "@litespace/luna/Calendar";
 import dayjs from "@/lib/dayjs";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
-import Header, { View } from "@/components/Schedule/Header";
+import Header, { View } from "@/components/LessonSchedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -25,17 +25,9 @@ const Schedule: React.FC = () => {
     full: true,
   });
 
-  const filteredLessons = useMemo(() => {
+  const calendarLessons: LessonProps[] = useMemo(() => {
     if (!lessons.list || !user) return [];
-    const filtered = lessons.list.filter(({ lesson }) =>
-      dayjs(lesson.start).isBetween(
-        date,
-        date.add(1, "hour"),
-        "milliseconds",
-        "[]"
-      )
-    );
-    return filtered.map(({ lesson, members }) => {
+    return lessons.list.map(({ lesson, members }) => {
       const otherMember = members.find((member) => member.userId !== user?.id);
 
       if (!otherMember)
@@ -53,7 +45,28 @@ const Schedule: React.FC = () => {
         end: dayjs(lesson.start).add(lesson.duration, "minutes").toISOString(),
       };
     });
-  }, [lessons.list, user, date]);
+  }, [lessons.list, user]);
+
+  const onJoinHandler = useCallback(
+    (lessonId: number) =>
+      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
+    []
+  );
+  const onCancelHandler = useCallback(
+    (lessonId: number) =>
+      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
+    []
+  );
+  const onEditHandler = useCallback(
+    (lessonId: number) =>
+      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
+    []
+  );
+  const onRebookHandler = useCallback(
+    (lessonId: number) =>
+      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
+    []
+  );
 
   return (
     <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
@@ -78,7 +91,17 @@ const Schedule: React.FC = () => {
             animate="visible"
             exit="hidden"
           >
-            <Calendar date={date} key="calendar" lessons={filteredLessons} />
+            <Calendar
+              key="calendar"
+              date={date}
+              lessons={calendarLessons}
+              lessonActions={{
+                onJoin: onJoinHandler,
+                onCancel: onCancelHandler,
+                onEdit: onEditHandler,
+                onRebook: onRebookHandler,
+              }}
+            />
           </motion.div>
         ) : null}
       </AnimatePresence>
@@ -92,6 +115,7 @@ const Schedule: React.FC = () => {
             exit="hidden"
           >
             <LessonsList
+              key="list"
               list={lessons.list}
               loading={lessons.query.isLoading}
               error={lessons.query.isError}
@@ -99,7 +123,6 @@ const Schedule: React.FC = () => {
               more={lessons.more}
               hasMore={lessons.query.hasNextPage && !lessons.query.isPending}
               refetch={lessons.query.refetch}
-              key="list"
             />
           </motion.div>
         ) : null}

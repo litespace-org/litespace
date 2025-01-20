@@ -11,9 +11,7 @@ export class AvailabilitySlot extends Base {
     });
   }
 
-  async set(
-    payload: IAvailabilitySlot.SetAvailabilitySlotsApiPayload
-  ): Promise<IAvailabilitySlot.FindAvailabilitySlotsApiResponse> {
+  async set(payload: IAvailabilitySlot.SetAvailabilitySlotsApiPayload) {
     return await this.post({
       route: `/api/v1/availability-slot/`,
       payload,

@@ -38,6 +38,7 @@
     "./Menu": "./dist/components/Menu/index.js",
     "./MovableMedia": "./dist/components/MovableMedia/index.js",
     "./MultiSelect": "./dist/components/MultiSelect/index.js",
+    "./ManageSchedule": "./dist/components/ManageSchedule/index.js",
     "./Navbar": "./dist/components/Navbar/index.js",
     "./NumericInput": "./dist/components/NumericInput/index.js",
     "./PatternInput": "./dist/components/PatternInput/index.js",

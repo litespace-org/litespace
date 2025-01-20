@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { AvailabilitySlot } from "@/components/Calendar/Events/AvailabilitySlots/AvailabilitySlots";
 import dayjs from "@/lib/dayjs";
 import { faker } from "@faker-js/faker/locale/ar";
+import { EventProps } from "@/components/Calendar/types";
 
 type Component = typeof AvailabilitySlot;
 
@@ -13,7 +14,7 @@ const meta: Meta<Component> = {
 };
 
 const actions = {
-  onEdit: (id: number) => alert(`Edit: ${id}`),
+  onEdit: (slotInfo: EventProps) => alert(`Edit: ${slotInfo.id}`),
   onDelete: (id: number) => alert(`Delete: ${id}`),
 };
 

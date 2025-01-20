@@ -64,7 +64,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
     >
       <div className="tw-absolute tw-top-1 tw-left-1">
         <OptionsMenu
-          onEdit={() => onEdit && onEdit(id)}
+          onEdit={() => onEdit && onEdit({ id, start, end })}
           onDelete={() => onDelete && onDelete(id)}
         />
       </div>
@@ -82,9 +82,9 @@ export const AvailabilitySlot: React.FC<Props> = ({
               }}
               style={{
                 position: "absolute",
-                zIndex: idx === 0 ? 0 : 1,
+                zIndex: idx === 0 ? 1 : 1,
               }}
-              whileHover={{ zIndex: 1 }}
+              whileHover={{ zIndex: 2 }}
             >
               <div>
                 <motion.div
@@ -139,7 +139,7 @@ const OptionsMenu: React.FC<{
 
   return (
     <Menu actions={actions} open={open} setOpen={setOpen}>
-      <div className="tw-p-2">
+      <div className="tw-p-2 tw-z-10">
         <More className="[&>*]:tw-fill-natural-800" />
       </div>
     </Menu>

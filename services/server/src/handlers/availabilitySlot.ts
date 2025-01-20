@@ -14,11 +14,7 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { isEmpty } from "lodash";
-import {
-  deleteSlots,
-  getSubslots,
-  isConflictingSlots,
-} from "@/lib/availabilitySlot";
+import { deleteSlots, getSubslots, isValidSlots } from "@/lib/availabilitySlot";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findPayload = zod.object({
@@ -31,21 +27,21 @@ const findPayload = zod.object({
 });
 
 const setPayload = zod.object({
-  slots: zod.array(
+  actions: zod.array(
     zod.union([
       zod.object({
-        action: zod.literal("create"),
+        type: zod.literal("create"),
         start: datetime,
         end: datetime,
       }),
       zod.object({
-        action: zod.literal("update"),
+        type: zod.literal("update"),
         id: id,
         start: datetime.optional(),
         end: datetime.optional(),
       }),
       zod.object({
-        action: zod.literal("delete"),
+        type: zod.literal("delete"),
         id: id,
       }),
     ])
@@ -118,14 +114,14 @@ async function set(req: Request, res: Response, next: NextFunction) {
 
   const payload = setPayload.parse(req.body);
 
-  const creates = payload.slots.filter(
-    (slot) => slot.action === "create"
+  const creates = payload.actions.filter(
+    (slot) => slot.type === "create"
   ) as Array<IAvailabilitySlot.CreateAction>;
-  const updates = payload.slots.filter(
-    (slot) => slot.action === "update"
+  const updates = payload.actions.filter(
+    (slot) => slot.type === "update"
   ) as Array<IAvailabilitySlot.UpdateAction>;
-  const deletes = payload.slots.filter(
-    (slot) => slot.action === "delete"
+  const deletes = payload.actions.filter(
+    (slot) => slot.type === "delete"
   ) as Array<IAvailabilitySlot.DeleteAction>;
 
   const error = await knex.transaction(async (tx) => {
@@ -142,13 +138,14 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
     if (!isOwner) return forbidden();
 
-    const conflicting = await isConflictingSlots({
+    const isvalid = await isValidSlots({
       userId: user.id,
       creates,
       updates,
       deletes,
     });
-    if (conflicting) return conflict();
+    if (isvalid === "malformed") return bad();
+    if (isvalid === "conflict") return conflict();
 
     // delete slots
     await deleteSlots({

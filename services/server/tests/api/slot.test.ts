@@ -93,9 +93,9 @@ describe("/api/v1/availability-slot/", () => {
       const now = dayjs.utc();
       const res = await safe(async () =>
         studentApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "create",
+              type: "create",
               start: now.toISOString(),
               end: now.add(6, "hours").toISOString(),
             },
@@ -111,9 +111,9 @@ describe("/api/v1/availability-slot/", () => {
 
       const now = dayjs.utc();
       await tutorApi.atlas.availabilitySlot.set({
-        slots: [
+        actions: [
           {
-            action: "create",
+            type: "create",
             start: now.add(1, "hour").toISOString(),
             end: now.add(6, "hours").toISOString(),
           },
@@ -144,9 +144,9 @@ describe("/api/v1/availability-slot/", () => {
 
       const res = await safe(async () =>
         tutorApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "create",
+              type: "create",
               start: now.add(1, "hour").toISOString(),
               end: now.add(6, "hours").toISOString(),
             },
@@ -163,9 +163,9 @@ describe("/api/v1/availability-slot/", () => {
 
       const res = await safe(async () =>
         tutorApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "create",
+              type: "create",
               start: now.subtract(1, "hour").toISOString(),
               end: now.add(6, "hours").toISOString(),
             },
@@ -173,7 +173,7 @@ describe("/api/v1/availability-slot/", () => {
         })
       );
 
-      expect(res).to.deep.eq(conflict());
+      expect(res).to.deep.eq(bad());
     });
 
     it("should respond with bad request if the slot is not well structured", async () => {
@@ -182,9 +182,9 @@ describe("/api/v1/availability-slot/", () => {
 
       const res = await safe(async () =>
         tutorApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "create",
+              type: "create",
               start: now.add(4, "hours").toISOString(),
               end: now.add(2, "hours").toISOString(),
             },
@@ -192,7 +192,7 @@ describe("/api/v1/availability-slot/", () => {
         })
       );
 
-      expect(res).to.deep.eq(conflict());
+      expect(res).to.deep.eq(bad());
     });
 
     it("should successfully update an existing slot", async () => {
@@ -208,9 +208,9 @@ describe("/api/v1/availability-slot/", () => {
       };
 
       await tutorApi.atlas.availabilitySlot.set({
-        slots: [
+        actions: [
           {
-            action: "update",
+            type: "update",
             ...newSlotData,
           },
         ],
@@ -228,9 +228,9 @@ describe("/api/v1/availability-slot/", () => {
       const mock = await genMockData(tutor.user.id, now);
 
       await tutorApi.atlas.availabilitySlot.set({
-        slots: [
+        actions: [
           {
-            action: "delete",
+            type: "delete",
             id: mock.slots[0].id,
           },
         ],
@@ -248,19 +248,19 @@ describe("/api/v1/availability-slot/", () => {
 
       const res = await safe(async () =>
         tutorApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "delete",
+              type: "delete",
               id: mock.slots[0].id,
             },
             {
-              action: "update",
+              type: "update",
               id: mock.slots[1].id,
               start: now.add(2, "days").toISOString(),
               end: now.add(3, "days").toISOString(),
             },
             {
-              action: "delete",
+              type: "delete",
               id: 123,
             },
           ],
@@ -278,9 +278,9 @@ describe("/api/v1/availability-slot/", () => {
 
       const res = await safe(async () =>
         tutorApi.atlas.availabilitySlot.set({
-          slots: [
+          actions: [
             {
-              action: "delete",
+              type: "delete",
               id: mock.slots[0].id,
             },
           ],

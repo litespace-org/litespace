@@ -90,7 +90,11 @@ function updateSlots(
 }
 
 // TODO: unit tests are needed to test this function
-export async function isConflictingSlots({
+/**
+ * This function ensures that slots are not conflicting
+ * and properly structured as well.
+ */
+export async function isValidSlots({
   userId,
   creates,
   updates,
@@ -100,7 +104,7 @@ export async function isConflictingSlots({
   creates: IAvailabilitySlot.CreateAction[];
   updates: IAvailabilitySlot.UpdateAction[];
   deletes: IAvailabilitySlot.DeleteAction[];
-}): Promise<boolean> {
+}): Promise<"conflict" | "malformed" | null> {
   const now = dayjs.utc();
   // Find "all" (hence `full=true`) user slots that are not deleted or about to
   // be deleted (hence why `execludeSlots`)
@@ -130,13 +134,13 @@ export async function isConflictingSlots({
     const start = dayjs.utc(slot.start);
     const end = dayjs.utc(slot.end);
     if (start.isAfter(end) || start.isSame(end) || start.isBefore(now))
-      return true;
+      return "malformed";
   }
 
   // List of the final version of all user slots
   // 1. `readOnlySlots` -> all user slots the are not deleted or about to be
   //    updated.
-  // 2. `creates` -> user slots that are about to be inserted in the to
+  // 2. `creates` -> user slots that are about to be inserted in the
   //    database.
   // 3. `updatedSlots` -> in-memory slots with the desired updates (updates are
   //    applied)
@@ -146,7 +150,7 @@ export async function isConflictingSlots({
   const starts = uniqBy(allSlots, (slot) => slot.start);
   const ends = uniqBy(allSlots, (slot) => slot.end);
   if (starts.length !== allSlots.length || ends.length !== allSlots.length)
-    return true;
+    return "conflict";
 
   // Rule: each slot should not conflict with the other slots.
   for (const currentSlot of allSlots) {
@@ -159,8 +163,8 @@ export async function isConflictingSlots({
       otherSlots
     );
 
-    if (intersecting) return true;
+    if (intersecting) return "conflict";
   }
 
-  return false;
+  return null;
 }

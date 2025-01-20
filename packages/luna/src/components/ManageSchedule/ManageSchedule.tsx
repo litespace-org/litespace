@@ -61,7 +61,6 @@ const Animate: React.FC<{
         opacity: 0,
         height: 0,
       }}
-      className="tw-overflow-hidden"
     >
       {children}
     </motion.div>
@@ -111,6 +110,11 @@ export const ManageSchedule: React.FC<Props> = ({
       return unionBy(concat(cloned, slots), (slot) => slot.id);
     });
   }, [initialSlots]);
+
+  const onClose = useCallback(() => {
+    setSlots([]);
+    close();
+  }, [close]);
 
   const addSlot = useCallback(
     ({ day, start, end }: { day: string; start?: string; end?: string }) => {
@@ -171,17 +175,17 @@ export const ManageSchedule: React.FC<Props> = ({
     );
 
     for (const slot of deletedSlots) {
-      final.push({ action: "delete", id: slot.id });
+      final.push({ type: "delete", id: slot.id });
     }
 
     // NOTE: `unchnaged` slots are not added to the final slots actions.
     for (const slot of slots) {
       if (slot.state === "created" && slot.start && slot.end)
-        final.push({ action: "create", start: slot.start, end: slot.end });
+        final.push({ type: "create", start: slot.start, end: slot.end });
 
       if (slot.state === "updated" && slot.start && slot.end) {
         final.push({
-          action: "update",
+          type: "update",
           id: slot.id,
           start: slot.start,
           end: slot.end,
@@ -202,7 +206,7 @@ export const ManageSchedule: React.FC<Props> = ({
   return (
     <Dialog
       open={open}
-      close={close}
+      close={onClose}
       title={
         <Typography
           element="subtitle-2"
@@ -293,7 +297,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {!loading && !error ? (
             <Animate key="days">
-              <div className="tw-flex tw-flex-col tw-gap-4">
+              <div className="tw-flex tw-flex-col tw-gap-4 tw-overflow-y-auto tw-scrollbar-thin">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
                   return (
@@ -339,7 +343,7 @@ export const ManageSchedule: React.FC<Props> = ({
           </Typography>
         </Button>
         <Button
-          onClick={close}
+          onClick={onClose}
           variant={ButtonVariant.Secondary}
           className="tw-grow tw-basis-1/2"
           disabled={saving}
