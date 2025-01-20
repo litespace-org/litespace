@@ -11,6 +11,7 @@ import { Void } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
+import cn from "classnames";
 
 export type Props = {
   lessons: Array<{
@@ -115,16 +116,29 @@ export const PastLessonsTable: React.FC<Props> = ({
       </div>
 
       {isEmpty(lessons) ? (
-        <div className="tw-flex tw-flex-row tw-justify-center tw-items-center tw-gap-20">
+        <div
+          className={cn(
+            "tw-flex tw-justify-center tw-items-center",
+            isTutor ? "tw-flex-col-reverse tw-gap-6" : "tw-gap-20"
+          )}
+        >
           <div className="tw-flex tw-flex-col tw-items-center tw-gap-6">
-            <Typography element="h4" weight="semibold">
-              {intl("student-dashboard.table.empty")}
+            <Typography
+              element={isTutor ? "subtitle-1" : "h4"}
+              weight="semibold"
+              className="tw-text-natural-950"
+            >
+              {isTutor
+                ? intl("tutor-dashboard.past-lessons.empty")
+                : intl("student-dashboard.table.empty")}
             </Typography>
-            <Link to={tutorsRoute}>
-              <Button size={ButtonSize.Small}>
-                {intl("student-dashboard.table.search-tutors")}
-              </Button>
-            </Link>
+            {!isTutor ? (
+              <Link to={tutorsRoute}>
+                <Button size={ButtonSize.Small}>
+                  {intl("student-dashboard.table.search-tutors")}
+                </Button>
+              </Link>
+            ) : null}
           </div>
           <div>
             <EmptyLessons />
