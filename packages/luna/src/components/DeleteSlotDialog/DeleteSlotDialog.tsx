@@ -2,40 +2,46 @@ import React from "react";
 import { Void } from "@litespace/types";
 import CalendarRemove from "@litespace/assets/CalendarRemove";
 import { useFormatMessage } from "@/hooks";
-import { ConfirmationDialog } from "../ConfirmationDialog";
+import { ConfirmationDialog } from "@/components/ConfirmationDialog";
 
 type Props = {
   slotId: number;
-  confirm: (slotId: number) => void;
+  confirm: Void;
   close: Void;
   opened: boolean;
-  confirming: boolean;
-  setOpen?: Void;
+  deleting: boolean;
+  /**
+   * `normal` in case the slot doesn't has associated lessons or interviews.
+   * Otherwise, it should be `high`
+   */
+  severity: "normal" | "high";
 };
 
 export const DeleteSlotDialog: React.FC<Props> = ({
-  slotId,
   confirm,
   close,
   opened,
-  setOpen,
-  confirming,
+  deleting,
+  severity,
 }) => {
   const intl = useFormatMessage();
   return (
     <ConfirmationDialog
       title={intl("manage-schedule.remove-dialog.title")}
-      description={intl("manage-schedule.remove-dialog.desc")}
+      description={
+        severity === "normal"
+          ? intl("manage-schedule.remove-dialog.severity-normal")
+          : intl("manage-schedule.remove-dialog.severity-high")
+      }
       type="error"
       labels={{
         confirm: intl("labels.delete"),
         cancel: intl("labels.go-back"),
       }}
-      confirm={() => confirm(slotId)}
+      confirm={confirm}
       close={close}
       open={opened}
-      setOpen={setOpen}
-      loading={confirming}
+      loading={deleting}
       icon={<CalendarRemove height={24} width={24} />}
     />
   );

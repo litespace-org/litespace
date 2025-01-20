@@ -18,22 +18,30 @@ const meta: Meta<typeof DeleteSlotDialog> = {
 
 const actions = {
   close: () => alert("close..."),
-  confirm: (slotId: number) => alert("deleting: " + slotId),
+  confirm: () => alert("deleting..."),
 };
 
 export const Primary: Story = {
   args: {
-    slotId: 1,
     opened: true,
+    severity: "normal",
     ...actions,
   },
 };
 
-export const Confirming: Story = {
+export const HighSeveritySlot: Story = {
   args: {
-    slotId: 1,
     opened: true,
-    confirming: true,
+    severity: "high",
+    ...actions,
+  },
+};
+
+export const Deleting: Story = {
+  args: {
+    opened: true,
+    deleting: true,
+    severity: "normal",
     ...actions,
   },
 };

@@ -78,14 +78,12 @@ export const ConfirmationDialog: React.FC<{
               >
                 {icon}
               </div>
-              {!loading ? (
-                <Close
-                  onClick={close}
-                  className="tw-rounded-full tw-h-11 tw-w-11 tw-flex tw-items-center tw-justify-center"
-                >
-                  <X className="tw-text-natural-600" />
-                </Close>
-              ) : null}
+              <Close
+                onClick={close}
+                className="tw-rounded-full tw-h-11 tw-w-11 tw-flex tw-items-center tw-justify-center"
+              >
+                <X className="tw-text-natural-600" />
+              </Close>
             </div>
             <div>
               <Title>
@@ -99,7 +97,7 @@ export const ConfirmationDialog: React.FC<{
               </Title>
               <Typography
                 element="caption"
-                className="tw-text-natural-750"
+                className="tw-text-natural-700"
                 weight="regular"
               >
                 {description}
