@@ -8,7 +8,7 @@ type Component = typeof PastLessonsTable;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "Lessons/PastLessontsTabe",
+  title: "Lessons/PastLessonsTabe",
   component: PastLessonsTable,
   parameters: {
     layout: null,
@@ -106,10 +106,19 @@ export const Error: Story = {
   },
 };
 
-export const Empty: Story = {
+export const EmptyForStudent: Story = {
   args: {
     lessons: [],
     tutorsRoute: "/",
+    isTutor: false,
+  },
+};
+
+export const EmptyForTutor: Story = {
+  args: {
+    lessons: [],
+    tutorsRoute: "/",
+    isTutor: true,
   },
 };
 
