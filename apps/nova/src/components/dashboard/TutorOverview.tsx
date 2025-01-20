@@ -21,7 +21,7 @@ export const TutorOverview: React.FC = () => {
       <Overview
         studentCount={statsQuery.data?.studentCount || 0}
         completedLessonCount={statsQuery.data?.completedLessonCount || 0}
-        totalTutoringTime={0}
+        totalTutoringTime={statsQuery.data?.totalTutoringTime || 0}
         totalLessonCount={statsQuery.data?.completedLessonCount || 0}
         loading={statsQuery.isPending}
         error={statsQuery.isError}
