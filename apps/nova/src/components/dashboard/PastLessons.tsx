@@ -75,7 +75,7 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user]
   );
 
-  const findRoom = useFindRoomByMembers(members);
+  const findRoom = useFindRoomByMembers({ userIds: members });
   const [sendingMessage, setSendingMessage] = useState(0);
 
   const navigate = useNavigate();

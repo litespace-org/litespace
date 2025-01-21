@@ -16,7 +16,8 @@ export const ChatHeader: React.FC<{
   id: number;
   role: IUser.Role;
   openDialog: Void;
-}> = ({ name, image, online, id, lastSeen, role, openDialog }) => {
+  inCall?: boolean;
+}> = ({ name, image, online, id, lastSeen, role, openDialog, inCall }) => {
   const intl = useFormatMessage();
 
   return (
@@ -57,7 +58,7 @@ export const ChatHeader: React.FC<{
           </Typography>
         </div>
       </div>
-      {role !== IUser.Role.Student ? (
+      {role !== IUser.Role.Student && !inCall ? (
         <div className="tw-flex tw-items-center">
           <Button
             onClick={openDialog}

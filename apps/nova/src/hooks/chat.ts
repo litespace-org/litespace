@@ -1,4 +1,3 @@
-import { IRoom, ITutor } from "@litespace/types";
 import {
   useFindUncontactedTutors,
   useFindUserRooms,
@@ -6,10 +5,9 @@ import {
 } from "@litespace/headless/chat";
 import { useUserContext } from "@litespace/headless/context/user";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
-import { useInfinteScroll } from "@litespace/luna/hooks/common";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { useToast } from "@litespace/luna/Toast";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useState } from "react";
 
 export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
@@ -28,43 +26,10 @@ export function useRoomManager(isStudent: boolean) {
 
   const uncontactedTutors = useFindUncontactedTutors(isStudent);
 
-  const isEnabled = useCallback(
-    (
-      query: UseInfinitePaginationQueryResult<
-        IRoom.FindUserRoomsApiRecord | ITutor.UncontactedTutorInfo
-      >["query"]
-    ) => query.hasNextPage && !query.isLoading && !query.isFetching,
+  const canLoadMore = useCallback(
+    <T>(query: UseInfinitePaginationQueryResult<T>["query"]) =>
+      query.hasNextPage && !query.isLoading && !query.isFetching,
     []
-  );
-
-  const allRoomsEnabled = useMemo(
-    () => isEnabled(allRooms.query),
-    [allRooms.query, isEnabled]
-  );
-
-  const pinnedRoomsEnabled = useMemo(
-    () => isEnabled(pinnedRooms.query),
-    [pinnedRooms.query, isEnabled]
-  );
-
-  const uncontactedTutorsEnabled = useMemo(
-    () => isEnabled(uncontactedTutors.query),
-    [uncontactedTutors.query, isEnabled]
-  );
-
-  const { target: allRoomsTarget } = useInfinteScroll<HTMLDivElement>(
-    allRooms.more,
-    allRoomsEnabled
-  );
-
-  const { target: pinnedRoomsTarget } = useInfinteScroll<HTMLDivElement>(
-    pinnedRooms.more,
-    pinnedRoomsEnabled
-  );
-
-  const { target: uncontactedTutorsTarget } = useInfinteScroll<HTMLDivElement>(
-    uncontactedTutors.more,
-    uncontactedTutorsEnabled
   );
 
   const update = useUpdateRoom({
@@ -82,20 +47,20 @@ export function useRoomManager(isStudent: boolean) {
       all: {
         list: allRooms.list,
         query: allRooms.query,
-        target: allRoomsTarget,
-        enabled: allRoomsEnabled,
+        more: allRooms.more,
+        canLoadMore: canLoadMore(allRooms.query),
       },
       pinned: {
         query: pinnedRooms.query,
         list: pinnedRooms.list,
-        target: pinnedRoomsTarget,
-        enabled: pinnedRoomsEnabled,
+        more: pinnedRooms.more,
+        canLoadMore: canLoadMore(pinnedRooms.query),
       },
       uncontactedTutors: {
         list: uncontactedTutors.list,
         query: uncontactedTutors.query,
-        target: uncontactedTutorsTarget,
-        enabled: uncontactedTutorsEnabled,
+        more: uncontactedTutors.more,
+        canLoadMore: canLoadMore(uncontactedTutors.query),
       },
     },
     keyword: {

@@ -36,7 +36,7 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useToast } from "@litespace/luna/Toast";
-import { SelectRoom } from "@litespace/luna/hooks/chat";
+import { SelectRoom, UncontactedTutorRoomId } from "@litespace/luna/hooks/chat";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 
@@ -58,7 +58,7 @@ const Messages: React.FC<{
   /**
    * Room id
    */
-  room: number | "temporary" | null;
+  room: number | UncontactedTutorRoomId | null;
   isTyping: boolean;
   isOnline: boolean | undefined;
   /**
@@ -70,9 +70,18 @@ const Messages: React.FC<{
     | IRoom.FindUserRoomsApiRecord["otherMember"]
     | ITutor.FullUncontactedTutorInfo
     | null;
-  setTemporaryTutor: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
-  select: SelectRoom;
-}> = ({ room, otherMember, setTemporaryTutor, select, isTyping, isOnline }) => {
+  setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
+  select?: SelectRoom;
+  inCall?: boolean;
+}> = ({
+  room,
+  otherMember,
+  setTemporaryTutor,
+  select,
+  isTyping,
+  isOnline,
+  inCall,
+}) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
@@ -95,9 +104,10 @@ const Messages: React.FC<{
     onMessage: onMessages,
     more,
     error,
-  } = useMessages(room);
+  } = useMessages(typeof room === "number" ? room : null);
 
-  const roomErrors = room && room !== "temporary" ? messageErrors[room] : {};
+  const roomErrors =
+    room && typeof room === "number" ? messageErrors[room] : {};
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -134,12 +144,14 @@ const Messages: React.FC<{
   const onSuccess = useCallback(
     (response: IRoom.CreateRoomApiResponse) => {
       if (!otherMember) return;
-      select({
-        room: response.roomId,
-        otherMember: otherMember,
-      });
-      setTemporaryTutor(null);
-      invdalidate([QueryKey.FindUserRooms, QueryKey.FindUncontactedTutors]);
+      if (select)
+        select({
+          room: response.roomId,
+          otherMember: otherMember,
+        });
+      if (setTemporaryTutor) setTemporaryTutor(null);
+      invdalidate([QueryKey.FindUserRooms]);
+      invdalidate([QueryKey.FindUncontactedTutors]);
     },
     [otherMember, select, setTemporaryTutor, invdalidate]
   );
@@ -162,20 +174,20 @@ const Messages: React.FC<{
     delete: (payload) =>
       typeof payload === "number" &&
       room &&
-      room !== "temporary" &&
+      typeof room === "number" &&
       deleteMessage(payload, room),
   };
+
   const typingMessage = useCallback(
-    () => room && room !== "temporary" && ackUserTyping({ roomId: room }),
+    () => room && typeof room === "number" && ackUserTyping({ roomId: room }),
     [room, ackUserTyping]
   );
 
   const submit = useCallback(
     (text: string) => {
       if (!room || !otherMember) return;
-      if (room === "temporary") {
+      if (typeof room === "string")
         return createRoom.mutate({ id: otherMember.id, message: text });
-      }
       return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
     [room, sendMessage, user, otherMember, createRoom]
@@ -183,12 +195,12 @@ const Messages: React.FC<{
 
   const onUpdateMessage = useCallback(
     (text: string) => {
-      if (!updatableMessage || !room || room === "temporary") return;
+      if (!updatableMessage || !room || typeof room !== "number") return;
       setUpdatableMessage(null);
       updateMessage({
         id: updatableMessage.id,
-        text,
         roomId: room,
+        text,
       });
     },
     [updatableMessage, updateMessage, room]
@@ -207,7 +219,7 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage || !room || room === "temporary") return;
+    if (!deletableMessage || !room || typeof room === "string") return;
     deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
   }, [deletableMessage, deleteMessage, room]);
@@ -278,20 +290,26 @@ const Messages: React.FC<{
 
   return (
     <div
-      style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
-      className="flex-1 border-r border-border-strong flex flex-col"
+      style={{
+        height: !inCall ? `calc(100vh - ${HEADER_HEIGHT}px)` : "",
+      }}
+      className="flex-1 flex flex-col h-full"
     >
       {room === null ? <NoSelection /> : null}
 
       {chatHeaderProps ? (
-        <ChatHeader {...chatHeaderProps} openDialog={openDialog} />
+        <ChatHeader
+          {...chatHeaderProps}
+          openDialog={openDialog}
+          inCall={inCall}
+        />
       ) : null}
 
       {room ? (
         <>
           <div
             className={cn(
-              "h-full overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
+              "grow overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
               "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
             )}
           >
@@ -301,7 +319,10 @@ const Messages: React.FC<{
               </div>
             ) : (
               <ul
-                className="h-full flex flex-col gap-4 overflow-auto grow"
+                className={cn(
+                  "flex flex-col gap-4 overflow-auto grow",
+                  inCall ? "h-[380px]" : "h-full"
+                )}
                 onScroll={onScroll}
                 ref={messagesRef}
               >
@@ -321,7 +342,7 @@ const Messages: React.FC<{
                   </div>
                 ) : null}
 
-                {room !== "temporary" && messageGroups.length > 0 ? (
+                {typeof room === "number" && messageGroups.length > 0 ? (
                   messageGroups.map(({ date, groups }, index) => {
                     return (
                       <div key={index} className="w-full">
@@ -392,7 +413,7 @@ const Messages: React.FC<{
               />
             </div>
           ) : null}
-          <div className="px-4 pt-2 pb-6 mt-3">
+          <div className={cn("px-4 pt-2 pb-6 mt-3", inCall && "-mt-6")}>
             <SendInput typingMessage={typingMessage} onSubmit={submit} />
           </div>
         </>
@@ -420,7 +441,7 @@ const Messages: React.FC<{
         close={discardDelete}
         icon={<Trash />}
       />
-      {otherMember && otherMember.role !== IUser.Role.Student ? (
+      {otherMember && otherMember.role !== IUser.Role.Student && open ? (
         <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
       ) : null}
     </div>

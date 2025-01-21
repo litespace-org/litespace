@@ -1,1 +1,1 @@
-export { ChatRoom } from "@/components/Chat/ChatRoom/ChatRoom";
+export { ChatRoom, type Props } from "@/components/Chat/ChatRoom/ChatRoom";

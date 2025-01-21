@@ -5,14 +5,22 @@ import {
   SubscriptionQuota,
 } from "@litespace/luna/Navbar";
 import React from "react";
+import { useLocation } from "react-router-dom";
+import cn from "classnames";
+import { Route } from "@/types/routes";
 
 const Navbar: React.FC = () => {
   const { user } = useUserContext();
-  if (!user) return null;
+  const location = useLocation();
 
+  if (!user) return null;
   return (
-    <div className=" shadow-app-navbar w-full z-navbar">
-      <div className=" flex justify-between gap-8 items-center mx-auto  p-6 max-w-screen-3xl">
+    <div className="shadow-app-navbar w-full z-navbar">
+      <div
+        className={cn("flex justify-between gap-8 items-center p-6", {
+          "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
+        })}
+      >
         <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />
         <div className="w-[386px]">
           <SearchInput />
