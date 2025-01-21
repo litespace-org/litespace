@@ -2,13 +2,15 @@ import { IRoom } from "@litespace/types";
 import { useCallback, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 
+export type UncontactedTutorRoomId = `t-${number}`;
+
 export type SelectedRoom = {
-  room: number | "temporary" | null;
+  room: number | UncontactedTutorRoomId | null;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
 };
 
 export type SelectRoom = (payload: {
-  room: number | "temporary";
+  room: number | UncontactedTutorRoomId;
   otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
 }) => void;
 
@@ -37,6 +39,10 @@ function getRoomParam(params: URLSearchParams): number | null {
   return asRoomId(room);
 }
 
+export function asTutorRoomId(tutorId: number): UncontactedTutorRoomId {
+  return `t-${tutorId}`;
+}
+
 export function useSelectedRoom() {
   const [params, setParams] = useSearchParams();
 
@@ -53,7 +59,7 @@ export function useSelectedRoom() {
 
   const select: SelectRoom = useCallback(
     (payload) => {
-      if (payload.room !== "temporary") saveRoom(payload.room);
+      if (typeof payload.room === "number") saveRoom(payload.room);
       setSelected(payload);
       setParams({
         [ROOM_URL_PARAM]: payload.room.toString(),

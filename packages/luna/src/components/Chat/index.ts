@@ -1,5 +1,8 @@
 export { ChatMessageGroup } from "@/components/Chat/ChatMessageGroup";
-export { ChatRoom } from "@/components/Chat/ChatRoom";
+export {
+  ChatRoom,
+  type Props as ChatRoomProps,
+} from "@/components/Chat/ChatRoom";
 export { ChatMessage } from "@/components/Chat/ChatMessage";
 export { ChatHeader } from "@/components/Chat/ChatHeader";
 export { SendInput } from "@/components/Chat/SendInput";

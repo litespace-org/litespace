@@ -31,7 +31,6 @@ import {
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, uniqueId } from "lodash";
-import { useUserContext } from "@/user/index";
 
 // ========================== Chat System Functionalities =========================
 
@@ -716,12 +715,7 @@ function reducer(state: State, action: Action) {
   return mutate();
 }
 
-/**
- *
- * @param room
- * @returns
- */
-export function useMessages(room: number | "temporary" | null) {
+export function useMessages(room: number | null) {
   const atlas = useAtlas();
   const [state, dispatch] = useReducer(reducer, initial);
 
@@ -746,8 +740,8 @@ export function useMessages(room: number | "temporary" | null) {
   );
 
   const fetcher = useCallback(
-    async (room: number | "temporary" | null, page: number) => {
-      if (!room || room === "temporary") return;
+    async (room: number | null, page: number) => {
+      if (!room) return;
       const full = fetchedAllMessages(room);
       const done = state.pages[room] === page;
       if (
@@ -791,7 +785,7 @@ export function useMessages(room: number | "temporary" | null) {
   );
 
   const more = useCallback(() => {
-    if (!room || room === "temporary") return;
+    if (!room) return;
     const page = state.pages[room];
     if (!page || fetchedAllMessages(room)) return;
     return fetcher(room, page + 1);
@@ -805,7 +799,6 @@ export function useMessages(room: number | "temporary" | null) {
     const page = 1;
     if (
       !!room &&
-      room !== "temporary" &&
       !state.pages[room] &&
       !state.messages[room] &&
       !state.loading[room] &&
@@ -825,7 +818,7 @@ export function useMessages(room: number | "temporary" | null) {
    * list of messages in the chat
    */
   const messages = useMemo(() => {
-    if (!room || room === "temporary") return [];
+    if (!room) return [];
     const messages = state.messages[room] || [];
     const fresh =
       state.freshMessages[room]?.map((message) => {
@@ -841,12 +834,12 @@ export function useMessages(room: number | "temporary" | null) {
   return useMemo(() => {
     return {
       messages,
-      loading: room && room !== "temporary" ? state.loading[room] : false,
-      fetching: room && room !== "temporary" ? state.fetching[room] : false,
+      loading: room ? state.loading[room] : false,
+      fetching: room ? state.fetching[room] : false,
       messageErrors: state.messageErrors,
       more,
       onMessage,
-      error: room && room !== "temporary" ? state.roomErrors[room] : undefined,
+      error: room ? state.roomErrors[room] : undefined,
     };
   }, [
     messages,
@@ -866,28 +859,18 @@ export type RoomsMap = Partial<{
 
 export function useChatStatus() {
   const socket = useSocket();
-  const { user } = useUserContext();
-  const userRooms = useFindUserRooms(user?.id);
 
   /**
-   * A map from rooms to object containing both users in it and showing
-   * if they are typing currently or not
-   * ```ts
-   * type TypingStaus = boolean; // true in case the user is typing.
-   * type TypingMap = Record<RoomId, Record<UserId, TypingStatus>>;
-   * ```
+   * A map from rooms to object containing both users in it and showing if they
+   * are typing currently or not
    */
   const [typingMap, setTypingMap] = useState<RoomsMap>({});
 
   /**
-   * A map from rooms to object containing both users in it and showing
-   * if they are online
-   * ```ts
-   * type OnlineStaus = boolean; // true in case the user is typing.
-   * type OnlineMap = Record<RoomId, Record<UserId, OnlineStaus>>;
-   * ```
+   * A map from rooms to object containing both users in it and showing if they
+   * are online.
    */
-  const [usersOnlineMap, setUsersOnlineMap] = useState<RoomsMap>({});
+  const [onlineUsersMap, setOnlineUsersMap] = useState<RoomsMap>({});
 
   /**
    * object containing timers to remove the typing states from rooms (only if we didn't recieve the
@@ -922,24 +905,13 @@ export function useChatStatus() {
       userId,
       roomId,
     }: Wss.EventPayload<Wss.ServerEvent.UserStatusChanged>) =>
-      setUsersOnlineMap((prev) => {
+      setOnlineUsersMap((prev) => {
         const cloned = structuredClone(prev);
         cloned[roomId] = { ...cloned[roomId], [userId]: online };
         return cloned;
       }),
     []
   );
-
-  // populate the map with data from the server
-  useEffect(() => {
-    const rooms: RoomsMap = {};
-    userRooms.list?.forEach((room) => {
-      rooms[room.roomId] = {
-        [room.otherMember.id]: room.otherMember.online,
-      };
-    });
-    setUsersOnlineMap(rooms);
-  }, [userRooms.list]);
 
   useEffect(() => {
     socket?.on(Wss.ServerEvent.UserTyping, onUserTyping);
@@ -950,7 +922,7 @@ export function useChatStatus() {
     };
   }, [socket, onUserTyping, onUserStatusChange]);
 
-  return { typingMap, usersOnlineMap };
+  return { typingMap, onlineUsersMap };
 }
 
 // ========================== Room Functionalities =========================
@@ -1003,11 +975,11 @@ export function useCreateRoom({
 }
 
 export function useFindRoomMembers(
-  roomId: number | "temporary" | null
+  roomId: number | null
 ): UseQueryResult<IRoom.FindRoomMembersApiResponse, Error> {
   const atlas = useAtlas();
   const findRoomMembers = useCallback(async () => {
-    if (!roomId || roomId === "temporary") return [];
+    if (!roomId) return [];
     return await atlas.chat.findRoomMembers(roomId);
   }, [atlas.chat, roomId]);
 

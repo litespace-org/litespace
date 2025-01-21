@@ -1,5 +1,5 @@
 import Messages from "@/components/Chat/Messages";
-import RoomsContainer from "@/components/Chat/RoomsContainer";
+import RoomsPanel from "@/components/Chat/RoomsPanel";
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { useSelectedRoom } from "@litespace/luna/hooks/chat";
@@ -13,19 +13,21 @@ import { ITutor } from "@litespace/types";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
 const Chat: React.FC = () => {
-  const { user } = useUserContext();
-  const intl = useFormatMessage();
   const [temporaryTutor, setTemporaryTutor] =
     useState<ITutor.FullUncontactedTutorInfo | null>(null);
 
+  const { user } = useUserContext();
+  const intl = useFormatMessage();
   const { select, selected } = useSelectedRoom();
-  // TODO: read/unread function
-  const roomMembers = useFindRoomMembers(selected.room);
+
+  const roomMembers = useFindRoomMembers(
+    typeof selected.room === "number" ? selected.room : null
+  );
   const otherMember = useMemo(
     () => asOtherMember(user?.id, roomMembers.data),
     [user?.id, roomMembers.data]
   );
-  const { typingMap, usersOnlineMap } = useChatStatus();
+  const { typingMap, onlineUsersMap } = useChatStatus();
 
   const isCurrentRoomTyping = useMemo(() => {
     return otherMember
@@ -40,21 +42,21 @@ const Chat: React.FC = () => {
   const isOtherMemberOnline = useMemo(() => {
     return otherMember
       ? isOnline({
-          map: usersOnlineMap,
+          map: onlineUsersMap,
           roomId: selected.room,
           otherMemberStatus: otherMember.online,
           otherMemberId: otherMember.id,
         })
       : false;
-  }, [selected.room, otherMember, usersOnlineMap]);
+  }, [selected.room, otherMember, onlineUsersMap]);
 
   const retry = useCallback(() => {
     roomMembers.refetch();
   }, [roomMembers]);
 
-  if (roomMembers.isLoading && !selected.otherMember)
+  if (roomMembers.isError || (roomMembers.isLoading && !selected.otherMember))
     return (
-      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6 max-w-screen-3xl mx-auto">
+      <div className="w-full h-full overflow-hidden flex flex-col p-6">
         <Typography
           weight="bold"
           element="subtitle-2"
@@ -62,35 +64,27 @@ const Chat: React.FC = () => {
         >
           {intl("chat.title")}
         </Typography>
-        <div>
-          <Loader size="large" text={intl("chat.loading")} />
-        </div>
-      </div>
-    );
-
-  if (roomMembers.isError)
-    return (
-      <div className="w-full h-full overflow-hidden flex flex-col gap-[157px] p-6 max-w-screen-3xl mx-auto">
-        <Typography
-          weight="bold"
-          element="subtitle-2"
-          className="text-natural-950 mb-6"
-        >
-          {intl("chat.title")}
-        </Typography>
-        <div>
-          <LoadingError size="large" error={intl("chat.error")} retry={retry} />
+        <div className="mt-[15vh]">
+          {roomMembers.isError ? (
+            <LoadingError
+              size="large"
+              error={intl("chat.error")}
+              retry={retry}
+            />
+          ) : (
+            <Loader size="large" text={intl("chat.loading")} />
+          )}
         </div>
       </div>
     );
 
   return (
     <div className={cn("flex flex-row overflow-hidden")}>
-      <RoomsContainer
-        usersOnlineMap={usersOnlineMap}
+      <RoomsPanel
+        onlineUsersMap={onlineUsersMap}
         typingMap={typingMap}
         setTemporaryTutor={setTemporaryTutor}
-        selected={selected}
+        selectedRoom={selected.room}
         select={select}
       />
 

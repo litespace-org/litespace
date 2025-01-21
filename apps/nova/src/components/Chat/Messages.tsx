@@ -36,7 +36,7 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { HEADER_HEIGHT } from "@/constants/ui";
 import { useToast } from "@litespace/luna/Toast";
-import { SelectRoom } from "@litespace/luna/hooks/chat";
+import { SelectRoom, UncontactedTutorRoomId } from "@litespace/luna/hooks/chat";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 
@@ -58,7 +58,7 @@ const Messages: React.FC<{
   /**
    * Room id
    */
-  room: number | "temporary" | null;
+  room: number | UncontactedTutorRoomId | null;
   isTyping: boolean;
   isOnline: boolean | undefined;
   /**
@@ -104,9 +104,10 @@ const Messages: React.FC<{
     onMessage: onMessages,
     more,
     error,
-  } = useMessages(room);
+  } = useMessages(typeof room === "number" ? room : null);
 
-  const roomErrors = room && room !== "temporary" ? messageErrors[room] : {};
+  const roomErrors =
+    room && typeof room === "number" ? messageErrors[room] : {};
 
   const onScroll = useCallback(() => {
     const el = messagesRef.current;
@@ -149,7 +150,8 @@ const Messages: React.FC<{
           otherMember: otherMember,
         });
       if (setTemporaryTutor) setTemporaryTutor(null);
-      invdalidate([QueryKey.FindUserRooms, QueryKey.FindUncontactedTutors]);
+      invdalidate([QueryKey.FindUserRooms]);
+      invdalidate([QueryKey.FindUncontactedTutors]);
     },
     [otherMember, select, setTemporaryTutor, invdalidate]
   );
@@ -172,20 +174,20 @@ const Messages: React.FC<{
     delete: (payload) =>
       typeof payload === "number" &&
       room &&
-      room !== "temporary" &&
+      typeof room === "number" &&
       deleteMessage(payload, room),
   };
+
   const typingMessage = useCallback(
-    () => room && room !== "temporary" && ackUserTyping({ roomId: room }),
+    () => room && typeof room === "number" && ackUserTyping({ roomId: room }),
     [room, ackUserTyping]
   );
 
   const submit = useCallback(
     (text: string) => {
       if (!room || !otherMember) return;
-      if (room === "temporary") {
+      if (typeof room === "string")
         return createRoom.mutate({ id: otherMember.id, message: text });
-      }
       return sendMessage({ roomId: room, text, userId: user?.id || 0 });
     },
     [room, sendMessage, user, otherMember, createRoom]
@@ -193,12 +195,12 @@ const Messages: React.FC<{
 
   const onUpdateMessage = useCallback(
     (text: string) => {
-      if (!updatableMessage || !room || room === "temporary") return;
+      if (!updatableMessage || !room || typeof room !== "number") return;
       setUpdatableMessage(null);
       updateMessage({
         id: updatableMessage.id,
-        text,
         roomId: room,
+        text,
       });
     },
     [updatableMessage, updateMessage, room]
@@ -217,7 +219,7 @@ const Messages: React.FC<{
   );
 
   const confirmDelete = useCallback(() => {
-    if (!deletableMessage || !room || room === "temporary") return;
+    if (!deletableMessage || !room || typeof room === "string") return;
     deleteMessage(deletableMessage, room);
     setDeletableMessage(null);
   }, [deletableMessage, deleteMessage, room]);
@@ -291,7 +293,7 @@ const Messages: React.FC<{
       style={{
         height: !inCall ? `calc(100vh - ${HEADER_HEIGHT}px)` : "",
       }}
-      className="flex-1 border-r border-border-strong flex flex-col h-full"
+      className="flex-1 flex flex-col h-full"
     >
       {room === null ? <NoSelection /> : null}
 
@@ -340,7 +342,7 @@ const Messages: React.FC<{
                   </div>
                 ) : null}
 
-                {room !== "temporary" && messageGroups.length > 0 ? (
+                {typeof room === "number" && messageGroups.length > 0 ? (
                   messageGroups.map(({ date, groups }, index) => {
                     return (
                       <div key={index} className="w-full">
@@ -439,7 +441,7 @@ const Messages: React.FC<{
         close={discardDelete}
         icon={<Trash />}
       />
-      {otherMember && otherMember.role !== IUser.Role.Student ? (
+      {otherMember && otherMember.role !== IUser.Role.Student && open ? (
         <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
       ) : null}
     </div>

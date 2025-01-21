@@ -88,7 +88,7 @@ const Lesson: React.FC = () => {
     [user?.id, roomMembers.data]
   );
 
-  const { typingMap, usersOnlineMap } = useChatStatus();
+  const { typingMap, onlineUsersMap } = useChatStatus();
 
   const isOtherMemberTyping = useMemo(() => {
     return chatOtherMember
@@ -103,13 +103,13 @@ const Lesson: React.FC = () => {
   const isOtherMemberOnline = useMemo(() => {
     return chatOtherMember
       ? isOnline({
-          map: usersOnlineMap,
+          map: onlineUsersMap,
           roomId: room,
           otherMemberStatus: chatOtherMember.online,
           otherMemberId: chatOtherMember.id,
         })
       : false;
-  }, [room, chatOtherMember, usersOnlineMap]);
+  }, [chatOtherMember, onlineUsersMap, room]);
 
   // ============================ Session/Streams ================================
   const [permission, setPermission] = useState<"mic-and-camera" | "mic-only">();

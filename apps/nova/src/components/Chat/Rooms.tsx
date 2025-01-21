@@ -1,112 +1,115 @@
 import { ChatRoom } from "@litespace/luna/Chat";
-import { SelectRoom } from "@litespace/luna/hooks/chat";
+import {
+  asTutorRoomId,
+  SelectRoom,
+  UncontactedTutorRoomId,
+} from "@litespace/luna/hooks/chat";
 import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { Typography } from "@litespace/luna/Typography";
-import { IRoom, ITutor, Paginated } from "@litespace/types";
-import { InfiniteData, UseInfiniteQueryResult } from "@tanstack/react-query";
+import { IMessage, IRoom, ITutor, Void } from "@litespace/types";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
 import { isOnline, isTyping } from "@/lib/room";
 import { RoomsMap } from "@litespace/headless/chat";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { LocalId } from "@litespace/luna/locales";
 import People from "@litespace/assets/People";
-import { asChatRoomProps } from "@/lib/room";
-
-type Query = UseInfiniteQueryResult<
-  InfiniteData<
-    Paginated<IRoom.FindUserRoomsApiRecord | ITutor.UncontactedTutorInfo>,
-    unknown
-  >,
-  Error
->;
+import { asFullAssetUrl } from "@litespace/luna/backend";
+import { orUndefined } from "@litespace/sol/utils";
+import dayjs from "@/lib/dayjs";
+import { InView } from "react-intersection-observer";
 
 type RoomsData = {
-  Icon: React.ReactNode;
+  icon: React.ReactNode;
   label: LocalId;
 };
 
 const Rooms: React.FC<{
-  type: "all" | "pinned" | "uncontactedTutors";
-  query: Query;
+  type: "all" | "pinned" | "uncontacted-tutors";
   typingMap?: RoomsMap;
-  usersOnlineMap?: RoomsMap;
-  rooms:
-    | IRoom.FindUserRoomsApiRecord[]
-    | ITutor.FullUncontactedTutorInfo[]
-    | null;
+  onlineUsersMap?: RoomsMap;
+  data: IRoom.FindUserRoomsApiRecord[] | ITutor.FullUncontactedTutorInfo[];
   selectUncontacted?: (tutor: ITutor.FullUncontactedTutorInfo) => void;
   select?: SelectRoom;
-  roomId: number | "temporary" | null;
-  target: React.RefObject<HTMLDivElement>;
-  enabled: boolean;
-  toggleMute?: ({ roomId, muted }: { roomId: number; muted: boolean }) => void;
-  togglePin?: ({ roomId, pinned }: { roomId: number; pinned: boolean }) => void;
+  roomId: number | UncontactedTutorRoomId | null;
+  toggleMute?: (payload: { roomId: number; muted: boolean }) => void;
+  togglePin?: (payload: { roomId: number; pinned: boolean }) => void;
+  pending?: boolean;
+  fetching?: boolean;
+  error?: boolean;
+  canLoadMore?: boolean;
+  more: Void;
+  refetch: Void;
 }> = ({
   typingMap,
-  usersOnlineMap,
-  query,
-  rooms,
+  onlineUsersMap,
+  data,
   select,
   selectUncontacted,
-  target,
   roomId,
   type,
-  enabled,
   toggleMute,
   togglePin,
+  pending,
+  fetching,
+  error,
+  refetch,
+  more,
+  canLoadMore,
 }) => {
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
-  const roomsData: RoomsData = useMemo(() => {
+  const { icon, label }: RoomsData = useMemo(() => {
     if (type === "all")
       return {
-        Icon: <AllMessages />,
+        icon: <AllMessages className="w-4 h-4" />,
         label: "chat.all",
       };
+
     if (type === "pinned")
       return {
-        Icon: <Pin />,
+        icon: <Pin className="w-4 h-4" />,
         label: "chat.pinned.title",
       };
 
     return {
-      Icon: <People className="[&>*]:stroke-natural-600 w-4 h-4" />,
+      icon: <People className="[&>*]:stroke-natural-600 w-4 h-4" />,
       label: "chat.all-tutors.title",
     };
   }, [type]);
 
-  /**
-   * map from either unconctacted tutors or chatRooms to list of props
-   * we are doing this to avoid making prop definition unread
-   */
-  const chatRoomProps: (React.ComponentProps<typeof ChatRoom> & {
-    roomId: number | null;
-  })[] = useMemo(
-    () =>
-      asChatRoomProps({
-        roomId,
-        rooms,
-        selectUncontacted,
-        currentUserId: user?.id,
-        select,
-        toggleMute,
-        togglePin,
-        intl,
-      }),
-    [
-      rooms,
-      selectUncontacted,
-      roomId,
-      select,
-      toggleMute,
-      togglePin,
-      user?.id,
-      intl,
-    ]
+  const asRoomMessage = useCallback(
+    ({
+      bio,
+      online,
+      message,
+      lastSeen,
+    }: {
+      message: IMessage.Self | null;
+      bio: string | null;
+      lastSeen: string;
+      online: boolean;
+    }) => {
+      if (message) return message.text;
+      if (bio) return bio;
+      if (online) return intl("chat.online");
+      return intl("chat.offline", {
+        time: dayjs(lastSeen).fromNow(),
+      });
+    },
+    [intl]
+  );
+
+  const asMessageState = useCallback(
+    (message: IMessage.Self | null): IMessage.MessageState | undefined => {
+      if (!message) return;
+      if (message.read) return "seen";
+      return "sent";
+    },
+    []
   );
 
   if (!user) return null;
@@ -114,49 +117,101 @@ const Rooms: React.FC<{
   return (
     <div>
       <div className="flex flex-row items-center justify-start gap-2 mb-4">
-        {roomsData.Icon}
-
+        {icon}
         <Typography element="caption" className="text-natural-600">
-          {intl(roomsData.label)}
+          {intl(label)}
         </Typography>
       </div>
 
       <div className="flex flex-col justify-stretch gap-4">
-        {chatRoomProps.map((chatRoom) => (
-          <ChatRoom
-            {...chatRoom}
-            online={isOnline({
-              map: usersOnlineMap,
-              roomId: chatRoom.roomId,
-              otherMemberStatus: chatRoom.online,
-              otherMemberId: chatRoom.userId,
-            })}
-            isTyping={isTyping({
-              map: typingMap,
-              roomId: chatRoom.roomId,
-              otherMemberId: chatRoom.userId,
-            })}
-          />
-        ))}
+        {data.map((data) => {
+          const room = "roomId" in data;
+          return (
+            <ChatRoom
+              key={room ? data.roomId : `t-${data.id}`}
+              active={
+                room
+                  ? data.roomId === roomId
+                  : asTutorRoomId(data.id) === roomId
+              }
+              actionable={type !== "uncontacted-tutors"}
+              owner={room && data.latestMessage?.userId === user.id}
+              pinned={room && data.settings.pinned}
+              muted={room && data.settings.muted}
+              userId={
+                room
+                  ? data.otherMember.id // other member id
+                  : data.id // tutor id
+              }
+              imageUrl={orUndefined(
+                asFullAssetUrl(room ? data.otherMember.image : data.image)
+              )}
+              name={orUndefined(room ? data.otherMember.name : data.name)}
+              message={asRoomMessage({
+                message: room ? data.latestMessage : null,
+                bio: !room ? data.bio : null,
+                lastSeen: room ? data.otherMember.lastSeen : data.lastSeen,
+                online: room ? data.otherMember.online : data.online,
+              })}
+              unreadCount={room ? data.unreadMessagesCount : 0}
+              messageState={asMessageState(room ? data.latestMessage : null)}
+              select={() => {
+                if (room && select)
+                  return select({
+                    room: data.roomId,
+                    otherMember: data.otherMember,
+                  });
+                if (!room && selectUncontacted) return selectUncontacted(data);
+              }}
+              toggleMute={() => {
+                if (!room || !toggleMute) return;
+                toggleMute({
+                  roomId: data.roomId,
+                  muted: !data.settings.muted,
+                });
+              }}
+              togglePin={() => {
+                if (!room || !togglePin) return;
+                togglePin({
+                  roomId: data.roomId,
+                  pinned: !data.settings.pinned,
+                });
+              }}
+              online={isOnline({
+                map: onlineUsersMap,
+                roomId: room ? data.roomId : null,
+                otherMemberStatus: room ? data.otherMember.online : data.online,
+                otherMemberId: room ? data.otherMember.id : data.id,
+              })}
+              typing={isTyping({
+                map: typingMap,
+                roomId: room ? data.roomId : null,
+                otherMemberId: room ? data.otherMember.id : data.id,
+              })}
+            />
+          );
+        })}
       </div>
 
-      {query.isPending || query.isFetching ? (
-        <div className="my-6">
+      {pending || fetching ? (
+        <div className="mt-6">
           <Loader size="small" />
         </div>
       ) : null}
 
-      <div
-        data-enabled={enabled}
-        className="data-[enabled=true]:h-2"
-        ref={target}
-      />
+      {canLoadMore && !pending && !error && !fetching ? (
+        <InView
+          onChange={(inview) => {
+            if (inview) more();
+          }}
+        />
+      ) : null}
 
-      {query.isError && !query.isPending ? (
+      {error && !pending && !fetching ? (
         <div className="my-6 max-w-[192px] mx-auto">
           <LoadingError
             size="small"
-            retry={() => query.refetch}
+            retry={refetch}
             error={intl("chat.error")}
           />
         </div>
