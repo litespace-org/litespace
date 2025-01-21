@@ -6,7 +6,10 @@ import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 
-const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Animate: React.FC<{ children: React.ReactNode; className?: string }> = ({
+  children,
+  className,
+}) => {
   return (
     <motion.div
       initial={{
@@ -27,7 +30,10 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         duration: 0.4,
         ease: "easeInOut",
       }}
-      className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
+      className={cn(
+        "tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden",
+        className
+      )}
     >
       {children}
     </motion.div>
@@ -78,21 +84,28 @@ export const FocusedStream: React.FC<{
   return (
     <div className="tw-grow tw-rounded-lg tw-overflow-hidden">
       <AnimatePresence mode="wait">
-        {stream.camera || stream.cast ? (
-          <Animate key="stream">
-            <Stream stream={stream.stream} muted={muted} />
-          </Animate>
-        ) : (
-          <Animate key="avatar">
-            <div
-              className={cn(
-                "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center"
-              )}
-            >
-              <UserAvatar user={stream.user} speaking={stream.speaking} />
-            </div>
-          </Animate>
-        )}
+        <Animate
+          className={cn(
+            !stream.camera && !stream.cast && "!tw-absolute !tw-opacity-0"
+          )}
+          key="stream"
+        >
+          <Stream stream={stream.stream} muted={stream.muted} />
+        </Animate>
+        <Animate
+          className={cn(
+            (stream.cast || stream.camera) && "!tw-absolute !tw-opacity-0"
+          )}
+          key="avatar"
+        >
+          <div
+            className={
+              "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center"
+            }
+          >
+            <UserAvatar user={stream.user} speaking={stream.speaking} />
+          </div>
+        </Animate>
       </AnimatePresence>
 
       <VideoBar
@@ -100,7 +113,7 @@ export const FocusedStream: React.FC<{
         timer={timer}
         fullScreen={fullScreen}
         speaking={stream.speaking}
-        muted={stream.muted}
+        muted={muted}
       />
     </div>
   );

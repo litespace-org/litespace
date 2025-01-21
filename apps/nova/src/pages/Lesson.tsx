@@ -169,7 +169,7 @@ const Lesson: React.FC = () => {
     const streams: StreamInfo[] = [
       {
         speaking: session.members.current.speaking,
-        muted: !session.members.current.audio,
+        muted: true,
         camera: session.members.current.video,
         stream: session.members.current.stream,
         cast: false,

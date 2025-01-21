@@ -16,6 +16,7 @@ export const SessionStreams: React.FC<{
    * @default false
    */
   chat?: boolean;
+  mic: boolean;
   timer: {
     duration: number;
     startAt: string;
@@ -24,7 +25,7 @@ export const SessionStreams: React.FC<{
     enabled: boolean;
     toggle: Void;
   };
-}> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
+}> = ({ alert, streams, chat, timer, fullScreen, currentUserId, mic }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const newStreams = useMemo(
     () => organizeStreams(streams, currentUserId),
@@ -49,7 +50,11 @@ export const SessionStreams: React.FC<{
         fullScreen={fullScreen}
         stream={newStreams.focused}
         timer={timer}
-        muted={newStreams.focused.user.id === currentUserId}
+        muted={
+          newStreams.focused.user.id === currentUserId
+            ? !mic
+            : newStreams.focused.muted
+        }
         alert={alert}
       />
 
@@ -63,7 +68,11 @@ export const SessionStreams: React.FC<{
           if (!stream) return null;
           return (
             <MovableMedia container={containerRef} key={idx}>
-              <UnFocusedStream stream={stream} />
+              <UnFocusedStream
+                owner={stream.user.id === currentUserId}
+                mic={mic}
+                stream={stream}
+              />
             </MovableMedia>
           );
         })}

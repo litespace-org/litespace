@@ -72,6 +72,7 @@ export const Session: React.FC<Props> = ({
           chat={chat.enabled}
           timer={timer}
           alert={alert}
+          mic={mic.enabled}
         />
         {chat.enabled ? chatPanel : null}
       </div>
