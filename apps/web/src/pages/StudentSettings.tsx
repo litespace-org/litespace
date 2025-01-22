@@ -3,7 +3,7 @@ import PageTitle from "@/components/Common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
-import { ProfileForm } from "@/components/Settings/ProfileForm";
+import { ProfileForm } from "@/components/StudentSettings/ProfileForm";
 import { redirect } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { Loader, LoadingError } from "@litespace/ui/Loading";

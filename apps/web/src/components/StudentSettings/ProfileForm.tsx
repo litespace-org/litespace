@@ -1,7 +1,6 @@
 import { Controller, Form, Label } from "@litespace/ui/Form";
-import UploadPhoto from "@/components/Settings/UploadPhoto";
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { Typography } from "@litespace/ui/Typography";
-import { FullSwitch } from "@litespace/ui/Switch";
 import { Button, ButtonSize } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
@@ -19,13 +18,14 @@ import {
 } from "@litespace/ui/hooks/validation";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateFullUser } from "@litespace/headless/user";
-import TopicSelector from "@/components/Settings/TopicSelector";
+import { TopicSelector } from "@/components/StudentSettings/TopicSelector";
 import { isEqual } from "lodash";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
 import { governorates } from "@/constants/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import NotificationSettings from "@/components/Common/NotificationSettings";
 
 type IForm = {
   name: string;
@@ -163,13 +163,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
 
   const profileMutation = useUpdateFullUser({ onSuccess, onError });
 
-  const notifyComingSoon = useCallback(() => {
-    toast.success({
-      title: intl("settings.notifications.coming-soon.title"),
-      description: intl("settings.notifications.coming-soon.description"),
-    });
-  }, [intl, toast]);
-
   const onSubmit = useCallback(
     (data: IForm) => {
       if (!canSubmit) return;
@@ -302,7 +295,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           <Label>{intl("settings.edit.personal.city")}</Label>
           <Controller.Select
             options={cityOptions}
-            placeholder={intl("settings.edit.personal.city.placeholder")}
+            placeholder={intl("shared-settings.edit.personal.city.placeholder")}
             value={orUndefined(form.watch("city"))}
             control={form.control}
             name="city"
@@ -367,34 +360,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
         </div>
         <div className="w-full flex flex-col md:gap-6">
           {!lg ? topicsSelector : null}
-          <Typography
-            element={lg ? "subtitle-1" : "caption"}
-            weight="bold"
-            className="text-natural-950 mt-6 mb-4 md:m-0"
-          >
-            {intl("settings.notifications")}
-          </Typography>
-
-          <div className="flex flex-col gap-4">
-            <FullSwitch
-              title={intl("settings.notifications.lesson-date.title")}
-              description={intl(
-                "settings.notifications.lesson-date.description"
-              )}
-              checked={false}
-              disabled={false}
-              onChange={notifyComingSoon}
-              isLargeScreen={lg}
-            />
-            <FullSwitch
-              title={intl("settings.notifications.messages.title")}
-              description={intl("settings.notifications.messages.description")}
-              checked={false}
-              disabled={false}
-              onChange={notifyComingSoon}
-              isLargeScreen={lg}
-            />
-          </div>
+          <NotificationSettings />
         </div>
       </div>
       {lg ? topicsSelector : null}

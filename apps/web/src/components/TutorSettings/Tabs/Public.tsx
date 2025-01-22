@@ -18,7 +18,6 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const Topics: React.FC<{
   edit: Void;
@@ -75,7 +74,6 @@ const PublicSettings: React.FC<{
   const userTopics = useUserTopics();
   const validateUserName = useValidateUserName(form.watch("name") !== null);
   const validateBio = useValidateBio(form.watch("bio") !== null);
-  const errors = form.formState.errors;
 
   const allTopics = useMemo(() => {
     if (!topics.query.data) return [];
@@ -103,16 +101,11 @@ const PublicSettings: React.FC<{
     setShowTopoicsDialog(false);
   }, [invalidateQuery]);
 
-  const onTopicChangeError = useCallback(
-    (error: unknown) => {
-      const errorMessage = getErrorMessageId(error);
-      toast.error({
-        title: intl("tutor-settings.personal-info.update-topics-error"),
-        description: intl(errorMessage),
-      });
-    },
-    [intl, toast]
-  );
+  const onTopicChangeError = useCallback(() => {
+    toast.error({
+      title: intl("tutor-settings.personal-info.update-topics-error"),
+    });
+  }, [intl, toast]);
 
   const updateTopics = useUpdateUserTopics({
     onSuccess: onTopicChangeSuccess,
@@ -147,27 +140,26 @@ const PublicSettings: React.FC<{
         {intl("tutor-settings.personal-info.title")}
       </Typography>
       <div className="flex items-center gap-8">
-        <Controller.Input
-          value={form.watch("name")}
-          control={form.control}
-          rules={{ validate: validateUserName }}
-          autoComplete="off"
-          name="name"
-          label={intl("tutor-settings.personal-info.name")}
-          state={errors.name ? "error" : undefined}
-          helper={errors.name?.message}
-        />
-        <Label>{intl("tutor-settings.personal-info.bio")}</Label>
-        <Controller.Input
-          value={form.watch("bio")}
-          control={form.control}
-          rules={{ validate: validateBio }}
-          autoComplete="off"
-          name="bio"
-          label={intl("tutor-settings.personal-info.bio")}
-          state={errors.bio ? "error" : undefined}
-          helper={errors.bio?.message}
-        />
+        <div className="grow flex flex-col">
+          <Label>{intl("tutor-settings.personal-info.name")}</Label>
+          <Controller.Input
+            value={form.watch("name")}
+            control={form.control}
+            rules={{ validate: validateUserName }}
+            autoComplete="off"
+            name="name"
+          />
+        </div>
+        <div className="grow flex flex-col">
+          <Label>{intl("tutor-settings.personal-info.bio")}</Label>
+          <Controller.Input
+            value={form.watch("bio")}
+            control={form.control}
+            rules={{ validate: validateBio }}
+            autoComplete="off"
+            name="bio"
+          />
+        </div>
       </div>
 
       <Topics
@@ -189,8 +181,6 @@ const PublicSettings: React.FC<{
         autoComplete="off"
         className="min-h-[172px]"
         name="about"
-        state={errors.about ? "error" : undefined}
-        helper={errors.about?.message}
       />
       <Typography
         element="subtitle-1"

@@ -6,7 +6,7 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { redirect } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import { ProfileSettings } from "@/components/TutorSettings/ProfileSettings";
+import ProfileSettings from "@/components/TutorSettings/ProfileSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 
 const TutorSettings: React.FC = () => {
@@ -17,6 +17,8 @@ const TutorSettings: React.FC = () => {
   useEffect(() => {
     if (!user && !!loading && !error) redirect(Route.Login);
   }, [user, loading, error]);
+
+  if (!user) return null;
 
   return (
     <div className="max-w-screen-3xl mx-auto w-full p-6">
@@ -51,7 +53,14 @@ const TutorSettings: React.FC = () => {
         ) : null}
         <PageContent>
           {tutorInfo.data && !error && !loading ? (
-            <ProfileSettings {...tutorInfo.data} />
+            <ProfileSettings
+              info={tutorInfo.data}
+              personalData={{
+                city: user.city,
+                phoneNumber: user.phoneNumber,
+                email: user.email,
+              }}
+            />
           ) : null}
         </PageContent>
       </div>

@@ -11,7 +11,6 @@ import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { ITutor, IUser } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { orNull, orUndefined } from "@litespace/utils/utils";
 
 const TutorSettings: React.FC<{
@@ -69,11 +68,10 @@ const TutorSettings: React.FC<{
   }, [info.id, invalidateQuery, form]);
 
   const onError = useCallback(
-    (error: unknown) => {
-      const errorMessage = getErrorMessageId(error);
+    (error: Error) => {
       toast.error({
         title: intl("tutor-settings.profile.update.error"),
-        description: intl(errorMessage),
+        description: error.message,
       });
     },
     [intl, toast]
