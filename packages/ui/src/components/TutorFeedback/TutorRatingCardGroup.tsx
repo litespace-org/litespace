@@ -60,7 +60,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
   return (
     <div
       className={cn(
-        "tw-p-6 tw-bg-natural-50 tw-rounded-3xl",
+        "tw-p-4 md:tw-p-6 tw-bg-natural-50 tw-rounded-3xl",
         "tw-flex tw-flex-col tw-gap-6 tw-justify-between tw-items-center",
         "tw-shadow-feedback-card"
       )}
@@ -73,7 +73,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
               <div
                 key={rating.userId}
                 className={cn(
-                  "tw-w-[54px] tw-h-[54px] tw-rounded-full tw-overflow-hidden tw-border-[3px] tw-border-brand-500 -tw-mr-4 tw-relative",
+                  "md:tw-w-[54px] tw-w-[51px] tw-h-[51px] md:tw-h-[54px] tw-rounded-full tw-overflow-hidden tw-border-[3px] tw-border-brand-500 -tw-mr-4 tw-relative",
                   "tw-felx tw-justify-center tw-items-center",
                   { "tw-bg-brand-600": idx === 4 }
                 )}
@@ -102,7 +102,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
       <RatingStars readonly rating={value} variant="md" />
       <div className="tw-flex tw-flex-wrap tw-justify-center">
         <Typography
-          element="body"
+          element={{ default: "body", md: "caption" }}
           weight="bold"
           className="tw-text-natural-950 tw-text-center"
         >
@@ -111,12 +111,16 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
       </div>
       <div
         className={cn(
-          "tw-bg-brand-500 tw-w-[123px] tw-h-[124px] tw-rounded-full",
+          "tw-bg-brand-500 tw-w-[54px] tw-h-[54px] md:tw-w-[123px] md:tw-h-[124px] tw-rounded-full",
           "tw-flex tw-flex-col tw-justify-center tw-items-center",
           "tw-border-[2px] tw-border-natural-200"
         )}
       >
-        <Quote width={52.72} height={52.72} />
+        <Quote
+          width={52.72}
+          height={52.72}
+          className="md:tw-w-[52.72px] md:tw-h-[52.72px] tw-w-6 tw-h-6"
+        />
       </div>
     </div>
   );

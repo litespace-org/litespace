@@ -9,7 +9,6 @@ import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
 import { Loader, LoadingError } from "@/components/Loading";
 import cn from "classnames";
-import { useMediaQueries } from "@/hooks/media";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -25,6 +24,7 @@ export const TutorProfileCard: React.FC<{
   onBook?: Void;
   loading?: boolean;
   error?: boolean;
+  mq?: "default" | "sm" | "md";
   retry?: Void;
 }> = ({
   image,
@@ -39,20 +39,20 @@ export const TutorProfileCard: React.FC<{
   loading,
   error,
   retry,
+  mq = "default",
 }) => {
-  const { md } = useMediaQueries();
   const intl = useFormatMessage();
 
   if (loading)
     return (
-      <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
+      <div className="tw-h-full tw-flex tw-mt-[54px] tw-justify-center tw-items-center">
         <Loader size="medium" text={intl("tutor.profile.loading")} />
       </div>
     );
 
   if (error && retry)
     return (
-      <div className="tw-h-full tw-flex tw-justify-center tw-items-center">
+      <div className="tw-h-full tw-flex tw-mt-[54px] tw-justify-center tw-items-center">
         <LoadingError
           size="medium"
           error={intl("tutor.profile.error")}
@@ -66,7 +66,7 @@ export const TutorProfileCard: React.FC<{
       className={cn(
         "tw-grid tw-grid-cols-[auto,1fr] md:tw-flex tw-items-center max-w-[280px]",
         {
-          "tw-gap-4 md:tw-gap-10 md:tw-p-10": variant === "large",
+          "tw-gap-4 md:tw-gap-10 md:tw-p-10 md:tw-pb-0": variant === "large",
           "tw-gap-4": variant === "small",
         }
       )}
@@ -94,7 +94,7 @@ export const TutorProfileCard: React.FC<{
           })}
         >
           <Typography
-            element={md ? "h2" : "body"}
+            element={{ default: "body", md: "h2" }}
             weight="bold"
             className="tw-text-natural-950 dark:tw-text-natural-50"
           >
@@ -102,7 +102,7 @@ export const TutorProfileCard: React.FC<{
           </Typography>
           <div className="tw-flex tw-flex-col tw-gap-1">
             <Typography
-              element={md ? "subtitle-2" : "tiny-text"}
+              element={{ default: "tiny-text", md: "subtitle-2" }}
               weight="semibold"
               className="tw-text-natural-950 dark:tw-text-natural-50"
             >
@@ -110,7 +110,7 @@ export const TutorProfileCard: React.FC<{
             </Typography>
             {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
               <Typography
-                element={md ? "subtitle-2" : "tiny-text"}
+                element={{ default: "tiny-text", md: "subtitle-2" }}
                 weight="semibold"
                 className="tw-text-natural-950 dark:tw-text-natural-50"
               >
@@ -124,7 +124,7 @@ export const TutorProfileCard: React.FC<{
           {avgRating > 0 ? (
             <div className="tw-flex tw-items-center tw-gap-1 md:tw-gap-2">
               <Typography
-                element={md ? "subtitle-2" : "tiny-text"}
+                element={{ default: "tiny-text", md: "subtitle-2" }}
                 weight="semibold"
                 className="tw-text-natural-950 dark:tw-text-natural-50"
               >
@@ -138,13 +138,13 @@ export const TutorProfileCard: React.FC<{
             </div>
           ) : null}
         </div>
-        {onBook && md ? (
+        {onBook && mq === "md" ? (
           <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
             {intl("tutor.book")}
           </Button>
         ) : null}
       </div>
-      {onBook && !md ? (
+      {onBook && mq === "default" ? (
         <Button
           size={ButtonSize.Tiny}
           onClick={onBook}

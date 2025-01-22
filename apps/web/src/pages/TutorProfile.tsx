@@ -1,4 +1,4 @@
-import { Loading } from "@litespace/ui/Loading";
+import { Loader, LoadingError } from "@litespace/ui/Loading";
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
@@ -9,7 +9,7 @@ import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { Route } from "@/types/routes";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
@@ -25,14 +25,21 @@ const TutorProfile: React.FC = () => {
 
   const tutor = useFindTutorInfo(id);
 
-  const { md } = useMediaQueries();
+  const mq = useMediaQuery();
 
-  if (tutor.isLoading) return <Loading className="h-[40vh]" />;
+  if (tutor.isLoading)
+    return <Loader size="large" text={intl("tutor.profile.loading")} />;
 
-  // TODO: Need to implement error state
-  if (!tutor.data || tutor.error) return null;
+  if (!tutor.data || tutor.error)
+    return (
+      <LoadingError
+        size="large"
+        error={intl("tutor.profile.error")}
+        retry={tutor.refetch}
+      />
+    );
   return (
-    <div className="w-full max-w-screen-3xl p-6 mx-auto md:mb-12">
+    <div className="w-full max-w-screen-3xl p-4 md:p-6 mx-auto md:mb-12">
       <div className="flex items-center gap-4 md:gap-6">
         <Link
           to={Route.Tutors}
@@ -41,7 +48,7 @@ const TutorProfile: React.FC = () => {
           <RightArrow className="[&>*]:stroke-brand-700" />
         </Link>
         <Typography
-          element={md ? "subtitle-2" : "body"}
+          element={{ default: "body", md: "subtitle-2" }}
           className="font-bold text-natural-950"
         >
           {intl("tutors.title")} /{" "}
@@ -49,7 +56,14 @@ const TutorProfile: React.FC = () => {
         </Typography>
       </div>
       <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl mt-4 md:mt-6 flex flex-col gap-8 md:gap-12">
-        <TutorProfileCard {...tutor.data} onBook={openDialog} />
+        <TutorProfileCard
+          {...tutor.data}
+          mq={mq.md ? "md" : "default"}
+          onBook={openDialog}
+          loading={tutor.isPending}
+          error={tutor.isError}
+          retry={tutor.refetch}
+        />
         <TutorTabs tutor={tutor.data} />
         <BookLesson tutorId={tutor.data.id} close={closeDialog} open={open} />
       </div>

@@ -14,7 +14,7 @@ const registerRoutes = [IUser.Role.Student, IUser.Role.Tutor].map((role) =>
 );
 
 const Root: React.FC = () => {
-  const { lg } = useMediaQuery();
+  const mq = useMediaQuery();
   const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -35,27 +35,27 @@ const Root: React.FC = () => {
     if (student) return navigate(Route.StudentDashboard);
   }, [navigate, location.pathname, user, meta]);
 
-  const showNaviation = useMemo(() => {
+  const showNavigation = useMemo(() => {
     const routes: string[] = [
       Route.Login,
       Route.ForgetPassword,
       Route.ResetPassword,
       ...registerRoutes,
     ];
-    return !routes.includes(location.pathname);
-  }, [location.pathname]);
+    return !routes.includes(location.pathname) && mq.lg;
+  }, [location.pathname, mq.lg]);
 
   return (
     <div
       className={cn("flex relative w-full", {
-        "lg:ps-60": showNaviation,
+        "lg:ps-60": showNavigation,
       })}
     >
-      {showNaviation && lg ? <Sidebar /> : null}
+      {showNavigation ? <Sidebar /> : null}
       <div
         className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
       >
-        {showNaviation && lg ? <Navbar /> : null}
+        {showNavigation ? <Navbar /> : null}
         <Outlet />
       </div>
     </div>
