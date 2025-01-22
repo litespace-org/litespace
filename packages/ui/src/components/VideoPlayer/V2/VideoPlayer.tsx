@@ -12,7 +12,6 @@ import { AudioController } from "@/components/VideoPlayer/V2/AudioController";
 import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 import { Loader } from "@/components/Loading";
-// import { useMediaQueries } from "@/hooks/media";
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const intl = useFormatMessage();
@@ -39,8 +38,6 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     progressRef,
     seekingHandlers,
   } = useVideo();
-
-  // const { md } = useMediaQueries();
 
   return (
     <div
@@ -89,7 +86,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             onClick={togglePlay}
             className="tw-w-16 tw-h-10 tw-bg-background-video tw-flex tw-justify-center tw-items-center tw-rounded"
           >
-            {paused ? <Play /> : <Pause />}
+            {paused ? <Play className="tw-w-4 tw-h-[18px]" /> : <Pause />}
           </button>
         </div>
       ) : null}
@@ -111,7 +108,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             </span>
             <Typography
               element="tiny-text"
-              className="tw-font-semibold tw-text-natural-50"
+              className="tw-font-semibold tw-text-center tw-px-4 tw-text-natural-50"
             >
               {intl("media.video.error")}
             </Typography>

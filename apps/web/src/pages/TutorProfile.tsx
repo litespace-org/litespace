@@ -27,7 +27,7 @@ const TutorProfile: React.FC = () => {
   const tutor = useFindTutorInfo(id);
 
   return (
-    <div className="w-full max-w-screen-3xl p-6 mx-auto md:mb-12">
+    <div className="w-full max-w-screen-3xl p-4 md:p-6 mx-auto md:mb-12">
       <div className="flex items-center gap-4 md:gap-6">
         <Link
           to={Route.Tutors}
