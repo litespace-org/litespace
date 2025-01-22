@@ -10,6 +10,7 @@ import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
 import { useSearchParams } from "react-router-dom";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Tab = "profile" | "ratings";
 const URL_TAB_KEY = "tab";
@@ -21,6 +22,7 @@ function isValidTab(tab: string): tab is Tab {
 export const TutorTabs: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
 }> = ({ tutor }) => {
+  const { md } = useMediaQuery();
   const intl = useFormatMessage();
   const [params, setParams] = useSearchParams();
 
@@ -51,7 +53,7 @@ export const TutorTabs: React.FC<{
         setParams({ [URL_TAB_KEY]: value });
       }}
     >
-      <Tabs.List className="border-b border-natural-300 flex gap-[56px] px-10 ">
+      <Tabs.List className="border-b border-natural-300 flex gap-14 px-4 md:px-10">
         {tabs.map(({ value, label }) => (
           <Tabs.Trigger
             key={value}
@@ -59,7 +61,7 @@ export const TutorTabs: React.FC<{
             className={cn("py-2 relative")}
           >
             <Typography
-              element="body"
+              element={md ? "body" : "caption"}
               weight="semibold"
               className={cn(
                 "transition-colors duration-300",

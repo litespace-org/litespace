@@ -12,6 +12,7 @@ import { AudioController } from "@/components/VideoPlayer/V2/AudioController";
 import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 import { Loader } from "@/components/Loading";
+// import { useMediaQueries } from "@/hooks/media";
 
 export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
   const intl = useFormatMessage();
@@ -38,6 +39,8 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     progressRef,
     seekingHandlers,
   } = useVideo();
+
+  // const { md } = useMediaQueries();
 
   return (
     <div

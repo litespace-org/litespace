@@ -4,11 +4,12 @@ import { orUndefined } from "@litespace/utils/utils";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import Star from "@litespace/assets/Star";
-import { Button } from "@/components/Button";
+import { Button, ButtonSize } from "@/components/Button";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
 import { Loader, LoadingError } from "@/components/Loading";
 import cn from "classnames";
+import { useMediaQueries } from "@/hooks/media";
 
 const ACHIEVEMENTS_DISPLAY_THRETHOLD = 5;
 
@@ -39,6 +40,7 @@ export const TutorProfileCard: React.FC<{
   error,
   retry,
 }) => {
+  const { md } = useMediaQueries();
   const intl = useFormatMessage();
 
   if (loading)
@@ -61,16 +63,22 @@ export const TutorProfileCard: React.FC<{
 
   return (
     <div
-      className={cn("tw-flex tw-items-center", {
-        "tw-gap-10 tw-p-10": variant === "large",
-        "tw-gap-4": variant === "small",
-      })}
+      className={cn(
+        "tw-grid tw-grid-cols-[auto,1fr] md:tw-flex tw-items-center max-w-[280px]",
+        {
+          "tw-gap-4 md:tw-gap-10 md:tw-p-10": variant === "large",
+          "tw-gap-4": variant === "small",
+        }
+      )}
     >
       <div
-        className={cn("tw-aspect-square tw-rounded-full tw-overflow-hidden", {
-          "tw-w-[242px]": variant === "large",
-          "tw-w-[174px]": variant === "small",
-        })}
+        className={cn(
+          "tw-aspect-square tw-shrink-0 tw-rounded-full tw-overflow-hidden",
+          {
+            "tw-w-[90px] md:tw-w-[242px]": variant === "large",
+            "tw-w-[174px]": variant === "small",
+          }
+        )}
       >
         <Avatar
           src={orUndefined(image)}
@@ -81,27 +89,30 @@ export const TutorProfileCard: React.FC<{
       <div>
         <div
           className={cn("tw-flex tw-flex-col", {
-            "tw-gap-2": variant === "large",
+            "tw-gap-1 md:tw-gap-2": variant === "large",
             "tw-gap-1": variant === "small",
           })}
         >
           <Typography
-            element="h2"
-            className="tw-font-bold tw-text-natural-950 dark:tw-text-natural-50"
+            element={md ? "h2" : "body"}
+            weight="bold"
+            className="tw-text-natural-950 dark:tw-text-natural-50"
           >
             {name}
           </Typography>
           <div className="tw-flex tw-flex-col tw-gap-1">
             <Typography
-              element="subtitle-2"
-              className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+              element={md ? "subtitle-2" : "tiny-text"}
+              weight="semibold"
+              className="tw-text-natural-950 dark:tw-text-natural-50"
             >
               {bio}
             </Typography>
             {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
               <Typography
-                element="subtitle-2"
-                className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+                element={md ? "subtitle-2" : "tiny-text"}
+                weight="semibold"
+                className="tw-text-natural-950 dark:tw-text-natural-50"
               >
                 {intl("tutor.achievements", {
                   lessonCount: formatNumber(lessonCount),
@@ -111,25 +122,37 @@ export const TutorProfileCard: React.FC<{
             ) : null}
           </div>
           {avgRating > 0 ? (
-            <div className="tw-flex tw-items-center tw-gap-2">
+            <div className="tw-flex tw-items-center tw-gap-1 md:tw-gap-2">
               <Typography
-                element="subtitle-2"
-                className="tw-text-natural-950 tw-font-semibold dark:tw-text-natural-50"
+                element={md ? "subtitle-2" : "tiny-text"}
+                weight="semibold"
+                className="tw-text-natural-950 dark:tw-text-natural-50"
               >
                 {formatNumber(avgRating, {
                   maximumFractionDigits: 1,
                 })}
               </Typography>
-              <Star className="[&>*]:tw-fill-warning-500" />
+              <div className="tw-w-4 tw-h-4 md:tw-w-[30px] md:tw-h-[30px]">
+                <Star className="[&>*]:tw-fill-warning-500" />
+              </div>
             </div>
           ) : null}
         </div>
-        {onBook ? (
+        {onBook && md ? (
           <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
             {intl("tutor.book")}
           </Button>
         ) : null}
       </div>
+      {onBook && !md ? (
+        <Button
+          size={ButtonSize.Tiny}
+          onClick={onBook}
+          className="tw-w-full tw-col-span-2"
+        >
+          {intl("tutor.book")}
+        </Button>
+      ) : null}
     </div>
   );
 };

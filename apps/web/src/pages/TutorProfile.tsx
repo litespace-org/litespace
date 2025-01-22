@@ -27,11 +27,11 @@ const TutorProfile: React.FC = () => {
   const tutor = useFindTutorInfo(id);
 
   return (
-    <div className="w-full max-w-screen-3xl p-6 mx-auto mb-12 lg:max-w-screen-3xl">
-      <div className="flex items-center gap-6">
+    <div className="w-full max-w-screen-3xl p-6 mx-auto md:mb-12">
+      <div className="flex items-center gap-4 md:gap-6">
         <Link
           to={Route.Tutors}
-          className="w-6 h-6 flex items-center justify-center"
+          className="hidden md:flex w-6 h-6 items-center justify-center"
         >
           <RightArrow className="[&>*]:stroke-brand-700" />
         </Link>
@@ -68,7 +68,7 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
-        <div className="bg-natural-50 border border-natural-100 shadow-tutor-profile rounded-2xl  mt-6 flex flex-col gap-12">
+        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl mt-4 md:mt-6 flex flex-col gap-8 md:gap-12">
           <TutorProfileCard {...tutor.data} onBook={openDialog} />
           <TutorTabs tutor={tutor.data} />
         </div>
