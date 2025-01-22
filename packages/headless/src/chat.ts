@@ -30,7 +30,7 @@ import {
   UseQueryResult,
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
-import { concat, uniqueId } from "lodash";
+import { concat, isEmpty, uniqueId } from "lodash";
 
 // ========================== Chat System Functionalities =========================
 
@@ -1041,11 +1041,7 @@ export function useUpdateRoom({
   });
 }
 
-export function useFindRoomByMembers({
-  userIds,
-}: {
-  userIds: number[] | null;
-}) {
+export function useFindRoomByMembers(userIds: number[] | null) {
   const atlas = useAtlas();
   const findRoomByMembers = useCallback(async () => {
     if (!userIds) return null;
@@ -1055,5 +1051,6 @@ export function useFindRoomByMembers({
   return useQuery({
     queryFn: findRoomByMembers,
     queryKey: [QueryKey.FindRoomByMembers, userIds],
+    enabled: !!userIds && !isEmpty(userIds),
   });
 }

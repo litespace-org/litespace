@@ -7,7 +7,12 @@ import {
   notfound,
   wrongPassword,
 } from "@/lib/error";
-import { hashPassword, isSamePassword } from "@/lib/user";
+import {
+  hashPassword,
+  isSamePassword,
+  withImageUrl,
+  withImageUrls,
+} from "@/lib/user";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import {
@@ -25,13 +30,7 @@ import {
   jsonBoolean,
   orderDirection,
 } from "@/validation/utils";
-import { uploadSingle } from "@/lib/media";
-import {
-  FileType,
-  jwtSecret,
-  paginationDefaults,
-  serverConfig,
-} from "@/constants";
+import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
 import zod from "zod";
 import { Knex } from "knex";
@@ -58,6 +57,7 @@ import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/sol/verification";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
+import { getRequestFile, upload } from "@/lib/assets";
 
 const createUserPayload = zod.object({
   role,
@@ -185,22 +185,20 @@ function update(context: ApiContext) {
         city,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-      const files = {
-        image: {
-          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Image],
-          type: FileType.Image,
-        },
-        video: {
-          file: req.files?.[IUser.UpdateMediaFilesApiKeys.Video],
-          type: FileType.Video,
-        },
-      } as const;
+      const image = getRequestFile(
+        req.files,
+        IUser.UpdateMediaFilesApiKeys.Image
+      );
+
+      const video = getRequestFile(
+        req.files,
+        IUser.UpdateMediaFilesApiKeys.Video
+      );
 
       // Only studios and admins can update tutor media files (images and videos)
       // Tutor cannot upload it for himself.
       const isUpdatingTutorMedia =
-        (files.image.file || files.video.file) &&
-        (isTutor(targetUser) || isTutorManager(targetUser));
+        (image || video) && (isTutor(targetUser) || isTutorManager(targetUser));
 
       const isEligibleUser = [
         IUser.Role.SuperAdmin,
@@ -211,15 +209,15 @@ function update(context: ApiContext) {
 
       // Only studios and admins can upload videos.
       // e.g., students/interviewers cannot upload videos
-      if (files.video.file && !isEligibleUser) return next(forbidden());
+      if (video && !isEligibleUser) return next(forbidden());
 
-      const [image, video] = await Promise.all(
-        [files.image, files.video].map(({ file, type }) =>
-          file
-            ? uploadSingle(file, type, serverConfig.assets.directory.uploads)
-            : undefined
-        )
-      );
+      const imageId = image
+        ? await upload({ data: image.buffer, type: image.mimetype })
+        : undefined;
+
+      const videoId = video
+        ? await upload({ data: video.buffer, type: video.mimetype })
+        : undefined;
 
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(
@@ -252,7 +250,7 @@ function update(context: ApiContext) {
             email,
             gender,
             birthYear,
-            image: drop?.image === true ? null : image,
+            image: drop?.image === true ? null : imageId,
             password: password ? hashPassword(password.new) : undefined,
             phoneNumber,
             city,
@@ -264,15 +262,15 @@ function update(context: ApiContext) {
         if (tutorData && (isTutor(targetUser) || isTutorManager(targetUser)))
           await tutors.update(
             targetUser.id,
-            { bio, about, video: drop?.video ? null : video, notice },
+            { bio, about, video: drop?.video ? null : videoId, notice },
             tx
           );
 
         return user;
       });
 
-      // todo: remove the tutor from the case incase tutor is no longer fully onboarded
-      res.status(200).json(user);
+      // todo: remove the tutor from the cache incase tutor is no longer fully onboarded
+      res.status(200).json(await withImageUrl(user));
       // todo: handle cache update using a specific worker
       if (!isTutor(user) && !isTutorManager(user)) return;
 
@@ -305,8 +303,7 @@ async function findById(req: Request, res: Response, next: NextFunction) {
   const { id } = withNamedId("id").parse(req.params);
   const user = await users.findById(id);
   if (!user) return next(notfound.user());
-
-  res.status(200).json(user);
+  res.status(200).json(await withImageUrl(user));
 }
 
 async function findUsers(req: Request, res: Response, next: NextFunction) {
@@ -315,9 +312,14 @@ async function findUsers(req: Request, res: Response, next: NextFunction) {
   if (!allowed) return next(forbidden());
 
   const query: IUser.FindUsersApiQuery = findUsersQuery.parse(req.query);
-  const result: IUser.FindUsersApiResponse = await users.find(query);
+  const { list, total } = await users.find(query);
 
-  res.status(200).json(result);
+  const response: IUser.FindUsersApiResponse = {
+    list: await withImageUrls(list),
+    total,
+  };
+
+  res.status(200).json(response);
 }
 
 async function findCurrentUser(
@@ -330,7 +332,7 @@ async function findCurrentUser(
   if (!allowed) return next(forbidden());
 
   const response: IUser.FindCurrentUserApiResponse = {
-    user,
+    user: await withImageUrl(user),
     token: encodeAuthJwt(user.id, jwtSecret),
   };
 
@@ -360,7 +362,7 @@ async function findTutorMeta(req: Request, res: Response, next: NextFunction) {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
   const tutor = await tutors.findSelfById(tutorId);
   if (!tutor) return next(notfound.tutor());
-  const response: ITutor.FindTutorMetaApiResponse = tutor;
+  const response: ITutor.FindTutorMetaApiResponse = await withImageUrl(tutor);
   res.status(200).json(response);
 }
 
@@ -370,10 +372,10 @@ async function findTutorInfo(
   next: NextFunction
 ): Promise<void> {
   const { tutorId } = withNamedId("tutorId").parse(req.params);
-
   const ctutor = await cache.tutors.getOne(tutorId);
   if (ctutor !== null) {
-    const response = asTutorInfoResponseBody(ctutor);
+    const response: ITutor.FindTutorInfoApiResponse =
+      await asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
     return;
   }
@@ -382,7 +384,8 @@ async function findTutorInfo(
   if (tutor !== null && isOnboard(tutor)) {
     const ctutor = await joinTutorCache(tutor, null);
     await cache.tutors.setOne(ctutor);
-    const response = asTutorInfoResponseBody(ctutor);
+    const response: ITutor.FindTutorInfoApiResponse =
+      await asTutorInfoResponseBody(ctutor);
     res.status(200).json(response);
     return;
   }
@@ -439,7 +442,7 @@ async function findOnboardedTutors(req: Request, res: Response) {
 
   // DONE: Update the response to match the new design in (@/architecture/v1.0/tutors.md)
   const response: ITutor.FindOnboardedTutorsApiResponse = {
-    list,
+    list: await withImageUrls(list),
     total,
   };
 
@@ -455,9 +458,14 @@ async function findTutorsForStudio(
   if (!allowed) return next(forbidden());
 
   const query = pagination.parse(req.query);
-  const result: ITutor.FindTutorsForStudioApiResponse =
+  const { list, total }: ITutor.FindTutorsForStudioApiResponse =
     await tutors.findForStudio(query);
-  res.status(200).json(result);
+
+  const response: ITutor.FindTutorsForStudioApiResponse = {
+    list: await withImageUrls(list),
+    total,
+  };
+  res.status(200).json(response);
 }
 
 async function findTutorStats(req: Request, res: Response, next: NextFunction) {
@@ -810,10 +818,12 @@ async function findUncontactedTutors(
   );
 
   const tutorsList: ITutor.FindFullUncontactedTutorsApiResponse = {
-    list: list.map((tutor) => ({
-      ...tutor,
-      online: onlineStatuses.get(tutor.id) || false,
-    })),
+    list: await withImageUrls(
+      list.map((tutor) => ({
+        ...tutor,
+        online: onlineStatuses.get(tutor.id) || false,
+      }))
+    ),
     total,
   };
 

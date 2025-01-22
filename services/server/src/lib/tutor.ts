@@ -4,6 +4,7 @@ import { tutors, knex, lessons, topics, ratings } from "@litespace/models";
 import { first, orderBy } from "lodash";
 import { cache } from "@/lib/cache";
 import { Gender } from "@litespace/types/dist/esm/user";
+import { withImageUrl } from "@/lib/user";
 
 export type TutorsCache = ITutor.Cache[];
 
@@ -180,20 +181,23 @@ export function isOnboard(tutor: ITutor.FullTutor): boolean {
   );
 }
 
-export function asTutorInfoResponseBody(
+export async function asTutorInfoResponseBody(
   ctutor: ITutor.Cache
-): ITutor.FindTutorInfoApiResponse {
+): Promise<ITutor.FindTutorInfoApiResponse> {
+  const assets = await withImageUrl({
+    image: ctutor.image,
+    video: ctutor.video,
+  });
   return {
     id: ctutor.id,
     name: ctutor.name,
     bio: ctutor.bio,
     about: ctutor.about,
-    image: ctutor.image,
-    video: ctutor.video,
     topics: ctutor.topics,
     studentCount: ctutor.studentCount,
     lessonCount: ctutor.lessonCount,
     avgRating: ctutor.avgRating,
     notice: ctutor.notice,
+    ...assets,
   };
 }
