@@ -9,6 +9,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
 
 type Tab = "profile" | "ratings";
 
@@ -16,6 +17,7 @@ export const TutorTabs: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
 }> = ({ tutor }) => {
   const intl = useFormatMessage();
+  const { md } = useMediaQueries();
   const [tab, setTab] = useState<Tab>("profile");
 
   const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
@@ -36,7 +38,7 @@ export const TutorTabs: React.FC<{
       value={tab}
       onValueChange={(value: string) => setTab(value as Tab)}
     >
-      <Tabs.List className="border-b border-natural-300 flex gap-[56px] px-10 ">
+      <Tabs.List className="border-b border-natural-300 flex gap-14 px-4 md:px-10">
         {tabs.map(({ value, label }) => (
           <Tabs.Trigger
             key={value}
@@ -44,7 +46,7 @@ export const TutorTabs: React.FC<{
             className={cn("py-2 relative")}
           >
             <Typography
-              element="body"
+              element={md ? "body" : "caption"}
               weight="semibold"
               className={cn(
                 "transition-colors duration-300",

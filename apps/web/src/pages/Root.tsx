@@ -55,7 +55,7 @@ const Root: React.FC = () => {
       <div
         className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
       >
-        {showNaviation ? <Navbar /> : null}
+        {showNaviation && lg ? <Navbar /> : null}
         <Outlet />
       </div>
     </div>
