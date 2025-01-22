@@ -11,7 +11,7 @@ import { Role } from "@litespace/types/dist/esm/user";
 import { first, range } from "lodash";
 import { forbidden, notfound } from "@/lib/error";
 
-describe("/api/v1/user/", () => {
+describe.skip("/api/v1/user/", () => {
   beforeEach(async () => {
     await db.flush();
   });

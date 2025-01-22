@@ -8,7 +8,7 @@ import {
 } from "@/lib/error";
 import { knex, tutors, users } from "@litespace/models";
 import { NextFunction, Request, Response } from "express";
-import { hashPassword } from "@/lib/user";
+import { hashPassword, withImageUrl } from "@/lib/user";
 import { IToken, IUser } from "@litespace/types";
 import { email, id, password, string, url } from "@/validation/utils";
 import { googleConfig, jwtSecret } from "@/constants";
@@ -63,7 +63,10 @@ async function loginWithPassword(
   const user = await users.findByCredentials({ email, password: hashed });
   if (!user) return next(notfound.user());
   const token = encodeAuthJwt(user.id, jwtSecret);
-  const response: IUser.LoginApiResponse = { user, token };
+  const response: IUser.LoginApiResponse = {
+    user: await withImageUrl(user),
+    token,
+  };
   res.status(200).json(response);
 }
 
@@ -113,15 +116,18 @@ async function loginWithGoogle(
   const data = await getGoogleEmail({ token, type });
   if (!data) return next(bad());
 
-  const success = (user: IUser.Self) => {
+  const success = async (user: IUser.Self) => {
     const token = encodeAuthJwt(user.id, jwtSecret);
-    const response: IUser.LoginApiResponse = { user, token };
+    const response: IUser.LoginApiResponse = {
+      user: await withImageUrl(user),
+      token,
+    };
     res.status(200).json(response);
   };
 
   const user = await users.findByEmail(data.email);
   if (user && role && role !== user.role) return next(bad());
-  if (user && (!role || role === user.role)) return success(user);
+  if (user && (!role || role === user.role)) return await success(user);
 
   if (role) {
     const freshUser = await knex.transaction(async (tx) => {
@@ -132,7 +138,7 @@ async function loginWithGoogle(
       if (role === IUser.Role.Tutor) await tutors.create(user.id, tx);
       return user;
     });
-    return success(freshUser);
+    return await success(freshUser);
   }
 
   return next(notfound.user());
@@ -149,7 +155,7 @@ async function loginWithAuthToken(
   if (!user) return next(notfound.user());
 
   const response: IUser.LoginWithAuthTokenApiResponse = {
-    user,
+    user: await withImageUrl(user),
     token: encodeAuthJwt(id, jwtSecret),
   };
 
@@ -187,7 +193,7 @@ async function resetPassword(req: Request, res: Response, next: NextFunction) {
   });
 
   const response: IUser.ResetPasswordApiResponse = {
-    user: updated,
+    user: await withImageUrl(updated),
     token: encodeAuthJwt(id, jwtSecret),
   };
 

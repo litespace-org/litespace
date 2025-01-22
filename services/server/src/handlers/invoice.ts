@@ -1,4 +1,3 @@
-import { FileType, serverConfig } from "@/constants";
 import {
   bad,
   empty,
@@ -7,7 +6,7 @@ import {
   notfound,
 } from "@/lib/error";
 import { isValidInvoice } from "@/lib/invoice";
-import { uploadSingle } from "@/lib/media";
+import { getRequestFile, upload } from "@/lib/assets";
 import { ApiContext } from "@/types/api";
 import {
   bank,
@@ -25,7 +24,6 @@ import { invoices, lessons } from "@litespace/models";
 import { IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
-import { UploadedFile } from "express-fileupload";
 import { isUndefined } from "lodash";
 import zod from "zod";
 
@@ -251,8 +249,7 @@ export function updateByAdmin(context: ApiContext) {
       const allowed = isAdmin(user);
       if (!allowed) return next(forbidden());
 
-      const files = req.files as Record<IInvoice.ReceiptFileKey, UploadedFile>;
-      const file = files?.["receipt"];
+      const file = getRequestFile(req.files, "receipt");
       const { invoiceId } = withNamedId("invoiceId").parse(req.params);
       const payload: IInvoice.UpdateByAdminApiPayload =
         updateByAdminPayload.parse(req.body);
@@ -267,11 +264,7 @@ export function updateByAdmin(context: ApiContext) {
         return next(bad());
 
       const receipt = file
-        ? await uploadSingle(
-            file,
-            FileType.Image,
-            serverConfig.assets.directory.receipts
-          )
+        ? await upload({ data: file.buffer, type: file.mimetype })
         : undefined;
 
       const approveUpdate =

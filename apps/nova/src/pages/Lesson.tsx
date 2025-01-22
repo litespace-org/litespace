@@ -75,11 +75,11 @@ const Lesson: React.FC = () => {
     setChatEnabled((prev) => !prev);
   }, []);
 
-  const chatRoomQuery = useFindRoomByMembers({
-    userIds: lessonMembers
-      ? [lessonMembers?.current.userId, lessonMembers?.other.userId]
-      : null,
-  });
+  const chatRoomQuery = useFindRoomByMembers(
+    lessonMembers
+      ? [lessonMembers.current.userId, lessonMembers.other.userId]
+      : null
+  );
 
   const room = chatRoomQuery.data?.room || null;
   const roomMembers = useFindRoomMembers(room);

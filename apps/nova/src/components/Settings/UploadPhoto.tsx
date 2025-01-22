@@ -4,7 +4,6 @@ import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Typography } from "@litespace/luna/Typography";
 import { first } from "lodash";
 import { Avatar } from "@litespace/luna/Avatar";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 
 const UploadPhoto: React.FC<{
   photo: File | string | null;
@@ -16,7 +15,7 @@ const UploadPhoto: React.FC<{
 
   const photoUrl = useMemo(() => {
     if (!photo) return undefined;
-    if (typeof photo === "string") return asFullAssetUrl.of(photo);
+    if (typeof photo === "string") return photo;
     return URL.createObjectURL(photo);
   }, [photo]);
 

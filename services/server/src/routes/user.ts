@@ -1,18 +1,28 @@
 import user from "@/handlers/user";
 import { Router } from "express";
 import { ApiContext } from "@/types/api";
-import { fileupload } from "@/middleware/fileupload";
+import { uploadMiddleware } from "@/lib/assets";
+import { IUser } from "@litespace/types";
 
 export default function router(context: ApiContext) {
   const router = Router();
 
   router.route("/").post(user.create);
-
   router.get("/interviewer/select", user.selectInterviewer);
   router.get("/current", user.findCurrentUser);
   router.get("/list", user.findUsers);
   router.get("/:id", user.findById);
-  router.put("/:id", fileupload, user.update(context));
+  router.put(
+    "/:id",
+    uploadMiddleware.fields([
+      { name: IUser.UpdateMediaFilesApiKeys.Image, maxCount: 1 },
+      {
+        name: IUser.UpdateMediaFilesApiKeys.Video,
+        maxCount: 1,
+      },
+    ]),
+    user.update(context)
+  );
   router.get("/studio/tutors", user.findTutorsForStudio);
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);

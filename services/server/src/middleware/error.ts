@@ -6,6 +6,7 @@ import { first } from "lodash";
 import { ZodError } from "zod";
 import { DatabaseError } from "pg";
 import { ApiErrorCode, ApiError } from "@litespace/types";
+import { S3ServiceException } from "@aws-sdk/client-s3";
 
 function getZodMessage(error: ZodError) {
   const issue = first(error.errors);
@@ -35,7 +36,10 @@ export function errorHandler(
   } else if (error instanceof AxiosError) {
     message = error.response?.data ? error.response.data : error.message;
     statusCode = error.response?.status || 400;
-  } else if (error instanceof DatabaseError) {
+  } else if (
+    error instanceof DatabaseError ||
+    error instanceof S3ServiceException
+  ) {
     // ignore any database error: should never be shared with the client.
   } else if (error instanceof Error) {
     message = error.message;
