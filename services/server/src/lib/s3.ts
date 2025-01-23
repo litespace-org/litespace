@@ -5,9 +5,10 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
+const bucket = "litespace-assets-staging";
+
 const s3 = new S3Client({
   region: "me-south-1",
-  profile: "ahmed",
 });
 
 async function put({
@@ -21,7 +22,7 @@ async function put({
 }) {
   await s3.send(
     new PutObjectCommand({
-      Bucket: "litespace-assets-staging",
+      Bucket: bucket,
       Key: key,
       Body: data,
       ContentType: type,
@@ -32,7 +33,7 @@ async function put({
 async function get(key: string): Promise<string> {
   const command = new GetObjectCommand({
     Key: key,
-    Bucket: "litespace-assets-staging",
+    Bucket: bucket,
   });
 
   const url = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });
