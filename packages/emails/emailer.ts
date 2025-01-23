@@ -16,7 +16,7 @@ function makeTransporter(user: string, pass: string): nodemailer.Transporter {
 
 type SendEmail = {
   template: EmailTemplate.ForgetPassword | EmailTemplate.VerifyEmail;
-  props: { url: string };
+  props: { redirectUrl: string };
 };
 
 export class Emailer {

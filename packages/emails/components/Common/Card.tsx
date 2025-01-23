@@ -6,7 +6,7 @@ const Card: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <Container
       className={cn(
-        "p-6 rounded-[16px] bg-natural-50 w-[504px] [&>*]:p-0 [&>*]:m-0 [&>*]:box-border",
+        "p-6 rounded-[16px] bg-natural-50 w-[504px]",
         "flex flex-col items-center justify-center text-center"
       )}
     >

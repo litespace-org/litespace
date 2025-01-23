@@ -44,7 +44,7 @@ async function sendAuthTokenEmail({
         type === IToken.Type.VerifyEmail
           ? EmailTemplate.VerifyEmail
           : EmailTemplate.ForgetPassword,
-      props: { url: url.toString() },
+      props: { redirectUrl: url.toString() },
     });
   });
 
