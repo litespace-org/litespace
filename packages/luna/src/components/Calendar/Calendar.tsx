@@ -28,11 +28,11 @@ export const Calendar: React.FC<Props> = ({
   slotActions,
 }) => {
   return (
-    <div className="tw-w-full">
+    <div className="tw-w-full tw-overflow-auto">
       <div
         className={cn(
           "tw-w-full tw-flex tw-bg-natural-50 tw-border tw-border-natural-300",
-          "tw-shadow-calendar tw-rounded-2xl"
+          "tw-shadow-calendar tw-rounded-2xl tw-min-w-[1200px]"
         )}
       >
         <Hours day={date} />
