@@ -505,7 +505,7 @@
   "student-dashboard.button.find-tutors": "تصفح المعملين",
   "student-dashboard.overview.total-lessons": "اجمالي الحصص",
   "student-dashboard.overview.completed-lessons": "الحصص المكتملة",
-  "student-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
+  "student-dashboard.overview.total-learning-time": "وقت التعلم",
   "student-dashboard.overview.total-learning-time.unit.minute": "{value} د",
   "student-dashboard.overview.teachers": "عدد المعلمين",
   "student-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",

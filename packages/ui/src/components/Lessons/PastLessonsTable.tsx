@@ -7,50 +7,13 @@ import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
 import EmptyLessons from "@litespace/assets/EmptyLesson2";
 import { orUndefined } from "@litespace/utils/utils";
-import { Void } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import { Link } from "react-router-dom";
 import cn from "classnames";
+import { BasePastLessonProps } from "@/components/Lessons/types";
 
-export type Props = {
-  lessons: Array<{
-    id: number;
-    start: string;
-    duration: number;
-    /**
-     * Current user id
-     */
-    currentMember: number;
-    /**
-     * Student in case user is tutor and vice versa
-     */
-    otherMember: {
-      id: number;
-      name: string | null;
-      imageUrl: string | null;
-    };
-  }>;
-  tutorsRoute: string;
-  /**
-   * `true` in case the current user is a tutor or tutor manager.
-   */
-  isTutor?: boolean;
-  loading?: boolean;
-  error?: boolean;
-  /**
-   * The lesson with the same id as `sendingMessage` will have the loading button state.
-   */
-  sendingMessage?: number;
-  /**
-   * State of sending message disable present in the end of each row of the table.
-   */
-  onRebook?: (tutorId: number) => void;
-  onSendMessage?: (lessonId: number, members: number[]) => void;
-  retry?: Void;
-};
-
-export const PastLessonsTable: React.FC<Props> = ({
+export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
   lessons,
   tutorsRoute,
   isTutor,

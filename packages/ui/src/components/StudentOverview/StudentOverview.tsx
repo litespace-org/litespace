@@ -1,15 +1,16 @@
 import React, { useMemo } from "react";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
-import Video16X16 from "@litespace/assets/Video16X16";
-import Check16X16 from "@litespace/assets/Check16X16";
-import Clock16X16 from "@litespace/assets/Clock16X16";
+import Video from "@litespace/assets/Video";
+import Check from "@litespace/assets/Check1";
+import Clock from "@litespace/assets/Clock";
 import People from "@litespace/assets/People";
 import cn from "classnames";
 import { LocalId } from "@/locales";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
 import { Loader, LoadingError } from "@/components/Loading";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
   /**
@@ -43,6 +44,8 @@ export const StudentOverview: React.FC<Props> = ({
   retry,
 }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
+
   const learningTime = useMemo(() => {
     if (totalLearningTime === 0) return "0";
     return intl("student-dashboard.overview.total-learning-time.unit.minute", {
@@ -54,7 +57,7 @@ export const StudentOverview: React.FC<Props> = ({
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <Loader
-          size="medium"
+          size={mq.sm ? "medium" : "small"}
           text={intl("student-dashboard.overview.loading")}
         />
       </div>
@@ -64,7 +67,7 @@ export const StudentOverview: React.FC<Props> = ({
     return (
       <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
         <LoadingError
-          size="medium"
+          size={mq.sm ? "medium" : "small"}
           error={intl("student-dashboard.overview.error")}
           retry={retry}
         />
@@ -72,29 +75,38 @@ export const StudentOverview: React.FC<Props> = ({
     );
 
   return (
-    <div className="tw-flex tw-gap-6 tw-flex-wrap tw-w-full">
+    <div className="tw-grid tw-grid-rows-2 tw-grid-cols-2 md:tw-flex tw-gap-4 md:tw-gap-6 tw-flex-wrap tw-w-full">
       <Card
-        icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" />}
+        icon={
+          <Video className="[&>*]:tw-stroke-natural-50 tw-w-3 sm:tw-w-4 tw-h-3 sm:tw-h-4" />
+        }
         value={formatNumber(totalLessonCount)}
         color="brand"
         title="student-dashboard.overview.total-lessons"
       />
+
       <Card
-        icon={<Check16X16 className="[&]*:tw-stroke-natural-50" />}
+        icon={
+          <Check className="[&>*]:tw-stroke-natural-50 tw-w-3 sm:tw-w-4 tw-h-3 sm:tw-h-4" />
+        }
         value={formatNumber(completedLessonCount)}
         color="secondary"
         title="student-dashboard.overview.completed-lessons"
       />
 
       <Card
-        icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" />}
+        icon={
+          <Clock className="[&>*]:tw-stroke-natural-50 tw-w-3 sm:tw-w-4 tw-h-3 sm:tw-h-4" />
+        }
         value={learningTime}
         color="warning"
         title="student-dashboard.overview.total-learning-time"
       />
 
       <Card
-        icon={<People className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />}
+        icon={
+          <People className="[&>*]:tw-stroke-natural-50 tw-w-3 sm:tw-w-4 tw-h-3 sm:tw-h-4" />
+        }
         value={formatNumber(tutorCount)}
         color="destructive"
         title="student-dashboard.overview.teachers"
@@ -115,8 +127,8 @@ export const Card: React.FC<{
   return (
     <div
       className={cn(
-        "tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-x-small",
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-max-w-[215px]",
+        "tw-p-3 sm:tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-x-small",
+        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-w-full md:tw-max-w-[215px]",
         "tw-basis-full tw-flex tw-flex-col tw-justify-between tw-gap-2 tw-relative tw-overflow-hidden"
       )}
     >
@@ -137,7 +149,7 @@ export const Card: React.FC<{
       <div className="tw-flex tw-items-center tw-gap-2 tw-z-10">
         <div
           className={cn(
-            "tw-w-6 tw-h-6 tw-rounded-md tw-flex tw-justify-center tw-items-center"
+            "tw-w-5 sm:tw-w-6 tw-h-5 sm:tw-h-6 tw-rounded-md tw-flex tw-justify-center tw-items-center tw-p-1"
           )}
           style={{ backgroundColor: `var(--${color}-500)` }}
         >
@@ -152,8 +164,14 @@ export const Card: React.FC<{
         </Typography>
       </div>
       <Typography
-        element="h3"
-        weight="semibold"
+        element={{
+          default: "body",
+          sm: "h3",
+        }}
+        weight={{
+          default: "bold",
+          sm: "semibold",
+        }}
         className={cn(
           "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b"
         )}
