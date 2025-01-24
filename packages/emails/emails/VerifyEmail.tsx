@@ -9,7 +9,7 @@ import Footer from "@/components/Layout/Footer";
 
 export function VerifyEmail({ redirectUrl }: { redirectUrl: string }) {
   return (
-    <Template>
+    <Template preview={translate("verify-email.title")}>
       <Header />
 
       <Section className="w-[312px] mt-[46px] text-center">
