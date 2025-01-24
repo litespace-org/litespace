@@ -26,7 +26,7 @@ export const SpeechIndicator: React.FC<{
         "tw-rounded-full tw-backdrop-blur-[15px] tw-flex tw-items-center tw-justify-center",
         {
           "tw-bg-background-indicator": !speaking || muted,
-          "tw-bg-background-speaking": speaking,
+          "tw-bg-background-speaking": speaking && !muted,
           "tw-w-16 tw-h-16": variant === "large",
           "tw-w-8 tw-h-8": variant === "small",
         }

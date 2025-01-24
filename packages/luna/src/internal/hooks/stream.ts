@@ -3,7 +3,7 @@ import { createStreamInfo, getVideoMediaStream } from "@/internal/utils/stream";
 import { faker } from "@faker-js/faker/locale/en";
 
 export function useCreateStream(
-  camera?: boolean,
+  video?: boolean,
   currentUserId?: number,
   cast?: boolean
 ) {
@@ -23,7 +23,7 @@ export function useCreateStream(
       imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
     },
-    camera: camera || false,
+    video: video || false,
     cast: cast || false,
   });
 }
@@ -49,7 +49,7 @@ export function useUserMedia() {
 
 export function useUserMediaStreamInfo(
   currentUserId?: number,
-  camera?: boolean,
+  video?: boolean,
   cast?: boolean
 ) {
   const stream = useUserMedia();
@@ -65,7 +65,7 @@ export function useUserMediaStreamInfo(
       imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
       name: faker.person.fullName(),
     },
-    camera: camera || false,
+    video: video || false,
     cast: cast || false,
   });
 }

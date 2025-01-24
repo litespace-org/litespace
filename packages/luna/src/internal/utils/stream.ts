@@ -41,14 +41,14 @@ export function createStreamInfo(
       imageUrl: string | null;
       name: string | null;
     };
-    camera: boolean;
+    video: boolean;
     cast: boolean;
   }
 ): StreamInfo {
   return {
     stream,
     speaking: false,
-    muted: true,
+    audio: false,
     ...options,
   };
 }

@@ -10,6 +10,8 @@ import { ActionsBar } from "@/components/Session/ActionsBar";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
+import { AnimatePresence } from "framer-motion";
+import { AnimateWidth } from "@/components/Animate";
 
 type Props = {
   streams: StreamInfo[];
@@ -44,7 +46,6 @@ type Props = {
 };
 
 export const Session: React.FC<Props> = ({
-  chat,
   chatPanel,
   leave,
   camera,
@@ -55,14 +56,14 @@ export const Session: React.FC<Props> = ({
   alert,
   fullScreen,
   currentUserId,
+  chat,
 }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-10">
       <div
         className={cn(
-          "tw-w-full tw-aspect-video tw-max-h-[648px] tw-grow tw-border tw-border-brand-700",
-          "tw-rounded-lg tw-overflow-hidden tw-grid",
-          chat.enabled ? "tw-grid-cols-[70%,30%]" : ""
+          "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
+          "tw-rounded-lg tw-overflow-hidden tw-flex tw-flex-row tw-gap-6"
         )}
       >
         <SessionStreams
@@ -72,9 +73,13 @@ export const Session: React.FC<Props> = ({
           chat={chat.enabled}
           timer={timer}
           alert={alert}
-          mic={mic.enabled}
         />
-        {chat.enabled ? chatPanel : null}
+
+        <AnimatePresence mode="wait">
+          {chat.enabled ? (
+            <AnimateWidth key="chat">{chatPanel}</AnimateWidth>
+          ) : null}
+        </AnimatePresence>
       </div>
       <div className="tw-border-t tw-border-natural-400" />
       <ActionsBar
