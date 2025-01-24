@@ -138,14 +138,14 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
     if (!isOwner) return forbidden();
 
-    const isvalid = await isValidSlots({
+    const isValid = await isValidSlots({
       userId: user.id,
       creates,
       updates,
       deletes,
     });
-    if (isvalid === "malformed") return bad();
-    if (isvalid === "conflict") return conflict();
+    if (isValid === "malformed") return bad();
+    if (isValid === "conflict") return conflict();
 
     // delete slots
     await deleteSlots({

@@ -13,7 +13,7 @@ import { DeleteSlotDialog } from "@litespace/luna/DeleteSlotDialog";
 import { useToast } from "@litespace/luna/Toast";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 
-import Header from "@/components/SlotSchedule/Header";
+import Header from "@/components/ScheduleManagement/Header";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { isEmpty } from "lodash";
 import { IAvailabilitySlot } from "@litespace/types";
@@ -70,8 +70,6 @@ const ScheduleManagement: React.FC = () => {
       toast.success({ title: intl("manage-schedule.update.success") });
     },
     onError(error) {
-      setDeleteDialogProps((prev) => ({ ...prev, opened: false }));
-      setManageScheduleProps((prev) => ({ ...prev, open: false }));
       toast.error({
         title: intl("manage-schedule.update.error"),
         description: error instanceof Error ? error.message : undefined,
@@ -150,7 +148,7 @@ const ScheduleManagement: React.FC = () => {
   );
 
   return (
-    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
+    <div className="w-full p-6 mx-auto max-w-screen-3xl">
       <div className="mb-8">
         <Header
           date={date}
@@ -163,8 +161,8 @@ const ScheduleManagement: React.FC = () => {
           manageSchedule={() =>
             setManageScheduleProps((prev) => ({
               ...prev,
-              singleDay: false,
               open: true,
+              singleDay: false,
               initialSlots: calendarSlots,
             }))
           }
@@ -193,12 +191,13 @@ const ScheduleManagement: React.FC = () => {
         loading={slotsQuery.isFetching}
         error={!!slotsQuery.error}
         singleDay={manageScheduleProps.singleDay}
+        saving={mutateSlots.isPending}
       />
 
       <DeleteSlotDialog
         slotId={deleteDialogProps.slotId}
         opened={deleteDialogProps.opened}
-        deleting={false}
+        deleting={mutateSlots.isPending}
         confirm={() =>
           mutateSlots.mutate([
             {

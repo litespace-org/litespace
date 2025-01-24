@@ -12,10 +12,8 @@ import { WeekTable } from "@/components/Calendar/WeekTable";
 
 interface Props {
   date: Dayjs;
-
   lessons?: LessonProps[];
   lessonActions?: LessonActions;
-
   slots?: AvailabilitySlotProps[];
   slotActions?: SlotActions;
 }
@@ -28,7 +26,12 @@ export const Calendar: React.FC<Props> = ({
   slotActions,
 }) => {
   return (
-    <div className="tw-w-full tw-overflow-auto">
+    <div
+      className={cn(
+        "tw-w-full tw-h-full tw-overflow-x-auto",
+        "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+      )}
+    >
       <div
         className={cn(
           "tw-w-full tw-flex tw-bg-natural-50 tw-border tw-border-natural-300",
@@ -36,7 +39,7 @@ export const Calendar: React.FC<Props> = ({
         )}
       >
         <Hours day={date} />
-        <div className="tw-grid tw-grid-cols-7 tw-w-full tw-rounded-tl-3xl">
+        <div className="tw-grid tw-grid-cols-7 tw-w-full tw-rounded-tl-2xl">
           <WeekTable
             day={date}
             slots={slots}
