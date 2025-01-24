@@ -8,7 +8,7 @@ const PageContent: React.FC<{
   return (
     <div
       className={cn(
-        "bg-natural-50 border border-natural-100 shadow-page-content rounded-3xl w-full",
+        "md:bg-natural-50 md:border md:border-natural-100 md:shadow-page-content md:rounded-3xl md:w-full",
         className
       )}
     >

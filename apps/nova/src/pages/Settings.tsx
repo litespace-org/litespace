@@ -17,9 +17,9 @@ const Settings: React.FC = () => {
   }, [user, loading, error]);
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full p-6">
-      <div className="w-full">
-        <div className="mb-8">
+    <div className="p-4 mx-auto w-full md:max-w-screen-3xl md:p-6">
+      <div className="relative w-full">
+        <div className="mb-4 md:mb-8">
           <PageTitle
             title={intl("settings.profile.title")}
             fetching={fetching && !loading}
@@ -28,16 +28,16 @@ const Settings: React.FC = () => {
 
         <PageContent>
           {loading ? (
-            <div className="w-full h-[908px] pt-[149px] flex justify-center">
+            <div className="w-full md:h-[908px] pt-[149px] md:flex md:justify-center">
               <div className="h-[181px]">
                 <Loader size="large" text={intl("settings.loading")} />
               </div>
             </div>
           ) : null}
+
           {error && !loading ? (
             <div className="w-full h-[908px] pt-[149px] flex justify-center">
               <div className="h-[181px]">
-                {" "}
                 <LoadingError
                   size="large"
                   retry={refetch.user}
@@ -46,6 +46,7 @@ const Settings: React.FC = () => {
               </div>
             </div>
           ) : null}
+
           {user && !error && !loading ? <ProfileForm user={user} /> : null}
         </PageContent>
       </div>
