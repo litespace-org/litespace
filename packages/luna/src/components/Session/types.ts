@@ -1,26 +1,26 @@
 export type StreamInfo = {
   /**
-   * determines if the user is speaking or no
+   * Determines if the user is speaking or no
    */
   speaking: boolean;
   /**
-   * determines if the user is muted or not
+   * `true` in case the audio tracks in the media stream are enabled.
    */
-  muted: boolean;
+  audio: boolean;
   /**
-   * determines if the user has his camera enabled or not
+   * `true` in case the video tracks in the media stream are enabled.
    */
-  camera: boolean;
+  video: boolean;
   /**
-   * determines if the stream is for screen casting
+   * Determines if the stream is for screen casting
    */
   cast: boolean;
   /**
-   * The Media stream itself that will be given to the video player
+   * The media stream itself that will be given to the video player
    */
   stream: MediaStream | null;
   /**
-   * user details
+   * Stream owner details.
    */
   user: {
     id: number;

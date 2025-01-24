@@ -24,7 +24,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         overflow: "hidden",
       }}
       transition={{
-        duration: 0.4,
+        duration: 0.3,
         ease: "easeInOut",
       }}
       className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
@@ -34,10 +34,11 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
-  stream,
-  muted,
-}) => {
+const Stream: React.FC<{
+  stream: MediaStream | null;
+  muted: boolean;
+  hidden?: boolean;
+}> = ({ stream, muted, hidden }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -48,7 +49,10 @@ const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
     <video
       ref={videoRef}
       autoPlay
-      className={cn("tw-w-full tw-aspect-video tw-absolute tw-top-0")}
+      className={cn(
+        "tw-w-full tw-aspect-video tw-absolute tw-top-0",
+        hidden && "tw-opacity-0"
+      )}
       muted={muted}
       playsInline
     />
@@ -56,6 +60,7 @@ const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
 };
 
 export const FocusedStream: React.FC<{
+  chat?: boolean;
   alert?: string;
   muted: boolean;
   stream: StreamInfo;
@@ -67,18 +72,20 @@ export const FocusedStream: React.FC<{
     enabled: boolean;
     toggle: Void;
   };
-}> = ({ stream, timer, alert, fullScreen, muted }) => {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-
-  useEffect(() => {
-    if (videoRef.current && stream.stream)
-      videoRef.current.srcObject = stream.stream;
-  }, [stream.stream]);
-
+}> = ({ stream, timer, alert, fullScreen, muted, chat }) => {
   return (
-    <div className="tw-grow tw-rounded-lg tw-overflow-hidden">
+    <motion.div
+      layout
+      transition={{ duration: 0.3 }}
+      style={{
+        marginInlineStart:
+          chat && (stream.video || stream.cast) ? "1.5rem" : "0rem",
+        marginTop: chat && (stream.video || stream.cast) ? "3.5rem" : "0rem",
+      }}
+      className={cn("tw-rounded-lg", chat && "tw-relative")}
+    >
       <AnimatePresence mode="wait">
-        {stream.camera || stream.cast ? (
+        {stream.video || stream.cast ? (
           <Animate key="stream">
             <Stream stream={stream.stream} muted={muted} />
           </Animate>
@@ -90,6 +97,7 @@ export const FocusedStream: React.FC<{
               )}
             >
               <UserAvatar user={stream.user} speaking={stream.speaking} />
+              <Stream stream={stream.stream} muted={muted} hidden />
             </div>
           </Animate>
         )}
@@ -100,9 +108,9 @@ export const FocusedStream: React.FC<{
         timer={timer}
         fullScreen={fullScreen}
         speaking={stream.speaking}
-        muted={stream.muted}
+        muted={!stream.audio}
       />
-    </div>
+    </motion.div>
   );
 };
 

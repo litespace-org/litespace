@@ -26,31 +26,30 @@ export const SessionStreams: React.FC<{
   };
 }> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const newStreams = useMemo(
+  const organizedStreams = useMemo(
     () => organizeStreams(streams, currentUserId),
     [streams, currentUserId]
   );
 
   // SHOULD NEVER HAPPEN
-  if (!newStreams.focused) return null;
+  if (!organizedStreams.focused) return null;
 
   return (
     <div
+      data-name="session-streams"
       ref={containerRef}
-      className={cn(
-        "tw-relative tw-w-full tw-h-full tw-bg-brand-100 tw-gap-6 tw-overflow-hidden",
-        {
-          "tw-p-6 tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg": chat,
-          "tw-rounded-lg": !chat,
-        }
-      )}
+      className={cn("tw-relative tw-w-full tw-h-full tw-gap-6", {
+        "tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg": chat,
+        "tw-rounded-lg": !chat,
+      })}
     >
       <FocusedStream
+        muted={organizedStreams.focused.user.id === currentUserId}
+        stream={organizedStreams.focused}
         fullScreen={fullScreen}
-        stream={newStreams.focused}
         timer={timer}
-        muted={newStreams.focused.user.id === currentUserId}
         alert={alert}
+        chat={chat}
       />
 
       <div
@@ -59,11 +58,14 @@ export const SessionStreams: React.FC<{
           !chat && "tw-absolute tw-bottom-6 tw-right-6"
         )}
       >
-        {newStreams.unfocused.map((stream, idx) => {
+        {organizedStreams.unfocused.map((stream, idx) => {
           if (!stream) return null;
           return (
             <MovableMedia container={containerRef} key={idx}>
-              <UnFocusedStream stream={stream} />
+              <UnFocusedStream
+                muted={stream.user.id === currentUserId}
+                stream={stream}
+              />
             </MovableMedia>
           );
         })}

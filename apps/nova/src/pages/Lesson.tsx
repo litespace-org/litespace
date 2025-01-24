@@ -169,8 +169,8 @@ const Lesson: React.FC = () => {
     const streams: StreamInfo[] = [
       {
         speaking: session.members.current.speaking,
-        muted: !session.members.current.audio,
-        camera: session.members.current.video,
+        audio: session.members.current.audio,
+        video: session.members.current.video,
         stream: session.members.current.stream,
         cast: false,
         user: current,
@@ -180,8 +180,8 @@ const Lesson: React.FC = () => {
     if (session.members.other.stream)
       streams.push({
         speaking: session.members.other.speaking,
-        muted: !session.members.other.audio,
-        camera: session.members.other.video,
+        audio: session.members.other.audio,
+        video: session.members.other.video,
         cast: false,
         stream: session.members.other.stream,
         user: other,
@@ -190,8 +190,8 @@ const Lesson: React.FC = () => {
     if (session.members.current.screen)
       streams.push({
         speaking: false,
-        muted: false,
-        camera: true,
+        audio: false,
+        video: true,
         cast: true,
         stream: session.members.current.screen,
         user: current,
@@ -200,8 +200,8 @@ const Lesson: React.FC = () => {
     if (session.members.other.screen)
       streams.push({
         speaking: false,
-        muted: false,
-        camera: true,
+        audio: false,
+        video: true,
         cast: true,
         stream: session.members.other.screen,
         user: other,

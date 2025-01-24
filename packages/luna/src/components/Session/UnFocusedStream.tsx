@@ -24,10 +24,11 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
-  stream,
-  muted,
-}) => {
+const Stream: React.FC<{
+  stream: MediaStream | null;
+  muted: boolean;
+  hidden?: boolean;
+}> = ({ stream, muted, hidden }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
@@ -36,7 +37,10 @@ const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
   return (
     <video
       ref={videoRef}
-      className={cn("tw-w-full tw-aspect-video tw-absolute tw-top-0")}
+      className={cn(
+        "tw-w-full tw-aspect-video tw-absolute tw-top-0",
+        hidden && "tw-opacity-0"
+      )}
       autoPlay
       muted={muted}
       playsInline
@@ -46,7 +50,8 @@ const Stream: React.FC<{ stream: MediaStream | null; muted: boolean }> = ({
 
 export const UnFocusedStream: React.FC<{
   stream: StreamInfo;
-}> = ({ stream }) => {
+  muted: boolean;
+}> = ({ stream, muted }) => {
   return (
     <motion.div
       initial={{ x: -200, y: -200 }}
@@ -58,9 +63,9 @@ export const UnFocusedStream: React.FC<{
       className="tw-aspect-video tw-w-[219px] tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden"
     >
       <AnimatePresence initial={false} mode="wait">
-        {stream.camera || stream.cast ? (
+        {stream.video || stream.cast ? (
           <Animate key="stream">
-            <Stream stream={stream.stream} muted={stream.muted} />
+            <Stream stream={stream.stream} muted={muted} />
           </Animate>
         ) : (
           <Animate key="avatar">
@@ -74,6 +79,7 @@ export const UnFocusedStream: React.FC<{
                 user={stream.user}
                 speaking={stream.speaking}
               />
+              <Stream stream={stream.stream} muted={muted} hidden />
             </div>
           </Animate>
         )}
@@ -83,7 +89,7 @@ export const UnFocusedStream: React.FC<{
         <SpeechIndicator
           variant="small"
           speaking={stream.speaking}
-          muted={stream.muted}
+          muted={!stream.audio}
         />
       </div>
     </motion.div>
