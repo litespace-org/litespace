@@ -15,6 +15,7 @@ export enum QueryKey {
   FindUserLesson = "find-user-lessons",
   FindLessons = "find-lessons",
   FindLesson = "find-lesson",
+  FindAvailabilitySlots = "find-availability-slots",
   FindInfiniteLessons = "find-infinite-lessons",
   FindWithdrawalMethods = "find-withdrawal-methods",
   FindUserById = "find-user-by-id",

@@ -47,7 +47,7 @@ export const WeekTable: React.FC<{
               className={cn(
                 "tw-flex tw-items-center tw-justify-center tw-px-3 tw-h-16 tw-border-b tw-border-natural-300",
                 today ? "tw-bg-brand-100" : "tw-bg-natural-50",
-                lastDay && "tw-rounded-tl-3xl"
+                lastDay && "tw-rounded-tl-2xl"
               )}
             >
               <Typography

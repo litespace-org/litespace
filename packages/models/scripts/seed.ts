@@ -19,7 +19,13 @@ import {
   topics,
   availabilitySlots,
 } from "@litespace/models";
-import { IInterview, ILesson, IUser, IWithdrawMethod } from "@litespace/types";
+import {
+  IAvailabilitySlot,
+  IInterview,
+  ILesson,
+  IUser,
+  IWithdrawMethod,
+} from "@litespace/types";
 import dayjs from "dayjs";
 import { Time } from "@litespace/sol/time";
 import { calculateLessonPrice } from "@litespace/sol/lesson";
@@ -289,13 +295,46 @@ async function main(): Promise<void> {
   });
 
   // seeding slots
-  await availabilitySlots.create(
-    addedTutors.map((tutor) => ({
-      userId: tutor.id,
-      start: dayjs.utc().startOf("day").toISOString(),
-      end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
-    }))
-  );
+  const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
+  addedTutors.forEach(async (tutor, i) => {
+    const date = dayjs
+      .utc()
+      .add(i * 4, "days")
+      .startOf("day");
+    const slots = await availabilitySlots.create([
+      {
+        userId: tutor.id,
+        start: date.toISOString(),
+        end: date.add(2, "hours").toISOString(),
+      },
+      {
+        userId: tutor.id,
+        start: date.add(3, "hours").toISOString(),
+        end: date.add(7, "hours").toISOString(),
+      },
+      {
+        userId: tutor.id,
+        start: date.add(12, "hours").toISOString(),
+        end: date.add(20, "hours").toISOString(),
+      },
+      {
+        userId: tutor.id,
+        start: date.add(25, "hours").toISOString(),
+        end: date.add(29, "hours").toISOString(),
+      },
+      {
+        userId: tutor.id,
+        start: date.add(36, "hours").toISOString(),
+        end: date.add(40, "hours").toISOString(),
+      },
+      {
+        userId: tutor.id,
+        start: date.add(80, "hours").toISOString(),
+        end: date.add(90, "hours").toISOString(),
+      },
+    ]);
+    return (seededSlots[tutor.id] = slots);
+  });
 
   const times = range(0, 24).map((hour) =>
     [hour.toString().padStart(2, "0"), "00"].join(":")
@@ -345,9 +384,11 @@ async function main(): Promise<void> {
 
   async function createRandomLesson({
     tutorId,
+    slotId,
     start,
   }: {
     tutorId: number;
+    slotId: number;
     start: string;
   }) {
     return await knex.transaction(async (tx: Knex.Transaction) => {
@@ -361,7 +402,7 @@ async function main(): Promise<void> {
         start,
         duration,
         rule: 1,
-        slot: 1,
+        slot: slotId,
         tx,
       });
 
@@ -376,24 +417,23 @@ async function main(): Promise<void> {
     });
   }
 
-  let start = dayjs().utc().startOf("day");
+  // seeding lessons
   for (const tutor of addedTutors) {
     // create chat room tutor-student
     await knex.transaction(async (tx) =>
       rooms.create([tutor.id, student.id], tx)
     );
 
-    for (const _ of range(1, 100)) {
+    for (const slot of seededSlots[tutor.id] || []) {
       await createRandomLesson({
         tutorId: tutor.id,
-        start: start.toISOString(),
+        slotId: slot.id,
+        start: slot.start,
       });
-
-      start = start.add(sample([15, 30, 45, 60]), "minutes");
     }
 
     stdout.log(
-      `created 100 lesson for tutor with id "${tutor.id}" and email "${tutor.email}" `
+      `created lesson for each slot of tutor with id "${tutor.id}" and email "${tutor.email}" `
     );
   }
 
