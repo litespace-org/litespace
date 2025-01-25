@@ -25,7 +25,6 @@ import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/sol/constants";
 import { governorates } from "@/constants/user";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
-import { Link } from "react-router-dom";
 
 type IForm = {
   name: string;
@@ -204,7 +203,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     [profileMutation, photo, user, canSubmit, topics, userTopics]
   );
 
-  const Topics = useMemo(() => {
+  const topicsSelector = useMemo(() => {
     if (userTopicsQuery.isPending || allTopicsQuery.query.isPending)
       // adding this div to not cause layout shift while loading the queries
       return <div />;
@@ -265,19 +264,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           />
         </div>
         <div className="mb-2 md:m-0">
-          <div className="flex justify-between items-center">
-            <Label>{intl("settings.edit.personal.email")}</Label>
-            {/* TODO: Link for email verification */}
-            <Link to={"/"} className="inline-block mb-2">
-              <Typography
-                element="caption"
-                weight="semibold"
-                className="text-brand-700"
-              >
-                {intl("settings.edit.personal.email.confirm")}
-              </Typography>
-            </Link>
-          </div>
+          <Label>{intl("settings.edit.personal.email")}</Label>
           <Controller.Input
             control={form.control}
             name="email"
@@ -370,7 +357,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           </div>
         </div>
         <div className="w-full flex flex-col md:gap-6">
-          {!lg ? Topics : null}
+          {!lg ? topicsSelector : null}
           <Typography
             element={lg ? "subtitle-1" : "caption"}
             weight="bold"
@@ -401,7 +388,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           </div>
         </div>
       </div>
-      {lg ? Topics : null}
+      {lg ? topicsSelector : null}
       <Button
         disabled={profileMutation.isPending || !canSubmit}
         loading={profileMutation.isPending}

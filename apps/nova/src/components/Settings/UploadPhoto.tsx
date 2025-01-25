@@ -5,6 +5,7 @@ import { Typography } from "@litespace/luna/Typography";
 import { first } from "lodash";
 import { Avatar } from "@litespace/luna/Avatar";
 import { useMediaQueries } from "@litespace/luna/hooks/media";
+import cn from "classnames";
 
 const UploadPhoto: React.FC<{
   photo: File | string | null;
@@ -35,17 +36,17 @@ const UploadPhoto: React.FC<{
         }}
       />
 
-      <div className="min-w-[84px] min-h-[84px] md:w-[102px] md:h-[102px] rounded-full overflow-hidden">
+      <div className="min-w-[84px] min-h-[84px] lg:w-[102px] lg:h-[102px] rounded-full overflow-hidden">
         <Avatar src={photoUrl} alt={photoUrl} seed={id.toString()} />
       </div>
-      <div className="grow md:grow-0 flex flex-col-reverse md:flex-col gap-2 md:gap-4">
+      <div className="grow md:grow-0 flex flex-col-reverse lg:flex-col gap-2 lg:gap-4">
         <Button
           size={ButtonSize.Tiny}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();
           }}
-          className="w-full"
+          className={cn("w-full", lg ? "max-w-fit" : "max-w-[214px]")}
         >
           <Typography
             element="caption"
@@ -58,7 +59,7 @@ const UploadPhoto: React.FC<{
         <Typography
           element={lg ? "caption" : "tiny-text"}
           weight="semibold"
-          className="text-natural-700 max-w-fit md:max-w-[214px]"
+          className="text-natural-700 max-w-fit lg:max-w-[214px]"
         >
           {intl("settings.upload.image.desc")}
         </Typography>
