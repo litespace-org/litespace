@@ -7,12 +7,14 @@ import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
 import { useUserContext } from "@litespace/headless/context/user";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
 
 const registerRoutes = [IUser.Role.Student, IUser.Role.Tutor].map((role) =>
   Route.Register.replace(":role", role)
 );
 
 const Root: React.FC = () => {
+  const { lg } = useMediaQueries();
   const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
@@ -46,10 +48,10 @@ const Root: React.FC = () => {
   return (
     <div
       className={cn("flex relative w-full", {
-        "sm:ps-60": showNaviation,
+        "lg:ps-60": showNaviation,
       })}
     >
-      {showNaviation ? <Sidebar /> : null}
+      {showNaviation && lg ? <Sidebar /> : null}
       <div
         className={cn("min-h-screen flex flex-col w-full overflow-x-hidden")}
       >

@@ -9,11 +9,11 @@ const PageTitle: React.FC<{
   fetching?: boolean;
   className?: string;
 }> = ({ title, fetching, className }) => {
-  const mq = useMediaQueries();
+  const { lg } = useMediaQueries();
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
       <Typography
-        element={mq.sm ? "subtitle-2" : "body"}
+        element={lg ? "subtitle-2" : "body"}
         weight="bold"
         className="text-natural-950"
       >

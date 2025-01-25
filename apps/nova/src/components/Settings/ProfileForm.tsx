@@ -24,6 +24,7 @@ import { isEqual } from "lodash";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/sol/constants";
 import { governorates } from "@/constants/user";
+import { useMediaQueries } from "@litespace/luna/hooks/media";
 
 type IForm = {
   name: string;
@@ -44,6 +45,7 @@ export type TopicWatcher = {
 };
 
 export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
+  const { lg } = useMediaQueries();
   const [photo, setPhoto] = useState<File | null>(null);
 
   const allTopicsQuery = useTopics({});
@@ -201,6 +203,29 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     [profileMutation, photo, user, canSubmit, topics, userTopics]
   );
 
+  const topicsSelector = useMemo(() => {
+    if (userTopicsQuery.isPending || allTopicsQuery.query.isPending)
+      // adding this div to not cause layout shift while loading the queries
+      return <div />;
+
+    return (
+      <TopicSelector
+        setTopics={(newTopics: number[]) => {
+          if (topics.length === MAX_TOPICS_COUNT) return;
+          form.setValue("topics", newTopics);
+        }}
+        topics={topics}
+        allTopics={allTopics}
+      />
+    );
+  }, [
+    allTopics,
+    allTopicsQuery.query.isPending,
+    form,
+    topics,
+    userTopicsQuery.isPending,
+  ]);
+
   useEffect(() => {
     if (!requirePassword) {
       form.trigger("password.current");
@@ -212,22 +237,22 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   return (
     <Form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="grid justify-items-stretch grid-cols-2 gap-x-28 gap-y-8 p-14"
+      className="md:grid md:justify-items-stretch md:grid-cols-2 md:gap-x-28 md:gap-y-8 md:p-10 pb-16"
     >
-      <div className=" flex flex-col gap-6">
+      <div className=" flex flex-col md:gap-6">
         <UploadPhoto
           id={user.id}
           setPhoto={setPhoto}
           photo={photo || orNull(user?.image)}
         />
         <Typography
-          element="subtitle-1"
+          element={lg ? "subtitle-1" : "caption"}
           weight="bold"
-          className="text-natural-950"
+          className="text-natural-950 mt-6 mb-4 md:m-0"
         >
           {intl("settings.edit.personal.title")}
         </Typography>
-        <div>
+        <div className="mb-2 md:m-0">
           <Label>{intl("settings.edit.personal.name")}</Label>
           <Controller.Input
             placeholder={intl("settings.edit.personal.name.placeholder")}
@@ -238,7 +263,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             name="name"
           />
         </div>
-        <div>
+        <div className="mb-2 md:m-0">
           <Label>{intl("settings.edit.personal.email")}</Label>
           <Controller.Input
             control={form.control}
@@ -249,7 +274,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             rules={{ validate: validateEmail }}
           />
         </div>
-        <div>
+        <div className="mb-2 md:m-0">
           <Label>{intl("settings.edit.personal.phone-number")}</Label>
           <Controller.PatternInput
             format="### #### ####"
@@ -264,7 +289,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             mask=" "
           />
         </div>
-        <div>
+        <div className="mb-6 md:m-0">
           <Label>{intl("settings.edit.personal.city")}</Label>
           <Controller.Select
             options={cityOptions}
@@ -275,16 +300,16 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           />
         </div>
       </div>
-      <div className=" flex flex-col gap-6">
-        <div className="w-[72%] flex flex-col gap-6">
+      <div className=" flex flex-col md:gap-6">
+        <div className="w-full md:w-[72%] flex flex-col md:gap-6">
           <Typography
-            element="subtitle-1"
+            element={lg ? "subtitle-1" : "caption"}
             weight="bold"
-            className="text-natural-950"
+            className="text-natural-950 mb-4 md:m-0"
           >
             {intl("settings.edit.password.title")}
           </Typography>
-          <div>
+          <div className="mb-2 md:m-0">
             <Label>{intl("settings.edit.password.current")}</Label>
             <Controller.Password
               value={form.watch("password.current")}
@@ -298,7 +323,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               name="password.current"
             />
           </div>
-          <div>
+          <div className="mb-2 md:m-0">
             <Label>{intl("settings.edit.password.new")}</Label>
             <Controller.Password
               value={form.watch("password.new")}
@@ -312,7 +337,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               name="password.new"
             />
           </div>
-          <div>
+          <div className="mb-6 md:m-0">
             <Label>{intl("settings.edit.password.confirm")}</Label>
             <Controller.Password
               value={form.watch("password.confirm")}
@@ -331,11 +356,12 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             />
           </div>
         </div>
-        <div className="w-full flex flex-col gap-6">
+        <div className="w-full flex flex-col md:gap-6">
+          {!lg ? topicsSelector : null}
           <Typography
-            element="subtitle-1"
+            element={lg ? "subtitle-1" : "caption"}
             weight="bold"
-            className="text-natural-950"
+            className="text-natural-950 mt-6 mb-4 md:m-0"
           >
             {intl("settings.notifications")}
           </Typography>
@@ -349,6 +375,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               checked={false}
               disabled={false}
               onChange={notifyComingSoon}
+              isLargeScreen={lg}
             />
             <FullSwitch
               title={intl("settings.notifications.messages.title")}
@@ -356,31 +383,26 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               checked={false}
               disabled={false}
               onChange={notifyComingSoon}
+              isLargeScreen={lg}
             />
           </div>
         </div>
       </div>
-      {userTopicsQuery.isPending || allTopicsQuery.query.isPending ? (
-        // adding this div to not cause layout shift while loading the queries
-        <div />
-      ) : (
-        <TopicSelector
-          setTopics={(newTopics: number[]) => {
-            if (topics.length === MAX_TOPICS_COUNT) return;
-            form.setValue("topics", newTopics);
-          }}
-          topics={topics}
-          allTopics={allTopics}
-        />
-      )}
+      {lg ? topicsSelector : null}
       <Button
         disabled={profileMutation.isPending || !canSubmit}
         loading={profileMutation.isPending}
-        size={ButtonSize.Large}
-        className="mr-auto mt-auto"
+        size={lg ? ButtonSize.Large : ButtonSize.Tiny}
+        className="fixed bottom-4 left-4 md:static mr-auto mt-6 md:mt-auto"
         htmlType="submit"
       >
-        {intl("settings.save")}
+        <Typography
+          element={lg ? "body" : "caption"}
+          weight={lg ? "bold" : "semibold"}
+          className="text-natural-50"
+        >
+          {intl("settings.save")}
+        </Typography>
       </Button>
     </Form>
   );

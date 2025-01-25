@@ -21,12 +21,14 @@ export const MultiSelect = <T,>({
   values = [],
   placeholder,
   error,
+  hasSearchIcon = false,
   setValues,
 }: {
   options: MultiSelectOption<T>[];
   values?: T[];
   placeholder?: string;
   error?: boolean;
+  hasSearchIcon?: boolean;
   setValues?: (values: T[]) => void;
 }) => {
   const [open, setOpen] = useState(false);
@@ -67,7 +69,9 @@ export const MultiSelect = <T,>({
           onClick={() => setOpen(true)}
         >
           <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
-            <SearchIcon className="tw-justify-self-start tw-shrink-0" />
+            {hasSearchIcon ? (
+              <SearchIcon className="tw-justify-self-start tw-shrink-0" />
+            ) : null}
             <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
