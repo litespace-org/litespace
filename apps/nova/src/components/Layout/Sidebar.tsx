@@ -132,7 +132,8 @@ const Sidebar = () => {
   }, [intl, user?.role]);
 
   return (
-    <div className="fixed top-0 bottom-0 start-0 flex flex-col gap-10 w-60 p-6 shadow-app-sidebar z-sidebar">
+    // TODO: slide the sidebar to the right instead of hiding it.
+    <div className="hidden sm:flex fixed top-0 bottom-0 start-0 flex-col gap-10 w-60 p-6 shadow-app-sidebar z-sidebar">
       <Link to={Route.Root} className="flex items-center gap-2">
         <Logo className="h-[50px]" />
         <Typography

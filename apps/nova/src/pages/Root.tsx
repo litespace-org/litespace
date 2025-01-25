@@ -46,7 +46,7 @@ const Root: React.FC = () => {
   return (
     <div
       className={cn("flex relative w-full", {
-        "ps-60": showNaviation,
+        "sm:ps-60": showNaviation,
       })}
     >
       {showNaviation ? <Sidebar /> : null}
