@@ -2,7 +2,6 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { Route } from "@/types/routes";
 import { Loading } from "@litespace/luna/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/luna/TutorCard";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { Element, ITutor, Void } from "@litespace/types";
 import { motion } from "framer-motion";
 import React, { useCallback, useState } from "react";
@@ -40,7 +39,7 @@ const Content: React.FC<{
   if (!tutors) return null;
   return (
     <div>
-      <div className="grid sm:grid-cols-[repeat(auto-fill,minmax(568px,1fr))] gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {tutors.map((tutor) => {
           const profileUrl = Route.TutorProfile.replace(
             ":id",
@@ -52,7 +51,7 @@ const Content: React.FC<{
               animate={{ opacity: 1 }}
               key={tutor.id}
             >
-              {mq.sm ? (
+              {mq.lg ? (
                 <TutorCardV1
                   id={tutor.id}
                   bio={tutor.bio}
@@ -63,7 +62,7 @@ const Content: React.FC<{
                   rating={tutor.avgRating}
                   onBook={() => openBookingDialog(tutor)}
                   profileUrl={profileUrl}
-                  imageUrl={tutor.image ? asFullAssetUrl(tutor.image) : null}
+                  imageUrl={tutor.image}
                   topics={tutor.topics}
                 />
               ) : (
@@ -77,7 +76,7 @@ const Content: React.FC<{
                   rating={tutor.avgRating}
                   onBook={() => openBookingDialog(tutor)}
                   profileUrl={profileUrl}
-                  imageUrl={tutor.image ? asFullAssetUrl(tutor.image) : null}
+                  imageUrl={tutor.image}
                   topics={tutor.topics}
                 />
               )}
@@ -107,22 +106,22 @@ const Content: React.FC<{
 
       <div className="mt-8 sm:mt-[60px] mb-2 sm:mb-[132px] flex flex-col items-center">
         <MoreTutorsSoon
-          width={mq.sm ? 554 : 222}
-          height={mq.sm ? 350 : 140}
+          width={mq.lg ? 554 : 222}
+          height={mq.lg ? 350 : 140}
           className="mb-6 sm:mb-10"
         />
 
         <Typography
-          element={mq.sm ? "h4" : "body"}
+          element={mq.lg ? "h4" : "body"}
           weight="bold"
-          className="text-black max-w-[600px] text-center mb-6 sm:mb-8"
+          className="text-black max-w-[328px] lg:max-w-[600px] text-center mb-6 sm:mb-8"
         >
           {intl("tutors.coming-soon")}
         </Typography>
 
         <Button
-          className={cn({ "tw-w-full": !mq.sm })}
-          size={ButtonSize.Large}
+          className={cn("w-full max-w-[328px] lg:max-w-[386px] ")}
+          size={mq.lg ? ButtonSize.Small : ButtonSize.Tiny}
           onClick={() =>
             toast.success({
               title: intl("labels.coming-soon"),
