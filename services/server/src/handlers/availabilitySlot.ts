@@ -89,7 +89,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
   // NOTE: return only-slots only if the user is a tutor
   const slotIds = paginatedSlots.list.map((slot) => slot.id);
-  const subslots =
+  const bookedSlots =
     isTutor(user) || isTutorManager(user)
       ? []
       : await getSubslots({
@@ -101,7 +101,7 @@ async function find(req: Request, res: Response, next: NextFunction) {
 
   const result: IAvailabilitySlot.FindAvailabilitySlotsApiResponse = {
     slots: paginatedSlots,
-    subslots,
+    subslots: bookedSlots,
   };
 
   res.status(200).json(result);

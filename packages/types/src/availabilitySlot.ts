@@ -7,7 +7,7 @@ export type Self = {
   start: string;
   end: string;
   deleted: boolean;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 };
 

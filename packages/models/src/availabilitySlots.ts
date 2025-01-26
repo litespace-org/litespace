@@ -195,7 +195,7 @@ export class AvailabilitySlots {
       deleted: row.deleted,
       start: row.start.toISOString(),
       end: row.end.toISOString(),
-      createAt: row.created_at.toISOString(),
+      createdAt: row.created_at.toISOString(),
       updatedAt: row.updated_at.toISOString(),
     };
   }

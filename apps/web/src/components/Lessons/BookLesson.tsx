@@ -1,4 +1,3 @@
-import { useFindUserRulesWithSlots } from "@litespace/headless/rule";
 import { BookLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson } from "@litespace/headless/lessons";
@@ -8,6 +7,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
+import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -24,16 +24,20 @@ const BookLesson = ({
   const intl = useFormatMessage();
   const toast = useToast();
   const queryClient = useQueryClient();
-  const rulesQuery = useFindUserRulesWithSlots(
-    useMemo(
-      () => ({
-        id: tutorId,
-        after: dayjs().utc().toISOString(),
-        before: dayjs.utc().add(60, "days").toISOString(),
-      }),
-      [tutorId]
-    )
+
+  const availabilitySlotsQuery = useMemo(
+    () => ({
+      userId: tutorId,
+      after: dayjs().toISOString(),
+      before: dayjs().add(2, "week").toISOString(),
+    }),
+    [tutorId]
   );
+
+  const tutorAvailabilitySlots = useFindAvailabilitySlots(
+    availabilitySlotsQuery
+  );
+
   const tutor = useFindTutorInfo(tutorId);
 
   const onSuccess = useCallback(() => {
@@ -71,18 +75,22 @@ const BookLesson = ({
 
   const onBook = useCallback(
     ({
-      ruleId,
-      slotId,
+      parent,
       start,
       duration,
     }: {
-      ruleId: number;
-      slotId: number;
+      parent: number;
       start: string;
       duration: ILesson.Duration;
     }) =>
-      bookLessonMutation.mutate({ tutorId, ruleId, slotId, start, duration }),
-    [bookLessonMutation, tutorId]
+      bookLessonMutation.mutate({
+        tutorId,
+        slotId: parent,
+        duration,
+        start,
+        ruleId: 5, // TODO: Remove it when removed from the backend
+      }),
+    [tutorId, bookLessonMutation]
   );
 
   return (
@@ -93,10 +101,11 @@ const BookLesson = ({
       open={open}
       close={close}
       confirmationLoading={bookLessonMutation.isPending}
-      loading={rulesQuery.isLoading || tutor.isLoading || tutor.isFetching}
-      rules={rulesQuery.data?.rules || []}
-      slots={rulesQuery.data?.slots || []}
-      notice={orNull(tutor.data?.notice)}
+      loading={
+        tutorAvailabilitySlots.isLoading || tutor.isLoading || tutor.isFetching
+      }
+      bookedSlots={tutorAvailabilitySlots.data?.subslots || []}
+      slots={tutorAvailabilitySlots.data?.slots.list || []}
       onBook={onBook}
     />
   );
