@@ -3,7 +3,6 @@ import { BookLessonDialog } from "@/components/Lessons/BookLesson";
 import React, { useEffect, useState } from "react";
 import { identity, range } from "lodash";
 import { faker } from "@faker-js/faker/locale/ar";
-import { IDate, IRule } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 
 type Component = typeof BookLessonDialog;
@@ -24,40 +23,6 @@ const meta: Meta<Component> = {
   ],
 };
 
-const makeRule = (id: number): IRule.Self => ({
-  id,
-  userId: faker.number.int(),
-  title: faker.lorem.words(),
-  frequency: IRule.Frequency.Daily,
-  start: dayjs.utc().subtract(1, "day").toISOString(),
-  end: dayjs.utc().add(1, "month").toISOString(),
-  duration: 8 * 60,
-  time: "10:00",
-  weekdays: [
-    IDate.Weekday.Sunday,
-    IDate.Weekday.Monday,
-    IDate.Weekday.Tuesday,
-    IDate.Weekday.Wednesday,
-    IDate.Weekday.Thursday,
-  ],
-  monthday: null,
-  activated: true,
-  deleted: false,
-  createAt: faker.date.past().toISOString(),
-  updatedAt: faker.date.past().toISOString(),
-});
-
-const sharedRuleValues = {
-  id: 1,
-  userId: faker.number.int(),
-  title: faker.lorem.words(),
-  monthday: null,
-  activated: true,
-  deleted: false,
-  createAt: faker.date.past().toISOString(),
-  updatedAt: faker.date.past().toISOString(),
-};
-
 export const Primary: Story = {
   args: {
     open: true,
@@ -65,19 +30,29 @@ export const Primary: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [makeRule(1)],
+    bookedSlots: [],
     slots: range(5).map((idx) => ({
-      ruleId: 1,
+      id: 1,
       start: dayjs
         .utc()
-        .add(1, "day")
+        .add(idx + 1, "day")
         .set("hour", 10)
         .set("minutes", 0)
         .add(idx * 30, "minutes")
         .toISOString(),
       duration: 30,
+      end: dayjs
+        .utc()
+        .add(idx + 2, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      userId: 5,
+      createdAt: faker.date.past().toISOString(),
+      deleted: false,
+      updatedAt: faker.date.past().toISOString(),
     })),
-    notice: 0,
     onBook() {
       alert("Lesson booked!!");
     },
@@ -92,19 +67,29 @@ export const LoadingRules: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [makeRule(1)],
+    bookedSlots: [],
     slots: range(5).map((idx) => ({
-      ruleId: 1,
+      id: 1,
       start: dayjs
         .utc()
-        .add(1, "day")
+        .add(idx + 1, "day")
         .set("hour", 10)
         .set("minutes", 0)
         .add(idx * 30, "minutes")
         .toISOString(),
       duration: 30,
+      end: dayjs
+        .utc()
+        .add(idx + 2, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      userId: 5,
+      createdAt: faker.date.past().toISOString(),
+      deleted: false,
+      updatedAt: "",
     })),
-    notice: 0,
     onBook() {
       alert("Lesson booked!!");
     },
@@ -118,19 +103,29 @@ export const ConfirmationLoading: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [makeRule(1)],
     slots: range(5).map((idx) => ({
-      ruleId: 1,
+      id: 1,
       start: dayjs
         .utc()
-        .add(1, "day")
+        .add(idx + 1, "day")
         .set("hour", 10)
         .set("minutes", 0)
         .add(idx * 30, "minutes")
         .toISOString(),
       duration: 30,
+      end: dayjs
+        .utc()
+        .add(idx + 2, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      userId: 5,
+      createdAt: faker.date.past().toISOString(),
+      deleted: false,
+      updatedAt: "",
     })),
-    notice: 0,
+    bookedSlots: [],
     confirmationLoading: true,
     onBook() {
       alert("Lesson booked!!");
@@ -146,19 +141,29 @@ export const LoadingThenShowingRules: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [makeRule(1)],
     slots: range(5).map((idx) => ({
-      ruleId: 1,
+      id: 1,
       start: dayjs
         .utc()
-        .add(1, "day")
+        .add(idx + 1, "day")
         .set("hour", 10)
         .set("minutes", 0)
         .add(idx * 30, "minutes")
         .toISOString(),
       duration: 30,
+      end: dayjs
+        .utc()
+        .add(idx + 2, "day")
+        .set("hour", 10)
+        .set("minutes", 0)
+        .add(idx * 30, "minutes")
+        .toISOString(),
+      userId: 5,
+      createdAt: faker.date.past().toISOString(),
+      deleted: false,
+      updatedAt: "",
     })),
-    notice: 0,
+    bookedSlots: [],
     onBook() {
       alert("Lesson booked!!");
     },
@@ -182,71 +187,8 @@ export const EmptyRules: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [],
-    slots: range(5).map((idx) => ({
-      ruleId: 1,
-      start: dayjs
-        .utc()
-        .add(1, "day")
-        .set("hour", 10)
-        .set("minutes", 0)
-        .add(idx * 30, "minutes")
-        .toISOString(),
-      duration: 30,
-    })),
-    notice: 0,
-    onBook() {
-      alert("Lesson booked!!");
-    },
-  },
-};
-
-export const WithNoticePeriod: Story = {
-  args: {
-    open: true,
-    close: identity,
-    tutorId: faker.number.int(),
-    name: faker.person.fullName(),
-    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [
-      {
-        start: dayjs.utc().subtract(1, "day").toISOString(),
-        end: dayjs.utc().add(1, "month").toISOString(),
-        frequency: IRule.Frequency.Daily,
-        duration: 8 * 60,
-        time: dayjs.utc().startOf("hour").format("HH:mm"),
-        weekdays: [],
-        ...sharedRuleValues,
-      },
-    ],
     slots: [],
-    notice: 3 * 60,
-    onBook() {
-      alert("Lesson booked!!");
-    },
-  },
-};
-
-export const WithLongNoticePeriod: Story = {
-  args: {
-    open: true,
-    close: identity,
-    tutorId: faker.number.int(),
-    name: faker.person.fullName(),
-    imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [
-      {
-        start: dayjs.utc().subtract(1, "day").toISOString(),
-        end: dayjs.utc().add(1, "month").toISOString(),
-        frequency: IRule.Frequency.Daily,
-        duration: 8 * 60,
-        time: dayjs.utc().startOf("hour").format("HH:mm"),
-        weekdays: [],
-        ...sharedRuleValues,
-      },
-    ],
-    slots: [],
-    notice: 8 * 60,
+    bookedSlots: [],
     onBook() {
       alert("Lesson booked!!");
     },
@@ -260,35 +202,49 @@ export const SlotsBelongsToTwoSeperateDays: Story = {
     tutorId: faker.number.int(),
     name: faker.person.fullName(),
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
-    rules: [
-      {
-        start: dayjs.utc().subtract(1, "day").toISOString(),
-        end: dayjs.utc().add(1, "month").toISOString(),
-        frequency: IRule.Frequency.Daily,
-        duration: 8 * 60,
-        time: dayjs.utc().startOf("hour").format("HH:mm"),
-        weekdays: [],
-        ...sharedRuleValues,
-      },
-    ],
     slots: [
       {
-        ruleId: 1,
-        start: dayjs.utc().startOf("hour").add(1, "hour").toISOString(),
-        duration: 30,
-      },
-      {
-        ruleId: 1,
+        id: 1,
         start: dayjs
           .utc()
-          .add(1, "day")
-          .startOf("hour")
-          .add(1, "hour")
+          .add(0 + 1, "day")
+          .set("minutes", 0)
+          .set("hour", -2)
           .toISOString(),
-        duration: 30,
+        end: dayjs
+          .utc()
+          .add(0 + 2, "day")
+          .set("minutes", 0)
+          .set("hour", -2)
+          .toISOString(),
+        userId: 5,
+        createdAt: faker.date.past().toISOString(),
+        deleted: false,
+        updatedAt: "",
+      },
+      {
+        id: 1,
+        start: dayjs
+          .utc()
+          .add(4, "day")
+          .set("minutes", 0)
+          .set("hour", -2)
+          .add(1 * 30, "minutes")
+          .toISOString(),
+        end: dayjs
+          .utc()
+          .add(5, "day")
+          .set("minutes", 0)
+          .set("hour", -2)
+          .add(1 * 30, "minutes")
+          .toISOString(),
+        userId: 5,
+        createdAt: faker.date.past().toISOString(),
+        deleted: false,
+        updatedAt: "",
       },
     ],
-    notice: 0,
+    bookedSlots: [],
     onBook() {
       alert("Lesson booked!!");
     },
