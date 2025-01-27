@@ -92,6 +92,7 @@
     "./backend": "./dist/lib/backend.js",
     "./cache": "./dist/lib/cache.js",
     "./chat": "./dist/lib/chat.js",
+    "./error": "./dist/constants/error.js",
     "./style.css": "./dist/style.css",
     "./tailwind.config": "./dist/tailwind.config.js",
     "./tailwind.css": "./dist/tailwind.css"
