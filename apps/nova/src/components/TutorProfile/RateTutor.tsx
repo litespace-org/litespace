@@ -4,7 +4,6 @@ import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { RatingDialog } from "@litespace/luna/TutorFeedback";
 import { useUserContext } from "@litespace/headless/context/user";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import React, { useCallback, useState } from "react";
 import { useCreateRatingTutor } from "@litespace/headless/rating";
 import { useToast } from "@litespace/luna/Toast";
@@ -67,7 +66,7 @@ export const RateTutor: React.FC<{
         <Star className="[&>*]:fill-natural-50" />
       </Button>
       <RatingDialog
-        imageUrl={asFullAssetUrl(user.image || "")}
+        imageUrl={user.image}
         studentName={user.name || ""}
         onSubmit={rateTutor}
         studentId={user.id}

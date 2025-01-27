@@ -9,7 +9,6 @@ import React, { useState } from "react";
 import { Duration } from "@litespace/sol/duration";
 import { formatMinutes, formatNumber } from "@litespace/luna/utils";
 import { Loading } from "@litespace/luna/Loading";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
@@ -44,10 +43,7 @@ const Content: React.FC<{
         <div className="relative">
           {user.image ? (
             <div className="overflow-hidden border-2 border-white rounded-full">
-              <img
-                src={asFullAssetUrl.of(user.image)}
-                className="rounded-full w-14 h-14"
-              />
+              <img src={user.image} className="rounded-full w-14 h-14" />
             </div>
           ) : (
             <PersonIcon className="w-14 h-14" />

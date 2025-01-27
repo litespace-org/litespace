@@ -4,7 +4,6 @@ import {
   EmptyLessons,
   CancelLesson,
 } from "@litespace/luna/Lessons";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { ILesson, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Route } from "@/types/routes";
@@ -116,7 +115,7 @@ export const Content: React.FC<{
                 member={{
                   id: member.userId,
                   name: member.name,
-                  image: asFullAssetUrl(member.image),
+                  image: member.image,
                   role: member.role === "student" ? "student" : "tutor",
                 }}
               />

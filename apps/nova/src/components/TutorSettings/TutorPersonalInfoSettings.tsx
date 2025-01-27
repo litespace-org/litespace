@@ -16,7 +16,6 @@ import { UseFormReturn } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { orUndefined } from "@litespace/sol/utils";
 import { Void } from "@litespace/types";
 
@@ -195,7 +194,7 @@ export const TutorPersonalInfoSettings: React.FC<{
       >
         {intl("tutor-settings.personal-info.video")}
       </Typography>
-      <VideoPlayer src={orUndefined(asFullAssetUrl(tutor.video))} />
+      <VideoPlayer src={orUndefined(tutor.video)} />
 
       <TopicSelectionDialog
         confirm={saveTopics}

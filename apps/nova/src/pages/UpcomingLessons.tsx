@@ -15,7 +15,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/luna/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { orUndefined } from "@litespace/sol/utils";
 
 type RateDialogInfo = {
@@ -121,7 +120,7 @@ const UpcomingLessons: React.FC = () => {
           studentId={user.id}
           studentName={user.name}
           tutorName={rateDialogInfo.tutorName}
-          imageUrl={orUndefined(asFullAssetUrl(user.image))}
+          imageUrl={orUndefined(user.image)}
           onClose={() => setRateDialogInfo(defaultRateDialogInfo)}
           onSubmit={(payload) => {
             if (!rateDialogInfo.tutorId) return;

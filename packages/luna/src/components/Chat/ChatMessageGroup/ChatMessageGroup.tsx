@@ -7,7 +7,6 @@ import { motion } from "framer-motion";
 import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
 import { useFormatMessage } from "@/hooks";
-import { asFullAssetUrl } from "@/lib";
 import { DisplayMessage } from "@/lib/chat";
 import { InView } from "react-intersection-observer";
 
@@ -66,7 +65,7 @@ export const ChatMessageGroup: React.FC<{
       <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
         <Avatar
           alt={orUndefined(name)}
-          src={orUndefined(asFullAssetUrl(image))}
+          src={orUndefined(image)}
           seed={userId.toString()}
         />
       </div>

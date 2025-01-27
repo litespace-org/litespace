@@ -20,7 +20,6 @@ import { Loader, LoadingError } from "@litespace/luna/Loading";
 import { useToast } from "@litespace/luna/Toast";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
 
@@ -151,7 +150,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                 <TutorRatingCard
                   key={index}
                   feedback={rating.feedback}
-                  imageUrl={asFullAssetUrl(rating.image || "")}
+                  imageUrl={rating.image}
                   rating={rating.value}
                   studentId={rating.userId}
                   studentName={rating.name}
@@ -163,7 +162,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                       id: rating.id,
                       studentName: rating.name || "",
                       studentId: rating.userId,
-                      imageUrl: asFullAssetUrl(rating.image),
+                      imageUrl: rating.image,
                       feedback: rating.feedback,
                       rating: rating.value,
                     })
@@ -178,7 +177,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
                   ratings={rating.ratings.map((rating) => ({
                     userId: rating.userId,
                     name: rating.name,
-                    imageUrl: asFullAssetUrl(rating.image || ""),
+                    imageUrl: rating.image,
                   }))}
                   tutorName={tutorName}
                   value={rating.value}
