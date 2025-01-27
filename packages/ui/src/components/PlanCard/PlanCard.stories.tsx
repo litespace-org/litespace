@@ -86,6 +86,18 @@ export const SecondaryWithValuableLabel: Story = {
   },
 };
 
+export const SecondaryWithValuableLabelMobile: Story = {
+  args: {
+    title: faker.lorem.words(1),
+    description: faker.lorem.words(15),
+    price: faker.number.int({ min: 1, max: 1000 }),
+    label: "most-valuable",
+    primary: false,
+    weeklyMinutes: faker.number.int({ min: 30, max: 200 }),
+    onBuy: () => alert("buy"),
+  },
+};
+
 export const PrimaryWithDiscount: Story = {
   args: {
     title: faker.lorem.words(1),

@@ -41,12 +41,14 @@ const Navbar: React.FC = () => {
             </Button>
           </Link>
         ) : null}
-        <ProfileInfo
-          imageUrl={user.image}
-          name={user.name}
-          email={user.email}
-          id={user.id}
-        />
+        <div className="mr-auto">
+          <ProfileInfo
+            imageUrl={user.image}
+            name={user.name}
+            email={user.email}
+            id={user.id}
+          />
+        </div>
       </div>
     </div>
   );

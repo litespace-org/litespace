@@ -9,6 +9,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { LocalId } from "@litespace/ui/locales";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PlansDataProps, Tab } from "@/components/Plans/types";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const PLANS_TITLE_ID_MAP: { [key: number]: LocalId } = {
   1: "plans.titles.beginning",
@@ -25,6 +26,7 @@ const PLANS_DESC_ID_MAP: { [key: number]: LocalId } = {
 const Content: React.FC<{
   plans: PlansDataProps;
 }> = ({ plans }) => {
+  const { md, lg, xl } = useMediaQuery();
   const intl = useFormatMessage();
   const toast = useToast();
   const [tab, setTab] = useState<Tab>("monthly");
@@ -59,11 +61,17 @@ const Content: React.FC<{
   const makeTabPlans = useMemo(
     () => (tab: Tab) => (
       <Animate key={tab} tab={tab}>
-        <div className="flex gap-6 mt-[124px]">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 justify-items-center md:gap-6 mt-[124px]">
           {plans?.[tab].map((plan, idx) => (
             <div
               key={plan.id}
-              className={cn("max-w-[368px]", { "-mt-10": idx === 1 })}
+              className={cn(
+                "max-w-[368px]",
+                { "mb-4": !lg && idx !== 1 },
+                { "mb-12": !xl && idx === 1 },
+                { "-mt-10": idx === 1 && xl },
+                { "col-span-2": idx === 2 && md && !xl }
+              )}
             >
               <PlanCard
                 title={intl(PLANS_TITLE_ID_MAP[plan.id])}
@@ -82,21 +90,27 @@ const Content: React.FC<{
         </div>
       </Animate>
     ),
-    [intl, notifyComingSoon, plans]
+    [intl, lg, md, notifyComingSoon, plans, xl]
   );
 
+  // TODO: loading state
+  // TODO: Error state
   if (!plans) return null;
 
   return (
     <div>
-      <div className="flex flex-col gap-4 justify-center items-center text-center mb-16">
-        <Typography element="h3" weight="semibold" className="text-natural-950">
+      <div className="flex flex-col gap-2 md:gap-4 justify-center items-center text-center mb-16">
+        <Typography
+          element={{ default: "caption", lg: "h3" }}
+          weight="semibold"
+          className="text-natural-950"
+        >
           {intl("plans.message.title")}
         </Typography>
         <Typography
-          element="subtitle-1"
-          weight="semibold"
-          className="text-natural-600 max-w-4xl"
+          element={{ default: "tiny-text", lg: "subtitle-1" }}
+          weight={{ default: "regular", lg: "semibold" }}
+          className="text-natural-600 sm:max-w-4xl inline"
         >
           {intl("plans.message.description")}
         </Typography>
@@ -107,7 +121,7 @@ const Content: React.FC<{
           value={tab}
           onValueChange={(value: string) => setTab(value as Tab)}
         >
-          <Tabs.List className="flex justify-center gap-16">
+          <Tabs.List className="flex justify-between sm:justify-around md:justify-center md:gap-16">
             {tabs.map(({ value, label }) => (
               <Tabs.Trigger
                 key={value}
@@ -120,11 +134,11 @@ const Content: React.FC<{
                     <Typography
                       element="tiny-text"
                       weight="regular"
-                      className="absolute -top-[57px] -right-[105px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
+                      className="absolute -top-[50px] md:-top-[57px] -right-[130px] md:-right-[115px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
                     >
                       {intl("plans.installments.three-month")}
                     </Typography>
-                    <div className="absolute -top-[50px] right-1 w-[35px] h-[15px]">
+                    <div className="absolute -top-10 md:-top-[50px] right-1 w-7 md:w-[35px] h-[15px] origin-bottom-left translate-x-2 md:rotate-0">
                       <CurvedDashedLine />
                     </div>
                   </>
@@ -134,18 +148,23 @@ const Content: React.FC<{
                     <Typography
                       element="tiny-text"
                       weight="regular"
-                      className="absolute -bottom-[20px] -left-[355%] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
+                      className="absolute min-w-[106px] -bottom-[50px] md:-bottom-[20px] left-9 md:-left-[145px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
                     >
                       {intl("plans.installments.six-month")}
                     </Typography>
-                    <div className="absolute -bottom-[35px] -left-[115%] w-[35px] h-[15px] -rotate-[140deg]">
+                    <div
+                      style={{
+                        transform: md ? "rotate(220deg)" : "rotateX(180deg)",
+                      }}
+                      className="absolute -bottom-12 md:-bottom-[37px] -left-0 md:-left-[115%] w-7 md:w-[35px] h-[15px]"
+                    >
                       <CurvedDashedLine />
                     </div>
                   </>
                 ) : null}
 
                 <Typography
-                  element="body"
+                  element={lg ? "body" : "caption"}
                   weight="semibold"
                   className={cn(
                     "transition-colors duration-300",
@@ -174,7 +193,7 @@ const Content: React.FC<{
             ))}
           </Tabs.List>
 
-          <div className="mt-8">
+          <div className="mt-8 w-full">
             <AnimatePresence initial={false} mode="wait">
               {tab === "monthly" ? makeTabPlans("monthly") : null}
               {tab === "quarter" ? makeTabPlans("quarter") : null}
