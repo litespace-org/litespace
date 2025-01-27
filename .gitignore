@@ -14,5 +14,6 @@ storybook-static/
 # server 
 services/server/*.pem
 services/server/uploads/
+services/server/coverage/
 .vercel
 
