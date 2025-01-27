@@ -1,5 +1,10 @@
 import { availabilitySlots, interviews, lessons } from "@litespace/models";
-import { asSubSlots, isIntersecting } from "@litespace/sol";
+import {
+  asSubSlot,
+  asSubSlots,
+  isIntersecting,
+  isSuperSlot,
+} from "@litespace/sol";
 import { IAvailabilitySlot } from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty, uniqBy } from "lodash";
@@ -51,6 +56,62 @@ export async function deleteSlots({
   ]);
 }
 
+export async function updateSlot({
+  slot,
+  userId,
+  start,
+  end,
+  tx,
+}: {
+  userId: number;
+  slot: IAvailabilitySlot.Self;
+  start?: string;
+  end?: string;
+  tx: Knex.Transaction;
+}): Promise<void> {
+  const [updated] = asUpdateSlots([slot], [{ id: slot.id, start, end }]);
+
+  // get slot associated subslots (lessons & interviews)
+  const associatedLessons = await lessons.find({
+    canceled: false,
+    full: true,
+    slots: [slot.id],
+    tx,
+  });
+
+  const associatedInterviews = await interviews.find({
+    slots: [slot.id],
+    tx,
+  });
+
+  // check if the subslots will fit within the new slot dates (start & end)
+  // and cancel the subslot that doesn't fit
+  const toBeCancelledLessons = associatedLessons.list.filter(
+    (lesson) => !isSuperSlot(updated, asSubSlot(lesson))
+  );
+
+  const toBeCancelledInterviews = associatedInterviews.list.filter(
+    (interview) => !isSuperSlot(updated, asSubSlot(interview))
+  );
+
+  await Promise.all([
+    lessons.cancel({
+      ids: toBeCancelledLessons.map((lesson) => lesson.id),
+      canceledBy: userId,
+      tx,
+    }),
+
+    interviews.cancel({
+      ids: toBeCancelledInterviews.map((interview) => interview.ids.self),
+      canceledBy: userId,
+      tx,
+    }),
+
+    // update the slot dates in the database
+    availabilitySlots.update(slot.id, { start, end }, tx),
+  ]);
+}
+
 export async function getSubslots({
   slotIds,
   userId,
@@ -77,9 +138,9 @@ export async function getSubslots({
   return asSubSlots([...paginatedLessons.list, ...paginatedInterviews.list]);
 }
 
-function updateSlots(
+function asUpdateSlots(
   slots: IAvailabilitySlot.Self[],
-  updates: IAvailabilitySlot.UpdateAction[]
+  updates: Omit<IAvailabilitySlot.UpdateAction, "type">[]
 ) {
   return structuredClone(slots).map((slot) => {
     const update = updates.find((action) => action.id === slot.id);
@@ -126,7 +187,7 @@ export async function isValidSlots({
     (slot) => !updateIds.includes(slot.id)
   );
   // Create a version of the updatable slots with the desired updates.
-  const updatedSlots = updateSlots(updatableSlots, updates);
+  const updatedSlots = asUpdateSlots(updatableSlots, updates);
 
   // validate the slots that are about to be created and the slots with the
   // applied updates.

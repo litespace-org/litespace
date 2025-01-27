@@ -14,7 +14,12 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { isEmpty } from "lodash";
-import { deleteSlots, getSubslots, isValidSlots } from "@/lib/availabilitySlot";
+import {
+  deleteSlots,
+  getSubslots,
+  isValidSlots,
+  updateSlot,
+} from "@/lib/availabilitySlot";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findPayload = zod.object({
@@ -128,8 +133,13 @@ async function set(req: Request, res: Response, next: NextFunction) {
     const deleteIds = deletes.map((obj) => obj.id);
     const ids = [...deleteIds, ...updates.map((obj) => obj.id)];
 
-    const allExist = await availabilitySlots.allExist(ids, tx);
-    if (!allExist) return notfound.slot();
+    const allSlots = !isEmpty(ids)
+      ? await availabilitySlots.find({ slots: ids, tx })
+      : {
+          list: [],
+          total: 0,
+        };
+    if (allSlots.total !== ids.length) return notfound.slot();
 
     const isOwner = await availabilitySlots.isOwner({
       slots: ids,
@@ -155,16 +165,19 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
 
     // update slots
-    for (const update of updates) {
-      await availabilitySlots.update(
-        update.id,
-        {
-          start: update.start,
-          end: update.end,
-        },
-        tx
-      );
-    }
+    await Promise.all(
+      updates.map(async (updateAction) => {
+        const slot = allSlots.list.find((slot) => slot.id === updateAction.id);
+        if (!slot) return console.error("unreachable");
+        await updateSlot({
+          slot,
+          userId: user.id,
+          start: updateAction.start,
+          end: updateAction.end,
+          tx,
+        });
+      })
+    );
 
     // create slots
     if (isEmpty(creates)) return;
