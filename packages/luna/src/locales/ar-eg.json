@@ -578,7 +578,6 @@
   "plan.price-before-discount": "{value} جم",
   "plan.label.most-common": "الأكثر شهرة",
   "plan.label.most-valuable": "الأفضل قيمة",
-  "notice.desc.1": "المدة التي يجب أن تكون متاحه علي الأقل قبل حجز أي حصة مع المعلم.",
   "navbar.personal-quota": "الباقة الشخصية",
   "navbar.quota-consumption": "تم استهلاك {value}",
   "navbar.rest-of-quota": "متبقي {value}",

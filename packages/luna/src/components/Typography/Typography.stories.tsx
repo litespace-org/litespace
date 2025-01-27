@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Typography } from "@/components/Typography";
 import React from "react";
-import ar from "@/locales/ar-eg.json";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Typography;
 
@@ -18,26 +18,47 @@ export const Primary: StoryObj<Component> = {
   render() {
     return (
       <div>
-        <Typography element="h1">{ar["notice.desc.1"]}</Typography>
+        <Typography element="h1">{faker.lorem.words()}</Typography>
         <Typography element="h1" weight="bold">
-          {ar["notice.desc.1"]}
+          {faker.lorem.words()}
         </Typography>
         <Typography element="h1" weight="semibold">
-          {ar["notice.desc.1"]}
+          {faker.lorem.words()}
         </Typography>
         <Typography element="h1" weight="medium">
-          {ar["notice.desc.1"]}
+          {faker.lorem.words()}
         </Typography>
-        <Typography element="h2">{ar["notice.desc.1"]}</Typography>
-        <Typography element="h2">{ar["notice.desc.1"]}</Typography>
-        <Typography element="h3">{ar["notice.desc.1"]}</Typography>
-        <Typography element="h4">{ar["notice.desc.1"]}</Typography>
-        <Typography element="subtitle-1">{ar["notice.desc.1"]}</Typography>
-        <Typography element="subtitle-2">{ar["notice.desc.1"]}</Typography>
-        <Typography element="body">{ar["notice.desc.1"]}</Typography>
-        <Typography element="caption">{ar["notice.desc.1"]}</Typography>
+        <Typography element="h2">{faker.lorem.words()}</Typography>
+        <Typography element="h2">{faker.lorem.words()}</Typography>
+        <Typography element="h3">{faker.lorem.words()}</Typography>
+        <Typography element="h4">{faker.lorem.words()}</Typography>
+        <Typography element="subtitle-1">{faker.lorem.words()}</Typography>
+        <Typography element="subtitle-2">{faker.lorem.words()}</Typography>
+        <Typography element="body">{faker.lorem.words()}</Typography>
+        <Typography element="caption">{faker.lorem.words()}</Typography>
         <br />
-        <Typography element="tiny-text">{ar["notice.desc.1"]}</Typography>
+        <Typography element="tiny-text">{faker.lorem.words()}</Typography>
+      </div>
+    );
+  },
+};
+
+export const WithMediaQuery: StoryObj<Component> = {
+  args: {},
+  render() {
+    return (
+      <div>
+        <Typography
+          element={{
+            default: "h1",
+            sm: "caption",
+            md: "body",
+            lg: "h3",
+            xl: "h2",
+          }}
+        >
+          {faker.lorem.words()}
+        </Typography>
       </div>
     );
   },
