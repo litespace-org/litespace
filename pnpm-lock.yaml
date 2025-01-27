@@ -720,6 +720,9 @@ importers:
 
   packages/atlas:
     dependencies:
+      '@litespace/sol':
+        specifier: workspace:^
+        version: link:../sol
       '@litespace/types':
         specifier: workspace:^
         version: link:../types
@@ -1642,6 +1645,7 @@ packages:
   '@aws-sdk/middleware-flexible-checksums@3.735.0':
     resolution: {integrity: sha512-Tx7lYTPwQFRe/wQEHMR6Drh/S+X0ToAEq1Ava9QyxV1riwtepzRLojpNDELFb3YQVVYbX7FEiBMCJLMkmIIY+A==}
     engines: {node: '>=18.0.0'}
+    deprecated: Please upgrade to >=3.735.0, which contains fixes for checksum validation in S3 getObject calls. Details https://github.com/aws/aws-sdk-js-v3/issues/6827
 
   '@aws-sdk/middleware-host-header@3.734.0':
     resolution: {integrity: sha512-LW7RRgSOHHBzWZnigNsDIzu3AiwtjeI2X66v+Wn1P1u+eXssy1+up4ZY/h+t2sU4LU36UvEf+jrZti9c6vRnFw==}

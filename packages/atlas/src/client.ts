@@ -1,5 +1,6 @@
-import { Backend } from "@litespace/types";
+import { ApiError, ApiErrorCode, Backend, FieldError } from "@litespace/types";
 import axios, { AxiosError, AxiosInstance } from "axios";
+import { ResponseError } from "@litespace/sol/error";
 
 export enum TokenType {
   Bearer = "Bearer",
@@ -48,6 +49,21 @@ export const peers = {
   },
 } as const;
 
+function isApiError(value: unknown): value is ApiError {
+  return (
+    typeof value === "string" &&
+    Object.values(ApiError).includes(value as ApiError)
+  );
+}
+
+// Assuming FieldError is another type
+function isFieldError(value: unknown): value is FieldError {
+  return (
+    typeof value === "string" &&
+    Object.values(FieldError).includes(value as FieldError)
+  );
+}
+
 export function createClient(
   backend: Backend,
   token: AuthToken | null
@@ -65,15 +81,24 @@ export function createClient(
 
   client.interceptors.response.use(undefined, (error: AxiosError) => {
     const data = error.response?.data;
+
+    if (!error.response || !data || typeof data !== "object")
+      return Promise.reject(error);
+
     const message =
-      data &&
-      typeof data === "object" &&
-      "message" in data &&
-      typeof data.message === "string"
+      "message" in data && typeof data.message === "string"
         ? data.message
         : null;
 
-    if (message) return Promise.reject(new Error(message));
+    const code: ApiErrorCode | null =
+      "code" in data && (isApiError(data.code) || isFieldError(data.code))
+        ? data.code
+        : null;
+
+    if (message && code)
+      return Promise.reject(
+        new ResponseError({ message, code }, error.response.status)
+      );
 
     return Promise.reject(error);
   });

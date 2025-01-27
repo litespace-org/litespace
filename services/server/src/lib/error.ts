@@ -1,20 +1,5 @@
 import { ApiError, ApiErrorCode } from "@litespace/types";
-
-type CodedError = {
-  message: string;
-  code: ApiErrorCode;
-};
-
-export default class ResponseError extends Error {
-  statusCode: number;
-  errorCode: ApiErrorCode;
-
-  constructor(error: CodedError, statusCode: number) {
-    super(error.message);
-    this.statusCode = statusCode;
-    this.errorCode = error.code;
-  }
-}
+import { ResponseError } from "@litespace/sol/error";
 
 const error = (code: ApiErrorCode, message: string, status: number) =>
   new ResponseError(
