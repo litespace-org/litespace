@@ -18,10 +18,11 @@
   "register.login": "تسجيل الدخول",
   "register.with-google": "انشاء حساب باستخدام جوجل",
   "register.confirm-password": "تأكيد كلمة المرور",
-  "register.full-name": "الأسم بالكامل",
   "register.create-account": "انشاء الحساب",
   "register.password-not-the-same": "كملة المرور غير مطابقة",
   "register.error": "لديك مشكلة في إنشاء الحساب",
+  "complete-account.title": "قم بأستكمال حسابك!",
+  "complete-account.description": "استمتع بتجربة مريحة ومخصصة! أضف اسمك الكامل ومدينتك ورقم هاتفك، وقم بتعيين كلمة مرور خاصة بك لإكمال حسابك والاستفادة من جميع مميزات المنصة بسهولة.",
   "forget-password.title": "نسيت كلمة المرور؟",
   "forget-password.description": "ادخل برديك الالكتروني و سنرسل لك تعليمات لاعاده تعيين كلمه المرور الخاصة بك",
   "forget-password.send-link": "ارسال الرابط",
@@ -607,6 +608,15 @@
   "withdraw.methods.instapay": "إنستا باي",
   "withdraw.methods.bank": "تحويل بنكي",
   "withdraw.methods.wallet": "محفظة إلكترونية",
+  "labels.name": "الاسم",
+  "labels.confirm": "تأكيد",
+  "labels.skip": "تخطي",
+  "label.name.placeholder": "ادخل اسمك هنا",
+  "labels.phoneNumber": "رقم الهاتف",
+  "label.phoneNumber.placeholder": "ادخل رقم هاتفك هنا",
+  "labels.city": "المدينة",
+  "label.city.placeholder": "اختر مدينتك",
+  "label.password.placeholder": "قم بتعيين كلمة مرور خاصة بك",
   "labels.activity": "النشاط",
   "labels.activity.lesson": "أعطي حصة واحدة",
   "labels.activity.two.lessons": "أعطي حصتينj",
@@ -631,7 +641,6 @@
   "labels.share": "مشاركة",
   "labels.go-back": "الرجوع",
   "labels.coming-soon": "قريبا 🎉",
-  "labels.confirm": "تاكيد",
   "labels.cancel": "إلغاء",
   "labels.back-to-site": "الرجوع الي الموقع",
   "placeholders.from": "من",

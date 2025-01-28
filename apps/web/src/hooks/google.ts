@@ -30,7 +30,8 @@ export function useGoogle({
       if (info instanceof Error)
         return toast.error({ title: intl("login.error") });
       user.set(info);
-      navigate(Route.Root);
+      if (!info.user.phoneNumber) return navigate(Route.Complete);
+      return navigate(Route.Root);
     },
     [atlas.auth, intl, navigate, role, toast, user]
   );

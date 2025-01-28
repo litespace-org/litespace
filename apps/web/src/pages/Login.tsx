@@ -50,6 +50,7 @@ const Login: React.FC = () => {
       user.set(result);
       return navigate(Route.Root);
     },
+
     onError(error) {
       const errorMessage = getErrorMessageId(error);
       toast.error({
@@ -90,6 +91,7 @@ const Login: React.FC = () => {
                 <Controller.Input
                   control={control}
                   name="email"
+                  inputSize={"large"}
                   value={email}
                   autoComplete="off"
                   rules={{ validate: validateEmail }}
@@ -104,6 +106,7 @@ const Login: React.FC = () => {
                 <Controller.Password
                   control={control}
                   name="password"
+                  inputSize={"large"}
                   value={password}
                   rules={{ validate: validatePassword }}
                   disabled={mutation.isPending || google.loading}

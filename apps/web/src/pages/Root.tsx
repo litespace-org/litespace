@@ -41,6 +41,7 @@ const Root: React.FC = () => {
       Route.Login,
       Route.ForgetPassword,
       Route.ResetPassword,
+      Route.Complete,
       ...registerRoutes,
     ];
     return !routes.includes(location.pathname);
