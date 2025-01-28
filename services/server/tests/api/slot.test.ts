@@ -4,7 +4,7 @@ import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
 import { safe } from "@litespace/sol";
 import { bad, conflict, forbidden, notfound } from "@/lib/error";
-import { availabilitySlots } from "@litespace/models";
+import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";
 
 async function genMockData(tutorId: number, datetime: dayjs.Dayjs) {
@@ -219,6 +219,31 @@ describe("/api/v1/availability-slot/", () => {
       const slots = await availabilitySlots.find({ slots: [mock.slots[0].id] });
       expect(newSlotData.start).to.eq(first(slots.list)?.start);
       expect(newSlotData.end).to.eq(first(slots.list)?.end);
+    });
+
+    it("should cancel (out of scope) subslots upon successfull slot update", async () => {
+      const tutorApi = await Api.forTutor();
+      const tutor = await tutorApi.findCurrentUser();
+      const now = dayjs.utc();
+      const mock = await genMockData(tutor.user.id, now);
+
+      const newSlotData = {
+        id: mock.slots[0].id,
+        start: now.add(2, "days").toISOString(),
+        end: now.add(3, "days").toISOString(),
+      };
+
+      await tutorApi.atlas.availabilitySlot.set({
+        actions: [
+          {
+            type: "update",
+            ...newSlotData,
+          },
+        ],
+      });
+
+      const lesson = await lessons.findById(mock.lessons[0].lesson.id);
+      expect(lesson?.canceledBy).to.eq(tutor.user.id);
     });
 
     it("should successfully delete an existing slot", async () => {

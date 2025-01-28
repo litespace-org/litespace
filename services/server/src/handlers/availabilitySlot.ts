@@ -14,7 +14,12 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { isEmpty } from "lodash";
-import { deleteSlots, getSubslots, isValidSlots } from "@/lib/availabilitySlot";
+import {
+  deleteSlots,
+  getSubslots,
+  isValidSlots,
+  updateSlot,
+} from "@/lib/availabilitySlot";
 import { MAX_FULL_FLAG_DAYS } from "@/constants";
 
 const findPayload = zod.object({
@@ -138,33 +143,54 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
     if (!isOwner) return forbidden();
 
+    // Find "all" (hence `full=true`) user slots that are not deleted or about to
+    // be deleted (hence why `execludeSlots`)
+    // TODO: fetch only future slots @mmoehabb & @neuodev
+    const userSlots = await availabilitySlots.find({
+      execludeSlots: deletes.map((action) => action.id),
+      users: [user.id],
+      deleted: false,
+      full: true,
+    });
+
+    const updateIds = updates.map((update) => update.id);
+    const updatableSlots = userSlots.list.filter((slot) =>
+      updateIds.includes(slot.id)
+    );
+    /**
+     * This can happen incase the user is trying to update a deleted slot.
+     */
+    if (updatableSlots.length !== updateIds.length) return notfound.slot();
+
     const isValid = await isValidSlots({
-      userId: user.id,
+      userSlots: userSlots.list,
       creates,
       updates,
-      deletes,
     });
     if (isValid === "malformed") return bad();
     if (isValid === "conflict") return conflict();
 
     // delete slots
     await deleteSlots({
-      currentUserId: user.id,
+      userId: user.id,
       ids: deleteIds,
       tx,
     });
 
     // update slots
-    for (const update of updates) {
-      await availabilitySlots.update(
-        update.id,
-        {
-          start: update.start,
-          end: update.end,
-        },
-        tx
-      );
-    }
+    await Promise.all(
+      updates.map(async (updateAction) => {
+        const slot = updatableSlots.find((slot) => slot.id === updateAction.id);
+        if (!slot) return console.error("unreachable");
+        await updateSlot({
+          slot,
+          userId: user.id,
+          start: updateAction.start,
+          end: updateAction.end,
+          tx,
+        });
+      })
+    );
 
     // create slots
     if (isEmpty(creates)) return;
