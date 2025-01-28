@@ -15,7 +15,7 @@ import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 import { AnimatePresence, motion } from "framer-motion";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
-import { isEmpty } from "lodash";
+import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
 import { Loader } from "@/components/Loading";
@@ -122,11 +122,11 @@ export const BookLessonDialog: React.FC<{
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
   onBook: ({
-    parent,
+    slotId,
     start,
     duration,
   }: {
-    parent: number;
+    slotId: number;
     start: string;
     duration: ILesson.Duration;
   }) => void;
@@ -148,11 +148,11 @@ export const BookLessonDialog: React.FC<{
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
     end: string | null;
-    parent: number | null;
+    slotId: number | null;
   }>({
     start: null,
     end: null,
-    parent: null,
+    slotId: null,
   });
 
   const [date, setDate] = useState<Dayjs>(dayjs());
@@ -192,9 +192,17 @@ export const BookLessonDialog: React.FC<{
    * List of all slots including booked and not-yet-booked slots.
    */
   const allSlots = useMemo(() => {
-    const availableSlots = selectDaySlots(date);
-    return orderSlots(availableSlots, "asc");
-  }, [selectDaySlots, date]);
+    const availableSlots: IAvailabilitySlot.AttributedSlot[] = selectDaySlots(
+      date
+    ).map((slot) => ({ ...slot, bookable: true }));
+    return orderSlots(
+      concat(
+        availableSlots,
+        bookedSlots.map((slot) => ({ ...slot, bookable: false }))
+      ),
+      "asc"
+    );
+  }, [selectDaySlots, date, bookedSlots]);
 
   const isTutorBusy = useMemo(() => isEmpty(unBookedSlots), [unBookedSlots]);
 
@@ -266,7 +274,7 @@ export const BookLessonDialog: React.FC<{
                   setLessonDetails({
                     start: slot.start,
                     end: slot.end,
-                    parent: "parent" in slot ? slot.parent : slot.id,
+                    slotId: "parent" in slot ? slot.parent : slot.id,
                   });
                 }}
               />
@@ -288,10 +296,10 @@ export const BookLessonDialog: React.FC<{
                   duration={duration}
                   onConfrim={() =>
                     lessonDetails.start &&
-                    lessonDetails.parent &&
+                    lessonDetails.slotId &&
                     onBook({
                       start: lessonDetails.start,
-                      parent: lessonDetails.parent,
+                      slotId: lessonDetails.slotId,
                       duration,
                     })
                   }

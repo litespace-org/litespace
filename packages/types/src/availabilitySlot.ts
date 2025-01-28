@@ -45,6 +45,8 @@ export type SubSlot = {
   end: string;
 };
 
+export type AttributedSlot = SubSlot & { bookable: boolean };
+
 export type Base = {
   start: string;
   end: string;

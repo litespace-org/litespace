@@ -167,7 +167,7 @@ export const PastLessons: React.FC = () => {
       ) : null}
 
       {tutor ? (
-        <BookLesson close={closeRebookingDialog} tutorId={tutor} open />
+        <BookLesson close={closeRebookingDialog} tutorId={tutor} />
       ) : null}
     </div>
   );

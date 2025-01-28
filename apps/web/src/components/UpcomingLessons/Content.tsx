@@ -161,11 +161,7 @@ export const Content: React.FC<{
       ) : null}
 
       {tutorId ? (
-        <BookLesson
-          tutorId={tutorId}
-          open={!!tutorId}
-          close={() => setTutorId(null)}
-        />
+        <BookLesson tutorId={tutorId} close={() => setTutorId(null)} />
       ) : null}
     </div>
   );

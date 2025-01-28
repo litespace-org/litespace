@@ -75,7 +75,7 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {open && tutor.data ? (
-        <BookLesson tutorId={tutor.data.id} close={closeDialog} open />
+        <BookLesson tutorId={tutor.data.id} close={closeDialog} />
       ) : null}
     </div>
   );

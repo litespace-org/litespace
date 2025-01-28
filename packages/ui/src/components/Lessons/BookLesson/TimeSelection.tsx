@@ -6,10 +6,10 @@ import { motion } from "framer-motion";
 import { IAvailabilitySlot } from "@litespace/types";
 
 export const TimeSelection: React.FC<{
-  slots: IAvailabilitySlot.GeneralSlot[];
+  slots: (IAvailabilitySlot.SubSlot & { bookable: boolean })[];
   start: string | null;
   end: string | null;
-  select: (payload: IAvailabilitySlot.GeneralSlot) => void;
+  select: (payload: IAvailabilitySlot.SubSlot) => void;
 }> = ({ slots, start, end, select }) => {
   return (
     <div className="tw-px-5">
@@ -26,6 +26,7 @@ export const TimeSelection: React.FC<{
               whileTap={{ scale: 0.95 }}
               type="button"
               key={slot.start}
+              disabled={!slot.bookable}
               onClick={() => select(slot)}
               data-selected={slot.start === start && slot.end === end}
               className={cn(
