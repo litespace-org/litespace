@@ -11,15 +11,7 @@ import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots"
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/sol/utils";
 
-const BookLesson = ({
-  open,
-  close,
-  tutorId,
-}: {
-  open: boolean;
-  close: Void;
-  tutorId: number;
-}) => {
+const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const queryClient = useQueryClient();
@@ -27,8 +19,8 @@ const BookLesson = ({
   const availabilitySlotsQuery = useMemo(
     () => ({
       userId: tutorId,
-      after: dayjs().toISOString(),
-      before: dayjs().add(2, "week").toISOString(),
+      after: dayjs.utc().toISOString(),
+      before: dayjs.utc().add(2, "week").toISOString(),
     }),
     [tutorId]
   );
@@ -67,17 +59,17 @@ const BookLesson = ({
 
   const onBook = useCallback(
     ({
-      parent,
+      slotId,
       start,
       duration,
     }: {
-      parent: number;
+      slotId: number;
       start: string;
       duration: ILesson.Duration;
     }) =>
       bookLessonMutation.mutate({
         tutorId,
-        slotId: parent,
+        slotId,
         duration,
         start,
         ruleId: 5, // TODO: Remove it when removed from the backend
@@ -90,7 +82,7 @@ const BookLesson = ({
       imageUrl={orNull(tutor.data?.image)}
       name={orNull(tutor.data?.name)}
       tutorId={tutorId}
-      open={open}
+      open={true}
       close={close}
       confirmationLoading={bookLessonMutation.isPending}
       loading={

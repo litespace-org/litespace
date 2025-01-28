@@ -46,7 +46,7 @@ const TutorProfile: React.FC = () => {
         <TutorProfileCard {...tutor.data} onBook={openDialog} />
         <TutorTabs tutor={tutor.data} />
         {open ? (
-          <BookLesson tutorId={tutor.data.id} close={closeDialog} open={open} />
+          <BookLesson tutorId={tutor.data.id} close={closeDialog} />
         ) : null}
       </div>
     </div>
