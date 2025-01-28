@@ -133,13 +133,8 @@ async function set(req: Request, res: Response, next: NextFunction) {
     const deleteIds = deletes.map((obj) => obj.id);
     const ids = [...deleteIds, ...updates.map((obj) => obj.id)];
 
-    const allSlots = !isEmpty(ids)
-      ? await availabilitySlots.find({ slots: ids, tx })
-      : {
-          list: [],
-          total: 0,
-        };
-    if (allSlots.total !== ids.length) return notfound.slot();
+    const allExist = await availabilitySlots.allExist(ids, tx);
+    if (!allExist) return notfound.slot();
 
     const isOwner = await availabilitySlots.isOwner({
       slots: ids,
@@ -148,18 +143,36 @@ async function set(req: Request, res: Response, next: NextFunction) {
     });
     if (!isOwner) return forbidden();
 
+    // Find "all" (hence `full=true`) user slots that are not deleted or about to
+    // be deleted (hence why `execludeSlots`)
+    // TODO: fetch only future slots @mmoehabb & @neuodev
+    const userSlots = await availabilitySlots.find({
+      execludeSlots: deletes.map((action) => action.id),
+      users: [user.id],
+      deleted: false,
+      full: true,
+    });
+
+    const updateIds = updates.map((update) => update.id);
+    const updatableSlots = userSlots.list.filter((slot) =>
+      updateIds.includes(slot.id)
+    );
+    /**
+     * This can happen incase the user is trying to update a deleted slot.
+     */
+    if (updatableSlots.length !== updateIds.length) return notfound.slot();
+
     const isValid = await isValidSlots({
-      userId: user.id,
+      userSlots: userSlots.list,
       creates,
       updates,
-      deletes,
     });
     if (isValid === "malformed") return bad();
     if (isValid === "conflict") return conflict();
 
     // delete slots
     await deleteSlots({
-      currentUserId: user.id,
+      userId: user.id,
       ids: deleteIds,
       tx,
     });
@@ -167,7 +180,7 @@ async function set(req: Request, res: Response, next: NextFunction) {
     // update slots
     await Promise.all(
       updates.map(async (updateAction) => {
-        const slot = allSlots.list.find((slot) => slot.id === updateAction.id);
+        const slot = updatableSlots.find((slot) => slot.id === updateAction.id);
         if (!slot) return console.error("unreachable");
         await updateSlot({
           slot,
