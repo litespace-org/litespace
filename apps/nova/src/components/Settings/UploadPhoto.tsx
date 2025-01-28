@@ -4,7 +4,7 @@ import { Button, ButtonSize } from "@litespace/luna/Button";
 import { Typography } from "@litespace/luna/Typography";
 import { first } from "lodash";
 import { Avatar } from "@litespace/luna/Avatar";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 
 const UploadPhoto: React.FC<{
@@ -12,7 +12,7 @@ const UploadPhoto: React.FC<{
   setPhoto: (photo: File) => void;
   id: number;
 }> = ({ photo, setPhoto, id }) => {
-  const { lg } = useMediaQueries();
+  const { lg } = useMediaQuery();
   const intl = useFormatMessage();
   const ref = useRef<HTMLInputElement>(null);
 

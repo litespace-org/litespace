@@ -12,7 +12,7 @@ import { Typography } from "@litespace/luna/Typography";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Button, ButtonSize } from "@litespace/luna/Button";
 import { useToast } from "@litespace/luna/Toast";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
@@ -28,7 +28,7 @@ const Content: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
   const [tutor, setTutor] = useState<Tutor | null>(null);
-  const mq = useMediaQueries();
+  const mq = useMediaQuery();
 
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);
   const closeBookingDialog = useCallback(() => setTutor(null), []);

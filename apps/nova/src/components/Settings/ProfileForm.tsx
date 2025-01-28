@@ -24,7 +24,7 @@ import { isEqual } from "lodash";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/sol/constants";
 import { governorates } from "@/constants/user";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type IForm = {
   name: string;
@@ -45,7 +45,7 @@ export type TopicWatcher = {
 };
 
 export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
-  const { lg } = useMediaQueries();
+  const { lg } = useMediaQuery();
   const [photo, setPhoto] = useState<File | null>(null);
 
   const allTopicsQuery = useTopics({});

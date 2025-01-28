@@ -16,6 +16,7 @@ import { UserProvider } from "@litespace/headless/context/user";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { Direction } from "@litespace/luna/Direction";
 import { AppConfigProvider } from "@litespace/headless/config";
+import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import App from "@/App";
 
 import "@litespace/luna/style.css";
@@ -38,18 +39,20 @@ createRoot(document.getElementById("root")!).render(
                 <AtlasProvider>
                   <SocketProvider>
                     <UserProvider>
-                      <ReduxProvider store={store}>
-                        <PersistGate
-                          loading={
-                            <div className="flex items-center justify-center w-screen h-screen">
-                              <Spinner />
-                            </div>
-                          }
-                          persistor={persistor}
-                        >
-                          <App />
-                        </PersistGate>
-                      </ReduxProvider>
+                      <MediaQueryProvider>
+                        <ReduxProvider store={store}>
+                          <PersistGate
+                            loading={
+                              <div className="flex items-center justify-center w-screen h-screen">
+                                <Spinner />
+                              </div>
+                            }
+                            persistor={persistor}
+                          >
+                            <App />
+                          </PersistGate>
+                        </ReduxProvider>
+                      </MediaQueryProvider>
                     </UserProvider>
                   </SocketProvider>
                 </AtlasProvider>

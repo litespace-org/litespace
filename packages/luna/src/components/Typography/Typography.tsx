@@ -1,6 +1,6 @@
 import React, { ComponentProps, useMemo } from "react";
 import cn from "classnames";
-import { useMediaQueries } from "@/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type MediaQuery = "default" | "sm" | "md" | "lg" | "xl" | "xxl";
 
@@ -55,7 +55,7 @@ export const Typography = <T extends Tag>({
   className,
   ...props
 }: Props<T>) => {
-  const mq = useMediaQueries();
+  const mq = useMediaQuery();
   const selectedElement: TypographyElement = useMemo(() => {
     if (typeof element === "string") return element;
     if (mq.xxl && element.xxl) return element.xxl;
