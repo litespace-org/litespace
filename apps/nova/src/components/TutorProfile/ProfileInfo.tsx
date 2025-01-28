@@ -1,4 +1,3 @@
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Typography } from "@litespace/luna/Typography";
 import { VideoPlayer } from "@litespace/luna/VideoPlayer";
@@ -60,7 +59,7 @@ const ProfileInfo: React.FC<{
           >
             {intl("tutor.profile.tabs.profile.video")}
           </Typography>
-          <VideoPlayer src={orUndefined(asFullAssetUrl(video))} />
+          <VideoPlayer src={orUndefined(video)} />
         </div>
       ) : null}
     </div>

@@ -9,7 +9,6 @@ import {
 } from "@litespace/luna/Button";
 import { VideoPlayer } from "@litespace/luna/VideoPlayer";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { Upload, X } from "react-feather";
 import cn from "classnames";
 
@@ -26,8 +25,7 @@ type Viewer = Controls & {
 const useMediaUrl = (media: Viewer["media"]) => {
   return useMemo(() => {
     if (media instanceof File) return URL.createObjectURL(media);
-    if (media) return asFullAssetUrl(media);
-    return null;
+    return media || null;
   }, [media]);
 };
 

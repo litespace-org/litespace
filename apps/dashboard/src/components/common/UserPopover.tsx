@@ -3,7 +3,6 @@ import { HoverCard } from "@litespace/luna/HoverCard";
 import { Loading } from "@litespace/luna/Loading";
 import React from "react";
 import { AlertCircle, User } from "react-feather";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { rolesMap } from "../utils/user";
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
 import { Link } from "react-router-dom";
@@ -31,7 +30,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
                 <div>
                   {user.data.image ? (
                     <img
-                      src={asFullAssetUrl.of(user.data.image)}
+                      src={user.data.image}
                       className="w-16 h-16 rounded-full shadow-2xl"
                     />
                   ) : (

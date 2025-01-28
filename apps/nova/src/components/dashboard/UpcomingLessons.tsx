@@ -2,7 +2,6 @@ import dayjs from "@/lib/dayjs";
 import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { UpcomingLessonsSummary as Summary } from "@litespace/luna/Lessons";
 import { ILesson, IUser } from "@litespace/types";
 import { useMemo } from "react";
@@ -23,7 +22,7 @@ function asUpcomingLessons(
         .toISOString(),
       name: member?.name || null,
       userId: member?.userId || 0,
-      imageUrl: member?.image ? asFullAssetUrl(member.image) : null,
+      imageUrl: member?.image || null,
       url: Route.Call,
     };
   });

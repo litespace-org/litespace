@@ -16,7 +16,6 @@ import { RoomsMap } from "@litespace/headless/chat";
 import React, { useCallback, useMemo } from "react";
 import { LocalId } from "@litespace/luna/locales";
 import People from "@litespace/assets/People";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { orUndefined } from "@litespace/sol/utils";
 import dayjs from "@/lib/dayjs";
 import { InView } from "react-intersection-observer";
@@ -143,9 +142,7 @@ const Rooms: React.FC<{
                   ? data.otherMember.id // other member id
                   : data.id // tutor id
               }
-              imageUrl={orUndefined(
-                asFullAssetUrl(room ? data.otherMember.image : data.image)
-              )}
+              imageUrl={orUndefined(room ? data.otherMember.image : data.image)}
               name={orUndefined(room ? data.otherMember.name : data.name)}
               message={asRoomMessage({
                 message: room ? data.latestMessage : null,

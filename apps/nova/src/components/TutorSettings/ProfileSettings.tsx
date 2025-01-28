@@ -12,7 +12,6 @@ import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import { ITutor } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { orNull } from "@litespace/sol/utils";
 
 export const ProfileSettings: React.FC<ITutor.FindTutorInfoApiResponse> = ({
@@ -88,7 +87,7 @@ export const ProfileSettings: React.FC<ITutor.FindTutorInfoApiResponse> = ({
       <div className="p-10 pb-0 flex justify-between">
         <TutorProfileCard
           variant="small"
-          image={asFullAssetUrl(info.image)}
+          image={info.image}
           name={info.name}
           id={info.id}
           bio={info.bio}

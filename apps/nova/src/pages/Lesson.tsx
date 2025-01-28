@@ -12,7 +12,6 @@ import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
 import { useParams, useNavigate } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import {
   SessionV3Payload,
   useSessionV3,
@@ -152,17 +151,13 @@ const Lesson: React.FC = () => {
 
     const current = {
       id: lessonMembers.current.userId,
-      imageUrl: lessonMembers.current.image
-        ? asFullAssetUrl(lessonMembers.current.image)
-        : null,
+      imageUrl: lessonMembers.current.image || null,
       name: lessonMembers.current.name,
     };
 
     const other = {
       id: lessonMembers.other.userId,
-      imageUrl: lessonMembers.other.image
-        ? asFullAssetUrl(lessonMembers.other.image)
-        : null,
+      imageUrl: lessonMembers.other.image || null,
       name: lessonMembers.other.name,
     };
 
@@ -335,17 +330,13 @@ const Lesson: React.FC = () => {
           stream={session.members.current.stream}
           currentMember={{
             id: lessonMembers.current.userId,
-            imageUrl: lessonMembers.current.image
-              ? asFullAssetUrl(lessonMembers.current.image)
-              : null,
+            imageUrl: lessonMembers.current.image || null,
             name: lessonMembers.current.name,
             role: lessonMembers.current.role,
           }}
           otherMember={{
             id: lessonMembers.other.userId,
-            imageUrl: lessonMembers.other.image
-              ? asFullAssetUrl(lessonMembers.other.image)
-              : null,
+            imageUrl: lessonMembers.other.image || null,
             name: lessonMembers.other.name,
             //! TODO: gender is not in the response.
             //! TODO: gender should be optional

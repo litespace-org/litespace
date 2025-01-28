@@ -10,7 +10,6 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
 import dayjs from "dayjs";
 import { Loading } from "@litespace/luna/Loading";
-import { asFullAssetUrl } from "@litespace/luna/backend";
 import { useNavigate } from "react-router-dom";
 import { useFindRoomByMembers } from "@litespace/headless/chat";
 
@@ -42,7 +41,7 @@ function asLessons(
          */
         id: otherMember.userId,
         name: otherMember.name,
-        imageUrl: otherMember.image ? asFullAssetUrl(otherMember.image) : null,
+        imageUrl: otherMember.image,
       },
     };
   });
