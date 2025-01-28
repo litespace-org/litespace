@@ -7,14 +7,14 @@ import cn from "classnames";
 import Sidebar from "@/components/Layout/Sidebar";
 import Navbar from "@/components/Layout/Navbar";
 import { useUserContext } from "@litespace/headless/context/user";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const registerRoutes = [IUser.Role.Student, IUser.Role.Tutor].map((role) =>
   Route.Register.replace(":role", role)
 );
 
 const Root: React.FC = () => {
-  const { lg } = useMediaQueries();
+  const { lg } = useMediaQuery();
   const { user, meta } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();

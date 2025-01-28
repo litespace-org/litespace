@@ -14,6 +14,7 @@ import { AppConfigProvider } from "@litespace/headless/config";
 import { PersistGate } from "redux-persist/integration/react";
 import { ToastProvider } from "@litespace/luna/Toast";
 import { UserProvider } from "@litespace/headless/context/user";
+import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import App from "@/App.tsx";
 
 import "@litespace/luna/style.css";
@@ -30,28 +31,30 @@ createRoot(document.getElementById("root")!).render(
     >
       <AppConfigProvider>
         <ToastProvider>
-          <BackendProvider backend={backend}>
-            <AtlasProvider>
-              <SocketProvider>
-                <UserProvider>
-                  <QueryClientProvider client={queryClient}>
-                    <ReduxProvider store={store}>
-                      <PersistGate
-                        loading={
-                          <div className="flex items-center justify-center w-screen h-screen">
-                            <Spinner />
-                          </div>
-                        }
-                        persistor={persistor}
-                      >
-                        <App />
-                      </PersistGate>
-                    </ReduxProvider>
-                  </QueryClientProvider>
-                </UserProvider>
-              </SocketProvider>
-            </AtlasProvider>
-          </BackendProvider>
+          <QueryClientProvider client={queryClient}>
+            <BackendProvider backend={backend}>
+              <AtlasProvider>
+                <SocketProvider>
+                  <UserProvider>
+                    <MediaQueryProvider>
+                      <ReduxProvider store={store}>
+                        <PersistGate
+                          loading={
+                            <div className="flex items-center justify-center w-screen h-screen">
+                              <Spinner />
+                            </div>
+                          }
+                          persistor={persistor}
+                        >
+                          <App />
+                        </PersistGate>
+                      </ReduxProvider>
+                    </MediaQueryProvider>
+                  </UserProvider>
+                </SocketProvider>
+              </AtlasProvider>
+            </BackendProvider>
+          </QueryClientProvider>
         </ToastProvider>
       </AppConfigProvider>
     </IntlProvider>

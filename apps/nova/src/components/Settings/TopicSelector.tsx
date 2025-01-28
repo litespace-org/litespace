@@ -1,5 +1,5 @@
 import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useMediaQueries } from "@litespace/luna/hooks/media";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { MultiSelect } from "@litespace/luna/MultiSelect";
 import { Typography } from "@litespace/luna/Typography";
 import React from "react";
@@ -12,7 +12,7 @@ export const TopicSelector: React.FC<{
   topics: number[];
   setTopics: (topics: number[]) => void;
 }> = ({ allTopics, setTopics, topics }) => {
-  const { lg } = useMediaQueries();
+  const { lg } = useMediaQuery();
   const intl = useFormatMessage();
 
   return (
