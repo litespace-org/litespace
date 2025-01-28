@@ -1,9 +1,5 @@
 import { useUserContext } from "@litespace/headless/context/user";
-import {
-  ProfileInfo,
-  SearchInput,
-  SubscriptionQuota,
-} from "@litespace/luna/Navbar";
+import { ProfileInfo, SubscriptionQuota } from "@litespace/luna/Navbar";
 import React from "react";
 import { useLocation } from "react-router-dom";
 import cn from "classnames";
@@ -22,9 +18,6 @@ const Navbar: React.FC = () => {
         })}
       >
         <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />
-        <div className="w-[386px]">
-          <SearchInput />
-        </div>
         <ProfileInfo
           imageUrl={user.image}
           name={user.name}
