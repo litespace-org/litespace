@@ -48,6 +48,7 @@ const Login: React.FC = () => {
       user.set(result);
       return navigate(Route.Root);
     },
+
     onError(error) {
       toast.error({
         title: intl("login.error"),
