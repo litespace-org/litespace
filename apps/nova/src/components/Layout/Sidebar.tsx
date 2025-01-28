@@ -76,9 +76,9 @@ const Sidebar = () => {
       Icon: Home,
     };
 
-    const schedule = {
-      label: intl("sidebar.schedule"),
-      route: Route.Schedule,
+    const lessonsSchedule = {
+      label: intl("sidebar.lessons-schedule"),
+      route: Route.LessonsSchedule,
       Icon: Calendar,
     };
 
@@ -116,14 +116,20 @@ const Sidebar = () => {
       user?.role === IUser.Role.Tutor ||
       user?.role === IUser.Role.TutorManager
     )
-      return [dashboard, upcomingLessons, schedule, scheduleManagement, chat];
+      return [
+        dashboard,
+        upcomingLessons,
+        lessonsSchedule,
+        scheduleManagement,
+        chat,
+      ];
 
     if (user?.role === IUser.Role.Student)
       return [
         dashboard,
         upcomingLessons,
         tutors,
-        schedule,
+        lessonsSchedule,
         chat,
         subscribtions,
       ];

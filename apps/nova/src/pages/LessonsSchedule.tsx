@@ -12,7 +12,7 @@ const variants = {
   visible: { opacity: 1, transition: { duration: 0.5 } },
 };
 
-const Schedule: React.FC = () => {
+const LessonsSchedule: React.FC = () => {
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("calendar");
   const { user } = useUserContext();
@@ -131,4 +131,4 @@ const Schedule: React.FC = () => {
   );
 };
 
-export default Schedule;
+export default LessonsSchedule;
