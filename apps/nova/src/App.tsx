@@ -9,7 +9,7 @@ import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
 import Complete from "@/pages/Complete";
 import StudentDashboard from "@/pages/StudentDashboard";
-import Schedule from "@/pages/Schedule";
+import LessonsSchedule from "@/pages/LessonsSchedule";
 import Settings from "@/pages/Settings";
 import Payments from "@/pages/Payments";
 import Tutors from "@/pages/Tutors";
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
       { path: Route.StudentSettings, element: <Settings /> },
       { path: Route.TutorDashboard, element: <TutorDashboard /> },
       { path: Route.TutorSettings, element: <TutorSettings /> },
-      { path: Route.Schedule, element: <Schedule /> },
+      { path: Route.LessonsSchedule, element: <LessonsSchedule /> },
       { path: Route.ScheduleManagement, element: <ScheduleManagement /> },
       { path: Route.Subscription, element: <Plans /> },
       { path: Route.TutorOnboarding, element: <TutorOnboarding /> },
