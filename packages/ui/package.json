@@ -48,6 +48,7 @@
     "./Price": "./dist/components/Price/index.js",
     "./Profile": "./dist/components/Profile/index.js",
     "./Rating": "./dist/components/Rating/index.js",
+    "./RatingDialog": "./dist/components/RatingDialog/index.js",
     "./RawHtml": "./dist/components/RawHtml/index.js",
     "./Select": "./dist/components/Select/index.js",
     "./Settings": "./dist/components/Settings/index.js",
