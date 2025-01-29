@@ -3,16 +3,16 @@ import {
   ButtonSize,
   ButtonType,
   ButtonVariant,
-} from "@litespace/luna/Button";
-import { useRender } from "@litespace/luna/hooks/common";
-import { Typography } from "@litespace/luna/Typography";
+} from "@litespace/ui/Button";
+import { useRender } from "@litespace/ui/hooks/common";
+import { Typography } from "@litespace/ui/Typography";
 import ImageDialog from "@/components/common/ImageDialog";
 import React, { useMemo } from "react";
 import { useAssetBlob } from "@litespace/headless/asset";
 import { IAsset } from "@litespace/types";
-import { Loading } from "@litespace/luna/Loading";
+import { Loading } from "@litespace/ui/Loading";
 import Error from "@/components/common/Error";
-import { orUndefined } from "@litespace/sol/utils";
+import { orUndefined } from "@litespace/utils/utils";
 
 const ImageField: React.FC<{
   name: string | null;

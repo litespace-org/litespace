@@ -3,8 +3,8 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Plans/List";
 import PlanForm from "@/components/Plans/PlanForm";
 import { usePlans } from "@litespace/headless/plans";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useRender } from "@litespace/luna/hooks/common";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useRender } from "@litespace/ui/hooks/common";
 import cn from "classnames";
 
 export const Plans: React.FC = () => {

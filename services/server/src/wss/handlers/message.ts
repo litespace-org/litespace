@@ -1,5 +1,5 @@
 import { isGhost } from "@litespace/auth";
-import { logger, safe } from "@litespace/sol";
+import { logger, safe } from "@litespace/utils";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { messages, rooms } from "@litespace/models";

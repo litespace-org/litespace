@@ -1,19 +1,19 @@
 import Error from "@/components/common/Error";
 import { Table } from "@/components/common/Table";
 import UserPopover from "@/components/common/UserPopover";
-import { Loading } from "@litespace/luna/Loading";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Loading } from "@litespace/ui/Loading";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Element, IInterview, IUser, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { dayjs } from "@/lib/dayjs";
 import DateField from "@/components/common/DateField";
 import React, { useCallback, useMemo, useState } from "react";
 import { interviewStatusMap } from "@/components/utils/interview";
-import { ActionsMenu } from "@litespace/luna/ActionsMenu";
-import { Alert, AlertType } from "@litespace/luna/Alert";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
+import { Alert, AlertType } from "@litespace/ui/Alert";
 import { useUpdateInterview } from "@litespace/headless/interviews";
-import { useToast } from "@litespace/luna/Toast";
-import { Dialog } from "@litespace/luna/Dialog";
+import { useToast } from "@litespace/ui/Toast";
+import { Dialog } from "@litespace/ui/Dialog";
 import { UsePaginateResult } from "@/types/query";
 import { useUserContext } from "@litespace/headless/context/user";
 

@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { dayjs } from "@/lib/dayjs";
-import { Tooltip } from "@litespace/luna/Tooltip";
+import { Tooltip } from "@litespace/ui/Tooltip";
 
 const DateField: React.FC<{ date: string }> = ({ date }) => {
   const formatedDate = useMemo(() => dayjs(date).format("YYYY/MM/DD"), [date]);

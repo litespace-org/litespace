@@ -23,7 +23,7 @@
   },
   "devDependencies": {
     "@litespace/models": "workspace:^",
-    "@litespace/sol": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "@faker-js/faker": "^9.0.3",
     "@jest/globals": "^29.7.0",
     "@rollup/plugin-alias": "^5.1.0",

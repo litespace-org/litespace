@@ -1,3 +1,0 @@
-# Sol
-
-LiteSpace shared logic.

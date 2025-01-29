@@ -27,10 +27,10 @@ import {
   IWithdrawMethod,
 } from "@litespace/types";
 import dayjs from "dayjs";
-import { Time } from "@litespace/sol/time";
-import { calculateLessonPrice } from "@litespace/sol/lesson";
-import { logger } from "@litespace/sol/log";
-import { price } from "@litespace/sol/value";
+import { Time } from "@litespace/utils/time";
+import { calculateLessonPrice } from "@litespace/utils/lesson";
+import { logger } from "@litespace/utils/log";
+import { price } from "@litespace/utils/value";
 import { IDate, IRule } from "@litespace/types";
 import { first, range, sample } from "lodash";
 import { Knex } from "knex";

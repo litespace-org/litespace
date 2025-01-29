@@ -77,7 +77,7 @@
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
-    "@litespace/sol": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "@litespace/types": "workspace:^",
     "hark": "^1.2.3"
   },

@@ -1,8 +1,8 @@
 import React from "react";
 import RecordsCount from "@/components/common/RecordsCount";
-import { Spinner } from "@litespace/luna/Spinner";
+import { Spinner } from "@litespace/ui/Spinner";
 import cn from "classnames";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 
 const PageTitle: React.FC<{
   title: string;

@@ -8,15 +8,15 @@
   - `packages/auth` - Server authentication and authorization module.
   - `packages/email` - Email templates.
   - `packages/headless` - React components logic that can be used in the web and mobile.
-  - `packages/luna` - Components library.
+  - `packages/UI` - Components library.
   - `packages/models` - Database models.
-  - `packages/sol`- Sharable pure javascript logic that can be use on web, server, and mobile.
+  - `packages/utils`- Sharable pure javascript logic that can be use on web, server, and mobile.
 - `apps/*`
   - `apps/blog` - LiteSpace blog.
   - `apps/dashboard` - LiteSpace admin dashboard.
   - `apps/mobile` - LiteSpace mobile app.
-  - `apps/nebula` - LiteSpace landing page.
-  - `apps/nova` - LiteSpace main web platform.
+  - `apps/landing` - LiteSpace landing page.
+  - `apps/web` - LiteSpace main web platform.
 
 # Project Setup
 

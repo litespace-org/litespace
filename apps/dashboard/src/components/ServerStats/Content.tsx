@@ -1,9 +1,9 @@
-import { Loading } from "@litespace/luna/Loading";
+import { Loading } from "@litespace/ui/Loading";
 import { Server } from "@litespace/types";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
 import Chart from "@/components/ServerStats/Chart";
-import { formatNumber, formatPercentage } from "@litespace/luna/utils";
+import { formatNumber, formatPercentage } from "@litespace/ui/utils";
 
 const Content: React.FC<{ stats: Server.Stats[] }> = ({ stats }) => {
   const memoryData = useMemo(

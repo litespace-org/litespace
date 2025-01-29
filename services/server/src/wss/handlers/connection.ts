@@ -1,5 +1,5 @@
 import { isAdmin, isGhost, isStudent, isTutor } from "@litespace/auth";
-import { logger, safe } from "@litespace/sol";
+import { logger, safe } from "@litespace/utils";
 import { Wss } from "@litespace/types";
 import { WssHandler } from "@/wss/handlers/base";
 import { rooms } from "@litespace/models";
@@ -7,7 +7,7 @@ import { background } from "@/workers";
 import { PartentPortMessage, PartentPortMessageType } from "@/workers/messages";
 import { asSessionRoomId, asChatRoomId } from "@/wss/utils";
 import { cache } from "@/lib/cache";
-import { getGhostSession } from "@litespace/sol/ghost";
+import { getGhostSession } from "@litespace/utils/ghost";
 
 const stdout = logger("wss");
 

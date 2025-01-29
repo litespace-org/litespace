@@ -1,4 +1,4 @@
-import { nameof } from "@litespace/sol";
+import { nameof } from "@litespace/utils";
 import { createContext, useContext } from "react";
 
 type Context = {

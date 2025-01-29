@@ -1,6 +1,6 @@
 import PageTitle from "@/components/common/PageTitle";
 import StatsContent from "@/components/Tutor/StatsContent";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IInvoice } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React from "react";

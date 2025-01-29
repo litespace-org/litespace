@@ -1,5 +1,5 @@
-import { formatCurrency, formatPercentage } from "@litespace/luna/utils";
-import { percentage, price as scaler } from "@litespace/sol/value";
+import { formatCurrency, formatPercentage } from "@litespace/ui/utils";
+import { percentage, price as scaler } from "@litespace/utils/value";
 import React from "react";
 
 const Price: React.FC<{ price: number; discount: number }> = ({

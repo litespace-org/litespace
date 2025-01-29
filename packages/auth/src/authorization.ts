@@ -1,6 +1,6 @@
 import { IUser } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
-import { GHOST_USERNAME_PREFIX } from "@litespace/sol/ghost";
+import { GHOST_USERNAME_PREFIX } from "@litespace/utils/ghost";
 
 export function authenticated(req: Request, res: Response, next: NextFunction) {
   if (req.user) return next();

@@ -2,11 +2,11 @@ import Error from "@/components/common/Error";
 import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Invoices/List";
 import { isEqual } from "lodash";
-import { Loading } from "@litespace/luna/Loading";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Loading } from "@litespace/ui/Loading";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
-import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
+import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
 import { IFilter, IInvoice, IWithdrawMethod } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import {

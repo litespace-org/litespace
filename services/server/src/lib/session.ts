@@ -1,10 +1,10 @@
-import { unpackRules } from "@litespace/sol/rule";
+import { unpackRules } from "@litespace/utils/rule";
 import { IInterview, ILesson, IRule, ISession } from "@litespace/types";
 import { concat, isEmpty } from "lodash";
 import dayjs from "@/lib/dayjs";
 import { platformConfig } from "@/constants";
 import { interviews, lessons } from "@litespace/models";
-import { getSessionType } from "@litespace/sol";
+import { getSessionType } from "@litespace/utils";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {

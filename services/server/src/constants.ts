@@ -1,4 +1,4 @@
-import { price } from "@litespace/sol/value";
+import { price } from "@litespace/utils/value";
 import zod from "zod";
 
 export enum Environment {

@@ -1,5 +1,5 @@
 import fixtures from "@fixtures/db";
-import { nameof } from "@litespace/sol/utils";
+import { nameof } from "@litespace/utils/utils";
 import { hashPassword, users } from "@/index";
 import { expect } from "chai";
 import dayjs from "@/lib/dayjs";

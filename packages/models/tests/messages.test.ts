@@ -1,6 +1,6 @@
 import { knex, messages, rooms } from "@/index";
 import fixtures from "@fixtures/db";
-import { nameof } from "@litespace/sol";
+import { nameof } from "@litespace/utils";
 import { expect } from "chai";
 
 describe("Messages", () => {

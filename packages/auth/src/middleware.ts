@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { decodeAuthJwt } from "@/jwt";
 import { users } from "@litespace/models";
-import { safe } from "@litespace/sol/error";
-import { asGhost } from "@litespace/sol/ghost";
+import { safe } from "@litespace/utils/error";
+import { asGhost } from "@litespace/utils/ghost";
 import { isAdmin } from "@/authorization";
 
 export function authMiddleware({

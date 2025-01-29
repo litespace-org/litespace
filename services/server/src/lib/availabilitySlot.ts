@@ -4,7 +4,7 @@ import {
   asSubSlots,
   isIntersecting,
   isSuperSlot,
-} from "@litespace/sol";
+} from "@litespace/utils";
 import { IAvailabilitySlot } from "@litespace/types";
 import { Knex } from "knex";
 import { isEmpty, uniqBy } from "lodash";

@@ -1,9 +1,9 @@
 import { useCreateTopic, useUpdateTopic } from "@litespace/headless/topic";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-import { Dialog } from "@litespace/luna/Dialog";
-import { Field, Form, Controller, Label } from "@litespace/luna/Form";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useToast } from "@litespace/luna/Toast";
+import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Dialog } from "@litespace/ui/Dialog";
+import { Field, Form, Controller, Label } from "@litespace/ui/Form";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
 import { ITopic, Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";

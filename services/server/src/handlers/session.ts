@@ -2,7 +2,7 @@ import { cache } from "@/lib/cache";
 import { bad, forbidden } from "@/lib/error";
 import { canAccessSession } from "@/lib/session";
 import { isUser } from "@litespace/auth";
-import { isSessionId } from "@litespace/sol";
+import { isSessionId } from "@litespace/utils";
 import { ISession } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";

@@ -52,7 +52,7 @@
   },
   "peerDependencies": {
     "@litespace/models": "workspace:^",
-    "@litespace/sol": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "connect-pg-simple": "^9.0.1",
     "express": "^4.19.2",
     "express-async-handler": "^1.2.0",

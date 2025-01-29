@@ -1,4 +1,4 @@
-import { LocalId } from "@litespace/luna/locales";
+import { LocalId } from "@litespace/ui/locales";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 
 export const withdrawMethodsIntlMap: Record<IWithdrawMethod.Type, LocalId> = {

@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React from "react";

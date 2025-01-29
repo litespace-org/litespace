@@ -1,10 +1,10 @@
 import { useFindUserById } from "@litespace/headless/users";
-import { HoverCard } from "@litespace/luna/HoverCard";
-import { Loading } from "@litespace/luna/Loading";
+import { HoverCard } from "@litespace/ui/HoverCard";
+import { Loading } from "@litespace/ui/Loading";
 import React from "react";
 import { AlertCircle, User } from "react-feather";
 import { rolesMap } from "../utils/user";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Link } from "react-router-dom";
 import { Route } from "@/lib/route";
 

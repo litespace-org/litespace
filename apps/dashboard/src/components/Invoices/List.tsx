@@ -1,9 +1,9 @@
 import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/common/Table";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { formatCurrency } from "@litespace/luna/utils";
-import { ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { formatCurrency } from "@litespace/ui/utils";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { createColumnHelper } from "@tanstack/react-table";
 import { useMemo } from "react";
 import DateField from "@/components/common/DateField";
@@ -15,7 +15,7 @@ import {
   invoiceStatusIntlMap,
   withdrawMethodsIntlMap,
 } from "@/components/utils/invoice";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 import ImageField from "@/components/common/ImageField";
 
 const List: React.FC<{

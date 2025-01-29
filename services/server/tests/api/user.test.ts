@@ -2,7 +2,7 @@ import { IUser } from "@litespace/types";
 import { Api } from "@fixtures/api";
 import db, { faker } from "@fixtures/db";
 import { expect } from "chai";
-import { safe } from "@litespace/sol/error";
+import { safe } from "@litespace/utils/error";
 import { cacheTutors } from "@/lib/tutor";
 import dayjs from "@/lib/dayjs";
 import { cache } from "@/lib/cache";

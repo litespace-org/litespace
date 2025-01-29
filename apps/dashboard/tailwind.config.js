@@ -1,4 +1,4 @@
-import config from "@litespace/luna/tailwind.config";
+import config from "@litespace/ui/tailwind.config";
 import { omit } from "lodash";
 
 /** @type {import('tailwindcss').Config} */

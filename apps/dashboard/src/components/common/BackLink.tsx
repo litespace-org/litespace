@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { LocalId } from "@litespace/luna/locales";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { LocalId } from "@litespace/ui/locales";
 
 const BackLink: React.FC<{ to: string; name: LocalId }> = ({ to, name }) => {
   const intl = useFormatMessage();

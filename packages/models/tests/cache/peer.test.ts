@@ -1,5 +1,5 @@
 import { cache } from "@fixtures/cache";
-import { genSessionId } from "@litespace/sol";
+import { genSessionId } from "@litespace/utils";
 import { expect } from "chai";
 
 describe("Testing cache/peer functions", () => {

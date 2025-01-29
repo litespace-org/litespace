@@ -1,8 +1,8 @@
 import { useDeleteTopic } from "@litespace/headless/topic";
-import { Alert, AlertType } from "@litespace/luna/Alert";
-import { Dialog } from "@litespace/luna/Dialog";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useToast } from "@litespace/luna/Toast";
+import { Alert, AlertType } from "@litespace/ui/Alert";
+import { Dialog } from "@litespace/ui/Dialog";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
 import { ITopic } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 
