@@ -37,7 +37,10 @@ export const Dialog: React.FC<{
     <Root open={open} onOpenChange={setOpen}>
       {trigger ? <Trigger>{trigger}</Trigger> : null}
       <Portal>
-        <Overlay className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-10" />
+        <Overlay
+          onClick={close}
+          className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-10"
+        />
         <Content
           aria-describedby={description}
           dir="rtl"
