@@ -1,6 +1,6 @@
 import BookLesson from "@/components/Lessons/BookLesson";
 import { Route } from "@/types/routes";
-import { Loading } from "@litespace/ui/Loading";
+import { Loading, Loader, LoadingError } from "@litespace/ui/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/ui/TutorCard";
 import { Element, ITutor, Void } from "@litespace/types";
 import { motion } from "framer-motion";
@@ -22,9 +22,10 @@ const Content: React.FC<{
   loading: boolean;
   fetching: boolean;
   error: boolean;
-  more: Void;
   hasMore: boolean;
-}> = ({ tutors, loading, error, more, hasMore, fetching }) => {
+  more: Void;
+  refetch: Void;
+}> = ({ tutors, loading, error, more, hasMore, fetching, refetch }) => {
   const intl = useFormatMessage();
   const toast = useToast();
   const [tutor, setTutor] = useState<Tutor | null>(null);
@@ -33,9 +34,27 @@ const Content: React.FC<{
   const openBookingDialog = useCallback((tutor: Tutor) => setTutor(tutor), []);
   const closeBookingDialog = useCallback(() => setTutor(null), []);
 
-  if (loading) return <Loading className="h-[30vh]" />;
-  // todo: add error component
-  if (error) return "ERROR: TODO";
+  if (loading)
+    return (
+      <div className="mt-[15vh]">
+        <Loader
+          size={mq.lg ? "large" : "small"}
+          text={intl("tutors.loading")}
+        />
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="mt-[15vh]">
+        <LoadingError
+          error={intl("tutors.error")}
+          size={mq.lg ? "large" : "small"}
+          retry={refetch}
+        />
+      </div>
+    );
+
   if (!tutors) return null;
   return (
     <div>
