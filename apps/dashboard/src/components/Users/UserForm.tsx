@@ -1,14 +1,14 @@
 import { useCreateUser } from "@litespace/headless/users";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-import { Controller, Field, Form, Label } from "@litespace/luna/Form";
-import { Dialog } from "@litespace/luna/Dialog";
-import { useToast } from "@litespace/luna/Toast";
-import { useRender } from "@litespace/luna/hooks/common";
+import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Controller, Field, Form, Label } from "@litespace/ui/Form";
+import { Dialog } from "@litespace/ui/Dialog";
+import { useToast } from "@litespace/ui/Toast";
+import { useRender } from "@litespace/ui/hooks/common";
 import {
   useValidateEmail,
   useValidatePassword,
-} from "@litespace/luna/hooks/validation";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+} from "@litespace/ui/hooks/validation";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";

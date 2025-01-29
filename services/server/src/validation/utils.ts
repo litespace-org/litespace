@@ -1,4 +1,4 @@
-import { PASSWORD_REGEX } from "@litespace/sol";
+import { PASSWORD_REGEX } from "@litespace/utils";
 import {
   IUser,
   IRule,

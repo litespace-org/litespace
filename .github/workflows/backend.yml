@@ -8,7 +8,7 @@ on:
       - "packages/auth/**"
       - "packages/models/**"
       - "packages/atlas/**"
-      - "packages/sol/**"
+      - "packages/utils/**"
       - "packages/types/**"
 
   workflow_dispatch:

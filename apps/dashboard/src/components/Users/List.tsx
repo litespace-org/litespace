@@ -1,6 +1,6 @@
-import { ActionsMenu } from "@litespace/luna/ActionsMenu";
-import { Loading } from "@litespace/luna/Loading";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
+import { Loading } from "@litespace/ui/Loading";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
 import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";

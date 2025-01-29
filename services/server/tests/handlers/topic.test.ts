@@ -2,7 +2,7 @@ import { empty, forbidden, notfound, refused } from "@/lib/error";
 import { mockApi } from "@fixtures/mockApi";
 import db, { faker } from "@fixtures/db";
 import { topics } from "@litespace/models";
-import { MAX_TOPICS_COUNT, safe } from "@litespace/sol";
+import { MAX_TOPICS_COUNT, safe } from "@litespace/utils";
 import { expect } from "chai";
 import { range } from "lodash";
 import handlers from "@/handlers/topic";

@@ -1,10 +1,10 @@
-import { Card } from "@litespace/luna/Card";
-import { LocalId } from "@litespace/luna/locales";
-import { useInvoiceStatus } from "@litespace/luna/hooks/invoice";
-import { useWithdrawMethod } from "@litespace/luna/hooks/withdraw";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import * as Invoices from "@litespace/luna/Invoices";
-import { MenuAction } from "@litespace/luna/ActionsMenu";
+import { Card } from "@litespace/ui/Card";
+import { LocalId } from "@litespace/ui/locales";
+import { useInvoiceStatus } from "@litespace/ui/hooks/invoice";
+import { useWithdrawMethod } from "@litespace/ui/hooks/withdraw";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import * as Invoices from "@litespace/ui/Invoices";
+import { MenuAction } from "@litespace/ui/ActionsMenu";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import Process from "@/components/Invoices/Process";

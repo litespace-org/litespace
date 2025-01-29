@@ -3,8 +3,8 @@ import {
   ButtonSize,
   ButtonType,
   ButtonVariant,
-} from "@litespace/luna/Button";
-import { Select, SelectList } from "@litespace/luna/Select";
+} from "@litespace/ui/Button";
+import { Select, SelectList } from "@litespace/ui/Select";
 import { Void } from "@litespace/types";
 import {
   getCoreRowModel,

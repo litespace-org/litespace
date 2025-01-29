@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { IUser } from "@litespace/types";
 import { Route } from "@/lib/route";
@@ -18,7 +18,7 @@ import {
 } from "react-feather";
 import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
-import { destructureRole } from "@litespace/sol/user";
+import { destructureRole } from "@litespace/utils/user";
 import { useUserContext } from "@litespace/headless/context/user";
 
 const Root: React.FC = () => {

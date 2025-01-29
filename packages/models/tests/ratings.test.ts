@@ -1,5 +1,5 @@
 import fixtures from "@fixtures/db";
-import { nameof } from "@litespace/sol/utils";
+import { nameof } from "@litespace/utils/utils";
 import { ratings } from "@/index";
 import { expect } from "chai";
 import { faker } from "@faker-js/faker/locale/ar";

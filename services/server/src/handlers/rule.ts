@@ -13,7 +13,7 @@ import {
 import { IRule, Wss } from "@litespace/types";
 import { contradictingRules, forbidden, notfound } from "@/lib/error";
 import { lessons, rules } from "@litespace/models";
-import { Rule, Schedule, asRule, unpackRules } from "@litespace/sol/rule";
+import { Rule, Schedule, asRule, unpackRules } from "@litespace/utils/rule";
 import { isEmpty } from "lodash";
 import { ApiContext } from "@/types/api";
 import { isTutorManager, isTutor, isUser } from "@litespace/auth";

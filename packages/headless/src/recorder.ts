@@ -1,4 +1,4 @@
-import { safe } from "@litespace/sol/error";
+import { safe } from "@litespace/utils/error";
 import { useCallback, useState } from "react";
 
 export function useDisplayRecorder() {

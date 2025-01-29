@@ -4,9 +4,9 @@ import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
 import { IRule } from "@litespace/types";
-import { Time } from "@litespace/sol/time";
+import { Time } from "@litespace/utils/time";
 import { faker } from "@faker-js/faker/locale/ar";
-import { unpackRules } from "@litespace/sol/rule";
+import { unpackRules } from "@litespace/utils/rule";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 

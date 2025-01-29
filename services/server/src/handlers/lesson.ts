@@ -15,15 +15,15 @@ import { lessons, rules, users, knex, rooms } from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
-import { calculateLessonPrice } from "@litespace/sol/lesson";
-import { safe } from "@litespace/sol/error";
-import { unpackRules } from "@litespace/sol/rule";
+import { calculateLessonPrice } from "@litespace/utils/lesson";
+import { safe } from "@litespace/utils/error";
+import { unpackRules } from "@litespace/utils/rule";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
 import { canBook } from "@/lib/session";
 import { concat, isEmpty, isEqual } from "lodash";
-import { genSessionId } from "@litespace/sol";
+import { genSessionId } from "@litespace/utils";
 
 const createLessonPayload = zod.object({
   tutorId: id,

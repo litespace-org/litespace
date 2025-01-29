@@ -9,7 +9,7 @@ import { IUser } from "@litespace/types";
 import { useParams } from "react-router-dom";
 import { UseQueryResult } from "@tanstack/react-query";
 import { useFindUserById } from "@litespace/headless/users";
-import { destructureRole } from "@litespace/sol/user";
+import { destructureRole } from "@litespace/utils/user";
 import { useFindStudentStats } from "@litespace/headless/student";
 import { useMemo, useCallback } from "react";
 import { useFindTutorMeta, useFindTutorStats } from "@litespace/headless/tutor";

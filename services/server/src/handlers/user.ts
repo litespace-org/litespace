@@ -43,8 +43,8 @@ import {
   orderTutors,
 } from "@/lib/tutor";
 import { ApiContext } from "@/types/api";
-import { safe } from "@litespace/sol/error";
-import { asIsoDate } from "@litespace/sol/dayjs";
+import { safe } from "@litespace/utils/error";
+import { asIsoDate } from "@litespace/utils/dayjs";
 import {
   encodeAuthJwt,
   isAdmin,
@@ -55,7 +55,7 @@ import {
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
-import { isValidPassword } from "@litespace/sol/verification";
+import { isValidPassword } from "@litespace/utils/verification";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 import { getRequestFile, upload } from "@/lib/assets";
 

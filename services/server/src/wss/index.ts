@@ -1,6 +1,6 @@
 import { Socket } from "socket.io";
 import { WssHandlers } from "@/wss/handlers";
-import { logger } from "@litespace/sol";
+import { logger } from "@litespace/utils";
 
 const stdout = logger("wss");
 

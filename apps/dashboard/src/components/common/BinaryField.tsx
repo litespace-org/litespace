@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React from "react";
 
 const BinaryField: React.FC<{ yes?: boolean | null }> = ({ yes }) => {

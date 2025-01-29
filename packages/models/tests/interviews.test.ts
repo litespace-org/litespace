@@ -1,6 +1,6 @@
 import { interviews } from "@/interviews";
 import fixtures from "@fixtures/db";
-import { nameof } from "@litespace/sol/utils";
+import { nameof } from "@litespace/utils/utils";
 import { IInterview } from "@litespace/types";
 import { expect } from "chai";
 

@@ -61,7 +61,7 @@
     "@litespace/auth": "workspace:^",
     "@litespace/emails": "workspace:^",
     "@litespace/models": "workspace:^",
-    "@litespace/sol": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "@litespace/types": "workspace:^",
     "@types/multer": "^1.4.12",
     "axios": "^1.6.8",

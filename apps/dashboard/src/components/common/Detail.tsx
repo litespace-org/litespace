@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 
 const Detail: React.FC<{
   label: React.ReactNode;

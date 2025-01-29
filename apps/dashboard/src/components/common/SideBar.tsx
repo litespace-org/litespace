@@ -1,11 +1,11 @@
 import React, { useRef, useCallback } from "react";
 import { Moon, Sidebar, Sun, User } from "react-feather";
-import { Button, ButtonSize, ButtonType } from "@litespace/luna/Button";
-import { Switch } from "@litespace/luna/Switch";
-import { removeAuthToken } from "@litespace/luna/cache";
-import { useTheme, Theme } from "@litespace/luna/hooks/theme";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useClosableRef } from "@litespace/luna/hooks/dom";
+import { Button, ButtonSize, ButtonType } from "@litespace/ui/Button";
+import { Switch } from "@litespace/ui/Switch";
+import { removeAuthToken } from "@litespace/ui/cache";
+import { useTheme, Theme } from "@litespace/ui/hooks/theme";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useClosableRef } from "@litespace/ui/hooks/dom";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -15,7 +15,7 @@ import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
-import { ButtonVariant } from "@litespace/luna/Button";
+import { ButtonVariant } from "@litespace/ui/Button";
 import { useUserContext } from "@litespace/headless/context/user";
 
 const framerSidebarBackground = {

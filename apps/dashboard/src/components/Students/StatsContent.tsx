@@ -1,8 +1,8 @@
 import LablesTable, { TableLablesRow } from "@/components/common/LabelsTable";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Loading } from "@litespace/luna/Loading";
-import { formatNumber } from "@litespace/luna/utils";
-import { Duration } from "@litespace/sol/duration";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Loading } from "@litespace/ui/Loading";
+import { formatNumber } from "@litespace/ui/utils";
+import { Duration } from "@litespace/utils/duration";
 import { IUser, Void } from "@litespace/types";
 import ErrorElement from "@/components/common/Error";
 import React, { useMemo } from "react";

@@ -1,4 +1,4 @@
-import { LocalId } from "@litespace/luna/locales";
+import { LocalId } from "@litespace/ui/locales";
 import { IUser } from "@litespace/types";
 
 export const rolesMap: Record<IUser.Role, LocalId> = {

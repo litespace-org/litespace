@@ -2,7 +2,7 @@ import { exists, forbidden, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db, { flush } from "@fixtures/db";
 import { ratings } from "@litespace/models";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/utils";
 import { expect } from "chai";
 import { first } from "lodash";
 

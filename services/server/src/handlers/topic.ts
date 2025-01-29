@@ -18,11 +18,11 @@ import { isAdmin, isStudent, isTutor, isTutorManager } from "@litespace/auth";
 import { NextFunction, Request, Response } from "express";
 import { knex, topics } from "@litespace/models";
 import { ITopic } from "@litespace/types";
-import { isValidTopicName } from "@litespace/sol/verification";
+import { isValidTopicName } from "@litespace/utils/verification";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { Knex } from "knex";
-import { MAX_TOPICS_COUNT } from "@litespace/sol";
+import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { FindUserTopicsApiResponse } from "@litespace/types/dist/esm/topic";
 import { isEmpty } from "lodash";
 

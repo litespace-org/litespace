@@ -1,4 +1,4 @@
-import { logger, safe } from "@litespace/sol";
+import { logger, safe } from "@litespace/utils";
 import { isGhost } from "@litespace/auth";
 import { Wss } from "@litespace/types";
 import { boolean, sessionId } from "@/validation/utils";

@@ -1,10 +1,10 @@
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Loading } from "@litespace/luna/Loading";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Loading } from "@litespace/ui/Loading";
 import { IInvoice, Void } from "@litespace/types";
 import React, { useMemo } from "react";
 import ErrorElement from "@/components/common/Error";
 import LablesTable, { TableLablesRow } from "@/components/common/LabelsTable";
-import { formatCurrency } from "@litespace/luna/utils";
+import { formatCurrency } from "@litespace/ui/utils";
 
 const StatsContent: React.FC<{
   loading: boolean;

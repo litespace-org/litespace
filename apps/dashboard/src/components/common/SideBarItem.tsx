@@ -4,11 +4,11 @@ import {
   ButtonSize,
   ButtonType,
   ButtonVariant,
-} from "@litespace/luna/Button";
+} from "@litespace/ui/Button";
 import { Link, useLocation } from "react-router-dom";
 import { Void } from "@litespace/types";
 import cn from "classnames";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 
 function SideBarItem({
   option,

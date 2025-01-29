@@ -3,7 +3,7 @@ import { users } from "@/users";
 import { faker } from "@faker-js/faker/locale/ar";
 import fixtures from "@fixtures/db";
 import { expect } from "chai";
-import { dayjs, nameof } from "@litespace/sol";
+import { dayjs, nameof } from "@litespace/utils";
 import { IUser } from "@litespace/types";
 import { first, range } from "lodash";
 import { Role } from "@litespace/types/dist/esm/user";

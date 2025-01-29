@@ -3,11 +3,11 @@ import DateField from "@/components/common/DateField";
 import PlanForm from "@/components/Plans/PlanForm";
 import Price from "@/components/Plans/Price";
 import { Table } from "@/components/common/Table";
-import { ActionsMenu } from "@litespace/luna/ActionsMenu";
-import { formatMinutes } from "@litespace/luna/utils";
-import { Loading } from "@litespace/luna/Loading";
-import { useToast } from "@litespace/luna/Toast";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
+import { formatMinutes } from "@litespace/ui/utils";
+import { Loading } from "@litespace/ui/Loading";
+import { useToast } from "@litespace/ui/Toast";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";

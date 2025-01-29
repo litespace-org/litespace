@@ -2,14 +2,14 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
-import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { IFilter, IUser } from "@litespace/types";
 import { rolesMap } from "@/components/utils/user";
-import { orUndefined } from "@litespace/sol/utils";
+import { orUndefined } from "@litespace/utils/utils";
 
 export const Users: React.FC = () => {
   const intl = useFormatMessage();

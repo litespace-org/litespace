@@ -1,4 +1,4 @@
-import { LocalId } from "@litespace/luna/locales";
+import { LocalId } from "@litespace/ui/locales";
 import { IInterview } from "@litespace/types";
 
 export const interviewStatusMap: Record<IInterview.Status, LocalId> = {

@@ -1,4 +1,4 @@
-import { Dialog } from "@litespace/luna/Dialog";
+import { Dialog } from "@litespace/ui/Dialog";
 import { Void } from "@litespace/types";
 import React from "react";
 

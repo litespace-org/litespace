@@ -3,11 +3,11 @@ import { createColumnHelper } from "@tanstack/react-table";
 import { useCallback, useMemo, useState } from "react";
 import DateField from "@/components/common/DateField";
 import Error from "@/components/common/Error";
-import { Loading } from "@litespace/luna/Loading";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Loading } from "@litespace/ui/Loading";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Table } from "@/components/common/Table";
 import { UsePaginateResult } from "@/types/query";
-import { ActionsMenu } from "@litespace/luna/ActionsMenu";
+import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import DeleteTopic from "@/components/Topics/DeleteTopic";
 import TopicDialog from "@/components/Topics/TopicDialog";
 

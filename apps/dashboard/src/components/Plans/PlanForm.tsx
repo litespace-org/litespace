@@ -1,18 +1,18 @@
 import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
-import { formatCurrency } from "@litespace/luna/utils";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-import { Controller, Field, Form, Label } from "@litespace/luna/Form";
+import { formatCurrency } from "@litespace/ui/utils";
+import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Controller, Field, Form, Label } from "@litespace/ui/Form";
 import {
   useValidateDiscount,
   useValidatePlanAlias,
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
-} from "@litespace/luna/hooks/validation";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useToast } from "@litespace/luna/Toast";
-import { Dialog } from "@litespace/luna/Dialog";
-import { Duration } from "@litespace/sol/duration";
-import { percentage, price } from "@litespace/sol/value";
+} from "@litespace/ui/hooks/validation";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
+import { Dialog } from "@litespace/ui/Dialog";
+import { Duration } from "@litespace/utils/duration";
+import { percentage, price } from "@litespace/utils/value";
 import { IPlan, Void } from "@litespace/types";
 import React, { useCallback } from "react";
 import { useForm } from "react-hook-form";

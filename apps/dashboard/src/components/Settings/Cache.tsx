@@ -4,12 +4,12 @@ import {
   ButtonSize,
   ButtonType,
   ButtonVariant,
-} from "@litespace/luna/Button";
-import { Dialog } from "@litespace/luna/Dialog";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { useToast } from "@litespace/luna/Toast";
+} from "@litespace/ui/Button";
+import { Dialog } from "@litespace/ui/Dialog";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useToast } from "@litespace/ui/Toast";
 import React, { useCallback, useState } from "react";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 
 const Cache: React.FC = () => {

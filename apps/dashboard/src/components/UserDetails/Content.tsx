@@ -6,13 +6,13 @@ import GenderField from "@/components/common/GenderField";
 import UserPopover from "@/components/common/UserPopover";
 import cn from "classnames";
 import React, { useState } from "react";
-import { Duration } from "@litespace/sol/duration";
-import { formatMinutes, formatNumber } from "@litespace/luna/utils";
-import { Loading } from "@litespace/luna/Loading";
+import { Duration } from "@litespace/utils/duration";
+import { formatMinutes, formatNumber } from "@litespace/ui/utils";
+import { Loading } from "@litespace/ui/Loading";
 import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 const Content: React.FC<{
   user?: IUser.Self;

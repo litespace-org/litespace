@@ -2,7 +2,7 @@ import { bad, notfound } from "@/lib/error";
 import { Api } from "@fixtures/api";
 import db, { flush } from "@fixtures/db";
 import { interviews, rules } from "@litespace/models";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/utils";
 import { IUser } from "@litespace/types";
 import { expect } from "chai";
 import dayjs from "dayjs";

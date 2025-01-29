@@ -1,10 +1,10 @@
 import List from "@/components/Media/List";
 import { useAtlas } from "@litespace/headless/atlas";
-import { Button, ButtonSize } from "@litespace/luna/Button";
-import { Loading } from "@litespace/luna/Loading";
-import { Spinner } from "@litespace/luna/Spinner";
-import { usePaginationQuery } from "@litespace/luna/hooks/common";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Loading } from "@litespace/ui/Loading";
+import { Spinner } from "@litespace/ui/Spinner";
+import { usePaginationQuery } from "@litespace/ui/hooks/common";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";

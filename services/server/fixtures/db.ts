@@ -26,7 +26,7 @@ import {
 import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
-import { Time } from "@litespace/sol/time";
+import { Time } from "@litespace/utils/time";
 export { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";

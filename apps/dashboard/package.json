@@ -15,8 +15,8 @@
   "dependencies": {
     "@litespace/atlas": "workspace:^",
     "@litespace/headless": "workspace:^",
-    "@litespace/luna": "workspace:^",
-    "@litespace/sol": "workspace:^",
+    "@litespace/ui": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "@litespace/types": "workspace:^",
     "@reduxjs/toolkit": "^2.2.5",
     "@tanstack/react-query": "^5.56.2",

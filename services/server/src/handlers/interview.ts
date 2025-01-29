@@ -39,7 +39,7 @@ import {
 import { isEqual } from "lodash";
 import { canBook } from "@/lib/session";
 import { platformConfig } from "@/constants";
-import { genSessionId } from "@litespace/sol";
+import { genSessionId } from "@litespace/utils";
 
 const createInterviewPayload = zod.object({
   interviewerId: id,

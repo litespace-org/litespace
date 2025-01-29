@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
 import { IUser } from "@litespace/types";
-import { saveToken } from "@litespace/luna/cache";
+import { saveToken } from "@litespace/ui/cache";
 import {
   initial,
   LoadableState,
   createThunk,
   fetcher,
-} from "@litespace/luna/redux";
+} from "@litespace/ui/redux";
 import { Atlas } from "@litespace/atlas";
 
 type Value = { user: IUser.Self; token: string | null };

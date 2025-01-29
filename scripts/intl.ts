@@ -6,7 +6,7 @@ import { omit } from "lodash";
 
 async function findUnusedIds() {
   const local = JSON.parse(
-    fs.readFileSync("./packages/luna/src/locales/ar-eg.json").toString("utf-8")
+    fs.readFileSync("./packages/ui/src/locales/ar-eg.json").toString("utf-8")
   );
   const files = await glob("{packages,apps}/**/*.{js,ts,jsx,tsx}", {
     posix: true,
@@ -71,7 +71,7 @@ const remove = new Command()
     if (ids.length === 0) return console.log("All ids are in use.".gray.bold);
     console.log(`Found ${ids.length} id(s)`.gray.bold);
 
-    const path = "./packages/luna/src/locales/ar-eg.json";
+    const path = "./packages/ui/src/locales/ar-eg.json";
     console.log(`Upadting: ${path}`.italic);
 
     const content = JSON.parse(fs.readFileSync(path).toString("utf-8"));

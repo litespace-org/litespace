@@ -27,7 +27,7 @@ import { faker } from "@faker-js/faker/locale/ar";
 import { entries, first, range, sample } from "lodash";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { Time } from "@litespace/sol/time";
+import { Time } from "@litespace/utils/time";
 import { randomUUID } from "crypto";
 
 export async function flush() {

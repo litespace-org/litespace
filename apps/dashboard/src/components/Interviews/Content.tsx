@@ -4,8 +4,8 @@ import {
   useFindInterviews,
   type UseFindInterviewsPayload,
 } from "@litespace/headless/interviews";
-import { ActionsMenu, MenuAction } from "@litespace/luna/ActionsMenu";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { IFilter, IInterview } from "@litespace/types";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { interviewStatusMap } from "@/components/utils/interview";

@@ -2,7 +2,7 @@ import { Api } from "@fixtures/api";
 import db from "@fixtures/db";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
-import { safe } from "@litespace/sol";
+import { safe } from "@litespace/utils";
 import { bad, conflict, forbidden, notfound } from "@/lib/error";
 import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";

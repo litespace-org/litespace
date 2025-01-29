@@ -1,10 +1,10 @@
 import { ISession, Void, Wss } from "@litespace/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { safe } from "@litespace/sol/error";
+import { safe } from "@litespace/utils/error";
 import { useSocket } from "@/socket";
 import { usePeer } from "@/peer";
 import { MediaConnection, PeerError } from "peerjs";
-import { orUndefined } from "@litespace/sol/utils";
+import { orUndefined } from "@litespace/utils/utils";
 import zod from "zod";
 import hark from "hark";
 import { concat, isEmpty, uniq } from "lodash";

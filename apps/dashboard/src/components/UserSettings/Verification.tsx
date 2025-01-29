@@ -1,12 +1,12 @@
 import { CALLBACK_URL } from "@/lib/route";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { useUserContext } from "@litespace/headless/context/user";
-import { Button, ButtonSize, ButtonVariant } from "@litespace/luna/Button";
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
-import { Input } from "@litespace/luna/Input";
-import { useToast } from "@litespace/luna/Toast";
-import { Tooltip } from "@litespace/luna/Tooltip";
-import { Typography } from "@litespace/luna/Typography";
+import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Input } from "@litespace/ui/Input";
+import { useToast } from "@litespace/ui/Toast";
+import { Tooltip } from "@litespace/ui/Tooltip";
+import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback } from "react";
 import { Check } from "react-feather";
 

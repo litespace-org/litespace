@@ -1,6 +1,6 @@
-import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import VerificationDetails from "@/components/UserSettings/Verification";
-import { Typography } from "@litespace/luna/Typography";
+import { Typography } from "@litespace/ui/Typography";
 
 const UserSettings = () => {
   const intl = useFormatMessage();

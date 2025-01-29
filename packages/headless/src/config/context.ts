@@ -1,4 +1,4 @@
-import { nameof } from "@litespace/sol/utils";
+import { nameof } from "@litespace/utils/utils";
 import { createContext, useContext } from "react";
 
 export type AppConfig = {
