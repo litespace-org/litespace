@@ -575,6 +575,7 @@
   "plan.price-before-discount": "{value} جم",
   "plan.label.most-common": "الأكثر شهرة",
   "plan.label.most-valuable": "الأفضل قيمة",
+  "navbar.subscribe-now": "اشترك الان",
   "navbar.personal-quota": "الباقة الشخصية",
   "navbar.quota-consumption": "تم استهلاك {value}",
   "navbar.rest-of-quota": "متبقي {value}",

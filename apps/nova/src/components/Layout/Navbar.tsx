@@ -1,11 +1,17 @@
 import { useUserContext } from "@litespace/headless/context/user";
-import { ProfileInfo, SubscriptionQuota } from "@litespace/luna/Navbar";
+import { ProfileInfo } from "@litespace/luna/Navbar";
 import React from "react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { Route } from "@/types/routes";
+import { Typography } from "@litespace/luna/Typography";
+import { useFormatMessage } from "@litespace/luna/hooks/intl";
+import Crown from "@litespace/assets/Crown";
+import { IUser } from "@litespace/types";
+import { Button, ButtonSize } from "@litespace/luna/Button";
 
 const Navbar: React.FC = () => {
+  const intl = useFormatMessage();
   const { user } = useUserContext();
   const location = useLocation();
 
@@ -17,7 +23,24 @@ const Navbar: React.FC = () => {
           "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
         })}
       >
-        <SubscriptionQuota totalMinutes={1200} remainingMinutes={930} />
+        {user.role === IUser.Role.Student &&
+        location.pathname !== Route.Subscription ? (
+          <Link to={Route.Subscription}>
+            <Button
+              size={ButtonSize.Large}
+              htmlType="button"
+              endIcon={<Crown height={24} width={24} />}
+            >
+              <Typography
+                element="body"
+                weight="bold"
+                className="text-natural-50"
+              >
+                {intl("navbar.subscribe-now")}
+              </Typography>
+            </Button>
+          </Link>
+        ) : null}
         <ProfileInfo
           imageUrl={user.image}
           name={user.name}
