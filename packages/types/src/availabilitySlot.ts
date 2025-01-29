@@ -7,7 +7,7 @@ export type Self = {
   start: string;
   end: string;
   deleted: boolean;
-  createAt: string;
+  createdAt: string;
   updatedAt: string;
 };
 
@@ -44,6 +44,8 @@ export type SubSlot = {
   start: string;
   end: string;
 };
+
+export type AttributedSlot = SubSlot & { bookable: boolean };
 
 export type Base = {
   start: string;
