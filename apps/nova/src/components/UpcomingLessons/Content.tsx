@@ -4,7 +4,7 @@ import {
   EmptyLessons,
   CancelLesson,
 } from "@litespace/luna/Lessons";
-import { ILesson, Void } from "@litespace/types";
+import { ILesson, IUser, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
@@ -31,7 +31,7 @@ export const Content: React.FC<{
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
   const toast = useToast();
-  const { user: currentUser } = useUserContext();
+  const { user } = useUserContext();
 
   const [tutorId, setTutorId] = useState<number | null>(null);
   const [lessonId, setLessonId] = useState<number | null>(null);
@@ -53,10 +53,10 @@ export const Content: React.FC<{
     onError: onCancelError,
   });
 
-  const canceled = useCallback(
-    (item: Lessons[0], tutor: ILesson.PopuldatedMember) => {
-      if (!item.lesson.canceledBy) return null;
-      if (item.lesson.canceledBy === tutor.userId) return "tutor";
+  const getCancellerRole = useCallback(
+    (canceledBy: number | null, tutorId: number) => {
+      if (!canceledBy) return null;
+      if (canceledBy === tutorId) return "tutor";
       return "student";
     },
     []
@@ -80,11 +80,9 @@ export const Content: React.FC<{
       </div>
     );
 
-  if (!list) return null;
-
-  if (!list.length)
+  if (!list || !list.length || !user)
     return (
-      <div className="mt-28">
+      <div className="mt-[15vh]">
         <EmptyLessons tutorsPage={Route.Tutors} />;
       </div>
     );
@@ -93,10 +91,16 @@ export const Content: React.FC<{
     <div>
       <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
         {list.map((item) => {
-          const member = item.members.find(
-            (member) => member.role !== currentUser?.role
+          const tutor = item.members.find(
+            (member) =>
+              member.role === IUser.Role.Tutor ||
+              member.role === IUser.Role.TutorManager
           );
-          if (!member) return;
+
+          const otherMember = item.members.find(
+            (member) => member.role === user.role
+          );
+          if (!tutor || !otherMember) return null;
           return (
             <motion.div
               initial={{ opacity: 0 }}
@@ -108,15 +112,18 @@ export const Content: React.FC<{
                 duration={item.lesson.duration}
                 onJoin={() => console.log("join")}
                 onCancel={() => setLessonId(item.lesson.id)}
-                onRebook={() => setTutorId(member.userId)}
+                onRebook={() => setTutorId(tutor.userId)}
                 // TODO: implement tutor sendMsg button functionality
                 onSendMsg={() => console.log("Not implemented yet!")}
-                canceled={canceled(item, member)}
+                canceled={getCancellerRole(
+                  item.lesson.canceledBy,
+                  tutor.userId
+                )}
                 member={{
-                  id: member.userId,
-                  name: member.name,
-                  image: member.image,
-                  role: member.role === "student" ? "student" : "tutor",
+                  id: otherMember.userId,
+                  name: otherMember.name,
+                  image: otherMember.image,
+                  role: otherMember.role === "student" ? "student" : "tutor",
                 }}
               />
             </motion.div>
