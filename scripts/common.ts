@@ -1,4 +1,4 @@
-import { capitalize } from "lodash";
+import { upperCase } from "lodash";
 
 export type Update = {
   update_id: number;
@@ -34,7 +34,7 @@ export function asVercelUrlsMessage(
   let message = prefix + "\n";
 
   for (const [name, url] of Object.entries(urls)) {
-    message += `🚀 [${capitalize(name)}](${asVercelUrl(url)}) \n`;
+    message += `🚀 [${upperCase(name)}](${asVercelUrl(url)}) \n`;
   }
 
   return message;
