@@ -126,7 +126,9 @@ export const PastLessons: React.FC = () => {
         />
       ) : null}
 
-      {lessonsQuery.query.isFetching && !lessonsQuery.query.isLoading ? (
+      {lessonsQuery.query.isFetching &&
+      !lessonsQuery.query.isLoading &&
+      !lessonsQuery.query.error ? (
         <Loading />
       ) : null}
 
