@@ -8,8 +8,8 @@ export const Plans: React.FC = () => {
   const intl = useFormatMessage();
 
   return (
-    <div className="w-full p-6 mx-auto max-w-screen-3xl">
-      <PageTitle title={intl("plans.title")} className="mb-6" />
+    <div className="w-full p-4 md:p-6 mx-auto max-w-screen-3xl">
+      <PageTitle title={intl("plans.title")} className="mb-4 md:mb-6" />
       <Content plans={data as PlansDataProps} />
     </div>
   );
