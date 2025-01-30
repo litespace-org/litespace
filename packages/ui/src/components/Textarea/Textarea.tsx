@@ -36,7 +36,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div
         className={cn(
-          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-group",
+          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-font-cairo tw-group",
           disabled && "tw-cursor-not-allowed"
         )}
       >
@@ -107,10 +107,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 show={!!value && value.toString().length > maxAllowedCharacters}
                 side="right"
                 content={
-                  <Typography
-                    element="body"
-                    className="tw-text-natural-950 tw-max-w-[296px]"
-                  >
+                  <Typography element="body" className="tw-text-natural-950">
                     {intl("text-area.validate.maxAllowed")}
                   </Typography>
                 }
