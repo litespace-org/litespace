@@ -7,16 +7,26 @@ import Rate from "@litespace/assets/Rate";
 import { RatingStars } from "@/components/RatingStars";
 import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
 import { Textarea } from "@/components/Textarea";
-import { orUndefined } from "@litespace/utils";
+
+const DEFAULT_MAX_ALLOWED_CHARACTERS = 180;
 
 interface DialogProps {
   dialogTitle: string;
   contentTitle: string;
   contentDescription: string;
-  maxAllowedChars: number;
+  maxAllowedChars?: number;
   submitting: boolean;
+  initialRating?: number;
+  initialFeedback?: string;
   close: Void;
-  submit: (value: number, text?: string) => void;
+  submit: ({
+    value,
+    feedback,
+  }: {
+    value: number;
+    feedback: string | null;
+  }) => void;
+  bottom?: boolean;
 }
 
 const RatingDialog: React.FC<DialogProps> = ({
@@ -26,31 +36,38 @@ const RatingDialog: React.FC<DialogProps> = ({
   contentDescription,
   maxAllowedChars,
   submitting,
+  initialRating,
+  initialFeedback,
   submit,
+  bottom,
 }) => {
   const intl = useFormatMessage();
-  const [rating, setRating] = useState<number>(5);
-  const [text, setText] = useState<string>("");
+  const [rating, setRating] = useState<number>(initialRating || 5);
+  const [feedback, setFeedback] = useState<string>(initialFeedback || "");
 
-  const ontextChange = useCallback(
+  const onfeedbackChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-      setText(event.target.value);
+      setFeedback(event.target.value);
     },
     []
   );
 
   const handleRating = useCallback(() => {
-    submit(rating, orUndefined(text));
-  }, [submit, rating, text]);
+    submit({ value: rating, feedback: feedback || null });
+  }, [submit, rating, feedback]);
 
   const canSubmit = useMemo(
-    () => !submitting && text.length <= maxAllowedChars,
-    [submitting, maxAllowedChars, text.length]
+    () =>
+      !submitting &&
+      feedback.length <= (maxAllowedChars || DEFAULT_MAX_ALLOWED_CHARACTERS),
+    [submitting, maxAllowedChars, feedback.length]
   );
 
   return (
     <Dialog
       open={true}
+      className="tw-w-full md:tw-w-[659px]"
+      position={bottom ? "bottom" : "center"}
       title={
         <div className="tw-flex tw-items-center tw-gap-2">
           <Rate />
@@ -82,7 +99,7 @@ const RatingDialog: React.FC<DialogProps> = ({
         </Typography>
 
         <RatingStars
-          variant="xl"
+          variant={"xl"}
           rating={rating}
           setRating={setRating}
           readonly={submitting}
@@ -90,11 +107,13 @@ const RatingDialog: React.FC<DialogProps> = ({
 
         <Textarea
           placeholder={intl("session.rating.text.placeholder")}
-          className="tw-min-h-[138px] !tw-w-[696px]"
+          className="tw-min-h-[138px]"
           disabled={submitting}
-          value={text}
-          maxLength={maxAllowedChars || 180}
-          onChange={ontextChange}
+          value={feedback}
+          maxAllowedCharacters={
+            maxAllowedChars || DEFAULT_MAX_ALLOWED_CHARACTERS
+          }
+          onChange={onfeedbackChange}
         />
         <div className="tw-flex tw-w-full tw-gap-6">
           <Button

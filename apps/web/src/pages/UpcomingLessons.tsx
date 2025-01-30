@@ -9,13 +9,12 @@ import {
 } from "@litespace/headless/rating";
 import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { RatingDialog } from "@litespace/ui/TutorFeedback";
-import React, { useEffect, useState } from "react";
+import { RatingDialog } from "@litespace/ui/RatingDialog";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
-import { orUndefined } from "@litespace/utils/utils";
 
 type RateDialogInfo = {
   tutorId: number | null;
@@ -63,6 +62,18 @@ const UpcomingLessons: React.FC = () => {
         title: intl("tutor.rate.error"),
       }),
   });
+
+  const submitRating = useCallback(
+    (payload: { value: number; feedback: string | null }) => {
+      if (!rateDialogInfo.tutorId) return;
+      rateTutor.mutate({
+        rateeId: rateDialogInfo.tutorId,
+        value: payload.value,
+        feedback: payload.feedback,
+      });
+    },
+    [rateDialogInfo.tutorId, rateTutor]
+  );
 
   useEffect(() => {
     if (!user) return navigate(Route.Root);
@@ -115,21 +126,14 @@ const UpcomingLessons: React.FC = () => {
       rateDialogInfo.canRate &&
       user ? (
         <RatingDialog
-          open
-          loading={rateTutor.isPending}
-          studentId={user.id}
-          studentName={user.name}
-          tutorName={rateDialogInfo.tutorName}
-          imageUrl={orUndefined(user.image)}
-          onClose={() => setRateDialogInfo(defaultRateDialogInfo)}
-          onSubmit={(payload) => {
-            if (!rateDialogInfo.tutorId) return;
-            rateTutor.mutate({
-              rateeId: rateDialogInfo.tutorId,
-              value: payload.value,
-              feedback: payload.feedback,
-            });
-          }}
+          submitting={rateTutor.isPending}
+          close={() => setRateDialogInfo(defaultRateDialogInfo)}
+          submit={submitRating}
+          dialogTitle={intl("rating.form.title")}
+          contentTitle={intl("rating.form.content.title", {
+            tutor: rateDialogInfo.tutorName,
+          })}
+          contentDescription={intl("rating.form.content.description")}
         />
       ) : null}
     </div>

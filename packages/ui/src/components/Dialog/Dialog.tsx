@@ -59,7 +59,7 @@ export const Dialog: React.FC<{
           <div className="tw-flex tw-justify-between tw-items-center tw-w-full">
             <Title>{title}</Title>
             {close ? (
-              <Close onClick={close}>
+              <Close className="tw-w-6 tw-h-6" onClick={close}>
                 <X className="tw-cursor-pointer" />
               </Close>
             ) : null}
