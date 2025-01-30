@@ -1,15 +1,15 @@
 import { Meta, StoryObj } from "@storybook/react";
-import { PastLessonsTable } from "@/components/Lessons/PastLessonsTable";
+import { PastLessonsSummary } from "@/components/Lessons/PastLessonsSummary";
 import { faker } from "@faker-js/faker/locale/ar";
 import { concat, range, sample } from "lodash";
 import React from "react";
 
-type Component = typeof PastLessonsTable;
+type Component = typeof PastLessonsSummary;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "Lessons/PastLessonsTable",
-  component: PastLessonsTable,
+  title: "Lessons/PastLessonsSummary",
+  component: PastLessonsSummary,
   parameters: {
     layout: null,
   },
@@ -49,6 +49,7 @@ export const UserIsTutor: Story = {
     error: false,
     onSendMessage: () => alert("sending message..."),
     retry: () => alert("retrying..."),
+    more: () => {},
   },
 };
 
@@ -63,6 +64,7 @@ export const UserIsStudent: Story = {
     loading: false,
     error: false,
     retry: () => alert("retrying..."),
+    more: () => {},
   },
 };
 
@@ -73,7 +75,20 @@ export const Loading: Story = {
       alert(`Rebook with tutor id ${tutorId}`);
     },
     tutorsRoute: "/",
+    more: () => {},
     loading: true,
+  },
+};
+
+export const LoadingMore: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    onRebook(tutorId) {
+      alert(`Rebook with tutor id ${tutorId}`);
+    },
+    tutorsRoute: "/",
+    more: () => {},
+    loadingMore: true,
   },
 };
 
@@ -97,7 +112,7 @@ export const SendingMessage: Story = {
 export const Error: Story = {
   args: {
     lessons: range(10).map(() => makeLesson()),
-    onRebook(tutorId) {
+    onRebook(tutorId: number) {
       alert(`Rebook with tutor id ${tutorId}`);
     },
     tutorsRoute: "/",

@@ -8,9 +8,12 @@ export const StudentOverview: React.FC = () => {
   const statsQuery = useFindPersonalizedStudentStats();
 
   return (
-    <div className="grid gap-6 justify-items-start w-full">
+    <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
       <Typography
-        element="subtitle-2"
+        element={{
+          default: "body",
+          sm: "subtitle-2",
+        }}
         weight="bold"
         className="text-natural-950"
       >
