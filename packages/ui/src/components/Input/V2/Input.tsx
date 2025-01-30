@@ -1,38 +1,42 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
+import { InputType, InputAction, InputSize } from "@/components/Input/V2/types";
 import { Typography } from "@/components/Typography";
-import { Tooltip } from "@/components/Tooltip";
-import { useFormatMessage } from "@/hooks";
 
-export interface TextareaProps
-  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+export interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   /**
-   * Textarea text direction in case of no value is typed yet.
+   * Input text direction in case of no value is typed yet.
    */
   idleDir?: "rtl" | "ltr";
+  type?: InputType;
+  inputSize?: InputSize;
+  icon?: React.FC<{ className?: string }>;
+  endAction?: InputAction;
   state?: "error" | "success";
   label?: string;
   helper?: string | null;
-  maxAllowedCharacters?: number;
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
+      type,
       state,
       label,
       value,
       disabled,
       helper,
-      maxAllowedCharacters,
+      inputSize = "large",
       idleDir = "rtl",
+      icon: Icon,
+      endAction,
       className,
       ...props
     },
     ref
   ) => {
-    const intl = useFormatMessage();
     return (
       <div
         className={cn(
@@ -57,9 +61,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           data-disabled={disabled}
           className={cn(
             // base
-            "tw-w-full tw-px-3 tw-py-[6px]",
+            "tw-w-full tw-px-3",
             "tw-rounded-[6px] tw-border",
-            "tw-flex tw-flex-col tw-gap-1 tw-bg-natural-50",
+            "tw-flex tw-gap-2 tw-items-center tw-bg-natural-50",
+            {
+              "tw-h-7": inputSize === "small",
+              "tw-h-8": inputSize === "medium",
+              "tw-h-10": inputSize === "large",
+            },
             // Focused
             "focus-within:tw-border-brand-700 focus-within:tw-border-2",
             {
@@ -74,12 +83,28 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             }
           )}
         >
-          <textarea
+          {Icon ? (
+            <button
+              className={cn(
+                // Default
+                "tw-w-4 tw-h-4 tw-cursor-default [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+                // Filled
+                value && !disabled && "[&_*]:tw-stroke-natural-950",
+                // Disabled
+                disabled &&
+                  "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none"
+              )}
+            >
+              <Icon />
+            </button>
+          ) : null}
+          <input
             dir={!value ? idleDir : "auto"}
+            type={type}
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium",
+              "tw-grow tw-bg-inherit focus-within:tw-outline-none tw-font-medium",
               // Placeholder
               "placeholder:tw-text-natural-600",
               {
@@ -93,58 +118,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             ref={ref}
             {...props}
           />
-          {maxAllowedCharacters ? (
-            <div dir="ltr" className="tw-flex tw-flex-col tw-gap-1">
-              <hr
-                className={cn("group-focus-within:tw-border-brand-700", {
-                  "tw-border-natural-200": disabled,
-                  "tw-border-natural-300": !state,
-                  "tw-border-success-600": state === "success",
-                  "tw-border-destructive-600": state === "error",
-                })}
-              />
-              <Tooltip
-                show={!!value && value.toString().length > maxAllowedCharacters}
-                side="right"
-                content={
-                  <Typography
-                    element="body"
-                    className="tw-text-natural-950 tw-max-w-[296px]"
-                  >
-                    {intl("text-area.validate.maxAllowed")}
-                  </Typography>
-                }
-              >
-                <div className="tw-w-fit">
-                  <Typography
-                    element="tiny-text"
-                    className={cn(
-                      "tw-justify-self-end group-focus-within:tw-text-natural-950",
-                      {
-                        "tw-text-natural-600": !value && !disabled,
-                        "tw-text-natural-950": value && !disabled,
-                        "tw-text-natural-500": disabled,
-                      }
-                    )}
-                  >
-                    <Typography
-                      element="tiny-text"
-                      className={cn("tw-justify-self-end", {
-                        "tw-text-natural-500": disabled,
-                        "tw-text-destructive-600":
-                          state === "error" ||
-                          (value &&
-                            value.toString().length > maxAllowedCharacters),
-                      })}
-                    >
-                      {value?.toString().length || 0}{" "}
-                    </Typography>
-                    /{maxAllowedCharacters}
-                  </Typography>
-                </div>
-              </Tooltip>
-            </div>
-          ) : null}
+          <Actions disabled={disabled} action={endAction} filled={!!value} />
         </div>
         <AnimatePresence mode="wait" initial={false}>
           {helper ? (
@@ -184,4 +158,30 @@ export const Helper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return <motion.div {...framer}>{children}</motion.div>;
+};
+
+const Actions: React.FC<{
+  action: InputAction | undefined;
+  disabled?: boolean;
+  filled?: boolean;
+}> = ({ action, disabled, filled }) => {
+  return action ? (
+    <button
+      key={action.id}
+      onClick={action.onClick}
+      type="button"
+      className={cn(
+        // Default
+        "tw-w-4 tw-h-4 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+        // Filled
+        filled && !disabled && "[&_*]:tw-stroke-natural-950",
+        // Disabled
+        disabled &&
+          "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none",
+        action.className
+      )}
+    >
+      <action.Icon />
+    </button>
+  ) : null;
 };
