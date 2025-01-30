@@ -31,7 +31,6 @@ export enum QueryKey {
   FindCallMembers = "find-call-members",
   FindCurrentUser = "find-current-user",
   FindTutorInfo = "find-tutor-info",
-  FindRulesWithSlots = "find-rules-with-slots",
   FindUserTopics = "find-user-topics",
   FindSessionMembers = "find-session-members",
   FindRoomByMembers = "find-room-by-members",

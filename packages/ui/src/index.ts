@@ -51,7 +51,6 @@ export {
   useValidateDuration,
 } from "@/hooks/validation";
 export { useTimeFormatterMap, useWeekdayMap } from "@/hooks/datetime";
-export { useRuleFormatterMap } from "@/hooks/rule";
 export { Spinner } from "@/icons/Spinner";
 export {
   type LoadableState,

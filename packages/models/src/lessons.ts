@@ -53,10 +53,6 @@ type SearchFilter = {
    */
   before?: string;
   /**
-   * Filter only lessons that blogs to the provided rule ids.
-   */
-  rules?: number[];
-  /**
    * Filter only lessons that blogs to the provided slot ids.
    */
   slots?: number[];
@@ -91,7 +87,6 @@ export class Lessons {
       start: this.columns.lessons("start"),
       duration: this.columns.lessons("duration"),
       price: this.columns.lessons("price"),
-      rule_id: this.columns.lessons("rule_id"),
       slot_id: this.columns.lessons("slot_id"),
       session_id: this.columns.lessons("session_id"),
       canceled_by: this.columns.lessons("canceled_by"),
@@ -112,7 +107,6 @@ export class Lessons {
       .insert({
         start: dayjs.utc(payload.start).toDate(),
         duration: payload.duration,
-        rule_id: payload.rule,
         slot_id: payload.slot,
         session_id: payload.session,
         price: payload.price,
@@ -241,7 +235,6 @@ export class Lessons {
     now = false,
     after,
     before,
-    rules,
     slots,
     ...pagination
   }: WithOptionalTx<IFilter.SkippablePagination & SearchFilter>): Promise<
@@ -256,7 +249,6 @@ export class Lessons {
       now,
       after,
       before,
-      rules,
       slots,
     });
 
@@ -476,7 +468,6 @@ export class Lessons {
       users,
       after,
       before,
-      rules = [],
       slots = [],
     }: SearchFilter
   ): Knex.QueryBuilder<R, T> {
@@ -506,10 +497,8 @@ export class Lessons {
     const pastOnly = past && !future;
 
     const nowDate = dayjs.utc().toDate();
-    const end = addSqlMinutes(
-      this.columns.lessons("start"),
-      this.columns.lessons("duration")
-    );
+    const start = this.columns.lessons("start");
+    const end = addSqlMinutes(start, this.columns.lessons("duration"));
 
     if (now) {
       builder
@@ -521,11 +510,18 @@ export class Lessons {
       builder.where(end, "<=", nowDate);
     }
 
-    if (after) builder.where(end, ">=", dayjs.utc(after).toDate());
-    if (before) builder.where(end, "<=", dayjs.utc(before).toDate());
-
-    if (!isEmpty(rules))
-      builder.whereIn(this.columns.lessons("rule_id"), rules);
+    if (after)
+      builder.where((builder) => {
+        builder
+          .where(start, ">=", dayjs.utc(after).toDate())
+          .orWhere(end, ">", dayjs.utc(after).toDate());
+      });
+    if (before)
+      builder.where((builder) => {
+        builder
+          .where(end, "<=", dayjs.utc(before).toDate())
+          .orWhere(start, "<", dayjs.utc(before).toDate());
+      });
 
     if (!isEmpty(slots))
       builder.whereIn(this.columns.lessons("slot_id"), slots);
@@ -539,7 +535,6 @@ export class Lessons {
       start: row.start.toISOString(),
       duration: row.duration,
       price: row.price,
-      ruleId: row.rule_id,
       slotId: row.slot_id,
       sessionId: row.session_id,
       canceledBy: row.canceled_by,

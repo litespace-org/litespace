@@ -207,7 +207,6 @@ describe("/api/v1/topic/", () => {
       expect(res.status).to.eq(200);
 
       const userTopics = await findUserTopics({ user: student });
-      console.log(userTopics);
       expect(userTopics.body).to.be.an("array");
       expect(userTopics.body).to.have.length(3);
     });

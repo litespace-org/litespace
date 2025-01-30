@@ -3,10 +3,6 @@ import db from "@fixtures/db";
 import { ClientSocket } from "@fixtures/wss";
 import { IUser, Wss } from "@litespace/types";
 import dayjs from "@/lib/dayjs";
-import { IRule } from "@litespace/types";
-import { Time } from "@litespace/utils/time";
-import { faker } from "@faker-js/faker/locale/ar";
-import { unpackRules } from "@litespace/utils/rule";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 
@@ -39,26 +35,6 @@ describe("sessions test suite", () => {
   it("should join the user socket in the socket.io room when the user pre-join", async () => {
     const now = dayjs();
 
-    const rule = await tutorApi.atlas.rule.create({
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
-      duration: 8 * 60,
-      frequency: IRule.Frequency.Daily,
-      time: Time.from(now.hour() + ":" + now.minute())
-        .utc()
-        .format("railway"),
-      title: faker.lorem.words(3),
-    });
-
-    const unpackedRules = unpackRules({
-      rules: [rule],
-      slots: [],
-      start: rule.start,
-      end: rule.end,
-    });
-
-    const selectedRuleEvent = unpackedRules[0];
-
     const slot = await db.slot({
       userId: tutor.user.id,
       start: now.utc().startOf("day").toISOString(),
@@ -66,9 +42,8 @@ describe("sessions test suite", () => {
     });
 
     const lesson = await studentApi.atlas.lesson.create({
-      start: selectedRuleEvent.start,
+      start: slot.start,
       duration: 30,
-      ruleId: rule.id,
       slotId: slot.id,
       tutorId: tutor.user.id,
     });
@@ -96,36 +71,15 @@ describe("sessions test suite", () => {
   it("should broadcast the event when the user join a session", async () => {
     const now = dayjs();
 
-    const rule = await tutorApi.atlas.rule.create({
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
-      duration: 8 * 60,
-      frequency: IRule.Frequency.Daily,
-      time: Time.from(now.hour() + ":" + now.minute())
-        .utc()
-        .format("railway"),
-      title: faker.lorem.words(3),
-    });
-
     const slot = await db.slot({
       userId: tutor.user.id,
       start: now.utc().startOf("day").toISOString(),
       end: now.utc().add(10, "day").startOf("day").toISOString(),
     });
 
-    const unpackedRules = unpackRules({
-      rules: [rule],
-      slots: [],
-      start: rule.start,
-      end: rule.end,
-    });
-
-    const selectedRuleEvent = unpackedRules[0];
-
     const lesson = await studentApi.atlas.lesson.create({
-      start: selectedRuleEvent.start,
+      start: slot.start,
       duration: 30,
-      ruleId: rule.id,
       slotId: slot.id,
       tutorId: tutor.user.id,
     });
@@ -155,16 +109,6 @@ describe("sessions test suite", () => {
 
   it("should NOT broadcast when user tries to join a lesson to which he doesn't belong", async () => {
     const now = dayjs();
-    const rule = await tutorApi.atlas.rule.create({
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
-      duration: 8 * 60,
-      frequency: IRule.Frequency.Daily,
-      time: Time.from(now.hour() + ":" + now.minute())
-        .utc()
-        .format("railway"),
-      title: faker.lorem.words(3),
-    });
 
     const slot = await db.slot({
       userId: tutor.user.id,
@@ -172,18 +116,9 @@ describe("sessions test suite", () => {
       end: now.utc().add(10, "day").startOf("day").toISOString(),
     });
 
-    const unpackedRules = unpackRules({
-      rules: [rule],
-      slots: [],
-      start: rule.start,
-      end: rule.end,
-    });
-    const selectedRuleEvent = unpackedRules[0];
-
     const lesson = await studentApi.atlas.lesson.create({
-      start: selectedRuleEvent.start,
+      start: slot.start,
       duration: 30,
-      ruleId: rule.id,
       slotId: slot.id,
       tutorId: tutor.user.id,
     });
@@ -207,16 +142,6 @@ describe("sessions test suite", () => {
 
   it("should NOT broadcast when user tries to join a session before its start", async () => {
     const now = dayjs();
-    const rule = await tutorApi.atlas.rule.create({
-      start: now.add(1, "day").utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
-      duration: 8 * 60,
-      frequency: IRule.Frequency.Daily,
-      time: Time.from(now.hour() + ":" + now.minute())
-        .utc()
-        .format("railway"),
-      title: faker.lorem.words(3),
-    });
 
     const slot = await db.slot({
       userId: tutor.user.id,
@@ -224,18 +149,9 @@ describe("sessions test suite", () => {
       end: now.utc().add(10, "day").startOf("day").toISOString(),
     });
 
-    const unpackedRules = unpackRules({
-      rules: [rule],
-      slots: [],
-      start: rule.start,
-      end: rule.end,
-    });
-    const selectedRuleEvent = unpackedRules[0];
-
     const lesson = await studentApi.atlas.lesson.create({
-      start: selectedRuleEvent.start,
+      start: slot.start,
       duration: 30,
-      ruleId: rule.id,
       slotId: slot.id,
       tutorId: tutor.user.id,
     });

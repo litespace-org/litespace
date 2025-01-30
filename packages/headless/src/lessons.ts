@@ -89,13 +89,11 @@ export function useCreateLesson({
   const bookLesson = useCallback(
     async ({
       tutorId,
-      ruleId,
       slotId,
       start,
       duration,
     }: {
       tutorId: number;
-      ruleId: number;
       slotId: number;
       start: string;
       duration: ILesson.Duration;
@@ -103,7 +101,6 @@ export function useCreateLesson({
       return await atlas.lesson.create({
         tutorId,
         duration,
-        ruleId,
         slotId,
         start,
       });

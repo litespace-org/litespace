@@ -1,7 +1,6 @@
 import { PASSWORD_REGEX } from "@litespace/utils";
 import {
   IUser,
-  IRule,
   ISubscription,
   IDate,
   StringLiteral,
@@ -83,13 +82,6 @@ export const birthYear = zod.coerce
   .min(year - 80);
 
 export const datetime = zod.coerce.string().datetime();
-
-export const repeat = zod.enum([
-  IRule.Repeat.No,
-  IRule.Repeat.Daily,
-  IRule.Repeat.Weekly,
-  IRule.Repeat.Monthly,
-]);
 
 export const role = zod.enum([
   IUser.Role.SuperAdmin,

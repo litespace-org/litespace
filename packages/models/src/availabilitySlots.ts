@@ -178,10 +178,21 @@ export class AvailabilitySlots {
     if (users && !isEmpty(users))
       builder.whereIn(this.column("user_id"), users);
 
+    const start = this.column("start");
+    const end = this.column("end");
+
     if (after)
-      builder.where(this.column("start"), ">=", dayjs.utc(after).toDate());
+      builder.where((builder) => {
+        builder
+          .where(start, ">=", dayjs.utc(after).toDate())
+          .orWhere(end, ">", dayjs.utc(after).toDate());
+      });
     if (before)
-      builder.where(this.column("end"), "<=", dayjs.utc(before).toDate());
+      builder.where((builder) => {
+        builder
+          .where(end, "<=", dayjs.utc(before).toDate())
+          .orWhere(start, "<", dayjs.utc(before).toDate());
+      });
 
     if (deleted) builder.where(this.column("deleted"), deleted);
 

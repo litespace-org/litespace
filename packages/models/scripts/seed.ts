@@ -3,7 +3,6 @@ import {
   users,
   tutors,
   ratings,
-  rules,
   plans,
   coupons,
   invites,
@@ -27,11 +26,9 @@ import {
   IWithdrawMethod,
 } from "@litespace/types";
 import dayjs from "dayjs";
-import { Time } from "@litespace/utils/time";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { logger } from "@litespace/utils/log";
 import { price } from "@litespace/utils/value";
-import { IDate, IRule } from "@litespace/types";
 import { first, range, sample } from "lodash";
 import { Knex } from "knex";
 import utc from "dayjs/plugin/utc";
@@ -276,24 +273,6 @@ async function main(): Promise<void> {
     })
   );
 
-  const rule = await rules.create({
-    userId: tutorManager.id,
-    frequency: IRule.Frequency.Daily,
-    start: dayjs.utc().startOf("day").toISOString(),
-    end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
-    time: Time.from("2pm").utc().format(),
-    duration: 180,
-    title: "Main Rule",
-    weekdays: [
-      IDate.Weekday.Monday,
-      IDate.Weekday.Tuesday,
-      IDate.Weekday.Wednesday,
-      IDate.Weekday.Thursday,
-      IDate.Weekday.Friday,
-    ],
-    monthday: sample(range(1, 31)),
-  });
-
   // seeding slots
   const seededSlots: { [tutorId: number]: IAvailabilitySlot.Self[] } = {};
   addedTutors.forEach(async (tutor, i) => {
@@ -336,35 +315,6 @@ async function main(): Promise<void> {
     return (seededSlots[tutor.id] = slots);
   });
 
-  const times = range(0, 24).map((hour) =>
-    [hour.toString().padStart(2, "0"), "00"].join(":")
-  );
-
-  await Promise.all(
-    addedTutors.map(async (tutor) => {
-      await rules.create({
-        userId: tutor.id,
-        frequency: IRule.Frequency.Daily,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().startOf("day").add(30, "days").toISOString(),
-        time: Time.from(sample(times)!).utc().format(),
-        duration: 180,
-        title: "Main Rule",
-        weekdays: [
-          sample([
-            IDate.Weekday.Monday,
-            IDate.Weekday.Tuesday,
-            IDate.Weekday.Wednesday,
-            IDate.Weekday.Thursday,
-            IDate.Weekday.Friday,
-            IDate.Weekday.Saturday,
-            IDate.Weekday.Sunday,
-          ]),
-        ],
-      });
-    })
-  );
-
   function randomStart(): string {
     return dayjs
       .utc()
@@ -401,7 +351,6 @@ async function main(): Promise<void> {
         price: calculateLessonPrice(price.scale(100), duration),
         start,
         duration,
-        rule: 1,
         slot: slotId,
         tx,
       });
@@ -454,7 +403,6 @@ async function main(): Promise<void> {
         interviewee: tutor.id,
         interviewer: tutorManager.id,
         start: randomStart(),
-        rule: rule.id,
         slot: slot.id,
         tx,
       });

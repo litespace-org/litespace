@@ -3,15 +3,14 @@ import dayjs from "@/lib/dayjs";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { motion } from "framer-motion";
-import { AttributedSlot } from "@/components/Lessons/BookLesson/types";
+import { IAvailabilitySlot } from "@litespace/types";
 
 export const TimeSelection: React.FC<{
-  slots: AttributedSlot[];
+  slots: IAvailabilitySlot.Slot[];
   start: string | null;
-  ruleId: number | null;
   slotId: number | null;
-  select: (payload: { start: string; ruleId: number; slotId: number }) => void;
-}> = ({ slots, start, ruleId, slotId, select }) => {
+  select: (payload: { start: string; slotId: number }) => void;
+}> = ({ slots, start, slotId, select }) => {
   return (
     <div className="tw-px-5">
       <div
@@ -29,17 +28,12 @@ export const TimeSelection: React.FC<{
               key={slot.start}
               onClick={() =>
                 select({
-                  ruleId: slot.ruleId,
-                  slotId: slot.ruleId,
+                  slotId: slot.id,
                   start: slot.start,
                 })
               }
-              data-selected={
-                slot.start === start &&
-                slot.ruleId === ruleId &&
-                slot.ruleId === slotId
-              }
-              disabled={!slot.bookable}
+              data-selected={slot.start === start && slot.id === slotId}
+              disabled={!!slot.id} // TODO: check if the slot is bookable
               className={cn(
                 "tw-bg-natural-50 tw-border tw-border-natural-800 tw-shadow-time-selection-item",
                 "tw-h-[60px] tw-w-[60px] tw-rounded-lg tw-flex tw-items-center tw-justify-center",

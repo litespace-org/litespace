@@ -1,6 +1,5 @@
 export * from "@/dayjs";
 export * from "@/time";
-export * from "@/rule";
 export * from "@/duration";
 export * from "@/value";
 export * from "@/lesson";

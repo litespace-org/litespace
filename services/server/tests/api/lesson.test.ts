@@ -1,14 +1,10 @@
 import { Api } from "@fixtures/api";
 import dayjs from "@/lib/dayjs";
-import { IRule } from "@litespace/types";
-import { Time } from "@litespace/utils/time";
-import { faker } from "@faker-js/faker/locale/ar";
-import { unpackRules } from "@litespace/utils/rule";
 import { expect } from "chai";
 import { cache } from "@/lib/cache";
 import db from "@fixtures/db";
 import { forbidden, notfound } from "@/lib/error";
-import { safe } from "@litespace/utils";
+import { getSubSlots, safe } from "@litespace/utils";
 
 describe("/api/v1/lesson/", () => {
   beforeAll(async () => {
@@ -32,33 +28,19 @@ describe("/api/v1/lesson/", () => {
       const tutor = await tutorApi.findCurrentUser();
       const student = await studentApi.findCurrentUser();
 
-      const rule = await tutorApi.atlas.rule.create({
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().add(10, "day").startOf("day").toISOString(),
-        duration: 8 * 60,
-        frequency: IRule.Frequency.Daily,
-        time: Time.from("12:00").utc().format("railway"),
-        title: faker.lorem.words(3),
-      });
-
+      const date = dayjs.utc();
       const slot = await db.slot({
         userId: tutor.user.id,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().add(10, "day").startOf("day").toISOString(),
+        start: date.startOf("hour").toISOString(),
+        end: date.add(5, "hour").toISOString(),
       });
 
-      const unpackedRules = unpackRules({
-        rules: [rule],
-        slots: [],
-        start: rule.start,
-        end: rule.end,
-      });
+      const subslots = getSubSlots(slot, 30);
 
       // create 10 future lessons
-      for (const rule of unpackedRules) {
+      for (const subslot of subslots) {
         await studentApi.atlas.lesson.create({
-          start: rule.start,
-          ruleId: rule.id,
+          start: subslot.start,
           slotId: slot.id,
           duration: 30,
           tutorId: tutor.user.id,
@@ -67,44 +49,36 @@ describe("/api/v1/lesson/", () => {
 
       const tests = [
         {
-          after: unpackedRules[0].start,
-          before: unpackedRules[9].end,
+          after: subslots[0].start,
+          before: subslots[9].end,
           total: 10,
         },
         {
-          after: unpackedRules[0].start,
-          before: unpackedRules[0].end,
+          after: subslots[0].start,
+          before: subslots[0].end,
           total: 1,
         },
-        // skip first lesson
+        // skip first two lessons
         {
-          after: dayjs.utc(unpackedRules[0].start).add(1, "hour").toISOString(),
-          before: unpackedRules[9].end,
-          total: 9,
+          after: subslots[2].start,
+          before: subslots[9].end,
+          total: 8,
         },
-        // skip last lesson
+        // skip last two lessons
         {
-          after: unpackedRules[0].start,
-          before: dayjs
-            .utc(unpackedRules[9].start)
-            .subtract(1, "hour")
-            .toISOString(),
-          total: 9,
+          after: subslots[0].start,
+          before: subslots[8].start,
+          total: 8,
         },
       ];
 
       for (const test of tests) {
-        expect(
-          await studentApi.atlas.lesson
-            .findLessons({
-              users: [student.user.id],
-              after: test.after,
-              before: test.before,
-            })
-            .then((lessons) => {
-              return lessons.total;
-            })
-        ).to.be.eq(test.total);
+        const found = await studentApi.atlas.lesson.findLessons({
+          users: [student.user.id],
+          after: test.after,
+          before: test.before,
+        });
+        expect(found.total).to.be.eq(test.total);
       }
     });
   });
@@ -120,12 +94,6 @@ describe("/api/v1/lesson/", () => {
       const tutor = await db.tutor();
       const student = await db.student();
 
-      const rule = await db.activatedRule({
-        userId: tutor.id,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().add(10, "days").toISOString(),
-      });
-
       const slot = await db.slot({
         userId: tutor.id,
         start: dayjs.utc().startOf("day").toISOString(),
@@ -136,7 +104,6 @@ describe("/api/v1/lesson/", () => {
         tutor: tutor.id,
         student: student.id,
         timing: "future",
-        rule: rule.id,
         slot: slot.id,
       });
 
@@ -153,12 +120,6 @@ describe("/api/v1/lesson/", () => {
       const tutor = await db.tutor();
       const student = await studentApi.findCurrentUser();
 
-      const rule = await db.activatedRule({
-        userId: tutor.id,
-        start: dayjs.utc().startOf("day").toISOString(),
-        end: dayjs.utc().add(10, "days").toISOString(),
-      });
-
       const slot = await db.slot({
         userId: tutor.id,
         start: dayjs.utc().startOf("day").toISOString(),
@@ -169,7 +130,6 @@ describe("/api/v1/lesson/", () => {
         tutor: tutor.id,
         student: student.user.id,
         timing: "future",
-        rule: rule.id,
         slot: slot.id,
       });
 

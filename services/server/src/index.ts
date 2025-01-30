@@ -80,7 +80,6 @@ app.use(
 );
 app.use("/api/v1/auth", routes.auth);
 app.use("/api/v1/user", routes.user(context));
-app.use("/api/v1/rule", routes.rule(context));
 app.use("/api/v1/lesson", routes.lesson(context));
 app.use("/api/v1/interview", routes.interview);
 app.use("/api/v1/availability-slot", routes.availabilitySlot);
