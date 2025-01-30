@@ -1,13 +1,14 @@
-import ArrowRight from "@litespace/assets/ArrowRight";
 import ArrowLeft from "@litespace/assets/ArrowLeft";
-import React, { useMemo } from "react";
-import { Dayjs } from "dayjs";
-import { Void } from "@litespace/types";
-import { Typography } from "@litespace/ui/Typography";
+import ArrowRight from "@litespace/assets/ArrowRight";
 import Calendar from "@litespace/assets/Calendar";
 import Categories from "@litespace/assets/Categories";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Void } from "@litespace/types";
+import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
+import { Dayjs } from "dayjs";
 import { motion } from "framer-motion";
+import React, { useMemo } from "react";
 
 export type View = "calendar" | "list";
 
@@ -26,6 +27,7 @@ const Header: React.FC<Props> = ({
   view,
   setView,
 }) => {
+  const { lg } = useMediaQuery();
   const views = useMemo(() => {
     return [
       {
@@ -42,15 +44,15 @@ const Header: React.FC<Props> = ({
   return (
     <div>
       <Typography
-        element="subtitle-2"
+        element={{ default: "body", lg: "subtitle-2" }}
         weight="bold"
         className="text-natural-950 mb-2"
       >
-        {date.format("YYYY MMMM")}
+        {date.format("MMMM YYYY")}
       </Typography>
-      <div className="flex flex-row justify-between items-center">
+      <div className="flex flex-col sm:flex-row gap-6 justify-between items-start md:items-center">
         <Typography
-          element="body"
+          element={{ default: "caption", lg: "body" }}
           weight="semibold"
           className="text-natural-700"
         >
@@ -58,32 +60,34 @@ const Header: React.FC<Props> = ({
           {date.endOf("week").format("DD MMMM YYYY")}
         </Typography>
 
-        <div className="flex flex-row gap-6 items-center justify-center">
-          <div className="flex flex-row items-center justify-center gap-4">
-            {views.map(({ view: viewOption, Icon }) => (
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                whileHover={{ scale: 1.05 }}
-                key={viewOption}
-                onClick={() => setView(viewOption)}
-              >
-                <Icon
-                  className={cn(
-                    "transition-colors duration-300",
-                    view === viewOption
-                      ? "[&>*]:stroke-brand-700"
-                      : "[&>*]:stroke-natural-600"
-                  )}
-                />
-              </motion.button>
-            ))}
-          </div>
-          <div className="flex tw-flex-row gap-4 items-center justify-center">
+        <div className="w-full sm:w-fit flex flex-row gap-6 items-center justify-center">
+          {lg ? (
+            <div className="flex flex-row items-center justify-center gap-4">
+              {views.map(({ view: viewOption, Icon }) => (
+                <motion.button
+                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05 }}
+                  key={viewOption}
+                  onClick={() => setView(viewOption)}
+                >
+                  <Icon
+                    className={cn(
+                      "transition-colors duration-300",
+                      view === viewOption
+                        ? "[&>*]:stroke-brand-700"
+                        : "[&>*]:stroke-natural-600"
+                    )}
+                  />
+                </motion.button>
+              ))}
+            </div>
+          ) : null}
+          <div className="w-full flex flex-row sm:gap-4 items-center justify-between sm:justify-center">
             <button onClick={prevWeek} type="button">
               <ArrowRight className="[&>*]:stroke-brand-700" />
             </button>
             <Typography
-              element="body"
+              element={{ default: "caption", lg: "body" }}
               weight="bold"
               className="text-natural-950"
             >
