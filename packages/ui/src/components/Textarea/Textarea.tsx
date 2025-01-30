@@ -36,7 +36,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     return (
       <div
         className={cn(
-          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-group",
+          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-font-cairo tw-group",
           disabled && "tw-cursor-not-allowed"
         )}
       >
@@ -57,7 +57,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           data-disabled={disabled}
           className={cn(
             // base
-            "tw-w-full tw-py-[6px]",
+            "tw-w-full tw-pb-[6px] tw-overflow-hidden",
             "tw-rounded-[6px] tw-border",
             "tw-flex tw-flex-col tw-gap-1 tw-bg-natural-50",
             // Focused
@@ -79,7 +79,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full tw-px-3",
+              "tw-pt-3 tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full tw-px-3",
               // Placeholder
               "placeholder:tw-text-natural-600",
               {
@@ -88,7 +88,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 // Disabled
                 "tw-text-natural-500 placeholder:tw-text-natural-500 tw-cursor-not-allowed":
                   disabled,
-              }
+              },
+              className
             )}
             ref={ref}
             {...props}
@@ -121,25 +122,14 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                     className={cn(
                       "tw-justify-self-end group-focus-within:tw-text-natural-950",
                       {
-                        "tw-text-natural-600": !value && !disabled,
-                        "tw-text-natural-950": value && !disabled,
+                        "tw-text-natural-600": !value && !disabled && !state,
+                        "tw-text-natural-950": value && !disabled && !state,
                         "tw-text-natural-500": disabled,
+                        "tw-text-destructive-600": state === "error",
                       }
                     )}
                   >
-                    <Typography
-                      element="tiny-text"
-                      className={cn("tw-justify-self-end", {
-                        "tw-text-natural-500": disabled,
-                        "tw-text-destructive-600":
-                          state === "error" ||
-                          (value &&
-                            value.toString().length > maxAllowedCharacters),
-                      })}
-                    >
-                      {value?.toString().length || 0}{" "}
-                    </Typography>
-                    /{maxAllowedCharacters}
+                    {value?.toString().length || 0} / {maxAllowedCharacters}
                   </Typography>
                 </div>
               </Tooltip>

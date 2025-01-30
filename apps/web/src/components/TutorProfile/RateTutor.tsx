@@ -2,7 +2,7 @@ import Star from "@litespace/assets/Star";
 import { Button, ButtonSize } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { RatingDialog } from "@litespace/ui/TutorFeedback";
+import { RatingDialog } from "@litespace/ui/RatingDialog";
 import { useUserContext } from "@litespace/headless/context/user";
 import React, { useCallback, useState } from "react";
 import { useCreateRatingTutor } from "@litespace/headless/rating";
@@ -69,17 +69,17 @@ export const RateTutor: React.FC<{
         </Typography>
         <Star className="[&>*]:fill-natural-50" />
       </Button>
-      <RatingDialog
-        imageUrl={user.image}
-        studentName={user.name || ""}
-        onSubmit={rateTutor}
-        studentId={user.id}
-        loading={rateMutation.isPending}
-        feedback={null}
-        tutorName={tutorName}
-        open={rating}
-        onClose={() => setRating(false)}
-      />
+      {rating ? (
+        <RatingDialog
+          dialogTitle={intl("rating.form.title")}
+          contentTitle={intl("rating.form.content.title", { tutor: tutorName })}
+          contentDescription={intl("rating.form.content.description")}
+          submitting={rateMutation.isPending}
+          close={() => setRating(false)}
+          maxAllowedChars={180}
+          submit={rateTutor}
+        />
+      ) : null}
     </div>
   );
 };

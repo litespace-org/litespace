@@ -8,10 +8,10 @@ import { organizeRatings } from "@/lib/ratings";
 import { useUserContext } from "@litespace/headless/context/user";
 import {
   DeleteRating,
-  RatingDialog,
   TutorRatingCard,
   TutorRatingCardGroup,
 } from "@litespace/ui/TutorFeedback";
+import { RatingDialog } from "@litespace/ui/RatingDialog";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import NewTutor from "@litespace/assets/NewTutor";
@@ -23,6 +23,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { orUndefined } from "@litespace/utils/utils";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -119,6 +120,19 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
     [ratingsQuery.data, user]
   );
 
+  const editRating = useCallback(
+    (payload: { value: number; feedback: string | null }) =>
+      editDialog &&
+      editMutation.mutate({
+        id: editDialog.id,
+        payload: {
+          value: payload.value,
+          feedback: payload.feedback || "",
+        },
+      }),
+    [editDialog, editMutation]
+  );
+
   if (ratingsQuery.isLoading || ratingsQuery.isPending)
     return (
       <div className="h-96 flex justify-center items-center">
@@ -205,20 +219,15 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
 
       {editDialog ? (
         <RatingDialog
-          {...editDialog}
-          tutorName={tutorName}
-          onClose={closeEdit}
-          loading={editMutation.isPending}
-          open={!!editDialog}
-          onSubmit={(payload: { value: number; feedback: string | null }) =>
-            editMutation.mutate({
-              id: editDialog.id,
-              payload: {
-                value: payload.value,
-                feedback: payload.feedback || "",
-              },
-            })
-          }
+          dialogTitle={intl("rating.form.title")}
+          contentTitle={intl("rating.form.content.title", { tutor: tutorName })}
+          contentDescription={intl("rating.form.content.description")}
+          submitting={editMutation.isPending}
+          initialRating={editDialog.rating}
+          initialFeedback={orUndefined(editDialog.feedback)}
+          close={closeEdit}
+          maxAllowedChars={180}
+          submit={editRating}
         />
       ) : null}
 
