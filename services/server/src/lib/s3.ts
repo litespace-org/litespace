@@ -1,3 +1,4 @@
+import { spaceConfig } from "@/constants";
 import {
   S3Client,
   PutObjectCommand,
@@ -5,10 +6,16 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const bucket = "litespace-assets-staging";
+const bucket = "litespace-assets";
 
 const s3 = new S3Client({
-  region: "me-south-1",
+  endpoint: "https://fra1.digitaloceanspaces.com",
+  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
+  region: "fra1",
+  credentials: {
+    accessKeyId: spaceConfig.accessKeyId,
+    secretAccessKey: spaceConfig.secretAccessKey,
+  },
 });
 
 async function put({
