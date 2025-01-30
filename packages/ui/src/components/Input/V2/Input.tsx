@@ -58,8 +58,6 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           </Typography>
         ) : null}
         <div
-          data-filled={!!value}
-          data-state={!!state}
           data-disabled={disabled}
           className={cn(
             // base
@@ -79,7 +77,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               // Error
               "tw-border-destructive-600": state === "error",
               // Success
-              "tw-border-brand-600": state === "error",
+              "tw-border-brand-600": state === "success",
               // Disabled
               "tw-bg-natural-100 tw-border-natural-200": disabled,
             }
