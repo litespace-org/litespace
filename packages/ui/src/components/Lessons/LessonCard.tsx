@@ -241,7 +241,7 @@ export const LessonCard: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-flex tw-flex-col tw-items-stretch tw-gap-4 tw-p-6 tw-bg-natural-50",
+        "tw-flex tw-flex-col tw-items-stretch tw-gap-4 tw-p-4 md:tw-p-6 tw-bg-natural-50",
         "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-lesson-upcoming-card"
       )}
     >

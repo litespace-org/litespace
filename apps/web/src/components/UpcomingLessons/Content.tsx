@@ -12,6 +12,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { useUserContext } from "@litespace/headless/context/user";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -24,6 +25,7 @@ export const Content: React.FC<{
   more: Void;
   refetch: Void;
 }> = ({ list, loading, fetching, error, hasMore, more, refetch }) => {
+  const { lg } = useMediaQuery();
   const queryClient = useQueryClient();
   const intl = useFormatMessage();
   const toast = useToast();
@@ -61,7 +63,10 @@ export const Content: React.FC<{
   if (loading)
     return (
       <div className="mt-[15vh]">
-        <Loader size="large" text={intl("upcoming-lessons.loading")} />
+        <Loader
+          size={lg ? "large" : "small"}
+          text={intl("upcoming-lessons.loading")}
+        />
       </div>
     );
 
@@ -69,7 +74,7 @@ export const Content: React.FC<{
     return (
       <div className="mt-[15vh]">
         <LoadingError
-          size="large"
+          size={lg ? "large" : "small"}
           error={intl("upcoming-lessons.loading-error")}
           retry={refetch}
         />
@@ -85,7 +90,7 @@ export const Content: React.FC<{
 
   return (
     <div>
-      <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-3 gap-y-6">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(265px,1fr))] gap-x-2 md:gap-x-3 gap-y-4 md:gap-y-6">
         {list.map((item) => {
           const tutor = item.members.find(
             (member) =>
