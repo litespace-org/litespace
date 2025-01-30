@@ -387,7 +387,7 @@ export function Textarea<T extends FieldValues>({
       rules={rules}
       render={({ field, formState }) => (
         <BaseTextarea
-          error={!!formState.errors[name]?.message}
+          state={formState.errors[name]?.message ? "error" : "success"}
           helper={(formState.errors[name]?.message as string) || props.helper}
           {...field}
           {...props}

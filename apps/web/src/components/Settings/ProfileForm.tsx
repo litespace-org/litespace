@@ -315,7 +315,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               value={form.watch("password.current")}
               control={form.control}
               helper={form.formState.errors.password?.current?.message}
-              error={!!form.formState.errors.password?.current?.message}
+              state={
+                form.formState.errors.password?.current?.message
+                  ? "error"
+                  : "success"
+              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
@@ -329,7 +333,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               value={form.watch("password.new")}
               control={form.control}
               helper={form.formState.errors.password?.new?.message}
-              error={!!form.formState.errors.password?.new?.message}
+              state={
+                form.formState.errors.password?.new?.message
+                  ? "error"
+                  : "success"
+              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
@@ -343,7 +351,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               value={form.watch("password.confirm")}
               control={form.control}
               helper={form.formState.errors.password?.confirm?.message}
-              error={!!form.formState.errors.password?.confirm?.message}
+              state={
+                form.formState.errors.password?.confirm?.message
+                  ? "error"
+                  : "success"
+              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: (value) => {
