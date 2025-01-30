@@ -1,4 +1,4 @@
-import { Loading } from "@litespace/ui/Loading";
+import { Loader, LoadingError } from "@litespace/ui/Loading";
 import React, { useCallback, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
@@ -9,8 +9,10 @@ import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { Route } from "@/types/routes";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TutorProfile: React.FC = () => {
+  const { lg } = useMediaQuery();
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
@@ -24,9 +26,28 @@ const TutorProfile: React.FC = () => {
 
   const tutor = useFindTutorInfo(id);
 
-  if (tutor.isLoading) return <Loading className="h-[40vh]" />;
+  if (tutor.isLoading)
+    return (
+      <div className="mt-[15vh]">
+        <Loader
+          size={lg ? "medium" : "small"}
+          text={intl("tutor-profile.loading")}
+        />
+        ;
+      </div>
+    );
 
-  // TODO: Need to implement error state
+  if (tutor.isError)
+    return (
+      <div className="mt-[15vh]">
+        <LoadingError
+          size={lg ? "medium" : "small"}
+          error={intl("tutor-profile.error")}
+          retry={tutor.refetch}
+        />
+      </div>
+    );
+
   if (!tutor.data || tutor.error) return null;
   return (
     <div className="w-full max-w-screen-3xl p-6 mx-auto mb-12 lg:max-w-screen-3xl">
