@@ -12,7 +12,7 @@ import { faker as fakeren } from "@faker-js/faker/locale/en";
 type Component = typeof Input;
 
 const meta: Meta<Component> = {
-  title: "Input",
+  title: "Input/V1",
   component: Input,
   parameters: { layout: "centered" },
   decorators: [
