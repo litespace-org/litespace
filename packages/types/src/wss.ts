@@ -1,4 +1,4 @@
-import { IMessage, IRule, ISession, ITutor, Server } from "@/index";
+import { IMessage, ISession, ITutor, Server } from "@/index";
 
 /**
  * Events emitted by the client
@@ -56,10 +56,6 @@ export enum ServerEvent {
 
   LessonBooked = "LessonBooked",
   LessonCanceled = "LessonCanceled",
-
-  RuleDeleted = "RuleDeleted",
-  RuleUpdated = "RuleUpdated",
-  RuleCreated = "RuleCreated",
 
   InvoiceUpdated = "InvoiceUpdated",
   InvoiceDeleted = "InvoiceDeleted",
@@ -166,17 +162,12 @@ export type ServerEventsMap = {
   [ServerEvent.InvoiceDeleted]: EventCallback<void>;
   [ServerEvent.LessonBooked]: EventCallback<{
     tutor: number;
-    rule: number;
-    events: IRule.RuleEvent[];
+    lessonId: number;
   }>;
   [ServerEvent.LessonCanceled]: EventCallback<{
     tutor: number;
-    rule: number;
-    events: IRule.RuleEvent[];
+    lessonId: number;
   }>;
-  [ServerEvent.RuleCreated]: EventCallback<void>;
-  [ServerEvent.RuleUpdated]: EventCallback<void>;
-  [ServerEvent.RuleDeleted]: EventCallback<void>;
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
   [ServerEvent.UserTyping]: EventCallback<{ roomId: number; userId: number }>;

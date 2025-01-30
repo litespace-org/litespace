@@ -5,7 +5,6 @@ import {
   lessons,
   messages,
   rooms,
-  rules,
   topics,
   users,
   ratings,
@@ -15,7 +14,6 @@ import {
 import {
   IInterview,
   ILesson,
-  IRule,
   ITopic,
   IUser,
   IRating,
@@ -41,7 +39,6 @@ export async function flush() {
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
     await interviews.builder(tx).del();
-    await rules.builder(tx).del();
     await ratings.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
@@ -79,30 +76,6 @@ export async function user(
   });
 }
 
-export async function rule(payload?: Partial<IRule.CreatePayload>) {
-  const start = dayjs.utc(payload?.start || faker.date.future());
-  const end = start.add(faker.number.int(8), "hours");
-  const frequency =
-    payload?.frequency ||
-    sample([
-      IRule.Frequency.Daily,
-      IRule.Frequency.Weekly,
-      IRule.Frequency.Monthly,
-    ]);
-
-  return await rules.create({
-    duration: payload?.duration || duration(),
-    start: start.toISOString(),
-    end: end.toISOString(),
-    frequency,
-    time: payload?.time || time(),
-    title: faker.word.adjective(),
-    userId: await or.tutorId(payload?.userId),
-    monthday: payload?.monthday,
-    weekdays: payload?.weekdays,
-  });
-}
-
 export async function slot(payload?: Partial<IAvailabilitySlot.CreatePayload>) {
   const start = dayjs.utc(payload?.start || faker.date.future());
   const end = start.add(faker.number.int(8), "hours");
@@ -135,10 +108,6 @@ const or = {
   },
   async sessionId(type: ISession.Type): Promise<ISession.Id> {
     return `${type}:${randomUUID()}`;
-  },
-  async ruleId(id?: number): Promise<number> {
-    if (!id) return await rule().then((rule) => rule.id);
-    return id;
   },
   async roomId(roomId?: number): Promise<number> {
     if (!roomId) return await makeRoom();
@@ -178,7 +147,6 @@ export async function lesson(
             : payload?.start || faker.date.soon().toISOString(),
       duration: payload?.duration || sample([15, 30]),
       price: payload?.price || faker.number.int(500),
-      rule: await or.ruleId(payload?.rule),
       slot: await or.slotId(payload?.slot),
       student,
       tutor,
@@ -201,7 +169,6 @@ export async function interview(payload: Partial<IInterview.CreatePayload>) {
     interviewer: await or.tutorManagerId(payload.interviewer),
     interviewee: await or.tutorId(payload.interviewee),
     session: await or.sessionId("interview"),
-    rule: await or.ruleId(payload.rule),
     slot: await or.slotId(payload.slot),
     start: or.start(payload.start),
   });
@@ -253,24 +220,24 @@ export type MakeLessonsReturn = Array<{
 async function makeLessons({
   tutor,
   students,
-  rule,
   future,
   past,
   canceled,
   duration,
   price,
+  slot,
 }: {
   tutor: number;
   students: number[];
   future: number[];
   past: number[];
-  rule: number;
   duration?: ILesson.Duration;
   price?: number;
   canceled: {
     future: number[];
     past: number[];
   };
+  slot: number;
 }): Promise<MakeLessonsReturn> {
   const result: MakeLessonsReturn = [];
 
@@ -283,9 +250,9 @@ async function makeLessons({
 
     const create = async (start: string) => {
       return await lesson({
+        slot,
         tutor,
         student,
-        rule,
         start,
         duration,
         price,
@@ -473,7 +440,6 @@ export default {
   lesson,
   flush,
   topic,
-  rule,
   slot,
   room: makeRoom,
   rating: makeRating,

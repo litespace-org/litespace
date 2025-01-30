@@ -14,7 +14,6 @@ export * as IToken from "@/token";
 export * as IFilter from "@/filter";
 export * as IInterview from "@/interview";
 export * as Wss from "@/wss";
-export * as IRule from "@/rule";
 export * as IAvailabilitySlot from "@/availabilitySlot";
 export * as IDate from "@/date";
 export * as ILesson from "@/lesson";

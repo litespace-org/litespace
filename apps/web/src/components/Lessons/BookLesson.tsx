@@ -1,15 +1,14 @@
-import { useFindUserRulesWithSlots } from "@litespace/headless/rule";
 import { BookLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson } from "@litespace/headless/lessons";
-import dayjs from "dayjs";
-import { useCallback, useMemo } from "react";
+import { useCallback } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/utils/utils";
+import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 
 const BookLesson = ({
   open,
@@ -23,16 +22,7 @@ const BookLesson = ({
   const intl = useFormatMessage();
   const toast = useToast();
   const queryClient = useQueryClient();
-  const rulesQuery = useFindUserRulesWithSlots(
-    useMemo(
-      () => ({
-        id: tutorId,
-        after: dayjs().utc().toISOString(),
-        before: dayjs.utc().add(60, "days").toISOString(),
-      }),
-      [tutorId]
-    )
-  );
+  const slotsQuery = useFindAvailabilitySlots({ userId: tutorId });
   const tutor = useFindTutorInfo(tutorId);
 
   const onSuccess = useCallback(() => {
@@ -45,7 +35,7 @@ const BookLesson = ({
 
     queryClient.invalidateQueries({
       queryKey: [
-        QueryKey.FindRulesWithSlots,
+        QueryKey.FindAvailabilitySlots,
         QueryKey.FindLesson,
         QueryKey.FindTutors,
       ],
@@ -63,17 +53,14 @@ const BookLesson = ({
 
   const onBook = useCallback(
     ({
-      ruleId,
       slotId,
       start,
       duration,
     }: {
-      ruleId: number;
       slotId: number;
       start: string;
       duration: ILesson.Duration;
-    }) =>
-      bookLessonMutation.mutate({ tutorId, ruleId, slotId, start, duration }),
+    }) => bookLessonMutation.mutate({ tutorId, slotId, start, duration }),
     [bookLessonMutation, tutorId]
   );
 
@@ -85,9 +72,8 @@ const BookLesson = ({
       open={open}
       close={close}
       confirmationLoading={bookLessonMutation.isPending}
-      loading={rulesQuery.isLoading || tutor.isLoading || tutor.isFetching}
-      rules={rulesQuery.data?.rules || []}
-      slots={rulesQuery.data?.slots || []}
+      loading={slotsQuery.isLoading || tutor.isLoading || tutor.isFetching}
+      slots={slotsQuery.data?.slots.list || []}
       notice={orNull(tutor.data?.notice)}
       onBook={onBook}
     />

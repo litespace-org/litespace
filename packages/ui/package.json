@@ -79,7 +79,6 @@
     "./hooks/datetime": "./dist/hooks/datetime.js",
     "./hooks/common": "./dist/hooks/common.js",
     "./hooks/keys": "./dist/hooks/keys.js",
-    "./hooks/rule": "./dist/hooks/rule.js",
     "./hooks/media": "./dist/hooks/media.js",
     "./hooks/theme": "./dist/hooks/theme.js",
     "./hooks/user": "./dist/hooks/user.js",

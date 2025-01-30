@@ -8,7 +8,6 @@ import {
   weekday,
   time,
   date,
-  repeat,
   url,
   string,
   subscriptionPeriod,
@@ -58,7 +57,6 @@ const slot = {
     weekday,
     time: zod.object({ start: time, end: time }),
     date: zod.object({ start: date, end: zod.optional(date) }),
-    repeat,
   }),
   update: {
     params: zod.object({ id }),
