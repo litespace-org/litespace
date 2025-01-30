@@ -286,6 +286,7 @@ export default {
       "dialog-confirm": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "lesson-event-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "lesson-upcoming-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.2)",
+      "mobile-lesson-upcoming-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       toast:
         "0px 16px 24px 0px rgba(0, 0, 0, 0.10), 0px 6px 30px 0px rgba(0, 0, 0, 0.10), 0px 8px 10px 0px rgba(0, 0, 0, 0.15)",
       "unread-count": "0px 4px 15px 0px rgba(29, 124, 78, 0.2)",
@@ -304,6 +305,7 @@ export default {
       "plan-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.2)",
       "plan-card-label": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "alert-circle": "0px 4px 15px 0px rgba(0, 0, 0, 0.1)",
+      header: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
     },
   },
   plugins: [
