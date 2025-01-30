@@ -1,8 +1,8 @@
-import React from "react";
-import { useTutors } from "@litespace/headless/tutor";
-import Content from "@/components/Tutors/Content";
 import PageTitle from "@/components/Common/PageTitle";
+import Content from "@/components/Tutors/Content";
+import { useTutors } from "@litespace/headless/tutor";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import React from "react";
 
 const Tutors: React.FC = () => {
   const intl = useFormatMessage();
@@ -23,6 +23,7 @@ const Tutors: React.FC = () => {
         error={tutors.query.isError}
         more={tutors.more}
         hasMore={tutors.query.hasNextPage && !tutors.query.isPending}
+        refetch={tutors.query.refetch}
       />
     </div>
   );

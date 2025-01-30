@@ -96,6 +96,8 @@
   "student-dashboard.overview.title": "نظرة عامة",
   "student-dashboard.past-lessons.title": "الدروس السابقة",
   "tutors.title": "كل المعلمين",
+  "tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
+  "tutors.error": " عذرًا، حدث خطأ أثناء تحميل بيانات المعلمين، برجاء المحاولة مرة أخرى",
   "tutors.card.book-button.label": "احجز الآن",
   "tutors.card.profile-button.label": "عرض الملف",
   "tutors.card.label.students": "الطلاب",
