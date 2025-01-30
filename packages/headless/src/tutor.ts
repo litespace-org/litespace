@@ -6,9 +6,9 @@ import {
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
-import { IInterview, IRule, ITutor, IUser, Void } from "@litespace/types";
+import { IInterview, ITutor, IUser, Void } from "@litespace/types";
 import { MutationKey, QueryKey } from "@/constants";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import { useInfinitePaginationQuery } from "@/query";
 
@@ -75,33 +75,6 @@ export function useFindTutorActivityScore(
     queryKey: [QueryKey.FindTutorActivity, id],
     enabled: !!id,
     retry: false,
-  });
-}
-
-export function useFindUnpackedTutorRules({
-  interviewer,
-  start,
-  end,
-}: {
-  interviewer: IUser.Self | undefined;
-  start: Dayjs;
-  end: Dayjs;
-}): UseQueryResult<IRule.FindUnpackedUserRulesResponse | undefined, Error> {
-  const atlas = useAtlas();
-
-  const findUnpackedUserRoles = useCallback(async () => {
-    if (!interviewer) return;
-    return atlas.rule.findUnpackedUserRules(
-      interviewer.id,
-      start.utc().format("YYYY-MM-DD"),
-      end.utc().format("YYYY-MM-DD")
-    );
-  }, [atlas.rule, end, interviewer, start]);
-
-  return useQuery({
-    queryFn: findUnpackedUserRoles,
-    queryKey: [QueryKey.FindInterviewSlots],
-    enabled: !!interviewer,
   });
 }
 

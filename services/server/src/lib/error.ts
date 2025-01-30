@@ -41,13 +41,6 @@ export const emailAlreadyVerified = () =>
 export const wrongPassword = () =>
   error(ApiError.WrongPassword, "Wrong password, please try again", 400);
 
-export const contradictingRules = () =>
-  error(
-    ApiError.ContradictingRules,
-    "Incomding rule is contradicting with existing ones",
-    400
-  );
-
 export const interviewAlreadySigned = () =>
   error(ApiError.InterviewAlreadySigned, "Interview is already signed", 400);
 
@@ -67,7 +60,6 @@ export const already = {
 export const notfound = {
   base: () => error(ApiError.NotFound, "Resource not found", 404),
   user: () => error(ApiError.UserNotFound, "User not found", 404),
-  rule: () => error(ApiError.RuleNotFound, "Rule not found", 404),
   slot: () => error(ApiError.SlotNotFound, "Slot not found", 404),
   tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
   student: () => error(ApiError.StudentNotFound, "Student not found", 404),

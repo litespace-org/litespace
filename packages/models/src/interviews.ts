@@ -20,7 +20,6 @@ export class Interviews {
     interviewee_id: this.column("interviewee_id"),
     interviewer_feedback: this.column("interviewer_feedback"),
     interviewee_feedback: this.column("interviewee_feedback"),
-    rule_id: this.column("rule_id"),
     slot_id: this.column("slot_id"),
     session_id: this.column("session_id"),
     note: this.column("note"),
@@ -44,7 +43,6 @@ export class Interviews {
         interviewer_id: payload.interviewer,
         interviewee_id: payload.interviewee,
         session_id: payload.session,
-        rule_id: payload.rule,
         slot_id: payload.slot,
         created_at: now,
         updated_at: now,
@@ -136,10 +134,6 @@ export class Interviews {
     return await this.findManyBy("interviewer_id", id);
   }
 
-  async findByRuleId(id: number): Promise<IInterview.Self[]> {
-    return await this.findManyBy("rule_id", id);
-  }
-
   async findBySlotId(id: number): Promise<IInterview.Self[]> {
     return await this.findManyBy("slot_id", id);
   }
@@ -152,7 +146,6 @@ export class Interviews {
     users,
     page,
     size,
-    rules = [],
     slots = [],
     cancelled,
     tx,
@@ -163,7 +156,6 @@ export class Interviews {
     tx?: Knex.Transaction;
     signed?: boolean;
     signers?: number[];
-    rules?: number[];
     /**
      * slots ids to be included in the query result
      */
@@ -194,8 +186,6 @@ export class Interviews {
     if (signers && !isEmpty(signers))
       baseBuilder.whereIn(this.column("signer"), signers);
 
-    if (!isEmpty(rules)) baseBuilder.whereIn(this.column("rule_id"), rules);
-
     if (!isEmpty(slots)) baseBuilder.whereIn(this.column("slot_id"), slots);
 
     if (cancelled === true)
@@ -219,7 +209,6 @@ export class Interviews {
         self: row.id,
         interviewer: row.interviewer_id,
         interviewee: row.interviewee_id,
-        rule: row.rule_id,
         slot: row.slot_id,
         session: row.session_id,
       },

@@ -72,23 +72,6 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMESTAMP", notNull: true },
   });
 
-  pgm.createTable("rules", {
-    id: { type: "SERIAL", primaryKey: true, notNull: true },
-    user_id: { type: "SERIAL", notNull: true, references: "users(id)" },
-    title: { type: "VARCHAR(255)", notNull: true },
-    frequency: { type: "SMALLINT", notNull: true },
-    start: { type: "TIMESTAMP", notNull: true },
-    end: { type: "TIMESTAMP", notNull: true },
-    time: { type: "CHAR(5)", notNull: true },
-    duration: { type: "SMALLINT", notNull: true },
-    weekdays: { type: "JSONB", notNull: true, default: "[]" },
-    monthday: { type: "SMALLINT" },
-    activated: { type: "BOOLEAN", notNull: true, default: true },
-    deleted: { type: "BOOLEAN", notNull: true, default: false },
-    created_at: { type: "TIMESTAMP", notNull: true },
-    updated_at: { type: "TIMESTAMP", notNull: true },
-  });
-
   pgm.createTable("availability_slots", {
     id: { type: "SERIAL", primaryKey: true, notNull: true },
     user_id: { type: "INT", notNull: true, references: "users(id)" },
@@ -104,7 +87,6 @@ exports.up = (pgm) => {
     start: { type: "TIMESTAMP", notNull: true },
     duration: { type: "SMALLINT", notNull: true },
     price: { type: "INT", notNull: true },
-    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     slot_id: {
       type: "SERIAL",
       references: "availability_slots(id)",
@@ -130,7 +112,6 @@ exports.up = (pgm) => {
     interviewer_feedback: { type: "TEXT", default: null },
     interviewee_feedback: { type: "TEXT", default: null },
     session_id: { type: "TEXT", notNull: true, primaryKey: true },
-    rule_id: { type: "SERIAL", references: "rules(id)", notNull: true },
     slot_id: {
       type: "SERIAL",
       references: "availability_slots(id)",
@@ -336,7 +317,6 @@ exports.up = (pgm) => {
 
   // indexes
   pgm.createIndex("lessons", "id");
-  pgm.createIndex("rules", "id");
   pgm.createIndex("availability_slots", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
@@ -373,7 +353,6 @@ exports.down = (pgm) => {
   pgm.dropIndex("gifts", "id", { ifExists: true });
   pgm.dropIndex("ratings", "id", { ifExists: true });
   pgm.dropIndex("lessons", "id", { ifExists: true });
-  pgm.dropIndex("rules", "id", { ifExists: true });
   pgm.dropIndex("tutors", "id", { ifExists: true });
   pgm.dropIndex("users", "id", { ifExists: true });
 
@@ -396,7 +375,6 @@ exports.down = (pgm) => {
   pgm.dropTable("interviews", { ifExists: true });
   pgm.dropTable("lesson_members", { ifExists: true });
   pgm.dropTable("lessons", { ifExists: true });
-  pgm.dropTable("rules", { ifExists: true });
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("availability_slots", { ifExists: true });
   pgm.dropTable("users", { ifExists: true, cascade: true });

@@ -21,7 +21,6 @@ export type Self = {
      * The interviewee id (the id of the tutor)
      */
     interviewee: number;
-    rule: number;
     slot: number;
     session: ISession.Id;
   };
@@ -52,7 +51,6 @@ export type Row = {
   interviewee_id: number;
   interviewer_feedback: string | null;
   interviewee_feedback: string | null;
-  rule_id: number;
   slot_id: number;
   session_id: ISession.Id;
   note: string | null;
@@ -71,7 +69,6 @@ export type CreatePayload = {
    */
   start: string;
   session: ISession.Id;
-  rule: number;
   slot: number;
   interviewer: number;
   interviewee: number;
@@ -83,7 +80,6 @@ export type CreateApiPayload = {
    * ISO date (UTC)
    */
   start: string;
-  ruleId: number;
   slotId: number;
 };
 

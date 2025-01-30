@@ -5,7 +5,6 @@ export type Row = {
   start: Date;
   duration: number;
   price: number;
-  rule_id: number;
   slot_id: number;
   session_id: ISession.Id;
   canceled_by: number | null;
@@ -30,7 +29,6 @@ export type Self = {
    * Example: 10.01 EGP is represented as 1001.
    */
   price: number;
-  ruleId: number;
   slotId: number;
   sessionId: ISession.Id;
   /**
@@ -92,7 +90,6 @@ export type CreatePayload = {
   duration: number;
   tutor: number;
   student: number;
-  rule: number;
   slot: number;
   session: ISession.Id;
   /**
@@ -103,7 +100,6 @@ export type CreatePayload = {
 
 export type CreateApiPayload = {
   tutorId: number;
-  ruleId: number;
   slotId: number;
   start: string;
   duration: Duration;

@@ -33,7 +33,7 @@ const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
         size="medium"
         text={
           tutorName
-            ? intl("book-lesson.loading-rules", { tutor: tutorName })
+            ? intl("book-lesson.loading-slots", { tutor: tutorName })
             : undefined
         }
       />
@@ -269,10 +269,10 @@ export const BookLessonDialog: React.FC<{
                 slots={allSlots}
                 start={lessonDetails.start}
                 slotId={lessonDetails.slotId}
-                select={(slot: IAvailabilitySlot.SubSlot) => {
+                select={(slotId: number, start: string) => {
                   setLessonDetails({
-                    slotId: slot.parent,
-                    start: slot.start,
+                    slotId,
+                    start,
                   });
                 }}
               />

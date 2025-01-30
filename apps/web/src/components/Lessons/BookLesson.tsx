@@ -1,7 +1,6 @@
 import { BookLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson } from "@litespace/headless/lessons";
-import dayjs from "dayjs";
 import { useCallback, useMemo } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -11,6 +10,7 @@ import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots"
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import dayjs from "@/lib/dayjs";
 
 const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
   const intl = useFormatMessage();
@@ -42,7 +42,7 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
 
     queryClient.invalidateQueries({
       queryKey: [
-        QueryKey.FindRulesWithSlots,
+        QueryKey.FindAvailabilitySlots,
         QueryKey.FindLesson,
         QueryKey.FindTutors,
       ],
@@ -80,7 +80,6 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
         slotId,
         duration,
         start,
-        ruleId: 5, // TODO: Remove it when removed from the backend
       }),
     [tutorId, bookLessonMutation]
   );

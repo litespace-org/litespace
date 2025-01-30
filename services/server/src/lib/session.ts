@@ -1,65 +1,11 @@
-import { unpackRules } from "@litespace/utils/rule";
-import { IInterview, ILesson, IRule, ISession } from "@litespace/types";
-import { concat, isEmpty } from "lodash";
-import dayjs from "@/lib/dayjs";
-import { platformConfig } from "@/constants";
+import { IInterview, ISession } from "@litespace/types";
+import { isEmpty } from "lodash";
 import { interviews, lessons } from "@litespace/models";
 import { getSessionType } from "@litespace/utils";
 
 // todo: impl: each tutor can have interview each 3 months.
 export function canBeInterviewed(sessions: IInterview.Self[]): boolean {
   if (isEmpty(sessions)) return true;
-  return false;
-}
-
-export function canBook({
-  rule,
-  lessons = [],
-  interviews = [],
-  slot,
-}: {
-  rule: IRule.Self;
-  lessons?: ILesson.Self[];
-  interviews?: IInterview.Self[];
-  slot: { start: string; duration: number };
-}) {
-  const start = dayjs.utc(slot.start).startOf("day");
-  const end = start.add(1, "day");
-  const lessonSlots: IRule.Slot[] = lessons.map((lesson) => ({
-    ruleId: lesson.ruleId,
-    start: lesson.start,
-    duration: lesson.duration,
-  }));
-  const interviewSlots: IRule.Slot[] = interviews.map((interview) => ({
-    ruleId: interview.ids.rule,
-    start: interview.start,
-    duration: platformConfig.interviewDuration,
-  }));
-  const unpackedRules = unpackRules({
-    rules: [rule],
-    slots: concat(lessonSlots, interviewSlots),
-    start: start.toISOString(),
-    end: end.toISOString(),
-  });
-
-  if (isEmpty(unpackedRules)) return false;
-
-  const slotStart = dayjs.utc(slot.start);
-  const slotEnd = slotStart.add(slot.duration, "minutes");
-
-  /**
-   * Check if the incoming slot can fit in one of the unpacked rules.
-   */
-  for (const unpackedRule of unpackedRules) {
-    const after =
-      slotStart.isSame(unpackedRule.start) ||
-      slotStart.isAfter(unpackedRule.start);
-    const before =
-      slotEnd.isSame(unpackedRule.end) || slotEnd.isBefore(unpackedRule.end);
-    const between = after && before;
-    if (between) return true;
-  }
-
   return false;
 }
 

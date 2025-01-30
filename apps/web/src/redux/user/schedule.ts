@@ -1,16 +1,16 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/redux/store";
-import { IRule } from "@litespace/types";
 import { fetcher, initial, LoadableState } from "@/redux/fetcher";
 import { createThunk } from "@/redux/thunk";
+import { IAvailabilitySlot } from "@litespace/types";
 
-type State = LoadableState<IRule.Self[]>;
+type State = LoadableState<IAvailabilitySlot.Self[]>;
 
 const initialState: State = initial();
 
-export const findUserRules = createThunk(
-  "user/schedule/rules",
-  async (): Promise<IRule.Self[]> => {
+export const findUserSlots = createThunk(
+  "user/schedule/slots",
+  async (): Promise<IAvailabilitySlot.Self[]> => {
     return [];
   },
   (state) => state.user.schedule
@@ -20,21 +20,24 @@ const slice = createSlice({
   name: "user/schedule",
   initialState,
   reducers: {
-    resetUserRules: () => initialState,
-    setUserRules: (state, { payload }: PayloadAction<IRule.Self[]>) => {
+    resetUserSlots: () => initialState,
+    setUserSlots: (
+      state,
+      { payload }: PayloadAction<IAvailabilitySlot.Self[]>
+    ) => {
       state.value = payload;
     },
   },
   extraReducers(builder) {
-    fetcher(builder, findUserRules);
+    fetcher(builder, findUserSlots);
   },
 });
 
-export const userRulesSelector = {
+export const userSlotsSelector = {
   full: (state: RootState) => state.user.schedule,
   value: (state: RootState) => state.user.schedule.value,
 };
 
-export const { resetUserRules, setUserRules } = slice.actions;
+export const { resetUserSlots, setUserSlots } = slice.actions;
 
 export default slice.reducer;

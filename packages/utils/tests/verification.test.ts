@@ -14,9 +14,6 @@ import {
   isValidPlanWeeklyMinutes,
   isValidRatingText,
   isValidRatingValue,
-  isValidRuleDuration,
-  isValidRuleBounds,
-  isValidRuleTitle,
   isValidTutorAbout,
   isValidTutorBio,
   isValidTutorNotice,
@@ -31,7 +28,6 @@ import {
   isValidPhoneNumber,
 } from "@/verification";
 import { FieldError } from "@litespace/types";
-import { dayjs } from "@/dayjs";
 import { nameof } from "@/utils";
 
 describe("email validation", () => {
@@ -186,81 +182,6 @@ describe("tutor notice validation", () => {
   });
   it("should reject notice more than 24 hours", () => {
     expect(isValidTutorNotice(1441)).toBe(FieldError.MaxNoticeExceeded);
-  });
-});
-
-describe("rule title validation", () => {
-  it("should accept title in range 5-255 chars", () => {
-    expect(isValidRuleTitle("جدولي الإساسي")).toBe(true);
-    expect(isValidRuleTitle("جدول نهاية الاسبوع 1")).toBe(true);
-  });
-
-  it("should reject title less than 5 char", () => {
-    expect(isValidRuleTitle("rule")).toBe(FieldError.ShortRuleTitle);
-  });
-
-  it("should reject title exceeding 255 chars", () => {
-    const fakeRuleTitle = `${faker.lorem.sentences({
-      min: 300,
-      max: 350,
-    })}`;
-
-    expect(isValidRuleTitle(fakeRuleTitle)).toBe(FieldError.LongRuleTitle);
-  });
-});
-
-describe("rule start validation", () => {
-  it("should accept a rule start ISO valid, not in the past and not after the rule end", () => {
-    expect(
-      isValidRuleBounds(
-        dayjs.utc().add(1, "hour").toISOString(),
-        dayjs.utc().add(2, "day").toISOString()
-      )
-    ).toBe(true);
-  });
-
-  it("should reject a rule with an ISO invalid start date", () => {
-    expect(isValidRuleBounds("invalid-date", dayjs().utc().toISOString())).toBe(
-      FieldError.InvalidRuleStartFormat
-    );
-    expect(isValidRuleBounds(dayjs.utc().toISOString(), "invalid-date")).toBe(
-      FieldError.InvalidRuleEndFormat
-    );
-  });
-
-  it("should reject a rule which has start date on the past", () => {
-    expect(isValidRuleBounds("10/20/2024", "12/20/2025")).toBe(
-      FieldError.RuleStartDatePassed
-    );
-  });
-
-  it("should reject a rule which has start date after the end date", () => {
-    expect(isValidRuleBounds("10/29/2024", "10/27/2024")).toBe(
-      FieldError.RuleStartAfterEnd
-    );
-  });
-
-  it("should reject a rule which has less than 24 hours difference between start and end", () => {
-    expect(
-      isValidRuleBounds(
-        dayjs.utc().add(1, "hour").toISOString(),
-        dayjs.utc().add(23, "hours").toISOString()
-      )
-    ).toBe(FieldError.InvalidRuleDatePeriod);
-  });
-});
-
-describe("rule duration validation", () => {
-  it("should accept a rule duration between 0 and 8 hours", () => {
-    expect(isValidRuleDuration(0)).toBe(true);
-    expect(isValidRuleDuration(120)).toBe(true);
-    expect(isValidRuleDuration(480)).toBe(true);
-  });
-  it("should reject a rule duration with minus number", () => {
-    expect(isValidRuleDuration(-1)).toBe(FieldError.InvalidRuleDuration);
-  });
-  it("should reject a rule duration more than 8 hours", () => {
-    expect(isValidRuleDuration(961)).toBe(FieldError.MaxRuleDuratoinExceeded);
   });
 });
 
