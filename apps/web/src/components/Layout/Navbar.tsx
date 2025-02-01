@@ -7,10 +7,13 @@ import { Route } from "@/types/routes";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Crown from "@litespace/assets/Crown";
-import { IUser } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
 import { Button, ButtonSize } from "@litespace/ui/Button";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import Menu from "@litespace/assets/Menu";
 
-const Navbar: React.FC = () => {
+const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
+  const { md, lg } = useMediaQuery();
   const intl = useFormatMessage();
   const { user } = useUserContext();
   const location = useLocation();
@@ -19,12 +22,13 @@ const Navbar: React.FC = () => {
   return (
     <div className="shadow-app-navbar w-full z-navbar">
       <div
-        className={cn("flex justify-between gap-8 items-center p-6", {
+        className={cn("flex justify-between gap-8 items-center py-6 px-4", {
           "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
         })}
       >
         {user.role === IUser.Role.Student &&
-        location.pathname !== Route.Subscription ? (
+        location.pathname !== Route.Subscription &&
+        lg ? (
           <Link to={Route.Subscription}>
             <Button
               size={ButtonSize.Large}
@@ -41,11 +45,19 @@ const Navbar: React.FC = () => {
             </Button>
           </Link>
         ) : null}
+
+        {!lg ? (
+          <div onClick={toggleSidebar}>
+            <Menu width={24} height={24} />
+          </div>
+        ) : null}
+
         <ProfileInfo
           imageUrl={user.image}
           name={user.name}
           email={user.email}
           id={user.id}
+          isLargeScreen={md}
         />
       </div>
     </div>
