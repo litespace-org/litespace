@@ -125,6 +125,9 @@ const PlanForm: React.FC<{
     },
     [createPlan, plan, updatePlan]
   );
+
+  const errors = form.formState.errors;
+
   return (
     <Dialog
       close={onClose}
@@ -151,6 +154,8 @@ const PlanForm: React.FC<{
                 name="alias"
                 value={form.watch("alias")}
                 rules={aliasRules}
+                state={errors.alias ? "error" : undefined}
+                helper={errors.alias?.message}
               />
             }
           />

@@ -7,4 +7,4 @@ export type InputAction = {
   className?: string;
 };
 
-export type InputSize = "large" | "medium" | "small";
+export type InputSize = "small" | "medium" | "large";

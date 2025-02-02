@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import React from "react";
+import React, { useState } from "react";
 import { Textarea } from "@/components/Textarea/Textarea";
 import { faker } from "@faker-js/faker/locale/ar";
 
@@ -22,6 +22,17 @@ export const PrimaryInteractive: StoryObj<Component> = {
   args: {
     label: faker.lorem.words(2),
     placeholder: faker.lorem.words(2),
+    maxAllowedCharacters: 180,
+  },
+  render(props) {
+    const [value, setValue] = useState<string>("");
+    return (
+      <Textarea
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 

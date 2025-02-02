@@ -49,7 +49,7 @@
   "tutor.rate.delete.success": "تم إزالة التقييم بنجاح",
   "tutor.rate.delete.error": "عذرا، حدث خطأ أثناء إزالة التقييم، برجاء المحاولة مرة أخرى",
   "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",
-  "text-area.validate.maxAllowed": "لقد وصلت للحد الاقصي من الحروف المسموح بها داخل التعليق.",
+  "text-area.validate.max-allowed": "لقد وصلت للحد الاقصي من الحروف المسموح بها داخل التعليق.",
   "tutor.book": "حجز حصة",
   "tutor.rating.rate": "رأيك في {tutor}",
   "tutor.rating.edit": "تعديل التعليق",

@@ -88,16 +88,8 @@ export function Input<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
-        return (
-          <BaseInput
-            {...field}
-            {...props}
-            helper={message}
-            state={message ? "error" : "success"}
-          />
-        );
+      render={({ field }) => {
+        return <BaseInput {...field} {...props} />;
       }}
     />
   );
@@ -120,12 +112,9 @@ export function Password<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
+      render={({ field }) => {
         return (
           <BaseInput
-            helper={message}
-            state={message ? "error" : "success"}
             placeholder="******************"
             autoComplete="off"
             type={hidden ? "password" : "text"}
@@ -385,14 +374,7 @@ export function Textarea<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => (
-        <BaseTextarea
-          state={formState.errors[name]?.message ? "error" : "success"}
-          helper={(formState.errors[name]?.message as string) || props.helper}
-          {...field}
-          {...props}
-        />
-      )}
+      render={({ field }) => <BaseTextarea {...field} {...props} />}
     />
   );
 }

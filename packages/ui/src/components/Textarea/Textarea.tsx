@@ -57,11 +57,11 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           data-disabled={disabled}
           className={cn(
             // base
-            "tw-w-full tw-px-3 tw-py-[6px]",
+            "tw-w-full tw-py-[6px]",
             "tw-rounded-[6px] tw-border",
             "tw-flex tw-flex-col tw-gap-1 tw-bg-natural-50",
             // Focused
-            "focus-within:tw-border-brand-700 focus-within:tw-border-2",
+            "focus-within:tw-ring-1 focus-within:tw-ring-brand-700 focus-within:tw-border-brand-700",
             {
               // Default || Filled
               "tw-border-natural-300": !state && !disabled,
@@ -79,7 +79,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium",
+              "tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full tw-px-3",
               // Placeholder
               "placeholder:tw-text-natural-600",
               {
@@ -94,7 +94,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
             {...props}
           />
           {maxAllowedCharacters ? (
-            <div dir="ltr" className="tw-flex tw-flex-col tw-gap-1">
+            <div dir="ltr" className="tw-flex tw-flex-col tw-gap-1 tw-px-3">
               <hr
                 className={cn("group-focus-within:tw-border-brand-700", {
                   "tw-border-natural-200": disabled,
@@ -111,7 +111,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                     element="body"
                     className="tw-text-natural-950 tw-max-w-[296px]"
                   >
-                    {intl("text-area.validate.maxAllowed")}
+                    {intl("text-area.validate.max-allowed")}
                   </Typography>
                 }
               >
@@ -183,5 +183,9 @@ const framer = {
 export const Helper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return <motion.div {...framer}>{children}</motion.div>;
+  return (
+    <motion.span {...framer} className="tw-flex">
+      {children}
+    </motion.span>
+  );
 };

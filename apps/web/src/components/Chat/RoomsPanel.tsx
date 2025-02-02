@@ -79,7 +79,7 @@ const RoomsPanel: React.FC<{
             placeholder={intl("chat.search")}
             value={keyword.value}
             onChange={(e) => keyword.set(e.target.value)}
-            icon={Search}
+            icon={<Search width={16} height={16} />}
           />
         </div>
 

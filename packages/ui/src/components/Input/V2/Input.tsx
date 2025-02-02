@@ -12,11 +12,11 @@ export interface InputProps
   idleDir?: "rtl" | "ltr";
   type?: InputType;
   inputSize?: InputSize;
-  icon?: React.FC<{ className?: string }>;
+  icon?: React.ReactNode;
   endAction?: InputAction;
   state?: "error" | "success";
   label?: string;
-  helper?: string | null;
+  helper?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -30,7 +30,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       helper,
       inputSize = "large",
       idleDir = "rtl",
-      icon: Icon,
+      icon,
       endAction,
       className,
       ...props
@@ -70,7 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "tw-h-10": inputSize === "large",
             },
             // Focused
-            "focus-within:tw-border-brand-700 focus-within:tw-border-2",
+            "focus-within:tw-ring-1 focus-within:tw-ring-brand-700 focus-within:tw-border-brand-700",
             {
               // Default || Filled
               "tw-border-natural-300": !state && !disabled,
@@ -83,8 +83,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             }
           )}
         >
-          {Icon ? (
-            <button
+          {icon ? (
+            <div
               className={cn(
                 // Default
                 "tw-w-4 tw-h-4 tw-cursor-default [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
@@ -95,8 +95,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                   "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none"
               )}
             >
-              <Icon />
-            </button>
+              {icon}
+            </div>
           ) : null}
           <input
             dir={!value ? idleDir : "auto"}
@@ -104,7 +104,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-grow tw-bg-inherit focus-within:tw-outline-none tw-font-medium",
+              "tw-grow tw-bg-inherit focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full",
               // Placeholder
               "placeholder:tw-text-natural-600",
               {
@@ -127,7 +127,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 element="tiny-text"
                 weight="semibold"
                 className={cn("group-focus-within:tw-text-natural-600", {
-                  // Default || Filled
+                  // Default or filled
                   "tw-text-natural-600": !state && !disabled,
                   // Success
                   "tw-text-success-600": state === "success",
@@ -157,7 +157,11 @@ const framer = {
 export const Helper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return <motion.div {...framer}>{children}</motion.div>;
+  return (
+    <motion.div {...framer} className="tw-flex">
+      {children}
+    </motion.div>
+  );
 };
 
 const Actions: React.FC<{
@@ -165,7 +169,8 @@ const Actions: React.FC<{
   disabled?: boolean;
   filled?: boolean;
 }> = ({ action, disabled, filled }) => {
-  return action ? (
+  if (!action) return null;
+  return (
     <button
       key={action.id}
       onClick={action.onClick}
@@ -173,6 +178,7 @@ const Actions: React.FC<{
       className={cn(
         // Default
         "tw-w-4 tw-h-4 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+        "tw-outline-none focus:tw-ring-2 tw-ring-brand-700 tw-rounded-sm",
         // Filled
         filled && !disabled && "[&_*]:tw-stroke-natural-950",
         // Disabled
@@ -183,5 +189,5 @@ const Actions: React.FC<{
     >
       <action.Icon />
     </button>
-  ) : null;
+  );
 };

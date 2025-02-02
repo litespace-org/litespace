@@ -25,13 +25,14 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Primary: StoryObj<Component> = {
+export const Small: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
-    icon: Search,
+    icon: <Search />,
+    inputSize: "small",
     endAction: {
       Icon: X,
       id: 1,
@@ -50,14 +51,14 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
-export const Small: StoryObj<Component> = {
+export const Medium: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
     label: faker.lorem.words(2),
-    inputSize: "small",
+    inputSize: "medium",
     helper: faker.lorem.words(2),
-    icon: Search,
+    icon: <Search />,
     endAction: {
       Icon: X,
       id: 1,
@@ -83,7 +84,7 @@ export const Large: StoryObj<Component> = {
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
     inputSize: "large",
-    icon: Search,
+    icon: <Search />,
     endAction: {
       Icon: X,
       id: 1,
@@ -108,7 +109,7 @@ export const Filled: StoryObj<Component> = {
     placeholder: faker.internet.email(),
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
-    icon: Search,
+    icon: <Search />,
     endAction: {
       Icon: X,
       id: 1,
@@ -116,7 +117,50 @@ export const Filled: StoryObj<Component> = {
     },
   },
   render: (props) => {
-    const [value, setValue] = useState<string>("Hello, World!");
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
+  },
+};
+
+export const WithoutIcon: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
+  },
+};
+
+export const withoutEndAction: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
     return (
       <Input
         {...props}
@@ -134,7 +178,7 @@ export const Error: StoryObj<Component> = {
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
     state: "error",
-    icon: Search,
+    icon: <Search />,
     endAction: {
       Icon: X,
       id: 1,
@@ -142,7 +186,33 @@ export const Error: StoryObj<Component> = {
     },
   },
   render: (props) => {
-    const [value, setValue] = useState<string>("Error Value!");
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
+  },
+};
+
+export const Success: StoryObj<Component> = {
+  args: {
+    id: "name",
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    state: "success",
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
     return (
       <Input
         {...props}
@@ -160,7 +230,7 @@ export const Disabled: StoryObj<Component> = {
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
     disabled: true,
-    icon: Search,
+    icon: <Search />,
     endAction: {
       Icon: X,
       id: 1,
