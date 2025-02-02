@@ -1,6 +1,8 @@
 import Express from "express";
 import { IUser } from "@litespace/types";
 import db from "@fixtures/db";
+import { ApiContext } from "@/types/api";
+import { Server } from "socket.io";
 
 type MockRequest<Body = object, Params = object, Query = object> = {
   body?: Body;
@@ -64,4 +66,8 @@ export function mockApi<Body = object, Params = object, Query = object>(
       else return resolve(response.data);
     });
   };
+}
+
+export function mockApiContext(): ApiContext {
+  return { io: new Server() };
 }

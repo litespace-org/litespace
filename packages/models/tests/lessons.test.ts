@@ -851,4 +851,37 @@ describe("Lessons", () => {
       expect(first(studentsCount)?.count).to.eq(1);
     });
   });
+
+  describe(nameof(lessons.update), () => {
+    it("should successfully update lesson data", async () => {
+      const tutor = await fixtures.tutor();
+      const student = await fixtures.student();
+
+      const { lesson } = await fixtures.lesson({
+        tutor: tutor.id,
+        student: student.id,
+        duration: ILesson.Duration.Long,
+        timing: "past",
+        canceled: false,
+      });
+
+      const startDate = dayjs.utc().add(2, "days").toISOString();
+      await lessons.update(lesson.id, {
+        start: startDate,
+        duration: ILesson.Duration.Short,
+      });
+
+      const updated = await lessons.findById(lesson.id);
+
+      expect(updated).to.not.be.null;
+      expect(updated?.id).to.eq(lesson.id);
+      expect(updated?.duration).to.eq(ILesson.Duration.Short);
+      expect(dayjs(updated?.updatedAt).isAfter(lesson.updatedAt)).to.be.true;
+
+      expect(updated?.price).to.eq(lesson.price);
+      expect(updated?.slotId).to.eq(lesson.slotId);
+      expect(updated?.canceledAt).to.eq(lesson.canceledAt);
+      expect(updated?.canceledBy).to.eq(lesson.canceledBy);
+    });
+  });
 });

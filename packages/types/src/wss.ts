@@ -55,6 +55,7 @@ export enum ServerEvent {
   TutorUpdated = "TutorUpdated",
 
   LessonBooked = "LessonBooked",
+  LessonRebooked = "LessonRebooked",
   LessonCanceled = "LessonCanceled",
 
   InvoiceUpdated = "InvoiceUpdated",
@@ -162,11 +163,15 @@ export type ServerEventsMap = {
   [ServerEvent.InvoiceDeleted]: EventCallback<void>;
   [ServerEvent.LessonBooked]: EventCallback<{
     tutor: number;
-    lessonId: number;
+    lesson: number;
+  }>;
+  [ServerEvent.LessonRebooked]: EventCallback<{
+    tutor: number;
+    lesson: number;
   }>;
   [ServerEvent.LessonCanceled]: EventCallback<{
     tutor: number;
-    lessonId: number;
+    lesson: number;
   }>;
   [ServerEvent.TutorUpdated]: EventCallback<ITutor.FullTutor>;
   [ServerEvent.ServerStats]: EventCallback<Server.Stats>;
