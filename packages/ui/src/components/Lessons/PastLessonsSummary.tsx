@@ -10,7 +10,7 @@ import { Link } from "react-router-dom";
 import { isEmpty } from "lodash";
 import cn from "classnames";
 
-import EmptyLessons from "@litespace/assets/EmptyLesson2";
+import EmptyLessons from "@litespace/assets/EmptyLessons";
 import AddCalendarSVG from "@litespace/assets/CalendarAdd";
 import SendSVG from "@litespace/assets/Send2";
 import { Void } from "@litespace/types";
@@ -18,7 +18,6 @@ import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/utils";
 import { Tooltip } from "@/components/Tooltip";
 import { BasePastLessonProps } from "@/components/Lessons/types";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 export type Props = BasePastLessonProps & {
   /**
@@ -50,80 +49,56 @@ export const PastLessonsSummary: React.FC<Props> = ({
   loadingMore,
 }) => {
   const intl = useFormatMessage();
-  const mq = useMediaQuery();
-
-  if (loading)
-    return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-96 lg:tw-h-40">
-        <Loader
-          size={mq.sm ? "medium" : "small"}
-          text={
-            isTutor
-              ? intl("tutor-dashboard.past-lessons.loading")
-              : intl("student-dashboard.past-lessons.loading")
-          }
-        />
-      </div>
-    );
-
-  if (error && retry)
-    return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-96 lg:tw-h-40">
-        <LoadingError
-          size={mq.sm ? "medium" : "small"}
-          error={
-            isTutor
-              ? intl("tutor-dashboard.past-lessons.error")
-              : intl("student-dashboard.past-lessons.error")
-          }
-          retry={retry}
-        />
-      </div>
-    );
 
   return (
-    <div>
-      {isEmpty(lessons) ? (
-        <div
-          className={cn(
-            "tw-flex tw-flex-col-reverse tw-justify-center tw-items-center tw-mt-8",
-            isTutor ? "tw-flex-col-reverse tw-gap-6" : "tw-gap-6 sm:tw-gap-20"
-          )}
-        >
-          <div className="tw-flex tw-flex-col tw-items-center tw-gap-12 tw-w-full sm:tw-w-fit">
-            <Typography
-              element={{
-                default: "caption",
-                sm: isTutor ? "subtitle-1" : "h4",
-              }}
-              weight={{
-                default: "bold",
-                sm: "semibold",
-              }}
-              className="tw-text-natural-950"
-            >
-              {isTutor
-                ? intl("tutor-dashboard.past-lessons.empty")
-                : intl("student-dashboard.table.empty")}
-            </Typography>
-            {!isTutor ? (
-              <Link to={tutorsRoute} className="tw-w-full">
-                <Button size={ButtonSize.Small} className="tw-w-full">
-                  <Typography
-                    element={{
-                      default: "caption",
-                      sm: "body",
-                    }}
-                  >
-                    {intl("student-dashboard.table.search-tutors")}
-                  </Typography>
-                </Button>
-              </Link>
-            ) : null}
-          </div>
-          <EmptyLessons />
+    <div
+      className={cn(
+        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-h-min-96",
+        "tw-rounded-lg tw-p-4 tw-shadow-ls-x-small tw-bg-natural-50"
+      )}
+    >
+      <Typography
+        element="body"
+        weight="bold"
+        className="text-natural-950 tw-mb-4"
+      >
+        {isTutor
+          ? intl("tutor-dashboard.past-lessons.title")
+          : intl("student-dashboard.past-lessons.title")}
+      </Typography>
+
+      {loading && !error ? (
+        <div className="tw-mb-[135px] tw-mt-[112px]">
+          <Loader
+            size="medium"
+            text={
+              isTutor
+                ? intl("tutor-dashboard.past-lessons.loading")
+                : intl("student-dashboard.past-lessons.loading")
+            }
+          />
         </div>
-      ) : (
+      ) : null}
+
+      {error && retry && !loading ? (
+        <div className="tw-mt-[72px] tw-mb-[76px]">
+          <LoadingError
+            size="medium"
+            error={
+              isTutor
+                ? intl("tutor-dashboard.past-lessons.error")
+                : intl("student-dashboard.past-lessons.error")
+            }
+            retry={retry}
+          />
+        </div>
+      ) : null}
+
+      {isEmpty(lessons) && !loading && !error ? (
+        <Empty isTutor={isTutor} tutorsRoute={tutorsRoute} />
+      ) : null}
+
+      {!isEmpty(lessons) && !loading && !error ? (
         <div className="tw-flex tw-flex-col tw-gap-4">
           {lessons.map((lesson, i) => (
             <Row
@@ -150,6 +125,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
               }}
             />
           ))}
+
           {more && hasMore ? (
             <Button
               size={ButtonSize.Tiny}
@@ -168,7 +144,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
             </Button>
           ) : null}
         </div>
-      )}
+      ) : null}
     </div>
   );
 };
@@ -276,29 +252,69 @@ export const Row: React.FC<RowProps> = ({
         </div>
       </div>
       <div className="tw-mr-auto">
-        {
-          <Button
-            className="tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] !tw-p-2 tw-bg-brand-700 tw-rounded-lg"
-            onClick={onClick}
-            disabled={buttonDisabled}
-            loading={buttonLoading}
-          >
-            {isTutor ? (
-              <SendSVG
-                className="[&>*]:tw-stroke-natural-50"
-                width={24}
-                height={24}
-              />
-            ) : (
-              <AddCalendarSVG
-                className="[&>*]:tw-stroke-natural-50"
-                width={24}
-                height={24}
-              />
-            )}
-          </Button>
-        }
+        <Button
+          className="tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] !tw-p-2 tw-bg-brand-700 tw-rounded-lg"
+          onClick={onClick}
+          disabled={buttonDisabled}
+          loading={buttonLoading}
+        >
+          {isTutor ? (
+            <SendSVG
+              className="[&>*]:tw-stroke-natural-50"
+              width={24}
+              height={24}
+            />
+          ) : (
+            <AddCalendarSVG
+              className="[&>*]:tw-stroke-natural-50"
+              width={24}
+              height={24}
+            />
+          )}
+        </Button>
       </div>
     </Link>
+  );
+};
+
+const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
+  isTutor,
+  tutorsRoute,
+}) => {
+  const intl = useFormatMessage();
+  return (
+    <div
+      className={cn(
+        "tw-flex tw-flex-col tw-gap-3 tw-justify-center tw-items-center"
+      )}
+    >
+      <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-my-8">
+        <EmptyLessons className="tw-w-[204px] tw-h-[130px]" />
+
+        <Typography
+          element="caption"
+          weight="bold"
+          className="tw-text-natural-950"
+        >
+          {isTutor
+            ? intl("tutor-dashboard.past-lessons.empty")
+            : intl("student-dashboard.table.empty")}
+        </Typography>
+      </div>
+
+      {!isTutor ? (
+        <Link to={tutorsRoute} className="tw-w-full">
+          <Button size={ButtonSize.Small} className="tw-w-full">
+            <Typography
+              element="caption"
+              weight="bold"
+              className="tw-text-neutral-50"
+            >
+              {intl("student-dashboard.table.search-tutors")}
+            </Typography>
+          </Button>
+        </Link>
+      ) : null}
+    </div>
   );
 };

@@ -93,6 +93,29 @@ export const PastLessons: React.FC = () => {
     navigate(`${Route.Chat}?room=${findRoom.data.room}`);
   }, [findRoom.data?.room, navigate]);
 
+  if (!mq.lg)
+    return (
+      <PastLessonsSummary
+        tutorsRoute={Route.Tutors}
+        onRebook={openRebookingDialog}
+        lessons={lessons}
+        loading={lessonsQuery.query.isPending}
+        error={lessonsQuery.query.isError}
+        retry={lessonsQuery.query.refetch}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        onSendMessage={onSendMessage}
+        sendingMessage={sendingMessage}
+        more={() => {
+          if (lessonsQuery.query.hasNextPage) lessonsQuery.more();
+        }}
+        hasMore={lessonsQuery.query.hasNextPage}
+        loadingMore={lessonsQuery.query.isFetching}
+      />
+    );
+
   return (
     <div
       className={cn(
@@ -115,46 +138,22 @@ export const PastLessons: React.FC = () => {
           : intl("tutor-dashboard.past-lessons.title")}
       </Typography>
 
-      {mq.lg ? (
-        <PastLessonsTable
-          tutorsRoute={Route.Tutors}
-          onRebook={openRebookingDialog}
-          lessons={lessons}
-          loading={lessonsQuery.query.isPending}
-          error={lessonsQuery.query.isError}
-          retry={lessonsQuery.query.refetch}
-          isTutor={
-            user?.role === IUser.Role.Tutor ||
-            user?.role === IUser.Role.TutorManager
-          }
-          onSendMessage={onSendMessage}
-          sendingMessage={sendingMessage}
-        />
-      ) : (
-        <PastLessonsSummary
-          tutorsRoute={Route.Tutors}
-          onRebook={openRebookingDialog}
-          lessons={lessons}
-          loading={lessonsQuery.query.isPending}
-          error={lessonsQuery.query.isError}
-          retry={lessonsQuery.query.refetch}
-          isTutor={
-            user?.role === IUser.Role.Tutor ||
-            user?.role === IUser.Role.TutorManager
-          }
-          onSendMessage={onSendMessage}
-          sendingMessage={sendingMessage}
-          more={() => {
-            if (lessonsQuery.query.hasNextPage) lessonsQuery.more();
-          }}
-          hasMore={lessonsQuery.query.hasNextPage}
-          loadingMore={lessonsQuery.query.isFetching}
-        />
-      )}
+      <PastLessonsTable
+        tutorsRoute={Route.Tutors}
+        onRebook={openRebookingDialog}
+        lessons={lessons}
+        loading={lessonsQuery.query.isPending}
+        error={lessonsQuery.query.isError}
+        retry={lessonsQuery.query.refetch}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        onSendMessage={onSendMessage}
+        sendingMessage={sendingMessage}
+      />
 
-      {mq.lg &&
-      !lessonsQuery.query.isFetching &&
-      lessonsQuery.query.hasNextPage ? (
+      {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (
         <InView
           as="div"
           onChange={(inView) => {
@@ -163,18 +162,12 @@ export const PastLessons: React.FC = () => {
         />
       ) : null}
 
-      {mq.lg &&
-      lessonsQuery.query.isFetching &&
-      !lessonsQuery.query.isLoading ? (
+      {lessonsQuery.query.isFetching && !lessonsQuery.query.isLoading ? (
         <Loading />
       ) : null}
 
       {tutor ? (
-        <BookLesson
-          close={closeRebookingDialog}
-          open={!!tutor}
-          tutorId={tutor}
-        />
+        <BookLesson close={closeRebookingDialog} tutorId={tutor} open />
       ) : null}
     </div>
   );

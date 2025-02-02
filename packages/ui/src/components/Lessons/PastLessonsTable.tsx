@@ -5,7 +5,7 @@ import { Typography } from "@/components/Typography";
 import { formatMinutes } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
-import EmptyLessons from "@litespace/assets/EmptyLesson2";
+import EmptyLessons from "@litespace/assets/EmptyLessons";
 import { orUndefined } from "@litespace/utils/utils";
 import { isEmpty } from "lodash";
 import React, { useMemo } from "react";
@@ -104,7 +104,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
             ) : null}
           </div>
           <div>
-            <EmptyLessons />
+            <EmptyLessons className="tw-w-[282px] tw-h-[182px]" />
           </div>
         </div>
       ) : (

@@ -15,7 +15,7 @@ const meta: Meta<Component> = {
   },
   decorators: [
     (Story) => (
-      <div className="tw-p-6">
+      <div className="tw-max-w-[328px] tw-mx-auto">
         <Story />
       </div>
     ),
@@ -80,6 +80,18 @@ export const Loading: Story = {
   },
 };
 
+export const Error: Story = {
+  args: {
+    lessons: range(10).map(() => makeLesson()),
+    onRebook(tutorId: number) {
+      alert(`Rebook with tutor id ${tutorId}`);
+    },
+    tutorsRoute: "/",
+    error: true,
+    retry: () => alert("retry"),
+  },
+};
+
 export const LoadingMore: Story = {
   args: {
     lessons: range(10).map(() => makeLesson()),
@@ -88,6 +100,7 @@ export const LoadingMore: Story = {
     },
     tutorsRoute: "/",
     more: () => {},
+    hasMore: true,
     loadingMore: true,
   },
 };
@@ -106,18 +119,6 @@ export const SendingMessage: Story = {
     sendingMessage: lesson.id,
     isTutor: true,
     tutorsRoute: "/",
-  },
-};
-
-export const Error: Story = {
-  args: {
-    lessons: range(10).map(() => makeLesson()),
-    onRebook(tutorId: number) {
-      alert(`Rebook with tutor id ${tutorId}`);
-    },
-    tutorsRoute: "/",
-    error: true,
-    retry: () => alert("retry"),
   },
 };
 
