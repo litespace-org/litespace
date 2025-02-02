@@ -31,15 +31,15 @@ createRoot(document.getElementById("root")!).render(
     defaultLocale="ar-EG"
   >
     <Direction>
-      <ToastProvider>
-        <AppConfigProvider>
-          <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-            <QueryClientProvider client={queryClient}>
-              <BackendProvider backend={backend}>
-                <AtlasProvider>
-                  <SocketProvider>
-                    <UserProvider>
-                      <MediaQueryProvider>
+      <AppConfigProvider>
+        <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+          <QueryClientProvider client={queryClient}>
+            <BackendProvider backend={backend}>
+              <AtlasProvider>
+                <SocketProvider>
+                  <UserProvider>
+                    <MediaQueryProvider>
+                      <ToastProvider>
                         <ReduxProvider store={store}>
                           <PersistGate
                             loading={
@@ -52,15 +52,15 @@ createRoot(document.getElementById("root")!).render(
                             <App />
                           </PersistGate>
                         </ReduxProvider>
-                      </MediaQueryProvider>
-                    </UserProvider>
-                  </SocketProvider>
-                </AtlasProvider>
-              </BackendProvider>
-            </QueryClientProvider>
-          </GoogleOAuthProvider>
-        </AppConfigProvider>
-      </ToastProvider>
+                      </ToastProvider>
+                    </MediaQueryProvider>
+                  </UserProvider>
+                </SocketProvider>
+              </AtlasProvider>
+            </BackendProvider>
+          </QueryClientProvider>
+        </GoogleOAuthProvider>
+      </AppConfigProvider>
     </Direction>
   </IntlProvider>
 );

@@ -20,6 +20,7 @@ export const Plans: React.FC = () => {
           count={plans.data?.length}
           fetching={plans.isFetching && !plans.isLoading}
         />
+
         <PlanForm
           close={form.hide}
           open={form.open}
