@@ -1,17 +1,19 @@
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { PastLessonsTable } from "@litespace/ui/Lessons";
+import { PastLessonsSummary, PastLessonsTable } from "@litespace/ui/Lessons";
 import { Typography } from "@litespace/ui/Typography";
 import { ILesson, IUser } from "@litespace/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
-import dayjs from "dayjs";
 import { Loading } from "@litespace/ui/Loading";
 import { useNavigate } from "react-router-dom";
 import { useFindRoomByMembers } from "@litespace/headless/chat";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import dayjs from "dayjs";
+import cn from "classnames";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -49,6 +51,7 @@ function asLessons(
 
 export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const [tutor, setTutor] = useState<number | null>(null);
   const [members, setMembers] = useState<number[]>([]);
 
@@ -90,10 +93,43 @@ export const PastLessons: React.FC = () => {
     navigate(`${Route.Chat}?room=${findRoom.data.room}`);
   }, [findRoom.data?.room, navigate]);
 
+  if (!mq.lg)
+    return (
+      <PastLessonsSummary
+        tutorsRoute={Route.Tutors}
+        onRebook={openRebookingDialog}
+        lessons={lessons}
+        loading={lessonsQuery.query.isPending}
+        error={lessonsQuery.query.isError}
+        retry={lessonsQuery.query.refetch}
+        isTutor={
+          user?.role === IUser.Role.Tutor ||
+          user?.role === IUser.Role.TutorManager
+        }
+        onSendMessage={onSendMessage}
+        sendingMessage={sendingMessage}
+        more={() => {
+          if (lessonsQuery.query.hasNextPage) lessonsQuery.more();
+        }}
+        hasMore={lessonsQuery.query.hasNextPage}
+        loadingMore={lessonsQuery.query.isFetching}
+      />
+    );
+
   return (
-    <div className="grid gap-6 ">
+    <div
+      className={cn(
+        !mq.lg && [
+          "tw-border tw-border-transparent hover:tw-border-natural-100 tw-h-min-96",
+          "tw-rounded-lg tw-p-4 sm:tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50",
+        ]
+      )}
+    >
       <Typography
-        element="subtitle-2"
+        element={{
+          default: "body",
+          sm: "subtitle-2",
+        }}
         weight="bold"
         className="text-natural-950 "
       >
@@ -126,18 +162,12 @@ export const PastLessons: React.FC = () => {
         />
       ) : null}
 
-      {lessonsQuery.query.isFetching &&
-      !lessonsQuery.query.isLoading &&
-      !lessonsQuery.query.error ? (
+      {lessonsQuery.query.isFetching && !lessonsQuery.query.isLoading ? (
         <Loading />
       ) : null}
 
       {tutor ? (
-        <BookLesson
-          close={closeRebookingDialog}
-          open={!!tutor}
-          tutorId={tutor}
-        />
+        <BookLesson close={closeRebookingDialog} tutorId={tutor} open />
       ) : null}
     </div>
   );

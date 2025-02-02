@@ -12,8 +12,9 @@ export const LoadingError: React.FC<{
   size?: "small" | "medium" | "large";
 }> = ({ retry, error, size = "small" }) => {
   const intl = useFormatMessage();
+
   return (
-    <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center">
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
       <div
         className={cn(
           "tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full",
@@ -27,9 +28,9 @@ export const LoadingError: React.FC<{
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        element={size === "large" ? "caption" : "tiny-text"}
-        weight={size === "large" ? "semibold" : "regular"}
-        className="tw-text-natural-950 tw-text-center"
+        element={size === "small" ? "tiny-text" : "caption"}
+        weight={size === "small" ? "regular" : "semibold"}
+        className="tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4"
       >
         {error}
       </Typography>

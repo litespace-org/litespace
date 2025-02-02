@@ -95,7 +95,7 @@
   "platform.rating.question": "شاركنا رأيك لتحسين تجربتك!",
   "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
   "student-dashboard.overview.title": "نظرة عامة",
-  "student-dashboard.past-lessons.title": "الدروس السابقة",
+  "student-dashboard.past-lessons.title": "الحصص السابقة",
   "tutors.title": "كل المعلمين",
   "tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
   "tutors.error": " عذرًا، حدث خطأ أثناء تحميل بيانات المعلمين، برجاء المحاولة مرة أخرى",
@@ -133,7 +133,7 @@
   "tutor-dashboard.past-lessons.title": "الحصص السابقة",
   "tutor-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
   "tutor-dashboard.past-lessons.error": " عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
-  "tutor-dashboard.past-lessons.empty": "لا توجد دروس سابقة",
+  "tutor-dashboard.past-lessons.empty": "لا توجد حصص سابقة",
   "page.error.title": "بتحاول توصل لايه؟ 🔍",
   "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
   "page.error.button.label": "الرجوع للخلف",
@@ -498,7 +498,7 @@
   "student-dashboard.table.duration": "المدة",
   "student-dashboard.table.tutor": "المعلم",
   "student-dashboard.table.rebook": "حجز حصة أخري",
-  "student-dashboard.table.empty": "لا توجد دروس سابقة",
+  "student-dashboard.table.empty": "لا توجد حصص سابقة",
   "student-dashboard.table.search-tutors": "تصفح المعلمين",
   "student-dashboard.start-journey": "انطلق الآن وابدأ رحلتك",
   "student-dashboard.button.show-all-lessons": "عرض جميع الحصص",
@@ -508,7 +508,7 @@
   "student-dashboard.button.find-tutors": "تصفح المعملين",
   "student-dashboard.overview.total-lessons": "اجمالي الحصص",
   "student-dashboard.overview.completed-lessons": "الحصص المكتملة",
-  "student-dashboard.overview.total-learning-time": "اجمالي وقت التعلم",
+  "student-dashboard.overview.total-learning-time": "وقت التعلم",
   "student-dashboard.overview.total-learning-time.unit.minute": "{value} د",
   "student-dashboard.overview.teachers": "عدد المعلمين",
   "student-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",

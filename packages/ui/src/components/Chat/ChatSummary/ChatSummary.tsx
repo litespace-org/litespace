@@ -3,6 +3,7 @@ import { Button, ButtonSize } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import dayjs from "@/lib/dayjs";
 import EmptyChatSummary from "@litespace/assets/EmptyChatsSummary";
 import { orUndefined } from "@litespace/utils/utils";
@@ -56,14 +57,18 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
   chatsUrl,
 }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   return (
     <div
       className={cn(
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-rounded-lg tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50"
+        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-rounded-lg tw-p-4 sm:tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50"
       )}
     >
       <Typography
-        element="subtitle-2"
+        element={{
+          default: "body",
+          sm: "subtitle-2",
+        }}
         weight="bold"
         className="tw-text-natural-950"
       >
@@ -73,7 +78,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       {error && retry && !loading ? (
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
           <LoadingError
-            size="medium"
+            size={mq.sm ? "medium" : "small"}
             error={intl("student-dashboard.chat-summary.error")}
             retry={retry}
           />
@@ -83,7 +88,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       {loading ? (
         <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
           <Loader
-            size="medium"
+            size={mq.sm ? "medium" : "small"}
             text={intl("student-dashboard.chat-summary.loading")}
           />
         </div>
@@ -170,11 +175,17 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
 const EmptyChats = () => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-mb-[39px] tw-mt-6">
+    <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-mb-12 tw-mt-8 lg:tw-mt-6">
       <EmptyChatSummary />
       <Typography
-        element="subtitle-1"
-        weight="semibold"
+        element={{
+          default: "caption",
+          sm: "subtitle-1",
+        }}
+        weight={{
+          default: "bold",
+          sm: "semibold",
+        }}
         className="tw-text-natural-950"
       >
         {intl("student-dashboard.empty-chats")}

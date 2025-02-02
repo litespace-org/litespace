@@ -131,7 +131,10 @@ const Content: React.FC<{
         />
 
         <Typography
-          element={mq.lg ? "h4" : "body"}
+          element={{
+            default: "body",
+            lg: "h4",
+          }}
           weight="bold"
           className="text-black max-w-[328px] lg:max-w-[600px] text-center mb-6 sm:mb-8"
         >
