@@ -81,6 +81,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
       topics: userTopics,
     },
   });
+  const errors = form.formState.errors;
 
   useEffect(() => {
     form.setValue("topics", userTopics);
@@ -253,7 +254,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           {intl("settings.edit.personal.title")}
         </Typography>
         <div className="mb-2 md:m-0">
-          <Label>{intl("settings.edit.personal.name")}</Label>
           <Controller.Input
             placeholder={intl("settings.edit.personal.name.placeholder")}
             value={form.watch("name")}
@@ -261,10 +261,12 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             rules={{ validate: validateUserName }}
             autoComplete="off"
             name="name"
+            label={intl("settings.edit.personal.name")}
+            state={errors.name ? "error" : undefined}
+            helper={errors.name?.message}
           />
         </div>
         <div className="mb-2 md:m-0">
-          <Label>{intl("settings.edit.personal.email")}</Label>
           <Controller.Input
             control={form.control}
             name="email"
@@ -272,6 +274,9 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             placeholder={intl("settings.edit.personal.email.placeholder")}
             autoComplete="off"
             rules={{ validate: validateEmail }}
+            label={intl("settings.edit.personal.email")}
+            state={errors.email ? "error" : undefined}
+            helper={errors.email?.message}
           />
         </div>
         <div className="mb-2 md:m-0">
@@ -310,39 +315,31 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             {intl("settings.edit.password.title")}
           </Typography>
           <div className="mb-2 md:m-0">
-            <Label>{intl("settings.edit.password.current")}</Label>
             <Controller.Password
               value={form.watch("password.current")}
               control={form.control}
-              helper={form.formState.errors.password?.current?.message}
-              state={
-                form.formState.errors.password?.current?.message
-                  ? "error"
-                  : "success"
-              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
               }}
               name="password.current"
+              label={intl("settings.edit.password.current")}
+              state={errors.password?.current ? "error" : undefined}
+              helper={errors.password?.current?.message}
             />
           </div>
           <div className="mb-2 md:m-0">
-            <Label>{intl("settings.edit.password.new")}</Label>
             <Controller.Password
               value={form.watch("password.new")}
               control={form.control}
-              helper={form.formState.errors.password?.new?.message}
-              state={
-                form.formState.errors.password?.new?.message
-                  ? "error"
-                  : "success"
-              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
               }}
               name="password.new"
+              label={intl("settings.edit.password.new")}
+              state={errors.password?.new ? "error" : undefined}
+              helper={errors.password?.new?.message}
             />
           </div>
           <div className="mb-6 md:m-0">
@@ -350,12 +347,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             <Controller.Password
               value={form.watch("password.confirm")}
               control={form.control}
-              helper={form.formState.errors.password?.confirm?.message}
-              state={
-                form.formState.errors.password?.confirm?.message
-                  ? "error"
-                  : "success"
-              }
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: (value) => {
@@ -365,6 +356,9 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
                 },
               }}
               name="password.confirm"
+              label={intl("settings.edit.password.confirm")}
+              state={errors.password?.confirm ? "error" : undefined}
+              helper={errors.password?.confirm?.message}
             />
           </div>
         </div>

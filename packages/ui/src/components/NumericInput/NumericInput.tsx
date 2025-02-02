@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { NumericFormat, NumericFormatProps } from "react-number-format";
 import { Input, InputProps } from "@/components/Input";
+import { orUndefined } from "@litespace/utils";
 
 export type NumericInputProps = Omit<NumericFormatProps, "customInput">;
 
@@ -10,7 +11,14 @@ const NumericInput = React.forwardRef<
 >(({ error, helper, ...props }, ref) => {
   const CustomInput: React.FC<InputProps> = useMemo(
     () => (inputProps: InputProps) => {
-      return <Input ref={ref} error={error} helper={helper} {...inputProps} />;
+      return (
+        <Input
+          ref={ref}
+          state={error ? "error" : "success"}
+          helper={orUndefined(helper)}
+          {...inputProps}
+        />
+      );
     },
     [error, helper, ref]
   );

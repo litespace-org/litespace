@@ -51,6 +51,7 @@ const ManageInvoice: React.FC<{
   const intl = useFormatMessage();
   const methods = useFindWithdrawalMethods();
   const toast = useToast();
+  const errors = form.formState.errors;
 
   const methodOptions = useMemo(() => {
     if (!methods.data) return [];
@@ -197,64 +198,49 @@ const ManageInvoice: React.FC<{
         ) : null}
 
         {bank ? (
-          <Field
-            label={<Label>{intl("invoices.create.form.accountNumber")}</Label>}
-            field={
-              <Controller.Input control={form.control} name="accountNumber" />
-            }
+          <Controller.Input
+            control={form.control}
+            name="accountNumber"
+            label={intl("invoices.create.form.accountNumber")}
+            state={errors.accountNumber ? "error" : undefined}
+            helper={errors.accountNumber?.message}
           />
         ) : null}
 
         {wallet ? (
-          <Field
-            label={<Label>{intl("invoices.create.form.phoneNumber")}</Label>}
-            field={
-              <Controller.Input
-                control={form.control}
-                name="phoneNumber"
-                placeholder={intl(
-                  "invoices.create.form.phoneNumber.placeholder"
-                )}
-                autoComplete="off"
-              />
-            }
+          <Controller.Input
+            control={form.control}
+            name="phoneNumber"
+            placeholder={intl("invoices.create.form.phoneNumber.placeholder")}
+            autoComplete="off"
+            label={intl("invoices.create.form.phoneNumber")}
+            state={errors.phoneNumber ? "error" : undefined}
+            helper={errors.phoneNumber?.message}
           />
         ) : null}
 
         {instapay ? (
-          <Field
-            label={<Label>{intl("invoices.create.form.username")}</Label>}
-            field={
-              <Controller.Input
-                control={form.control}
-                name="username"
-                placeholder={intl("invoices.create.form.username.placeholder")}
-                value={form.watch("username")}
-                state={
-                  form.formState.errors.username?.message ? "error" : "success"
-                }
-                helper={form.formState.errors.username?.message}
-                autoComplete="off"
-              />
-            }
+          <Controller.Input
+            control={form.control}
+            name="username"
+            placeholder={intl("invoices.create.form.username.placeholder")}
+            value={form.watch("username")}
+            label={intl("invoices.create.form.username")}
+            state={errors.username ? "error" : undefined}
+            helper={errors.username?.message}
+            autoComplete="off"
           />
         ) : null}
 
-        <Field
-          label={<Label>{intl("invoices.create.form.amount")}</Label>}
-          field={
-            <Controller.Input
-              control={form.control}
-              name="amount"
-              placeholder={intl("invoices.create.form.amount.placeholder")}
-              value={form.watch("amount").toString()}
-              state={
-                form.formState.errors.amount?.message ? "error" : "success"
-              }
-              helper={form.formState.errors.amount?.message}
-              autoComplete="off"
-            />
-          }
+        <Controller.Input
+          control={form.control}
+          name="amount"
+          placeholder={intl("invoices.create.form.amount.placeholder")}
+          value={form.watch("amount").toString()}
+          label={intl("invoices.create.form.amount")}
+          state={errors.amount ? "error" : undefined}
+          helper={errors.amount?.message}
+          autoComplete="off"
         />
 
         <div className="mt-4">

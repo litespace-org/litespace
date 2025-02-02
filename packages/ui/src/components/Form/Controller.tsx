@@ -4,7 +4,7 @@ import {
 } from "@/components/DateInput";
 import { Duration as BaseDuration } from "@/components/Duration";
 import { Gender as BaseGender } from "@/components/Gender";
-import { Input as BaseInput, InputProps } from "@/components/Input/V2/Input";
+import { Input as BaseInput, InputProps } from "@/components/Input";
 import {
   NumericInput as BaseNumericInput,
   NumericInputProps,

@@ -41,7 +41,7 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const { role } = useParams<{ role: Role }>();
-  const { watch, handleSubmit, control } = useForm<IForm>({
+  const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
       name: "",
       email: "",
@@ -49,6 +49,7 @@ const Register: React.FC = () => {
       confirmedPassword: "",
     },
   });
+  const errors = formState.errors;
 
   const validateUserName = useValidateUserName(true);
   const validateEmail = useValidateEmail(true);
@@ -116,61 +117,61 @@ const Register: React.FC = () => {
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col">
-                  <Label id="email">{intl("register.full-name")}</Label>
-                  <Controller.Input
-                    control={control}
-                    name="name"
-                    value={name}
-                    autoComplete="off"
-                    rules={{ validate: validateUserName }}
-                    placeholder={intl("register.full-name")}
-                    disabled={mutation.isPending || google.loading}
-                    idleDir="rtl"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <Label id="email">{intl("labels.email")}</Label>
-                  <Controller.Input
-                    control={control}
-                    name="email"
-                    value={email}
-                    autoComplete="off"
-                    rules={{ validate: validateEmail }}
-                    placeholder={intl("labels.email.placeholder")}
-                    disabled={mutation.isPending || google.loading}
-                    idleDir="ltr"
-                  />
-                </div>
+                <Controller.Input
+                  control={control}
+                  name="name"
+                  value={name}
+                  autoComplete="off"
+                  rules={{ validate: validateUserName }}
+                  placeholder={intl("register.full-name")}
+                  disabled={mutation.isPending || google.loading}
+                  idleDir="rtl"
+                  label={intl("register.full-name")}
+                  state={errors.name ? "error" : undefined}
+                  helper={errors.name?.message}
+                />
+                <Label id="email">{intl("labels.email")}</Label>
+                <Controller.Input
+                  control={control}
+                  name="email"
+                  value={email}
+                  autoComplete="off"
+                  rules={{ validate: validateEmail }}
+                  placeholder={intl("labels.email.placeholder")}
+                  disabled={mutation.isPending || google.loading}
+                  idleDir="ltr"
+                  label={intl("labels.email")}
+                  state={errors.email ? "error" : undefined}
+                  helper={errors.email?.message}
+                />
 
-                <div className="flex flex-col">
-                  <Label id="password">{intl("labels.password")}</Label>
-                  <Controller.Password
-                    control={control}
-                    name="password"
-                    value={password}
-                    rules={{ validate: validatePassword }}
-                    disabled={mutation.isPending || google.loading}
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <Label id="password">
-                    {intl("register.confirm-password")}
-                  </Label>
-                  <Controller.Password
-                    control={control}
-                    name="confirmedPassword"
-                    value={confirmedPassword}
-                    rules={{
-                      validate: (value) => {
-                        if (value !== watch("password"))
-                          return intl("register.password-not-the-same");
-                        return validatePassword(value);
-                      },
-                    }}
-                    disabled={mutation.isPending || google.loading}
-                  />
-                </div>
+                <Controller.Password
+                  control={control}
+                  name="password"
+                  value={password}
+                  rules={{ validate: validatePassword }}
+                  disabled={mutation.isPending || google.loading}
+                  label={intl("labels.password")}
+                  state={errors.password ? "error" : undefined}
+                  helper={errors.password?.message}
+                />
+
+                <Controller.Password
+                  control={control}
+                  name="confirmedPassword"
+                  value={confirmedPassword}
+                  rules={{
+                    validate: (value) => {
+                      if (value !== watch("password"))
+                        return intl("register.password-not-the-same");
+                      return validatePassword(value);
+                    },
+                  }}
+                  disabled={mutation.isPending || google.loading}
+                  label={intl("register.confirm-password")}
+                  state={errors.confirmedPassword ? "error" : undefined}
+                  helper={errors.confirmedPassword?.message}
+                />
               </div>
 
               <div className="flex flex-col gap-4">

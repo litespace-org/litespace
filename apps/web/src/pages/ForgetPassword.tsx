@@ -3,7 +3,7 @@ import Header from "@/components/Auth/Header";
 import { Route } from "@/types/routes";
 import { useForgetPassword } from "@litespace/headless/auth";
 import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
-import { Controller, Form, Label } from "@litespace/ui/Form";
+import { Controller, Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useValidateEmail } from "@litespace/ui/hooks/validation";
 import { useToast } from "@litespace/ui/Toast";
@@ -42,9 +42,10 @@ const ForgetPassword: React.FC = () => {
   const intl = useFormatMessage();
   const validateEmail = useValidateEmail(true);
   const [sentEmail, setSentEmail] = useState<boolean>(false);
-  const { watch, handleSubmit, control, reset } = useForm<FormData>({
+  const { watch, handleSubmit, control, reset, formState } = useForm<FormData>({
     defaultValues: { email: "" },
   });
+  const errors = formState.errors;
 
   const forgetPassword = useForgetPassword({
     onSuccess() {
@@ -91,7 +92,6 @@ const ForgetPassword: React.FC = () => {
 
                   <Form onSubmit={onSubmit}>
                     <div className="mb-8">
-                      <Label>{intl("labels.email")}</Label>
                       <Controller.Input
                         control={control}
                         name="email"
@@ -101,6 +101,9 @@ const ForgetPassword: React.FC = () => {
                         placeholder={intl("labels.email.placeholder")}
                         autoComplete="off"
                         idleDir="ltr"
+                        label={intl("labels.email")}
+                        state={errors.email ? "error" : undefined}
+                        helper={errors.email?.message}
                       />
                     </div>
 

@@ -5,8 +5,6 @@ import { Form } from "@/components/Form";
 import React from "react";
 import { Direction } from "@/components/Direction";
 import ar from "@/locales/ar-eg.json";
-import { Label } from "@/components/Form/Label";
-import { Field } from "@/components/Form/Field";
 
 type IForm = typeof Form;
 
@@ -27,15 +25,11 @@ export const Primary: StoryObj<IForm> = {
   args: {
     children: (
       <div className="tw-ui-w-[40rem]">
-        <Field
-          label={<Label id="name">{ar["global.form.email.label"]}</Label>}
-          field={
-            <Input
-              type="text"
-              placeholder={ar["global.form.email.placeholder"]}
-              autoComplete="off"
-            />
-          }
+        <Input
+          type="text"
+          placeholder={ar["global.form.email.placeholder"]}
+          autoComplete="off"
+          label={ar["global.form.email.label"]}
         />
       </div>
     ),

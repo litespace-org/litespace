@@ -30,7 +30,7 @@
     "./Gender": "./dist/components/Gender/index.js",
     "./IconField": "./dist/components/IconField/index.js",
     "./Icons": "./dist/components/Icons/index.js",
-    "./Input": "./dist/components/Input/V2/index.js",
+    "./Input": "./dist/components/Input/index.js",
     "./Interviews": "./dist/components/Interviews/index.js",
     "./Invoices": "./dist/components/Invoices/index.js",
     "./Loading": "./dist/components/Loading/index.js",

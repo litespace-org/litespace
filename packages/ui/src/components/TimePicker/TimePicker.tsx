@@ -10,6 +10,7 @@ import Picker from "@/components/TimePicker/Picker";
 import { Clock } from "react-feather";
 import { FormatterMap, Time } from "@litespace/utils/time";
 import cn from "classnames";
+import { orUndefined } from "@litespace/utils";
 
 export type TimePickerProps = {
   placeholder?: string;
@@ -62,13 +63,13 @@ export const TimePicker: React.FC<TimePickerProps> = ({
     <div className="tw-w-full tw-relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
-        error={!!error}
-        helper={error}
+        state={error ? "error" : "success"}
+        helper={orUndefined(error)}
         value={value}
         disabled={disabled}
         onFocus={show}
-        endActions={useMemo(
-          () => [{ id: 1, Icon: Clock, onClick: toggle }],
+        endAction={useMemo(
+          () => ({ id: 1, Icon: Clock, onClick: toggle }),
           [toggle]
         )}
       />

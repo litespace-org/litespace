@@ -33,12 +33,13 @@ const Login: React.FC = () => {
   const google = useGoogle({});
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
-  const { control, handleSubmit, watch } = useForm<IForm>({
+  const { control, handleSubmit, watch, formState } = useForm<IForm>({
     defaultValues: {
       email: "student@litespace.org",
       password: "Password@8",
     },
   });
+  const errors = formState.errors;
 
   const email = watch("email");
   const password = watch("password");
@@ -84,30 +85,31 @@ const Login: React.FC = () => {
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col">
-                  <Label id="email">{intl("labels.email")}</Label>
-                  <Controller.Input
-                    control={control}
-                    name="email"
-                    value={email}
-                    autoComplete="off"
-                    rules={{ validate: validateEmail }}
-                    placeholder={intl("labels.email.placeholder")}
-                    disabled={mutation.isPending || google.loading}
-                    idleDir="ltr"
-                  />
-                </div>
+                <Controller.Input
+                  control={control}
+                  name="email"
+                  value={email}
+                  autoComplete="off"
+                  rules={{ validate: validateEmail }}
+                  placeholder={intl("labels.email.placeholder")}
+                  disabled={mutation.isPending || google.loading}
+                  idleDir="ltr"
+                  label={intl("labels.email")}
+                  state={errors.email ? "error" : undefined}
+                  helper={errors.email?.message}
+                />
 
-                <div className="flex flex-col">
-                  <Label id="password">{intl("labels.password")}</Label>
-                  <Controller.Password
-                    control={control}
-                    name="password"
-                    value={password}
-                    rules={{ validate: validatePassword }}
-                    disabled={mutation.isPending || google.loading}
-                  />
-                </div>
+                <Label id="password">{intl("labels.password")}</Label>
+                <Controller.Password
+                  control={control}
+                  name="password"
+                  value={password}
+                  rules={{ validate: validatePassword }}
+                  disabled={mutation.isPending || google.loading}
+                  label={intl("labels.password")}
+                  state={errors.password ? "error" : undefined}
+                  helper={errors.password?.message}
+                />
 
                 <Link to={Route.ForgetPassword}>
                   <Typography

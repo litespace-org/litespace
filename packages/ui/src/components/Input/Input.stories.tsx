@@ -2,24 +2,21 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "@/components/Input";
 import React, { useState } from "react";
 import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
-import { useForm } from "react-hook-form";
-import { Calendar } from "react-feather";
-import Search from "@litespace/assets/Search";
 import { faker } from "@faker-js/faker/locale/ar";
-import { faker as fakeren } from "@faker-js/faker/locale/en";
+import Search from "@litespace/assets/Search";
+import X from "@litespace/assets/X";
 
 type Component = typeof Input;
 
 const meta: Meta<Component> = {
-  title: "Input/V1",
+  title: "Input/V2",
   component: Input,
   parameters: { layout: "centered" },
   decorators: [
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="tw-bg-background-200 tw-w-[30rem] tw-h-[30rem] tw-px-12 tw-flex tw-items-center tw-justify-center tw-shadow-xl tw-md">
+          <div className="tw-w-[30rem] tw-h-[30rem] tw-px-12 tw-flex tw-items-center tw-justify-center tw-shadow-xl tw-md">
             <Story />
           </div>
         </Direction>
@@ -28,14 +25,22 @@ const meta: Meta<Component> = {
   ],
 };
 
-export const Idle: StoryObj<Component> = {
+export const Small: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
-    idleDir: "ltr",
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    icon: <Search />,
+    inputSize: "small",
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
   },
-  render(props) {
-    const [value, setValue] = useState("");
+  render: (props) => {
+    const [value, setValue] = useState<string>("");
     return (
       <Input
         {...props}
@@ -46,14 +51,22 @@ export const Idle: StoryObj<Component> = {
   },
 };
 
-export const ArabicPlaceholder: StoryObj<Component> = {
+export const Medium: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: faker.person.fullName(),
-    idleDir: "rtl",
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    inputSize: "medium",
+    helper: faker.lorem.words(2),
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
   },
-  render(props) {
-    const [value, setValue] = useState("");
+  render: (props) => {
+    const [value, setValue] = useState<string>("");
     return (
       <Input
         {...props}
@@ -64,157 +77,173 @@ export const ArabicPlaceholder: StoryObj<Component> = {
   },
 };
 
-export const LTRDefaultDir: StoryObj<Component> = {
+export const Large: StoryObj<Component> = {
   args: {
     id: "name",
     placeholder: faker.internet.email(),
-    idleDir: "ltr",
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    inputSize: "large",
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>("");
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
-export const Disabled: StoryObj<Component> = {
+export const Filled: StoryObj<Component> = {
   args: {
     id: "name",
-    disabled: true,
-    value: faker.internet.email(),
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
-export const IdelWithValueArabic: StoryObj<Component> = {
+export const WithoutIcon: StoryObj<Component> = {
   args: {
     id: "name",
-    value: faker.lorem.words(5),
-    onChange: () => {},
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
-export const IdelWithValueEnglish: StoryObj<Component> = {
+export const withoutEndAction: StoryObj<Component> = {
   args: {
     id: "name",
-    value: fakeren.lorem.words(5),
-    onChange: () => {},
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
 export const Error: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
-    error: true,
-    helper: ar["error.email.invlaid"],
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    state: "error",
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
-export const WithHelperText: StoryObj<Component> = {
+export const Success: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
-    helper: ar["error.email.invlaid"],
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    state: "success",
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
+  },
+  render: (props) => {
+    const [value, setValue] = useState<string>(faker.lorem.words(2));
+    return (
+      <Input
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
+      />
+    );
   },
 };
 
-export const ErrorWithValue: StoryObj<Component> = {
+export const Disabled: StoryObj<Component> = {
   args: {
     id: "name",
-    placeholder: ar["global.form.email.placeholder"],
-    error: true,
-    helper: ar["error.email.invlaid"],
-    value: "لايت اسبيس",
-    onChange: () => {},
+    placeholder: faker.internet.email(),
+    label: faker.lorem.words(2),
+    helper: faker.lorem.words(2),
+    disabled: true,
+    icon: <Search />,
+    endAction: {
+      Icon: X,
+      id: 1,
+      onClick: () => alert("End Action"),
+    },
   },
-};
-
-export const Password: StoryObj<Component> = {
-  args: {},
-  render: () => {
-    const { register, watch } = useForm<{ password: string }>({
-      defaultValues: { password: "" },
-    });
+  render: (props) => {
+    const [value, setValue] = useState<string>("");
     return (
       <Input
-        type="password"
-        value={watch("password")}
-        {...register("password")}
-      />
-    );
-  },
-};
-
-export const PasswordError: StoryObj<Component> = {
-  args: {},
-  render: () => {
-    const { register, watch } = useForm<{ password: string }>({
-      defaultValues: { password: "" },
-    });
-    return (
-      <Input
-        type="password"
-        value={watch("password")}
-        error={true}
-        helper={ar["error.invalid"]}
-        {...register("password")}
-      />
-    );
-  },
-};
-
-export const InputEnglish: StoryObj<Component> = {
-  render: () => {
-    const { register, watch } = useForm<{ email: string }>({
-      defaultValues: { email: "" },
-    });
-    return (
-      <Input
-        type="password"
-        placeholder={ar["global.form.email.placeholder"]}
-        value={watch("email")}
-        {...register("email")}
-      />
-    );
-  },
-};
-
-export const WithStartActions: StoryObj<Component> = {
-  render: () => {
-    const { register } = useForm<{ date: string }>({
-      defaultValues: { date: "" },
-    });
-    return (
-      <Input
-        placeholder={ar["global.form.email.placeholder"]}
-        {...register("date")}
-        startActions={[
-          {
-            id: 1,
-            Icon: Calendar,
-            onClick() {
-              alert("Clicked!");
-            },
-          },
-        ]}
-      />
-    );
-  },
-};
-
-export const WithEndActions: StoryObj<Component> = {
-  render: () => {
-    const { register } = useForm<{ date: string }>({
-      defaultValues: { date: "" },
-    });
-    return (
-      <Input
-        placeholder={ar["global.form.email.placeholder"]}
-        {...register("date")}
-        endActions={[
-          {
-            id: 1,
-            Icon: Search,
-            onClick() {
-              alert("Clicked!");
-            },
-          },
-        ]}
+        {...props}
+        value={value}
+        onChange={(e) => setValue(e.target.value)}
       />
     );
   },

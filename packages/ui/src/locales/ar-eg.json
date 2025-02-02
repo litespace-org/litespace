@@ -728,7 +728,6 @@
   "global.gender.female": "أنثي",
   "global.goto": "إلي صفحة {name}",
   "global.sure": "هل أنت متأكد؟",
-  "error.invalid": "خطأ",
   "error.alert": "حدث خطأ ما",
   "error.form.invalid": "غير مناسب",
   "error.required": "مطلوب",
