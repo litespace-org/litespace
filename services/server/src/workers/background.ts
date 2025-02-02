@@ -8,7 +8,7 @@ import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
 import { IToken, Server } from "@litespace/types";
 import jwt from "jsonwebtoken";
-import { jwtSecret } from "@/constants";
+import { tokensExpireTime, jwtSecret } from "@/constants";
 import { safe } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
 import pidusage from "pidusage";
@@ -34,7 +34,9 @@ async function sendAuthTokenEmail({
 }) {
   const error = await safe(async () => {
     const payload: IToken.AuthTokenEmail = { type, user };
-    const token = jwt.sign(payload, jwtSecret, { expiresIn: "30m" });
+    const token = jwt.sign(payload, jwtSecret, {
+      expiresIn: tokensExpireTime[type],
+    });
     const url = new URL(callbackUrl);
     url.searchParams.set("token", token);
 

@@ -1,3 +1,4 @@
+import { IToken } from "@litespace/types";
 import { price } from "@litespace/utils/value";
 import zod from "zod";
 
@@ -126,3 +127,8 @@ export const platformConfig = {
 };
 
 export const MAX_FULL_FLAG_DAYS = 14;
+
+export const tokensExpireTime: Record<IToken.Type, string> = {
+  [IToken.Type.VerifyEmail]: "24h",
+  [IToken.Type.ForgetPassword]: "30m",
+};
