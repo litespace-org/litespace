@@ -1,22 +1,30 @@
 import { Route } from "@/types/routes";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Typography } from "@litespace/ui/Typography";
 import Calendar from "@litespace/assets/Calendar";
 import Chat from "@litespace/assets/Chat";
 import Home from "@litespace/assets/Home";
 import Logo from "@litespace/assets/Logo";
 import Logout from "@litespace/assets/Logout";
 import People from "@litespace/assets/People";
+import ProfileAvatar from "@litespace/assets/ProfileAvatar";
+import ScheduleManagement from "@litespace/assets/ScheduleManagement";
 import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
-import ScheduleManagement from "@litespace/assets/ScheduleManagement";
-import ProfileAvatar from "@litespace/assets/ProfileAvatar";
-import cn from "classnames";
-import React, { SVGProps, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import AccountPromotion from "@litespace/assets/AccountPromotion";
 import { useUserContext } from "@litespace/headless/context/user";
-import { IUser } from "@litespace/types";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { IUser, Void } from "@litespace/types";
+import { Button, ButtonSize } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { Typography } from "@litespace/ui/Typography";
+import cn from "classnames";
+import React, { SVGProps, useCallback, useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  MOBILE_NAVBAR_HEIGHT,
+  MOBILE_SIDEBAR_WIDTH,
+  TABLET_NAVBAR_HEIGHT,
+} from "@/constants/ui";
 
 const SidebarItem = ({
   to,
@@ -34,7 +42,7 @@ const SidebarItem = ({
   return (
     <Link
       className={cn(
-        "flex flex-row gap-4 px-[14px] py-2 items-center",
+        "flex flex-row gap-2 md:gap-4 px-[14px] py-2 items-center",
         "rounded-lg transition-colors duration-200 group",
         {
           "bg-brand-700": active,
@@ -44,14 +52,17 @@ const SidebarItem = ({
       to={to}
     >
       <Icon
-        className={cn("[&_*]:transition-all [&_*]:duration-200 h-6 w-6", {
-          "[&_*]:stroke-natural-50": active,
-          "[&_*]:stroke-natural-700": !active,
-        })}
+        className={cn(
+          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 lg:h-6 lg:w-6",
+          {
+            "[&_*]:stroke-natural-50": active,
+            "[&_*]:stroke-natural-700": !active,
+          }
+        )}
       />
       <Typography
-        element="caption"
-        weight="semibold"
+        element={{ default: "tiny-text", lg: "caption" }}
+        weight={{ default: "regular", lg: "semibold" }}
         className={cn(active ? "text-natural-50" : "text-natural-700")}
       >
         {label}
@@ -60,7 +71,10 @@ const SidebarItem = ({
   );
 };
 
-const Sidebar = () => {
+const Sidebar: React.FC<{
+  hide: Void;
+}> = ({ hide }) => {
+  const { md, lg } = useMediaQuery();
   const intl = useFormatMessage();
   const location = useLocation();
   const navigate = useNavigate();
@@ -137,25 +151,44 @@ const Sidebar = () => {
     return [];
   }, [intl, user?.role]);
 
+  const onMouseDown = useCallback(
+    (e: MouseEvent) => {
+      const backdropXEnd = window.innerWidth - MOBILE_SIDEBAR_WIDTH;
+      const backdropYStart = !md ? MOBILE_NAVBAR_HEIGHT : TABLET_NAVBAR_HEIGHT;
+      if (e.pageX < backdropXEnd && e.pageY > backdropYStart) hide();
+    },
+    [hide, md]
+  );
+
+  useEffect(() => {
+    window.addEventListener("mousedown", onMouseDown);
+    return () => window.removeEventListener("mousedown", onMouseDown);
+  }, [onMouseDown]);
+
   return (
-    // TODO: slide the sidebar to the right instead of hiding it.
-    <div className="hidden sm:flex fixed top-0 bottom-0 start-0 flex-col gap-10 w-60 p-6 shadow-app-sidebar z-sidebar">
-      <Link to={Route.Root} className="flex items-center gap-2">
-        <Logo className="h-[50px]" />
+    <div
+      className={cn(
+        "absolute lg:fixed top-[72px] md:top-[88px] lg:top-0 bottom-0 start-0 z-20 lg:z-sidebar",
+        "bg-natural-50 w-[166px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
+        "flex flex-col gap-6 md:gap-10"
+      )}
+    >
+      <Link to={Route.Root} className="flex items-center gap-1 md:gap-2">
+        <Logo className="h-6 md:h-[50px]" />
         <Typography
-          element="subtitle-2"
+          element={{ default: "tiny-text", lg: "subtitle-2" }}
           weight="bold"
-          className="text-brand-500"
+          className="inline-block text-brand-500"
         >
           {intl("labels.litespace")}
         </Typography>
       </Link>
 
-      <div className="flex flex-col gap-1.5">
+      <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
-          element="caption"
+          element={{ default: "tiny-text", lg: "caption" }}
           weight="bold"
-          className="text-natural-800 py-2"
+          className="text-natural-800 md:py-2"
         >
           {intl("sidebar.main")}
         </Typography>
@@ -172,11 +205,15 @@ const Sidebar = () => {
         </ul>
       </div>
 
-      <div className="flex flex-col gap-1.5">
-        <Typography className="text-natural-800 py-2" weight="bold">
+      <div className="flex flex-col gap-2 md:gap-1.5">
+        <Typography
+          element={{ default: "tiny-text", lg: "caption" }}
+          className="text-natural-800 md:py-2"
+          weight="bold"
+        >
           {intl("sidebar.settings")}
         </Typography>
-        <ul className="flex flex-col gap-2">
+        <ul className="flex flex-col gap-1.5">
           {user ? (
             <SidebarItem
               to={
@@ -205,19 +242,62 @@ const Sidebar = () => {
               logout();
             }}
             className={cn(
-              "flex gap-4 px-[14px] py-2 rounded-lg",
+              "flex gap-2 md:gap-4 px-[14px] py-2 rounded-lg",
               "hover:text-destructive-400 hover:bg-destructive-100",
               "active:bg-destructive-400 [&_*]:active:text-natural-50",
               "[&_*]:active:stroke-natural-50 transition-all duration-200"
             )}
           >
-            <Logout />
-            <Typography className="text-destructive-400 active:bg-destructive-400 active:text-natural-50">
+            <Logout className="h-4 w-4 lg:h-6 lg:w-6" />
+            <Typography
+              element={{ default: "tiny-text", lg: "caption" }}
+              className="text-destructive-400 active:bg-destructive-400 active:text-natural-50"
+            >
               {intl("sidebar.logout")}
             </Typography>
           </button>
         </ul>
       </div>
+
+      {user &&
+      user.role === IUser.Role.Student &&
+      location.pathname !== Route.Subscription ? (
+        <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
+          <div className="mx-2 lg:mx-0 px-4 mb-3">
+            <Typography
+              element={{ default: "tiny-text", lg: "caption" }}
+              weight={{ default: "bold", lg: "semibold" }}
+              className="text-natural-950 inline-block"
+            >
+              {intl("sidebar.account-promotion.title")}
+            </Typography>
+            <Typography
+              element={{ default: "tiny-text", lg: "caption" }}
+              weight={{ default: "regular", lg: "medium" }}
+              className="text-natural-700 inline-block"
+            >
+              {intl("sidebar.account-promotion.description")}
+            </Typography>
+          </div>
+          <Link to={Route.Subscription}>
+            <Button size={ButtonSize.Tiny} htmlType="button">
+              <Typography
+                element="caption"
+                weight="semibold"
+                className="text-natural-50"
+              >
+                {intl("navbar.subscribe-now")}
+              </Typography>
+            </Button>
+          </Link>
+
+          {lg ? (
+            <div className="h-[101px] w-[192px] mt-6">
+              <AccountPromotion />
+            </div>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 };
