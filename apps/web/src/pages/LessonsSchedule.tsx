@@ -6,6 +6,8 @@ import Header, { View } from "@/components/LessonSchedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { useUserContext } from "@litespace/headless/context/user";
+import cn from "classnames";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -13,6 +15,7 @@ const variants = {
 };
 
 const LessonsSchedule: React.FC = () => {
+  const { md, lg } = useMediaQuery();
   const [date, setDate] = useState(dayjs().startOf("week"));
   const [view, setView] = useState<View>("calendar");
   const { user } = useUserContext();
@@ -69,8 +72,12 @@ const LessonsSchedule: React.FC = () => {
   );
 
   return (
-    <div className="w-full p-6 mx-auto overflow-hidden max-w-screen-3xl">
-      <div className="mb-8">
+    <div className="w-full p-4 md:p-6 mx-auto overflow-hidden max-w-screen-3xl">
+      <div
+        className={cn("mb-4 md:mb-6", {
+          "rounded-b-3xl -mx-4 -mt-4 p-4 shadow-header bg-natural-50": !md,
+        })}
+      >
         <Header
           date={date}
           nextWeek={() => {
@@ -84,7 +91,7 @@ const LessonsSchedule: React.FC = () => {
         />
       </div>
       <AnimatePresence mode="wait" initial={false}>
-        {view === "calendar" ? (
+        {view === "calendar" && lg ? (
           <motion.div
             variants={variants}
             initial="hidden"
@@ -107,7 +114,7 @@ const LessonsSchedule: React.FC = () => {
       </AnimatePresence>
 
       <AnimatePresence>
-        {view === "list" ? (
+        {view === "list" || !lg ? (
           <motion.div
             variants={variants}
             initial="hidden"

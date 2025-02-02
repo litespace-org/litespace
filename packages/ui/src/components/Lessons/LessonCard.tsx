@@ -228,21 +228,25 @@ export const LessonCard: React.FC<Props> = ({
   const button = (
     <Button
       size={ButtonSize.Tiny}
-      className={cn(
-        "tw-w-full tw-text-[14px] tw-leading-[21px] tw-font-semibold tw-mt-auto"
-      )}
+      className={cn("tw-w-full tw-mt-auto")}
       disabled={!canJoin && !canRebook}
       onClick={mainBtnHandler}
     >
-      {mainBtnText}
+      <Typography
+        element="caption"
+        weight="semibold"
+        className="tw-text-natural-50"
+      >
+        {mainBtnText}
+      </Typography>
     </Button>
   );
 
   return (
     <div
       className={cn(
-        "tw-flex tw-flex-col tw-items-stretch tw-gap-4 tw-p-6 tw-bg-natural-50",
-        "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-lesson-upcoming-card"
+        "tw-flex tw-flex-col tw-items-stretch tw-gap-4 tw-p-4 md:tw-p-6 tw-bg-natural-50",
+        "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-mobile-lesson-upcoming-card md:tw-shadow-lesson-upcoming-card"
       )}
     >
       <div className="tw-flex tw-justify-between tw-items-stretch tw-gap-6">
