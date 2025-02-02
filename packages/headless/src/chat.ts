@@ -31,11 +31,12 @@ import {
 } from "@tanstack/react-query";
 import { useSocket } from "@/socket";
 import { concat, isEmpty, uniqueId } from "lodash";
+import { ResponseError } from "@litespace/utils";
 
 // ========================== Chat System Functionalities =========================
 
 type OnSuccess = Void;
-type OnError = (err: Error) => void;
+type OnError = (err: ResponseError) => void;
 
 enum MessageStream {
   Add = "add",
@@ -956,7 +957,7 @@ export function useCreateRoom({
   onError,
 }: {
   onSuccess: (response: IRoom.CreateRoomApiResponse) => void;
-  onError: Void;
+  onError: OnError;
 }) {
   const atlas = useAtlas();
   const createRoom = useCallback(

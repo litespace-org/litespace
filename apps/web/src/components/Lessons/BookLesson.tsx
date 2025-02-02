@@ -10,6 +10,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/utils/utils";
+import { ResponseError } from "@litespace/utils";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const BookLesson = ({
   open,
@@ -52,9 +54,16 @@ const BookLesson = ({
     });
   }, [close, tutor.data, toast, intl, queryClient]);
 
-  const onError = useCallback(() => {
-    toast.error({ title: intl("book-lesson.error") });
-  }, [toast, intl]);
+  const onError = useCallback(
+    (error: ResponseError) => {
+      const errorMessage = getErrorMessageId(error);
+      toast.error({
+        title: intl("book-lesson.error"),
+        description: intl(errorMessage),
+      });
+    },
+    [toast, intl]
+  );
 
   const bookLessonMutation = useCreateLesson({
     onSuccess,

@@ -5,6 +5,7 @@ import {
 } from "@litespace/headless/chat";
 import { useUserContext } from "@litespace/headless/context/user";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { useCallback, useState } from "react";
@@ -37,8 +38,12 @@ export function useRoomManager(isStudent: boolean) {
       pinnedRooms.query.refetch();
       allRooms.query.refetch();
     },
-    onError() {
-      toast.error({ title: intl("chat.update-settings.error") });
+    onError(error) {
+      const errorMessage = getErrorMessageId(error);
+      toast.error({
+        title: intl("chat.update-settings.error"),
+        description: errorMessage,
+      });
     },
   });
 

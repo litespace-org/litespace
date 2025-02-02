@@ -12,9 +12,9 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { OnError } from "@/types/query";
 
 type OnSuccess = Void;
-type OnError = (error: Error) => void;
 
 export type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
   IInvoice.FindInvoicesQuery,

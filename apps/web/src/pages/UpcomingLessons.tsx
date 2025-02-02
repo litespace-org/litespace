@@ -16,6 +16,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
 import { orUndefined } from "@litespace/utils/utils";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type RateDialogInfo = {
   tutorId: number | null;
@@ -58,10 +59,13 @@ const UpcomingLessons: React.FC = () => {
 
   const rateTutor = useCreateRatingTutor({
     onSuccess: () => setRateDialogInfo(defaultRateDialogInfo),
-    onError: () =>
+    onError: (error) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rate.error"),
-      }),
+        description: errorMessage,
+      });
+    },
   });
 
   useEffect(() => {

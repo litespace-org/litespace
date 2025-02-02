@@ -11,11 +11,10 @@
     "declarationDir": "types",
     "sourceMap": true,
     "outDir": "dist",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "paths": {
-      "@/*": ["./src/*"],
-      "@litespace/sol/*": ["../sol/dist/esm/*"]
+      "@/*": ["./src/*"]
     }
   }
 }

@@ -20,6 +20,8 @@ import {
 } from "@litespace/ui/hooks/validation";
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { ResponseError } from "@litespace/utils";
 
 interface IForm {
   name: string;
@@ -74,10 +76,11 @@ const Register: React.FC = () => {
   );
 
   const onError = useCallback(
-    (error: Error) => {
+    (error: ResponseError) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("register.error"),
-        description: error instanceof Error ? error.message : undefined,
+        description: intl(errorMessage),
       });
     },
     [intl, toast]

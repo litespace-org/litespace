@@ -1,14 +1,12 @@
 import { ApiError, ApiErrorCode } from "@litespace/types";
-import { ResponseError } from "@litespace/sol/error";
+import { ResponseError } from "@litespace/utils/error";
 
-const error = (code: ApiErrorCode, message: string, status: number) =>
-  new ResponseError(
-    {
-      code,
-      message,
-    },
-    status
-  );
+const error = (errorCode: ApiErrorCode, message: string, statusCode: number) =>
+  new ResponseError({
+    errorCode,
+    message,
+    statusCode,
+  });
 
 export const apierror = error;
 

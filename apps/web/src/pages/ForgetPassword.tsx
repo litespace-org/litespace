@@ -10,6 +10,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { AnimatePresence, motion } from "framer-motion";
 
 type FormData = {
@@ -52,8 +53,12 @@ const ForgetPassword: React.FC = () => {
       setSentEmail(true);
       reset();
     },
-    onError() {
-      toast.error({ title: intl("forget-password.error") });
+    onError(error) {
+      const errorMessage = getErrorMessageId(error);
+      toast.error({
+        title: intl("forget-password.error"),
+        description: intl(errorMessage),
+      });
     },
   });
 

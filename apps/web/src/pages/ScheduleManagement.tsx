@@ -17,6 +17,7 @@ import Header from "@/components/ScheduleManagement/Header";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { isEmpty } from "lodash";
 import { IAvailabilitySlot } from "@litespace/types";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const ScheduleManagement: React.FC = () => {
   const { user } = useUserContext();
@@ -70,9 +71,10 @@ const ScheduleManagement: React.FC = () => {
       toast.success({ title: intl("manage-schedule.update.success") });
     },
     onError(error) {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("manage-schedule.update.error"),
-        description: error instanceof Error ? error.message : undefined,
+        description: errorMessage,
       });
     },
   });

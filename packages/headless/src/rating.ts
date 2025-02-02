@@ -3,9 +3,9 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { useCallback } from "react";
 import { MutationKey, QueryKey } from "@/constants";
 import { useAtlas } from "@/atlas";
+import { OnError } from "@/types/query";
 
 export type OnSuccess = Void;
-export type OnError = (error: Error) => void;
 
 export function useFindTutorRatings(
   id: number | null,

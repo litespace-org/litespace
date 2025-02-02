@@ -22,6 +22,8 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
+import { ResponseError } from "@litespace/utils";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -67,10 +69,13 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   }, []);
 
   const onDeleteError = useCallback(
-    () =>
+    (error: ResponseError) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rating.delete.error"),
-      }),
+        description: intl(errorMessage),
+      });
+    },
     [intl, toast]
   );
 
@@ -94,10 +99,13 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   }, [id, invalidateQuery, closeEdit]);
 
   const onEditError = useCallback(
-    () =>
+    (error: ResponseError) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rating.edit.error"),
-      }),
+        description: intl(errorMessage),
+      });
+    },
     [intl, toast]
   );
   const editMutation = useEditRatingTutor({

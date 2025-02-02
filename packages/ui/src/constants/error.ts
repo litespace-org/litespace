@@ -1,7 +1,7 @@
 import { LocalId } from "@/locales";
 import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
 
-export const ApiErrorMap: Record<ApiErrorCode, LocalId> = {
+export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.Forbidden]: "error.api.forbidden",
   [ApiError.BadRequest]: "error.api.bad-request",
   [ApiError.RoomExists]: "error.api.room-exists",

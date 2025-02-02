@@ -1,4 +1,5 @@
-import { ApiErrorCode } from "@litespace/types";
+import { ApiError, ApiErrorCode, FieldError } from "@litespace/types";
+
 export async function safe<T>(handler: () => Promise<T>) {
   try {
     return await handler();
@@ -7,19 +8,37 @@ export async function safe<T>(handler: () => Promise<T>) {
   }
 }
 
-type CodedError = {
-  message: string;
-  code: ApiErrorCode;
-};
+export function isApiError(value: unknown): value is ApiError {
+  return (
+    typeof value === "string" &&
+    Object.values(ApiError).includes(value as ApiError)
+  );
+}
+
+// Assuming FieldError is another type
+export function isFieldError(value: unknown): value is FieldError {
+  return (
+    typeof value === "string" &&
+    Object.values(FieldError).includes(value as FieldError)
+  );
+}
 
 // api error handling
 export class ResponseError extends Error {
   statusCode: number;
   errorCode: ApiErrorCode;
 
-  constructor(error: CodedError, statusCode: number) {
-    super(error.message);
+  constructor({
+    errorCode,
+    statusCode,
+    message,
+  }: {
+    errorCode: ApiErrorCode;
+    statusCode: number;
+    message: string;
+  }) {
+    super(message);
     this.statusCode = statusCode;
-    this.errorCode = error.code;
+    this.errorCode = errorCode;
   }
 }

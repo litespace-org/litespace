@@ -1,6 +1,10 @@
-import { ApiError, ApiErrorCode, Backend, FieldError } from "@litespace/types";
+import { ApiErrorCode, Backend } from "@litespace/types";
+import {
+  ResponseError,
+  isApiError,
+  isFieldError,
+} from "@litespace/utils/error";
 import axios, { AxiosError, AxiosInstance } from "axios";
-import { ResponseError } from "@litespace/sol/error";
 
 export enum TokenType {
   Bearer = "Bearer",
@@ -49,21 +53,6 @@ export const peers = {
   },
 } as const;
 
-function isApiError(value: unknown): value is ApiError {
-  return (
-    typeof value === "string" &&
-    Object.values(ApiError).includes(value as ApiError)
-  );
-}
-
-// Assuming FieldError is another type
-function isFieldError(value: unknown): value is FieldError {
-  return (
-    typeof value === "string" &&
-    Object.values(FieldError).includes(value as FieldError)
-  );
-}
-
 export function createClient(
   backend: Backend,
   token: AuthToken | null
@@ -97,7 +86,11 @@ export function createClient(
 
     if (message && code)
       return Promise.reject(
-        new ResponseError({ message, code }, error.response.status)
+        new ResponseError({
+          message,
+          errorCode: code,
+          statusCode: error.response.status,
+        })
       );
 
     return Promise.reject(error);

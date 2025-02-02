@@ -25,6 +25,8 @@ import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
 import { governorates } from "@/constants/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { ResponseError } from "@litespace/utils";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type IForm = {
   name: string;
@@ -141,10 +143,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   }, [invalidateQuery]);
 
   const onError = useCallback(
-    (error: Error) => {
+    (error: ResponseError) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("profile.update.error"),
-        description: error.message,
+        description: intl(errorMessage),
       });
     },
     [intl, toast]
