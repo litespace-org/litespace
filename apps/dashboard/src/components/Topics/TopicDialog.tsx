@@ -27,6 +27,7 @@ const TopicDialog: React.FC<{
       englishName: topic?.name.en || "",
     },
   });
+  const errors = form.formState.errors;
 
   const onCreateSuccess = useCallback(() => {
     toast.success({
@@ -106,6 +107,8 @@ const TopicDialog: React.FC<{
               control={form.control}
               value={form.watch("arabicName")}
               name="arabicName"
+              state={errors.arabicName ? "error" : undefined}
+              helper={errors.arabicName?.message}
             />
           }
         />
@@ -117,6 +120,8 @@ const TopicDialog: React.FC<{
               control={form.control}
               value={form.watch("englishName")}
               name="englishName"
+              state={errors.englishName ? "error" : undefined}
+              helper={errors.englishName?.message}
             />
           }
         />

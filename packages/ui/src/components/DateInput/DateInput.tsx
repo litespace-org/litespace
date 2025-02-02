@@ -10,6 +10,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { Dayjs } from "dayjs";
 import dayjs from "@/lib/dayjs";
 import { Calendar } from "react-feather";
+import { orUndefined } from "@litespace/utils";
 
 export type DateInputProps = {
   placeholder?: string;
@@ -66,13 +67,13 @@ export const DateInput: React.FC<DateInputProps> = ({
     <div className="tw-w-full tw-relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
-        error={!!error}
-        helper={error}
+        state={error ? "error" : "success"}
+        helper={orUndefined(error)}
         value={value}
         disabled={disabled}
         onFocus={open}
-        endActions={useMemo(
-          () => [{ id: 1, Icon: Calendar, onClick: () => setShow(!show) }],
+        endAction={useMemo(
+          () => ({ id: 1, Icon: Calendar, onClick: () => setShow(!show) }),
           [show]
         )}
       />

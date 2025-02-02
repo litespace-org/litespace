@@ -79,6 +79,7 @@ export const TutorPersonalInfoSettings: React.FC<{
   const userTopics = useUserTopics();
   const validateUserName = useValidateUserName(tutor.name !== null);
   const validateBio = useValidateBio(tutor.bio !== null);
+  const errors = form.formState.errors;
 
   const allTopics = useMemo(() => {
     if (!topics.query.data) return [];
@@ -145,26 +146,27 @@ export const TutorPersonalInfoSettings: React.FC<{
         {intl("tutor-settings.personal-info.title")}
       </Typography>
       <div className="flex items-center gap-8">
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.name")}</Label>
-          <Controller.Input
-            value={form.watch("name")}
-            control={form.control}
-            rules={{ validate: validateUserName }}
-            autoComplete="off"
-            name="name"
-          />
-        </div>
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.bio")}</Label>
-          <Controller.Input
-            value={form.watch("bio")}
-            control={form.control}
-            rules={{ validate: validateBio }}
-            autoComplete="off"
-            name="bio"
-          />
-        </div>
+        <Controller.Input
+          value={form.watch("name")}
+          control={form.control}
+          rules={{ validate: validateUserName }}
+          autoComplete="off"
+          name="name"
+          label={intl("tutor-settings.personal-info.name")}
+          state={errors.name ? "error" : undefined}
+          helper={errors.name?.message}
+        />
+        <Label>{intl("tutor-settings.personal-info.bio")}</Label>
+        <Controller.Input
+          value={form.watch("bio")}
+          control={form.control}
+          rules={{ validate: validateBio }}
+          autoComplete="off"
+          name="bio"
+          label={intl("tutor-settings.personal-info.bio")}
+          state={errors.bio ? "error" : undefined}
+          helper={errors.bio?.message}
+        />
       </div>
 
       <Topics
@@ -186,6 +188,8 @@ export const TutorPersonalInfoSettings: React.FC<{
         autoComplete="off"
         className="min-h-[172px]"
         name="about"
+        state={errors.about ? "error" : undefined}
+        helper={errors.about?.message}
       />
       <Typography
         element="subtitle-1"

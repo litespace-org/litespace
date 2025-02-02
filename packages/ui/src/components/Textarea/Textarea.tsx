@@ -1,54 +1,167 @@
 import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
-import { AnimatePresence } from "framer-motion";
-import { Helper } from "@/components/Input/Input";
+import { Tooltip } from "@/components/Tooltip";
+import { useFormatMessage } from "@/hooks";
 
 export interface TextareaProps
-  extends React.InputHTMLAttributes<HTMLTextAreaElement> {
-  helper?: string;
-  error?: boolean;
+  extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  /**
+   * Textarea text direction in case of no value is typed yet.
+   */
+  idleDir?: "rtl" | "ltr";
+  state?: "error" | "success";
+  label?: string;
+  helper?: string | null;
+  maxAllowedCharacters?: number;
 }
 
 export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ error, name, value, placeholder, helper, className, ...props }, ref) => {
+  (
+    {
+      state,
+      label,
+      value,
+      disabled,
+      helper,
+      maxAllowedCharacters,
+      idleDir = "rtl",
+      className,
+      ...props
+    },
+    ref
+  ) => {
+    const intl = useFormatMessage();
     return (
-      <div className="tw-flex tw-flex-col tw-gap-1">
-        <textarea
-          ref={ref}
-          name={name}
-          disabled={props.disabled}
-          data-error={!!error}
-          value={value}
-          placeholder={placeholder}
+      <div
+        className={cn(
+          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-group",
+          disabled && "tw-cursor-not-allowed"
+        )}
+      >
+        {label ? (
+          <Typography
+            element="caption"
+            weight="semibold"
+            htmlFor={props.id}
+            className={cn({
+              "tw-text-natural-950": !disabled,
+              "tw-text-natural-500": disabled,
+            })}
+          >
+            {label}
+          </Typography>
+        ) : null}
+        <div
+          data-disabled={disabled}
           className={cn(
-            //base
-            "tw-w-full tw-h-full tw-resize-none tw-bg-natural-50 tw-font-cairo",
-            "tw-border tw-border-natural-300 tw-p-[14px] tw-rounded-lg",
-            "tw-text-natural-900 tw-text-base tw-transition-all tw-duration-200",
-            // hover
-            "hover:tw-bg-brand-50 hover:tw-border-brand-200",
-            // active/focus
-            "focus-within:tw-border-brand-500 focus-within:hover:tw-border-brand-500 focus-within:tw-shadow-input-focus focus:tw-outline-none",
-            //placeholder
-            "placeholder:tw-text-natural-400",
-            // error
-            "data-[error=true]:tw-shadow-input-error data-[error=true]:tw-border-destructive-600 data-[error=true]:hover:tw-bg-natural-50 data-[error=true]:hover:tw-border-destructive-600",
-            // disabled
-            "disabled:tw-opacity-50",
-            className
+            // base
+            "tw-w-full tw-py-[6px]",
+            "tw-rounded-[6px] tw-border",
+            "tw-flex tw-flex-col tw-gap-1 tw-bg-natural-50",
+            // Focused
+            "focus-within:tw-ring-1 focus-within:tw-ring-brand-700 focus-within:tw-border-brand-700",
+            {
+              // Default || Filled
+              "tw-border-natural-300": !state && !disabled,
+              // Error
+              "tw-border-destructive-600": state === "error",
+              // Success
+              "tw-border-brand-600": state === "success",
+              // Disabled
+              "tw-bg-natural-100 tw-border-natural-200": disabled,
+            }
           )}
-          {...props}
-        />
-
+        >
+          <textarea
+            dir={!value ? idleDir : "auto"}
+            value={value}
+            disabled={disabled}
+            className={cn(
+              "tw-grow tw-bg-inherit tw-w-full tw-resize-none focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full tw-px-3",
+              // Placeholder
+              "placeholder:tw-text-natural-600",
+              {
+                // Filled
+                "tw-text-natural-950": !disabled && value,
+                // Disabled
+                "tw-text-natural-500 placeholder:tw-text-natural-500 tw-cursor-not-allowed":
+                  disabled,
+              }
+            )}
+            ref={ref}
+            {...props}
+          />
+          {maxAllowedCharacters ? (
+            <div dir="ltr" className="tw-flex tw-flex-col tw-gap-1 tw-px-3">
+              <hr
+                className={cn("group-focus-within:tw-border-brand-700", {
+                  "tw-border-natural-200": disabled,
+                  "tw-border-natural-300": !state,
+                  "tw-border-success-600": state === "success",
+                  "tw-border-destructive-600": state === "error",
+                })}
+              />
+              <Tooltip
+                show={!!value && value.toString().length > maxAllowedCharacters}
+                side="right"
+                content={
+                  <Typography
+                    element="body"
+                    className="tw-text-natural-950 tw-max-w-[296px]"
+                  >
+                    {intl("text-area.validate.max-allowed")}
+                  </Typography>
+                }
+              >
+                <div className="tw-w-fit">
+                  <Typography
+                    element="tiny-text"
+                    className={cn(
+                      "tw-justify-self-end group-focus-within:tw-text-natural-950",
+                      {
+                        "tw-text-natural-600": !value && !disabled,
+                        "tw-text-natural-950": value && !disabled,
+                        "tw-text-natural-500": disabled,
+                      }
+                    )}
+                  >
+                    <Typography
+                      element="tiny-text"
+                      className={cn("tw-justify-self-end", {
+                        "tw-text-natural-500": disabled,
+                        "tw-text-destructive-600":
+                          state === "error" ||
+                          (value &&
+                            value.toString().length > maxAllowedCharacters),
+                      })}
+                    >
+                      {value?.toString().length || 0}{" "}
+                    </Typography>
+                    /{maxAllowedCharacters}
+                  </Typography>
+                </div>
+              </Tooltip>
+            </div>
+          ) : null}
+        </div>
         <AnimatePresence mode="wait" initial={false}>
           {helper ? (
             <Helper>
               <Typography
                 element="tiny-text"
-                className={cn(
-                  error ? "tw-text-destructive-500" : "tw-text-natural-400"
-                )}
+                weight="semibold"
+                className={cn("group-focus-within:tw-text-natural-600", {
+                  // Default || Filled
+                  "tw-text-natural-600": !state && !disabled,
+                  // Success
+                  "tw-text-success-600": state === "success",
+                  // Error
+                  "tw-text-destructive-600": state === "error",
+                  // Disabled
+                  "tw-text-natural-500": disabled,
+                })}
               >
                 {helper}
               </Typography>
@@ -59,3 +172,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     );
   }
 );
+
+const framer = {
+  initial: { opacity: 0, y: 10 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 10 },
+  transition: { duration: 0.2 },
+};
+
+export const Helper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
+  return (
+    <motion.span {...framer} className="tw-flex">
+      {children}
+    </motion.span>
+  );
+};

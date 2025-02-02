@@ -4,7 +4,7 @@ import {
   ButtonType,
   ButtonVariant,
 } from "@litespace/ui/Button";
-import { Form, Label, Field, Controller } from "@litespace/ui/Form";
+import { Form, Controller } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -35,6 +35,7 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
       email: "",
     },
   });
+  const errors = formState.errors;
 
   const email = watch("email");
 
@@ -81,23 +82,20 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
         onSubmit={onSubmit}
         className="flex flex-col items-center justify-center gap-4"
       >
-        <Field
-          label={<Label id="email-forgotten">{intl("labels.email")}</Label>}
-          field={
-            <Controller.Input
-              required={true}
-              value={email}
-              id="email-forgotten"
-              control={control}
-              placeholder={intl("labels.email.placeholder")}
-              autoComplete="off"
-              error={!!formState.errors.email?.message}
-              helper={formState.errors.email?.message}
-              disabled={mutation.isPending}
-              name="email"
-            />
-          }
+        <Controller.Input
+          required={true}
+          value={email}
+          id="email-forgotten"
+          control={control}
+          placeholder={intl("labels.email.placeholder")}
+          autoComplete="off"
+          state={errors.email ? "error" : "success"}
+          helper={errors.email?.message}
+          label={intl("labels.email")}
+          disabled={mutation.isPending}
+          name="email"
         />
+
         <Button
           type={ButtonType.Main}
           variant={ButtonVariant.Primary}

@@ -1,90 +1,141 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
-import { InputType, InputAction } from "@/components/Input/types";
+import { InputType, InputAction, InputSize } from "@/components/Input/types";
 import { Typography } from "@/components/Typography";
-
-// auto resize text input, used for chat box
-// https://www.youtube.com/watch?v=sOnPz_GMa38
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   /**
-   * Input text direction incase of no value is typed yet.
+   * Input text direction in case of no value is typed yet.
    */
   idleDir?: "rtl" | "ltr";
   type?: InputType;
-  startActions?: Array<InputAction>;
-  endActions?: Array<InputAction>;
-  error?: boolean;
-  helper?: string | null;
+  inputSize?: InputSize;
+  icon?: React.ReactNode;
+  endAction?: InputAction;
+  state?: "error" | "success";
+  label?: string;
+  helper?: string;
 }
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
     {
       type,
-      error,
+      state,
+      label,
       value,
       disabled,
       helper,
+      inputSize = "large",
       idleDir = "rtl",
-      startActions = [],
-      endActions = [],
+      icon,
+      endAction,
       className,
       ...props
     },
     ref
   ) => {
     return (
-      <div className="tw-flex tw-flex-col tw-w-full">
+      <div
+        className={cn(
+          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-group",
+          disabled && "tw-cursor-not-allowed"
+        )}
+      >
+        {label ? (
+          <Typography
+            element="caption"
+            weight="semibold"
+            htmlFor={props.id}
+            className={cn({
+              "tw-text-natural-950": !disabled,
+              "tw-text-natural-500": disabled,
+            })}
+          >
+            {label}
+          </Typography>
+        ) : null}
         <div
-          data-filled={!!value}
-          data-error={!!error}
           data-disabled={disabled}
           className={cn(
             // base
-            "tw-w-full tw-transition-colors tw-duration-200",
-            "tw-flex tw-flex-row tw-items-center tw-gap-2",
-            // default
-            "tw-bg-natural-50 tw-border tw-border-natural-300 tw-rounded-lg tw-px-[0.875rem]",
-            // hover
-            "hover:tw-bg-brand-50 hover:tw-border-brand-200",
-            // active/focus
-            "focus-within:tw-border-brand-500 focus-within:tw-shadow-input-focus",
-            // error
-            "data-[error=true]:tw-shadow-input-error data-[error=true]:tw-border-destructive-600 data-[error=true]:hover:tw-bg-natural-50 data-[error=true]:hover:tw-border-destructive-600",
-            // disabled
-            "data-[disabled=true]:tw-opacity-50",
-            className
+            "tw-w-full tw-px-3",
+            "tw-rounded-[6px] tw-border",
+            "tw-flex tw-gap-2 tw-items-center tw-bg-natural-50",
+            {
+              "tw-h-7": inputSize === "small",
+              "tw-h-8": inputSize === "medium",
+              "tw-h-10": inputSize === "large",
+            },
+            // Focused
+            "focus-within:tw-ring-1 focus-within:tw-ring-brand-700 focus-within:tw-border-brand-700",
+            {
+              // Default || Filled
+              "tw-border-natural-300": !state && !disabled,
+              // Error
+              "tw-border-destructive-600": state === "error",
+              // Success
+              "tw-border-brand-600": state === "success",
+              // Disabled
+              "tw-bg-natural-100 tw-border-natural-200": disabled,
+            }
           )}
         >
-          <Actions actions={startActions} />
+          {icon ? (
+            <div
+              className={cn(
+                // Default
+                "tw-w-4 tw-h-4 tw-cursor-default [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+                // Filled
+                value && !disabled && "[&_*]:tw-stroke-natural-950",
+                // Disabled
+                disabled &&
+                  "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none"
+              )}
+            >
+              {icon}
+            </div>
+          ) : null}
           <input
             dir={!value ? idleDir : "auto"}
             type={type}
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-w-full tw-text-start tw-bg-transparent focus:tw-outline-none",
-              "placeholder:tw-font-normal placeholder:tw-text-natural-400 placeholder:tw-text-base placeholder:tw-leading-6",
-              "tw-text-natural-900 dark:tw-text-foreground tw-leading-6 tw-py-4"
+              "tw-grow tw-bg-inherit focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full",
+              // Placeholder
+              "placeholder:tw-text-natural-600",
+              {
+                // Filled
+                "tw-text-natural-950": !disabled && value,
+                // Disabled
+                "tw-text-natural-500 placeholder:tw-text-natural-500 tw-cursor-not-allowed":
+                  disabled,
+              }
             )}
             ref={ref}
             {...props}
           />
-          <Actions actions={endActions} />
+          <Actions disabled={disabled} action={endAction} filled={!!value} />
         </div>
         <AnimatePresence mode="wait" initial={false}>
           {helper ? (
             <Helper>
               <Typography
                 element="tiny-text"
-                weight="regular"
-                className={cn(
-                  "tw-mt-1",
-                  error ? "tw-text-destructive-500" : "tw-text-natural-400"
-                )}
+                weight="semibold"
+                className={cn("group-focus-within:tw-text-natural-600", {
+                  // Default or filled
+                  "tw-text-natural-600": !state && !disabled,
+                  // Success
+                  "tw-text-success-600": state === "success",
+                  // Error
+                  "tw-text-destructive-600": state === "error",
+                  // Disabled
+                  "tw-text-natural-500": disabled,
+                })}
               >
                 {helper}
               </Typography>
@@ -106,19 +157,37 @@ const framer = {
 export const Helper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  return <motion.div {...framer}>{children}</motion.div>;
+  return (
+    <motion.div {...framer} className="tw-flex">
+      {children}
+    </motion.div>
+  );
 };
 
 const Actions: React.FC<{
-  actions: InputAction[];
-}> = ({ actions }) => {
+  action: InputAction | undefined;
+  disabled?: boolean;
+  filled?: boolean;
+}> = ({ action, disabled, filled }) => {
+  if (!action) return null;
   return (
-    <>
-      {actions.map(({ id, Icon, onClick, className }) => (
-        <button key={id} onClick={onClick} type="button" className={className}>
-          <Icon />
-        </button>
-      ))}
-    </>
+    <button
+      key={action.id}
+      onClick={action.onClick}
+      type="button"
+      className={cn(
+        // Default
+        "tw-w-4 tw-h-4 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+        "tw-outline-none focus:tw-ring-2 tw-ring-brand-700 tw-rounded-sm",
+        // Filled
+        filled && !disabled && "[&_*]:tw-stroke-natural-950",
+        // Disabled
+        disabled &&
+          "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none",
+        action.className
+      )}
+    >
+      <action.Icon />
+    </button>
   );
 };

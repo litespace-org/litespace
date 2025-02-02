@@ -6,3 +6,5 @@ export type InputAction = {
   onClick?: () => void;
   className?: string;
 };
+
+export type InputSize = "small" | "medium" | "large";

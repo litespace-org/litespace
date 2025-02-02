@@ -74,7 +74,9 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
             "student-dashboard.rating-dialog.add-comment-placeholder"
           )}
           value={newFeedback || ""}
-          onChange={(e) => setNewFeedback(e.target.value)}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setNewFeedback(e.target.value)
+          }
         />
         <Button
           size={ButtonSize.Large}

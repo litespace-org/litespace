@@ -4,7 +4,7 @@ import {
 } from "@/components/DateInput";
 import { Duration as BaseDuration } from "@/components/Duration";
 import { Gender as BaseGender } from "@/components/Gender";
-import { Input as BaseInput, InputProps } from "@/components/Input/Input";
+import { Input as BaseInput, InputProps } from "@/components/Input";
 import {
   NumericInput as BaseNumericInput,
   NumericInputProps,
@@ -88,11 +88,8 @@ export function Input<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
-        return (
-          <BaseInput {...field} {...props} helper={message} error={!!message} />
-        );
+      render={({ field }) => {
+        return <BaseInput {...field} {...props} />;
       }}
     />
   );
@@ -115,23 +112,18 @@ export function Password<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
+      render={({ field }) => {
         return (
           <BaseInput
-            helper={message}
-            error={!!message}
             placeholder="******************"
             autoComplete="off"
             type={hidden ? "password" : "text"}
             idleDir="ltr"
-            startActions={[
-              {
-                id: 1,
-                Icon: () => (hidden ? <EyeSlash /> : <Eye />),
-                onClick: () => setHidden(!hidden),
-              },
-            ]}
+            endAction={{
+              Icon: hidden ? EyeSlash : Eye,
+              id: 4,
+              onClick: () => setHidden((prev) => !prev),
+            }}
             {...field}
             {...props}
           />
@@ -382,14 +374,7 @@ export function Textarea<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => (
-        <BaseTextarea
-          error={!!formState.errors[name]?.message}
-          helper={(formState.errors[name]?.message as string) || props.helper}
-          {...field}
-          {...props}
-        />
-      )}
+      render={({ field }) => <BaseTextarea {...field} {...props} />}
     />
   );
 }

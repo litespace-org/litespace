@@ -21,6 +21,7 @@ const MessageBox: React.FC<{
   const form = useForm<IForm>({ defaultValues: { message: "" } });
   const message = form.watch("message");
   const sanitizedMessage = useMemo(() => sanitizeMessage(message), [message]);
+  const errors = form.formState.errors;
 
   const send = useCallback(
     (message: string) => {
@@ -62,6 +63,8 @@ const MessageBox: React.FC<{
         autoComplete="off"
         autoFocus
         value={form.watch("message")}
+        state={errors.message ? "error" : undefined}
+        helper={errors.message?.message}
         className="min-h-10 w-full bg-transparent focus:outline-none"
       />
       <div className="flex flex-row gap-2">

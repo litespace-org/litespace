@@ -31,6 +31,7 @@ const UserForm: React.FC<{
   const form = useForm<IForm>({
     defaultValues: { email: "", password: "", role: IUser.Role.RegularAdmin },
   });
+  const errors = form.formState.errors;
 
   const onClose = useCallback(() => {
     form.reset();
@@ -85,28 +86,25 @@ const UserForm: React.FC<{
           onSubmit={form.handleSubmit(onSubmit)}
           className="min-w-96 max-h-[32rem] flex flex-col gap-4"
         >
-          <Field
-            label={<Label>{intl("dashboard.user.email")}</Label>}
-            field={
-              <Controller.Input
-                control={form.control}
-                name="email"
-                value={form.watch("email")}
-                rules={{ validate: validateEmail }}
-              />
-            }
+          <Controller.Input
+            control={form.control}
+            name="email"
+            value={form.watch("email")}
+            rules={{ validate: validateEmail }}
+            state={errors.email ? "error" : undefined}
+            helper={errors.email?.message}
+            label={intl("dashboard.user.email")}
           />
-          <Field
-            label={<Label>{intl("dashboard.user.password")}</Label>}
-            field={
-              <Controller.Input
-                control={form.control}
-                name="password"
-                value={form.watch("password")}
-                rules={{ validate: validatePassword }}
-                type="password"
-              />
-            }
+
+          <Controller.Password
+            control={form.control}
+            name="password"
+            value={form.watch("password")}
+            rules={{ validate: validatePassword }}
+            type="password"
+            label={intl("dashboard.user.password")}
+            state={errors.password ? "error" : undefined}
+            helper={errors.password?.message}
           />
           <Field
             label={<Label>{intl("dashboard.user.role")}</Label>}

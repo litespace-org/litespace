@@ -1,4 +1,4 @@
-import { Form, Label, Field, Controller } from "@litespace/ui/Form";
+import { Form, Controller } from "@litespace/ui/Form";
 import { Button, ButtonSize } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -20,7 +20,12 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const user = useUserContext();
-  const { control, handleSubmit, watch } = useForm<IForm>({
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<IForm>({
     defaultValues: {
       email: "admin@litespace.org",
       password: "Password@8",
@@ -64,31 +69,27 @@ const Login: React.FC = () => {
 
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-4">
-              <Field
-                label={<Label id="email">{intl("labels.email")}</Label>}
-                field={
-                  <Controller.Input
-                    control={control}
-                    name="email"
-                    value={email}
-                    placeholder={intl("labels.email.placeholder")}
-                    autoComplete="off"
-                    disabled={mutation.isPending}
-                  />
-                }
+              <Controller.Input
+                control={control}
+                name="email"
+                value={email}
+                placeholder={intl("labels.email.placeholder")}
+                autoComplete="off"
+                disabled={mutation.isPending}
+                label={intl("labels.email")}
+                state={errors.email ? "error" : undefined}
+                helper={errors.email?.message}
               />
 
-              <Field
-                label={<Label id="password">{intl("labels.password")}</Label>}
-                field={
-                  <Controller.Password
-                    control={control}
-                    name="password"
-                    autoComplete="off"
-                    value={password}
-                    disabled={mutation.isPending}
-                  />
-                }
+              <Controller.Password
+                control={control}
+                name="password"
+                autoComplete="off"
+                value={password}
+                disabled={mutation.isPending}
+                label={intl("labels.password")}
+                state={errors.password ? "error" : undefined}
+                helper={errors.password?.message}
               />
 
               <Button

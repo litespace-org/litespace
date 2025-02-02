@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Input } from "@/components/Input";
 import { Duration } from "@litespace/utils/duration";
+import { orUndefined } from "@litespace/utils";
 
 export const DurationInput: React.FC<{
   value?: Duration;
@@ -19,7 +20,7 @@ export const DurationInput: React.FC<{
 
   return (
     <Input
-      onChange={(event) => {
+      onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
         const value = event.target.value;
         if (onChange) onChange(Duration.from(value));
         setRawValue(value);
@@ -28,8 +29,8 @@ export const DurationInput: React.FC<{
       onBlur={() => setFocused(false)}
       value={focused ? rawValue : value?.format() || ""}
       placeholder={placeholder}
-      error={error}
-      helper={helper}
+      state={error ? "error" : "success"}
+      helper={orUndefined(helper)}
       disabled={disabled}
     />
   );

@@ -58,13 +58,11 @@ export const SendInput: React.FC<{
   return (
     <Input
       disabled={disabled}
-      endActions={[
-        {
-          id: 1,
-          Icon: Send,
-          onClick: handleSubmit,
-        },
-      ]}
+      endAction={{
+        id: 1,
+        Icon: Send,
+        onClick: handleSubmit,
+      }}
       onChange={handleChange}
       autoFocus
       value={value}
