@@ -6,7 +6,6 @@ import { IFilter, IInvoice, Paginated, Void } from "@litespace/types";
 import {
   InfiniteData,
   UseInfiniteQueryResult,
-  UseMutationResult,
   UseQueryResult,
   useMutation,
   useQuery,
@@ -113,12 +112,7 @@ export function useCreateInvoice({
 }: {
   onSuccess: OnSuccess;
   onError: OnError;
-}): UseMutationResult<
-  IInvoice.Self,
-  Error,
-  IInvoice.CreateApiPayload,
-  unknown
-> {
+}) {
   const atlas = useAtlas();
 
   const createUserInvoice = useCallback(

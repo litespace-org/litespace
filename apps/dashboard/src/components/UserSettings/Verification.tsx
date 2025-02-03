@@ -21,15 +21,12 @@ const VerificationDetails: React.FC = () => {
     });
   }, [toast, intl]);
 
-  const onError = useCallback(
-    (error: Error) => {
-      toast.error({
-        title: intl("dashboard.user-settings.send-verify.success"),
-        description: error.message,
-      });
-    },
-    [toast, intl]
-  );
+  const onError = useCallback(() => {
+    toast.error({
+      title: intl("dashboard.user-settings.send-verify.success"),
+      // description: error.message,
+    });
+  }, [toast, intl]);
 
   const reverify = useSendVerifyEmail({ onSuccess, onError });
 

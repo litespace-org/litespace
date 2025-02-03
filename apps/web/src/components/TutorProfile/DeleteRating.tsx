@@ -7,7 +7,6 @@ import { useDeleteRatingTutor } from "@litespace/headless/rating";
 import { Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type DeleteRatingProps = {
@@ -34,7 +33,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
   }, [invalidate, tutorId, toast, intl, close]);
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rate.delete.error"),

@@ -16,8 +16,8 @@ import { useForm } from "react-hook-form";
 import { IRating, Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+
 type IForm = {
   feedback?: string;
   rating: number;
@@ -45,7 +45,7 @@ const RateForm: React.FC<RateFormProps> = ({ tutor, rate, close }) => {
   }, [close, form, intl, invalidate, rate, toast, tutor]);
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rate.error"),

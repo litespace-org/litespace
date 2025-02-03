@@ -17,7 +17,6 @@ import {
   useFindWithdrawalMethods,
 } from "@litespace/headless/invoices";
 import { price } from "@litespace/utils/value";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type IForm = {
@@ -84,7 +83,7 @@ const ManageInvoice: React.FC<{
   }, [close, form, intl, invoice, refresh, toast]);
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl(invoice ? "invoices.edit.error" : "invoices.create.error"),

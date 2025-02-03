@@ -13,7 +13,6 @@ import { ITutor } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orNull } from "@litespace/utils/utils";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 export const ProfileSettings: React.FC<ITutor.FindTutorInfoApiResponse> = ({
@@ -56,7 +55,7 @@ export const ProfileSettings: React.FC<ITutor.FindTutorInfoApiResponse> = ({
   }, [info.id, invalidateQuery]);
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor-settings.profile.update.error"),

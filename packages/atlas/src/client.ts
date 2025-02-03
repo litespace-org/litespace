@@ -68,7 +68,7 @@ export function createClient(
     return config;
   });
 
-  client.interceptors.response.use(undefined, (error: AxiosError) => {
+  client.interceptors.response.use(null, (error: AxiosError) => {
     const data = error.response?.data;
 
     if (!error.response || !data || typeof data !== "object")

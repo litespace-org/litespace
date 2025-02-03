@@ -21,7 +21,6 @@ import {
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { ResponseError } from "@litespace/utils";
 
 interface IForm {
   name: string;
@@ -76,7 +75,7 @@ const Register: React.FC = () => {
   );
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("register.error"),

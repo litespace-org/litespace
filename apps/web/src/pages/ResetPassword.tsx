@@ -20,7 +20,6 @@ import Aside from "@/components/Auth/Aside";
 import { Typography } from "@litespace/ui/Typography";
 import Spinner from "@litespace/assets/Spinner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -85,7 +84,7 @@ const ResetPassword = () => {
   );
 
   const onError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("reset-password.error"),

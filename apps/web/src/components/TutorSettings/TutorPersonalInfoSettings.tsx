@@ -18,7 +18,6 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
-import { ResponseError } from "@litespace/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const Topics: React.FC<{
@@ -110,7 +109,7 @@ export const TutorPersonalInfoSettings: React.FC<{
   }, [invalidateQuery]);
 
   const onTopicChangeError = useCallback(
-    (error: ResponseError) => {
+    (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor-settings.personal-info.update-topics-error"),
