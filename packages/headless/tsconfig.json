@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "es6",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "jsx": "preserve",
     "skipLibCheck": true,
-    "module": "ESNext",
+    "module": "esnext",
     "declarationMap": true,
     "declaration": true,
     "outDir": "dist",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"]
