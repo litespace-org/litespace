@@ -71,6 +71,7 @@
     "utils": "pnpm --filter @litespace/utils",
     "types": "pnpm --filter @litespace/types",
     "server": "pnpm --filter @litespace/server",
+    "apollo": "pnpm --filter @litespace/apollo",
     "web": "pnpm --filter @litespace/web",
     "dashboard": "pnpm --filter @litespace/dashboard"
   },

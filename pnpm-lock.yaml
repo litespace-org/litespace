@@ -1337,6 +1337,37 @@ importers:
         specifier: ^1.0.15
         version: 1.0.15
 
+  services/apollo:
+    dependencies:
+      express:
+        specifier: ^4.19.2
+        version: 4.21.2
+      express-async-handler:
+        specifier: ^1.2.0
+        version: 1.2.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.24.1
+    devDependencies:
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.21
+      '@types/node':
+        specifier: ^22.7.5
+        version: 22.13.0
+      env-cmd:
+        specifier: ^10.1.0
+        version: 10.1.0
+      ts-patch:
+        specifier: ^3.2.1
+        version: 3.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+      typescript-transform-paths:
+        specifier: ^3.5.2
+        version: 3.5.3(typescript@5.4.5)
+
   services/recorder:
     dependencies:
       playwright:
