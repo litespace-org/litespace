@@ -9,6 +9,7 @@ chmod 600 private-key.pem
 # Establish an SSH connection and execute commands on the remote server
 ssh -o StrictHostKeyChecking=no -i private-key.pem "$STAGING_SERVER_USERNAME_AND_HOST" <<EOF
     # Comands below will be executed on the remote server 
+    source ~/.bashrc
     cd litespace-org/litespace/
     git pull origin master
     pnpm install 

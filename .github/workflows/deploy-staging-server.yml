@@ -5,29 +5,26 @@ on:
   pull_request:
     branches:
       - "master"
-    types: [closed]
-    paths:
-      - "services/server/**"
-      - "packages/auth/**"
-      - "packages/models/**"
-      - "packages/atlas/**"
-      - "packages/utils/**"
-      - "packages/types/**"
+    # types: [closed]
+    # paths:
+    #   - "services/server/**"
+    #   - "packages/auth/**"
+    #   - "packages/models/**"
+    #   - "packages/atlas/**"
+    #   - "packages/utils/**"
 
   workflow_dispatch:
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: SSH into the staging server
         env:
           PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
           STAGING_SERVER_USERNAME_AND_HOST: ${{ secrets.STAGING_SERVER_USERNAME_AND_HOST }}
         run: |
-          scripts/deploy-staging-server.sh &>/dev/null
-    permissions:
-      contents: read
-      actions: write
-      id-token: write
+          bash scripts/deploy-staging-server.sh # &>/dev/null
