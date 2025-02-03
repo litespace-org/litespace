@@ -20,6 +20,7 @@ import {
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { isDev } from "@/constants/env";
 
 interface IForm {
   email: string;
@@ -36,14 +37,14 @@ const Login: React.FC = () => {
   const validatePassword = useValidatePassword(true);
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
     defaultValues: {
-      email: "student@litespace.org",
-      password: "Password@8",
+      email: isDev ? "student@litespace.org" : "",
+      password: isDev ? "Password@8" : "",
     },
   });
-  const errors = formState.errors;
 
   const email = watch("email");
   const password = watch("password");
+  const errors = formState.errors;
 
   const mutation = useLoginUser({
     onSuccess(result) {
@@ -89,28 +90,32 @@ const Login: React.FC = () => {
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <Controller.Input
-                  control={control}
+                  id="email"
                   name="email"
-                  inputSize={"large"}
+                  idleDir="ltr"
                   value={email}
+                  inputSize="large"
                   autoComplete="off"
+                  control={control}
+                  helper={errors.email?.message}
+                  label={intl("labels.email")}
                   rules={{ validate: validateEmail }}
+                  state={errors.email ? "error" : undefined}
                   placeholder={intl("labels.email.placeholder")}
                   disabled={mutation.isPending || google.loading}
-                  idleDir="ltr"
-                  label={intl("labels.email")}
-                  state={errors.email ? "error" : undefined}
-                  helper={errors.email?.message}
                 />
 
                 <Controller.Password
+                  id="password"
+                  idleDir="rtl"
                   control={control}
                   name="password"
-                  inputSize={"large"}
+                  inputSize="large"
                   value={password}
                   rules={{ validate: validatePassword }}
                   disabled={mutation.isPending || google.loading}
                   label={intl("labels.password")}
+                  placeholder={intl("login.enter-password")}
                   state={errors.password ? "error" : undefined}
                   helper={errors.password?.message}
                 />
