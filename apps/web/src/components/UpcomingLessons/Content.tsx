@@ -1,7 +1,7 @@
 import { Loader, Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
@@ -14,6 +14,7 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { useNavigateToRoom } from "@/hooks/chat";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -68,6 +69,15 @@ export const Content: React.FC<{
     []
   );
 
+  const { room, sendingMessage, navigate, setSendingMessage, onSendMessage } =
+    useNavigateToRoom();
+
+  useEffect(() => {
+    if (!room) return;
+    setSendingMessage(0);
+    navigate(`${Route.Chat}?room=${room}`);
+  }, [room, navigate, setSendingMessage]);
+
   if (loading)
     return (
       <div className="mt-[15vh]">
@@ -109,6 +119,7 @@ export const Content: React.FC<{
           const otherMember = item.members.find(
             (member) => member.role !== user.role
           );
+
           if (!tutor || !otherMember) return null;
           return (
             <motion.div
@@ -122,8 +133,9 @@ export const Content: React.FC<{
                 onJoin={() => console.log("join")}
                 onCancel={() => setLessonId(item.lesson.id)}
                 onRebook={() => setTutorId(tutor.userId)}
-                // TODO: implement tutor sendMsg button functionality
-                onSendMsg={() => console.log("Not implemented yet!")}
+                onSendMsg={() =>
+                  onSendMessage(item.lesson.id, [user.id, otherMember?.userId])
+                }
                 canceled={getCancellerRole(
                   item.lesson.canceledBy,
                   tutor.userId
@@ -137,6 +149,8 @@ export const Content: React.FC<{
                       ? "student"
                       : "tutor",
                 }}
+                sendingMessage={sendingMessage === item.lesson.id}
+                disabled={!!sendingMessage}
               />
             </motion.div>
           );

@@ -26,6 +26,8 @@ export type Props = {
      */
     role: "tutor" | "student";
   };
+  sendingMessage: boolean;
+  disabled: boolean;
   onRebook: Void;
   onJoin: Void;
   onCancel: Void;
@@ -37,6 +39,8 @@ export const LessonCard: React.FC<Props> = ({
   duration,
   member,
   canceled,
+  sendingMessage,
+  disabled,
   onJoin,
   onCancel,
   onRebook,
@@ -174,8 +178,13 @@ export const LessonCard: React.FC<Props> = ({
     <Button
       size={"small"}
       className={cn("tw-w-full tw-mt-auto")}
-      disabled={!canJoin && !canRebook}
+      disabled={
+        disabled ||
+        (mainBtnHandler === onRebook && !canRebook) ||
+        (mainBtnHandler === onJoin && !canJoin)
+      }
       onClick={mainBtnHandler}
+      loading={sendingMessage}
     >
       <Typography
         element="caption"

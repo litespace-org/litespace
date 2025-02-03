@@ -1,4 +1,5 @@
 import {
+  useFindRoomByMembers,
   useFindUncontactedTutors,
   useFindUserRooms,
   useUpdateRoom,
@@ -9,6 +10,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { useCallback, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
@@ -78,5 +80,27 @@ export function useRoomManager(isStudent: boolean) {
       togglePin: ({ roomId, pinned }: { roomId: number; pinned: boolean }) =>
         update.mutate({ roomId, payload: { pinned } }),
     },
+  };
+}
+
+export function useNavigateToRoom() {
+  const navigate = useNavigate();
+  const [members, setMembers] = useState<number[]>([]);
+  const [sendingMessage, setSendingMessage] = useState(0);
+
+  const findRoom = useFindRoomByMembers(members);
+
+  const onSendMessage = useCallback((lessonId: number, members: number[]) => {
+    if (!lessonId) return;
+    setSendingMessage(lessonId);
+    setMembers(members);
+  }, []);
+
+  return {
+    sendingMessage,
+    room: findRoom.data?.room,
+    navigate,
+    setSendingMessage,
+    onSendMessage,
   };
 }

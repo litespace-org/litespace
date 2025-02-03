@@ -9,11 +9,10 @@ import { ILesson, IUser } from "@litespace/types";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { InView } from "react-intersection-observer";
 import { Loading } from "@litespace/ui/Loading";
-import { useNavigate } from "react-router-dom";
-import { useFindRoomByMembers } from "@litespace/headless/chat";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import dayjs from "dayjs";
 import cn from "classnames";
+import { useNavigateToRoom } from "@/hooks/chat";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -53,7 +52,6 @@ export const PastLessons: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const [tutor, setTutor] = useState<number | null>(null);
-  const [members, setMembers] = useState<number[]>([]);
 
   const closeRebookingDialog = useCallback(() => {
     setTutor(null);
@@ -77,21 +75,14 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user]
   );
 
-  const findRoom = useFindRoomByMembers(members);
-  const [sendingMessage, setSendingMessage] = useState(0);
-
-  const navigate = useNavigate();
-
-  const onSendMessage = useCallback((lessonId: number, members: number[]) => {
-    setMembers(members);
-    setSendingMessage(lessonId);
-  }, []);
+  const { room, sendingMessage, navigate, onSendMessage, setSendingMessage } =
+    useNavigateToRoom();
 
   useEffect(() => {
-    if (!findRoom.data?.room) return;
+    if (!room) return;
     setSendingMessage(0);
-    navigate(`${Route.Chat}?room=${findRoom.data.room}`);
-  }, [findRoom.data?.room, navigate]);
+    navigate(`${Route.Chat}?room=${room}`);
+  }, [room, navigate, setSendingMessage]);
 
   if (!mq.lg)
     return (
