@@ -1,0 +1,39 @@
+name: Pull Request Closed
+
+# only trigger on pull request closed events
+on:
+  pull_request:
+    branches:
+      - "master"
+    types: [closed]
+
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH into the staging server
+        env:
+          PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
+          STAGING_SERVER_USERNAME_AND_HOST: ${{ secrets.STAGING_SERVER_USERNAME_AND_HOST }}
+        run: |
+          # Write the private key to a file
+          echo "$PRIVATE_KEY" > private_key.pem 
+
+          # Set the appropriate permissions for the key file
+          chmod 600 private_key.pem 
+
+          # Establish an SSH connection and execute commands on the remote server
+          ssh -o StrictHostKeyChecking=no -i private_key.pem "$STAGING_SERVER_USERNAME_AND_HOST" <<EOF
+            # Comands below will be executed on the server 
+            echo "Works?!" > text.txt
+          EOF
+
+          # Remove the private key file after use for security
+          rm -f private_key.pem
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
