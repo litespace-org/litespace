@@ -19,6 +19,7 @@ import {
 } from "@litespace/ui/hooks/validation";
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 interface IForm {
   email: string;
@@ -50,9 +51,10 @@ const Login: React.FC = () => {
       return navigate(Route.Root);
     },
     onError(error) {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("login.error"),
-        description: error instanceof Error ? error.message : undefined,
+        description: intl(errorMessage),
       });
     },
   });

@@ -2,32 +2,41 @@
   "name": "@litespace/atlas",
   "description": "LiteSpace API SDK",
   "version": "1.0.0",
-  "main": "dist/cjs/index.js",
-  "module": "dist/esm/index.js",
-  "types": "dist/index.d.ts",
-  "react-native": "dist/esm/index.js",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "rollup -c --bundleConfigAsCjs",
-    "watch": "pnpm build -w",
-    "build:ts": "tsc",
+    "build": "pnpm build:cjs && pnpm build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
     "clean": "rm -rf dist/",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "prepare": "ts-patch install -s",
+    "watch": "npm-watch build"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx",
+      "quiet": false
+    }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    }
   },
   "devDependencies": {
-    "@rollup/plugin-alias": "^5.1.0",
-    "@rollup/plugin-commonjs": "^25.0.8",
-    "@rollup/plugin-json": "^6.1.0",
-    "@rollup/plugin-node-resolve": "^15.2.3",
-    "@rollup/plugin-typescript": "^11.1.6",
-    "rollup": "^4.18.0",
-    "rollup-plugin-dts": "^6.1.1",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "npm-watch": "^0.13.0",
+    "ts-patch": "^3.2.1"
   },
   "dependencies": {
     "@litespace/types": "workspace:^",
+    "@litespace/utils": "workspace:^",
     "dayjs": "^1.11.13",
     "zod": "^3.23.8"
   },

@@ -88,10 +88,12 @@
     "./hooks/withdraw": "./dist/hooks/withdraw.js",
     "./hooks/dom": "./dist/hooks/dom.js",
     "./locales": "./dist/locales/index.js",
+    "./errorMessage": "./dist/lib/error.js",
     "./redux": "./dist/lib/redux.js",
     "./backend": "./dist/lib/backend.js",
     "./cache": "./dist/lib/cache.js",
     "./chat": "./dist/lib/chat.js",
+    "./error": "./dist/constants/error.js",
     "./style.css": "./dist/style.css",
     "./tailwind.config": "./dist/tailwind.config.js",
     "./tailwind.css": "./dist/tailwind.css"

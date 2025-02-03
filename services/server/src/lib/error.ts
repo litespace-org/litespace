@@ -1,29 +1,12 @@
 import { ApiError, ApiErrorCode } from "@litespace/types";
+import { ResponseError } from "@litespace/utils/error";
 
-type CodedError = {
-  message: string;
-  code: ApiErrorCode;
-};
-
-export default class ResponseError extends Error {
-  statusCode: number;
-  errorCode: ApiErrorCode;
-
-  constructor(error: CodedError, statusCode: number) {
-    super(error.message);
-    this.statusCode = statusCode;
-    this.errorCode = error.code;
-  }
-}
-
-const error = (code: ApiErrorCode, message: string, status: number) =>
-  new ResponseError(
-    {
-      code,
-      message,
-    },
-    status
-  );
+const error = (errorCode: ApiErrorCode, message: string, statusCode: number) =>
+  new ResponseError({
+    errorCode,
+    message,
+    statusCode,
+  });
 
 export const apierror = error;
 

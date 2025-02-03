@@ -13,6 +13,7 @@ import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useForgetPassword } from "@litespace/headless/auth";
 import { Route } from "@/types/routes";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type ForgetPasswordProps = {
   open: boolean;
@@ -46,10 +47,11 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   }, [close, intl, reset, toast]);
 
   const onError = useCallback(
-    (error: Error) => {
+    (error: unknown) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
-        title: intl("error.unexpected"),
-        description: error.message,
+        title: intl("forget-password.error"),
+        description: intl(errorMessage),
       });
     },
     [intl, toast]

@@ -25,6 +25,7 @@ import { useTopics, useUserTopics } from "@litespace/headless/topic";
 import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
 import { governorates } from "@/constants/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type IForm = {
   name: string;
@@ -141,10 +142,11 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   }, [invalidateQuery]);
 
   const onError = useCallback(
-    (error: Error) => {
+    (error: unknown) => {
+      const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("profile.update.error"),
-        description: error.message,
+        description: intl(errorMessage),
       });
     },
     [intl, toast]
@@ -280,7 +282,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
           />
         </div>
         <div className="mb-2 md:m-0">
-          <Label>{intl("settings.edit.personal.phone-number")}</Label>
           <Controller.PatternInput
             format="### #### ####"
             placeholder={intl(
@@ -292,6 +293,9 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             rules={{ validate: validatePhoneNumber }}
             autoComplete="off"
             mask=" "
+            label={intl("settings.edit.personal.phone-number")}
+            state={errors.phoneNumber ? "error" : undefined}
+            helper={errors.phoneNumber?.message}
           />
         </div>
         <div className="mb-6 md:m-0">
@@ -343,7 +347,6 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
             />
           </div>
           <div className="mb-6 md:m-0">
-            <Label>{intl("settings.edit.password.confirm")}</Label>
             <Controller.Password
               value={form.watch("password.confirm")}
               control={form.control}

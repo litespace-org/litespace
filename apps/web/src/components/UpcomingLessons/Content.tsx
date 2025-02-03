@@ -13,6 +13,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import BookLesson from "@/components/Lessons/BookLesson";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -42,9 +43,16 @@ export const Content: React.FC<{
     });
   }, [toast, queryClient, intl]);
 
-  const onCancelError = useCallback(() => {
-    toast.error({ title: intl("cancel-lesson.error") });
-  }, [toast, intl]);
+  const onCancelError = useCallback(
+    (error: unknown) => {
+      const errorMessage = getErrorMessageId(error);
+      toast.error({
+        title: intl("cancel-lesson.error"),
+        description: intl(errorMessage),
+      });
+    },
+    [toast, intl]
+  );
 
   const cancelLesson = useCancelLesson({
     onSuccess: onCancelSuccess,

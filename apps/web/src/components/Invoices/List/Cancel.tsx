@@ -4,6 +4,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useCancelInvoiceById } from "@litespace/headless/invoices";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const Cancel: React.FC<{
   open: boolean;
@@ -24,9 +25,10 @@ const Cancel: React.FC<{
 
   const onError = useCallback(
     (error: unknown) => {
+      const errorMessage = getErrorMessageId(error);
       toast.success({
         title: intl("invoices.cancel.error"),
-        description: error instanceof Error ? error.message : undefined,
+        description: intl(errorMessage),
       });
     },
     [intl, toast]

@@ -148,14 +148,11 @@ export function NumericInput<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
+      render={({ field }) => {
         return (
           <BaseNumericInput
             {...props}
             onValueChange={(value) => field.onChange(value.floatValue)}
-            helper={message}
-            error={!!message}
           />
         );
       }}
@@ -178,14 +175,11 @@ export function PatternInput<T extends FieldValues>({
       control={control}
       name={name}
       rules={rules}
-      render={({ field, formState }) => {
-        const message = formState.errors[name]?.message as string;
+      render={({ field }) => {
         return (
           <BasePatternInput
             {...props}
             onValueChange={(value) => field.onChange(value.value)}
-            helper={message}
-            error={!!message}
           />
         );
       }}

@@ -6,15 +6,14 @@ import { IFilter, IInvoice, Paginated, Void } from "@litespace/types";
 import {
   InfiniteData,
   UseInfiniteQueryResult,
-  UseMutationResult,
   UseQueryResult,
   useMutation,
   useQuery,
 } from "@tanstack/react-query";
 import { useCallback } from "react";
+import { OnError } from "@/types/query";
 
 type OnSuccess = Void;
-type OnError = (error: Error) => void;
 
 export type UseFindInvoicesPayload = { userOnly?: boolean } & Omit<
   IInvoice.FindInvoicesQuery,
@@ -113,12 +112,7 @@ export function useCreateInvoice({
 }: {
   onSuccess: OnSuccess;
   onError: OnError;
-}): UseMutationResult<
-  IInvoice.Self,
-  Error,
-  IInvoice.CreateApiPayload,
-  unknown
-> {
+}) {
   const atlas = useAtlas();
 
   const createUserInvoice = useCallback(

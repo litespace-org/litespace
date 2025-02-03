@@ -1,5 +1,5 @@
 import { isProduction } from "@/constants";
-import ResponseError from "@/lib/error";
+import { ResponseError } from "@litespace/utils/error";
 import { AxiosError } from "axios";
 import { NextFunction, Request, Response } from "express";
 import { first } from "lodash";

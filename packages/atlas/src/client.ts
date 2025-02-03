@@ -1,4 +1,9 @@
-import { Backend } from "@litespace/types";
+import { ApiErrorCode, Backend } from "@litespace/types";
+import {
+  ResponseError,
+  isApiError,
+  isFieldError,
+} from "@litespace/utils/error";
 import axios, { AxiosError, AxiosInstance } from "axios";
 
 export enum TokenType {
@@ -63,17 +68,30 @@ export function createClient(
     return config;
   });
 
-  client.interceptors.response.use(undefined, (error: AxiosError) => {
+  client.interceptors.response.use(null, (error: AxiosError) => {
     const data = error.response?.data;
+
+    if (!error.response || !data || typeof data !== "object")
+      return Promise.reject(error);
+
     const message =
-      data &&
-      typeof data === "object" &&
-      "message" in data &&
-      typeof data.message === "string"
+      "message" in data && typeof data.message === "string"
         ? data.message
         : null;
 
-    if (message) return Promise.reject(new Error(message));
+    const code: ApiErrorCode | null =
+      "code" in data && (isApiError(data.code) || isFieldError(data.code))
+        ? data.code
+        : null;
+
+    if (message && code)
+      return Promise.reject(
+        new ResponseError({
+          message,
+          errorCode: code,
+          statusCode: error.response.status,
+        })
+      );
 
     return Promise.reject(error);
   });
