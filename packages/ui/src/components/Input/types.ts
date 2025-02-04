@@ -2,7 +2,7 @@ export type InputType = "password" | "text";
 
 export type InputAction = {
   id: number;
-  Icon: React.FC<{ className?: string }>;
+  icon: React.ReactNode;
   onClick?: () => void;
   className?: string;
 };

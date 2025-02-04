@@ -69,7 +69,11 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         disabled={disabled}
         onFocus={show}
         endAction={useMemo(
-          () => ({ id: 1, Icon: Clock, onClick: toggle }),
+          () => ({
+            id: 1,
+            icon: <Clock className="tw-w-4 tw-h-4" />,
+            onClick: toggle,
+          }),
           [toggle]
         )}
       />

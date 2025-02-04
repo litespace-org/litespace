@@ -70,7 +70,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "tw-h-10": inputSize === "large",
             },
             // Focused
-            "focus-within:tw-ring-1 focus-within:tw-ring-brand-700 focus-within:tw-border-brand-700",
+            "[&:has(input:focus)]:tw-ring-1 [&:has(input:focus)]:tw-ring-brand-700 [&:has(input:focus)]:tw-border-brand-700",
             {
               // Default || Filled
               "tw-border-natural-300": !state && !disabled,
@@ -98,6 +98,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               {icon}
             </div>
           ) : null}
+
           <input
             dir={!value ? idleDir : "auto"}
             type={type}
@@ -118,8 +119,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             ref={ref}
             {...props}
           />
-          <Actions disabled={disabled} action={endAction} filled={!!value} />
+          <Action disabled={disabled} action={endAction} filled={!!value} />
         </div>
+
         <AnimatePresence mode="wait" initial={false}>
           {helper ? (
             <Helper>
@@ -164,7 +166,7 @@ export const Helper: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-const Actions: React.FC<{
+const Action: React.FC<{
   action: InputAction | undefined;
   disabled?: boolean;
   filled?: boolean;
@@ -174,10 +176,12 @@ const Actions: React.FC<{
     <button
       key={action.id}
       onClick={action.onClick}
+      disabled={disabled}
       type="button"
       className={cn(
         // Default
-        "tw-w-4 tw-h-4 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+        "tw-flex tw-items-center tw-justify-center",
+        "tw-w-5 tw-h-5 -tw-mx-1 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
         "tw-outline-none focus:tw-ring-2 tw-ring-brand-700 tw-rounded-sm",
         // Filled
         filled && !disabled && "[&_*]:tw-stroke-natural-950",
@@ -187,7 +191,7 @@ const Actions: React.FC<{
         action.className
       )}
     >
-      <action.Icon />
+      {action.icon}
     </button>
   );
 };

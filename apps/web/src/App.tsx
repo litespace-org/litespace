@@ -10,7 +10,7 @@ import TutorOnboarding from "@/pages/TutorOnboarding";
 import Complete from "@/pages/Complete";
 import StudentDashboard from "@/pages/StudentDashboard";
 import LessonsSchedule from "@/pages/LessonsSchedule";
-import Settings from "@/pages/Settings";
+import StudentSettings from "@/pages/StudentSettings";
 import Payments from "@/pages/Payments";
 import Tutors from "@/pages/Tutors";
 import Invoices from "@/pages/Invoices";
@@ -38,7 +38,7 @@ const router = createBrowserRouter([
       { path: Route.Register, element: <Register /> },
       { path: Route.ResetPassword, element: <ResetPassword /> },
       { path: Route.StudentDashboard, element: <StudentDashboard /> },
-      { path: Route.StudentSettings, element: <Settings /> },
+      { path: Route.StudentSettings, element: <StudentSettings /> },
       { path: Route.TutorDashboard, element: <TutorDashboard /> },
       { path: Route.TutorSettings, element: <TutorSettings /> },
       { path: Route.LessonsSchedule, element: <LessonsSchedule /> },

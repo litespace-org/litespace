@@ -6,7 +6,7 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { redirect } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import { ProfileSettings } from "@/components/TutorSettings/ProfileSettings";
+import Settings from "@/components/TutorSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 
 const TutorSettings: React.FC = () => {
@@ -15,8 +15,10 @@ const TutorSettings: React.FC = () => {
   const tutorInfo = useFindTutorInfo(user?.id || null);
 
   useEffect(() => {
-    if (!user && !!loading && !error) redirect(Route.Login);
+    if (!user && !loading && !error) redirect(Route.Login);
   }, [user, loading, error]);
+
+  if (!user) return null;
 
   return (
     <div className="max-w-screen-3xl mx-auto w-full p-6">
@@ -29,31 +31,39 @@ const TutorSettings: React.FC = () => {
         </div>
 
         {loading ? (
-          <div className="w-full h-[908px] pt-[149px] flex justify-center">
-            <div className="h-[181px]">
-              <Loader
-                size="large"
-                text={intl("tutor-settings.profile.loading")}
-              />
-            </div>
+          <div className="mt-[15vh]">
+            <Loader
+              size="large"
+              text={intl("tutor-settings.profile.loading")}
+            />
           </div>
         ) : null}
+
         {error && !loading ? (
-          <div className="w-full h-[908px] pt-[149px] flex justify-center">
-            <div className="h-[181px]">
-              <LoadingError
-                size="large"
-                retry={refetch.user}
-                error={intl("tutor-settings.profile.loading-error")}
-              />
-            </div>
+          <div className="mt-[15vh]">
+            <LoadingError
+              size="large"
+              retry={() => {
+                refetch.user();
+                refetch.meta();
+              }}
+              error={intl("tutor-settings.profile.loading-error")}
+            />
           </div>
         ) : null}
-        <PageContent>
-          {tutorInfo.data && !error && !loading ? (
-            <ProfileSettings {...tutorInfo.data} />
-          ) : null}
-        </PageContent>
+
+        {tutorInfo.data && !error && !loading ? (
+          <PageContent>
+            <Settings
+              info={{
+                ...tutorInfo.data,
+                city: user.city,
+                phoneNumber: user.phoneNumber,
+                email: user.email,
+              }}
+            />
+          </PageContent>
+        ) : null}
       </div>
     </div>
   );
