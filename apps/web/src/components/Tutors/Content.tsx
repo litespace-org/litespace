@@ -105,11 +105,7 @@ const Content: React.FC<{
       </div>
 
       {tutor ? (
-        <BookLesson
-          close={closeBookingDialog}
-          open={!!tutor}
-          tutorId={tutor.id}
-        />
+        <BookLesson close={closeBookingDialog} tutorId={tutor.id} />
       ) : null}
 
       {fetching ? <Loading className="mt-6 text-natural-950" /> : null}

@@ -3,15 +3,14 @@ import dayjs from "@/lib/dayjs";
 import { Typography } from "@/components/Typography";
 import cn from "classnames";
 import { motion } from "framer-motion";
-import { AttributedSlot } from "@/components/Lessons/BookLesson/types";
+import { IAvailabilitySlot } from "@litespace/types";
 
 export const TimeSelection: React.FC<{
-  slots: AttributedSlot[];
+  slots: Array<IAvailabilitySlot.SubSlot & { bookable: boolean }>;
   start: string | null;
-  ruleId: number | null;
   slotId: number | null;
-  select: (payload: { start: string; ruleId: number; slotId: number }) => void;
-}> = ({ slots, start, ruleId, slotId, select }) => {
+  select: (payload: IAvailabilitySlot.SubSlot) => void;
+}> = ({ slots, start, slotId, select }) => {
   return (
     <div className="tw-px-5">
       <div
@@ -23,29 +22,19 @@ export const TimeSelection: React.FC<{
         {slots.map((slot) => {
           return (
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: slot.bookable ? 1.05 : 1 }}
+              whileTap={{ scale: slot.bookable ? 0.95 : 1 }}
               type="button"
               key={slot.start}
-              onClick={() =>
-                select({
-                  ruleId: slot.ruleId,
-                  slotId: slot.ruleId,
-                  start: slot.start,
-                })
-              }
-              data-selected={
-                slot.start === start &&
-                slot.ruleId === ruleId &&
-                slot.ruleId === slotId
-              }
               disabled={!slot.bookable}
+              onClick={() => select(slot)}
+              data-selected={slot.start === start && slot.parent === slotId}
               className={cn(
                 "tw-bg-natural-50 tw-border tw-border-natural-800 tw-shadow-time-selection-item",
                 "tw-h-[60px] tw-w-[60px] tw-rounded-lg tw-flex tw-items-center tw-justify-center",
                 "data-[selected=false]:hover:tw-bg-brand-100 tw-transition-colors tw-duration-300",
                 "data-[selected=true]:tw-bg-brand-700 data-[selected=true]:tw-border-brand-800",
-                "disabled:tw-opacity-20 disabled:tw-cursor-not-allowed"
+                "disabled:tw-opacity-20 disabled:tw-cursor-not-allowed disabled:hover:tw-bg-natural-50"
               )}
             >
               <Typography

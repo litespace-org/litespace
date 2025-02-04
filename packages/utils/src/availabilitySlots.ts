@@ -186,10 +186,10 @@ export function isSuperSlot(
 /**
  * immutably orders/sorts a list of slots/subslots.
  */
-export function orderSlots(
-  slots: IAvailabilitySlot.GeneralSlot[],
+export function orderSlots<T extends { start: string; end: string }>(
+  slots: T[],
   dir: "asc" | "desc"
-): IAvailabilitySlot.GeneralSlot[] {
+): T[] {
   return orderBy(slots, [(slot) => dayjs.utc(slot.start)], [dir]);
 }
 

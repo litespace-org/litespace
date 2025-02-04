@@ -449,7 +449,7 @@ const Messages: React.FC<{
         icon={<Trash />}
       />
       {otherMember && otherMember.role !== IUser.Role.Student && open ? (
-        <BookLesson tutorId={otherMember.id} close={closeDialog} open={open} />
+        <BookLesson tutorId={otherMember.id} close={closeDialog} />
       ) : null}
     </div>
   );

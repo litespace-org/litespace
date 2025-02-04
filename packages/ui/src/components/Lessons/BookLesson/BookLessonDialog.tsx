@@ -1,10 +1,10 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Dialog } from "@/components/Dialog";
-import { ILesson, IRule, Void } from "@litespace/types";
+import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 import { Stepper } from "@/components/Lessons/BookLesson/Stepper";
-import { Step, AttributedSlot } from "@/components/Lessons/BookLesson/types";
+import { Step } from "@/components/Lessons/BookLesson/types";
 import { DateSelection } from "@/components/Lessons/BookLesson/DateSelection";
 import { DurationSelection } from "@/components/Lessons/BookLesson/DurationSelection";
 import { TimeSelection } from "@/components/Lessons/BookLesson/TimeSelection";
@@ -13,13 +13,17 @@ import { Button, ButtonSize } from "@/components/Button";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 import { AnimatePresence, motion } from "framer-motion";
-import { Schedule, splitRuleEvent, unpackRules } from "@litespace/utils/rule";
 import dayjs from "@/lib/dayjs";
 import { Dayjs } from "dayjs";
-import { concat, flattenDeep, isEmpty } from "lodash";
+import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
 import { Loader } from "@/components/Loading";
+import {
+  getSubSlotsBatch as getSubSlots,
+  orderSlots,
+  subtractSlotsBatch as subtractSlots,
+} from "@litespace/utils";
 
 const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
@@ -115,16 +119,13 @@ export const BookLessonDialog: React.FC<{
   imageUrl: string | null;
   loading?: boolean;
   confirmationLoading?: boolean;
-  rules: IRule.Self[];
-  slots: IRule.Slot[];
-  notice: number | null;
+  slots: IAvailabilitySlot.Self[];
+  bookedSlots: IAvailabilitySlot.SubSlot[];
   onBook: ({
-    ruleId,
     slotId,
     start,
     duration,
   }: {
-    ruleId: number;
     slotId: number;
     start: string;
     duration: ILesson.Duration;
@@ -135,20 +136,24 @@ export const BookLessonDialog: React.FC<{
   tutorId,
   name,
   imageUrl,
-  rules,
   slots,
-  notice,
+  bookedSlots,
   onBook,
   loading,
   confirmationLoading,
 }) => {
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
-  const [duration, setDuration] = useState<number>(15);
-  const [start, setStart] = useState<string | null>(null);
-  const [ruleId, setRuleId] = useState<number | null>(null);
-  const [slotId, setSlotId] = useState<number | null>(null);
-  const [date, setDate] = useState<Dayjs>(dayjs());
+  const [duration, setDuration] = useState<number>(30);
+  const [lessonDetails, setLessonDetails] = useState<{
+    start: string | null;
+    slotId: number | null;
+  }>({
+    start: null,
+    slotId: null,
+  });
+
+  const [date, setDate] = useState<Dayjs | null>(null);
 
   const dateBounds = useMemo(() => {
     const min = dayjs();
@@ -156,48 +161,28 @@ export const BookLessonDialog: React.FC<{
     return { min, max };
   }, []);
 
-  const unpackedRules = useMemo(() => {
-    return unpackRules({
-      rules,
-      slots,
-      /**
-       * ! update {@link unpackRules} logic and make `start` date inclusive.
-       */
-      start: dateBounds.min.subtract(1, "day").toISOString(),
-      end: dateBounds.max.add(1, "day").toISOString(),
-    });
-  }, [dateBounds.max, dateBounds.min, rules, slots]);
+  const unbookedSlots = useMemo(
+    () => subtractSlots({ slots, subslots: bookedSlots }),
+    [slots, bookedSlots]
+  );
 
   const selectDaySlots = useCallback(
-    (day: Dayjs) => {
-      const daySlots = unpackedRules.filter(
+    (day: Dayjs | null) => {
+      if (!day) return [];
+      const daySlots = unbookedSlots.filter(
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
       );
-
-      const unpackedSlots: AttributedSlot[] = flattenDeep(
-        daySlots.map((rule) => splitRuleEvent(rule, duration))
-      ).map((event) => ({
-        ruleId: event.id,
-        slotId: event.id,
-        start: event.start,
-        end: event.end,
-        bookable: dayjs(event.start).isAfter(
-          dayjs().add(notice || 0, "minutes")
-        ),
-      }));
-
-      return unpackedSlots;
+      return getSubSlots(daySlots, duration);
     },
-    [duration, notice, unpackedRules]
+    [duration, unbookedSlots]
   );
 
   /**
-   * Date is considered valid incase it has at least one bookable (free) slot.
+   * Date is considered valid in case it has at least one bookable (free) slot.
    */
   const isValidDate = useCallback(
-    (date: Dayjs) =>
-      !isEmpty(selectDaySlots(date).filter((slot) => slot.bookable)),
+    (date: Dayjs | null) => !!date && !isEmpty(selectDaySlots(date)),
     [selectDaySlots]
   );
 
@@ -205,31 +190,20 @@ export const BookLessonDialog: React.FC<{
    * List of all slots including booked and not-yet-booked slots.
    */
   const allSlots = useMemo(() => {
-    const daySlots = selectDaySlots(date);
-    const bookedSlots: AttributedSlot[] = slots
-      .map((slot) => ({
-        ruleId: slot.ruleId,
-        slotId: slot.ruleId,
-        start: slot.start,
-        end: dayjs(slot.start).add(slot.duration, "minutes").toISOString(),
-        bookable: false,
-      }))
-      .filter(
-        (slot) => date.isSame(slot.start, "day") || date.isSame(slot.end, "day")
-      );
-    return Schedule.order(concat(daySlots, bookedSlots), "asc");
-  }, [selectDaySlots, date, slots]);
-
-  const isTutorBusy = useMemo(() => {
-    return (
-      isEmpty(unpackedRules) ||
-      isEmpty(
-        unpackedRules.filter((slot) =>
-          dayjs(slot.start).isAfter(dayjs().add(notice || 0))
-        )
-      )
+    const availableSlots = selectDaySlots(date).map((slot) => ({
+      ...slot,
+      bookable: true,
+    }));
+    return orderSlots(
+      concat(
+        availableSlots,
+        bookedSlots.map((slot) => ({ ...slot, bookable: false }))
+      ),
+      "asc"
     );
-  }, [notice, unpackedRules]);
+  }, [selectDaySlots, date, bookedSlots]);
+
+  const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
 
   return (
     <Dialog
@@ -293,13 +267,13 @@ export const BookLessonDialog: React.FC<{
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
-                start={start}
-                ruleId={ruleId}
-                slotId={ruleId}
-                select={({ slotId, ruleId, start }) => {
-                  setStart(start);
-                  setRuleId(ruleId);
-                  setSlotId(slotId);
+                start={lessonDetails.start}
+                slotId={lessonDetails.slotId}
+                select={(slot: IAvailabilitySlot.SubSlot) => {
+                  setLessonDetails({
+                    slotId: slot.parent,
+                    start: slot.start,
+                  });
                 }}
               />
             </Animation>
@@ -307,9 +281,7 @@ export const BookLessonDialog: React.FC<{
 
           {!isTutorBusy &&
           step === "confirmation" &&
-          start &&
-          ruleId &&
-          slotId &&
+          lessonDetails.start &&
           !loading ? (
             <Animation key="confimration" id="confirmation">
               <div className="tw-px-6">
@@ -317,10 +289,17 @@ export const BookLessonDialog: React.FC<{
                   tutorId={tutorId}
                   name={name}
                   imageUrl={imageUrl}
-                  start={start}
+                  start={lessonDetails.start}
                   confirmationLoading={confirmationLoading}
                   duration={duration}
-                  onConfrim={() => onBook({ ruleId, slotId, start, duration })}
+                  onConfrim={() => {
+                    if (!lessonDetails.start || !lessonDetails.slotId) return;
+                    return onBook({
+                      start: lessonDetails.start,
+                      slotId: lessonDetails.slotId,
+                      duration,
+                    });
+                  }}
                   onEdit={() => {
                     setStep("date-selection");
                   }}
@@ -358,7 +337,8 @@ export const BookLessonDialog: React.FC<{
               if (step === "time-selection") setStep("confirmation");
             }}
             disabled={
-              (step === "time-selection" && !start) || !isValidDate(date)
+              (step === "time-selection" && !lessonDetails.start) ||
+              !isValidDate(date)
             }
             className={cn({
               "tw-w-[196px]": step === "date-selection",

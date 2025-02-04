@@ -41,6 +41,7 @@ export function canBook({
     start: start.toISOString(),
     end: end.toISOString(),
   });
+
   if (isEmpty(unpackedRules)) return false;
 
   const slotStart = dayjs.utc(slot.start);
