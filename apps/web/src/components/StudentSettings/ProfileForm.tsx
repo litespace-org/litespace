@@ -372,11 +372,12 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
         htmlType="submit"
       >
         <Typography
-          element={lg ? "body" : "caption"}
-          weight={lg ? "bold" : "semibold"}
+          // element={lg ? "body" : "caption"}
+          element={{ default: "caption", lg: "body" }}
+          weight={{ default: "semibold", lg: "bold" }}
           className="text-natural-50"
         >
-          {intl("settings.save")}
+          {intl("shared-settings.save")}
         </Typography>
       </Button>
     </Form>

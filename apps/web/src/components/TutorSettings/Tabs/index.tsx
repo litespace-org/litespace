@@ -6,10 +6,10 @@ import { LocalId } from "@litespace/ui/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Animate } from "@/components/Common/Animate";
-import PublicSettings from "@/components/TutorSettings/Tabs/Public";
 import { UseFormReturn } from "react-hook-form";
 import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import PersonalSettings from "@/components/TutorSettings/Tabs/Personal";
+import PublicSettings from "@/components/TutorSettings/Tabs/Public";
 
 type Tab = "profile" | "settings";
 
@@ -80,6 +80,7 @@ export const TutorSettingsTabs: React.FC<{
             <PublicSettings video={video} form={form} />
           </Animate>
         ) : null}
+
         {tab === "settings" ? (
           <Animate key="settings">
             <PersonalSettings form={form} />

@@ -73,7 +73,11 @@ export const DateInput: React.FC<DateInputProps> = ({
         disabled={disabled}
         onFocus={open}
         endAction={useMemo(
-          () => ({ id: 1, Icon: Calendar, onClick: () => setShow(!show) }),
+          () => ({
+            id: 1,
+            icon: <Calendar className="tw-w-4 tw-h-4" />,
+            onClick: () => setShow(!show),
+          }),
           [show]
         )}
       />

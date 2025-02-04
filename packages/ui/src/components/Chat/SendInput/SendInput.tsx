@@ -60,7 +60,7 @@ export const SendInput: React.FC<{
       disabled={disabled}
       endAction={{
         id: 1,
-        Icon: Send,
+        icon: <Send className="tw-w-4 tw-h-4" />,
         onClick: handleSubmit,
       }}
       onChange={handleChange}

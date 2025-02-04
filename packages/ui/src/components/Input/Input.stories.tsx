@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { Input } from "@/components/Input";
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Direction } from "@/components/Direction";
 import { faker } from "@faker-js/faker/locale/ar";
 import Search from "@litespace/assets/Search";
@@ -9,7 +9,7 @@ import X from "@litespace/assets/X";
 type Component = typeof Input;
 
 const meta: Meta<Component> = {
-  title: "Input/V2",
+  title: "Input",
   component: Input,
   parameters: { layout: "centered" },
   decorators: [
@@ -34,18 +34,20 @@ export const Small: StoryObj<Component> = {
     icon: <Search />,
     inputSize: "small",
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
   render: (props) => {
     const [value, setValue] = useState<string>("");
+    const ref = useRef<HTMLInputElement>(null);
     return (
       <Input
         {...props}
         value={value}
         onChange={(e) => setValue(e.target.value)}
+        ref={ref}
       />
     );
   },
@@ -60,8 +62,8 @@ export const Medium: StoryObj<Component> = {
     helper: faker.lorem.words(2),
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -86,8 +88,8 @@ export const Large: StoryObj<Component> = {
     inputSize: "large",
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -111,8 +113,8 @@ export const Filled: StoryObj<Component> = {
     helper: faker.lorem.words(2),
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -135,8 +137,8 @@ export const WithoutIcon: StoryObj<Component> = {
     label: faker.lorem.words(2),
     helper: faker.lorem.words(2),
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -180,8 +182,8 @@ export const Error: StoryObj<Component> = {
     state: "error",
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -206,8 +208,8 @@ export const Success: StoryObj<Component> = {
     state: "success",
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -232,8 +234,8 @@ export const Disabled: StoryObj<Component> = {
     disabled: true,
     icon: <Search />,
     endAction: {
-      Icon: X,
       id: 1,
+      icon: <X className="tw-w-4 tw-h-4" />,
       onClick: () => alert("End Action"),
     },
   },

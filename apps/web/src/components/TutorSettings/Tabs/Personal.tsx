@@ -18,6 +18,7 @@ const PersonalSettings: React.FC<{
   const intl = useFormatMessage();
   const validatePassword = useValidatePassword();
   const validatePhoneNumber = useValidatePhoneNumber();
+  const errors = form.formState.errors;
 
   const cityOptions = useMemo(
     () =>
@@ -37,8 +38,8 @@ const PersonalSettings: React.FC<{
 
   return (
     <div className="p-10">
-      <div className="grid grid-cols-2 justify-between">
-        <div className="flex flex-col gap-6 max-w-[400px]">
+      <div className="flex flex-row gap-[192px] justify-start">
+        <div className="flex flex-col gap-6 w-full max-w-[400px]">
           <Typography
             element="subtitle-1"
             weight="bold"
@@ -46,27 +47,22 @@ const PersonalSettings: React.FC<{
           >
             {intl("tutor-settings.account-settings.title")}
           </Typography>
-          <div className="flex flex-col gap-2">
-            <Label>{intl("labels.email")}</Label>
-
-            <Controller.Input
-              value={form.watch("email")}
-              control={form.control}
-              autoComplete="off"
-              name="email"
-              disabled
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <Label>{intl("labels.phoneNumber")}</Label>
-            <Controller.Input
-              value={form.watch("phoneNumber")}
-              control={form.control}
-              rules={{ validate: validatePhoneNumber }}
-              autoComplete="off"
-              name="phoneNumber"
-            />
-          </div>
+          <Controller.Input
+            label={intl("labels.email")}
+            value={form.watch("email")}
+            control={form.control}
+            autoComplete="off"
+            name="email"
+            disabled
+          />
+          <Controller.Input
+            label={intl("labels.phoneNumber")}
+            value={form.watch("phoneNumber")}
+            control={form.control}
+            rules={{ validate: validatePhoneNumber }}
+            autoComplete="off"
+            name="phoneNumber"
+          />
           <div className="flex flex-col gap-2">
             <Label>{intl("labels.city")}</Label>
             <Controller.Select
@@ -80,7 +76,7 @@ const PersonalSettings: React.FC<{
             />
           </div>
         </div>
-        <div className="max-w-[400px] flex flex-col gap-6">
+        <div className="flex flex-col gap-6 max-w-[400px] w-full">
           <Typography
             element="subtitle-1"
             weight="bold"
@@ -88,48 +84,45 @@ const PersonalSettings: React.FC<{
           >
             {intl("tutor-settings.account-settings.password.title")}
           </Typography>
-          <div>
-            <Label>{intl("settings.edit.password.current")}</Label>
-            <Controller.Password
-              value={form.watch("password.current")}
-              control={form.control}
-              helper={form.formState.errors.password?.current?.message}
-              error={!!form.formState.errors.password?.current?.message}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: validatePassword,
-              }}
-              name="password.current"
-            />
-          </div>
-          <div>
-            <Label>{intl("settings.edit.password.new")}</Label>
-            <Controller.Password
-              value={form.watch("password.new")}
-              control={form.control}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: validatePassword,
-              }}
-              name="password.new"
-            />
-          </div>
-          <div>
-            <Label>{intl("settings.edit.password.confirm")}</Label>
-            <Controller.Password
-              value={form.watch("password.confirm")}
-              control={form.control}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: (value) => {
-                  if (value !== form.watch("password.new"))
-                    return intl("settings.edit.password.confirm.not-same");
-                  return validatePassword(value);
-                },
-              }}
-              name="password.confirm"
-            />
-          </div>
+
+          <Controller.Password
+            value={form.watch("password.current")}
+            control={form.control}
+            label={intl("settings.edit.password.current")}
+            helper={errors.password?.current?.message}
+            state={errors.password ? "error" : undefined}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: validatePassword,
+            }}
+            name="password.current"
+          />
+
+          <Controller.Password
+            label={intl("settings.edit.password.new")}
+            value={form.watch("password.new")}
+            control={form.control}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: validatePassword,
+            }}
+            name="password.new"
+          />
+
+          <Controller.Password
+            label={intl("settings.edit.password.confirm")}
+            value={form.watch("password.confirm")}
+            control={form.control}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: (value) => {
+                if (value !== form.watch("password.new"))
+                  return intl("settings.edit.password.confirm.not-same");
+                return validatePassword(value);
+              },
+            }}
+            name="password.confirm"
+          />
         </div>
       </div>
       <NotificationSettings />

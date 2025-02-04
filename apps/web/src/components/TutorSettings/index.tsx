@@ -2,7 +2,7 @@ import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import React, { useCallback, useMemo } from "react";
 import { Button, ButtonSize } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { TutorSettingsTabs } from "@/components/TutorSettings/Tabs";
+import { TutorSettingsTabs as Tabs } from "@/components/TutorSettings/Tabs";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
 import { Form } from "@litespace/ui/Form";
@@ -12,15 +12,15 @@ import { ITutor, IUser } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orNull, orUndefined } from "@litespace/utils/utils";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const TutorSettings: React.FC<{
-  info: ITutor.FindTutorInfoApiResponse;
-  personalData: {
+  info: ITutor.FindTutorInfoApiResponse & {
     phoneNumber: string | null;
     city: IUser.City | null;
     email: string;
   };
-}> = ({ info, personalData }) => {
+}> = ({ info }) => {
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -30,9 +30,9 @@ const TutorSettings: React.FC<{
       name: info.name || "",
       bio: info.bio || "",
       about: info.about || "",
-      email: personalData.email || "",
-      phoneNumber: personalData.phoneNumber || "",
-      city: orUndefined(personalData.city),
+      email: info.email || "",
+      phoneNumber: info.phoneNumber || "",
+      city: orUndefined(info.city),
     },
   });
 
@@ -49,11 +49,11 @@ const TutorSettings: React.FC<{
       orNull(name.trim()) !== info.name ||
       orNull(bio.trim()) !== info.bio ||
       orNull(about.trim()) !== info.about ||
-      orNull(email.trim()) !== personalData.email ||
-      orNull(phoneNumber.trim()) !== personalData.phoneNumber ||
-      orNull(city) !== personalData.city ||
+      orNull(email.trim()) !== info.email ||
+      orNull(phoneNumber.trim()) !== info.phoneNumber ||
+      orNull(city) !== info.city ||
       !!password,
-    [about, bio, name, city, phoneNumber, email, info, password, personalData]
+    [about, bio, name, city, phoneNumber, email, info, password]
   );
 
   const onSuccess = useCallback(() => {
@@ -62,16 +62,16 @@ const TutorSettings: React.FC<{
     invalidateQuery([QueryKey.FindUserTopics]);
     form.setValue("password", {
       confirm: "",
-      new: "",
       current: "",
+      new: "",
     });
   }, [info.id, invalidateQuery, form]);
 
   const onError = useCallback(
-    (error: Error) => {
+    (error: unknown) => {
       toast.error({
         title: intl("tutor-settings.profile.update.error"),
-        description: error.message,
+        description: intl(getErrorMessageId(error)),
       });
     },
     [intl, toast]
@@ -92,14 +92,12 @@ const TutorSettings: React.FC<{
           about:
             data.about.trim() !== info.about ? data.about.trim() : undefined,
           email:
-            data.email.trim() !== personalData.email
-              ? data.email.trim()
-              : undefined,
+            data.email.trim() !== info.email ? data.email.trim() : undefined,
           phoneNumber:
-            data.phoneNumber.trim() !== personalData.phoneNumber
+            data.phoneNumber.trim() !== info.phoneNumber
               ? data.phoneNumber.trim()
               : undefined,
-          city: data.city !== personalData.city ? data.city : undefined,
+          city: data.city !== info.city ? data.city : undefined,
           password:
             data.password.current && data.password.new
               ? {
@@ -110,7 +108,7 @@ const TutorSettings: React.FC<{
         },
       });
     },
-    [info, updateTutor, personalData]
+    [info, updateTutor]
   );
 
   return (
@@ -133,10 +131,11 @@ const TutorSettings: React.FC<{
           disabled={updateTutor.isPending || !dataChanged}
           size={ButtonSize.Small}
         >
-          {intl("settings.save")}
+          {intl("shared-settings.save")}
         </Button>
       </div>
-      <TutorSettingsTabs form={form} video={info.video} />
+
+      <Tabs form={form} video={info.video} />
     </Form>
   );
 };
