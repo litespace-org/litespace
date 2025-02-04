@@ -222,6 +222,7 @@ export const BookLessonDialog: React.FC<{
         </Typography>
       }
       className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
+      nopopup
     >
       {!loading ? (
         <div className="tw-mt-6 tw-px-6">
