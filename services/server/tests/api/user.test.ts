@@ -388,16 +388,16 @@ describe.skip("/api/v1/user/", () => {
         phoneNumber: "01112223334",
       });
 
-      // defining rules
-      const rule1 = await db.rule({
+      // defining slots
+      const slot1 = await db.slot({
         userId: tutor.user.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
       });
-      const rule2 = await db.rule({
+      const slot2 = await db.slot({
         userId: tutor.user.id,
         start: dayjs.utc().add(2, "days").toISOString(),
       });
-      const rule3 = await db.rule({
+      const slot3 = await db.slot({
         userId: tutor.user.id,
         start: dayjs.utc().add(3, "days").toISOString(),
       });
@@ -408,20 +408,20 @@ describe.skip("/api/v1/user/", () => {
       const { lesson: lesson1 } = await db.lesson({
         tutor: tutor.user.id,
         student: students[0].id,
-        rule: rule1.id,
-        start: rule1.start,
+        slot: slot1.id,
+        start: slot1.start,
       });
 
       await db.lesson({
         tutor: tutor.user.id,
         student: students[1].id,
-        rule: rule2.id,
+        slot: slot2.id,
       });
 
       await db.lesson({
         tutor: tutor.user.id,
         student: students[2].id,
-        rule: rule3.id,
+        slot: slot3.id,
         canceled: true, // should not be counted
       });
 
@@ -455,15 +455,15 @@ describe.skip("/api/v1/user/", () => {
       const tutor2 = await db.tutor();
       const tutor3 = await db.tutor();
 
-      const rule1 = await db.rule({
+      const slot1 = await db.slot({
         userId: student.user.id,
         start: dayjs.utc().subtract(2, "days").toISOString(),
       });
-      const rule2 = await db.rule({
+      const slot2 = await db.slot({
         userId: student.user.id,
         start: dayjs.utc().add(2, "days").toISOString(),
       });
-      const rule3 = await db.rule({
+      const slot3 = await db.slot({
         userId: student.user.id,
         start: dayjs.utc().add(3, "days").toISOString(),
       });
@@ -471,20 +471,20 @@ describe.skip("/api/v1/user/", () => {
       const lesson1 = await db.lesson({
         student: student.user.id,
         tutor: tutor1.id,
-        rule: rule1.id,
-        start: rule1.start,
+        slot: slot1.id,
+        start: slot1.start,
       });
 
       await db.lesson({
         student: student.user.id,
         tutor: tutor2.id,
-        rule: rule2.id,
+        slot: slot2.id,
       });
 
       await db.lesson({
         student: student.user.id,
         tutor: tutor3.id,
-        rule: rule3.id,
+        slot: slot3.id,
         canceled: true,
       });
 

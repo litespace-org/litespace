@@ -29,7 +29,6 @@
     "./interviews": "./dist/interviews.js",
     "./chat": "./dist/chat.js",
     "./tutor": "./dist/tutor.js",
-    "./rule": "./dist/rule.js",
     "./user": "./dist/user.js",
     "./student": "./dist/student.js",
     "./cache": "./dist/cache.js",
@@ -55,7 +54,6 @@
     "./lessons": "./dist/lessons.js",
     "./messageRooms": "./dist/messageRooms.js",
     "./tutor": "./dist/tutor.js",
-    "./rule": "./dist/rule.js",
     "./user": "./dist/user.js"
   },
   "scripts": {

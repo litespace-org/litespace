@@ -9,7 +9,6 @@ import invite from "@/routes/invite";
 import report from "@/routes/report";
 import reportReply from "@/routes/reportReply";
 import asset from "@/routes/asset";
-import rule from "@/routes/rule";
 import lesson from "@/routes/lesson";
 import invoice from "@/routes/invoice";
 import withdrawMethod from "@/routes/withdrawMethod";
@@ -22,7 +21,6 @@ export default {
   user,
   lesson,
   invoice,
-  rule,
   withdrawMethod,
   plan,
   chat,

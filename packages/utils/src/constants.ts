@@ -6,8 +6,6 @@ export const MIN_AGE = 10;
 export const MAX_AGE = 70;
 export const MIN_USER_NAME_LENGTH = 2;
 export const MAX_USER_NAME_LENGTH = 30;
-export const MAX_RULE_DURATION_MINUTES = 8 * 60;
-export const MIN_RULE_DURATION_MINUTES = 0;
 export const MIN_INTERVIEW_LEVEL = 1;
 export const MAX_INTERVIEW_LEVEL = 5;
 export const MAX_RATING_TEXT_LENGTH = 1000;
@@ -28,13 +26,6 @@ export const MAX_USER_AGE = 60;
 export const MIN_USER_AGE = 10;
 export const MIN_TUTOR_NOTICE_DURATION = 0;
 export const MAX_TUTOR_NOTICE_DURATION = 24 * 60;
-export const MAX_RULE_TITLE_LENGTH = 255;
-export const MIN_RULE_TITLE_LENGTH = 5;
-export const RULE_TITLE_REGEX = /^[\u0600-\u06ff\s\d.]+$/;
-/**
- * Rule period between start and end date
- */
-export const MIN_RULE_DATE_PERIOD_HOURS = 24;
 export const MAX_FEEDBACK_TEXT_LENGTH = 1000;
 export const MIN_FEEDBACK_TEXT_LENGTH = 5;
 export const MAX_NOTE_TEXT_LENGTH = 1000;

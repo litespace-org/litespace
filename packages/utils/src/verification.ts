@@ -1,5 +1,4 @@
 import {
-  ARABIC_LETTERS_REGEX,
   BIO_REGEX,
   COUPON_REGEX,
   EMAIL_REGEX,
@@ -17,8 +16,6 @@ import {
   MAX_PLAN_WEEKLY_MINUTES,
   MAX_RATING_TEXT_LENGTH,
   MAX_RATING_VALUE,
-  MAX_RULE_DURATION_MINUTES,
-  MAX_RULE_TITLE_LENGTH,
   MAX_TOPIC_LEGNTH,
   MAX_TUTOR_ABOUT_TEXT_LENGTH,
   MAX_TUTOR_BIO_TEXT_LENGTH,
@@ -37,9 +34,6 @@ import {
   MIN_PLAN_WEEKLY_MINUTES,
   MIN_RATING_TEXT_LENGTH,
   MIN_RATING_VALUE,
-  MIN_RULE_DATE_PERIOD_HOURS,
-  MIN_RULE_DURATION_MINUTES,
-  MIN_RULE_TITLE_LENGTH,
   MIN_TOPIC_LEGNTH,
   MIN_TUTOR_NOTICE_DURATION,
   MIN_USER_AGE,
@@ -50,7 +44,6 @@ import {
 } from "@/constants";
 import { banks, FieldError, WithdrawMethod, type Bank } from "@litespace/types";
 import { getSafeInnerHtmlText } from "@/utils";
-import { dayjs } from "@/dayjs";
 
 export function isValidUserName(
   name: unknown
@@ -137,58 +130,6 @@ export function isValidTutorNotice(
   if (tutorNotice <= MIN_TUTOR_NOTICE_DURATION) return FieldError.InvalidNotice;
   if (tutorNotice > MAX_TUTOR_NOTICE_DURATION)
     return FieldError.MaxNoticeExceeded;
-  return true;
-}
-
-export function isValidRuleTitle(
-  title: string
-):
-  | FieldError.ShortRuleTitle
-  | FieldError.LongRuleTitle
-  | FieldError.InvalidRuleTitle
-  | true {
-  if (title.length < MIN_RULE_TITLE_LENGTH) return FieldError.ShortRuleTitle;
-  if (!ARABIC_LETTERS_REGEX.test(title)) return FieldError.InvalidRuleTitle;
-  if (title.length > MAX_RULE_TITLE_LENGTH) return FieldError.LongRuleTitle;
-  return true;
-}
-
-/**
- * Validate rule start and end date
- */
-export function isValidRuleBounds(
-  start: string,
-  end: string
-):
-  | FieldError.InvalidRuleStartFormat
-  | FieldError.InvalidRuleEndFormat
-  | FieldError.RuleStartAfterEnd
-  | FieldError.RuleStartDatePassed
-  | FieldError.RuleEndDatePassed
-  | FieldError.InvalidRuleDatePeriod
-  | true {
-  const ruleStart = dayjs.utc(start);
-  const ruleEnd = dayjs.utc(end);
-
-  if (!ruleStart.isValid()) return FieldError.InvalidRuleStartFormat;
-  if (!ruleEnd.isValid()) return FieldError.InvalidRuleEndFormat;
-
-  if (ruleStart.isAfter(ruleEnd)) return FieldError.RuleStartAfterEnd;
-  if (dayjs.utc().isAfter(ruleStart)) return FieldError.RuleStartDatePassed;
-  if (dayjs.utc().isAfter(ruleEnd)) return FieldError.RuleEndDatePassed;
-  if (ruleStart.add(MIN_RULE_DATE_PERIOD_HOURS, "hours").isAfter(ruleEnd))
-    return FieldError.InvalidRuleDatePeriod;
-
-  return true;
-}
-
-export function isValidRuleDuration(
-  duration: number
-): FieldError.InvalidRuleDuration | FieldError.MaxRuleDuratoinExceeded | true {
-  if (duration < MIN_RULE_DURATION_MINUTES)
-    return FieldError.InvalidRuleDuration;
-  if (duration > MAX_RULE_DURATION_MINUTES)
-    return FieldError.MaxRuleDuratoinExceeded;
   return true;
 }
 

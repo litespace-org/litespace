@@ -10,24 +10,28 @@ import {
   withNamedId,
 } from "@/validation/utils";
 import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
-import { ILesson, IRule, IUser, Wss } from "@litespace/types";
-import { lessons, rules, users, knex, rooms } from "@litespace/models";
+import { ILesson, IUser, Wss } from "@litespace/types";
+import {
+  lessons,
+  users,
+  knex,
+  rooms,
+  availabilitySlots,
+  interviews,
+} from "@litespace/models";
 import { Knex } from "knex";
 import safeRequest from "express-async-handler";
 import { ApiContext } from "@/types/api";
 import { calculateLessonPrice } from "@litespace/utils/lesson";
 import { safe } from "@litespace/utils/error";
-import { unpackRules } from "@litespace/utils/rule";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
-import { canBook } from "@/lib/session";
+import { asSubSlots, canBook, genSessionId } from "@litespace/utils";
 import { concat, isEmpty, isEqual } from "lodash";
-import { genSessionId } from "@litespace/utils";
 
 const createLessonPayload = zod.object({
   tutorId: id,
-  ruleId: id,
   slotId: id,
   start: datetime,
   duration,
@@ -60,24 +64,35 @@ function create(context: ApiContext) {
       const tutor = await users.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());
 
-      const rule = await rules.findById(payload.ruleId);
-      if (!rule) return next(notfound.rule());
-
       const price = calculateLessonPrice(
         platformConfig.tutorHourlyRate,
         payload.duration
       );
 
-      const ruleLessons = await lessons.find({
-        rules: [rule.id],
+      const slotLessons = await lessons.find({
+        slots: [payload.slotId],
         full: true,
         canceled: false, // ignore canceled lessons
       });
 
+      const slotInterviews = await interviews.findBySlotId(payload.slotId);
+
       const canBookLesson = canBook({
-        rule,
-        lessons: ruleLessons.list,
-        slot: { start: payload.start, duration: payload.duration },
+        bookedSubslots: concat(
+          asSubSlots(slotLessons.list),
+          asSubSlots(slotInterviews)
+        ),
+        slot: {
+          id: payload.slotId,
+          start: payload.start,
+          end: dayjs(payload.start)
+            .add(payload.duration, "minutes")
+            .toISOString(),
+        },
+        bookInfo: {
+          start: payload.start,
+          duration: payload.duration,
+        },
       });
       if (!canBookLesson) return next(busyTutor());
 
@@ -92,7 +107,6 @@ function create(context: ApiContext) {
             student: user.id,
             start: payload.start,
             duration: payload.duration,
-            rule: payload.ruleId,
             slot: payload.slotId,
             session: genSessionId("lesson"),
             price,
@@ -106,25 +120,10 @@ function create(context: ApiContext) {
       res.status(200).json(response);
 
       const error = await safe(async () => {
-        const slots: IRule.Slot[] = concat(ruleLessons.list, lesson).map(
-          (lesson) => ({
-            ruleId: lesson.ruleId,
-            start: lesson.start,
-            duration: lesson.duration,
-          })
-        );
-        const today = dayjs.utc().startOf("day");
         const payload = {
           tutor: tutor.id,
-          rule: rule.id,
-          events: unpackRules({
-            rules: [rule],
-            start: today.toISOString(),
-            end: today.add(30, "days").toISOString(),
-            slots,
-          }),
+          lessonId: lesson.id,
         };
-
         context.io.sockets
           .in(Wss.Room.TutorsCache)
           .emit(Wss.ServerEvent.LessonBooked, payload);
@@ -165,9 +164,6 @@ async function findLessons(req: Request, res: Response, next: NextFunction) {
     users: query.users,
     ratified: query.ratified,
     canceled: query.canceled,
-    future: query.future,
-    past: query.past,
-    now: query.now,
     after: query.after,
     before: query.before,
     page: query.page,
@@ -238,20 +234,6 @@ function cancel(context: ApiContext) {
 
       //! todo: cache updates should be done at the worker thread
       const error = await safe(async () => {
-        const ruleLessons = await lessons.find({
-          rules: [lesson.ruleId],
-          full: true,
-          canceled: false,
-        });
-
-        const slots: IRule.Slot[] = concat(ruleLessons.list, lesson).map(
-          (lesson) => ({
-            ruleId: lesson.ruleId,
-            start: lesson.start,
-            duration: lesson.duration,
-          })
-        );
-
         const tutor = members.find(
           (member) => member.role === IUser.Role.Tutor
         );
@@ -261,19 +243,12 @@ function cancel(context: ApiContext) {
             "Tutor not found in the lesson members; should never happen."
           );
 
-        const rule = await rules.findById(lesson.ruleId);
-        if (!rule) throw new Error("Rule not found; should never happen");
+        const slot = await availabilitySlots.findById(lesson.slotId);
+        if (!slot) throw new Error("Slot not found; should never happen");
 
-        const today = dayjs.utc().startOf("day");
         const payload = {
           tutor: tutor.userId,
-          rule: lesson.ruleId,
-          events: unpackRules({
-            start: today.toISOString(),
-            end: today.add(30, "days").toISOString(),
-            rules: [rule],
-            slots,
-          }),
+          lessonId: lesson.id,
         };
 
         // notify client

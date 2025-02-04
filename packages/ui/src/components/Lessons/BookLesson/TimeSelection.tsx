@@ -9,7 +9,7 @@ export const TimeSelection: React.FC<{
   slots: Array<IAvailabilitySlot.SubSlot & { bookable: boolean }>;
   start: string | null;
   slotId: number | null;
-  select: (payload: IAvailabilitySlot.SubSlot) => void;
+  select: (slotId: number, start: string) => void;
 }> = ({ slots, start, slotId, select }) => {
   return (
     <div className="tw-px-5">
@@ -27,7 +27,7 @@ export const TimeSelection: React.FC<{
               type="button"
               key={slot.start}
               disabled={!slot.bookable}
-              onClick={() => select(slot)}
+              onClick={() => select(slot.parent, slot.start)}
               data-selected={slot.start === start && slot.parent === slotId}
               className={cn(
                 "tw-bg-natural-50 tw-border tw-border-natural-800 tw-shadow-time-selection-item",

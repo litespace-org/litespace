@@ -8,7 +8,6 @@ export { plans } from "@/plans";
 export { ratings } from "@/ratings";
 export { reportReplies } from "@/reportReplies";
 export { reports } from "@/reports";
-export { rules } from "@/rules";
 export { tokens } from "@/tokens";
 export { tutors } from "@/tutors";
 export { users } from "@/users";

@@ -8,11 +8,11 @@ import {
 import { canBeInterviewed } from "@/lib/interview";
 import {
   interviews,
-  rules,
   users,
   knex,
   rooms,
   availabilitySlots,
+  lessons,
 } from "@litespace/models";
 import {
   datetime,
@@ -36,15 +36,17 @@ import {
   isSuperAdmin,
   isTutor,
 } from "@litespace/auth";
-import { isEqual } from "lodash";
-import { canBook } from "@/lib/session";
-import { platformConfig } from "@/constants";
-import { genSessionId } from "@litespace/utils";
+import { concat, isEqual } from "lodash";
+import {
+  asSubSlots,
+  canBook,
+  genSessionId,
+  INTERVIEW_DURATION,
+} from "@litespace/utils";
 
 const createInterviewPayload = zod.object({
   interviewerId: id,
   start: datetime,
-  ruleId: id,
   slotId: id,
 });
 
@@ -81,7 +83,7 @@ async function createInterview(
   if (!allowed) return next(forbidden());
 
   const intervieweeId = user.id;
-  const { interviewerId, start, ruleId, slotId }: IInterview.CreateApiPayload =
+  const { interviewerId, start, slotId }: IInterview.CreateApiPayload =
     createInterviewPayload.parse(req.body);
 
   const interviewer = await users.findById(interviewerId);
@@ -92,19 +94,27 @@ async function createInterview(
   const interviewable = canBeInterviewed(list);
   if (!interviewable) return next(bad());
 
-  const rule = await rules.findById(ruleId);
-  if (!rule) return next(notfound.rule());
-
   const slot = await availabilitySlots.findById(slotId);
   if (!slot) return next(notfound.slot());
 
-  // Find rule interviews to check if the incoming interview is contradicting with existing ones.
-  const ruleInterviews = await interviews.findByRuleId(rule.id);
+  const slotLessons = await lessons.find({
+    slots: [slotId],
+    full: true,
+    canceled: false, // ignore canceled lessons
+  });
+
+  const slotInterviews = await interviews.findBySlotId(slotId);
 
   const canBookInterview = canBook({
-    rule,
-    interviews: ruleInterviews,
-    slot: { start, duration: platformConfig.interviewDuration },
+    bookedSubslots: concat(
+      asSubSlots(slotLessons.list),
+      asSubSlots(slotInterviews)
+    ),
+    slot: slot,
+    bookInfo: {
+      start: start,
+      duration: INTERVIEW_DURATION,
+    },
   });
   if (!canBookInterview) return next(busyTutorManager());
 
@@ -118,7 +128,6 @@ async function createInterview(
       interviewer: interviewerId,
       interviewee: intervieweeId,
       session: genSessionId("interview"),
-      rule: rule.id,
       slot: slot.id,
       start,
       tx,

@@ -5,7 +5,6 @@ export type Step =
   | "confirmation";
 
 export type AttributedSlot = {
-  ruleId: number;
   /**
    * ISO UTC datetime
    */

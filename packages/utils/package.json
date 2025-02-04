@@ -69,10 +69,6 @@
       "import": "./dist/esm/log.js",
       "require": "./dist/cjs/log.js"
     },
-    "./rule": {
-      "import": "./dist/esm/rule.js",
-      "require": "./dist/cjs/rule.js"
-    },
     "./time": {
       "import": "./dist/esm/time.js",
       "require": "./dist/cjs/time.js"
@@ -116,7 +112,6 @@
     "./interview": "./dist/cjs/interview.js",
     "./lesson": "./dist/cjs/lesson.js",
     "./log": "./dist/cjs/log.js",
-    "./rule": "./dist/cjs/rule.js",
     "./time": "./dist/cjs/time.js",
     "./user": "./dist/cjs/user.js",
     "./utils": "./dist/cjs/utils.js",

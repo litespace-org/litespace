@@ -140,7 +140,7 @@ describe("Lessons", () => {
       it("should count unique students", async () => {
         const tutor = await fixtures.tutor();
         const students = await fixtures.students(3);
-        const rule = await fixtures.rule({ userId: tutor.id });
+        const slot = await fixtures.slot({ userId: tutor.id });
         const futureLessons = [1, 2, 3];
         const pastLessons = [3, 2, 1];
 
@@ -160,7 +160,7 @@ describe("Lessons", () => {
             future: [0, 1, 2],
             past: [2, 1, 1],
           },
-          rule: rule.id,
+          slot: slot.id,
         });
 
         for (const [_, student] of entries(students)) {
@@ -206,14 +206,14 @@ describe("Lessons", () => {
       const tutors = await fixtures.make.tutors(2);
 
       for (const tutor of tutors) {
-        const rule = await fixtures.rule({
+        const slot = await fixtures.slot({
           userId: tutor.id,
         });
 
         await fixtures.lesson({
           tutor: tutor.id,
           student: student.id,
-          rule: rule.id,
+          slot: slot.id,
         });
       }
 
@@ -238,7 +238,7 @@ describe("Lessons", () => {
     beforeEach(async () => {
       tutor = await fixtures.tutor();
       const students = await fixtures.students(5);
-      const rule = await fixtures.rule({ userId: tutor.id });
+      const slot = await fixtures.slot({ userId: tutor.id });
       /**
        * - 5 students
        * - 8 future lessons
@@ -257,7 +257,7 @@ describe("Lessons", () => {
           future: [1, 1, 1, 0, 0],
           past: [0, 0, 0, 1, 1],
         },
-        rule: rule.id,
+        slot: slot.id,
       });
     });
 
@@ -520,7 +520,7 @@ describe("Lessons", () => {
     it("should find all lessons in the database", async () => {
       const tutor = await fixtures.tutor();
       const students = await fixtures.students(5);
-      const rule = await fixtures.rule({ userId: tutor.id });
+      const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2, 2, 1, 1];
       const past = [3, 3, 3, 2, 2];
       const total = sum(future) + sum(past);
@@ -534,7 +534,7 @@ describe("Lessons", () => {
           future: [1, 1, 1, 0, 0],
           past: [0, 0, 0, 1, 1],
         },
-        rule: rule.id,
+        slot: slot.id,
       });
 
       const result = await lessons.find({ size: 100 });
@@ -546,7 +546,7 @@ describe("Lessons", () => {
     it("should find all lessons in the database (with pagination)", async () => {
       const tutor = await fixtures.tutor();
       const students = await fixtures.students(2);
-      const rule = await fixtures.rule({ userId: tutor.id });
+      const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2];
       const past = [3, 4];
       const total = sum(future) + sum(past); // 11
@@ -560,7 +560,7 @@ describe("Lessons", () => {
           future: [1, 1],
           past: [0, 0],
         },
-        rule: rule.id,
+        slot: slot.id,
       });
 
       const r1 = await lessons.find({ page: 1, size: 2 });
@@ -579,7 +579,7 @@ describe("Lessons", () => {
     it("should filter users lessons using `future`, `past`, `ratified` and `canceled` flags", async () => {
       const tutor = await fixtures.tutor();
       const students = await fixtures.students(2);
-      const rule = await fixtures.rule({ userId: tutor.id });
+      const slot = await fixtures.slot({ userId: tutor.id });
       const future = [2, 2];
       const past = [3, 4];
 
@@ -592,7 +592,7 @@ describe("Lessons", () => {
           future: [1, 1],
           past: [0, 0],
         },
-        rule: rule.id,
+        slot: slot.id,
       });
 
       const tests = [
@@ -677,14 +677,14 @@ describe("Lessons", () => {
 
     it("should filter lessons between `before` and `after` dates", async () => {
       const tutor = await fixtures.tutor();
-      const rule = await fixtures.rule({ userId: tutor.id });
+      const slot = await fixtures.slot({ userId: tutor.id });
       const student = await fixtures.student();
       const date = dayjs.utc().startOf("day");
 
       // create 24 lessons (30 minute each) across the day
       for (let i = 0; i < 24; i++) {
         await fixtures.lesson({
-          rule: rule.id,
+          slot: slot.id,
           start: date.add(i, "hour").toISOString(),
           duration: 30,
           tutor: tutor.id,
@@ -701,7 +701,7 @@ describe("Lessons", () => {
         },
         // skip the first lesson in the day
         {
-          after: date.add(1.5, "hour").toISOString(),
+          after: date.add(1, "hour").toISOString(),
           before: date.add(1, "day").toISOString(),
           count: 23,
         },
@@ -714,7 +714,7 @@ describe("Lessons", () => {
         // include last lesson incase it is not eneded yet.
         {
           after: date.toISOString(),
-          before: date.add(23.5, "hours").toISOString(),
+          before: date.add(23.25, "hours").toISOString(),
           count: 24,
         },
         // execlude last lesson in case it is ended
@@ -726,25 +726,20 @@ describe("Lessons", () => {
       ];
 
       for (const test of tests) {
-        expect(
-          await lessons
-            .find({
-              users: [tutor.id],
-              size: 50,
-              after: test.after,
-              before: test.before,
-            })
-            .then((lessons) => {
-              return lessons.list;
-            })
-        ).to.be.of.length(test.count);
+        const found = await lessons.find({
+          users: [tutor.id],
+          size: 50,
+          after: test.after,
+          before: test.before,
+        });
+        expect(found.total).to.eq(test.count);
       }
     });
 
     it("should tutor lessons with pagination", async () => {
       const firstTutor = await fixtures.tutor();
       const firstTutorStudents = await fixtures.students(2);
-      const firstTutorRule = await fixtures.rule({ userId: firstTutor.id });
+      const firstTutorSlot = await fixtures.slot({ userId: firstTutor.id });
       const firstTutorFutureLesson = [2, 2];
       const firstTutorPastLessons = [3, 4];
       const firstTutorTotaLessons =
@@ -759,12 +754,12 @@ describe("Lessons", () => {
           future: [1, 1],
           past: [0, 0],
         },
-        rule: firstTutorRule.id,
+        slot: firstTutorSlot.id,
       });
 
       const secondTutor = await fixtures.tutor();
       const secondTutorStudents = await fixtures.students(2);
-      const secondTutorRule = await fixtures.rule({ userId: secondTutor.id });
+      const secondTutorSlot = await fixtures.slot({ userId: secondTutor.id });
       const secondTutorFutureLessons = [1, 1];
       const secondTutorPastLessons = [2, 3];
       const secondTutorTotaLessons =
@@ -779,7 +774,7 @@ describe("Lessons", () => {
           future: [1, 1],
           past: [0, 0],
         },
-        rule: secondTutorRule.id,
+        slot: secondTutorSlot.id,
       });
 
       const tests = [
