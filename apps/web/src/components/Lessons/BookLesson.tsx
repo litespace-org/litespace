@@ -90,7 +90,6 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
       imageUrl={orNull(tutor.data?.image)}
       name={orNull(tutor.data?.name)}
       tutorId={tutorId}
-      open={true}
       close={close}
       confirmationLoading={bookLessonMutation.isPending}
       loading={
@@ -99,6 +98,7 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
       bookedSlots={tutorAvailabilitySlots.data?.subslots || []}
       slots={tutorAvailabilitySlots.data?.slots.list || []}
       onBook={onBook}
+      open
     />
   );
 };

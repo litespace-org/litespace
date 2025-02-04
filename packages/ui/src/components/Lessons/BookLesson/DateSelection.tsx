@@ -26,7 +26,7 @@ export const DateSelection: React.FC<{
   isSelectable: (date: Dayjs) => boolean;
   min?: Dayjs;
   max?: Dayjs;
-  selected?: Dayjs;
+  selected: Dayjs | null;
   disable?: boolean;
 }> = ({ onSelect, isSelectable, selected, min, max, disable }) => {
   const value = useMemo(() => selected || dayjs(), [selected]);

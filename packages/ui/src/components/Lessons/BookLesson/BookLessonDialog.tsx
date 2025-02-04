@@ -147,15 +147,13 @@ export const BookLessonDialog: React.FC<{
   const [duration, setDuration] = useState<number>(30);
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
-    end: string | null;
     slotId: number | null;
   }>({
     start: null,
-    end: null,
     slotId: null,
   });
 
-  const [date, setDate] = useState<Dayjs>(dayjs());
+  const [date, setDate] = useState<Dayjs | null>(null);
 
   const dateBounds = useMemo(() => {
     const min = dayjs();
@@ -163,28 +161,28 @@ export const BookLessonDialog: React.FC<{
     return { min, max };
   }, []);
 
-  const unBookedSlots = useMemo(
+  const unbookedSlots = useMemo(
     () => subtractSlots({ slots, subslots: bookedSlots }),
     [slots, bookedSlots]
   );
 
   const selectDaySlots = useCallback(
-    (day: Dayjs) => {
-      const daySlots = unBookedSlots.filter(
+    (day: Dayjs | null) => {
+      if (!day) return [];
+      const daySlots = unbookedSlots.filter(
         (event) =>
           day.isSame(event.start, "day") || day.isSame(event.end, "day")
       );
-
       return getSubSlots(daySlots, duration);
     },
-    [duration, unBookedSlots]
+    [duration, unbookedSlots]
   );
 
   /**
    * Date is considered valid in case it has at least one bookable (free) slot.
    */
   const isValidDate = useCallback(
-    (date: Dayjs) => !isEmpty(selectDaySlots(date)),
+    (date: Dayjs | null) => !!date && !isEmpty(selectDaySlots(date)),
     [selectDaySlots]
   );
 
@@ -192,9 +190,10 @@ export const BookLessonDialog: React.FC<{
    * List of all slots including booked and not-yet-booked slots.
    */
   const allSlots = useMemo(() => {
-    const availableSlots: IAvailabilitySlot.AttributedSlot[] = selectDaySlots(
-      date
-    ).map((slot) => ({ ...slot, bookable: true }));
+    const availableSlots = selectDaySlots(date).map((slot) => ({
+      ...slot,
+      bookable: true,
+    }));
     return orderSlots(
       concat(
         availableSlots,
@@ -204,7 +203,7 @@ export const BookLessonDialog: React.FC<{
     );
   }, [selectDaySlots, date, bookedSlots]);
 
-  const isTutorBusy = useMemo(() => isEmpty(unBookedSlots), [unBookedSlots]);
+  const isTutorBusy = useMemo(() => isEmpty(unbookedSlots), [unbookedSlots]);
 
   return (
     <Dialog
@@ -269,12 +268,11 @@ export const BookLessonDialog: React.FC<{
               <TimeSelection
                 slots={allSlots}
                 start={lessonDetails.start}
-                end={lessonDetails.end}
-                select={(slot: IAvailabilitySlot.GeneralSlot) => {
+                slotId={lessonDetails.slotId}
+                select={(slot: IAvailabilitySlot.SubSlot) => {
                   setLessonDetails({
+                    slotId: slot.parent,
                     start: slot.start,
-                    end: slot.end,
-                    slotId: "parent" in slot ? slot.parent : slot.id,
                   });
                 }}
               />
@@ -294,15 +292,14 @@ export const BookLessonDialog: React.FC<{
                   start={lessonDetails.start}
                   confirmationLoading={confirmationLoading}
                   duration={duration}
-                  onConfrim={() =>
-                    lessonDetails.start &&
-                    lessonDetails.slotId &&
-                    onBook({
+                  onConfrim={() => {
+                    if (!lessonDetails.start || !lessonDetails.slotId) return;
+                    return onBook({
                       start: lessonDetails.start,
                       slotId: lessonDetails.slotId,
                       duration,
-                    })
-                  }
+                    });
+                  }}
                   onEdit={() => {
                     setStep("date-selection");
                   }}
