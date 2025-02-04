@@ -9,8 +9,12 @@ import cn from "classnames";
 export const LoadingError: React.FC<{
   retry: Void;
   error: string;
+  secondAction?: {
+    label: string;
+    onClick: Void;
+  };
   size?: "small" | "medium" | "large";
-}> = ({ retry, error, size = "small" }) => {
+}> = ({ retry, error, secondAction, size = "small" }) => {
   const intl = useFormatMessage();
 
   return (
@@ -34,13 +38,26 @@ export const LoadingError: React.FC<{
       >
         {error}
       </Typography>
-      <Button
-        size={size === "large" ? ButtonSize.Small : ButtonSize.Tiny}
-        onClick={retry}
-        variant={ButtonVariant.Secondary}
-      >
-        {intl("global.retry")}
-      </Button>
+      <div className="tw-flex tw-gap-4">
+        <Button
+          size={size === "large" ? ButtonSize.Small : ButtonSize.Tiny}
+          onClick={retry}
+          variant={
+            secondAction ? ButtonVariant.Primary : ButtonVariant.Secondary
+          }
+        >
+          {intl("global.retry")}
+        </Button>
+        {secondAction ? (
+          <Button
+            size={size === "large" ? ButtonSize.Small : ButtonSize.Tiny}
+            onClick={secondAction.onClick}
+            variant={ButtonVariant.Secondary}
+          >
+            {secondAction.label}
+          </Button>
+        ) : null}
+      </div>
     </div>
   );
 };

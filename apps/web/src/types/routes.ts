@@ -3,6 +3,7 @@ export enum Route {
   Call = "/call/:id/:type",
   Chat = "/chat",
   Complete = "/complete",
+  CheckEmail = "/check-email",
   Interviews = "/interviews",
   Invoices = "/invoices",
   Login = "/login",
@@ -44,3 +45,5 @@ export enum RoutePatterns {
   ResetPassword = "(/)reset-password(/)",
   VerifyEmail = "(/)verify-email(/)",
 }
+
+export const CALLBACK_URL = window.location.origin.concat(Route.VerifyEmail);
