@@ -1,1 +1,4 @@
-export { EmailVerification } from "@/components/EmailVerification/EmailVerification";
+export {
+  EmailVerification,
+  type VerificationState,
+} from "@/components/EmailVerification/EmailVerification";

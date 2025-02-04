@@ -1,63 +1,47 @@
-import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useVerifyEmail } from "@litespace/headless/auth";
-import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { Loading } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
+import { Loader, LoaderSuccess, LoadingError } from "@/components/Loading";
 import { Void } from "@litespace/types";
 
-const EmailVerification: React.FC<{ root: string; onVerification: Void }> = ({
-  root,
-  onVerification,
-}) => {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
+export type VerificationState = "loading" | "success" | "error";
+
+const EmailVerification: React.FC<{
+  state: VerificationState;
+  retry: Void;
+  resend: Void;
+  goDashboard: Void;
+}> = ({ state = "loading", retry, resend, goDashboard }) => {
   const intl = useFormatMessage();
-  const toast = useToast();
-  const [token, setToken] = useState<string | null>(null);
-
-  const onSuccess = useCallback(() => {
-    toast.success({ title: intl("page.verify.email.success") });
-    onVerification();
-    navigate(root);
-  }, [toast, intl, onVerification, navigate, root]);
-
-  const onError = useCallback(() => {
-    toast.error({ title: intl("page.verify.email.failure") });
-
-    setTimeout(() => {
-      navigate(root);
-    }, 5_000);
-  }, [toast, intl, navigate, root]);
-
-  useEffect(() => {
-    if (token) return;
-    const searchParamsToken = searchParams.get("token");
-    if (!searchParamsToken) return navigate(root);
-    setToken(searchParamsToken);
-    setSearchParams({});
-  }, [intl, navigate, searchParams, setSearchParams, token, root]);
-
-  const mutation = useVerifyEmail({ onSuccess, onError });
-
-  useEffect(() => {
-    if (!token || mutation.isPending || mutation.isError) return;
-    mutation.mutate(token);
-  }, [token, mutation]);
-
-  if (mutation.isPending) return <Loading className="tw-h-screen" />;
-
-  if (mutation.isError)
-    return (
-      <div className="tw-h-screen tw-flex tw-items-center tw-justify-center">
-        <Typography element="h3">
-          {intl("page.verify.email.redirect")}
-        </Typography>
-      </div>
-    );
-
-  return null;
+  return (
+    <div className="grow flex flex-col items-center justify-center gap-10">
+      <Typography element="h4" weight={"semibold"} className="text-natural-950">
+        {intl("page.verify.email.title")}
+      </Typography>
+      {state === "loading" ? (
+        <Loader size="large" text={intl("page.verify.email.loading")} />
+      ) : null}
+      {state === "error" ? (
+        <LoadingError
+          secondAction={{
+            label: intl("page.check.email.resend"),
+            onClick: resend,
+          }}
+          retry={retry}
+          size="large"
+          error={intl("page.verify.email.failure")}
+        />
+      ) : null}
+      {state === "success" ? (
+        <LoaderSuccess
+          action={{
+            label: intl("global.go-dashboard"),
+            onClick: goDashboard,
+          }}
+          text={intl("page.verify.email.success")}
+        />
+      ) : null}
+    </div>
+  );
 };
 
 export { EmailVerification };
