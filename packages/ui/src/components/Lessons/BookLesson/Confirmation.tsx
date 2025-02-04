@@ -52,7 +52,7 @@ export const Confirmation: React.FC<{
 
           <div className="tw-flex tw-flex-col tw-gap-2">
             <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-              <Calendar />
+              <Calendar className="tw-h-6 tw-w-6" />
               <Typography
                 element="subtitle-2"
                 weight="semibold"

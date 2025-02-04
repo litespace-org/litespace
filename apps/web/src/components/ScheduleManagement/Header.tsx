@@ -60,7 +60,7 @@ const Header: React.FC<Props> = ({
 
       <Button
         size={ButtonSize.Small}
-        endIcon={<Calendar className="[&>*]:tw-stroke-natural-50" />}
+        endIcon={<Calendar className="[&>*]:tw-stroke-natural-50 h-6 w-6" />}
         onClick={manageSchedule}
         htmlType="button"
       >
