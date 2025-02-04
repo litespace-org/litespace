@@ -2,8 +2,13 @@ import { Route } from "@/lib/route";
 import { useAppDispatch } from "@/redux/store";
 import { findCurrentUser } from "@/redux/user/profile";
 import { useAtlas } from "@litespace/headless/atlas";
-import { EmailVerification } from "@litespace/ui/EmailVerification";
-import React, { useCallback } from "react";
+import { useToast } from "@litespace/ui/Toast";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useVerifyEmail } from "@litespace/headless/auth";
+import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Loading } from "@litespace/ui/Loading";
+import { Typography } from "@litespace/ui/Typography";
 
 const VerifyEmail: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -12,9 +17,54 @@ const VerifyEmail: React.FC = () => {
   const onVerification = useCallback(() => {
     dispatch(findCurrentUser.call(atlas));
   }, [atlas, dispatch]);
-  return (
-    <EmailVerification onVerification={onVerification} root={Route.Root} />
-  );
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const intl = useFormatMessage();
+  const toast = useToast();
+  const [token, setToken] = useState<string | null>(null);
+
+  const onSuccess = useCallback(() => {
+    toast.success({ title: intl("page.verify.email.success") });
+    onVerification();
+    navigate(Route.Root);
+  }, [toast, intl, onVerification, navigate]);
+
+  const onError = useCallback(() => {
+    toast.error({ title: intl("page.verify.email.failure") });
+
+    setTimeout(() => {
+      navigate(Route.Root);
+    }, 5_000);
+  }, [toast, intl, navigate]);
+
+  useEffect(() => {
+    if (token) return;
+    const searchParamsToken = searchParams.get("token");
+    if (!searchParamsToken) return navigate(Route.Root);
+    setToken(searchParamsToken);
+    setSearchParams({});
+  }, [intl, navigate, searchParams, setSearchParams, token]);
+
+  const mutation = useVerifyEmail({ onSuccess, onError });
+
+  useEffect(() => {
+    if (!token || mutation.isPending || mutation.isError) return;
+    mutation.mutate(token);
+  }, [token, mutation]);
+
+  if (mutation.isPending) return <Loading className="tw-h-screen" />;
+
+  if (mutation.isError)
+    return (
+      <div className="tw-h-screen tw-flex tw-items-center tw-justify-center">
+        <Typography element="h3">
+          {intl("page.verify.email.redirect")}
+        </Typography>
+      </div>
+    );
+
+  return null;
 };
 
 export default VerifyEmail;

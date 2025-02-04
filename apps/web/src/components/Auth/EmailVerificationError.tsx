@@ -1,16 +1,15 @@
 import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@/hooks/intl";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Void } from "@litespace/types";
 import React from "react";
 import cn from "classnames";
 
-export const LoadingError: React.FC<{
+export const EmailVerificationError: React.FC<{
   retry: Void;
-  error: string;
-  size?: "small" | "medium" | "large";
-}> = ({ retry, error, size = "small" }) => {
+  resend: Void;
+}> = ({ retry, resend }) => {
   const intl = useFormatMessage();
 
   return (
@@ -18,29 +17,26 @@ export const LoadingError: React.FC<{
       <div
         className={cn(
           "tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full",
-          {
-            "tw-p-[3.33px] tw-w-10 tw-h-10": size === "small",
-            "tw-p-[5.33px] tw-w-16 tw-h-16": size === "medium",
-            "tw-p-[6.67px] tw-w-20 tw-h-20": size === "large",
-          }
+          "tw-p-[6.67px] tw-w-20 tw-h-20"
         )}
       >
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        element={size === "small" ? "tiny-text" : "caption"}
-        weight={size === "small" ? "regular" : "semibold"}
+        element={"caption"}
+        weight={"semibold"}
         className="tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4"
       >
-        {error}
+        {intl("page.verify.email.failure")}
       </Typography>
-      <Button
-        size={size === "large" ? "medium" : "small"}
-        onClick={retry}
-        variant={"secondary"}
-      >
-        {intl("labels.retry")}
-      </Button>
+      <div className="tw-flex tw-gap-4">
+        <Button size={"large"} onClick={retry} variant={"primary"}>
+          {intl("labels.retry")}
+        </Button>
+        <Button size={"large"} onClick={resend} variant={"secondary"}>
+          {intl("page.check.email.resend")}
+        </Button>
+      </div>
     </div>
   );
 };
