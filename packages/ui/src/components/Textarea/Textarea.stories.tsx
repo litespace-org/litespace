@@ -36,6 +36,13 @@ export const PrimaryInteractive: StoryObj<Component> = {
   },
 };
 
+export const WithMaxNum: StoryObj<Component> = {
+  args: {
+    placeholder: faker.lorem.words(2),
+    maxLength: 400,
+  },
+};
+
 export const WithHelperText: StoryObj<Component> = {
   args: {
     placeholder: faker.lorem.words(2),

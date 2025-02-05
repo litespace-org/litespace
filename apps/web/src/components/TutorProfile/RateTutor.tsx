@@ -2,7 +2,7 @@ import Star from "@litespace/assets/Star";
 import { Button, ButtonSize } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { RatingDialog } from "@litespace/ui/TutorFeedback";
+import { RatingDialog } from "@litespace/ui/RatingDialog";
 import { useUserContext } from "@litespace/headless/context/user";
 import React, { useCallback, useState } from "react";
 import { useCreateRatingTutor } from "@litespace/headless/rating";
@@ -42,14 +42,8 @@ export const RateTutor: React.FC<{
     onError: onRateError,
   });
 
-  const rateTutor = useCallback(
-    ({ value, feedback }: { value: number; feedback: string | null }) => {
-      rateMutation.mutate({ value, feedback, rateeId: tutorId });
-    },
-    [tutorId, rateMutation]
-  );
-
   if (!user) return null;
+
   return (
     <div className="flex gap-10 flex-col items-center justify-center ">
       <Typography
@@ -69,17 +63,19 @@ export const RateTutor: React.FC<{
         </Typography>
         <Star className="[&>*]:fill-natural-50" />
       </Button>
-      <RatingDialog
-        imageUrl={user.image}
-        studentName={user.name || ""}
-        onSubmit={rateTutor}
-        studentId={user.id}
-        loading={rateMutation.isPending}
-        feedback={null}
-        tutorName={tutorName}
-        open={rating}
-        onClose={() => setRating(false)}
-      />
+      {rating ? (
+        <RatingDialog
+          title={intl("rating-dialog.rate-tutor.title")}
+          header={intl("rating-dialog.rate-tutor.header", { tutor: tutorName })}
+          description={intl("rating-dialog.rate-tutor.description")}
+          submitting={rateMutation.isPending}
+          close={() => setRating(false)}
+          maxAllowedCharacters={180}
+          submit={({ value, feedback }) => {
+            rateMutation.mutate({ value, feedback, rateeId: tutorId });
+          }}
+        />
+      ) : null}
     </div>
   );
 };
