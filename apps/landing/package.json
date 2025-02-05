@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:export": "EXPORT_OUTPUT=true pnpm build",
     "build:vercel": "pnpm vercel build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "start": "next start",
