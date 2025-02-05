@@ -126,7 +126,7 @@ const SidebarNav: React.FC<{
                 <Button
                   onClick={logout}
                   className="w-full"
-                  size={"small"}
+                  size={"medium"}
                   type={"error"}
                   variant={"secondary"}
                 >

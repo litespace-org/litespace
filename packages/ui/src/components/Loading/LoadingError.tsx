@@ -35,7 +35,7 @@ export const LoadingError: React.FC<{
         {error}
       </Typography>
       <Button
-        size={size === "large" ? "small" : "tiny"}
+        size={size === "large" ? "medium" : "small"}
         onClick={retry}
         variant={"secondary"}
       >

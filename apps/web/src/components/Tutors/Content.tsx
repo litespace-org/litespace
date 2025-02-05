@@ -139,7 +139,7 @@ const Content: React.FC<{
 
         <Button
           className={cn("w-full max-w-[328px] lg:max-w-[386px] ")}
-          size={mq.lg ? "small" : "tiny"}
+          size={mq.lg ? "medium" : "small"}
           onClick={() =>
             toast.success({
               title: intl("labels.coming-soon"),

@@ -178,7 +178,7 @@ const Register: React.FC = () => {
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={"small"}
+                  size={"medium"}
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -189,7 +189,7 @@ const Register: React.FC = () => {
 
                 <Button
                   variant={"secondary"}
-                  size={"small"}
+                  size={"medium"}
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}

@@ -97,7 +97,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
             </Typography>
             {!isTutor ? (
               <Link to={tutorsRoute}>
-                <Button size={"small"}>
+                <Button size={"medium"}>
                   {intl("student-dashboard.table.search-tutors")}
                 </Button>
               </Link>
@@ -148,7 +148,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                       ]);
                   }}
                   variant={"secondary"}
-                  size={"tiny"}
+                  size={"small"}
                   disabled={!!sendingMessage}
                   loading={sendingMessage === lesson.id}
                 >

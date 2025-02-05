@@ -98,7 +98,7 @@ const Topics = () => {
           fetching={query.query.isFetching && !query.query.isLoading}
           count={query.totalPages}
         />
-        <Button size={"tiny"} onClick={addNewTopic.show}>
+        <Button size={"small"} onClick={addNewTopic.show}>
           {intl("dashboard.topics.add")}
         </Button>
       </div>

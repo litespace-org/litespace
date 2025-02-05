@@ -24,7 +24,7 @@ const ErrorPage: React.FC = () => {
           </p>
         </div>
         <div className="mt-4">
-          <Button size={"small"}>
+          <Button size={"medium"}>
             {intl.formatMessage({ id: messages["page.error.button.label"] })}
           </Button>
         </div>

@@ -64,7 +64,7 @@ export const TextEditor: React.FC<{
               htmlType="button"
               type={"main"}
               variant={"secondary"}
-              size={"tiny"}
+              size={"small"}
               disabled={disabled}
               onClick={onClick}
               className="!tw-w-[30px] !tw-h-[30px]"

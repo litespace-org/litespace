@@ -1,9 +1,7 @@
 import React, { useCallback, useMemo, useRef } from "react";
 import { MediaType } from "@/components/Media/types";
 import { Avatar } from "@litespace/ui/Avatar";
-import {
-  Button,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Upload, X } from "react-feather";
@@ -80,7 +78,7 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
         disabled={disabled}
         type={"main"}
         variant={"secondary"}
-        size={"small"}
+        size={"medium"}
         onClick={onDrop}
       >
         <X className="w-6 h-6" />
@@ -89,7 +87,7 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
         disabled={disabled}
         type={"main"}
         variant={"secondary"}
-        size={"small"}
+        size={"medium"}
         onClick={open}
       >
         <Upload className="w-6 h-6" />

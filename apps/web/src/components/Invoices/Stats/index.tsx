@@ -53,7 +53,7 @@ const Stats: React.FC<{
           {fetching && !loading ? <Spinner /> : null}
         </div>
 
-        <Button onClick={create.show} size={"small"}>
+        <Button onClick={create.show} size={"medium"}>
           {intl("invoices.stats.create.invoice")}
         </Button>
       </div>

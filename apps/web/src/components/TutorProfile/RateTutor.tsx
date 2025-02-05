@@ -57,7 +57,7 @@ export const RateTutor: React.FC<{
       </Typography>
       <Button
         onClick={() => setRating(true)}
-        size={"small"}
+        size={mq.md ? "medium" : "small"}
         className="w-full md:w-[386px] flex items-center gap-2"
       >
         <Typography

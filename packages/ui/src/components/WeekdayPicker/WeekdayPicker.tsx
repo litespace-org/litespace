@@ -205,7 +205,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           <Button
             onClick={reset}
             htmlType="button"
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
           >
@@ -214,7 +214,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           <Button
             htmlType="button"
             onClick={selectAll}
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
           >

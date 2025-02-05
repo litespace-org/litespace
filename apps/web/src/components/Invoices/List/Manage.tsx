@@ -247,7 +247,7 @@ const ManageInvoice: React.FC<{
 
         <div className="mt-4">
           <Button
-            size={"small"}
+            size={"medium"}
             disabled={create.isPending || update.isPending || disabled}
             loading={create.isPending || update.isPending}
           >

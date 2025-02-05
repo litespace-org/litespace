@@ -160,7 +160,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               ))}
 
               <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
-                <Button size={"tiny"} className="tw-w-full">
+                <Button size={"small"} className="tw-w-full">
                   <Typography
                     element="caption"
                     weight="semibold"
@@ -203,7 +203,7 @@ const EmptyUpcomingLessonsComponent: React.FC<{
         </Typography>
       </div>
       <Link to={tutorsUrl} className="tw-intline-block tw-w-full">
-        <Button className="tw-w-full" size={"tiny"}>
+        <Button className="tw-w-full" size={"small"}>
           <Typography
             element="caption"
             weight="semibold"

@@ -205,7 +205,7 @@ export const PlanCard: React.FC<Props> = ({
       ) : (
         <Button
           htmlType="button"
-          size={mq.lg ? "small" : "tiny"}
+          size={mq.lg ? "medium" : "small"}
           className="tw-mt-4 md:tw-mt-6 tw-w-full"
           onClick={onBuy}
         >

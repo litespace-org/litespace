@@ -90,12 +90,10 @@ const Picker: React.FC<{
                 <Button
                   key={label}
                   htmlType="button"
-                  size={"tiny"}
+                  size={"small"}
                   onClick={onClick}
                   type={"main"}
-                  variant={
-                    active ? "primary" : "secondary"
-                  }
+                  variant={active ? "primary" : "secondary"}
                 >
                   {label}
                 </Button>

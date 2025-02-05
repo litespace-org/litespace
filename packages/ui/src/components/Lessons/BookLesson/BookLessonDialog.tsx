@@ -315,7 +315,7 @@ export const BookLessonDialog: React.FC<{
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
-              size={"small"}
+              size={"medium"}
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
@@ -330,7 +330,7 @@ export const BookLessonDialog: React.FC<{
 
           <Button
             endIcon={<LongLeftArrow />}
-            size={"small"}
+            size={"medium"}
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
               if (step === "duration-selection") setStep("time-selection");

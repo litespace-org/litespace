@@ -70,7 +70,7 @@ const List: React.FC<{
           <Button
             loading={loading || fetching}
             disabled={loading || fetching || !withMore}
-            size={"small"}
+            size={"medium"}
             onClick={more}
           >
             {intl.formatMessage({

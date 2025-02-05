@@ -227,7 +227,7 @@ export const LessonCard: React.FC<Props> = ({
 
   const button = (
     <Button
-      size={"tiny"}
+      size={"small"}
       className={cn("tw-w-full tw-mt-auto")}
       disabled={!canJoin && !canRebook}
       onClick={mainBtnHandler}

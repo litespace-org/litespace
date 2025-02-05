@@ -114,7 +114,7 @@ const ForgetPassword: React.FC = () => {
 
                     <Button
                       variant={"primary"}
-                      size={"small"}
+                      size={"medium"}
                       className="w-full"
                       htmlType="submit"
                       loading={forgetPassword.isPending}
@@ -142,7 +142,7 @@ const ForgetPassword: React.FC = () => {
                   </div>
                   <Button
                     variant={"tertiary"}
-                    size={"small"}
+                    size={"medium"}
                     className="mx-auto"
                     onClick={() => {
                       setSentEmail(false);

@@ -74,7 +74,7 @@ export const Note: React.FC<{ note: string | null; onEdit?: () => void }> = ({
             onClick={onEdit}
             type={"main"}
             variant={"secondary"}
-            size={"tiny"}
+            size={"small"}
           >
             {intl("global.labels.edit")}
           </Button>

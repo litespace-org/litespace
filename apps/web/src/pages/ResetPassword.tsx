@@ -1,6 +1,4 @@
-import {
-  Button,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Label, Controller } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -187,7 +185,7 @@ const ResetPassword = () => {
                       loading={resetPassword.isPending}
                       type={"main"}
                       variant={"primary"}
-                      size={"small"}
+                      size={"medium"}
                       className="w-full"
                     >
                       {intl("labels.confirm")}

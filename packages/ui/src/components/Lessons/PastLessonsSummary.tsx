@@ -128,7 +128,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
 
           {more && hasMore ? (
             <Button
-              size={"tiny"}
+              size={"small"}
               className="tw-inline-block tw-w-full"
               loading={loadingMore}
               disabled={loadingMore}
@@ -304,7 +304,7 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
 
       {!isTutor ? (
         <Link to={tutorsRoute} className="tw-w-full">
-          <Button size={"small"} className="tw-w-full">
+          <Button size={"medium"} className="tw-w-full">
             <Typography
               element="caption"
               weight="bold"

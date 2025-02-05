@@ -72,7 +72,7 @@ const UserForm: React.FC<{
 
   return (
     <React.Fragment>
-      <Button onClick={render.show} size={"small"}>
+      <Button onClick={render.show} size={"medium"}>
         {intl("dashboard.users.create")}
       </Button>
 
@@ -138,7 +138,7 @@ const UserForm: React.FC<{
           <Button
             disabled={createUser.isPending}
             loading={createUser.isPending}
-            size={"small"}
+            size={"medium"}
           >
             {intl("labels.create")}
           </Button>

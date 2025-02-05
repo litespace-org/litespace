@@ -367,7 +367,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
       <Button
         disabled={profileMutation.isPending || !canSubmit}
         loading={profileMutation.isPending}
-        size={lg ? "large" : "tiny"}
+        size={lg ? "large" : "small"}
         className="fixed bottom-4 left-4 md:static mr-auto mt-6 md:mt-auto"
         htmlType="submit"
       >

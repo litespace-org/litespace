@@ -71,10 +71,8 @@ export const Alert: React.FC<{
             <Button
               htmlType="button"
               onClick={action.onClick}
-              size={"small"}
-              type={
-                type === AlertType.Error ? "error" : "main"
-              }
+              size={"medium"}
+              type={type === AlertType.Error ? "error" : "main"}
               disabled={action.disabled}
               loading={action.loading}
             >

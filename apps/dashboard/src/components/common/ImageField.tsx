@@ -1,6 +1,4 @@
-import {
-  Button,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import { Typography } from "@litespace/ui/Typography";
 import ImageDialog from "@/components/common/ImageDialog";
@@ -36,7 +34,7 @@ const ImageField: React.FC<{
     <>
       <Button
         type={"main"}
-        size={"tiny"}
+        size={"small"}
         variant={"secondary"}
         onClick={image.show}
       >

@@ -1,6 +1,4 @@
-import {
-  Button,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
@@ -172,7 +170,7 @@ const Process: React.FC<{
           <div className="flex gap-4 items-center">
             <Button
               htmlType="button"
-              size={"tiny"}
+              size={"small"}
               variant={"secondary"}
               onClick={() => {
                 if (!ref.current) return;
@@ -217,7 +215,7 @@ const Process: React.FC<{
                 : "main"
             }
             variant={"primary"}
-            size={"small"}
+            size={"medium"}
             loading={update.isPending}
             disabled={update.isPending || deleteNote.isPending}
           >
@@ -227,7 +225,7 @@ const Process: React.FC<{
           {editNote && note !== null ? (
             <Button
               type={"error"}
-              size={"small"}
+              size={"medium"}
               loading={deleteNote.isPending}
               disabled={update.isPending || deleteNote.isPending}
               htmlType="button"

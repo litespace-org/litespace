@@ -294,7 +294,7 @@ const Sidebar: React.FC<{
             </Typography>
           </div>
           <Link to={Route.Subscription}>
-            <Button size={"tiny"} htmlType="button">
+            <Button size={"small"} htmlType="button">
               <Typography
                 element="caption"
                 weight="semibold"

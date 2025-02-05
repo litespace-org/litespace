@@ -1,6 +1,4 @@
-import {
-  Button,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Select, SelectList } from "@litespace/ui/Select";
 import { Void } from "@litespace/types";
 import {
@@ -114,7 +112,7 @@ export const Table = <T extends object>({
             />
           </div>
           <Button
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
             onClick={() => goto(1)}
@@ -123,7 +121,7 @@ export const Table = <T extends object>({
             &laquo;
           </Button>
           <Button
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
             onClick={prev}
@@ -132,7 +130,7 @@ export const Table = <T extends object>({
             &rarr;
           </Button>
           <Button
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
             onClick={next}
@@ -141,7 +139,7 @@ export const Table = <T extends object>({
             &larr;
           </Button>
           <Button
-            size={"tiny"}
+            size={"small"}
             type={"main"}
             variant={"secondary"}
             onClick={() => goto(totalPages)}

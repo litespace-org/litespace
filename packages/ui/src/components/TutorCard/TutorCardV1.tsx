@@ -1,7 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import {
-  Button,
-} from "@/components/Button";
+import { Button } from "@/components/Button";
 import { CardProps } from "@/components/TutorCard/types";
 import { Typography } from "@/components/Typography";
 import { formatNumber } from "@/components/utils";
@@ -204,7 +202,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
             className="tw-grow tw-basis-1/2 tw-w-full"
             type={"main"}
             variant={"primary"}
-            size={"tiny"}
+            size={"small"}
           >
             <Typography
               element="caption"

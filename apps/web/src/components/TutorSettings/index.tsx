@@ -129,7 +129,7 @@ const TutorSettings: React.FC<{
           htmlType="submit"
           loading={updateTutor.isPending}
           disabled={updateTutor.isPending || !dataChanged}
-          size={"small"}
+          size={"medium"}
         >
           {intl("shared-settings.save")}
         </Button>

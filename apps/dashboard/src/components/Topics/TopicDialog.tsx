@@ -130,7 +130,7 @@ const TopicDialog: React.FC<{
           <Button
             loading={createTopic.isPending || updateTopic.isPending}
             disabled={createTopic.isPending || updateTopic.isPending}
-            size={"tiny"}
+            size={"small"}
           >
             {topic
               ? intl("dashboard.topics.edit")

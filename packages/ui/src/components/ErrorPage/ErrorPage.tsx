@@ -21,9 +21,7 @@ const ErrorPage: React.FC = () => {
           </p>
         </div>
         <div className="tw-mt-4">
-          <Button size={"small"}>
-            {intl("page.error.button.label")}
-          </Button>
+          <Button size={"medium"}>{intl("page.error.button.label")}</Button>
         </div>
       </div>
     </div>

@@ -93,7 +93,7 @@ const Login: React.FC = () => {
               />
 
               <Button
-                size={"small"}
+                size={"medium"}
                 disabled={mutation.isPending}
                 loading={mutation.isPending}
               >

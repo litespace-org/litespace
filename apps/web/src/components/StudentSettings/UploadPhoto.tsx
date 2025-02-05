@@ -41,7 +41,7 @@ const UploadPhoto: React.FC<{
       </div>
       <div className="grow md:grow-0 flex flex-col-reverse lg:flex-col gap-2 lg:gap-4">
         <Button
-          size={"tiny"}
+          size={"small"}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();

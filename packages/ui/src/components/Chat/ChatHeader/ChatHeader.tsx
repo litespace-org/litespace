@@ -60,11 +60,7 @@ export const ChatHeader: React.FC<{
       </div>
       {role !== IUser.Role.Student && !inCall ? (
         <div className="tw-flex tw-items-center">
-          <Button
-            onClick={openDialog}
-            type={"main"}
-            size={"small"}
-          >
+          <Button onClick={openDialog} type={"main"} size={"medium"}>
             {intl("chat.book")}
           </Button>
         </div>

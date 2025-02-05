@@ -33,7 +33,7 @@ const Media: React.FC = () => {
         <div>
           <List list={media.list} refersh={media.query.refetch} />
           <Button
-            size={"small"}
+            size={"medium"}
             disabled={
               media.query.isLoading ||
               media.query.isFetching ||

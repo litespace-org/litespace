@@ -70,16 +70,12 @@ const MessageBox: React.FC<{
       <div className="flex flex-row gap-2">
         <Button
           disabled={!sanitizedMessage || sanitizedMessage === defaultMessage}
-          size={"small"}
+          size={"medium"}
         >
           {intl(update ? "global.labels.edit" : "global.labels.send")}
         </Button>
         {update ? (
-          <Button
-            onClick={cancel}
-            size={"small"}
-            type={"error"}
-          >
+          <Button onClick={cancel} size={"medium"} type={"error"}>
             {intl("global.labels.cancel")}
           </Button>
         ) : null}

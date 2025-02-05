@@ -132,9 +132,7 @@ const PlanForm: React.FC<{
     <Dialog
       close={onClose}
       trigger={
-        <Button size={"small"}>
-          {intl("dashboard.plans.createPlanBtn")}
-        </Button>
+        <Button size={"medium"}>{intl("dashboard.plans.createPlanBtn")}</Button>
       }
       title={intl("dashboard.plan.form.create")}
       open={open}
@@ -330,7 +328,7 @@ const PlanForm: React.FC<{
           </div>
 
           <Button
-            size={"small"}
+            size={"medium"}
             loading={createPlan.isPending}
             disabled={createPlan.isPending}
             htmlType="submit"

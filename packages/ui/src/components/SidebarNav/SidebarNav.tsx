@@ -27,7 +27,7 @@ const SidebarNav: React.FC<{
       <div ref={button}>
         <Button
           onClick={toggle}
-          size={"small"}
+          size={"medium"}
           type={"main"}
           variant={"secondary"}
           className="!tw-p-2"
@@ -68,7 +68,7 @@ const SidebarNav: React.FC<{
                           "!w-full",
                           location.pathname === option.route && "bg-surface-200"
                         )}
-                        size={"small"}
+                        size={"medium"}
                         type={"main"}
                         variant={"secondary"}
                       >

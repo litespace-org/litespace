@@ -55,7 +55,7 @@ const VerificationDetails: React.FC = () => {
           </Tooltip>
         ) : (
           <Button
-            size={"tiny"}
+            size={"small"}
             variant={"secondary"}
             onClick={reverifyEmail}
             loading={reverify.isPending}

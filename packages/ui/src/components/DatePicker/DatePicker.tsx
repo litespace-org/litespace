@@ -1,7 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import {
-  Button,
-} from "@/components/Button";
+import { Button } from "@/components/Button";
 import { ChevronRight, ChevronLeft } from "react-feather";
 import { flatten, range } from "lodash";
 import { days } from "@/constants/labels";
@@ -91,7 +89,7 @@ export const DatePicker: React.FC<{
             htmlType="button"
             disabled={!canGoBack || disable}
             onClick={prevMonth}
-            size={"small"}
+            size={"medium"}
             type={"main"}
             variant={"secondary"}
             className={cn(compact && "!tw-p-1 !tw-h-auto")}
@@ -109,7 +107,7 @@ export const DatePicker: React.FC<{
             htmlType="button"
             disabled={!canGoNext || disable}
             onClick={nextMonth}
-            size={"small"}
+            size={"medium"}
             type={"main"}
             variant={"secondary"}
             className={cn(compact ? "!tw-p-1 !tw-h-auto" : "")}
@@ -121,7 +119,7 @@ export const DatePicker: React.FC<{
           <div className="tw-absolute tw-top-0 tw-right-1">
             <Button
               onClick={reset}
-              size={"tiny"}
+              size={"small"}
               type={"main"}
               variant={"secondary"}
               className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-xs")}
@@ -173,7 +171,7 @@ export const DatePicker: React.FC<{
                   ? "primary"
                   : "secondary"
               }
-              size={"small"}
+              size={"medium"}
               onClick={() => onSelect && onSelect(day)}
               htmlType="button"
             >

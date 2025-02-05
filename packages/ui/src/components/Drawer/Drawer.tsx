@@ -21,7 +21,7 @@ const Drawer: React.FC<{
         <h3 className="tw-mr-3 tw-text-2xl">{title}</h3>
         <Button
           onClick={close}
-          size={"tiny"}
+          size={"small"}
           type={"main"}
           variant={"primary"}
           className="!tw-px-1"
