@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "license": "MIT",
   "scripts": {
-    "start": "pnpm build && env-cmd ts-node dist/index.js",
+    "start": "env-cmd ts-node dist/index.js",
     "start:test:server": "pnpm build && ts-node dist/index.js",
     "start:local:test:server": "env-cmd -f .env.test pnpm start:test:server",
     "start:ci:test:server": "env-cmd -f .env.test.ci pnpm start:test:server",
