@@ -3,7 +3,7 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import cn from "classnames";
 import More from "@litespace/assets/More";
-import Paperclip from "@litespace/assets/Paperclip";
+import Pin from "@litespace/assets/Pin";
 import Notification from "@litespace/assets/Notification";
 import Edit from "@litespace/assets/Edit";
 import Muted from "@litespace/assets/Muted";
@@ -28,6 +28,10 @@ export type Props = {
    */
   owner?: boolean;
   online?: boolean;
+  /**
+   * whether we show menu or not.
+   * false in case this was all tutors chatRoom
+   */
   actionable?: boolean;
   messageState?: IMessage.MessageState;
   select: Void;
@@ -59,7 +63,7 @@ export const ChatRoom: React.FC<Props> = ({
     () => [
       {
         label: pinned ? intl("chat.unpin") : intl("chat.pin"),
-        icon: <Paperclip />,
+        icon: <Pin />,
         onClick: togglePin,
       },
       {
@@ -125,10 +129,11 @@ export const ChatRoom: React.FC<Props> = ({
           </Typography>
           <Typography
             tag="div"
-            element="caption"
+            element={actionable ? "caption" : "tiny-text"}
             className={cn("tw-mt-2 tw-text-right tw-flex tw-gap-1", {
               "tw-text-natural-50 dark:tw-text-secondary-50": active,
-              "tw-text-natural-600": !active,
+              "tw-text-natural-600": !active && actionable,
+              "tw-text-brand-700": !active && !actionable,
             })}
           >
             {owner && !active && !typing ? (
@@ -160,7 +165,7 @@ export const ChatRoom: React.FC<Props> = ({
             ) : (
               <span
                 style={{ lineBreak: "anywhere" }}
-                className="tw-line-clamp-1 "
+                className="tw-line-clamp-1"
               >
                 {message}
               </span>
@@ -170,15 +175,21 @@ export const ChatRoom: React.FC<Props> = ({
       </div>
       <div className="tw-flex tw-w-fit tw-flex-col tw-relative tw-items-end tw-justify-between">
         {actionable ? (
-          <Menu actions={actions}>
-            <div className="tw-p-2">
+          <Menu
+            className="tw-translate-x-4 lg:tw-translate-x-4"
+            actions={actions}
+          >
+            <div className="tw-p-2 ">
               <More
-                className={cn("tw-cursor-pointer", {
-                  "[&>*]:tw-fill-natural-800 dark:[&>*]:tw-fill-natural-50":
-                    !active,
-                  "[&>*]:tw-fill-natural-50 dark:[&>*]:tw-fill-natural-50":
-                    active,
-                })}
+                className={cn(
+                  "tw-cursor-pointer tw-w-6 tw-h-[5px] lg:tw-w-3 lg:tw-h-[3px]",
+                  {
+                    "[&>*]:tw-fill-natural-800 dark:[&>*]:tw-fill-natural-50":
+                      !active,
+                    "[&>*]:tw-fill-natural-50 dark:[&>*]:tw-fill-natural-50":
+                      active,
+                  }
+                )}
               />
             </div>
           </Menu>

@@ -108,14 +108,10 @@ export const ChatMessage: React.FC<{
 
   return (
     <div
-      className={cn(
-        "tw-group tw-flex tw-w-fit",
-        "tw-gap-[14px] tw-items-center",
-        {
-          "tw-flex-row-reverse": owner,
-          "tw-flex-row": !owner,
-        }
-      )}
+      className={cn("tw-group tw-flex tw-w-fit", "tw-gap-4 tw-items-center", {
+        "tw-flex-row-reverse": owner,
+        "tw-flex-row": !owner,
+      })}
       onMouseEnter={() => setShowMenu(true)}
       onMouseLeave={() => {
         if (openMenu) return;
@@ -126,7 +122,7 @@ export const ChatMessage: React.FC<{
         <div
           data-show={showMenu || !!error}
           className={cn(
-            "tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200",
+            "lg:tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200",
             viewOnly && "tw-hidden"
           )}
         >
@@ -147,7 +143,7 @@ export const ChatMessage: React.FC<{
 
       <div
         className={cn(
-          "tw-rounded-[15px] tw-relative tw-p-2 tw-max-w-[324px]",
+          "tw-rounded-[15px] tw-relative tw-p-2 tw-max-w-[242px] lg:tw-max-w-[324px]",
           "tw-flex tw-items-end tw-gap-2 tw-justify-start",
           pending && "tw-cursor-wait tw-opacity-50",
           {
@@ -191,10 +187,13 @@ export const ChatMessage: React.FC<{
           style={{
             lineBreak: "anywhere",
           }}
-          className={cn("tw-flex tw-items-end tw-gap-2 tw-max-w-[310px]", {
-            "tw-text-natural-950": !error,
-            "tw-text-natural-50": error && !pending,
-          })}
+          className={cn(
+            "tw-flex tw-items-end tw-gap-2 tw-max-w-[198px] lg:tw-max-w-[310px]",
+            {
+              "tw-text-natural-950": !error,
+              "tw-text-natural-50": error && !pending,
+            }
+          )}
         >
           {message.text}
         </Typography>

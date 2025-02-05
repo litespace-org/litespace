@@ -11,7 +11,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
-import { HEADER_HEIGHT } from "@/constants/ui";
 import { useRoomManager } from "@/hooks/chat";
 import { RoomsMap } from "@litespace/headless/chat";
 import { isEmpty } from "lodash";
@@ -59,18 +58,17 @@ const RoomsPanel: React.FC<{
 
   return (
     <div
-      style={{ height: `calc(100vh - ${HEADER_HEIGHT}px)` }}
       className={cn(
         "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-100",
-        "flex-shrink-0 flex flex-col overflow-auto h-screen gap-6",
-        "w-[400px] px-6 pb-6 pt-8 border-e border-natural-200"
+        "flex-shrink-0 flex flex-col overflow-auto gap-6",
+        "w-full lg:w-[400px] p-4 lg:px-6 lg:pb-6 lg:pt-8 border-e border-natural-200"
       )}
     >
       <div>
         <div className="mb-6">
           <Typography
             weight="bold"
-            element="subtitle-2"
+            element={{ default: "body", lg: "subtitle-2" }}
             className=" text-natural-950 mb-6"
           >
             {intl("chat.title")}

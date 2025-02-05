@@ -62,7 +62,7 @@ export const ChatMessageGroup: React.FC<{
         "tw-flex-row": owner,
       })}
     >
-      <div className="tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
+      <div className="tw-hidden lg:tw-block tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
         <Avatar
           alt={orUndefined(name)}
           src={orUndefined(image)}
@@ -71,7 +71,7 @@ export const ChatMessageGroup: React.FC<{
       </div>
       <div>
         <div
-          className={cn("tw-flex tw-gap-6 tw-mb-[14px] tw-items-center", {
+          className={cn("tw-hidden lg:tw-flex tw-gap-6 tw-items-center", {
             "tw-flex-row-reverse": !owner,
             "tw-flex-row": owner,
           })}
@@ -90,7 +90,7 @@ export const ChatMessageGroup: React.FC<{
           </Typography>
         </div>
         <div
-          className={cn("tw-flex tw-flex-col tw-gap-y-2", {
+          className={cn("tw-flex tw-flex-col lg:tw-mt-2 tw-gap-y-2", {
             "tw-items-end": !owner,
             "tw-items-start": owner,
           })}
