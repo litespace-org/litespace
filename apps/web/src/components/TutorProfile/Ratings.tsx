@@ -23,7 +23,6 @@ import { QueryKey } from "@litespace/headless/constants";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { orUndefined } from "@litespace/utils/utils";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -219,14 +218,16 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
 
       {editDialog ? (
         <RatingDialog
-          dialogTitle={intl("rating.form.title")}
-          contentTitle={intl("rating.form.content.title", { tutor: tutorName })}
-          contentDescription={intl("rating.form.content.description")}
+          title={intl("rating-dialog.rate-tutor.title")}
+          header={intl("rating-dialog.rate-tutor.header", { tutor: tutorName })}
+          description={intl("rating-dialog.rate-tutor.description")}
           submitting={editMutation.isPending}
-          initialRating={editDialog.rating}
-          initialFeedback={orUndefined(editDialog.feedback)}
+          defaults={{
+            feedback: editDialog.feedback,
+            rating: editDialog.rating,
+          }}
           close={closeEdit}
-          maxAllowedChars={180}
+          maxAllowedCharacters={180}
           submit={editRating}
         />
       ) : null}

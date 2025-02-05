@@ -16,6 +16,7 @@ interface DialogProps {
   submitting: boolean;
   initialRating?: number;
   initialFeedback?: string;
+  defaults?: { rating?: number; feedback?: string | null };
   close: Void;
   submit: ({
     value,
@@ -24,24 +25,23 @@ interface DialogProps {
     value: number;
     feedback: string | null;
   }) => void;
-  bottom?: boolean;
+  skippable?: boolean;
 }
 
 const RatingDialog: React.FC<DialogProps> = ({
   close,
+  skippable,
   title,
   header,
   description,
   maxAllowedCharacters,
   submitting,
-  initialRating,
-  initialFeedback,
+  defaults,
   submit,
-  bottom,
 }) => {
   const intl = useFormatMessage();
-  const [rating, setRating] = useState<number>(initialRating || 5);
-  const [feedback, setFeedback] = useState<string>(initialFeedback || "");
+  const [rating, setRating] = useState<number>(defaults?.rating || 0);
+  const [feedback, setFeedback] = useState<string>(defaults?.feedback || "");
 
   const onFeedbackChange = useCallback(
     (event: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -50,7 +50,7 @@ const RatingDialog: React.FC<DialogProps> = ({
     []
   );
 
-  const handleRating = useCallback(() => {
+  const onSubmit = useCallback(() => {
     submit({ value: rating, feedback: feedback || null });
   }, [submit, rating, feedback]);
 
@@ -63,9 +63,8 @@ const RatingDialog: React.FC<DialogProps> = ({
 
   return (
     <Dialog
-      open={true}
+      open
       className="tw-w-full md:tw-w-[659px]"
-      position={bottom ? "bottom" : "center"}
       title={
         <div className="tw-flex tw-items-center tw-gap-2">
           <Rate />
@@ -110,22 +109,21 @@ const RatingDialog: React.FC<DialogProps> = ({
           onChange={onFeedbackChange}
           maxAllowedCharacters={maxAllowedCharacters}
           placeholder={intl("session.rating.text.placeholder")}
-          // state={
-          //   feedback &&
-          //   maxAllowedCharacters &&
-          //   feedback.length > maxAllowedCharacters
-          //     ? "error"
-          //     : undefined
-          // }
-          state={"error"}
+          state={
+            feedback &&
+            maxAllowedCharacters &&
+            feedback.length > maxAllowedCharacters
+              ? "error"
+              : undefined
+          }
         />
 
         <div className="tw-flex tw-w-full tw-gap-6">
           <Button
             size={ButtonSize.Large}
-            onClick={handleRating}
+            onClick={onSubmit}
             loading={submitting}
-            disabled={!canSubmit}
+            disabled={!canSubmit || submitting || !rating}
             className="tw-w-full"
           >
             {intl("rating-dialog.submit")}
@@ -134,11 +132,10 @@ const RatingDialog: React.FC<DialogProps> = ({
             onClick={close}
             size={ButtonSize.Large}
             variant={ButtonVariant.Secondary}
-            loading={submitting}
-            disabled={!canSubmit}
+            disabled={!canSubmit || submitting}
             className="tw-w-full"
           >
-            {intl("labels.skip")}
+            {intl(skippable ? "labels.skip" : "labels.cancel")}
           </Button>
         </div>
       </div>

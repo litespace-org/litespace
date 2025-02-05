@@ -42,14 +42,8 @@ export const RateTutor: React.FC<{
     onError: onRateError,
   });
 
-  const rateTutor = useCallback(
-    ({ value, feedback }: { value: number; feedback: string | null }) => {
-      rateMutation.mutate({ value, feedback, rateeId: tutorId });
-    },
-    [tutorId, rateMutation]
-  );
-
   if (!user) return null;
+
   return (
     <div className="flex gap-10 flex-col items-center justify-center ">
       <Typography
@@ -71,13 +65,15 @@ export const RateTutor: React.FC<{
       </Button>
       {rating ? (
         <RatingDialog
-          dialogTitle={intl("rating.form.title")}
-          contentTitle={intl("rating.form.content.title", { tutor: tutorName })}
-          contentDescription={intl("rating.form.content.description")}
+          title={intl("rating-dialog.rate-tutor.title")}
+          header={intl("rating-dialog.rate-tutor.header", { tutor: tutorName })}
+          description={intl("rating-dialog.rate-tutor.description")}
           submitting={rateMutation.isPending}
           close={() => setRating(false)}
-          maxAllowedChars={180}
-          submit={rateTutor}
+          maxAllowedCharacters={180}
+          submit={({ value, feedback }) => {
+            rateMutation.mutate({ value, feedback, rateeId: tutorId });
+          }}
         />
       ) : null}
     </div>

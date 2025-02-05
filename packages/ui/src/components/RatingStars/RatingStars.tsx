@@ -53,7 +53,7 @@ export const RatingStars: React.FC<StarProps> = ({
     >
       {range(5).map((idx) => (
         <div key={idx} className={cn("tw-flex tw-flex-col tw-gap-4")}>
-          <motion.div
+          <motion.button
             whileHover={readonly ? undefined : { scale: 1.1 }}
             whileTap={readonly ? undefined : { scale: 0.9 }}
             className={cn(
@@ -62,6 +62,10 @@ export const RatingStars: React.FC<StarProps> = ({
               { "tw-w-[51px] tw-h-[50px]": variant === "lg" },
               { "tw-w-[80px] tw-h-[80px]": variant === "xl" }
             )}
+            onClick={() => {
+              if (!setRating || readonly) return;
+              setRating(idx + 1);
+            }}
           >
             <SStar
               className={cn(
@@ -71,12 +75,8 @@ export const RatingStars: React.FC<StarProps> = ({
                   ? "[&>*]:tw-fill-warning-500"
                   : "[&>*]:tw-fill-natural-300"
               )}
-              onClick={() => {
-                if (!setRating || readonly) return;
-                setRating(idx + 1);
-              }}
             />
-          </motion.div>
+          </motion.button>
           {!readonly ? (
             <Typography
               element="caption"

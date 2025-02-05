@@ -133,11 +133,11 @@ const UpcomingLessons: React.FC = () => {
           submitting={rateTutor.isPending}
           close={() => setRateDialogInfo(defaultRateDialogInfo)}
           submit={submitRating}
-          dialogTitle={intl("rating.form.title")}
-          contentTitle={intl("rating.form.content.title", {
+          title={intl("rating-dialog.rate-tutor.title")}
+          header={intl("rating-dialog.rate-tutor.header", {
             tutor: rateDialogInfo.tutorName,
           })}
-          contentDescription={intl("rating.form.content.description")}
+          description={intl("rating-dialog.rate-tutor.description")}
         />
       ) : null}
     </div>

@@ -9,6 +9,16 @@ const meta: Meta<typeof RatingDialog> = {
 
 type Story = StoryObj<typeof RatingDialog>;
 
+const submit = ({
+  value,
+  feedback,
+}: {
+  value: number;
+  feedback: string | null;
+}) => {
+  alert(`${feedback}, ${value}`);
+};
+
 export const Primary: Story = {
   args: {
     close: () => alert("close"),
@@ -16,16 +26,21 @@ export const Primary: Story = {
     header: faker.lorem.words(4),
     description: faker.lorem.words(20),
     submitting: false,
-    submit: ({
-      value,
-      feedback,
-    }: {
-      value: number;
-      feedback: string | null;
-    }) => {
-      alert(`${feedback}, ${value}`);
-    },
     maxAllowedCharacters: 200,
+    submit,
+  },
+};
+
+export const Skippable: Story = {
+  args: {
+    close: () => alert("close"),
+    title: faker.lorem.words(2),
+    header: faker.lorem.words(4),
+    description: faker.lorem.words(20),
+    submitting: false,
+    maxAllowedCharacters: 200,
+    skippable: true,
+    submit,
   },
 };
 
@@ -36,39 +51,24 @@ export const WithData: Story = {
     header: faker.lorem.words(4),
     description: faker.lorem.words(20),
     submitting: false,
-    submit: ({
-      value,
-      feedback,
-    }: {
-      value: number;
-      feedback: string | null;
-    }) => {
-      alert(`${feedback}, ${value}`);
-    },
+    submit,
     initialFeedback: faker.lorem.words(20),
     initialRating: faker.number.int({ min: 1, max: 5 }),
     maxAllowedCharacters: 200,
   },
 };
 
-export const Bottom: Story = {
+export const Submitting: Story = {
   args: {
     close: () => alert("close"),
     title: faker.lorem.words(2),
     header: faker.lorem.words(4),
     description: faker.lorem.words(20),
-    submitting: false,
-    submit: ({
-      value,
-      feedback,
-    }: {
-      value: number;
-      feedback: string | null;
-    }) => {
-      alert(`${feedback}, ${value}`);
-    },
+    submitting: true,
+    initialFeedback: faker.lorem.words(20),
+    initialRating: faker.number.int({ min: 1, max: 5 }),
     maxAllowedCharacters: 200,
-    bottom: true,
+    submit,
   },
 };
 
