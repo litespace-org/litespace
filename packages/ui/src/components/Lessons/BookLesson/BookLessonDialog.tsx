@@ -24,13 +24,17 @@ import {
   orderSlots,
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+const Loading: React.FC<{
+  tutorName: string | null;
+  isLargeScreen: boolean;
+}> = ({ tutorName, isLargeScreen }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
+    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[15vh] tw-mb-[146px]">
       <Loader
-        size="medium"
+        size={isLargeScreen ? "medium" : "small"}
         text={
           tutorName
             ? intl("book-lesson.loading-slots", { tutor: tutorName })
@@ -46,12 +50,12 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   return (
     <div
       className={cn(
-        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-[82px] tw-mb-[148px]"
+        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-10 lg:tw-mt-[106px] tw-mb-[148px]"
       )}
     >
       <CalendarEmpty />
       <Typography
-        element="subtitle-2"
+        element={{ default: "body", lg: "subtitle-2" }}
         weight="bold"
         className="tw-text-brand-700 tw-text-center"
       >
@@ -142,6 +146,7 @@ export const BookLessonDialog: React.FC<{
   loading,
   confirmationLoading,
 }) => {
+  const { sm, lg } = useMediaQuery();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
   const [duration, setDuration] = useState<number>(30);
@@ -209,10 +214,11 @@ export const BookLessonDialog: React.FC<{
     <Dialog
       open={open}
       close={close}
+      position={sm ? "center" : "bottom"}
       title={
         <Typography
           className="tw-text-natural-950"
-          element="subtitle-2"
+          element={{ default: "body", lg: "subtitle-2" }}
           weight="bold"
           tag="div"
         >
@@ -221,19 +227,37 @@ export const BookLessonDialog: React.FC<{
             : intl("book-lesson.title.placeholder")}
         </Typography>
       }
-      className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
+      className={cn(
+        "tw-px-0 tw-py-4 lg:!tw-py-6 [&>div:first-child]:!tw-px-4 lg:[&>div:first-child]:!tw-px-6",
+        {
+          "!tw-left-0 tw-right-0 tw-translate-x-0": !sm,
+        }
+      )}
     >
       {!loading ? (
-        <div className="tw-mt-6 tw-px-6">
+        <div
+          className={cn(
+            step === "time-selection" ||
+              step === "confirmation" ||
+              step === "duration-selection"
+              ? "tw-mt-6 lg:tw-mt-8"
+              : "tw-mt-6"
+          )}
+        >
           <Stepper step={step} />
         </div>
       ) : null}
 
-      <div className="tw-mt-6">
+      <div
+        className={cn({
+          "tw-my-6 !tw-px-4 !lg:tw-px-14": step === "date-selection",
+          "tw-mt-6 lg:tw-mt-8 tw-mb-10 lg:tw-mb-6": step === "time-selection",
+        })}
+      >
         <AnimatePresence mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
-              <Loading tutorName={name} />
+              <Loading tutorName={name} isLargeScreen={lg} />
             </Animation>
           ) : null}
 
@@ -257,7 +281,7 @@ export const BookLessonDialog: React.FC<{
 
           {!isTutorBusy && step === "duration-selection" && !loading ? (
             <Animation key="duration-selection" id="duration-selection">
-              <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
+              <div className="tw-mt-6 lg:tw-mt-14 tw-mb-10 lg:tw-mb-[82px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
@@ -284,8 +308,9 @@ export const BookLessonDialog: React.FC<{
           lessonDetails.start &&
           !loading ? (
             <Animation key="confimration" id="confirmation">
-              <div className="tw-px-6">
+              <div>
                 <Confirmation
+                  isLargeScreen={lg}
                   tutorId={tutorId}
                   name={name}
                   imageUrl={imageUrl}
@@ -315,22 +340,28 @@ export const BookLessonDialog: React.FC<{
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
-              size={ButtonSize.Small}
+              size={lg ? ButtonSize.Small : ButtonSize.Tiny}
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
-                "tw-w-[128px]": step === "duration-selection",
+                "tw-flex-1 lg:tw-w-[128px]": step === "duration-selection",
               })}
             >
-              {intl("book-lesson.steps.prev")}
+              <Typography
+                element={{ default: "caption", lg: "body" }}
+                weight="semibold"
+                className="tw-text-natural-50"
+              >
+                {intl("book-lesson.steps.prev")}
+              </Typography>
             </Button>
           ) : null}
 
           <Button
             endIcon={<LongLeftArrow />}
-            size={ButtonSize.Small}
+            size={lg ? ButtonSize.Small : ButtonSize.Tiny}
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
               if (step === "duration-selection") setStep("time-selection");
@@ -341,11 +372,17 @@ export const BookLessonDialog: React.FC<{
               !isValidDate(date)
             }
             className={cn({
-              "tw-w-[196px]": step === "date-selection",
-              "tw-w-[128px]": step === "duration-selection",
+              "tw-flex-1 lg:tw-w-[196px]": step === "date-selection",
+              "tw-flex-1 lg:tw-w-[128px]": step === "duration-selection",
             })}
           >
-            {intl("book-lesson.steps.next")}
+            <Typography
+              element={{ default: "caption", lg: "body" }}
+              weight="semibold"
+              className="tw-text-natural-50"
+            >
+              {intl("book-lesson.steps.next")}
+            </Typography>
           </Button>
         </div>
       ) : null}

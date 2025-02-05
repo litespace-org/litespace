@@ -39,18 +39,21 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
   );
 
   return (
-    <div className="tw-flex tw-flex-row tw-gap-6">
+    <div className="tw-flex tw-flex-row tw-justify-center tw-gap-4 lg:tw-gap-6">
       {steps.map(({ index, label }) => {
         const isCurrent = index === stepIndex;
         const isBefore = index < stepIndex;
         const isAfter = index > stepIndex;
 
         return (
-          <div key={index} className="tw-flex tw-flex-col">
-            <div className="tw-flex tw-flex-row tw-gap-4 tw-items-center tw-mb-2">
+          <div
+            key={index}
+            className="tw-flex tw-flex-col tw-w-min tw-gap-[3px] lg:tw-gap-2"
+          >
+            <div className="tw-flex tw-flex-row tw-gap-1 lg:tw-gap-4 tw-items-center">
               <div
                 className={cn(
-                  "tw-w-7 tw-h-7 tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center",
+                  "tw-w-5 tw-h-[22px] lg:tw-w-7 lg:tw-h-7 tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center",
                   {
                     "tw-bg-brand-700": isCurrent || isBefore,
                     "tw-bg-natural-400": isAfter,
@@ -69,7 +72,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
                   <Check />
                 )}
               </div>
-              <div className="tw-h-[2px] tw-w-20 tw-bg-natural-400">
+              <div className="tw-h-[2px] tw-w-[46px] lg:tw-w-20 tw-bg-natural-400">
                 <div
                   className={cn("tw-h-full", {
                     "tw-w-2/3 tw-bg-brand-700": isCurrent,
@@ -81,7 +84,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
             </div>
             <Typography
               element="tiny-text"
-              className={cn({
+              className={cn("tw-text-center lg:tw-text-start", {
                 "tw-text-brand-700": isBefore || isCurrent,
                 "tw-text-natural-400": isAfter,
               })}
