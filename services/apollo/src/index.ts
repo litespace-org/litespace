@@ -1,14 +1,13 @@
-import express, { json, NextFunction, Request, Response } from "express";
-import { serverConfig } from "@/constants";
+import express, { json } from "express";
+import { config } from "@/config";
+import handler from "@/handler";
 
 const app = express();
 
 app.use(json());
 
-app.post("/", (_req: Request, _res: Response, _next: NextFunction) => {
-  // logic will go here
-});
+app.post("/", handler);
 
-app.listen(serverConfig.port, serverConfig.host, () =>
-  console.log(`Server is running on ${serverConfig.host}:${serverConfig.port}`)
+app.listen(config.port, config.host, () =>
+  console.log(`Server is running on ${config.host}:${config.port}`)
 );

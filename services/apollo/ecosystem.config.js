@@ -2,13 +2,9 @@ module.exports = {
   apps: [
     {
       script: "pnpm start",
-      name: "api",
+      name: "apollo",
       watch: ["dist"],
       watch_delay: 1000,
-    },
-    {
-      script: "pnpm peer",
-      name: "peer",
     },
   ],
 };

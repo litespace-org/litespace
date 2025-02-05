@@ -17,3 +17,5 @@ services/server/uploads/
 services/server/coverage/
 .vercel
 
+# apollo 
+config.json
