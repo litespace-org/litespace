@@ -2,21 +2,33 @@ import * as Tabs from "@radix-ui/react-tabs";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { ITutor } from "@litespace/types";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { LocalId } from "@litespace/ui/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
+import { useSearchParams } from "react-router-dom";
 
 type Tab = "profile" | "ratings";
+const URL_TAB_KEY = "tab";
+
+function isValidTab(tab: string): tab is Tab {
+  return tab === "profile" || tab === "ratings";
+}
 
 export const TutorTabs: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
 }> = ({ tutor }) => {
   const intl = useFormatMessage();
-  const [tab, setTab] = useState<Tab>("profile");
+  const [params, setParams] = useSearchParams();
+
+  const tab = useMemo((): Tab => {
+    const tab = params.get(URL_TAB_KEY);
+    if (!tab || !isValidTab(tab)) return "profile";
+    return tab;
+  }, [params]);
 
   const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
     return [
@@ -34,7 +46,10 @@ export const TutorTabs: React.FC<{
   return (
     <Tabs.Root
       value={tab}
-      onValueChange={(value: string) => setTab(value as Tab)}
+      onValueChange={(value: string) => {
+        if (!isValidTab(value)) return;
+        setParams({ [URL_TAB_KEY]: value });
+      }}
     >
       <Tabs.List className="border-b border-natural-300 flex gap-[56px] px-10 ">
         {tabs.map(({ value, label }) => (
