@@ -1,0 +1,7 @@
+{
+  "repo": "/home/litespace-org/litespace",
+  "branch": "master",
+  "port": 9090,
+  "host": "0.0.0.0",
+  "secret": "0x1"
+}
