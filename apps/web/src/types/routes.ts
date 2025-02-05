@@ -22,12 +22,14 @@ export enum Route {
   Subscription = "/subscription",
   TutorOnboarding = "/tutor/onboarding",
   Tutors = "/tutors",
-  TutorProfile = "/:id/tutor",
+  TutorProfile = "/t/:id",
   UpcomingLessons = "/upcoming-lessons",
   VerifyEmail = "/verify-email",
   ForgetPassword = "/forget-password",
   Lesson = "/lesson/:id",
 }
+
+export const TUTOR_PROFILE_REGEX = /\/t\/\d+\/?/;
 
 export enum RoutePatterns {
   Register = "(/):role/register(/)",

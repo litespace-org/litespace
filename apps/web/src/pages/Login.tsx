@@ -1,4 +1,4 @@
-import { Form, Controller, Label } from "@litespace/ui/Form";
+import { Form, Controller } from "@litespace/ui/Form";
 import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -101,7 +101,6 @@ const Login: React.FC = () => {
                   helper={errors.email?.message}
                 />
 
-                <Label id="password">{intl("labels.password")}</Label>
                 <Controller.Password
                   control={control}
                   name="password"

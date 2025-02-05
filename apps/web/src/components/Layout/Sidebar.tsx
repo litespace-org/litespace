@@ -1,4 +1,4 @@
-import { Route } from "@/types/routes";
+import { Route, TUTOR_PROFILE_REGEX } from "@/types/routes";
 import Calendar from "@litespace/assets/Calendar";
 import Chat from "@litespace/assets/Chat";
 import Home from "@litespace/assets/Home";
@@ -25,6 +25,7 @@ import {
   MOBILE_SIDEBAR_WIDTH,
   TABLET_NAVBAR_HEIGHT,
 } from "@/constants/ui";
+import { Icon } from "@/types/common";
 
 const SidebarItem = ({
   to,
@@ -71,6 +72,13 @@ const SidebarItem = ({
   );
 };
 
+type LinkInfo = {
+  label: string;
+  route: Route;
+  Icon: Icon;
+  isActive?: () => boolean;
+};
+
 const Sidebar: React.FC<{
   hide: Void;
 }> = ({ hide }) => {
@@ -80,8 +88,8 @@ const Sidebar: React.FC<{
   const navigate = useNavigate();
   const { user, logout } = useUserContext();
 
-  const mainPages = useMemo(() => {
-    const dashboard = {
+  const mainPages: LinkInfo[] = useMemo(() => {
+    const dashboard: LinkInfo = {
       label: intl("sidebar.dashboard"),
       route:
         user?.role === IUser.Role.Student
@@ -118,6 +126,12 @@ const Sidebar: React.FC<{
       label: intl("sidebar.tutors"),
       route: Route.Tutors,
       Icon: People,
+      isActive() {
+        return (
+          location.pathname === Route.Tutors ||
+          TUTOR_PROFILE_REGEX.test(location.pathname)
+        );
+      },
     };
 
     const subscribtions = {
@@ -149,7 +163,7 @@ const Sidebar: React.FC<{
       ];
 
     return [];
-  }, [intl, user?.role]);
+  }, [intl, location.pathname, user?.role]);
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -193,13 +207,13 @@ const Sidebar: React.FC<{
           {intl("sidebar.main")}
         </Typography>
         <ul className="flex flex-col gap-2">
-          {mainPages.map(({ label, route, Icon }) => (
+          {mainPages.map(({ label, route, Icon, isActive = () => false }) => (
             <SidebarItem
               key={label}
               to={route}
               Icon={Icon}
               label={label}
-              active={location.pathname === route}
+              active={location.pathname === route || isActive()}
             />
           ))}
         </ul>

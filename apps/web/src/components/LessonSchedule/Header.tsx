@@ -72,7 +72,7 @@ const Header: React.FC<Props> = ({
                 >
                   <Icon
                     className={cn(
-                      "transition-colors duration-300",
+                      "tw-w-6 tw-h-6 transition-colors duration-300",
                       view === viewOption
                         ? "[&>*]:stroke-brand-700"
                         : "[&>*]:stroke-natural-600"
