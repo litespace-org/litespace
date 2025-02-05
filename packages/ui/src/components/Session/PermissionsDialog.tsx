@@ -3,7 +3,7 @@ import { Dialog } from "@/components/Dialog";
 import Devices from "@litespace/assets/Devices";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
-import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import cn from "classnames";
 import { Void } from "@litespace/types";
 
@@ -85,7 +85,7 @@ export const PermissionsDialog: React.FC<Props> = ({
         <div className="tw-flex tw-items-center tw-justify-center tw-gap-6 tw-w-fit">
           <Button
             className="tw-shrink-0 tw-min-w-[274px]"
-            size={ButtonSize.Large}
+            size={"large"}
             onClick={() => onSubmit("mic-and-camera")}
             loading={loading === "mic-and-camera"}
             disabled={!!loading || !devices.camera || !devices.mic}
@@ -96,8 +96,8 @@ export const PermissionsDialog: React.FC<Props> = ({
           </Button>
           <Button
             className="tw-shrink-0 tw-min-w-[274px]"
-            size={ButtonSize.Large}
-            variant={ButtonVariant.Secondary}
+            size={"large"}
+            variant={"secondary"}
             onClick={() => onSubmit("mic-only")}
             loading={loading === "mic-only"}
             disabled={!!loading || !devices.mic}

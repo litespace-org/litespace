@@ -1,9 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@/components/Button";
 import { ChevronRight, ChevronLeft } from "react-feather";
 import { flatten, range } from "lodash";
@@ -94,9 +91,9 @@ export const DatePicker: React.FC<{
             htmlType="button"
             disabled={!canGoBack || disable}
             onClick={prevMonth}
-            size={ButtonSize.Small}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"small"}
+            type={"main"}
+            variant={"secondary"}
             className={cn(compact && "!tw-p-1 !tw-h-auto")}
           >
             <ChevronRight
@@ -112,9 +109,9 @@ export const DatePicker: React.FC<{
             htmlType="button"
             disabled={!canGoNext || disable}
             onClick={nextMonth}
-            size={ButtonSize.Small}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"small"}
+            type={"main"}
+            variant={"secondary"}
             className={cn(compact ? "!tw-p-1 !tw-h-auto" : "")}
           >
             <ChevronLeft className={cn(compact && "tw-w-[15px] tw-h-[15px]")} />
@@ -124,9 +121,9 @@ export const DatePicker: React.FC<{
           <div className="tw-absolute tw-top-0 tw-right-1">
             <Button
               onClick={reset}
-              size={ButtonSize.Tiny}
-              type={ButtonType.Main}
-              variant={ButtonVariant.Secondary}
+              size={"tiny"}
+              type={"main"}
+              variant={"secondary"}
               className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-xs")}
               disabled={disable || isDateDisabled(dayjs())}
             >
@@ -170,13 +167,13 @@ export const DatePicker: React.FC<{
                 compact && "!tw-p-1 !tw-h-auto",
                 !isCurrentMonth && "tw-opacity-40"
               )}
-              type={ButtonType.Main}
+              type={"main"}
               variant={
                 selected && selected.isSame(day, "day")
-                  ? ButtonVariant.Primary
-                  : ButtonVariant.Secondary
+                  ? "primary"
+                  : "secondary"
               }
-              size={ButtonSize.Small}
+              size={"small"}
               onClick={() => onSelect && onSelect(day)}
               htmlType="button"
             >

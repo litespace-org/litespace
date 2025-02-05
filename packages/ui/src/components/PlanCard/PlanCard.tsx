@@ -3,7 +3,7 @@ import { useFormatMessage } from "@/hooks";
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { formatNumber } from "@/components/utils";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
@@ -205,7 +205,7 @@ export const PlanCard: React.FC<Props> = ({
       ) : (
         <Button
           htmlType="button"
-          size={mq.lg ? ButtonSize.Small : ButtonSize.Tiny}
+          size={mq.lg ? "small" : "tiny"}
           className="tw-mt-4 md:tw-mt-6 tw-w-full"
           onClick={onBuy}
         >

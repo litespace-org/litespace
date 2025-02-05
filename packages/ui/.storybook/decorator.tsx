@@ -21,7 +21,7 @@ const Decorator = (Story: React.FC) => {
           <MediaQueryProvider>
             <div dir="rtl" className="tw-font-cairo">
               <div className="tw-mb-4">
-                <Button onClick={toggle} size={ButtonSize.Tiny}>
+                <Button onClick={toggle} size={"tiny"}>
                   Toggle Theme
                 </Button>
               </div>

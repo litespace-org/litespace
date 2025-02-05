@@ -3,9 +3,6 @@ import { MediaType } from "@/components/Media/types";
 import { Avatar } from "@litespace/ui/Avatar";
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -81,18 +78,18 @@ const Controller: React.FC<Controls & { type: MediaType }> = ({
       />
       <Button
         disabled={disabled}
-        type={ButtonType.Main}
-        variant={ButtonVariant.Secondary}
-        size={ButtonSize.Small}
+        type={"main"}
+        variant={"secondary"}
+        size={"small"}
         onClick={onDrop}
       >
         <X className="w-6 h-6" />
       </Button>
       <Button
         disabled={disabled}
-        type={ButtonType.Main}
-        variant={ButtonVariant.Secondary}
-        size={ButtonSize.Small}
+        type={"main"}
+        variant={"secondary"}
+        size={"small"}
         onClick={open}
       >
         <Upload className="w-6 h-6" />

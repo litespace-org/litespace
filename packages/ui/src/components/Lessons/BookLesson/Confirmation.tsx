@@ -7,7 +7,7 @@ import Clock from "@litespace/assets/Clock";
 import Timer from "@litespace/assets/Timer";
 import dayjs from "@/lib/dayjs";
 import { formatMinutes } from "@/components/utils";
-import { Button, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 
@@ -102,7 +102,7 @@ export const Confirmation: React.FC<{
         <Button
           className="tw-w-full"
           disabled={confirmationLoading}
-          variant={ButtonVariant.Secondary}
+          variant={"secondary"}
           onClick={onEdit}
         >
           {intl("book-lesson.edit")}

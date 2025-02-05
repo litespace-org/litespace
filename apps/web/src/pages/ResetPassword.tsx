@@ -1,8 +1,5 @@
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { Label, Controller } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
@@ -188,9 +185,9 @@ const ResetPassword = () => {
                     <Button
                       disabled={resetPassword.isPending}
                       loading={resetPassword.isPending}
-                      type={ButtonType.Main}
-                      variant={ButtonVariant.Primary}
-                      size={ButtonSize.Small}
+                      type={"main"}
+                      variant={"primary"}
+                      size={"small"}
                       className="w-full"
                     >
                       {intl("labels.confirm")}

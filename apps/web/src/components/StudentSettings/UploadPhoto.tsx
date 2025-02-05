@@ -1,6 +1,6 @@
 import React, { useMemo, useRef } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { first } from "lodash";
 import { Avatar } from "@litespace/ui/Avatar";
@@ -41,7 +41,7 @@ const UploadPhoto: React.FC<{
       </div>
       <div className="grow md:grow-0 flex flex-col-reverse lg:flex-col gap-2 lg:gap-4">
         <Button
-          size={ButtonSize.Tiny}
+          size={"tiny"}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();

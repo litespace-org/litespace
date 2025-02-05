@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { formatMinutes } from "@/components/utils";
@@ -97,7 +97,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
             </Typography>
             {!isTutor ? (
               <Link to={tutorsRoute}>
-                <Button size={ButtonSize.Small}>
+                <Button size={"small"}>
                   {intl("student-dashboard.table.search-tutors")}
                 </Button>
               </Link>
@@ -147,8 +147,8 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                         lesson.currentMember,
                       ]);
                   }}
-                  variant={ButtonVariant.Secondary}
-                  size={ButtonSize.Tiny}
+                  variant={"secondary"}
+                  size={"tiny"}
                   disabled={!!sendingMessage}
                   loading={sendingMessage === lesson.id}
                 >

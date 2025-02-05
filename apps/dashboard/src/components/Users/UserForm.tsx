@@ -1,5 +1,5 @@
 import { useCreateUser } from "@litespace/headless/users";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Controller, Field, Form, Label } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
@@ -72,7 +72,7 @@ const UserForm: React.FC<{
 
   return (
     <React.Fragment>
-      <Button onClick={render.show} size={ButtonSize.Small}>
+      <Button onClick={render.show} size={"small"}>
         {intl("dashboard.users.create")}
       </Button>
 
@@ -138,7 +138,7 @@ const UserForm: React.FC<{
           <Button
             disabled={createUser.isPending}
             loading={createUser.isPending}
-            size={ButtonSize.Small}
+            size={"small"}
           >
             {intl("labels.create")}
           </Button>

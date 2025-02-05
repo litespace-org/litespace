@@ -1,6 +1,6 @@
 import React from "react";
 import { Avatar } from "@/components/Avatar";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import { orUndefined } from "@litespace/utils/utils";
 import { useFormatMessage } from "@/hooks";
@@ -62,8 +62,8 @@ export const ChatHeader: React.FC<{
         <div className="tw-flex tw-items-center">
           <Button
             onClick={openDialog}
-            type={ButtonType.Main}
-            size={ButtonSize.Small}
+            type={"main"}
+            size={"small"}
           >
             {intl("chat.book")}
           </Button>

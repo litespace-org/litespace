@@ -1,5 +1,5 @@
 import { useWithdrawMethod } from "@/hooks/withdraw";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import {
   destructureWithdrawMethod,
   getWithdrawMethodIntlId,
@@ -247,7 +247,7 @@ const ManageInvoice: React.FC<{
 
         <div className="mt-4">
           <Button
-            size={ButtonSize.Small}
+            size={"small"}
             disabled={create.isPending || update.isPending || disabled}
             loading={create.isPending || update.isPending}
           >

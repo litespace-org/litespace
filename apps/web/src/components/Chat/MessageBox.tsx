@@ -1,4 +1,4 @@
-import { Button, ButtonSize, ButtonType } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Form, Controller } from "@litespace/ui/Form";
 import { useKeys } from "@litespace/ui/hooks/keys";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -70,15 +70,15 @@ const MessageBox: React.FC<{
       <div className="flex flex-row gap-2">
         <Button
           disabled={!sanitizedMessage || sanitizedMessage === defaultMessage}
-          size={ButtonSize.Small}
+          size={"small"}
         >
           {intl(update ? "global.labels.edit" : "global.labels.send")}
         </Button>
         {update ? (
           <Button
             onClick={cancel}
-            size={ButtonSize.Small}
-            type={ButtonType.Error}
+            size={"small"}
+            type={"error"}
           >
             {intl("global.labels.cancel")}
           </Button>

@@ -1,4 +1,4 @@
-import { Button, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
 import { Loader, LoadingError } from "@/components/Loading";
 import DaySlots from "@/components/ManageSchedule/DaySlots";
@@ -344,7 +344,7 @@ export const ManageSchedule: React.FC<Props> = ({
         </Button>
         <Button
           onClick={onClose}
-          variant={ButtonVariant.Secondary}
+          variant={"secondary"}
           className="tw-grow tw-basis-1/2"
           disabled={saving}
         >

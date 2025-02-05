@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import ar from "@/locales/ar-eg.json";
 import React from "react";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import { ButtonVariant } from "@/components/Button/types";
 
 type Component = typeof Button;
 
@@ -19,8 +18,8 @@ const meta: Meta<Component> = {
 export const LoadingOverHiddenText: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    size: ButtonSize.Tiny,
+    type: "main",
+    size: "tiny",
     loading: true,
   },
   render(props: object & { children: React.ReactNode }) {
@@ -35,309 +34,309 @@ export const LoadingOverHiddenText: StoryObj<typeof Button> = {
 export const MainPrimaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "primary",
+    size: "tiny",
   },
 };
 export const MainPrimarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Small,
+    type: "main",
+    variant: "primary",
+    size: "small",
   },
 };
 export const MainPrimaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Large,
+    type: "main",
+    variant: "primary",
+    size: "large",
   },
 };
 
 export const MainSecondaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "secondary",
+    size: "tiny",
   },
 };
 export const MainSecondarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Small,
+    type: "main",
+    variant: "secondary",
+    size: "small",
   },
 };
 export const MainSecondaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Large,
+    type: "main",
+    variant: "secondary",
+    size: "large",
   },
 };
 
 export const MainTertiaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "tertiary",
+    size: "tiny",
   },
 };
 export const MainTertiarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Small,
+    type: "main",
+    variant: "tertiary",
+    size: "small",
   },
 };
 export const MainTertiaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Large,
+    type: "main",
+    variant: "tertiary",
+    size: "large",
   },
 };
 
 export const WarningPrimaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "primary",
+    size: "tiny",
   },
 };
 export const WarningPrimarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Small,
+    type: "warning",
+    variant: "primary",
+    size: "small",
   },
 };
 export const WarningPrimaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Large,
+    type: "warning",
+    variant: "primary",
+    size: "large",
   },
 };
 
 export const WarningSecondaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "secondary",
+    size: "tiny",
   },
 };
 export const WarningSecondarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Small,
+    type: "warning",
+    variant: "secondary",
+    size: "small",
   },
 };
 export const WarningSecondaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Large,
+    type: "warning",
+    variant: "secondary",
+    size: "large",
   },
 };
 
 export const WarningTertiaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "tertiary",
+    size: "tiny",
   },
 };
 export const WarningTertiarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Small,
+    type: "warning",
+    variant: "tertiary",
+    size: "small",
   },
 };
 export const WarningTertiaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Large,
+    type: "warning",
+    variant: "tertiary",
+    size: "large",
   },
 };
 
 export const SuccessPrimaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "primary",
+    size: "tiny",
   },
 };
 export const SuccessPrimarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Small,
+    type: "success",
+    variant: "primary",
+    size: "small",
   },
 };
 export const SuccessPrimaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Large,
+    type: "success",
+    variant: "primary",
+    size: "large",
   },
 };
 
 export const SuccessSecondaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "secondary",
+    size: "tiny",
   },
 };
 export const SuccessSecondarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Small,
+    type: "success",
+    variant: "secondary",
+    size: "small",
   },
 };
 export const SuccessSecondaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Large,
+    type: "success",
+    variant: "secondary",
+    size: "large",
   },
 };
 
 export const SuccessTertiaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "tertiary",
+    size: "tiny",
   },
 };
 export const SuccessTertiarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Small,
+    type: "success",
+    variant: "tertiary",
+    size: "small",
   },
 };
 export const SuccessTertiaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Large,
+    type: "success",
+    variant: "tertiary",
+    size: "large",
   },
 };
 
 export const ErrorPrimaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "primary",
+    size: "tiny",
   },
 };
 export const ErrorPrimarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Small,
+    type: "error",
+    variant: "primary",
+    size: "small",
   },
 };
 export const ErrorPrimaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Large,
+    type: "error",
+    variant: "primary",
+    size: "large",
   },
 };
 
 export const ErrorSecondaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "secondary",
+    size: "tiny",
   },
 };
 export const ErrorSecondarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Small,
+    type: "error",
+    variant: "secondary",
+    size: "small",
   },
 };
 export const ErrorSecondaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Large,
+    type: "error",
+    variant: "secondary",
+    size: "large",
   },
 };
 
 export const ErrorTertiaryTiny: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "tertiary",
+    size: "tiny",
   },
 };
 export const ErrorTertiarySmall: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Small,
+    type: "error",
+    variant: "tertiary",
+    size: "small",
   },
 };
 export const ErrorTertiaryLarge: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Large,
+    type: "error",
+    variant: "tertiary",
+    size: "large",
   },
 };
 
 export const DisabledMainPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "primary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -345,9 +344,9 @@ export const DisabledMainPrimary: StoryObj<typeof Button> = {
 export const DisabledMainSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "secondary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -355,9 +354,9 @@ export const DisabledMainSecondary: StoryObj<typeof Button> = {
 export const DisabledMainTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "tertiary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -365,9 +364,9 @@ export const DisabledMainTertiary: StoryObj<typeof Button> = {
 export const DisabledSuccessPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "primary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -375,9 +374,9 @@ export const DisabledSuccessPrimary: StoryObj<typeof Button> = {
 export const DisabledSuccessSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "secondary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -385,9 +384,9 @@ export const DisabledSuccessSecondary: StoryObj<typeof Button> = {
 export const DisabledSuccessTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "tertiary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -395,9 +394,9 @@ export const DisabledSuccessTertiary: StoryObj<typeof Button> = {
 export const DisabledWarningPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "primary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -405,9 +404,9 @@ export const DisabledWarningPrimary: StoryObj<typeof Button> = {
 export const DisabledWarningSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "secondary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -415,9 +414,9 @@ export const DisabledWarningSecondary: StoryObj<typeof Button> = {
 export const DisabledWarningTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "tertiary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -425,9 +424,9 @@ export const DisabledWarningTertiary: StoryObj<typeof Button> = {
 export const DisabledErrorPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "primary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -435,9 +434,9 @@ export const DisabledErrorPrimary: StoryObj<typeof Button> = {
 export const DisabledErrorSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "secondary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -445,9 +444,9 @@ export const DisabledErrorSecondary: StoryObj<typeof Button> = {
 export const DisabledErrorTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "tertiary",
+    size: "tiny",
     disabled: true,
   },
 };
@@ -455,9 +454,9 @@ export const DisabledErrorTertiary: StoryObj<typeof Button> = {
 export const LoadingMainPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "primary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -465,9 +464,9 @@ export const LoadingMainPrimary: StoryObj<typeof Button> = {
 export const LoadingMainSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "secondary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -475,9 +474,9 @@ export const LoadingMainSecondary: StoryObj<typeof Button> = {
 export const LoadingMainTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Main,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "main",
+    variant: "tertiary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -485,9 +484,9 @@ export const LoadingMainTertiary: StoryObj<typeof Button> = {
 export const LoadingSuccessPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "primary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -495,9 +494,9 @@ export const LoadingSuccessPrimary: StoryObj<typeof Button> = {
 export const LoadingSuccessSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "secondary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -505,9 +504,9 @@ export const LoadingSuccessSecondary: StoryObj<typeof Button> = {
 export const LoadingSuccessTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Success,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "success",
+    variant: "tertiary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -515,9 +514,9 @@ export const LoadingSuccessTertiary: StoryObj<typeof Button> = {
 export const LoadingWarningPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "primary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -525,9 +524,9 @@ export const LoadingWarningPrimary: StoryObj<typeof Button> = {
 export const LoadingWarningSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "secondary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -535,9 +534,9 @@ export const LoadingWarningSecondary: StoryObj<typeof Button> = {
 export const LoadingWarningTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Warning,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "warning",
+    variant: "tertiary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -545,9 +544,9 @@ export const LoadingWarningTertiary: StoryObj<typeof Button> = {
 export const LoadingErrorPrimary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Primary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "primary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -555,9 +554,9 @@ export const LoadingErrorPrimary: StoryObj<typeof Button> = {
 export const LoadingErrorSecondary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Secondary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "secondary",
+    size: "tiny",
     loading: true,
   },
 };
@@ -565,9 +564,9 @@ export const LoadingErrorSecondary: StoryObj<typeof Button> = {
 export const LoadingErrorTertiary: StoryObj<typeof Button> = {
   args: {
     children: ar["global.labels.logout"],
-    type: ButtonType.Error,
-    variant: ButtonVariant.Tertiary,
-    size: ButtonSize.Tiny,
+    type: "error",
+    variant: "tertiary",
+    size: "tiny",
     loading: true,
   },
 };

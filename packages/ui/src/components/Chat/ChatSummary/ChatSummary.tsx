@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
@@ -156,7 +156,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
             )}
           </div>
           <Link to={chatsUrl} className="tw-intline-block tw-w-full">
-            <Button className="tw-w-full" size={ButtonSize.Tiny}>
+            <Button className="tw-w-full" size={"tiny"}>
               <Typography
                 element="caption"
                 weight="semibold"

@@ -1,9 +1,6 @@
 import { useFlushCache } from "@litespace/headless/cache";
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -46,8 +43,8 @@ const Cache: React.FC = () => {
       </div>
 
       <Button
-        size={ButtonSize.Tiny}
-        type={ButtonType.Error}
+        size={"tiny"}
+        type={"error"}
         onClick={() => setOpen(true)}
       >
         {intl("global.labels.delete")}
@@ -62,8 +59,8 @@ const Cache: React.FC = () => {
       >
         <div className="flex gap-4">
           <Button
-            size={ButtonSize.Tiny}
-            type={ButtonType.Error}
+            size={"tiny"}
+            type={"error"}
             onClick={() => flush.mutate()}
             loading={flush.isPending}
             disabled={flush.isPending}
@@ -72,8 +69,8 @@ const Cache: React.FC = () => {
           </Button>
 
           <Button
-            size={ButtonSize.Tiny}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            variant={"secondary"}
             onClick={() => setOpen(false)}
           >
             {intl("labels.cancel")}

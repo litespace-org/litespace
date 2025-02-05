@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { Typography } from "@/components/Typography";
 
@@ -128,7 +128,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
 
           {more && hasMore ? (
             <Button
-              size={ButtonSize.Tiny}
+              size={"tiny"}
               className="tw-inline-block tw-w-full"
               loading={loadingMore}
               disabled={loadingMore}
@@ -304,7 +304,7 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
 
       {!isTutor ? (
         <Link to={tutorsRoute} className="tw-w-full">
-          <Button size={ButtonSize.Small} className="tw-w-full">
+          <Button size={"small"} className="tw-w-full">
             <Typography
               element="caption"
               weight="bold"

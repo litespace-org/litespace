@@ -8,7 +8,7 @@ import React, {
 import { IDate } from "@litespace/types";
 import { Checkbox } from "@/components/Checkbox";
 import cn from "classnames";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import {
   BorderDottedIcon,
   CaretDownIcon,
@@ -16,7 +16,6 @@ import {
 } from "@radix-ui/react-icons";
 import { clone, concat, orderBy } from "lodash";
 import { asArabicDayIndex } from "@/lib/time";
-import { ButtonVariant } from "@/components/Button/types";
 
 export type WeekdayMap = {
   saturday: string;
@@ -206,18 +205,18 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           <Button
             onClick={reset}
             htmlType="button"
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
           >
             {weekdayMap.reset}
           </Button>
           <Button
             htmlType="button"
             onClick={selectAll}
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
           >
             {weekdayMap.all}
           </Button>

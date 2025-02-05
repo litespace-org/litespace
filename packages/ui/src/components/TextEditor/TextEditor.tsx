@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useRef } from "react";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import cn from "classnames";
 import { Bold, Italic, Underline, List } from "react-feather";
 import { Helper } from "@/components/Input/Input";
@@ -7,7 +7,6 @@ import Editable, { ContentEditableEvent } from "react-contenteditable";
 import { RawHtml } from "@/components/RawHtml";
 import { AnimatePresence } from "framer-motion";
 import { HeadingIcon } from "@radix-ui/react-icons";
-import { ButtonVariant } from "@/components/Button/types";
 import { Typography } from "@/components/Typography";
 
 export const TextEditor: React.FC<{
@@ -63,9 +62,9 @@ export const TextEditor: React.FC<{
           <div key={idx}>
             <Button
               htmlType="button"
-              type={ButtonType.Main}
-              variant={ButtonVariant.Secondary}
-              size={ButtonSize.Tiny}
+              type={"main"}
+              variant={"secondary"}
+              size={"tiny"}
               disabled={disabled}
               onClick={onClick}
               className="!tw-w-[30px] !tw-h-[30px]"

@@ -14,7 +14,7 @@ import AccountPromotion from "@litespace/assets/AccountPromotion";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { IUser, Void } from "@litespace/types";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
@@ -294,7 +294,7 @@ const Sidebar: React.FC<{
             </Typography>
           </div>
           <Link to={Route.Subscription}>
-            <Button size={ButtonSize.Tiny} htmlType="button">
+            <Button size={"tiny"} htmlType="button">
               <Typography
                 element="caption"
                 weight="semibold"

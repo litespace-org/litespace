@@ -1,7 +1,7 @@
 import { Controller, Form, Label } from "@litespace/ui/Form";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import { Typography } from "@litespace/ui/Typography";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -367,7 +367,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
       <Button
         disabled={profileMutation.isPending || !canSubmit}
         loading={profileMutation.isPending}
-        size={lg ? ButtonSize.Large : ButtonSize.Tiny}
+        size={lg ? "large" : "tiny"}
         className="fixed bottom-4 left-4 md:static mr-auto mt-6 md:mt-auto"
         htmlType="submit"
       >

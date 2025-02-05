@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
 import { Input } from "@/components/Input";
 import { RatingStars } from "@/components/RatingStars/RatingStars";
@@ -79,7 +79,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
           }
         />
         <Button
-          size={ButtonSize.Large}
+          size={"large"}
           onClick={() =>
             onSubmit({
               value: newRating,

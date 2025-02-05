@@ -1,8 +1,5 @@
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import { Typography } from "@litespace/ui/Typography";
@@ -38,9 +35,9 @@ const ImageField: React.FC<{
   return (
     <>
       <Button
-        type={ButtonType.Main}
-        size={ButtonSize.Tiny}
-        variant={ButtonVariant.Secondary}
+        type={"main"}
+        size={"tiny"}
+        variant={"secondary"}
         onClick={image.show}
       >
         <Typography element="caption" className="truncate inline-block w-16">

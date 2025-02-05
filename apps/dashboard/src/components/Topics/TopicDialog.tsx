@@ -1,5 +1,5 @@
 import { useCreateTopic, useUpdateTopic } from "@litespace/headless/topic";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -130,7 +130,7 @@ const TopicDialog: React.FC<{
           <Button
             loading={createTopic.isPending || updateTopic.isPending}
             disabled={createTopic.isPending || updateTopic.isPending}
-            size={ButtonSize.Tiny}
+            size={"tiny"}
           >
             {topic
               ? intl("dashboard.topics.edit")

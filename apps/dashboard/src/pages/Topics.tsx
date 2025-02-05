@@ -2,7 +2,7 @@ import PageTitle from "@/components/common/PageTitle";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import TopicDialog from "@/components/Topics/TopicDialog";
 import { ChangeEvent, useCallback, useMemo, useState } from "react";
@@ -98,7 +98,7 @@ const Topics = () => {
           fetching={query.query.isFetching && !query.query.isLoading}
           count={query.totalPages}
         />
-        <Button size={ButtonSize.Tiny} onClick={addNewTopic.show}>
+        <Button size={"tiny"} onClick={addNewTopic.show}>
           {intl("dashboard.topics.add")}
         </Button>
       </div>

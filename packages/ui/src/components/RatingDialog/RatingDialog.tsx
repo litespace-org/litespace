@@ -5,7 +5,7 @@ import { Void } from "@litespace/types";
 import React, { useCallback, useMemo, useState } from "react";
 import Rate from "@litespace/assets/Rate";
 import { RatingStars } from "@/components/RatingStars";
-import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Textarea } from "@/components/Textarea";
 
 interface DialogProps {
@@ -120,7 +120,7 @@ const RatingDialog: React.FC<DialogProps> = ({
 
         <div className="tw-flex tw-w-full tw-gap-6">
           <Button
-            size={ButtonSize.Large}
+            size={"large"}
             onClick={onSubmit}
             loading={submitting}
             disabled={!canSubmit || submitting || !rating}
@@ -130,8 +130,8 @@ const RatingDialog: React.FC<DialogProps> = ({
           </Button>
           <Button
             onClick={close}
-            size={ButtonSize.Large}
-            variant={ButtonVariant.Secondary}
+            size={"large"}
+            variant={"secondary"}
             disabled={!canSubmit || submitting}
             className="tw-w-full"
           >

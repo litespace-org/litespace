@@ -1,6 +1,6 @@
 import List from "@/components/Media/List";
 import { useAtlas } from "@litespace/headless/atlas";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Loading } from "@litespace/ui/Loading";
 import { Spinner } from "@litespace/ui/Spinner";
 import { usePaginationQuery } from "@litespace/ui/hooks/common";
@@ -33,7 +33,7 @@ const Media: React.FC = () => {
         <div>
           <List list={media.list} refersh={media.query.refetch} />
           <Button
-            size={ButtonSize.Small}
+            size={"small"}
             disabled={
               media.query.isLoading ||
               media.query.isFetching ||

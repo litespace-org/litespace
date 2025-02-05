@@ -1,5 +1,5 @@
 import Star from "@litespace/assets/Star";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
@@ -57,7 +57,7 @@ export const RateTutor: React.FC<{
       </Typography>
       <Button
         onClick={() => setRating(true)}
-        size={mq.md ? ButtonSize.Small : ButtonSize.Tiny}
+        size={"small"}
         className="w-full md:w-[386px] flex items-center gap-2"
       >
         <Typography

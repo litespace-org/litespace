@@ -1,5 +1,5 @@
 import { Form, Label, Controller } from "@litespace/ui/Form";
-import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
@@ -178,7 +178,7 @@ const Register: React.FC = () => {
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={ButtonSize.Small}
+                  size={"small"}
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -188,8 +188,8 @@ const Register: React.FC = () => {
                 </Button>
 
                 <Button
-                  variant={ButtonVariant.Secondary}
-                  size={ButtonSize.Small}
+                  variant={"secondary"}
+                  size={"small"}
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}

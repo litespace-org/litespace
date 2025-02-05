@@ -1,8 +1,5 @@
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { Form, Controller } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
@@ -99,9 +96,9 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
         />
 
         <Button
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
-          size={ButtonSize.Small}
+          type={"main"}
+          variant={"primary"}
+          size={"small"}
           disabled={mutation.isPending}
           loading={mutation.isPending}
         >

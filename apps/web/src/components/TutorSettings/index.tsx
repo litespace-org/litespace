@@ -1,6 +1,6 @@
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import React, { useCallback, useMemo } from "react";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { TutorSettingsTabs as Tabs } from "@/components/TutorSettings/Tabs";
 import { useUpdateUser } from "@litespace/headless/user";
@@ -129,7 +129,7 @@ const TutorSettings: React.FC<{
           htmlType="submit"
           loading={updateTutor.isPending}
           disabled={updateTutor.isPending || !dataChanged}
-          size={ButtonSize.Small}
+          size={"small"}
         >
           {intl("shared-settings.save")}
         </Button>

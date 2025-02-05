@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { messages } from "@litespace/ui/locales";
 import React from "react";
 import { useIntl } from "react-intl";
@@ -24,7 +24,7 @@ const ErrorPage: React.FC = () => {
           </p>
         </div>
         <div className="mt-4">
-          <Button size={ButtonSize.Small}>
+          <Button size={"small"}>
             {intl.formatMessage({ id: messages["page.error.button.label"] })}
           </Button>
         </div>

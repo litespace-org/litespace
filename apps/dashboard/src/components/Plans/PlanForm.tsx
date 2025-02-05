@@ -1,6 +1,6 @@
 import { useCreatePlan, useUpdatePlan } from "@litespace/headless/plans";
 import { formatCurrency } from "@litespace/ui/utils";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Controller, Field, Form, Label } from "@litespace/ui/Form";
 import {
   useValidateDiscount,
@@ -132,7 +132,7 @@ const PlanForm: React.FC<{
     <Dialog
       close={onClose}
       trigger={
-        <Button size={ButtonSize.Small}>
+        <Button size={"small"}>
           {intl("dashboard.plans.createPlanBtn")}
         </Button>
       }
@@ -330,7 +330,7 @@ const PlanForm: React.FC<{
           </div>
 
           <Button
-            size={ButtonSize.Small}
+            size={"small"}
             loading={createPlan.isPending}
             disabled={createPlan.isPending}
             htmlType="submit"

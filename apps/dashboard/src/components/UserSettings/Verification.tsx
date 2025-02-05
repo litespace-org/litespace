@@ -1,7 +1,7 @@
 import { CALLBACK_URL } from "@/lib/route";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { useUserContext } from "@litespace/headless/context/user";
-import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import { useToast } from "@litespace/ui/Toast";
@@ -55,8 +55,8 @@ const VerificationDetails: React.FC = () => {
           </Tooltip>
         ) : (
           <Button
-            size={ButtonSize.Tiny}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            variant={"secondary"}
             onClick={reverifyEmail}
             loading={reverify.isPending}
             disabled={reverify.isPending}

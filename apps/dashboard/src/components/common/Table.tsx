@@ -1,8 +1,5 @@
 import {
   Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
 } from "@litespace/ui/Button";
 import { Select, SelectList } from "@litespace/ui/Select";
 import { Void } from "@litespace/types";
@@ -117,36 +114,36 @@ export const Table = <T extends object>({
             />
           </div>
           <Button
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
             onClick={() => goto(1)}
             disabled={page <= 1 || loading || fetching}
           >
             &laquo;
           </Button>
           <Button
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
             onClick={prev}
             disabled={page <= 1 || loading || fetching}
           >
             &rarr;
           </Button>
           <Button
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
             onClick={next}
             disabled={page >= totalPages || loading || fetching}
           >
             &larr;
           </Button>
           <Button
-            size={ButtonSize.Tiny}
-            type={ButtonType.Main}
-            variant={ButtonVariant.Secondary}
+            size={"tiny"}
+            type={"main"}
+            variant={"secondary"}
             onClick={() => goto(totalPages)}
             disabled={page >= totalPages || loading || fetching}
           >
