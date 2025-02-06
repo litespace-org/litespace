@@ -35,7 +35,12 @@ export const ToggleButton: React.FC<{
         />
       )}
       {error ? (
-        <div className="tw-w-6 tw-rounded-full tw-h-6 tw-flex tw-items-center tw-justify-center tw-bg-destructive-400 tw-border-[3px] tw-border-destructive-600 tw-absolute -tw-top-3 -tw-left-3 ">
+        <div
+          className={cn(
+            "tw-w-4 lg:tw-w-6 tw-rounded-full tw-h-4 lg:tw-h-6 tw-flex tw-items-center tw-justify-center",
+            "tw-bg-destructive-400 tw-border-[3px] tw-border-destructive-600 tw-absolute -tw-top-1 -tw-left-1 lg:-tw-top-3 lg:-tw-left-3"
+          )}
+        >
           <Error />
         </div>
       ) : null}
