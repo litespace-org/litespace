@@ -107,7 +107,7 @@ export const Content: React.FC<{
           );
 
           const otherMember = item.members.find(
-            (member) => member.role === user.role
+            (member) => member.role !== user.role
           );
           if (!tutor || !otherMember) return null;
           return (
@@ -132,7 +132,10 @@ export const Content: React.FC<{
                   id: otherMember.userId,
                   name: otherMember.name,
                   image: otherMember.image,
-                  role: otherMember.role === "student" ? "student" : "tutor",
+                  role:
+                    otherMember.role === IUser.Role.Student
+                      ? "student"
+                      : "tutor",
                 }}
               />
             </motion.div>
