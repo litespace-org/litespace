@@ -28,7 +28,15 @@ const Stream: React.FC<{ stream: MediaStream | null }> = ({ stream }) => {
     if (videoRef.current) videoRef.current.srcObject = stream;
   }, [stream]);
 
-  return <video ref={videoRef} autoPlay muted playsInline />;
+  return (
+    <video
+      className="tw-w-full tw-h-full"
+      ref={videoRef}
+      autoPlay
+      muted
+      playsInline
+    />
+  );
 };
 
 export const PreSessionUserPreview: React.FC<{
@@ -42,7 +50,7 @@ export const PreSessionUserPreview: React.FC<{
   };
 }> = ({ stream, user, camera, speaking }) => {
   return (
-    <div className="tw-aspect-video tw-w-full tw-grow tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
+    <div className="tw-w-[156px] tw-aspect-[9/16] lg:tw-aspect-video lg:tw-w-full tw-grow tw-rounded-2xl lg:tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
       <AnimatePresence mode="wait">
         {camera ? (
           <Animate>
@@ -50,8 +58,8 @@ export const PreSessionUserPreview: React.FC<{
           </Animate>
         ) : (
           <Animate key="avatar">
-            <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-lg">
-              <UserAvatar user={user} speaking={speaking} />
+            <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-2xl lg:tw-rounded-lg">
+              <UserAvatar variant="small" user={user} speaking={speaking} />
             </div>
           </Animate>
         )}
