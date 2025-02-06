@@ -24,6 +24,7 @@ import TutorSettings from "@/pages/TutorSettings";
 import ScheduleManagement from "@/pages/ScheduleManagement";
 import ForgetPassword from "@/pages/ForgetPassword";
 import TutorDashboard from "@/pages/TutorDashboard";
+import CheckEmail from "@/pages/CheckEmail";
 
 const router = createBrowserRouter([
   {
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: Route.Chat, element: <Chat /> },
+      { path: Route.CheckEmail, element: <CheckEmail /> },
       { path: Route.Complete, element: <Complete /> },
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Login, element: <Login /> },

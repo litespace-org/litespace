@@ -4,13 +4,8 @@ import { EmailTemplate, ForgetPassword, VerifyEmail } from "@/emails";
 
 function makeTransporter(user: string, pass: string): nodemailer.Transporter {
   return nodemailer.createTransport({
-    host: "mail.privateemail.com",
-    port: 465,
-    secure: true,
+    service: "gmail",
     auth: { user, pass },
-    tls: {
-      rejectUnauthorized: false,
-    },
   });
 }
 

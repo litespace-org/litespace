@@ -25,6 +25,7 @@ const Root: React.FC = () => {
     const routes: string[] = [
       Route.Login,
       Route.VerifyEmail,
+      Route.CheckEmail,
       Route.ForgetPassword,
       ...registerRoutes,
     ];
@@ -41,6 +42,8 @@ const Root: React.FC = () => {
       Route.Login,
       Route.ForgetPassword,
       Route.ResetPassword,
+      Route.VerifyEmail,
+      Route.CheckEmail,
       ...registerRoutes,
     ];
     return !routes.includes(location.pathname);

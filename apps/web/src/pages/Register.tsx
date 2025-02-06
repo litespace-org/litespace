@@ -69,7 +69,7 @@ const Register: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      navigate(Route.Root);
+      navigate(Route.CheckEmail);
     },
     [navigate, user]
   );
