@@ -1,18 +1,17 @@
 import React from "react";
 import Play from "@litespace/assets/Play";
-import TopLeftArch from "@litespace/assets/TopLeftArch";
-import BottomRightArch from "@litespace/assets/BottomRightArch";
 import { Void } from "@litespace/types";
 
 export const PlayButton: React.FC<{ togglePlay: Void }> = ({ togglePlay }) => {
   return (
     <button
       onClick={togglePlay}
-      className="tw-w-[77px] tw-rounded-lg tw-relative tw-h-[81px] tw-bg-brand-600 tw-flex tw-items-center tw-justify-center"
+      className="tw-w-[26px] tw-h-[27px] md:tw-w-[96px] tw-rounded-full tw-overflow-hidden tw-relative md:tw-h-[96px]  tw-flex tw-items-center tw-justify-center"
     >
-      <TopLeftArch className="tw-absolute tw-top-1 tw-left-1" />
-      <Play className="tw-scale-[200%]" />
-      <BottomRightArch className="tw-absolute tw-bottom-1 tw-right-1" />
+      <div className="tw-w-[13.56px] tw-h-[15.52px] md:tw-w-[32px] md:tw-h-[36px]">
+        <Play />
+      </div>
+      <div className="tw-absolute tw-w-full tw-shadow-play-button tw-h-full tw-rounded-full tw-bg-background-button-play tw-blur-[20px]"></div>
     </button>
   );
 };

@@ -6,6 +6,4 @@ const nextConfig = {
   distDir: "dist",
 };
 
-console.log(nextConfig);
-
 export default nextConfig;

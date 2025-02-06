@@ -168,6 +168,7 @@ export default {
           },
           button: {
             DEFAULT: "hsl(var(--background-button-default))",
+            play: "rgba(0, 0, 0, 0.25)",
           },
           alternative: {
             DEFAULT: "hsl(var(--background-alternative-default))",
@@ -307,6 +308,8 @@ export default {
       "plan-card-label": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "alert-circle": "0px 4px 15px 0px rgba(0, 0, 0, 0.1)",
       header: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
+      "play-button":
+        "-0.73px 0.73px 0.73px -1.46px rgba(255, 255, 255, 0.35) inset",
     },
   },
   plugins: [

@@ -14,7 +14,7 @@ const registerRoutes = [IUser.Role.Student, IUser.Role.Tutor].map((role) =>
 );
 
 const Root: React.FC = () => {
-  const { lg } = useMediaQuery();
+  const mq = useMediaQuery();
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const { user, meta } = useUserContext();
   const navigate = useNavigate();
@@ -36,7 +36,7 @@ const Root: React.FC = () => {
     if (student) return navigate(Route.StudentDashboard);
   }, [navigate, location.pathname, user, meta]);
 
-  const showNaviation = useMemo(() => {
+  const showNavigation = useMemo(() => {
     const routes: string[] = [
       Route.Login,
       Route.ForgetPassword,
@@ -49,20 +49,20 @@ const Root: React.FC = () => {
   return (
     <div
       className={cn("flex relative w-full", {
-        "lg:ps-60": showNaviation,
+        "lg:ps-60": showNavigation,
       })}
     >
-      {showNaviation && (lg || showMobileSidebar) ? (
+      {showNavigation && (mq.lg || showMobileSidebar) ? (
         <Sidebar hide={() => setShowMobileSidebar(false)} />
       ) : null}
 
       <div
         className={cn("min-h-screen flex flex-col w-full overflow-x-hidden", {
           "after:content-[''] after:absolute after:z-10 after:top-[72px] md:after:top-[88px] lg:after:top-0 after:bottom-0 after:right-0 after:left-0 after:bg-black after:bg-opacity-20 after:backdrop-blur-sm":
-            showMobileSidebar && !lg,
+            showMobileSidebar && !mq.lg,
         })}
       >
-        {showNaviation ? (
+        {showNavigation ? (
           <Navbar toggleSidebar={() => setShowMobileSidebar((prev) => !prev)} />
         ) : null}
         <Outlet />

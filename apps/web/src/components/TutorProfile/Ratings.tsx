@@ -28,16 +28,17 @@ const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
 }) => {
   const intl = useFormatMessage();
+
   return (
-    <div className="flex tw-relative items-center justify-center h-[294px] w-full gap-[88px]">
+    <div className="flex flex-wrap md:flex-nowrap relative items-center justify-center md:h-[294px] w-full gap-6 md:gap-[88px]">
       <Typography
-        element="subtitle-1"
+        element={{ default: "body", md: "subtitle-1" }}
         weight="bold"
-        className="text-natural-950 text-center -translate-y-7 max-w-[476px]"
+        className="text-natural-950 text-center md:-translate-y-7 max-w-[476px]"
       >
         {intl("tutor.profile.first-rating", { tutor: tutorName })}
       </Typography>
-      <div className="w-[292px] h-[294px]">
+      <div className="w-[151px] h-[147px] md:w-[292px] md:h-[294px]">
         <NewTutor />
       </div>
     </div>
@@ -153,14 +154,14 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   return (
     <div
       className={cn(
-        "flex flex-col justify-center p-8",
-        isEmpty(ratings) ? "gap-8" : "gap-10"
+        "flex flex-col justify-center py-4 md:p-8",
+        isEmpty(ratings) ? "gap-8" : "gap-4 md:gap-10"
       )}
     >
       {isEmpty(ratings) ? (
         <NoTutorRatings tutorName={tutorName} />
       ) : (
-        <div className="grid gap-4 flex-wrap justify-center grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
+        <div className="grid gap-4 flex-wrap justify-center md:grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
           {ratings.map((rating, index) => {
             if (
               "userId" in rating &&

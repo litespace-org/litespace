@@ -124,9 +124,9 @@ export const Button: React.FC<{
           "tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-2"
         )}
       >
-        {startIcon ? <div>{startIcon}</div> : null}
+        {startIcon ? startIcon : null}
         {children}
-        {endIcon ? <div>{endIcon}</div> : null}
+        {endIcon ? endIcon : null}
       </div>
     </button>
   );
