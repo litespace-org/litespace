@@ -1,6 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
-import { SelectList, SelectPlacement } from "@/components/Select/types";
 import {
   Root,
   Trigger,
@@ -17,17 +16,7 @@ import {
 import ArrowDown from "@litespace/assets/ArrowDown";
 import { Typography } from "@/components/Typography";
 import { isEmpty } from "lodash";
-
-export type SelectProps<T extends string | number> = {
-  placeholder?: string;
-  options?: SelectList<T>;
-  value?: T;
-  placement?: SelectPlacement;
-  children?: React.ReactNode;
-  showDropdownIcon?: boolean;
-  disabled?: boolean;
-  onChange?: (value: T) => void;
-};
+import { SelectProps } from "@/components/Select/types";
 
 export const Select = <T extends string | number>({
   value,

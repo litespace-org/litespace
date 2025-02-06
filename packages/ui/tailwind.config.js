@@ -11,6 +11,7 @@ export default {
     },
     extend: {
       zIndex: {
+        "select-item": "1",
         "chat-avatar": "1",
         "calendar-hour": "1",
         navbar: "1",

@@ -130,7 +130,7 @@ export const MultiSelect = <T,>({
             <ArrowDown
               data-open={open}
               className={cn(
-                "tw-justify-self-end",
+                "tw-h-6 tw-w-6 tw-justify-self-end",
                 "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
               )}
             />
