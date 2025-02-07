@@ -19,6 +19,7 @@ export default [
   {
     ignores: [
       "**/dist",
+      "**/coverage",
       "**/.eslintrc.cjs",
       "**/tailwind.config.js",
       "**/src-tauri",

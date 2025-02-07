@@ -106,7 +106,7 @@ export const LessonCard: React.FC<Props> = ({
 
     // after finish of the lesson
     if (!canceled && now.isAfter(end)) return intl("lessons.end");
-  }, [currentUserRole, canceled, intl]);
+  }, [canceled, currentUserRole, intl, start, duration, end]);
 
   const [title, setTitle] = useState<string | undefined>(getTitle());
 
