@@ -22,9 +22,15 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   return (
     <div className="shadow-app-navbar lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
-        className={cn("flex justify-between gap-8 items-center py-6 px-4", {
-          "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
-        })}
+        className={cn(
+          "flex gap-8 items-center py-6 px-4",
+          {
+            "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
+          },
+          user.role !== IUser.Role.Student && lg
+            ? "justify-end"
+            : "justify-between"
+        )}
       >
         {user.role === IUser.Role.Student &&
         location.pathname !== Route.Subscription &&
