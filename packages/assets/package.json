@@ -18,7 +18,6 @@
   },
   "exports": {
     "./Categories": "./dist/Categories.tsx",
-    "./Crown": "./dist/Crown.tsx",
     "./LongLeftArrow": "./dist/LongLeftArrow.tsx",
     "./LongRightArrow": "./dist/LongRightArrow.tsx",
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
@@ -48,6 +47,7 @@
     "./Clock": "./dist/Clock.tsx",
     "./Clock16X16": "./dist/Clock16X16.tsx",
     "./Close": "./dist/Close.tsx",
+    "./Crown": "./dist/Crown.tsx",
     "./CurvedDashedLine": "./dist/CurvedDashedLine.tsx",
     "./Devices": "./dist/Devices.tsx",
     "./DoubleCheck": "./dist/DoubleCheck.tsx",

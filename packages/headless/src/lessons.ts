@@ -7,9 +7,10 @@ import { UsePaginateResult, usePaginate } from "@/pagination";
 import { InfiniteQueryHandler, useInfinitePaginationQuery } from "@/query";
 import { OnError, OnSuccess } from "@/types/query";
 
-export function useFindLessons(
-  query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
-): UsePaginateResult<{
+export function useFindLessons({
+  userOnly,
+  ...query
+}: ILesson.FindLessonsApiQuery & { userOnly?: boolean }): UsePaginateResult<{
   lesson: ILesson.Self;
   members: ILesson.PopuldatedMember[];
 }> {
@@ -17,10 +18,14 @@ export function useFindLessons(
 
   const lessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
-      if (query.userOnly && !query.users?.length) return { list: [], total: 0 };
-      return await atlas.lesson.findLessons({ page, size, ...query });
+      if (userOnly && !query.users?.length) return { list: [], total: 0 };
+      return await atlas.lesson.findLessons({
+        page,
+        size,
+        ...query,
+      });
     },
-    [atlas.lesson, query]
+    [atlas.lesson, query, userOnly]
   );
 
   return usePaginate(lessons, [QueryKey.FindLessons, query]);
@@ -29,22 +34,23 @@ export function useFindLessons(
 /**
  * Paginate lessons using infinite pagination.
  */
-export function useInfiniteLessons(
-  query: ILesson.FindLessonsApiQuery & { userOnly?: boolean }
-) {
+export function useInfiniteLessons({
+  userOnly,
+  ...query
+}: ILesson.FindLessonsApiQuery & { userOnly?: boolean }) {
   const atlas = useAtlas();
 
   const findLessons: InfiniteQueryHandler<
     Element<ILesson.FindUserLessonsApiResponse["list"]>
   > = useCallback(
     async ({ pageParam }) => {
-      if (query.userOnly && !query.users?.length) return { list: [], total: 0 };
+      if (userOnly && !query.users?.length) return { list: [], total: 0 };
       return await atlas.lesson.findLessons({
         page: pageParam,
         ...query,
       });
     },
-    [atlas.lesson, query]
+    [atlas.lesson, query, userOnly]
   );
 
   return useInfinitePaginationQuery(findLessons, [

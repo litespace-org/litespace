@@ -26,8 +26,9 @@ function getWorkspaceBuildCommand(workspaces: Workspace[] | "all"): string[] {
 
 export async function build(workspaces: Workspace[] | "all") {
   const commands = [
+    `git reset --hard`,
     `git pull origin ${config.branch}`,
-    `pnpm install`,
+    `pnpm install --network-concurrency=2`,
     `pnpm build:pkgs`,
     ...getWorkspaceBuildCommand(workspaces),
   ];
