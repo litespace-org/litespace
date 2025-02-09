@@ -1,3 +1,4 @@
+import { Route } from "@/types/routes";
 import {
   useFindRoomByMembers,
   useFindUncontactedTutors,
@@ -9,7 +10,7 @@ import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useRoomManager(isStudent: boolean) {
@@ -86,21 +87,24 @@ export function useRoomManager(isStudent: boolean) {
 export function useNavigateToRoom() {
   const navigate = useNavigate();
   const [members, setMembers] = useState<number[]>([]);
-  const [sendingMessage, setSendingMessage] = useState(0);
+  const [lessonId, setLessonId] = useState(0);
 
   const findRoom = useFindRoomByMembers(members);
 
   const onSendMessage = useCallback((lessonId: number, members: number[]) => {
-    if (!lessonId) return;
-    setSendingMessage(lessonId);
+    setLessonId(lessonId);
     setMembers(members);
   }, []);
 
-  return {
-    sendingMessage,
-    room: findRoom.data?.room,
-    navigate,
-    setSendingMessage,
-    onSendMessage,
-  };
+  useEffect(() => {
+    const room = findRoom.data?.room;
+    if (!room) return;
+    setLessonId(0);
+    navigate(`${Route.Chat}?room=${room}`);
+  }, [navigate, setLessonId, findRoom.data?.room]);
+
+  return useMemo(
+    () => ({ lessonId, onSendMessage }),
+    [lessonId, onSendMessage]
+  );
 }

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
@@ -75,14 +75,8 @@ export const PastLessons: React.FC = () => {
     [lessonsQuery.list, user]
   );
 
-  const { room, sendingMessage, navigate, onSendMessage, setSendingMessage } =
+  const { lessonId: sendingMessageLessonId, onSendMessage } =
     useNavigateToRoom();
-
-  useEffect(() => {
-    if (!room) return;
-    setSendingMessage(0);
-    navigate(`${Route.Chat}?room=${room}`);
-  }, [room, navigate, setSendingMessage]);
 
   if (!mq.lg)
     return (
@@ -98,7 +92,7 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.TutorManager
         }
         onSendMessage={onSendMessage}
-        sendingMessage={sendingMessage}
+        sendingMessage={sendingMessageLessonId}
         more={() => {
           if (lessonsQuery.query.hasNextPage) lessonsQuery.more();
         }}
@@ -141,7 +135,7 @@ export const PastLessons: React.FC = () => {
           user?.role === IUser.Role.TutorManager
         }
         onSendMessage={onSendMessage}
-        sendingMessage={sendingMessage}
+        sendingMessage={sendingMessageLessonId}
       />
 
       {!lessonsQuery.query.isFetching && lessonsQuery.query.hasNextPage ? (

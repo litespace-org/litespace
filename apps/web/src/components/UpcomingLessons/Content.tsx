@@ -1,7 +1,7 @@
 import { Loader, Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
@@ -69,14 +69,8 @@ export const Content: React.FC<{
     []
   );
 
-  const { room, sendingMessage, navigate, setSendingMessage, onSendMessage } =
+  const { lessonId: sendingMessageLessonId, onSendMessage } =
     useNavigateToRoom();
-
-  useEffect(() => {
-    if (!room) return;
-    setSendingMessage(0);
-    navigate(`${Route.Chat}?room=${room}`);
-  }, [room, navigate, setSendingMessage]);
 
   if (loading)
     return (
@@ -149,8 +143,8 @@ export const Content: React.FC<{
                       ? "student"
                       : "tutor",
                 }}
-                sendingMessage={sendingMessage === item.lesson.id}
-                disabled={!!sendingMessage}
+                sendingMessage={sendingMessageLessonId === item.lesson.id}
+                disabled={!!sendingMessageLessonId}
               />
             </motion.div>
           );
