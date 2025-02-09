@@ -6,7 +6,10 @@ import { StreamInfo } from "@/components/Session/types";
 import { Void } from "@litespace/types";
 import cn from "classnames";
 
-const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const Animate: React.FC<{ children: React.ReactNode; chat?: boolean }> = ({
+  children,
+  chat,
+}) => {
   return (
     <motion.div
       initial={{
@@ -27,7 +30,10 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="lg:tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
+      className={cn(
+        "tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden",
+        !chat && "lg:tw-aspect-video "
+      )}
     >
       {children}
     </motion.div>
@@ -83,17 +89,18 @@ export const FocusedStream: React.FC<{
         marginTop: chat && (stream.video || stream.cast) ? "3.5rem" : "0rem",
       }}
       className={cn(
-        "tw-rounded-2xl lg:tw-rounded-lg tw-h-full",
+        "tw-rounded-2xl lg:tw-rounded-lg tw-grow",
+        !chat && "tw-h-full",
         chat && "tw-relative"
       )}
     >
       <AnimatePresence mode="wait">
         {stream.video || stream.cast ? (
-          <Animate key="stream">
+          <Animate chat={chat} key="stream">
             <Stream stream={stream.stream} muted={muted} />
           </Animate>
         ) : (
-          <Animate key="avatar">
+          <Animate chat={chat} key="avatar">
             <div
               className={cn(
                 "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center"
