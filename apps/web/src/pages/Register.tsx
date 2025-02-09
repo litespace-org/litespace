@@ -1,4 +1,4 @@
-import { Form, Label, Controller } from "@litespace/ui/Form";
+import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -16,14 +16,12 @@ import { Typography } from "@litespace/ui/Typography";
 import {
   useValidateEmail,
   useValidatePassword,
-  useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 interface IForm {
-  name: string;
   email: string;
   password: string;
   confirmedPassword: string;
@@ -44,7 +42,6 @@ const Register: React.FC = () => {
   const { role } = useParams<{ role: Role }>();
   const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
-      name: "",
       email: "",
       password: "",
       confirmedPassword: "",
@@ -52,12 +49,10 @@ const Register: React.FC = () => {
   });
   const errors = formState.errors;
 
-  const validateUserName = useValidateUserName(true);
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
   const isValidRole = useMemo(() => role && roles.includes(role), [role]);
   const google = useGoogle({ role: isValidRole ? role : undefined });
-  const name = watch("name");
   const email = watch("email");
   const password = watch("password");
   const confirmedPassword = watch("confirmedPassword");
@@ -69,7 +64,7 @@ const Register: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      navigate(Route.Root);
+      navigate(Route.CompleteProfile);
     },
     [navigate, user]
   );
@@ -120,46 +115,37 @@ const Register: React.FC = () => {
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
                 <Controller.Input
-                  control={control}
-                  name="name"
-                  value={name}
-                  autoComplete="off"
-                  rules={{ validate: validateUserName }}
-                  placeholder={intl("register.full-name")}
-                  disabled={mutation.isPending || google.loading}
-                  idleDir="rtl"
-                  label={intl("register.full-name")}
-                  state={errors.name ? "error" : undefined}
-                  helper={errors.name?.message}
-                />
-                <Label id="email">{intl("labels.email")}</Label>
-                <Controller.Input
+                  id="email"
                   control={control}
                   name="email"
                   value={email}
                   autoComplete="off"
+                  label={intl("labels.email")}
                   rules={{ validate: validateEmail }}
                   placeholder={intl("labels.email.placeholder")}
                   disabled={mutation.isPending || google.loading}
-                  idleDir="ltr"
-                  label={intl("labels.email")}
                   state={errors.email ? "error" : undefined}
                   helper={errors.email?.message}
+                  idleDir="rtl"
                 />
 
                 <Controller.Password
-                  control={control}
+                  idleDir="rtl"
+                  id="password"
                   name="password"
                   value={password}
-                  rules={{ validate: validatePassword }}
-                  disabled={mutation.isPending || google.loading}
+                  control={control}
                   label={intl("labels.password")}
-                  state={errors.password ? "error" : undefined}
                   helper={errors.password?.message}
+                  rules={{ validate: validatePassword }}
+                  state={errors.password ? "error" : undefined}
+                  disabled={mutation.isPending || google.loading}
+                  placeholder={intl("register.password.placeholder")}
                 />
 
                 <Controller.Password
                   control={control}
+                  id="confirmedPassword"
                   name="confirmedPassword"
                   value={confirmedPassword}
                   rules={{
@@ -171,14 +157,17 @@ const Register: React.FC = () => {
                   }}
                   disabled={mutation.isPending || google.loading}
                   label={intl("register.confirm-password")}
+                  placeholder={intl("register.confirm-password.placeholder")}
                   state={errors.confirmedPassword ? "error" : undefined}
                   helper={errors.confirmedPassword?.message}
+                  idleDir="rtl"
                 />
               </div>
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={"medium"}
+                  type="main"
+                  size="large"
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -188,14 +177,15 @@ const Register: React.FC = () => {
                 </Button>
 
                 <Button
-                  variant={"secondary"}
-                  size={"medium"}
+                  variant="secondary"
+                  size="large"
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}
                   htmlType="button"
                   loading={google.loading}
                   disabled={google.loading || mutation.isPending}
+                  omitIconStyles
                 >
                   {intl("register.with-google")}
                 </Button>

@@ -129,18 +129,18 @@ export function useValidateBio(required: boolean = false) {
   );
 }
 
-export function useValidatePhoneNumber() {
+export function useValidatePhoneNumber(required?: boolean) {
   const intl = useFormatMessage();
 
   return useCallback(
     (value: unknown) => {
-      if (typeof value === "string" && !value) return true;
+      if (!required && !value) return true;
       const valid = isValidPhoneNumber(value);
       if (valid === FieldError.InvalidPhoneNumber)
         return intl("error.phone-number.invlaid");
       return true;
     },
-    [intl]
+    [intl, required]
   );
 }
 

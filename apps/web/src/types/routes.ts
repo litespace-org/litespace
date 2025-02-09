@@ -2,7 +2,7 @@ export enum Route {
   Root = "/",
   Call = "/call/:id/:type",
   Chat = "/chat",
-  Complete = "/complete",
+  CompleteProfile = "/complete-profile",
   Interviews = "/interviews",
   Invoices = "/invoices",
   Login = "/login",

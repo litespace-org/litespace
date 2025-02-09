@@ -100,28 +100,33 @@ export type CreatePayload = {
 export type UpdatePayload = {
   email?: string;
   password?: string;
-  name?: string;
+  name?: string | null;
   image?: string | null;
   birthYear?: number;
   gender?: Gender;
   verified?: boolean;
   creditScore?: number;
-  phoneNumber?: string;
-  city?: City;
+  phoneNumber?: string | null;
+  city?: City | null;
 };
 
 export type UpdateApiPayload = {
   email?: string;
   password?: { new: string; current: string | null };
-  name?: string;
+  /**
+   * - Passing `string` will set the user name to the new value.
+   * - Passing `null` will reset user name to `null`
+   * - Passing `undefine` will not update the user name.
+   */
+  name?: string | null;
   gender?: Gender;
   notice?: number;
   birthYear?: number;
   drop?: { image?: boolean; video?: boolean };
   bio?: string;
   about?: string;
-  phoneNumber?: string;
-  city?: City;
+  phoneNumber?: string | null;
+  city?: City | null;
 };
 
 export enum UpdateMediaFilesApiKeys {

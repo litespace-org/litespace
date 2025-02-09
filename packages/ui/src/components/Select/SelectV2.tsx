@@ -19,7 +19,8 @@ import { isEmpty } from "lodash";
 import { SelectProps } from "@/components/Select/types";
 
 export const SelectV2 = <T extends string | number>({
-  title,
+  id,
+  label,
   value,
   placeholder,
   options = [],
@@ -31,7 +32,7 @@ export const SelectV2 = <T extends string | number>({
 }: SelectProps<T>) => {
   const [open, setOpen] = useState<boolean>(false);
 
-  const label = useMemo(
+  const text = useMemo(
     () => options.find((option) => option.value === value)?.label,
     [options, value]
   );
@@ -49,45 +50,48 @@ export const SelectV2 = <T extends string | number>({
 
   return (
     <Root
+      dir="rtl"
       open={open}
       onOpenChange={setOpen}
-      dir="rtl"
-      value={label?.toString()}
+      value={value?.toString()}
       onValueChange={onValueChange}
       disabled={isEmpty(options) || disabled}
     >
-      {title ? (
-        <Typography
-          className="tw-mb-1 tw-text-natural-950"
-          element="caption"
-          weight="semibold"
-        >
-          {title}
-        </Typography>
-      ) : null}
+      <div>
+        {label ? (
+          <Typography
+            htmlFor={id}
+            tag="label"
+            className="tw-mb-1 tw-text-natural-950"
+            element="caption"
+            weight="semibold"
+          >
+            {label}
+          </Typography>
+        ) : null}
 
-      <Trigger
-        data-open={open}
-        disabled={disabled}
-        role="button"
-        className={cn(
-          "tw-flex tw-flex-row tw-justify-between tw-items-center",
-          "tw-w-full tw-rounded-lg tw-p-2",
-          "tw-bg-natural-50 tw-transition-colors tw-duration-200",
-          "tw-border tw-border-natural-300",
-          "tw-transition-colors tw-duration-200",
-          "disabled:tw-cursor-not-allowed",
-          "focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-border-secondary-600",
-          {
-            "tw-h-7": size === "small",
-            "tw-h-8": size === "medium",
-            "tw-h-10": size === "large",
-          }
-        )}
-      >
-        <Value
-          placeholder={
-            placeholder ? (
+        <Trigger
+          id={id}
+          data-open={open}
+          disabled={disabled}
+          role="button"
+          className={cn(
+            "tw-flex tw-flex-row tw-justify-between tw-items-center",
+            "tw-w-full tw-rounded-lg tw-p-2",
+            "tw-bg-natural-50 tw-transition-colors tw-duration-200",
+            "tw-border tw-border-natural-300",
+            "tw-transition-colors tw-duration-200",
+            "disabled:tw-cursor-not-allowed",
+            "focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-border-secondary-600",
+            {
+              "tw-h-7": size === "small",
+              "tw-h-8": size === "medium",
+              "tw-h-10": size === "large",
+            }
+          )}
+        >
+          <Value
+            placeholder={
               <Typography
                 className={cn("tw-text-natural-600")}
                 element="caption"
@@ -95,66 +99,69 @@ export const SelectV2 = <T extends string | number>({
               >
                 {placeholder}
               </Typography>
-            ) : null
-          }
-        >
-          <Typography
-            className={cn("tw-text-natural-800")}
-            element="caption"
-            weight="medium"
+            }
           >
-            {label}
-          </Typography>
-        </Value>
-        {showDropdownIcon ? (
-          <Icon>
-            <ArrowDown
-              data-open={open}
-              className={cn(
-                "tw-w-4 tw-h-4",
-                "tw-justify-self-end",
-                "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
-              )}
-            />
-          </Icon>
-        ) : null}
-      </Trigger>
-
-      {helper ? (
-        <Typography
-          className="tw-mt-1 tw-text-natural-600"
-          element="tiny-text"
-          weight="semibold"
-        >
-          {helper}
-        </Typography>
-      ) : null}
-
-      <Portal>
-        <Content
-          position="popper"
-          className={cn(
-            "tw-bg-natural-50 tw-border tw-border-natural-200 tw-rounded-lg",
-            "tw-w-[var(--radix-select-trigger-width)] tw-z-select-dropdown tw-overflow-hidden"
-          )}
-          sideOffset={helper ? 26 : 14}
-        >
-          <Viewport>
-            <Group
-              className={cn(
-                "tw-flex tw-flex-col tw-max-h-[204px] tw-overflow-y-auto",
-                "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
-              )}
+            <Typography
+              className={cn("tw-text-natural-800")}
+              element="caption"
+              weight="medium"
             >
-              {options.map((option) => (
-                <SelectItem value={option.value.toString()} key={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </Group>
-          </Viewport>
-        </Content>
-      </Portal>
+              {text}
+            </Typography>
+          </Value>
+          {showDropdownIcon ? (
+            <Icon>
+              <ArrowDown
+                data-open={open}
+                className={cn(
+                  "tw-w-4 tw-h-4",
+                  "tw-justify-self-end",
+                  "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+                )}
+              />
+            </Icon>
+          ) : null}
+        </Trigger>
+
+        {helper ? (
+          <Typography
+            className="tw-mt-1 tw-text-natural-600"
+            element="tiny-text"
+            weight="semibold"
+          >
+            {helper}
+          </Typography>
+        ) : null}
+
+        <Portal>
+          <Content
+            position="popper"
+            className={cn(
+              "tw-bg-natural-50 tw-border tw-border-natural-200 tw-rounded-lg",
+              "tw-w-[var(--radix-select-trigger-width)] tw-z-select-dropdown tw-overflow-hidden"
+            )}
+            sideOffset={helper ? 26 : 14}
+          >
+            <Viewport>
+              <Group
+                className={cn(
+                  "tw-flex tw-flex-col tw-max-h-[204px] tw-overflow-y-auto",
+                  "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+                )}
+              >
+                {options.map((option) => (
+                  <SelectItem
+                    value={option.value.toString()}
+                    key={option.value}
+                  >
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </Group>
+            </Viewport>
+          </Content>
+        </Portal>
+      </div>
     </Root>
   );
 };

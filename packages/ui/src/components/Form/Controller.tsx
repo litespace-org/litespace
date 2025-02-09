@@ -14,7 +14,7 @@ import {
   PatternInputProps,
 } from "@/components/PatternInput";
 import { Rating as BaseRating } from "@/components/Rating";
-import { Select as BaseSelect, SelectProps } from "@/components/Select";
+import { SelectV2 as BaseSelect, SelectProps } from "@/components/Select";
 import { Switch as BaseSwitch, SwitchProps } from "@/components/Switch";
 import { Textarea as BaseTextarea } from "@/components/Textarea";
 import { TextareaProps } from "@/components/Textarea/Textarea";
@@ -115,7 +115,6 @@ export function Password<T extends FieldValues>({
       render={({ field }) => {
         return (
           <BaseInput
-            placeholder="******************"
             autoComplete="off"
             type={hidden ? "password" : "text"}
             idleDir="ltr"

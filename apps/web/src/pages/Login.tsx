@@ -50,6 +50,7 @@ const Login: React.FC = () => {
       user.set(result);
       return navigate(Route.Root);
     },
+
     onError(error) {
       const errorMessage = getErrorMessageId(error);
       toast.error({
@@ -90,6 +91,7 @@ const Login: React.FC = () => {
                 <Controller.Input
                   control={control}
                   name="email"
+                  inputSize={"large"}
                   value={email}
                   autoComplete="off"
                   rules={{ validate: validateEmail }}
@@ -104,6 +106,7 @@ const Login: React.FC = () => {
                 <Controller.Password
                   control={control}
                   name="password"
+                  inputSize={"large"}
                   value={password}
                   rules={{ validate: validatePassword }}
                   disabled={mutation.isPending || google.loading}
@@ -125,7 +128,8 @@ const Login: React.FC = () => {
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={"medium"}
+                  type="main"
+                  size="large"
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -135,14 +139,15 @@ const Login: React.FC = () => {
                 </Button>
 
                 <Button
-                  variant={"secondary"}
-                  size={"medium"}
+                  variant="secondary"
+                  size="large"
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}
                   htmlType="button"
                   loading={google.loading}
                   disabled={google.loading || mutation.isPending}
+                  omitIconStyles
                 >
                   {intl("login.with-google")}
                 </Button>

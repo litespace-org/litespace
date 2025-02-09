@@ -74,7 +74,7 @@ const updateUserPayload = zod.object({
       new: zod.string(),
     })
   ),
-  name: zod.optional(string),
+  name: zod.optional(zod.union([zod.null(), string])),
   gender: zod.optional(gender),
   notice: zod.optional(zod.number().positive().int()),
   birthYear: zod.optional(zod.number().positive()),
@@ -86,8 +86,10 @@ const updateUserPayload = zod.object({
   ),
   bio: zod.optional(zod.string().trim()),
   about: zod.optional(zod.string().trim()),
-  city: zod.optional(zod.nativeEnum(IUser.City)),
-  phoneNumber: zod.optional(zod.string().max(15).trim()),
+  city: zod.optional(zod.union([zod.nativeEnum(IUser.City), zod.null()])),
+  phoneNumber: zod.optional(
+    zod.union([zod.string().max(15).trim(), zod.null()])
+  ),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<

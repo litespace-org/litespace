@@ -9,6 +9,16 @@ import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+function isPopupClosedError(error: unknown) {
+  return (
+    error &&
+    typeof error === "object" &&
+    "type" in error &&
+    typeof error.type === "string" &&
+    error.type === "popup_closed"
+  );
+}
+
 export function useGoogle({
   role,
 }: {
@@ -30,7 +40,7 @@ export function useGoogle({
       if (info instanceof Error)
         return toast.error({ title: intl("login.error") });
       user.set(info);
-      navigate(Route.Root);
+      return navigate(role ? Route.CompleteProfile : Route.Root);
     },
     [atlas.auth, intl, navigate, role, toast, user]
   );
@@ -39,9 +49,10 @@ export function useGoogle({
     (error?: unknown) => {
       console.error(error);
       setLoading(false);
-      toast.error({ title: intl("login.error") });
+      if (!isPopupClosedError(error))
+        toast.error({ title: intl(role ? "register.error" : "login.error") });
     },
-    [intl, toast]
+    [intl, role, toast]
   );
 
   useGoogleOneTapLogin({
@@ -57,6 +68,7 @@ export function useGoogle({
       return auth(response.access_token, "bearer");
     },
     onError,
+    onNonOAuthError: onError,
   });
 
   return useMemo(

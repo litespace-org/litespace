@@ -4,8 +4,7 @@ import cn from "classnames";
 import { InputType, InputAction, InputSize } from "@/components/Input/types";
 import { Typography } from "@/components/Typography";
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export type ExtraInputProps = {
   /**
    * Input text direction in case of no value is typed yet.
    */
@@ -17,7 +16,10 @@ export interface InputProps
   state?: "error" | "success";
   label?: string;
   helper?: string;
-}
+};
+
+export type InputProps = React.InputHTMLAttributes<HTMLInputElement> &
+  ExtraInputProps;
 
 export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   (
@@ -46,6 +48,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
       >
         {label ? (
           <Typography
+            tag="label"
             element="caption"
             weight="semibold"
             htmlFor={props.id}
@@ -70,7 +73,7 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               "tw-h-10": inputSize === "large",
             },
             // Focused
-            "[&:has(input:focus)]:tw-ring-1 [&:has(input:focus)]:tw-ring-brand-700 [&:has(input:focus)]:tw-border-brand-700",
+            "[&:has(input:focus)]:tw-ring-1 [&:has(input:focus)]:tw-ring-secondary-700 [&:has(input:focus)]:tw-border-secondary-700",
             {
               // Default || Filled
               "tw-border-natural-300": !state && !disabled,
@@ -128,9 +131,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
               <Typography
                 element="tiny-text"
                 weight="semibold"
-                className={cn("group-focus-within:tw-text-natural-600", {
+                className={cn({
                   // Default or filled
-                  "tw-text-natural-600": !state && !disabled,
+                  "tw-text-natural-600 group-focus-within:tw-text-natural-600":
+                    !state && !disabled,
                   // Success
                   "tw-text-success-600": state === "success",
                   // Error
