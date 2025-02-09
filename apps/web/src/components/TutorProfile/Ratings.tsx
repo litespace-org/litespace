@@ -154,14 +154,14 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   return (
     <div
       className={cn(
-        "flex flex-col justify-center py-4 md:p-8",
+        "flex flex-col justify-center py-6 md:p-8",
         isEmpty(ratings) ? "gap-8" : "gap-4 md:gap-10"
       )}
     >
       {isEmpty(ratings) ? (
         <NoTutorRatings tutorName={tutorName} />
       ) : (
-        <div className="grid gap-4 flex-wrap justify-center md:grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
+        <div className="grid gap-4 flex-wrap justify-center grid-cols-[repeat(auto-fill,minmax(256px,328px))] lg:grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
           {ratings.map((rating, index) => {
             if (
               "userId" in rating &&

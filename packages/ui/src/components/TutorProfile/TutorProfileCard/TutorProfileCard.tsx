@@ -20,6 +20,9 @@ export const TutorProfileCard: React.FC<{
   studentCount: number;
   lessonCount: number;
   avgRating: number;
+  /**
+   * Small in tutor settings page and large in tutor profile page
+   */
   variant?: "small" | "large";
   onBook?: Void;
   loading?: boolean;
@@ -75,7 +78,8 @@ export const TutorProfileCard: React.FC<{
         className={cn(
           "tw-aspect-square tw-shrink-0 tw-rounded-full tw-overflow-hidden",
           {
-            "tw-w-[90px] md:tw-w-[242px]": variant === "large",
+            "tw-w-[90px] tw-h-[90px] md:tw-h-[242px] md:tw-w-[242px]":
+              variant === "large",
             "tw-w-[174px]": variant === "small",
           }
         )}
@@ -86,7 +90,8 @@ export const TutorProfileCard: React.FC<{
           seed={id.toString()}
         />
       </div>
-      <div>
+
+      <div className="md:tw-flex md:tw-flex-col ">
         <div
           className={cn("tw-flex tw-flex-col", {
             "tw-gap-1 md:tw-gap-2": variant === "large",
@@ -122,7 +127,7 @@ export const TutorProfileCard: React.FC<{
             ) : null}
           </div>
           {avgRating > 0 ? (
-            <div className="tw-flex tw-items-center tw-gap-1 md:tw-gap-2">
+            <div className="tw-flex tw-items-center tw-gap-2">
               <Typography
                 element={{ default: "tiny-text", md: "subtitle-2" }}
                 weight="semibold"
@@ -139,18 +144,25 @@ export const TutorProfileCard: React.FC<{
           ) : null}
         </div>
         {onBook && mq === "md" ? (
-          <Button onClick={onBook} className="tw-mt-3 !tw-w-[301px]">
+          <Button onClick={onBook} className="tw-mt-auto !tw-w-[301px]">
             {intl("tutor.book")}
           </Button>
         ) : null}
       </div>
+
       {onBook && mq === "default" ? (
         <Button
-          size={"small"}
+          size="small"
           onClick={onBook}
-          className="tw-w-full tw-col-span-2"
+          className="tw-w-full tw-max-w-[393px] tw-col-span-2 "
         >
-          {intl("tutor.book")}
+          <Typography
+            element={{ default: "caption", lg: "body" }}
+            weight={{ default: "semibold", lg: "medium" }}
+            className="tw-text-natural-50"
+          >
+            {intl("tutor.book")}
+          </Typography>
         </Button>
       ) : null}
     </div>

@@ -12,7 +12,7 @@ import { Route } from "@/types/routes";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TutorProfile: React.FC = () => {
-  const { lg } = useMediaQuery();
+  const { md, lg } = useMediaQuery();
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
@@ -28,19 +28,25 @@ const TutorProfile: React.FC = () => {
 
   return (
     <div className="w-full max-w-screen-3xl p-4 md:p-6 mx-auto md:mb-12">
-      <div className="flex items-center gap-4 md:gap-6">
-        <Link
-          to={Route.Tutors}
-          className="hidden md:flex w-6 h-6 items-center justify-center"
+      <div className="flex items-center lg:gap-6 mb-4 md:mb-6">
+        {lg ? (
+          <Link
+            to={Route.Tutors}
+            className="hidden md:flex w-6 h-6 items-center justify-center"
+          >
+            <RightArrow className="[&>*]:stroke-brand-700" />
+          </Link>
+        ) : null}
+        <Typography
+          element={{ default: "body", md: "subtitle-2" }}
+          weight="bold"
+          className="text-natural-950"
         >
-          <RightArrow className="[&>*]:stroke-brand-700" />
-        </Link>
-        <Typography element="subtitle-2" className="font-bold text-natural-950">
           {intl("tutors.title")}
           {tutor.data?.name ? (
             <>
-              <span> / </span>
-              <span className="underline text-brand-700">
+              <span>/ </span>
+              <span className="text-brand-700 inline-block border-b border-brand-700">
                 {tutor.data.name}
               </span>
             </>
@@ -68,8 +74,12 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
-        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl mt-4 md:mt-6 flex flex-col gap-8 md:gap-12">
-          <TutorProfileCard {...tutor.data} onBook={openDialog} />
+        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl flex flex-col gap-8 md:gap-12">
+          <TutorProfileCard
+            {...tutor.data}
+            onBook={openDialog}
+            mq={md ? "md" : "default"}
+          />
           <TutorTabs tutor={tutor.data} />
         </div>
       ) : null}

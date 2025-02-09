@@ -67,9 +67,7 @@ export const RateTutor: React.FC<{
         >
           {intl("tutor.profile.rate-tutor")}
         </Typography>
-        <div className="w-6 h-6">
-          <Star className="[&>*]:fill-natural-50" />
-        </div>
+        <Star className="w-6 h-6 [&>*]:fill-natural-50" />
       </Button>
       {rating ? (
         <RatingDialog
