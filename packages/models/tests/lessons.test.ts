@@ -408,6 +408,71 @@ describe("Lessons", () => {
       });
     });
 
+    describe(nameof(lessons.findLessonsByMembers), () => {
+      it("should return lessons that includes the passed members list", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({ tutor: tutor.id }); // lesson1
+        const { lesson: lesson2 } = await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+        });
+
+        const res = await lessons.findLessonsByMembers({
+          members: [tutor.id, student.id],
+        });
+        expect(res).to.have.length(1);
+        expect(first(res)).to.deep.eq(lesson2);
+      });
+
+      it("should return canceled lessons that includes the passed members list", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          canceled: false,
+        }); // lesson1
+        const { lesson: lesson2 } = await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          canceled: true,
+        });
+
+        const res = await lessons.findLessonsByMembers({
+          members: [tutor.id, student.id],
+          canceled: true,
+        });
+        expect(res).to.have.length(1);
+        expect(first(res)).to.deep.eq(lesson2);
+      });
+
+      it("should return uncanceled lessons that includes the passed members list", async () => {
+        const tutor = await fixtures.tutor();
+        const student = await fixtures.student();
+
+        const { lesson: lesson1 } = await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          canceled: false,
+        }); // lesson1
+        await fixtures.lesson({
+          tutor: tutor.id,
+          student: student.id,
+          canceled: true,
+        });
+
+        const res = await lessons.findLessonsByMembers({
+          members: [tutor.id, student.id],
+          canceled: false,
+        });
+        expect(res).to.have.length(1);
+        expect(first(res)).to.deep.eq(lesson1);
+      });
+    });
+
     describe(nameof(lessons.findLessonDays), () => {
       it("should return empty result if not lessons", async () => {
         const tutor = await fixtures.tutor();

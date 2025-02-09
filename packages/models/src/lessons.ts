@@ -7,10 +7,9 @@ import {
 } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, isEmpty, orderBy } from "lodash";
+import { concat, first, isEmpty } from "lodash";
 import { users } from "@/users";
 import {
-  aggArrayOrder,
   knex,
   column,
   addSqlMinutes,
@@ -217,21 +216,44 @@ export class Lessons {
     return rows.map((row) => this.asPopulatedMember(row));
   }
 
-  async findLessonsByMembers(
-    members: number[],
-    tx?: Knex.Transaction
-  ): Promise<ILesson.Self[]> {
-    const rows: ILesson.Row[] = await this.builder(tx)
-      .members.join(
-        this.table.lessons,
-        this.columns.lessons("id"),
-        this.columns.members("lesson_id")
-      )
-      .select<ILesson.Row[]>(this.rows.lesson)
-      .groupBy(this.columns.members("user_id"))
-      .havingRaw(aggArrayOrder(this.columns.members("user_id")), [
-        orderBy(members),
-      ]);
+  async findLessonsByMembers({
+    members,
+    tx,
+    ...filter
+  }: WithOptionalTx<{ members: number[] } & SearchFilter>): Promise<
+    ILesson.Self[]
+  > {
+    /**
+     * Sample sql query
+     * SELECT * FROM lessons
+     * JOIN (
+     *   SELECT DISTINCT lm1.lesson_id FROM lesson_members lm1
+     *   JOIN lesson_members lm2 ON lm1.lesson_id = lm2.lesson_id
+     *   WHERE lm1.user_id in (MEMBERS_IDS) AND
+     *   lm2.user_id in (MEMBERS_IDS) AND
+     *   lm1.user_id != lm2.user_id
+     * ) ids
+     * ON lessons.id = ids.lesson_id;
+     */
+
+    const innerSelect = knex
+      .distinct("lm1.lesson_id")
+      .from("lesson_members AS lm1")
+      .join("lesson_members AS lm2", "lm1.lesson_id", "lm2.lesson_id")
+      .whereRaw("lm1.user_id != lm2.user_id")
+      .whereIn("lm1.user_id", members)
+      .and.whereIn("lm2.user_id", members);
+
+    const outerSelect = this.builder(tx).lessons.joinRaw(
+      "INNER JOIN (" +
+        innerSelect.clone() +
+        ") AS ids ON lessons.id = ids.lesson_id"
+    );
+
+    const rows: ILesson.Row[] = await this.applySearchFilterV2(
+      outerSelect.clone(),
+      filter
+    );
 
     return rows.map((row) => this.from(row));
   }
@@ -475,12 +497,12 @@ export class Lessons {
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
+      users,
+      ratified = true,
       canceled = true,
       future = true,
-      ratified = true,
       past = true,
       now = false,
-      users,
       after,
       before,
       slots = [],
@@ -524,6 +546,58 @@ export class Lessons {
     } else if (pastOnly) {
       builder.where(end, "<=", nowDate);
     }
+
+    if (after)
+      builder.where((builder) => {
+        builder
+          .where(start, ">=", dayjs.utc(after).toDate())
+          .orWhere(end, ">", dayjs.utc(after).toDate());
+      });
+    if (before)
+      builder.where((builder) => {
+        builder
+          .where(end, "<=", dayjs.utc(before).toDate())
+          .orWhere(start, "<", dayjs.utc(before).toDate());
+      });
+
+    if (!isEmpty(slots))
+      builder.whereIn(this.columns.lessons("slot_id"), slots);
+
+    return builder;
+  }
+
+  // TODO applySearchFilter function should be replaced with this one
+  // as default values make the code ambiguous, unpredictable and not clean.
+  applySearchFilterV2<R extends object, T>(
+    builder: Knex.QueryBuilder<R, T>,
+    { users, ratified, canceled, after, before, slots = [] }: SearchFilter
+  ): Knex.QueryBuilder<R, T> {
+    if (canceled !== undefined && ratified !== undefined)
+      throw Error("cannot use `canceled` and `ratified` together!");
+    //! Because of the one-to-many relationship between the lesson and its
+    //! members. We should only perform the join in case the `users` param is
+    //! providered. We will get duplicated rows if we did this by default which
+    //! will douple the total sum for the prices.
+    if (users)
+      builder
+        .join(
+          this.table.members,
+          this.columns.members("lesson_id"),
+          this.columns.lessons("id")
+        )
+        .whereIn(this.columns.members("user_id"), users);
+
+    if (canceled === true)
+      builder.where(this.columns.lessons("canceled_by"), "IS NOT", null);
+
+    if (canceled === false)
+      builder.where(this.columns.lessons("canceled_by"), "IS", null);
+
+    if (ratified === true)
+      builder.where(this.columns.lessons("canceled_by"), "IS", null);
+
+    const start = this.columns.lessons("start");
+    const end = addSqlMinutes(start, this.columns.lessons("duration"));
 
     if (after)
       builder.where((builder) => {
