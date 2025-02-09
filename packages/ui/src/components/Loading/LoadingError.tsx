@@ -1,5 +1,5 @@
 import ExclaimationMarkCircle from "@litespace/assets/ExclaimationMarkCircle";
-import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Void } from "@litespace/types";
@@ -35,9 +35,9 @@ export const LoadingError: React.FC<{
         {error}
       </Typography>
       <Button
-        size={size === "large" ? ButtonSize.Small : ButtonSize.Tiny}
+        size={size === "large" ? "medium" : "small"}
         onClick={retry}
-        variant={ButtonVariant.Secondary}
+        variant={"secondary"}
       >
         {intl("global.retry")}
       </Button>

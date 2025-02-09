@@ -1,9 +1,8 @@
 import React from "react";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { X } from "react-feather";
 import cn from "classnames";
 import { Void } from "@litespace/types";
-import { ButtonVariant } from "@/components/Button/types";
 
 const Drawer: React.FC<{
   children?: React.ReactNode;
@@ -22,9 +21,9 @@ const Drawer: React.FC<{
         <h3 className="tw-mr-3 tw-text-2xl">{title}</h3>
         <Button
           onClick={close}
-          size={ButtonSize.Tiny}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
+          size={"small"}
+          type={"main"}
+          variant={"primary"}
           className="!tw-px-1"
         >
           <X className="tw-w-5 tw-h-5" />

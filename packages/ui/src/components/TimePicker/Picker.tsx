@@ -1,9 +1,8 @@
 import React, { useMemo } from "react";
 import { range } from "lodash";
 import cn from "classnames";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Meridiem, Time } from "@litespace/utils/time";
-import { ButtonVariant } from "@/components/Button/types";
 
 const Picker: React.FC<{
   labels: { am: string; pm: string };
@@ -91,12 +90,10 @@ const Picker: React.FC<{
                 <Button
                   key={label}
                   htmlType="button"
-                  size={ButtonSize.Tiny}
+                  size={"small"}
                   onClick={onClick}
-                  type={ButtonType.Main}
-                  variant={
-                    active ? ButtonVariant.Primary : ButtonVariant.Secondary
-                  }
+                  type={"main"}
+                  variant={active ? "primary" : "secondary"}
                 >
                   {label}
                 </Button>

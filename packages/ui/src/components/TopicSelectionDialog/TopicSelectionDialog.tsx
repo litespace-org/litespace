@@ -4,7 +4,7 @@ import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
 import { Dialog } from "@/components/Dialog";
-import { Button, ButtonSize, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Loader, LoadingError } from "@/components/Loading";
 import { concat, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
@@ -167,7 +167,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
 
           <div className="tw-flex tw-flex-row tw-w-full tw-gap-6">
             <Button
-              size={ButtonSize.Large}
+              size={"large"}
               onClick={() => confirm(selection)}
               className="tw-w-full"
               loading={confirming}
@@ -176,8 +176,8 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               {intl("labels.confirm")}
             </Button>
             <Button
-              variant={ButtonVariant.Secondary}
-              size={ButtonSize.Large}
+              variant={"secondary"}
+              size={"large"}
               onClick={onClose}
               className="tw-w-full"
               disabled={confirming}

@@ -8,7 +8,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Crown from "@litespace/assets/Crown";
 import { IUser, Void } from "@litespace/types";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import Menu from "@litespace/assets/Menu";
 
@@ -31,7 +31,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         lg ? (
           <Link to={Route.Subscription}>
             <Button
-              size={ButtonSize.Large}
+              size={"large"}
               htmlType="button"
               endIcon={<Crown height={24} width={24} />}
             >

@@ -1,10 +1,5 @@
 import { NavOption } from "@/types/navbar";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Link, useLocation } from "react-router-dom";
 import { Void } from "@litespace/types";
 import cn from "classnames";
@@ -26,13 +21,9 @@ function SideBarItem({
           loading={option.loading}
           disabled={option.disabled}
           className={cn("w-full [&>div]:w-full")}
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={
-            location.pathname === option.route
-              ? ButtonVariant.Primary
-              : ButtonVariant.Tertiary
-          }
+          size={"medium"}
+          type={"main"}
+          variant={location.pathname === option.route ? "primary" : "tertiary"}
         >
           <div className="flex items-center justify-start w-full gap-2">
             <option.icon className="w-6 h-6" />

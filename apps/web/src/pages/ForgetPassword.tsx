@@ -2,7 +2,7 @@ import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
 import { Route } from "@/types/routes";
 import { useForgetPassword } from "@litespace/headless/auth";
-import { Button, ButtonSize, ButtonVariant } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Controller, Form } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useValidateEmail } from "@litespace/ui/hooks/validation";
@@ -113,8 +113,8 @@ const ForgetPassword: React.FC = () => {
                     </div>
 
                     <Button
-                      variant={ButtonVariant.Primary}
-                      size={ButtonSize.Small}
+                      variant={"primary"}
+                      size={"medium"}
                       className="w-full"
                       htmlType="submit"
                       loading={forgetPassword.isPending}
@@ -141,8 +141,8 @@ const ForgetPassword: React.FC = () => {
                     </Typography>
                   </div>
                   <Button
-                    variant={ButtonVariant.Tertiary}
-                    size={ButtonSize.Small}
+                    variant={"tertiary"}
+                    size={"medium"}
                     className="mx-auto"
                     onClick={() => {
                       setSentEmail(false);

@@ -3,7 +3,7 @@ import { Dayjs } from "dayjs";
 import { Void } from "@litespace/types";
 
 import { Typography } from "@litespace/ui/Typography";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 
 import Calendar from "@litespace/assets/Calendar";
@@ -59,7 +59,7 @@ const Header: React.FC<Props> = ({
       </div>
 
       <Button
-        size={ButtonSize.Small}
+        size={"medium"}
         endIcon={<Calendar className="[&>*]:tw-stroke-natural-50 h-6 w-6" />}
         onClick={manageSchedule}
         htmlType="button"

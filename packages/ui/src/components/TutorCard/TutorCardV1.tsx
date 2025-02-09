@@ -1,10 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@/components/Button";
+import { Button } from "@/components/Button";
 import { CardProps } from "@/components/TutorCard/types";
 import { Typography } from "@/components/Typography";
 import { formatNumber } from "@/components/utils";
@@ -205,9 +200,9 @@ export const TutorCardV1: React.FC<CardProps> = ({
           <Button
             onClick={onBook}
             className="tw-grow tw-basis-1/2 tw-w-full"
-            type={ButtonType.Main}
-            variant={ButtonVariant.Primary}
-            size={ButtonSize.Tiny}
+            type={"main"}
+            variant={"primary"}
+            size={"small"}
           >
             <Typography
               element="caption"

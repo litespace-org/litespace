@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Timeline, TimelineItem } from "@litespace/ui/Timeline";
 import { Spinner } from "@litespace/ui/Spinner";
 import { messages } from "@litespace/ui/locales";
@@ -70,7 +70,7 @@ const List: React.FC<{
           <Button
             loading={loading || fetching}
             disabled={loading || fetching || !withMore}
-            size={ButtonSize.Small}
+            size={"medium"}
             onClick={more}
           >
             {intl.formatMessage({

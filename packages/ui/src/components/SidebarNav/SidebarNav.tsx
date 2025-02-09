@@ -1,12 +1,11 @@
 import React, { useRef } from "react";
 import { Sidebar } from "react-feather";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { NavOption } from "@/components/SidebarNav/types";
 import { useClosableRef } from "@/hooks";
 import cn from "classnames";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import { ButtonVariant } from "@/components/Button/types";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -28,9 +27,9 @@ const SidebarNav: React.FC<{
       <div ref={button}>
         <Button
           onClick={toggle}
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
+          size={"medium"}
+          type={"main"}
+          variant={"secondary"}
           className="!tw-p-2"
         >
           <Sidebar className="tw-w-6 tw-h-6" />
@@ -69,9 +68,9 @@ const SidebarNav: React.FC<{
                           "!w-full",
                           location.pathname === option.route && "bg-surface-200"
                         )}
-                        size={ButtonSize.Small}
-                        type={ButtonType.Main}
-                        variant={ButtonVariant.Secondary}
+                        size={"medium"}
+                        type={"main"}
+                        variant={"secondary"}
                       >
                         {option.label}
                       </Button>

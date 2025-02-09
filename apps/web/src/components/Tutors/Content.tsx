@@ -10,7 +10,7 @@ import MoreTutorsSoon from "@litespace/assets/MoreTutorsSoon";
 import Notification2 from "@litespace/assets/Notification2";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
@@ -139,7 +139,7 @@ const Content: React.FC<{
 
         <Button
           className={cn("w-full max-w-[328px] lg:max-w-[386px] ")}
-          size={mq.lg ? ButtonSize.Small : ButtonSize.Tiny}
+          size={mq.lg ? "medium" : "small"}
           onClick={() =>
             toast.success({
               title: intl("labels.coming-soon"),

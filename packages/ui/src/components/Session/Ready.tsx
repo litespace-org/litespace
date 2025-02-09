@@ -5,7 +5,7 @@ import { Typography } from "@/components/Typography";
 import { useMemo } from "react";
 import { Avatar } from "@/components/Avatar";
 import { orUndefined } from "@litespace/utils/utils";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 
 export const Ready: React.FC<{
   otherMember: {
@@ -93,7 +93,7 @@ export const Ready: React.FC<{
         <Typography element="subtitle-1">{otherMember.name}</Typography>
       </div>
       <Button
-        size={ButtonSize.Large}
+        size={"large"}
         onClick={join}
         disabled={disabled || loading}
         loading={loading}

@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from "react";
 import { Moon, Sidebar, Sun, User } from "react-feather";
-import { Button, ButtonSize, ButtonType } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Switch } from "@litespace/ui/Switch";
 import { removeAuthToken } from "@litespace/ui/cache";
 import { useTheme, Theme } from "@litespace/ui/hooks/theme";
@@ -15,7 +15,6 @@ import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
-import { ButtonVariant } from "@litespace/ui/Button";
 import { useUserContext } from "@litespace/headless/context/user";
 
 const framerSidebarBackground = {
@@ -55,8 +54,8 @@ const SidebarNav: React.FC<{
       >
         <Button
           onClick={toggleMenu}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
+          type={"main"}
+          variant={"primary"}
           className="!w-14 !h-14"
         >
           <Sidebar className="w-6 h-6" />
@@ -127,9 +126,9 @@ const SidebarNav: React.FC<{
                 <Button
                   onClick={logout}
                   className="w-full"
-                  size={ButtonSize.Small}
-                  type={ButtonType.Error}
-                  variant={ButtonVariant.Secondary}
+                  size={"medium"}
+                  type={"error"}
+                  variant={"secondary"}
                 >
                   {intl("navbar.logout")}
                 </Button>

@@ -1,4 +1,4 @@
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { LocalId } from "@litespace/ui/locales";
 import { Spinner } from "@litespace/ui/Spinner";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -53,7 +53,7 @@ const Stats: React.FC<{
           {fetching && !loading ? <Spinner /> : null}
         </div>
 
-        <Button onClick={create.show} size={ButtonSize.Small}>
+        <Button onClick={create.show} size={"medium"}>
           {intl("invoices.stats.create.invoice")}
         </Button>
       </div>

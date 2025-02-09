@@ -9,7 +9,7 @@ import { DateSelection } from "@/components/Lessons/BookLesson/DateSelection";
 import { DurationSelection } from "@/components/Lessons/BookLesson/DurationSelection";
 import { TimeSelection } from "@/components/Lessons/BookLesson/TimeSelection";
 import { Confirmation } from "@/components/Lessons/BookLesson/Confirmation";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 import { AnimatePresence, motion } from "framer-motion";
@@ -315,7 +315,7 @@ export const BookLessonDialog: React.FC<{
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
-              size={ButtonSize.Small}
+              size={"medium"}
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
@@ -330,7 +330,7 @@ export const BookLessonDialog: React.FC<{
 
           <Button
             endIcon={<LongLeftArrow />}
-            size={ButtonSize.Small}
+            size={"medium"}
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
               if (step === "duration-selection") setStep("time-selection");

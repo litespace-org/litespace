@@ -1,17 +1,5 @@
-export enum ButtonType {
-  Main = "main",
-  Warning = "warning",
-  Success = "success",
-  Error = "error",
-}
+export type ButtonType = "main" | "warning" | "success" | "error";
 
-export enum ButtonSize {
-  Tiny = "tiny",
-  Small = "small",
-  Large = "large",
-}
-export enum ButtonVariant {
-  Primary = "primary",
-  Secondary = "secondary",
-  Tertiary = "tertiary",
-}
+export type ButtonSize = "small" | "medium" | "large";
+
+export type ButtonVariant = "primary" | "secondary" | "tertiary";

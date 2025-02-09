@@ -2,12 +2,7 @@ import React, { useMemo } from "react";
 import cn from "classnames";
 import { Avatar } from "@/components/Avatar";
 import { Typography } from "@/components/Typography";
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@/components/Button";
+import { Button } from "@/components/Button";
 import Star from "@litespace/assets/Star";
 import { useFormatMessage } from "@/hooks";
 import { formatNumber } from "@/components/utils";
@@ -216,9 +211,9 @@ export const TutorCard: React.FC<CardProps> = ({
         <Button
           onClick={onBook}
           className="tw-w-full"
-          type={ButtonType.Main}
-          variant={ButtonVariant.Primary}
-          size={ButtonSize.Tiny}
+          type={"main"}
+          variant={"primary"}
+          size={"small"}
         >
           {intl("tutors.card.book-button.label")}
         </Button>

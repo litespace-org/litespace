@@ -1,9 +1,4 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useRender } from "@litespace/ui/hooks/common";
 import { Typography } from "@litespace/ui/Typography";
 import ImageDialog from "@/components/common/ImageDialog";
@@ -38,9 +33,9 @@ const ImageField: React.FC<{
   return (
     <>
       <Button
-        type={ButtonType.Main}
-        size={ButtonSize.Tiny}
-        variant={ButtonVariant.Secondary}
+        type={"main"}
+        size={"small"}
+        variant={"secondary"}
         onClick={image.show}
       >
         <Typography element="caption" className="truncate inline-block w-16">

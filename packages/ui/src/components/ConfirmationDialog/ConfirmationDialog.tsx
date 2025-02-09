@@ -11,7 +11,7 @@ import cn from "classnames";
 import React from "react";
 import { DialogType } from "@/components/ConfirmationDialog/types";
 import X from "@litespace/assets/X";
-import { Button, ButtonType, ButtonVariant } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
@@ -109,8 +109,8 @@ export const ConfirmationDialog: React.FC<{
             <Button
               className="tw-w-full"
               onClick={confirm}
-              type={type !== "error" ? ButtonType.Main : ButtonType.Error}
-              variant={ButtonVariant.Primary}
+              type={type !== "error" ? "main" : "error"}
+              variant={"primary"}
               loading={loading}
               disabled={loading}
             >
@@ -119,8 +119,8 @@ export const ConfirmationDialog: React.FC<{
             <Button
               onClick={close}
               className="tw-w-full"
-              type={type !== "error" ? ButtonType.Main : ButtonType.Error}
-              variant={ButtonVariant.Secondary}
+              type={type !== "error" ? "main" : "error"}
+              variant={"secondary"}
               disabled={loading}
             >
               {labels?.cancel || intl("global.labels.cancel")}

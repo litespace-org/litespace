@@ -1,5 +1,5 @@
 import { Avatar } from "@/components/Avatar";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import dayjs from "@/lib/dayjs";
@@ -172,7 +172,7 @@ export const LessonCard: React.FC<Props> = ({
 
   const button = (
     <Button
-      size={ButtonSize.Tiny}
+      size={"small"}
       className={cn("tw-w-full tw-mt-auto")}
       disabled={!canJoin && !canRebook}
       onClick={mainBtnHandler}

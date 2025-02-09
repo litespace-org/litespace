@@ -5,7 +5,7 @@ import { Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import Rate from "@litespace/assets/Rate";
 import { RatingStars } from "@/components/RatingStars";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { Textarea } from "@/components/Textarea";
 
 export const RateLesson: React.FC<{
@@ -103,7 +103,7 @@ export const RateLesson: React.FC<{
         />
 
         <Button
-          size={ButtonSize.Large}
+          size={"large"}
           onClick={handleRating}
           loading={rateLoading}
           disabled={rateLoading}

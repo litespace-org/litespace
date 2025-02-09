@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonSize } from "../src/components/Button";
+import { Button } from "../src/components/Button";
 import { useTheme } from "../src/hooks/theme";
 import { IntlProvider } from "react-intl";
 import { ToastProvider } from "../src/components/Toast";
@@ -21,7 +21,7 @@ const Decorator = (Story: React.FC) => {
           <MediaQueryProvider>
             <div dir="rtl" className="tw-font-cairo">
               <div className="tw-mb-4">
-                <Button onClick={toggle} size={ButtonSize.Tiny}>
+                <Button onClick={toggle} size={"small"}>
                   Toggle Theme
                 </Button>
               </div>

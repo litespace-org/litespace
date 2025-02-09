@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { useFormatMessage } from "@/hooks";
 
 const ErrorPage: React.FC = () => {
@@ -21,9 +21,7 @@ const ErrorPage: React.FC = () => {
           </p>
         </div>
         <div className="tw-mt-4">
-          <Button size={ButtonSize.Small}>
-            {intl("page.error.button.label")}
-          </Button>
+          <Button size={"medium"}>{intl("page.error.button.label")}</Button>
         </div>
       </div>
     </div>

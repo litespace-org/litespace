@@ -1,9 +1,4 @@
-import {
-  Button,
-  ButtonType,
-  ButtonSize,
-  ButtonVariant,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Card } from "@litespace/ui/Card";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -133,7 +128,7 @@ const Tutor: React.FC<{
             (tutor.image === image && tutor.video === video)
           }
           loading={mutation.isPending}
-          size={ButtonSize.Small}
+          size={"medium"}
         >
           {intl("labels.confirm")}
         </Button>
@@ -144,9 +139,9 @@ const Tutor: React.FC<{
             (tutor.image === image && tutor.video === video)
           }
           loading={mutation.isPending}
-          size={ButtonSize.Small}
-          type={ButtonType.Main}
-          variant={ButtonVariant.Secondary}
+          size={"medium"}
+          type={"main"}
+          variant={"secondary"}
         >
           {intl("global.labels.cancel")}
         </Button>

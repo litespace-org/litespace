@@ -1,9 +1,4 @@
-import {
-  Button,
-  ButtonSize,
-  ButtonType,
-  ButtonVariant,
-} from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
@@ -175,8 +170,8 @@ const Process: React.FC<{
           <div className="flex gap-4 items-center">
             <Button
               htmlType="button"
-              size={ButtonSize.Tiny}
-              variant={ButtonVariant.Secondary}
+              size={"small"}
+              variant={"secondary"}
               onClick={() => {
                 if (!ref.current) return;
                 ref.current.click();
@@ -216,11 +211,11 @@ const Process: React.FC<{
             type={
               action === Action.ApproveCancelRequest ||
               action === Action.MarkAsRejected
-                ? ButtonType.Error
-                : ButtonType.Main
+                ? "error"
+                : "main"
             }
-            variant={ButtonVariant.Primary}
-            size={ButtonSize.Small}
+            variant={"primary"}
+            size={"medium"}
             loading={update.isPending}
             disabled={update.isPending || deleteNote.isPending}
           >
@@ -229,8 +224,8 @@ const Process: React.FC<{
 
           {editNote && note !== null ? (
             <Button
-              type={ButtonType.Error}
-              size={ButtonSize.Small}
+              type={"error"}
+              size={"medium"}
               loading={deleteNote.isPending}
               disabled={update.isPending || deleteNote.isPending}
               htmlType="button"

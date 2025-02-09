@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import cn from "classnames";
 import { AlertCircle, AlertTriangle, CheckCircle, Info } from "react-feather";
 import { AlertType } from "@/components/Alert/types";
-import { Button, ButtonSize, ButtonType } from "@/components/Button";
+import { Button } from "@/components/Button";
 
 export const Alert: React.FC<{
   title?: string;
@@ -71,10 +71,8 @@ export const Alert: React.FC<{
             <Button
               htmlType="button"
               onClick={action.onClick}
-              size={ButtonSize.Small}
-              type={
-                type === AlertType.Error ? ButtonType.Error : ButtonType.Main
-              }
+              size={"medium"}
+              type={type === AlertType.Error ? "error" : "main"}
               disabled={action.disabled}
               loading={action.loading}
             >

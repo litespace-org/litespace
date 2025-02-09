@@ -4,7 +4,7 @@ import { orUndefined } from "@litespace/utils/utils";
 import { Typography } from "@/components/Typography";
 import { useFormatMessage } from "@/hooks";
 import Star from "@litespace/assets/Star";
-import { Button, ButtonSize } from "@/components/Button";
+import { Button } from "@/components/Button";
 import { formatNumber } from "@/components/utils";
 import { Void } from "@litespace/types";
 import { Loader, LoadingError } from "@/components/Loading";
@@ -146,7 +146,7 @@ export const TutorProfileCard: React.FC<{
       </div>
       {onBook && mq === "default" ? (
         <Button
-          size={ButtonSize.Tiny}
+          size={"small"}
           onClick={onBook}
           className="tw-w-full tw-col-span-2"
         >

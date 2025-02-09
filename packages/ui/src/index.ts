@@ -1,4 +1,4 @@
-export { Button, ButtonType, ButtonSize } from "@/components/Button";
+export { Button } from "@/components/Button";
 export { Dir } from "@/components/Direction";
 export { Input, type InputType } from "@/components/Input";
 export { NumericInput } from "@/components/NumericInput";

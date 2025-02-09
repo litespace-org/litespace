@@ -1,5 +1,5 @@
 import { Form, Controller } from "@litespace/ui/Form";
-import { Button, ButtonSize } from "@litespace/ui/Button";
+import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
@@ -93,7 +93,7 @@ const Login: React.FC = () => {
               />
 
               <Button
-                size={ButtonSize.Small}
+                size={"medium"}
                 disabled={mutation.isPending}
                 loading={mutation.isPending}
               >
