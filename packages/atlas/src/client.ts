@@ -74,20 +74,14 @@ export function createClient(
     if (!error.response || !data || typeof data !== "object")
       return Promise.reject(error);
 
-    const message =
-      "message" in data && typeof data.message === "string"
-        ? data.message
-        : null;
-
     const code: ApiErrorCode | null =
       "code" in data && (isApiError(data.code) || isFieldError(data.code))
         ? data.code
         : null;
 
-    if (message && code)
+    if (code)
       return Promise.reject(
         new ResponseError({
-          message,
           errorCode: code,
           statusCode: error.response.status,
         })

@@ -3,7 +3,7 @@ import db from "@fixtures/db";
 import dayjs from "@/lib/dayjs";
 import { expect } from "chai";
 import { safe } from "@litespace/utils";
-import { bad, conflict, forbidden, notfound } from "@/lib/error";
+import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
 import { availabilitySlots, lessons } from "@litespace/models";
 import { first } from "lodash";
 
@@ -154,7 +154,7 @@ describe("/api/v1/availability-slot/", () => {
         })
       );
 
-      expect(res).to.deep.eq(conflict());
+      expect(res).to.deep.eq(conflictingSchedule());
     });
 
     it("should respond with bad request if the slot is not in the future", async () => {

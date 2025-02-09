@@ -7,10 +7,9 @@ import {
 } from "@litespace/types";
 import { Knex } from "knex";
 import dayjs from "@/lib/dayjs";
-import { concat, first, isEmpty, orderBy } from "lodash";
+import { concat, first, isEmpty } from "lodash";
 import { users } from "@/users";
 import {
-  aggArrayOrder,
   knex,
   column,
   addSqlMinutes,
@@ -215,25 +214,6 @@ export class Lessons {
       .whereIn(this.columns.members("lesson_id"), lessonIds);
 
     return rows.map((row) => this.asPopulatedMember(row));
-  }
-
-  async findLessonsByMembers(
-    members: number[],
-    tx?: Knex.Transaction
-  ): Promise<ILesson.Self[]> {
-    const rows: ILesson.Row[] = await this.builder(tx)
-      .members.join(
-        this.table.lessons,
-        this.columns.lessons("id"),
-        this.columns.members("lesson_id")
-      )
-      .select<ILesson.Row[]>(this.rows.lesson)
-      .groupBy(this.columns.members("user_id"))
-      .havingRaw(aggArrayOrder(this.columns.members("user_id")), [
-        orderBy(members),
-      ]);
-
-    return rows.map((row) => this.from(row));
   }
 
   /**
@@ -475,12 +455,12 @@ export class Lessons {
   applySearchFilter<R extends object, T>(
     builder: Knex.QueryBuilder<R, T>,
     {
+      users,
+      ratified = true,
       canceled = true,
       future = true,
-      ratified = true,
       past = true,
       now = false,
-      users,
       after,
       before,
       slots = [],

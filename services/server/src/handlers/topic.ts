@@ -69,10 +69,8 @@ async function createTopic(req: Request, res: Response, next: NextFunction) {
   const validArabicName = isValidTopicName(payload.arabicName);
   const validEnglishName = isValidTopicName(payload.englishName);
 
-  if (validArabicName !== true)
-    return next(apierror(validArabicName, "Invalid topic Arabic name", 400));
-  if (validEnglishName !== true)
-    return next(apierror(validEnglishName, "Invalid topic English name", 400));
+  if (validArabicName !== true) return next(apierror(validArabicName, 400));
+  if (validEnglishName !== true) return next(apierror(validEnglishName, 400));
 
   const topic = await topics.create({
     name: {
@@ -100,16 +98,12 @@ async function updateTopic(req: Request, res: Response, next: NextFunction) {
   if (payload.arabicName) {
     const validArabicName = isValidTopicName(payload.arabicName);
 
-    if (validArabicName !== true)
-      return next(apierror(validArabicName, "Invalid topic Arabic name", 400));
+    if (validArabicName !== true) return next(apierror(validArabicName, 400));
   }
 
   if (payload.englishName) {
     const validEnglishName = isValidTopicName(payload.englishName);
-    if (validEnglishName !== true)
-      return next(
-        apierror(validEnglishName, "Invalid topic English name", 400)
-      );
+    if (validEnglishName !== true) return next(apierror(validEnglishName, 400));
   }
 
   const updated = await topics.update(id, payload);

@@ -9,7 +9,13 @@ import {
   pageSize,
   withNamedId,
 } from "@/validation/utils";
-import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
+import {
+  bad,
+  busyTutor,
+  reachedBookingLimit,
+  forbidden,
+  notfound,
+} from "@/lib/error";
 import { ILesson, IUser, Wss } from "@litespace/types";
 import {
   lessons,
@@ -75,15 +81,27 @@ function create(context: ApiContext) {
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
 
+      // Lesson should be in the future
+      if (dayjs.utc(payload.start).isBefore(dayjs.utc())) return next(bad());
+
+      // User is allowed to have only one not-canceled lesson at a time.
+      const userLessons = await lessons.find({
+        users: [user.id],
+        after: dayjs.utc().toISOString(),
+        canceled: false,
+      });
+      if (userLessons.total !== 0) return next(reachedBookingLimit());
+
       const price = calculateLessonPrice(
         platformConfig.tutorHourlyRate,
         payload.duration
       );
 
+      // Check if the new lessons intercepts any of current subslots
       const slotLessons = await lessons.find({
         slots: [slot.id],
         full: true,
-        canceled: false, // ignore canceled lessons
+        canceled: false, // Ignore canceled lessons
       });
 
       const slotInterviews = await interviews.find({
@@ -102,6 +120,7 @@ function create(context: ApiContext) {
       });
       if (!canBookLesson) return next(busyTutor());
 
+      // create the lesson with its associated room if it doesn't exist
       const roomMembers = [user.id, tutor.id];
       const room = await rooms.findRoomByMembers(roomMembers);
 

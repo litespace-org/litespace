@@ -176,7 +176,7 @@ describe("/api/v1/rating/", () => {
       });
 
       const res = await safe(async () =>
-        studentApi.atlas.rating.findTutorRatings(123)
+        studentApi.atlas.rating.findTutorRatings(999999)
       );
       expect(res).to.deep.eq(notfound.tutor());
     });

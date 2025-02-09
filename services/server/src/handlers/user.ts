@@ -234,14 +234,7 @@ function update(context: ApiContext) {
         if (!isValidCurrentPassword) return next(wrongPassword());
 
         const validPassword = isValidPassword(password.new);
-        if (validPassword !== true)
-          return next(
-            apierror(
-              validPassword,
-              "Your new password doesn't meet the requirements, pelase retry",
-              400
-            )
-          );
+        if (validPassword !== true) return next(apierror(validPassword, 400));
       }
 
       const user = await knex.transaction(async (tx: Knex.Transaction) => {
