@@ -13,11 +13,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div
-        style={{
-          width: "1200px",
-        }}
-      >
+      <div className="lg:tw-w-[1200px]">
         <Story />
       </div>
     ),

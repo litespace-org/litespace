@@ -46,16 +46,16 @@ export const TimerIndicator: React.FC<{
   }, [duration, startAt, updateTimer]);
 
   return (
-    <div className="tw-bg-background-indicator tw-rounded-full tw-p-4 tw-backdrop-blur-[15px] tw-gap-2 tw-flex tw-items-center">
+    <div className="tw-bg-background-indicator tw-rounded-full tw-p-3 lg:tw-p-4 tw-backdrop-blur-[15px] tw-gap-2 tw-flex tw-items-center">
       <Typography
         className="tw-text-natural-50"
-        element="subtitle-2"
-        weight="semibold"
+        element={{ default: "tiny-text", lg: "subtitle-2" }}
+        weight={{ default: "bold", lg: "semibold" }}
         dir="ltr"
       >
         {timer}
       </Typography>
-      <Timer />
+      <Timer className="tw-w-4 tw-h-4 lg:tw-w-8 lg:tw-h-8" />
     </div>
   );
 };

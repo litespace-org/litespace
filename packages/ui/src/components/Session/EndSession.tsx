@@ -7,7 +7,12 @@ export const EndSession: React.FC<{
   onClick: Void;
 }> = ({ onClick }) => {
   return (
-    <Button onClick={onClick} variant={"secondary"} type={"error"}>
+    <Button
+      className="!tw-w-14 !tw-h-10 lg:!tw-h-12 lg:!tw-w-[72px]"
+      onClick={onClick}
+      variant={"secondary"}
+      type={"error"}
+    >
       <CallIncoming className="[&>*]:tw-stroke-destructive-700" />
     </Button>
   );

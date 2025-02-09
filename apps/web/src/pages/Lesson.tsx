@@ -10,7 +10,7 @@ import {
 } from "@litespace/ui/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
 import {
   SessionV3Payload,
@@ -28,6 +28,7 @@ import {
   useFindRoomMembers,
 } from "@litespace/headless/chat";
 import { asOtherMember, isOnline, isTyping } from "@/lib/room";
+import ArrowRight from "@litespace/assets/ArrowRight";
 
 /**
  * @todos
@@ -235,25 +236,30 @@ const Lesson: React.FC = () => {
   ]);
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full p-6">
-      <div className="mb-6 flex flex-row items-center justify-start gap-1">
-        <Typography
-          element="subtitle-2"
-          weight="bold"
-          className="text-natural-950"
-        >
-          {intl("lesson.title")}
-          {lessonMembers?.other.name ? "/" : null}
-        </Typography>
-        {lessonMembers?.other.name ? (
+    <div className="max-w-screen-3xl mx-auto w-full grow p-6">
+      <div className="mb-4 lg:mb-6 flex flex-row items-center justify-start gap-2">
+        <Link className="lg:hidden w-6 h-6" to={Route.StudentDashboard}>
+          <ArrowRight />
+        </Link>
+        <div className="flex items-center gap-1">
           <Typography
-            element="subtitle-2"
+            element={{ default: "body", lg: "subtitle-2" }}
             weight="bold"
-            className="text-brand-700"
+            className="text-natural-950"
           >
-            {lessonMembers.other.name}
+            {intl("lesson.title")}
+            {lessonMembers?.other.name ? "/" : null}
           </Typography>
-        ) : null}
+          {lessonMembers?.other.name ? (
+            <Typography
+              element={{ default: "body", lg: "subtitle-2" }}
+              weight="bold"
+              className="text-brand-700"
+            >
+              {lessonMembers.other.name}
+            </Typography>
+          ) : null}
+        </div>
       </div>
 
       <PermissionsDialog
