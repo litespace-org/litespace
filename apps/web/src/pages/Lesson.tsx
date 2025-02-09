@@ -237,7 +237,7 @@ const Lesson: React.FC = () => {
   ]);
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full p-6">
+    <div className="max-w-screen-3xl mx-auto w-full grow p-6">
       <div className="mb-4 lg:mb-6 flex flex-row items-center justify-start gap-2">
         <Link className="lg:hidden w-6 h-6" to={Web.StudentDashboard}>
           <ArrowRightLong />

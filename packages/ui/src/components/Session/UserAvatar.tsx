@@ -18,7 +18,8 @@ export const UserAvatar: React.FC<{
       className={cn(
         "tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center",
         {
-          "tw-w-[290px] tw-h-[290px]": variant === "large",
+          "tw-w-[128px] tw-h-[128px] lg:tw-w-[290px] lg:tw-h-[290px]":
+            variant === "large",
           "tw-w-[92px] tw-h-[92px] lg:tw-w-[176px] lg:tw-h-[176px]":
             variant === "small",
         }
@@ -56,7 +57,8 @@ export const UserAvatar: React.FC<{
         className={cn(
           "tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute",
           {
-            "tw-w-[265px] tw-h-[265px]": variant === "large",
+            "tw-w-[116px] tw-h-[116px] lg:tw-w-[265px] lg:tw-h-[265px]":
+              variant === "large",
             "tw-w-[112px] tw-h-[112px] lg:tw-w-[176px] lg:tw-h-[176px]":
               variant === "small",
           }
@@ -64,7 +66,8 @@ export const UserAvatar: React.FC<{
       />
       <div
         className={cn("tw-overflow-hidden tw-rounded-full", {
-          "tw-w-[242px] tw-h-[242px]": variant === "large",
+          "tw-w-[104px] tw-h-[104px] lg:tw-w-[242px] lg:tw-h-[242px]":
+            variant === "large",
           "tw-w-[76px] tw-h-[76px] lg:tw-w-[145px] lg:tw-h-[145px]":
             variant === "small",
         })}
