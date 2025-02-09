@@ -12,7 +12,6 @@ const workspaceBuildCommand: Record<Workspace, string[]> = {
   "@litespace/web": ["pnpm web build"],
   "@litespace/dashboard": ["pnpm dashboard build"],
   "@litespace/landing": ["pnpm landing build", "pm2 reload landing"],
-  "@litespace/apollo": ["pnpm apollo build"],
   // "@litespace/blog": ["pnpm blog build"],
 };
 
