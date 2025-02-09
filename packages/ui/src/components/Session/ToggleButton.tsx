@@ -13,7 +13,7 @@ export const ToggleButton: React.FC<{
   return (
     <button
       className={cn(
-        "tw-relative tw-w-[72px] tw-h-12 tw-rounded-lg tw-border tw-py-3 tw-px-6",
+        "tw-relative tw-w-14 tw-h-10 lg:tw-h-12 lg:tw-w-[72px] tw-rounded-lg tw-border tw-py-2 tw-px-4 lg:tw-py-3 lg:tw-px-6",
         "tw-transition-colors tw-duration-300",
         {
           "hover:tw-bg-brand-100 tw-border-brand-700": !enabled,
