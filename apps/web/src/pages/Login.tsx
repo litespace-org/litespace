@@ -147,7 +147,6 @@ const Login: React.FC = () => {
                   htmlType="button"
                   loading={google.loading}
                   disabled={google.loading || mutation.isPending}
-                  omitIconStyles
                 >
                   {intl("login.with-google")}
                 </Button>

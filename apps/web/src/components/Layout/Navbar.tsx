@@ -31,9 +31,9 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
         lg ? (
           <Link to={Route.Subscription}>
             <Button
-              size={"large"}
+              size="large"
               htmlType="button"
-              endIcon={<Crown height={24} width={24} />}
+              endIcon={<Crown height={16} width={16} />}
             >
               <Typography
                 element="body"
