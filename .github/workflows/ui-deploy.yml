@@ -1,0 +1,89 @@
+name: Deploy interfaces (ui, web, landing, dashboard, and blog)
+env:
+  TELEGRAM_API_TOKEN: ${{ secrets.TELEGRAM_API_TOKEN }}
+
+on:
+  pull_request:
+    branches: ["master"]
+    paths:
+      - "apps/blog/**"
+      - "apps/dashboard/**"
+      - "apps/landing/**"
+      - "apps/web/**"
+      - "packages/ui/**"
+      - "packages/atlas/**"
+      - "packages/headless/**"
+      - "packages/utils/**"
+      - "packages/types/**"
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+      - name: Enable pnpm
+        run: corepack enable pnpm
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+      - name: Build packages
+        run: pnpm build:pkgs
+      # @litespace/web deployment
+      - name: Pull @litespace/web config from Vercel
+        run: pnpm vercel:ci pull "web" "apps/web/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for @litespace/web
+        run: cp apps/web/.env.staging apps/web/.env
+      - name: Build @litespace/web using Vercel
+        run: pnpm build:web:vercel
+      - name: Deploy the web platform to Vercel
+        run: pnpm deploy:web:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # @litespace/ui package deployment
+      - name: Pull @litespace/ui config from Vercel
+        run: pnpm vercel:ci pull "ui" "packages/ui/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for @litespace/web
+        run: cp packages/ui/.env.staging packages/ui/.env
+      - name: Build @litespace/ui using Vercel
+        run: pnpm build:ui:vercel
+      - name: Deploy @litespace/ui to Vercel
+        run: pnpm deploy:ui:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # @litespace/landing deployment
+      - name: Pull @litespace/landing from Vercel
+        run: pnpm vercel:ci pull "landing" "apps/landing/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build @litespace/landing using Vercel
+        run: pnpm build:landing:vercel
+      - name: Deploy @litespace/landing to Vercel
+        run: pnpm deploy:landing:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Dashboard Deployment
+      - name: Pull Dashboard from Vercel
+        run: pnpm vercel:ci pull "dashboard" "apps/dashboard/" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Setup staging environment variables for Dashboard
+        run: cp apps/dashboard/.env.staging apps/dashboard/.env
+      - name: Build Dashboard using Vercel
+        run: pnpm build:dashboard:vercel
+      - name: Deploy Dashboard to Vercel
+        run: pnpm deploy:dashboard:vercel --token=${{ secrets.VERCEL_TOKEN }}
+      # Display deployment URLs as GitHub comment and Telegram message
+      - name: Pull latest deployment urls from Vercel
+        run: pnpm vercel:ci urls "web,ui,landing,dashboard" --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Send latest deployment urls to Telegram
+        run: pnpm telegram send-vercel-urls -p ${{ github.event.number }} -b ${{ github.head_ref }}
+      - name: Make GitHub comment with Vercel URLs
+        run: pnpm github comment -p ${{ github.event.number }} -t ${{ secrets.AUTH_GITHUB_TOKEN }}
