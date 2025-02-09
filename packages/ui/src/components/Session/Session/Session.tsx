@@ -63,7 +63,8 @@ export const Session: React.FC<Props> = ({
       <div
         className={cn(
           "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
-          "tw-rounded-lg tw-overflow-hidden tw-flex tw-flex-row tw-gap-6"
+          "tw-rounded-lg tw-overflow-hidden",
+          chat.enabled ? "tw-grid tw-grid-cols-[auto,326px]" : "tw-flex"
         )}
       >
         <SessionStreams
@@ -77,7 +78,9 @@ export const Session: React.FC<Props> = ({
 
         <AnimatePresence mode="wait">
           {chat.enabled ? (
-            <AnimateWidth key="chat">{chatPanel}</AnimateWidth>
+            <AnimateWidth key="chat" className="tw-min-w-[326px]">
+              {chatPanel}
+            </AnimateWidth>
           ) : null}
         </AnimatePresence>
       </div>
