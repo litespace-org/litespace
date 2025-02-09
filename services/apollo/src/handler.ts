@@ -6,6 +6,7 @@ import { config } from "@/config";
 import { WORKSPACES } from "@/constants";
 import { Workspace } from "@/types";
 import { telegram } from "@/telegram";
+import { execute } from "@/shell";
 
 const workspaces = zod.union([
   zod.string().transform((raw, ctx): Workspace[] => {
@@ -59,7 +60,15 @@ async function handler(req: Request, res: Response) {
       .filter((line) => !!line)
       .join("\n"),
   });
+
   res.sendStatus(200);
+
+  /**
+   * Restarting the apollo server should be after sending the response and sending
+   * the telegram message
+   */
+  if (workspaces === "all" || workspaces.includes("@litespace/apollo"))
+    execute("pm2 reload apollo", config.repo);
 }
 
 export default safe(handler);

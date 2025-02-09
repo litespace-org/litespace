@@ -3,8 +3,6 @@ module.exports = {
     {
       script: "pnpm start",
       name: "apollo",
-      watch: ["dist"],
-      watch_delay: 1000,
     },
   ],
 };

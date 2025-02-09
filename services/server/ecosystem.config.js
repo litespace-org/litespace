@@ -3,8 +3,6 @@ module.exports = {
     {
       script: "pnpm start",
       name: "api",
-      watch: ["dist"],
-      watch_delay: 1000,
     },
     {
       script: "pnpm peer",
