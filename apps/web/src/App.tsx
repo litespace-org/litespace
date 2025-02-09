@@ -7,7 +7,7 @@ import ErrorPage from "@/pages/Error";
 import { Route } from "@/types/routes";
 import TutorProfile from "@/pages/TutorProfile";
 import TutorOnboarding from "@/pages/TutorOnboarding";
-import Complete from "@/pages/Complete";
+import CompleteProfile from "@/pages/CompleteProfile";
 import StudentDashboard from "@/pages/StudentDashboard";
 import LessonsSchedule from "@/pages/LessonsSchedule";
 import StudentSettings from "@/pages/StudentSettings";
@@ -31,7 +31,7 @@ const router = createBrowserRouter([
     element: <Root />,
     children: [
       { path: Route.Chat, element: <Chat /> },
-      { path: Route.Complete, element: <Complete /> },
+      { path: Route.CompleteProfile, element: <CompleteProfile /> },
       { path: Route.Invoices, element: <Invoices /> },
       { path: Route.Login, element: <Login /> },
       { path: Route.Payments, element: <Payments /> },

@@ -3,7 +3,7 @@ import React from "react";
 import Header from "@/components/Auth/Header";
 import { Typography } from "@litespace/ui/Typography";
 import Aside from "@/components/Auth/Aside";
-import CompleteInfoForm from "@/components/Complete/CompleteInfoForm";
+import Form from "@/components/CompleteProfile/Form";
 
 const Complete: React.FC = () => {
   const intl = useFormatMessage();
@@ -19,17 +19,17 @@ const Complete: React.FC = () => {
               weight="semibold"
               className="text-natural-950"
             >
-              {intl("complete-account.title")}
+              {intl("complete-profile.title")}
             </Typography>
             <Typography
               element="body"
               weight="regular"
               className="text-natural-700"
             >
-              {intl("complete-account.description")}
+              {intl("complete-profile.description")}
             </Typography>
           </div>
-          <CompleteInfoForm />
+          <Form />
         </div>
       </main>
       <Aside />

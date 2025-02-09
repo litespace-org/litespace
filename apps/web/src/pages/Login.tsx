@@ -128,7 +128,8 @@ const Login: React.FC = () => {
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={"medium"}
+                  type="main"
+                  size="large"
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -138,14 +139,15 @@ const Login: React.FC = () => {
                 </Button>
 
                 <Button
-                  variant={"secondary"}
-                  size={"medium"}
+                  variant="secondary"
+                  size="large"
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}
                   htmlType="button"
                   loading={google.loading}
                   disabled={google.loading || mutation.isPending}
+                  omitIconStyles
                 >
                   {intl("login.with-google")}
                 </Button>

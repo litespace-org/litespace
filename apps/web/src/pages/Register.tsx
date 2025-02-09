@@ -1,4 +1,4 @@
-import { Form, Label, Controller } from "@litespace/ui/Form";
+import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -64,7 +64,7 @@ const Register: React.FC = () => {
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      navigate(Route.Complete);
+      navigate(Route.CompleteProfile);
     },
     [navigate, user]
   );
@@ -114,33 +114,38 @@ const Register: React.FC = () => {
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
-                <div className="flex flex-col">
-                  <Label id="email">{intl("labels.email")}</Label>
-                  <Controller.Input
-                    control={control}
-                    name="email"
-                    value={email}
-                    autoComplete="off"
-                    rules={{ validate: validateEmail }}
-                    placeholder={intl("labels.email.placeholder")}
-                    disabled={mutation.isPending || google.loading}
-                    idleDir="ltr"
-                  />
-                </div>
+                <Controller.Input
+                  id="email"
+                  control={control}
+                  name="email"
+                  value={email}
+                  autoComplete="off"
+                  label={intl("labels.email")}
+                  rules={{ validate: validateEmail }}
+                  placeholder={intl("labels.email.placeholder")}
+                  disabled={mutation.isPending || google.loading}
+                  state={errors.email ? "error" : undefined}
+                  helper={errors.email?.message}
+                  idleDir="rtl"
+                />
 
                 <Controller.Password
-                  control={control}
+                  idleDir="rtl"
+                  id="password"
                   name="password"
                   value={password}
-                  rules={{ validate: validatePassword }}
-                  disabled={mutation.isPending || google.loading}
+                  control={control}
                   label={intl("labels.password")}
-                  state={errors.password ? "error" : undefined}
                   helper={errors.password?.message}
+                  rules={{ validate: validatePassword }}
+                  state={errors.password ? "error" : undefined}
+                  disabled={mutation.isPending || google.loading}
+                  placeholder={intl("register.password.placeholder")}
                 />
 
                 <Controller.Password
                   control={control}
+                  id="confirmedPassword"
                   name="confirmedPassword"
                   value={confirmedPassword}
                   rules={{
@@ -152,14 +157,17 @@ const Register: React.FC = () => {
                   }}
                   disabled={mutation.isPending || google.loading}
                   label={intl("register.confirm-password")}
+                  placeholder={intl("register.confirm-password.placeholder")}
                   state={errors.confirmedPassword ? "error" : undefined}
                   helper={errors.confirmedPassword?.message}
+                  idleDir="rtl"
                 />
               </div>
 
               <div className="flex flex-col gap-4">
                 <Button
-                  size={"medium"}
+                  type="main"
+                  size="large"
                   disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
@@ -169,14 +177,15 @@ const Register: React.FC = () => {
                 </Button>
 
                 <Button
-                  variant={"secondary"}
-                  size={"medium"}
+                  variant="secondary"
+                  size="large"
                   className="w-full"
                   endIcon={<Google />}
                   onClick={google.login}
                   htmlType="button"
                   loading={google.loading}
                   disabled={google.loading || mutation.isPending}
+                  omitIconStyles
                 >
                   {intl("register.with-google")}
                 </Button>

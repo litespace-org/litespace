@@ -11,16 +11,17 @@ type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: React.FC<{
   children: React.ReactNode;
-  onClick?: React.DOMAttributes<HTMLButtonElement>["onClick"];
+  onClick?: Button["onClick"];
   type?: ButtonType;
   size?: ButtonSize;
   disabled?: boolean;
   variant?: ButtonVariant;
   className?: string;
-  htmlType?: HTMLButtonElement["type"];
+  htmlType?: Button["type"];
   loading?: boolean;
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
+  omitIconStyles?: boolean;
 }> = ({
   children,
   variant = "primary",
@@ -33,6 +34,7 @@ export const Button: React.FC<{
   loading,
   startIcon,
   endIcon,
+  omitIconStyles,
 }) => {
   const is = useMemo(
     () => ({
@@ -159,15 +161,17 @@ export const Button: React.FC<{
         className={cn(
           loading ? "tw-opacity-0" : "tw-opacity-100",
           "tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-2",
-          {
-            "[&>div>svg>*]:tw-stroke-natural-50": is.primary,
-            "[&>div>svg>*]:tw-stroke-natural-700": is.tertiary,
-            "[&>div>svg>*]:tw-stroke-brand-700": is.secondary && is.main,
-            "[&>div>svg>*]:tw-stroke-destructive-700": is.secondary && is.error,
-            "[&>div>svg*]:focus:tw-stroke-destructive-500":
-              is.secondary && is.error,
-            "[&>div>svg*>*]:tw-stroke-success-700": is.secondary && is.success,
-          }
+          !omitIconStyles
+            ? {
+                "[&_svg>*]:tw-stroke-natural-50": is.primary,
+                "[&_svg>*]:tw-stroke-natural-700": is.tertiary,
+                "[&_svg>*]:tw-stroke-brand-700": is.secondary && is.main,
+                "[&_svg>*]:tw-stroke-destructive-700": is.secondary && is.error,
+                "[&_svg>*]:focus:tw-stroke-destructive-500":
+                  is.secondary && is.error,
+                "[&_svg>*]:tw-stroke-success-700": is.secondary && is.success,
+              }
+            : null
         )}
       >
         {startIcon ? <div className="tw-w-4 tw-h-4">{startIcon}</div> : null}

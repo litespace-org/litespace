@@ -26,7 +26,7 @@ const render = (props: SelectProps<string | number>) => {
 
 export const Primary: StoryObj<ISelect> = {
   args: {
-    title: faker.lorem.words(3),
+    label: faker.lorem.words(3),
     placeholder: faker.lorem.words(5),
     helper: faker.lorem.words(5),
     options,
@@ -36,7 +36,7 @@ export const Primary: StoryObj<ISelect> = {
 
 export const Small: StoryObj<ISelect> = {
   args: {
-    title: faker.lorem.words(3),
+    label: faker.lorem.words(3),
     placeholder: faker.lorem.words(5),
     helper: faker.lorem.words(5),
     options,
@@ -47,7 +47,7 @@ export const Small: StoryObj<ISelect> = {
 
 export const Meidum: StoryObj<ISelect> = {
   args: {
-    title: faker.lorem.words(3),
+    label: faker.lorem.words(3),
     placeholder: faker.lorem.words(5),
     helper: faker.lorem.words(5),
     options,
@@ -58,7 +58,7 @@ export const Meidum: StoryObj<ISelect> = {
 
 export const Large: StoryObj<ISelect> = {
   args: {
-    title: faker.lorem.words(3),
+    label: faker.lorem.words(3),
     placeholder: faker.lorem.words(5),
     helper: faker.lorem.words(5),
     options,
@@ -78,7 +78,7 @@ export const WithoutTitle: StoryObj<ISelect> = {
 
 export const WithoutHelper: StoryObj<ISelect> = {
   args: {
-    title: faker.lorem.words(3),
+    label: faker.lorem.words(3),
     placeholder: faker.lorem.words(5),
     options,
   },
