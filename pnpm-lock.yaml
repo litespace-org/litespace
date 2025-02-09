@@ -1041,6 +1041,22 @@ importers:
         specifier: ^3.23.8
         version: 3.24.1
 
+  packages/radio:
+    dependencies:
+      axios:
+        specifier: ^1.7.2
+        version: 1.7.9
+    devDependencies:
+      npm-watch:
+        specifier: ^0.13.0
+        version: 0.13.0
+      ts-patch:
+        specifier: ^3.2.1
+        version: 3.3.0
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
+
   packages/types:
     devDependencies:
       npm-watch:
@@ -1321,6 +1337,9 @@ importers:
 
   services/apollo:
     dependencies:
+      '@litespace/radio':
+        specifier: workspace:^
+        version: link:../../packages/radio
       express:
         specifier: ^4.19.2
         version: 4.21.2

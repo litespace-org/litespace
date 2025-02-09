@@ -9,6 +9,10 @@ const schema = zod
     port: zod.number().positive().int(),
     host: zod.string().ip(),
     secret: zod.string(),
+    telegram: zod.object({
+      token: zod.string(),
+      chat: zod.coerce.number().negative().int(),
+    }),
   })
   .superRefine((data, ctx) => {
     if (!fs.existsSync(data.repo) || !path.isAbsolute(data.repo))
