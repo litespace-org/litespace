@@ -14,4 +14,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger staging deployment using the Apollo server
-        run: curl -X POST "https://apollo.staging.litespace.org?workspaces=all&secret=$APOLLO_STAGING_SECRET"
+        run: curl --fail -X POST "https://apollo.staging.litespace.org?workspaces=all&secret=$APOLLO_STAGING_SECRET"
