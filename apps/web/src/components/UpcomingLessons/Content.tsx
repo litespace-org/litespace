@@ -14,6 +14,7 @@ import BookLesson from "@/components/Lessons/BookLesson";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { useNavigateToRoom } from "@/hooks/chat";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -68,6 +69,9 @@ export const Content: React.FC<{
     []
   );
 
+  const { lessonId: sendingMessageLessonId, onSendMessage } =
+    useNavigateToRoom();
+
   if (loading)
     return (
       <div className="mt-[15vh]">
@@ -109,6 +113,7 @@ export const Content: React.FC<{
           const otherMember = item.members.find(
             (member) => member.role !== user.role
           );
+
           if (!tutor || !otherMember) return null;
           return (
             <motion.div
@@ -122,8 +127,9 @@ export const Content: React.FC<{
                 onJoin={() => console.log("join")}
                 onCancel={() => setLessonId(item.lesson.id)}
                 onRebook={() => setTutorId(tutor.userId)}
-                // TODO: implement tutor sendMsg button functionality
-                onSendMsg={() => console.log("Not implemented yet!")}
+                onSendMsg={() =>
+                  onSendMessage(item.lesson.id, [user.id, otherMember?.userId])
+                }
                 canceled={getCancellerRole(
                   item.lesson.canceledBy,
                   tutor.userId
@@ -137,6 +143,8 @@ export const Content: React.FC<{
                       ? "student"
                       : "tutor",
                 }}
+                sendingMessage={sendingMessageLessonId === item.lesson.id}
+                disabled={!!sendingMessageLessonId}
               />
             </motion.div>
           );

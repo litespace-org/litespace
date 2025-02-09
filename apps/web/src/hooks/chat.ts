@@ -1,4 +1,6 @@
+import { Route } from "@/types/routes";
 import {
+  useFindRoomByMembers,
   useFindUncontactedTutors,
   useFindUserRooms,
   useUpdateRoom,
@@ -8,7 +10,8 @@ import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
@@ -79,4 +82,29 @@ export function useRoomManager(isStudent: boolean) {
         update.mutate({ roomId, payload: { pinned } }),
     },
   };
+}
+
+export function useNavigateToRoom() {
+  const navigate = useNavigate();
+  const [members, setMembers] = useState<number[]>([]);
+  const [lessonId, setLessonId] = useState(0);
+
+  const findRoom = useFindRoomByMembers(members);
+
+  const onSendMessage = useCallback((lessonId: number, members: number[]) => {
+    setLessonId(lessonId);
+    setMembers(members);
+  }, []);
+
+  useEffect(() => {
+    const room = findRoom.data?.room;
+    if (!room) return;
+    setLessonId(0);
+    navigate(`${Route.Chat}?room=${room}`);
+  }, [navigate, setLessonId, findRoom.data?.room]);
+
+  return useMemo(
+    () => ({ lessonId, onSendMessage }),
+    [lessonId, onSendMessage]
+  );
 }
