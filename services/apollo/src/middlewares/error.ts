@@ -14,6 +14,7 @@ export function error(
   res: Response,
   _next: NextFunction
 ) {
+  console.error(error);
   let statusCode = 400;
   let message = "Unexpected error, please retry";
 

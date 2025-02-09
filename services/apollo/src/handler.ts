@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import safe from "express-async-handler";
 import zod from "zod";
-// import { build } from "@/build";
+import { build } from "@/build";
 import { config } from "@/config";
 import { WORKSPACES } from "@/constants";
 import { Workspace } from "@/types";
@@ -35,8 +35,8 @@ async function handler(req: Request, res: Response) {
     res.sendStatus(401);
     return;
   }
-  // await build(workspaces);
 
+  await build(workspaces);
   await telegram.sendMessage({
     chat: config.telegram.chat,
     text: [
