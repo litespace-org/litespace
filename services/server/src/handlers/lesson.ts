@@ -27,14 +27,22 @@ import { safe } from "@litespace/utils/error";
 import { isAdmin, isStudent, isUser } from "@litespace/auth";
 import { MAX_FULL_FLAG_DAYS, platformConfig } from "@/constants";
 import dayjs from "@/lib/dayjs";
-import { asSubSlots, canBook, genSessionId } from "@litespace/utils";
-import { concat, isEmpty, isEqual } from "lodash";
+import { asSubSlots, canBook } from "@litespace/utils/availabilitySlots";
+import { isEmpty, isEqual } from "lodash";
+import { genSessionId } from "@litespace/utils";
 
 const createLessonPayload = zod.object({
   tutorId: id,
   slotId: id,
   start: datetime,
   duration,
+});
+
+const updateLessonPayload = zod.object({
+  lessonId: id,
+  slotId: id,
+  start: datetime,
+  duration: duration,
 });
 
 const findLessonsQuery = zod.object({
@@ -64,35 +72,33 @@ function create(context: ApiContext) {
       const tutor = await users.findById(payload.tutorId);
       if (!tutor) return next(notfound.tutor());
 
+      const slot = await availabilitySlots.findById(payload.slotId);
+      if (!slot) return next(notfound.slot());
+
       const price = calculateLessonPrice(
         platformConfig.tutorHourlyRate,
         payload.duration
       );
 
       const slotLessons = await lessons.find({
-        slots: [payload.slotId],
+        slots: [slot.id],
         full: true,
         canceled: false, // ignore canceled lessons
       });
 
-      const slotInterviews = await interviews.findBySlotId(payload.slotId);
+      const slotInterviews = await interviews.find({
+        slots: [slot.id],
+        pagination: { full: true },
+        cancelled: false,
+      });
 
       const canBookLesson = canBook({
-        bookedSubslots: concat(
-          asSubSlots(slotLessons.list),
-          asSubSlots(slotInterviews)
-        ),
-        slot: {
-          id: payload.slotId,
-          start: payload.start,
-          end: dayjs(payload.start)
-            .add(payload.duration, "minutes")
-            .toISOString(),
-        },
-        bookInfo: {
-          start: payload.start,
-          duration: payload.duration,
-        },
+        slot,
+        bookedSubslots: asSubSlots([
+          ...slotLessons.list,
+          ...slotInterviews.list,
+        ]),
+        bookInfo: { start: payload.start, duration: payload.duration },
       });
       if (!canBookLesson) return next(busyTutor());
 
@@ -119,16 +125,82 @@ function create(context: ApiContext) {
       const response: ILesson.CreateLessonApiResponse = lesson;
       res.status(200).json(response);
 
-      const error = await safe(async () => {
-        const payload = {
+      context.io.sockets
+        .in(Wss.Room.TutorsCache)
+        .emit(Wss.ServerEvent.LessonBooked, {
           tutor: tutor.id,
-          lessonId: lesson.id,
-        };
-        context.io.sockets
-          .in(Wss.Room.TutorsCache)
-          .emit(Wss.ServerEvent.LessonBooked, payload);
+          lesson: lesson.id,
+        });
+    }
+  );
+}
+
+function update(context: ApiContext) {
+  return safeRequest(
+    async (req: Request, res: Response, next: NextFunction) => {
+      const user = req.user;
+      const allowed = isStudent(user);
+      if (!allowed) return next(forbidden());
+
+      const payload: ILesson.UpdateApiPayload = updateLessonPayload.parse(
+        req.body
+      );
+
+      const lesson = await lessons.findById(payload.lessonId);
+      if (!lesson) return next(notfound.lesson());
+
+      const members = await lessons.findLessonMembers([payload.lessonId]);
+      const member = members.find((member) => member.userId === user.id);
+      if (!member) return next(forbidden());
+
+      const tutor = members.find((member) => member.userId !== user.id);
+      if (!tutor) return next(bad());
+
+      const slot = await availabilitySlots.findById(payload.slotId);
+      if (!slot) return next(notfound.slot());
+
+      const slotLessons = await lessons.find({
+        slots: [slot.id],
+        full: true,
+        canceled: false, // ignore canceled lessons
       });
-      if (error instanceof Error) console.error(error);
+
+      const slotInterviews = await interviews.find({
+        slots: [slot.id],
+        pagination: { full: true },
+        cancelled: false,
+      });
+
+      const canBookLesson = canBook({
+        slot,
+        bookedSubslots: asSubSlots([
+          ...slotLessons.list.filter(
+            (lesson) => lesson.id !== payload.lessonId
+          ),
+          ...slotInterviews.list,
+        ]),
+        bookInfo: {
+          start: payload.start || lesson.start,
+          duration: payload.duration || lesson.duration,
+        },
+      });
+      if (!canBookLesson) return next(busyTutor());
+
+      await lessons.update(payload.lessonId, {
+        start: payload.start,
+        duration: payload.duration,
+        slotId: payload.slotId,
+      });
+
+      res.sendStatus(200);
+
+      // notify tutors that lessons have been rebooked
+      context.io.sockets
+        .in(Wss.Room.TutorsCache)
+        .emit(Wss.ServerEvent.LessonRebooked, {
+          tutor: tutor.userId,
+          lesson: lesson.id,
+        });
     }
   );
 }
@@ -248,7 +320,7 @@ function cancel(context: ApiContext) {
 
         const payload = {
           tutor: tutor.userId,
-          lessonId: lesson.id,
+          lesson: lesson.id,
         };
 
         // notify client
@@ -264,6 +336,7 @@ function cancel(context: ApiContext) {
 export default {
   create,
   cancel,
+  update,
   findLessons: safeRequest(findLessons),
   findLessonById: safeRequest(findLessonById),
 };

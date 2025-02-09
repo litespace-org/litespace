@@ -133,6 +133,21 @@ export class Lessons {
     };
   }
 
+  async update(
+    id: number,
+    payload: ILesson.UpdatePayload,
+    tx?: Knex.Transaction
+  ) {
+    await this.builder(tx)
+      .lessons.update({
+        slot_id: payload.slotId,
+        start: payload.start ? dayjs.utc(payload.start).toDate() : undefined,
+        duration: payload.duration,
+        updated_at: dayjs.utc().toDate(),
+      })
+      .where("id", id);
+  }
+
   async cancel({
     canceledBy,
     ids,

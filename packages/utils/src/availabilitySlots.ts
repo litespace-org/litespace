@@ -70,15 +70,16 @@ export function canBook({
   };
 }): boolean {
   const availableSubSlots = subtractSlots(slot, bookedSubslots);
+  const start = dayjs.utc(bookInfo.start).toISOString();
+  const end = dayjs
+    .utc(bookInfo.start)
+    .add(bookInfo.duration, "minutes")
+    .toISOString();
   const found = availableSubSlots.find((subslot) =>
-    isSuperSlot(subslot, {
-      parent: subslot.parent,
-      start: dayjs.utc(bookInfo.start).toISOString(),
-      end: dayjs
-        .utc(bookInfo.start)
-        .add(bookInfo.duration, "minutes")
-        .toISOString(),
-    })
+    isParent(
+      { id: subslot.parent, start: subslot.start, end: subslot.end },
+      { parent: subslot.parent, start, end }
+    )
   );
   return !!found;
 }

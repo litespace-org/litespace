@@ -98,6 +98,25 @@ export type CreatePayload = {
   price: number;
 };
 
+export type UpdatePayload = {
+  slotId?: number;
+  /**
+   * ISO UTC datetime.
+   */
+  start?: string;
+  /**
+   * Lesson duration in minutes.
+   */
+  duration?: number;
+};
+
+export type UpdateApiPayload = {
+  lessonId: number;
+  slotId: number;
+  start: string;
+  duration: Duration;
+};
+
 export type CreateApiPayload = {
   tutorId: number;
   slotId: number;
@@ -106,6 +125,8 @@ export type CreateApiPayload = {
 };
 
 export type CreateLessonApiResponse = Self;
+
+export type UpdateLessonApiResponse = void;
 
 export type FindLessonsApiQuery = IFilter.SkippablePagination & {
   users?: number[];
