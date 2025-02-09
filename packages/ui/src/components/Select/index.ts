@@ -1,2 +1,3 @@
-export { Select, type SelectProps } from "@/components/Select/Select";
-export type { SelectList } from "@/components/Select/types";
+export { Select } from "@/components/Select/Select";
+export { SelectV2 } from "@/components/Select/SelectV2";
+export type { SelectList, SelectProps } from "@/components/Select/types";
