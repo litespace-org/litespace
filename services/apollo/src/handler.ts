@@ -13,15 +13,17 @@ const workspace = zod.union([
   zod.literal("@litespace/blog"),
 ]);
 
-const query = zod.object({ workspace, secret: zod.string() });
+const workspaces = zod.union([zod.set(workspace), zod.literal("all")]);
+
+const query = zod.object({ workspaces, secret: zod.string() });
 
 async function handler(req: Request, res: Response) {
-  const { workspace, secret } = query.parse(req.query);
+  const { workspaces, secret } = query.parse(req.query);
   if (secret !== config.secret) {
     res.sendStatus(401);
     return;
   }
-  await build(workspace);
+  await build(workspaces);
   res.sendStatus(200);
 }
 

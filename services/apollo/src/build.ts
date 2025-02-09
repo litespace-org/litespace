@@ -1,5 +1,6 @@
 import { config } from "@/config";
 import { Workspace } from "@/types";
+import { flatten } from "lodash";
 import { spawn } from "node:child_process";
 
 const workspaceBuildCommand: Record<Workspace, string[]> = {
@@ -11,12 +12,26 @@ const workspaceBuildCommand: Record<Workspace, string[]> = {
   "@litespace/blog": ["pnpm blog build"],
 };
 
-export async function build(workspace: Workspace) {
+function getWorkspaceBuildCommand(
+  workspaces: Set<Workspace> | "all"
+): string[] {
+  if (workspaces === "all")
+    return flatten(Object.values(workspaceBuildCommand));
+
+  const commands: string[] = [];
+
+  for (const workspace of workspaces)
+    commands.push(...workspaceBuildCommand[workspace]);
+
+  return commands;
+}
+
+export async function build(workspaces: Set<Workspace> | "all") {
   const commands = [
     `git pull origin ${config.branch}`,
     `pnpm install`,
     `pnpm build:pkgs`,
-    ...workspaceBuildCommand[workspace],
+    ...getWorkspaceBuildCommand(workspaces),
   ];
 
   const process = spawn(commands.join(" && "), [], {
