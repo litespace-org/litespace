@@ -1,5 +1,4 @@
 export const WORKSPACES = [
-  "@litespace/apollo",
   "@litespace/server",
   "@litespace/web",
   "@litespace/dashboard",
