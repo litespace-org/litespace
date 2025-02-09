@@ -3,5 +3,6 @@
   "branch": "master",
   "port": 9090,
   "host": "0.0.0.0",
-  "secret": "0x0"
+  "secret": "0x0",
+  "telegram": { "token": "0x0", "chat": -10101010 }
 }

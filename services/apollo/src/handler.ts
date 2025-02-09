@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import safe from "express-async-handler";
 import zod from "zod";
-import { build } from "@/build";
+// import { build } from "@/build";
 import { config } from "@/config";
 import { WORKSPACES } from "@/constants";
 import { Workspace } from "@/types";
+import { telegram } from "@/telegram";
 
 const workspaces = zod.union([
   zod.string().transform((raw, ctx): Workspace[] => {
@@ -34,7 +35,30 @@ async function handler(req: Request, res: Response) {
     res.sendStatus(401);
     return;
   }
-  await build(workspaces);
+  // await build(workspaces);
+
+  await telegram.sendMessage({
+    chat: config.telegram.chat,
+    text: [
+      "*Staging Server Update*",
+      workspaces === "all"
+        ? `- All workspaces are up to date`
+        : "Updated workspaces: ",
+      (workspaces !== "all"
+        ? workspaces.map((workspace) => workspace.replace("@", "- "))
+        : []
+      ).join("\n"),
+      `*Staging links:*`,
+      `- app.staging.litespace.org`,
+      `- landing.staging.litespace.org`,
+      `- dashboard.staging.litespace.org`,
+      `- blog.staging.litespace.org`,
+      `- api.staging.litespace.org`,
+      `- peer.staging.litespace.org`,
+    ]
+      .filter((line) => !!line)
+      .join("\n"),
+  });
   res.sendStatus(200);
 }
 

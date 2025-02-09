@@ -70,6 +70,7 @@
     "models": "pnpm --filter @litespace/models",
     "utils": "pnpm --filter @litespace/utils",
     "types": "pnpm --filter @litespace/types",
+    "radio": "pnpm --filter @litespace/radio",
     "server": "pnpm --filter @litespace/server",
     "apollo": "pnpm --filter @litespace/apollo",
     "web": "pnpm --filter @litespace/web",

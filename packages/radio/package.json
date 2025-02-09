@@ -1,0 +1,41 @@
+{
+  "name": "@litespace/radio",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "pnpm build:cjs && pnpm build:esm",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build:esm": "tsc -p tsconfig.esm.json",
+    "clean": "rm -rf dist/",
+    "check": "tsc --noEmit",
+    "prepare": "ts-patch install -s",
+    "watch": "npm-watch build"
+  },
+  "watch": {
+    "build": {
+      "patterns": [
+        "src"
+      ],
+      "extensions": "ts,tsx",
+      "quiet": false
+    }
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./telegram": {
+      "import": "./dist/esm/telegram.js",
+      "require": "./dist/cjs/telegram.js"
+    }
+  },
+  "dependencies": {},
+  "peerDependencies": {
+    "axios": "^1.7.2"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5",
+    "npm-watch": "^0.13.0",
+    "ts-patch": "^3.2.1"
+  }
+}
