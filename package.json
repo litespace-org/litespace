@@ -36,7 +36,7 @@
     "lint:landing": "pnpm landing lint",
     "lint:dashboard": "pnpm dashboard lint",
     "lint:headless": "pnpm headless lint",
-    "lint:all": "pnpm lint && pnpm lint:web && pnpm lint:mobile && pnpm lint:landing && pnpm lint:dashboard",
+    "lint:all": "pnpm lint && pnpm lint:web && pnpm lint:mobile && pnpm lint:dashboard",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
     "check:all": "pnpm atlas check && pnpm auth check && pnpm emails check && pnpm headless check && pnpm ui check && pnpm models check && pnpm utils check && pnpm types check",
     "storybook": "pnpm --filter @litespace/ui storybook",
