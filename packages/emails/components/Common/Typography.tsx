@@ -5,7 +5,12 @@ import cn from "classnames";
 const Typography: React.FC<{
   element?: "h4" | "body";
   weight?: "bold" | "semibold" | "medium" | "regular";
-  text?: "brand-500" | "natural-950" | "natural-700" | "natural-50";
+  text?:
+    | "brand-500"
+    | "brand-700"
+    | "natural-950"
+    | "natural-700"
+    | "natural-50";
   children?: React.ReactNode;
 }> = ({ element = "body", weight = "regular", children, text }) => {
   return (
@@ -18,6 +23,7 @@ const Typography: React.FC<{
         "font-medium": weight === "medium",
         "font-normal": weight === "regular",
         "text-brand-500": text === "brand-500",
+        "text-brand-700": text === "brand-700",
         "text-natural-950": text === "natural-950",
         "text-natural-700": text === "natural-700",
         "text-natural-50": text === "natural-50",
