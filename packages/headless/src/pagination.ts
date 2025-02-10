@@ -27,11 +27,13 @@ export function usePaginate<T, K>(
     () => callback({ page, size: pageSize.value }),
     [callback, page, pageSize.value]
   );
+
   const query = useQuery({
     queryFn: find,
     queryKey: [...key, page, pageSize.value],
     placeholderData: keepPreviousData,
   });
+
   const totalPages = useMemo(
     () => (query.data ? Math.ceil(query.data.total / pageSize.value) : 0),
     [pageSize.value, query.data]

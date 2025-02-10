@@ -92,10 +92,7 @@ const Messages: React.FC<{
     id: number;
   } | null>(null);
   const [deletableMessage, setDeletableMessage] = useState<number | null>(null);
-
   const [open, setOpen] = useState<boolean>(false);
-  const closeDialog = useCallback(() => setOpen(false), []);
-  const openDialog = useCallback(() => setOpen(true), []);
 
   const {
     messages,
@@ -302,8 +299,8 @@ const Messages: React.FC<{
           image={otherMember.image}
           role={otherMember.role}
           online={isOnline}
-          openDialog={openDialog}
-          goBack={goBack}
+          book={() => setOpen(true)}
+          back={goBack}
           inSession={inSession}
           lastSeen={otherMember.lastSeen}
         />
@@ -461,7 +458,7 @@ const Messages: React.FC<{
         icon={<Trash />}
       />
       {otherMember && otherMember.role !== IUser.Role.Student && open ? (
-        <BookLesson tutorId={otherMember.id} close={closeDialog} />
+        <BookLesson tutorId={otherMember.id} close={() => setOpen(false)} />
       ) : null}
     </div>
   );

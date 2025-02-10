@@ -13,7 +13,6 @@ import { DialogType } from "@/components/ConfirmationDialog/types";
 import X from "@litespace/assets/X";
 import { Button } from "@/components/Button";
 import { Void } from "@litespace/types";
-import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
 
 export const ConfirmationDialog: React.FC<{
@@ -21,16 +20,15 @@ export const ConfirmationDialog: React.FC<{
   title: string;
   description: string;
   open?: boolean;
-  setOpen?: (open: boolean) => void;
-  actions?: {
-    primary?: {
-      label?: string;
+  actions: {
+    primary: {
+      label: string;
       onClick?: Void;
       loading?: boolean;
       disabled?: boolean;
     };
     secondary?: {
-      label?: string;
+      label: string;
       onClick?: Void;
       loading?: boolean;
       disabled?: boolean;
@@ -40,25 +38,22 @@ export const ConfirmationDialog: React.FC<{
   type?: DialogType;
   icon: React.ReactNode;
 }> = ({
+  type = "main",
+  description,
   trigger,
   title,
-  description,
   open,
-  type = "success",
   icon,
   actions,
   close,
-  setOpen,
 }) => {
-  const intl = useFormatMessage();
-
   return (
-    <Root open={open} onOpenChange={setOpen}>
+    <Root open={open}>
       {trigger ? <Trigger>{trigger}</Trigger> : null}
       <Portal>
         <Overlay
           onClick={close}
-          className="tw-fixed tw-inset-0 tw-bg-transparent tw-backdrop-blur-sm tw-z-[98]"
+          className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-dialog-overlay"
         />
         <Content
           dir="rtl"
@@ -71,21 +66,23 @@ export const ConfirmationDialog: React.FC<{
           <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
             <div
               className={cn(
-                "tw-w-14 tw-h-14 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center",
+                "tw-w-12 tw-h-12 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center",
                 {
+                  "tw-bg-brand-100 tw-border-brand-50": type === "main",
                   "tw-bg-success-100 tw-border-success-50": type === "success",
                   "tw-bg-warning-100 tw-border-warning-50": type === "warning",
                   "tw-bg-destructive-100 tw-border-destructive-50":
                     type === "error",
                 },
                 {
-                  "[&>svg>*]:tw-stroke-success-600": type === "success",
-                  "[&>svg>*]:tw-stroke-warning-600": type === "warning",
-                  "[&>svg>*]:tw-stroke-destructive-700": type === "error",
+                  "[&_svg>*]:tw-stroke-brand-700": type === "main",
+                  "[&_svg>*]:tw-stroke-success-600": type === "success",
+                  "[&_svg>*]:tw-stroke-warning-600": type === "warning",
+                  "[&_svg>*]:tw-stroke-destructive-700": type === "error",
                 }
               )}
             >
-              {icon}
+              <div className="tw-w-6 tw-h-6">{icon}</div>
             </div>
             <Close
               onClick={close}
@@ -115,27 +112,28 @@ export const ConfirmationDialog: React.FC<{
 
           <div className="tw-flex tw-items-center tw-justify-center tw-gap-3">
             <Button
-              className="tw-w-full"
-              onClick={actions?.primary?.onClick}
-              type={type !== "error" ? "main" : "error"}
-              variant={"primary"}
-              loading={actions?.primary?.loading}
+              type={type}
               size="large"
-              disabled={actions?.primary?.disabled}
+              variant="primary"
+              className="tw-w-full"
+              onClick={actions.primary.onClick}
+              loading={actions.primary.loading}
+              disabled={actions.primary.disabled}
             >
-              {actions?.primary?.label || intl("labels.confirm")}
+              {actions.primary.label}
             </Button>
-            {actions?.secondary ? (
+
+            {actions.secondary ? (
               <Button
-                onClick={actions?.secondary.onClick}
-                className="tw-w-full"
-                type={type !== "error" ? "main" : "error"}
-                variant={"secondary"}
                 size="large"
-                loading={actions?.secondary.loading}
-                disabled={actions?.secondary.disabled}
+                type={type}
+                variant="secondary"
+                className="tw-w-full"
+                onClick={actions.secondary.onClick}
+                loading={actions.secondary.loading}
+                disabled={actions.secondary.disabled}
               >
-                {actions?.secondary.label || intl("global.labels.cancel")}
+                {actions.secondary.label}
               </Button>
             ) : null}
           </div>

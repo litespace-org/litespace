@@ -39,7 +39,7 @@ export const Dialog: React.FC<{
       <Portal>
         <Overlay
           onClick={close}
-          className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-10"
+          className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-dialog-overlay"
         />
         <Content
           aria-describedby={description}

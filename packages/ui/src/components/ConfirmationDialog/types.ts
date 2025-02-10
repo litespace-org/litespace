@@ -1,1 +1,1 @@
-export type DialogType = "success" | "warning" | "error";
+export type DialogType = "main" | "success" | "warning" | "error";

@@ -211,9 +211,9 @@ export const TutorCard: React.FC<CardProps> = ({
         <Button
           onClick={onBook}
           className="tw-w-full"
-          type={"main"}
-          variant={"primary"}
-          size={"large"}
+          type="main"
+          variant="primary"
+          size="large"
         >
           {intl("tutors.card.book-button.label")}
         </Button>

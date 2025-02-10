@@ -59,8 +59,8 @@ const Header: React.FC<Props> = ({
       </div>
 
       <Button
-        size={"medium"}
-        endIcon={<Calendar className="[&>*]:tw-stroke-natural-50 h-6 w-6" />}
+        size="large"
+        endIcon={<Calendar className="[&>*]:tw-stroke-natural-50" />}
         onClick={manageSchedule}
         htmlType="button"
       >

@@ -31,6 +31,10 @@ export enum Route {
 
 export const TUTOR_PROFILE_REGEX = /\/t\/\d+\/?/;
 
+export const VERIFY_EMAIL_CALLBACK_URL = window.location.origin.concat(
+  Route.VerifyEmail
+);
+
 export enum RoutePatterns {
   Register = "(/):role/register(/)",
   Login = "(/)login(/)",
@@ -44,5 +48,3 @@ export enum RoutePatterns {
   ResetPassword = "(/)reset-password(/)",
   VerifyEmail = "(/)verify-email(/)",
 }
-
-export const CALLBACK_URL = window.location.origin.concat(Route.VerifyEmail);

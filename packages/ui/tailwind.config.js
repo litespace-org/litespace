@@ -23,6 +23,7 @@ export default {
         sidebar: "2",
         "online-indicator": "2",
         quote: "10",
+        "dialog-overlay": "10",
         dialog: "11",
         "select-dropdown": "12",
         tooltip: "13",

@@ -6,7 +6,6 @@ import React from "react";
 
 export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
   open,
-  setOpen,
   onDelete,
   close,
   loading,
@@ -18,7 +17,6 @@ export const DeleteRating: React.FC<FeedbackDeleteProps> = ({
       open={open}
       title={intl("tutor.rating.delete")}
       description={intl("tutor.rating.delete.warning")}
-      setOpen={setOpen}
       actions={{
         primary: {
           label: intl("labels.delete"),

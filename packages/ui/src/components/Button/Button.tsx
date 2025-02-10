@@ -58,21 +58,22 @@ export const Button: React.FC<{
       disabled={disabled}
       data-size={size}
       data-type={type}
+      data-variant={variant}
       className={cn(
         // general styles
-        "tw-relative tw-font-cairo tw-cursor-pointer tw-font-medium",
-        "tw-text-center tw-font-normal tw-transition-colors tw-ease-out tw-duration-200 tw-rounded-lg",
-        "tw-outline-none tw-transition-all tw-outline-0",
-        "tw-w-fit tw-flex tw-items-center tw-justify-center tw-text-base",
+        "tw-text-center tw-font-normal",
+        "tw-flex tw-items-center tw-justify-center",
+        "tw-relative tw-font-cairo tw-cursor-pointer",
+        "tw-w-fit tw-flex tw-items-center tw-justify-center",
         "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
-        "tw-flex tw-items-center",
+        "tw-transition-colors tw-ease-out tw-duration-200 tw-rounded-lg tw-outline-none",
         // bg color
         {
           "hover:tw-bg-natural-100 active:tw-bg-natural-200": is.tertiary,
-          "tw-bg-brand-700 hover:tw-bg-brand-600": is.primary && is.main,
+          "tw-bg-brand-700 hover:tw-bg-brand-600": is.main && is.primary,
           "tw-bg-destructive-700 hover:tw-bg-destructive-600":
-            is.primary && is.error,
-          "tw-bg-success-700 hover:tw-bg-success-600": is.primary && is.success,
+            is.error && is.primary,
+          "tw-bg-success-700 hover:tw-bg-success-600": is.success && is.primary,
 
           "tw-bg-natural-50 focus:tw-bg-natural-50": is.secondary,
           "hover:tw-bg-brand-50 active:tw-bg-brand-100":
@@ -81,6 +82,11 @@ export const Button: React.FC<{
             is.secondary && is.error,
           "hover:tw-bg-success-50 active:tw-bg-success-100":
             is.secondary && is.success,
+
+          "tw-bg-warning-700 hover:tw-bg-warning-600 focus:tw-bg-warning-700":
+            is.warning && is.primary,
+          "tw-bg-neutral-50 hover:tw-bg-warning-50 active:tw-bg-warning-100":
+            is.warning && is.secondary,
         },
         // text color
         {
@@ -91,6 +97,7 @@ export const Button: React.FC<{
             is.secondary && is.error,
           "tw-text-success-700 focus:tw-text-success-500":
             is.secondary && is.success,
+          "tw-text-warning-700": is.warning && is.secondary,
         },
         // font weight and size
         {
@@ -105,19 +112,20 @@ export const Button: React.FC<{
           "tw-px-4 tw-h-10": is.large,
         },
         // border
+        // TODO: add `primary` variant borders.
         {
-          "focus:tw-ring-[1.5px] focus:tw-ring-secondary-600":
-            !loading && !disabled,
-          "tw-ring-[1px]": is.secondary,
-          "tw-ring-brand-700": is.secondary && is.main,
-
-          "tw-ring-destructive-700": is.secondary && is.error,
-          "hover:tw-ring-destructive-500": is.secondary && is.error,
-          "active:tw-ring-destructive-500": is.secondary && is.error,
-
-          "tw-ring-success-700": is.secondary && is.success,
-          "hover:tw-ring-success-500": is.secondary && is.success,
-          "active:tw-ring-success-500": is.secondary && is.success,
+          "tw-border focus:tw-ring-[0.5px] focus:tw-ring-secondary-600 focus:tw-border-secondary-600":
+            is.secondary || is.primary,
+          //==================== TEMP ====================
+          "tw-border-brand-700 ": is.main && is.primary,
+          "tw-border-destructive-700 ": is.error && is.primary,
+          "tw-border-success-500 ": is.success && is.primary,
+          "tw-border-warning-700 ": is.warning && is.primary,
+          //==================== END ====================
+          "tw-border-brand-700": is.main && is.secondary,
+          "tw-border-destructive-700": is.error && is.secondary,
+          "tw-border-success-500": is.success && is.secondary,
+          "tw-border-warning-700": is.warning && is.secondary,
         },
         className
       )}
