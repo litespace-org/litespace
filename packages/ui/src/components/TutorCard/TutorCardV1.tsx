@@ -202,7 +202,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
             className="tw-grow tw-basis-1/2 tw-w-full"
             type={"main"}
             variant={"primary"}
-            size={"small"}
+            size={"large"}
           >
             <Typography
               element="caption"
