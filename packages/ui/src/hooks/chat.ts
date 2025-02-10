@@ -10,8 +10,8 @@ export type SelectedRoom = {
 };
 
 export type SelectRoom = (payload: {
-  room: number | UncontactedTutorRoomId;
-  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"];
+  room: number | UncontactedTutorRoomId | null;
+  otherMember: IRoom.FindUserRoomsApiRecord["otherMember"] | null;
 }) => void;
 
 const ROOM_URL_PARAM = "room";
@@ -59,11 +59,13 @@ export function useSelectedRoom() {
 
   const select: SelectRoom = useCallback(
     (payload) => {
-      if (typeof payload.room === "number") saveRoom(payload.room);
+      if (typeof payload?.room === "number") saveRoom(payload.room);
       setSelected(payload);
-      setParams({
-        [ROOM_URL_PARAM]: payload.room.toString(),
-      });
+      if (payload.room)
+        setParams({
+          [ROOM_URL_PARAM]: payload.room.toString(),
+        });
+      else setParams({});
     },
     [setParams]
   );

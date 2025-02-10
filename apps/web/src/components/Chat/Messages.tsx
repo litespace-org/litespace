@@ -34,7 +34,6 @@ import { InView } from "react-intersection-observer";
 import { orUndefined } from "@litespace/utils/utils";
 import BookLesson from "@/components/Lessons/BookLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
-import { HEADER_HEIGHT } from "@/constants/ui";
 import { useToast } from "@litespace/ui/Toast";
 import { SelectRoom, UncontactedTutorRoomId } from "@litespace/ui/hooks/chat";
 import { useInvalidateQuery } from "@litespace/headless/query";
@@ -74,7 +73,7 @@ const Messages: React.FC<{
     | null;
   setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
   select?: SelectRoom;
-  inCall?: boolean;
+  inSession?: boolean;
 }> = ({
   room,
   otherMember,
@@ -82,7 +81,7 @@ const Messages: React.FC<{
   select,
   isTyping,
   isOnline,
-  inCall,
+  inSession,
 }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
@@ -168,6 +167,15 @@ const Messages: React.FC<{
     },
     [toast, intl]
   );
+
+  const goBack = useCallback(() => {
+    if (select)
+      select({
+        room: null,
+        otherMember: null,
+      });
+    if (setTemporaryTutor) setTemporaryTutor(null);
+  }, [select, setTemporaryTutor]);
 
   const createRoom = useCreateRoom({ onSuccess, onError });
 
@@ -280,55 +288,49 @@ const Messages: React.FC<{
     el.scrollTop += 100;
   }, [messageGroups]);
 
-  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> | null =
-    useMemo(() => {
-      if (!otherMember) return null;
-
-      return {
-        id: otherMember.id,
-        name: otherMember.name,
-        image: otherMember.image,
-        role: otherMember.role,
-        online: isOnline,
-        lastSeen: dayjs(otherMember.lastSeen).fromNow(),
-        openDialog: openDialog,
-      };
-    }, [otherMember, openDialog, isOnline]);
-
   return (
     <div
-      style={{
-        height: !inCall ? `calc(100vh - ${HEADER_HEIGHT}px)` : "",
-      }}
-      className="flex-1 flex flex-col h-full bg-natural-50"
+      id="messages-container"
+      className={cn("flex-1 flex flex-col bg-natural-50 h-full")}
     >
       {room === null ? <NoSelection /> : null}
 
-      {chatHeaderProps ? (
+      {otherMember ? (
         <ChatHeader
-          {...chatHeaderProps}
+          id={otherMember.id}
+          name={otherMember.name}
+          image={otherMember.image}
+          role={otherMember.role}
+          online={isOnline}
           openDialog={openDialog}
-          inCall={inCall}
+          goBack={goBack}
+          inSession={inSession}
+          lastSeen={otherMember.lastSeen}
         />
       ) : null}
 
       {room ? (
-        <>
+        <div
+          className={cn(
+            "flex flex-col h-full gap-2",
+            "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
+          )}
+        >
           <div
+            id="messages-content"
             className={cn(
-              "grow overflow-x-hidden overflow-y-auto px-4 pt-2 mt-2 ml-4 pb-6",
-              "scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
+              "overflow-x-hidden px-4 h-full flex items-center justify-center"
             )}
           >
             {loading ? (
-              <div className="w-full h-full flex justify-center items-center">
+              <div className="w-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
               </div>
             ) : (
               <ul
                 className={cn(
-                  "flex flex-col gap-4 overflow-auto grow",
-                  inCall ? "h-[380px]" : "h-full"
+                  "flex flex-col gap-4 h-full",
+                  "overflow-auto grow scrollbar-thin h-full scrollbar-thumb-natural-200 scrollbar-track-natural-50"
                 )}
                 onScroll={onScroll}
                 ref={messagesRef}
@@ -352,8 +354,11 @@ const Messages: React.FC<{
                 {typeof room === "number" && messageGroups.length > 0 ? (
                   messageGroups.map(({ date, groups }, index) => {
                     return (
-                      <div key={index} className="w-full">
-                        <div className="bg-natural-50 rounded-[40px] p-3 mx-auto w-fit shadow-chat-date">
+                      <div
+                        key={index}
+                        className="w-full flex flex-col gap-4 lg:gap-[14px]"
+                      >
+                        <div className="bg-natural-50 rounded-2xl p-3 mx-auto w-fit shadow-chat-date">
                           <Typography
                             element="caption"
                             className="text-natural-950"
@@ -370,7 +375,7 @@ const Messages: React.FC<{
                               )
                           )
                           .map((group, index) => (
-                            <div className="mb-6" key={index}>
+                            <div key={index}>
                               <ChatMessageGroup
                                 {...group}
                                 readMessage={readMessage}
@@ -410,20 +415,22 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-          {isTyping && otherMember ? (
-            <div className="px-6">
-              <UserTyping
-                id={otherMember.id}
-                name={otherMember.name}
-                gender={otherMember.gender}
-                imageUrl={otherMember.image}
-              />
+          <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
+            {isTyping && otherMember ? (
+              <div className="px-6 mt-6 lg:mt-9">
+                <UserTyping
+                  id={otherMember.id}
+                  name={otherMember.name}
+                  gender={otherMember.gender}
+                  imageUrl={otherMember.image}
+                />
+              </div>
+            ) : null}
+            <div className={cn("px-4 mb-4 mt-auto")}>
+              <SendInput typingMessage={typingMessage} onSubmit={submit} />
             </div>
-          ) : null}
-          <div className={cn("px-4 pt-2 pb-6 mt-3", inCall && "-mt-6")}>
-            <SendInput typingMessage={typingMessage} onSubmit={submit} />
           </div>
-        </>
+        </div>
       ) : null}
 
       {updatableMessage ? (

@@ -10,6 +10,11 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      maxHeight: {
+        "chat-desktop": "calc(100vh - 106px)",
+        "chat-tablet": "calc(100vh - 88px)",
+        "chat-mobile": "calc(100vh - 72px)",
+      },
       zIndex: {
         "select-item": "1",
         "chat-avatar": "1",

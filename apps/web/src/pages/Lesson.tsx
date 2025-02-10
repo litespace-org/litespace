@@ -411,7 +411,7 @@ const Lesson: React.FC = () => {
           }}
           chatPanel={
             <Messages
-              inCall={true}
+              inSession
               room={room}
               isTyping={isOtherMemberTyping}
               isOnline={isOtherMemberOnline}

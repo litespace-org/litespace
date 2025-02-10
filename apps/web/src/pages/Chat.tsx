@@ -11,10 +11,13 @@ import { Typography } from "@litespace/ui/Typography";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { ITutor } from "@litespace/types";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Chat: React.FC = () => {
   const [temporaryTutor, setTemporaryTutor] =
     useState<ITutor.FullUncontactedTutorInfo | null>(null);
+
+  const mq = useMediaQuery();
 
   const { user } = useUserContext();
   const intl = useFormatMessage();
@@ -79,16 +82,23 @@ const Chat: React.FC = () => {
     );
 
   return (
-    <div className={cn("flex flex-row overflow-hidden")}>
-      <RoomsPanel
-        onlineUsersMap={onlineUsersMap}
-        typingMap={typingMap}
-        setTemporaryTutor={setTemporaryTutor}
-        selectedRoom={selected.room}
-        select={select}
-      />
+    <div
+      className={cn(
+        "flex flex-row overflow-hidden grow",
+        "max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-desktop"
+      )}
+    >
+      {(!temporaryTutor && !otherMember) || mq.lg ? (
+        <RoomsPanel
+          onlineUsersMap={onlineUsersMap}
+          typingMap={typingMap}
+          setTemporaryTutor={setTemporaryTutor}
+          selectedRoom={selected.room}
+          select={select}
+        />
+      ) : null}
 
-      {!selected.room ? (
+      {!selected.room && mq.lg ? (
         <div className="h-full w-full flex items-center justify-center flex-col gap-8">
           <StartMessaging />
           <Typography

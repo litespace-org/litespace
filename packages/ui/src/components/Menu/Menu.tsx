@@ -19,7 +19,8 @@ export const Menu: React.FC<{
   setOpen?: (open: boolean) => void;
   title?: string;
   danger?: boolean;
-}> = ({ actions, children, open, setOpen, title, danger }) => {
+  className?: string;
+}> = ({ actions, children, open, setOpen, title, danger, className }) => {
   return (
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger
@@ -37,7 +38,8 @@ export const Menu: React.FC<{
           side="top"
           className={cn(
             "tw-shadow-lesson-event-card tw-bg-natural-50 tw-p-1",
-            "tw-flex tw-flex-col tw-gap-1 tw-rounded-lg tw-z-[5]"
+            "tw-flex tw-flex-col tw-gap-1 tw-rounded-lg tw-min-w-[121px] tw-z-[5]",
+            className
           )}
         >
           {title ? (
@@ -60,7 +62,7 @@ export const Menu: React.FC<{
               className={cn(
                 "tw-flex tw-flex-row tw-items-center tw-gap-2 tw-p-1 tw-pe-4 tw-rounded-lg",
                 "hover:tw-bg-natural-100 active:tw-bg-brand-700 tw-cursor-pointer",
-                "[&>span]:active:!tw-text-natural-50 [&>svg>*]:active:tw-stroke-natural-50",
+                "[&>span]:active:!tw-text-natural-50 [&>div>svg>*]:active:tw-stroke-natural-50",
                 "focus:tw-outline-none focus:tw-bg-natural-100",
                 disabled
               )}
