@@ -1,21 +1,21 @@
 import { BookLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson } from "@litespace/headless/lessons";
-import { useCallback, useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import { orNull } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import dayjs from "@/lib/dayjs";
+import { useInvalidateQuery } from "@litespace/headless/query";
 
 const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
-  const intl = useFormatMessage();
   const toast = useToast();
-  const queryClient = useQueryClient();
+  const intl = useFormatMessage();
+  const invalidate = useInvalidateQuery();
 
   const availabilitySlotsQuery = useMemo(
     () => ({
@@ -29,25 +29,18 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
   const tutorAvailabilitySlots = useFindAvailabilitySlots(
     availabilitySlotsQuery
   );
-
   const tutor = useFindTutorInfo(tutorId);
 
   const onSuccess = useCallback(() => {
-    close();
-
-    if (tutor.data && tutor.data.name)
+    if (tutor.data?.name)
       toast.success({
         title: intl("book-lesson.success", { tutor: tutor.data.name }),
       });
-
-    queryClient.invalidateQueries({
-      queryKey: [
-        QueryKey.FindAvailabilitySlots,
-        QueryKey.FindLesson,
-        QueryKey.FindTutors,
-      ],
-    });
-  }, [close, tutor.data, toast, intl, queryClient]);
+    invalidate([QueryKey.FindAvailabilitySlots]);
+    invalidate([QueryKey.FindLesson]);
+    invalidate([QueryKey.FindTutors]);
+    close();
+  }, [close, tutor.data?.name, toast, intl, invalidate]);
 
   const onError = useCallback(
     (error: unknown) => {
@@ -60,10 +53,7 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
     [toast, intl]
   );
 
-  const bookLessonMutation = useCreateLesson({
-    onSuccess,
-    onError,
-  });
+  const bookLessonMutation = useCreateLesson({ onSuccess, onError });
 
   const onBook = useCallback(
     ({
@@ -74,13 +64,7 @@ const BookLesson = ({ close, tutorId }: { close: Void; tutorId: number }) => {
       slotId: number;
       start: string;
       duration: ILesson.Duration;
-    }) =>
-      bookLessonMutation.mutate({
-        tutorId,
-        slotId,
-        duration,
-        start,
-      }),
+    }) => bookLessonMutation.mutate({ tutorId, slotId, duration, start }),
     [tutorId, bookLessonMutation]
   );
 

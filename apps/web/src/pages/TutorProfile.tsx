@@ -1,5 +1,5 @@
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import RightArrow from "@litespace/assets/ArrowRight";
@@ -16,8 +16,7 @@ const TutorProfile: React.FC = () => {
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
-  const closeDialog = useCallback(() => setOpen(false), []);
-  const openDialog = useCallback(() => setOpen(true), []);
+
   const id = useMemo(() => {
     const id = Number(params.id);
     if (Number.isNaN(id)) return null;
@@ -69,13 +68,13 @@ const TutorProfile: React.FC = () => {
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
         <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl mt-4 md:mt-6 flex flex-col gap-8 md:gap-12">
-          <TutorProfileCard {...tutor.data} onBook={openDialog} />
+          <TutorProfileCard {...tutor.data} onBook={() => setOpen(true)} />
           <TutorTabs tutor={tutor.data} />
         </div>
       ) : null}
 
       {open && tutor.data ? (
-        <BookLesson tutorId={tutor.data.id} close={closeDialog} />
+        <BookLesson tutorId={tutor.data.id} close={() => setOpen(false)} />
       ) : null}
     </div>
   );

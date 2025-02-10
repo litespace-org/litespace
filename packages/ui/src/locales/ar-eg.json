@@ -487,6 +487,7 @@
   "settings.loading": "برجاء الانتظار... جاري تحميل صفحة الإعدادات!",
   "settings.error": " عذرًا، حدث خطأ أثناء تحميل صفحة الإعدادات، برجاء المحاولة مرة أخرى",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
+  "verify-email.title": "لم يتم تأكيد حسابك بعد!",
   "lessons.button.rebook": "إعادة الحجز",
   "lessons.button.join": "دخول الحصة",
   "lessons.button.send-message": "إرسال رسالة",

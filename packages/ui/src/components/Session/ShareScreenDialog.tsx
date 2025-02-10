@@ -14,18 +14,24 @@ export const ShareScreenDialog: React.FC<{
 
   return (
     <ConfirmationDialog
-      labels={{
-        confirm: intl("labels.share"),
-        cancel: intl("labels.go-back"),
+      actions={{
+        primary: {
+          label: intl("labels.share"),
+          onClick: confirm,
+          loading: loading,
+          disabled: loading,
+        },
+        secondary: {
+          label: intl("labels.go-back"),
+          onClick: close,
+        },
       }}
+      close={close}
       type="warning"
       title={intl("session.share-screen.title")}
       description={intl("session.share-screen.description")}
-      confirm={confirm}
-      close={close}
       icon={<CastScreen />}
       open={open}
-      loading={loading}
     />
   );
 };

@@ -83,10 +83,6 @@ export type FeedbackDeleteProps = {
    * state of the dialog wheather opened or not
    */
   open: boolean;
-  /**
-   * fn toggles the dialog
-   */
-  setOpen?: (open: boolean) => void;
   onDelete: Void;
   close: Void;
   loading?: boolean;

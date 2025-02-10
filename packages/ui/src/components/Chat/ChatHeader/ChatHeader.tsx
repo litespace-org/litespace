@@ -20,19 +20,9 @@ export const ChatHeader: React.FC<{
   id: number;
   role: IUser.Role;
   inSession?: boolean;
-  openDialog: Void;
-  goBack: Void;
-}> = ({
-  name,
-  image,
-  online,
-  id,
-  lastSeen,
-  role,
-  openDialog,
-  goBack,
-  inSession,
-}) => {
+  book: Void;
+  back: Void;
+}> = ({ name, image, online, id, lastSeen, role, book, back, inSession }) => {
   const intl = useFormatMessage();
 
   return (
@@ -40,7 +30,7 @@ export const ChatHeader: React.FC<{
       <div className="tw-flex tw-gap-2 lg:tw-gap-4 tw-items-center">
         <button
           type="button"
-          onClick={goBack}
+          onClick={back}
           className="tw-w-6 tw-h-6 lg:tw-hidden tw-cursor-pointer"
         >
           <ArrowRight />
@@ -84,7 +74,7 @@ export const ChatHeader: React.FC<{
       </div>
       {role !== IUser.Role.Student && !inSession ? (
         <div className="tw-flex tw-items-center">
-          <Button onClick={openDialog} type="main" size="large">
+          <Button onClick={book} type="main" size="large">
             {intl("chat.book")}
           </Button>
         </div>

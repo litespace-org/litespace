@@ -34,14 +34,20 @@ export const DeleteSlotDialog: React.FC<Props> = ({
           : intl("manage-schedule.remove-dialog.severity-high")
       }
       type="error"
-      labels={{
-        confirm: intl("labels.delete"),
-        cancel: intl("labels.go-back"),
+      actions={{
+        primary: {
+          label: intl("labels.delete"),
+          onClick: confirm,
+          loading: deleting,
+          disabled: deleting,
+        },
+        secondary: {
+          label: intl("labels.go-back"),
+          onClick: close,
+        },
       }}
-      confirm={confirm}
       close={close}
       open={opened}
-      loading={deleting}
       icon={<CalendarRemove height={24} width={24} />}
     />
   );

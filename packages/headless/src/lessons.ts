@@ -16,7 +16,7 @@ export function useFindLessons({
 }> {
   const atlas = useAtlas();
 
-  const lessons = useCallback(
+  const findLessons = useCallback(
     async ({ page, size }: IFilter.Pagination) => {
       if (userOnly && !query.users?.length) return { list: [], total: 0 };
       return await atlas.lesson.findLessons({
@@ -28,7 +28,7 @@ export function useFindLessons({
     [atlas.lesson, query, userOnly]
   );
 
-  return usePaginate(lessons, [QueryKey.FindLessons, query]);
+  return usePaginate(findLessons, [QueryKey.FindLessons, query]);
 }
 
 /**
