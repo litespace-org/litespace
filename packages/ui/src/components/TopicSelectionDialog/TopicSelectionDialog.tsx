@@ -10,8 +10,11 @@ import { concat, uniq } from "lodash";
 import { MAX_TOPICS_COUNT } from "@litespace/utils";
 import { Animate } from "@/components/Animate";
 import { AnimatePresence } from "framer-motion";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
+  title: string;
+  description: string;
   topics: Array<{
     id: number;
     label: string;
@@ -27,6 +30,8 @@ type Props = {
 };
 
 export const TopicSelectionDialog: React.FC<Props> = ({
+  title,
+  description,
   topics,
   initialTopics,
   close,
@@ -38,6 +43,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
   error,
 }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const [selection, setSelection] = useState<number[]>([]);
 
   useEffect(() => {
@@ -85,23 +91,31 @@ export const TopicSelectionDialog: React.FC<Props> = ({
       title={
         <Typography
           tag="div"
-          element="subtitle-1"
+          element={{
+            default: "body",
+            sm: "subtitle-1",
+          }}
           weight="bold"
           className="tw-text-natural-950"
         >
-          {intl("tutor-settings.topics.selection-dialog.title")}
+          {title}
         </Typography>
       }
+      className={mq.sm ? "tw-w-[584px]" : "tw-w-screen"}
       close={confirming ? undefined : onClose}
       open={opened}
+      position={mq.sm ? "center" : "bottom"}
     >
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-w-[744px]">
+      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
         <Typography
-          element="caption"
+          element={{
+            default: "tiny-text",
+            sm: "caption",
+          }}
           weight="semibold"
           className="tw-text-natural-950 tw-mt-2"
         >
-          {intl("tutor-settings.topics.selection-dialog.description")}
+          {description}
         </Typography>
 
         <AnimatePresence initial={false} mode="wait">
@@ -146,7 +160,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                     (disableSelection && !selection.includes(topic.id))
                   }
                   className={cn(
-                    "tw-rounded-2xl tw-p-4 tw-transition-colors tw-duration-200",
+                    "tw-rounded-2xl tw-px-5 tw-py-3 sm:tw-p-4 tw-transition-colors tw-duration-200",
                     "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
                     {
                       "tw-bg-natural-100 tw-text-natural-950":
@@ -157,7 +171,14 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                   )}
                   onClick={() => onSelect(topic.id)}
                 >
-                  <Typography element="body" weight="medium">
+                  <Typography
+                    element={{
+                      default: "tiny-text",
+                      sm: "caption",
+                      md: "body",
+                    }}
+                    weight="medium"
+                  >
                     {topic.label}
                   </Typography>
                 </button>

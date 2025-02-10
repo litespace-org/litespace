@@ -16,15 +16,18 @@ const NotificationSettings = () => {
   }, [intl, toast]);
 
   return (
-    <>
+    <div>
       <Typography
-        element="subtitle-1"
+        element={{
+          default: "caption",
+          sm: "subtitle-2",
+        }}
         weight="bold"
-        className="text-natural-950 mt-6"
+        className="text-natural-950"
       >
         {intl("tutor-settings.account-settings.notifications.title")}
       </Typography>
-      <div className="flex flex-col gap-4 mt-6 max-w-[467px]">
+      <div className="flex flex-col gap-4 mt-4 sm:mt-6">
         <FullSwitch
           title={intl("settings.notifications.lesson-date.title")}
           description={intl("settings.notifications.lesson-date.description")}
@@ -40,7 +43,7 @@ const NotificationSettings = () => {
           onChange={notifyComingSoon}
         />
       </div>
-    </>
+    </div>
   );
 };
 

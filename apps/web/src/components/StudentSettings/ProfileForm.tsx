@@ -1,14 +1,22 @@
-import { Controller, Form, Label } from "@litespace/ui/Form";
-import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import { Typography } from "@litespace/ui/Typography";
-import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import cn from "classnames";
+import { isEqual } from "lodash";
+
+import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
+import { TopicSelector } from "@/components/StudentSettings/TopicSelector";
+import { governorates } from "@/constants/user";
+import NotificationSettings from "@/components/Common/NotificationSettings";
+
 import { IUser } from "@litespace/types";
-import { useToast } from "@litespace/ui/Toast";
 import { orNull, orUndefined } from "@litespace/utils/utils";
-import { useInvalidateQuery } from "@litespace/headless/query";
+import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
+
+import { Controller, Form } from "@litespace/ui/Form";
+import { Typography } from "@litespace/ui/Typography";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { Button } from "@litespace/ui/Button";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import {
   useRequired,
   useValidateEmail,
@@ -16,16 +24,13 @@ import {
   useValidatePhoneNumber,
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
+import { useToast } from "@litespace/ui/Toast";
+
+import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateFullUser } from "@litespace/headless/user";
-import { TopicSelector } from "@/components/StudentSettings/TopicSelector";
-import { isEqual } from "lodash";
 import { useTopics, useUserTopics } from "@litespace/headless/topic";
-import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
-import { governorates } from "@/constants/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import NotificationSettings from "@/components/Common/NotificationSettings";
 
 type IForm = {
   name: string;
@@ -45,8 +50,11 @@ export type TopicWatcher = {
   removeTopics: number[];
 };
 
-export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
-  const { lg } = useMediaQuery();
+export const ProfileForm: React.FC<{
+  user: IUser.Self;
+  className?: string;
+}> = ({ user, className }) => {
+  const mq = useMediaQuery();
   const [photo, setPhoto] = useState<File | null>(null);
 
   const allTopicsQuery = useTopics({});
@@ -55,7 +63,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   const allTopics = useMemo(() => {
     if (!allTopicsQuery.query.data?.list) return [];
     return allTopicsQuery.query.data.list.map((topic) => ({
-      value: topic.id,
+      id: topic.id,
       label: topic.name.ar,
     }));
   }, [allTopicsQuery]);
@@ -206,12 +214,13 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
 
     return (
       <TopicSelector
+        allTopics={allTopics}
+        selectedTopics={topics}
         setTopics={(newTopics: number[]) => {
           if (topics.length === MAX_TOPICS_COUNT) return;
           form.setValue("topics", newTopics);
         }}
-        topics={topics}
-        allTopics={allTopics}
+        retry={userTopicsQuery.refetch}
       />
     );
   }, [
@@ -220,6 +229,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
     form,
     topics,
     userTopicsQuery.isPending,
+    userTopicsQuery.refetch,
   ]);
 
   useEffect(() => {
@@ -233,85 +243,121 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
   return (
     <Form
       onSubmit={form.handleSubmit(onSubmit)}
-      className="md:grid md:justify-items-stretch md:grid-cols-2 md:gap-x-28 md:gap-y-8 md:p-10 pb-16"
+      className={cn("flex flex-col", className)}
     >
-      <div className=" flex flex-col md:gap-6">
+      <div className="flex items-start justify-between mb-6 sm:mb-8">
         <UploadPhoto
           id={user.id}
           setPhoto={setPhoto}
           photo={photo || orNull(user?.image)}
-        />
-        <Typography
-          element={lg ? "subtitle-1" : "caption"}
-          weight="bold"
-          className="text-natural-950 mt-6 mb-4 md:m-0"
         >
-          {intl("settings.edit.personal.title")}
-        </Typography>
-        <div className="mb-2 md:m-0">
-          <Controller.Input
-            placeholder={intl("settings.edit.personal.name.placeholder")}
-            value={form.watch("name")}
-            control={form.control}
-            rules={{ validate: validateUserName }}
-            autoComplete="off"
-            name="name"
-            label={intl("settings.edit.personal.name")}
-            state={errors.name ? "error" : undefined}
-            helper={errors.name?.message}
+          {!mq.sm ? (
+            <ConfirmButton
+              disabled={profileMutation.isPending || !canSubmit}
+              loading={profileMutation.isPending}
+            />
+          ) : null}
+        </UploadPhoto>
+
+        <div
+          className={cn(
+            "fixed sm:relative bottom-0 left-0 p-4 sm:p-0 flex gap-2 w-full sm:w-fit",
+            "bg-natural-50 sm:bg-transparent shadow-student-profile z-10"
+          )}
+        >
+          <SaveButton
+            disabled={profileMutation.isPending || !canSubmit}
+            loading={profileMutation.isPending}
           />
-        </div>
-        <div className="mb-2 md:m-0">
-          <Controller.Input
-            control={form.control}
-            name="email"
-            value={form.watch("email")}
-            placeholder={intl("settings.edit.personal.email.placeholder")}
-            autoComplete="off"
-            rules={{ validate: validateEmail }}
-            label={intl("settings.edit.personal.email")}
-            state={errors.email ? "error" : undefined}
-            helper={errors.email?.message}
-          />
-        </div>
-        <div className="mb-2 md:m-0">
-          <Controller.PatternInput
-            format="### #### ####"
-            placeholder={intl(
-              "settings.edit.personal.phone-number.placeholder"
-            )}
-            value={form.watch("phoneNumber")}
-            control={form.control}
-            name="phoneNumber"
-            rules={{ validate: validatePhoneNumber }}
-            autoComplete="off"
-            mask=" "
-            label={intl("settings.edit.personal.phone-number")}
-            state={errors.phoneNumber ? "error" : undefined}
-            helper={errors.phoneNumber?.message}
-          />
-        </div>
-        <div className="mb-6 md:m-0">
-          <Label>{intl("settings.edit.personal.city")}</Label>
-          <Controller.Select
-            options={cityOptions}
-            placeholder={intl("shared-settings.edit.personal.city.placeholder")}
-            value={orUndefined(form.watch("city"))}
-            control={form.control}
-            name="city"
-          />
+          {mq.sm ? (
+            <ConfirmButton
+              disabled={profileMutation.isPending || !canSubmit}
+              loading={profileMutation.isPending}
+            />
+          ) : null}
         </div>
       </div>
-      <div className=" flex flex-col md:gap-6">
-        <div className="w-full md:w-[72%] flex flex-col md:gap-6">
+
+      <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
+        <div className="flex-1 flex flex-col lg:max-w-[400px]">
           <Typography
-            element={lg ? "subtitle-1" : "caption"}
+            element="subtitle-2"
             weight="bold"
-            className="text-natural-950 mb-4 md:m-0"
+            className="text-natural-950"
+          >
+            {intl("settings.edit.personal.title")}
+          </Typography>
+
+          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6">
+            <Controller.Input
+              placeholder={intl("settings.edit.personal.name.placeholder")}
+              value={form.watch("name")}
+              control={form.control}
+              rules={{ validate: validateUserName }}
+              autoComplete="off"
+              name="name"
+              label={intl("settings.edit.personal.name")}
+              state={errors.name ? "error" : undefined}
+              helper={errors.name?.message}
+            />
+
+            <Controller.Input
+              control={form.control}
+              name="email"
+              value={form.watch("email")}
+              placeholder={intl("settings.edit.personal.email.placeholder")}
+              autoComplete="off"
+              rules={{ validate: validateEmail }}
+              label={intl("settings.edit.personal.email")}
+              state={errors.email ? "error" : undefined}
+              helper={errors.email?.message}
+            />
+
+            <Controller.PatternInput
+              format="### #### ####"
+              placeholder={intl(
+                "settings.edit.personal.phone-number.placeholder"
+              )}
+              value={form.watch("phoneNumber")}
+              control={form.control}
+              name="phoneNumber"
+              rules={{ validate: validatePhoneNumber }}
+              autoComplete="off"
+              mask=" "
+              label={intl("settings.edit.personal.phone-number")}
+              state={errors.phoneNumber ? "error" : undefined}
+              helper={errors.phoneNumber?.message}
+            />
+
+            <div>
+              <Typography element="caption" weight="semibold">
+                {intl("settings.edit.personal.city")}
+              </Typography>
+              <Controller.Select
+                options={cityOptions}
+                placeholder={intl(
+                  "shared-settings.edit.personal.city.placeholder"
+                )}
+                value={orUndefined(form.watch("city"))}
+                control={form.control}
+                name="city"
+              />
+            </div>
+          </div>
+
+          {mq.sm ? topicsSelector : null}
+        </div>
+
+        <div className="flex-1 flex flex-col">
+          <Typography
+            element="subtitle-2"
+            weight="bold"
+            className="text-natural-950"
           >
             {intl("settings.edit.password.title")}
           </Typography>
-          <div className="mb-2 md:m-0">
+
+          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
             <Controller.Password
               value={form.watch("password.current")}
               control={form.control}
@@ -324,8 +370,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               state={errors.password?.current ? "error" : undefined}
               helper={errors.password?.current?.message}
             />
-          </div>
-          <div className="mb-2 md:m-0">
+
             <Controller.Password
               value={form.watch("password.new")}
               control={form.control}
@@ -338,8 +383,7 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               state={errors.password?.new ? "error" : undefined}
               helper={errors.password?.new?.message}
             />
-          </div>
-          <div className="mb-6 md:m-0">
+
             <Controller.Password
               value={form.watch("password.confirm")}
               control={form.control}
@@ -357,29 +401,61 @@ export const ProfileForm: React.FC<{ user: IUser.Self }> = ({ user }) => {
               helper={errors.password?.confirm?.message}
             />
           </div>
-        </div>
-        <div className="w-full flex flex-col md:gap-6">
-          {!lg ? topicsSelector : null}
-          <NotificationSettings />
+
+          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
+            <NotificationSettings />
+            {!mq.sm ? topicsSelector : null}
+          </div>
         </div>
       </div>
-      {lg ? topicsSelector : null}
-      <Button
-        disabled={profileMutation.isPending || !canSubmit}
-        loading={profileMutation.isPending}
-        size={lg ? "large" : "small"}
-        className="fixed bottom-4 left-4 md:static mr-auto mt-6 md:mt-auto"
-        htmlType="submit"
-      >
-        <Typography
-          // element={lg ? "body" : "caption"}
-          element={{ default: "caption", lg: "body" }}
-          weight={{ default: "semibold", lg: "bold" }}
-          className="text-natural-50"
-        >
-          {intl("shared-settings.save")}
-        </Typography>
-      </Button>
     </Form>
+  );
+};
+
+const SaveButton: React.FC<{
+  disabled: boolean;
+  loading: boolean;
+}> = ({ disabled, loading }) => {
+  const intl = useFormatMessage();
+  return (
+    <Button
+      disabled={disabled}
+      loading={loading}
+      size="large"
+      className="w-fit sm:static sm:bottom-4 sm:left-4 mr-auto sm:mt-auto z-10"
+      htmlType="submit"
+    >
+      <Typography
+        element={{ default: "caption", lg: "body" }}
+        weight={{ default: "medium" }}
+        className="text-natural-50"
+      >
+        {intl("shared-settings.save")}
+      </Typography>
+    </Button>
+  );
+};
+
+const ConfirmButton: React.FC<{
+  disabled: boolean;
+  loading: boolean;
+}> = ({ disabled, loading }) => {
+  const intl = useFormatMessage();
+  return (
+    <Button
+      disabled={disabled}
+      loading={loading}
+      size="large"
+      variant="secondary"
+      className="w-full sm:w-fit sm:static sm:bottom-4 sm:left-4 mr-auto sm:mt-auto z-10"
+      htmlType="submit"
+    >
+      <Typography
+        element={{ default: "caption", lg: "body" }}
+        weight={{ default: "medium" }}
+      >
+        {intl("settings.confirm")}
+      </Typography>
+    </Button>
   );
 };

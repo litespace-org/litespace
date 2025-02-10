@@ -192,6 +192,8 @@ const PublicSettings: React.FC<{
       <VideoPlayer src={orUndefined(video)} />
 
       <TopicSelectionDialog
+        title={intl("tutor-settings.topics.selection-dialog.title")}
+        description={intl("tutor-settings.topics.selection-dialog.description")}
         confirm={saveTopics}
         topics={allTopics}
         initialTopics={userTopicsIds}

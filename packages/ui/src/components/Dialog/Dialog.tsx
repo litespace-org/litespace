@@ -46,7 +46,7 @@ export const Dialog: React.FC<{
           dir="rtl"
           className={cn(
             "tw-fixed tw-bg-natural-50",
-            "tw-p-6 tw-min-w-96 tw-z-dialog",
+            "tw-p-4 sm:tw-p-6 tw-z-dialog",
             {
               "tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-rounded-[32px]":
                 position === "center",
