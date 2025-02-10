@@ -33,7 +33,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
       - name: Install dependencies
-        run: pnpm install --no-frozen-lockfile
+        run: pnpm install
       - name: Lint all workspaces
         run: pnpm lint:all && pnpm lint
       - name: Check formatting
