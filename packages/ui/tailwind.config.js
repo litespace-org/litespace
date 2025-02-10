@@ -10,15 +10,10 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
-      height: {
-        "chat-mobile": "calc(100vh - 72px)",
-        "chat-tablet": "calc(100vh - 88px)",
-        "chat-pc": "calc(100vh - 106px)",
-      },
       maxHeight: {
-        "chat-mobile": "calc(100vh - 72px)",
+        "chat-desktop": "calc(100vh - 106px)",
         "chat-tablet": "calc(100vh - 88px)",
-        "chat-pc": "calc(100vh - 106px)",
+        "chat-mobile": "calc(100vh - 72px)",
       },
       zIndex: {
         "select-item": "1",

@@ -56,12 +56,14 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           </button>
         ) : null}
 
-        <ProfileInfo
-          imageUrl={user.image}
-          name={user.name}
-          email={user.email}
-          id={user.id}
-        />
+        <div className="ms-auto">
+          <ProfileInfo
+            imageUrl={user.image}
+            name={user.name}
+            email={user.email}
+            id={user.id}
+          />
+        </div>
       </div>
     </div>
   );

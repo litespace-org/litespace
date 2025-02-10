@@ -84,7 +84,8 @@ const Chat: React.FC = () => {
   return (
     <div
       className={cn(
-        "flex flex-row overflow-hidden grow max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-pc h-chat-mobile md:h-chat-tablet lg:h-chat-pc"
+        "flex flex-row overflow-hidden grow",
+        "max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-desktop"
       )}
     >
       {(!temporaryTutor && !otherMember) || mq.lg ? (

@@ -64,9 +64,9 @@ export const SendInput: React.FC<{
         onClick: handleSubmit,
       }}
       onChange={handleChange}
-      autoFocus
       value={value}
       placeholder={intl("chat.input.placeholder")}
+      autoFocus
     />
   );
 };

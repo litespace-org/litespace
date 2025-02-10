@@ -73,7 +73,7 @@ const Messages: React.FC<{
     | null;
   setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
   select?: SelectRoom;
-  inCall?: boolean;
+  inSession?: boolean;
 }> = ({
   room,
   otherMember,
@@ -81,7 +81,7 @@ const Messages: React.FC<{
   select,
   isTyping,
   isOnline,
-  inCall,
+  inSession,
 }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
@@ -288,34 +288,40 @@ const Messages: React.FC<{
     el.scrollTop += 100;
   }, [messageGroups]);
 
-  const chatHeaderProps: React.ComponentProps<typeof ChatHeader> | null =
-    useMemo(() => {
-      if (!otherMember) return null;
-
-      return {
-        id: otherMember.id,
-        name: otherMember.name,
-        image: otherMember.image,
-        role: otherMember.role,
-        online: isOnline,
-        lastSeen: dayjs(otherMember.lastSeen).fromNow(),
-        openDialog: openDialog,
-        goBack,
-      };
-    }, [otherMember, openDialog, isOnline, goBack]);
-
   return (
-    <div className={cn("flex-1 flex flex-col bg-natural-50")}>
+    <div
+      id="messages-container"
+      className={cn("flex-1 flex flex-col bg-natural-50 h-full")}
+    >
       {room === null ? <NoSelection /> : null}
 
-      {chatHeaderProps ? (
-        <ChatHeader {...chatHeaderProps} inCall={inCall} />
+      {otherMember ? (
+        <ChatHeader
+          id={otherMember.id}
+          name={otherMember.name}
+          image={otherMember.image}
+          role={otherMember.role}
+          online={isOnline}
+          openDialog={openDialog}
+          goBack={goBack}
+          inSession={inSession}
+          lastSeen={otherMember.lastSeen}
+        />
       ) : null}
 
       {room ? (
-        // This line is necessary is to ensure the chat stays in place
-        <div className="flex flex-col h-full gap-2 lg:gap-9 max-h-[calc(100vh-72px-72px)] md:max-h-[calc(100vh-88px-88px)] lg:max-h-[calc(100vh-106px-106px)]">
-          <div className={cn("overflow-x-hidden px-4")}>
+        <div
+          className={cn(
+            "flex flex-col h-full gap-2",
+            "max-h-[calc(100%-72px)] md:max-h-[calc(100%-88px)] lg:max-h-[calc(100%-106px)]"
+          )}
+        >
+          <div
+            id="messages-content"
+            className={cn(
+              "overflow-x-hidden px-4 h-full flex items-center justify-center"
+            )}
+          >
             {loading ? (
               <div className="w-full flex justify-center items-center">
                 <Loader size="large" text={intl("chat.message.loading")} />
@@ -323,10 +329,8 @@ const Messages: React.FC<{
             ) : (
               <ul
                 className={cn(
-                  "flex flex-col gap-4 h-full overflow-auto grow",
-                  "scrollbar-thin h-full scrollbar-thumb-natural-200 scrollbar-track-natural-50",
-
-                  inCall ? "h-[380px]" : ""
+                  "flex flex-col gap-4 h-full",
+                  "overflow-auto grow scrollbar-thin h-full scrollbar-thumb-natural-200 scrollbar-track-natural-50"
                 )}
                 onScroll={onScroll}
                 ref={messagesRef}
@@ -371,7 +375,7 @@ const Messages: React.FC<{
                               )
                           )
                           .map((group, index) => (
-                            <div className="" key={index}>
+                            <div key={index}>
                               <ChatMessageGroup
                                 {...group}
                                 readMessage={readMessage}
@@ -411,7 +415,7 @@ const Messages: React.FC<{
               </ul>
             )}
           </div>
-          <div className="flex flex-col gap-2">
+          <div id="messages-footer" className="flex flex-col gap-2 mt-auto">
             {isTyping && otherMember ? (
               <div className="px-6 mt-6 lg:mt-9">
                 <UserTyping
@@ -422,7 +426,7 @@ const Messages: React.FC<{
                 />
               </div>
             ) : null}
-            <div className={cn("px-4 mb-4 lg:mb-0")}>
+            <div className={cn("px-4 mb-4 mt-auto")}>
               <SendInput typingMessage={typingMessage} onSubmit={submit} />
             </div>
           </div>
