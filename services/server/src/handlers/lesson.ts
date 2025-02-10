@@ -9,7 +9,7 @@ import {
   pageSize,
   withNamedId,
 } from "@/validation/utils";
-import { bad, busyTutor, forbidden, notfound } from "@/lib/error";
+import { bad, busyTutor, conflict, forbidden, notfound } from "@/lib/error";
 import { ILesson, IUser, Wss } from "@litespace/types";
 import {
   lessons,
@@ -59,6 +59,10 @@ const findLessonsQuery = zod.object({
   full: zod.optional(jsonBoolean),
 });
 
+/**
+  This handler should be invoked when students book lessons
+  NOTE: tutors create slots within which students create lessons
+*/
 function create(context: ApiContext) {
   return safeRequest(
     async (req: Request, res: Response, next: NextFunction) => {
@@ -75,11 +79,28 @@ function create(context: ApiContext) {
       const slot = await availabilitySlots.findById(payload.slotId);
       if (!slot) return next(notfound.slot());
 
+      // the booked lesson should be in the future
+      if (dayjs.utc(payload.start).isBefore(dayjs.utc())) {
+        return next(bad());
+      }
+
       const price = calculateLessonPrice(
         platformConfig.tutorHourlyRate,
         payload.duration
       );
 
+      // check if the user already has a lesson currently or in future
+      // with this tutor and return conflict if so
+      const curLessons = await lessons.find({
+        users: [user.id],
+        after: dayjs.utc().toISOString(),
+        canceled: false,
+      });
+      if (curLessons.total !== 0) {
+        return next(conflict());
+      }
+
+      // check if the new lessons intercepts any of current subslots
       const slotLessons = await lessons.find({
         slots: [slot.id],
         full: true,
@@ -102,6 +123,7 @@ function create(context: ApiContext) {
       });
       if (!canBookLesson) return next(busyTutor());
 
+      // create the lesson with its associated room if it doen't exist
       const roomMembers = [user.id, tutor.id];
       const room = await rooms.findRoomByMembers(roomMembers);
 

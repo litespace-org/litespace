@@ -134,7 +134,7 @@ export async function lesson(
     canceled?: boolean;
   }
 ): Promise<LessonReturn> {
-  return await knex.transaction(async (tx: Knex.Transaction) => {
+  const data = await knex.transaction(async (tx: Knex.Transaction) => {
     const tutor = await or.tutorId(payload?.tutor);
     const student = await or.studentId(payload?.student);
     const data = await lessons.create({
@@ -162,6 +162,8 @@ export async function lesson(
 
     return data;
   });
+  data.lesson = (await lessons.findById(data.lesson.id)) || data.lesson;
+  return data;
 }
 
 export async function interview(payload: Partial<IInterview.CreatePayload>) {
