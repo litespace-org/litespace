@@ -44,3 +44,5 @@ export enum RoutePatterns {
   ResetPassword = "(/)reset-password(/)",
   VerifyEmail = "(/)verify-email(/)",
 }
+
+export const CALLBACK_URL = window.location.origin.concat(Route.VerifyEmail);

@@ -213,7 +213,7 @@ export const TutorCard: React.FC<CardProps> = ({
           className="tw-w-full"
           type={"main"}
           variant={"primary"}
-          size={"small"}
+          size={"large"}
         >
           {intl("tutors.card.book-button.label")}
         </Button>

@@ -26,6 +26,16 @@ export const Success: StoryObj<typeof ConfirmationDialog> = {
   },
 };
 
+export const PrimaryButtonOnly: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    trigger: <button>Success</button>,
+    title: faker.lorem.words(5),
+    description: faker.lorem.words(20),
+    type: "success",
+    icon: <CheckCircle />,
+  },
+};
+
 export const Warnning: StoryObj<typeof ConfirmationDialog> = {
   args: {
     trigger: <button>Warning</button>,
@@ -41,6 +51,7 @@ export const Error: StoryObj<typeof ConfirmationDialog> = {
     trigger: <button>Error</button>,
     title: faker.lorem.words(5),
     description: faker.lorem.words(20),
+    actions: {},
     type: "error",
     icon: <CheckCircle />,
   },

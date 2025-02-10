@@ -443,16 +443,21 @@ const Messages: React.FC<{
       ) : null}
 
       <ConfirmationDialog
-        labels={{
-          confirm: intl("chat.message.delete.confirm"),
-          cancel: intl("chat.message.delete.cancel"),
+        actions={{
+          primary: {
+            label: intl("chat.message.delete.confirm"),
+            onClick: confirmDelete,
+          },
+          secondary: {
+            label: intl("chat.message.delete.cancel"),
+            onClick: close,
+          },
         }}
+        close={discardDelete}
         type="error"
         title={intl("chat.message.delete")}
         description={intl("chat.message.delete.description")}
         open={!!deletableMessage}
-        confirm={confirmDelete}
-        close={discardDelete}
         icon={<Trash />}
       />
       {otherMember && otherMember.role !== IUser.Role.Student && open ? (

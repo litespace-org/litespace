@@ -15,16 +15,22 @@ export const CancelLesson: React.FC<{
     <ConfirmationDialog
       open={open}
       type="error"
-      loading={loading}
       icon={<CallIncoming />}
+      actions={{
+        primary: {
+          label: intl("cancel-lesson.confirm-and-cancel"),
+          onClick: onCancel,
+          loading: loading,
+          disabled: loading,
+        },
+        secondary: {
+          label: intl("cancel-lesson.cancel-and-return"),
+          onClick: close,
+        },
+      }}
       close={close}
-      confirm={onCancel}
       title={intl("cancel-lesson.title")}
       description={intl("cancel-lesson.description")}
-      labels={{
-        confirm: intl("cancel-lesson.confirm-and-cancel"),
-        cancel: intl("cancel-lesson.cancel-and-return"),
-      }}
     />
   );
 };
