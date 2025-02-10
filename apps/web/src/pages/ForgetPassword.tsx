@@ -12,6 +12,7 @@ import React, { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { AnimatePresence, motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
 type FormData = {
   email: string;
@@ -78,7 +79,7 @@ const ForgetPassword: React.FC = () => {
       <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
         <Header />
         <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
-          <div className="w-full mt-[calc(50vh-50%)]">
+          <div className="flex justify-center items-center w-full h-1/2 mt-[24.4%]">
             <AnimatePresence initial={false} mode="wait">
               {!sentEmail ? (
                 <Animate key="form">
@@ -95,26 +96,27 @@ const ForgetPassword: React.FC = () => {
                     </Typography>
                   </div>
 
-                  <Form onSubmit={onSubmit}>
-                    <div className="mb-8">
+                  <Form onSubmit={onSubmit} className="mb-6">
+                    <div className="mb-6">
                       <Controller.Input
-                        control={control}
+                        id="email"
                         name="email"
+                        idleDir="rtl"
+                        control={control}
                         value={watch("email")}
+                        autoComplete="off"
+                        label={intl("labels.email")}
                         rules={{ validate: validateEmail }}
                         disabled={forgetPassword.isPending}
-                        placeholder={intl("labels.email.placeholder")}
-                        autoComplete="off"
-                        idleDir="ltr"
-                        label={intl("labels.email")}
-                        state={errors.email ? "error" : undefined}
                         helper={errors.email?.message}
+                        state={errors.email ? "error" : undefined}
+                        placeholder={intl("labels.email.placeholder")}
                       />
                     </div>
 
                     <Button
-                      variant={"primary"}
-                      size={"medium"}
+                      size="large"
+                      variant="primary"
                       className="w-full"
                       htmlType="submit"
                       loading={forgetPassword.isPending}
@@ -123,12 +125,27 @@ const ForgetPassword: React.FC = () => {
                       {intl("forget-password.send-link")}
                     </Button>
                   </Form>
+
+                  <div className="w-full text-center">
+                    <Typography element="caption" weight="medium">
+                      {intl("forget-password.password-remembered")}
+                    </Typography>
+                    <Link to={Route.Login} className="px-1">
+                      <Typography
+                        element="caption"
+                        weight="medium"
+                        className="text-brand-700"
+                      >
+                        {intl("labels.login")}
+                      </Typography>
+                    </Link>
+                  </div>
                 </Animate>
               ) : null}
 
               {sentEmail ? (
                 <Animate key="email-sent">
-                  <div className="flex flex-col items-center justify-center gap-2 text-center mb-8">
+                  <div className="flex flex-col items-center justify-center gap-2 text-center mb-6">
                     <Typography
                       element="h4"
                       weight="semibold"
@@ -141,14 +158,16 @@ const ForgetPassword: React.FC = () => {
                     </Typography>
                   </div>
                   <Button
-                    variant={"tertiary"}
-                    size={"medium"}
+                    variant="tertiary"
+                    size="medium"
                     className="mx-auto"
                     onClick={() => {
                       setSentEmail(false);
                     }}
                   >
-                    {intl("forget-password.re-send-email")}
+                    <Typography weight="semibold">
+                      {intl("forget-password.re-send-email")}
+                    </Typography>
                   </Button>
                 </Animate>
               ) : null}

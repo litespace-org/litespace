@@ -26,6 +26,7 @@ const Root: React.FC = () => {
       Route.Login,
       Route.VerifyEmail,
       Route.ForgetPassword,
+      Route.ResetPassword,
       ...registerRoutes,
     ];
     const ignore = routes.some((route) => route === location.pathname);

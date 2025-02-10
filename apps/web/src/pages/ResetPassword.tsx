@@ -1,5 +1,5 @@
 import { Button } from "@litespace/ui/Button";
-import { Label, Controller } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useValidatePassword } from "@litespace/ui/hooks/validation";
@@ -14,8 +14,10 @@ import Header from "@/components/Auth/Header";
 import Aside from "@/components/Auth/Aside";
 import { Typography } from "@litespace/ui/Typography";
 import Spinner from "@litespace/assets/Spinner";
+import Success from "@litespace/assets/Success";
 import { motion, AnimatePresence } from "framer-motion";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { LoadingError } from "@litespace/ui/Loading";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -102,8 +104,8 @@ const ResetPassword = () => {
     <div className="flex flex-row gap-8 h-full p-6">
       <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
         <Header />
-        <div className="flex-1 flex flex-col items-center w-full max-w-[554px]">
-          <div className="mt-[calc(50vh-50%)] w-full">
+        <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
+          <div className="flex flex-col justify-center items-center w-full h-1/2 mt-[24.4%]">
             <div className="flex flex-col items-center justify-center gap-2 text-center max-w-[363px] mb-10 mx-auto">
               <Typography
                 element="h4"
@@ -112,30 +114,57 @@ const ResetPassword = () => {
               >
                 {intl("reset-password.title")}
               </Typography>
-              <Typography element="body" className="text-natural-700">
-                {intl("reset-password.description")}
-              </Typography>
+              {!resetPassword.isPending && !resetPassword.isSuccess ? (
+                <Typography element="body" className="text-natural-700">
+                  {intl("reset-password.description")}
+                </Typography>
+              ) : null}
             </div>
 
             <AnimatePresence initial={false} mode="wait">
               {resetPassword.isPending ? (
                 <Animate key="submitting">
-                  <div className="flex flex-col items-center justify-center gap-6">
-                    <Spinner className="w-[110px] fill-brand-700" />
-                    <Typography element="body" className="text-natural-700">
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    <Spinner className="w-[80px] fill-brand-700" />
+                    <Typography
+                      element="caption"
+                      weight="semibold"
+                      className="text-natural-950"
+                    >
                       {intl("reset-password.setting-password")}
                     </Typography>
                   </div>
                 </Animate>
               ) : null}
 
+              {resetPassword.isError ? (
+                <Animate key="submitting">
+                  <div className="flex flex-col items-center justify-center gap-4">
+                    <LoadingError
+                      size="large"
+                      error={intl("reset-password.error")}
+                      retry={onSubmit}
+                    />
+                  </div>
+                </Animate>
+              ) : null}
+
               {resetPassword.isSuccess ? (
                 <Animate key="success">
+                  <div className="flex flex-col items-center gap-6 mb-8">
+                    <Success width={141} height={141} />
+                    <Typography element="body" className="text-natural-700">
+                      {intl("reset-password.done")}
+                    </Typography>
+                  </div>
                   <Button
+                    type="main"
+                    size="large"
+                    variant="primary"
                     className="w-full"
                     onClick={() => navigate(Route.Root)}
                   >
-                    {intl("reset-password.login")}
+                    {intl("reset-password.go-to-dashboard")}
                   </Button>
                 </Animate>
               ) : null}
@@ -144,28 +173,28 @@ const ResetPassword = () => {
                 <Animate key="form">
                   <Form
                     onSubmit={onSubmit}
-                    className="flex flex-col gap-8 w-full"
+                    className="flex flex-col gap-6 w-full"
                   >
-                    <div>
-                      <Label id="new-password">
-                        {intl("reset-password.new-password")}
-                      </Label>
+                    <div className="flex flex-col gap-4">
                       <Controller.Password
+                        idleDir="rtl"
                         disabled={resetPassword.isPending}
                         value={password}
                         id="new-password"
                         control={control}
                         rules={{ validate: validatePassword }}
+                        label={intl("reset-password.new-password")}
                         name="password"
+                        placeholder={intl(
+                          "reset-password.new-password.placeholder"
+                        )}
                       />
-                    </div>
-                    <div>
-                      <Label id="repeat-new-password">
-                        {intl("reset-password.confirm-new-password")}
-                      </Label>
+
                       <Controller.Password
+                        idleDir="rtl"
                         id="repeat-new-password"
                         disabled={resetPassword.isPending}
+                        label={intl("reset-password.confirm-new-password")}
                         value={confirmedPassword}
                         rules={{
                           validate(value, formData) {
@@ -178,15 +207,19 @@ const ResetPassword = () => {
                         control={control}
                         autoComplete="off"
                         name="confirmedPassword"
+                        placeholder={intl(
+                          "reset-password.confirm-password.placeholder"
+                        )}
                       />
                     </div>
+
                     <Button
+                      type="main"
+                      size="large"
+                      variant="primary"
+                      className="w-full"
                       disabled={resetPassword.isPending}
                       loading={resetPassword.isPending}
-                      type={"main"}
-                      variant={"primary"}
-                      size={"medium"}
-                      className="w-full"
                     >
                       {intl("labels.confirm")}
                     </Button>
