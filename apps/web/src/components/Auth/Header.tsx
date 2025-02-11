@@ -16,7 +16,10 @@ const Header: React.FC = () => {
         </Typography>
       </div>
 
-      <Link to="https://litespace.org" className="flex flex-row gap-2">
+      <Link
+        to="https://litespace.org"
+        className="flex flex-row items-center gap-2"
+      >
         <Typography
           element="caption"
           weight="semibold"

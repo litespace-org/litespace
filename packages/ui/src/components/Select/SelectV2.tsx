@@ -179,7 +179,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
           // display and dimentions
           "tw-flex tw-shrink-0 tw-items-center tw-justify-between",
           "tw-h-[34px] tw-p-2",
-          "tw-cursor-pointer focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-z-select-item",
+          "tw-cursor-pointer focus:tw-outline-none focus:tw-ring-inset focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-z-select-item",
           className
         )}
         {...props}
