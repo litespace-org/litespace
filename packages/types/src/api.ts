@@ -37,7 +37,9 @@ export enum ApiError {
   EmptyRequest = "empty-request",
   UserAlreadyVerified = "user-already-verified",
   WrongPassword = "wrong-password",
-  Conflict = "conflict",
+  ConflictingLessons = "conflicting-lessons",
+  ConflictingSchedule = "conflicting-schedule",
+  ReachedBookingLimit = "reached-booking-limit",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

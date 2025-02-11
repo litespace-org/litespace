@@ -33,16 +33,16 @@ describe("sessions test suite", () => {
   });
 
   it("should join the user socket in the socket.io room when the user pre-join", async () => {
-    const now = dayjs();
+    const now = dayjs.utc();
 
     const slot = await db.slot({
       userId: tutor.user.id,
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      start: now.startOf("day").toISOString(),
+      end: now.add(2, "day").startOf("day").toISOString(),
     });
 
     const lesson = await studentApi.atlas.lesson.create({
-      start: slot.start,
+      start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
       tutorId: tutor.user.id,
@@ -69,16 +69,16 @@ describe("sessions test suite", () => {
   });
 
   it("should broadcast the event when the user join a session", async () => {
-    const now = dayjs();
+    const now = dayjs.utc();
 
     const slot = await db.slot({
       userId: tutor.user.id,
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      start: now.startOf("day").toISOString(),
+      end: now.add(2, "day").startOf("day").toISOString(),
     });
 
     const lesson = await studentApi.atlas.lesson.create({
-      start: slot.start,
+      start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
       tutorId: tutor.user.id,
@@ -108,16 +108,16 @@ describe("sessions test suite", () => {
   });
 
   it("should NOT broadcast when user tries to join a lesson to which he doesn't belong", async () => {
-    const now = dayjs();
+    const now = dayjs.utc();
 
     const slot = await db.slot({
       userId: tutor.user.id,
-      start: now.utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      start: now.startOf("day").toISOString(),
+      end: now.add(2, "day").startOf("day").toISOString(),
     });
 
     const lesson = await studentApi.atlas.lesson.create({
-      start: slot.start,
+      start: now.add(1, "hour").toISOString(),
       duration: 30,
       slotId: slot.id,
       tutorId: tutor.user.id,
@@ -141,12 +141,12 @@ describe("sessions test suite", () => {
   });
 
   it("should NOT broadcast when user tries to join a session before its start", async () => {
-    const now = dayjs();
+    const now = dayjs.utc();
 
     const slot = await db.slot({
       userId: tutor.user.id,
-      start: now.add(1, "day").utc().startOf("day").toISOString(),
-      end: now.utc().add(10, "day").startOf("day").toISOString(),
+      start: now.add(1, "day").startOf("day").toISOString(),
+      end: now.add(2, "day").startOf("day").toISOString(),
     });
 
     const lesson = await studentApi.atlas.lesson.create({

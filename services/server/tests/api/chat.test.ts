@@ -4,7 +4,7 @@ import db from "@fixtures/db";
 import { knex, messages, rooms } from "@litespace/models";
 import { range } from "lodash";
 import { ClientSocket } from "@fixtures/wss";
-import { Wss } from "@litespace/types";
+import { ApiError, Wss } from "@litespace/types";
 
 describe("/api/v1/chat", () => {
   beforeEach(async () => {
@@ -17,9 +17,7 @@ describe("/api/v1/chat", () => {
       await publicApi.atlas.chat
         .updateRoom(1, { muted: true, pinned: true })
         .then(unexpectedApiSuccess)
-        .catch((error) =>
-          expect(error.message).to.be.eq("Unauthorized access")
-        );
+        .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
     });
 
     it("should response with error incase of empty request", async () => {
@@ -37,7 +35,9 @@ describe("/api/v1/chat", () => {
       await studentApi.atlas.chat
         .updateRoom(room, {})
         .then(unexpectedApiSuccess)
-        .catch((error) => expect(error.message).to.be.eq("Empty request"));
+        .catch((error) =>
+          expect(error.message).to.be.eq(ApiError.EmptyRequest)
+        );
     });
 
     it("should response with error incase user is not a member", async () => {
@@ -57,9 +57,7 @@ describe("/api/v1/chat", () => {
       await unathorizedStudentApi.atlas.chat
         .updateRoom(room, {})
         .then(unexpectedApiSuccess)
-        .catch((error) =>
-          expect(error.message).to.be.eq("Unauthorized access")
-        );
+        .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
     });
 
     it("should update user room settings", async () => {
@@ -105,7 +103,7 @@ describe("GET /api/v1/chat/list/rooms/:userId", () => {
     await student2Api.atlas.chat
       .findRooms(tutor.user.id)
       .then(unexpectedApiSuccess)
-      .catch((error) => expect(error.message).to.be.eq("Unauthorized access"));
+      .catch((error) => expect(error.message).to.be.eq(ApiError.Forbidden));
   });
 
   it("should get all user rooms", async () => {

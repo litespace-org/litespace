@@ -159,8 +159,8 @@ export async function lesson(
         ids: [data.lesson.id],
         tx,
       });
-
-    return data;
+    const lesson = await lessons.findById(data.lesson.id);
+    return { lesson: lesson || data.lesson, members: data.members };
   });
 }
 

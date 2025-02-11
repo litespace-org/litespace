@@ -1,87 +1,79 @@
 import { ApiError, ApiErrorCode } from "@litespace/types";
 import { ResponseError } from "@litespace/utils/error";
 
-const error = (errorCode: ApiErrorCode, message: string, statusCode: number) =>
+const error = (errorCode: ApiErrorCode, statusCode: number) =>
   new ResponseError({
     errorCode,
-    message,
     statusCode,
   });
 
 export const apierror = error;
 
-export const forbidden = () =>
-  error(ApiError.Forbidden, "Unauthorized access", 401);
+export const forbidden = () => error(ApiError.Forbidden, 401);
 
 // The server understood the request, but it's refusing to fulfill it
-export const refused = () =>
-  error(ApiError.Forbidden, "Cannot fulfill the request", 403);
+export const refused = () => error(ApiError.Forbidden, 403);
 
-export const bad = () => error(ApiError.BadRequest, "Bad request", 400);
+export const bad = () => error(ApiError.BadRequest, 400);
 
-export const conflict = () => error(ApiError.Conflict, "Conflict", 409);
+export const conflictingLessons = () => error(ApiError.ConflictingLessons, 409);
 
-export const empty = () => error(ApiError.EmptyRequest, "Empty request", 400);
+export const conflictingSchedule = () =>
+  error(ApiError.ConflictingSchedule, 409);
 
-export const busyTutor = () =>
-  error(ApiError.BusyTutor, "Tutor has not time", 400);
+export const reachedBookingLimit = () =>
+  error(ApiError.ReachedBookingLimit, 409);
 
-export const busyTutorManager = () =>
-  error(ApiError.BusyTutorManager, "Tutor manager has not time", 400);
+export const empty = () => error(ApiError.EmptyRequest, 400);
 
-export const unexpected = () =>
-  error(ApiError.Unexpected, "unexpected error occurred", 500);
+export const busyTutor = () => error(ApiError.BusyTutor, 400);
+
+export const busyTutorManager = () => error(ApiError.BusyTutorManager, 400);
+
+export const unexpected = () => error(ApiError.Unexpected, 500);
 
 export const illegalInvoiceUpdate = () =>
-  error(ApiError.IllegalInvoiceUpdate, "Illegal invoice update", 400);
+  error(ApiError.IllegalInvoiceUpdate, 400);
 
 export const emailAlreadyVerified = () =>
-  error(ApiError.EmailAlreadyVerified, "Email already verified", 400);
+  error(ApiError.EmailAlreadyVerified, 400);
 
-export const wrongPassword = () =>
-  error(ApiError.WrongPassword, "Wrong password, please try again", 400);
+export const wrongPassword = () => error(ApiError.WrongPassword, 400);
 
 export const interviewAlreadySigned = () =>
-  error(ApiError.InterviewAlreadySigned, "Interview is already signed", 400);
+  error(ApiError.InterviewAlreadySigned, 400);
 
 export const exists = {
-  room: () => error(ApiError.RoomExists, "Room already exist", 400),
-  user: () => error(ApiError.UserExists, "User already exist", 400),
-  rate: () => error(ApiError.RatingExists, "You already rated this user", 400),
-  subscription: () =>
-    error(ApiError.SubscriptionExists, "You already subscribed", 400),
+  room: () => error(ApiError.RoomExists, 400),
+  user: () => error(ApiError.UserExists, 400),
+  rate: () => error(ApiError.RatingExists, 400),
+  subscription: () => error(ApiError.SubscriptionExists, 400),
 };
 
 export const already = {
-  verified: () =>
-    error(ApiError.UserAlreadyVerified, "User already verified his email", 400),
+  verified: () => error(ApiError.UserAlreadyVerified, 400),
 };
 
 export const notfound = {
-  base: () => error(ApiError.NotFound, "Resource not found", 404),
-  user: () => error(ApiError.UserNotFound, "User not found", 404),
-  slot: () => error(ApiError.SlotNotFound, "Slot not found", 404),
-  tutor: () => error(ApiError.TutorNotFound, "Tutor not found", 404),
-  student: () => error(ApiError.StudentNotFound, "Student not found", 404),
-  session: () => error(ApiError.SessionNotFound, "Session not found", 404),
-  lesson: () => error(ApiError.LessonNotFound, "Lesson not found", 404),
-  room: () => error(ApiError.RoomNotFound, "Room not found", 404),
-  roomMembers: () =>
-    error(ApiError.RoomMembersNotFound, "Room members not found", 404),
-  rating: () => error(ApiError.RatingNotFound, "Rating not found", 404),
-  subscription: () =>
-    error(ApiError.SubscriptionNotFound, "Subscription not found", 404),
-  asset: () => error(ApiError.AssetNotFound, "Asset not found", 404),
-  coupon: () => error(ApiError.CouponNotFound, "Coupon not found", 404),
-  invite: () => error(ApiError.InviteNotFound, "Invite not found", 404),
-  interview: () =>
-    error(ApiError.InterviewNotFound, "Interview not found", 404),
-  invoice: () => error(ApiError.InvoiceNotFound, "Invoice not found", 404),
-  plan: () => error(ApiError.PlanNotFound, "Plan not found", 404),
-  report: () => error(ApiError.ReportNotFound, "Report not found", 404),
-  reportReply: () =>
-    error(ApiError.ReportReplyNotFound, "Report reply not found", 404),
-  withdrawMethod: () =>
-    error(ApiError.WidthdrawMethodNotFound, "Withdraw method not found", 404),
-  topic: () => error(ApiError.TopicNotFound, "Topic not found", 404),
+  base: () => error(ApiError.NotFound, 404),
+  user: () => error(ApiError.UserNotFound, 404),
+  slot: () => error(ApiError.SlotNotFound, 404),
+  tutor: () => error(ApiError.TutorNotFound, 404),
+  student: () => error(ApiError.StudentNotFound, 404),
+  session: () => error(ApiError.SessionNotFound, 404),
+  lesson: () => error(ApiError.LessonNotFound, 404),
+  room: () => error(ApiError.RoomNotFound, 404),
+  roomMembers: () => error(ApiError.RoomMembersNotFound, 404),
+  rating: () => error(ApiError.RatingNotFound, 404),
+  subscription: () => error(ApiError.SubscriptionNotFound, 404),
+  asset: () => error(ApiError.AssetNotFound, 404),
+  coupon: () => error(ApiError.CouponNotFound, 404),
+  invite: () => error(ApiError.InviteNotFound, 404),
+  interview: () => error(ApiError.InterviewNotFound, 404),
+  invoice: () => error(ApiError.InvoiceNotFound, 404),
+  plan: () => error(ApiError.PlanNotFound, 404),
+  report: () => error(ApiError.ReportNotFound, 404),
+  reportReply: () => error(ApiError.ReportReplyNotFound, 404),
+  withdrawMethod: () => error(ApiError.WidthdrawMethodNotFound, 404),
+  topic: () => error(ApiError.TopicNotFound, 404),
 } as const;

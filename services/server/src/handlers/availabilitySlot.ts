@@ -1,4 +1,4 @@
-import { bad, conflict, forbidden, notfound } from "@/lib/error";
+import { bad, conflictingSchedule, forbidden, notfound } from "@/lib/error";
 import {
   datetime,
   id,
@@ -168,7 +168,7 @@ async function set(req: Request, res: Response, next: NextFunction) {
       updates,
     });
     if (isValid === "malformed") return bad();
-    if (isValid === "conflict") return conflict();
+    if (isValid === "conflict") return conflictingSchedule();
 
     // delete slots
     await deleteSlots({

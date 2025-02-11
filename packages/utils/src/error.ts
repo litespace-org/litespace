@@ -23,7 +23,6 @@ export function isFieldError(value: unknown): value is FieldError {
   );
 }
 
-// api error handling
 export class ResponseError extends Error {
   statusCode: number;
   errorCode: ApiErrorCode;
@@ -31,13 +30,11 @@ export class ResponseError extends Error {
   constructor({
     errorCode,
     statusCode,
-    message,
   }: {
     errorCode: ApiErrorCode;
     statusCode: number;
-    message: string;
   }) {
-    super(message);
+    super(errorCode);
     this.statusCode = statusCode;
     this.errorCode = errorCode;
   }
