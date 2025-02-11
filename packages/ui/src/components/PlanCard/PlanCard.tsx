@@ -188,7 +188,7 @@ export const PlanCard: React.FC<Props> = ({
         <button
           type="button"
           className={cn(
-            "tw-w-full tw-py-2 lg:tw-py-3 tw-rounded-lg tw-mt-4 md:tw-mt-6",
+            "tw-w-full tw-h-7 lg:tw-h-10 tw-rounded-lg tw-mt-4 md:tw-mt-6",
             "tw-bg-natural-50 hover:tw-bg-brand-100 active:tw-bg-brand-200",
             "tw-transition-colors tw-duration-200"
           )}
@@ -205,7 +205,7 @@ export const PlanCard: React.FC<Props> = ({
       ) : (
         <Button
           htmlType="button"
-          size={mq.lg ? "medium" : "small"}
+          size={mq.lg ? "large" : "medium"}
           className="tw-mt-4 md:tw-mt-6 tw-w-full"
           onClick={onBuy}
         >

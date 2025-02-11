@@ -107,7 +107,7 @@ export const Button: React.FC<{
         },
         // dimentions, margins, and paddings
         {
-          "tw-px-2 tw-h-[28px]": is.small,
+          "tw-px-2 tw-h-7": is.small,
           "tw-px-3 tw-h-8": is.medium,
           "tw-px-4 tw-h-10": is.large,
         },
