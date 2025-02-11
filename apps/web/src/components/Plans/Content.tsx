@@ -29,7 +29,7 @@ const Content: React.FC<{
   const { md, lg, xl } = useMediaQuery();
   const intl = useFormatMessage();
   const toast = useToast();
-  const [tab, setTab] = useState<Tab>("monthly");
+  const [tab, setTab] = useState<Tab>("annual");
   const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
     return [
       {
