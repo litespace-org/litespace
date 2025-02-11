@@ -29,6 +29,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import SettingsVerifyEmail from "@/components/StudentSettings/SettingsVerifyEmail";
 
 type IForm = {
   name: string;
@@ -321,6 +322,7 @@ export const ProfileForm: React.FC<{
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
             <NotificationSettings />
             {!mq.sm ? <TopicSelection /> : null}
+            <SettingsVerifyEmail />
           </div>
         </div>
       </div>
