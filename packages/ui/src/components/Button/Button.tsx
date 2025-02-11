@@ -114,7 +114,7 @@ export const Button: React.FC<{
         // Border & Focus
         // TODO: add `primary` variant borders.
         {
-          "tw-border focus-visible:tw-outline-2 focus-visible:tw-outline-secondary-600 focus-visible:-tw-outline-offset-2":
+          "tw-border focus-visible:tw-outline-[2px] focus-visible:tw-outline-secondary-600":
             is.primary || is.secondary || is.tertiary,
           "tw-border-transparent hover:tw-border-natural-100 active:tw-border-natural-200":
             is.tertiary,

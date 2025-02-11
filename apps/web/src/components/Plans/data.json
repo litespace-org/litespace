@@ -4,19 +4,19 @@
       {
         "id": 1,
         "weeklyMinutes": 120,
-        "price": 1300,
+        "price": 1800,
         "label": "most-common"
       },
       {
         "id": 2,
         "weeklyMinutes": 180,
-        "price": 1750,
+        "price": 2700,
         "primary": true
       },
       {
         "id": 3,
+        "price": 3400,
         "weeklyMinutes": 240,
-        "price": 2300,
         "label": "most-valuable"
       }
     ],
@@ -24,18 +24,21 @@
       {
         "id": 1,
         "weeklyMinutes": 120,
-        "price": 1250,
-        "label": "most-common"
+        "price": 1800,
+        "label": "most-common",
+        "discount": 5
       },
       {
         "id": 2,
         "weeklyMinutes": 180,
-        "price": 1700,
+        "price": 2700,
+        "discount": 7,
         "primary": true
       },
       {
         "id": 3,
-        "price": 2250,
+        "price": 3400,
+        "discount": 5,
         "weeklyMinutes": 240,
         "label": "most-valuable"
       }
@@ -43,19 +46,22 @@
     "half": [
       {
         "id": 1,
+        "price": 1800,
+        "discount": 15,
         "weeklyMinutes": 120,
-        "price": 1200,
         "label": "most-common"
       },
       {
         "id": 2,
         "weeklyMinutes": 180,
-        "price": 1650,
+        "price": 2200,
+        "discount": 18,
         "primary": true
       },
       {
         "id": 3,
-        "price": 2200,
+        "price": 3400,
+        "discount": 15,
         "weeklyMinutes": 240,
         "label": "most-valuable"
       }
@@ -64,18 +70,21 @@
       {
         "id": 1,
         "weeklyMinutes": 120,
-        "price": 1100,
-        "label": "most-common"
+        "price": 1800,
+        "label": "most-common",
+        "discount": 30
       },
       {
         "id": 2,
         "weeklyMinutes": 180,
-        "price": 1600,
+        "price": 2700,
+        "discount": 35,
         "primary": true
       },
       {
         "id": 3,
-        "price": 2100,
+        "price": 3400,
+        "discount": 26,
         "weeklyMinutes": 240,
         "label": "most-valuable"
       }
