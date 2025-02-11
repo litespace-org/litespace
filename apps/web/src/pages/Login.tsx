@@ -92,7 +92,7 @@ const Login: React.FC = () => {
                 <Controller.Input
                   id="email"
                   name="email"
-                  idleDir="ltr"
+                  idleDir="rtl"
                   value={email}
                   inputSize="large"
                   autoComplete="off"
@@ -120,15 +120,17 @@ const Login: React.FC = () => {
                   helper={errors.password?.message}
                 />
 
-                <Link to={Route.ForgetPassword}>
-                  <Typography
-                    element="caption"
-                    weight="medium"
-                    className="text-brand-700"
-                  >
-                    {intl("login.forget-password")}
-                  </Typography>
-                </Link>
+                <div>
+                  <Link to={Route.ForgetPassword}>
+                    <Typography
+                      element="caption"
+                      weight="medium"
+                      className="text-brand-700"
+                    >
+                      {intl("login.forget-password")}
+                    </Typography>
+                  </Link>
+                </div>
               </div>
 
               <div className="flex flex-col gap-4">
