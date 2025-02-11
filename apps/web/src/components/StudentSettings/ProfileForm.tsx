@@ -28,6 +28,12 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+<<<<<<< HEAD
+=======
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import NotificationSettings from "@/components/Common/NotificationSettings";
+import SettingsVerifyEmail from "@/components/StudentSettings/SettingsVerifyEmail";
+>>>>>>> 7ab636e7 (feat(web): implemented send verify email to students settings)
 
 type IForm = {
   name: string;
@@ -174,6 +180,7 @@ export const ProfileForm: React.FC<{
             loading={updateUser.isPending}
           />
         </div>
+        {lg ? topicsSelector : null}
       </div>
 
       <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
