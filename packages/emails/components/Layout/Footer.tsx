@@ -3,6 +3,8 @@ import React from "react";
 import Typography from "@/components/Common/Typography";
 import { translate } from "@/lib/translate";
 
+// TODO: WE need to update the faq link from the landing page when it's deployed
+
 const Footer: React.FC = () => {
   return (
     <Section className="max-w-[456px]">
@@ -14,18 +16,25 @@ const Footer: React.FC = () => {
         markdownCustomStyles={{
           p: {
             color: "#4D4D4D",
+            fontSize: "16px",
+            lineHeight: "24px",
+          },
+          link: {
+            color: "#4D4D4D",
+            fontSize: "16px",
+            lineHeight: "24px",
           },
         }}
       >
         {[
           `<span style="color:#0D0D0D;">${translate("footer.need-help")}</span>`,
           translate("footer.visit"),
-          `<a target="_blank" href="https://google.com" style="color:#1D7C4E; text-decoration:none;">
+          `<a target="_blank" href="https://litespace.org/faq" style="color:#1D7C4E; text-decoration:none;">
         ${translate("footer.faq")}
       </a>`,
           translate("footer.contact-email"),
-          `<a target="_blank" href="https://google.com" style="color:#1D7C4E; text-decoration:none;">
-        ${translate("footer.email")}
+          `<a target="_blank" href="mailto:support@litespace.com" style="color:#1D7C4E; text-decoration:none;">
+        support@litespace.com،
       </a>`,
           translate("footer.answer"),
         ].join(" ")}

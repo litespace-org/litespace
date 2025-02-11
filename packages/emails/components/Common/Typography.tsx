@@ -15,7 +15,7 @@ const Typography: React.FC<{
 }> = ({ element = "body", weight = "regular", children, text }) => {
   return (
     <Text
-      className={cn("font-cairo leading-[150%] p-0 m-0 box-border", {
+      className={cn("leading-[150%] p-0 m-0 box-border", {
         "text-[32px]": element === "h4",
         "text-base": element === "body",
         "font-bold": weight === "bold",
