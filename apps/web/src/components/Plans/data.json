@@ -3,84 +3,80 @@
     "monthly": [
       {
         "id": 1,
-        "weeklyMinutes": 60,
-        "price": 1000,
+        "weeklyMinutes": 120,
+        "price": 1300,
         "label": "most-common"
       },
       {
         "id": 2,
-        "weeklyMinutes": 120,
-        "price": 1500,
+        "weeklyMinutes": 180,
+        "price": 1750,
         "primary": true
       },
       {
         "id": 3,
-        "price": 1800,
-        "weeklyMinutes": 230,
-        "discount": 5,
+        "weeklyMinutes": 240,
+        "price": 2300,
         "label": "most-valuable"
       }
     ],
     "quarter": [
       {
         "id": 1,
-        "weeklyMinutes": 60,
-        "price": 2500,
+        "weeklyMinutes": 120,
+        "price": 1250,
         "label": "most-common"
       },
       {
         "id": 2,
-        "weeklyMinutes": 120,
-        "price": 3800,
+        "weeklyMinutes": 180,
+        "price": 1700,
         "primary": true
       },
       {
         "id": 3,
-        "price": 4200,
-        "weeklyMinutes": 230,
-        "discount": 5,
+        "price": 2250,
+        "weeklyMinutes": 240,
         "label": "most-valuable"
       }
     ],
     "half": [
       {
         "id": 1,
-        "weeklyMinutes": 60,
-        "price": 4000,
+        "weeklyMinutes": 120,
+        "price": 1200,
         "label": "most-common"
       },
       {
         "id": 2,
-        "weeklyMinutes": 120,
-        "price": 6500,
+        "weeklyMinutes": 180,
+        "price": 1650,
         "primary": true
       },
       {
         "id": 3,
-        "price": 8000,
-        "weeklyMinutes": 230,
-        "discount": 5,
+        "price": 2200,
+        "weeklyMinutes": 240,
         "label": "most-valuable"
       }
     ],
     "annual": [
       {
         "id": 1,
-        "weeklyMinutes": 60,
-        "price": 8000,
+        "weeklyMinutes": 120,
+        "price": 1100,
         "label": "most-common"
       },
       {
         "id": 2,
-        "weeklyMinutes": 120,
-        "price": 9800,
+        "weeklyMinutes": 180,
+        "price": 1600,
         "primary": true
       },
       {
         "id": 3,
-        "price": 11000,
-        "weeklyMinutes": 230,
-        "discount": 5,
+        "price": 2100,
+        "weeklyMinutes": 240,
         "label": "most-valuable"
       }
     ]
