@@ -10,37 +10,46 @@ const NotificationSettings = () => {
 
   const notifyComingSoon = useCallback(() => {
     toast.success({
-      title: intl("settings.notifications.coming-soon.title"),
-      description: intl("settings.notifications.coming-soon.description"),
+      title: intl("shared-settings.notifications.coming-soon.title"),
+      description: intl(
+        "shared-settings.notifications.coming-soon.description"
+      ),
     });
   }, [intl, toast]);
 
   return (
-    <>
+    <div>
       <Typography
-        element="subtitle-1"
+        element={{
+          default: "caption",
+          sm: "subtitle-2",
+        }}
         weight="bold"
-        className="text-natural-950 mt-6"
+        className="text-natural-950"
       >
         {intl("tutor-settings.account-settings.notifications.title")}
       </Typography>
-      <div className="flex flex-col gap-4 mt-6 max-w-[467px]">
+      <div className="flex flex-col gap-4 mt-4 sm:mt-6">
         <FullSwitch
-          title={intl("settings.notifications.lesson-date.title")}
-          description={intl("settings.notifications.lesson-date.description")}
+          title={intl("shared-settings.notifications.lesson-date.title")}
+          description={intl(
+            "shared-settings.notifications.lesson-date.description"
+          )}
           checked={false}
           disabled={false}
           onChange={notifyComingSoon}
         />
         <FullSwitch
-          title={intl("settings.notifications.messages.title")}
-          description={intl("settings.notifications.messages.description")}
+          title={intl("shared-settings.notifications.messages.title")}
+          description={intl(
+            "shared-settings.notifications.messages.description"
+          )}
           checked={false}
           disabled={false}
           onChange={notifyComingSoon}
         />
       </div>
-    </>
+    </div>
   );
 };
 

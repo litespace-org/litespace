@@ -311,6 +311,7 @@ export default {
       "time-selection-item": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
       "exclaimation-mark-video": "0px 4px 20px 1px rgba(204, 0, 0, 0.25)",
       "tutor-profile": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
+      "student-profile": "0px 4px 20px 0px rgba(0, 0, 0, 0.08)",
       "plan-card": "0px 4px 20px 0px rgba(0, 0, 0, 0.2)",
       "plan-card-label": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "alert-circle": "0px 4px 15px 0px rgba(0, 0, 0, 0.1)",

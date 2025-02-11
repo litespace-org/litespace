@@ -88,7 +88,7 @@ const PersonalSettings: React.FC<{
           <Controller.Password
             value={form.watch("password.current")}
             control={form.control}
-            label={intl("settings.edit.password.current")}
+            label={intl("shared-settings.edit.password.current")}
             helper={errors.password?.current?.message}
             state={errors.password ? "error" : undefined}
             rules={{
@@ -99,7 +99,7 @@ const PersonalSettings: React.FC<{
           />
 
           <Controller.Password
-            label={intl("settings.edit.password.new")}
+            label={intl("shared-settings.edit.password.new")}
             value={form.watch("password.new")}
             control={form.control}
             rules={{
@@ -110,14 +110,14 @@ const PersonalSettings: React.FC<{
           />
 
           <Controller.Password
-            label={intl("settings.edit.password.confirm")}
+            label={intl("shared-settings.edit.password.confirm")}
             value={form.watch("password.confirm")}
             control={form.control}
             rules={{
               required: requirePassword ? required : undefined,
               validate: (value) => {
                 if (value !== form.watch("password.new"))
-                  return intl("settings.edit.password.confirm.not-same");
+                  return intl("shared-settings.edit.password.confirm.not-same");
                 return validatePassword(value);
               },
             }}

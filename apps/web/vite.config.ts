@@ -52,4 +52,7 @@ export default defineConfig({
   esbuild: {
     exclude: ["@litespace/ui/*"],
   },
+  optimizeDeps: {
+    force: true,
+  },
 });

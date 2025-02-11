@@ -18,6 +18,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { getNullableFiledUpdatedValue } from "@litespace/utils";
 
 type IForm = {
   name: string;
@@ -25,19 +26,6 @@ type IForm = {
   city: IUser.City;
   password: string;
 };
-
-function getOptionalNullableField<T>(
-  current: T | null,
-  future: T
-): T | null | undefined {
-  // User entered a new value and it doesn't match his current one.
-  if (future && future !== current) return future;
-  // User entered a new value and it is the same as his one.
-  if (future === current) return undefined;
-  // User removed the current value
-  if (!future) return null;
-  return undefined;
-}
 
 const CompleteProfile: React.FC = () => {
   const navigate = useNavigate();
@@ -97,21 +85,23 @@ const CompleteProfile: React.FC = () => {
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      if (!user) return navigate(Route.Login);
+      if (!user) return;
       updateUser.mutate({
         id: user.id,
         payload: {
-          name: getOptionalNullableField(user.name, data.name.trim()),
-          phoneNumber: getOptionalNullableField(
+          name: getNullableFiledUpdatedValue(user.name, data.name.trim()),
+          phoneNumber: getNullableFiledUpdatedValue(
             user.phoneNumber,
             data.phoneNumber.trim()
           ),
-          city: getOptionalNullableField(user.city, data.city),
-          password: password ? { new: password, current: null } : undefined,
+          city: getNullableFiledUpdatedValue(user.city, data.city),
+          password: data.password
+            ? { new: data.password, current: null }
+            : undefined,
         },
       });
     },
-    [navigate, password, updateUser, user]
+    [updateUser, user]
   );
 
   return (

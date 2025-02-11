@@ -10,7 +10,7 @@ export const FullSwitch: React.FC<
       <div>
         <Typography
           element={desktop ? "subtitle-2" : "body"}
-          weight={desktop ? "regular" : "semibold"}
+          weight="regular"
           className="tw-text-natural-950 tw-mb-1"
         >
           {title}
