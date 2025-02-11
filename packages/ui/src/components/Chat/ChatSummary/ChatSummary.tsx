@@ -156,7 +156,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
             )}
           </div>
           <Link to={chatsUrl} className="tw-intline-block tw-w-full">
-            <Button className="tw-w-full" size={"small"}>
+            <Button className="tw-w-full" size="large">
               <Typography
                 element="caption"
                 weight="semibold"

@@ -160,7 +160,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               ))}
 
               <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
-                <Button size={"small"} className="tw-w-full">
+                <Button size="large" className="tw-w-full">
                   <Typography
                     element="caption"
                     weight="semibold"
@@ -189,21 +189,15 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <div className={cn("tw-flex tw-flex-col tw-items-center tw-gap-6")}>
         <EmptyUpcomingLessons />
         <Typography
-          element={{
-            default: "caption",
-            sm: "subtitle-1",
-          }}
-          weight={{
-            default: "bold",
-            sm: "semibold",
-          }}
+          element={{ default: "caption", sm: "subtitle-1" }}
+          weight={{ default: "bold", sm: "semibold" }}
           className="tw-text-natural-950"
         >
           {intl("student-dashboard.start-journey")}
         </Typography>
       </div>
       <Link to={tutorsUrl} className="tw-intline-block tw-w-full">
-        <Button className="tw-w-full" size={"small"}>
+        <Button className="tw-w-full" size="large">
           <Typography
             element="caption"
             weight="semibold"
