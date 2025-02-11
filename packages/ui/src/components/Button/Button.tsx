@@ -114,8 +114,10 @@ export const Button: React.FC<{
         // border
         // TODO: add `primary` variant borders.
         {
-          "tw-border focus:tw-ring-[0.5px] focus:tw-ring-secondary-600 focus:tw-border-secondary-600":
-            is.secondary || is.primary,
+          "tw-border focus-visible:tw-ring-[0.5px] focus-visible:tw-ring-natural-800 focus-visible:tw-border-natural-800":
+            is.primary || is.secondary || is.tertiary,
+          "tw-border-transparent hover:tw-border-natural-100 active:tw-border-natural-200":
+            is.tertiary,
           //==================== TEMP ====================
           "tw-border-brand-700 ": is.main && is.primary,
           "tw-border-destructive-700 ": is.error && is.primary,
@@ -141,24 +143,12 @@ export const Button: React.FC<{
         <Spinner
           className={cn({
             "tw-text-natural-50": is.primary,
-
-            "tw-text-success-700 dark:tw-text-success-400":
-              is.secondary && is.success,
-            "tw-text-destructive-700 dark:tw-text-destructive-300":
-              is.secondary && is.error,
-            "tw-text-brand-700 dark:tw-text-brand-50": is.secondary && is.main,
-            "tw-text-warning-700 dark:tw-text-warning-300":
-              is.secondary && is.warning,
-
-            "tw-text-brand-700 dark:tw-text-brand-200": is.tertiary && is.main,
-            "tw-text-warning-700 dark:tw-text-warning-200":
-              is.tertiary && is.warning,
-            "tw-text-destructive-700 dark:tw-text-destructive-200":
-              is.tertiary && is.error,
-            "tw-text-success-700 dark:tw-text-success-200":
-              is.tertiary && is.success,
-
-            "tw-w-[20px] tw-h-[20px]": is.small,
+            "tw-text-natural-700": is.tertiary,
+            "tw-text-success-700": is.secondary && is.success,
+            "tw-text-destructive-700": is.secondary && is.error,
+            "tw-text-brand-700": is.secondary && is.main,
+            "tw-text-warning-700": is.secondary && is.warning,
+            "tw-w-5 tw-h-5": is.small,
           })}
         />
       </span>
