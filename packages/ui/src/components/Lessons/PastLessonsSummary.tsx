@@ -100,9 +100,9 @@ export const PastLessonsSummary: React.FC<Props> = ({
 
       {!isEmpty(lessons) && !loading && !error ? (
         <div className="tw-flex tw-flex-col tw-gap-4">
-          {lessons.map((lesson, i) => (
+          {lessons.map((lesson) => (
             <Row
-              key={i}
+              key={lesson.id}
               userId={lesson.otherMember.id}
               name={lesson.otherMember.name}
               imageUrl={lesson.otherMember.imageUrl}
@@ -128,7 +128,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
 
           {more && hasMore ? (
             <Button
-              size={"small"}
+              size="large"
               className="tw-inline-block tw-w-full"
               loading={loadingMore}
               disabled={loadingMore}
@@ -253,7 +253,8 @@ export const Row: React.FC<RowProps> = ({
       </div>
       <div className="tw-mr-auto">
         <Button
-          className="tw-flex tw-items-center tw-justify-center tw-w-[40px] tw-h-[40px] !tw-p-2 tw-bg-brand-700 tw-rounded-lg"
+          size="medium"
+          className="tw-flex tw-items-center tw-justify-center tw-bg-brand-700 tw-rounded-lg"
           onClick={onClick}
           disabled={buttonDisabled}
           loading={buttonLoading}
@@ -261,14 +262,14 @@ export const Row: React.FC<RowProps> = ({
           {isTutor ? (
             <SendSVG
               className="[&>*]:tw-stroke-natural-50"
-              width={24}
-              height={24}
+              width={16}
+              height={16}
             />
           ) : (
             <AddCalendarSVG
               className="[&>*]:tw-stroke-natural-50"
-              width={24}
-              height={24}
+              width={16}
+              height={16}
             />
           )}
         </Button>
@@ -304,7 +305,7 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
 
       {!isTutor ? (
         <Link to={tutorsRoute} className="tw-w-full">
-          <Button size={"medium"} className="tw-w-full">
+          <Button size="large" className="tw-w-full">
             <Typography
               element="caption"
               weight="bold"

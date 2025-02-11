@@ -176,7 +176,7 @@ export const LessonCard: React.FC<Props> = ({
 
   const button = (
     <Button
-      size={"small"}
+      size="large"
       className={cn("tw-w-full tw-mt-auto")}
       disabled={
         disabled ||
