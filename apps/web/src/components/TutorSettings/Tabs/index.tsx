@@ -36,11 +36,11 @@ export const TutorSettingsTabs: React.FC<{
     return [
       {
         value: "profile",
-        label: "tutor.profile.tabs.profile",
+        label: "tutor-settings.tabs.profile-settings",
       },
       {
         value: "settings",
-        label: "settings.profile.title",
+        label: "tutor-settings.tabs.personal-settings",
       },
     ];
   }, []);

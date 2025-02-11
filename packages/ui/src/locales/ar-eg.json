@@ -438,6 +438,8 @@
   "chat.message.loading": "برجاء الانتظار... جاري تحميل المحادثة!",
   "chat.message.error": " عذرًا، حدث خطأ أثناء تحميل رسائل المحادثة، برجاء المحاولة مرة أخرى",
   "chat.error": " عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "tutor-settings.tabs.profile-settings": "الملف الشخصى",
+  "tutor-settings.tabs.personal-settings": "الاعدادات",
   "tutor-settings.profile.loading": "برجاء الانتظار... جاري تحميل الملف الشخصي!",
   "tutor-settings.profile.loading-error": " عذرًا، حدث خطأ أثناء تحميل الملف الشخصي، برجاء المحاولة مرة أخرى",
   "tutor-settings.profile.title": "الملف الشخصى",
@@ -460,39 +462,39 @@
   "student-settings.topics.selection-dialog.description": "لنجعل تجربتك التعليمية ممتعة وشخصية! اختر المواضيع التي تود الحديث عنها في جلساتك مع معلمينا، وسنقوم بتوصية معلمين يناسبون اهتماماتك.",
   "student-settings.add-topics-button.label": "قم بأضافة الموضوعات المفضلة الخاصة بك",
   "student-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المفضلات!",
-  "student-settings.topics.selection-dialog.error": " عذرًا، حدث خطأ أثناء تحميل المفضلات. برجاء المحاولة مرة أخرى",
-  "settings.profile.title": "الإعدادات",
-  "settings.upload.image.label": "قم برفع صورة جديدة",
-  "settings.upload.image.label-sm": "تغيير الصورة",
-  "settings.upload.image.desc": "يوصى بصيغة JPG أو PNG وGIF بحجم 480 × 480 بكسل على الأقل.",
-  "settings.edit.personal.title": "تعديل الملف الشخصي",
-  "settings.edit.personal.name": "الأسم",
-  "settings.edit.personal.name.placeholder": "قم بكتابة اسمك",
-  "settings.edit.personal.email": "البريد الإلكتروني",
-  "settings.edit.personal.email.placeholder": "قم بكتابة البريد الإلكتروني",
-  "settings.edit.personal.phone-number": "رقم الهاتف",
-  "settings.edit.personal.phone-number.placeholder": "قم بكتابة رقم هاتفك",
-  "settings.edit.personal.city": "المدينة",
+  "student-settings.topics.selection-dialog.loading-error": " عذرًا، حدث خطأ أثناء تحميل المفضلات. برجاء المحاولة مرة أخرى",
+  "student-settings.topics.selection-dialog.update-error": " عذرًا، حدث خطأ أثناء تحديث المفضلات. برجاء المحاولة مرة أخرى",
+  "student-settings.profile.title": "الإعدادات",
+  "student-settings.upload.image.label": "قم برفع صورة جديدة",
+  "student-settings.upload.image.label-sm": "تغيير الصورة",
+  "student-settings.upload.image.desc": "يوصى بصيغة JPG أو PNG وGIF بحجم 480 × 480 بكسل على الأقل.",
+  "student-settings.edit.personal.title": "تعديل الملف الشخصي",
+  "student-settings.edit.personal.name": "الأسم",
+  "student-settings.edit.personal.name.placeholder": "قم بكتابة اسمك",
+  "student-settings.edit.personal.email": "البريد الإلكتروني",
+  "student-settings.edit.personal.email.placeholder": "قم بكتابة البريد الإلكتروني",
+  "student-settings.edit.personal.phone-number": "رقم الهاتف",
+  "student-settings.edit.personal.phone-number.placeholder": "قم بكتابة رقم هاتفك",
+  "student-settings.edit.personal.city": "المدينة",
+  "student-settings.edit.personal.topics.title": "إضافة المفضلات",
+  "student-settings.edit.personal.topics": "قم باختيار المجالات التي تريد التحدث عنها",
+  "student-settings.loading": "برجاء الإنتظار... جاري تحميل الإعدادات!",
+  "student-settings.error": " عذرًا، حدث خطأ أثناء تحميل  الإعدادات، برجاء المحاولة مرة أخرى",
   "shared-settings.edit.personal.city.placeholder": "من أين أنت",
   "shared-settings.save": "حفظ التغيرات",
-  "settings.edit.personal.topics.title": "إضافة المفضلات",
-  "settings.edit.personal.topics": "قم باختيار المجالات التي تريد التحدث عنها",
-  "settings.edit.password.title": "تغيير كلمة السر",
-  "settings.edit.password.current": "كلمة السر الحالية",
-  "settings.edit.password.new": "كلمة السر الجديدة",
-  "settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
-  "settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
-  "settings.notifications": "الإشعارات",
-  "settings.notifications.lesson-date.title": "إشعارات تاريخ الدرس",
-  "settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
-  "settings.notifications.messages.title": "إشعارات الرسائل",
-  "settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
-  "settings.notifications.coming-soon.title": "قريبا 🎉",
-  "settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
-  "settings.loading": "برجاء الإنتظار... جاري تحميل الإعدادات!",
-  "settings.confirm": "تأكيد الحساب",
-  "settings.error": " عذرًا، حدث خطأ أثناء تحميل  الإعدادات، برجاء المحاولة مرة أخرى",
-  "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
+  "shared-settings.update.error": "لديك مشكلة في تحديث البيانات",
+  "shared-settings.notifications": "الإشعارات",
+  "shared-settings.notifications.lesson-date.title": "إشعارات تاريخ الدرس",
+  "shared-settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
+  "shared-settings.notifications.messages.title": "إشعارات الرسائل",
+  "shared-settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
+  "shared-settings.notifications.coming-soon.title": "قريبا 🎉",
+  "shared-settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
+  "shared-settings.edit.password.title": "تغيير كلمة السر",
+  "shared-settings.edit.password.current": "كلمة السر الحالية",
+  "shared-settings.edit.password.new": "كلمة السر الجديدة",
+  "shared-settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
+  "shared-settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
   "verify-email.title": "لم يتم تأكيد حسابك بعد!",
   "lessons.button.rebook": "إعادة الحجز",
   "lessons.button.join": "دخول الحصة",

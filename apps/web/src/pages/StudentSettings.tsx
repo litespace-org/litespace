@@ -16,10 +16,10 @@ const Settings: React.FC = () => {
   }, [user, loading, error]);
 
   return (
-    <div className="p-4 md:p-6 mx-auto w-full md:max-w-screen">
+    <div className="p-4 md:p-6 mx-auto w-full max-w-screen-3xl">
       <div className="relative w-full">
         <PageTitle
-          title={intl("settings.profile.title")}
+          title={intl("student-settings.profile.title")}
           className="mb-4 md:mb-6"
           fetching={fetching && !loading}
         />
@@ -27,7 +27,7 @@ const Settings: React.FC = () => {
         <div>
           {loading ? (
             <div className="w-full mt-[12.5%] flex justify-center">
-              <Loader size="large" text={intl("settings.loading")} />
+              <Loader size="large" text={intl("student-settings.loading")} />
             </div>
           ) : null}
 
@@ -36,7 +36,7 @@ const Settings: React.FC = () => {
               <LoadingError
                 size="large"
                 retry={refetch.user}
-                error={intl("settings.error")}
+                error={intl("student-settings.error")}
               />
             </div>
           ) : null}

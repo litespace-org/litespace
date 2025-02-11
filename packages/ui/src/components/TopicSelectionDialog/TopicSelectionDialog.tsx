@@ -188,18 +188,19 @@ export const TopicSelectionDialog: React.FC<Props> = ({
 
           <div className="tw-flex tw-flex-row tw-w-full tw-gap-6">
             <Button
-              size={"large"}
-              onClick={() => confirm(selection)}
-              className="tw-w-full"
+              size="large"
+              variant="primary"
               loading={confirming}
+              className="tw-w-full"
+              onClick={() => confirm(selection)}
               disabled={loading || error || confirming || !dataChanged}
             >
               {intl("labels.confirm")}
             </Button>
             <Button
-              variant={"secondary"}
-              size={"large"}
+              size="large"
               onClick={onClose}
+              variant="secondary"
               className="tw-w-full"
               disabled={confirming}
             >

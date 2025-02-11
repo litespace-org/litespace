@@ -149,3 +149,17 @@ export function useCurrentUser(enabled: boolean = true) {
     enabled,
   });
 }
+
+export function useUploadUserAssets() {
+  const atlas = useAtlas();
+  const upload = useCallback(
+    ({ id, payload }: { id: number; payload: IUser.UpdateMediaPayload }) =>
+      atlas.user.updateMedia(id, payload),
+    [atlas.user]
+  );
+
+  return useMutation({
+    mutationFn: upload,
+    mutationKey: [MutationKey.UploadUserAssets],
+  });
+}

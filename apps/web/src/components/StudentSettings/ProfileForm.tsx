@@ -1,17 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { isEqual } from "lodash";
-
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import { TopicSelector } from "@/components/StudentSettings/TopicSelector";
+import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { governorates } from "@/constants/user";
 import NotificationSettings from "@/components/Common/NotificationSettings";
-
 import { IUser } from "@litespace/types";
-import { orNull, orUndefined } from "@litespace/utils/utils";
-import { MAX_TOPICS_COUNT } from "@litespace/utils/constants";
-
+import {
+  getNullableFiledUpdatedValue,
+  getOptionalFieldUpdatedValue,
+} from "@litespace/utils/utils";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Typography } from "@litespace/ui/Typography";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -25,11 +24,9 @@ import {
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
 import { useToast } from "@litespace/ui/Toast";
-
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
-import { useUpdateFullUser } from "@litespace/headless/user";
-import { useTopics, useUserTopics } from "@litespace/headless/topic";
+import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type IForm = {
@@ -42,36 +39,24 @@ type IForm = {
     confirm: string;
   };
   city: IUser.City | null;
-  topics: number[];
 };
 
-export type TopicWatcher = {
-  addTopics: number[];
-  removeTopics: number[];
-};
+function canSubmit(formData: IForm, user: IUser.Self) {
+  const initial = {
+    name: user.name,
+    email: user.email,
+    phoneNumber: user.phoneNumber || "",
+    password: { new: "", current: "", confirm: "" },
+    city: user.city || null,
+  };
+  return !isEqual(formData, initial);
+}
 
 export const ProfileForm: React.FC<{
   user: IUser.Self;
   className?: string;
 }> = ({ user, className }) => {
   const mq = useMediaQuery();
-  const [photo, setPhoto] = useState<File | null>(null);
-
-  const allTopicsQuery = useTopics({});
-  const userTopicsQuery = useUserTopics();
-
-  const allTopics = useMemo(() => {
-    if (!allTopicsQuery.query.data?.list) return [];
-    return allTopicsQuery.query.data.list.map((topic) => ({
-      id: topic.id,
-      label: topic.name.ar,
-    }));
-  }, [allTopicsQuery]);
-
-  const userTopics = useMemo(() => {
-    if (!userTopicsQuery.data) return [];
-    return userTopicsQuery.data.map((topic) => topic.id);
-  }, [userTopicsQuery.data]);
 
   const intl = useFormatMessage();
   const toast = useToast();
@@ -87,14 +72,9 @@ export const ProfileForm: React.FC<{
         confirm: "",
       },
       city: user?.city || null,
-      topics: userTopics,
     },
   });
   const errors = form.formState.errors;
-
-  useEffect(() => {
-    form.setValue("topics", userTopics);
-  }, [userTopics, form]);
 
   const invalidateQuery = useInvalidateQuery();
   const validateUserName = useValidateUserName();
@@ -113,47 +93,17 @@ export const ProfileForm: React.FC<{
   const email = form.watch("email");
   const password = form.watch("password");
   const phoneNumber = form.watch("phoneNumber");
-  const topics = form.watch("topics");
-
-  const canSubmit = useMemo(() => {
-    const currentValues = { city, name, email, password, phoneNumber, topics };
-    const initialValues = {
-      name: user.name,
-      email: user.email,
-      phoneNumber: user.phoneNumber,
-      password: {
-        new: "",
-        current: "",
-        confirm: "",
-      },
-      city: user.city || null,
-      topics: userTopics,
-    };
-
-    if (photo) return true;
-    if (!isEqual(currentValues, initialValues)) return true;
-    return false;
-  }, [
-    user,
-    userTopics,
-    photo,
-    city,
-    name,
-    email,
-    password,
-    phoneNumber,
-    topics,
-  ]);
 
   const onSuccess = useCallback(() => {
+    form.resetField("password");
     invalidateQuery([QueryKey.FindCurrentUser]);
-  }, [invalidateQuery]);
+  }, [form, invalidateQuery]);
 
   const onError = useCallback(
     (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
       toast.error({
-        title: intl("profile.update.error"),
+        title: intl("shared-settings.update.error"),
         description: intl(errorMessage),
       });
     },
@@ -169,27 +119,20 @@ export const ProfileForm: React.FC<{
     [intl]
   );
 
-  const profileMutation = useUpdateFullUser({ onSuccess, onError });
+  const updateUser = useUpdateUser({ onSuccess, onError });
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      if (!canSubmit) return;
-      if (!user) return;
-
-      const addTopics: number[] = topics.filter(
-        (topic) => !userTopics.includes(topic)
-      );
-      const removeTopics: number[] = userTopics.filter(
-        (topic) => !topics.includes(topic)
-      );
-
-      profileMutation.mutate({
+      if (!user || !canSubmit(data, user)) return;
+      updateUser.mutate({
         id: user.id,
         payload: {
-          name: data.name && data.name !== user.name ? data.name : undefined,
-          email:
-            data.email && data.email !== user.email ? data.email : undefined,
-          phoneNumber: data.phoneNumber ? data.phoneNumber : undefined,
+          name: getNullableFiledUpdatedValue(user.name, data.name),
+          email: getOptionalFieldUpdatedValue(user.email, data.email),
+          phoneNumber: getNullableFiledUpdatedValue(
+            user.phoneNumber,
+            data.phoneNumber
+          ),
           password:
             data.password.new && data.password.current
               ? {
@@ -197,40 +140,12 @@ export const ProfileForm: React.FC<{
                   current: data.password.current,
                 }
               : undefined,
-          city: data.city && data.city !== user.city ? data.city : undefined,
-          addTopics,
-          removeTopics,
-          image: photo,
+          city: getNullableFiledUpdatedValue(user.city, data.city),
         },
       });
     },
-    [profileMutation, photo, user, canSubmit, topics, userTopics]
+    [updateUser, user]
   );
-
-  const topicsSelector = useMemo(() => {
-    if (userTopicsQuery.isPending || allTopicsQuery.query.isPending)
-      // adding this div to not cause layout shift while loading the queries
-      return <div />;
-
-    return (
-      <TopicSelector
-        allTopics={allTopics}
-        selectedTopics={topics}
-        setTopics={(newTopics: number[]) => {
-          if (topics.length === MAX_TOPICS_COUNT) return;
-          form.setValue("topics", newTopics);
-        }}
-        retry={userTopicsQuery.refetch}
-      />
-    );
-  }, [
-    allTopics,
-    allTopicsQuery.query.isPending,
-    form,
-    topics,
-    userTopicsQuery.isPending,
-    userTopicsQuery.refetch,
-  ]);
 
   useEffect(() => {
     if (!requirePassword) {
@@ -246,18 +161,7 @@ export const ProfileForm: React.FC<{
       className={cn("flex flex-col", className)}
     >
       <div className="flex items-start justify-between mb-6 sm:mb-8">
-        <UploadPhoto
-          id={user.id}
-          setPhoto={setPhoto}
-          photo={photo || orNull(user?.image)}
-        >
-          {!mq.sm ? (
-            <ConfirmButton
-              disabled={profileMutation.isPending || !canSubmit}
-              loading={profileMutation.isPending}
-            />
-          ) : null}
-        </UploadPhoto>
+        <UploadPhoto id={user.id} />
 
         <div
           className={cn(
@@ -266,15 +170,9 @@ export const ProfileForm: React.FC<{
           )}
         >
           <SaveButton
-            disabled={profileMutation.isPending || !canSubmit}
-            loading={profileMutation.isPending}
+            disabled={updateUser.isPending || !canSubmit(form.watch(), user)}
+            loading={updateUser.isPending}
           />
-          {mq.sm ? (
-            <ConfirmButton
-              disabled={profileMutation.isPending || !canSubmit}
-              loading={profileMutation.isPending}
-            />
-          ) : null}
         </div>
       </div>
 
@@ -285,67 +183,74 @@ export const ProfileForm: React.FC<{
             weight="bold"
             className="text-natural-950"
           >
-            {intl("settings.edit.personal.title")}
+            {intl("student-settings.edit.personal.title")}
           </Typography>
 
           <div className="grid gap-2 sm:gap-4 my-4 sm:my-6">
             <Controller.Input
-              placeholder={intl("settings.edit.personal.name.placeholder")}
-              value={form.watch("name")}
+              id="name"
+              name="name"
+              value={name}
+              idleDir="rtl"
+              autoComplete="off"
               control={form.control}
               rules={{ validate: validateUserName }}
-              autoComplete="off"
-              name="name"
-              label={intl("settings.edit.personal.name")}
-              state={errors.name ? "error" : undefined}
               helper={errors.name?.message}
+              state={errors.name ? "error" : undefined}
+              label={intl("student-settings.edit.personal.name")}
+              placeholder={intl(
+                "student-settings.edit.personal.name.placeholder"
+              )}
             />
 
             <Controller.Input
-              control={form.control}
+              id="email"
+              idleDir="rtl"
               name="email"
-              value={form.watch("email")}
-              placeholder={intl("settings.edit.personal.email.placeholder")}
+              value={email}
               autoComplete="off"
-              rules={{ validate: validateEmail }}
-              label={intl("settings.edit.personal.email")}
-              state={errors.email ? "error" : undefined}
+              control={form.control}
               helper={errors.email?.message}
+              rules={{ validate: validateEmail }}
+              state={errors.email ? "error" : undefined}
+              label={intl("student-settings.edit.personal.email")}
+              placeholder={intl(
+                "student-settings.edit.personal.email.placeholder"
+              )}
             />
 
             <Controller.PatternInput
-              format="### #### ####"
-              placeholder={intl(
-                "settings.edit.personal.phone-number.placeholder"
-              )}
-              value={form.watch("phoneNumber")}
-              control={form.control}
-              name="phoneNumber"
-              rules={{ validate: validatePhoneNumber }}
-              autoComplete="off"
               mask=" "
-              label={intl("settings.edit.personal.phone-number")}
-              state={errors.phoneNumber ? "error" : undefined}
+              idleDir="rtl"
+              id="phone-number"
+              name="phoneNumber"
+              autoComplete="off"
+              value={phoneNumber}
+              format="### #### ####"
+              control={form.control}
               helper={errors.phoneNumber?.message}
+              rules={{ validate: validatePhoneNumber }}
+              state={errors.phoneNumber ? "error" : undefined}
+              label={intl("student-settings.edit.personal.phone-number")}
+              placeholder={intl(
+                "student-settings.edit.personal.phone-number.placeholder"
+              )}
             />
 
-            <div>
-              <Typography element="caption" weight="semibold">
-                {intl("settings.edit.personal.city")}
-              </Typography>
-              <Controller.Select
-                options={cityOptions}
-                placeholder={intl(
-                  "shared-settings.edit.personal.city.placeholder"
-                )}
-                value={orUndefined(form.watch("city"))}
-                control={form.control}
-                name="city"
-              />
-            </div>
+            <Controller.Select
+              id="city"
+              name="city"
+              control={form.control}
+              value={city || undefined}
+              options={cityOptions}
+              label={intl("student-settings.edit.personal.city")}
+              placeholder={intl(
+                "shared-settings.edit.personal.city.placeholder"
+              )}
+            />
           </div>
 
-          {mq.sm ? topicsSelector : null}
+          {mq.sm ? <TopicSelection /> : null}
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -354,57 +259,68 @@ export const ProfileForm: React.FC<{
             weight="bold"
             className="text-natural-950"
           >
-            {intl("settings.edit.password.title")}
+            {intl("shared-settings.edit.password.title")}
           </Typography>
 
           <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
             <Controller.Password
-              value={form.watch("password.current")}
+              id="current-password"
+              value={password.current}
               control={form.control}
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
               }}
               name="password.current"
-              label={intl("settings.edit.password.current")}
+              label={intl("shared-settings.edit.password.current")}
               state={errors.password?.current ? "error" : undefined}
               helper={errors.password?.current?.message}
+              idleDir="rtl"
+              placeholder="********************"
             />
 
             <Controller.Password
-              value={form.watch("password.new")}
+              id="new-password"
+              idleDir="rtl"
+              value={password.new}
               control={form.control}
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: validatePassword,
               }}
               name="password.new"
-              label={intl("settings.edit.password.new")}
+              label={intl("shared-settings.edit.password.new")}
               state={errors.password?.new ? "error" : undefined}
               helper={errors.password?.new?.message}
+              placeholder="********************"
             />
 
             <Controller.Password
-              value={form.watch("password.confirm")}
+              id="confirm-password"
+              idleDir="rtl"
+              value={password.confirm}
               control={form.control}
               rules={{
                 required: requirePassword ? required : undefined,
                 validate: (value) => {
                   if (value !== form.watch("password.new"))
-                    return intl("settings.edit.password.confirm.not-same");
+                    return intl(
+                      "shared-settings.edit.password.confirm.not-same"
+                    );
                   return validatePassword(value);
                 },
               }}
               name="password.confirm"
-              label={intl("settings.edit.password.confirm")}
+              label={intl("shared-settings.edit.password.confirm")}
               state={errors.password?.confirm ? "error" : undefined}
               helper={errors.password?.confirm?.message}
+              placeholder="********************"
             />
           </div>
 
-          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
+          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
             <NotificationSettings />
-            {!mq.sm ? topicsSelector : null}
+            {!mq.sm ? <TopicSelection /> : null}
           </div>
         </div>
       </div>
@@ -431,30 +347,6 @@ const SaveButton: React.FC<{
         className="text-natural-50"
       >
         {intl("shared-settings.save")}
-      </Typography>
-    </Button>
-  );
-};
-
-const ConfirmButton: React.FC<{
-  disabled: boolean;
-  loading: boolean;
-}> = ({ disabled, loading }) => {
-  const intl = useFormatMessage();
-  return (
-    <Button
-      disabled={disabled}
-      loading={loading}
-      size="large"
-      variant="secondary"
-      className="w-full sm:w-fit sm:static sm:bottom-4 sm:left-4 mr-auto sm:mt-auto z-10"
-      htmlType="submit"
-    >
-      <Typography
-        element={{ default: "caption", lg: "body" }}
-        weight={{ default: "medium" }}
-      >
-        {intl("settings.confirm")}
       </Typography>
     </Button>
   );

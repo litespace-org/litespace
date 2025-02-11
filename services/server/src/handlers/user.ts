@@ -248,14 +248,16 @@ function update(context: ApiContext) {
         const user = await users.update(
           id,
           {
+            city,
             name,
             email,
             gender,
             birthYear,
+            phoneNumber,
+            // Reset user verification status incase his email updated.
+            verified: email ? false : undefined,
             image: drop?.image === true ? null : imageId,
             password: password ? hashPassword(password.new) : undefined,
-            phoneNumber,
-            city,
           },
           tx
         );
