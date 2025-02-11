@@ -5,6 +5,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useValidatePassword } from "@litespace/ui/hooks/validation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import cn from "classnames";
 import { useResetPassword } from "@litespace/headless/auth";
 import { Form, useNavigate, useSearchParams } from "react-router-dom";
 import { Route } from "@/types/routes";
@@ -18,6 +19,7 @@ import Success from "@litespace/assets/Success";
 import { motion, AnimatePresence } from "framer-motion";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { LoadingError } from "@litespace/ui/Loading";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -45,6 +47,7 @@ interface IForm {
 
 const ResetPassword = () => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const navigate = useNavigate();
   const validatePassword = useValidatePassword(true);
   const toast = useToast();
@@ -101,21 +104,39 @@ const ResetPassword = () => {
   }, [handleSubmit, password, confirmedPassword, token, resetPassword]);
 
   return (
-    <div className="flex flex-row gap-8 h-full p-6">
+    <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
       <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
         <Header />
-        <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
-          <div className="flex flex-col justify-center items-center w-full h-1/2 mt-[24.4%]">
-            <div className="flex flex-col items-center justify-center gap-2 text-center max-w-[363px] mb-10 mx-auto">
+
+        <div className="flex-1 flex flex-col justify-start items-center max-w-[554px] w-full">
+          <div className="flex flex-col justify-start sm:justify-center items-center w-full h-1/2 mt-10 sm:mt-[24.4%]">
+            <div
+              className={cn(
+                "flex flex-col items-start sm:items-center text-right sm:text-center justify-center",
+                "w-full gap-2 text-center sm:max-w-[363px]"
+              )}
+            >
               <Typography
-                element="h4"
-                weight="semibold"
+                element={{
+                  default: "subtitle-1",
+                  lg: "h4",
+                }}
+                weight={{
+                  default: "bold",
+                  lg: "semibold",
+                }}
                 className="text-natural-950"
               >
                 {intl("reset-password.title")}
               </Typography>
               {!resetPassword.isPending && !resetPassword.isSuccess ? (
-                <Typography element="body" className="text-natural-700">
+                <Typography
+                  element={{
+                    default: "tiny-text",
+                    lg: "body",
+                  }}
+                  className="text-natural-700"
+                >
                   {intl("reset-password.description")}
                 </Typography>
               ) : null}
@@ -125,10 +146,16 @@ const ResetPassword = () => {
               {resetPassword.isPending ? (
                 <Animate key="submitting">
                   <div className="flex flex-col items-center justify-center gap-4">
-                    <Spinner className="w-[80px] fill-brand-700" />
+                    <Spinner className="w-[40px] sm:w-[80px] fill-brand-700 mt-10" />
                     <Typography
-                      element="caption"
-                      weight="semibold"
+                      element={{
+                        default: "tiny-text",
+                        sm: "caption",
+                      }}
+                      weight={{
+                        default: "regular",
+                        sm: "semibold",
+                      }}
                       className="text-natural-950"
                     >
                       {intl("reset-password.setting-password")}
@@ -139,9 +166,9 @@ const ResetPassword = () => {
 
               {resetPassword.isError ? (
                 <Animate key="submitting">
-                  <div className="flex flex-col items-center justify-center gap-4">
+                  <div className="flex flex-col items-center justify-center gap-4 mt-[30px] sm:mt-10">
                     <LoadingError
-                      size="large"
+                      size={mq.sm ? "large" : "small"}
                       error={intl("reset-password.error")}
                       retry={onSubmit}
                     />
@@ -151,8 +178,8 @@ const ResetPassword = () => {
 
               {resetPassword.isSuccess ? (
                 <Animate key="success">
-                  <div className="flex flex-col items-center gap-6 mb-8">
-                    <Success width={141} height={141} />
+                  <div className="flex flex-col items-center gap-2 sm:gap-6 mb-10 sm:mb-8 mt-6 sm:mt-10">
+                    <Success className="w-20 sm:w-[141px] h-20 sm:h-[141px]" />
                     <Typography element="body" className="text-natural-700">
                       {intl("reset-password.done")}
                     </Typography>
@@ -173,7 +200,7 @@ const ResetPassword = () => {
                 <Animate key="form">
                   <Form
                     onSubmit={onSubmit}
-                    className="flex flex-col gap-6 w-full"
+                    className="flex flex-col gap-6 w-full mt-10"
                   >
                     <div className="flex flex-col gap-4">
                       <Controller.Password
@@ -230,7 +257,8 @@ const ResetPassword = () => {
           </div>
         </div>
       </main>
-      <Aside />
+
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };

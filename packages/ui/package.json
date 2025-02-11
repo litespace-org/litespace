@@ -108,7 +108,6 @@
     "clean": "rm -rf dist/",
     "build": "pnpm build:ts && pnpm build:assets && pnpm build:css",
     "build:ts": "tsc -p tsconfig.build.json",
-    "build:ts:watch": "tsc -p tsconfig.build.json -w",
     "build:css": "tailwindcss -m -i src/tailwind.css -o dist/style.css",
     "build:vercel": "pnpm vercel build",
     "build:assets": "cp src/tailwind.css dist/ && cp tailwind.config.js dist/",

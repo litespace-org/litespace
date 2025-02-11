@@ -21,6 +21,7 @@ import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface IForm {
   email: string;
@@ -33,6 +34,7 @@ const Login: React.FC = () => {
   const toast = useToast();
   const user = useUserContext();
   const google = useGoogle({});
+  const mq = useMediaQuery();
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
@@ -71,21 +73,42 @@ const Login: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row gap-8 h-full p-6">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+    <div className="flex flex-row gap-8 h-full p-4">
+      <main className="flex flex-col items-center justify-start flex-1 flex-shrink-0 w-full">
         <Header />
-        <div className="flex-1 flex flex-col justify-center max-w-[404px] w-full">
-          <div className="flex flex-row items-center justify-center gap-4 mb-8">
-            <Logo className="h-[87px]" />
-            <div className="flex flex-col gap-2 items-start justify-center">
-              <Typography element="h3" weight="bold" className="text-brand-500">
-                {intl("labels.litespace")}
+
+        <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
+          {mq.lg ? (
+            <div className="flex flex-row items-center justify-center gap-4 mb-8">
+              <Logo className="h-[87px]" />
+              <div className="flex flex-col gap-2 items-start justify-center">
+                <Typography
+                  element="h3"
+                  weight="bold"
+                  className="text-brand-500"
+                >
+                  {intl("labels.litespace")}
+                </Typography>
+                <Typography element="body" className="text-natural-700">
+                  {intl("login.welcome")}
+                </Typography>
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-col items-start justify-center gap-4 my-10">
+              <Typography
+                element="subtitle-1"
+                weight="bold"
+                className="text-brand-950 w-[220px] sm:w-auto"
+              >
+                {intl("page.login.mobile.form.title")}
               </Typography>
-              <Typography element="body" className="text-natural-700">
-                {intl("login.welcome")}
+              <Typography element="tiny-text" className="text-natural-700">
+                {intl("page.login.mobile.form.desc")}
               </Typography>
             </div>
-          </div>
+          )}
+
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
               <div className="flex flex-col gap-4">
@@ -184,7 +207,8 @@ const Login: React.FC = () => {
           </Form>
         </div>
       </main>
-      <Aside />
+
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };

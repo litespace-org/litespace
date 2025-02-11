@@ -77,12 +77,12 @@ const ForgetPassword: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
+    <div className="flex flex-row gap-8 h-full p-6">
       <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
         <Header />
 
         <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
-          <div className="flex justify-center items-start sm:items-center w-full h-1/2 mt-10 sm:mt-[24.4%]">
+          <div className="flex justify-start items-center w-full h-1/2 mt-[24.4%]">
             <AnimatePresence initial={false} mode="wait">
               {!sentEmail ? (
                 <Animate key="form">
@@ -97,7 +97,7 @@ const ForgetPassword: React.FC = () => {
                     >
                       {intl("forget-password.title")}
                     </Typography>
-                    <Typography
+                    <Typography 
                       element={{
                         default: "tiny-text",
                         lg: "body",
@@ -171,7 +171,7 @@ const ForgetPassword: React.FC = () => {
                     >
                       {intl("forget-password.check-inbox")}
                     </Typography>
-                    <Typography
+                    <Typography 
                       element={{
                         default: "tiny-text",
                         lg: "body",
