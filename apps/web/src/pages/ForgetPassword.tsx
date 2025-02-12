@@ -13,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type FormData = {
   email: string;
@@ -42,8 +43,9 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const ForgetPassword: React.FC = () => {
   const toast = useToast();
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const validateEmail = useValidateEmail(true);
-  const [sentEmail, setSentEmail] = useState<boolean>(false);
+  const [sentEmail, setSentEmail] = useState<boolean>(true);
   const { watch, handleSubmit, control, reset, formState } = useForm<FormData>({
     defaultValues: { email: "" },
   });
@@ -75,23 +77,27 @@ const ForgetPassword: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row gap-8 h-full p-6">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+    <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
+      <main className="flex flex-col gap-10 sm:gap-0 items-center flex-1 flex-shrink-0 w-full">
         <Header />
+
         <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
-          <div className="flex justify-center items-center w-full h-1/2 mt-[24.4%]">
+          <div className="flex justify-center items-start sm:items-center w-full">
             <AnimatePresence initial={false} mode="wait">
               {!sentEmail ? (
                 <Animate key="form">
-                  <div className="flex flex-col items-center justify-center gap-2 text-center max-w-[363px] mb-10 mx-auto">
+                  <div className="flex flex-col items-start sm:items-center gap-4 sm:gap-2 text-start sm:text-center max-w-[363px] mb-6 sm:mb-10 sm:mx-auto">
                     <Typography
-                      element="h4"
+                      element={{ default: "subtitle-1", lg: "h4" }}
                       weight="semibold"
                       className="text-natural-950"
                     >
                       {intl("forget-password.title")}
                     </Typography>
-                    <Typography element="body" className="text-natural-700">
+                    <Typography
+                      element={{ default: "tiny-text", lg: "body" }}
+                      className="text-natural-700"
+                    >
                       {intl("forget-password.description")}
                     </Typography>
                   </div>
@@ -145,18 +151,22 @@ const ForgetPassword: React.FC = () => {
 
               {sentEmail ? (
                 <Animate key="email-sent">
-                  <div className="flex flex-col items-center justify-center gap-2 text-center mb-6">
+                  <div className="flex flex-col items-start sm:items-center text-right sm:text-center justify-center gap-4 sm:gap-2 mb-6">
                     <Typography
-                      element="h4"
-                      weight="semibold"
-                      className="text-natural-950"
+                      element={{ default: "subtitle-1", lg: "h4" }}
+                      weight={{ default: "bold", lg: "semibold" }}
+                      className="text-natural-950 w-[230px] sm:w-auto"
                     >
                       {intl("forget-password.check-inbox")}
                     </Typography>
-                    <Typography element="body" className="text-natural-700">
+                    <Typography
+                      element={{ default: "tiny-text", lg: "body" }}
+                      className="text-natural-700"
+                    >
                       {intl("forget-password.check-inbox.description")}
                     </Typography>
                   </div>
+
                   <Button
                     variant="tertiary"
                     size="medium"
@@ -175,7 +185,8 @@ const ForgetPassword: React.FC = () => {
           </div>
         </div>
       </main>
-      <Aside />
+
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };

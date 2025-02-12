@@ -21,6 +21,7 @@ import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface IForm {
   email: string;
@@ -33,6 +34,7 @@ const Login: React.FC = () => {
   const toast = useToast();
   const user = useUserContext();
   const google = useGoogle({});
+  const mq = useMediaQuery();
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
@@ -71,11 +73,12 @@ const Login: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row gap-8 h-full p-6">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+    <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
+      <main className="flex flex-col gap-10 sm:gap-0 items-center justify-start flex-1 flex-shrink-0 w-full">
         <Header />
-        <div className="flex-1 flex flex-col justify-center max-w-[404px] w-full">
-          <div className="flex flex-row items-center justify-center gap-4 mb-8">
+
+        <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
+          <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
             <Logo className="h-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
               <Typography element="h3" weight="bold" className="text-brand-500">
@@ -86,9 +89,10 @@ const Login: React.FC = () => {
               </Typography>
             </div>
           </div>
+
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2 sm:gap-4">
                 <Controller.Input
                   id="email"
                   name="email"
@@ -120,7 +124,7 @@ const Login: React.FC = () => {
                   helper={errors.password?.message}
                 />
 
-                <div>
+                <div className="mt-2 sm:mt-0">
                   <Link to={Route.ForgetPassword}>
                     <Typography
                       element="caption"
@@ -184,7 +188,8 @@ const Login: React.FC = () => {
           </Form>
         </div>
       </main>
-      <Aside />
+
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };

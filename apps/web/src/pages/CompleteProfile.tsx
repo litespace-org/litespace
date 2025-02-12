@@ -4,26 +4,28 @@ import Header from "@/components/Auth/Header";
 import { Typography } from "@litespace/ui/Typography";
 import Aside from "@/components/Auth/Aside";
 import Form from "@/components/CompleteProfile/Form";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Complete: React.FC = () => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
 
   return (
     <div className="flex flex-row gap-8 h-full p-6">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+      <main className="flex flex-col gap-10 sm:gap-0 items-center flex-1 flex-shrink-0 w-full">
         <Header />
-        <div className="flex-1 flex flex-col gap-6 justify-center w-full">
-          <div className="flex flex-col gap-2 text-center max-w-[645px] mx-auto">
+        <div className="flex-1 flex flex-col sm:justify-center gap-6 w-full">
+          <div className="flex flex-col gap-2 items-start sm:items-center text-start sm:text-center max-w-[645px] sm:mx-auto">
             <Typography
-              element="h4"
-              weight="semibold"
+              element={{ default: "subtitle-1", sm: "h4" }}
+              weight={{ default: "bold", sm: "semibold" }}
               className="text-natural-950"
             >
               {intl("complete-profile.title")}
             </Typography>
             <Typography
-              element="body"
-              weight="regular"
+              element={{ default: "tiny-text", sm: "body" }}
+              weight={{ default: "semibold", sm: "regular" }}
               className="text-natural-700"
             >
               {intl("complete-profile.description")}
@@ -32,7 +34,7 @@ const Complete: React.FC = () => {
           <Form />
         </div>
       </main>
-      <Aside />
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };
