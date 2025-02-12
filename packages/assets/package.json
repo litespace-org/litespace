@@ -67,6 +67,7 @@
     "./Google": "./dist/Google.tsx",
     "./Home": "./dist/Home.tsx",
     "./Info": "./dist/Info.tsx",
+    "./Illustration": "./dist/Illustration.tsx",
     "./LeftArrowHead": "./dist/LeftArrowHead.tsx",
     "./LoginDark": "./dist/LoginDark.tsx",
     "./LoginLight": "./dist/LoginLight.tsx",
