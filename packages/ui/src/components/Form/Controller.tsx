@@ -117,7 +117,8 @@ export function Password<T extends FieldValues>({
           <BaseInput
             autoComplete="off"
             type={hidden ? "password" : "text"}
-            idleDir="ltr"
+            idleDir="rtl"
+            placeholder="********************"
             endAction={{
               icon: hidden ? (
                 <EyeSlash className="tw-w-4 tw-h-4" />

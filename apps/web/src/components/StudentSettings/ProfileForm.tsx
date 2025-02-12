@@ -254,76 +254,74 @@ export const ProfileForm: React.FC<{
 
           {mq.sm ? <TopicSelection /> : null}
         </div>
+      </div>
 
-        <div className="flex-1 flex flex-col">
-          <Typography
-            tag="h2"
-            className="text-natural-950 text-subtitle-2 font-bold"
-          >
-            {intl("shared-settings.edit.password.title")}
-          </Typography>
+      <div className="flex-1 flex flex-col">
+        <Typography
+          tag="h2"
+          className="text-natural-950 text-subtitle-2 font-bold"
+        >
+          {intl("shared-settings.edit.password.title")}
+        </Typography>
 
-          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
-            <Controller.Password
-              id="current-password"
-              value={password.current}
-              control={form.control}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: validatePassword,
-              }}
-              name="password.current"
-              label={intl("shared-settings.edit.password.current")}
-              state={errors.password?.current ? "error" : undefined}
-              helper={errors.password?.current?.message}
-              idleDir="rtl"
-              placeholder="********************"
-            />
+        <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
+          <Controller.Password
+            id="current-password"
+            value={password.current}
+            control={form.control}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: validatePassword,
+            }}
+            name="password.current"
+            label={intl("shared-settings.edit.password.current")}
+            state={errors.password?.current ? "error" : undefined}
+            helper={errors.password?.current?.message}
+            idleDir="rtl"
+            placeholder="********************"
+          />
 
-            <Controller.Password
-              id="new-password"
-              idleDir="rtl"
-              value={password.new}
-              control={form.control}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: validatePassword,
-              }}
-              name="password.new"
-              label={intl("shared-settings.edit.password.new")}
-              state={errors.password?.new ? "error" : undefined}
-              helper={errors.password?.new?.message}
-              placeholder="********************"
-            />
+          <Controller.Password
+            id="new-password"
+            idleDir="rtl"
+            value={password.new}
+            control={form.control}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: validatePassword,
+            }}
+            name="password.new"
+            label={intl("shared-settings.edit.password.new")}
+            state={errors.password?.new ? "error" : undefined}
+            helper={errors.password?.new?.message}
+            placeholder="********************"
+          />
 
-            <Controller.Password
-              id="confirm-password"
-              idleDir="rtl"
-              value={password.confirm}
-              control={form.control}
-              rules={{
-                required: requirePassword ? required : undefined,
-                validate: (value) => {
-                  if (value !== form.watch("password.new"))
-                    return intl(
-                      "shared-settings.edit.password.confirm.not-same"
-                    );
-                  return validatePassword(value);
-                },
-              }}
-              name="password.confirm"
-              label={intl("shared-settings.edit.password.confirm")}
-              state={errors.password?.confirm ? "error" : undefined}
-              helper={errors.password?.confirm?.message}
-              placeholder="********************"
-            />
-          </div>
+          <Controller.Password
+            id="confirm-password"
+            idleDir="rtl"
+            value={password.confirm}
+            control={form.control}
+            rules={{
+              required: requirePassword ? required : undefined,
+              validate: (value) => {
+                if (value !== form.watch("password.new"))
+                  return intl("shared-settings.edit.password.confirm.not-same");
+                return validatePassword(value);
+              },
+            }}
+            name="password.confirm"
+            label={intl("shared-settings.edit.password.confirm")}
+            state={errors.password?.confirm ? "error" : undefined}
+            helper={errors.password?.confirm?.message}
+            placeholder="********************"
+          />
+        </div>
 
-          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
-            <NotificationSettings />
-            {!mq.sm ? <TopicSelection /> : null}
-            <SettingsVerifyEmail />
-          </div>
+        <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
+          <NotificationSettings />
+          {!mq.sm ? <TopicSelection /> : null}
+          {!user.verified ? <SettingsVerifyEmail /> : null}
         </div>
       </div>
     </Form>
