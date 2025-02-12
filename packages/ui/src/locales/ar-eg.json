@@ -28,6 +28,8 @@
   "complete-profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
   "complete-profile.title": "قم بأستكمال حسابك!",
   "complete-profile.description": "نحن هنا لنضمن لك تجربة مخصصة و مريحة! أضف اسمك الكامل، مدينتك و رقم هاتفك لأستكمال حسابك و الاستفادة من جميع مميزات منصتنا.",
+  "complete-profile.phone.helper": "لضمان أمان حسابك وسهولة استرجاع كلمة المرور عند الحاجة",
+  "complete-profile.city.helper": "لترشيح معلمين بالقرب منك وضمان سرعة إنترنت مستقرة",
   "forget-password.title": "نسيت كلمة المرور؟",
   "forget-password.description": "ادخل برديك الالكتروني و سنرسل لك تعليمات لإعادة تعيين كلمه المرور الخاصة بك",
   "forget-password.send-link": "ارسال الرابط",

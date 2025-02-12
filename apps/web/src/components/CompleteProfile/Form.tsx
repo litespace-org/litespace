@@ -136,7 +136,10 @@ const CompleteProfile: React.FC = () => {
             rules={{ validate: validatePhoneNumber }}
             placeholder={intl("labels.phoneNumber.placeholder")}
             state={errors.phoneNumber ? "error" : undefined}
-            helper={errors.phoneNumber?.message}
+            helper={
+              errors.phoneNumber?.message ||
+              intl("complete-profile.phone.helper")
+            }
             autoComplete="off"
           />
 
@@ -148,6 +151,9 @@ const CompleteProfile: React.FC = () => {
             options={cityOptions}
             label={intl("labels.city")}
             placeholder={intl("labels.city.placeholder")}
+            helper={
+              errors.city?.message || intl("complete-profile.city.helper")
+            }
           />
 
           {!user?.password ? (
