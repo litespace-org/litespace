@@ -18,11 +18,13 @@ import { Topic } from "@/topic";
 import { AuthToken } from "@/client";
 import { Cache } from "@/cache";
 import { Session } from "@/session";
+import { ContactRequest } from "@/contactRequest";
 
 export class Atlas {
   public readonly user: User;
   public readonly auth: Auth;
   public readonly availabilitySlot: AvailabilitySlot;
+  public readonly contactRequest: ContactRequest;
   public readonly plan: Plan;
   public readonly coupon: Coupon;
   public readonly invite: Invite;
@@ -43,6 +45,7 @@ export class Atlas {
     this.user = new User(backend, token);
     this.auth = new Auth(backend, token);
     this.availabilitySlot = new AvailabilitySlot(backend, token);
+    this.contactRequest = new ContactRequest(backend, token);
     this.plan = new Plan(backend, token);
     this.coupon = new Coupon(backend, token);
     this.invite = new Invite(backend, token);

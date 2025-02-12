@@ -10,6 +10,7 @@ import {
   users,
   tutors,
   availabilitySlots,
+  contactRequests,
 } from "@litespace/models";
 
 async function execute(command: string): Promise<string> {
@@ -43,12 +44,13 @@ export async function flush() {
     await messages.builder(tx).del();
     await rooms.builder(tx).members.del();
     await rooms.builder(tx).rooms.del();
-    await interviews.builder(tx).del();
     await lessons.builder(tx).members.del();
     await lessons.builder(tx).lessons.del();
+    await interviews.builder(tx).del();
     await ratings.builder(tx).del();
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();
+    await contactRequests.builder(tx).del();
   });
 }

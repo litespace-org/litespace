@@ -1,6 +1,7 @@
 export { coupons } from "@/coupons";
 export { interviews } from "@/interviews";
 export { availabilitySlots } from "@/availabilitySlots";
+export { contactRequests } from "@/contactRequests";
 export { invites } from "@/invites";
 export { lessons } from "@/lessons";
 export { messages } from "@/messages";

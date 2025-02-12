@@ -315,9 +315,19 @@ exports.up = (pgm) => {
     updated_at: { type: "TIMeSTAMP", notNull: true },
   });
 
+  pgm.createTable("contact_requests", {
+    id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
+    name: { type: "VARCHAR(50)", notNull: true },
+    email: { type: "VARCHAR(50)", notNull: true },
+    title: { type: "VARCHAR(128)", notNull: true },
+    message: { type: "VARCHAR(256)", notNull: true },
+    created_at: { type: "TIMESTAMP", notNull: true },
+  });
+
   // indexes
   pgm.createIndex("lessons", "id");
   pgm.createIndex("availability_slots", "id");
+  pgm.createIndex("contact_requests", "id");
   pgm.createIndex("tutors", "id");
   pgm.createIndex("users", "id");
   pgm.createIndex("ratings", "id");
@@ -341,6 +351,7 @@ exports.up = (pgm) => {
 exports.down = (pgm) => {
   // indexes
   pgm.dropIndex("availability_slots", "id", { ifExists: true });
+  pgm.dropIndex("contact_requests", "id", { ifExists: true });
   pgm.dropIndex("invoices", "id", { ifExists: true });
   pgm.dropIndex("messages", "id", { ifExists: true });
   pgm.dropIndex("rooms", "id", { ifExists: true });
@@ -378,6 +389,7 @@ exports.down = (pgm) => {
   pgm.dropTable("tutors", { ifExists: true });
   pgm.dropTable("availability_slots", { ifExists: true });
   pgm.dropTable("users", { ifExists: true, cascade: true });
+  pgm.dropTable("contact_requests", { ifExists: true });
 
   // types
   pgm.dropType("user_role", { ifExists: true });
