@@ -2,11 +2,8 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { isEqual } from "lodash";
-import { Controller, Form } from "@litespace/ui/Form";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { governorates } from "@/constants/user";
-import NotificationSettings from "@/components/Common/NotificationSettings";
 import { IUser } from "@litespace/types";
 import {
   getNullableFiledUpdatedValue,
@@ -29,9 +26,9 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import NotificationSettings from "@/components/Common/NotificationSettings";
 import SettingsVerifyEmail from "@/components/StudentSettings/SettingsVerifyEmail";
+import TopicSelector from "@/components/Common/TopicSelector";
 
 type IForm = {
   name: string;
@@ -178,9 +175,7 @@ export const ProfileForm: React.FC<{
             loading={updateUser.isPending}
           />
         </div>
-        {lg ? topicsSelector : null}
       </div>
-
       <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
         <div className="flex-1 flex flex-col lg:max-w-[400px]">
           <Typography
@@ -255,7 +250,7 @@ export const ProfileForm: React.FC<{
             />
           </div>
 
-          {mq.sm ? <TopicSelection /> : null}
+          {mq.sm ? <TopicSelector /> : null}
         </div>
 
         <div className="flex-1 flex flex-col">
@@ -325,10 +320,10 @@ export const ProfileForm: React.FC<{
 
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
             <NotificationSettings />
-            {!mq.sm ? <TopicSelection /> : null}
-          {!user.verified ? <SettingsVerifyEmail /> : null}
-
+            {!mq.sm ? <TopicSelector /> : null}
+            {!user.verified ? <SettingsVerifyEmail /> : null}
           </div>
+        </div>
       </div>
     </Form>
   );

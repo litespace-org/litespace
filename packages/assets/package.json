@@ -17,6 +17,7 @@
     "vite-node": "^2.1.2"
   },
   "exports": {
+    "./Add": "./dist/Add.tsx",
     "./Categories": "./dist/Categories.tsx",
     "./Crown": "./dist/Crown.tsx",
     "./LongLeftArrow": "./dist/LongLeftArrow.tsx",

@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
-import { isEmpty } from "lodash";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
@@ -64,22 +63,18 @@ export function useUpdateFullUser({
       payload,
     }: {
       id: number;
-      payload: IUser.UpdateApiPayload &
-        ITopic.ReplaceUserTopicsApiPayload & {
-          image: File | null;
-        };
+      payload: IUser.UpdateApiPayload & {
+        image: File | null;
+      };
     }) => {
       await Promise.all([
         atlas.user.update(id, payload),
         payload.image
           ? atlas.user.updateMedia(id, { image: payload.image })
           : Promise.resolve(null),
-        !isEmpty(payload.addTopics) || !isEmpty(payload.removeTopics)
-          ? atlas.topic.replaceUserTopics(payload)
-          : Promise.resolve(null),
       ]);
     },
-    [atlas.user, atlas.topic]
+    [atlas.user]
   );
 
   return useMutation({
