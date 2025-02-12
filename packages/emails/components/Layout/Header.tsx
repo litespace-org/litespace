@@ -1,7 +1,7 @@
 import { Column, Img, Row, Section } from "@react-email/components";
 import React from "react";
 import { getAsset } from "@/lib/assets";
-import { translate } from "@/lib/translate";
+import { translate } from "@/components/Common/Translate";
 import Typography from "@/components/Common/Typography";
 
 const Header: React.FC = () => {
@@ -9,18 +9,18 @@ const Header: React.FC = () => {
     <Section className="w-fit">
       <Row style={{ direction: "rtl" }}>
         <Column>
-          <Img
-            className="ml-2"
-            src={getAsset("logo")}
-            alt="Logo"
-            width="48"
-            height="48"
-          />
-        </Column>
-        <Column>
           <Typography element="h4" weight="bold" text="brand-500">
             {translate("labels.litespace")}
           </Typography>
+        </Column>
+        <Column>
+          <Img
+            className="mr-2"
+            src={getAsset("logo")}
+            alt="LiteSpace"
+            width="48"
+            height="48"
+          />
         </Column>
       </Row>
     </Section>

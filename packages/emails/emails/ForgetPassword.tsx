@@ -3,13 +3,14 @@ import Typography from "@/components/Common/Typography";
 import Footer from "@/components/Layout/Footer";
 import Header from "@/components/Layout/Header";
 import Template from "@/components/Layout/Template";
-import { translate } from "@/lib/translate";
-import { Container, Markdown, Section } from "@react-email/components";
+import { translate } from "@/components/Common/Translate";
+import { Container, Section } from "@react-email/components";
 import * as React from "react";
+import Link from "@/components/Common/Link";
 
 export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
   return (
-    <Template preview={translate("forget-password-email.title")}>
+    <Template preview={translate.string("forget-password-email.title")}>
       <Header />
 
       <Section className="mt-[46px] text-center">
@@ -19,31 +20,15 @@ export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
       </Section>
 
       <Section className="max-w-[456px] mt-[24px] text-center">
-        <Markdown
-          markdownContainerStyles={{
-            padding: 0,
-            margin: 0,
-          }}
-          markdownCustomStyles={{
-            p: {
-              color: "#4D4D4D",
-              fontSize: "16px",
-              lineHeight: "24px",
-            },
-            link: {
-              fontSize: "16px",
-              lineHeight: "24px",
-            },
-          }}
-        >
-          {[
-            translate("forget-password-email.desc-1"),
-            `<a target="_blank" href="https://litespace.org/" style="color:#1D7C4E; text-decoration:none;">
-        LiteSpace.
-      </a>`,
-            translate("forget-password-email.desc-2"),
-          ].join(" ")}
-        </Markdown>
+        <Typography element="body" text="natural-700">
+          {translate("forget-password-email.desc", {
+            link: (
+              <Link href="https://litespace.org/" key="link">
+                {translate.string("labels.litespace")}
+              </Link>
+            ),
+          })}
+        </Typography>
       </Section>
 
       <Container>

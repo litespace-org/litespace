@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { render } from "@react-email/components";
 import { EmailTemplate, ForgetPassword, VerifyEmail } from "@/emails";
+import { EMAIL_SUBJECT } from "@/lib/subject";
 
 function makeTransporter(user: string, pass: string): nodemailer.Transporter {
   return nodemailer.createTransport({
@@ -32,12 +33,12 @@ export class Emailer {
     await this.transporter.sendMail({
       from: this.email,
       to,
-      subject: "TEST",
-      html: render(this.jsx(email)),
+      subject: EMAIL_SUBJECT[email.template],
+      html: render(this.template(email)),
     });
   }
 
-  private jsx({ template, props }: SendEmail) {
+  private template({ template, props }: SendEmail) {
     if (template === EmailTemplate.ForgetPassword) return ForgetPassword(props);
     return VerifyEmail(props);
   }

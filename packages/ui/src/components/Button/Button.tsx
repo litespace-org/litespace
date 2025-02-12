@@ -83,12 +83,12 @@ export const Button: React.FC<{
 
           "tw-bg-success-700 hover:tw-bg-success-600 active:tw-bg-success-700":
             is.success && is.primary,
-          "tw-bg-neutral-50 hover:tw-bg-success-50 active:tw-bg-success-100":
+          "tw-bg-natural-50 hover:tw-bg-success-50 active:tw-bg-success-100":
             is.success && is.secondary,
 
           "tw-bg-warning-700 hover:tw-bg-warning-600 active:tw-bg-warning-700":
             is.warning && is.primary,
-          "tw-bg-neutral-50 hover:tw-bg-warning-50 active:tw-bg-warning-100":
+          "tw-bg-natural-50 hover:tw-bg-warning-50 active:tw-bg-warning-100":
             is.warning && is.secondary,
         },
         // Text color
