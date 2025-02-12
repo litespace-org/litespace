@@ -7,6 +7,8 @@ import Rate from "@litespace/assets/Rate";
 import { RatingStars } from "@/components/RatingStars";
 import { Button } from "@/components/Button";
 import { Textarea } from "@/components/Textarea";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import cn from "classnames";
 
 interface DialogProps {
   title: string;
@@ -40,6 +42,7 @@ const RatingDialog: React.FC<DialogProps> = ({
   submit,
 }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
   const [rating, setRating] = useState<number>(defaults?.rating || 0);
   const [feedback, setFeedback] = useState<string>(defaults?.feedback || "");
 
@@ -69,19 +72,20 @@ const RatingDialog: React.FC<DialogProps> = ({
         <div className="tw-flex tw-items-center tw-gap-2">
           <Rate />
           <Typography
-            element="subtitle-2"
             weight="bold"
             className="tw-text-natural-950"
+            element={{ default: "body", sm: "subtitle-2" }}
           >
             {title}
           </Typography>
         </div>
       }
+      position={mq.md ? "center" : "bottom"}
       close={close}
     >
-      <div className="tw-flex tw-flex-col tw-gap-6 tw-items-center tw-justify-center tw-mt-6">
+      <div className="tw-flex tw-flex-col tw-gap-4 sm:tw-gap-6 tw-items-center tw-justify-center tw-mt-4 sm:tw-mt-6">
         <Typography
-          element="h4"
+          element={{ default: "body", sm: "h4" }}
           weight="bold"
           className="tw-text-natural-950 tw-text-center"
         >
@@ -95,12 +99,19 @@ const RatingDialog: React.FC<DialogProps> = ({
           {description}
         </Typography>
 
-        <RatingStars
-          variant="xl"
-          rating={rating}
-          setRating={setRating}
-          readonly={submitting}
-        />
+        <div
+          className={cn(
+            "tw-my-6 sm:tw-my-0",
+            !mq.sm && "[&>div]:tw-gap-[14px]"
+          )}
+        >
+          <RatingStars
+            variant={mq.sm ? "xl" : "lg"}
+            rating={rating}
+            setRating={setRating}
+            readonly={submitting}
+          />
+        </div>
 
         <Textarea
           value={feedback}
@@ -126,7 +137,12 @@ const RatingDialog: React.FC<DialogProps> = ({
             disabled={!canSubmit || submitting || !rating}
             className="tw-w-full"
           >
-            {intl("rating-dialog.submit")}
+            <Typography
+              weight="semibold"
+              element={{ default: "caption", sm: "body" }}
+            >
+              {intl("rating-dialog.submit")}
+            </Typography>
           </Button>
           <Button
             onClick={close}
@@ -135,7 +151,12 @@ const RatingDialog: React.FC<DialogProps> = ({
             disabled={!canSubmit || submitting}
             className="tw-w-full"
           >
-            {intl(skippable ? "labels.skip" : "labels.cancel")}
+            <Typography
+              weight="semibold"
+              element={{ default: "caption", sm: "body" }}
+            >
+              {intl(skippable ? "labels.skip" : "labels.cancel")}
+            </Typography>
           </Button>
         </div>
       </div>
