@@ -3,13 +3,14 @@ import Typography from "@/components/Common/Typography";
 import Footer from "@/components/Layout/Footer";
 import Header from "@/components/Layout/Header";
 import Template from "@/components/Layout/Template";
-import { translate } from "@/lib/translate";
+import { translate } from "@/components/Common/Translate";
 import { Container, Section } from "@react-email/components";
 import * as React from "react";
+import Link from "@/components/Common/Link";
 
 export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
   return (
-    <Template preview={translate("forget-password-email.title")}>
+    <Template preview={translate.string("forget-password-email.title")}>
       <Header />
 
       <Section className="mt-[46px] text-center">
@@ -18,16 +19,22 @@ export function ForgetPassword({ redirectUrl }: { redirectUrl: string }) {
         </Typography>
       </Section>
 
-      <Section className="w-[456px] mt-[24px] text-center">
-        <Typography element="body" weight="bold" text="natural-700">
-          {translate("forget-password-email.desc")}
+      <Section className="max-w-[456px] mt-[24px] text-center">
+        <Typography element="body" text="natural-700">
+          {translate("forget-password-email.desc", {
+            link: (
+              <Link href="https://litespace.org/" key="link">
+                {translate.string("labels.litespace")}
+              </Link>
+            ),
+          })}
         </Typography>
       </Section>
 
       <Container>
         <Section className="mt-[48px] text-center">
           <Button href={redirectUrl}>
-            <Typography element="body" weight="bold" text="natural-50">
+            <Typography element="body" text="natural-50">
               {translate("forget-password-email.confirm")}
             </Typography>
           </Button>

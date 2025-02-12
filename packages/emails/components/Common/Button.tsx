@@ -8,7 +8,7 @@ const Button: React.FC<{ children: React.ReactNode; href?: string }> = ({
   return (
     <Base
       href={href}
-      className="h-[56px] m-0 px-[32px] py-[16px] rounded-[8px] bg-brand-700 box-border"
+      className="h-[40px] m-0 px-[16px] py-[8px] rounded-[8px] bg-brand-700 box-border"
     >
       {children}
     </Base>
