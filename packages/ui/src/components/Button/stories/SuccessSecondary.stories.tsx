@@ -2,7 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { Button } from "@/components/Button";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
-import HomeSVG from "@litespace/assets/Home";
+import Home from "@litespace/assets/Home";
 import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Button;
@@ -59,15 +59,15 @@ export const Loading: StoryObj<typeof Button> = {
     children: faker.lorem.words({ min: 1, max: 4 }),
     type: "success",
     variant: "secondary",
-    size: "small",
+    size: "large",
     loading: true,
   },
 };
 
-export const WithStargIcon: StoryObj<typeof Button> = {
+export const WithStartIcon: StoryObj<typeof Button> = {
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
-    startIcon: <HomeSVG />,
+    startIcon: <Home className="icon" />,
     type: "success",
     variant: "secondary",
     size: "small",
@@ -77,7 +77,7 @@ export const WithStargIcon: StoryObj<typeof Button> = {
 export const WithEndIcon: StoryObj<typeof Button> = {
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
-    endIcon: <HomeSVG />,
+    endIcon: <Home className="icon" />,
     type: "success",
     variant: "secondary",
     size: "small",
@@ -86,7 +86,7 @@ export const WithEndIcon: StoryObj<typeof Button> = {
 
 export const WithOnlyIcon: StoryObj<typeof Button> = {
   args: {
-    endIcon: <HomeSVG />,
+    startIcon: <Home className="icon" />,
     type: "success",
     variant: "secondary",
     size: "small",
