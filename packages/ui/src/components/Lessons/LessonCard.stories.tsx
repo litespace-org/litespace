@@ -13,6 +13,13 @@ const url = "https://picsum.photos/400";
 
 type Story = StoryObj<Props>;
 
+const actions = {
+  onJoin: () => alert("join"),
+  onCancel: () => alert("cancel"),
+  onSendMsg: () => alert("send message"),
+  onRebook: () => alert("rebook"),
+};
+
 export const BeforeJoinForStudent: Story = {
   args: {
     canceled: null,
@@ -24,9 +31,7 @@ export const BeforeJoinForStudent: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -41,9 +46,7 @@ export const BeforeJoinForTutor: Story = {
       image: url,
       role: "student",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -58,9 +61,7 @@ export const CanJoinLesson: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -75,9 +76,7 @@ export const CanJoinLessonNow: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -92,9 +91,7 @@ export const AfterLessonStarted: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -109,9 +106,7 @@ export const LessonAboutToEnd: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -126,9 +121,7 @@ export const AfterLessonFinishForStudent: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -143,9 +136,7 @@ export const AfterLessonFinishForTutor: Story = {
       image: url,
       role: "student",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
-    onSendMsg: () => console.log("sendMsg"),
+    ...actions,
   },
 };
 
@@ -160,8 +151,7 @@ export const CanceledByTutor: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
+    ...actions,
   },
 };
 
@@ -176,12 +166,11 @@ export const CanceledByStudent: Story = {
       image: url,
       role: "student",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
+    ...actions,
   },
 };
 
-export const CanceledByCurTutor: Story = {
+export const CanceledByCurrentTutor: Story = {
   args: {
     canceled: "tutor",
     start: new Date().toISOString(),
@@ -192,12 +181,11 @@ export const CanceledByCurTutor: Story = {
       image: url,
       role: "student",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
+    ...actions,
   },
 };
 
-export const CanceledByCurStudent: Story = {
+export const CanceledByCurrentStudent: Story = {
   args: {
     canceled: "student",
     start: new Date().toISOString(),
@@ -208,7 +196,6 @@ export const CanceledByCurStudent: Story = {
       image: url,
       role: "tutor",
     },
-    onJoin: () => console.log("join"),
-    onCancel: () => console.log("cancel"),
+    ...actions,
   },
 };

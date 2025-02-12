@@ -230,7 +230,7 @@ export const BookLessonDialog: React.FC<{
       ) : null}
 
       <div className="tw-mt-6">
-        <AnimatePresence mode="wait">
+        <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
               <Loading tutorName={name} />

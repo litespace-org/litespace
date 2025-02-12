@@ -61,7 +61,7 @@ export const Button: React.FC<{
       data-variant={variant}
       className={cn(
         // Teneral styles
-        "tw-text-center tw-font-normal",
+        "tw-text-center tw-font-normal tw-group",
         "tw-flex tw-items-center tw-justify-center",
         "tw-relative tw-font-cairo tw-cursor-pointer",
         "tw-w-fit tw-flex tw-items-center tw-justify-center",
@@ -69,21 +69,24 @@ export const Button: React.FC<{
         "tw-transition-colors tw-ease-out tw-duration-200 tw-rounded-lg tw-outline-none",
         // Background color
         {
-          "hover:tw-bg-natural-100 active:tw-bg-natural-200": is.tertiary,
-          "tw-bg-brand-700 hover:tw-bg-brand-600": is.main && is.primary,
-          "tw-bg-destructive-700 hover:tw-bg-destructive-600":
+          "tw-bg-destructive-700 hover:tw-bg-destructive-600 active:tw-bg-destructive-700":
             is.error && is.primary,
-          "tw-bg-success-700 hover:tw-bg-success-600": is.success && is.primary,
-
-          "tw-bg-natural-50 focus:tw-bg-natural-50": is.secondary,
-          "hover:tw-bg-brand-50 active:tw-bg-brand-100":
-            is.secondary && is.main,
-          "hover:tw-bg-destructive-50 active:tw-bg-destructive-100":
+          "tw-bg-natural-50 hover:tw-bg-destructive-50 active:tw-bg-destructive-100":
             is.secondary && is.error,
-          "hover:tw-bg-success-50 active:tw-bg-success-100":
-            is.secondary && is.success,
 
-          "tw-bg-warning-700 hover:tw-bg-warning-600 focus:tw-bg-warning-700":
+          "tw-bg-brand-700 hover:tw-bg-brand-600 active:tw-bg-brand-700":
+            is.main && is.primary,
+          "tw-bg-natural-50 hover:tw-bg-brand-50 active:tw-bg-brand-100":
+            is.main && is.secondary,
+          "tw-bg-natural-50 hover:tw-bg-natural-100 active:tw-bg-natural-200":
+            is.main && is.tertiary,
+
+          "tw-bg-success-700 hover:tw-bg-success-600 active:tw-bg-success-700":
+            is.success && is.primary,
+          "tw-bg-neutral-50 hover:tw-bg-success-50 active:tw-bg-success-100":
+            is.success && is.secondary,
+
+          "tw-bg-warning-700 hover:tw-bg-warning-600 active:tw-bg-warning-700":
             is.warning && is.primary,
           "tw-bg-neutral-50 hover:tw-bg-warning-50 active:tw-bg-warning-100":
             is.warning && is.secondary,
@@ -93,9 +96,9 @@ export const Button: React.FC<{
           "tw-text-natural-50": is.primary,
           "tw-text-natural-700": is.tertiary,
           "tw-text-brand-700": is.secondary && is.main,
-          "tw-text-destructive-700 focus:tw-text-destructive-500":
+          "tw-text-destructive-700 hover:tw-text-destructive-500":
             is.secondary && is.error,
-          "tw-text-success-700 focus:tw-text-success-500":
+          "tw-text-success-700 hover:tw-text-success-500":
             is.secondary && is.success,
           "tw-text-warning-700": is.warning && is.secondary,
         },
@@ -156,7 +159,17 @@ export const Button: React.FC<{
       <div
         className={cn(
           loading ? "tw-opacity-0" : "tw-opacity-100",
-          "tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-2"
+          "tw-flex tw-flex-row tw-items-center tw-justify-center tw-gap-2",
+          {
+            "[&_.icon>*]:tw-stroke-success-700 group-hover:[&_.icon>*]:tw-stroke-success-500 [&_.icon>*]:tw-transition-[stroke] [&_.icon>*]:tw-duration-200":
+              is.success && is.secondary,
+            "[&_.icon>*]:tw-stroke-natural-50":
+              (is.main && is.primary) || (is.error && is.primary),
+            "[&_.icon>*]:tw-stroke-brand-700": is.main && is.secondary,
+            "[&_.icon>*]:tw-stroke-natural-700": is.main && is.tertiary,
+            "[&_.icon>*]:tw-stroke-destructive-700 group-hover:[&_.icon>*]:tw-stroke-destructive-500 [&_.icon>*]:tw-transition-[stroke] [&_.icon>*]:tw-duration-200":
+              is.error && is.secondary,
+          }
         )}
       >
         {startIcon ? <div className="tw-w-4 tw-h-4">{startIcon}</div> : null}

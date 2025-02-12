@@ -84,7 +84,11 @@ const Header: React.FC<Props> = ({
           ) : null}
           <div className="w-full flex flex-row sm:gap-4 items-center justify-between sm:justify-center">
             <button onClick={prevWeek} type="button">
-              <ArrowRight className="[&>*]:stroke-brand-700" />
+              <ArrowRight
+                width={24}
+                height={24}
+                className="[&>*]:stroke-brand-700"
+              />
             </button>
             <Typography
               element={{ default: "caption", lg: "body" }}
@@ -95,7 +99,11 @@ const Header: React.FC<Props> = ({
               {date.endOf("week").format("DD MMMM")}
             </Typography>
             <button onClick={nextWeek} type="button">
-              <ArrowLeft className="[&>*]:stroke-brand-700" />
+              <ArrowLeft
+                width={24}
+                height={24}
+                className="[&>*]:stroke-brand-700"
+              />
             </button>
           </div>
         </div>

@@ -1,13 +1,26 @@
 import React, { useCallback, useMemo, useState } from "react";
 import { Calendar, LessonProps } from "@litespace/ui/Calendar";
 import dayjs from "@/lib/dayjs";
-import { useInfiniteLessons } from "@litespace/headless/lessons";
+import {
+  useCancelLesson,
+  useInfiniteLessons,
+} from "@litespace/headless/lessons";
 import Header, { View } from "@/components/LessonSchedule/Header";
 import { AnimatePresence, motion } from "framer-motion";
 import LessonsList from "@/components/UpcomingLessons/Content";
 import { useUserContext } from "@litespace/headless/context/user";
 import cn from "classnames";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useNavigate } from "react-router-dom";
+import { Route } from "@/types/routes";
+import { CancelLesson } from "@litespace/ui/Lessons";
+import BookLesson from "@/components/Lessons/BookLesson";
+import { useToast } from "@litespace/ui/Toast";
+import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useInvalidateQuery } from "@litespace/headless/query";
+import { QueryKey } from "@litespace/headless/constants";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { IUser } from "@litespace/types";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -17,8 +30,14 @@ const variants = {
 const LessonsSchedule: React.FC = () => {
   const { md, lg } = useMediaQuery();
   const [date, setDate] = useState(dayjs().startOf("week"));
-  const [view, setView] = useState<View>("calendar");
+  const [view, setView] = useState<View>("list");
   const { user } = useUserContext();
+  const navigate = useNavigate();
+  const [tutorId, setTutorId] = useState<number | null>(null);
+  const [lessonId, setLessonId] = useState<number | null>(null);
+  const intl = useFormatMessage();
+  const toast = useToast();
+  const invalidate = useInvalidateQuery();
 
   const lessons = useInfiniteLessons({
     users: user ? [user.id] : [],
@@ -50,26 +69,55 @@ const LessonsSchedule: React.FC = () => {
     });
   }, [lessons.list, user]);
 
-  const onJoinHandler = useCallback(
-    (lessonId: number) =>
-      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
-    []
+  const onCancelSuccess = useCallback(() => {
+    toast.success({ title: intl("cancel-lesson.success") });
+    setLessonId(null);
+    invalidate([QueryKey.FindInfiniteLessons]);
+  }, [toast, intl, invalidate]);
+
+  const onCancelError = useCallback(
+    (error: unknown) => {
+      const errorMessage = getErrorMessageId(error);
+      toast.error({
+        title: intl("cancel-lesson.error"),
+        description: intl(errorMessage),
+      });
+    },
+    [toast, intl]
   );
-  const onCancelHandler = useCallback(
-    (lessonId: number) =>
-      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
-    []
+
+  const cancelLesson = useCancelLesson({
+    onSuccess: onCancelSuccess,
+    onError: onCancelError,
+  });
+
+  const onJoin = useCallback(
+    (lessonId: number) => {
+      navigate(Route.Lesson.replace(":id", lessonId.toString()));
+    },
+    [navigate]
   );
-  const onEditHandler = useCallback(
-    (lessonId: number) =>
-      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
-    []
+
+  const onCancel = useCallback((lessonId: number) => {
+    setLessonId(lessonId);
+  }, []);
+
+  const onRebook = useCallback(
+    (lessonId: number) => {
+      const item = lessons.list?.find((item) => item.lesson.id === lessonId);
+      if (!item) return;
+      const tutor = item.members.find(
+        (member) => member.role !== IUser.Role.Student
+      );
+      if (!tutor) return;
+      setTutorId(tutor.userId);
+    },
+    [lessons.list]
   );
-  const onRebookHandler = useCallback(
-    (lessonId: number) =>
-      alert(`Not implemented yet! - Lesson Id: ${lessonId}`),
-    []
-  );
+
+  const onEdit = useCallback((lessonId: number) => {
+    alert(`No yet implemented - Lesson ID: ${lessonId}`);
+  }, []);
 
   return (
     <div className="w-full p-4 md:p-6 mx-auto overflow-hidden max-w-screen-3xl">
@@ -103,10 +151,10 @@ const LessonsSchedule: React.FC = () => {
               date={date}
               lessons={calendarLessons}
               lessonActions={{
-                onJoin: onJoinHandler,
-                onCancel: onCancelHandler,
-                onEdit: onEditHandler,
-                onRebook: onRebookHandler,
+                onJoin,
+                onCancel,
+                onEdit,
+                onRebook,
               }}
             />
           </motion.div>
@@ -134,6 +182,19 @@ const LessonsSchedule: React.FC = () => {
           </motion.div>
         ) : null}
       </AnimatePresence>
+
+      {lessonId ? (
+        <CancelLesson
+          close={() => setLessonId(null)}
+          onCancel={() => cancelLesson.mutate(lessonId)}
+          loading={cancelLesson.isPending}
+          open
+        />
+      ) : null}
+
+      {tutorId ? (
+        <BookLesson tutorId={tutorId} close={() => setTutorId(null)} />
+      ) : null}
     </div>
   );
 };

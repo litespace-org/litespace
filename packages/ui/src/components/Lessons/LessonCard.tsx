@@ -47,7 +47,10 @@ export const LessonCard: React.FC<Props> = ({
   onSendMsg,
 }) => {
   const intl = useFormatMessage();
-  const end = dayjs(start).add(duration, "minutes");
+  const end = useMemo(
+    () => dayjs(start).add(duration, "minutes"),
+    [duration, start]
+  );
 
   // for code readability
   const currentUserRole = useMemo(() => {
@@ -114,19 +117,6 @@ export const LessonCard: React.FC<Props> = ({
 
   const [title, setTitle] = useState<string | undefined>(getTitle());
 
-  const canJoin = useMemo(() => {
-    return dayjs().isBetween(
-      dayjs(start).subtract(10, "minutes"),
-      end,
-      "minutes",
-      "[]"
-    );
-  }, [end, start]);
-
-  const canRebook = useMemo(() => {
-    return currentUserRole === "student" && (dayjs().isAfter(end) || canceled);
-  }, [canceled, end, currentUserRole]);
-
   useEffect(() => {
     const interval = setInterval(() => {
       const title = getTitle();
@@ -162,28 +152,30 @@ export const LessonCard: React.FC<Props> = ({
     [intl, onCancel, currentUserRole]
   );
 
-  const mainBtnHandler = useMemo(() => {
-    if (!canceled) return onJoin;
-    if (currentUserRole === "student") return onRebook;
-    else return onSendMsg;
-  }, [canceled, onJoin, onRebook, onSendMsg, currentUserRole]);
-
-  const mainBtnText = useMemo(() => {
-    if (!canceled) return intl("lessons.button.join");
-    if (currentUserRole === "student") return intl("lessons.button.rebook");
-    else return intl("lessons.button.send-message");
-  }, [canceled, currentUserRole, intl]);
+  const action = useMemo(() => {
+    const ended = end.isBefore(dayjs());
+    if (currentUserRole === "student" && (ended || canceled))
+      return {
+        label: intl("lessons.button.rebook"),
+        onClick: onRebook,
+      };
+    if (currentUserRole === "tutor" && (ended || canceled))
+      return {
+        label: intl("lessons.button.send-message"),
+        onClick: onSendMsg,
+      };
+    return {
+      label: intl("lessons.button.join"),
+      onClick: onJoin,
+    };
+  }, [canceled, currentUserRole, end, intl, onJoin, onRebook, onSendMsg]);
 
   const button = (
     <Button
       size="large"
       className={cn("tw-w-full tw-mt-auto")}
-      disabled={
-        disabled ||
-        (mainBtnHandler === onRebook && !canRebook) ||
-        (mainBtnHandler === onJoin && !canJoin)
-      }
-      onClick={mainBtnHandler}
+      disabled={disabled}
+      onClick={action.onClick}
       loading={sendingMessage}
     >
       <Typography
@@ -191,7 +183,7 @@ export const LessonCard: React.FC<Props> = ({
         weight="semibold"
         className="tw-text-natural-50"
       >
-        {mainBtnText}
+        {action.label}
       </Typography>
     </Button>
   );
