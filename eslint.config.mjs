@@ -24,13 +24,19 @@ export default [
       "**/tailwind.config.js",
       "**/src-tauri",
       "**/ecosystem.config.js",
-      "**/apps",
+      // "**/apps",
+      "**/apps/web",
+      "**/apps/dashboard",
+      "**/apps/mobile",
+      "**/apps/blog",
       "**/migrations",
       "**/jest.config.js",
       "**/jest.config.cjs",
       "**/babel.config.js",
       "**/babel.config.cjs",
       "**/svg-template.js",
+      "**/next.config.mjs",
+      "**/.next",
       "prettier.config.js",
     ],
   },
@@ -100,6 +106,12 @@ export default [
     files: ["**/*.stories.tsx"],
     rules: {
       "react-hooks/rules-of-hooks": "off",
+    },
+  },
+  {
+    files: ["apps/landing/app/layout.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
     },
   },
 ];

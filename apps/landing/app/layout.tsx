@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import React from "react";
+import Body from "@/components/Layout/Body";
 
-const inter = Inter({ subsets: ["latin"] });
+import "@litespace/ui/style.css";
+import "@litespace/ui/tailwind.css";
 
 export const metadata: Metadata = {
   title: "LiteSpace",
-  description: "Learn English with ease!",
+  description: "Effortless English learning!",
 };
 
 export default function RootLayout({
@@ -15,8 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>{children}</body>
+    <html
+      lang="ar"
+      dir="rtl"
+      className="scrollbar-thin bg-natural-50 font-cairo relative"
+    >
+      <Body>{children}</Body>
     </html>
   );
 }
