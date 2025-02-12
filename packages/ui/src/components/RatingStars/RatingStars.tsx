@@ -9,18 +9,15 @@ import { motion } from "framer-motion";
 
 type StarProps = {
   /**
-   * rating is number bet 1 to 5 default is zero
+   * Rating is number bet 1 to 5 default is zero
    */
   rating: number;
   /**
-   * represents the size of star
-   * - sm "20x20"
-   * - md "38x38"
-   * - lg "50x51"
+   * Represents the size of star
    */
   variant?: "sm" | "md" | "lg" | "xl";
   /**
-   * state shows weather stars can be clicked or not
+   * State shows weather stars can be clicked or not
    */
   readonly: boolean;
   setRating?: (newRating: number) => void;
@@ -40,7 +37,6 @@ export const RatingStars: React.FC<StarProps> = ({
   readonly = true,
   variant = "sm",
   setRating,
-  className,
 }) => {
   const intl = useFormatMessage();
 
@@ -50,8 +46,7 @@ export const RatingStars: React.FC<StarProps> = ({
         "tw-flex tw-justify-around tw-p-0",
         { "tw-gap-2": variant === "sm" },
         { "tw-gap-1": variant === "md" },
-        { "tw-gap-8": variant === "lg" || variant === "xl" },
-        className
+        { "tw-gap-8": variant === "lg" || variant === "xl" }
       )}
     >
       {range(5).map((idx) => (
@@ -85,10 +80,7 @@ export const RatingStars: React.FC<StarProps> = ({
           </motion.button>
           {!readonly ? (
             <Typography
-              element={{
-                default: "tiny-text",
-                sm: "caption",
-              }}
+              element={{ default: "tiny-text", sm: "caption" }}
               weight="regular"
               className="tw-inline-block tw-text-natural-950 tw-text-center"
             >
