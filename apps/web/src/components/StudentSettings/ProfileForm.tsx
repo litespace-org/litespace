@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { isEqual } from "lodash";
+import { Controller, Form } from "@litespace/ui/Form";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { governorates } from "@/constants/user";
@@ -28,12 +29,9 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-<<<<<<< HEAD
-=======
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import NotificationSettings from "@/components/Common/NotificationSettings";
 import SettingsVerifyEmail from "@/components/StudentSettings/SettingsVerifyEmail";
->>>>>>> 7ab636e7 (feat(web): implemented send verify email to students settings)
 
 type IForm = {
   name: string;
@@ -328,8 +326,9 @@ export const ProfileForm: React.FC<{
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
             <NotificationSettings />
             {!mq.sm ? <TopicSelection /> : null}
+          {!user.verified ? <SettingsVerifyEmail /> : null}
+
           </div>
-        </div>
       </div>
     </Form>
   );
