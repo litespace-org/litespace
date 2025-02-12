@@ -24,6 +24,7 @@ type StarProps = {
    */
   readonly: boolean;
   setRating?: (newRating: number) => void;
+  className?: string;
 };
 
 const ratingMap: { [key: number]: LocalId } = {
@@ -39,27 +40,32 @@ export const RatingStars: React.FC<StarProps> = ({
   readonly = true,
   variant = "sm",
   setRating,
+  className,
 }) => {
   const intl = useFormatMessage();
 
   return (
     <div
       className={cn(
-        "tw-flex tw-p-0",
+        "tw-flex tw-justify-around tw-p-0",
         { "tw-gap-2": variant === "sm" },
         { "tw-gap-1": variant === "md" },
-        { "tw-gap-8": variant === "lg" || variant === "xl" }
+        { "tw-gap-8": variant === "lg" || variant === "xl" },
+        className
       )}
     >
       {range(5).map((idx) => (
-        <div key={idx} className={cn("tw-flex tw-flex-col tw-gap-4")}>
+        <div
+          key={idx}
+          className={cn("tw-flex tw-flex-col tw-gap-2 sm:tw-gap-4")}
+        >
           <motion.button
             whileHover={readonly ? undefined : { scale: 1.1 }}
             whileTap={readonly ? undefined : { scale: 0.9 }}
             className={cn(
               { "tw-w-5 tw-h-5": variant === "sm" },
               { "tw-w-[38px] tw-h-[38px]": variant === "md" },
-              { "tw-w-[51px] tw-h-[50px]": variant === "lg" },
+              { "tw-w-[48px] tw-h-[48px]": variant === "lg" },
               { "tw-w-[80px] tw-h-[80px]": variant === "xl" }
             )}
             onClick={() => {
@@ -79,7 +85,10 @@ export const RatingStars: React.FC<StarProps> = ({
           </motion.button>
           {!readonly ? (
             <Typography
-              element="caption"
+              element={{
+                default: "tiny-text",
+                sm: "caption",
+              }}
               weight="regular"
               className="tw-inline-block tw-text-natural-950 tw-text-center"
             >
