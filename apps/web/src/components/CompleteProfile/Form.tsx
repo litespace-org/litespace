@@ -106,8 +106,8 @@ const CompleteProfile: React.FC = () => {
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)}>
-      <div className="flex flex-col mx-auto gap-10 sm:gap-6 max-w-[404px]">
-        <div className="flex flex-col gap-4">
+      <div className="flex flex-col sm:mx-auto gap-6 sm:max-w-[404px]">
+        <div className="flex flex-col gap-2 sm:gap-4">
           <Controller.Input
             id="name"
             name="name"

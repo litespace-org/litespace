@@ -2,7 +2,7 @@ import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Route } from "@/types/routes";
@@ -20,7 +20,6 @@ import {
 import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { Checkbox } from "@litespace/ui/Checkbox";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 interface IForm {
@@ -42,7 +41,6 @@ const Register: React.FC = () => {
   const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
-  const [policiesApproved, setPoliciesApproved] = useState(false);
   const { role } = useParams<{ role: Role }>();
   const { watch, handleSubmit, control, formState } = useForm<IForm>({
     defaultValues: {
@@ -101,44 +99,25 @@ const Register: React.FC = () => {
 
   return (
     <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
-      <main className="flex flex-col items-center flex-1 flex-shrink-0 w-full">
+      <main className="flex flex-col gap-10 sm:gap-0 items-center flex-1 flex-shrink-0 w-full">
         <Header />
 
         <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
-          {mq.sm ? (
-            <div className="flex flex-row items-center justify-center gap-4 mb-8">
-              <Logo className="h-[87px]" />
-              <div className="flex flex-col gap-2 items-start justify-center">
-                <Typography
-                  element="h3"
-                  weight="bold"
-                  className="text-brand-500"
-                >
-                  {intl("labels.litespace")}
-                </Typography>
-                <Typography element="body" className="text-natural-700">
-                  {intl("register.welcome")}
-                </Typography>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-start justify-center gap-4 my-10">
-              <Typography
-                element="subtitle-1"
-                weight="bold"
-                className="text-brand-950 w-[220px] sm:w-auto"
-              >
-                {intl("page.register.mobile.form.title")}
+          <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
+            <Logo className="h-[87px]" />
+            <div className="flex flex-col gap-2 items-start justify-center">
+              <Typography element="h3" weight="bold" className="text-brand-500">
+                {intl("labels.litespace")}
               </Typography>
-              <Typography element="tiny-text" className="text-natural-700">
-                {intl("page.register.mobile.form.desc")}
+              <Typography element="body" className="text-natural-700">
+                {intl("register.welcome")}
               </Typography>
             </div>
-          )}
+          </div>
 
           <Form onSubmit={onSubmit}>
-            <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <div className="flex flex-col gap-2 sm:gap-4">
                 <Controller.Input
                   id="email"
                   control={control}
@@ -188,23 +167,20 @@ const Register: React.FC = () => {
                   idleDir="rtl"
                 />
 
-                <Checkbox
-                  id="confirmedPassword"
-                  label={intl("page.register.confirm-policies")}
-                  checked={policiesApproved}
-                  onCheckedChange={() => setPoliciesApproved((prev) => !prev)}
-                  disabled={mutation.isPending || google.loading}
-                  checkBoxClassName="border-natural-500 border-[1px]"
-                />
+                <Typography
+                  element="caption"
+                  weight="medium"
+                  className="text-natural-600"
+                >
+                  {intl("register.accept-terms")}
+                </Typography>
               </div>
 
               <div className="flex flex-col gap-4">
                 <Button
                   type="main"
                   size="large"
-                  disabled={
-                    mutation.isPending || google.loading || !policiesApproved
-                  }
+                  disabled={mutation.isPending || google.loading}
                   loading={mutation.isPending}
                   className="w-full"
                   htmlType="submit"
@@ -228,7 +204,7 @@ const Register: React.FC = () => {
                 <Typography
                   element="caption"
                   weight="medium"
-                  className="text-natural-950 text-center mt-2 sm:mt-0"
+                  className="text-natural-950 text-center"
                 >
                   {intl.node("register.has-account", {
                     link: (

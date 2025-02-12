@@ -73,45 +73,26 @@ const Login: React.FC = () => {
   );
 
   return (
-    <div className="flex flex-row gap-8 h-full p-4">
-      <main className="flex flex-col items-center justify-start flex-1 flex-shrink-0 w-full">
+    <div className="flex flex-row gap-8 h-full p-4 sm:p-6">
+      <main className="flex flex-col gap-10 sm:gap-0 items-center justify-start flex-1 flex-shrink-0 w-full">
         <Header />
 
         <div className="flex-1 flex flex-col sm:justify-center max-w-[404px] w-full">
-          {mq.lg ? (
-            <div className="flex flex-row items-center justify-center gap-4 mb-8">
-              <Logo className="h-[87px]" />
-              <div className="flex flex-col gap-2 items-start justify-center">
-                <Typography
-                  element="h3"
-                  weight="bold"
-                  className="text-brand-500"
-                >
-                  {intl("labels.litespace")}
-                </Typography>
-                <Typography element="body" className="text-natural-700">
-                  {intl("login.welcome")}
-                </Typography>
-              </div>
-            </div>
-          ) : (
-            <div className="flex flex-col items-start justify-center gap-4 my-10">
-              <Typography
-                element="subtitle-1"
-                weight="bold"
-                className="text-brand-950 w-[220px] sm:w-auto"
-              >
-                {intl("page.login.mobile.form.title")}
+          <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
+            <Logo className="h-[87px]" />
+            <div className="flex flex-col gap-2 items-start justify-center">
+              <Typography element="h3" weight="bold" className="text-brand-500">
+                {intl("labels.litespace")}
               </Typography>
-              <Typography element="tiny-text" className="text-natural-700">
-                {intl("page.login.mobile.form.desc")}
+              <Typography element="body" className="text-natural-700">
+                {intl("login.welcome")}
               </Typography>
             </div>
-          )}
+          </div>
 
           <Form onSubmit={onSubmit}>
             <div className="flex flex-col gap-6">
-              <div className="flex flex-col gap-4">
+              <div className="flex flex-col gap-2 sm:gap-4">
                 <Controller.Input
                   id="email"
                   name="email"
@@ -143,7 +124,7 @@ const Login: React.FC = () => {
                   helper={errors.password?.message}
                 />
 
-                <div>
+                <div className="mt-2 sm:mt-0">
                   <Link to={Route.ForgetPassword}>
                     <Typography
                       element="caption"
