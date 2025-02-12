@@ -45,7 +45,7 @@ const ForgetPassword: React.FC = () => {
   const intl = useFormatMessage();
   const mq = useMediaQuery();
   const validateEmail = useValidateEmail(true);
-  const [sentEmail, setSentEmail] = useState<boolean>(true);
+  const [sentEmail, setSentEmail] = useState<boolean>(false);
   const { watch, handleSubmit, control, reset, formState } = useForm<FormData>({
     defaultValues: { email: "" },
   });
@@ -82,7 +82,7 @@ const ForgetPassword: React.FC = () => {
         <Header />
 
         <div className="flex-1 flex flex-col items-center max-w-[554px] w-full">
-          <div className="flex justify-center items-start sm:items-center w-full">
+          <div className="flex-1 flex justify-center items-start sm:items-center w-full">
             <AnimatePresence initial={false} mode="wait">
               {!sentEmail ? (
                 <Animate key="form">
