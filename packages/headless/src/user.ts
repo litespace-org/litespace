@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
-import { isEmpty } from "lodash";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
@@ -42,49 +41,6 @@ export function useRegisterUser({
 
   return useMutation({
     mutationFn: createUser,
-    onSuccess,
-    onError,
-  });
-}
-
-/**
- * Update all user data in one mutation.
- */
-export function useUpdateFullUser({
-  onSuccess,
-  onError,
-}: {
-  onSuccess?: OnSuccess<void>;
-  onError?: OnError;
-}) {
-  const atlas = useAtlas();
-  const update = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IUser.UpdateApiPayload &
-        ITopic.ReplaceUserTopicsApiPayload & {
-          image: File | null;
-        };
-    }) => {
-      await Promise.all([
-        atlas.user.update(id, payload),
-        payload.image
-          ? atlas.user.updateMedia(id, { image: payload.image })
-          : Promise.resolve(null),
-        !isEmpty(payload.addTopics) || !isEmpty(payload.removeTopics)
-          ? atlas.topic.replaceUserTopics(payload)
-          : Promise.resolve(null),
-      ]);
-    },
-    [atlas.user, atlas.topic]
-  );
-
-  return useMutation({
-    mutationFn: update,
-    mutationKey: [MutationKey.UpdateUser],
     onSuccess,
     onError,
   });

@@ -1,4 +1,5 @@
-import { VERIFY_EMAIL_CALLBACK_URL } from "@/types/routes";
+import { capture } from "@/lib/sentry";
+import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { Button } from "@litespace/ui/Button";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -7,23 +8,23 @@ import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useCallback } from "react";
 
-const SettingsVerifyEmail = () => {
+const VerifyEmail = () => {
   const intl = useFormatMessage();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {
     toast.success({
-      title: intl("settings.verify.success.title"),
-      description: intl("settings.verify.success.description"),
+      title: intl("student-settings.verify.success.title"),
+      description: intl("student-settings.verify.success.description"),
     });
   }, [toast, intl]);
 
   const onError = useCallback(
     (error: unknown) => {
       const errorMessage = getErrorMessageId(error);
-
+      capture(error);
       toast.error({
-        title: intl("settings.verify.error.title"),
+        title: intl("student-settings.verify.error.title"),
         description: intl(errorMessage),
       });
     },
@@ -43,21 +44,21 @@ const SettingsVerifyEmail = () => {
         weight="bold"
         className="text-natural-950"
       >
-        {intl("settings.verify.title")}
+        {intl("student-settings.verify.title")}
       </Typography>
       <div className="flex flex-wrap gap-4 justify-between">
         <Typography
           element="body"
           className="text-natural-950 lg:max-w-[410px]"
         >
-          {intl("settings.verify.description")}
+          {intl("student-settings.verify.description")}
         </Typography>
         <Button htmlType="button" size="large" onClick={sendVerifyEmail}>
-          {intl("settings.verify.action")}
+          {intl("student-settings.verify.action")}
         </Button>
       </div>
     </div>
   );
 };
 
-export default SettingsVerifyEmail;
+export default VerifyEmail;

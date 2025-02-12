@@ -3,9 +3,7 @@ import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { isEqual } from "lodash";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { governorates } from "@/constants/user";
-import NotificationSettings from "@/components/Common/NotificationSettings";
 import { IUser } from "@litespace/types";
 import {
   getNullableFiledUpdatedValue,
@@ -29,7 +27,9 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
-import SettingsVerifyEmail from "@/components/StudentSettings/SettingsVerifyEmail";
+import NotificationSettings from "@/components/SharedSettings/NotificationSettings";
+import VerifyEmail from "@/components/StudentSettings/VerifyEmail";
+import TopicSelection from "@/components/SharedSettings/TopicSelection";
 
 type IForm = {
   name: string;
@@ -178,7 +178,6 @@ export const ProfileForm: React.FC<{
           />
         </div>
       </div>
-
       <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
         <div className="flex-1 flex flex-col lg:max-w-[400px]">
           <Typography
@@ -254,74 +253,76 @@ export const ProfileForm: React.FC<{
 
           {mq.sm ? <TopicSelection /> : null}
         </div>
-      </div>
 
-      <div className="flex-1 flex flex-col">
-        <Typography
-          tag="h2"
-          className="text-natural-950 text-subtitle-2 font-bold"
-        >
-          {intl("shared-settings.edit.password.title")}
-        </Typography>
+        <div className="flex-1 flex flex-col">
+          <Typography
+            tag="h2"
+            className="text-natural-950 text-subtitle-2 font-bold"
+          >
+            {intl("shared-settings.edit.password.title")}
+          </Typography>
 
-        <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
-          <Controller.Password
-            id="current-password"
-            value={password.current}
-            control={form.control}
-            rules={{
-              required: requirePassword ? required : undefined,
-              validate: validatePassword,
-            }}
-            name="password.current"
-            label={intl("shared-settings.edit.password.current")}
-            state={errors.password?.current ? "error" : undefined}
-            helper={errors.password?.current?.message}
-            idleDir="rtl"
-            placeholder="********************"
-          />
+          <div className="grid gap-2 sm:gap-4 my-4 sm:my-6 lg:max-w-[400px]">
+            <Controller.Password
+              id="current-password"
+              value={password.current}
+              control={form.control}
+              rules={{
+                required: requirePassword ? required : undefined,
+                validate: validatePassword,
+              }}
+              name="password.current"
+              label={intl("shared-settings.edit.password.current")}
+              state={errors.password?.current ? "error" : undefined}
+              helper={errors.password?.current?.message}
+              idleDir="rtl"
+              placeholder="********************"
+            />
 
-          <Controller.Password
-            id="new-password"
-            idleDir="rtl"
-            value={password.new}
-            control={form.control}
-            rules={{
-              required: requirePassword ? required : undefined,
-              validate: validatePassword,
-            }}
-            name="password.new"
-            label={intl("shared-settings.edit.password.new")}
-            state={errors.password?.new ? "error" : undefined}
-            helper={errors.password?.new?.message}
-            placeholder="********************"
-          />
+            <Controller.Password
+              id="new-password"
+              idleDir="rtl"
+              value={password.new}
+              control={form.control}
+              rules={{
+                required: requirePassword ? required : undefined,
+                validate: validatePassword,
+              }}
+              name="password.new"
+              label={intl("shared-settings.edit.password.new")}
+              state={errors.password?.new ? "error" : undefined}
+              helper={errors.password?.new?.message}
+              placeholder="********************"
+            />
 
-          <Controller.Password
-            id="confirm-password"
-            idleDir="rtl"
-            value={password.confirm}
-            control={form.control}
-            rules={{
-              required: requirePassword ? required : undefined,
-              validate: (value) => {
-                if (value !== form.watch("password.new"))
-                  return intl("shared-settings.edit.password.confirm.not-same");
-                return validatePassword(value);
-              },
-            }}
-            name="password.confirm"
-            label={intl("shared-settings.edit.password.confirm")}
-            state={errors.password?.confirm ? "error" : undefined}
-            helper={errors.password?.confirm?.message}
-            placeholder="********************"
-          />
-        </div>
+            <Controller.Password
+              id="confirm-password"
+              idleDir="rtl"
+              value={password.confirm}
+              control={form.control}
+              rules={{
+                required: requirePassword ? required : undefined,
+                validate: (value) => {
+                  if (value !== form.watch("password.new"))
+                    return intl(
+                      "shared-settings.edit.password.confirm.not-same"
+                    );
+                  return validatePassword(value);
+                },
+              }}
+              name="password.confirm"
+              label={intl("shared-settings.edit.password.confirm")}
+              state={errors.password?.confirm ? "error" : undefined}
+              helper={errors.password?.confirm?.message}
+              placeholder="********************"
+            />
+          </div>
 
-        <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
-          <NotificationSettings />
-          {!mq.sm ? <TopicSelection /> : null}
-          {!user.verified ? <SettingsVerifyEmail /> : null}
+          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
+            <NotificationSettings />
+            {!mq.sm ? <TopicSelection /> : null}
+            {!user.verified ? <VerifyEmail /> : null}
+          </div>
         </div>
       </div>
     </Form>

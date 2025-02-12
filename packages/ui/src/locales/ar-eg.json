@@ -453,6 +453,7 @@
   "tutor-settings.personal-info.about": "السيرة الذاتية",
   "tutor-settings.personal-info.video": "الفيديو التعريفي",
   "tutor-settings.profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
+  "tutor-settings.topics.update": "قم بأضافة مجالات الخبرة الخاصة بك",
   "tutor-settings.topics.selection-dialog.title": "شارك خبراتك لتجذب الطلاب الذين يشاركونك الشغف!",
   "tutor-settings.topics.selection-dialog.description": "حدد المجالات التي تبرع فيها أو تهتم بها، مثل الرياضة أو التكنولوجيا أو علم النفس، لنساعدك في تخصيص تجربة تدريسية تناسب اهتمامات طلابك وتزيد من تفاعلهم وحماسهم للتعلم.",
   "tutor-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المجالات المتاحة!",
@@ -461,6 +462,8 @@
   "tutor-settings.account-settings.password.title": "تغيير كلمة السر",
   "tutor-settings.account-settings.notifications.title": "الإشعارات",
   "student-settings.topics.selection-dialog.title": "اخبرنا بالمزيد عن نفسك !",
+  "student-settings.edit.personal.topics.loading": "برجاء الانتظار... جاري تحميل المفضلات!",
+  "student-settings.edit.personal.topics.error": "عذرًا، حدث خطأ أثناء تحميل المفضلات. برجاء المحاولة مرة أخرى!",
   "student-settings.topics.selection-dialog.description": "لنجعل تجربتك التعليمية ممتعة وشخصية! اختر المواضيع التي تود الحديث عنها في جلساتك مع معلمينا، وسنقوم بتوصية معلمين يناسبون اهتماماتك.",
   "student-settings.add-topics-button.label": "قم بأضافة الموضوعات المفضلة الخاصة بك",
   "student-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المفضلات!",
@@ -482,18 +485,6 @@
   "student-settings.edit.personal.topics": "قم باختيار المجالات التي تريد التحدث عنها",
   "student-settings.loading": "برجاء الإنتظار... جاري تحميل الإعدادات!",
   "student-settings.error": " عذرًا، حدث خطأ أثناء تحميل  الإعدادات، برجاء المحاولة مرة أخرى",
-  "settings.profile.title": "الإعدادات",
-  "settings.upload.image.label": "قم برفع صورة جديدة",
-  "settings.upload.image.label.mobile": "تغيير الصورة",
-  "settings.upload.image.desc": "يوصى بصيغة JPG أو PNG وGIF بحجم 480 × 480 بكسل على الأقل.",
-  "settings.edit.personal.title": "تعديل الملف الشخصي",
-  "settings.edit.personal.name": "الاسم",
-  "settings.edit.personal.name.placeholder": "احمد محمد اسامه",
-  "settings.edit.personal.email": "البريد الإلكتروني",
-  "settings.edit.personal.email.placeholder": "ahmedmohamed@gmail.com",
-  "settings.edit.personal.phone-number": "رقم الهاتف",
-  "settings.edit.personal.phone-number.placeholder": "قم بكتابة رقم هاتفك",
-  "settings.edit.personal.city": "المدينة",
   "shared-settings.edit.personal.city.placeholder": "من أين أنت",
   "shared-settings.save": "حفظ التغيرات",
   "shared-settings.update.error": "لديك مشكلة في تحديث البيانات",
@@ -509,27 +500,12 @@
   "shared-settings.edit.password.new": "كلمة السر الجديدة",
   "shared-settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
   "shared-settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
-  "settings.edit.personal.topics.title": "إضافة المفضلات",
-  "settings.edit.personal.topics": "قم باختيار المجالات التي تريد التحدث عنها",
-  "settings.edit.password.title": "تغيير كلمة السر",
-  "settings.edit.password.current": "كلمة السر الحالية",
-  "settings.edit.password.new": "كلمة السر الجديدة",
-  "settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
-  "settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
-  "settings.notifications": "الإشعارات",
-  "settings.notifications.lesson-date.title": "إشعارات تاريخ الدرس",
-  "settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
-  "settings.notifications.messages.title": "إشعارات الرسائل",
-  "settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
-  "settings.notifications.coming-soon.title": "قريبا 🎉",
-  "settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
-  "settings.topics.placeholder": "الرياضة، السفر، التكنولوجيا",
-  "settings.verify.title": "تأكيد الحساب الخاص بك.",
-  "settings.verify.description": "أكد حسابك حتي تتمكن من حجز الحصص او التحدث مع المعلمين، تفقد بريدك الإلكتروني لتجد رابط التاكيد.",
-  "settings.verify.action": "تأكيد الحساب",
-  "settings.verify.success.title": "تم إرسال رابط التاكيد الي بريدك الإلكتروني بنجاح",
-  "settings.verify.success.description": "يُرجى التحقق من بريدك الوارد واتباع التعليمات لتأكيد الحساب.",
-  "settings.verify.error.title": "حدث خطأ أثناء إرسال رابط التأكيد، برجاء المحاولة مرة أخرى!",
+  "student-settings.verify.title": "تأكيد الحساب الخاص بك.",
+  "student-settings.verify.description": "أكد حسابك حتي تتمكن من حجز الحصص او التحدث مع المعلمين، تفقد بريدك الإلكتروني لتجد رابط التاكيد.",
+  "student-settings.verify.action": "تأكيد الحساب",
+  "student-settings.verify.success.title": "تم إرسال رابط التاكيد الي بريدك الإلكتروني بنجاح",
+  "student-settings.verify.success.description": "يُرجى التحقق من بريدك الوارد واتباع التعليمات لتأكيد الحساب.",
+  "student-settings.verify.error.title": "حدث خطأ أثناء إرسال رابط التأكيد، برجاء المحاولة مرة أخرى!",
   "settings.loading": "برجاء الانتظار... جاري تحميل صفحة الإعدادات!",
   "settings.error": " عذرًا، حدث خطأ أثناء تحميل صفحة الإعدادات، برجاء المحاولة مرة أخرى",
   "profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
