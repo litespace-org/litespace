@@ -1,11 +1,13 @@
 import type { Metadata } from "next";
+import React from "react";
+import Body from "@/components/Layout/Body";
+
 import "@litespace/ui/style.css";
 import "@litespace/ui/tailwind.css";
-import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
   title: "LiteSpace",
-  description: "Learn English with ease!",
+  description: "Effortless English learning!",
 };
 
 export default function RootLayout({
@@ -14,8 +16,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" dir="rtl">
-      <Providers>{children}</Providers>
+    <html
+      lang="ar"
+      dir="rtl"
+      className="scrollbar-thin bg-natural-50 font-cairo relative"
+    >
+      <Body>{children}</Body>
     </html>
   );
 }

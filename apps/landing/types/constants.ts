@@ -1,2 +1,0 @@
-export const SMALL_SCREEN_SIDEBAR_WIDTH = 166;
-export const SMALL_SCREEN_NAVBAR_HEIGHT = 72;

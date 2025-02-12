@@ -1,10 +1,10 @@
 "use client";
 
-import { pages } from "@/components/layout/common";
 import {
-  SMALL_SCREEN_NAVBAR_HEIGHT,
-  SMALL_SCREEN_SIDEBAR_WIDTH,
-} from "@/types/constants";
+  PAGES,
+  SMALL_SCREEN_NAVBAR_HEIGHT_PX,
+  SMALL_SCREEN_SIDEBAR_WIDTH_PX,
+} from "@/constants/ui";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -16,25 +16,26 @@ import { Void } from "@litespace/types";
 const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
   const intl = useFormatMessage();
 
-  const closeSidebar = useCallback((e: MouseEvent) => {
-    if (typeof window === "undefined") return;
-
-    const backdropXEnd = window.innerWidth - SMALL_SCREEN_SIDEBAR_WIDTH;
-    const backdropYStart = SMALL_SCREEN_NAVBAR_HEIGHT;
-
-    if (e.pageX < backdropXEnd && e.pageY > backdropYStart) hide();
-  }, []);
+  const onClick = useCallback(
+    (e: MouseEvent) => {
+      if (typeof window === "undefined") return;
+      const backdropXEnd = window.innerWidth - SMALL_SCREEN_SIDEBAR_WIDTH_PX;
+      const backdropYStart = SMALL_SCREEN_NAVBAR_HEIGHT_PX;
+      if (e.pageX < backdropXEnd && e.pageY > backdropYStart) hide();
+    },
+    [hide]
+  );
 
   useEffect(() => {
-    window.addEventListener("click", closeSidebar);
-    return () => window.removeEventListener("click", closeSidebar);
-  }, []);
+    window.addEventListener("click", onClick);
+    return () => window.removeEventListener("click", onClick);
+  }, [onClick]);
 
   return (
     <div className="fixed flex lg:hidden right-0 top-[72px] bottom-0 max-w-[166px] p-4 bg-natural-50 flex-col gap-6">
       <div className={cn("flex flex-col lg:flex-row gap-6 items-start")}>
-        {pages.map((page) => (
-          <Link href={page.route} key={page.title}>
+        {PAGES.map((page) => (
+          <Link href={page.route} key={page.route}>
             <Typography
               element="tiny-text"
               weight="bold"

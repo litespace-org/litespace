@@ -1,9 +1,9 @@
 "use client";
 
-import { pages } from "@/components/layout/common";
-import { Route } from "@/types/routes";
+import { PAGES } from "@/constants/ui";
 import Logo from "@litespace/assets/Logo";
 import Menu from "@litespace/assets/Menu";
+import { Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -12,27 +12,26 @@ import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 const Navbar: React.FC<{
-  toggleSidebar: () => void;
+  toggleSidebar: Void;
 }> = ({ toggleSidebar }) => {
   const intl = useFormatMessage();
 
-  const [isPageScolled, setIsPageScrolled] = useState(false);
+  const [scolled, setScrolled] = useState(false);
 
   const onScroll = useCallback(() => {
-    setIsPageScrolled(!!window.scrollY);
+    setScrolled(!!window.scrollY);
   }, []);
 
   useEffect(() => {
     window.addEventListener("scroll", onScroll);
-
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [onScroll]);
 
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 shadow-app-navbar-mobile",
-        isPageScolled ? "bg-natural-50" : "bg-natural-50 lg:bg-transparent"
+        "fixed top-0 left-0 right-0 z-50 shadow-app-navbar-mobile transition-colors duration-300",
+        scolled ? "bg-natural-50" : "bg-natural-50 lg:bg-transparent"
       )}
     >
       <div className="max-w-screen-3xl mx-auto flex flex-row-reverse lg:flex-row justify-between items-center py-6 lg:py-4 px-4 md:px-8">
@@ -42,13 +41,14 @@ const Navbar: React.FC<{
             "hidden lg:flex flex-col lg:flex-row gap-8 items-center"
           )}
         >
-          {pages.map((page) => (
-            <Link href={page.route} key={page.title}>
+          {PAGES.map((page) => (
+            <Link href={page.route} key={page.route}>
               <Typography
                 element="caption"
                 weight="semibold"
                 className={cn(
-                  isPageScolled ? "text-natural-950" : "text-natural-50"
+                  "transition-colors duration-300",
+                  scolled ? "text-natural-950" : "text-natural-50"
                 )}
               >
                 {intl(page.title)}
