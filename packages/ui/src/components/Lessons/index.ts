@@ -1,4 +1,4 @@
-export { BookLessonDialog } from "@/components/Lessons/BookLesson";
+export { ManageLessonDialog } from "@/components/Lessons/ManageLesson";
 export { LessonCard, type Props } from "@/components/Lessons/LessonCard";
 export { EmptyLessons } from "@/components/Lessons/EmptyLessons";
 export { PastLessonsTable } from "@/components/Lessons/PastLessonsTable";

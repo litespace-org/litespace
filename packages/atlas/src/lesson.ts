@@ -24,6 +24,12 @@ export class Lesson extends Base {
     return await this.get({ route: `/api/v1/lesson/${id}` });
   }
 
+  async update(
+    payload: ILesson.UpdateApiPayload
+  ): Promise<ILesson.UpdateLessonApiResponse> {
+    return await this.patch({ route: `/api/v1/lesson`, payload });
+  }
+
   async cancel(id: number): Promise<void> {
     return this.del({ route: `/api/v1/lesson/${id}` });
   }

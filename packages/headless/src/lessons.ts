@@ -122,6 +122,30 @@ export function useCreateLesson({
   });
 }
 
+export function useUpdateLesson({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: OnSuccess<ILesson.UpdateLessonApiResponse>;
+  onError: OnError;
+}) {
+  const atlas = useAtlas();
+
+  const updateLesson = useCallback(
+    async (lesson: ILesson.UpdateApiPayload) => {
+      return await atlas.lesson.update(lesson);
+    },
+    [atlas.lesson]
+  );
+
+  return useMutation({
+    mutationFn: updateLesson,
+    mutationKey: [MutationKey.UpdateLesson],
+    onSuccess,
+    onError,
+  });
+}
+
 export function useFindLesson(id?: number) {
   const atlas = useAtlas();
 

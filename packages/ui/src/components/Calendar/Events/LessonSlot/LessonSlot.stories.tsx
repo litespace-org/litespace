@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { LessonSlot } from "@/components/Calendar/Events/LessonSlot/LessonSlot";
 import { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "@/lib/dayjs";
+import { LessonActions } from "@/components/Calendar/types";
 
 type Component = typeof LessonSlot;
 
@@ -12,8 +13,8 @@ const meta: Meta<Component> = {
   decorators: [],
 };
 
-const actions = {
-  onEdit: (id: number) => alert(`Edit: ${id}`),
+const actions: LessonActions = {
+  onEdit: (id) => alert(`Edit: ${id}`),
   onCancel: (id: number) => alert(`Cancel: ${id}`),
   onRebook: (id: number) => alert(`Rebook: ${id}`),
   onJoin: (id: number) => alert(`Join: ${id}`),

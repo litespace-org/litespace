@@ -153,6 +153,7 @@ export const SelectV2 = <T extends string | number>({
                   <SelectItem
                     value={option.value.toString()}
                     key={option.value}
+                    disabled={option.disabled}
                   >
                     {option.label}
                   </SelectItem>
@@ -180,6 +181,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
           "tw-flex tw-shrink-0 tw-items-center tw-justify-between",
           "tw-h-[34px] tw-p-2",
           "tw-cursor-pointer focus:tw-outline-none focus:tw-ring-inset focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-z-select-item",
+          "data-[disabled]:tw-cursor-not-allowed",
           className
         )}
         {...props}

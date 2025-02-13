@@ -30,6 +30,7 @@ export type Props = {
   disabled: boolean;
   onRebook: Void;
   onJoin: Void;
+  onEdit: Void;
   onCancel: Void;
   onSendMsg: Void;
 };
@@ -44,6 +45,7 @@ export const LessonCard: React.FC<Props> = ({
   onJoin,
   onCancel,
   onRebook,
+  onEdit,
   onSendMsg,
 }) => {
   const intl = useFormatMessage();
@@ -133,7 +135,7 @@ export const LessonCard: React.FC<Props> = ({
             {
               label: intl("lessons.menu.edit"),
               icon: <CalendarEdit />,
-              onClick: () => console.log("edit"),
+              onClick: () => onEdit(),
             },
             {
               label: intl("lessons.menu.cancel"),
@@ -149,7 +151,7 @@ export const LessonCard: React.FC<Props> = ({
               onClick: () => onCancel(),
             },
           ],
-    [intl, onCancel, currentUserRole]
+    [intl, onCancel, onEdit, currentUserRole]
   );
 
   const action = useMemo(() => {

@@ -2,7 +2,7 @@ import { useFormatMessage } from "@/hooks";
 import React, { useMemo } from "react";
 import Check from "@litespace/assets/Check2";
 import { Typography } from "@/components/Typography";
-import { Step } from "@/components/Lessons/BookLesson/types";
+import { Step } from "@/components/Lessons/ManageLesson/types";
 import cn from "classnames";
 
 export const Stepper: React.FC<{ step: Step }> = ({ step }) => {

@@ -14,6 +14,7 @@ export type SelectProps<T extends string | number> = {
 };
 
 export type SelectList<T extends string | number> = Array<{
+  disabled?: boolean;
   label: string;
   value: T;
 }>;
