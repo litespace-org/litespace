@@ -7,7 +7,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
-import BookLesson from "@/components/Lessons/BookLesson";
+import BookLesson from "@/components/Lessons/ManageLesson";
 import { Route } from "@/types/routes";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 

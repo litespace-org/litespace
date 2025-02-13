@@ -1,16 +1,16 @@
 import { StoryObj, Meta } from "@storybook/react";
-import { BookLessonDialog } from "@/components/Lessons/BookLesson";
+import { ManageLessonDialog } from "@/components/Lessons/ManageLesson";
 import React, { useEffect, useState } from "react";
 import { identity, range } from "lodash";
 import { faker } from "@faker-js/faker/locale/ar";
 import dayjs from "@/lib/dayjs";
 
-type Component = typeof BookLessonDialog;
+type Component = typeof ManageLessonDialog;
 type Story = StoryObj<Component>;
 
 const meta: Meta<Component> = {
-  title: "Lessons/BookLessonDialog",
-  component: BookLessonDialog,
+  title: "Lessons/ManageLessonDialog",
+  component: ManageLessonDialog,
   parameters: {
     layout: null,
   },
@@ -53,7 +53,7 @@ export const Primary: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
     slots: makeSlots(5),
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },
@@ -89,7 +89,7 @@ export const WithBookedSlots: Story = {
         end: dayjs.utc().startOf("day").add(1.5, "hours").toISOString(),
       },
     ],
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },
@@ -105,7 +105,7 @@ export const LoadingSlots: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     bookedSlots: [],
     slots: [],
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },
@@ -121,7 +121,7 @@ export const ConfirmationLoading: Story = {
     slots: makeSlots(5),
     bookedSlots: [],
     confirmationLoading: true,
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },
@@ -137,7 +137,7 @@ export const LoadingThenShowingSchedule: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: makeSlots(5),
     bookedSlots: [],
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },
@@ -149,7 +149,7 @@ export const LoadingThenShowingSchedule: Story = {
       }, 2_000);
       return () => clearTimeout(id);
     }, []);
-    return <BookLessonDialog {...props} loading={loading} />;
+    return <ManageLessonDialog {...props} loading={loading} />;
   },
 };
 
@@ -162,7 +162,7 @@ export const EmptySchedule: Story = {
     imageUrl: faker.image.urlPicsumPhotos({ width: 400, height: 400 }),
     slots: [],
     bookedSlots: [],
-    onBook() {
+    onSubmit() {
       alert("Lesson booked!!");
     },
   },

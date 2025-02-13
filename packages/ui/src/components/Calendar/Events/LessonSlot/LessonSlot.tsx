@@ -51,7 +51,11 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
   return (
     <Card canceled={canceled}>
       <div className="tw-absolute tw-top-0 tw-left-0">
-        <OptionsMenu canceled={canceled} {...actions} />
+        <OptionsMenu
+          otherMemberId={otherMember.id}
+          canceled={canceled}
+          {...actions}
+        />
       </div>
       <div className="tw-px-[10px]">
         <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
@@ -162,6 +166,7 @@ const MultipleLessons: React.FC<
                         OptionsMenu={
                           <OptionsMenu
                             id={lesson.id}
+                            otherMemberId={lesson.otherMember.id}
                             canceled={false}
                             open={menuOpened}
                             setOpen={setMenuOpened}
@@ -185,10 +190,21 @@ const OptionsMenu: React.FC<
   Partial<LessonActions> & {
     canceled: boolean;
     id: number;
+    otherMemberId: number;
     open?: boolean;
     setOpen?: (open: boolean) => void;
   }
-> = ({ id, canceled, onCancel, onEdit, onRebook, onJoin, open, setOpen }) => {
+> = ({
+  id,
+  otherMemberId,
+  canceled,
+  onCancel,
+  onEdit,
+  onRebook,
+  onJoin,
+  open,
+  setOpen,
+}) => {
   const intl = useFormatMessage();
 
   const actions: MenuAction[] = useMemo(() => {
@@ -217,7 +233,7 @@ const OptionsMenu: React.FC<
         label: intl("schedule.lesson.edit"),
         onClick: () => {
           if (!onEdit) console.warn("onEdit is undefined.");
-          if (onEdit) onEdit(id);
+          if (onEdit) onEdit({ lessonId: id, otherMemberId });
         },
       },
       {
@@ -229,7 +245,7 @@ const OptionsMenu: React.FC<
         },
       },
     ];
-  }, [canceled, intl, onRebook, id, onJoin, onEdit, onCancel]);
+  }, [canceled, otherMemberId, intl, onRebook, id, onJoin, onEdit, onCancel]);
 
   return (
     <Menu

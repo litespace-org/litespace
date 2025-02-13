@@ -32,7 +32,7 @@ import Trash from "@litespace/assets/Trash";
 import { useUserContext } from "@litespace/headless/context/user";
 import { InView } from "react-intersection-observer";
 import { orUndefined } from "@litespace/utils/utils";
-import BookLesson from "@/components/Lessons/BookLesson";
+import BookLesson from "@/components/Lessons/ManageLesson";
 import StartNewMessage from "@litespace/assets/StartNewMessage";
 import { useToast } from "@litespace/ui/Toast";
 import { SelectRoom, UncontactedTutorRoomId } from "@litespace/ui/hooks/chat";

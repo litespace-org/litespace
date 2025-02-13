@@ -6,7 +6,7 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { PastLessonsSummary, PastLessonsTable } from "@litespace/ui/Lessons";
 import { Typography } from "@litespace/ui/Typography";
 import { ILesson, IUser } from "@litespace/types";
-import BookLesson from "@/components/Lessons/BookLesson";
+import BookLesson from "@/components/Lessons/ManageLesson";
 import { InView } from "react-intersection-observer";
 import { Loading } from "@litespace/ui/Loading";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";

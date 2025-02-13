@@ -10,11 +10,12 @@ import { useToast } from "@litespace/ui/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import BookLesson from "@/components/Lessons/BookLesson";
+import ManageLesson from "@/components/Lessons/ManageLesson";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useNavigateToRoom } from "@/hooks/chat";
+import { orUndefined } from "@litespace/utils";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -126,6 +127,10 @@ export const Content: React.FC<{
                 duration={item.lesson.duration}
                 onJoin={() => console.log("join")}
                 onCancel={() => setLessonId(item.lesson.id)}
+                onEdit={() => {
+                  setTutorId(tutor.userId);
+                  setLessonId(item.lesson.id);
+                }}
                 onRebook={() => setTutorId(tutor.userId)}
                 onSendMsg={() =>
                   onSendMessage(item.lesson.id, [user.id, otherMember?.userId])
@@ -162,7 +167,7 @@ export const Content: React.FC<{
         />
       ) : null}
 
-      {lessonId ? (
+      {lessonId && !tutorId ? (
         <CancelLesson
           close={() => setLessonId(null)}
           onCancel={() => cancelLesson.mutate(lessonId)}
@@ -172,7 +177,14 @@ export const Content: React.FC<{
       ) : null}
 
       {tutorId ? (
-        <BookLesson tutorId={tutorId} close={() => setTutorId(null)} />
+        <ManageLesson
+          lessonId={orUndefined(lessonId)}
+          tutorId={tutorId}
+          close={() => {
+            setTutorId(null);
+            setLessonId(null);
+          }}
+        />
       ) : null}
     </div>
   );

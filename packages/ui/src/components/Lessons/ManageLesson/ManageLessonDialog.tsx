@@ -3,12 +3,12 @@ import { Dialog } from "@/components/Dialog";
 import { IAvailabilitySlot, ILesson, Void } from "@litespace/types";
 import { useFormatMessage } from "@/hooks";
 import { Typography } from "@/components/Typography";
-import { Stepper } from "@/components/Lessons/BookLesson/Stepper";
-import { Step } from "@/components/Lessons/BookLesson/types";
-import { DateSelection } from "@/components/Lessons/BookLesson/DateSelection";
-import { DurationSelection } from "@/components/Lessons/BookLesson/DurationSelection";
-import { TimeSelection } from "@/components/Lessons/BookLesson/TimeSelection";
-import { Confirmation } from "@/components/Lessons/BookLesson/Confirmation";
+import { Stepper } from "@/components/Lessons/ManageLesson/Stepper";
+import { Step } from "@/components/Lessons/ManageLesson/types";
+import { DateSelection } from "@/components/Lessons/ManageLesson/DateSelection";
+import { DurationSelection } from "@/components/Lessons/ManageLesson/DurationSelection";
+import { TimeSelection } from "@/components/Lessons/ManageLesson/TimeSelection";
+import { Confirmation } from "@/components/Lessons/ManageLesson/Confirmation";
 import { Button } from "@/components/Button";
 import LongRightArrow from "@litespace/assets/LongRightArrow";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
@@ -99,7 +99,7 @@ const Animation: React.FC<{
   );
 };
 
-export const BookLessonDialog: React.FC<{
+export const ManageLessonDialog: React.FC<{
   /**
    * Flag to show or hide the dialog
    */
@@ -121,7 +121,10 @@ export const BookLessonDialog: React.FC<{
   confirmationLoading?: boolean;
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
-  onBook: ({
+  /**
+   * Generic function that will submit data either to be booked or edited
+   */
+  onSubmit: ({
     slotId,
     start,
     duration,
@@ -138,7 +141,7 @@ export const BookLessonDialog: React.FC<{
   imageUrl,
   slots,
   bookedSlots,
-  onBook,
+  onSubmit,
   loading,
   confirmationLoading,
 }) => {
@@ -294,7 +297,7 @@ export const BookLessonDialog: React.FC<{
                   duration={duration}
                   onConfrim={() => {
                     if (!lessonDetails.start || !lessonDetails.slotId) return;
-                    return onBook({
+                    return onSubmit({
                       start: lessonDetails.start,
                       slotId: lessonDetails.slotId,
                       duration,

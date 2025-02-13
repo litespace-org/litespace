@@ -219,7 +219,7 @@ export function asSubSlot<T extends ILesson.Self | IInterview.Self>(
     parent: "ids" in item ? item.ids.slot : item.slotId,
     start: item.start,
     end: dayjs(item.start)
-      .add("duration" in item ? item.duration : INTERVIEW_DURATION)
+      .add("duration" in item ? item.duration : INTERVIEW_DURATION, "minute")
       .toISOString(),
   };
 }

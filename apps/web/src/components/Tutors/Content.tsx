@@ -1,4 +1,4 @@
-import BookLesson from "@/components/Lessons/BookLesson";
+import BookLesson from "@/components/Lessons/ManageLesson";
 import { Route } from "@/types/routes";
 import { Loading, Loader, LoadingError } from "@litespace/ui/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/ui/TutorCard";
