@@ -1,10 +1,6 @@
 import { ManageLessonDialog } from "@litespace/ui/Lessons";
 import { ILesson, Void } from "@litespace/types";
-import {
-  useCreateLesson,
-  useFindLesson,
-  useUpdateLesson,
-} from "@litespace/headless/lessons";
+import { useCreateLesson, useUpdateLesson } from "@litespace/headless/lessons";
 import { useMemo, useCallback } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -16,24 +12,34 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import dayjs from "@/lib/dayjs";
 import { useInvalidateQuery } from "@litespace/headless/query";
 
+type Base = {
+  close: Void;
+};
+
+export type ManageLessonPayload =
+  | {
+      type: "book";
+      tutorId: number;
+    }
+  | {
+      type: "update";
+      tutorId: number;
+      lessonId: number;
+      slotId: number;
+      start: string;
+      duration: number;
+    };
+
+type Props = Base & ManageLessonPayload;
+
 /**
  * This is wrapper component for the dialog component where users can either
  * book new lessons or edit existing lesson
  */
-const ManageLesson = ({
-  close,
-  tutorId,
-  lessonId,
-}: {
-  close: Void;
-  tutorId: number;
-  lessonId?: number;
-}) => {
+const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
   const toast = useToast();
   const intl = useFormatMessage();
   const invalidate = useInvalidateQuery();
-
-  const lessonData = useFindLesson(lessonId);
 
   const availabilitySlotsQuery = useMemo(
     () => ({
@@ -116,35 +122,39 @@ const ManageLesson = ({
       start: string;
       duration: ILesson.Duration;
     }) => {
-      // no lessonId -> Create New Lesson
-      if (!lessonId) {
-        createLessonMutation.mutate({ tutorId, slotId, duration, start });
-        return;
-      }
-      // lessonId -> Edit Existing Lesson
-      updateLessonMutation.mutate({ lessonId, slotId, duration, start });
+      if (payload.type === "book")
+        return createLessonMutation.mutate({
+          tutorId,
+          slotId,
+          duration,
+          start,
+        });
+
+      updateLessonMutation.mutate({
+        lessonId: payload.lessonId,
+        slotId,
+        duration,
+        start,
+      });
     },
-    [tutorId, createLessonMutation, updateLessonMutation, lessonId]
+    [payload, createLessonMutation, tutorId, updateLessonMutation]
   );
 
   const bookedSlots = useMemo(() => {
-    if (!tutorAvailabilitySlots.data || !tutorAvailabilitySlots.data?.subslots)
-      return [];
-    if (!lessonId || !lessonData.data?.lesson)
-      return tutorAvailabilitySlots.data.subslots;
-
-    const lesson = lessonData.data?.lesson;
+    if (!tutorAvailabilitySlots.data?.subslots) return [];
+    if (payload.type === "book") return tutorAvailabilitySlots.data.subslots;
+    const start = dayjs.utc(payload.start);
+    const end = start.add(payload.duration, "minutes");
     return tutorAvailabilitySlots.data.subslots.filter(
-      (slot) =>
-        !dayjs(slot.start).isSame(dayjs(lesson.start)) &&
-        !dayjs(slot.end).isSame(
-          dayjs(lesson.start).add(lesson.duration, "minute")
-        )
+      (slot) => !start.isSame(slot.start) || !end.isSame(slot.end)
     );
-  }, [tutorAvailabilitySlots.data, lessonId, lessonData]);
+  }, [tutorAvailabilitySlots.data?.subslots, payload]);
 
   return (
     <ManageLessonDialog
+      slotId={payload.type === "update" ? payload.slotId : undefined}
+      start={payload.type === "update" ? payload.start : undefined}
+      duration={payload.type === "update" ? payload.duration : undefined}
       imageUrl={orNull(tutor.data?.image)}
       name={orNull(tutor.data?.name)}
       tutorId={tutorId}

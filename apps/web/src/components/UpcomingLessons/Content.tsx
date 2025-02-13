@@ -10,12 +10,14 @@ import { useToast } from "@litespace/ui/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import ManageLesson from "@/components/Lessons/ManageLesson";
+import ManageLesson, {
+  ManageLessonPayload,
+} from "@/components/Lessons/ManageLesson";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useNavigateToRoom } from "@/hooks/chat";
-import { orUndefined } from "@litespace/utils";
+import { useNavigate } from "react-router-dom";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -33,13 +35,15 @@ export const Content: React.FC<{
   const intl = useFormatMessage();
   const toast = useToast();
   const { user } = useUserContext();
+  const navigate = useNavigate();
 
-  const [tutorId, setTutorId] = useState<number | null>(null);
-  const [lessonId, setLessonId] = useState<number | null>(null);
+  const [cancelLessonId, setCancelLessonId] = useState<number | null>(null);
+  const [manageLessonData, setManageLessonData] =
+    useState<ManageLessonPayload | null>(null);
 
   const onCancelSuccess = useCallback(() => {
     toast.success({ title: intl("cancel-lesson.success") });
-    setLessonId(null);
+    setCancelLessonId(null);
     queryClient.invalidateQueries({
       queryKey: [QueryKey.FindInfiniteLessons],
     });
@@ -125,13 +129,25 @@ export const Content: React.FC<{
               <LessonCard
                 start={item.lesson.start}
                 duration={item.lesson.duration}
-                onJoin={() => console.log("join")}
-                onCancel={() => setLessonId(item.lesson.id)}
+                onJoin={() =>
+                  navigate(
+                    Route.Lesson.replace(":id", item.lesson.id.toString())
+                  )
+                }
+                onCancel={() => setCancelLessonId(item.lesson.id)}
                 onEdit={() => {
-                  setTutorId(tutor.userId);
-                  setLessonId(item.lesson.id);
+                  setManageLessonData({
+                    type: "update",
+                    lessonId: item.lesson.id,
+                    slotId: item.lesson.slotId,
+                    start: item.lesson.start,
+                    duration: item.lesson.duration,
+                    tutorId: tutor.userId,
+                  });
                 }}
-                onRebook={() => setTutorId(tutor.userId)}
+                onRebook={() =>
+                  setManageLessonData({ type: "book", tutorId: tutor.userId })
+                }
                 onSendMsg={() =>
                   onSendMessage(item.lesson.id, [user.id, otherMember?.userId])
                 }
@@ -167,23 +183,21 @@ export const Content: React.FC<{
         />
       ) : null}
 
-      {lessonId && !tutorId ? (
+      {cancelLessonId ? (
         <CancelLesson
-          close={() => setLessonId(null)}
-          onCancel={() => cancelLesson.mutate(lessonId)}
+          close={() => setCancelLessonId(null)}
+          onCancel={() => cancelLesson.mutate(cancelLessonId)}
           loading={cancelLesson.isPending}
           open
         />
       ) : null}
 
-      {tutorId ? (
+      {manageLessonData ? (
         <ManageLesson
-          lessonId={orUndefined(lessonId)}
-          tutorId={tutorId}
           close={() => {
-            setTutorId(null);
-            setLessonId(null);
+            setManageLessonData(null);
           }}
+          {...manageLessonData}
         />
       ) : null}
     </div>

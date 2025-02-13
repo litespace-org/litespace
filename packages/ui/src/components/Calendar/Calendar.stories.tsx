@@ -48,8 +48,8 @@ const lessonActions: LessonActions = {
   onCancel(id) {
     alert(`Cancel ${id}`);
   },
-  onEdit({ lessonId, otherMemberId }) {
-    alert(`Edit ${lessonId} for tutor ${otherMemberId}`);
+  onEdit(id) {
+    alert(`Edit ${id}`);
   },
 };
 

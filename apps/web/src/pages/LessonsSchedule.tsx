@@ -14,14 +14,15 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useNavigate } from "react-router-dom";
 import { Route } from "@/types/routes";
 import { CancelLesson } from "@litespace/ui/Lessons";
-import BookLesson from "@/components/Lessons/ManageLesson";
+import ManageLesson, {
+  ManageLessonPayload,
+} from "@/components/Lessons/ManageLesson";
 import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { IUser } from "@litespace/types";
-import { orUndefined } from "@litespace/utils";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -34,8 +35,9 @@ const LessonsSchedule: React.FC = () => {
   const [view, setView] = useState<View>("list");
   const { user } = useUserContext();
   const navigate = useNavigate();
-  const [tutorId, setTutorId] = useState<number | null>(null);
   const [lessonId, setLessonId] = useState<number | null>(null);
+  const [manageLessonData, setManageLessonData] =
+    useState<ManageLessonPayload | null>(null);
   const intl = useFormatMessage();
   const toast = useToast();
   const invalidate = useInvalidateQuery();
@@ -103,33 +105,51 @@ const LessonsSchedule: React.FC = () => {
     setLessonId(lessonId);
   }, []);
 
-  const onRebook = useCallback(
+  const getTutorId = useCallback(
     (lessonId: number) => {
       const item = lessons.list?.find((item) => item.lesson.id === lessonId);
-      if (!item) return;
+      if (!item) return null;
+
       const tutor = item.members.find(
         (member) => member.role !== IUser.Role.Student
       );
-      if (!tutor) return;
-      setTutorId(tutor.userId);
+      return tutor?.userId || null;
     },
     [lessons.list]
   );
 
-  const onEdit = useCallback(
-    ({
-      lessonId,
-      otherMemberId,
-    }: {
-      lessonId: number;
-      otherMemberId: number;
-    }) => {
-      // Only students can edit the time of the lesson
-      if (user?.role !== IUser.Role.Student) return;
-      setTutorId(otherMemberId);
-      setLessonId(lessonId);
+  const onRebook = useCallback(
+    (lessonId: number) => {
+      const tutorId = getTutorId(lessonId);
+      if (!tutorId) return;
+      setManageLessonData({ type: "book", tutorId });
     },
-    [user]
+    [getTutorId]
+  );
+
+  const onEdit = useCallback(
+    (lessonId: number) => {
+      // Only students can edit the time of the lesson
+      if (!user || user.role !== IUser.Role.Student) return;
+
+      const item = lessons.list?.find(({ lesson }) => lesson.id === lessonId);
+      if (!item) return;
+
+      const tutor = item.members.find(
+        (member) => member.role !== IUser.Role.Student
+      );
+      if (!tutor) return;
+
+      setManageLessonData({
+        type: "update",
+        tutorId: tutor.userId,
+        duration: item.lesson.duration,
+        start: item.lesson.start,
+        lessonId: item.lesson.id,
+        slotId: item.lesson.slotId,
+      });
+    },
+    [lessons.list, user]
   );
 
   return (
@@ -196,7 +216,7 @@ const LessonsSchedule: React.FC = () => {
         ) : null}
       </AnimatePresence>
 
-      {lessonId && !tutorId ? (
+      {lessonId ? (
         <CancelLesson
           close={() => setLessonId(null)}
           onCancel={() => cancelLesson.mutate(lessonId)}
@@ -205,13 +225,11 @@ const LessonsSchedule: React.FC = () => {
         />
       ) : null}
 
-      {tutorId ? (
-        <BookLesson
-          lessonId={orUndefined(lessonId)}
-          tutorId={tutorId}
+      {manageLessonData ? (
+        <ManageLesson
+          {...manageLessonData}
           close={() => {
-            setTutorId(null);
-            setLessonId(null);
+            setManageLessonData(null);
           }}
         />
       ) : null}

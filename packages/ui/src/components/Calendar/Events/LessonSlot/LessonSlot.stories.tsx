@@ -14,8 +14,7 @@ const meta: Meta<Component> = {
 };
 
 const actions: LessonActions = {
-  onEdit: ({ lessonId, otherMemberId }) =>
-    alert(`Edit: ${lessonId} for ${otherMemberId}`),
+  onEdit: (id) => alert(`Edit: ${id}`),
   onCancel: (id: number) => alert(`Cancel: ${id}`),
   onRebook: (id: number) => alert(`Rebook: ${id}`),
   onJoin: (id: number) => alert(`Join: ${id}`),

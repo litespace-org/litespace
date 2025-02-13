@@ -1,4 +1,4 @@
-import BookLesson from "@/components/Lessons/ManageLesson";
+import ManageLesson from "@/components/Lessons/ManageLesson";
 import { Route } from "@/types/routes";
 import { Loading, Loader, LoadingError } from "@litespace/ui/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/ui/TutorCard";
@@ -105,7 +105,11 @@ const Content: React.FC<{
       </div>
 
       {tutor ? (
-        <BookLesson close={closeBookingDialog} tutorId={tutor.id} />
+        <ManageLesson
+          type="book"
+          close={closeBookingDialog}
+          tutorId={tutor.id}
+        />
       ) : null}
 
       {fetching ? <Loading className="mt-6 text-natural-950" /> : null}

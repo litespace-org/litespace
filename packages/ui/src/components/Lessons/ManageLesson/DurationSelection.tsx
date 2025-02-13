@@ -1,5 +1,4 @@
-import { Select } from "@/components/Select";
-import { Typography } from "@/components/Typography";
+import { SelectV2 } from "@/components/Select";
 import { formatMinutes } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import React from "react";
@@ -11,11 +10,9 @@ export const DurationSelection: React.FC<{
   const intl = useFormatMessage();
   return (
     <div className="tw-flex tw-flex-col tw-gap-2">
-      <Typography element="subtitle-2" className="tw-text-natural-950">
-        {intl("book-lesson.pick-lesson-duration")}
-      </Typography>
       <div className="tw-w-[400px]">
-        <Select
+        <SelectV2
+          label={intl("book-lesson.pick-lesson-duration")}
           options={[
             {
               label: formatMinutes(15),
@@ -24,6 +21,7 @@ export const DurationSelection: React.FC<{
             {
               label: formatMinutes(30),
               value: 30,
+              disabled: true,
             },
           ]}
           value={value}

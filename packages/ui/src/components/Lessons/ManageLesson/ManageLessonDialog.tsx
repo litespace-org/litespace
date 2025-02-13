@@ -119,6 +119,9 @@ export const ManageLessonDialog: React.FC<{
   imageUrl: string | null;
   loading?: boolean;
   confirmationLoading?: boolean;
+  slotId?: number;
+  start?: string;
+  duration?: number;
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
   /**
@@ -144,19 +147,22 @@ export const ManageLessonDialog: React.FC<{
   onSubmit,
   loading,
   confirmationLoading,
+  ...initials
 }) => {
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
-  const [duration, setDuration] = useState<number>(30);
+  const [duration, setDuration] = useState<number>(initials.duration || 15);
   const [lessonDetails, setLessonDetails] = useState<{
     start: string | null;
     slotId: number | null;
   }>({
-    start: null,
-    slotId: null,
+    start: initials.start || null,
+    slotId: initials.slotId || null,
   });
 
-  const [date, setDate] = useState<Dayjs | null>(null);
+  const [date, setDate] = useState<Dayjs | null>(
+    initials.start ? dayjs.utc(initials.start).startOf("day") : null
+  );
 
   const dateBounds = useMemo(() => {
     const min = dayjs();
@@ -314,11 +320,11 @@ export const ManageLessonDialog: React.FC<{
       </div>
 
       {step !== "confirmation" && !loading && !isTutorBusy ? (
-        <div className="tw-flex tw-flex-row tw-gap-6 tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
+        <div className="tw-flex tw-flex-row tw-gap-[14px] tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
-              size={"medium"}
+              size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
@@ -333,7 +339,7 @@ export const ManageLessonDialog: React.FC<{
 
           <Button
             endIcon={<LongLeftArrow />}
-            size={"medium"}
+            size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
               if (step === "duration-selection") setStep("time-selection");

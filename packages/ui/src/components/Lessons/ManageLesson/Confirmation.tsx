@@ -64,7 +64,7 @@ export const Confirmation: React.FC<{
 
             <div className="tw-flex tw-flex-row tw-gap-[88px]">
               <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Clock />
+                <Clock className="tw-w-6 tw-h-6" />
 
                 <Typography
                   element="subtitle-2"
@@ -75,7 +75,7 @@ export const Confirmation: React.FC<{
                 </Typography>
               </div>
               <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Timer />
+                <Timer className="tw-w-6 tw-h-6" />
 
                 <Typography
                   element="subtitle-2"
@@ -90,20 +90,22 @@ export const Confirmation: React.FC<{
         </div>
       </div>
 
-      <div className="tw-flex tw-flex-row tw-gap-8 tw-pb-5">
+      <div className="tw-flex tw-flex-row tw-gap-6 tw-pb-5">
         <Button
           className="tw-w-full"
           loading={confirmationLoading}
           disabled={confirmationLoading}
           onClick={onConfrim}
+          size="large"
         >
           {intl("book-lesson.confirm")}
         </Button>
         <Button
           className="tw-w-full"
           disabled={confirmationLoading}
-          variant={"secondary"}
+          variant="secondary"
           onClick={onEdit}
+          size="large"
         >
           {intl("book-lesson.edit")}
         </Button>

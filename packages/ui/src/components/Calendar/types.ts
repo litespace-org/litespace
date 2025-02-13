@@ -2,13 +2,7 @@ import { IAvailabilitySlot } from "@litespace/types";
 
 export type LessonActions = {
   onCancel(id: number): void;
-  onEdit({
-    lessonId,
-    otherMemberId,
-  }: {
-    lessonId: number;
-    otherMemberId: number;
-  }): void;
+  onEdit(id: number): void;
   onRebook(id: number): void;
   onJoin(id: number): void;
 };

@@ -7,7 +7,7 @@ import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
-import BookLesson from "@/components/Lessons/ManageLesson";
+import ManageLesson from "@/components/Lessons/ManageLesson";
 import { Route } from "@/types/routes";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
@@ -74,7 +74,11 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {open && tutor.data ? (
-        <BookLesson tutorId={tutor.data.id} close={() => setOpen(false)} />
+        <ManageLesson
+          type="book"
+          tutorId={tutor.data.id}
+          close={() => setOpen(false)}
+        />
       ) : null}
     </div>
   );
