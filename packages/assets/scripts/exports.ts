@@ -48,7 +48,7 @@ function loadPackageJson(): PackageJson {
 }
 
 function savePackageJson(pkg: PackageJson): void {
-  fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2));
+  fs.writeFileSync("package.json", JSON.stringify(pkg, null, 2) + "\n");
 }
 
 async function main() {
