@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import safe from "express-async-handler";
 import zod from "zod";
 import { build } from "@/build";
-import { config } from "@/config";
+import { config, staging } from "@/config";
 import { WORKSPACES } from "@/constants";
 import { Workspace } from "@/types";
 import { telegram } from "@/telegram";
@@ -36,6 +36,13 @@ async function handler(req: Request, res: Response) {
     return;
   }
 
+  await telegram.sendMessage({
+    chat: config.telegram.chat,
+    text: staging
+      ? `Started a staging deployment`
+      : "Started a production deployment",
+  });
+
   await build(workspaces);
   await telegram.sendMessage({
     chat: config.telegram.chat,
@@ -49,12 +56,24 @@ async function handler(req: Request, res: Response) {
         : []
       ).join("\n"),
       `*Staging links:*`,
-      `- https://app.staging.litespace.org`,
-      `- https://landing.staging.litespace.org`,
-      `- https://dashboard.staging.litespace.org`,
-      `- https://blog.staging.litespace.org`,
-      `- https://api.staging.litespace.org`,
-      `- https://peer.staging.litespace.org`,
+      staging
+        ? "- https://app.staging.litespace.org"
+        : "- https://app.litespace.org",
+      staging
+        ? "- https://landing.staging.litespace.org"
+        : "- https://litespace.org",
+      staging
+        ? "- https://dashboard.staging.litespace.org"
+        : "- https://dashboard.litespace.org",
+      staging
+        ? "- https://blog.staging.litespace.org"
+        : "- https://blog.litespace.org",
+      staging
+        ? `- https://api.staging.litespace.org`
+        : "- https://api.litespace.org",
+      staging
+        ? "- https://peer.staging.litespace.org"
+        : "- https://peer.litespace.org",
     ]
       .filter((line) => !!line)
       .join("\n"),

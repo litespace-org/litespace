@@ -1,15 +1,12 @@
-const body = process.argv[2];
-if (!body) throw new Error("Release body is missing.");
+import axios from "axios";
+import { Command } from "commander";
 
-const regex = body.match(/```release\n(?<workspaces>[A-Za-z@/,]*)\n```/);
+const regex =
+  /```release(\r|\n|\r\n)(?<workspaces>[A-Za-z@/,]*)(\r|\n|\r\n)```/;
 
-const raw = regex?.groups?.["workspaces"];
-if (!raw) throw new Error("Invalid release body; Workspaces is not recognized");
-
-if (raw === "skip") {
-  console.log("skip");
-  process.exit(0);
-}
+const client = axios.create({
+  baseURL: "https://apollo.litespace.org",
+});
 
 const expected = [
   "@litespace/web",
@@ -19,13 +16,47 @@ const expected = [
   "@litespace/server",
 ];
 
-const workspaces = raw.split(",");
-
-for (const workspace of workspaces) {
-  if (!expected.includes(workspace))
-    throw new Error(
-      `${workspace} is not a valid workspace name. Expecting one of${expected.join(",")}`
-    );
+function isValidWorkspaces(workspaces: string[]): boolean {
+  for (const workspace of workspaces) {
+    if (!expected.includes(workspace)) return false;
+  }
+  return true;
 }
 
-console.log(raw);
+async function sendDeploymentRequest(workspaces: string[], secret: string) {
+  return await client.post("/", null, {
+    params: {
+      workspaces: workspaces.join(","),
+      secret,
+    },
+  });
+}
+
+new Command()
+  .name("release")
+  .description("LiteSpace Release CLI")
+  .version("1.0.0")
+  .requiredOption("-b, --release-body <body>")
+  .requiredOption("-s, --secret <secret>")
+  .action(
+    async ({
+      releaseBody,
+      secret,
+    }: {
+      releaseBody: string;
+      secret: string;
+    }) => {
+      const match = regex.exec(releaseBody);
+      const raw = match?.groups?.["workspaces"];
+      console.log({ releaseBody, match, raw });
+      if (!raw) throw new Error("Invalid release body.");
+      if (raw === "skip") return console.log("Skipping release deployment");
+
+      const workspaces = raw.split(",");
+      const isValid = isValidWorkspaces(workspaces);
+      if (!isValid) throw new Error(`"${raw}" invalid workspaces expression`);
+
+      await sendDeploymentRequest(workspaces, secret);
+    }
+  )
+  .parse();

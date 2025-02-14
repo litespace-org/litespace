@@ -1,7 +1,13 @@
 name: Release
+
+env:
+  RELEASE_BODY: ${{ github.event.pull_request.body }}
+  APOLLO_PROD_SECRET: ${{ secrets.APOLLO_PROD_SECRET }}
+
 on:
   release:
     types: [published]
+
   workflow_dispatch:
 
 jobs:
@@ -14,10 +20,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: "20.11.1"
-      - name: Start production deployment
+      - name: Enable pnpm
+        run: corepack enable pnpm
+      - name: Get pnpm store directory
+        shell: bash
         run: |
-          WORKSPACES = $(node scripts/release.ts {{ github.event.release.body }})
-
-          if $WORKSPACES != "skip"; then
-            curl --fail -X POST "https://apollo.litespace.org?workspaces=all&secret=$APOLLO_STAGING_SECRET"
-          fi
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+      - uses: actions/cache@v3
+        name: Setup pnpm cache
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+      - name: Install dependencies
+        run: pnpm install
+      - name: Start production deployment
+        run: pnpm release --release-body $"$RELEASE_BODY" --secret "$APOLLO_PROD_SECRET"
