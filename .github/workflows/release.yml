@@ -1,0 +1,21 @@
+name: Release
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "20.11.1"
+      - name: Start production deployment
+        run: |
+          WORKSPACES = $(node scripts/release.ts {{ github.event.release.body }})
+
+          if $WORKSPACES != "skip"; then
+            curl --fail -X POST "https://apollo.litespace.org?workspaces=all&secret=$APOLLO_STAGING_SECRET"
+          fi
