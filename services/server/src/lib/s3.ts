@@ -6,8 +6,6 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
-const bucket = "litespace-assets";
-
 const s3 = new S3Client({
   endpoint: "https://fra1.digitaloceanspaces.com",
   forcePathStyle: false, // Configures to use subdomain/virtual calling format.
@@ -29,7 +27,7 @@ async function put({
 }) {
   await s3.send(
     new PutObjectCommand({
-      Bucket: bucket,
+      Bucket: spaceConfig.bucketName,
       Key: key,
       Body: data,
       ContentType: type,
@@ -40,7 +38,7 @@ async function put({
 async function get(key: string): Promise<string> {
   const command = new GetObjectCommand({
     Key: key,
-    Bucket: bucket,
+    Bucket: spaceConfig.bucketName,
   });
 
   const url = await getSignedUrl(s3, command, { expiresIn: 60 * 60 });

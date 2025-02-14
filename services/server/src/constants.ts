@@ -97,6 +97,10 @@ export const emailConfig = {
 } as const;
 
 export const spaceConfig = {
+  bucketName: zod
+    .string({ message: "Missing or invalid digital ocean space bucket name" })
+    .trim()
+    .parse(process.env.SPACES_BUCKET_NAME),
   accessKeyId: zod
     .string({ message: "Missing or invalid digital ocean space access key" })
     .trim()
