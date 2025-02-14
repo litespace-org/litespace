@@ -10,6 +10,7 @@ import {
   ratings,
   tutors,
   availabilitySlots,
+  contactRequests,
 } from "@/index";
 import {
   IInterview,
@@ -43,6 +44,7 @@ export async function flush() {
     await tutors.builder(tx).del();
     await availabilitySlots.builder(tx).del();
     await users.builder(tx).del();
+    await contactRequests.builder(tx).del();
   });
 }
 

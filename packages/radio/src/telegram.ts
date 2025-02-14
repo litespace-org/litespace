@@ -10,7 +10,7 @@ export class Telegram {
   }
 
   async sendMessage({ text, chat }: { text: string; chat: number }) {
-    await this.client.post("/sendMessage", null, {
+    return await this.client.post("/sendMessage", null, {
       params: { chat_id: chat, text, parse_mode: "markdown" },
     });
   }

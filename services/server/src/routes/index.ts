@@ -16,12 +16,14 @@ import auth from "@/routes/auth";
 import topic from "@/routes/topic";
 import cache from "@/routes/cache";
 import session from "@/routes/session";
+import contactRequest from "@/routes/contactRequest";
 
 export default {
   user,
   lesson,
   invoice,
   withdrawMethod,
+  contactRequest,
   plan,
   chat,
   rating,

@@ -136,3 +136,14 @@ export const tokensExpireTime: Record<IToken.Type, string> = {
   [IToken.Type.VerifyEmail]: "24h",
   [IToken.Type.ForgetPassword]: "30m",
 };
+
+export const telegramConfig = {
+  token: zod
+    .string({ message: "Missing telegram token" })
+    .trim()
+    .parse(process.env.TELEGRAM_TOKEN),
+
+  chat: zod
+    .number({ message: "Missing telegram chat id" })
+    .parse(Number(process.env.TELEGRAM_CHAT)),
+};
