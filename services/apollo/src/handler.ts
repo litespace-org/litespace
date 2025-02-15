@@ -47,7 +47,7 @@ async function handler(req: Request, res: Response) {
   await telegram.sendMessage({
     chat: config.telegram.chat,
     text: [
-      "*Staging Server Update*",
+      staging ? "*Staging Server Update*" : "Production Server Update",
       workspaces === "all"
         ? `- All workspaces are up to date`
         : "Updated workspaces: ",
@@ -55,7 +55,7 @@ async function handler(req: Request, res: Response) {
         ? workspaces.map((workspace) => workspace.replace("@", "- "))
         : []
       ).join("\n"),
-      `*Staging links:*`,
+      `*Links:*`,
       staging
         ? "- https://app.staging.litespace.org"
         : "- https://app.litespace.org",
