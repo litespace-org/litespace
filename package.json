@@ -43,6 +43,7 @@
     "vercel": "env-cmd vite-node scripts/vercel.ts",
     "vercel:ci": "vite-node scripts/vercel.ts",
     "telegram": "vite-node scripts/telegram.ts",
+    "release": "vite-node scripts/release.ts",
     "github": "vite-node scripts/github.ts",
     "intl": "vite-node scripts/intl.ts",
     "dangerfile": "danger --dangerfile scripts/dangerfile.ts",

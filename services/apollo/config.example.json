@@ -1,6 +1,7 @@
 {
   "repo": "/home/litespace-org/litespace",
   "branch": "master",
+  "env": "staging",
   "port": 9090,
   "host": "0.0.0.0",
   "secret": "0x0",

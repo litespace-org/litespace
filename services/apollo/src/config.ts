@@ -6,6 +6,7 @@ const schema = zod
   .object({
     branch: zod.union([zod.literal("master"), zod.literal("production")]),
     repo: zod.string(),
+    env: zod.union([zod.literal("staging"), zod.literal("production")]),
     port: zod.number().positive().int(),
     host: zod.string().ip(),
     secret: zod.string(),
@@ -37,3 +38,5 @@ function parseConfig(): ConfigSchema {
 }
 
 export const config = parseConfig();
+
+export const staging = config.env === "staging";
