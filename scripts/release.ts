@@ -48,7 +48,6 @@ new Command()
     }) => {
       const match = regex.exec(releaseBody);
       const raw = match?.groups?.["workspaces"];
-      console.log({ releaseBody, match, raw });
       if (!raw) throw new Error("Invalid release body.");
       if (raw === "skip") return console.log("Skipping release deployment");
 
