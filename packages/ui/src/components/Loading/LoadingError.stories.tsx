@@ -47,4 +47,16 @@ export const Large: StoryObj<Component> = {
   },
 };
 
+export const WithSecondaryAction: StoryObj<Component> = {
+  args: {
+    error: faker.lorem.words(10),
+    retry: () => {},
+    size: "small",
+    secondAction: {
+      label: faker.lorem.words(2),
+      onClick: () => {},
+    },
+  },
+};
+
 export default meta;
