@@ -7,6 +7,7 @@ import Sidebar from "@/components/Layout/Sidebar";
 import { IntlProvider } from "react-intl";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
 import { locales } from "@litespace/ui/locales";
+import Footer from "@/components/Layout/Footer";
 
 const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -19,7 +20,7 @@ const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     >
       <MediaQueryProvider>
         <body
-          className={cn("relative", {
+          className={cn("relative flex flex-col min-h-screen", {
             "after:content-[''] after:absolute lg:after:hidden after:top-[72px] after:right-[166px] after:h-screen after:bottom-0 after:left-0 after:bg-black after:bg-opacity-20 after:backdrop-blur-sm -z-50":
               showSidebar,
           })}
@@ -27,6 +28,7 @@ const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <Navbar toggleSidebar={() => setShowSidebar((prev) => !prev)} />
           {showSidebar ? <Sidebar hide={() => setShowSidebar(false)} /> : null}
           {children}
+          <Footer />
         </body>
       </MediaQueryProvider>
     </IntlProvider>
