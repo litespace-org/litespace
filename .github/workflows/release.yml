@@ -1,7 +1,7 @@
 name: Release
 
 env:
-  RELEASE_BODY: ${{ github.event.pull_request.body }}
+  RELEASE_BODY: ${{ github.event.release.body }}
   APOLLO_PROD_SECRET: ${{ secrets.APOLLO_PROD_SECRET }}
 
 on:
