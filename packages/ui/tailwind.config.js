@@ -256,9 +256,7 @@ export default {
           to: { opacity: "0" },
         },
         "slide-in": {
-          from: {
-            transform: "translateX(-25px)",
-          },
+          from: { transform: "translateX(-25px)" },
           to: { transform: "translateX(0)" },
         },
         "swipe-out": {
@@ -267,11 +265,21 @@ export default {
             transform: "translateX(calc(-100% - var(--viewport-padding)))",
           },
         },
+        "slide-down": {
+          from: { height: 0 },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "slide-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: 0 },
+        },
       },
       animation: {
         hide: "hide 100ms ease-in",
         "slide-in": "slide-in 150ms cubic-bezier(0.16, 1, 0.3, 1)",
         "swipe-out": "swipe-out 100ms ease-out",
+        "slide-down": "slide-down 300ms cubic-bezier(0.87, 0, 0.13, 1)",
+        "slide-up": "slide-up 300ms cubic-bezier(0.87, 0, 0.13, 1)",
       },
       lineClamp: {
         3: "3",
