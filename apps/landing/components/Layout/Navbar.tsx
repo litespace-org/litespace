@@ -30,8 +30,10 @@ const Navbar: React.FC<{
   return (
     <nav
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 shadow-app-navbar-mobile transition-colors duration-300",
-        scolled ? "bg-natural-50" : "bg-natural-50 lg:bg-transparent"
+        "fixed top-0 left-0 right-0 z-50  transition-colors duration-300",
+        scolled
+          ? "bg-natural-50 shadow-app-navbar-mobile"
+          : "bg-natural-50 lg:bg-transparent"
       )}
     >
       <div className="max-w-screen-3xl mx-auto flex flex-row-reverse lg:flex-row justify-between items-center py-6 lg:py-4 px-4 md:px-8">

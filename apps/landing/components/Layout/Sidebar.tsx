@@ -32,7 +32,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
   }, [onClick]);
 
   return (
-    <div className="fixed flex lg:hidden right-0 top-[72px] bottom-0 max-w-[166px] p-4 bg-natural-50 flex-col gap-6">
+    <div className="fixed flex lg:hidden right-0 top-[72px] bottom-0 max-w-[166px] p-4 bg-natural-50 flex-col gap-6 z-[40]">
       <div className={cn("flex flex-col lg:flex-row gap-6 items-start")}>
         {PAGES.map((page) => (
           <Link href={page.route} key={page.route}>

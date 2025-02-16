@@ -1,9 +1,7 @@
 import baseConfig from "@litespace/ui/tailwind.config";
+import { Config } from "tailwindcss/types/config";
 
 /** @type {import('tailwindcss').Config} */
-
-import type { Config } from "tailwindcss";
-
 const config: Config = {
   ...baseConfig,
   prefix: "",
@@ -13,4 +11,5 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
 };
+
 export default config;
