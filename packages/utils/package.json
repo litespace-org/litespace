@@ -90,8 +90,8 @@
       "require": "./dist/cjs/withdrawMethod.js"
     },
     "./verification": {
-      "import": "./dist/esm/verification.js",
-      "require": "./dist/cjs/verification.js"
+      "import": "./dist/esm/verification/index.js",
+      "require": "./dist/cjs/verification/index.js"
     },
     "./session": {
       "import": "./dist/esm/session.js",
@@ -117,7 +117,7 @@
     "./utils": "./dist/cjs/utils.js",
     "./value": "./dist/cjs/value.js",
     "./withdrawMethod": "./dist/cjs/withdrawMethod.js",
-    "./verification": "./dist/cjs/verification.js"
+    "./verification": "./dist/cjs/verification/index.js"
   },
   "devDependencies": {
     "@faker-js/faker": "^9.0.3",
