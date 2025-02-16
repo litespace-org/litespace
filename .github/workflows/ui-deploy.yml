@@ -64,13 +64,6 @@ jobs:
         run: pnpm build:ui:vercel
       - name: Deploy @litespace/ui to Vercel
         run: pnpm deploy:ui:vercel --token=${{ secrets.VERCEL_TOKEN }}
-      # @litespace/landing deployment
-      - name: Pull @litespace/landing from Vercel
-        run: pnpm vercel:ci pull "landing" "apps/landing/" --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Build @litespace/landing using Vercel
-        run: pnpm build:landing:vercel
-      - name: Deploy @litespace/landing to Vercel
-        run: pnpm deploy:landing:vercel --token=${{ secrets.VERCEL_TOKEN }}
       # Dashboard Deployment
       - name: Pull Dashboard from Vercel
         run: pnpm vercel:ci pull "dashboard" "apps/dashboard/" --token=${{ secrets.VERCEL_TOKEN }}
