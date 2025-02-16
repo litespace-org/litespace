@@ -118,4 +118,15 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [FieldError.InvalidBankName]: "error.field.invalid-bank-name",
   [FieldError.ShortTopicName]: "error.field.short-topic-name",
   [FieldError.LongTopicName]: "error.field.long-topic-name",
+  [FieldError.InvalidName]: "error.field.invalid-name",
+  [FieldError.ShortName]: "error.field.short-name",
+  [FieldError.LongName]: "error.field.long-name",
+  [FieldError.ShortContactRequestTitle]:
+    "error.field.short-contact-request-title",
+  [FieldError.LongContactRequestTitle]:
+    "error.field.long-contact-request-title",
+  [FieldError.ShortContactRequestMessage]:
+    "error.field.short-contact-request-message",
+  [FieldError.LongContactRequestMessage]:
+    "error.field.long-contact-request-message",
 };
