@@ -26,7 +26,9 @@ import {
   isValidInvoiceNote,
   isValidTopicName,
   isValidPhoneNumber,
-} from "@/verification";
+  isValidContactRequestMessage,
+  isValidContactRequestTitle,
+} from "@/validation";
 import { FieldError } from "@litespace/types";
 import { nameof } from "@/utils";
 
@@ -497,5 +499,41 @@ describe("Topic name", () => {
 
   it("should accept valid names", () => {
     expect(isValidTopicName("JavaScript")).toBe(true);
+  });
+});
+
+describe("Contact request title", () => {
+  it("should reject short titles", () => {
+    expect(isValidContactRequestTitle("G".repeat(4))).toBe(
+      FieldError.ShortContactRequestTitle
+    );
+  });
+
+  it("should reject long titles", () => {
+    expect(isValidContactRequestTitle("G".repeat(129))).toBe(
+      FieldError.LongContactRequestTitle
+    );
+  });
+
+  it("should accept valid titles", () => {
+    expect(isValidContactRequestTitle("Just a nice title")).toBe(true);
+  });
+});
+
+describe("Contact request message", () => {
+  it("should reject short messages", () => {
+    expect(isValidContactRequestMessage("G".repeat(9))).toBe(
+      FieldError.ShortContactRequestMessage
+    );
+  });
+
+  it("should reject long messages", () => {
+    expect(isValidContactRequestMessage("G".repeat(1001))).toBe(
+      FieldError.LongContactRequestMessage
+    );
+  });
+
+  it("should accept valid messages", () => {
+    expect(isValidContactRequestMessage("Just a nice message")).toBe(true);
   });
 });

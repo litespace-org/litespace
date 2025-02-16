@@ -25,7 +25,7 @@ export * as ITopic from "@/topic";
 export * as Server from "@/server";
 export * from "@/api";
 export * from "@/utils";
-export * from "@/verification";
+export * from "@/validation";
 
 export { banks, type Bank } from "@/invoice";
 export { Type as WithdrawMethod } from "@/withdrawMethod";

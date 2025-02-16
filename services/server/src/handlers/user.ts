@@ -55,7 +55,7 @@ import {
 import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
-import { isValidPassword } from "@litespace/utils/verification";
+import { isValidPassword } from "@litespace/utils/validation";
 import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
 import { getRequestFile, upload } from "@/lib/assets";
 

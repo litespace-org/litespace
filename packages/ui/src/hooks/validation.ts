@@ -12,7 +12,7 @@ import {
   isValidPhoneNumber,
   isValidTutorBio,
   isValidUserName,
-} from "@litespace/utils/verification";
+} from "@litespace/utils/validation";
 
 export function useRequired() {
   const intl = useFormatMessage();
