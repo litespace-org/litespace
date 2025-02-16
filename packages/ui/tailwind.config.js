@@ -10,6 +10,9 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      blur: {
+        ellipse: "100px",
+      },
       maxHeight: {
         "chat-desktop": "calc(100vh - 106px)",
         "chat-tablet": "calc(100vh - 88px)",
