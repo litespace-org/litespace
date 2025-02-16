@@ -1,4 +1,4 @@
-import { FieldError } from "@/verification";
+import { FieldError } from "@/validation";
 
 export enum ApiError {
   Forbidden = "forbidden",
