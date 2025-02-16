@@ -1,7 +1,7 @@
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileInfo } from "@litespace/ui/Navbar";
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import cn from "classnames";
 import { Route } from "@/types/routes";
 import { Typography } from "@litespace/ui/Typography";
@@ -16,15 +16,15 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { lg } = useMediaQuery();
   const intl = useFormatMessage();
   const { user } = useUserContext();
-  const location = useLocation();
 
   if (!user) return null;
   return (
     <div className="shadow-app-navbar lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
-        className={cn("flex justify-between gap-8 items-center py-6 px-4", {
-          "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
-        })}
+        className={cn(
+          "flex justify-between gap-8 items-center py-6 px-4",
+          "max-w-screen-3xl mx-auto"
+        )}
       >
         {user.role === IUser.Role.Student &&
         location.pathname !== Route.Subscription &&
@@ -50,9 +50,9 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           <button
             type="button"
             onClick={toggleSidebar}
-            className="w-6 h-6 bg-natural-100 bg-opacity-50 rounded-[4px] p-[2px]"
+            className="w-6 h-6 bg-brand-700 bg-opacity-50 rounded-[4px] p-[2px]"
           >
-            <Menu />
+            <Menu className="[&>*]:stroke-natural-50" />
           </button>
         ) : null}
 

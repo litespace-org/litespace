@@ -1,4 +1,4 @@
-import { TutorProfileCard } from "@litespace/ui/TutorProfile";
+// import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import React, { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -13,6 +13,8 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orNull, orUndefined } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import ProfileCard from "@/components/TutorSettings/ProfileCard";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TutorSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse & {
@@ -21,6 +23,7 @@ const TutorSettings: React.FC<{
     email: string;
   };
 }> = ({ info }) => {
+  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -111,10 +114,38 @@ const TutorSettings: React.FC<{
     [info, updateTutor]
   );
 
+  const SubmitButton = useMemo(
+    () => (
+      <Button
+        htmlType="submit"
+        loading={updateTutor.isPending}
+        disabled={updateTutor.isPending || !dataChanged}
+        size={"medium"}
+        className="self-end"
+      >
+        {intl("shared-settings.save")}
+      </Button>
+    ),
+    [dataChanged, intl, updateTutor.isPending]
+  );
+
   return (
-    <Form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-10">
-      <div className="p-10 pb-0 flex justify-between">
-        <TutorProfileCard
+    <Form
+      onSubmit={form.handleSubmit(submit)}
+      className="flex flex-col gap-6 md:gap-10"
+    >
+      <div className="sm:p-10 sm:pb-0 sm:flex sm:justify-between">
+        <ProfileCard
+          image={info.image}
+          name={info.name}
+          id={info.id}
+          bio={info.bio}
+          studentCount={info.studentCount}
+          lessonCount={info.lessonCount}
+          avgRating={info.avgRating}
+        />
+
+        {/* <TutorProfileCard
           variant="small"
           image={info.image}
           name={info.name}
@@ -123,19 +154,13 @@ const TutorSettings: React.FC<{
           studentCount={info.studentCount}
           lessonCount={info.studentCount}
           avgRating={info.avgRating}
-        />
-
-        <Button
-          htmlType="submit"
-          loading={updateTutor.isPending}
-          disabled={updateTutor.isPending || !dataChanged}
-          size={"medium"}
-        >
-          {intl("shared-settings.save")}
-        </Button>
+        /> */}
+        {sm ? SubmitButton : null}
       </div>
 
       <Tabs form={form} video={info.video} />
+
+      {!sm ? SubmitButton : null}
     </Form>
   );
 };
