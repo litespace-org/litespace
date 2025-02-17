@@ -1,7 +1,7 @@
 import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
@@ -29,7 +29,7 @@ interface IForm {
 }
 
 const Login: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
   const user = useUserContext();
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
             <Logo className="h-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
               <Typography element="h3" weight="bold" className="text-brand-500">
-                {intl("labels.litespace")}
+                LiteSpace
               </Typography>
               <Typography element="body" className="text-natural-700">
                 {intl("login.welcome")}

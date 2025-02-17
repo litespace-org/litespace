@@ -8,14 +8,14 @@ import {
 import { useUserContext } from "@litespace/headless/context/user";
 import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function useRoomManager(isStudent: boolean) {
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const [keyword, setKeyword] = useState("");
   const { user } = useUserContext();
 

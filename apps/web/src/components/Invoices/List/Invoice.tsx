@@ -4,7 +4,7 @@ import { Card } from "@litespace/ui/Card";
 import * as Invoices from "@litespace/ui/Invoices";
 import { MenuAction } from "@litespace/ui/ActionsMenu";
 import { useRender } from "@litespace/ui/hooks/common";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { LocalId, LocalMap } from "@litespace/ui/locales";
 import { IInvoice } from "@litespace/types";
 import React, { useMemo } from "react";
@@ -16,7 +16,7 @@ const Invoice: React.FC<{
   invoice: IInvoice.Self;
   refresh?: () => void;
 }> = ({ invoice, refresh }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const edit = useRender();
   const cancel = useRender();
   const {

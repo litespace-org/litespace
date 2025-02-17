@@ -1,13 +1,13 @@
 import { Button } from "@litespace/ui/Button";
-import { LocalId } from "@litespace/ui/locales";
 import { Spinner } from "@litespace/ui/Spinner";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useMemo } from "react";
 import { useRender } from "@/hooks/render";
 import ManageInvoice from "@/components/Invoices/List/Manage";
 import Stat from "@/components/Invoices/Stats/Stat";
 import { IInvoice } from "@litespace/types";
 import Error from "@/components/Invoices/Stats/Error";
+import { LocalWebId } from "@/lib/intl";
 
 const Stats: React.FC<{
   refreshAll: () => void;
@@ -17,11 +17,11 @@ const Stats: React.FC<{
   fetching: boolean;
   error: Error | null;
 }> = ({ refresh, refreshAll, stats, loading, fetching, error }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const create = useRender();
 
   const data = useMemo((): Array<{
-    id: LocalId;
+    id: LocalWebId;
     value: number;
   }> => {
     if (!stats) return [];

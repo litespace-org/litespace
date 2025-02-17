@@ -5,7 +5,7 @@ import peer from "@/lib/peer";
 import { ISession, Wss } from "@litespace/types";
 import hark from "hark";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { isEmpty } from "lodash";
 import { useSocket } from "@litespace/headless/socket";
 
@@ -298,7 +298,7 @@ export function useCallEvents(
 }
 
 export function useFullScreen() {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const ref = useRef<HTMLDivElement>(null);
   const toast = useToast();
   const [isFullScreen, setIsFullScreen] = useState<boolean>(false);
