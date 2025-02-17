@@ -1,7 +1,7 @@
 import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
@@ -36,7 +36,7 @@ const origin = location.origin;
 const callbackUrl = origin.concat(Route.VerifyEmail);
 
 const Register: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
   const user = useUserContext();
   const navigate = useNavigate();
@@ -107,7 +107,7 @@ const Register: React.FC = () => {
             <Logo className="h-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
               <Typography element="h3" weight="bold" className="text-brand-500">
-                {intl("labels.litespace")}
+                LiteSpace
               </Typography>
               <Typography element="body" className="text-natural-700">
                 {intl("register.welcome")}

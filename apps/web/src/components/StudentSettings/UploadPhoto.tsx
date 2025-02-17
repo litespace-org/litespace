@@ -1,5 +1,5 @@
 import React, { useMemo, useRef, useState } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import { first } from "lodash";
@@ -15,7 +15,7 @@ const UploadPhoto: React.FC<{
 }> = ({ id }) => {
   const [photo, setPhoto] = useState<File | null>(null);
   const { lg } = useMediaQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const ref = useRef<HTMLInputElement>(null);
   const mq = useMediaQuery();
   const { user } = useUserContext();

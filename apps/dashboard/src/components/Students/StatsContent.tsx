@@ -1,5 +1,5 @@
 import LablesTable, { TableLablesRow } from "@/components/common/LabelsTable";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Loading } from "@litespace/ui/Loading";
 import { formatNumber } from "@litespace/ui/utils";
 import { Duration } from "@litespace/utils/duration";
@@ -13,7 +13,7 @@ const StatsContent: React.FC<{
   data?: IUser.FindStudentStatsApiResponse | null;
   refetch: Void;
 }> = ({ loading, error, data, refetch }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   const labels = useMemo((): TableLablesRow[] => {
     if (!data) return [];

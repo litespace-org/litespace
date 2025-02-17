@@ -1,6 +1,6 @@
 export { useWithdrawMethod } from "@/hooks/withdraw";
 export { useInvoiceStatus } from "@/hooks/invoice";
-export { useFormatMessage } from "@/hooks/intl";
+export { createFormatMessageHook, useFormatMessage } from "@/hooks/intl";
 export { useTheme, Theme } from "@/hooks/theme";
 export {
   usePaginationQuery,

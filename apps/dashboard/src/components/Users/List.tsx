@@ -1,6 +1,6 @@
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { Loading } from "@litespace/ui/Loading";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
 import { IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -22,7 +22,7 @@ const List: React.FC<{
   totalPages: number;
   page: number;
 }> = ({ query, ...props }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const columnHelper = createColumnHelper<IUser.Self>();
   const columns = useMemo(
     () => [

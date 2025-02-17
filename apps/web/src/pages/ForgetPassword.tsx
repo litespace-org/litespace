@@ -4,7 +4,7 @@ import { Route } from "@/types/routes";
 import { useForgetPassword } from "@litespace/headless/auth";
 import { Button } from "@litespace/ui/Button";
 import { Controller, Form } from "@litespace/ui/Form";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useValidateEmail } from "@litespace/ui/hooks/validation";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
@@ -42,7 +42,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
 const ForgetPassword: React.FC = () => {
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
   const validateEmail = useValidateEmail(true);
   const [sentEmail, setSentEmail] = useState<boolean>(false);

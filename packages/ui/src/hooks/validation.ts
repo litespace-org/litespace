@@ -267,7 +267,7 @@ export function useValidation() {
           maxLength: {
             value: 500,
             message: intl.formatMessage({
-              id: messages["global.chat.input.error.length.max"],
+              id: messages["error.chat.length.max"],
             }),
           },
         },

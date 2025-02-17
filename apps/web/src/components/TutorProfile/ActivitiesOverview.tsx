@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from "react";
 import Title from "@/components/TutorProfile/Title";
 import { ActivityGrid, ActivityMap, GridDay } from "@litespace/ui/ActivityGrid";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { UseQueryResult } from "@tanstack/react-query";
 import { ITutor } from "@litespace/types";
 import { entries } from "lodash";
@@ -13,7 +13,7 @@ type GridDayData = GridDay<BaseData>;
 const ActivitiesOverview: React.FC<{
   query: UseQueryResult<ITutor.FindTutorActivityScores | null, Error>;
 }> = ({ query }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const activityMap = useMemo(() => {
     if (!query.data) return {};
 
