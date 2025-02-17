@@ -26,11 +26,9 @@ import ForgetPassword from "@/pages/ForgetPassword";
 import TutorDashboard from "@/pages/TutorDashboard";
 import * as Sentry from "@sentry/react";
 
-const sentryCreateBrowserRouter =
-  Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
-// NOTE: Sentry.captureException(error) shall be used within elements for error boundary.
+const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
 
-const router = sentryCreateBrowserRouter([
+const router = createRouter([
   {
     path: Route.Root,
     element: <Root />,

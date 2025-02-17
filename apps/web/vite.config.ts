@@ -3,6 +3,9 @@ import react from "@vitejs/plugin-react-swc";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "node:path";
 
+const backend = process.env.VITE_BACKEND;
+const development = backend === "production";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   // prevent vite from obscuring rust errors
@@ -24,12 +27,11 @@ export default defineConfig({
     target: process.env.TAURI_PLATFORM == "windows" ? "chrome105" : "safari13",
     // don't minify for debug builds
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
-    // produce sourcemaps for debug builds
-    // sentry uploads source maps only in production mode.
+    // Produce sourcemaps for debug builds
+    // Sentry uploads source maps only in production mode.
     // Sentry NOTE: Generating sourcemaps may expose them to the public,
     // potentially causing your source code to be leaked.
-    sourcemap:
-      !!process.env.TAURI_DEBUG || process.env.VITE_BACKEND === "production",
+    sourcemap: !!process.env.TAURI_DEBUG || !development,
   },
   plugins: [
     react({}),
@@ -47,9 +49,11 @@ export default defineConfig({
       },
     },
     sentryVitePlugin({
-      org: "litespace-org",
-      project: "litespace",
+      org: "litespace",
+      project: process.env.SENTRY_PROJECT_NAME,
       authToken: process.env.SENTRY_AUTH_TOKEN,
+      telemetry: false,
+
       sourcemaps: {
         // TODO: fill this array with sourcemaps files
         filesToDeleteAfterUpload: [],

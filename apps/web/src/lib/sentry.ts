@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import {
   useLocation,
   useNavigationType,
@@ -6,21 +6,17 @@ import {
   matchRoutes,
 } from "react-router-dom";
 import * as Sentry from "@sentry/react";
+import { env } from "@/lib/env";
 
 Sentry.init({
-  // TODO: put sentry dsn here
-  dsn: "",
+  dsn: env.sentryDsn,
   integrations: [
     Sentry.reactRouterV6BrowserTracingIntegration({
-      useEffect: React.useEffect,
+      useEffect: useEffect,
       useLocation,
       useNavigationType,
       createRoutesFromChildren,
       matchRoutes,
     }),
   ],
-  // Learn more at
-  // https://docs.sentry.io/platforms/javascript/session-replay/configuration/#general-integration-configuration
-  replaysSessionSampleRate: 0.1,
-  replaysOnErrorSampleRate: 1.0,
 });

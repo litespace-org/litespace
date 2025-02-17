@@ -1,6 +1,7 @@
-name: Deploy interfaces (ui, web, landing, dashboard, and blog)
+name: Deploy interfaces (ui, web, dashboard, and blog)
 env:
   TELEGRAM_API_TOKEN: ${{ secrets.TELEGRAM_API_TOKEN }}
+  SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_STAGING_AUTH_TOKEN }}
 
 on:
   pull_request:
@@ -8,7 +9,6 @@ on:
     paths:
       - "apps/blog/**"
       - "apps/dashboard/**"
-      - "apps/landing/**"
       - "apps/web/**"
       - "packages/ui/**"
       - "packages/atlas/**"

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
-    "build": "tsc && vite build",
+    "build": "env-cmd -f .env vite build",
     "build:vercel": "pnpm vercel build",
     "deploy:vercel": "pnpm vercel deploy --prebuilt",
     "lint": "eslint . --report-unused-disable-directives --max-warnings 0",
@@ -75,6 +75,7 @@
     "autoprefixer": "^10.4.19",
     "babel-jest": "^29.7.0",
     "chai": "^5.1.1",
+    "env-cmd": "^10.1.0",
     "eslint": "^9.14.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
