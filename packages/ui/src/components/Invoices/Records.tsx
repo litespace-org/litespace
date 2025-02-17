@@ -1,6 +1,4 @@
 import { ActionsMenu, MenuAction } from "@/components/ActionsMenu";
-import { useFormatMessage } from "@/hooks/intl";
-import { LocalId } from "@/locales";
 import React from "react";
 
 const List: React.FC<{
@@ -11,13 +9,12 @@ const List: React.FC<{
   );
 };
 
-export const Labels: React.FC<{ ids: Array<LocalId> }> = ({ ids }) => {
-  const intl = useFormatMessage();
+export const Labels: React.FC<{ ids: Array<string> }> = ({ ids }) => {
   return (
     <List>
       {ids.map((id) => (
         <li key={id} className="tw-text-foreground-light">
-          <p>{intl(id)}:</p>
+          <p>{id}:</p>
         </li>
       ))}
     </List>

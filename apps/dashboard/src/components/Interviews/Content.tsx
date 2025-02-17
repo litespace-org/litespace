@@ -5,7 +5,7 @@ import {
   type UseFindInterviewsPayload,
 } from "@litespace/headless/interviews";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { IFilter, IInterview } from "@litespace/types";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { interviewStatusMap } from "@/components/utils/interview";
@@ -20,7 +20,7 @@ const DEFAULT_STATUS_FILTER = [
 ];
 
 const Content: React.FC<{ user?: number }> = ({ user }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [statuses, setStatus] = useState<IInterview.Status[]>(
     DEFAULT_STATUS_FILTER
   );

@@ -1,8 +1,8 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import React from "react";
 
 const BinaryField: React.FC<{ yes?: boolean | null }> = ({ yes }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   return (
     <React.Fragment>
       {yes == true

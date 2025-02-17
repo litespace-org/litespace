@@ -8,7 +8,7 @@ import {
   useValidateEmail,
   useValidatePassword,
 } from "@litespace/ui/hooks/validation";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 
 import { IUser, Void } from "@litespace/types";
 import React, { useCallback } from "react";
@@ -26,7 +26,7 @@ const UserForm: React.FC<{
   refresh: Void;
 }> = ({ refresh }) => {
   const render = useRender();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: { email: "", password: "", role: IUser.Role.RegularAdmin },
