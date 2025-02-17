@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "node:path";
 
 // https://vitejs.dev/config/
@@ -24,7 +25,11 @@ export default defineConfig({
     // don't minify for debug builds
     minify: !process.env.TAURI_DEBUG ? "esbuild" : false,
     // produce sourcemaps for debug builds
-    sourcemap: !!process.env.TAURI_DEBUG,
+    // sentry uploads source maps only in production mode.
+    // Sentry NOTE: Generating sourcemaps may expose them to the public,
+    // potentially causing your source code to be leaked.
+    sourcemap:
+      !!process.env.TAURI_DEBUG || process.env.VITE_BACKEND === "production",
   },
   plugins: [
     react({}),
@@ -41,6 +46,15 @@ export default defineConfig({
         });
       },
     },
+    sentryVitePlugin({
+      org: "litespace-org",
+      project: "litespace",
+      authToken: process.env.SENTRY_AUTH_TOKEN,
+      sourcemaps: {
+        // TODO: fill this array with sourcemaps files
+        filesToDeleteAfterUpload: [],
+      },
+    }),
   ],
   resolve: {
     alias: {
