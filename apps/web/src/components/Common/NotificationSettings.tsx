@@ -20,10 +20,7 @@ const NotificationSettings = () => {
   return (
     <div>
       <Typography
-        element={{
-          default: "caption",
-          sm: "subtitle-2",
-        }}
+        element="subtitle-2"
         weight="bold"
         className="text-natural-950"
       >
