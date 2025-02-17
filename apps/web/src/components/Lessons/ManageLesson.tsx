@@ -167,6 +167,8 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
       slots={tutorAvailabilitySlots.data?.slots.list || []}
       onSubmit={onSubmit}
       open
+      retry={tutorAvailabilitySlots.refetch}
+      error={tutorAvailabilitySlots.isError}
     />
   );
 };

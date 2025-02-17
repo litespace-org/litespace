@@ -10,7 +10,7 @@ export const DurationSelection: React.FC<{
   const intl = useFormatMessage();
   return (
     <div className="tw-flex tw-flex-col tw-gap-2">
-      <div className="tw-w-[400px]">
+      <div className="tw-w-full">
         <SelectV2
           label={intl("book-lesson.pick-lesson-duration")}
           options={[
