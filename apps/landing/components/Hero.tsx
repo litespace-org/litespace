@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import Ellipse from "@/components/Ellipse";
 import cn from "classnames";
@@ -23,13 +23,14 @@ const Hero: React.FC = () => {
             tag="h1"
             className="text-natural-50 text-[1.5rem] md:text-[3rem]"
           >
-            {intl("landing.home.hero-section.title")}
+            {intl("home/hero/title")}
           </Typography>
           <Typography
+            tag="p"
             weight="medium"
             className="text-natural-50 text-[1rem] md:text-[1.5rem]"
           >
-            {intl("landing.home.hero-section.description")}
+            {intl("home/hero/description")}
           </Typography>
         </div>
         <Link href="https://app.litespace.org" className="mb-14">
@@ -39,7 +40,7 @@ const Hero: React.FC = () => {
               weight="bold"
               className="text-natural-50"
             >
-              {intl("landing.home.hero-section.start-journey-btn")}
+              {intl("home/hero/start-your-journey")}
             </Typography>
           </Button>
         </Link>

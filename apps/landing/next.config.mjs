@@ -1,9 +1,8 @@
-const EXPORT_OUTPUT = process.env["EXPORT_OUTPUT"] === "true";
+import createNextIntlPlugin from "next-intl/plugin";
+
+const withNextIntl = createNextIntlPlugin("./locales/request.ts");
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
-  output: EXPORT_OUTPUT ? "export" : undefined,
-  distDir: "dist",
-};
+const nextConfig = {};
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

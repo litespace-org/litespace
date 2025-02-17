@@ -24,7 +24,6 @@
     "reseed": "pnpm --filter @litespace/models reseed",
     "build:web:vercel": "pnpm --filter @litespace/web build:vercel",
     "build:ui:vercel": "pnpm --filter @litespace/ui build:vercel",
-    "build:landing:vercel": "pnpm --filter @litespace/landing build:vercel",
     "build:dashboard:vercel": "pnpm --filter @litespace/dashboard build:vercel",
     "deploy:orbit:vercel": "pnpm --filter @litespace/orbit deploy:vercel",
     "deploy:web:vercel": "pnpm --filter @litespace/web deploy:vercel",

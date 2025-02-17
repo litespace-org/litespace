@@ -6,7 +6,7 @@ import {
   SMALL_SCREEN_SIDEBAR_WIDTH_PX,
 } from "@/constants/ui";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import Link from "next/link";
@@ -32,7 +32,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
   }, [onClick]);
 
   return (
-    <div className="fixed flex lg:hidden right-0 top-[72px] bottom-0 max-w-[166px] p-4 bg-natural-50 flex-col gap-6 z-[40]">
+    <nav className="fixed flex lg:hidden right-0 top-[72px] bottom-0 max-w-[166px] p-4 bg-natural-50 flex-col gap-6">
       <div className={cn("flex flex-col lg:flex-row gap-6 items-start")}>
         {PAGES.map((page) => (
           <Link href={page.route} key={page.route}>
@@ -58,7 +58,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
               weight="semibold"
               className="text-natural-50"
             >
-              {intl("navbar.register")}
+              {intl("navbar/register")}
             </Typography>
           </Button>
         </Link>
@@ -72,12 +72,12 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
               weight="semibold"
               className="text-brand-700"
             >
-              {intl("navbar.login")}
+              {intl("navbar/login")}
             </Typography>
           </Button>
         </Link>
       </div>
-    </div>
+    </nav>
   );
 };
 

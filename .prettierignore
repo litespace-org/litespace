@@ -4,5 +4,5 @@ pnpm-lock.yaml
 **/dist
 **/.next
 packages/assets/svgs.html
-packages/luna/src/style.css
+packages/ui/src/style.css
 
