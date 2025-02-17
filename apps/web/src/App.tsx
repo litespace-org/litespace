@@ -24,8 +24,11 @@ import TutorSettings from "@/pages/TutorSettings";
 import ScheduleManagement from "@/pages/ScheduleManagement";
 import ForgetPassword from "@/pages/ForgetPassword";
 import TutorDashboard from "@/pages/TutorDashboard";
+import * as Sentry from "@sentry/react";
 
-const router = createBrowserRouter([
+const createRouter = Sentry.wrapCreateBrowserRouterV6(createBrowserRouter);
+
+const router = createRouter([
   {
     path: Route.Root,
     element: <Root />,

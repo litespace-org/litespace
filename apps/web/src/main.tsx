@@ -1,3 +1,4 @@
+import "@/lib/sentry";
 import { createRoot } from "react-dom/client";
 import { Provider as ReduxProvider } from "react-redux";
 import { locales } from "@litespace/ui/locales";
