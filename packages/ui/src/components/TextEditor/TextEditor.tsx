@@ -103,7 +103,7 @@ export const TextEditor: React.FC<{
       <AnimatePresence mode="wait" initial={false}>
         {error ? (
           <Helper>
-            <Typography element="tiny-text" className="tw-text-destructive-500">
+            <Typography tag="label" className="tw-text-destructive-500 tw-text-xs">
               {error}
             </Typography>
           </Helper>

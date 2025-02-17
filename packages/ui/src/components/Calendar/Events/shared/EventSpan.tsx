@@ -8,9 +8,8 @@ export const EventSpan: React.FC<{
 }> = ({ start, end }) => {
   return (
     <Typography
-      element="tiny-text"
-      weight="semibold"
-      className="tw-text-brand-700"
+      tag="label"
+      className="tw-text-brand-700 tw-text-xs tw-text-semibold"
     >
       {start ? dayjs(start).format("h:mm a") : "??"}&nbsp;-&nbsp;
       {end ? dayjs(end).format("h:mm a") : "??"}

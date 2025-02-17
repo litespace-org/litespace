@@ -10,6 +10,16 @@ export default {
       cairo: ["Cairo", "sans-serif"],
     },
     extend: {
+      fontSize: {
+        h1: "4rem",
+        h2: "3rem",
+        h3: "2.5rem",
+        "subtitle-1": "1.5rem",
+        "subtitle-2": "1.25rem",
+        body: "1rem",
+        caption: "0.875rem",
+        tiny: "0.75rem",
+      },
       blur: {
         ellipse: "100px",
       },

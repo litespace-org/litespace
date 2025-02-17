@@ -28,16 +28,14 @@ const ProfileInfo: React.FC<{
       {md ? (
         <div className="tw-flex tw-flex-col tw-gap-[1px]">
           <Typography
-            element="caption"
-            weight="semibold"
-            className="tw-text-natural-950"
+            tag="label"
+            className="tw-text-natural-950 tw-text-sm tw-font-semibold"
           >
             {name || backupName}
           </Typography>
           <Typography
-            element="tiny-text"
-            weight="regular"
-            className="tw-text-natural-600"
+            tag="label"
+            className="tw-text-natural-600 tw-text-xs tw-font-normal"
           >
             {email}
           </Typography>

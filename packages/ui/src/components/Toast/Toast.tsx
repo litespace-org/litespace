@@ -84,8 +84,8 @@ export const Toast: React.FC<{
         {description ? (
           <Description asChild>
             <Typography
-              element="caption"
-              className="tw-text-natural-600 tw-font-semibold dark:tw-text-natural-50"
+              tag="label"
+              className="tw-text-natural-600 tw-font-semibold dark:tw-text-natural-50 tw-text-sm"
             >
               {description}
             </Typography>

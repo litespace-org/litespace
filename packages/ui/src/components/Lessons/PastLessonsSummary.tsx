@@ -58,9 +58,8 @@ export const PastLessonsSummary: React.FC<Props> = ({
       )}
     >
       <Typography
-        element="body"
-        weight="bold"
-        className="text-natural-950 tw-mb-4"
+        tag="h1"
+        className="text-natural-950 tw-mb-4 tw-text-base tw-font-bold"
       >
         {isTutor
           ? intl("tutor-dashboard.past-lessons.title")
@@ -135,9 +134,8 @@ export const PastLessonsSummary: React.FC<Props> = ({
               onClick={more}
             >
               <Typography
-                element="caption"
-                weight="semibold"
-                className="tw-text-natural-50"
+                tag="label"
+                className="tw-text-natural-50 tw-text-sm tw-font-semibold"
               >
                 {intl("global.labels.more")}
               </Typography>
@@ -218,32 +216,29 @@ export const Row: React.FC<RowProps> = ({
       </div>
       <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
         <Typography
-          element="caption"
-          weight="semibold"
-          className="tw-text-natural-950"
+          tag="label"
+          className="tw-text-natural-950 tw-text-sm tw-font-semibold"
         >
           {dayjs(start).format("dddd - D MMMM YYYY")}
         </Typography>
         <div className="tw-flex tw-justify-between">
           <Tooltip
             content={
-              <Typography className="tw-text-natuarl-950">{name}</Typography>
+              <Typography tag="label" className="tw-text-natuarl-950">{name}</Typography>
             }
           >
             <div>
               <Typography
-                element="tiny-text"
-                weight="regular"
-                className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16"
+                tag="label"
+                className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-text-xs tw-font-normal"
               >
                 {name}
               </Typography>
             </div>
           </Tooltip>
           <Typography
-            element="tiny-text"
-            weight="regular"
-            className="tw-block tw-text-natural-600 tw-ms-[18px]"
+            tag="label"
+            className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-xs tw-font-normal"
           >
             {dayjs(start).format("h:mm")}
             {" - "}

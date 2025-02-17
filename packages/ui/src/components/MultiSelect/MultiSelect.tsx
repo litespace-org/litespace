@@ -74,7 +74,7 @@ export const MultiSelect = <T,>({
             ) : null}
             <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
               {isEmpty(selectedOptions) ? (
-                <Typography className="tw-flex-1 tw-text-natural-400 tw-text-start">
+                <Typography tag="label" className="tw-flex-1 tw-text-natural-400 tw-text-start">
                   {placeholder}
                 </Typography>
               ) : (
@@ -83,13 +83,13 @@ export const MultiSelect = <T,>({
                     return (
                       <Tooltip
                         side="top"
-                        content={<Typography>{label}</Typography>}
+                        content={<Typography tag="label">{label}</Typography>}
                         key={label}
                       >
                         <div className=" tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full">
                           <Typography
-                            element="body"
-                            className="tw-text-natural-50 tw-max-w-[100px] tw-truncate"
+                            tag="label"
+                            className="tw-text-natural-50 tw-max-w-[100px] tw-truncate tw-text-base"
                           >
                             {label}
                           </Typography>
@@ -117,8 +117,8 @@ export const MultiSelect = <T,>({
                         className="tw-flex tw-items-center tw-px-[10px] tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full"
                       >
                         <Typography
-                          element="body"
-                          className="tw-text-natural-50 tw-whitespace-nowrap"
+                          tag="label"
+                          className="tw-text-natural-50 tw-whitespace-nowrap tw-text-base"
                         >
                           {selectedOptions.length - idx} +
                         </Typography>

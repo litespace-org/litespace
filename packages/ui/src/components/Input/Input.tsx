@@ -49,13 +49,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label ? (
           <Typography
             tag="label"
-            element="caption"
-            weight="semibold"
             htmlFor={props.id}
-            className={cn({
-              "tw-text-natural-950": !disabled,
-              "tw-text-natural-500": disabled,
-            })}
+            className={cn(
+              "tw-text-sm tw-font-semibold",
+              {
+                "tw-text-natural-950": !disabled,
+                "tw-text-natural-500": disabled,
+              }
+            )}
           >
             {label}
           </Typography>
@@ -129,19 +130,21 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {helper ? (
             <Helper>
               <Typography
-                element="tiny-text"
-                weight="semibold"
-                className={cn({
-                  // Default or filled
-                  "tw-text-natural-600 group-focus-within:tw-text-natural-600":
-                    !state && !disabled,
-                  // Success
-                  "tw-text-success-600": state === "success",
-                  // Error
-                  "tw-text-destructive-600": state === "error",
-                  // Disabled
-                  "tw-text-natural-500": disabled,
-                })}
+                tag="label"
+                className={cn(
+                  "tw-text-xs tw-font-semibold",
+                  {
+                    // Default or filled
+                    "tw-text-natural-600 group-focus-within:tw-text-natural-600":
+                      !state && !disabled,
+                    // Success
+                    "tw-text-success-600": state === "success",
+                    // Error
+                    "tw-text-destructive-600": state === "error",
+                    // Disabled
+                    "tw-text-natural-500": disabled,
+                  }
+                )}
               >
                 {helper}
               </Typography>

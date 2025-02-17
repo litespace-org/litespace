@@ -80,9 +80,8 @@ export const RatingStars: React.FC<StarProps> = ({
           </motion.button>
           {!readonly ? (
             <Typography
-              element={{ default: "tiny-text", sm: "caption" }}
-              weight="regular"
-              className="tw-inline-block tw-text-natural-950 tw-text-center"
+              tag="label"
+              className="tw-inline-block tw-text-natural-950 tw-text-center tw-text-xs sm:tw-text-sm tw-font-normal"
             >
               {intl(ratingMap[idx])}
             </Typography>
