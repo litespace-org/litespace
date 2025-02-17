@@ -65,9 +65,8 @@ const Login: React.FC = () => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(
-        async (credentials: IUser.Credentials) =>
-          await mutation.mutateAsync(credentials)
+      handleSubmit((credentials: IUser.Credentials) =>
+        mutation.mutate(credentials)
       ),
     [handleSubmit, mutation]
   );

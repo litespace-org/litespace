@@ -59,11 +59,8 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
 
   const onSubmit = useMemo(
     () =>
-      handleSubmit(async (data: IForm) => {
-        await mutation.mutateAsync({
-          email: data.email,
-          callbackUrl,
-        });
+      handleSubmit((data: IForm) => {
+        mutation.mutate({ email: data.email, callbackUrl });
       }),
     [handleSubmit, mutation]
   );
