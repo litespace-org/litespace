@@ -26,7 +26,6 @@
   "forget-password.re-send-email": "اعادة ارسال البريد؟",
   "forget-password.password-remembered": "تذكرت كلمة المرور؟",
   "forget-password.error": "حدثت مشكلة أثناء ارسال البريد الالكتروني",
-
   "chat.update-settings.error": "حدث خطاء، الرجاء المحاولة لاحقا",
   "page.login.forget.password.button.submit": "إعادة تعيين كلمة السر",
   "page.login.forget.password.title": "تغيير كلمة السر",
@@ -124,7 +123,6 @@
   "student-settings.upload.image.desc": "يوصى بصيغة JPG أو PNG وGIF بحجم 480 × 480 بكسل على الأقل.",
   "student-settings.upload.image.label": "قم برفع صورة جديدة",
   "student-settings.upload.image.label-sm": "تغيير الصورة",
-
   "shared-settings.edit.personal.city.placeholder": "من أين أنت",
   "shared-settings.edit.password.title": "تغيير كلمة السر",
   "shared-settings.edit.password.current": "كلمة السر الحالية",
@@ -194,7 +192,6 @@
   "login.with-google": "تسجيل الدخول باستخدام جوجل",
   "login.has-no-account": "ليس لديك حساب؟ {link}",
   "login.create-account": "انشاء حساب",
-
   "lesson.title": "الدروس الجارية",
   "plans.title": "خطط الأشتراك",
   "register.welcome": "أنشئ حسابك وابدأ تطوير مهاراتك في الإنجليزية",
@@ -221,10 +218,6 @@
   "student-settings.profile.title": "الإعدادات",
   "student-settings.loading": "برجاء الإنتظار... جاري تحميل الإعدادات!",
   "student-settings.error": " عذرًا، حدث خطأ أثناء تحميل  الإعدادات، برجاء المحاولة مرة أخرى",
-  "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
-  "page.tutor.onboarding.steps.second": "زورنا في يلا استب",
-  "page.tutor.onboarding.steps.third": "قدم نفسك لطلابك",
-  "page.tutor.onboarding.steps.third.description": "علشان انت تعرف نفسك أكثر من أي حد تاني، حاول توصف نفسك في كلمات معدوده...",
   "tutors.title": "كل المعلمين",
   "tutor-profile.loading": "برجاء الانتظار... جاري تحميل بيانات المعلم!",
   "tutor-profile.error": "عذرًا، حدث خطأ أثناء تحميل بيانات المعلم، برجاء المحاولة مرة أخرى",
@@ -232,7 +225,6 @@
   "tutor-settings.profile.loading-error": " عذرًا، حدث خطأ أثناء تحميل الملف الشخصي، برجاء المحاولة مرة أخرى",
   "tutor-settings.profile.title": "الملف الشخصى",
   "upcoming-lessons.title": "الدروس الجارية",
-
   "labels.login": "تسجيل الدخول",
   "labels.back-to-site": "الرجوع الي الموقع",
   "labels.about.short": "نبذه",

@@ -4,10 +4,27 @@ import "colors";
 import { Command } from "commander";
 import { omit } from "lodash";
 
-async function findUnusedIds() {
-  const local = JSON.parse(
-    fs.readFileSync("./packages/ui/src/locales/ar-eg.json").toString("utf-8")
-  );
+const localeFiles = {
+  shared: "./packages/ui/src/locales/ar-eg.json",
+  dashboard: "./apps/dashboard/src/locales/ar-eg.json",
+  web: "./apps/web/src/locales/ar-eg.json",
+  landing: "./apps/landing/locales/ar-eg.json",
+};
+type IntlMap = Record<string, { value: string; source: string }>;
+type FileMap = Record<string, Array<string>>;
+
+function loadIntlWithSource(): IntlMap {
+  const intlMap: IntlMap = {};
+  for (const [_, path] of Object.entries(localeFiles)) {
+    const content = JSON.parse(fs.readFileSync(path, "utf-8"));
+    for (const id in content) {
+      intlMap[id] = { value: content[id], source: path };
+    }
+  }
+  return intlMap;
+}
+
+async function findUnusedIds(intlMap: IntlMap) {
   const files = await glob("{packages,apps}/**/*.{js,ts,jsx,tsx}", {
     posix: true,
     ignore: [
@@ -18,68 +35,95 @@ async function findUnusedIds() {
     ],
   });
 
-  const ids = Object.keys(local);
-  const counter: Record<string, number> = {};
+  const counter = {};
+  const ids = Object.keys(intlMap);
 
   for (const file of files) {
-    const content = fs.readFileSync(file).toString("utf-8");
+    const content = fs.readFileSync(file, "utf-8");
 
     for (const id of ids) {
-      const regex = new RegExp(`${id}`, "g");
-      const match = content.match(regex) || [];
-      const prev = counter[id] || 0;
-      counter[id] = prev + match.length;
+      const regex = new RegExp(`\\b${id}\\b`, "g"); // Match whole word only
+      const matches = content.match(regex) || [];
+      counter[id] = (counter[id] || 0) + matches.length;
     }
   }
 
-  const unused: string[] = [];
+  const unused = ids.filter((id) => counter[id] === 0);
+  return unused;
+}
 
-  for (const [id, count] of Object.entries(counter)) {
-    if (count === 0) unused.push(id);
+async function inspectUnusedIds({ fail }) {
+  const intlMap = loadIntlWithSource();
+  const unusedIds = await findUnusedIds(intlMap);
+
+  if (unusedIds.length === 0) {
+    console.log("All ids are in use.".green.bold);
+    return;
   }
 
-  return unused;
+  console.log("Not used".bgRed.bold);
+
+  const idsByFile: FileMap = {};
+  for (const id of unusedIds) {
+    const file = intlMap[id]?.source;
+    if (file) {
+      if (!idsByFile[file]) idsByFile[file] = [];
+      idsByFile[file].push(id);
+    }
+  }
+
+  for (const [file, ids] of Object.entries(idsByFile)) {
+    console.log(`\n${file}`.cyan.bold);
+    ids.forEach((id) => console.log(`   ${id}`.red.bold));
+  }
+
+  console.log(`\nFound ${unusedIds.length} unused ID(s)`.red.bold);
+
+  if (fail) {
+    throw new Error(
+      `Found ${unusedIds.length} unused ID(s)\nUse "pnpm intl remove" to remove them if needed.`
+    );
+  }
+}
+
+async function removeUnusedIds() {
+  const intlMap = loadIntlWithSource();
+
+  const unusedIds = await findUnusedIds(intlMap);
+
+  if (unusedIds.length === 0) {
+    console.log("All ids are in use.".gray.bold);
+    return;
+  }
+
+  const idsByFile: FileMap = {};
+  for (const id of unusedIds) {
+    const file = intlMap[id]?.source;
+    if (file) {
+      if (!idsByFile[file]) idsByFile[file] = [];
+      idsByFile[file].push(id);
+    }
+  }
+
+  for (const [file, ids] of Object.entries(idsByFile)) {
+    console.log(`Updating: ${file}`.italic);
+    const content = JSON.parse(fs.readFileSync(file, "utf-8"));
+    const updated = omit(content, ids);
+    fs.writeFileSync(file, JSON.stringify(updated, null, 2));
+    console.log(`Removed ${ids.length} ID(s) from ${file}`.green);
+    ids.forEach((id) => console.log(`  - ${id}`.red.bold));
+  }
+
+  console.log(`\nDone. Removed ${unusedIds.length} unused ID(s) across files.`);
 }
 
 const inspect = new Command()
   .name("inspect")
   .alias("i")
   .option("-f, --fail", "Throw error if unused ids are found", false)
-  .action(async function inspect({ fail }: { fail: boolean }) {
-    const ids = await findUnusedIds();
-    if (ids.length === 0) return console.log("All ids are in use.".green.bold);
+  .action(inspectUnusedIds);
 
-    console.log("Not used".bgRed.bold);
-
-    for (const id of ids) {
-      console.log(`   ${id}`.red.bold);
-    }
-
-    console.log(`Found ${ids.length} unused id(s)`.red.bold);
-
-    if (fail)
-      throw new Error(
-        `Found ${ids.length} unused id(s)\nuse "pnpm intl remove" to remove it if needed.`
-      );
-  });
-
-const remove = new Command()
-  .name("remove")
-  .alias("rm")
-  .action(async function remove() {
-    const ids = await findUnusedIds();
-    if (ids.length === 0) return console.log("All ids are in use.".gray.bold);
-    console.log(`Found ${ids.length} id(s)`.gray.bold);
-
-    const path = "./packages/ui/src/locales/ar-eg.json";
-    console.log(`Upadting: ${path}`.italic);
-
-    const content = JSON.parse(fs.readFileSync(path).toString("utf-8"));
-    const updated = omit(content, ids);
-
-    fs.writeFileSync(path, JSON.stringify(updated, null, 2));
-    console.log("Done.");
-  });
+const remove = new Command().name("remove").alias("rm").action(removeUnusedIds);
 
 new Command()
   .name("intl")

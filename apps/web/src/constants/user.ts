@@ -1,4 +1,3 @@
-
 export enum TutorOnboardingStep {
   /**
    * Have interview with the interviewer
@@ -13,5 +12,3 @@ export enum TutorOnboardingStep {
    */
   Profile = 3,
 }
-
-

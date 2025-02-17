@@ -1,4 +1,7 @@
 {
+  "verify-email.success": "تم تأكيد الحساب الخاص بك بنجاح.",
+  "verify-email.failure": "حدث خطأ أثناء تأكيد بريدك الإليكترونى، برجاء المحاولة مرة أخرى",
+  "verify-email.redirect": "سوف يتم إعادة توجيهك للصفحة الرئسية خلال 5 ثواني...",
   "navbar.logout": "تسجيل خروج",
   "dashboard.interview.status": "الحالة",
   "dashboard.interview.status.pending": "قيد الانتظار",
@@ -181,7 +184,6 @@
   "dashboard.sidebar.server.stats": "إحصائيات السيرفر",
   "dashboard.sidebar.platform.settings": "إعدادات المنصة",
   "dashboard.sidebar.user.settings": "إعدادات الحساب",
-  "dashboard.sidebar.topics.title": "الموضوعات",
   "dashboard.server.stats.title": "إحصائيات السيرفر",
   "dashboard.server.stats.uptime": "مدة تشغيل السيرفر: {duration}",
   "dashboard.topics.title": "الموضوعات",
