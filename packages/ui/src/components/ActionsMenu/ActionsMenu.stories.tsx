@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ActionsMenu } from "@/components/ActionsMenu";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import ar from "@/locales/ar-eg.json";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof ActionsMenu;
 
@@ -15,14 +16,14 @@ const meta: Meta<Component> = {
 const actions = [
   {
     id: 1,
-    label: ar["labels.share"],
+    label: faker.lorem.words(3),
     onClick() {
       alert("Clicked 1!!");
     },
   },
   {
     id: 2,
-    label: ar["labels.go-back"],
+    label: faker.lorem.words(2),
     onClick() {
       alert("Clicked 2!!");
     },
@@ -30,7 +31,7 @@ const actions = [
   },
   {
     id: 3,
-    label: ar["global.labels.go"],
+    label: faker.lorem.words(1),
     onClick() {
       alert("Clicked 3!!");
     },

@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { HoverCard } from "@/components/HoverCard";
-import ar from "@/locales/ar-eg.json";
 import { PlusIcon } from "@radix-ui/react-icons";
 import React from "react";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof HoverCard;
 
@@ -15,7 +15,7 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    content: ar["global.notify.schedule.update.success"],
+    content: faker.lorem.words(4),
     children: (
       <button className="tw-inline-flex tw-size-[35px] tw-items-center tw-justify-center tw-rounded-full tw-bg-white tw-text-foreground tw-border">
         <PlusIcon />

@@ -1,10 +1,10 @@
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import type { Meta, StoryObj } from "@storybook/react";
 import { DateInput } from "@/components/DateInput";
-import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { useState } from "react";
 import dayjs from "@/lib/dayjs";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof DateInput;
 
@@ -22,7 +22,7 @@ export const Primary: StoryObj<Component> = {
     return (
       <Form>
         <DateInput
-          placeholder={ar["global.form.email.placeholder"]}
+          placeholder={faker.lorem.words(4)}
           value={value}
           onChange={(value) => setValue(value)}
         />
@@ -38,7 +38,7 @@ export const Small: StoryObj<Component> = {
     return (
       <Form className="tw-w-[200px]">
         <DateInput
-          placeholder={ar["global.form.email.placeholder"]}
+          placeholder={faker.lorem.words(4)}
           value={value}
           onChange={(value) => setValue(value)}
         />
@@ -54,12 +54,12 @@ export const Bounded: StoryObj<Component> = {
     return (
       <Form>
         <DateInput
-          placeholder={ar["global.form.email.placeholder"]}
+          placeholder={faker.lorem.words(4)}
           value={value}
           onChange={(value) => setValue(value)}
           min={dayjs().subtract(10, "days")}
           max={dayjs().add(10, "days")}
-          today={ar["global.labels.today"]}
+          today={faker.lorem.words(1)}
         />
       </Form>
     );

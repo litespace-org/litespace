@@ -4,7 +4,7 @@ import { Input } from "@/components/Input";
 import { Form } from "@/components/Form";
 import React from "react";
 import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type IForm = typeof Form;
 
@@ -27,9 +27,9 @@ export const Primary: StoryObj<IForm> = {
       <div className="tw-ui-w-[40rem]">
         <Input
           type="text"
-          placeholder={ar["global.form.email.placeholder"]}
+          placeholder={faker.lorem.words(4)}
           autoComplete="off"
-          label={ar["global.form.email.label"]}
+          label={faker.lorem.words(2)}
         />
       </div>
     ),
