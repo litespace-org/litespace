@@ -353,10 +353,8 @@
   "error.bio.long": "تخطي البايو الحد الأقصي من الكلمات.",
   "error.bio.invalid": "يحتوي البايو علي محتوي غير مناسب.",
   "error.chat.length.max": "من الأفضل ان لا تتخطي رسالتك ال 250 حرف",
-
   "placeholders.from": "من",
   "placeholders.to": "إلي",
-
   "labels.update": "تعديل",
   "labels.confirm": "تأكيد",
   "labels.share": "مشاركة",
