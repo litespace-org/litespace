@@ -1,0 +1,382 @@
+{
+  "page.verify.email.success": "تم تأكيد بريدك الإليكترونى بنجاح",
+  "page.verify.email.failure": "حدث خطأ أثناء تأكيد بريدك الإليكترونى، برجاء المحاولة مرة أخرى",
+  "page.verify.email.redirect": "سوف يتم إعادة توجيهك للصفحة الرئسية خلال 5 ثواني...",
+  "page.login.form.title": "تسجيل الدخول",
+  "page.login.forget.password.button.submit": "إعادة تعيين كلمة السر",
+  "page.login.forget.password.title": "تغيير كلمة السر",
+  "page.login.forget.password.success": "سوف يتم إرسال بريد الكترونى إلي حسابك لتعيين كلمة سر جديدة، برجاء التأكد منه",
+  "login.button.label": "تسجيل الدخول",
+  "login.welcome": "مرحبًا بك! يرجى ملء بياناتك للمتابعة إلى حسابك",
+  "login.with-google": "تسجيل الدخول باستخدام جوجل",
+  "login.has-no-account": "ليس لديك حساب؟ {link}",
+  "login.create-account": "انشاء حساب",
+  "login.error": "لديك مشكلة في تسجيل الدخول",
+  "login.forget-password": "نسيت كلمة المرور؟",
+  "login.enter-password": "ادخل كلمة المرور",
+  "register.welcome": "أنشئ حسابك وابدأ تطوير مهاراتك في الإنجليزية",
+  "register.has-account": "لديك حساب بالفعل؟ {link}",
+  "register.login": "تسجيل الدخول",
+  "register.with-google": "انشاء حساب باستخدام جوجل",
+  "register.confirm-password": "تأكيد كلمة المرور",
+  "register.confirm-password.placeholder": "اعد ادخال كلمة المرور",
+  "register.create-account": "انشاء الحساب",
+  "register.password-not-the-same": "كملة المرور غير مطابقة",
+  "register.password.placeholder": "ادخل كلمة المرور",
+  "register.error": "لديك مشكلة في إنشاء الحساب",
+  "register.accept-terms": "بإنشاء حساب فانت توافق علي الشروط والاحكام وسياسة الخصوصية.",
+  "complete-profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
+  "complete-profile.title": "قم بأستكمال حسابك!",
+  "complete-profile.description": "نحن هنا لنضمن لك تجربة مخصصة و مريحة! أضف اسمك الكامل، مدينتك و رقم هاتفك لأستكمال حسابك و الاستفادة من جميع مميزات منصتنا.",
+  "complete-profile.phone.helper": "لضمان أمان حسابك وسهولة استرجاع كلمة المرور عند الحاجة",
+  "complete-profile.city.helper": "لترشيح معلمين بالقرب منك وضمان سرعة إنترنت مستقرة",
+  "forget-password.title": "نسيت كلمة المرور؟",
+  "forget-password.description": "ادخل برديك الالكتروني و سنرسل لك تعليمات لإعادة تعيين كلمه المرور الخاصة بك",
+  "forget-password.send-link": "ارسال الرابط",
+  "forget-password.check-inbox": "تفقد البريد الالكتروني الخاص بك!",
+  "forget-password.check-inbox.description": "لقد قمنا بارسال رابط لتأكيد الحساب الخاص بك الي بريدك الالكتروني ، يرجي التحقق من بريدك الوارد و اتباع التعليمات لتأكيد الحساب.",
+  "forget-password.re-send-email": "اعادة ارسال البريد؟",
+  "forget-password.error": "حدثت مشكلة أثناء ارسال البريد الالكتروني",
+  "forget-password.password-remembered": "تذكرت كلمة المرور؟",
+  "reset-password.title": "انشاء كلمة مرور جديدة",
+  "reset-password.description": "قم بإنشاء كلمه مرور جديدة لحسابك",
+  "reset-password.error": " عذرًا، حدث خطأ أثناء تأكيد كلمة المرور الجديدة. برجاء المحاولة مرة أخرى",
+  "reset-password.new-password": "كلمة المرور الجديدة",
+  "reset-password.confirm-new-password": "تأكيد كلمة المرور الجديدة",
+  "reset-password.done": "تم تحديث كلمة المرور الجديدة بنجاح.",
+  "reset-password.go-to-dashboard": "الذهاب إلى لوحة التحكم",
+  "reset-password.new-password.placeholder": "قم بإنشاء كلمة مرور جديدة",
+  "reset-password.confirm-password.placeholder": "اعد كتابة كلمة المرور الجديدة",
+  "page.tutor.onboarding.steps.first": "حدد موعد مقابلتك",
+  "page.tutor.onboarding.steps.second": "زورنا في يلا استب",
+  "page.tutor.onboarding.steps.third": "قدم نفسك لطلابك",
+  "page.tutor.onboarding.steps.third.description": "علشان انت تعرف نفسك أكثر من أي حد تاني، حاول توصف نفسك في كلمات معدوده...",
+  "page.tutor.onboarding.book.interview.success.title": "تم حجز مقابلتك بنجاح",
+  "tutor.rate.error": "حدث خطأ أثناء تقييم المعلم، برجاء المحاولة مرة أخرى",
+  "tutor.rate.delete.title": "إزالة تقييم المعلم",
+  "tutor.rate.delete.titleWarning": "أنت على وشك إزالة تقييمك للمعلم",
+  "tutor.rate.delete.success": "تم إزالة التقييم بنجاح",
+  "tutor.rate.delete.error": "عذرا، حدث خطأ أثناء إزالة التقييم، برجاء المحاولة مرة أخرى",
+  "tutor.achievements": "{lessonCount} حصة مع {studentCount} طالب",
+  "text-area.validate.max-allowed": "لقد وصلت للحد الاقصي من الحروف المسموح بها داخل التعليق.",
+  "tutor.book": "حجز حصة",
+  "tutor.rating.rate": "رأيك في {tutor}",
+  "tutor.rating.edit": "تعديل التعليق",
+  "tutor.rating.delete": "حذف التعليق",
+  "tutor.rating.name.placeholder": "أحد طلاب {value}",
+  "tutor.rating.delete.warning": "هل انت متأكد من انك تريد حذف هذا التعليق ؟ هذا الفعل لا يمكن الرجوع فيه.",
+  "tutor.rating.feedback.placeholder": "اضف تعليقك بالاسفل !",
+  "tutor.rating.group-names.one-more": "{names} و 1 اخر",
+  "tutor.rating.group-names.others": "{names} و {count} اخرون",
+  "tutor.rating.group-names.n-students": "{count} من طلاب {tutor}",
+  "tutor-profile.loading": "برجاء الانتظار... جاري تحميل بيانات المعلم!",
+  "tutor-profile.error": "عذرًا، حدث خطأ أثناء تحميل بيانات المعلم، برجاء المحاولة مرة أخرى",
+  "student-dashboard.rating-dialog.add-comment-placeholder": "اكتب تعليقك هنا",
+  "rating-dialog.submit": "ارسال التقييم",
+  "rating-dialog.rate-tutor.title": "قيم معلمك",
+  "rating-dialog.rate-tutor.header": "كيف كانت تجربتك مع {tutor}؟",
+  "rating-dialog.rate-tutor.description": "نود سماع رأيك! تقييمك مهم لنا لمساعدتنا في تحسين تجربتك وتجربة الآخرين. من فضلك، شارك تقييمك للمعلم بعد الجلسة لنتمكن من تقديم خدمة أفضل في المستقبل",
+  "session.loading": "برجاء الانتظار... جاري تحميل صفحة الدرس!",
+  "session.loading-error": " عذرًا، حدث خطأ أثناء تحميل صفحة الدرس، برجاء المحاولة مرة أخرى",
+  "session.ready.title": "هل أنت جاهز للإنضمام؟",
+  "session.ready.explaination.full.male-tutor": "بإمكانك الدخول، المعلم ينتظرك الاّن داخل الحصة",
+  "session.ready.explaination.full.female-tutor": "بإمكانك الدخول، المعلمة تنتظرك الاّن داخل الحصة",
+  "session.ready.explaination.full.male-student": "بإمكانك الدخول، الطالب ينتظرك الاّن داخل الحصة",
+  "session.ready.explaination.full.female-student": "بإمكانك الدخول، الطالبة تنتظرك الاّن داخل الحصة",
+  "session.ready.explaination.empty.tutor": "المعلم في طريقه لدخول الحصة",
+  "session.ready.explaination.empty.student": "الطالب في طريقه لدخول الحصة",
+  "session.ready.join": "انضم للحصة الاّن",
+  "session.rating.title": "قيم تجربتك",
+  "session.rating.question": "كيف كانت حصتك مع {tutor} ؟",
+  "session.rating.question.description": "تقييمك يساهم في جعل تجربتك التعليمية أكثر تميزًا. أخبرنا عن انطباعك لتقديم تجربة تتناسب مع احتياجاتك",
+  "session.rating.text.placeholder": "اترك تعليقك هنا...",
+  "session.rating.send-rating": "إرسال التقييم",
+  "session.permissions.title": "هل تريد ان يراك و يسمعك المعلم خلال الحصة؟",
+  "session.permissions.note": "يجب تفعيل المايكروفون علي الاقل  لكي تستطيع الانضمام للحصة.",
+  "session.permissions.enable-mic-and-camera": "تفعيل المايكروفون و الكاميرا",
+  "session.permissions.enable-mic-only": "تفعيل المايكروفون فقط",
+  "session.permissions.no-camera-or-mic": "عذرًا، لم نتمكن من العثور على كاميرا أو ميكروفون متصل بجهازك",
+  "session.permissions.no-speakers": "عذرًا، لم نتمكن من العثور على سماعات متصلة بجهازك.",
+  "session.permissions.no-mic": "عذرًا، لم نتمكن من العثور على ميكروفون متصل بجهازك",
+  "session.permissions.no-camera": "عذرًا، لم نتمكن من العثور على كاميرا متصلة بجهازك",
+  "session.share-screen.title": "هل تريد مشاركة الشاشة؟",
+  "session.share-screen.description": "سيؤدي مشاركة الشاشة لديك الي ايقاف مشاركة الشاشة الحالية.",
+  "platform.rating.question": "شاركنا رأيك لتحسين تجربتك!",
+  "platform.rating.question.description": "رأيك يهمنا لتحسين تجربتك على منصتنا. أخبرنا بما أعجبك وما يمكننا تطويره لنكون دائماً عند توقعاتك.",
+  "student-dashboard.overview.title": "نظرة عامة",
+  "student-dashboard.past-lessons.title": "الحصص السابقة",
+  "tutors.title": "كل المعلمين",
+  "tutors.loading": "برجاء الانتظار... جاري تحميل بيانات المعلمين!",
+  "tutors.error": " عذرًا، حدث خطأ أثناء تحميل بيانات المعلمين، برجاء المحاولة مرة أخرى",
+  "tutors.card.book-button.label": "احجز الآن",
+  "tutors.card.profile-button.label": "عرض الملف",
+  "tutors.card.label.students": "الطلاب",
+  "tutors.card.label.lessons": "الدروس",
+  "tutors.card.label.rating": "التقييم",
+  "tutors.card.label.read-more": "اقرأ المزيد",
+  "tutors.coming-soon": "فرص تعلم جديدة تقترب... معلمون مميزون سينضمون قريبًا!",
+  "tutors.coming.set-notifications": "أخبرني عند التوفر",
+  "tutors.coming-soon.notification-description": "سوف يتم اشعارك بجميع المعلمين الجدد",
+  "tutor.profile.tabs.profile": "الملف الشخصى",
+  "tutor.profile.tabs.profile.about": "حول المعلم",
+  "tutor.profile.tabs.profile.specialities": "مجالات خبرة المعلم",
+  "tutor.profile.tabs.profile.video": "الفيديو التعريفي",
+  "tutor.profile.tabs.reviews": "الأراء",
+  "tutor.profile.loading": "برجاء الانتظار... نحضر لك بيانات المعلم!",
+  "tutor.profile.rate-tutor": "قيم المعلم",
+  "tutor.profile.your-ratings-help": "آراؤك تساهم في تحسين طريقة تدريس معلمينا، ونحن نحرص على استخدامها لتقديم تجربة تعليمية أفضل",
+  "tutor.profile.first-rating": " كن من أوائل الطلاب الذين يكتشفون إمكانيات {tutor} المتميز! اغتنم الفرصة الآن قبل أن يصبح جدوله ممتلئًا!",
+  "tutor.rating.delete.error": "حدث خطأ أثناء حذف التعليق، برجاء المحاولة مرة أخرى",
+  "tutor.rating.edit.error": "حدث خطأ أثناء تعديل التعليق، برجاء المحاولة مرة أخرى",
+  "tutor.profile.error": " عذرًا، حدث خطأ أثناء تحميل المحتوى. برجاء المحاولة مرة أخرى",
+  "tutor-dashboard.overview.title": "نظرة عامة",
+  "tutor-dashboard.overview.total-lessons": "اجمالي الحصص",
+  "tutor-dashboard.overview.completed-lessons": "الحصص المكتملة",
+  "tutor-dashboard.overview.tutoring-time": "وقت التعليم",
+  "tutor-dashboard.overview.students": "عدد الطلاب",
+  "tutor-dashboard.overview.total-learning-time.unit.minute": "{value} د",
+  "tutor-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",
+  "tutor-dashboard.overview.error": "عذرًا، حدث خطأ أثناء تحميل الاحصائيات العامة، برجاء المحاولة مرة أخرى",
+  "tutor-dashboard.table.student": "الطالب",
+  "tutor-dashboard.table.send-message": "إرسال رسالة",
+  "tutor-dashboard.past-lessons.title": "الحصص السابقة",
+  "tutor-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
+  "tutor-dashboard.past-lessons.error": " عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
+  "tutor-dashboard.past-lessons.empty": "لا توجد حصص سابقة",
+  "page.error.title": "بتحاول توصل لايه؟ 🔍",
+  "page.error.subtitle": "مش لاقين اللي انت بتدور عليه!",
+  "page.error.button.label": "الرجوع للخلف",
+  "page.schedule.list.actions.delete": "حذف",
+  "schedule.lesson.edit": "تعديل الموعد",
+  "schedule.lesson.cancel": "الغاء الحصة",
+  "schedule.lesson.rebook": "حجز حصة اخري",
+  "schedule.lesson.join": "دخول الحصة",
+  "schedule.lesson.canceled-by-tutor": "لقد تم الغاء الحصة من قبل المعلم",
+  "manage-schedule.update.success": "تم تحديث جدولك بنجاح",
+  "manage-schedule.update.error": "لديك مشكلة في تحديث الجدول",
+  "manage-schedule.edit-or-add-schedule": "تعديل او اضافة جدول جديد",
+  "manage-schedule.slot.edit": "تعديل الجدول",
+  "manage-schedule.slot.delete": "مسح الجدول",
+  "manage-schedule.manage": "إدارة الجدول",
+  "manage-schedule.edit": "تعديل الجدول",
+  "manage-schedule.save": "حفظ الجدول",
+  "manage-schedule.manage-dialog.available-days": "أيام الأسبوع المتاحة",
+  "manage-schedule.manage-dialog.loading.message": "برجاء الانتظار... جاري تحميل الجدول",
+  "manage-schedule.manage-dialog.error.message": " عذرًا، حدث خطأ أثناء تحميل الجدول، برجاء المحاولة مرة أخرى",
+  "manage-schedule.remove-dialog.title": "حذف الجدول",
+  "manage-schedule.remove-dialog.severity-normal": "هل انت متأكد من انك تريد حذف هذا الجدول ؟ هذا الفعل لا يمكن الرجوع فيه.",
+  "manage-schedule.remove-dialog.severity-high": "هل انت متأكد من انك تريد حذف هذا الجدول ؟ سيؤدي هذا الي الغاء الحصص المحجوزة بالجدول و اشعار الطلاب بالغائها و الي تراجع مستوي التقييم العام الخاص بك.",
+  "page.interviews.interviewer.feedback": "تقيمك/رسالتك للمعلم",
+  "page.interviews.tutor.feedback": "رسالة من المعلم",
+  "chat.loading": "برجاء الانتظار... جاري تحميل المحادثات!",
+  "chat.start-message": "لا تتردد في بدء المحادثة مع معلمك! كل سؤال هو خطوة نحو إتقانك للغة الإنجليزية",
+  "chat.no": "إطرح جميع إسئلتك علي معلمك المفضل",
+  "chat.active": "نشط الأن",
+  "chat.message.edit": "تعديل الرسالة",
+  "chat.message.delete": "حذف الرسالة",
+  "chat.message.delete.description": "هل انت متأكد من انك تريد حذف هذة الرسالة ؟ هذا الفعل لا يمكن الرجوع فيه.",
+  "chat.message.delete.confirm": "حذف",
+  "chat.message.delete.cancel": "الرجوع",
+  "chat.message.retry": "إرسال مجددا",
+  "chat.message.title.you": "أنت",
+  "chat.pin": "تثبيت",
+  "chat.unpin": "إلغاء تثبيت",
+  "chat.mute": "كتم",
+  "chat.update-settings.error": "حدث خطاء، الرجاء المحاولة لاحقا",
+  "chat.unmute": "إلغاء كتم",
+  "chat.title": "المحادثات",
+  "chat.all-tutors.title": "جميع المعلمين",
+  "chat.create.room.error": "حدث خطا أثناء بدء المحادثة برجاء المحاولة مرة أخرى",
+  "chat.pinned.title": "المحادثات المثبتة",
+  "chat.all": "جميع الرسائل",
+  "chat.search": "ابحث هنا",
+  "chat.online": "نشط الان",
+  "chat.offline": "نشط {time}",
+  "chat.book": "احجز الاّن",
+  "chat.date.today": "اليوم",
+  "chat.date.yesterday": "الأمس",
+  "chat.input.placeholder": "اكتب رسالتك هنا  .......",
+  "chat.typing-now.male": "يكتب الان....",
+  "chat.typing-now.female": "تكتب الان....",
+  "chat.message.no-message": "لا توجد رسائل هنا بعد",
+  "chat.message.start-chat": "ابدأ المحادثة مع معلمك الآن لطرح أسئلتك أو طلب المساعدة!",
+  "chat.message.loading": "برجاء الانتظار... جاري تحميل المحادثة!",
+  "chat.message.error": " عذرًا، حدث خطأ أثناء تحميل رسائل المحادثة، برجاء المحاولة مرة أخرى",
+  "chat.error": " عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "tutor-settings.tabs.profile-settings": "الملف الشخصى",
+  "tutor-settings.tabs.personal-settings": "الاعدادات",
+  "tutor-settings.profile.loading": "برجاء الانتظار... جاري تحميل الملف الشخصي!",
+  "tutor-settings.profile.loading-error": " عذرًا، حدث خطأ أثناء تحميل الملف الشخصي، برجاء المحاولة مرة أخرى",
+  "tutor-settings.profile.title": "الملف الشخصى",
+  "tutor-settings.personal-info.title": "المعلومات الشخصية",
+  "tutor-settings.personal-info.name": "الاسم بالكامل",
+  "tutor-settings.personal-info.bio": "النبذة المختصرة",
+  "tutor-settings.personal-info.topics": "مجالات الخبرة",
+  "tutor-settings.personal-info.update-topics-error": "عذرًا، حدث خطأ أثناء تحديث مجالات خبرتك، برجاء المحاولة مرة أخرى!",
+  "tutor-settings.personal-info.about": "السيرة الذاتية",
+  "tutor-settings.personal-info.video": "الفيديو التعريفي",
+  "tutor-settings.profile.update.error": "لديك مشكلة في تحديدث بياناتك، الرجاء المحاولة لاحقاً",
+  "tutor-settings.topics.selection-dialog.title": "شارك خبراتك لتجذب الطلاب الذين يشاركونك الشغف!",
+  "tutor-settings.topics.selection-dialog.description": "حدد المجالات التي تبرع فيها أو تهتم بها، مثل الرياضة أو التكنولوجيا أو علم النفس، لنساعدك في تخصيص تجربة تدريسية تناسب اهتمامات طلابك وتزيد من تفاعلهم وحماسهم للتعلم.",
+  "tutor-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المجالات المتاحة!",
+  "tutor-settings.topics.selection-dialog.error": "عذرًا، حدث خطأ أثناء تحميل  المجالات المتاحة، برجاء المحاولة مرة أخرى",
+  "tutor-settings.account-settings.title": "الإعدادات",
+  "tutor-settings.account-settings.password.title": "تغيير كلمة السر",
+  "tutor-settings.account-settings.notifications.title": "الإشعارات",
+  "student-settings.topics.selection-dialog.title": "اخبرنا بالمزيد عن نفسك !",
+  "student-settings.topics.selection-dialog.description": "لنجعل تجربتك التعليمية ممتعة وشخصية! اختر المواضيع التي تود الحديث عنها في جلساتك مع معلمينا، وسنقوم بتوصية معلمين يناسبون اهتماماتك.",
+  "student-settings.add-topics-button.label": "قم بأضافة الموضوعات المفضلة الخاصة بك",
+  "student-settings.topics.selection-dialog.loading": "برجاء الانتظار... جاري تحميل المفضلات!",
+  "student-settings.topics.selection-dialog.loading-error": " عذرًا، حدث خطأ أثناء تحميل المفضلات. برجاء المحاولة مرة أخرى",
+  "student-settings.topics.selection-dialog.update-error": " عذرًا، حدث خطأ أثناء تحديث المفضلات. برجاء المحاولة مرة أخرى",
+  "student-settings.profile.title": "الإعدادات",
+  "student-settings.upload.image.label": "قم برفع صورة جديدة",
+  "student-settings.upload.image.label-sm": "تغيير الصورة",
+  "student-settings.upload.image.desc": "يوصى بصيغة JPG أو PNG وGIF بحجم 480 × 480 بكسل على الأقل.",
+  "student-settings.edit.personal.title": "تعديل الملف الشخصي",
+  "student-settings.edit.personal.name": "الأسم",
+  "student-settings.edit.personal.name.placeholder": "قم بكتابة اسمك",
+  "student-settings.edit.personal.email": "البريد الإلكتروني",
+  "student-settings.edit.personal.email.placeholder": "قم بكتابة البريد الإلكتروني",
+  "student-settings.edit.personal.phone-number": "رقم الهاتف",
+  "student-settings.edit.personal.phone-number.placeholder": "قم بكتابة رقم هاتفك",
+  "student-settings.edit.personal.city": "المدينة",
+  "student-settings.edit.personal.topics.title": "إضافة المفضلات",
+  "student-settings.edit.personal.topics": "قم باختيار المجالات التي تريد التحدث عنها",
+  "student-settings.loading": "برجاء الإنتظار... جاري تحميل الإعدادات!",
+  "student-settings.error": " عذرًا، حدث خطأ أثناء تحميل  الإعدادات، برجاء المحاولة مرة أخرى",
+  "shared-settings.edit.personal.city.placeholder": "من أين أنت",
+  "shared-settings.save": "حفظ التغيرات",
+  "shared-settings.update.error": "لديك مشكلة في تحديث البيانات",
+  "shared-settings.notifications": "الإشعارات",
+  "shared-settings.notifications.lesson-date.title": "إشعارات تاريخ الدرس",
+  "shared-settings.notifications.lesson-date.description": "سيتم اشعارك بميعاد الدرس قبله بيوم و قبله بساعه",
+  "shared-settings.notifications.messages.title": "إشعارات الرسائل",
+  "shared-settings.notifications.messages.description": "سوف يتم اشعارك بجميع الرسائل الواردة",
+  "shared-settings.notifications.coming-soon.title": "قريبا 🎉",
+  "shared-settings.notifications.coming-soon.description": "بإمكانك التحكم في الاشعارات بمجرد ان يتم تفعيل هذه الخاصية.",
+  "shared-settings.edit.password.title": "تغيير كلمة السر",
+  "shared-settings.edit.password.current": "كلمة السر الحالية",
+  "shared-settings.edit.password.new": "كلمة السر الجديدة",
+  "shared-settings.edit.password.confirm": "تاكيد كلمة السر الجديدة",
+  "shared-settings.edit.password.confirm.not-same": "الرقم السري غير متطابق",
+  "verify-email.title": "لم يتم تأكيد حسابك بعد!",
+  "lessons.button.rebook": "إعادة الحجز",
+  "lessons.button.join": "دخول الحصة",
+  "lessons.button.send-message": "إرسال رسالة",
+  "lessons.button.find-tutors": "تصفح المعلمين",
+  "lessons.canceled-by-tutor": "لقد تم إلغاء الحصة من قبل المعلم",
+  "lessons.canceled-by-student": "لقد قام الطالب بإلغاء الحصة",
+  "lessons.canceled-by-you": "لقد قمت بإلغاء الحصة",
+  "lessons.time-to-join": "باقي علي الدرس {value}",
+  "lessons.time-to-end-lesson": "باقي علي انتهاء الدرس {value}",
+  "lessons.time-from-start": "بدأ الدرس منذ {value} دقائق",
+  "lessons.can-join-now": "يمكنك الالتحاق الآن",
+  "lessons.end": "انتهت الحصة",
+  "lessons.menu.edit": "تعديل الموعد",
+  "lessons.menu.cancel": "الغاء الحصة",
+  "lessons.empty": "ليس لديك أي دروس في الوقت الحالي",
+  "lessons.empty.find-tutors": "قم بتصفح المعلمين و اختار المعلم الذي يتناسب مع احتياجاتك و ابدأ رحلتك التعليمية",
+  "upcoming-lessons.title": "الدروس الجارية",
+  "upcoming-lessons.loading-error": "عذرًا، حدث خطأ أثناء تحميل جدول الحصص، برجاء المحاولة مرة أخرى",
+  "upcoming-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس الجارية!",
+  "lesson.title": "الدروس الجارية",
+  "student-dashboard.upcoming-lessons.title": "الحصص القادمة",
+  "student-dashboard.table.date": "التاريخ",
+  "student-dashboard.table.duration": "المدة",
+  "student-dashboard.table.tutor": "المعلم",
+  "student-dashboard.table.rebook": "حجز حصة أخري",
+  "student-dashboard.table.empty": "لا توجد حصص سابقة",
+  "student-dashboard.table.search-tutors": "تصفح المعلمين",
+  "student-dashboard.start-journey": "انطلق الآن وابدأ رحلتك",
+  "student-dashboard.button.show-all-lessons": "عرض جميع الحصص",
+  "student-dashboard.button.find-chats": "عرض جميع المحادثات",
+  "student-dashboard.chat.title": "المحادثات",
+  "student-dashboard.empty-chats": "لا يوجد لديك اي محادثات",
+  "student-dashboard.button.find-tutors": "تصفح المعملين",
+  "student-dashboard.overview.total-lessons": "اجمالي الحصص",
+  "student-dashboard.overview.completed-lessons": "الحصص المكتملة",
+  "student-dashboard.overview.total-learning-time": "وقت التعلم",
+  "student-dashboard.overview.total-learning-time.unit.minute": "{value} د",
+  "student-dashboard.overview.teachers": "عدد المعلمين",
+  "student-dashboard.overview.loading": "برجاء الانتظار... جاري تحميل الاحصائيات العامة!",
+  "student-dashboard.overview.error": "عذرًا، حدث خطأ أثناء تحميل الاحصائيات العامة، برجاء المحاولة مرة أخرى",
+  "student-dashboard.chat-summary.loading": "برجاء الانتظار... جاري تحميل المحادثات!",
+  "student-dashboard.chat-summary.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "student-dashboard.upcoming-lessons-summary.loading": "برجاء الانتظار... جاري تحميل الحصص القادمة!",
+  "student-dashboard.upcoming-lessons-summary.error": "عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "student-dashboard.past-lessons.loading": "برجاء الانتظار... جاري تحميل الدروس السابقة!",
+  "student-dashboard.past-lessons.error": "عذرًا، حدث خطأ أثناء تحميل الدروس السابقة، برجاء المحاولة مرة أخرى",
+  "rating.bad": "سئ",
+  "rating.accepted": "مقبول",
+  "rating.good": "جيد",
+  "rating.very-good": "جيد جدا",
+  "rating.excellent": "ممتاز",
+  "book-lesson.title": "إحجز حصة مع {tutor}",
+  "book-lesson.title.placeholder": "إحجز حصة",
+  "book-lesson.steps.date-selection": "إختر تاريخ الحصة",
+  "book-lesson.steps.duration-selection": "إختر مدة الحصة",
+  "book-lesson.steps.time-selection": "إختر توقيت الحصة",
+  "book-lesson.steps.confirmation": "تاكيد حجز الحصة",
+  "book-lesson.pick-lesson-duration": "قم بتحديد مدة الحصة",
+  "book-lesson.steps.next": "التالي",
+  "book-lesson.steps.prev": "السابق",
+  "book-lesson.confirm": "تاكيد الحجز",
+  "book-lesson.edit": "تعديل الموعد",
+  "book-lesson.loading-slots": "برجاء الانتظار، جاري احضار جدول {tutor}",
+  "book-lesson.empty-slots": "عفواً ! لا يوجد أي أيام متاحة ل{tutor}",
+  "book-lesson.success": "تم حجز الحصة بنجاح مع {tutor}",
+  "book-lesson.error": "حدث خطأ أثناء حجز الحصة، برجاء المحاولة مرة أخرى",
+  "update-lesson.success": "تم تحديث مياعد حصتك مع {tutor} بنجاح",
+  "update-lesson.error": "حدث خطأ أثناء تحديث ميعاد الحصة، برجاء المحاولة مرة أخرى",
+  "cancel-lesson.title": "إلغاء الحصة",
+  "cancel-lesson.description": "هل انت متأكد من انك تريد الغاء الحصة؟ هذا الفعل لا يمكن الرجوع فيه.",
+  "cancel-lesson.confirm-and-cancel": "إلغاء",
+  "cancel-lesson.cancel-and-return": "الرجوع",
+  "cancel-lesson.success": "تم إلغاء الحصة بنجاح",
+  "cancel-lesson.error": "حدث خطأ أثناء إلغاء الحصة، برجاء المحاولة مرة أخرى",
+  "plans.title": "خطط الأشتراك",
+  "plans.message.title": "استمتع بخطط سعرية تناسب احتياجاتك لجعل تعلمك أكثر فعالية",
+  "plans.message.description": "نوفر لك خططًا مرنة مصممة لتلبية احتياجاتك المختلفة، مما يساعدك على تحقيق أهدافك في تعلم اللغة الإنجليزية بسهولة وثقة.",
+  "plans.labels.monthly": "شهري",
+  "plans.labels.quarter": "3 شهور",
+  "plans.labels.half": "6 شهور",
+  "plans.labels.annual": "سنوي",
+  "plans.installments.three-month": "قسط علي 3 شهور",
+  "plans.installments.six-month": "قسط علي 6 شهور",
+  "plans.subscribe.soon.title": "قريبا 🎉",
+  "plans.subscribe.soon.description": "بإمكانك التسجيل في الخطط بمجرد ان يتم تفعيل هذه الخاصية.",
+  "plans.titles.beginning": "البداية",
+  "plans.titles.advanced": "التقدم",
+  "plans.titles.professional": "الاحتراف",
+  "plans.descriptions.beginning": "ابدأ تعلم الإنجليزية بخطوة ثابتة مع {value} دقيقة أسبوعيًا، وطور مهاراتك بشكل مرن مع معلم متخصص.",
+  "plans.descriptions.advanced": "تعلم بسرعة أكبر مع {value} دقيقة أسبوعيًا، وزد من تقدمك في وقت أقل.",
+  "plans.descriptions.professional": "استمتع بتعلم مكثف مع {value} دقيقة أسبوعيًا، وحقق تقدمًا سريعًا في مهاراتك اللغوية.",
+  "plan.button.buy": "شراء الخطة",
+  "plan.weekly-minutes": "{value} دقيقة/أسبوع",
+  "plan.discount": "{value} % خصم لفترة محدودة",
+  "plan.instead-of": "بدلا من",
+  "plan.price": "{value} جنية مصري",
+  "plan.price-before-discount": "{value} جم",
+  "plan.label.most-common": "الأكثر شهرة",
+  "plan.label.most-valuable": "الأفضل قيمة",
+  "navbar.subscribe-now": "اشترك الان",
+  "navbar.personal-quota": "الباقة الشخصية",
+  "navbar.quota-consumption": "تم استهلاك {value}",
+  "navbar.rest-of-quota": "متبقي {value}",
+  "navbar.logout": "تسجيل خروج",
+  "sidebar.main": "الرئيسية",
+  "sidebar.dashboard": "لوحة التحكم",
+  "sidebar.upcoming-lessons": "الدروس الجارية",
+  "sidebar.tutors": "كل المعلمين",
+  "sidebar.lessons": "الحصص",
+  "sidebar.lessons-schedule": "جدول الدروس",
+  "sidebar.schedule-management": "إدارة الجداول",
+  "sidebar.chat": "المحادثاث",
+  "sidebar.subscriptions": "الإشتراكات",
+  "sidebar.settings": "الإعدادات",
+  "sidebar.logout": "تسجيل خروج",
+  "sidebar.profile": "الملف الشخصي",
+  "sidebar.account-promotion.title": "ترقية الحساب",
+  "sidebar.account-promotion.description": "استمتع بتجربة أوسع وساعات تعليمية أكثر."
+}
