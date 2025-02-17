@@ -8,7 +8,7 @@ import { InView } from "react-intersection-observer";
 import MoreTutorsSoon from "@litespace/assets/MoreTutorsSoon";
 import Notification2 from "@litespace/assets/Notification2";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
@@ -27,7 +27,7 @@ const Content: React.FC<{
   more: Void;
   refetch: Void;
 }> = ({ tutors, loading, error, more, hasMore, fetching, refetch }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const [tutor, setTutor] = useState<Tutor | null>(null);
   const mq = useMediaQuery();

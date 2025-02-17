@@ -6,18 +6,18 @@ import { AnimatePresence, motion } from "framer-motion";
 import CurvedDashedLine from "@litespace/assets/CurvedDashedLine";
 import cn from "classnames";
 import { useToast } from "@litespace/ui/Toast";
-import { LocalId } from "@litespace/ui/locales";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { PlansDataProps, Tab } from "@/components/Plans/types";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { LocalWebId } from "@/lib/intl";
 
-const PLANS_TITLE_ID_MAP: { [key: number]: LocalId } = {
+const PLANS_TITLE_ID_MAP: { [key: number]: LocalWebId } = {
   1: "plans.titles.beginning",
   2: "plans.titles.advanced",
   3: "plans.titles.professional",
 };
 
-const PLANS_DESC_ID_MAP: { [key: number]: LocalId } = {
+const PLANS_DESC_ID_MAP: { [key: number]: LocalWebId } = {
   1: "plans.descriptions.beginning",
   2: "plans.descriptions.advanced",
   3: "plans.descriptions.professional",
@@ -27,10 +27,10 @@ const Content: React.FC<{
   plans: PlansDataProps;
 }> = ({ plans }) => {
   const { md, lg, xl } = useMediaQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const [tab, setTab] = useState<Tab>("annual");
-  const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
+  const tabs = useMemo((): Array<{ value: Tab; label: LocalWebId }> => {
     return [
       {
         value: "monthly",

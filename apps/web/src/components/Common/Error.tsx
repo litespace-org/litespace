@@ -1,5 +1,5 @@
 import { Alert } from "@litespace/ui/Alert";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Void } from "@litespace/types";
 import React from "react";
 
@@ -8,7 +8,7 @@ const Error: React.FC<{ title: string; error: Error; refetch: Void }> = ({
   error,
   refetch,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   return (
     <Alert

@@ -1,5 +1,5 @@
 import { Alert, AlertType } from "@litespace/ui/Alert";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React from "react";
 
 const Error: React.FC<{
@@ -7,7 +7,7 @@ const Error: React.FC<{
   disabled: boolean;
   loading: boolean;
 }> = ({ refetch, loading, disabled }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <Alert
       type={AlertType.Error}

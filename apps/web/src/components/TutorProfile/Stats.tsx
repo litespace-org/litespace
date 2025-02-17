@@ -1,17 +1,17 @@
 import { formatNumber } from "@litespace/ui/utils";
 import { Card } from "@litespace/ui/Card";
 import { Loading } from "@litespace/ui/Loading";
-import { LocalId } from "@litespace/ui/locales";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { LocalWebId } from "@/lib/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { ITutor } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React, { useMemo } from "react";
 import humanize from "humanize-duration";
 
-type StatProps = { id: LocalId; value: React.ReactNode };
+type StatProps = { id: LocalWebId; value: React.ReactNode };
 
 const Stat: React.FC<StatProps> = ({ id, value }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <Card className="w-full h-full">
       <h3 className="mb-1 text-xl font-semibold text-foreground-light">

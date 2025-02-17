@@ -4,7 +4,7 @@ import cn from "classnames";
 import { isEqual } from "lodash";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
 import TopicSelection from "@/components/StudentSettings/TopicSelection";
-import { governorates } from "@/constants/user";
+import { governorates } from "@litespace/ui/governorate";
 import NotificationSettings from "@/components/Common/NotificationSettings";
 import { IUser } from "@litespace/types";
 import {
@@ -15,7 +15,7 @@ import { Controller, Form } from "@litespace/ui/Form";
 import { Typography } from "@litespace/ui/Typography";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import {
   useRequired,
   useValidateEmail,
@@ -59,7 +59,7 @@ export const ProfileForm: React.FC<{
 }> = ({ user, className }) => {
   const mq = useMediaQuery();
 
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
 
   const form = useForm<IForm>({
@@ -332,7 +332,7 @@ const SaveButton: React.FC<{
   disabled: boolean;
   loading: boolean;
 }> = ({ disabled, loading }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <Button
       disabled={disabled}

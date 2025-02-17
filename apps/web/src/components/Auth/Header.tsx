@@ -1,12 +1,12 @@
 import React from "react";
 import Logo from "@litespace/assets/Logo";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Link } from "react-router-dom";
 import ArrowLeft from "@litespace/assets/ArrowLeft";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 const Header: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <div className="flex flex-row justify-between items-center w-full">
       <div className="flex flex-row gap-2 items-center justify-center">

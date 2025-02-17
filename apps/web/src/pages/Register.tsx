@@ -2,12 +2,12 @@ import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
 import Logo from "@litespace/assets/Logo";
 import RegisterForm from "@/components/Auth/RegisterForm";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 const Register: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
 
   return (

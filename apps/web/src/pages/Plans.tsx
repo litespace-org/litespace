@@ -2,10 +2,10 @@ import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/Plans/Content";
 import { data } from "@/components/Plans/data.json";
 import { PlansDataProps } from "@/components/Plans/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 export const Plans: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   return (
     <div className="w-full p-4 md:p-6 mx-auto max-w-screen-3xl">

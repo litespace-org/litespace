@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import { orUndefined } from "@litespace/utils/utils";
@@ -10,7 +10,7 @@ const ProfileInfo: React.FC<{
   topics: string[];
   video: string | null;
 }> = ({ about, topics, video }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 py-4 md:py-8 gap-4 md:gap-[88px] md:px-10">
       <div>

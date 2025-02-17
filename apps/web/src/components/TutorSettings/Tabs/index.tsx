@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import * as Tabs from "@radix-ui/react-tabs";
 import { Typography } from "@litespace/ui/Typography";
-import { LocalId } from "@litespace/ui/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import { Animate } from "@/components/Common/Animate";
@@ -11,6 +10,7 @@ import { ITutorSettingsForm } from "@/components/TutorSettings/types";
 import PersonalSettings from "@/components/TutorSettings/Tabs/Personal";
 import PublicSettings from "@/components/TutorSettings/Tabs/Public";
 import { useSearchParams } from "react-router-dom";
+import { LocalWebId } from "@/lib/intl";
 
 type Tab = "profile" | "settings";
 const URL_TAB_KEY = "tab";
@@ -23,7 +23,7 @@ export const TutorSettingsTabs: React.FC<{
   form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
   video: string | null;
 }> = ({ video, form }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const [params, setParams] = useSearchParams();
 
   const tab = useMemo((): Tab => {
@@ -32,7 +32,7 @@ export const TutorSettingsTabs: React.FC<{
     return tab;
   }, [params]);
 
-  const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
+  const tabs = useMemo((): Array<{ value: Tab; label: LocalWebId }> => {
     return [
       {
         value: "profile",

@@ -2,7 +2,7 @@ import { Button } from "@litespace/ui/Button";
 import { Form, Controller } from "@litespace/ui/Form";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -23,7 +23,7 @@ const origin = location.origin;
 const callbackUrl = origin.concat(Web.ResetPassword);
 
 const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
 
   const { control, watch, formState, handleSubmit, reset } = useForm<IForm>({

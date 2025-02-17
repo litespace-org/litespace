@@ -16,7 +16,7 @@ const Room: React.FC<{
   active: boolean;
   select: Void;
 }> = ({ members, active, select }) => {
-  // const intl = useFormatMessage(); TODO: uncomment this when online status is implemented
+  //   const intl = useWebFormatMessage(); TODO: uncomment this when online status is implemented
   const member = useMemo(() => first(members), [members]);
   const status = useMemo(() => {
     if (!member) return Status.InActive;

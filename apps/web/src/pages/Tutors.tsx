@@ -1,11 +1,11 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/Tutors/Content";
 import { useTutors } from "@litespace/headless/tutor";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React from "react";
 
 const Tutors: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const tutors = useTutors();
 
   return (

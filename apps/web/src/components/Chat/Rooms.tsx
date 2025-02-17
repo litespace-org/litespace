@@ -7,22 +7,22 @@ import {
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
 import { IMessage, IRoom, ITutor, Void } from "@litespace/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import AllMessages from "@litespace/assets/AllMessages";
 import Pin from "@litespace/assets/Pin";
 import { useUserContext } from "@litespace/headless/context/user";
 import { isOnline, isTyping } from "@/lib/room";
 import { RoomsMap } from "@litespace/headless/chat";
 import React, { useCallback, useMemo } from "react";
-import { LocalId } from "@litespace/ui/locales";
 import People from "@litespace/assets/People";
 import { orUndefined } from "@litespace/utils/utils";
 import dayjs from "@/lib/dayjs";
 import { InView } from "react-intersection-observer";
+import { LocalWebId } from "@/lib/intl";
 
 type RoomsData = {
   icon: React.ReactNode;
-  label: LocalId;
+  label: LocalWebId;
 };
 
 const Rooms: React.FC<{
@@ -58,7 +58,7 @@ const Rooms: React.FC<{
   more,
   canLoadMore,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user } = useUserContext();
 
   const { icon, label }: RoomsData = useMemo(() => {

@@ -3,7 +3,7 @@ import { ILesson, Void } from "@litespace/types";
 import { useCreateLesson, useUpdateLesson } from "@litespace/headless/lessons";
 import { useMemo, useCallback } from "react";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { QueryKey } from "@litespace/headless/constants";
 import { useFindAvailabilitySlots } from "@litespace/headless/availabilitySlots";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
@@ -39,7 +39,7 @@ type Props = Base & ManageLessonPayload;
  */
 const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const invalidate = useInvalidateQuery();
 
   const availabilitySlotsQuery = useMemo(

@@ -1,11 +1,11 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { TutorOverview as Overview } from "@litespace/ui/TutorOverview";
 import { Typography } from "@litespace/ui/Typography";
 import { useFindPersonalizedTutorStats } from "@litespace/headless/tutor";
 import React from "react";
 
 export const TutorOverview: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const statsQuery = useFindPersonalizedTutorStats();
 
   return (

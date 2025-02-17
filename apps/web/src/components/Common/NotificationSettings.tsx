@@ -1,11 +1,11 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { FullSwitch } from "@litespace/ui/Switch";
 import { useToast } from "@litespace/ui/Toast";
 import { Typography } from "@litespace/ui/Typography";
 import { useCallback } from "react";
 
 const NotificationSettings = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
 
   const notifyComingSoon = useCallback(() => {

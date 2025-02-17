@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { PastLessonsSummary, PastLessonsTable } from "@litespace/ui/Lessons";
 import { Typography } from "@litespace/ui/Typography";
 import { ILesson, IUser } from "@litespace/types";
@@ -49,7 +49,7 @@ function asLessons(
 }
 
 export const PastLessons: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
   const [tutor, setTutor] = useState<number | null>(null);
 

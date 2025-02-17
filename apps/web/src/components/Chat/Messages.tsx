@@ -22,7 +22,6 @@ import {
   useMessages,
 } from "@litespace/headless/chat";
 import { asMessageGroups } from "@litespace/ui/chat";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import NoSelection from "@/components/Chat/NoSelection";
 import dayjs from "dayjs";
@@ -40,6 +39,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 type RetryFnMap = Record<
   "send" | "update" | "delete",
@@ -84,7 +84,7 @@ const Messages: React.FC<{
   inSession,
 }) => {
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] = useState<{
