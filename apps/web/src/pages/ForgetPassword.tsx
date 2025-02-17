@@ -14,6 +14,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 type FormData = {
   email: string;
@@ -57,6 +58,7 @@ const ForgetPassword: React.FC = () => {
       reset();
     },
     onError(error) {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("forget-password.error"),

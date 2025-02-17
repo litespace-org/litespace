@@ -1,3 +1,4 @@
+import { capture } from "@/lib/sentry";
 import { Route } from "@/types/routes";
 import {
   useFindRoomByMembers,
@@ -42,6 +43,7 @@ export function useRoomManager(isStudent: boolean) {
       allRooms.query.refetch();
     },
     onError(error) {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("chat.update-settings.error"),

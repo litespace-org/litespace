@@ -21,6 +21,7 @@ import { useGoogle } from "@/hooks/google";
 import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 interface IForm {
   email: string;
@@ -73,6 +74,7 @@ const Register: React.FC = () => {
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("register.error"),

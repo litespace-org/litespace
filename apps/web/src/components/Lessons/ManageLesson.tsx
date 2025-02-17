@@ -11,6 +11,7 @@ import { orNull } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import dayjs from "@/lib/dayjs";
 import { useInvalidateQuery } from "@litespace/headless/query";
+import { capture } from "@/lib/sentry";
 
 type Base = {
   close: Void;
@@ -69,6 +70,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
 
   const onCreateError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("book-lesson.error"),
@@ -98,6 +100,7 @@ const ManageLesson = ({ close, tutorId, ...payload }: Props) => {
 
   const onUpdateError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("update-lesson.error"),

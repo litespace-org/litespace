@@ -19,6 +19,7 @@ import { Controller, Form } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { getNullableFiledUpdatedValue } from "@litespace/utils";
+import { capture } from "@/lib/sentry";
 
 type IForm = {
   name: string;
@@ -63,6 +64,7 @@ const CompleteProfile: React.FC = () => {
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("complete-profile.update.error"),

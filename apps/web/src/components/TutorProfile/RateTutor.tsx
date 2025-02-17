@@ -11,6 +11,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 export const RateTutor: React.FC<{
   tutorName: string;
@@ -25,6 +26,7 @@ export const RateTutor: React.FC<{
 
   const onRateError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rate.error"),

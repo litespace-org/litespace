@@ -16,6 +16,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { capture } from "@/lib/sentry";
 
 type RateDialogInfo = {
   tutorId: number | null;
@@ -58,7 +59,8 @@ const UpcomingLessons: React.FC = () => {
 
   const rateTutor = useCreateRatingTutor({
     onSuccess: () => setRateDialogInfo(defaultRateDialogInfo),
-    onError: (error) => {
+    onError: (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rate.error"),

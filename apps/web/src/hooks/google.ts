@@ -8,6 +8,7 @@ import { IUser } from "@litespace/types";
 import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { capture } from "@/lib/sentry";
 
 function isPopupClosedError(error: unknown) {
   return (
@@ -47,6 +48,7 @@ export function useGoogle({
 
   const onError = useCallback(
     (error?: unknown) => {
+      capture(error);
       console.error(error);
       setLoading(false);
       if (!isPopupClosedError(error))

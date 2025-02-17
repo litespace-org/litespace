@@ -28,6 +28,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 type IForm = {
   name: string;
@@ -101,6 +102,7 @@ export const ProfileForm: React.FC<{
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("shared-settings.update.error"),

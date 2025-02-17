@@ -18,6 +18,8 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
+import { capture } from "@/lib/sentry";
+import { getErrorMessageId } from "@litespace/ui/errorMessage";
 
 const Topics: React.FC<{
   edit: Void;
@@ -101,11 +103,16 @@ const PublicSettings: React.FC<{
     setShowTopoicsDialog(false);
   }, [invalidateQuery]);
 
-  const onTopicChangeError = useCallback(() => {
-    toast.error({
-      title: intl("tutor-settings.personal-info.update-topics-error"),
-    });
-  }, [intl, toast]);
+  const onTopicChangeError = useCallback(
+    (error: unknown) => {
+      capture(error);
+      toast.error({
+        title: intl("tutor-settings.personal-info.update-topics-error"),
+        description: intl(getErrorMessageId(error)),
+      });
+    },
+    [intl, toast]
+  );
 
   const updateTopics = useUpdateUserTopics({
     onSuccess: onTopicChangeSuccess,

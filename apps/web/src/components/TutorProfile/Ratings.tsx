@@ -23,6 +23,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { RateTutor } from "@/components/TutorProfile/RateTutor";
 import cn from "classnames";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { capture } from "@/lib/sentry";
 
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
@@ -70,6 +71,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
 
   const onDeleteError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("tutor.rating.delete.error"),

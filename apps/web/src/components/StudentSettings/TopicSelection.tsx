@@ -14,6 +14,7 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useToast } from "@litespace/ui/Toast";
 import { useUpdateUserTopics } from "@litespace/headless/user";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { capture } from "@/lib/sentry";
 
 const TopicSelection: React.FC = () => {
   const intl = useFormatMessage();
@@ -43,6 +44,7 @@ const TopicSelection: React.FC = () => {
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       toast.error({
         title: intl("student-settings.topics.selection-dialog.update-error"),
         description: intl(getErrorMessageId(error)),

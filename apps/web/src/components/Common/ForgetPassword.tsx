@@ -9,6 +9,7 @@ import { useForm } from "react-hook-form";
 import { useForgetPassword } from "@litespace/headless/auth";
 import { Route } from "@/types/routes";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { capture } from "@/lib/sentry";
 
 type ForgetPasswordProps = {
   open: boolean;
@@ -43,6 +44,7 @@ const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("forget-password.error"),
