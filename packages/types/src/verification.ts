@@ -62,4 +62,11 @@ export enum FieldError {
   InvalidBankName = "invalid-bank-name",
   ShortTopicName = "short-topic-name",
   LongTopicName = "long-topic-name",
+  ShortContactRequestTitle = "short-contact-request-title",
+  LongContactRequestTitle = "long-contact-request-title",
+  ShortContactRequestMessage = "short-contact-request-message",
+  LongContactRequestMessage = "long-contact-request-message",
+  InvalidName = "invalid-name",
+  ShortName = "short-name",
+  LongName = "long-name",
 }

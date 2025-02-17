@@ -53,6 +53,13 @@ export const TOPIC_ENGLISH_NAME_REGEX = /[a-zA-Z\s]{3,50}/;
 export const MIN_TOPIC_LEGNTH = 3;
 export const MAX_TOPIC_LEGNTH = 50;
 export const MAX_TOPICS_COUNT = 30;
+export const MIN_CONTACT_REQUEST_TITLE_LENGTH = 5;
+export const MAX_CONTACT_REQUEST_TITLE_LENGTH = 128;
+export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
+export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
+export const MIN_NAME_LENGTH = 3;
+export const MAX_NAME_LENGTH = 50;
+export const ALPHABETIC = /^[A-Za-z\s]+$/;
 
 /**
  * Interview duration in minutes.
