@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Loading } from "@litespace/ui/Loading";
 import { IInvoice, Void } from "@litespace/types";
 import React, { useMemo } from "react";
@@ -12,7 +12,7 @@ const StatsContent: React.FC<{
   data?: IInvoice.StatsApiResponse | null;
   refetch: Void;
 }> = ({ loading, error, data, refetch }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   const labels = useMemo((): TableLablesRow[] => {
     if (!data) return [];

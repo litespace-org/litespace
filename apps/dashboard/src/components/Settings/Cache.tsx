@@ -1,14 +1,14 @@
 import { useFlushCache } from "@litespace/headless/cache";
 import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import React, { useCallback, useState } from "react";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 
 const Cache: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [open, setOpen] = useState(false);
   const toast = useToast();
 

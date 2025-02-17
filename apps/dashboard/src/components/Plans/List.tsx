@@ -7,7 +7,7 @@ import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { formatMinutes } from "@litespace/ui/utils";
 import { Loading } from "@litespace/ui/Loading";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 
 import { IPlan, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
@@ -20,7 +20,7 @@ const List: React.FC<{
   query: UseQueryResult<IPlan.MappedAttributes[], Error>;
   refresh: Void;
 }> = ({ query, refresh }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [plan, setPlan] = useState<IPlan.MappedAttributes | null>(null);
   const close = useCallback(() => setPlan(null), []);
   const toast = useToast();

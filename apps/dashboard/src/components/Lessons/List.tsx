@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { createColumnHelper } from "@tanstack/react-table";
 import { ILesson, Void } from "@litespace/types";
 import { Table } from "@/components/common/Table";
@@ -21,7 +21,7 @@ const List: React.FC<{
   page: number;
   totalPages: number;
 }> = ({ query, next, prev, goto, page, totalPages }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   const columnHelper =
     createColumnHelper<ILesson.FindUserLessonsApiResponse["list"][number]>();

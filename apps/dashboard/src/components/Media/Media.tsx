@@ -3,7 +3,7 @@ import { MediaType } from "@/components/Media/types";
 import { Avatar } from "@litespace/ui/Avatar";
 import { Button } from "@litespace/ui/Button";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Upload, X } from "react-feather";
 import cn from "classnames";
 
@@ -25,7 +25,7 @@ const useMediaUrl = (media: Viewer["media"]) => {
 };
 
 const Empty: React.FC<{ type: MediaType }> = ({ type }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   return (
     <div className="flex items-center justify-center w-full h-full">
       <p>

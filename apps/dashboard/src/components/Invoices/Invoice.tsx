@@ -1,8 +1,7 @@
 import { Card } from "@litespace/ui/Card";
-import { LocalId } from "@litespace/ui/locales";
 import { useInvoiceStatus } from "@litespace/ui/hooks/invoice";
 import { useWithdrawMethod } from "@litespace/ui/hooks/withdraw";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import * as Invoices from "@litespace/ui/Invoices";
 import { MenuAction } from "@litespace/ui/ActionsMenu";
 import { IInvoice } from "@litespace/types";
@@ -14,7 +13,7 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
   invoice,
   onUpdate,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const { bank, instapay, wallet } = useWithdrawMethod(invoice.method);
   const {
     pending,
@@ -27,19 +26,23 @@ const Invoice: React.FC<{ invoice: IInvoice.Self; onUpdate?: () => void }> = ({
   const [action, setAction] = useState<Action | null>(null);
   const reset = useCallback(() => setAction(null), []);
 
-  const ids = useMemo((): Array<LocalId> => {
-    const ids: LocalId[] = ["invoices.id", "invoices.owner", "invoices.method"];
-    if (bank) ids.push("invoices.account");
-    if (instapay) ids.push("invoices.username");
-    if (wallet) ids.push("invoices.phone");
-    if (bank) ids.push("invoices.bank");
+  const ids = useMemo((): Array<string> => {
+    const ids: string[] = [
+      intl("invoices.id"),
+      intl("invoices.owner"),
+      intl("invoices.method"),
+    ];
+    if (bank) ids.push(intl("invoices.account"));
+    if (instapay) ids.push(intl("invoices.username"));
+    if (wallet) ids.push(intl("invoices.phone"));
+    if (bank) ids.push(intl("invoices.bank"));
     ids.push(
-      "invoices.amount",
-      "invoices.date.created",
-      "invoices.date.updated"
+      intl("invoices.amount"),
+      intl("invoices.date.created"),
+      intl("invoices.date.updated")
     );
     return ids;
-  }, [bank, instapay, wallet]);
+  }, [bank, instapay, wallet, intl]);
 
   const values = useMemo(() => {
     const values: Invoices.Value[] = [

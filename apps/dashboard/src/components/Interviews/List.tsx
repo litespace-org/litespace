@@ -2,7 +2,7 @@ import Error from "@/components/common/Error";
 import { Table } from "@/components/common/Table";
 import UserPopover from "@/components/common/UserPopover";
 import { Loading } from "@litespace/ui/Loading";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Element, IInterview, IUser, Void } from "@litespace/types";
 import { createColumnHelper } from "@tanstack/react-table";
 import { dayjs } from "@/lib/dayjs";
@@ -29,7 +29,7 @@ const List: React.FC<{
   page: number;
   refresh: Void;
 }> = ({ query, ...props }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
   const { user } = useUserContext();
   const [interview, setInterview] = useState<IndividualInterview | null>(null);
@@ -47,7 +47,7 @@ const List: React.FC<{
 
   const onSuccess = useCallback(() => {
     toast.success({
-      title: intl("dashboard.interview.actions.sign.fullfilled"),
+      title: intl("dashboard.interview.actions.sign.success"),
     });
     reset();
     query.query.refetch();
@@ -55,7 +55,7 @@ const List: React.FC<{
 
   const onError = useCallback(() => {
     toast.error({
-      title: intl("dashboard.interview.actions.sign.rejected"),
+      title: intl("dashboard.interview.actions.sign.error"),
     });
   }, [toast, intl]);
 

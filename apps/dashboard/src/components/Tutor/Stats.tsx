@@ -1,6 +1,6 @@
 import PageTitle from "@/components/common/PageTitle";
 import StatsContent from "@/components/Tutor/StatsContent";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { IInvoice } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React from "react";
@@ -8,7 +8,7 @@ import React from "react";
 const Stats: React.FC<{
   stats: UseQueryResult<IInvoice.StatsApiResponse | null>;
 }> = ({ stats }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   return (
     <>

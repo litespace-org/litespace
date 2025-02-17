@@ -1,7 +1,7 @@
-import { LocalId } from "@litespace/ui/locales";
 import { IUser } from "@litespace/types";
+import { LocalDashId } from "@/lib/intl";
 
-export const rolesMap: Record<IUser.Role, LocalId> = {
+export const rolesMap: Record<IUser.Role, LocalDashId> = {
   [IUser.Role.SuperAdmin]: "global.role.super-admin",
   [IUser.Role.RegularAdmin]: "global.role.regular-admin",
   [IUser.Role.Studio]: "global.role.studio",

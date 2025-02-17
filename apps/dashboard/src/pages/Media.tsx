@@ -4,13 +4,13 @@ import { Button } from "@litespace/ui/Button";
 import { Loading } from "@litespace/ui/Loading";
 import { Spinner } from "@litespace/ui/Spinner";
 import { usePaginationQuery } from "@litespace/ui/hooks/common";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 
 const Media: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const atlas = useAtlas();
   const findTutors = useCallback(
     async ({ pageParam }: { pageParam: number }) => {

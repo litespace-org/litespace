@@ -4,13 +4,13 @@ import { Loading } from "@litespace/ui/Loading";
 import React from "react";
 import { AlertCircle, User } from "react-feather";
 import { rolesMap } from "../utils/user";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Link } from "react-router-dom";
 import { router } from "@/lib/route";
 import { Dashboard } from "@litespace/utils/routes";
 
 const UserPopover: React.FC<{ id: number }> = ({ id }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const user = useFindUserById(id);
 
   return (

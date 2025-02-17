@@ -3,13 +3,13 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Plans/List";
 import PlanForm from "@/components/Plans/PlanForm";
 import { usePlans } from "@litespace/headless/plans";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useRender } from "@litespace/ui/hooks/common";
 import cn from "classnames";
 
 export const Plans: React.FC = () => {
   const form = useRender();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const plans = usePlans();
 
   return (

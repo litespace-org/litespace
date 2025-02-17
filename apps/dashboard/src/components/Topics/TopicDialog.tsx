@@ -2,7 +2,7 @@ import { useCreateTopic, useUpdateTopic } from "@litespace/headless/topic";
 import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/ui/Form";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { ITopic, Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
@@ -20,7 +20,7 @@ const TopicDialog: React.FC<{
   onUpdate?: Void;
 }> = ({ open, close, onUpdate, topic }) => {
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const form = useForm<IForm>({
     defaultValues: {
       arabicName: topic?.name.ar || "",
@@ -65,7 +65,7 @@ const TopicDialog: React.FC<{
   const onEditError = useCallback(
     (error: Error) => {
       toast.error({
-        title: intl("dashboard.topics.edit.success"),
+        title: intl("dashboard.topics.edit.error"),
         description: error.message,
       });
     },

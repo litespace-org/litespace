@@ -1,7 +1,7 @@
-import { LocalId } from "@litespace/ui/locales";
 import { IInterview } from "@litespace/types";
+import { LocalDashId } from "@/lib/intl";
 
-export const interviewStatusMap: Record<IInterview.Status, LocalId> = {
+export const interviewStatusMap: Record<IInterview.Status, LocalDashId> = {
   [IInterview.Status.Pending]: "dashboard.interview.status.pending",
   [IInterview.Status.Passed]: "dashboard.interview.status.passed",
   [IInterview.Status.Rejected]: "dashboard.interview.status.rejected",

@@ -4,13 +4,13 @@ import Error from "@/components/common/Error";
 import PageTitle from "@/components/common/PageTitle";
 import { useFindLessons } from "@litespace/headless/lessons";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { ILesson } from "@litespace/types";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { useMemo, useState } from "react";
 
 const Content: React.FC<{ user?: number }> = ({ user }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [ratified, setRatified] = useState<boolean>(true);
   const [canceled, setCanceled] = useState<boolean>(true);
   const [future, setFuture] = useState<boolean>(true);

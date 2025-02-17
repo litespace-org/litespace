@@ -1,7 +1,7 @@
 import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/common/Table";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { formatCurrency } from "@litespace/ui/utils";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { createColumnHelper } from "@tanstack/react-table";
@@ -27,7 +27,7 @@ const List: React.FC<{
   page: number;
   totalPages: number;
 }> = ({ data, query, next, prev, goto, page, totalPages }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const columnHelper = createColumnHelper<IInvoice.Self>();
   const [action, setAction] = useState<Action | null>(null);
   const [invoice, setInvoice] = useState<IInvoice.Self | null>(null);
