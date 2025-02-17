@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { IUser } from "@litespace/types";
 import { Route } from "@/lib/route";
@@ -25,7 +25,7 @@ const Root: React.FC = () => {
   const { user } = useUserContext();
   const navigate = useNavigate();
   const location = useLocation();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   useAuthRoutes();
 
@@ -74,7 +74,7 @@ const Root: React.FC = () => {
           show: role?.admin,
         },
         {
-          label: intl("dashboard.topics.title"),
+          label: intl("dashboard.sidebar.topics.title"),
           route: Route.Topics,
           icon: List,
           show: role?.admin,

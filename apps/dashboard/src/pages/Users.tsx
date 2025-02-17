@@ -3,7 +3,7 @@ import List from "@/components/Users/List";
 import UserForm from "@/components/Users/UserForm";
 import { useUsers } from "@litespace/headless/users";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import React, { useCallback, useMemo, useState } from "react";
 import cn from "classnames";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
@@ -12,7 +12,7 @@ import { rolesMap } from "@/components/utils/user";
 import { orUndefined } from "@litespace/utils/utils";
 
 export const Users: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [role, setRole] = useState<IUser.Role | null>(null);
   const [gender, setGender] = useState<IUser.Gender | null>(null);
   const [verified, setVerified] = useState<boolean | null>(null);

@@ -1,5 +1,5 @@
 import { Controller, Label } from "@litespace/ui/Form";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useMemo } from "react";
 import { UseFormReturn } from "react-hook-form";
@@ -9,13 +9,13 @@ import {
   useValidatePassword,
   useValidatePhoneNumber,
 } from "@litespace/ui/hooks/validation";
-import { governorates } from "@/constants/user";
 import NotificationSettings from "@/components/Common/NotificationSettings";
+import { governorates } from "@litespace/ui/governorate";
 
 const PersonalSettings: React.FC<{
   form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
 }> = ({ form }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const validatePassword = useValidatePassword();
   const validatePhoneNumber = useValidatePhoneNumber();
   const errors = form.formState.errors;

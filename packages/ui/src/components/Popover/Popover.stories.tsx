@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { Popover } from "@/components/Popover";
 import { DarkStoryWrapper } from "@/internal/DarkWrapper";
 import { Button } from "@/components/Button";
-import ar from "@/locales/ar-eg.json";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof Popover;
 
@@ -15,12 +15,8 @@ const meta: Meta<Component> = {
 
 export const Primary: StoryObj<Component> = {
   args: {
-    children: <Button>{ar["global.labels.go"]}</Button>,
-    content: (
-      <p className="tw-w-full">
-        {ar["page.tutor.onboarding.book.interview.success.title"]}
-      </p>
-    ),
+    children: <Button>{faker.lorem.words(1)}</Button>,
+    content: <p className="tw-w-full">{faker.lorem.words(3)}</p>,
   },
 };
 

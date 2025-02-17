@@ -12,7 +12,7 @@ import { Loading } from "@litespace/ui/Loading";
 import { ITutor, IUser, Void } from "@litespace/types";
 import { PersonIcon, CheckCircledIcon } from "@radix-ui/react-icons";
 import { rolesMap } from "@/components/utils/user";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 
 const Content: React.FC<{
   user?: IUser.Self;
@@ -22,7 +22,7 @@ const Content: React.FC<{
   error: Error | null;
   refetch: Void;
 }> = ({ user, tutor, tutorStats, loading, error, refetch }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   // TODO: use a hook to get the online status form the server cache
   const [onlineStatus] = useState(false);
 

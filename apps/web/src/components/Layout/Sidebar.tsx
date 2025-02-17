@@ -15,7 +15,7 @@ import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import cn from "classnames";
 import React, { SVGProps, useCallback, useEffect, useMemo } from "react";
@@ -83,7 +83,7 @@ const Sidebar: React.FC<{
   hide: Void;
 }> = ({ hide }) => {
   const { md, lg } = useMediaQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const location = useLocation();
   const navigate = useNavigate();
   const { user, logout } = useUserContext();
@@ -194,7 +194,7 @@ const Sidebar: React.FC<{
           weight="bold"
           className="inline-block text-brand-500"
         >
-          {intl("labels.litespace")}
+          LiteSpace
         </Typography>
       </Link>
 

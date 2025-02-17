@@ -8,7 +8,7 @@ import {
   useFindTutorRatings,
 } from "@litespace/headless/rating";
 import { getRateLessonQuery } from "@/lib/query";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -32,7 +32,7 @@ const defaultRateDialogInfo: RateDialogInfo = {
 };
 
 const UpcomingLessons: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const navigate = useNavigate();
   const { user } = useUserContext();
   const toast = useToast();

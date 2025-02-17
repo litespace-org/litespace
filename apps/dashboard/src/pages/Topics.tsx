@@ -1,5 +1,5 @@
 import PageTitle from "@/components/common/PageTitle";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useTopics } from "@litespace/headless/topic";
 import List from "@/components/Topics/List";
 import { Button } from "@litespace/ui/Button";
@@ -13,7 +13,7 @@ import { orUndefined } from "@litespace/utils/utils";
 import { Select } from "@litespace/ui/Select";
 
 const Topics = () => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const addNewTopic = useRender();
 
   const [name, setName] = useState<string>("");

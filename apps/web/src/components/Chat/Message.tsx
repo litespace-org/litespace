@@ -1,7 +1,7 @@
 import { RawHtml } from "@litespace/ui/RawHtml";
 import { MenuAction, ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { useRender } from "@litespace/ui/hooks/common";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { IMessage, Void } from "@litespace/types";
 import cn from "classnames";
 import React, { useCallback, useMemo, useRef, useState } from "react";
@@ -12,7 +12,7 @@ const Message: React.FC<{
   onDeleteMessage: Void;
 }> = ({ message, onUpdateMessage, onDeleteMessage }) => {
   const ref = useRef<HTMLDivElement>(null);
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const menu = useRender();
   const [open, setOpen] = useState<boolean>(false);
 

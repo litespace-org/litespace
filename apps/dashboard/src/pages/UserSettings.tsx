@@ -1,9 +1,9 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import VerificationDetails from "@/components/UserSettings/Verification";
 import { Typography } from "@litespace/ui/Typography";
 
 const UserSettings = () => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">

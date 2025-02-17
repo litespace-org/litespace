@@ -4,7 +4,7 @@ import { useCallback, useMemo, useState } from "react";
 import DateField from "@/components/common/DateField";
 import Error from "@/components/common/Error";
 import { Loading } from "@litespace/ui/Loading";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Table } from "@/components/common/Table";
 import { UsePaginateResult } from "@/types/query";
 import { ActionsMenu } from "@litespace/ui/ActionsMenu";
@@ -22,7 +22,7 @@ const List: React.FC<{
   totalPages: number;
   page: number;
 }> = ({ topics, ...props }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [topic, setTopic] = useState<Topic | null>(null);
   const [action, setAction] = useState<"edit" | "delete" | null>(null);
 

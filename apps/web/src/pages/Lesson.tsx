@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
@@ -38,7 +38,7 @@ import { asOtherMember, isOnline, isTyping } from "@/lib/room";
  */
 const Lesson: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user } = useUserContext();
   const navigate = useNavigate();
 

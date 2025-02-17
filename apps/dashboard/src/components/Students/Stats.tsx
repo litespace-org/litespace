@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { IUser } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import React from "react";
@@ -8,7 +8,7 @@ import StatsContent from "@/components/Students/StatsContent";
 const Stats: React.FC<{
   stats: UseQueryResult<IUser.FindStudentStatsApiResponse | null>;
 }> = ({ stats }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
 
   return (
     <>

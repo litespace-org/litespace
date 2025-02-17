@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { Route } from "@/types/routes";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import Crown from "@litespace/assets/Crown";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
@@ -14,7 +14,7 @@ import Menu from "@litespace/assets/Menu";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { lg } = useMediaQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user } = useUserContext();
   const location = useLocation();
 

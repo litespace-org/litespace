@@ -4,7 +4,7 @@ import { Void } from "@litespace/types";
 
 import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 import Calendar from "@litespace/assets/Calendar";
 import ArrowRight from "@litespace/assets/ArrowRight";
@@ -23,7 +23,7 @@ const Header: React.FC<Props> = ({
   prevWeek,
   manageSchedule,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   return (
     <div className="flex flex-row justify-between items-center gap-6">
