@@ -15,8 +15,8 @@ const PageTitle: React.FC<{
           default: "body",
           lg: "subtitle-2",
         }}
-        className="text-natural-950"
         weight="bold"
+        className="text-natural-950"
       >
         {title}
       </Typography>

@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { Controller, Label } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import Edit from "@litespace/assets/Edit";
 import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
@@ -28,7 +28,7 @@ const Topics: React.FC<{
     <div>
       <div className="flex justify-between items-center">
         <Typography
-          element="subtitle-1"
+          element={{ default: "subtitle-2", md: "body", lg: "subtitle-1" }}
           weight="bold"
           className="text-natural-950"
         >
@@ -46,12 +46,15 @@ const Topics: React.FC<{
           >
             {intl("global.labels.edit")}
           </Typography>
-          <Edit width={24} height={24} className="[&>*]:stroke-brand-700" />
+          <Edit className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>
-      <div className="flex gap-4 flex-wrap mt-[21px]">
+      <div className="flex gap-2 lg:gap-4 flex-wrap mt-4 lg:mt-6">
         {topics.map((topic) => (
-          <div className="bg-brand-700 rounded-3xl py-3 px-4" key={topic.id}>
+          <div
+            className="bg-brand-700 rounded-3xl p-3 md:py-3 md:px-4"
+            key={topic.id}
+          >
             <Typography className="text-natural-50" element="caption">
               {topic.label}
             </Typography>
@@ -131,17 +134,27 @@ const PublicSettings: React.FC<{
   );
 
   return (
-    <div className="flex flex-col gap-6 p-10">
+    <div className="flex flex-col gap-6 lg:gap-6 pt-4 md:p-10">
       <Typography
-        element="subtitle-1"
+        element={{ default: "subtitle-2", md: "body", lg: "subtitle-1" }}
         weight="bold"
         className="text-natural-950"
       >
         {intl("tutor-settings.personal-info.title")}
       </Typography>
-      <div className="flex items-center gap-8">
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.name")}</Label>
+      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 md:mt-0">
+        <div className="grow flex flex-col gap-1">
+          {/* TODO: update label */}
+          {/* <Label className="mb-1">
+            {intl("tutor-settings.personal-info.name")}
+          </Label> */}
+          <Typography
+            element="caption"
+            weight="semibold"
+            className="text-natural-950"
+          >
+            {intl("tutor-settings.personal-info.name")}
+          </Typography>
           <Controller.Input
             value={form.watch("name")}
             control={form.control}
@@ -150,8 +163,15 @@ const PublicSettings: React.FC<{
             name="name"
           />
         </div>
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.bio")}</Label>
+        <div className="grow flex flex-col gap-1">
+          {/* <Label>{intl("tutor-settings.personal-info.bio")}</Label> */}
+          <Typography
+            element="caption"
+            weight="semibold"
+            className="text-natural-950"
+          >
+            {intl("tutor-settings.personal-info.bio")}
+          </Typography>
           <Controller.Input
             value={form.watch("bio")}
             control={form.control}
@@ -168,9 +188,9 @@ const PublicSettings: React.FC<{
       />
 
       <Typography
-        element="subtitle-1"
+        element={{ default: "subtitle-2", md: "body", lg: "subtitle-1" }}
         weight="bold"
-        className="text-natural-950"
+        className="text-natural-950 -mb-2"
       >
         {intl("tutor-settings.personal-info.about")}
       </Typography>
@@ -183,9 +203,9 @@ const PublicSettings: React.FC<{
         name="about"
       />
       <Typography
-        element="subtitle-1"
+        element={{ default: "subtitle-2", md: "body", lg: "subtitle-1" }}
         weight="bold"
-        className="text-natural-950"
+        className="text-natural-950 -mb-2 lg:mb-0"
       >
         {intl("tutor-settings.personal-info.video")}
       </Typography>

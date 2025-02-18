@@ -37,7 +37,7 @@ const PersonalSettings: React.FC<{
     !!form.watch("password.confirm");
 
   return (
-    <div className="p-10">
+    <div className="md:p-10">
       <div className="flex flex-row gap-[192px] justify-start">
         <div className="flex flex-col gap-6 w-full max-w-[400px]">
           <Typography
