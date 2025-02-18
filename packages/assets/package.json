@@ -141,6 +141,11 @@
     "./Video": "./dist/Video.tsx",
     "./WarningFill": "./dist/WarningFill.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
-    "./X": "./dist/X.tsx"
+    "./X": "./dist/X.tsx",
+    "./Instagram": "./dist/Instagram.tsx",
+    "./Facebook": "./dist/Facebook.tsx",
+    "./Linkedin": "./dist/Linkedin.tsx",
+    "./Whatsapp": "./dist/Whatsapp.tsx",
+    "./Youtube": "./dist/Youtube.tsx"
   }
 }
