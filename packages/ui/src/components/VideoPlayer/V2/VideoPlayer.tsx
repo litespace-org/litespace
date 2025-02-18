@@ -13,7 +13,10 @@ import { VideoProgressbar } from "@/components/VideoPlayer/V2/VideoProgressbar";
 import { PlayButton } from "@/components/VideoPlayer/V2/PlayButton";
 import { Loader } from "@/components/Loading";
 
-export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
+export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
+  src,
+  thumbnail,
+}) => {
   const intl = useFormatMessage();
 
   const {
@@ -43,7 +46,7 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
     <div
       id={CONTAINER_ID}
       ref={containerRef}
-      className="tw-w-full tw-aspect-video tw-relative tw-rounded-lg tw-overflow-hidden"
+      className="tw-relative tw-w-full tw-aspect-video tw-relative tw-rounded-lg tw-overflow-hidden"
     >
       <video
         playsInline
@@ -58,8 +61,18 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
         src={src}
         className="tw-w-full tw-h-full data-[ready=true]:tw-cursor-pointer"
       />
+
       {readyState > 1 && paused && currentTime === 0 ? (
-        <div className="tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2">
+        <div
+          className={cn(
+            "tw-absolute tw-top-0 tw-w-full tw-h-full",
+            "tw-flex tw-justify-center tw-items-center"
+          )}
+          style={{
+            backgroundImage: `url('${thumbnail}')`,
+            backgroundSize: "contain",
+          }}
+        >
           <PlayButton togglePlay={togglePlay} />
         </div>
       ) : null}
