@@ -1,4 +1,4 @@
-import { Controller, Label } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useMemo } from "react";
@@ -37,13 +37,16 @@ const PersonalSettings: React.FC<{
     !!form.watch("password.confirm");
 
   return (
-    <div className="p-10">
-      <div className="flex flex-row gap-[192px] justify-start">
-        <div className="flex flex-col gap-6 w-full max-w-[400px]">
+    <div className="p-4 sm:p-10 mb-20 sm:mb-0">
+      <div className="flex flex-col items-center md:flex-row gap-6 md:gap-[192px] justify-start">
+        <div className="flex flex-col gap-2 sm:gap-6 w-full max-w-[400px]">
           <Typography
-            element="subtitle-1"
+            element={{
+              default: "subtitle-2",
+              sm: "subtitle-1",
+            }}
             weight="bold"
-            className="text-natural-950"
+            className="text-natural-950 mb-2 sm:mb-0"
           >
             {intl("tutor-settings.account-settings.title")}
           </Typography>
@@ -64,8 +67,8 @@ const PersonalSettings: React.FC<{
             name="phoneNumber"
           />
           <div className="flex flex-col gap-2">
-            <Label>{intl("labels.city")}</Label>
             <Controller.Select
+              label={intl("labels.city")}
               value={form.watch("city")}
               options={cityOptions}
               placeholder={intl(
@@ -76,11 +79,14 @@ const PersonalSettings: React.FC<{
             />
           </div>
         </div>
-        <div className="flex flex-col gap-6 max-w-[400px] w-full">
+        <div className="flex flex-col gap-2 sm:gap-6 w-full max-w-[400px]">
           <Typography
-            element="subtitle-1"
+            element={{
+              default: "subtitle-2",
+              sm: "subtitle-1",
+            }}
             weight="bold"
-            className="text-natural-950"
+            className="text-natural-950 mb-2 sm:mb-0"
           >
             {intl("tutor-settings.account-settings.password.title")}
           </Typography>

@@ -13,6 +13,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { orNull, orUndefined } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const TutorSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse & {
@@ -24,6 +25,7 @@ const TutorSettings: React.FC<{
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
+  const mq = useMediaQuery();
 
   const form = useForm<ITutorSettingsForm>({
     defaultValues: {
@@ -112,30 +114,50 @@ const TutorSettings: React.FC<{
   );
 
   return (
-    <Form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-10">
-      <div className="p-10 pb-0 flex justify-between">
-        <TutorProfileCard
-          variant="small"
-          image={info.image}
-          name={info.name}
-          id={info.id}
-          bio={info.bio}
-          studentCount={info.studentCount}
-          lessonCount={info.studentCount}
-          avgRating={info.avgRating}
-        />
+    <Form
+      onSubmit={form.handleSubmit(submit)}
+      className="flex flex-col gap-6 sm:gap-10"
+    >
+      <div className="sm:p-10 pb-0 flex justify-between">
+        <div className="px-4 sm:px-0">
+          <TutorProfileCard
+            variant={mq.sm ? "medium" : "small"}
+            image={info.image}
+            name={info.name}
+            id={info.id}
+            bio={info.bio}
+            studentCount={info.studentCount}
+            lessonCount={info.studentCount}
+            avgRating={info.avgRating}
+          />
+        </div>
 
-        <Button
-          htmlType="submit"
-          loading={updateTutor.isPending}
-          disabled={updateTutor.isPending || !dataChanged}
-          size={"medium"}
-        >
-          {intl("shared-settings.save")}
-        </Button>
+        {mq.sm ? (
+          <Button
+            htmlType="submit"
+            loading={updateTutor.isPending}
+            disabled={updateTutor.isPending || !dataChanged}
+            size={"medium"}
+          >
+            {intl("shared-settings.save")}
+          </Button>
+        ) : null}
       </div>
 
       <Tabs form={form} video={info.video} />
+
+      {!mq.sm ? (
+        <div className="flex justify-end fixed bottom-0 right-0 bg-natural-50 p-4 w-full shadow-tutor-profile">
+          <Button
+            htmlType="submit"
+            loading={updateTutor.isPending}
+            disabled={updateTutor.isPending || !dataChanged}
+            size={"medium"}
+          >
+            {intl("shared-settings.save")}
+          </Button>
+        </div>
+      ) : null}
     </Form>
   );
 };

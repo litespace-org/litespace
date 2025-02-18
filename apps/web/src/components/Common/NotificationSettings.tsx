@@ -18,11 +18,11 @@ const NotificationSettings = () => {
   }, [intl, toast]);
 
   return (
-    <div>
+    <div className="mt-6">
       <Typography
         element={{
-          default: "caption",
-          sm: "subtitle-2",
+          default: "subtitle-2",
+          sm: "subtitle-1",
         }}
         weight="bold"
         className="text-natural-950"

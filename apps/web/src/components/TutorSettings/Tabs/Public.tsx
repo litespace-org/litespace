@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { Controller, Label } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import Edit from "@litespace/assets/Edit";
 import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
@@ -131,18 +131,22 @@ const PublicSettings: React.FC<{
   );
 
   return (
-    <div className="flex flex-col gap-6 p-10">
-      <Typography
-        element="subtitle-1"
-        weight="bold"
-        className="text-natural-950"
-      >
-        {intl("tutor-settings.personal-info.title")}
-      </Typography>
-      <div className="flex items-center gap-8">
+    <div className="flex flex-col gap-6 p-4 sm:p-10 mb-20 sm:mb-0">
+      <div className="flex flex-col md:flex-row md:items-center gap-2 sm:gap-8">
+        <Typography
+          element={{
+            default: "subtitle-2",
+            sm: "subtitle-1",
+          }}
+          weight="bold"
+          className="text-natural-950 mb-2 sm:mb-0"
+        >
+          {intl("tutor-settings.personal-info.title")}
+        </Typography>
+
         <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.name")}</Label>
           <Controller.Input
+            label={intl("tutor-settings.personal-info.name")}
             value={form.watch("name")}
             control={form.control}
             rules={{ validate: validateUserName }}
@@ -150,9 +154,10 @@ const PublicSettings: React.FC<{
             name="name"
           />
         </div>
+
         <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.bio")}</Label>
           <Controller.Input
+            label={intl("tutor-settings.personal-info.bio")}
             value={form.watch("bio")}
             control={form.control}
             rules={{ validate: validateBio }}

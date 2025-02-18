@@ -20,7 +20,7 @@ export const TutorProfileCard: React.FC<{
   studentCount: number;
   lessonCount: number;
   avgRating: number;
-  variant?: "small" | "large";
+  variant?: "small" | "medium" | "large";
   onBook?: Void;
   loading?: boolean;
   error?: boolean;
@@ -67,7 +67,7 @@ export const TutorProfileCard: React.FC<{
         "tw-grid tw-grid-cols-[auto,1fr] md:tw-flex tw-items-center max-w-[280px]",
         {
           "tw-gap-4 md:tw-gap-10 md:tw-p-10 md:tw-pb-0": variant === "large",
-          "tw-gap-4": variant === "small",
+          "tw-gap-4": variant === "small" || variant === "medium",
         }
       )}
     >
@@ -76,7 +76,8 @@ export const TutorProfileCard: React.FC<{
           "tw-aspect-square tw-shrink-0 tw-rounded-full tw-overflow-hidden",
           {
             "tw-w-[90px] md:tw-w-[242px]": variant === "large",
-            "tw-w-[174px]": variant === "small",
+            "tw-w-[174px]": variant === "medium",
+            "tw-w-[84px]": variant === "small",
           }
         )}
       >
