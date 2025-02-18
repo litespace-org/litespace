@@ -63,7 +63,7 @@ export const ConfirmationDialog: React.FC<{
             "tw-shadow-dialog-confirm tw-p-6"
           )}
         >
-          <div className="tw-flex tw-items-center tw-justify-between tw-mb-4">
+          <div className="tw-flex tw-items-center tw-justify-between tw-mb-4 lg:tw-mb-6">
             <div
               className={cn(
                 "tw-w-12 tw-h-12 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center",
@@ -91,7 +91,7 @@ export const ConfirmationDialog: React.FC<{
               <X className="tw-text-natural-600 tw-w-6 tw-h-6" />
             </Close>
           </div>
-          <div className="tw-flex tw-gap-1 tw-flex-col tw-mb-6">
+          <div className="tw-flex tw-gap-1 tw-flex-col tw-mb-4 lg:tw-mb-6">
             <Title>
               <Typography
                 element="body"
