@@ -398,11 +398,12 @@ const Lesson: React.FC = () => {
             startAt: lesson.data.lesson.start,
           }}
           leave={() => {
-            session.leave();
-            sessionManager.leave();
+            session.leave(); // this shall close/stop related user media (video, share screen, etc)
+            sessionManager.leave(); // this shall close the connection (websocket), and invoke db mutations.
             if (lessonMembers.current.role === IUser.Role.Student) {
               const query = asRateLessonQuery({
                 lessonId: lessonMembers.current.lessonId,
+                lessonStart: lesson.data?.lesson.start || "",
                 tutorId: lessonMembers.other.userId,
                 tutorName: lessonMembers.other.name,
               });
