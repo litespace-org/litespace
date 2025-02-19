@@ -7,5 +7,15 @@
   "navbar/login": "تسجيل الدخول",
   "home/hero/title": "تعلم اللغة الإنجليزية بالطريقة الأكثر تفاعلية مع معلمين محترفين",
   "home/hero/description": "أطلق العنان لمهاراتك وتمتع بتجربة تعليمية فريدة على طرْف إصبعك مع جلسات تفاعلية ومباشرة، و طور مهارات اللغة الانجليزية لديك بخطوات ثابتة وسهلة.",
-  "home/hero/start-your-journey": "ابدأ رحلتك الأن"
+  "home/hero/start-your-journey": "ابدأ رحلتك الأن",
+  "landing/routes/main-pages": "الصفحات الرئيسية",
+  "landing/routes/important-routes": "عناوين مهمة",
+  "landing/routes/terms-and-conditions": "الشروط والأحكام",
+  "landing/routes/student-guide": "دليل الطالب",
+  "landing/routes/tutor-guide": "دليل المعلم",
+  "landing/routes/faq": "الأسئلة الشائعة",
+  "landing/routes/contact-us": "تواصل معنا",
+  "landing/footer/description": "تجربتك التعليمية عن بُعد والمصممة خصيصًا لمساعدتك في تطوير مهاراتك في اللغة الانجليزية وثقتك بنفسك من خلال جلسات خاصة تفاعلية مع معلمين تم اختيارهم بعناية فائقة.",
+  "landing/footer/follow-us/title": "تابعنا على",
+  "landing/footer/follow-us/description": "تابعنا عبر منصات التواصل"
 }
