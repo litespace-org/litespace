@@ -3,9 +3,11 @@ import FullScreen from "@litespace/assets/FullScreen";
 import Minimize from "@litespace/assets/Minimize";
 import { Void } from "@litespace/types";
 import { Button } from "@/components/Button";
+import cn from "classnames"
 
-export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
+export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void; chat?: boolean; }> = ({
   enabled,
+  chat,
   toggle,
 }) => {
   return (
@@ -14,9 +16,9 @@ export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
       onClick={toggle}
     >
       {enabled ? (
-        <Minimize className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8" />
+        <Minimize className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
       ) : (
-        <FullScreen className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8" />
+        <FullScreen className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
       )}
     </Button>
   );

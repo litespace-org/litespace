@@ -114,6 +114,7 @@ export const FocusedStream: React.FC<{
       </AnimatePresence>
 
       <VideoBar
+        chat={chat}
         alert={alert}
         timer={timer}
         fullScreen={fullScreen}

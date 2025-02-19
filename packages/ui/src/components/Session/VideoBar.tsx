@@ -9,6 +9,7 @@ import cn from "classnames";
 
 export const VideoBar: React.FC<{
   alert?: string;
+  chat?: boolean;
   fullScreen: {
     enabled: boolean;
     toggle: Void;
@@ -19,16 +20,16 @@ export const VideoBar: React.FC<{
     startAt: string;
     duration: number;
   };
-}> = ({ alert, fullScreen, speaking, muted, timer }) => {
+}> = ({ alert, fullScreen, speaking, muted, timer, chat }) => {
   return (
     <div className="tw-flex tw-flex-col tw-gap-[13px]">
       <div className="tw-w-full tw-p-4 lg:tw-px-6 lg:tw-mt-6 tw-absolute tw-top-0 tw-left-0 tw-flex tw-gap-[13px] tw-justify-between tw-items-center">
         <div className="tw-flex tw-items-center tw-gap-2 lg:tw-gap-8">
-          <FullScreenButton {...fullScreen} />
+          <FullScreenButton {...fullScreen} chat={chat} />
           {alert ? <Alert alert={alert} /> : null}
         </div>
         <div className="tw-flex tw-items-center tw-gap-2 lg:tw-gap-8">
-          <SpeechIndicator speaking={speaking} muted={muted} variant="large" />
+          <SpeechIndicator speaking={speaking} muted={muted} chat={chat} variant="large" />
           <TimerIndicator {...timer} />
         </div>
       </div>

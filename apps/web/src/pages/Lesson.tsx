@@ -420,6 +420,7 @@ const Lesson: React.FC = () => {
             <Messages
               inSession
               room={room}
+              toggleChat={toggleChat}
               isTyping={isOtherMemberTyping}
               isOnline={isOtherMemberOnline}
               otherMember={chatOtherMember}
