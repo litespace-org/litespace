@@ -18,7 +18,7 @@ import { isAdmin, isStudent, isTutor, isTutorManager } from "@litespace/auth";
 import { NextFunction, Request, Response } from "express";
 import { knex, topics } from "@litespace/models";
 import { ITopic } from "@litespace/types";
-import { isValidTopicName } from "@litespace/utils/verification";
+import { isValidTopicName } from "@litespace/utils/validation";
 import safeRequest from "express-async-handler";
 import zod from "zod";
 import { Knex } from "knex";
