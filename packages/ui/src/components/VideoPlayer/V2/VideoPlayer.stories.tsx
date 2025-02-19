@@ -17,6 +17,14 @@ export const Primary: StoryObj<Component> = {
   },
 };
 
+export const WithThumbnail: StoryObj<Component> = {
+  args: {
+    src: "https://files.vidstack.io/sprite-fight/720p.mp4",
+    thumbnail:
+      "https://ddz4ak4pa3d19.cloudfront.net/cache/8d/ed/8ded94a514ca466ea5f819824fbe14ab.jpg",
+  },
+};
+
 export const InvalidVideoUrl: StoryObj<Component> = {
   args: {
     src: "",
