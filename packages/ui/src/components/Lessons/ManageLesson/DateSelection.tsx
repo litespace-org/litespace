@@ -63,10 +63,10 @@ export const DateSelection: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-text-foreground tw-relative">
+    <div className="tw-flex tw-flex-col tw-gap-6 tw-items-center tw-text-foreground tw-relative tw-px-4 md:tw-px-0">
       <div
         className={cn(
-          "tw-flex tw-flex-row tw-items-center tw-justify-between tw-mb-5 tw-gap-4"
+          "tw-flex tw-flex-row tw-items-center tw-justify-between tw-gap-4"
         )}
       >
         <button
@@ -78,8 +78,8 @@ export const DateSelection: React.FC<{
           <ArrowRight className="[&>*]:tw-stroke-brand-700" />
         </button>
         <Typography
-          element="subtitle-2"
-          weight="medium"
+          element={{ default: "caption", lg: "subtitle-2" }}
+          weight={{ default: "semibold", lg: "medium" }}
           className="tw-flex tw-items-center tw-justify-center tw-text-center tw-text-natural-950"
         >
           {date.format("MMMM")} {year}
@@ -94,7 +94,11 @@ export const DateSelection: React.FC<{
         </button>
       </div>
 
-      <ul className={cn("tw-grid tw-grid-cols-7 tw-gap-4")}>
+      <ul
+        className={cn(
+          "tw-grid tw-grid-cols-7 tw-gap-x-1 tw-gap-y-[11px] md:tw-gap-4"
+        )}
+      >
         {grid.map((day) => {
           const isCurrentMonth = day.isSame(date, "month");
           const isSelected = selected?.isSame(day, "day");
@@ -105,9 +109,9 @@ export const DateSelection: React.FC<{
               disabled={disable || isOutOfRange(day) || !isSelectable(day)}
               data-selected={isSelected}
               className={cn(
-                "tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-[7px]",
+                "tw-px-[2px] tw-py-[5px] tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-[2px] lg:tw-gap-[7px]",
                 "tw-cursor-pointer disabled:tw-cursor-not-allowed",
-                "tw-text-center tw-w-[60px] tw-h-[60px] tw-border tw-border-natural-900 tw-shadow-date-selection-item tw-rounded-lg",
+                "tw-text-center tw-w-[43px] tw-h-12 md:tw-w-[60px] md:tw-h-[60px] tw-border tw-border-natural-900 tw-shadow-date-selection-item tw-rounded-lg",
                 isCurrentMonth &&
                   "data-[selected=false]:hover:tw-bg-brand-100 active:tw-bg-brand-700 data-[selected=true]:tw-bg-brand-700",
                 today.isSame(day, "day") && "tw-ring tw-ring-surface-300",
@@ -119,14 +123,14 @@ export const DateSelection: React.FC<{
               <Typography
                 element="tiny-text"
                 data-selected={isSelected}
-                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50"
+                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-inline-block"
               >
                 {day.format("DD")}
               </Typography>
               <Typography
                 element="tiny-text"
                 data-selected={isSelected}
-                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50"
+                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-inline-block tw-px-[2px]"
               >
                 {day.format("dddd")}
               </Typography>
