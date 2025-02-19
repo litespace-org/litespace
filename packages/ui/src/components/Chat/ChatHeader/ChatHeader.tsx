@@ -27,7 +27,7 @@ export const ChatHeader: React.FC<{
 
   return (
     <div className="tw-flex tw-justify-between tw-px-6 tw-py-4 tw-shadow-chat-header">
-      <div className="tw-flex tw-gap-2 lg:tw-gap-4 tw-items-center">
+      <div className="tw-flex tw-grow tw-gap-2 lg:tw-gap-4 tw-items-center">
         <button
           type="button"
           onClick={back}
@@ -35,42 +35,45 @@ export const ChatHeader: React.FC<{
         >
           <ArrowRightLong />
         </button>
-        <div
-          className={cn(
-            "tw-overflow-hidden tw-rounded-full",
-            "tw-p-[2px] lg:tw-p-[5px] tw-flex tw-items-center tw-justify-center",
-            "tw-border-[3px] lg:tw-border-4",
-            online ? "tw-border-brand-700" : "tw-border-natural-500"
-          )}
-        >
-          <div className="tw-rounded-full tw-overflow-hidden tw-w-8 tw-h-8 lg:tw-w-14 lg:tw-h-14 tw-shrink-0">
-            <Avatar
-              alt={orUndefined(name)}
-              src={orUndefined(image)}
-              seed={id.toString()}
-            />
+        <div className={cn("tw-flex tw-gap-2 tw-items-center", inSession ? "tw-hidden lg:tw-flex lg:tw-gap-2" : "lg:tw-gap-4")}>
+          <div
+            className={cn(
+              "tw-overflow-hidden tw-rounded-full",
+              "tw-p-[2px] lg:tw-p-[5px] tw-flex tw-items-center tw-justify-center",
+              "tw-border-[3px] lg:tw-border-4",
+              online ? "tw-border-brand-700" : "tw-border-natural-500"
+            )}
+          >
+            <div className="tw-rounded-full tw-overflow-hidden tw-w-8 tw-h-8 lg:tw-w-14 lg:tw-h-14 tw-shrink-0">
+              <Avatar
+                alt={orUndefined(name)}
+                src={orUndefined(image)}
+                seed={id.toString()}
+              />
+            </div>
+          </div>
+          <div>
+            <Typography
+              element={{ default: "body", lg: inSession ? "body" : "subtitle-2" }}
+              weight="bold"
+              className={"tw-text-natural-950"}
+            >
+              {name}
+            </Typography>
+            <Typography
+              element={{ default: "tiny-text", lg: inSession ? "tiny-text" : "caption" }}
+              className={cn({
+                "tw-text-primary-700": online,
+                "tw-text-natural-700": !online,
+              })}
+            >
+              {online
+                ? intl("chat.online")
+                : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
+            </Typography>
           </div>
         </div>
-        <div>
-          <Typography
-            element={{ default: "body", lg: "subtitle-2" }}
-            weight="bold"
-            className={"tw-text-natural-950"}
-          >
-            {name}
-          </Typography>
-          <Typography
-            element={{ default: "tiny-text", lg: "caption" }}
-            className={cn({
-              "tw-text-primary-700": online,
-              "tw-text-natural-700": !online,
-            })}
-          >
-            {online
-              ? intl("chat.online")
-              : intl("chat.offline", { time: dayjs(lastSeen).fromNow() })}
-          </Typography>
-        </div>
+        <Typography element="body" weight="bold" className={cn(inSession ? "tw-text-natural-950 lg:tw-hidden" : "tw-hidden")}>{intl("chat.in-session.header.title")}</Typography>
       </div>
       {role !== IUser.Role.Student && !inSession ? (
         <div className="tw-flex tw-items-center">

@@ -12,6 +12,7 @@ import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 import { AnimatePresence } from "framer-motion";
 import { AnimateWidth } from "@/components/Animate";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
   streams: StreamInfo[];
@@ -58,13 +59,18 @@ export const Session: React.FC<Props> = ({
   currentUserId,
   chat,
 }) => {
+  const mq = useMediaQuery();
+  console.log(chat.enabled);
+
   return (
-    <div className="tw-flex tw-flex-col tw-h-full tw-gap-4 lg:tw-gap-10">
+    <div className="tw-flex tw-flex-col tw-h-full tw-gap-4 lg:tw-gap-10 tw-pb-[66px]">
       <div
         className={cn(
           "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
           "tw-rounded-lg tw-overflow-hidden",
-          chat.enabled ? "tw-grid tw-grid-cols-[auto,326px]" : "tw-flex"
+          chat.enabled
+            ? "lg:tw-grid tw-relative lg:tw-grid-cols-[auto,minmax(35%,326px)]"
+            : "tw-flex"
         )}
       >
         <SessionStreams
@@ -78,9 +84,13 @@ export const Session: React.FC<Props> = ({
 
         <AnimatePresence mode="wait">
           {chat.enabled ? (
-            <AnimateWidth key="chat" className="tw-min-w-[326px]">
-              {chatPanel}
-            </AnimateWidth>
+            mq.lg ? (
+              <AnimateWidth key="chat" className="tw-h-full">
+                {chatPanel}
+              </AnimateWidth>
+            ) : (
+              chatPanel
+            )
           ) : null}
         </AnimatePresence>
       </div>

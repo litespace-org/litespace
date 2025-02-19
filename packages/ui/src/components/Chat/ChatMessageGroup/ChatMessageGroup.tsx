@@ -21,10 +21,10 @@ export type RetryFnMap = Record<
     payload:
       | { roomId: number; text: string; userId: number }
       | {
-          id: number;
-          text: string;
-          roomId: number;
-        }
+        id: number;
+        text: string;
+        roomId: number;
+      }
       | number
   ) => void
 >;
@@ -37,6 +37,7 @@ export const ChatMessageGroup: React.FC<{
   roomId: number;
   sentAt: string;
   owner?: boolean;
+  inSession?: boolean;
   retryFnMap: RetryFnMap;
   roomErrors: RoomErrors;
   readMessage: (id: number) => void;
@@ -50,110 +51,113 @@ export const ChatMessageGroup: React.FC<{
   messages,
   sender: { image, name, userId },
   owner,
+  inSession,
   readMessage,
   editMessage,
   deleteMessage,
 }) => {
-  const intl = useFormatMessage();
-  return (
-    <div
-      className={cn("tw-flex tw-gap-4", {
-        "tw-flex-row-reverse": !owner,
-        "tw-flex-row": owner,
-      })}
-    >
-      <div className="tw-hidden lg:tw-block tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
-        <Avatar
-          alt={orUndefined(name)}
-          src={orUndefined(image)}
-          seed={userId.toString()}
-        />
-      </div>
-      <div>
-        <div
-          className={cn("tw-hidden lg:tw-flex tw-gap-6 tw-items-center", {
-            "tw-flex-row-reverse": !owner,
-            "tw-flex-row": owner,
-          })}
-        >
-          <Typography
-            element="body"
-            className="tw-font-semibold tw-text-natural-950 dark:tw-text-natural-50"
-          >
-            {owner ? intl("chat.message.title.you") : name}
-          </Typography>
-          <Typography
-            element="tiny-text"
-            className="tw-text-natural-400 dark:tw-text-natural-300"
-          >
-            {dayjs(sentAt).format("hh:mm a")}
-          </Typography>
+    const intl = useFormatMessage();
+    return (
+      <div
+        className={cn("tw-flex tw-gap-4", {
+          "tw-flex-row-reverse": !owner,
+          "tw-flex-row": owner,
+        })}
+      >
+        <div className={cn("tw-hidden lg:tw-block tw-overflow-hidden tw-rounded-full tw-flex-shrink-0",
+          inSession ? "tw-w-8 tw-h-8" : "tw-w-14 tw-h-14"
+        )}>
+          <Avatar
+            alt={orUndefined(name)}
+            src={orUndefined(image)}
+            seed={userId.toString()}
+          />
         </div>
-        <div
-          className={cn("tw-flex tw-flex-col lg:tw-mt-2 tw-gap-y-2", {
-            "tw-items-end": !owner,
-            "tw-items-start": owner,
-          })}
-        >
-          {messages.map((message, index) => {
-            const retry = () => {
-              const messageErrorType = roomErrors[message.id];
-              if (!messageErrorType) return null;
+        <div>
+          <div
+            className={cn("tw-hidden lg:tw-flex tw-gap-6 tw-items-center", {
+              "tw-flex-row-reverse": !owner,
+              "tw-flex-row": owner,
+            })}
+          >
+            <Typography
+              element="body"
+              className="tw-font-semibold tw-text-natural-950 dark:tw-text-natural-50"
+            >
+              {owner ? intl("chat.message.title.you") : name}
+            </Typography>
+            <Typography
+              element="tiny-text"
+              className="tw-text-natural-400 dark:tw-text-natural-300"
+            >
+              {dayjs(sentAt).format("hh:mm a")}
+            </Typography>
+          </div>
+          <div
+            className={cn("tw-flex tw-flex-col lg:tw-mt-2 tw-gap-y-2", {
+              "tw-items-end": !owner,
+              "tw-items-start": owner,
+            })}
+          >
+            {messages.map((message, index) => {
+              const retry = () => {
+                const messageErrorType = roomErrors[message.id];
+                if (!messageErrorType) return null;
 
-              if (messageErrorType === "update")
+                if (messageErrorType === "update")
+                  return retryFnMap[messageErrorType]({
+                    id: message.id,
+                    roomId,
+                    text: message.text,
+                  });
+
+                if (messageErrorType === "delete")
+                  return retryFnMap[messageErrorType](message.id);
+
                 return retryFnMap[messageErrorType]({
-                  id: message.id,
                   roomId,
                   text: message.text,
+                  userId,
                 });
+              };
 
-              if (messageErrorType === "delete")
-                return retryFnMap[messageErrorType](message.id);
-
-              return retryFnMap[messageErrorType]({
-                roomId,
-                text: message.text,
-                userId,
-              });
-            };
-
-            return message.deleted ? null : (
-              <motion.div
-                variants={messageVariants}
-                initial="hidden"
-                animate="visible"
-                exit="hidden"
-                className={cn("w-full mt-1 tw-flex", {
-                  "tw-justify-end": !owner,
-                  "tw-justify-start": owner,
-                })}
-                key={message.id}
-              >
-                <InView
-                  as="div"
-                  onChange={() =>
-                    !owner &&
-                    message.messageState !== "seen" &&
-                    readMessage(message.id)
-                  }
+              return message.deleted ? null : (
+                <motion.div
+                  variants={messageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  exit="hidden"
+                  className={cn("w-full mt-1 tw-flex", {
+                    "tw-justify-end": !owner,
+                    "tw-justify-start": owner,
+                  })}
+                  key={message.id}
                 >
-                  <ChatMessage
-                    messageState={message.messageState}
-                    firstMessage={index === 0}
-                    message={message}
-                    pending={message.messageState === "pending"}
-                    error={message.messageState === "error"}
-                    owner={owner}
-                    retry={retry}
-                    editMessage={() => editMessage(message)}
-                    deleteMessage={() => deleteMessage(message.id)}
-                  />
-                </InView>
-              </motion.div>
-            );
-          })}
+                  <InView
+                    as="div"
+                    onChange={() =>
+                      !owner &&
+                      message.messageState !== "seen" &&
+                      readMessage(message.id)
+                    }
+                  >
+                    <ChatMessage
+                      messageState={message.messageState}
+                      firstMessage={index === 0}
+                      message={message}
+                      pending={message.messageState === "pending"}
+                      error={message.messageState === "error"}
+                      owner={owner}
+                      retry={retry}
+                      editMessage={() => editMessage(message)}
+                      deleteMessage={() => deleteMessage(message.id)}
+                    />
+                  </InView>
+                </motion.div>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
-  );
-};
+    );
+  };

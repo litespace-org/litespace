@@ -9,7 +9,8 @@ export const SpeechIndicator: React.FC<{
   speaking: boolean;
   muted: boolean;
   variant?: "small" | "large";
-}> = ({ speaking, muted, variant = "large" }) => {
+  chat?: boolean;
+}> = ({ speaking, muted, variant = "large", chat }) => {
   const icon = useMemo(() => {
     if (muted && variant === "small")
       return (
@@ -17,16 +18,16 @@ export const SpeechIndicator: React.FC<{
       );
     if (muted && variant === "large")
       return (
-        <MicrophoneSlash className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8" />
+        <MicrophoneSlash className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
       );
     if (!muted && variant === "small")
       return (
         <SoundSmall className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />
       );
     return (
-      <Sound className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8" />
+      <Sound className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
     );
-  }, [muted, variant]);
+  }, [muted, variant, chat]);
 
   return (
     <div
