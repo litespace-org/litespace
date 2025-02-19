@@ -141,6 +141,10 @@
     "./Video": "./dist/Video.tsx",
     "./WarningFill": "./dist/WarningFill.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
-    "./X": "./dist/X.tsx"
+    "./X": "./dist/X.tsx",
+    "./Whatsapp2": "./dist/Whatsapp2.tsx",
+    "./Mail": "./dist/Mail.tsx",
+    "./PaperMessage1": "./dist/PaperMessage1.tsx",
+    "./PaperMessage2": "./dist/PaperMessage2.tsx"
   }
 }

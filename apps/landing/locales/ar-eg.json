@@ -7,5 +7,23 @@
   "navbar/login": "تسجيل الدخول",
   "home/hero/title": "تعلم اللغة الإنجليزية بالطريقة الأكثر تفاعلية مع معلمين محترفين",
   "home/hero/description": "أطلق العنان لمهاراتك وتمتع بتجربة تعليمية فريدة على طرْف إصبعك مع جلسات تفاعلية ومباشرة، و طور مهارات اللغة الانجليزية لديك بخطوات ثابتة وسهلة.",
-  "home/hero/start-your-journey": "ابدأ رحلتك الأن"
+  "home/hero/start-your-journey": "ابدأ رحلتك الأن",
+
+  "section/contact-us/title/1": "لا تتردد",
+  "section/contact-us/title/2": "في التواصل معنا في اي وقت!",
+  "section/contact-us/description": "نحن هنا لدعمك لا تتردد في ارسال استفساراتك عبر النموذج و سنقوم بالرد عليك في اقرب وقت ممكن.",
+  "section/contact-us/card/title": "تواصل معنا...",
+  "section/contact-us/card/description": "قم بملئ البيانات في النموذج و سيوقم فريقنا بالرد عليك في غضون 24 ساعه.",
+  "section/contact-us/phone": "+20 0123 4567 890",
+  "section/contact-us/gmail": "litespace@gmail.com",
+  "section/contact-us/form/label/name": "الاسم",
+  "section/contact-us/form/placeholder/name": "ادخل اسمك هنا",
+  "section/contact-us/form/label/email": "البريد الالكتروني",
+  "section/contact-us/form/placeholder/email": "ادخل بريدك الالكتروني هنا",
+  "section/contact-us/form/label/title": "عنوان الرسالة",
+  "section/contact-us/form/placeholder/title": "ادخل عنوان الراسلة هنا",
+  "section/contact-us/form/label/message": "محتوي الرسالة",
+  "section/contact-us/form/placeholder/message": "ادخل محتوي الرسالة هنا",
+
+  "labels/send": "إرسال"
 }
