@@ -9,9 +9,10 @@ import { ToastType } from "@/components/Toast/types";
 import { Provider, Viewport } from "@radix-ui/react-toast";
 import cn from "classnames";
 
-export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
-  children,
-}) => {
+export const ToastProvider: React.FC<{
+  children?: React.ReactNode;
+  location?: "top" | "bottom";
+}> = ({ children, location = "top-left" }) => {
   const [toasts, setToasts] = useState<ToastData[]>([]);
 
   const add = useCallback((data: AddToastData, type: ToastType) => {
@@ -48,8 +49,12 @@ export const ToastProvider: React.FC<{ children?: React.ReactNode }> = ({
 
         <Viewport
           className={cn(
-            "tw-fixed tw-top-0 tw-left-0 tw-w-96 tw-z-toast",
-            "tw-list-none tw-flex tw-flex-col tw-gap-2.5 tw-p-[var(--viewport-padding)] tw-outline-none [--viewport-padding:_25px]"
+            "tw-fixed tw-w-96 tw-z-toast tw-list-none tw-flex tw-flex-col tw-gap-2.5",
+            "tw-p-[var(--viewport-padding)] tw-outline-none [--viewport-padding:_25px]",
+            {
+              "tw-top-0 tw-left-0": location === "top",
+              "tw-bottom-0 tw-left-0": location === "bottom",
+            }
           )}
         />
       </Provider>

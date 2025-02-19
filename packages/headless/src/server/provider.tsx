@@ -2,13 +2,21 @@ import { Env } from "@litespace/types";
 import { ServerContext, Context } from "@/server/context";
 import { AuthToken, TokenType } from "@litespace/atlas";
 import { useCallback, useMemo, useState } from "react";
-import { cache } from "@/cache/base";
+import { AbstractStorage, StorageWrapper } from "@/storage";
 import { CacheKey } from "@/constants/cache";
 
 export const ServerProvider: React.FC<{
-  children?: React.ReactNode;
   server: Env.Server;
-}> = ({ children, server }) => {
+  children?: React.ReactNode;
+  storage?: AbstractStorage;
+}> = ({ children, server, storage }) => {
+  // NOTE: browser localStorage is assigned as default, in order to
+  // be compatible with the base code with minimal modifications possible.
+  const cache = useMemo(
+    () => new StorageWrapper(storage || localStorage),
+    [storage]
+  );
+
   const [token, setToken] = useState<AuthToken | null>(
     cache.load(CacheKey.AuthToken)
   );
@@ -18,7 +26,7 @@ export const ServerProvider: React.FC<{
       setToken(token);
       if (remember) cache.save(CacheKey.AuthToken, token);
     },
-    []
+    [cache]
   );
 
   const setBearerToken = useCallback(
@@ -38,7 +46,7 @@ export const ServerProvider: React.FC<{
   const removeToken = useCallback(() => {
     setToken(null);
     cache.remove(CacheKey.AuthToken);
-  }, []);
+  }, [cache]);
 
   const context = useMemo(
     (): Context => ({

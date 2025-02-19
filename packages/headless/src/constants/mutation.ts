@@ -36,4 +36,6 @@ export enum MutationKey {
   CreateRoom = "create-room",
   ShareFeedback = "share-feedback",
   FlushCache = "flush-cache",
+
+  CreateContactRequest = "create-contact-request",
 }

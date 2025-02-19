@@ -146,6 +146,11 @@
     "./Facebook": "./dist/Facebook.tsx",
     "./Linkedin": "./dist/Linkedin.tsx",
     "./Whatsapp": "./dist/Whatsapp.tsx",
-    "./Youtube": "./dist/Youtube.tsx"
+    "./Youtube": "./dist/Youtube.tsx",
+    "./Whatsapp2": "./dist/Whatsapp2.tsx",
+    "./Mail": "./dist/Mail.tsx",
+    "./PaperMessage1": "./dist/PaperMessage1.tsx",
+    "./PaperMessage2": "./dist/PaperMessage2.tsx",
+    "./Telegram": "./dist/Telegram.tsx"
   }
 }

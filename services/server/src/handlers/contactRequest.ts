@@ -11,6 +11,7 @@ import {
   isValidContactRequestTitle,
   isValidEmail,
   isValidUserName,
+  safe,
 } from "@litespace/utils";
 import { apierror } from "@/lib/error";
 
@@ -37,22 +38,28 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
   await contactRequests.create([payload]);
 
-  await telegram.sendMessage({
-    chat: telegramConfig.chat,
-    text: [
-      "*New Contact Request*",
-      "```md",
-      "# " + payload.title,
-      payload.message,
-      "```",
-      "*Requester Name: *" + `_${payload.name}_`,
-      "*Requester Email: *" + `_${payload.email}_`,
-    ]
-      .filter((line) => !!line)
-      .join("\n"),
-  });
+  const telegramRes = await safe(async () =>
+    telegram.sendMessage({
+      chat: telegramConfig.chat,
+      text: [
+        "*New Contact Request*",
+        "```md",
+        "# " + payload.title,
+        payload.message,
+        "```",
+        "*Requester Name: *" + `_${payload.name}_`,
+        "*Requester Email: *" + `_${payload.email}_`,
+      ]
+        .filter((line) => !!line)
+        .join("\n"),
+    })
+  );
 
-  res.status(200);
+  if (telegramRes instanceof Error) {
+    console.error("contactRequest Handler: couldn't send telegram message!");
+  }
+
+  res.sendStatus(200);
 }
 
 export default {

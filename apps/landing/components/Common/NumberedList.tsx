@@ -11,8 +11,7 @@ export const NumberedList: React.FC<ListProps> = ({ items }) => (
       <li key={i} className="text-[1.5rem]">
         <Typography
           tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+          className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
         >
           {item}
         </Typography>

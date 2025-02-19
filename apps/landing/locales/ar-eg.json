@@ -219,5 +219,34 @@
   "faq/body/for-student/q/20/answer": "نحن في LiteSpace نؤمن بأن كل طالب فريد، وأن التعلم يجب أن يكون مخصصًا. لذلك، إذا واجهت أي صعوبة في الفهم، سيقوم معلمك بتبسيط اسلوب كلامه ليتناسب مع احتياجاتك الفردية.",
 
   "faq/body/are-you-tutor": "هل أنت معلم؟ <link>اطلع علي الاسئلة الخاصة بالمعلمين</link>",
-  "faq/body/are-you-student": "هل أنت طالب؟ <link>اطلع على الأسئلة الخاصة بالطلاب</link>"
+  "faq/body/are-you-student": "هل أنت طالب؟ <link>اطلع على الأسئلة الخاصة بالطلاب</link>",
+  "section/contact-us/title/1": "لا تتردد",
+  "section/contact-us/title/2": "في التواصل معنا في اي وقت!",
+  "section/contact-us/description": "نحن هنا لدعمك لا تتردد في ارسال استفساراتك عبر النموذج و سنقوم بالرد عليك في اقرب وقت ممكن.",
+  "section/contact-us/card/title": "تواصل معنا...",
+  "section/contact-us/card/description": "قم بملء البيانات في النموذج و سيوقم فريقنا بالرد عليك في غضون 24 ساعه.",
+  "section/contact-us/phone": "+20 0123 4567 890",
+  "section/contact-us/gmail": "litespace@gmail.com",
+  "section/contact-us/telegram": "@litespace_tutors",
+  "section/contact-us/form/label/name": "الاسم",
+  "section/contact-us/form/placeholder/name": "ادخل اسمك هنا",
+  "section/contact-us/form/label/email": "البريد الالكتروني",
+  "section/contact-us/form/placeholder/email": "ادخل بريدك الالكتروني هنا",
+  "section/contact-us/form/label/title": "عنوان الرسالة",
+  "section/contact-us/form/placeholder/title": "ادخل عنوان الراسلة هنا",
+  "section/contact-us/form/label/message": "محتوي الرسالة",
+  "section/contact-us/form/placeholder/message": "ادخل محتوي الرسالة هنا",
+
+  "labels/send": "إرسال",
+
+  "error/required": "مطلوب",
+  "error/server": "حدث خطأ بالسيرفر",
+  "error/email/invalid": "عنوان بريد اليكتروني غير صحيح",
+  "error/form/invalid": "غير مناسب",
+  "error/name/invalid": "الاسم الذي أدخلته غير صحيح",
+  "error/short/text": "النص الذي أدخلته قصير جدا",
+  "error/long/text": "النص الذي أدخلته قد بلغ الحد الأقصى",
+  "error/form/contact-us": "حدث خطأ برجاء المحاولة مرة أخرى لاحقا",
+
+  "success/form/contact-us": "قد تم إرسال رسالتك بنجاح"
 }

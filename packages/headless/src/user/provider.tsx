@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { UserContext, Context } from "@/user/context";
 import { useCurrentUser } from "@/user";
-import { cache } from "@/cache/base";
+import { StorageWrapper } from "@/storage/base";
 import { CacheKey } from "@/constants";
 import { ITutor, IUser } from "@litespace/types";
 import { useFindTutorMeta } from "@/tutor";
@@ -16,6 +16,8 @@ const defaultData: Data = {
   user: null,
   meta: null,
 };
+
+const cache = new StorageWrapper(localStorage);
 
 const userCache = cache.load<Data>(CacheKey.User);
 
