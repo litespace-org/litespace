@@ -13,7 +13,7 @@ export const ToggleButton: React.FC<{
   return (
     <button
       className={cn(
-        "tw-relative tw-w-[72px] tw-h-12 tw-rounded-lg tw-border tw-py-3 tw-px-6",
+        "tw-relative tw-w-14 tw-h-10 lg:tw-h-12 lg:tw-w-[72px] tw-rounded-lg tw-border tw-py-2 tw-px-4 lg:tw-py-3 lg:tw-px-6",
         "tw-transition-colors tw-duration-300",
         {
           "hover:tw-bg-brand-100 tw-border-brand-700": !enabled,
@@ -35,7 +35,12 @@ export const ToggleButton: React.FC<{
         />
       )}
       {error ? (
-        <div className="tw-w-6 tw-rounded-full tw-h-6 tw-flex tw-items-center tw-justify-center tw-bg-destructive-400 tw-border-[3px] tw-border-destructive-600 tw-absolute -tw-top-3 -tw-left-3 ">
+        <div
+          className={cn(
+            "tw-w-4 lg:tw-w-6 tw-rounded-full tw-h-4 lg:tw-h-6 tw-flex tw-items-center tw-justify-center",
+            "tw-bg-destructive-400 tw-border-[3px] tw-border-destructive-600 tw-absolute -tw-top-1 -tw-left-1 lg:-tw-top-3 lg:-tw-left-3"
+          )}
+        >
           <Error />
         </div>
       ) : null}
