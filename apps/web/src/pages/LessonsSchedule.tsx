@@ -23,6 +23,7 @@ import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { IUser } from "@litespace/types";
+import { capture } from "@/lib/sentry";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -80,6 +81,7 @@ const LessonsSchedule: React.FC = () => {
 
   const onCancelError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("cancel-lesson.error"),

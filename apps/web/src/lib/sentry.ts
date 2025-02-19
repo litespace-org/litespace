@@ -20,3 +20,5 @@ Sentry.init({
     }),
   ],
 });
+
+export const capture = Sentry.captureException;

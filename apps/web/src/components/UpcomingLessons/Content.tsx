@@ -18,6 +18,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useNavigateToRoom } from "@/hooks/chat";
 import { useNavigate } from "react-router-dom";
+import { capture } from "@/lib/sentry";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -51,6 +52,7 @@ export const Content: React.FC<{
 
   const onCancelError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("cancel-lesson.error"),

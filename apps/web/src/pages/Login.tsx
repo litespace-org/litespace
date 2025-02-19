@@ -22,6 +22,7 @@ import Header from "@/components/Auth/Header";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 interface IForm {
   email: string;
@@ -55,6 +56,7 @@ const Login: React.FC = () => {
     },
 
     onError(error) {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("login.error"),

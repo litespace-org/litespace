@@ -18,6 +18,7 @@ import Success from "@litespace/assets/Success";
 import { motion, AnimatePresence } from "framer-motion";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { capture } from "@/lib/sentry";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -84,6 +85,7 @@ const ResetPassword = () => {
 
   const onError = useCallback(
     (error: unknown) => {
+      capture(error);
       const errorMessage = getErrorMessageId(error);
       toast.error({
         title: intl("reset-password.error"),
