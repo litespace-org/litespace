@@ -10,24 +10,27 @@ import {
 import { getRateLessonQuery } from "@/lib/query";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@litespace/ui/Toast";
 import { first } from "lodash";
 import { IUser } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import dayjs from "@/lib/dayjs";
 
 type RateDialogInfo = {
   tutorId: number | null;
   lessonId: number | null;
   tutorName: string | null;
+  lessonStart: string | null;
   canRate: boolean;
 };
 
 const defaultRateDialogInfo: RateDialogInfo = {
   tutorId: null,
   lessonId: null,
+  lessonStart: null,
   tutorName: null,
   canRate: false,
 };
@@ -56,6 +59,11 @@ const UpcomingLessons: React.FC = () => {
     ratified: true,
     canceled: true,
   });
+
+  // used to show rate dialog only if the lesson is already started
+  const isRatingLessonStarted = useMemo(() => {
+    return dayjs.utc(rateDialogInfo.lessonStart).isBefore(dayjs.utc());
+  }, [rateDialogInfo.lessonStart]);
 
   const rateTutor = useCreateRatingTutor({
     onSuccess: () => setRateDialogInfo(defaultRateDialogInfo),
@@ -89,8 +97,15 @@ const UpcomingLessons: React.FC = () => {
     const student = user?.role == IUser.Role.Student;
     const data = !!rateDialogInfo.tutorId && !!rateDialogInfo.lessonId;
     if (!student || data) return;
-    const { tutorId, lessonId, tutorName } = getRateLessonQuery(params);
-    setRateDialogInfo((prev) => ({ ...prev, tutorId, lessonId, tutorName }));
+    const { tutorId, lessonId, lessonStart, tutorName } =
+      getRateLessonQuery(params);
+    setRateDialogInfo((prev) => ({
+      ...prev,
+      tutorId,
+      lessonId,
+      lessonStart,
+      tutorName,
+    }));
     // Reste url search params
     setParams({});
   }, [
@@ -109,10 +124,14 @@ const UpcomingLessons: React.FC = () => {
       ratingQuery.isPending
     )
       return;
+    // by convention, if the user has already rated the lesson,
+    // his rating shall be in the begining of the response from
+    // the server.
     const rating = first(ratingQuery.data.list);
-    const canRate = !rating || rating.userId !== user.id;
+    const canRate =
+      (!rating || rating.userId !== user.id) && isRatingLessonStarted;
     setRateDialogInfo((prev) => ({ ...prev, canRate }));
-  }, [ratingQuery.data, ratingQuery.isPending, user]);
+  }, [ratingQuery.data, ratingQuery.isPending, user, isRatingLessonStarted]);
 
   return (
     <div className="p-6 max-w-screen-3xl mx-auto w-full h-full">
