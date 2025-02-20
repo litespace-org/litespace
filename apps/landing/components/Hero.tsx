@@ -1,15 +1,28 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import Ellipse from "@/components/Ellipse";
 import cn from "classnames";
 import Link from "next/link";
+import { trackFacebookEvents } from "@/utils/trackConversion";
+import { EventType } from "@/types/conversionEvent";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
+
+  useEffect(() => {
+    trackFacebookEvents({
+      eventName: EventType.PageView,
+      eventSourceUrl: window.location.href,
+      customData: {
+        page: "Home Page",
+      },
+    });
+  }, []);
+
   return (
     <div
       className={cn(
