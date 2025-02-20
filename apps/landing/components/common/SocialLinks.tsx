@@ -25,7 +25,7 @@ const socials = [
     icon: <Whatsapp className="w-8 h-8 fill-brand-500" />,
   },
   {
-    href: "https://www.youtube.com/@litespace_en",
+    href: "https://www.youtube.com/@litespace_eng",
     icon: <Youtube className="w-8 h-8 fill-brand-500" />,
   },
 ];
