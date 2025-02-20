@@ -18,14 +18,24 @@ export const SpeechIndicator: React.FC<{
       );
     if (muted && variant === "large")
       return (
-        <MicrophoneSlash className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
+        <MicrophoneSlash
+          className={cn(
+            "[&>*]:tw-stroke-natural-50",
+            chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+          )}
+        />
       );
     if (!muted && variant === "small")
       return (
         <SoundSmall className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />
       );
     return (
-      <Sound className={cn("[&>*]:tw-stroke-natural-50", chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8")} />
+      <Sound
+        className={cn(
+          "[&>*]:tw-stroke-natural-50",
+          chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+        )}
+      />
     );
   }, [muted, variant, chat]);
 

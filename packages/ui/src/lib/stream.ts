@@ -3,8 +3,7 @@ import { StreamInfo } from "@/components/Session/types";
 export function organizeStreams(
   streams: StreamInfo[],
   currentUserId: number,
-  chat?: boolean,
-  desktop?: boolean,
+  floatingStreams: boolean
 ): {
   focused: StreamInfo | null;
   unfocused: (StreamInfo | null)[];
@@ -34,12 +33,19 @@ export function organizeStreams(
     }
   });
 
-  if (chat && !desktop) return {
-    focused: null,
-    unfocused: [currentUserCast, otherUserCast, currentUserStream, otherUserStream].filter(
-      (stream) => stream !== null
-    ),
-  }
+  /**
+   * if we are on mobile devices and chat is open all will be unfocused
+   */
+  if (floatingStreams)
+    return {
+      focused: null,
+      unfocused: [
+        currentUserCast,
+        otherUserCast,
+        currentUserStream,
+        otherUserStream,
+      ].filter((stream) => stream !== null),
+    };
 
   /**
    * Degree of Hirarchy

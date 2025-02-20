@@ -1,20 +1,22 @@
 import { Void } from "@litespace/types";
 import React from "react";
 import CallIncoming from "@litespace/assets/CallIncoming";
-import { Button } from "@/components/Button";
+import cn from "classnames";
 
 export const EndSession: React.FC<{
   onClick: Void;
 }> = ({ onClick }) => {
   return (
-    <Button
-      className="!tw-w-14 !tw-h-10 lg:!tw-h-12 lg:!tw-w-[72px]"
+    <button
+      className={cn(
+        "tw-rounded-lg tw-w-12 lg:tw-w-14 tw-h-10 lg:tw-h-12 tw-border tw-border-destructive-700 tw-flex tw-items-center tw-justify-center",
+        "tw-transition-colors tw-duration-300",
+        "tw-bg-destructive-50 hover:tw-bg-destructive-100"
+      )}
       onClick={onClick}
-      variant={"secondary"}
-      type={"error"}
     >
       <CallIncoming className="[&>*]:tw-stroke-destructive-700" />
-    </Button>
+    </button>
   );
 };
 

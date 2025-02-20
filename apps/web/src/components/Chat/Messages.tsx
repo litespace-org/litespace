@@ -74,7 +74,7 @@ const Messages: React.FC<{
   inSession?: boolean;
   setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
   select?: SelectRoom;
-  toggleChat?: Void;
+  close?: Void;
 }> = ({
   room,
   otherMember,
@@ -83,7 +83,7 @@ const Messages: React.FC<{
   inSession,
   setTemporaryTutor,
   select,
-  toggleChat,
+  close,
 }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
@@ -304,7 +304,7 @@ const Messages: React.FC<{
           role={otherMember.role}
           online={isOnline}
           book={() => setOpen(true)}
-          back={inSession && toggleChat ? toggleChat : goBack}
+          back={inSession && close ? close : goBack}
           inSession={inSession}
           lastSeen={otherMember.lastSeen}
         />

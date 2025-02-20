@@ -60,7 +60,6 @@ export const Session: React.FC<Props> = ({
   chat,
 }) => {
   const mq = useMediaQuery();
-  console.log(chat.enabled);
 
   return (
     <div className="tw-flex tw-flex-col tw-h-full tw-gap-4 lg:tw-gap-10 tw-pb-[66px]">
@@ -73,26 +72,28 @@ export const Session: React.FC<Props> = ({
             : "tw-flex"
         )}
       >
-        <SessionStreams
-          currentUserId={currentUserId}
-          fullScreen={fullScreen}
-          streams={streams}
-          chat={chat.enabled}
-          timer={timer}
-          alert={alert}
-        />
-
         <AnimatePresence mode="wait">
-          {chat.enabled ? (
-            mq.lg ? (
-              <AnimateWidth key="chat" className="tw-h-full">
-                {chatPanel}
-              </AnimateWidth>
-            ) : (
-              chatPanel
-            )
-          ) : null}
+          <AnimateWidth className="!tw-w-full">
+            <SessionStreams
+              currentUserId={currentUserId}
+              fullScreen={fullScreen}
+              streams={streams}
+              chat={chat.enabled}
+              timer={timer}
+              alert={alert}
+            />
+          </AnimateWidth>
         </AnimatePresence>
+
+        {chat.enabled && mq.lg ? (
+          <AnimatePresence mode="wait">
+            <AnimateWidth key="chat" className="tw-h-full">
+              {chatPanel}
+            </AnimateWidth>
+          </AnimatePresence>
+        ) : null}
+
+        {chat.enabled && !mq.lg ? chatPanel : null}
       </div>
       <div className="tw-hidden lg:tw-block tw-border-t tw-border-natural-400" />
       <ActionsBar

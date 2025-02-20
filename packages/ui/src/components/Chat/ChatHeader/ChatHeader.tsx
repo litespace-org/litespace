@@ -31,7 +31,7 @@ export const ChatHeader: React.FC<{
         <button
           type="button"
           onClick={back}
-          className="tw-w-6 tw-h-6 lg:tw-hidden tw-cursor-pointer"
+          className="tw-w-6 tw-h-6 tw-z-close-chat lg:tw-hidden tw-cursor-pointer"
         >
           <ArrowRightLong />
         </button>

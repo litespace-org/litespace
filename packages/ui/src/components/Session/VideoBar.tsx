@@ -29,15 +29,20 @@ export const VideoBar: React.FC<{
           {alert ? <Alert alert={alert} /> : null}
         </div>
         <div className="tw-flex tw-items-center tw-gap-2 lg:tw-gap-8">
-          <SpeechIndicator speaking={speaking} muted={muted} chat={chat} variant="large" />
+          <SpeechIndicator
+            speaking={speaking}
+            muted={muted}
+            chat={chat}
+            variant="large"
+          />
           <TimerIndicator {...timer} />
         </div>
       </div>
       {alert ? (
         <Typography
-          element="tiny-text"
+          tag="h4"
           className={cn(
-            "lg:hidden tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-semibold tw-h-[42px] tw-backdrop-blur-[15px] tw-p-3 tw-bg-background-internet"
+            "lg:hidden tw-text-tiny tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-semibold tw-h-[42px] tw-backdrop-blur-[15px] tw-p-3 tw-bg-background-internet"
           )}
         >
           {alert}

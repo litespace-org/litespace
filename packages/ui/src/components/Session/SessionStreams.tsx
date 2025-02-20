@@ -29,7 +29,7 @@ export const SessionStreams: React.FC<{
   const containerRef = useRef<HTMLDivElement>(null);
   const mq = useMediaQuery();
   const organizedStreams = useMemo(
-    () => organizeStreams(streams, currentUserId, chat, mq.lg),
+    () => organizeStreams(streams, currentUserId, !!chat && !mq.lg),
     [streams, currentUserId, chat, mq.lg]
   );
 
@@ -56,7 +56,7 @@ export const SessionStreams: React.FC<{
 
       <div
         className={cn(
-          "tw-flex tw-items-center tw-gap-6 tw-p-4 lg:tw-p-0 tw-absolute lg:tw-static tw-z-[99]",
+          "tw-flex tw-items-center tw-gap-6 tw-p-4 lg:tw-p-0 tw-absolute tw-top-10 lg:tw-top-0 lg:tw-static tw-z-floating-streams",
           !chat && "lg:tw-absolute tw-bottom-6 tw-right-6"
         )}
       >

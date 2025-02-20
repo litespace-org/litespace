@@ -54,7 +54,7 @@ export const TimerIndicator: React.FC<{
       >
         {timer}
       </Typography>
-      <Timer className="tw-w-4 tw-h-4 lg:tw-w-8 lg:tw-h-8" />
+      <Timer className="tw-w-4 tw-h-4 lg:tw-w-8 lg:tw-h-8 [&>*]:tw-fill-natural-50" />
     </div>
   );
 };
