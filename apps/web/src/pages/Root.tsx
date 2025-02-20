@@ -9,6 +9,10 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import CompleteProfileBanner from "@/components/Layout/CompleteProfileBanner";
+import ReactGA from "react-ga4";
+import zod from "zod";
+
+const gaId = zod.string();
 
 const Root: React.FC = () => {
   const mq = useMediaQuery();
@@ -17,6 +21,7 @@ const Root: React.FC = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const GA_ID = gaId.parse(process.env.VITE_GA);
 
   useEffect(() => {
     const root = location.pathname === Web.Root;
@@ -53,6 +58,14 @@ const Root: React.FC = () => {
     );
     return !match;
   }, [location.pathname]);
+
+  useEffect(() => {
+    ReactGA.initialize(GA_ID, {
+      gaOptions: {
+        userId: user?.id,
+      },
+    });
+  }, [location.pathname, GA_ID, user]);
 
   return (
     <div className="flex relative w-full">
