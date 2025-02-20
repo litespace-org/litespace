@@ -18,6 +18,7 @@
     "./auth": "./dist/auth.js",
     "./login": "./dist/login.js",
     "./users": "./dist/users.js",
+    "./analytics": "./dist/analytics.js",
     "./rating": "./dist/rating.js",
     "./topic": "./dist/topic.js",
     "./query": "./dist/query.js",
@@ -44,6 +45,7 @@
     "./config": "./dist/config/index.js",
     "./users": "./dist/users.js",
     "./login": "./dist/login.js",
+    "./analytics": "./dist/analytics.js",
     "./topic": "./dist/topic.js",
     "./rating": "./dist/rating.js",
     "./query": "./dist/query.js",
@@ -77,9 +79,10 @@
   },
   "dependencies": {
     "@litespace/atlas": "workspace:^",
-    "@litespace/utils": "workspace:^",
     "@litespace/types": "workspace:^",
-    "hark": "^1.2.3"
+    "@litespace/utils": "workspace:^",
+    "hark": "^1.2.3",
+    "react-ga4": "^2.1.0"
   },
   "peerDependencies": {
     "@tanstack/react-query": "^5.56.2",
