@@ -105,15 +105,14 @@ export const ChatRoom: React.FC<Props> = ({
         </div>
         <div className="tw-text-right tw-grow">
           <Typography
+            tag="label"
             className={cn(
               {
                 "tw-text-natural-50 dark:tw-text-secondary-50": active,
                 "tw-text-natural-950 dark:tw-text-natural-50": !active,
               },
-              "tw-flex tw-gap-2 tw-items-center"
+              "tw-flex tw-gap-2 tw-items-center tw-text-body tw-font-bold"
             )}
-            weight="bold"
-            element="body"
           >
             {name}
             {muted ? (
@@ -129,11 +128,12 @@ export const ChatRoom: React.FC<Props> = ({
           </Typography>
           <Typography
             tag="div"
-            element={actionable ? "caption" : "tiny-text"}
             className={cn("tw-mt-2 tw-text-right tw-flex tw-gap-1", {
               "tw-text-natural-50 dark:tw-text-secondary-50": active,
               "tw-text-natural-600": !active && actionable,
               "tw-text-brand-700": !active && !actionable,
+              "tw-text-caption": actionable,
+              "tw-text-tiny": !actionable,
             })}
           >
             {owner && !active && !typing ? (
@@ -154,8 +154,9 @@ export const ChatRoom: React.FC<Props> = ({
                   })}
                 />
                 <Typography
-                  element="caption"
+                  tag="label"
                   className={cn(
+                    "tw-text-caption",
                     active ? "tw-text-natural-50" : "tw-text-brand-700"
                   )}
                 >
@@ -197,13 +198,12 @@ export const ChatRoom: React.FC<Props> = ({
 
         {unreadCount && !active ? (
           <Typography
-            element="caption"
-            weight="semibold"
+            tag="label"
             className={cn(
               "tw-w-[30px] tw-h-[30px] tw-flex tw-justify-center tw-items-center tw-rounded-full",
               "tw-text-natural-50 tw-bg-brand-700 tw-shadow-unread-count",
               "dark:tw-bg-brand-400 dark:tw-text-secondary-900 dark:tw-shadow-unread-count-dark",
-              "tw-me-2 tw-mb-2"
+              "tw-me-2 tw-mb-2 tw-text-caption tw-font-semibold"
             )}
           >
             {unreadCount}

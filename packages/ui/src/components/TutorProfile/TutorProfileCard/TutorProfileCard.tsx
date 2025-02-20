@@ -94,25 +94,22 @@ export const TutorProfileCard: React.FC<{
           })}
         >
           <Typography
-            element={{ default: "body", md: "h2" }}
-            weight="bold"
-            className="tw-text-natural-950 dark:tw-text-natural-50"
+            tag="label"
+            className="tw-text-natural-950 dark:tw-text-natural-50 tw-text-base md:tw-text-h2 tw-font-bold"
           >
             {name}
           </Typography>
           <div className="tw-flex tw-flex-col tw-gap-1">
             <Typography
-              element={{ default: "tiny-text", md: "subtitle-2" }}
-              weight="semibold"
-              className="tw-text-natural-950 dark:tw-text-natural-50"
+              tag="label"
+              className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
             >
               {bio}
             </Typography>
             {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
               <Typography
-                element={{ default: "tiny-text", md: "subtitle-2" }}
-                weight="semibold"
-                className="tw-text-natural-950 dark:tw-text-natural-50"
+                tag="label"
+                className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
               >
                 {intl("tutor.achievements", {
                   lessonCount: formatNumber(lessonCount),
@@ -124,9 +121,8 @@ export const TutorProfileCard: React.FC<{
           {avgRating > 0 ? (
             <div className="tw-flex tw-items-center tw-gap-1 md:tw-gap-2">
               <Typography
-                element={{ default: "tiny-text", md: "subtitle-2" }}
-                weight="semibold"
-                className="tw-text-natural-950 dark:tw-text-natural-50"
+                tag="label"
+                className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
               >
                 {formatNumber(avgRating, {
                   maximumFractionDigits: 1,

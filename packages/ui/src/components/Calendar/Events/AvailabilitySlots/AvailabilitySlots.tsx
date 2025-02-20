@@ -99,7 +99,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
                     />
                   ) : members.length > VISIBLE_AVATAR_COUNT ? (
                     <div className="tw-flex tw-items-center tw-justify-center tw-bg-natural-500 tw-text-natural-50 tw-shrink-0 tw-w-9 tw-h-9 tw-rounded-full tw-overflow-hidden">
-                      <Typography className="tw-text-sm">
+                      <Typography tag="label" className="tw-text-sm">
                         {members.length - VISIBLE_AVATAR_COUNT}+
                       </Typography>
                     </div>

@@ -28,9 +28,14 @@ export const LoadingError: React.FC<{
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        element={size === "small" ? "tiny-text" : "caption"}
-        weight={size === "small" ? "regular" : "semibold"}
-        className="tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4"
+        tag="label"
+        className={cn(
+          "tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4",
+          {
+            "tw-text-tiny tw-font-semibold": size === "small",
+            "tw-text-caption tw-font-regular": size !== "small",
+          }
+        )}
       >
         {error}
       </Typography>

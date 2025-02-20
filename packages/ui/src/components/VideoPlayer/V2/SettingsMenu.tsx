@@ -66,18 +66,18 @@ export const SettingsMenu: React.FC<{
                 <div className="tw-grow tw-flex tw-items-center tw-gap-1">
                   <PlaybackSpeed />
                   <Typography
-                    element="tiny-text"
-                    weight="semibold"
+                    tag="label"
                     className={cn(
-                      "tw-text-natural-800 tw-font-semibold tw-max-w-24"
+                      "tw-font-semibold tw-text-tiny",
+                      "tw-text-natural-800 tw-font-semibold tw-max-w-24",
                     )}
                   >
                     {intl("media.video.playback-speed")}
                   </Typography>
                 </div>
                 <Typography
-                  element="tiny-text"
-                  className="tw-font-semibold tw-text-natural-800"
+                  tag="label"
+                  className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
                 >
                   {playbackSpeed === 1
                     ? intl("media.video.playback-speed.normal")
@@ -99,18 +99,17 @@ export const SettingsMenu: React.FC<{
                     </button>
                     <PlaybackSpeed />
                     <Typography
-                      element="tiny-text"
-                      weight="semibold"
+                      tag="label"
                       className={cn(
-                        "tw-text-natural-800 tw-font-semibold tw-max-w-24"
+                        "tw-text-natural-800 tw-font-semibold tw-max-w-24 tw-font-semibold tw-text-tiny"
                       )}
                     >
                       {intl("media.video.playback-speed")}
                     </Typography>
                   </div>
                   <Typography
-                    element="tiny-text"
-                    className="tw-font-semibold tw-text-natural-800"
+                    tag="label"
+                    className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
                   >
                     {playbackSpeed === 1
                       ? intl("media.video.playback-speed.normal")

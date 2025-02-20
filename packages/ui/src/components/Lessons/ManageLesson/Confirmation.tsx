@@ -43,9 +43,8 @@ export const Confirmation: React.FC<{
         </div>
         <div className="tw-flex tw-flex-col tw-gap-4">
           <Typography
-            weight="bold"
-            element="subtitle-1"
-            className="tw-text-natural-950"
+            tag="label"
+            className="tw-text-natural-950 tw-text-subtitle-1 tw-font-bold"
           >
             {name}
           </Typography>
@@ -54,9 +53,8 @@ export const Confirmation: React.FC<{
             <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
               <Calendar className="tw-h-6 tw-w-6" />
               <Typography
-                element="subtitle-2"
-                weight="semibold"
-                className="tw-text-natural-950"
+                tag="label"
+                className="tw-text-natural-950 tw-text-subtitle-1 tw-font-semibold"
               >
                 {dayjs(start).format("dddd, D MMMM")}
               </Typography>
@@ -67,9 +65,8 @@ export const Confirmation: React.FC<{
                 <Clock className="tw-w-6 tw-h-6" />
 
                 <Typography
-                  element="subtitle-2"
-                  weight="semibold"
-                  className="tw-text-natural-950"
+                  tag="label"
+                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
                 >
                   {dayjs(start).format("h:mm a")}
                 </Typography>
@@ -78,9 +75,8 @@ export const Confirmation: React.FC<{
                 <Timer className="tw-w-6 tw-h-6" />
 
                 <Typography
-                  element="subtitle-2"
-                  weight="semibold"
-                  className="tw-text-natural-950"
+                  tag="label"
+                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
                 >
                   {formatMinutes(duration)}
                 </Typography>

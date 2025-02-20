@@ -288,9 +288,8 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
         <EmptyLessons className="tw-w-[204px] tw-h-[130px]" />
 
         <Typography
-          element="caption"
-          weight="bold"
-          className="tw-text-natural-950"
+          tag="label"
+          className="tw-text-natural-950 tw-text-caption tw-text-bold"
         >
           {isTutor
             ? intl("tutor-dashboard.past-lessons.empty")
@@ -302,9 +301,8 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
         <Link to={tutorsRoute} className="tw-w-full">
           <Button size="large" className="tw-w-full">
             <Typography
-              element="caption"
-              weight="bold"
-              className="tw-text-neutral-50"
+              tag="label"
+              className="tw-text-neutral-50 tw-text-caption tw-font-bold"
             >
               {intl("student-dashboard.table.search-tutors")}
             </Typography>

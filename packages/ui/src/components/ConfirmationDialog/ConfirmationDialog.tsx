@@ -94,17 +94,15 @@ export const ConfirmationDialog: React.FC<{
           <div className="tw-flex tw-gap-1 tw-flex-col tw-mb-6">
             <Title>
               <Typography
-                element="body"
-                weight="semibold"
-                className="tw-text-natural-950 tw-mb-1"
+                tag="label"
+                className="tw-text-natural-950 tw-mb-1 tw-font-semibold tw-text-body"
               >
                 {title}
               </Typography>
             </Title>
             <Typography
-              element="caption"
-              className="tw-text-natural-700"
-              weight="regular"
+              tag="label"
+              className="tw-text-natural-700 tw-text-caption tw-font-regular"
             >
               {description}
             </Typography>

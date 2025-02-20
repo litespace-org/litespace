@@ -70,12 +70,8 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       )}
     >
       <Typography
-        element={{
-          default: "body",
-          sm: "subtitle-2",
-        }}
-        weight="bold"
-        className="tw-text-natural-950"
+        tag="label"
+        className="tw-text-natural-950 tw-font-bold tw-text-body sm:tw-text-subtitle-2"
       >
         {intl("student-dashboard.upcoming-lessons.title")}
       </Typography>
@@ -118,34 +114,31 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                   </div>
                   <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
                     <Typography
-                      element="caption"
-                      weight="semibold"
-                      className="tw-text-natural-950"
+                      tag="label"
+                      className="tw-text-natural-950 tw-text-caption tw-font-semibold"
                     >
                       {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
                     </Typography>
                     <div className="tw-flex tw-justify-between">
                       <Tooltip
                         content={
-                          <Typography className="tw-text-natuarl-950">
+                          <Typography tag="label" className="tw-text-natuarl-950">
                             {lesson.name}
                           </Typography>
                         }
                       >
                         <div>
                           <Typography
-                            element="tiny-text"
-                            weight="regular"
-                            className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16"
+                            tag="label"
+                            className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-font-regular tw-text-tiny"
                           >
                             {lesson.name}
                           </Typography>
                         </div>
                       </Tooltip>
                       <Typography
-                        element="tiny-text"
-                        weight="regular"
-                        className="tw-block tw-text-natural-600 tw-ms-[18px]"
+                        tag="label"
+                        className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-tiny tw-font-regular"
                       >
                         {dayjs(lesson.start).format("h:mm")}
                         {" - "}
@@ -162,9 +155,8 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
                 <Button size="large" className="tw-w-full">
                   <Typography
-                    element="caption"
-                    weight="semibold"
-                    className="tw-text-natural-50"
+                    tag="label"
+                    className="tw-text-natural-50 tw-font-semibold tw-text-caption"
                   >
                     {intl("student-dashboard.button.show-all-lessons")}
                   </Typography>
@@ -189,9 +181,8 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <div className={cn("tw-flex tw-flex-col tw-items-center tw-gap-6")}>
         <EmptyUpcomingLessons />
         <Typography
-          element={{ default: "caption", sm: "subtitle-1" }}
-          weight={{ default: "bold", sm: "semibold" }}
-          className="tw-text-natural-950"
+          tag="label"
+          className="tw-text-natural-950 tw-font-bold sm:tw-font-semibold tw-text-caption sm:tw-text-subtitle-1"
         >
           {intl("student-dashboard.start-journey")}
         </Typography>
@@ -199,9 +190,8 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <Link to={tutorsUrl} className="tw-intline-block tw-w-full">
         <Button className="tw-w-full" size="large">
           <Typography
-            element="caption"
-            weight="semibold"
-            className="tw-text-natural-50"
+            tag="label"
+            className="tw-text-natural-50 tw-font-semibold tw-text-caption"
           >
             {intl("student-dashboard.button.find-tutors")}
           </Typography>

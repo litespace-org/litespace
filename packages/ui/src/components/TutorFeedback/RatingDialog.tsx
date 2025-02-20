@@ -38,9 +38,8 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
         <div className="tw-flex tw-gap-2 tw-items-center">
           <MessageQuestion />
           <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="tw-text-natural-950"
+            tag="label"
+            className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
           >
             {rating
               ? intl("tutor.rating.edit")
@@ -92,9 +91,8 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
           loading={loading}
         >
           <Typography
-            element="body"
-            weight="bold"
-            className="tw-text-natural-50"
+            tag="label"
+            className="tw-text-natural-50 tw-font-bold tw-text-body"
           >
             {intl("labels.confirm")}
           </Typography>

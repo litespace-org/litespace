@@ -182,13 +182,12 @@ export const ChatMessage: React.FC<{
           <div className="tw-w-4 tw-h-4 tw-shrink-0">{ReadIcon}</div>
         ) : null}
         <Typography
-          element="caption"
-          weight="regular"
+          tag="label"
           style={{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "tw-flex tw-items-end tw-gap-2 tw-max-w-[198px] lg:tw-max-w-[310px]",
+            "tw-flex tw-items-end tw-gap-2 tw-max-w-[198px] lg:tw-max-w-[310px] tw-text-caption tw-font-regular",
             {
               "tw-text-natural-950": !error,
               "tw-text-natural-50": error && !pending,

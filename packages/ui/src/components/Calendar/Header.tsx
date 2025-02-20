@@ -15,17 +15,15 @@ const Header: React.FC<Props> = ({ date, nextWeek, prevWeek }) => {
   return (
     <div>
       <Typography
-        element="subtitle-2"
-        weight="bold"
-        className="tw-text-natural-950 tw-mb-2"
+        tag="label"
+        className="tw-text-natural-950 tw-mb-2 tw-text-subtitle-2 tw-font-bold"
       >
         {date.format("YYYY MMMM")}
       </Typography>
       <div className="tw-flex tw-flex-row tw-justify-between tw-items-center">
         <Typography
-          element="body"
-          weight="semibold"
-          className="tw-text-natural-700"
+          tag="label"
+          className="tw-text-natural-700 tw-text-body tw-font-semibold"
         >
           {date.startOf("week").format("DD MMMM YYYY")}&nbsp;-&nbsp;
           {date.endOf("week").format("DD MMMM YYYY")}
@@ -35,9 +33,8 @@ const Header: React.FC<Props> = ({ date, nextWeek, prevWeek }) => {
             <ArrowRight className="[&>*]:tw-stroke-brand-700" />
           </button>
           <Typography
-            element="body"
-            weight="bold"
-            className="tw-text-natural-950"
+            tag="label"
+            className="tw-text-natural-950 tw-text-body tw-font-bold"
           >
             {date.startOf("week").format("DD MMMM")}&nbsp;-&nbsp;
             {date.endOf("week").format("DD MMMM")}

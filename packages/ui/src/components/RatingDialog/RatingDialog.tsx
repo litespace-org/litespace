@@ -72,9 +72,8 @@ const RatingDialog: React.FC<DialogProps> = ({
         <div className="tw-flex tw-items-center tw-gap-2">
           <Rate />
           <Typography
-            weight="bold"
-            className="tw-text-natural-950"
-            element={{ default: "body", sm: "subtitle-2" }}
+            tag="h1"
+            className="tw-text-natural-950 tw-text-body sm:tw-text-subtitle-2 tw-font-bold"
           >
             {title}
           </Typography>
@@ -85,16 +84,14 @@ const RatingDialog: React.FC<DialogProps> = ({
     >
       <div className="tw-flex tw-flex-col tw-gap-4 sm:tw-gap-6 tw-items-center tw-justify-center tw-mt-4 sm:tw-mt-6">
         <Typography
-          element={{ default: "body", sm: "h4" }}
-          weight="bold"
-          className="tw-text-natural-950 tw-text-center"
+          tag="h2"
+          className="tw-text-natural-950 tw-text-center tw-text-body sm:tw-text-h4 tw-font-bold"
         >
           {header}
         </Typography>
         <Typography
-          element="caption"
-          weight="regular"
-          className="tw-text-natural-950 tw-text-center"
+          tag="p"
+          className="tw-text-natural-950 tw-text-center tw-text-caption tw-font-regular"
         >
           {description}
         </Typography>
@@ -138,8 +135,8 @@ const RatingDialog: React.FC<DialogProps> = ({
             className="tw-w-full"
           >
             <Typography
-              weight="semibold"
-              element={{ default: "caption", sm: "body" }}
+              tag="label"
+              className="tw-font-semibold tw-text-caption sm:tw-text-body"
             >
               {intl("rating-dialog.submit")}
             </Typography>
@@ -152,8 +149,8 @@ const RatingDialog: React.FC<DialogProps> = ({
             className="tw-w-full"
           >
             <Typography
-              weight="semibold"
-              element={{ default: "caption", sm: "body" }}
+              tag="label"
+              className="tw-font-semibold tw-text-caption sm:tw-text-body"
             >
               {intl(skippable ? "labels.skip" : "labels.cancel")}
             </Typography>
