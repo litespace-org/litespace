@@ -135,7 +135,7 @@ const RatingDialog: React.FC<DialogProps> = ({
             className="tw-w-full"
           >
             <Typography
-              tag="label"
+              tag="span"
               className="tw-font-semibold tw-text-caption sm:tw-text-body"
             >
               {intl("rating-dialog.submit")}
@@ -149,7 +149,7 @@ const RatingDialog: React.FC<DialogProps> = ({
             className="tw-w-full"
           >
             <Typography
-              tag="label"
+              tag="span"
               className="tw-font-semibold tw-text-caption sm:tw-text-body"
             >
               {intl(skippable ? "labels.skip" : "labels.cancel")}

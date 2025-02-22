@@ -156,14 +156,14 @@ export const Card: React.FC<{
           {icon}
         </div>
         <Typography
-          tag="label"
-          className="tw-text-natural-600 tw-text-sm tw-font-normal"
+          tag="h1"
+          className="tw-text-natural-600 tw-text-caption tw-font-normal"
         >
           {intl(title)}
         </Typography>
       </div>
       <Typography
-        tag="label"
+        tag="p"
         className={cn(
           "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b",
           "tw-text-base sm:tw-text-[2.5rem] tw-font-bold sm:tw-font-semibold"

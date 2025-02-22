@@ -90,7 +90,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
     <Dialog
       title={
         <Typography
-          tag="div"
+          tag="h1"
           className="tw-text-natural-950 tw-font-bold tw-text-body sm:tw-text-subtitle-1"
         >
           {title}
@@ -103,7 +103,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
     >
       <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
         <Typography
-          tag="label"
+          tag="p"
           className="tw-text-natural-950 tw-mt-2 tw-font-semibold tw-text-tiny sm:tw-text-caption"
         >
           {description}
@@ -163,7 +163,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                   onClick={() => onSelect(topic.id)}
                 >
                   <Typography
-                    tag="label"
+                    tag="span"
                     className="tw-font-medium tw-text-tiny sm:tw-text-caption md:tw-text-body"
                   >
                     {topic.label}

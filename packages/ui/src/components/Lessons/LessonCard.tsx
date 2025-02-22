@@ -181,8 +181,8 @@ export const LessonCard: React.FC<Props> = ({
       loading={sendingMessage}
     >
       <Typography
-        tag="label"
-        className="tw-text-natural-50 tw-text-sm tw-font-semibold"
+        tag="span"
+        className="tw-text-natural-50 tw-text-caption tw-font-semibold"
       >
         {action.label}
       </Typography>
@@ -201,8 +201,10 @@ export const LessonCard: React.FC<Props> = ({
           <div className="tw-flex tw-gap-2 tw-items-center">
             <CheckCircle className="[&>*]:tw-stroke-brand-700" />
             <Typography
-              tag="label"
-              className={cn("tw-text-brand-700 tw-line-clamp-1 tw-truncate tw-text-sm tw-font-semibold")}
+              tag="span"
+              className={cn(
+                "tw-text-brand-700 tw-line-clamp-1 tw-truncate tw-text-caption tw-font-semibold"
+              )}
             >
               {intl("lessons.end")}
             </Typography>
@@ -210,9 +212,9 @@ export const LessonCard: React.FC<Props> = ({
         ) : (
           <>
             <Typography
-              tag="label"
+              tag="h1"
               className={cn(
-                "tw-line-clamp-1 tw-text-sm tw-font-semibold",
+                "tw-line-clamp-1 tw-text-caption tw-font-semibold",
                 !canceled ? "tw-text-brand-700" : "tw-text-destructive-600"
               )}
             >
@@ -237,20 +239,20 @@ export const LessonCard: React.FC<Props> = ({
           </div>
           <div className="tw-flex tw-flex-col tw-gap-1">
             <Typography
-              tag="label"
-              className="tw-text-sm tw-font-bold tw-text-[14px] tw-leading-[21px] tw-text-natural-950"
+              tag="span"
+              className="tw-text-caption tw-font-bold tw-text-[14px] tw-leading-[21px] tw-text-natural-950"
             >
               {member.name}
             </Typography>
             <Typography
-              tag="label"
-              className="tw-text-natural-700 tw-text-xs tw-font-normal"
+              tag="span"
+              className="tw-text-natural-700 tw-text-tiny tw-font-normal"
             >
               {dayjs(start).format("dddd، D MMMM")}
             </Typography>
             <Typography
-              tag="label"
-              className="tw-text-natural-700 tw-flex tw-items-center tw-text-xs tw-font-normal"
+              tag="span"
+              className="tw-text-natural-700 tw-flex tw-items-center tw-text-tiny tw-font-normal"
             >
               {dayjs(start).format("h:mm a")}
               {" - "}

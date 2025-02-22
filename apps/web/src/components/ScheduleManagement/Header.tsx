@@ -29,16 +29,14 @@ const Header: React.FC<Props> = ({
     <div className="flex flex-row justify-between items-center gap-6">
       <div>
         <Typography
-          element="subtitle-2"
-          weight="bold"
-          className="text-natural-950 mb-2"
+          tag="span"
+          className="text-natural-950 mb-2 text-subtitle-2 font-bold"
         >
           {date.format("YYYY MMMM")}
         </Typography>
         <Typography
-          element="body"
-          weight="semibold"
-          className="text-natural-700"
+          tag="span"
+          className="text-natural-700 text-body font-semibold"
         >
           {date.startOf("week").format("DD MMMM YYYY")}&nbsp;-&nbsp;
           {date.endOf("week").format("DD MMMM YYYY")}
@@ -49,7 +47,7 @@ const Header: React.FC<Props> = ({
         <button onClick={prevWeek} type="button">
           <ArrowRight className="[&>*]:stroke-brand-700" />
         </button>
-        <Typography element="body" weight="bold" className="text-natural-950">
+        <Typography tag="span" className="text-natural-950 text-body font-bold">
           {date.startOf("week").format("DD MMMM")}&nbsp;-&nbsp;
           {date.endOf("week").format("DD MMMM")}
         </Typography>

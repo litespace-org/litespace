@@ -41,9 +41,8 @@ const PersonalSettings: React.FC<{
       <div className="flex flex-row gap-[192px] justify-start">
         <div className="flex flex-col gap-6 w-full max-w-[400px]">
           <Typography
-            element="subtitle-1"
-            weight="bold"
-            className="text-natural-950"
+            tag="h1"
+            className="text-natural-950 text-subtitle-1 font-bold"
           >
             {intl("tutor-settings.account-settings.title")}
           </Typography>
@@ -78,9 +77,8 @@ const PersonalSettings: React.FC<{
         </div>
         <div className="flex flex-col gap-6 max-w-[400px] w-full">
           <Typography
-            element="subtitle-1"
-            weight="bold"
-            className="text-natural-950"
+            tag="h2"
+            className="text-natural-950 text-subtitle-1 font-bold"
           >
             {intl("tutor-settings.account-settings.password.title")}
           </Typography>

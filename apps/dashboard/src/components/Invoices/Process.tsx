@@ -181,7 +181,9 @@ const Process: React.FC<{
             </Button>
             {receipt ? (
               <div className="flex gap-1">
-                <Typography element="caption">{receipt.name}</Typography>
+                <Typography tag="span" className="text-caption">
+                  {receipt.name}
+                </Typography>
                 <button
                   type="button"
                   className="hover:cursor-pointer"

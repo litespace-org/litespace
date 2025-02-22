@@ -62,9 +62,11 @@ const SidebarItem = ({
         )}
       />
       <Typography
-        element={{ default: "tiny-text", lg: "caption" }}
-        weight={{ default: "regular", lg: "semibold" }}
-        className={cn(active ? "text-natural-50" : "text-natural-700")}
+        tag="span"
+        className={cn(
+          active ? "text-natural-50" : "text-natural-700",
+          "text-tiny lg:text-caption font-regular lg:font-semibold"
+        )}
       >
         {label}
       </Typography>
@@ -190,9 +192,8 @@ const Sidebar: React.FC<{
       <Link to={Route.Root} className="flex items-center gap-1 md:gap-2">
         <Logo className="h-6 md:h-[50px]" />
         <Typography
-          element={{ default: "tiny-text", lg: "subtitle-2" }}
-          weight="bold"
-          className="inline-block text-brand-500"
+          tag="h1"
+          className="inline-block text-brand-500 text-tiny lg:text-subtitle-2 font-bold"
         >
           {intl("labels.litespace")}
         </Typography>
@@ -200,9 +201,8 @@ const Sidebar: React.FC<{
 
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
-          element={{ default: "tiny-text", lg: "caption" }}
-          weight="bold"
-          className="text-natural-800 md:py-2"
+          tag="span"
+          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold"
         >
           {intl("sidebar.main")}
         </Typography>
@@ -221,9 +221,8 @@ const Sidebar: React.FC<{
 
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
-          element={{ default: "tiny-text", lg: "caption" }}
-          className="text-natural-800 md:py-2"
-          weight="bold"
+          tag="span"
+          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold"
         >
           {intl("sidebar.settings")}
         </Typography>
@@ -264,8 +263,8 @@ const Sidebar: React.FC<{
           >
             <Logout className="h-4 w-4 lg:h-6 lg:w-6" />
             <Typography
-              element={{ default: "tiny-text", lg: "caption" }}
-              className="text-destructive-400 active:bg-destructive-400 active:text-natural-50"
+              tag="span"
+              className="text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption"
             >
               {intl("sidebar.logout")}
             </Typography>
@@ -279,16 +278,14 @@ const Sidebar: React.FC<{
         <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
           <div className="mx-2 lg:mx-0 px-4 mb-3">
             <Typography
-              element={{ default: "tiny-text", lg: "caption" }}
-              weight={{ default: "bold", lg: "semibold" }}
-              className="text-natural-950 inline-block"
+              tag="h1"
+              className="text-natural-950 inline-block text-tiny lg:text-caption font-bold lg:font-semibold"
             >
               {intl("sidebar.account-promotion.title")}
             </Typography>
             <Typography
-              element={{ default: "tiny-text", lg: "caption" }}
-              weight={{ default: "regular", lg: "medium" }}
-              className="text-natural-700 inline-block"
+              tag="p"
+              className="text-natural-700 inline-block text-tiny lg:text-caption font-regular lg:font-medium"
             >
               {intl("sidebar.account-promotion.description")}
             </Typography>
@@ -296,9 +293,8 @@ const Sidebar: React.FC<{
           <Link to={Route.Subscription}>
             <Button size={"small"} htmlType="button">
               <Typography
-                element="caption"
-                weight="semibold"
-                className="text-natural-50"
+                tag="span"
+                className="text-natural-50 text-caption font-semibold"
               >
                 {intl("navbar.subscribe-now")}
               </Typography>

@@ -70,7 +70,7 @@ const List: React.FC<{
           const status = info.getValue();
           const value = invoiceStatusIntlMap[status];
           return (
-            <Typography element="body" className="truncate">
+            <Typography tag="span" className="truncate text-body">
               {intl(value)}
             </Typography>
           );

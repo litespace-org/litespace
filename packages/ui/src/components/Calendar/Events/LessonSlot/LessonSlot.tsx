@@ -63,7 +63,7 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
             />
           </div>
           <Typography
-            tag="label"
+            tag="span"
             className={cn(
               "tw-w-full tw-truncate tw-font-semibold tw-text-tiny",
               canceled ? "tw-text-destructive-600" : "tw-text-natural-700"
@@ -75,7 +75,7 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
 
         <div className="tw-flex tw-items-center tw-justify-center tw-mt-2">
           <Typography
-            tag="label"
+            tag="span"
             className={cn(
               "tw-font-semibold tw-text-tiny",
               canceled ? "tw-text-destructive-600" : "tw-text-brand-700"
@@ -269,7 +269,7 @@ const EventGroupItem: React.FC<
         </div>
 
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-700 tw-w-3/5 tw-truncate tw-font-semibold tw-text-tiny"
         >
           {otherMember.name || "-"}

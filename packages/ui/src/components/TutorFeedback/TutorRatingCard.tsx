@@ -93,8 +93,10 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
 
       {!isEditing && !feedback ? null : (
         <Typography
-          tag="label"
-          className={cn("tw-line-clamp-5 tw-text-center tw-text-natural-800 tw-font-semibold tw-tiny")}
+          tag="span"
+          className={cn(
+            "tw-line-clamp-5 tw-text-center tw-text-natural-800 tw-font-semibold tw-tiny"
+          )}
         >
           {!feedback && isEditing
             ? intl("tutor.rating.feedback.placeholder")
@@ -103,10 +105,13 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
       )}
 
       <Typography
-        tag="label"
-        className={cn("tw-text-brand-950 tw-text-center tw-font-bold tw-text-body md:tw-text-caption", {
-          "tw-mt-auto": feedback,
-        })}
+        tag="span"
+        className={cn(
+          "tw-text-brand-950 tw-text-center tw-font-bold tw-text-body md:tw-text-caption",
+          {
+            "tw-mt-auto": feedback,
+          }
+        )}
       >
         {studentName
           ? studentName

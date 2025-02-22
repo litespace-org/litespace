@@ -30,9 +30,8 @@ const Topics: React.FC<{
     <div>
       <div className="flex justify-between items-center">
         <Typography
-          element="subtitle-1"
-          weight="bold"
-          className="text-natural-950"
+          tag="h2"
+          className="text-natural-950 text-subtitle-1 font-bold"
         >
           {intl("tutor-settings.personal-info.topics")}
         </Typography>
@@ -42,9 +41,8 @@ const Topics: React.FC<{
           className="flex gap-2 items-center"
         >
           <Typography
-            element="caption"
-            weight="semibold"
-            className="text-brand-700"
+            tag="span"
+            className="text-brand-700 text-caption font-semibold"
           >
             {intl("global.labels.edit")}
           </Typography>
@@ -54,7 +52,7 @@ const Topics: React.FC<{
       <div className="flex gap-4 flex-wrap mt-[21px]">
         {topics.map((topic) => (
           <div className="bg-brand-700 rounded-3xl py-3 px-4" key={topic.id}>
-            <Typography className="text-natural-50" element="caption">
+            <Typography tag="span" className="text-natural-50 text-caption">
               {topic.label}
             </Typography>
           </div>
@@ -140,9 +138,8 @@ const PublicSettings: React.FC<{
   return (
     <div className="flex flex-col gap-6 p-10">
       <Typography
-        element="subtitle-1"
-        weight="bold"
-        className="text-natural-950"
+        tag="h1"
+        className="text-natural-950 text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.title")}
       </Typography>
@@ -175,9 +172,8 @@ const PublicSettings: React.FC<{
       />
 
       <Typography
-        element="subtitle-1"
-        weight="bold"
-        className="text-natural-950"
+        tag="h2"
+        className="text-natural-950 text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.about")}
       </Typography>
@@ -190,9 +186,8 @@ const PublicSettings: React.FC<{
         name="about"
       />
       <Typography
-        element="subtitle-1"
-        weight="bold"
-        className="text-natural-950"
+        tag="h2"
+        className="text-natural-950 text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.video")}
       </Typography>

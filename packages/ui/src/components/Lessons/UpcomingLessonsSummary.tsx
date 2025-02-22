@@ -70,7 +70,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       )}
     >
       <Typography
-        tag="label"
+        tag="h2"
         className="tw-text-natural-950 tw-font-bold tw-text-body sm:tw-text-subtitle-2"
       >
         {intl("student-dashboard.upcoming-lessons.title")}
@@ -114,7 +114,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                   </div>
                   <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
                     <Typography
-                      tag="label"
+                      tag="span"
                       className="tw-text-natural-950 tw-text-caption tw-font-semibold"
                     >
                       {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
@@ -122,14 +122,17 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                     <div className="tw-flex tw-justify-between">
                       <Tooltip
                         content={
-                          <Typography tag="label" className="tw-text-natuarl-950">
+                          <Typography
+                            tag="span"
+                            className="tw-text-natuarl-950"
+                          >
                             {lesson.name}
                           </Typography>
                         }
                       >
                         <div>
                           <Typography
-                            tag="label"
+                            tag="span"
                             className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-font-regular tw-text-tiny"
                           >
                             {lesson.name}
@@ -137,7 +140,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                         </div>
                       </Tooltip>
                       <Typography
-                        tag="label"
+                        tag="span"
                         className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-tiny tw-font-regular"
                       >
                         {dayjs(lesson.start).format("h:mm")}
@@ -155,7 +158,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
               <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
                 <Button size="large" className="tw-w-full">
                   <Typography
-                    tag="label"
+                    tag="span"
                     className="tw-text-natural-50 tw-font-semibold tw-text-caption"
                   >
                     {intl("student-dashboard.button.show-all-lessons")}
@@ -181,7 +184,7 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <div className={cn("tw-flex tw-flex-col tw-items-center tw-gap-6")}>
         <EmptyUpcomingLessons />
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-950 tw-font-bold sm:tw-font-semibold tw-text-caption sm:tw-text-subtitle-1"
         >
           {intl("student-dashboard.start-journey")}
@@ -190,7 +193,7 @@ const EmptyUpcomingLessonsComponent: React.FC<{
       <Link to={tutorsUrl} className="tw-intline-block tw-w-full">
         <Button className="tw-w-full" size="large">
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-50 tw-font-semibold tw-text-caption"
           >
             {intl("student-dashboard.button.find-tutors")}

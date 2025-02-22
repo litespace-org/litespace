@@ -53,20 +53,17 @@ export const ChatHeader: React.FC<{
         </div>
         <div>
           <Typography
-            tag="label"
+            tag="span"
             className={"tw-text-natural-950 tw-text-subtitle-2 tw-text-body"}
           >
             {name}
           </Typography>
           <Typography
-            tag="label"
-            className={cn(
-              "tw-text-tiny lg:tw-text-caption",
-              {
-                "tw-text-primary-700": online,
-                "tw-text-natural-700": !online,
-              }
-            )}
+            tag="span"
+            className={cn("tw-text-tiny lg:tw-text-caption", {
+              "tw-text-primary-700": online,
+              "tw-text-natural-700": !online,
+            })}
           >
             {online
               ? intl("chat.online")

@@ -51,7 +51,7 @@ const EmailVerification: React.FC<{ root: string; onVerification: Void }> = ({
   if (mutation.isError)
     return (
       <div className="tw-h-screen tw-flex tw-items-center tw-justify-center">
-        <Typography tag="label" className="tw-text-[2.5rem]">
+        <Typography tag="span" className="tw-text-[2.5rem]">
           {intl("page.verify.email.redirect")}
         </Typography>
       </div>

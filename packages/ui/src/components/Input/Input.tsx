@@ -50,13 +50,10 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <Typography
             tag="label"
             htmlFor={props.id}
-            className={cn(
-              "tw-text-sm tw-font-semibold",
-              {
-                "tw-text-natural-950": !disabled,
-                "tw-text-natural-500": disabled,
-              }
-            )}
+            className={cn("tw-text-caption tw-font-semibold", {
+              "tw-text-natural-950": !disabled,
+              "tw-text-natural-500": disabled,
+            })}
           >
             {label}
           </Typography>
@@ -130,21 +127,18 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {helper ? (
             <Helper>
               <Typography
-                tag="label"
-                className={cn(
-                  "tw-text-xs tw-font-semibold",
-                  {
-                    // Default or filled
-                    "tw-text-natural-600 group-focus-within:tw-text-natural-600":
-                      !state && !disabled,
-                    // Success
-                    "tw-text-success-600": state === "success",
-                    // Error
-                    "tw-text-destructive-600": state === "error",
-                    // Disabled
-                    "tw-text-natural-500": disabled,
-                  }
-                )}
+                tag="span"
+                className={cn("tw-text-tiny tw-font-semibold", {
+                  // Default or filled
+                  "tw-text-natural-600 group-focus-within:tw-text-natural-600":
+                    !state && !disabled,
+                  // Success
+                  "tw-text-success-600": state === "success",
+                  // Error
+                  "tw-text-destructive-600": state === "error",
+                  // Disabled
+                  "tw-text-natural-500": disabled,
+                })}
               >
                 {helper}
               </Typography>

@@ -182,7 +182,7 @@ export const ChatMessage: React.FC<{
           <div className="tw-w-4 tw-h-4 tw-shrink-0">{ReadIcon}</div>
         ) : null}
         <Typography
-          tag="label"
+          tag="span"
           style={{
             lineBreak: "anywhere",
           }}

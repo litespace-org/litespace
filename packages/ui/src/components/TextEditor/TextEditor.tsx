@@ -86,7 +86,7 @@ export const TextEditor: React.FC<{
             "tw-text-foreground focus-visible:tw-shadow-md tw-outline-none",
             "focus:tw-ring-current focus:tw-ring-2 focus-visible:tw-border-foreground-muted",
             "focus-visible:tw-ring-background-control tw-placeholder-foreground-muted",
-            "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-4",
+            "tw-border tw-border-control tw-text-caption tw-px-4 tw-py-4",
             "aria-disabled:tw-opacity-50 aria-disabled:tw-cursor-not-allowed",
             {
               "tw-bg-foreground/[.026]": !error,
@@ -103,7 +103,10 @@ export const TextEditor: React.FC<{
       <AnimatePresence mode="wait" initial={false}>
         {error ? (
           <Helper>
-            <Typography tag="label" className="tw-text-destructive-500 tw-text-xs">
+            <Typography
+              tag="span"
+              className="tw-text-destructive-500 tw-text-tiny"
+            >
               {error}
             </Typography>
           </Helper>

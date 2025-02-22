@@ -12,8 +12,8 @@ export const Label: React.FC<{
       tag="label"
       htmlFor={id}
       className={cn(
-        "tw-block tw-text-natural-950 tw-mb-2", 
-        "tw-text-xl tw-font-normal",
+        "tw-block tw-text-natural-950 tw-mb-2",
+        "tw-text-subtitle-2 tw-font-normal",
         className
       )}
     >

@@ -57,7 +57,7 @@ export const RateLesson: React.FC<{
         <div className="tw-flex tw-items-center tw-gap-2">
           <Rate />
           <Typography
-            tag="label"
+            tag="h2"
             className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
           >
             {intl("session.rating.title")}
@@ -68,7 +68,7 @@ export const RateLesson: React.FC<{
     >
       <div className="tw-flex tw-flex-col tw-gap-6 tw-items-center tw-justify-center tw-mt-6">
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-950 tw-text-center tw-font-bold tw-text-h4"
         >
           {type === "session"
@@ -76,7 +76,7 @@ export const RateLesson: React.FC<{
             : intl("platform.rating.question")}
         </Typography>
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-950 tw-text-center tw-font-regular tw-text-caption"
         >
           {type === "session"

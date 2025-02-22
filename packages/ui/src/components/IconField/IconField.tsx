@@ -13,7 +13,7 @@ export const Field: React.FC<{
       <div>
         <Icon className="tw-w-5 tw-h-5 md:tw-w-6 md:tw-h-6" />
       </div>
-      <p className="tw-text-sm md:tw-text-base">{children}</p>
+      <p className="tw-text-caption md:tw-text-base">{children}</p>
     </li>
   );
 };

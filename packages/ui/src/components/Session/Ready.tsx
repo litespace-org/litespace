@@ -70,13 +70,13 @@ export const Ready: React.FC<{
     <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-w-full tw-text-center">
       <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
         <Typography
-          tag="label"
+          tag="h3"
           className="tw-font-bold tw-text-natural-950 tw-text-subtitle-1"
         >
           {intl("session.ready.title")}
         </Typography>
         <Typography
-          tag="label"
+          tag="p"
           className="tw-text-success-700 tw-font-semibold tw-text-caption"
         >
           {explaination}
@@ -90,7 +90,9 @@ export const Ready: React.FC<{
             alt={orUndefined(otherMember.name)}
           />
         </div>
-        <Typography tag="label" className="tw-text-subtitle-1">{otherMember.name}</Typography>
+        <Typography tag="span" className="tw-text-subtitle-1">
+          {otherMember.name}
+        </Typography>
       </div>
       <Button
         size={"large"}

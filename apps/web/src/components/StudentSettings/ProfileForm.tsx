@@ -181,9 +181,8 @@ export const ProfileForm: React.FC<{
       <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
         <div className="flex-1 flex flex-col lg:max-w-[400px]">
           <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="text-natural-950"
+            tag="h2"
+            className="text-natural-950 text-subtitle-2 font-bold"
           >
             {intl("student-settings.edit.personal.title")}
           </Typography>
@@ -257,9 +256,8 @@ export const ProfileForm: React.FC<{
 
         <div className="flex-1 flex flex-col">
           <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="text-natural-950"
+            tag="h2"
+            className="text-natural-950 text-subtitle-2 font-bold"
           >
             {intl("shared-settings.edit.password.title")}
           </Typography>
@@ -344,9 +342,8 @@ const SaveButton: React.FC<{
       htmlType="submit"
     >
       <Typography
-        element={{ default: "caption", lg: "body" }}
-        weight={{ default: "medium" }}
-        className="text-natural-50"
+        tag="span"
+        className="text-natural-50 text-caption lg:text-body font-medium"
       >
         {intl("shared-settings.save")}
       </Typography>

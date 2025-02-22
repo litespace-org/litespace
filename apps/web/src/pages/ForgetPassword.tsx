@@ -90,15 +90,14 @@ const ForgetPassword: React.FC = () => {
                 <Animate key="form">
                   <div className="flex flex-col items-start sm:items-center gap-4 sm:gap-2 text-start sm:text-center max-w-[363px] mb-6 sm:mb-10 sm:mx-auto">
                     <Typography
-                      element={{ default: "subtitle-1", lg: "h4" }}
-                      weight="semibold"
-                      className="text-natural-950"
+                      tag="h1"
+                      className="text-natural-950 text-subtitle-1 lg:text-h4 font-semibold"
                     >
                       {intl("forget-password.title")}
                     </Typography>
                     <Typography
-                      element={{ default: "tiny-text", lg: "body" }}
-                      className="text-natural-700"
+                      tag="p"
+                      className="text-natural-700 text-tiny lg:text-body"
                     >
                       {intl("forget-password.description")}
                     </Typography>
@@ -135,14 +134,13 @@ const ForgetPassword: React.FC = () => {
                   </Form>
 
                   <div className="w-full text-center">
-                    <Typography element="caption" weight="medium">
+                    <Typography tag="span" className="text-caption font-medium">
                       {intl("forget-password.password-remembered")}
                     </Typography>
                     <Link to={Route.Login} className="px-1">
                       <Typography
-                        element="caption"
-                        weight="medium"
-                        className="text-brand-700"
+                        tag="span"
+                        className="text-brand-700 text-caption font-medium"
                       >
                         {intl("labels.login")}
                       </Typography>
@@ -155,15 +153,14 @@ const ForgetPassword: React.FC = () => {
                 <Animate key="email-sent">
                   <div className="flex flex-col items-start sm:items-center text-right sm:text-center justify-center gap-4 sm:gap-2 mb-6">
                     <Typography
-                      element={{ default: "subtitle-1", lg: "h4" }}
-                      weight={{ default: "bold", lg: "semibold" }}
-                      className="text-natural-950 w-[230px] sm:w-auto"
+                      tag="span"
+                      className="text-natural-950 w-[230px] sm:w-auto text-subtitle-1 lg:text-h4 font-bold lg:font-semibold"
                     >
                       {intl("forget-password.check-inbox")}
                     </Typography>
                     <Typography
-                      element={{ default: "tiny-text", lg: "body" }}
-                      className="text-natural-700"
+                      tag="p"
+                      className="text-natural-700 text-tiny lg:text-body"
                     >
                       {intl("forget-password.check-inbox.description")}
                     </Typography>
@@ -177,7 +174,7 @@ const ForgetPassword: React.FC = () => {
                       setSentEmail(false);
                     }}
                   >
-                    <Typography weight="semibold">
+                    <Typography tag="span" className="font-semibold">
                       {intl("forget-password.re-send-email")}
                     </Typography>
                   </Button>

@@ -114,7 +114,7 @@ const SlotRow: React.FC<{
           />
         </div>
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-500 tw-text-base tw-font-bold"
         >
           -

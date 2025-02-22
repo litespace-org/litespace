@@ -7,8 +7,10 @@ const Detail: React.FC<{
 }> = ({ label, children }) => {
   return (
     <div>
-      <Typography element="subtitle-1">{label}</Typography>
-      <Typography element="body" tag="div" className="text-foreground-lighter">
+      <Typography tag="h1" className="text-subtitle-1">
+        {label}
+      </Typography>
+      <Typography tag="p" className="text-foreground-lighter text-body">
         {children}
       </Typography>
     </div>

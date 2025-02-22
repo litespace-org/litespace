@@ -77,13 +77,13 @@ export const ChatMessageGroup: React.FC<{
           })}
         >
           <Typography
-            tag="label"
+            tag="span"
             className="tw-font-semibold tw-text-natural-950 dark:tw-text-natural-50 tw-text-body"
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-400 dark:tw-text-natural-300 tw-text-tiny"
           >
             {dayjs(sentAt).format("hh:mm a")}

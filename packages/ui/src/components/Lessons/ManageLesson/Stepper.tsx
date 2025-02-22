@@ -59,7 +59,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
               >
                 {isCurrent || isAfter ? (
                   <Typography
-                    tag="label"
+                    tag="span"
                     className="tw-text-natural-50 tw-text-body tw-font-medium"
                   >
                     {index}
@@ -79,7 +79,7 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
               </div>
             </div>
             <Typography
-              tag="label"
+              tag="span"
               className={cn("tw-text-tiny", {
                 "tw-text-brand-700": isBefore || isCurrent,
                 "tw-text-natural-400": isAfter,

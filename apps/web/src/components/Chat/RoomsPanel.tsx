@@ -66,9 +66,8 @@ const RoomsPanel: React.FC<{
     >
       <div className="mb-6">
         <Typography
-          weight="bold"
-          element={{ default: "body", lg: "subtitle-2" }}
-          className=" text-natural-950 mb-6"
+          tag="h1"
+          className=" text-natural-950 mb-6 text-body lg:text-subtitle-2 font-bold"
         >
           {intl("chat.title")}
         </Typography>

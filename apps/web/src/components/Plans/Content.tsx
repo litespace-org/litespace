@@ -101,16 +101,14 @@ const Content: React.FC<{
     <div>
       <div className="flex flex-col gap-2 md:gap-4 justify-center items-center text-center mb-16">
         <Typography
-          element={{ default: "caption", lg: "h3" }}
-          weight="semibold"
-          className="text-natural-950"
+          tag="h1"
+          className="text-natural-950 text-caption lg:text-h3 font-semibold"
         >
           {intl("plans.message.title")}
         </Typography>
         <Typography
-          element={{ default: "tiny-text", lg: "subtitle-1" }}
-          weight={{ default: "regular", lg: "semibold" }}
-          className="text-natural-600 sm:max-w-4xl inline"
+          tag="p"
+          className="text-natural-600 sm:max-w-4xl inline text-tiny lg:text-subtitle-1 font-regular lg:font-semibold"
         >
           {intl("plans.message.description")}
         </Typography>
@@ -132,9 +130,8 @@ const Content: React.FC<{
                 {value === "half" ? (
                   <>
                     <Typography
-                      element="tiny-text"
-                      weight="regular"
-                      className="absolute -top-[50px] md:-top-[57px] -right-[130px] md:-right-[115px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
+                      tag="span"
+                      className="absolute -top-[50px] md:-top-[57px] -right-[130px] md:-right-[115px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-regular"
                     >
                       {intl("plans.installments.three-month")}
                     </Typography>
@@ -146,9 +143,8 @@ const Content: React.FC<{
                 {value === "annual" ? (
                   <>
                     <Typography
-                      element="tiny-text"
-                      weight="regular"
-                      className="absolute min-w-[106px] -bottom-[50px] md:-bottom-[20px] left-9 md:-left-[145px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2"
+                      tag="span"
+                      className="absolute min-w-[106px] -bottom-[50px] md:-bottom-[20px] left-9 md:-left-[145px] text-brand-600 bg-natural-50 rounded-[30px] shadow-plan-tooltip p-2 text-tiny font-regular"
                     >
                       {intl("plans.installments.six-month")}
                     </Typography>
@@ -164,10 +160,9 @@ const Content: React.FC<{
                 ) : null}
 
                 <Typography
-                  element={lg ? "body" : "caption"}
-                  weight="semibold"
+                  tag="span"
                   className={cn(
-                    "transition-colors duration-300",
+                    "transition-colors duration-300 text-caption lg:text-body font-semibold",
                     value === tab ? "text-brand-700" : "text-natural-500"
                   )}
                 >

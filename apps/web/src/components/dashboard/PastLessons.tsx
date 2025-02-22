@@ -111,12 +111,8 @@ export const PastLessons: React.FC = () => {
       )}
     >
       <Typography
-        element={{
-          default: "body",
-          sm: "subtitle-2",
-        }}
-        weight="bold"
-        className="text-natural-950 "
+        tag="h1"
+        className="text-natural-950 font-bold text-body sm:text-subtitle-2"
       >
         {user?.role === IUser.Role.Student
           ? intl("student-dashboard.past-lessons.title")

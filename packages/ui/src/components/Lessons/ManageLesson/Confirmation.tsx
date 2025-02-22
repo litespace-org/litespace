@@ -43,7 +43,7 @@ export const Confirmation: React.FC<{
         </div>
         <div className="tw-flex tw-flex-col tw-gap-4">
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-950 tw-text-subtitle-1 tw-font-bold"
           >
             {name}
@@ -53,7 +53,7 @@ export const Confirmation: React.FC<{
             <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
               <Calendar className="tw-h-6 tw-w-6" />
               <Typography
-                tag="label"
+                tag="span"
                 className="tw-text-natural-950 tw-text-subtitle-1 tw-font-semibold"
               >
                 {dayjs(start).format("dddd, D MMMM")}
@@ -65,7 +65,7 @@ export const Confirmation: React.FC<{
                 <Clock className="tw-w-6 tw-h-6" />
 
                 <Typography
-                  tag="label"
+                  tag="span"
                   className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
                 >
                   {dayjs(start).format("h:mm a")}
@@ -75,7 +75,7 @@ export const Confirmation: React.FC<{
                 <Timer className="tw-w-6 tw-h-6" />
 
                 <Typography
-                  tag="label"
+                  tag="span"
                   className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
                 >
                   {formatMinutes(duration)}

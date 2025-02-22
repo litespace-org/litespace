@@ -10,26 +10,20 @@ export const FullSwitch: React.FC<
     <div className="tw-flex tw-flex-row tw-items-start tw-justify-between tw-gap-4">
       <div>
         <Typography
-          tag="label"
-          className={cn(
-            "tw-text-natural-950 tw-mb-1 tw-font-regular",
-            {
-              "body": !desktop,
-              "subtitle-2": desktop,
-            }
-          )}
+          tag="h2"
+          className={cn("tw-text-natural-950 tw-mb-1 tw-font-regular", {
+            body: !desktop,
+            "subtitle-2": desktop,
+          })}
         >
           {title}
         </Typography>
         <Typography
-          tag="label"
-          className={cn(
-            "tw-text-natural-600 tw-font-regular",
-            {
-              "body": desktop,
-              "caption": !desktop,
-            }
-          )}
+          tag="p"
+          className={cn("tw-text-natural-600 tw-font-regular", {
+            body: desktop,
+            caption: !desktop,
+          })}
         >
           {description}
         </Typography>

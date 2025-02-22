@@ -94,21 +94,21 @@ export const TutorProfileCard: React.FC<{
           })}
         >
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-950 dark:tw-text-natural-50 tw-text-base md:tw-text-h2 tw-font-bold"
           >
             {name}
           </Typography>
           <div className="tw-flex tw-flex-col tw-gap-1">
             <Typography
-              tag="label"
+              tag="p"
               className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
             >
               {bio}
             </Typography>
             {studentCount >= ACHIEVEMENTS_DISPLAY_THRETHOLD ? (
               <Typography
-                tag="label"
+                tag="span"
                 className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
               >
                 {intl("tutor.achievements", {
@@ -121,7 +121,7 @@ export const TutorProfileCard: React.FC<{
           {avgRating > 0 ? (
             <div className="tw-flex tw-items-center tw-gap-1 md:tw-gap-2">
               <Typography
-                tag="label"
+                tag="span"
                 className="tw-text-natural-950 dark:tw-text-natural-50 tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
               >
                 {formatNumber(avgRating, {

@@ -51,7 +51,7 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
     >
       <CalendarEmpty />
       <Typography
-        tag="label"
+        tag="span"
         className="tw-text-brand-700 tw-text-center tw-font-bold tw-text-subtitle-2"
       >
         {tutorName
@@ -219,7 +219,7 @@ export const ManageLessonDialog: React.FC<{
       close={close}
       title={
         <Typography
-          tag="div"
+          tag="h1"
           className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
         >
           {name

@@ -66,17 +66,17 @@ export const SettingsMenu: React.FC<{
                 <div className="tw-grow tw-flex tw-items-center tw-gap-1">
                   <PlaybackSpeed />
                   <Typography
-                    tag="label"
+                    tag="span"
                     className={cn(
                       "tw-font-semibold tw-text-tiny",
-                      "tw-text-natural-800 tw-font-semibold tw-max-w-24",
+                      "tw-text-natural-800 tw-font-semibold tw-max-w-24"
                     )}
                   >
                     {intl("media.video.playback-speed")}
                   </Typography>
                 </div>
                 <Typography
-                  tag="label"
+                  tag="span"
                   className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
                 >
                   {playbackSpeed === 1
@@ -99,7 +99,7 @@ export const SettingsMenu: React.FC<{
                     </button>
                     <PlaybackSpeed />
                     <Typography
-                      tag="label"
+                      tag="span"
                       className={cn(
                         "tw-text-natural-800 tw-font-semibold tw-max-w-24 tw-font-semibold tw-text-tiny"
                       )}
@@ -108,7 +108,7 @@ export const SettingsMenu: React.FC<{
                     </Typography>
                   </div>
                   <Typography
-                    tag="label"
+                    tag="span"
                     className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
                   >
                     {playbackSpeed === 1

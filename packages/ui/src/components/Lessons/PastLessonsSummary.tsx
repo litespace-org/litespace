@@ -134,8 +134,8 @@ export const PastLessonsSummary: React.FC<Props> = ({
               onClick={more}
             >
               <Typography
-                tag="label"
-                className="tw-text-natural-50 tw-text-sm tw-font-semibold"
+                tag="span"
+                className="tw-text-natural-50 tw-text-caption tw-font-semibold"
               >
                 {intl("global.labels.more")}
               </Typography>
@@ -216,29 +216,31 @@ export const Row: React.FC<RowProps> = ({
       </div>
       <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
         <Typography
-          tag="label"
-          className="tw-text-natural-950 tw-text-sm tw-font-semibold"
+          tag="span"
+          className="tw-text-natural-950 tw-text-caption tw-font-semibold"
         >
           {dayjs(start).format("dddd - D MMMM YYYY")}
         </Typography>
         <div className="tw-flex tw-justify-between">
           <Tooltip
             content={
-              <Typography tag="label" className="tw-text-natuarl-950">{name}</Typography>
+              <Typography tag="span" className="tw-text-natuarl-950">
+                {name}
+              </Typography>
             }
           >
             <div>
               <Typography
-                tag="label"
-                className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-text-xs tw-font-normal"
+                tag="span"
+                className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-text-tiny tw-font-normal"
               >
                 {name}
               </Typography>
             </div>
           </Tooltip>
           <Typography
-            tag="label"
-            className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-xs tw-font-normal"
+            tag="span"
+            className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-tiny tw-font-normal"
           >
             {dayjs(start).format("h:mm")}
             {" - "}
@@ -288,7 +290,7 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
         <EmptyLessons className="tw-w-[204px] tw-h-[130px]" />
 
         <Typography
-          tag="label"
+          tag="span"
           className="tw-text-natural-950 tw-text-caption tw-text-bold"
         >
           {isTutor
@@ -301,7 +303,7 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
         <Link to={tutorsRoute} className="tw-w-full">
           <Button size="large" className="tw-w-full">
             <Typography
-              tag="label"
+              tag="span"
               className="tw-text-neutral-50 tw-text-caption tw-font-bold"
             >
               {intl("student-dashboard.table.search-tutors")}

@@ -37,9 +37,8 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
         {PAGES.map((page) => (
           <Link href={page.route} key={page.route}>
             <Typography
-              element="tiny-text"
-              weight="bold"
-              className="text-natural-800"
+              tag="span"
+              className="text-natural-800 text-tiny-text font-bold"
             >
               {intl(page.title)}
             </Typography>
@@ -54,9 +53,8 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
         >
           <Button size="large" className="w-full">
             <Typography
-              element="caption"
-              weight="semibold"
-              className="text-natural-50"
+              tag="span"
+              className="text-natural-50 text-caption font-semibold"
             >
               {intl("navbar/register")}
             </Typography>
@@ -68,9 +66,8 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
         >
           <Button size="large" variant="secondary" className="w-full">
             <Typography
-              element="caption"
-              weight="semibold"
-              className="text-brand-700"
+              tag="span"
+              className="text-brand-700 text-caption font-semibold"
             >
               {intl("navbar/login")}
             </Typography>

@@ -71,7 +71,7 @@ export const Menu: React.FC<{
               <div className="tw-w-4 tw-h-4">{icon}</div>
 
               <Typography
-                tag="label"
+                tag="span"
                 className="tw-text-natural-600 tw-text-tiny tw-font-semibold"
               >
                 {label}

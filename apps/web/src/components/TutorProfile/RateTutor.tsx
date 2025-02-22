@@ -51,9 +51,8 @@ export const RateTutor: React.FC<{
   return (
     <div className="flex gap-6 md:gap-10 flex-col items-center justify-center">
       <Typography
-        element={{ default: "caption", md: "subtitle-1" }}
-        weight={{ default: "semibold", md: "medium" }}
-        className="text-natural-700 md:text-natural-950 text-center max-w-[912px]"
+        tag="span"
+        className="text-natural-700 md:text-natural-950 text-center max-w-[912px] text-caption md:text-subtitle-1 font-semibold md:font-medium"
       >
         {intl("tutor.profile.your-ratings-help")}
       </Typography>
@@ -63,9 +62,8 @@ export const RateTutor: React.FC<{
         className="w-full md:w-[386px] flex items-center gap-2"
       >
         <Typography
-          element={{ default: "caption", md: "body" }}
-          weight="semibold"
-          className="text-nowrap"
+          tag="span"
+          className="text-nowrap text-caption md:text-body font-semibold"
         >
           {intl("tutor.profile.rate-tutor")}
         </Typography>

@@ -38,7 +38,7 @@ const MenuItem: React.FC<{
       disabled={disabled}
       className={cn(
         "tw-relative tw-flex tw-justify-between tw-items-center tw-h-6 tw-select-none tw-rounded-[3px]",
-        "tw-pr-2 tw-pl-1 tw-text-sm tw-leading-none outline-none",
+        "tw-pr-2 tw-pl-1 tw-text-caption tw-leading-none outline-none",
         "data-[disabled]:pointer-events-none  data-[disabled]:tw-text-foreground-muted",
         "tw-min-w-fit",
         danger
@@ -118,7 +118,7 @@ export const ActionsMenu: React.FC<{
                   <SubTrigger
                     className={cn(
                       "tw-relative tw-flex tw-flex-row tw-justify-between tw-items-center tw-h-7 tw-select-none tw-rounded-sm",
-                      "tw-pr-2 tw-pl-1 tw-text-sm tw-leading-none outline-none",
+                      "tw-pr-2 tw-pl-1 tw-text-caption tw-leading-none outline-none",
                       "data-[disabled]:pointer-events-none  data-[disabled]:tw-text-foreground-muted",
                       "tw-min-w-56",
                       action.danger
@@ -157,7 +157,7 @@ export const ActionsMenu: React.FC<{
               return (
                 <div key={action.id}>
                   <Separator className="tw-h-px tw-bg-border-strong tw-m-1.5" />
-                  <Label className="tw-text-foreground-lighter tw-text-sm">
+                  <Label className="tw-text-foreground-lighter tw-text-caption">
                     {action.label}
                   </Label>
                   <RadioGroup
@@ -169,7 +169,7 @@ export const ActionsMenu: React.FC<{
                         <RadioItem
                           key={item.id}
                           value={item.value}
-                          className="tw-relative tw-flex tw-h-7 tw-leading-none tw-select-none tw-items-center tw-rounded-1 tw-pr-6 tw-pl-1.5 tw-text-sm tw-text-foreground outline-none data-[disabled]:pointer-events-none data-[highlighted]:tw-bg-background-selection data-[highlighted]:tw-outline-border-control"
+                          className="tw-relative tw-flex tw-h-7 tw-leading-none tw-select-none tw-items-center tw-rounded-1 tw-pr-6 tw-pl-1.5 tw-text-caption tw-text-foreground outline-none data-[disabled]:pointer-events-none data-[highlighted]:tw-bg-background-selection data-[highlighted]:tw-outline-border-control"
                         >
                           <ItemIndicator className="tw-absolute tw-right-0 tw-inline-flex tw-w-6 tw-items-center tw-justify-center">
                             <DotFilledIcon />

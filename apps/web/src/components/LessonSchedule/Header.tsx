@@ -44,17 +44,15 @@ const Header: React.FC<Props> = ({
   return (
     <div>
       <Typography
-        element={{ default: "body", lg: "subtitle-2" }}
-        weight="bold"
-        className="text-natural-950 mb-2"
+        tag="span"
+        className="text-natural-950 mb-2 text-body lg:text-subtitle-2 font-bold"
       >
         {date.format("MMMM YYYY")}
       </Typography>
       <div className="flex flex-col sm:flex-row gap-6 justify-between items-start md:items-center">
         <Typography
-          element={{ default: "caption", lg: "body" }}
-          weight="semibold"
-          className="text-natural-700"
+          tag="span"
+          className="text-natural-700 text-caption lg:text-body font-semibold"
         >
           {date.startOf("week").format("DD MMMM YYYY")}&nbsp;-&nbsp;
           {date.endOf("week").format("DD MMMM YYYY")}
@@ -91,9 +89,8 @@ const Header: React.FC<Props> = ({
               />
             </button>
             <Typography
-              element={{ default: "caption", lg: "body" }}
-              weight="bold"
-              className="text-natural-950"
+              tag="span"
+              className="text-natural-950 text-caption lg:text-body font-bold"
             >
               {date.startOf("week").format("DD MMMM")}&nbsp;-&nbsp;
               {date.endOf("week").format("DD MMMM")}

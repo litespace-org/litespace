@@ -17,8 +17,8 @@ const meta: Meta<Component> = {
 const title = (
   <div>
     <Typography
-      tag="label"
-      className=" tw-text-natural-950 tw-text-xl tw-text-bold"
+      tag="span"
+      className=" tw-text-natural-950 tw-text-subtitle-2 tw-text-bold"
     >
       {faker.lorem.words(5)}
     </Typography>
@@ -28,7 +28,7 @@ const title = (
 const children = (
   <div>
     <div className="tw-my-2">
-      <Typography tag="label">{faker.lorem.lines(12)}</Typography>
+      <Typography tag="span">{faker.lorem.lines(12)}</Typography>
     </div>
   </div>
 );

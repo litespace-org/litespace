@@ -105,7 +105,7 @@ export const ChatRoom: React.FC<Props> = ({
         </div>
         <div className="tw-text-right tw-grow">
           <Typography
-            tag="label"
+            tag="span"
             className={cn(
               {
                 "tw-text-natural-50 dark:tw-text-secondary-50": active,
@@ -127,7 +127,7 @@ export const ChatRoom: React.FC<Props> = ({
             ) : null}
           </Typography>
           <Typography
-            tag="div"
+            tag="span"
             className={cn("tw-mt-2 tw-text-right tw-flex tw-gap-1", {
               "tw-text-natural-50 dark:tw-text-secondary-50": active,
               "tw-text-natural-600": !active && actionable,
@@ -154,7 +154,7 @@ export const ChatRoom: React.FC<Props> = ({
                   })}
                 />
                 <Typography
-                  tag="label"
+                  tag="span"
                   className={cn(
                     "tw-text-caption",
                     active ? "tw-text-natural-50" : "tw-text-brand-700"
@@ -198,7 +198,7 @@ export const ChatRoom: React.FC<Props> = ({
 
         {unreadCount && !active ? (
           <Typography
-            tag="label"
+            tag="span"
             className={cn(
               "tw-w-[30px] tw-h-[30px] tw-flex tw-justify-center tw-items-center tw-rounded-full",
               "tw-text-natural-50 tw-bg-brand-700 tw-shadow-unread-count",

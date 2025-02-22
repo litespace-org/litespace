@@ -209,7 +209,7 @@ export const ManageSchedule: React.FC<Props> = ({
       close={onClose}
       title={
         <Typography
-          tag="div"
+          tag="h1"
           className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
@@ -229,7 +229,7 @@ export const ManageSchedule: React.FC<Props> = ({
               <ArrowRight className="[&>*]:tw-stroke-brand-700" />
             </button>
             <Typography
-              tag="label"
+              tag="span"
               className="tw-text-natural-950 tw-text-body tw-font-bold"
             >
               {weekStart.format("D MMMM")} -{" "}
@@ -245,7 +245,7 @@ export const ManageSchedule: React.FC<Props> = ({
             </button>
           </div>
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-950 tw-mb-4 tw-mt-6 tw-font-bold tw-text-body"
           >
             {intl("manage-schedule.manage-dialog.available-days")}
@@ -299,7 +299,7 @@ export const ManageSchedule: React.FC<Props> = ({
                   return (
                     <div className="tw-flex tw-gap-8" key={iso}>
                       <Typography
-                        tag="label"
+                        tag="span"
                         className="tw-text-natural-950 tw-w-[88px] tw-font-medium tw-text-caption"
                       >
                         {day.format("dddd M/D")}
@@ -330,7 +330,7 @@ export const ManageSchedule: React.FC<Props> = ({
           loading={saving}
         >
           <Typography
-            tag="label"
+            tag="span"
             className="tw-text-natural-50 tw-font-semibold tw-text-body"
           >
             {intl("manage-schedule.save")}
@@ -343,7 +343,7 @@ export const ManageSchedule: React.FC<Props> = ({
           disabled={saving}
         >
           <Typography
-            tag="label"
+            tag="span"
             className="text-brand-700 tw-font-semibold tw-text-body"
           >
             {intl("global.labels.cancel")}

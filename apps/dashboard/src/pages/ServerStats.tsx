@@ -34,13 +34,13 @@ const ServerStats: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
-      <Typography element="h3">
+      <Typography tag="h3" className="text-h3">
         {intl("dashboard.server.stats.title")}
       </Typography>
 
       {top ? (
         <div>
-          <Typography element="body">
+          <Typography tag="span" className="text-body">
             {intl("dashboard.server.stats.uptime", {
               duration: Duration.from(uptime.toString()).format("ar"),
             })}

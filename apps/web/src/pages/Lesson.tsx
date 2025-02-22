@@ -238,18 +238,16 @@ const Lesson: React.FC = () => {
     <div className="max-w-screen-3xl mx-auto w-full p-6">
       <div className="mb-6 flex flex-row items-center justify-start gap-1">
         <Typography
-          element="subtitle-2"
-          weight="bold"
-          className="text-natural-950"
+          tag="h1"
+          className="text-natural-950 text-subtitle-2 font-bold"
         >
           {intl("lesson.title")}
           {lessonMembers?.other.name ? "/" : null}
         </Typography>
         {lessonMembers?.other.name ? (
           <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="text-brand-700"
+            tag="span"
+            className="text-brand-700 text-subtitle-2 font-bold"
           >
             {lessonMembers.other.name}
           </Typography>

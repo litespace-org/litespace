@@ -28,7 +28,7 @@ export const LoadingError: React.FC<{
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        tag="label"
+        tag="span"
         className={cn(
           "tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4",
           {

@@ -34,8 +34,10 @@ const Cache: React.FC = () => {
   return (
     <div className={cn("flex flex-col gap-4")}>
       <div>
-        <Typography element="h4">{intl("dashboard.settings.title")}</Typography>
-        <Typography element="body">
+        <Typography tag="h4" className="text-h4">
+          {intl("dashboard.settings.title")}
+        </Typography>
+        <Typography tag="p" className="text-body">
           {intl("dashboard.settings.cache.description")}
         </Typography>
       </div>

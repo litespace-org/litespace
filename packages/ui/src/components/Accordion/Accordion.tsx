@@ -44,7 +44,7 @@ export const Accordion: React.FC<{
                 "*:tw-transition-all *:tw-duration-150 *:tw-ease-in-out"
               )}
             >
-              <Typography className="title" element="body" weight="bold">
+              <Typography tag="h1" className="tw-text-body tw-font-bold title">
                 {item.title}
               </Typography>
               <ArrowUp className="icon tw-mt-1 tw-text-brand-500" aria-hidden />
@@ -59,7 +59,7 @@ export const Accordion: React.FC<{
               "data-[state=open]:tw-animate-slide-down data-[state=closed]:tw-animate-slide-up"
             )}
           >
-            <Typography element="caption" weight="regular">
+            <Typography tag="p" className="tw-text-caption tw-font-regular">
               {item.content}
             </Typography>
           </Content>

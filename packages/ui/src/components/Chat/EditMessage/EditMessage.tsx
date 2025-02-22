@@ -22,7 +22,7 @@ export const EditMessage: React.FC<{
         <div className="tw-flex tw-items-center tw-justify-center tw-gap-2">
           <EditMessageIcon className="[&>*]:tw-stroke-natural-950" />
           <Typography
-            tag="label"
+            tag="span"
             className="tw-font-bold tw-text-natural-950 tw-text-subtitle-2"
           >
             {intl("chat.message.edit")}

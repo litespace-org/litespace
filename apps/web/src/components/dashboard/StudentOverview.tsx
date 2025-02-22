@@ -10,12 +10,8 @@ export const StudentOverview: React.FC = () => {
   return (
     <div className="grid gap-4 sm:gap-6 justify-items-start w-full">
       <Typography
-        element={{
-          default: "body",
-          sm: "subtitle-2",
-        }}
-        weight="bold"
-        className="text-natural-950"
+        tag="h1"
+        className="text-natural-950 text-body text-subtitle-2 font-bold"
       >
         {intl("student-dashboard.overview.title")}
       </Typography>

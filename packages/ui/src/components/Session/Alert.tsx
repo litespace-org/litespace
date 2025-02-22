@@ -14,7 +14,7 @@ export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
         <ExclamationMark />
       </div>
       <Typography
-        tag="label"
+        tag="span"
         className={cn(
           "tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-bold",
           "tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-background-internet tw-text-caption"

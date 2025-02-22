@@ -15,8 +15,8 @@ const ErrorPage: React.FC = () => {
 
       <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-absolute">
         <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-space-y-3">
-          <h1 className="tw-text-2xl">{intl("page.error.title")}</h1>
-          <p className="tw-text-xl tw-text-foreground-light">
+          <h1 className="tw-text-subtitle-1">{intl("page.error.title")}</h1>
+          <p className="tw-text-subtitle-2 tw-text-foreground-light">
             {intl("page.error.subtitle")}
           </p>
         </div>

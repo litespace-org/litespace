@@ -81,7 +81,7 @@ export const DatePicker: React.FC<{
       <div
         className={cn(
           "tw-flex tw-flex-row tw-items-center tw-justify-between tw-mb-5",
-          compact ? "tw-gap-2 tw-text-xs" : "tw-gap-10 tw-w-[300px] "
+          compact ? "tw-gap-2 tw-text-tiny" : "tw-gap-10 tw-w-[300px] "
         )}
       >
         <div>
@@ -122,7 +122,7 @@ export const DatePicker: React.FC<{
               size={"small"}
               type={"main"}
               variant={"secondary"}
-              className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-xs")}
+              className={cn(compact && "!tw-p-1 !tw-h-[25px] tw-text-tiny")}
               disabled={disable || isDateDisabled(dayjs())}
             >
               {todayLabel}
@@ -142,7 +142,7 @@ export const DatePicker: React.FC<{
             key={day}
             className={cn(
               "tw-text-center",
-              compact ? "tw-text-xs" : "tw-text-sm"
+              compact ? "tw-text-tiny" : "tw-text-caption"
             )}
           >
             {day}

@@ -82,10 +82,10 @@ const Login: React.FC = () => {
           <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
             <Logo className="h-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
-              <Typography element="h3" weight="bold" className="text-brand-500">
+              <Typography tag="h1" className="text-brand-500 text-h3 font-bold">
                 {intl("labels.litespace")}
               </Typography>
-              <Typography element="body" className="text-natural-700">
+              <Typography tag="span" className="text-natural-700 text-body">
                 {intl("login.welcome")}
               </Typography>
             </div>
@@ -128,9 +128,8 @@ const Login: React.FC = () => {
                 <div className="mt-2 sm:mt-0">
                   <Link to={Route.ForgetPassword}>
                     <Typography
-                      element="caption"
-                      weight="medium"
-                      className="text-brand-700"
+                      tag="span"
+                      className="text-brand-700 text-caption font-medium"
                     >
                       {intl("login.forget-password")}
                     </Typography>
@@ -164,9 +163,8 @@ const Login: React.FC = () => {
                 </Button>
 
                 <Typography
-                  element="caption"
-                  weight="medium"
-                  className="text-natural-950 text-center"
+                  tag="span"
+                  className="text-natural-950 text-center text-caption font-medium"
                 >
                   {intl.node("login.has-no-account", {
                     link: (
@@ -174,9 +172,8 @@ const Login: React.FC = () => {
                         to={Route.Register.replace(":role", IUser.Role.Student)}
                       >
                         <Typography
-                          element="caption"
-                          weight="medium"
-                          className="text-brand-700"
+                          tag="span"
+                          className="text-brand-700 text-caption font-medium"
                         >
                           {intl("login.create-account")}
                         </Typography>

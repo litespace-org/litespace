@@ -38,7 +38,7 @@ export const TimeSelection: React.FC<{
               )}
             >
               <Typography
-                tag="label"
+                tag="span"
                 data-selected={slot.start === start}
                 className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-transition-colors tw-duration-300 tw-text-tiny"
               >

@@ -78,7 +78,7 @@ export const DateSelection: React.FC<{
           <ArrowRight className="[&>*]:tw-stroke-brand-700" />
         </button>
         <Typography
-          tag="label"
+          tag="span"
           className="tw-flex tw-items-center tw-justify-center tw-text-center tw-text-natural-950 tw-font-medium tw-text-subtitle-2"
         >
           {date.format("MMMM")} {year}
@@ -116,14 +116,14 @@ export const DateSelection: React.FC<{
               type="button"
             >
               <Typography
-                tag="label"
+                tag="span"
                 data-selected={isSelected}
                 className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-text-tiny"
               >
                 {day.format("DD")}
               </Typography>
               <Typography
-                tag="label"
+                tag="span"
                 data-selected={isSelected}
                 className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-text-tiny"
               >

@@ -18,7 +18,7 @@ const Drawer: React.FC<{
       )}
     >
       <div className="px-2 pt-2 tw-flex tw-items-center tw-justify-between tw-h-10">
-        <h3 className="tw-mr-3 tw-text-2xl">{title}</h3>
+        <h3 className="tw-mr-3 tw-text-subtitle-1">{title}</h3>
         <Button
           onClick={close}
           size={"small"}

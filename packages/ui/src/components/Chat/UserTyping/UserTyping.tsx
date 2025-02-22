@@ -65,12 +65,18 @@ export const UserTyping: React.FC<{
         </div>
         <div>
           {name ? (
-            <Typography tag="label" className="tw-text-natural-950 tw-text-caption">
+            <Typography
+              tag="span"
+              className="tw-text-natural-950 tw-text-caption"
+            >
               {name}
             </Typography>
           ) : null}
           &nbsp;
-          <Typography tag="label" className="tw-text-natural-400 tw-text-caption">
+          <Typography
+            tag="span"
+            className="tw-text-natural-400 tw-text-caption"
+          >
             {gender === IUser.Gender.Male || gender === null
               ? intl("chat.typing-now.male")
               : intl("chat.typing-now.female")}
