@@ -19,22 +19,17 @@ export const VideoProgressbar: React.FC<{
       onMouseDown={seekingHandlers.handleMouseDown}
       onMouseMove={seekingHandlers.handleMouseMove}
       onMouseUp={seekingHandlers.handleMouseUp}
-      className="tw-grow tw-h-[12px] tw-relative tw-block"
+      className="tw-grow tw-h-3 tw-relative tw-block"
     >
-      <div className="tw-absolute tw-top-0 tw-left-0 tw-opacity-40 tw-outline tw-w-full tw-h-full tw-outline-natural-50" />
-      {/* video current state */}
-      <motion.div
-        transition={{
-          duration: 0.1,
-          ease: "easeInOut",
-        }}
-        className="tw-absolute tw-top-0 tw-left-0 tw-bg-brand-500 tw-h-full"
+      <div className="tw-absolute tw-top-0 tw-left-0 tw-opacity-40 tw-w-full tw-h-full tw-border tw-border-natural-50 " />
+      <motion.div // video current state
+        transition={{ duration: 0.1, ease: "easeInOut" }}
+        className="tw-absolute tw-top-[2px] tw-left-[2px] tw-bg-brand-500 tw-h-2"
         animate={{ width: `${(currentTime / duration) * 100}%` }}
       />
-      {/* video buffering */}
-      <motion.div
+      <motion.div // video buffering state
         animate={{ width: `${buffered}%` }}
-        className="tw-absolute tw-top-0 tw-left-0 tw-bg-natural-50 tw-opacity-20 tw-w-full tw-h-full"
+        className="tw-absolute tw-top-[2px] tw-left-[2px] tw-bg-natural-50 tw-opacity-20 tw-w-full tw-h-2"
       />
     </button>
   );
