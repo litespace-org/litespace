@@ -11,11 +11,11 @@ import { useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAppDispatch } from "@/redux/store";
 import { resetUserProfile } from "@/redux/user/profile";
-import { Route } from "@/lib/route";
 import { SideBarAccordion } from "@/components/common/SideBarAccordion";
 import { NavAccordionItem, NavOption } from "@/types/navbar";
 import SideBarItem from "@/components/common/SideBarItem";
 import { useUserContext } from "@litespace/headless/context/user";
+import { Dashboard } from "@litespace/utils/routes";
 
 const framerSidebarBackground = {
   initial: { x: "30rem", y: "0rem" },
@@ -43,7 +43,7 @@ const SidebarNav: React.FC<{
   const logout = useCallback(() => {
     removeAuthToken();
     dispatch(resetUserProfile());
-    navigate(Route.Login);
+    navigate(Dashboard.Login);
   }, [dispatch, navigate]);
 
   return (

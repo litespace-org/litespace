@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { IUser } from "@litespace/types";
-import { Route } from "@/lib/route";
 import SidebarNav from "@/components/common/SideBar";
 import {
   BarChart,
@@ -20,6 +19,7 @@ import cn from "classnames";
 import { useAuthRoutes } from "@/hooks/authRoutes";
 import { destructureRole } from "@litespace/utils/user";
 import { useUserContext } from "@litespace/headless/context/user";
+import { Dashboard } from "@litespace/utils/routes";
 
 const Root: React.FC = () => {
   const { user } = useUserContext();
@@ -39,61 +39,61 @@ const Root: React.FC = () => {
       [
         {
           label: intl("dashboard.sidebar.users"),
-          route: Route.Users,
+          route: Dashboard.Users,
           icon: Users,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.invoices"),
-          route: Route.Invoices,
+          route: Dashboard.Invoices,
           icon: FileText,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.media"),
-          route: Route.Media,
+          route: Dashboard.Media,
           icon: Video,
           show: role?.admin || role?.studio,
         },
         {
           label: intl("dashboard.sidebar.plans"),
-          route: Route.Plans,
+          route: Dashboard.Plans,
           icon: BarChart,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.interviews"),
-          route: Route.Interviews,
+          route: Dashboard.Interviews,
           icon: Columns,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.lessons"),
-          route: Route.Lessons,
+          route: Dashboard.Lessons,
           icon: BookOpen,
           show: role?.admin,
         },
         {
           label: intl("dashboard.topics.title"),
-          route: Route.Topics,
+          route: Dashboard.Topics,
           icon: List,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.server.stats"),
-          route: Route.ServerStats,
+          route: Dashboard.ServerStats,
           icon: Server,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.platform.settings"),
-          route: Route.PlatformSettings,
+          route: Dashboard.PlatformSettings,
           icon: Settings,
           show: role?.admin,
         },
         {
           label: intl("dashboard.sidebar.user.settings"),
-          route: Route.UserSetting,
+          route: Dashboard.UserSetting,
           icon: User,
           show: role?.admin || role?.studio,
         },
@@ -102,8 +102,8 @@ const Root: React.FC = () => {
   );
 
   useEffect(() => {
-    if (location.pathname === Route.Login) return;
-    if (!user) return navigate(Route.Login);
+    if (location.pathname === Dashboard.Login) return;
+    if (!user) return navigate(Dashboard.Login);
 
     const forbidden =
       user.role === IUser.Role.Tutor ||
@@ -112,14 +112,14 @@ const Root: React.FC = () => {
 
     if (forbidden) return window.location.replace("https://litespace.org");
 
-    if (location.pathname !== Route.Root) return;
+    if (location.pathname !== Dashboard.Root) return;
 
     if (
       user.role === IUser.Role.SuperAdmin ||
       user.role === IUser.Role.RegularAdmin
     )
-      navigate(Route.Users);
-    if (user.role === IUser.Role.Studio) navigate(Route.Media);
+      navigate(Dashboard.Users);
+    if (user.role === IUser.Role.Studio) navigate(Dashboard.Media);
   }, [location.pathname, navigate, user]);
 
   return (

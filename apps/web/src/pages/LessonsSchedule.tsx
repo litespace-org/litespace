@@ -12,7 +12,6 @@ import { useUserContext } from "@litespace/headless/context/user";
 import cn from "classnames";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { useNavigate } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { CancelLesson } from "@litespace/ui/Lessons";
 import ManageLesson, {
   ManageLessonPayload,
@@ -24,6 +23,8 @@ import { QueryKey } from "@litespace/headless/constants";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { IUser } from "@litespace/types";
 import { capture } from "@/lib/sentry";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 const variants = {
   hidden: { opacity: 0 },
@@ -98,7 +99,7 @@ const LessonsSchedule: React.FC = () => {
 
   const onJoin = useCallback(
     (lessonId: number) => {
-      navigate(Route.Lesson.replace(":id", lessonId.toString()));
+      navigate(router.web({ route: Web.Lesson, id: lessonId }));
     },
     [navigate]
   );

@@ -7,9 +7,9 @@ import { Void } from "@litespace/types";
 import { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useForgetPassword } from "@litespace/headless/auth";
-import { Route } from "@/types/routes";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 type ForgetPasswordProps = {
   open: boolean;
@@ -20,7 +20,7 @@ interface IForm {
   email: string;
 }
 const origin = location.origin;
-const callbackUrl = origin.concat(Route.ResetPassword);
+const callbackUrl = origin.concat(Web.ResetPassword);
 
 const ForgetPassword = ({ open, close }: ForgetPasswordProps) => {
   const intl = useFormatMessage();

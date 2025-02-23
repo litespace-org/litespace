@@ -1,6 +1,5 @@
 import Aside from "@/components/Auth/Aside";
 import Header from "@/components/Auth/Header";
-import { Route } from "@/types/routes";
 import { useForgetPassword } from "@litespace/headless/auth";
 import { Button } from "@litespace/ui/Button";
 import { Controller, Form } from "@litespace/ui/Form";
@@ -15,12 +14,13 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 type FormData = {
   email: string;
 };
 
-const callbackUrl = window.location.origin + Route.ResetPassword;
+const callbackUrl = window.location.origin + Web.ResetPassword;
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -138,7 +138,7 @@ const ForgetPassword: React.FC = () => {
                     <Typography element="caption" weight="medium">
                       {intl("forget-password.password-remembered")}
                     </Typography>
-                    <Link to={Route.Login} className="px-1">
+                    <Link to={Web.Login} className="px-1">
                       <Typography
                         element="caption"
                         weight="medium"

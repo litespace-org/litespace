@@ -43,9 +43,3 @@ export enum ApiError {
 }
 
 export type ApiErrorCode = ApiError | FieldError;
-
-export enum Backend {
-  Staging = "staging",
-  Local = "local",
-  Production = "production",
-}

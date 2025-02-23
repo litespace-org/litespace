@@ -4,15 +4,15 @@ import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileForm } from "@/components/StudentSettings/ProfileForm";
 import { redirect } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
+import { Web } from "@litespace/utils/routes";
 
 const Settings: React.FC = () => {
   const intl = useFormatMessage();
   const { user, fetching, error, loading, refetch } = useUserContext();
 
   useEffect(() => {
-    if (!user && !!loading && !error) redirect(Route.Login);
+    if (!user && !!loading && !error) redirect(Web.Login);
   }, [user, loading, error]);
 
   return (

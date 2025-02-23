@@ -5,7 +5,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { useLoginUser } from "@litespace/headless/user";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -23,6 +22,8 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
+import { router } from "@/lib/routes";
 
 interface IForm {
   email: string;
@@ -52,7 +53,7 @@ const Login: React.FC = () => {
   const mutation = useLoginUser({
     onSuccess(result) {
       user.set(result);
-      return navigate(Route.Root);
+      return navigate(Web.Root);
     },
 
     onError(error) {
@@ -126,7 +127,7 @@ const Login: React.FC = () => {
                 />
 
                 <div className="mt-2 sm:mt-0">
-                  <Link to={Route.ForgetPassword}>
+                  <Link to={Web.ForgetPassword}>
                     <Typography
                       element="caption"
                       weight="medium"
@@ -171,7 +172,10 @@ const Login: React.FC = () => {
                   {intl.node("login.has-no-account", {
                     link: (
                       <Link
-                        to={Route.Register.replace(":role", IUser.Role.Student)}
+                        to={router.web({
+                          route: Web.Register,
+                          role: IUser.Role.Student,
+                        })}
                       >
                         <Typography
                           element="caption"

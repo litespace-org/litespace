@@ -1,5 +1,5 @@
 import { getRequestConfig } from "next-intl/server";
-import { getUserLocale } from "@/utils/intl";
+import { getUserLocale } from "@/lib/intl";
 import ar from "@/locales/ar-eg.json";
 
 export type LocalMap = Record<keyof typeof ar, keyof typeof ar>;

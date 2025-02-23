@@ -1,5 +1,4 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { Route } from "@/lib/route";
 import Root from "@/pages/Root";
 import { ErrorPage } from "@litespace/ui/ErrorPage";
 import Invoices from "@/pages/Invoices";
@@ -19,26 +18,27 @@ import PlatformSettings from "@/pages/PlatformSettings";
 import Topics from "@/pages/Topics";
 import VerifyEmail from "@/pages/VerifyEmail";
 import UserSettings from "@/pages/UserSettings";
+import { Dashboard } from "@litespace/utils/routes";
 
 const router = createBrowserRouter([
   {
-    path: Route.Root,
+    path: Dashboard.Root,
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { path: Route.Invoices, element: <Invoices /> },
-      { path: Route.Media, element: <Media /> },
-      { path: Route.Login, element: <Login /> },
-      { path: Route.Plans, element: <Plans /> },
-      { path: Route.Users, element: <Users /> },
-      { path: Route.User, element: <UserDetails /> },
-      { path: Route.Interviews, element: <Interviews /> },
-      { path: Route.Lessons, element: <Lessons /> },
-      { path: Route.Topics, element: <Topics /> },
-      { path: Route.ServerStats, element: <ServerStats /> },
-      { path: Route.PlatformSettings, element: <PlatformSettings /> },
-      { path: Route.VerifyEmail, element: <VerifyEmail /> },
-      { path: Route.UserSetting, element: <UserSettings /> },
+      { path: Dashboard.Invoices, element: <Invoices /> },
+      { path: Dashboard.Media, element: <Media /> },
+      { path: Dashboard.Login, element: <Login /> },
+      { path: Dashboard.Plans, element: <Plans /> },
+      { path: Dashboard.Users, element: <Users /> },
+      { path: Dashboard.User, element: <UserDetails /> },
+      { path: Dashboard.Interviews, element: <Interviews /> },
+      { path: Dashboard.Lessons, element: <Lessons /> },
+      { path: Dashboard.Topics, element: <Topics /> },
+      { path: Dashboard.ServerStats, element: <ServerStats /> },
+      { path: Dashboard.PlatformSettings, element: <PlatformSettings /> },
+      { path: Dashboard.VerifyEmail, element: <VerifyEmail /> },
+      { path: Dashboard.UserSetting, element: <UserSettings /> },
     ],
   },
 ]);

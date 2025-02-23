@@ -1,5 +1,5 @@
 import { Atlas, TokenType } from "@litespace/atlas";
-import { Backend, IUser } from "@litespace/types";
+import { IUser } from "@litespace/types";
 import { faker } from "@faker-js/faker/locale/ar";
 import { sample } from "lodash";
 import db from "@fixtures/db";
@@ -14,7 +14,7 @@ function asBearerToken(token?: string) {
 }
 
 export function atlas(token?: string): Atlas {
-  return new Atlas(Backend.Local, asBearerToken(token));
+  return new Atlas("local", asBearerToken(token));
 }
 
 export function unexpectedApiSuccess() {

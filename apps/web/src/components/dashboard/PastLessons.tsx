@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from "react";
-import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -13,6 +12,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import dayjs from "dayjs";
 import cn from "classnames";
 import { useNavigateToRoom } from "@/hooks/chat";
+import { Web } from "@litespace/utils/routes";
 
 function asLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -81,7 +81,7 @@ export const PastLessons: React.FC = () => {
   if (!mq.lg)
     return (
       <PastLessonsSummary
-        tutorsRoute={Route.Tutors}
+        tutorsRoute={Web.Tutors}
         onRebook={openRebookingDialog}
         lessons={lessons}
         loading={lessonsQuery.query.isPending}
@@ -124,7 +124,7 @@ export const PastLessons: React.FC = () => {
       </Typography>
 
       <PastLessonsTable
-        tutorsRoute={Route.Tutors}
+        tutorsRoute={Web.Tutors}
         onRebook={openRebookingDialog}
         lessons={lessons}
         loading={lessonsQuery.query.isPending}

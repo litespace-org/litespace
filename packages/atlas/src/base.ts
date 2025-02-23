@@ -1,4 +1,4 @@
-import { Backend } from "@litespace/types";
+import { Env } from "@litespace/types";
 import { AxiosInstance } from "axios";
 import { createClient, AuthToken } from "@/client";
 
@@ -11,8 +11,8 @@ type HTTPMethodAttr<T, P = object> = {
 export class Base {
   public readonly client: AxiosInstance;
 
-  constructor(backend: Backend, token: AuthToken | null) {
-    this.client = createClient(backend, token);
+  constructor(server: Env.Server, token: AuthToken | null) {
+    this.client = createClient(server, token);
   }
 
   async post<T, R = void, P = object>(attr: HTTPMethodAttr<T, P>): Promise<R> {

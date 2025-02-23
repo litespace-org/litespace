@@ -1,4 +1,3 @@
-import { Route } from "@/types/routes";
 import { useFindUserRooms } from "@litespace/headless/chat";
 import { useUserContext } from "@litespace/headless/context/user";
 import {
@@ -9,6 +8,8 @@ import { orUndefined } from "@litespace/utils/utils";
 import { IRoom } from "@litespace/types";
 import dayjs from "dayjs";
 import { useMemo } from "react";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 function asRooms(
   list: IRoom.FindUserRoomsApiRecord[] | null
@@ -17,7 +18,10 @@ function asRooms(
 
   return list.map((room) => ({
     id: room.roomId,
-    url: Route.Chat.concat("?room=", room.roomId.toString()),
+    url: router.web({
+      route: Web.Chat,
+      query: { room: room.roomId.toString() },
+    }),
     name: orUndefined(room.otherMember?.name),
     image: orUndefined(room.otherMember?.image),
     message: room.latestMessage?.text || "TODO",
@@ -36,7 +40,7 @@ export const ChatSummary = () => {
       loading={rooms.query.isPending}
       error={rooms.query.isError}
       retry={rooms.query.refetch}
-      chatsUrl={Route.Chat}
+      chatsUrl={Web.Chat}
       rooms={organizedRooms}
     />
   );

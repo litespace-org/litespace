@@ -8,7 +8,6 @@ import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { useResetPassword } from "@litespace/headless/auth";
 import { Form, useNavigate, useSearchParams } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
 import Header from "@/components/Auth/Header";
@@ -19,6 +18,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
@@ -58,7 +58,7 @@ const ResetPassword = () => {
   useEffect(() => {
     if (token) return;
     const searchParamToken = searchParams.get("token");
-    if (!searchParamToken) return navigate(Route.Root);
+    if (!searchParamToken) return navigate(Web.Root);
     setToken(searchParamToken);
     setSearchParams({});
   }, [navigate, searchParams, setSearchParams, token]);
@@ -148,7 +148,7 @@ const ResetPassword = () => {
                     size="large"
                     variant="primary"
                     className="w-full"
-                    onClick={() => navigate(Route.Root)}
+                    onClick={() => navigate(Web.Root)}
                   >
                     {intl("reset-password.go-to-dashboard")}
                   </Button>

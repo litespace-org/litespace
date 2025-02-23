@@ -19,6 +19,7 @@ Sentry.init({
       matchRoutes,
     }),
   ],
+  enabled: env.client !== "local",
 });
 
 export const capture = Sentry.captureException;

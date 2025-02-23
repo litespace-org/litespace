@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useToast } from "@litespace/ui/Toast";
 import { useNavigate } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { governorates } from "@/constants/user";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
@@ -20,6 +19,7 @@ import { Button } from "@litespace/ui/Button";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { getNullableFiledUpdatedValue } from "@litespace/utils";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 type IForm = {
   name: string;
@@ -55,7 +55,7 @@ const CompleteProfile: React.FC = () => {
   const validateUserName = useValidateUserName();
   const validatePhoneNumber = useValidatePhoneNumber();
 
-  const goRoot = useCallback(() => navigate(Route.Root), [navigate]);
+  const goRoot = useCallback(() => navigate(Web.Root), [navigate]);
 
   const onSuccess = useCallback(() => {
     invalidateQuery([QueryKey.FindCurrentUser]);

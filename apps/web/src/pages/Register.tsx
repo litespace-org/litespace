@@ -5,7 +5,6 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { IUser } from "@litespace/types";
 import { useRegisterUser } from "@litespace/headless/user";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -22,6 +21,7 @@ import Google from "@litespace/assets/Google";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 interface IForm {
   email: string;
@@ -34,7 +34,7 @@ type Role = (typeof roles)[number];
 const roles = [IUser.Role.Tutor, IUser.Role.Student] as const;
 
 const origin = location.origin;
-const callbackUrl = origin.concat(Route.VerifyEmail);
+const callbackUrl = origin.concat(Web.VerifyEmail);
 
 const Register: React.FC = () => {
   const intl = useFormatMessage();
@@ -61,13 +61,13 @@ const Register: React.FC = () => {
   const confirmedPassword = watch("confirmedPassword");
 
   useEffect(() => {
-    if (!isValidRole) return navigate(Route.Root);
+    if (!isValidRole) return navigate(Web.Root);
   }, [isValidRole, navigate]);
 
   const onSuccess = useCallback(
     async ({ user: info, token }: IUser.RegisterApiResponse) => {
       user.set({ user: info, token });
-      navigate(Route.CompleteProfile);
+      navigate(Web.CompleteProfile);
     },
     [navigate, user]
   );
@@ -210,7 +210,7 @@ const Register: React.FC = () => {
                 >
                   {intl.node("register.has-account", {
                     link: (
-                      <Link to={Route.Login}>
+                      <Link to={Web.Login}>
                         <Typography
                           element="caption"
                           weight="medium"

@@ -4,10 +4,10 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { redirect } from "react-router-dom";
-import { Route } from "@/types/routes";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import Settings from "@/components/TutorSettings";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
+import { Web } from "@litespace/utils/routes";
 
 const TutorSettings: React.FC = () => {
   const intl = useFormatMessage();
@@ -15,7 +15,7 @@ const TutorSettings: React.FC = () => {
   const tutorInfo = useFindTutorInfo(user?.id || null);
 
   useEffect(() => {
-    if (!user && !loading && !error) redirect(Route.Login);
+    if (!user && !loading && !error) redirect(Web.Login);
   }, [user, loading, error]);
 
   if (!user) return null;

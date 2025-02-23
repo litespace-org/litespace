@@ -19,7 +19,6 @@ import {
   useSessionMembers,
 } from "@litespace/headless/sessions";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
-import { Route } from "@/types/routes";
 import { asRateLessonQuery } from "@/lib/query";
 import Messages from "@/components/Chat/Messages";
 import {
@@ -28,6 +27,8 @@ import {
   useFindRoomMembers,
 } from "@litespace/headless/chat";
 import { asOtherMember, isOnline, isTyping } from "@/lib/room";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 /**
  * @todos
@@ -408,7 +409,7 @@ const Lesson: React.FC = () => {
                 tutorId: lessonMembers.other.userId,
                 tutorName: lessonMembers.other.name,
               });
-              navigate(`${Route.UpcomingLessons}?${query}`);
+              navigate(router.web({ route: Web.UpcomingLessons, query }));
             }
           }}
           chatPanel={
