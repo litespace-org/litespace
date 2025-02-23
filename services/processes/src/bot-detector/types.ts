@@ -7,3 +7,12 @@ export type LogLineData = {
 };
 
 export type Connection = "normal" | "fishy" | "uncertain";
+
+export type Config = {
+  access_log: string,
+  bots: string,
+  uncertains: string,
+  threshold: number,
+  strikes: number,
+}
+

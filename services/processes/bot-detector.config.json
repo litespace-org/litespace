@@ -1,0 +1,1 @@
+{"access_log":"./sample.log","bots":"./bots.json","uncertains":"./uncertains.json","threshold":15,"strikes":10}

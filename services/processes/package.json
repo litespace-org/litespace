@@ -6,6 +6,7 @@
   "scripts": {
     "build": "rollup --config",
     "start:bot-detector": "pnpm build; node ./dist/bot-detector/index.es.js",
+    "run:bot-detector": "node ./dist/bot-detector/index.es.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
