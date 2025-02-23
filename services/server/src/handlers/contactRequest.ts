@@ -1,21 +1,39 @@
 import { NextFunction, Request, Response } from "express";
 import zod from "zod";
-import { string, email } from "@/validation/utils";
+import { string } from "@/validation/utils";
 import safeRequest from "express-async-handler";
 import { IContactRequest } from "@litespace/types";
 import { contactRequests } from "@litespace/models";
 import { telegramConfig } from "@/constants";
 import { telegram } from "@/lib/telegram";
+import {
+  isValidContactRequestMessage,
+  isValidContactRequestTitle,
+  isValidEmail,
+  isValidUserName,
+} from "@litespace/utils";
+import { apierror } from "@/lib/error";
 
 const createPayload = zod.object({
   name: string,
-  email: email,
+  email: string,
   title: string,
   message: string,
 });
 
-async function create(req: Request, res: Response, _: NextFunction) {
+async function create(req: Request, res: Response, next: NextFunction) {
   const payload: IContactRequest.CreatePayload = createPayload.parse(req.body);
+
+  const validations = [
+    isValidUserName(payload.name),
+    isValidEmail(payload.email),
+    isValidContactRequestTitle(payload.title),
+    isValidContactRequestMessage(payload.message),
+  ];
+
+  for (const result of validations) {
+    if (result !== true) return next(apierror(result, 400));
+  }
 
   await contactRequests.create([payload]);
 

@@ -13,5 +13,5 @@ export * from "@/utils";
 export * from "@/user";
 export * from "@/interview";
 export * from "@/session";
-export * from "@/verification";
+export * from "@/validation";
 export * from "@/availabilitySlots";

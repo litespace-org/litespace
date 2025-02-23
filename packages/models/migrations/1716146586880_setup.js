@@ -320,7 +320,7 @@ exports.up = (pgm) => {
     name: { type: "VARCHAR(50)", notNull: true },
     email: { type: "VARCHAR(50)", notNull: true },
     title: { type: "VARCHAR(128)", notNull: true },
-    message: { type: "VARCHAR(256)", notNull: true },
+    message: { type: "VARCHAR(1000)", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },
   });
 

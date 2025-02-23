@@ -43,7 +43,6 @@ export const HTML_TAGS_REGEX = /<[^>]*>/g;
 export const HTML_REGEX = /<([A-Za-z][A-Za-z0-9]*)\b[^>]*>(.*?)<\/\1>/;
 export const COUPON_REGEX = /[a-zA-Z0-9!@#$%^&*()_+=-}{?.,]/;
 export const EMAIL_REGEX = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/;
-export const USER_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
 export const ARABIC_LETTERS_REGEX = /^[\u0600-\u06ff\s\d.]+$/;
 export const PHONE_NUMBER_REGEX = /^01[0125]\d{8}$/;
 export const INSTAPAY_REGEX = /\w+@instapay/;
@@ -53,6 +52,16 @@ export const TOPIC_ENGLISH_NAME_REGEX = /[a-zA-Z\s]{3,50}/;
 export const MIN_TOPIC_LEGNTH = 3;
 export const MAX_TOPIC_LEGNTH = 50;
 export const MAX_TOPICS_COUNT = 30;
+export const MIN_CONTACT_REQUEST_TITLE_LENGTH = 5;
+export const MAX_CONTACT_REQUEST_TITLE_LENGTH = 128;
+export const MIN_CONTACT_REQUEST_MESSAGE_LENGTH = 10;
+export const MAX_CONTACT_REQUEST_MESSAGE_LENGTH = 1000;
+
+// All users except tutors and tutor-managers can have their names in either Arabic or English or both.
+// https://regex101.com/r/ER7McY/1
+export const USER_NAME_REGEX = /^[A-Za-z\u0600-\u06ff ]+$/;
+// Tutor/tutor mangers name must be in Arabic - https://regex101.com/r/Av5SGH/1
+export const TUTOR_NAME_REGEX = /^[\u0600-\u06ff\s]+$/;
 
 /**
  * Interview duration in minutes.

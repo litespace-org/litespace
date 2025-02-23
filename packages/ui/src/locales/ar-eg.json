@@ -891,5 +891,10 @@
   "error.field.empty-bank-name": "اسم البنك غير مدخل، برجاء التحقق.",
   "error.field.invalid-bank-name": "اسم البنك غير صالح، برجاء التحقق.",
   "error.field.short-topic-name": "اسم الموضوع قصير جدًا، برجاء التعديل.",
-  "error.field.long-topic-name": "اسم الموضوع طويل جدًا، برجاء التعديل."
+  "error.field.long-topic-name": "اسم الموضوع طويل جدًا، برجاء التعديل.",
+  "error.field.short-contact-request-title": "العنوان قصيرة جدا، برجاء وضع عنوان أدق.",
+  "error.field.long-contact-request-title": "العنوان طويل جدا، برجاء اختيار عنوان أقصر.",
+  "error.field.short-contact-request-message": "الرسالة قصيرة جدا!",
+  "error.field.long-contact-request-message": "عذرا، الرسالة طويلة جدا.",
+  "error.field.invalid-type": "عذرا، القيمة التي تحاول إدخالها غير صحيحة."
 }
