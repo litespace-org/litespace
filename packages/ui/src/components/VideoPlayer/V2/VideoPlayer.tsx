@@ -46,7 +46,7 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
     <div
       id={CONTAINER_ID}
       ref={containerRef}
-      className="tw-relative tw-w-full tw-aspect-video tw-relative tw-rounded-lg tw-overflow-hidden"
+      className="tw-relative tw-w-full tw-aspect-video tw-rounded-lg tw-overflow-hidden"
     >
       <video
         playsInline
