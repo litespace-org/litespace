@@ -6,7 +6,8 @@ import { AlertCircle, User } from "react-feather";
 import { rolesMap } from "../utils/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Link } from "react-router-dom";
-import { Route } from "@/lib/route";
+import { router } from "@/lib/route";
+import { Dashboard } from "@litespace/utils/routes";
 
 const UserPopover: React.FC<{ id: number }> = ({ id }) => {
   const intl = useFormatMessage();
@@ -55,7 +56,7 @@ const UserPopover: React.FC<{ id: number }> = ({ id }) => {
     >
       {user.data ? (
         <Link
-          to={Route.User.replace(":id", user.data.id.toString())}
+          to={router.dashboard({ route: Dashboard.User, id: user.data.id })}
           className="hover:bg-background-selection px-2 py-0.5 rounded-md inline-block truncate"
         >
           <div className="flex flex-col gap-1">

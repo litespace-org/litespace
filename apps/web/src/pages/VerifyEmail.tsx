@@ -1,5 +1,5 @@
 import { EmailVerification } from "@litespace/ui/EmailVerification";
-import { Route } from "@/types/routes";
+import { Web } from "@litespace/utils/routes";
 import React, { useCallback } from "react";
 
 const VerifyEmail: React.FC = () => {
@@ -7,9 +7,7 @@ const VerifyEmail: React.FC = () => {
     // todo: refersh user data
   }, []);
 
-  return (
-    <EmailVerification onVerification={onVerification} root={Route.Root} />
-  );
+  return <EmailVerification onVerification={onVerification} root={Web.Root} />;
 };
 
 export default VerifyEmail;

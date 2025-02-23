@@ -2,7 +2,6 @@ import { Loader, Loading, LoadingError } from "@litespace/ui/Loading";
 import { LessonCard, EmptyLessons, CancelLesson } from "@litespace/ui/Lessons";
 import { ILesson, IUser, Void } from "@litespace/types";
 import React, { useCallback, useState } from "react";
-import { Route } from "@/types/routes";
 import { InView } from "react-intersection-observer";
 import { motion } from "framer-motion";
 import { useCancelLesson } from "@litespace/headless/lessons";
@@ -19,6 +18,8 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useNavigateToRoom } from "@/hooks/chat";
 import { useNavigate } from "react-router-dom";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
+import { router } from "@/lib/routes";
 
 type Lessons = ILesson.FindUserLessonsApiResponse["list"];
 
@@ -103,7 +104,7 @@ export const Content: React.FC<{
   if (!list || !list.length || !user)
     return (
       <div className="mt-[15vh]">
-        <EmptyLessons tutorsPage={Route.Tutors} />;
+        <EmptyLessons tutorsPage={Web.Tutors} />;
       </div>
     );
 
@@ -133,7 +134,10 @@ export const Content: React.FC<{
                 duration={item.lesson.duration}
                 onJoin={() =>
                   navigate(
-                    Route.Lesson.replace(":id", item.lesson.id.toString())
+                    router.web({
+                      route: Web.Lesson,
+                      id: item.lesson.id,
+                    })
                   )
                 }
                 onCancel={() => setCancelLessonId(item.lesson.id)}

@@ -1,6 +1,6 @@
 import autocannon from "autocannon";
-import { Backend } from "@litespace/types";
-import { backends } from "@litespace/atlas";
+import { Env } from "@litespace/types";
+import { servers } from "@litespace/atlas";
 import { Command, Option } from "commander";
 import { table } from "table";
 import ms from "ms";
@@ -24,7 +24,7 @@ const benchmarkApi = new Command()
   .name("api")
   .addOption(
     new Option("-b, --backend <ENV>", "Backend to run tests against")
-      .choices([Backend.Local, Backend.Staging, Backend.Production])
+      .choices(["local", "staging", "production"])
       .makeOptionMandatory()
   )
   .option<number>(
@@ -49,17 +49,17 @@ const benchmarkApi = new Command()
   )
   .action(
     async ({
-      backend,
+      server,
       duration,
       connections,
       route,
     }: {
-      backend: Backend;
+      server: Env.Server;
       duration: string;
       connections: number;
       route: string;
     }) => {
-      const url = backends.main[backend].concat(route);
+      const url = servers.main[server].concat(route);
       const result = await autocannon({
         url,
         duration,

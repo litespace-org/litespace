@@ -1,6 +1,6 @@
 import { io, Socket } from "socket.io-client";
 import { sockets } from "@litespace/atlas";
-import { Backend, ISession, Wss } from "@litespace/types";
+import { ISession, Wss } from "@litespace/types";
 import { uniqueId } from "lodash";
 
 export class ClientSocket {
@@ -10,7 +10,7 @@ export class ClientSocket {
     const options = {
       extraHeaders: { Authorization: `Bearer ${token}` },
     } as const;
-    this.client = io(sockets.main[Backend.Local], options);
+    this.client = io(sockets.main.local, options);
   }
 
   userTyping(roomId: number) {

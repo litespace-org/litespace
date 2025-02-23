@@ -1,4 +1,4 @@
-import { ApiErrorCode, Backend } from "@litespace/types";
+import { ApiErrorCode, Env } from "@litespace/types";
 import {
   ResponseError,
   isApiError,
@@ -13,38 +13,41 @@ export enum TokenType {
 
 export type AuthToken = { type: TokenType; value: string };
 
-export const sockets = {
+export const sockets: Record<"main", Record<Env.Server, string>> = {
   main: {
-    [Backend.Local]: `ws://localhost:8080`,
-    [Backend.Staging]: "wss://api.staging.litespace.org",
-    [Backend.Production]: "wss://api.litespace.org",
+    local: `ws://localhost:8080`,
+    staging: "wss://api.staging.litespace.org",
+    production: "wss://api.litespace.org",
   },
 } as const;
 
-export const backends = {
+export const servers: Record<"main", Record<Env.Server, string>> = {
   main: {
-    [Backend.Local]: "http://localhost:8080",
-    [Backend.Staging]: "https://api.staging.litespace.org",
-    [Backend.Production]: "https://api.litespace.org",
+    local: "http://localhost:8080",
+    staging: "https://api.staging.litespace.org",
+    production: "https://api.litespace.org",
   },
 };
 
-export const peers = {
-  [Backend.Local]: {
+export const peers: Record<
+  Env.Server,
+  { host: string; port: number; secure: boolean; key: string; path: string }
+> = {
+  local: {
     host: "localhost",
     port: 7070,
     secure: false,
     key: "peer",
     path: "/ls",
   },
-  [Backend.Staging]: {
+  staging: {
     host: "peer.staging.litespace.org",
     port: 443,
     secure: true,
     key: "peer",
     path: "/ls",
   },
-  [Backend.Production]: {
+  production: {
     host: "peer.litespace.org",
     port: 443,
     secure: true,
@@ -54,11 +57,11 @@ export const peers = {
 } as const;
 
 export function createClient(
-  backend: Backend,
+  server: Env.Server,
   token: AuthToken | null
 ): AxiosInstance {
   const client = axios.create({
-    baseURL: backends.main[backend],
+    baseURL: servers.main[server],
     withCredentials: true,
     headers: { "Content-Type": "application/json" },
   });

@@ -1,5 +1,5 @@
+import { router } from "@/lib/routes";
 import { capture } from "@/lib/sentry";
-import { Route } from "@/types/routes";
 import {
   useFindRoomByMembers,
   useFindUncontactedTutors,
@@ -11,6 +11,7 @@ import { UseInfinitePaginationQueryResult } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
+import { Web } from "@litespace/utils/routes";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -102,7 +103,7 @@ export function useNavigateToRoom() {
     const room = findRoom.data?.room;
     if (!room) return;
     setLessonId(0);
-    navigate(`${Route.Chat}?room=${room}`);
+    navigate(router.web({ route: Web.Chat, query: { room: room.toString() } }));
   }, [navigate, setLessonId, findRoom.data?.room]);
 
   return useMemo(

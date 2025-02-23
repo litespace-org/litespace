@@ -1,7 +1,7 @@
 import { User } from "@/user";
 import { Auth } from "@/auth";
 import { AvailabilitySlot } from "@/availabilitySlot";
-import { Backend } from "@litespace/types";
+import { Env } from "@litespace/types";
 import { Plan } from "@/plan";
 import { Coupon } from "@/coupon";
 import { Invite } from "@/invite";
@@ -41,25 +41,25 @@ export class Atlas {
   public readonly topic: Topic;
   public readonly session: Session;
 
-  constructor(backend: Backend, token: AuthToken | null) {
-    this.user = new User(backend, token);
-    this.auth = new Auth(backend, token);
-    this.availabilitySlot = new AvailabilitySlot(backend, token);
-    this.contactRequest = new ContactRequest(backend, token);
-    this.plan = new Plan(backend, token);
-    this.coupon = new Coupon(backend, token);
-    this.invite = new Invite(backend, token);
-    this.report = new Report(backend, token);
-    this.reportReply = new ReportReply(backend, token);
-    this.asset = new Asset(backend, token);
-    this.rating = new Rating(backend, token);
-    this.chat = new Chat(backend, token);
-    this.interview = new Interview(backend, token);
-    this.lesson = new Lesson(backend, token);
-    this.withdrawMethod = new WithdrawMethod(backend, token);
-    this.invoice = new Invoice(backend, token);
-    this.cache = new Cache(backend, token);
-    this.topic = new Topic(backend, token);
-    this.session = new Session(backend, token);
+  constructor(server: Env.Server, token: AuthToken | null) {
+    this.user = new User(server, token);
+    this.auth = new Auth(server, token);
+    this.availabilitySlot = new AvailabilitySlot(server, token);
+    this.contactRequest = new ContactRequest(server, token);
+    this.plan = new Plan(server, token);
+    this.coupon = new Coupon(server, token);
+    this.invite = new Invite(server, token);
+    this.report = new Report(server, token);
+    this.reportReply = new ReportReply(server, token);
+    this.asset = new Asset(server, token);
+    this.rating = new Rating(server, token);
+    this.chat = new Chat(server, token);
+    this.interview = new Interview(server, token);
+    this.lesson = new Lesson(server, token);
+    this.withdrawMethod = new WithdrawMethod(server, token);
+    this.invoice = new Invoice(server, token);
+    this.cache = new Cache(server, token);
+    this.topic = new Topic(server, token);
+    this.session = new Session(server, token);
   }
 }

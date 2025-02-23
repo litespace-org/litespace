@@ -1,18 +1,18 @@
-import { Route } from "@/constants/routes";
 import { LocalId } from "@/locales/request";
+import { Landing } from "@litespace/utils/routes";
 
 export const PAGES: Array<{ title: LocalId; route: string }> = [
   {
     title: "navbar/main",
-    route: Route.Home,
+    route: Landing.Home,
   },
   {
     title: "navbar/subscriptions",
-    route: Route.Subscriptions,
+    route: Landing.Subscriptions,
   },
   {
     title: "navbar/be-a-tutor",
-    route: Route.BecomeTutor,
+    route: Landing.BecomeTutor,
   },
 ];
 

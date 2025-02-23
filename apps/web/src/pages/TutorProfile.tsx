@@ -8,8 +8,8 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import ManageLesson from "@/components/Lessons/ManageLesson";
-import { Route } from "@/types/routes";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Web } from "@litespace/utils/routes";
 
 const TutorProfile: React.FC = () => {
   const { lg } = useMediaQuery();
@@ -29,7 +29,7 @@ const TutorProfile: React.FC = () => {
     <div className="w-full max-w-screen-3xl p-4 md:p-6 mx-auto md:mb-12">
       <div className="flex items-center gap-4 md:gap-6">
         <Link
-          to={Route.Tutors}
+          to={Web.Tutors}
           className="hidden md:flex w-6 h-6 items-center justify-center"
         >
           <RightArrow className="[&>*]:stroke-brand-700" />

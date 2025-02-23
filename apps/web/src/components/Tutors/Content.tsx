@@ -1,5 +1,4 @@
 import ManageLesson from "@/components/Lessons/ManageLesson";
-import { Route } from "@/types/routes";
 import { Loading, Loader, LoadingError } from "@litespace/ui/Loading";
 import { TutorCardV1, TutorCard } from "@litespace/ui/TutorCard";
 import { Element, ITutor, Void } from "@litespace/types";
@@ -14,6 +13,8 @@ import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 type Tutor = Element<ITutor.FindOnboardedTutorsApiResponse["list"]>;
 
@@ -60,10 +61,11 @@ const Content: React.FC<{
     <div>
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
         {tutors.map((tutor) => {
-          const profileUrl = Route.TutorProfile.replace(
-            ":id",
-            tutor.id.toString()
-          );
+          const profileUrl = router.web({
+            route: Web.TutorProfile,
+            id: tutor.id,
+          });
+
           return (
             <motion.div
               initial={{ opacity: 0 }}

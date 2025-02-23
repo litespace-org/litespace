@@ -5,7 +5,7 @@ import { cache } from "@/cache/base";
 import { CacheKey } from "@/constants";
 import { ITutor, IUser } from "@litespace/types";
 import { useFindTutorMeta } from "@/tutor";
-import { useBackend } from "@/backend";
+import { useServer } from "@/server";
 
 type Data = {
   user: IUser.Self | null;
@@ -27,7 +27,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [userData, setUserData] = useState<Data>(userCache || defaultData);
-  const { token, setBearerToken, removeToken } = useBackend();
+  const { token, setBearerToken, removeToken } = useServer();
   const query = useCurrentUser(!!token);
 
   const tutorId = useMemo(() => {

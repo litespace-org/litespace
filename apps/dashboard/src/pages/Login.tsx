@@ -5,10 +5,10 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
-import { Route } from "@/lib/route";
 import { IUser } from "@litespace/types";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useLoginUser } from "@litespace/headless/user";
+import { Dashboard } from "@litespace/utils/routes";
 
 interface IForm {
   email: string;
@@ -38,7 +38,7 @@ const Login: React.FC = () => {
   const mutation = useLoginUser({
     onSuccess(result) {
       user.set(result);
-      return navigate(Route.Root);
+      return navigate(Dashboard.Root);
     },
     onError(error) {
       toast.error({

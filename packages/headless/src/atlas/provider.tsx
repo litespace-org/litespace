@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import { AtlasContext } from "@/atlas/context";
-import { useBackend } from "@/backend";
+import { useServer } from "@/server";
 import { Atlas } from "@litespace/atlas";
 
 export const AtlasProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const { backend, token } = useBackend();
+  const { server, token } = useServer();
 
-  const atlas = useMemo(() => new Atlas(backend, token), [backend, token]);
+  const atlas = useMemo(() => new Atlas(server, token), [server, token]);
 
   return (
     <AtlasContext.Provider value={atlas}>{children}</AtlasContext.Provider>

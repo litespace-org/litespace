@@ -6,7 +6,6 @@ const envs = ["local", "staging", "production"] as const satisfies
   | Env.Client[];
 
 const schema = zod.object({
-  googleClientId: zod.string().endsWith(".apps.googleusercontent.com"),
   server: zod.enum(envs, {
     message:
       "Missing or invalid server. Expecting `VITE_SERVER` environment variable. It can be `local` or `staging` or `production`",
@@ -15,12 +14,9 @@ const schema = zod.object({
     message:
       "Missing or invalid server. Expecting `VITE_CLIENT` environment variable. It can be `local` or `staging` or `production`",
   }),
-  sentryDsn: zod.string().url(),
 });
 
 export const env = schema.parse({
-  googleClientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
   server: import.meta.env.VITE_SERVER,
   client: import.meta.env.VITE_CLIENT,
-  sentryDsn: import.meta.env.VITE_SENTRY_DSN,
 });

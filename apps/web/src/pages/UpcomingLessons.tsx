@@ -1,6 +1,5 @@
 import PageTitle from "@/components/Common/PageTitle";
 import Content from "@/components/UpcomingLessons/Content";
-import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import {
@@ -18,6 +17,7 @@ import { IUser } from "@litespace/types";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
 import dayjs from "@/lib/dayjs";
+import { Web } from "@litespace/utils/routes";
 
 type RateLessonParams = {
   tutorId: number | null;
@@ -90,20 +90,21 @@ const UpcomingLessons: React.FC = () => {
   );
 
   useEffect(() => {
-    if (!user) return navigate(Route.Root);
+    if (!user) return navigate(Web.Root);
   }, [navigate, user]);
 
   useEffect(() => {
     const student = user?.role == IUser.Role.Student;
     const data = !!rateLessonParams.tutorId && !!rateLessonParams.lessonId;
     if (!student || data) return;
-    const { tutorId, lessonId, start, tutorName } = getRateLessonQuery(params);
+    const query = getRateLessonQuery(params);
+    if (!query) return;
     setRateLessonParams((prev) => ({
       ...prev,
-      tutorId,
-      lessonId,
-      start,
-      tutorName,
+      tutorId: query.tutorId,
+      lessonId: query.lessonId,
+      start: query.start,
+      tutorName: query.tutorName,
     }));
     // Reste url search params
     setParams({});

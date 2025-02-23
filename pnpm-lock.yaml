@@ -345,6 +345,9 @@ importers:
       '@litespace/ui':
         specifier: workspace:^
         version: link:../../packages/ui
+      '@litespace/utils':
+        specifier: workspace:^
+        version: link:../../packages/utils
       classnames:
         specifier: ^2.5.1
         version: 2.5.1

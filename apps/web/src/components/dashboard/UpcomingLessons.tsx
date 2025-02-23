@@ -1,10 +1,11 @@
 import dayjs from "@/lib/dayjs";
-import { Route } from "@/types/routes";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
 import { UpcomingLessonsSummary as Summary } from "@litespace/ui/Lessons";
 import { ILesson, IUser } from "@litespace/types";
 import { useMemo } from "react";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 function asUpcomingLessons(
   list: ILesson.FindUserLessonsApiResponse["list"] | null,
@@ -21,7 +22,7 @@ function asUpcomingLessons(
       name: member?.name || null,
       userId: member?.userId || 0,
       imageUrl: member?.image || null,
-      url: Route.Lesson.replace(":id", item.lesson.id.toString()),
+      url: router.web({ route: Web.Lesson, id: item.lesson.id }),
     };
   });
 }
@@ -47,8 +48,8 @@ export const UpcomingLessons = () => {
       loading={lessonsQuery.query.isPending}
       error={lessonsQuery.query.isError}
       retry={lessonsQuery.query.refetch}
-      lessonsUrl={Route.UpcomingLessons}
-      tutorsUrl={Route.Tutors}
+      lessonsUrl={Web.UpcomingLessons}
+      tutorsUrl={Web.Tutors}
       lessons={lessons}
     />
   );

@@ -1,4 +1,3 @@
-import { Route, TUTOR_PROFILE_REGEX } from "@/types/routes";
 import Calendar from "@litespace/assets/Calendar";
 import Chat from "@litespace/assets/Chat";
 import Home from "@litespace/assets/Home";
@@ -26,6 +25,8 @@ import {
   TABLET_NAVBAR_HEIGHT,
 } from "@/constants/ui";
 import { Icon } from "@/types/common";
+import { Web } from "@litespace/utils/routes";
+import { router } from "@/lib/routes";
 
 const SidebarItem = ({
   to,
@@ -74,9 +75,8 @@ const SidebarItem = ({
 
 type LinkInfo = {
   label: string;
-  route: Route;
+  route: Web;
   Icon: Icon;
-  isActive?: () => boolean;
 };
 
 const Sidebar: React.FC<{
@@ -93,50 +93,44 @@ const Sidebar: React.FC<{
       label: intl("sidebar.dashboard"),
       route:
         user?.role === IUser.Role.Student
-          ? Route.StudentDashboard
-          : Route.TutorDashboard,
+          ? Web.StudentDashboard
+          : Web.TutorDashboard,
       Icon: Home,
     };
 
     const lessonsSchedule = {
       label: intl("sidebar.lessons-schedule"),
-      route: Route.LessonsSchedule,
+      route: Web.LessonsSchedule,
       Icon: Calendar,
     };
 
     const upcomingLessons = {
       label: intl("sidebar.upcoming-lessons"),
-      route: Route.UpcomingLessons,
+      route: Web.UpcomingLessons,
       Icon: Video,
     };
 
     const chat = {
       label: intl("sidebar.chat"),
-      route: Route.Chat,
+      route: Web.Chat,
       Icon: Chat,
     };
 
     const scheduleManagement = {
       label: intl("sidebar.schedule-management"),
-      route: Route.ScheduleManagement,
+      route: Web.ScheduleManagement,
       Icon: ScheduleManagement,
     };
 
     const tutors = {
       label: intl("sidebar.tutors"),
-      route: Route.Tutors,
+      route: Web.Tutors,
       Icon: People,
-      isActive() {
-        return (
-          location.pathname === Route.Tutors ||
-          TUTOR_PROFILE_REGEX.test(location.pathname)
-        );
-      },
     };
 
     const subscribtions = {
       label: intl("sidebar.subscriptions"),
-      route: Route.Subscription,
+      route: Web.Subscription,
       Icon: Tag,
     };
 
@@ -163,7 +157,7 @@ const Sidebar: React.FC<{
       ];
 
     return [];
-  }, [intl, location.pathname, user?.role]);
+  }, [intl, user?.role]);
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -187,7 +181,7 @@ const Sidebar: React.FC<{
         "flex flex-col gap-6 md:gap-10"
       )}
     >
-      <Link to={Route.Root} className="flex items-center gap-1 md:gap-2">
+      <Link to={Web.Root} className="flex items-center gap-1 md:gap-2">
         <Logo className="h-6 md:h-[50px]" />
         <Typography
           element={{ default: "tiny-text", lg: "subtitle-2" }}
@@ -207,13 +201,13 @@ const Sidebar: React.FC<{
           {intl("sidebar.main")}
         </Typography>
         <ul className="flex flex-col gap-2">
-          {mainPages.map(({ label, route, Icon, isActive = () => false }) => (
+          {mainPages.map(({ label, route, Icon }) => (
             <SidebarItem
               key={label}
               to={route}
               Icon={Icon}
               label={label}
-              active={location.pathname === route || isActive()}
+              active={router.isMatch.web(route, location.pathname)}
             />
           ))}
         </ul>
@@ -232,8 +226,8 @@ const Sidebar: React.FC<{
             <SidebarItem
               to={
                 user?.role === IUser.Role.Student
-                  ? Route.StudentSettings
-                  : Route.TutorSettings
+                  ? Web.StudentSettings
+                  : Web.TutorSettings
               }
               Icon={
                 user?.role === IUser.Role.Student ? Settings : ProfileAvatar
@@ -244,15 +238,15 @@ const Sidebar: React.FC<{
                   : intl("sidebar.profile")
               }
               active={
-                location.pathname === Route.TutorSettings ||
-                location.pathname === Route.StudentSettings
+                location.pathname === Web.TutorSettings ||
+                location.pathname === Web.StudentSettings
               }
             />
           ) : null}
 
           <button
             onClick={() => {
-              navigate(Route.Login);
+              navigate(Web.Login);
               logout();
             }}
             className={cn(
@@ -275,7 +269,7 @@ const Sidebar: React.FC<{
 
       {user &&
       user.role === IUser.Role.Student &&
-      location.pathname !== Route.Subscription ? (
+      location.pathname !== Web.Subscription ? (
         <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
           <div className="mx-2 lg:mx-0 px-4 mb-3">
             <Typography
@@ -293,7 +287,7 @@ const Sidebar: React.FC<{
               {intl("sidebar.account-promotion.description")}
             </Typography>
           </div>
-          <Link to={Route.Subscription}>
+          <Link to={Web.Subscription}>
             <Button size={"small"} htmlType="button">
               <Typography
                 element="caption"

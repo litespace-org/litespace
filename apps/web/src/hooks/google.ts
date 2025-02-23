@@ -1,4 +1,3 @@
-import { Route } from "@/types/routes";
 import { useAtlas } from "@litespace/headless/atlas";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -9,6 +8,7 @@ import { useGoogleLogin, useGoogleOneTapLogin } from "@react-oauth/google";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { capture } from "@/lib/sentry";
+import { Web } from "@litespace/utils/routes";
 
 function isPopupClosedError(error: unknown) {
   return (
@@ -41,7 +41,7 @@ export function useGoogle({
       if (info instanceof Error)
         return toast.error({ title: intl("login.error") });
       user.set(info);
-      return navigate(role ? Route.CompleteProfile : Route.Root);
+      return navigate(role ? Web.CompleteProfile : Web.Root);
     },
     [atlas.auth, intl, navigate, role, toast, user]
   );

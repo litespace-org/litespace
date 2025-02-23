@@ -1,6 +1,7 @@
-import { Route } from "@/lib/route";
+import { router } from "@/lib/route";
 import { useUserContext } from "@litespace/headless/context/user";
 import { IUser } from "@litespace/types";
+import { Dashboard } from "@litespace/utils/routes";
 import { concat, entries, isEmpty } from "lodash";
 import { useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -25,46 +26,43 @@ const BASE_BALACKLIST = [tutor, student, tutorManager] as const;
  * @note Super Admin is included by default in all whitelists.
  * @note Tutor Manager, Tutor, and Student are included by default in all balcklists.
  */
-const routeConfigMap: Record<Route, RouteConfig> = {
-  [Route.Root]: {},
-  [Route.Login]: {},
-  [Route.Users]: {
+const routeConfigMap: Record<Dashboard, RouteConfig> = {
+  [Dashboard.Root]: {},
+  [Dashboard.Login]: {},
+  [Dashboard.Users]: {
     whitelist: [regularAdmin],
   },
-  [Route.User]: {
+  [Dashboard.User]: {
     whitelist: [superAdmin, regularAdmin],
-    isActiveRoute(pathname) {
-      return pathname.startsWith(Route.User.replace(":id", ""));
-    },
   },
-  [Route.Invoices]: {
+  [Dashboard.Invoices]: {
     whitelist: [regularAdmin],
   },
-  [Route.Media]: {
+  [Dashboard.Media]: {
     whitelist: [regularAdmin, studio],
   },
-  [Route.Plans]: {
+  [Dashboard.Plans]: {
     whitelist: [regularAdmin],
   },
-  [Route.Interviews]: {
+  [Dashboard.Interviews]: {
     whitelist: [regularAdmin],
   },
-  [Route.Lessons]: {
+  [Dashboard.Lessons]: {
     whitelist: [regularAdmin],
   },
-  [Route.ServerStats]: {
+  [Dashboard.ServerStats]: {
     whitelist: [regularAdmin],
   },
-  [Route.PlatformSettings]: {
+  [Dashboard.PlatformSettings]: {
     whitelist: [regularAdmin],
   },
-  [Route.Topics]: {
+  [Dashboard.Topics]: {
     whitelist: [regularAdmin],
   },
-  [Route.VerifyEmail]: {
+  [Dashboard.VerifyEmail]: {
     whitelist: [regularAdmin],
   },
-  [Route.UserSetting]: {
+  [Dashboard.UserSetting]: {
     whitelist: [regularAdmin, studio],
   },
 };
@@ -78,9 +76,7 @@ export function useAuthRoutes() {
     const pathname = location.pathname;
 
     for (const [route, config] of entries(routeConfigMap)) {
-      const active =
-        (config.isActiveRoute && config.isActiveRoute(pathname)) ||
-        route === pathname;
+      const active = router.isMatch.dashboard(route as Dashboard, pathname);
       if (active) return config;
     }
 
@@ -100,6 +96,6 @@ export function useAuthRoutes() {
     const allowed = role && whitelist.includes(role);
     const disallowed = role && blacklist.includes(role);
 
-    if (!allowed || disallowed) return navigate(Route.Root);
+    if (!allowed || disallowed) return navigate(Dashboard.Root);
   }, [navigate, config, location.pathname, user?.role]);
 }

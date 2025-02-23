@@ -1,14 +1,14 @@
-import { Backend } from "@litespace/types";
-import { BackendContext, Context } from "@/backend/context";
+import { Env } from "@litespace/types";
+import { ServerContext, Context } from "@/server/context";
 import { AuthToken, TokenType } from "@litespace/atlas";
 import { useCallback, useMemo, useState } from "react";
 import { cache } from "@/cache/base";
 import { CacheKey } from "@/constants/cache";
 
-export const BackendProvider: React.FC<{
+export const ServerProvider: React.FC<{
   children?: React.ReactNode;
-  backend: Backend;
-}> = ({ children, backend }) => {
+  server: Env.Server;
+}> = ({ children, server }) => {
   const [token, setToken] = useState<AuthToken | null>(
     cache.load(CacheKey.AuthToken)
   );
@@ -46,15 +46,13 @@ export const BackendProvider: React.FC<{
       setBearerToken,
       setBasicToken,
       removeToken,
-      backend,
+      server,
       token,
     }),
-    [backend, removeToken, setAuthToken, setBasicToken, setBearerToken, token]
+    [removeToken, server, setAuthToken, setBasicToken, setBearerToken, token]
   );
 
   return (
-    <BackendContext.Provider value={context}>
-      {children}
-    </BackendContext.Provider>
+    <ServerContext.Provider value={context}>{children}</ServerContext.Provider>
   );
 };

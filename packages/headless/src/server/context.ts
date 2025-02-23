@@ -1,9 +1,9 @@
 import { AuthToken } from "@litespace/atlas";
-import { Backend, Void } from "@litespace/types";
+import { Env, Void } from "@litespace/types";
 import React, { useContext } from "react";
 
 export type Context = {
-  backend: Backend;
+  server: Env.Server;
   token: AuthToken | null;
   setAuthToken(token: AuthToken, remember?: boolean): void;
   setBearerToken(token: string, remember?: boolean): void;
@@ -11,11 +11,10 @@ export type Context = {
   removeToken: Void;
 };
 
-export const BackendContext = React.createContext<Context | null>(null);
+export const ServerContext = React.createContext<Context | null>(null);
 
-export function useBackend(): Context {
-  const context = useContext(BackendContext);
-  if (!context)
-    throw new Error("Invalid context. Using outside the provider?!");
+export function useServer(): Context {
+  const context = useContext(ServerContext);
+  if (!context) throw new Error(`useServer must be used within its provider.`);
   return context;
 }

@@ -3,7 +3,6 @@ import { ProfileInfo } from "@litespace/ui/Navbar";
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
-import { Route } from "@/types/routes";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import Crown from "@litespace/assets/Crown";
@@ -11,6 +10,7 @@ import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import Menu from "@litespace/assets/Menu";
+import { Web } from "@litespace/utils/routes";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { lg } = useMediaQuery();
@@ -23,13 +23,13 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
     <div className="shadow-app-navbar lg:shadow-app-navbar-mobile w-full z-navbar bg-natural-50">
       <div
         className={cn("flex justify-between gap-8 items-center py-6 px-4", {
-          "max-w-screen-3xl mx-auto": location.pathname !== Route.Chat,
+          "max-w-screen-3xl mx-auto": location.pathname !== Web.Chat,
         })}
       >
         {user.role === IUser.Role.Student &&
-        location.pathname !== Route.Subscription &&
+        location.pathname !== Web.Subscription &&
         lg ? (
-          <Link to={Route.Subscription}>
+          <Link to={Web.Subscription}>
             <Button
               size="large"
               htmlType="button"
