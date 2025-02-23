@@ -106,5 +106,5 @@
       "dayjs@1.11.13": "patches/dayjs@1.11.13.patch"
     }
   },
-  "packageManager": "pnpm@10.5.0+sha256.e77bc3c5a9888f823fe061413f60ef02afad4b967c9b16b13458279473ba7d1c"
+  "packageManager": "pnpm@10.5.2+sha256.79a98daa90248b50815e31460790f118c56fe099113370826caa0153be6daba5"
 }

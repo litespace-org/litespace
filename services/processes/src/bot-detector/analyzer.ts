@@ -1,5 +1,5 @@
 import fs from "node:fs";
-import { Connection, LogLineData } from "@/bot-detector/types";
+import { Config, Connection, LogLineData } from "@/bot-detector/types";
 import { min } from "@/bot-detector/utils";
 
 /**
@@ -13,30 +13,23 @@ import { min } from "@/bot-detector/utils";
 export class Analyzer {
   private threshold: number; // uncertainty threshold
   private data: Record<string, Connection>;
-  private dataFilePath = "./analyzer-data.json";
+  private trainedFilePath = "./store.json";
 
-  constructor() {
+  constructor(config: Config) {
     this.data = {};
-    this.threshold = 15;
-  }
-
-  setDataFilePath(path: string) {
-    this.dataFilePath = path;
-  }
-
-  setThreshold(threshold: number) {
-    this.threshold = threshold;
+    this.trainedFilePath = config.trained;
+    this.threshold = config.threshold;
   }
 
   /**
    * assumes the file at the specified path is well formed.
    */
   load() {
-    if (fs.existsSync(this.dataFilePath)) {
-      const stored = fs.readFileSync(this.dataFilePath);
+    if (fs.existsSync(this.trainedFilePath)) {
+      const stored = fs.readFileSync(this.trainedFilePath);
       this.data = JSON.parse(stored.toString());
     } else {
-      fs.writeFileSync(this.dataFilePath, JSON.stringify(this.data));
+      fs.writeFileSync(this.trainedFilePath, JSON.stringify(this.data));
     }
   }
 
