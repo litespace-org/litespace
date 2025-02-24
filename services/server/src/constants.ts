@@ -61,6 +61,9 @@ export enum FileType {
 export const serverConfig = {
   port: SERVER_PORT ? schema.number.parse(SERVER_PORT) : 8080,
   host: SERVER_HOST ? schema.string.parse(SERVER_HOST) : "0.0.0.0",
+  /**
+   * @deprecated should be removed
+   */
   assets: {
     directory: {
       uploads: "assets/uploads/",
