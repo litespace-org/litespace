@@ -14,6 +14,7 @@ export default {
         h1: "4rem",
         h2: "3rem",
         h3: "2.5rem",
+        h4: "2rem",
         "subtitle-1": "1.5rem",
         "subtitle-2": "1.25rem",
         body: "1rem",

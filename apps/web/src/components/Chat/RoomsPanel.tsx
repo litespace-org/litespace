@@ -67,7 +67,7 @@ const RoomsPanel: React.FC<{
       <div className="mb-6">
         <Typography
           tag="h1"
-          className=" text-natural-950 mb-6 text-body lg:text-subtitle-2 font-bold"
+          className="text-natural-950 mb-6 text-body lg:text-subtitle-2 font-bold"
         >
           {intl("chat.title")}
         </Typography>

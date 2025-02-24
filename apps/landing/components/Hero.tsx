@@ -20,13 +20,13 @@ const Hero: React.FC = () => {
         <div className="mx-auto flex flex-col items-center text-center gap-4 max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
             tag="h1"
-            className="text-natural-50 text-[1.5rem] md:text-[3rem] text-h1 font-bold"
+            className="text-natural-50 text-subtitle-1 sm:text-h2 font-bold"
           >
             {intl("home/hero/title")}
           </Typography>
           <Typography
             tag="p"
-            className="text-natural-50 text-[1rem] md:text-[1.5rem] font-medium"
+            className="text-natural-50 text-body sm:text-subtitle-1 font-medium"
           >
             {intl("home/hero/description")}
           </Typography>

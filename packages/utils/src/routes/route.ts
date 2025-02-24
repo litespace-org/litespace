@@ -30,6 +30,7 @@ export enum Landing {
   Subscriptions = "/subscriptions",
   BecomeTutor = "/tutor",
   Terms = "/terms",
+  Privacy = "/privacy",
 }
 
 export enum Dashboard {

@@ -38,7 +38,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
         <div className="tw-flex tw-gap-2 tw-items-center">
           <MessageQuestion />
           <Typography
-            tag="span"
+            tag="p"
             className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
           >
             {rating

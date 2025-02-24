@@ -38,7 +38,7 @@ const Sidebar: React.FC<{ hide: Void }> = ({ hide }) => {
           <Link href={page.route} key={page.route}>
             <Typography
               tag="span"
-              className="text-natural-800 text-tiny-text font-bold"
+              className="text-natural-800 text-tiny font-bold"
             >
               {intl(page.title)}
             </Typography>

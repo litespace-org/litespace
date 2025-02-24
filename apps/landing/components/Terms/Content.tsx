@@ -1,14 +1,11 @@
-// TODO: convert this component to server component once the Typography task is done
-"use client";
-
 import React from "react";
 import cn from "classnames";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-
-import { SocialLinks } from "@/components/common/SocialLinks";
-import { BulletList } from "@/components/common/BulletList";
-import { NumberedList } from "@/components/common/NumberedList";
+import { SocialLinks } from "@/components/Common/SocialLinks";
+import { BulletList } from "@/components/Common/BulletList";
+import { NumberedList } from "@/components/Common/NumberedList";
+import { Section, Text, Title } from "@/components/Layout/Section";
 
 const Content: React.FC = () => {
   const intl = useFormatMessage();
@@ -19,40 +16,14 @@ const Content: React.FC = () => {
         "max-w-screen-3xl mx-auto w-full"
       )}
     >
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/policies-updates/title")}
-        </Typography>
+      <Section>
+        <Title id="terms/body/policies-updates/title" />
+        <Text id="terms/body/policies-updates/content/1" />
+        <Text id="terms/body/policies-updates/content/2" />
+      </Section>
 
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/policies-updates/content/1")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/policies-updates/content/2")}
-        </Typography>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/account-register/title")}
-        </Typography>
+      <Section>
+        <Title id="terms/body/account-register/title" />
 
         <BulletList
           items={[
@@ -62,33 +33,15 @@ const Content: React.FC = () => {
             intl("terms/body/account-register/content/4"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/privacy-and-protection/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/privacy-and-protection/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/account-register/title" />
+        <Text id="terms/body/privacy-and-protection/content" />
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/payment-and-subscription/title")}
-        </Typography>
+      <Section>
+        <Title id="terms/body/account-register/title" />
 
         <BulletList
           items={[
@@ -98,33 +51,15 @@ const Content: React.FC = () => {
             intl("terms/body/payment-and-subscription/content/4"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/refund-policy/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/refund-policy/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/refund-policy/title" />
+        <Text id="terms/body/refund-policy/content" />
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/booking-steps/title")}
-        </Typography>
+      <Section>
+        <Title id="terms/body/booking-steps/title" />
 
         <NumberedList
           items={[
@@ -135,89 +70,37 @@ const Content: React.FC = () => {
             intl("terms/body/booking-steps/content/5"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/required-permissions/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/required-permissions/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/required-permissions/title" />
+        <Text id="terms/body/required-permissions/content" />
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/conversations/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/conversations/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/conversations/title" />
+        <Text id="terms/body/required-permissions/content" />
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/rating-tutors/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/rating-tutors/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/rating-tutors/title" />
+        <Text id="terms/body/rating-tutors/content" />
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("terms/body/contact-us/title")}
-        </Typography>
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("terms/body/contact-us/content")}
-        </Typography>
-      </div>
+      <Section>
+        <Title id="terms/body/contact-us/title" />
+        <Text id="terms/body/contact-us/content" />
 
-      <div className="flex flex-col gap-4">
         <div className="flex flex-row gap-2">
           <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+            tag="p"
+            className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
           >
             {intl("terms/body/contact-us/email/1")}
           </Typography>
           <Typography
-            tag="h3"
-            weight="medium"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+            tag="p"
+            className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
           >
             {intl("terms/body/contact-us/email/2")}
           </Typography>
@@ -225,16 +108,14 @@ const Content: React.FC = () => {
 
         <div className="flex flex-row gap-2">
           <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+            tag="p"
+            className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
           >
             {intl("terms/body/contact-us/phone/1")}
           </Typography>
           <Typography
-            tag="h3"
-            weight="medium"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+            tag="p"
+            className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
           >
             {intl("terms/body/contact-us/phone/2")}
           </Typography>
@@ -242,16 +123,18 @@ const Content: React.FC = () => {
 
         <div className="flex flex-col sm:flex-row flex-wrap gap-4">
           <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+            tag="p"
+            className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
           >
             {intl("terms/body/contact-us/social-media")}
           </Typography>
 
           <SocialLinks />
         </div>
-      </div>
+      </Section>
+
+      {/* <Section>
+      </Section> */}
     </div>
   );
 };

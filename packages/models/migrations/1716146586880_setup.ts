@@ -335,7 +335,7 @@ export function up(pgm: MigrationBuilder) {
   pgm.createIndex("invoices", "id");
 }
 
-export function down(pgm) {
+export function down(pgm: MigrationBuilder) {
   // indexes
   pgm.dropIndex("availability_slots", "id", { ifExists: true });
   pgm.dropIndex("contact_requests", "id", { ifExists: true });
