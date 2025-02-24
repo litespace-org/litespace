@@ -4,7 +4,7 @@ import { useToast } from "@litespace/ui/Toast";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { IUser } from "@litespace/types";
 import { useLoginUser } from "@litespace/headless/user";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -22,7 +22,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { isDev } from "@/constants/env";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
-import { Web } from "@litespace/utils/routes";
+import { isValidRoute, Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 
 interface IForm {
@@ -35,10 +35,19 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const toast = useToast();
   const user = useUserContext();
-  const google = useGoogle({});
   const mq = useMediaQuery();
+  const [searchParams] = useSearchParams();
   const validateEmail = useValidateEmail(true);
   const validatePassword = useValidatePassword(true);
+
+  const redirect = useMemo(() => {
+    const route = searchParams.get("redirect");
+    if (!route || !isValidRoute(route)) return null;
+    return route;
+  }, [searchParams]);
+
+  const google = useGoogle({ redirect });
+
   const { control, handleSubmit, watch, formState } = useForm<IForm>({
     defaultValues: {
       email: isDev ? "student@litespace.org" : "",
@@ -53,9 +62,8 @@ const Login: React.FC = () => {
   const mutation = useLoginUser({
     onSuccess(result) {
       user.set(result);
-      return navigate(Web.Root);
+      return navigate(redirect || Web.Root);
     },
-
     onError(error) {
       capture(error);
       const errorMessage = getErrorMessageId(error);

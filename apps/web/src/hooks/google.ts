@@ -22,8 +22,10 @@ function isPopupClosedError(error: unknown) {
 
 export function useGoogle({
   role,
+  redirect,
 }: {
   role?: IUser.Role.Student | IUser.Role.Tutor | IUser.Role.TutorManager;
+  redirect?: string | null;
 }) {
   const [loading, setLoading] = useState<boolean>(false);
   const atlas = useAtlas();
@@ -38,12 +40,16 @@ export function useGoogle({
       const info = await safe(async () =>
         atlas.auth.google({ token, type, role })
       );
+
       if (info instanceof Error)
         return toast.error({ title: intl("login.error") });
       user.set(info);
-      return navigate(role ? Web.CompleteProfile : Web.Root);
+
+      if (redirect) return navigate(redirect);
+      if (role) return navigate(Web.CompleteProfile);
+      return navigate(Web.Root);
     },
-    [atlas.auth, intl, navigate, role, toast, user]
+    [atlas.auth, intl, navigate, redirect, role, toast, user]
   );
 
   const onError = useCallback(

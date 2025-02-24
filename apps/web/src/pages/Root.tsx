@@ -45,6 +45,7 @@ const Root: React.FC = () => {
       Web.ForgetPassword,
       Web.ResetPassword,
       Web.CompleteProfile,
+      Web.VerifyEmail,
       ...registerRoutes,
     ];
     return !routes.includes(location.pathname);

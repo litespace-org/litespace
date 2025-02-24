@@ -44,7 +44,7 @@ export const LoadingError: React.FC<{
         onClick={retry}
         variant={"secondary"}
       >
-        {intl("global.retry")}
+        {intl("labels.retry")}
       </Button>
     </div>
   );

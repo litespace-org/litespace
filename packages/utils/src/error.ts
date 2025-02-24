@@ -23,6 +23,13 @@ export function isFieldError(value: unknown): value is FieldError {
   );
 }
 
+export function isForbidden(error: unknown) {
+  return (
+    error instanceof ResponseError &&
+    (error.statusCode === 401 || error.errorCode === ApiError.Forbidden)
+  );
+}
+
 export class ResponseError extends Error {
   statusCode: number;
   errorCode: ApiErrorCode;

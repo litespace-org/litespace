@@ -12,7 +12,7 @@ export const Animate: React.FC<{ children: React.ReactNode }> = ({
       animate={{
         opacity: 1,
         transition: {
-          duration: 0.1,
+          duration: 0.3,
           ease: "linear",
         },
       }}
