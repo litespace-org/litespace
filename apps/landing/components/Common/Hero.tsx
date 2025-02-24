@@ -5,10 +5,11 @@ import { LocalId } from "@/locales/request";
 import cn from "classnames";
 import { useFormatMessage } from "@/hooks/intl";
 
-const Hero: React.FC<{ title: LocalId; description: LocalId }> = ({
-  title,
-  description,
-}) => {
+const Hero: React.FC<{
+  title: LocalId;
+  description: LocalId;
+  descClassName?: string;
+}> = ({ title, description, descClassName }) => {
   const intl = useFormatMessage();
   return (
     <div className={cn("bg-brand-900 pt-[72px] sm:pt-[80px] px-4")}>
@@ -22,7 +23,10 @@ const Hero: React.FC<{ title: LocalId; description: LocalId }> = ({
           </Typography>
           <Typography
             tag="p"
-            className="text-natural-50 text-body sm:text-subtitle-1 font-medium "
+            className={cn(
+              "text-natural-50 text-body sm:text-subtitle-1 font-medium",
+              descClassName
+            )}
           >
             {intl(description)}
           </Typography>
