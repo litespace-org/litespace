@@ -1,5 +1,6 @@
 import { User } from "@/user";
 import { Auth } from "@/auth";
+import { Analytics } from "@/analytics";
 import { AvailabilitySlot } from "@/availabilitySlot";
 import { Env } from "@litespace/types";
 import { Plan } from "@/plan";
@@ -23,6 +24,7 @@ import { ContactRequest } from "@/contactRequest";
 export class Atlas {
   public readonly user: User;
   public readonly auth: Auth;
+  public readonly analytics: Analytics;
   public readonly availabilitySlot: AvailabilitySlot;
   public readonly contactRequest: ContactRequest;
   public readonly plan: Plan;
@@ -44,6 +46,7 @@ export class Atlas {
   constructor(server: Env.Server, token: AuthToken | null) {
     this.user = new User(server, token);
     this.auth = new Auth(server, token);
+    this.analytics = new Analytics(server, token);
     this.availabilitySlot = new AvailabilitySlot(server, token);
     this.contactRequest = new ContactRequest(server, token);
     this.plan = new Plan(server, token);
