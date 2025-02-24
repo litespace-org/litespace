@@ -11,7 +11,7 @@ const Header: React.FC = () => {
     <div className="flex flex-row justify-between items-center w-full">
       <div className="flex flex-row gap-2 items-center justify-center">
         <Logo className="h-[32px] sm:h-[48px]" />
-        <Typography tag="h1" className="text-brand-500 text-body font-bold">
+        <Typography tag="p" className="text-brand-500 text-body font-bold">
           {intl("labels.litespace")}
         </Typography>
       </div>

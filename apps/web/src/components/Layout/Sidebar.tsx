@@ -272,7 +272,7 @@ const Sidebar: React.FC<{
         <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
           <div className="mx-2 lg:mx-0 px-4 mb-3">
             <Typography
-              tag="h1"
+              tag="p"
               className="text-natural-950 inline-block text-tiny lg:text-caption font-bold lg:font-semibold"
             >
               {intl("sidebar.account-promotion.title")}

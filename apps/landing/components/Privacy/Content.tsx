@@ -1,33 +1,23 @@
-// TODO: convert this component to server component once the Typography task is done
-"use client";
-
 import React from "react";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { SocialLinks } from "@/components/common/SocialLinks";
-import { BulletList } from "@/components/common/BulletList";
+import { SocialLinks } from "@/components/Common/SocialLinks";
+import { BulletList } from "@/components/Common/BulletList";
+import { Title, Text, Section } from "@/components/Layout/Section";
+import cn from "classnames";
 
 const Content: React.FC = () => {
   const intl = useFormatMessage();
   return (
-    <div className="flex flex-col py-14 sm:py-20 md:py-20 px-4 md:px-8 lg:px-[108px] gap-14 sm:gap-20">
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/all-data/title")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/all-data/content/1")}
-        </Typography>
-
+    <div
+      className={cn(
+        "flex flex-col py-14 sm:py-20 px-4 md:px-8 lg:px-[108px] gap-14 sm:gap-20",
+        "max-w-screen-3xl mx-auto w-full"
+      )}
+    >
+      <Section>
+        <Title id="privacy-policy/body/all-data/title" />
+        <Text id="privacy-policy/body/all-data/content/1" />
         <BulletList
           items={[
             intl("privacy-policy/body/all-data/content/2"),
@@ -36,25 +26,11 @@ const Content: React.FC = () => {
             intl("privacy-policy/body/all-data/content/5"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/data-usage/title")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/data-usage/content/1")}
-        </Typography>
-
+      <Section>
+        <Title id="privacy-policy/body/data-usage/title" />
+        <Text id="privacy-policy/body/data-usage/content/1" />
         <BulletList
           items={[
             intl("privacy-policy/body/data-usage/content/2"),
@@ -65,50 +41,22 @@ const Content: React.FC = () => {
             intl("privacy-policy/body/data-usage/content/7"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/share-data/title")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/share-data/content/1")}
-        </Typography>
-
+      <Section>
+        <Title id="privacy-policy/body/share-data/title" />
+        <Text id="privacy-policy/body/share-data/content/1" />
         <BulletList
           items={[
             intl("privacy-policy/body/share-data/content/2"),
             intl("privacy-policy/body/share-data/content/3"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/data-protection/title")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/data-protection/content/1")}
-        </Typography>
-
+      <Section>
+        <Title id="privacy-policy/body/data-protection/title" />
+        <Text id="privacy-policy/body/data-protection/content/1" />
         <BulletList
           items={[
             intl("privacy-policy/body/data-protection/content/2"),
@@ -116,25 +64,11 @@ const Content: React.FC = () => {
             intl("privacy-policy/body/data-protection/content/4"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/subscriber-rights/title")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/subscriber-rights/content/1")}
-        </Typography>
-
+      <Section>
+        <Title id="privacy-policy/body/subscriber-rights/title" />
+        <Text id="privacy-policy/body/subscriber-rights/content/1" />
         <BulletList
           items={[
             intl("privacy-policy/body/subscriber-rights/content/2"),
@@ -143,117 +77,71 @@ const Content: React.FC = () => {
             intl("privacy-policy/body/subscriber-rights/content/5"),
           ]}
         />
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/cookies/title")}
-        </Typography>
+      <Section>
+        <Title id="privacy-policy/body/cookies/title" />
+        <Text id="privacy-policy/body/cookies/content" />
+      </Section>
 
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/cookies/content")}
-        </Typography>
-      </div>
-
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/updates/title")}
-        </Typography>
-
+      <Section>
+        <Title id="privacy-policy/body/updates/title" />
+        <Text id="privacy-policy/body/updates/content/1" />
         <Typography
           tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/updates/content/1")}
-        </Typography>
-
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
+          className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
         >
           {intl("privacy-policy/body/updates/content/2")}
         </Typography>
-      </div>
+      </Section>
 
-      <div className="flex flex-col gap-4 sm:gap-6">
-        <Typography
-          tag="h2"
-          weight="bold"
-          className="text-natural-950 text-[1.5rem] sm:text-[2rem]"
-        >
-          {intl("privacy-policy/body/contact-us/title")}
-        </Typography>
+      <Section>
+        <Title id="privacy-policy/body/contact-us/title" />
+        <Text id="privacy-policy/body/contact-us/content" />
 
-        <Typography
-          tag="p"
-          weight="medium"
-          className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-        >
-          {intl("privacy-policy/body/contact-us/content")}
-        </Typography>
-      </div>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-row items-center gap-2">
+            <Typography
+              tag="p"
+              className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
+            >
+              {intl("privacy-policy/body/contact-us/email/1")}
+            </Typography>
+            <Typography
+              tag="p"
+              className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
+            >
+              {intl("privacy-policy/body/contact-us/email/2")}
+            </Typography>
+          </div>
 
-      <div className="flex flex-col gap-4">
-        <div className="flex flex-row gap-2">
-          <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-          >
-            {intl("privacy-policy/body/contact-us/email/1")}
-          </Typography>
-          <Typography
-            tag="h3"
-            weight="medium"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-          >
-            {intl("privacy-policy/body/contact-us/email/2")}
-          </Typography>
+          <div className="flex flex-row items-center gap-2">
+            <Typography
+              tag="p"
+              className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
+            >
+              {intl("privacy-policy/body/contact-us/phone/1")}
+            </Typography>
+            <Typography
+              tag="p"
+              className="text-natural-950 text-body sm:text-subtitle-1 font-medium"
+            >
+              {intl("privacy-policy/body/contact-us/phone/2")}
+            </Typography>
+          </div>
+
+          <div className="flex flex-col sm:flex-row flex-wrap gap-4">
+            <Typography
+              tag="p"
+              className="text-natural-950 text-body sm:text-subtitle-1 font-bold"
+            >
+              {intl("privacy-policy/body/contact-us/social-media")}
+            </Typography>
+
+            <SocialLinks />
+          </div>
         </div>
-
-        <div className="flex flex-row gap-2">
-          <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-          >
-            {intl("privacy-policy/body/contact-us/phone/1")}
-          </Typography>
-          <Typography
-            tag="h3"
-            weight="medium"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-          >
-            {intl("privacy-policy/body/contact-us/phone/2")}
-          </Typography>
-        </div>
-
-        <div className="flex flex-col sm:flex-row flex-wrap gap-4">
-          <Typography
-            tag="h3"
-            weight="bold"
-            className="text-natural-950 text-[1rem] sm:text-[1.5rem]"
-          >
-            {intl("privacy-policy/body/contact-us/social-media")}
-          </Typography>
-
-          <SocialLinks />
-        </div>
-      </div>
+      </Section>
     </div>
   );
 };
