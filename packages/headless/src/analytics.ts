@@ -15,7 +15,7 @@ export function useTrackFacebookEvent() {
   );
 
   return useMutation({
-    mutationKey: [MutationKey.TrackFacebookEvent],
     mutationFn: trackEvent,
+    mutationKey: [MutationKey.TrackFacebookEvent],
   });
 }

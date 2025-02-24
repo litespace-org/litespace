@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -9,21 +9,42 @@ import cn from "classnames";
 import Link from "next/link";
 import { useTrackFacebookEvent } from "@litespace/headless/analytics";
 import { IAnalytics } from "@litespace/types";
+import { useSearchParams } from "next/navigation";
+import { formatFbc } from "@/lib/analytics";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
 
   const facebookTracker = useTrackFacebookEvent();
+  const searchParams = useSearchParams();
+
+  const fbclid = searchParams.get("fbclid");
 
   useEffect(() => {
     facebookTracker.mutate({
       eventName: IAnalytics.EventType.PageView,
       eventSourceUrl: window.location.href,
+      fbc: formatFbc(fbclid),
       customData: {
         page: "Home Page",
       },
     });
-  }, [facebookTracker]);
+    // eslint-disable-next-line
+  }, []);
+
+  const sendPixelEvent = useCallback(
+    () =>
+      facebookTracker.mutate({
+        eventName: IAnalytics.EventType.Register,
+        eventSourceUrl: window.location.href,
+        fbc: formatFbc(fbclid),
+        customData: {
+          page: "Home Page",
+        },
+      }),
+    // eslint-disable-next-line
+    []
+  );
 
   return (
     <div
@@ -35,7 +56,7 @@ const Hero: React.FC = () => {
         <div className="mx-auto flex flex-col items-center text-center gap-4 max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
             tag="h1"
-            className="text-natural-50 text-[1.5rem] md:text-[3rem] text-h1 font-bold"
+            className="text-natural-50 text-subtitle-1 sm:text-h2 font-bold"
           >
             {intl("home/hero/title")}
           </Typography>
@@ -46,7 +67,11 @@ const Hero: React.FC = () => {
             {intl("home/hero/description")}
           </Typography>
         </div>
-        <Link href="https://app.litespace.org" className="mb-14">
+        <Link
+          onClick={sendPixelEvent}
+          href="https://app.litespace.org"
+          className="mb-14"
+        >
           <Button size="large" className="h-auto w-auto py-4 px-8">
             <Typography
               tag="span"
