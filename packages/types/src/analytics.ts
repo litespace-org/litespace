@@ -1,3 +1,10 @@
+export type ConversionEventPayload = {
+  eventName: EventType;
+  userId?: string;
+  eventSourceUrl?: string;
+  customData?: Record<string, string | number>;
+};
+
 export type ConversionEvent = {
   event_name: EventType;
   event_time: number;
@@ -9,13 +16,6 @@ export type ConversionEvent = {
     client_user_agent: string;
     client_ip_address?: string;
   };
-};
-
-export type ConversionEventPayload = {
-  eventName: EventType;
-  userId?: string;
-  eventSourceUrl?: string;
-  customData?: Record<string, string | number>;
 };
 
 export enum EventType {

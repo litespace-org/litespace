@@ -7,21 +7,23 @@ import { Typography } from "@litespace/ui/Typography";
 import Ellipse from "@/components/Ellipse";
 import cn from "classnames";
 import Link from "next/link";
-import { trackFacebookEvents } from "@/utils/trackConversion";
-import { EventType } from "@/types/conversionEvent";
+import { useTrackFacebookEvent } from "@litespace/headless/analytics";
+import { IAnalytics } from "@litespace/types";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
 
+  const facebookTracker = useTrackFacebookEvent();
+
   useEffect(() => {
-    trackFacebookEvents({
-      eventName: EventType.PageView,
+    facebookTracker.mutate({
+      eventName: IAnalytics.EventType.PageView,
       eventSourceUrl: window.location.href,
       customData: {
         page: "Home Page",
       },
     });
-  }, []);
+  }, [facebookTracker]);
 
   return (
     <div
