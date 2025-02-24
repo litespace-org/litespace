@@ -1,22 +1,15 @@
 import { parentPort } from "node:worker_threads";
-import {
-  PartentPortMessageType,
-  WorkerMessage,
-  WorkerMessageType,
-} from "@/workers/messages";
+import { WorkerMessage, WorkerMessageType } from "@/workers/messages";
 import { emailer } from "@/lib/email";
 import { EmailTemplate } from "@litespace/emails";
-import { IToken, Server } from "@litespace/types";
+import { IToken } from "@litespace/types";
 import jwt from "jsonwebtoken";
 import { tokensExpireTime, jwtSecret } from "@/constants";
 import { safe } from "@litespace/utils/error";
 import { nameof } from "@litespace/utils/utils";
-import pidusage from "pidusage";
-import os from "node:os";
-import v8 from "node:v8";
 import { PartentPortMessage } from "@/workers/messages";
 
-function postMessage(message: PartentPortMessage) {
+function _postMessage(message: PartentPortMessage) {
   if (!parentPort) return;
   parentPort.postMessage(message);
 }
@@ -53,35 +46,6 @@ async function sendAuthTokenEmail({
   if (error instanceof Error) console.error(nameof(sendAuthTokenEmail), error);
 }
 
-async function getServerStats(): Promise<Server.Stats> {
-  const stats = await pidusage(process.pid);
-  // Convert from B to MB
-  // todo: make asMegaBytes util
-  const memory = stats.memory / 1024 / 1024;
-  const cpu = stats.cpu;
-  const elapsed = stats.elapsed;
-  const heap = v8.getHeapStatistics();
-  const timestamp = Date.now();
-  const load = os.loadavg();
-
-  return {
-    memory,
-    cpu,
-    elapsed,
-    heap: {
-      totalHeapSize: heap.total_heap_size / 1024 / 1024,
-      totalPhysicalSize: heap.total_physical_size / 1024 / 1024,
-      totalAvailableSize: heap.total_available_size / 1024 / 1024,
-      usedHeapSize: heap.used_heap_size / 1024 / 1024,
-      heapSizeLimit: heap.heap_size_limit / 1024 / 1024,
-      numberOfNativeContexts: heap.number_of_native_contexts,
-      numberOfDetachedContexts: heap.number_of_detached_contexts,
-    },
-    timestamp,
-    load,
-  };
-}
-
 parentPort?.on("message", async (message: WorkerMessage) => {
   if (
     message.type === WorkerMessageType.SendUserVerificationEmail ||
@@ -97,11 +61,3 @@ parentPort?.on("message", async (message: WorkerMessage) => {
           : IToken.Type.ForgetPassword,
     });
 });
-
-// emit stats to the main thread
-setInterval(async () => {
-  postMessage({
-    type: PartentPortMessageType.Stats,
-    stats: await getServerStats(),
-  });
-}, 5_000);
