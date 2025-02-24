@@ -1,6 +1,6 @@
 import safeRequest from "express-async-handler";
 import { IAnalytics } from "@litespace/types";
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import zod from "zod";
 import dayjs from "@/lib/dayjs";
 import axios from "axios";
@@ -11,6 +11,7 @@ import axios from "axios";
 const trackConversionEventPayload = zod.object({
   eventName: zod.nativeEnum(IAnalytics.EventType),
   userId: zod.string().optional(),
+  fbc: zod.string().optional(),
   eventSourceUrl: zod.string().optional(),
   customData: zod.object({}).optional(),
 });
@@ -26,9 +27,12 @@ const accessToken =
     ? process.env.DEVELOPMENT_CONVERSION_API_ACCESS_TOKEN
     : process.env.PRODUCTION_CONVERSION_API_URL;
 
-async function trackFacebookEvents(req: Request, res: Response) {
-  if (!apiUrl || !accessToken)
-    return console.error("Missing Conversion API configuration");
+async function trackFacebookEvents(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (!apiUrl || !accessToken) return next(res.status(200));
 
   const body = trackConversionEventPayload.parse(req.body);
   const ip = req.ip || req.socket.remoteAddress || "Unknown IP";
@@ -38,6 +42,7 @@ async function trackFacebookEvents(req: Request, res: Response) {
     user_data: {
       client_user_agent: req.headers["user-agent"] || "Unknown",
       client_ip_address: ip,
+      fbc: body.fbc,
     },
     event_time: dayjs.utc().unix(),
     event_source_url: body.eventSourceUrl,
@@ -45,16 +50,21 @@ async function trackFacebookEvents(req: Request, res: Response) {
     action_source: "website",
   };
 
-  await axios.post(
-    apiUrl,
-    { data: [event] },
-    {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    }
-  );
+  try {
+    await axios.post(
+      apiUrl,
+      { data: [event] },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }
+    );
+  } catch (error) {
+    console.log(error);
+    res.status(200);
+  }
 
   res.status(200);
 }

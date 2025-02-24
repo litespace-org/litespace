@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
@@ -9,23 +9,32 @@ import cn from "classnames";
 import Link from "next/link";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
-import { useTrackFacebookEvent } from "@litespace/headless/analytics";
 import { IAnalytics } from "@litespace/types";
+import { sendFacebookEvent } from "@/hooks/analytics";
+import { useSearchParams } from "next/navigation";
+import { orUndefined } from "@litespace/utils";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
-
-  const facebookTracker = useTrackFacebookEvent();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    facebookTracker.mutate({
+    sendFacebookEvent({
+      page: "Home Page",
+      fbclid: orUndefined(searchParams.get("fbclid")),
       eventName: IAnalytics.EventType.PageView,
-      eventSourceUrl: window.location.href,
-      customData: {
-        page: "Home Page",
-      },
     });
-  }, [facebookTracker]);
+  }, [searchParams]);
+
+  const sendPixelEvent = useCallback(
+    () =>
+      sendFacebookEvent({
+        page: "Home Page",
+        fbclid: orUndefined(searchParams.get("fbclid")),
+        eventName: IAnalytics.EventType.Register,
+      }),
+    [searchParams]
+  );
 
   return (
     <div
@@ -50,6 +59,7 @@ const Hero: React.FC = () => {
         </div>
         <Link
           href={router.web({ route: Web.Root, full: true })}
+          onClick={sendPixelEvent}
           className="mb-14"
         >
           <Button size="large" className="h-auto w-auto py-4 px-8">
