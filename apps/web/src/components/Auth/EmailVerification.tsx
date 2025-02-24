@@ -7,43 +7,68 @@ import CheckEmail from "@/components/Auth/CheckEmail";
 import { Button } from "@litespace/ui/Button";
 import { EmailVerificationError } from "@/components/Auth/EmailVerificationError";
 import { LocalId } from "@litespace/ui/locales";
-import { AnimatePresence } from "framer-motion";
-import { Animate } from "@/components/Common/Animate";
+import { AnimatePresence, motion } from "framer-motion";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-export type VerificationState = "loading" | "success" | "error" | "resend";
+export type VerificationState = "verifying" | "success" | "error" | "resend";
+
+const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{
+        opacity: 1,
+        transition: {
+          duration: 0.3,
+          ease: "linear",
+        },
+      }}
+      exit={{ opacity: 0 }}
+      className="w-full"
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const EmailVerification: React.FC<{
   state: VerificationState;
   errorMessage: LocalId | null;
-  loading: boolean;
+  verifying: boolean;
+  resending: boolean;
   retry: Void;
   resend: Void;
   goDashboard: Void;
 }> = ({
   state = "loading",
   errorMessage,
-  loading,
+  verifying,
   retry,
   resend,
   goDashboard,
+  resending,
 }) => {
   const intl = useFormatMessage();
+  const mq = useMediaQuery();
 
   return (
-    <AnimatePresence>
-      <div className="tw-grow tw-flex tw-flex-col tw-w-full tw-items-center tw-justify-center tw-gap-10">
-        {state !== "resend" ? (
-          <Typography
-            tag="h4"
-            className="text-natural-950 font-semibold text-h4"
-          >
-            {intl("verify-email.title")}
-          </Typography>
-        ) : null}
+    <div className="tw-flex tw-flex-col tw-w-full tw-items-center tw-justify-center mt-10 sm:mt-[140px] lg:mt-[30vh] gap-6 lg:tw-gap-10">
+      {state !== "resend" ? (
+        <Typography
+          tag="h4"
+          className="text-natural-950 font-bold sm:font-semibold text-subtitle-1 sm:text-h4"
+        >
+          {intl("verify-email.title")}
+        </Typography>
+      ) : null}
 
-        {state === "loading" ? (
+      <AnimatePresence initial={false} mode="wait">
+        {state === "verifying" ? (
           <Animate key="loading">
-            <Loader size="large" text={intl("verify-email.loading")} />
+            <Loader
+              size={mq.sm ? "large" : "small"}
+              text={intl("verify-email.loading")}
+            />
           </Animate>
         ) : null}
 
@@ -52,7 +77,8 @@ const EmailVerification: React.FC<{
           <Animate key="error">
             <EmailVerificationError
               errorMessage={errorMessage}
-              loading={loading}
+              resending={resending}
+              reverifying={verifying}
               resend={resend}
               retry={retry}
             />
@@ -75,11 +101,11 @@ const EmailVerification: React.FC<{
 
         {state === "resend" ? (
           <Animate key="resend">
-            <CheckEmail resend={resend} />
+            <CheckEmail resending={resending} resend={resend} />
           </Animate>
         ) : null}
-      </div>
-    </AnimatePresence>
+      </AnimatePresence>
+    </div>
   );
 };
 

@@ -122,7 +122,7 @@ export class RoutesManager {
     const populated = withParams(route, params);
     const updated = query ? withQuery(populated, query) : populated;
     if (full) return withUrl({ client: this.client, app, route: updated });
-    return populated;
+    return updated;
   }
 
   web(payload: BasePayload & WebPayload) {
@@ -135,5 +135,14 @@ export class RoutesManager {
 
   dashboard(payload: BasePayload & DashboardPayload) {
     return this.make({ ...payload, app: "dashboard" });
+  }
+}
+
+export function isValidRoute(route: string): boolean {
+  try {
+    new URL(route, "https://example.com");
+    return true;
+  } catch (_error) {
+    return false;
   }
 }

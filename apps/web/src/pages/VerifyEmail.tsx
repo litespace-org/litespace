@@ -11,22 +11,25 @@ import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { QueryKey } from "@litespace/headless/constants";
 import { useInvalidateQuery } from "@litespace/headless/query";
-import { VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
+import { router, VERIFY_EMAIL_CALLBACK_URL } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
 import { capture } from "@/lib/sentry";
 import { LocalId } from "@litespace/ui/locales";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { isForbidden } from "@litespace/utils";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const VerifyEmail: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [verificationState, setVerificationState] =
-    useState<VerificationState>("loading");
+    useState<VerificationState>("verifying");
   const [errorMessage, setErrorMessage] = useState<LocalId | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const navigate = useNavigate();
   const intl = useFormatMessage();
   const toast = useToast();
-  const [token, setToken] = useState<string | null>(null);
   const invalidateQuery = useInvalidateQuery();
+  const mq = useMediaQuery();
 
   const onVerifySuccess = useCallback(() => {
     setVerificationState("success");
@@ -50,16 +53,31 @@ const VerifyEmail: React.FC = () => {
   });
 
   const onResendSuccess = useCallback(() => {
+    setVerificationState("resend");
     toast.success({
       title: intl("verify-email.check-resend.success"),
     });
   }, [toast, intl]);
 
-  const onResendError = useCallback(() => {
-    toast.error({
-      title: intl("verify-email.check-resend.error"),
-    });
-  }, [toast, intl]);
+  const onResendError = useCallback(
+    (error: unknown) => {
+      capture(error);
+
+      toast.error({
+        title: intl("verify-email.check-resend.error"),
+        description: intl(getErrorMessageId(error)),
+      });
+
+      if (token && isForbidden(error)) {
+        const redirect = router.web({
+          route: Web.VerifyEmail,
+          query: { token },
+        });
+        return navigate(router.web({ route: Web.Login, query: { redirect } }));
+      }
+    },
+    [toast, intl, token, navigate]
+  );
 
   const resendMutation = useSendVerifyEmail({
     onSuccess: onResendSuccess,
@@ -68,26 +86,25 @@ const VerifyEmail: React.FC = () => {
 
   const resendEmail = useCallback(() => {
     resendMutation.mutate(VERIFY_EMAIL_CALLBACK_URL);
-    setVerificationState("resend");
   }, [resendMutation]);
 
   useEffect(() => {
     if (token) return;
     const searchParamsToken = searchParams.get("token");
+    if (!searchParamsToken) return navigate(Web.Root);
     setToken(searchParamsToken);
     setSearchParams({});
-  }, [intl, navigate, searchParams, setSearchParams, token]);
+  }, [navigate, searchParams, setSearchParams, token]);
 
   const verifyEmail = useCallback(() => {
     if (!token) return;
-    setVerificationState("loading");
+    setVerificationState("verifying");
     verifyMutation.mutate(token);
   }, [verifyMutation, token]);
 
   useEffect(() => {
     if (!token || verifyMutation.isPending || verifyMutation.isError) return;
     verifyEmail();
-    setToken(null);
   }, [token, verifyEmail, verifyMutation]);
 
   return (
@@ -97,13 +114,14 @@ const VerifyEmail: React.FC = () => {
         <EmailVerification
           state={verificationState}
           errorMessage={errorMessage}
-          loading={resendMutation.isPending || verifyMutation.isPending}
+          verifying={verifyMutation.isPending}
+          resending={resendMutation.isPending}
           resend={resendEmail}
           retry={verifyEmail}
           goDashboard={goDashboard}
         />
       </main>
-      <Aside />
+      {mq.lg ? <Aside /> : null}
     </div>
   );
 };

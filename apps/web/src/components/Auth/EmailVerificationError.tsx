@@ -9,25 +9,26 @@ import { LocalId } from "@litespace/ui/locales";
 
 export const EmailVerificationError: React.FC<{
   errorMessage: LocalId | null;
-  loading: boolean;
+  resending: boolean;
+  reverifying: boolean;
   retry: Void;
   resend: Void;
-}> = ({ errorMessage, loading, retry, resend }) => {
+}> = ({ errorMessage, resending, reverifying, retry, resend }) => {
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
+    <div className="flex flex-col items-center justify-center">
       <div
         className={cn(
-          "tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full",
-          "tw-p-[6.67px] tw-w-20 tw-h-20"
+          "flex items-center justify-center bg-destructive-200 rounded-full",
+          "p-[3px] sm:p-[7px] w-10 h-10 sm:w-20 sm:h-20"
         )}
       >
         <ExclaimationMarkCircle />
       </div>
       <Typography
-        tag="caption"
-        className="tw-text-natural-950 font-semibold text-caption tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4"
+        tag="p"
+        className="text-natural-950 text-tiny sm:text-caption sm:font-semibold text-center max-w-[226px] sm:w-full my-4"
       >
         {intl(
           errorMessage && errorMessage !== "error.unexpected"
@@ -35,11 +36,11 @@ export const EmailVerificationError: React.FC<{
             : "verify-email.failure"
         )}
       </Typography>
-      <div className="tw-flex tw-gap-4">
+      <div className="flex gap-4">
         <Button
           size="large"
-          loading={loading}
-          disabled={loading}
+          loading={reverifying}
+          disabled={reverifying}
           onClick={retry}
           variant="primary"
         >
@@ -47,8 +48,8 @@ export const EmailVerificationError: React.FC<{
         </Button>
         <Button
           size="large"
-          loading={loading}
-          disabled={loading}
+          loading={resending}
+          disabled={resending}
           onClick={resend}
           variant="secondary"
         >

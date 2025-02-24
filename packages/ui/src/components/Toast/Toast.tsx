@@ -8,7 +8,7 @@ import XErrored from "@litespace/assets/XErroredFill";
 import { motion } from "framer-motion";
 import { Typography } from "@/components/Typography";
 
-const TOAST_DURATION = 4800;
+const TOAST_DURATION = 10_000;
 
 const IconMap: Record<
   ToastType,
