@@ -1,14 +1,6 @@
-/**
- * @type {import('node-pg-migrate').ColumnDefinitions | undefined}
- */
-exports.shorthands = undefined;
+import { MigrationBuilder } from "node-pg-migrate";
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
-exports.up = (pgm) => {
+export function up(pgm: MigrationBuilder) {
   // types
   pgm.createType("user_role", [
     "super-admin",
@@ -341,14 +333,9 @@ exports.up = (pgm) => {
   pgm.createIndex("rooms", "id");
   pgm.createIndex("messages", "id");
   pgm.createIndex("invoices", "id");
-};
+}
 
-/**
- * @param pgm {import('node-pg-migrate').MigrationBuilder}
- * @param run {() => void | undefined}
- * @returns {Promise<void> | void}
- */
-exports.down = (pgm) => {
+export function down(pgm) {
   // indexes
   pgm.dropIndex("availability_slots", "id", { ifExists: true });
   pgm.dropIndex("contact_requests", "id", { ifExists: true });
@@ -398,4 +385,4 @@ exports.down = (pgm) => {
   pgm.dropType("interview_status", { ifExists: true });
   pgm.dropType("withdraw_method", { ifExists: true });
   pgm.dropType("invoice_status", { ifExists: true });
-};
+}
