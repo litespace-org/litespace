@@ -38,4 +38,6 @@ export enum MutationKey {
   FlushCache = "flush-cache",
 
   CreateContactRequest = "create-contact-request",
+
+  TrackFacebookEvent = "track-facebook-event",
 }

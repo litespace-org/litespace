@@ -1,5 +1,6 @@
 import { User } from "@/user";
 import { Auth } from "@/auth";
+import { Analytics } from "@/analytics";
 import { AvailabilitySlot } from "@/availabilitySlot";
 import { Env } from "@litespace/types";
 import { Plan } from "@/plan";
@@ -23,6 +24,7 @@ import { ContactRequest } from "@/contactRequest";
 export class Atlas {
   public readonly user: User;
   public readonly auth: Auth;
+  public readonly analytics: Analytics;
   public readonly availabilitySlot: AvailabilitySlot;
   public readonly contactRequest: ContactRequest;
   public readonly plan: Plan;
@@ -62,5 +64,6 @@ export class Atlas {
     this.cache = new Cache(client);
     this.topic = new Topic(client);
     this.session = new Session(client);
+    this.analytics = new Analytics(client);
   }
 }
