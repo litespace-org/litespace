@@ -1,6 +1,7 @@
 export type ConversionEventPayload = {
   eventName: EventType;
   userId?: string;
+  fbc?: string;
   eventSourceUrl?: string;
   customData?: Record<string, string | number>;
 };
@@ -15,6 +16,7 @@ export type ConversionEvent = {
   user_data: {
     client_user_agent: string;
     client_ip_address?: string;
+    fbc?: string;
   };
 };
 
@@ -23,4 +25,5 @@ export enum EventType {
   Register = "register",
   Login = "login",
   Depth = "depth",
+  Engagement = "engagement",
 }
