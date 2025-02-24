@@ -17,6 +17,10 @@
     "vite-node": "^2.1.2"
   },
   "exports": {
+    "./AstroStudent1": "./dist/AstroStudent1.tsx",
+    "./AstroStudent2": "./dist/AstroStudent2.tsx",
+    "./AstroStudent3": "./dist/AstroStudent3.tsx",
+    "./AstroStudent4": "./dist/AstroStudent4.tsx",
     "./Categories": "./dist/Categories.tsx",
     "./Crown": "./dist/Crown.tsx",
     "./LongLeftArrow": "./dist/LongLeftArrow.tsx",
