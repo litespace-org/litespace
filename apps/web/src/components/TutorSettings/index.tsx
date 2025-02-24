@@ -1,4 +1,3 @@
-import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import React, { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -14,6 +13,9 @@ import { QueryKey } from "@litespace/headless/constants";
 import { orNull, orUndefined } from "@litespace/utils/utils";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
+import ProfileCard from "@/components/TutorSettings/ProfileCard";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
+import { Typography } from "@litespace/ui/Typography";
 
 const TutorSettings: React.FC<{
   info: ITutor.FindTutorInfoApiResponse & {
@@ -22,6 +24,7 @@ const TutorSettings: React.FC<{
     email: string;
   };
 }> = ({ info }) => {
+  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
@@ -113,31 +116,48 @@ const TutorSettings: React.FC<{
     [info, updateTutor]
   );
 
+  const SubmitButton = useMemo(
+    () => (
+      <Button
+        htmlType="submit"
+        loading={updateTutor.isPending}
+        disabled={updateTutor.isPending || !dataChanged}
+        size="large"
+        className="self-end sm:self-start"
+      >
+        <Typography tag="label" className="font-medium">
+          {intl("shared-settings.save")}
+        </Typography>
+      </Button>
+    ),
+    [dataChanged, intl, updateTutor.isPending]
+  );
+
   return (
-    <Form onSubmit={form.handleSubmit(submit)} className="flex flex-col gap-10">
-      <div className="p-10 pb-0 flex justify-between">
-        <TutorProfileCard
-          variant="small"
+    <Form
+      onSubmit={form.handleSubmit(submit)}
+      className="flex flex-col gap-6 md:gap-10"
+    >
+      <div className="sm:p-10 sm:pb-0 sm:flex sm:justify-between">
+        <ProfileCard
           image={info.image}
           name={info.name}
           id={info.id}
           bio={info.bio}
           studentCount={info.studentCount}
-          lessonCount={info.studentCount}
+          lessonCount={info.lessonCount}
           avgRating={info.avgRating}
         />
-
-        <Button
-          htmlType="submit"
-          loading={updateTutor.isPending}
-          disabled={updateTutor.isPending || !dataChanged}
-          size={"medium"}
-        >
-          {intl("shared-settings.save")}
-        </Button>
+        {sm ? SubmitButton : null}
       </div>
 
       <Tabs form={form} video={info.video} />
+
+      {!sm ? (
+        <div className="-mx-4 -mb-4 p-4 flex justify-end bg-natural-50 shadow-form-submit-container">
+          {SubmitButton}
+        </div>
+      ) : null}
     </Form>
   );
 };

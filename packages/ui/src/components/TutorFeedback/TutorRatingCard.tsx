@@ -28,11 +28,13 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
   return (
     <div
       className={cn(
-        "tw-bg-natural-50 tw-p-4 md:tw-p-6 tw-shadow-feedback-card tw-rounded-3xl",
+        "tw-bg-natural-50 tw-p-4 md:tw-p-6 tw-shadow-feedback-card tw-rounded-2xl md:tw-rounded-3xl",
         "tw-relative tw-flex tw-flex-col tw-items-center tw-min-w-64",
         { "tw-justify-between": !feedback },
-        isEditing ? "tw-w-64 md:tw-h-[313px]" : "md:tw-h-[383px]",
-        isEditing ? "tw-gap-4" : "tw-gap-6"
+        isEditing
+          ? "tw-w-64 md:tw-h-[317px]"
+          : "md:tw-h-[317px] lg:tw-h-[383px]",
+        isEditing ? "tw-gap-4" : "tw-gap-4 lg:tw-gap-6"
       )}
     >
       {owner ? (
@@ -62,7 +64,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
             "tw-relative tw-rounded-full tw-shrink-0 tw-border-[3px] tw-border-brand-500",
             isEditing
               ? "tw-w-[82px] tw-h-[82px]"
-              : "md:tw-w-[129px] md:tw-h-[129px] tw-w-[72px] tw-h-[72px]"
+              : "tw-w-[72px] tw-h-[72px] md:tw-w-[94px] md:tw-h-[94px] lg:tw-w-[129px] lg:tw-h-[129px]"
           )}
         >
           <div className="tw-overflow-hidden tw-w-full tw-h-full tw-rounded-full">
@@ -77,10 +79,10 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
               "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-quote",
               isEditing
                 ? "tw-w-[42px] tw-h-[42px] -tw-right-[7.5px] -tw-bottom-[7.5px]"
-                : "md:tw-w-14 md:tw-h-14 -tw-right-[12px] -tw-bottom-[12px] tw-w-8 tw-h-8"
+                : "tw-w-8 tw-h-8 md:tw-w-[39px] md:tw-h-[39px] lg:tw-w-14 lg:tw-h-14 -tw-right-[12px] -tw-bottom-[12px]"
             )}
           >
-            <Quote className="md:tw-w-6 md:tw-h-6 tw-w-[14px] tw-h-[14px]" />
+            <Quote className="tw-w-[14px] tw-h-[14px] md:tw-w-6 md:tw-h-6" />
           </div>
         </div>
       </div>
@@ -95,7 +97,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
         <Typography
           tag="span"
           className={cn(
-            "tw-line-clamp-5 tw-text-center tw-text-natural-800 tw-font-semibold tw-tiny"
+            "tw-line-clamp-5 tw-text-center tw-text-natural-800 tw-font-semibold md:tw-font-normal lg:tw-font-semibold tw-tiny"
           )}
         >
           {!feedback && isEditing
@@ -107,7 +109,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
       <Typography
         tag="span"
         className={cn(
-          "tw-text-brand-950 tw-text-center tw-font-bold tw-text-body md:tw-text-caption",
+          "tw-text-brand-950 tw-text-center tw-font-bold tw-text-caption lg:tw-text-body",
           {
             "tw-mt-auto": feedback,
           }

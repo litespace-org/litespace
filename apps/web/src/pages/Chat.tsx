@@ -83,7 +83,7 @@ const Chat: React.FC = () => {
   return (
     <div
       className={cn(
-        "flex flex-row overflow-hidden grow",
+        "max-w-screen-3xl w-full mx-auto flex flex-row overflow-hidden grow",
         "max-h-chat-mobile md:max-h-chat-tablet lg:max-h-chat-desktop"
       )}
     >

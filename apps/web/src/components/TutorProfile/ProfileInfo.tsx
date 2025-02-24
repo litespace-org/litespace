@@ -12,33 +12,33 @@ const ProfileInfo: React.FC<{
 }> = ({ about, topics, video }) => {
   const intl = useFormatMessage();
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 py-4 md:py-8 gap-4 md:gap-[88px] md:px-10">
+    <div className="grid grid-cols-1 lg:grid-cols-2 pt-4 md:pt-6 md:pb-10 md:px-10 lg:pt-8 gap-4 md:gap-6 lg:gap-[88px]">
       <div>
         {about ? (
-          <div className="flex flex-col gap-2 md:gap-8">
+          <div className="flex flex-col gap-2 md:gap-4">
             <Typography
               tag="h2"
-              className="text-natural-950 text-body md:text-subtitle-2 font-bold"
+              className="text-natural-950 text-body lg:text-subtitle-2 font-bold"
             >
               {intl("tutor.profile.tabs.profile.about")}
             </Typography>
             <Typography
               tag="p"
-              className="text-natural-800 break-words text-tiny md:text-body"
+              className="text-natural-800 break-words text-tiny md:text-caption lg:text-body font-normal"
             >
               {about}
             </Typography>
           </div>
         ) : null}
         {!isEmpty(topics) ? (
-          <div className="mt-[34px] md:mt-8 flex flex-col md:gap-8 gap-2">
+          <div className="mt-4 md:mt-6 lg:mt-8 flex flex-col gap-2 md:gap-4">
             <Typography
               tag="span"
-              className="text-natural-950 text-body md:text-subtitle-2 font-bold"
+              className="text-natural-950 text-body lg:text-subtitle-2 font-bold"
             >
               {intl("tutor.profile.tabs.profile.specialities")}
             </Typography>
-            <div className="flex items-center gap-[10px] md:gap-4 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               {topics.map((topic) => (
                 <div
                   key={topic}
@@ -46,7 +46,7 @@ const ProfileInfo: React.FC<{
                 >
                   <Typography
                     tag="span"
-                    className="text-natural-50 text-tiny md:text-caption"
+                    className="text-natural-50 text-tiny md:text-caption font-normal"
                   >
                     {topic}
                   </Typography>
@@ -57,10 +57,10 @@ const ProfileInfo: React.FC<{
         ) : null}
       </div>
       {video ? (
-        <div className="flex flex-col md:gap-8 gap-2">
+        <div className="flex flex-col gap-2 md:gap-4">
           <Typography
             tag="span"
-            className="text-natural-950 font-bold text-body md:text-subtitle-2"
+            className="text-natural-950 font-bold text-body lg:text-subtitle-2"
           >
             {intl("tutor.profile.tabs.profile.video")}
           </Typography>

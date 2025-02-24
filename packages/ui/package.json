@@ -61,7 +61,6 @@
     "./Timeline": "./dist/components/Timeline/index.js",
     "./TimePicker": "./dist/components/TimePicker/index.js",
     "./TutorFeedback": "./dist/components/TutorFeedback/index.js",
-    "./TutorProfile": "./dist/components/TutorProfile/index.js",
     "./Typography": "./dist/components/Typography/index.js",
     "./Toast": "./dist/components/Toast/index.js",
     "./Tooltip": "./dist/components/Tooltip/index.js",

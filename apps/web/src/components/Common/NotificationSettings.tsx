@@ -21,11 +21,11 @@ const NotificationSettings = () => {
     <div>
       <Typography
         tag="h1"
-        className="text-natural-950 text-caption sm:text-subtitle-2 font-bold"
+        className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.account-settings.notifications.title")}
       </Typography>
-      <div className="flex flex-col gap-4 mt-4 sm:mt-6">
+      <div className="flex flex-col gap-2 md:gap-4 mt-4 lg:mt-6">
         <FullSwitch
           title={intl("shared-settings.notifications.lesson-date.title")}
           description={intl(

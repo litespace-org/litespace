@@ -140,8 +140,9 @@ const Content: React.FC<{
         </Typography>
 
         <Button
-          className={cn("w-full max-w-[328px] lg:max-w-[386px] ")}
-          size={mq.lg ? "medium" : "small"}
+          className={cn("w-full max-w-[380px] md:w-auto")}
+          size="large"
+          endIcon={<Notification2 className="w-4 h-4" />}
           onClick={() =>
             toast.success({
               title: intl("labels.coming-soon"),
@@ -149,15 +150,12 @@ const Content: React.FC<{
             })
           }
         >
-          <div className="flex items-center gap-[10px]">
-            <Typography
-              tag="span"
-              className="text-natural-50 text-body font-bold"
-            >
-              {intl("tutors.coming.set-notifications")}
-            </Typography>
-            <Notification2 width={24} height={24} />
-          </div>
+          <Typography
+            tag="label"
+            className="text-natural-50 text-body font-medium"
+          >
+            {intl("tutors.coming.set-notifications")}
+          </Typography>
         </Button>
       </div>
     </div>

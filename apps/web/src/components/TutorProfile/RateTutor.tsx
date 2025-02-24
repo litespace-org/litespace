@@ -10,7 +10,6 @@ import { useToast } from "@litespace/ui/Toast";
 import { QueryKey } from "@litespace/headless/constants";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
 
 export const RateTutor: React.FC<{
@@ -22,7 +21,6 @@ export const RateTutor: React.FC<{
   const [rating, setRating] = useState<boolean>(false);
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
-  const mq = useMediaQuery();
 
   const onRateError = useCallback(
     (error: unknown) => {
@@ -49,27 +47,25 @@ export const RateTutor: React.FC<{
   if (!user) return null;
 
   return (
-    <div className="flex gap-6 md:gap-10 flex-col items-center justify-center">
+    <div className="flex gap-6 lg:gap-10 flex-col items-center justify-center">
       <Typography
         tag="span"
-        className="text-natural-700 md:text-natural-950 text-center max-w-[912px] text-caption md:text-subtitle-1 font-semibold md:font-medium"
+        className="text-natural-700 md:text-natural-950 text-center max-w-[631px] text-caption md:text-body lg:text-subtitle-1 font-semibold md:font-bold lg:font-medium"
       >
         {intl("tutor.profile.your-ratings-help")}
       </Typography>
       <Button
         onClick={() => setRating(true)}
-        size={mq.md ? "medium" : "small"}
-        className="w-full md:w-[386px] flex items-center gap-2"
+        size="large"
+        className="w-full md:w-[267px] flex items-center gap-2"
       >
         <Typography
           tag="span"
-          className="text-nowrap text-caption md:text-body font-semibold"
+          className="text-nowrap text-caption md:text-body font-semibold md:font-medium"
         >
           {intl("tutor.profile.rate-tutor")}
         </Typography>
-        <div className="w-6 h-6">
-          <Star className="[&>*]:fill-natural-50" />
-        </div>
+        <Star className="w-4 h-4 [&>*]:stroke-natural-50 [&>*]:fill-transparent" />
       </Button>
       {rating ? (
         <RatingDialog

@@ -1,7 +1,7 @@
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileInfo } from "@litespace/ui/Navbar";
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import cn from "classnames";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -16,7 +16,6 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { lg } = useMediaQuery();
   const intl = useFormatMessage();
   const { user } = useUserContext();
-  const location = useLocation();
 
   if (!user) return null;
   return (
@@ -49,9 +48,9 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           <button
             type="button"
             onClick={toggleSidebar}
-            className="w-6 h-6 bg-natural-100 bg-opacity-50 rounded-[4px] p-[2px]"
+            className="w-6 h-6 bg-brand-700 bg-opacity-50 rounded-[4px] p-[2px]"
           >
-            <Menu />
+            <Menu className="[&>*]:stroke-natural-50" />
           </button>
         ) : null}
 

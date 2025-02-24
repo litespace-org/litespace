@@ -51,7 +51,7 @@ export const TutorTabs: React.FC<{
         setParams({ [URL_TAB_KEY]: value });
       }}
     >
-      <Tabs.List className="border-b border-natural-300 flex gap-14 px-4 md:px-10">
+      <Tabs.List className="border-b border-natural-300 flex gap-14 md:px-10">
         {tabs.map(({ value, label }) => (
           <Tabs.Trigger
             key={value}

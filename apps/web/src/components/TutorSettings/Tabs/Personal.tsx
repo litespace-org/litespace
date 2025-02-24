@@ -1,4 +1,4 @@
-import { Controller, Label } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useMemo } from "react";
@@ -37,12 +37,12 @@ const PersonalSettings: React.FC<{
     !!form.watch("password.confirm");
 
   return (
-    <div className="p-10">
-      <div className="flex flex-row gap-[192px] justify-start">
-        <div className="flex flex-col gap-6 w-full max-w-[400px]">
+    <div className="pt-4 md:pt-6 md:px-10 md:pb-10 lg:pt-10">
+      <div className="flex flex-col md:flex-row gap-6 md:gap-[30px] lg:gap-[192px] md:justify-start mb-6">
+        <div className="flex flex-col gap-2 md:gap-4 w-full max-w-[400px]">
           <Typography
             tag="h1"
-            className="text-natural-950 text-subtitle-1 font-bold"
+            className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold mb-2 md:mb-0 lg:mb-2"
           >
             {intl("tutor-settings.account-settings.title")}
           </Typography>
@@ -62,8 +62,11 @@ const PersonalSettings: React.FC<{
             autoComplete="off"
             name="phoneNumber"
           />
-          <div className="flex flex-col gap-2">
-            <Label>{intl("labels.city")}</Label>
+          <div className="flex flex-col gap-1">
+            {/* <Label>{intl("labels.city")}</Label> */}
+            <Typography tag="label" className="font-semibold text-natural-950">
+              {intl("labels.city")}
+            </Typography>
             <Controller.Select
               value={form.watch("city")}
               options={cityOptions}
@@ -75,10 +78,11 @@ const PersonalSettings: React.FC<{
             />
           </div>
         </div>
-        <div className="flex flex-col gap-6 max-w-[400px] w-full">
+
+        <div className="flex flex-col gap-2 md:gap-4 max-w-[400px] w-full">
           <Typography
             tag="h2"
-            className="text-natural-950 text-subtitle-1 font-bold"
+            className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold mb-2 md:mb-0 lg:mb-2"
           >
             {intl("tutor-settings.account-settings.password.title")}
           </Typography>

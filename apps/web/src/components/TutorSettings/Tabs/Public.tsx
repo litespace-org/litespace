@@ -1,6 +1,6 @@
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
-import { Controller, Label } from "@litespace/ui/Form";
+import { Controller } from "@litespace/ui/Form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
 import Edit from "@litespace/assets/Edit";
 import { TopicSelectionDialog } from "@litespace/ui/TopicSelectionDialog";
@@ -20,18 +20,25 @@ import { orUndefined } from "@litespace/utils/utils";
 import { Void } from "@litespace/types";
 import { capture } from "@/lib/sentry";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
+import { isEmpty } from "lodash";
+import { Button } from "@litespace/ui/Button";
+import AddCircle from "@litespace/assets/AddCircle";
+import { Loader, LoadingError } from "@litespace/ui/Loading";
 
 const Topics: React.FC<{
   edit: Void;
   topics: Array<{ id: number; label: string }>;
-}> = ({ edit, topics }) => {
+  loading: boolean;
+  error: boolean;
+  retry: Void;
+}> = ({ edit, topics, loading, error, retry }) => {
   const intl = useFormatMessage();
   return (
     <div>
       <div className="flex justify-between items-center">
         <Typography
           tag="h2"
-          className="text-natural-950 text-subtitle-1 font-bold"
+          className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
         >
           {intl("tutor-settings.personal-info.topics")}
         </Typography>
@@ -46,17 +53,55 @@ const Topics: React.FC<{
           >
             {intl("global.labels.edit")}
           </Typography>
-          <Edit width={24} height={24} className="[&>*]:stroke-brand-700" />
+          <Edit className="w-6 h-6 [&>*]:stroke-brand-700" />
         </button>
       </div>
-      <div className="flex gap-4 flex-wrap mt-[21px]">
-        {topics.map((topic) => (
-          <div className="bg-brand-700 rounded-3xl py-3 px-4" key={topic.id}>
-            <Typography tag="span" className="text-natural-50 text-caption">
-              {topic.label}
-            </Typography>
+      <div className="flex gap-2 lg:gap-4 flex-wrap mt-4 lg:mt-6">
+        {loading ? (
+          <div className="w-full flex justify-center md:mt-8 lg:mt-2 lg:mb-8">
+            <Loader size="small" text={intl("tutor-settings.topics.loading")} />
           </div>
-        ))}
+        ) : null}
+        {error ? (
+          <div className="w-full flex justify-center">
+            <LoadingError
+              error={intl("tutor-settings.topics.error")}
+              retry={retry}
+              size="small"
+            />
+          </div>
+        ) : null}
+
+        {!loading && !error && isEmpty(topics) ? (
+          <Button
+            size="large"
+            onClick={edit}
+            endIcon={
+              <AddCircle className="h-4 w-4 lg:h-6 lg:w-6 lg:-translate-y-[3px]" />
+            }
+            className="mx-auto mt-[34px] md:mt-[37px] md:mb-[29px] lg:mt-[17px] lg:mb-[41px] lg:h-14 lg:px-8"
+          >
+            <Typography
+              tag="label"
+              className="text-body font-medium lg:font-bold"
+            >
+              {intl("tutor-settings.topics.selection-dialog.trigger")}
+            </Typography>
+          </Button>
+        ) : null}
+
+        {!loading && !error && !isEmpty(topics)
+          ? topics.map((topic) => (
+              <div
+                className="bg-brand-700 rounded-3xl p-3 md:py-3 md:px-4"
+                key={topic.id}
+              >
+                <Typography tag="span" className="text-natural-50 text-caption">
+                  {topic.label}
+                </Typography>
+              </div>
+            ))
+          : null}
       </div>
     </div>
   );
@@ -136,16 +181,22 @@ const PublicSettings: React.FC<{
   );
 
   return (
-    <div className="flex flex-col gap-6 p-10">
+    <div className="flex flex-col gap-6 lg:gap-6 pt-4 md:pt-6 md:px-10 md:pb-10 lg:p-10">
       <Typography
         tag="h1"
-        className="text-natural-950 text-subtitle-1 font-bold"
+        className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.title")}
       </Typography>
-      <div className="flex items-center gap-8">
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.name")}</Label>
+      <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-8 -mt-2 lg:mt-0">
+        <div className="grow flex flex-col gap-1">
+          {/* TODO: update label */}
+          {/* <Label className="mb-1">
+            {intl("tutor-settings.personal-info.name")}
+          </Label> */}
+          <Typography tag="label" className="text-natural-950 font-semibold">
+            {intl("tutor-settings.personal-info.name")}
+          </Typography>
           <Controller.Input
             value={form.watch("name")}
             control={form.control}
@@ -154,8 +205,11 @@ const PublicSettings: React.FC<{
             name="name"
           />
         </div>
-        <div className="grow flex flex-col">
-          <Label>{intl("tutor-settings.personal-info.bio")}</Label>
+        <div className="grow flex flex-col gap-1">
+          {/* <Label>{intl("tutor-settings.personal-info.bio")}</Label> */}
+          <Typography tag="label" className="font-semibold text-natural-950">
+            {intl("tutor-settings.personal-info.bio")}
+          </Typography>
           <Controller.Input
             value={form.watch("bio")}
             control={form.control}
@@ -169,11 +223,14 @@ const PublicSettings: React.FC<{
       <Topics
         edit={() => setShowTopoicsDialog(true)}
         topics={selectedUserTopics}
+        error={userTopics.isError}
+        loading={userTopics.isLoading}
+        retry={userTopics.refetch}
       />
 
       <Typography
         tag="h2"
-        className="text-natural-950 text-subtitle-1 font-bold"
+        className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.about")}
       </Typography>
@@ -187,7 +244,7 @@ const PublicSettings: React.FC<{
       />
       <Typography
         tag="h2"
-        className="text-natural-950 text-subtitle-1 font-bold"
+        className="-mb-2 lg:mb-0 text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"
       >
         {intl("tutor-settings.personal-info.video")}
       </Typography>
