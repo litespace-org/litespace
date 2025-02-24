@@ -51,9 +51,8 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
     >
       <CalendarEmpty />
       <Typography
-        element="subtitle-2"
-        weight="bold"
-        className="tw-text-brand-700 tw-text-center"
+        tag="span"
+        className="tw-text-brand-700 tw-text-center tw-font-bold tw-text-subtitle-2"
       >
         {tutorName
           ? intl("book-lesson.empty-slots", { tutor: tutorName })
@@ -220,10 +219,8 @@ export const ManageLessonDialog: React.FC<{
       close={close}
       title={
         <Typography
-          className="tw-text-natural-950"
-          element="subtitle-2"
-          weight="bold"
-          tag="div"
+          tag="h1"
+          className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
         >
           {name
             ? intl("book-lesson.title", { tutor: name })

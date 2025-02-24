@@ -129,7 +129,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
         tabIndex={0}
         className={cn(
           "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
-          "tw-border tw-border-control tw-text-sm tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md h-[38px]",
+          "tw-border tw-border-control tw-text-caption tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md h-[38px]",
           "tw-flex tw-justify-between tw-items-center tw-cursor-pointer"
         )}
         onFocus={show}
@@ -143,7 +143,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
                 type="button"
                 role="button"
                 key={weekday}
-                className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-1 tw-h-[20px] tw-text-sm"
+                className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-1 tw-h-[20px] tw-text-caption"
               >
                 <Cross1Icon
                   className="tw-w-[15px] tw-h-[15px] tw-px-1 tw-cursor-pointer tw-bg-muted tw-rounded-full"
@@ -155,7 +155,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           })}
 
           {many ? (
-            <li className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-h-[20px] tw-text-foreground tw-text-xs tw-gap-1">
+            <li className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-h-[20px] tw-text-foreground tw-text-tiny tw-gap-1">
               {weekdays.length - DISPLAY_DAY_COUNT}
               <BorderDottedIcon />
             </li>

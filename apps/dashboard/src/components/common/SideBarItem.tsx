@@ -27,7 +27,7 @@ function SideBarItem({
         >
           <div className="flex items-center justify-start w-full gap-2">
             <option.icon className="w-6 h-6" />
-            <Typography element="body" className="truncate">
+            <Typography tag="span" className="truncate text-body">
               {option.label}
             </Typography>
           </div>

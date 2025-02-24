@@ -20,12 +20,8 @@ const NotificationSettings = () => {
   return (
     <div>
       <Typography
-        element={{
-          default: "caption",
-          sm: "subtitle-2",
-        }}
-        weight="bold"
-        className="text-natural-950"
+        tag="h1"
+        className="text-natural-950 text-caption sm:text-subtitle-2 font-bold"
       >
         {intl("tutor-settings.account-settings.notifications.title")}
       </Typography>

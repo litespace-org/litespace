@@ -46,7 +46,7 @@ const VerificationDetails: React.FC = () => {
         {user.verified ? (
           <Tooltip
             content={
-              <Typography>
+              <Typography tag="span">
                 {intl("dashboard.user-settings.verified")}
               </Typography>
             }

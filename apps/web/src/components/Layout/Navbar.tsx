@@ -36,9 +36,8 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
               endIcon={<Crown height={16} width={16} />}
             >
               <Typography
-                element="body"
-                weight="bold"
-                className="text-natural-50"
+                tag="span"
+                className="text-natural-50 text-body font-bold"
               >
                 {intl("navbar.subscribe-now")}
               </Typography>

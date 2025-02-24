@@ -19,9 +19,8 @@ export const Loader: React.FC<{
 
       {text ? (
         <Typography
-          element="caption"
-          weight="semibold"
-          className="tw-text-natural-950 tw-text-center"
+          tag="span"
+          className="tw-text-natural-950 tw-text-center tw-text-caption tw-font-semibold"
         >
           {text}
         </Typography>

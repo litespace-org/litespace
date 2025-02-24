@@ -209,10 +209,8 @@ export const ManageSchedule: React.FC<Props> = ({
       close={onClose}
       title={
         <Typography
-          element="subtitle-2"
-          tag="div"
-          weight="bold"
-          className="tw-text-natural-950"
+          tag="h1"
+          className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
@@ -231,9 +229,8 @@ export const ManageSchedule: React.FC<Props> = ({
               <ArrowRight className="[&>*]:tw-stroke-brand-700" />
             </button>
             <Typography
-              element="body"
-              weight="bold"
-              className="tw-text-natural-950"
+              tag="span"
+              className="tw-text-natural-950 tw-text-body tw-font-bold"
             >
               {weekStart.format("D MMMM")} -{" "}
               {weekStart.add(6, "days").format("D MMMM")}
@@ -248,9 +245,8 @@ export const ManageSchedule: React.FC<Props> = ({
             </button>
           </div>
           <Typography
-            element="body"
-            weight="bold"
-            className="tw-text-natural-950 tw-mb-4 tw-mt-6"
+            tag="span"
+            className="tw-text-natural-950 tw-mb-4 tw-mt-6 tw-font-bold tw-text-body"
           >
             {intl("manage-schedule.manage-dialog.available-days")}
           </Typography>
@@ -303,9 +299,8 @@ export const ManageSchedule: React.FC<Props> = ({
                   return (
                     <div className="tw-flex tw-gap-8" key={iso}>
                       <Typography
-                        element="caption"
-                        weight="medium"
-                        className="tw-text-natural-950 tw-w-[88px]"
+                        tag="span"
+                        className="tw-text-natural-950 tw-w-[88px] tw-font-medium tw-text-caption"
                       >
                         {day.format("dddd M/D")}
                       </Typography>
@@ -335,9 +330,8 @@ export const ManageSchedule: React.FC<Props> = ({
           loading={saving}
         >
           <Typography
-            element="body"
-            weight="semibold"
-            className="tw-text-natural-50"
+            tag="span"
+            className="tw-text-natural-50 tw-font-semibold tw-text-body"
           >
             {intl("manage-schedule.save")}
           </Typography>
@@ -349,9 +343,8 @@ export const ManageSchedule: React.FC<Props> = ({
           disabled={saving}
         >
           <Typography
-            element="body"
-            weight="semibold"
-            className="text-brand-700"
+            tag="span"
+            className="text-brand-700 tw-font-semibold tw-text-body"
           >
             {intl("global.labels.cancel")}
           </Typography>

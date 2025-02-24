@@ -87,9 +87,8 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
                   />
                 ) : (
                   <Typography
-                    element="subtitle-2"
-                    weight="bold"
-                    className="tw-text-natural-50 tw-flex tw-justify-center tw-items-center tw-h-full"
+                    tag="span"
+                    className="tw-text-natural-50 tw-flex tw-justify-center tw-items-center tw-h-full tw-font-bold tw-text-subtitle-2"
                   >
                     {arr.length - 4}
                     {"+"}
@@ -102,9 +101,8 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
       <RatingStars readonly rating={value} variant="md" />
       <div className="tw-flex tw-flex-wrap tw-justify-center">
         <Typography
-          element={{ default: "body", md: "caption" }}
-          weight="bold"
-          className="tw-text-natural-950 tw-text-center"
+          tag="span"
+          className="tw-text-natural-950 tw-text-center tw-font-bold tw-text-body md:tw-text-caption"
         >
           {raterNames}
         </Typography>

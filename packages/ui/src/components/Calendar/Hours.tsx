@@ -37,9 +37,8 @@ export const Hours: React.FC<{
     <div>
       <div className="tw-h-16 tw-bg-natural-50 tw-flex tw-items-center tw-justify-center tw-px-3 tw-border-b tw-border-natural-300 tw-rounded-tr-2xl">
         <Typography
-          element="body"
-          weight="semibold"
-          className="tw-text-natural-700"
+          tag="span"
+          className="tw-text-natural-700 tw-font-semibold tw-text-body"
         >
           {timezone}
         </Typography>
@@ -65,9 +64,10 @@ export const Hours: React.FC<{
                 )}
               >
                 <Typography
-                  className={cn("tw-text-natural-700 tw-text-center")}
-                  element="body"
-                  weight="regular"
+                  tag="span"
+                  className={cn(
+                    "tw-text-natural-700 tw-text-center tw-text-body tw-font-regular"
+                  )}
                 >
                   {!last ? display : null}
                 </Typography>

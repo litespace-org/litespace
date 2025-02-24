@@ -117,7 +117,7 @@ const Rooms: React.FC<{
     <div>
       <div className="flex flex-row items-center justify-start gap-2 mb-4">
         {icon}
-        <Typography element="caption" className="text-natural-600">
+        <Typography tag="span" className="text-natural-600 text-caption">
           {intl(label)}
         </Typography>
       </div>

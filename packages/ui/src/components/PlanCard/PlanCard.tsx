@@ -63,9 +63,9 @@ export const PlanCard: React.FC<Props> = ({
     >
       {label ? (
         <Typography
-          element={{ default: "tiny-text", lg: "body" }}
-          weight={{ default: "regular", lg: "semibold" }}
+          tag="span"
           className={cn(
+            "tw-text-tiny lg:tw-text-body tw-font-regular lg:tw-font-semibold",
             "tw-absolute tw-top-0 tw-left-[34px] md:tw-left-1/2 md:-tw-translate-x-1/2 -tw-translate-y-full",
             "tw-border-t tw-border-r tw-border-l tw-border-natural-300 tw-rounded-t-lg md:tw-rounded-t-2xl tw-py-[7px] tw-px-[8px] md:tw-p-[10px] tw-shadow-plan-card-label -tw-z-10",
             { "tw-bg-natural-100 tw-text-brand-700": label === "most-common" },
@@ -80,9 +80,9 @@ export const PlanCard: React.FC<Props> = ({
       <div>
         <div className="tw-flex tw-items-center tw-gap-4 tw-mb-1 md:tw-mb-2">
           <Typography
-            element={{ default: "caption", lg: "subtitle-2" }}
-            weight="bold"
+            tag="h2"
             className={cn(
+              "tw-text-caption lg:tw-text-subtitle-2 tw-font-bold",
               primary ? "tw-text-natural-50" : "tw-text-natural-950"
             )}
           >
@@ -91,10 +91,9 @@ export const PlanCard: React.FC<Props> = ({
           {discount ? (
             <div className="tw-self-stretch">
               <Typography
-                element="tiny-text"
-                weight="regular"
+                tag="span"
                 className={cn(
-                  "tw-text-brand-700 tw-py-[2px] tw-px-3 tw-rounded-[30px]",
+                  "tw-text-brand-700 tw-py-[2px] tw-px-3 tw-rounded-[30px] tw-text-tiny tw-font-regular",
                   primary ? "tw-bg-discount-primary" : "tw-bg-discount-default"
                 )}
               >
@@ -107,10 +106,9 @@ export const PlanCard: React.FC<Props> = ({
         </div>
 
         <Typography
-          element="tiny-text"
-          weight={{ default: "regular", lg: "semibold" }}
+          tag="p"
           className={cn(
-            "tw-inline-block tw-mb-2 md:tw-mb-4",
+            "tw-inline-block tw-mb-2 md:tw-mb-4 tw-text-tiny tw-font-regular lg:tw-font-semibold",
             primary ? "tw-text-natural-100" : "tw-text-natural-700"
           )}
         >
@@ -120,9 +118,9 @@ export const PlanCard: React.FC<Props> = ({
 
       <div className={cn("tw-flex tw-flex-col")}>
         <Typography
-          element={{ default: "body", lg: "h4" }}
-          weight="bold"
+          tag="span"
           className={cn(
+            "tw-font-bold tw-text-body lg:tw-text-h4",
             mq.lg ? "tw-mb-2" : "tw-mb-1",
             primary ? "tw-text-natural-50" : "tw-text-brand-700"
           )}
@@ -133,10 +131,9 @@ export const PlanCard: React.FC<Props> = ({
         </Typography>
         <div className={cn("tw-flex tw-items-end tw-flex-wrap")}>
           <Typography
-            element={{ default: "caption", lg: "subtitle-2" }}
-            weight={{ default: "semibold", lg: "bold" }}
+            tag="span"
             className={cn(
-              "tw-me-2",
+              "tw-text-caption lg:tw-text-subtitle-2 tw-font-semibold lg:tw-font-bold",
               primary ? "tw-text-natural-50" : "tw-text-natural-950"
             )}
           >
@@ -149,19 +146,18 @@ export const PlanCard: React.FC<Props> = ({
           {discount ? (
             <div className="tw-flex tw-gap-1">
               <Typography
-                element="tiny-text"
-                weight="regular"
+                tag="span"
                 className={cn(
+                  "tw-text-tiny tw-font-regular",
                   primary ? "tw-text-natural-100" : "tw-text-natural-700"
                 )}
               >
                 {intl("plan.instead-of")}
               </Typography>
               <Typography
-                element="tiny-text"
-                weight="regular"
+                tag="span"
                 className={cn(
-                  "tw-block tw-relative",
+                  "tw-block tw-relative tw-text-tiny tw-font-regular",
                   primary
                     ? "tw-text-destructive-400"
                     : "tw-text-destructive-600"
@@ -195,9 +191,11 @@ export const PlanCard: React.FC<Props> = ({
           onClick={onBuy}
         >
           <Typography
-            element={{ default: "caption", lg: "body" }}
-            weight="semibold"
-            className={cn(primary ? "tw-text-brand-700" : "tw-text-brand-50")}
+            tag="span"
+            className={cn(
+              "tw-font-semibold tw-text-caption tw-lg-body",
+              primary ? "tw-text-brand-700" : "tw-text-brand-50"
+            )}
           >
             {intl("plan.button.buy")}
           </Typography>
@@ -210,9 +208,8 @@ export const PlanCard: React.FC<Props> = ({
           onClick={onBuy}
         >
           <Typography
-            element={mq.lg ? "body" : "caption"}
-            weight="semibold"
-            className="tw-text-brand-50"
+            tag="span"
+            className="tw-text-brand-50 tw-font-semibold tw-text-caption lg:tw-text-body"
           >
             {intl("plan.button.buy")}
           </Typography>

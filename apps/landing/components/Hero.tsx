@@ -19,16 +19,14 @@ const Hero: React.FC = () => {
       <Ellipse className="flex flex-col items-center text-center gap-6 md:gap-12 px-4 md:px-0 z-20">
         <div className="mx-auto flex flex-col items-center text-center gap-4 max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography
-            weight="bold"
             tag="h1"
-            className="text-natural-50 text-[1.5rem] md:text-[3rem]"
+            className="text-natural-50 text-[1.5rem] md:text-[3rem] text-h1 font-bold"
           >
             {intl("home/hero/title")}
           </Typography>
           <Typography
             tag="p"
-            weight="medium"
-            className="text-natural-50 text-[1rem] md:text-[1.5rem]"
+            className="text-natural-50 text-[1rem] md:text-[1.5rem] font-medium"
           >
             {intl("home/hero/description")}
           </Typography>
@@ -36,9 +34,8 @@ const Hero: React.FC = () => {
         <Link href="https://app.litespace.org" className="mb-14">
           <Button size="large" className="h-auto w-auto py-4 px-8">
             <Typography
-              element="body"
-              weight="bold"
-              className="text-natural-50"
+              tag="span"
+              className="text-natural-50 text-body font-bold"
             >
               {intl("home/hero/start-your-journey")}
             </Typography>

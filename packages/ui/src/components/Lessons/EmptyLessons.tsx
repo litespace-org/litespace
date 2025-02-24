@@ -14,16 +14,14 @@ export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
       <EmptyLessonsImage className="tw-mb-8" />
       <div className="tw-flex tw-flex-col tw-gap-4 tw-mb-6">
         <Typography
-          element="subtitle-1"
-          weight="bold"
-          className="tw-text-natural-950"
+          tag="span"
+          className="tw-text-natural-950 tw-text-subtitle-1 tw-font-bold"
         >
           {intl("lessons.empty")}
         </Typography>
         <Typography
-          element="body"
-          weight="semibold"
-          className="tw-text-natural-800"
+          tag="span"
+          className="tw-text-natural-800 tw-text-base tw-font-semibold"
         >
           {intl("lessons.empty.find-tutors")}
         </Typography>
@@ -32,7 +30,10 @@ export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
         className="tw-px-8 tw-py-4 tw-rounded-lg tw-bg-brand-700"
         to={tutorsPage}
       >
-        <Typography element="body" weight="bold" className="tw-text-natural-50">
+        <Typography
+          tag="span"
+          className="tw-text-natural-50 tw-text-base tw-font-bold"
+        >
           {intl("lessons.button.find-tutors")}
         </Typography>
       </Link>

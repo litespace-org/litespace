@@ -49,10 +49,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
         {label ? (
           <Typography
             tag="label"
-            element="caption"
-            weight="semibold"
             htmlFor={props.id}
-            className={cn({
+            className={cn("tw-text-caption tw-font-semibold", {
               "tw-text-natural-950": !disabled,
               "tw-text-natural-500": disabled,
             })}
@@ -129,9 +127,8 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           {helper ? (
             <Helper>
               <Typography
-                element="tiny-text"
-                weight="semibold"
-                className={cn({
+                tag="span"
+                className={cn("tw-text-tiny tw-font-semibold", {
                   // Default or filled
                   "tw-text-natural-600 group-focus-within:tw-text-natural-600":
                     !state && !disabled,

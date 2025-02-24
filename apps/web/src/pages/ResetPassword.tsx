@@ -118,16 +118,15 @@ const ResetPassword = () => {
               )}
             >
               <Typography
-                element={{ default: "subtitle-1", sm: "h4" }}
-                weight={{ default: "bold", sm: "semibold" }}
-                className="text-natural-950"
+                tag="h1"
+                className="text-natural-950 text-subtitle-1 sm:text-h4 font-bold sm:font-semibold"
               >
                 {intl("reset-password.title")}
               </Typography>
               {!resetPassword.isPending && !resetPassword.isSuccess ? (
                 <Typography
-                  element={{ default: "tiny-text", sm: "body" }}
-                  className="text-natural-700"
+                  tag="p"
+                  className="text-natural-700 text-tiny sm:text-body"
                 >
                   {intl("reset-password.description")}
                 </Typography>
@@ -139,7 +138,10 @@ const ResetPassword = () => {
                 <Animate key="success">
                   <div className="flex flex-col items-center gap-2 sm:gap-6 mb-6 sm:mb-8 mt-10">
                     <Success className="w-20 sm:w-[141px] h-20 sm:h-[141px]" />
-                    <Typography element="body" className="text-natural-700">
+                    <Typography
+                      tag="span"
+                      className="text-natural-700 text-body"
+                    >
                       {intl("reset-password.done")}
                     </Typography>
                   </div>

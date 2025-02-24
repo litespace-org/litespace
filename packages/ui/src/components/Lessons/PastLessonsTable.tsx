@@ -71,7 +71,10 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
       <div className="tw-grid tw-grid-cols-4 tw-pb-2 tw-border-b tw-border-natural-500 tw-mb-6">
         {columns.map((column) => (
           <div key={column} className="tw-text-start tw-col-span-1">
-            <Typography element="caption" className="tw-text-natural-600">
+            <Typography
+              tag="span"
+              className="tw-text-natural-600 tw-text-caption"
+            >
               {column}
             </Typography>
           </div>
@@ -87,9 +90,11 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
         >
           <div className="tw-flex tw-flex-col tw-items-center tw-gap-6">
             <Typography
-              element={isTutor ? "subtitle-1" : "h4"}
-              weight="semibold"
-              className="tw-text-natural-950"
+              tag="span"
+              className={cn("tw-text-natural-950 tw-font-semibold", {
+                "tw-text-subtitle-1": isTutor,
+                "tw-text-h4": !isTutor,
+              })}
             >
               {isTutor
                 ? intl("tutor-dashboard.past-lessons.empty")
@@ -112,12 +117,18 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
           {lessons.map((lesson) => (
             <React.Fragment key={lesson.id}>
               <div className="tw-text-start">
-                <Typography element="body" className="tw-text-natural-950">
+                <Typography
+                  tag="span"
+                  className="tw-text-natural-950 tw-text-body"
+                >
                   {dayjs(lesson.start).format("dddd - DD MMMM YYYY")}
                 </Typography>
               </div>
               <div className="tw-text-start">
-                <Typography element="body" className="tw-text-natural-950">
+                <Typography
+                  tag="span"
+                  className="tw-text-natural-950 tw-text-body"
+                >
                   {formatMinutes(lesson.duration)}
                 </Typography>
               </div>
@@ -130,7 +141,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
                       seed={lesson.otherMember.id.toString()}
                     />
                   </div>
-                  <Typography className="tw-text-natural-950">
+                  <Typography tag="span" className="tw-text-natural-950">
                     {lesson.otherMember.name}
                   </Typography>
                 </div>

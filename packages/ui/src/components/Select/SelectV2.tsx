@@ -62,9 +62,7 @@ export const SelectV2 = <T extends string | number>({
           <Typography
             htmlFor={id}
             tag="label"
-            className="tw-mb-1 tw-text-natural-950"
-            element="caption"
-            weight="semibold"
+            className="tw-mb-1 tw-text-natural-950 tw-text-caption tw-font-semibold"
           >
             {label}
           </Typography>
@@ -93,18 +91,20 @@ export const SelectV2 = <T extends string | number>({
           <Value
             placeholder={
               <Typography
-                className={cn("tw-text-natural-600")}
-                element="caption"
-                weight="medium"
+                tag="span"
+                className={cn(
+                  "tw-text-natural-600 tw-font-medium tw-text-caption"
+                )}
               >
                 {placeholder}
               </Typography>
             }
           >
             <Typography
-              className={cn("tw-text-natural-800")}
-              element="caption"
-              weight="medium"
+              tag="span"
+              className={cn(
+                "tw-text-natural-800 tw-text-caption tw-font-meium"
+              )}
             >
               {text}
             </Typography>
@@ -125,9 +125,8 @@ export const SelectV2 = <T extends string | number>({
 
         {helper ? (
           <Typography
-            className="tw-mt-1 tw-text-natural-600"
-            element="tiny-text"
-            weight="semibold"
+            tag="span"
+            className="tw-mt-1 tw-text-natural-600 tw-text-tiny tw-font-semibold"
           >
             {helper}
           </Typography>
@@ -188,7 +187,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
         ref={ref}
       >
         <ItemText>
-          <Typography element="tiny-text" weight="semibold">
+          <Typography tag="div" className="tw-text-tiny tw-font-semibold">
             {children}
           </Typography>
         </ItemText>

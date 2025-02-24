@@ -59,25 +59,22 @@ export const PermissionsDialog: React.FC<Props> = ({
           )}
         >
           <Typography
-            element="subtitle-1"
-            weight="bold"
-            className="tw-text-natural-950"
+            tag="span"
+            className="tw-text-natural-950 tw-font-bold tw-text-subtitle-1"
           >
             {intl("session.permissions.title")}
           </Typography>
           {errorMessage ? (
             <Typography
-              element="caption"
-              weight="medium"
-              className="tw-text-destructive-700"
+              tag="span"
+              className="tw-text-destructive-700 tw-font-medium tw-text-caption"
             >
               {errorMessage}
             </Typography>
           ) : null}
           <Typography
-            element="caption"
-            weight="medium"
-            className="tw-text-natural-700"
+            tag="span"
+            className="tw-text-natural-700 tw-font-medium tw-text-caption"
           >
             {intl("session.permissions.note")}
           </Typography>
@@ -90,7 +87,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             loading={loading === "mic-and-camera"}
             disabled={!!loading || !devices.camera || !devices.mic}
           >
-            <Typography>
+            <Typography tag="span">
               {intl("session.permissions.enable-mic-and-camera")}
             </Typography>
           </Button>
@@ -102,7 +99,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             loading={loading === "mic-only"}
             disabled={!!loading || !devices.mic}
           >
-            <Typography>
+            <Typography tag="span">
               {intl("session.permissions.enable-mic-only")}
             </Typography>
           </Button>

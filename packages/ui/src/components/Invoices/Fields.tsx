@@ -102,7 +102,7 @@ export const Pending: React.FC<{ show?: boolean }> = ({ show = true }) => {
 
 export const Amount: React.FC<{ amount: number }> = ({ amount }) => {
   return (
-    <span className="[&_.change]:tw-text-xs">
+    <span className="[&_.change]:tw-text-tiny">
       <Price value={amount} />{" "}
     </span>
   );

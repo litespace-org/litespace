@@ -80,9 +80,8 @@ const TopicSelection: React.FC = () => {
     <div className="flex flex-col gap-4 md:gap-6">
       <div className="flex items-center justify-between">
         <Typography
-          element={{ default: "caption", lg: "subtitle-2" }}
-          className="text-natural-950"
-          weight="bold"
+          tag="h2"
+          className="text-natural-950 text-caption lg:text-subtitle-2 font-bold"
         >
           {intl("student-settings.edit.personal.topics.title")}
         </Typography>
@@ -95,9 +94,8 @@ const TopicSelection: React.FC = () => {
             }}
           >
             <Typography
-              element="caption"
-              weight="semibold"
-              className="flex text-brand-700"
+              tag="span"
+              className="flex text-brand-700 text-caption font-semibold"
             >
               {intl("labels.update")}
               <Edit className="w-6 h-6 mr-2" />
@@ -108,9 +106,8 @@ const TopicSelection: React.FC = () => {
 
       <div className="flex flex-col gap-2">
         <Typography
-          element="subtitle-2"
-          weight="regular"
-          className="text-natural-950 hidden"
+          tag="span"
+          className="text-natural-950 hidden text-subtitle-2 font-regular"
         >
           {intl("student-settings.edit.personal.topics")}
         </Typography>
@@ -143,9 +140,8 @@ const TopicSelection: React.FC = () => {
                 <div className="my-3" key={topic.id}>
                   <Animate>
                     <Typography
-                      element="caption"
-                      weight="regular"
-                      className="bg-brand-700 text-natural-50 px-4 py-3 rounded-[24px]"
+                      tag="span"
+                      className="bg-brand-700 text-natural-50 px-4 py-3 rounded-[24px] text-caption font-regular"
                     >
                       {topic.name.ar}
                     </Typography>
@@ -163,12 +159,8 @@ const TopicSelection: React.FC = () => {
                     onClick={() => setShowDialog(true)}
                   >
                     <Typography
-                      element={{
-                        default: "tiny-text",
-                        sm: "caption",
-                        md: "body",
-                      }}
-                      weight="medium"
+                      tag="span"
+                      className="text-tiny sm:text-caption md:text-body font-medium"
                     >
                       {intl("student-settings.add-topics-button.label")}
                     </Typography>

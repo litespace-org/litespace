@@ -17,15 +17,14 @@ const ProfileInfo: React.FC<{
         {about ? (
           <div className="flex flex-col gap-2 md:gap-8">
             <Typography
-              weight="bold"
-              element={{ default: "body", md: "subtitle-2" }}
-              className="text-natural-950"
+              tag="h2"
+              className="text-natural-950 text-body md:text-subtitle-2 font-bold"
             >
               {intl("tutor.profile.tabs.profile.about")}
             </Typography>
             <Typography
-              element={{ default: "tiny-text", md: "body" }}
-              className="text-natural-800 break-words"
+              tag="p"
+              className="text-natural-800 break-words text-tiny md:text-body"
             >
               {about}
             </Typography>
@@ -34,9 +33,8 @@ const ProfileInfo: React.FC<{
         {!isEmpty(topics) ? (
           <div className="mt-[34px] md:mt-8 flex flex-col md:gap-8 gap-2">
             <Typography
-              element={{ default: "body", md: "subtitle-2" }}
-              weight="bold"
-              className="text-natural-950"
+              tag="span"
+              className="text-natural-950 text-body md:text-subtitle-2 font-bold"
             >
               {intl("tutor.profile.tabs.profile.specialities")}
             </Typography>
@@ -47,8 +45,8 @@ const ProfileInfo: React.FC<{
                   className="p-[10px] md:py-3 md:px-4 bg-brand-700 rounded-3xl text-center"
                 >
                   <Typography
-                    element={{ default: "tiny-text", md: "caption" }}
-                    className="text-natural-50"
+                    tag="span"
+                    className="text-natural-50 text-tiny md:text-caption"
                   >
                     {topic}
                   </Typography>
@@ -61,8 +59,8 @@ const ProfileInfo: React.FC<{
       {video ? (
         <div className="flex flex-col md:gap-8 gap-2">
           <Typography
-            element={{ default: "body", md: "subtitle-2" }}
-            className="text-natural-950 font-bold"
+            tag="span"
+            className="text-natural-950 font-bold text-body md:text-subtitle-2"
           >
             {intl("tutor.profile.tabs.profile.video")}
           </Typography>

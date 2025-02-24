@@ -55,9 +55,8 @@ const UploadPhoto: React.FC<{
       </div>
       <div className="grow md:grow-0 flex flex-col sm:flex-col-reverse justify-between lg:flex-col gap-2 lg:gap-4">
         <Typography
-          className="text-natural-700 max-w-fit sm:max-w-[214px]"
-          element={{ default: "tiny-text", lg: "caption" }}
-          weight="semibold"
+          tag="span"
+          className="text-natural-700 max-w-fit sm:max-w-[214px] text-tiny lg:text-caption font-semibold"
         >
           {intl("student-settings.upload.image.desc")}
         </Typography>
@@ -73,9 +72,8 @@ const UploadPhoto: React.FC<{
           className={cn("w-full", lg ? "max-w-fit" : "max-w-[214px]")}
         >
           <Typography
-            element="caption"
-            weight="semibold"
-            className="text-natural-50"
+            tag="span"
+            className="text-natural-50 text-caption font-semibold"
           >
             {mq.sm
               ? intl("student-settings.upload.image.label")

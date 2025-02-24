@@ -133,12 +133,8 @@ const Content: React.FC<{
         />
 
         <Typography
-          element={{
-            default: "body",
-            lg: "h4",
-          }}
-          weight="bold"
-          className="text-black max-w-[328px] lg:max-w-[600px] text-center mb-6 sm:mb-8"
+          tag="span"
+          className="text-black max-w-[328px] lg:max-w-[600px] text-center mb-6 sm:mb-8 text-body lg:text-h4 font-bold"
         >
           {intl("tutors.coming-soon")}
         </Typography>
@@ -155,9 +151,8 @@ const Content: React.FC<{
         >
           <div className="flex items-center gap-[10px]">
             <Typography
-              element="body"
-              weight="bold"
-              className="text-natural-50"
+              tag="span"
+              className="text-natural-50 text-body font-bold"
             >
               {intl("tutors.coming.set-notifications")}
             </Typography>

@@ -19,10 +19,10 @@ export const RawHtml: React.FC<{
       className={cn(
         "tw-@container",
         // plain text styles
-        "tw-text-foreground-semi tw-text-sm @sm:tw-text-base",
+        "tw-text-foreground-semi tw-text-caption @sm:tw-text-base",
         // heading styles
         "[&_h3]:tw-text-foreground [&_h3]:tw-pb-2",
-        "[&_h3]:tw-text-lg @xs:[&_h3]:tw-text-xl @md:[&_h3]:tw-text-2xl [&_h3]:tw-font-semibold",
+        "[&_h3]:tw-text-lg @xs:[&_h3]:tw-text-subtitle-2 @md:[&_h3]:tw-text-subtitle-1 [&_h3]:tw-font-semibold",
         // paragraph styles
         "[&_p]:tw-text-foreground-light [&_p]:tw-mb-4 [&_p]:tw-text-base [&_p]:tw-leading-loose",
         // list styles

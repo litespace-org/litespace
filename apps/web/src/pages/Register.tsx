@@ -108,10 +108,10 @@ const Register: React.FC = () => {
           <div className="flex flex-row items-center justify-center gap-4 mb-6 sm:mb-8">
             <Logo className="h-[87px]" />
             <div className="flex flex-col gap-2 items-start justify-center">
-              <Typography element="h3" weight="bold" className="text-brand-500">
+              <Typography tag="h1" className="text-brand-500 text-h3 font-bold">
                 {intl("labels.litespace")}
               </Typography>
-              <Typography element="body" className="text-natural-700">
+              <Typography tag="h2" className="text-natural-700 text-body">
                 {intl("register.welcome")}
               </Typography>
             </div>
@@ -170,9 +170,8 @@ const Register: React.FC = () => {
                 />
 
                 <Typography
-                  element="caption"
-                  weight="medium"
-                  className="text-natural-600"
+                  tag="span"
+                  className="text-natural-600 text-caption font-medium"
                 >
                   {intl("register.accept-terms")}
                 </Typography>
@@ -204,17 +203,15 @@ const Register: React.FC = () => {
                 </Button>
 
                 <Typography
-                  element="caption"
-                  weight="medium"
-                  className="text-natural-950 text-center"
+                  tag="span"
+                  className="text-natural-950 text-center text-caption font-medium"
                 >
                   {intl.node("register.has-account", {
                     link: (
                       <Link to={Web.Login}>
                         <Typography
-                          element="caption"
-                          weight="medium"
-                          className="text-brand-700"
+                          tag="span"
+                          className="text-brand-700 text-caption font-medium"
                         >
                           {intl("register.login")}
                         </Typography>

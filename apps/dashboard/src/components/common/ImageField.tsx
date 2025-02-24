@@ -28,7 +28,12 @@ const ImageField: React.FC<{
   if (asset.isError)
     return <Error refetch={asset.refetch} title="error" error={asset.error} />;
 
-  if (!name || !url) return <Typography element="body">-</Typography>;
+  if (!name || !url)
+    return (
+      <Typography tag="span" className="text-body">
+        -
+      </Typography>
+    );
 
   return (
     <>
@@ -38,7 +43,10 @@ const ImageField: React.FC<{
         variant={"secondary"}
         onClick={image.show}
       >
-        <Typography element="caption" className="truncate inline-block w-16">
+        <Typography
+          tag="span"
+          className="truncate inline-block w-16 text-caption"
+        >
           {name}
         </Typography>
       </Button>

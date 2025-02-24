@@ -6,13 +6,13 @@ import { cn } from "@/lib/utils";
 
 import {
   getFeaturedMediaById,
-  getAuthorById,
+  // getAuthorById,
   getCategoryById,
 } from "@/lib/wordpress";
 
 export default async function PostCard({ post }: { post: Post }) {
   const media = await getFeaturedMediaById(post.featured_media);
-  const author = await getAuthorById(post.author);
+  // const author = await getAuthorById(post.author);
   const date = new Date(post.date).toLocaleDateString("en-US", {
     month: "long",
     day: "numeric",
@@ -54,7 +54,7 @@ export default async function PostCard({ post }: { post: Post }) {
 
       <div className="flex flex-col gap-4">
         <hr />
-        <div className="flex justify-between items-center text-xs">
+        <div className="flex justify-between items-center text-tiny">
           <p>{category.name}</p>
           <p>{date}</p>
         </div>

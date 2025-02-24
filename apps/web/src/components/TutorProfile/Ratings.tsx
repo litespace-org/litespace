@@ -33,9 +33,8 @@ const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   return (
     <div className="flex flex-wrap md:flex-nowrap relative items-center justify-center md:h-[294px] w-full gap-6 md:gap-[88px]">
       <Typography
-        element={{ default: "body", md: "subtitle-1" }}
-        weight="bold"
-        className="text-natural-950 text-center md:-translate-y-7 max-w-[476px]"
+        tag="span"
+        className="text-natural-950 text-center md:-translate-y-7 max-w-[476px] text-body md:text-subtitle-1 font-bold"
       >
         {intl("tutor.profile.first-rating", { tutor: tutorName })}
       </Typography>

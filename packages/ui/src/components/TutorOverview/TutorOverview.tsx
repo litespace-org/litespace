@@ -142,18 +142,17 @@ export const Card: React.FC<{
           {icon}
         </div>
         <Typography
-          element="caption"
-          weight="regular"
-          className="tw-text-natural-600"
+          tag="h2"
+          className="tw-text-natural-600 tw-text-caption tw-font-regular"
         >
           {intl(title)}
         </Typography>
       </div>
       <Typography
-        element="h3"
-        weight="semibold"
+        tag="p"
         className={cn(
-          "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b"
+          "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b",
+          "tw-text-h3 tw-font-semibold"
         )}
         style={{ borderBottomColor: `var(--${color}-500)` }}
       >

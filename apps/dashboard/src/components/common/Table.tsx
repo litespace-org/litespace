@@ -67,7 +67,7 @@ export const Table = <T extends object>({
       >
         <table className="min-w-full">
           {!headless ? (
-            <thead className="text-xs text-foreground bg-surface-75">
+            <thead className="text-tiny text-foreground bg-surface-75">
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id}>
                   {headerGroup.headers.map((header) => (

@@ -48,10 +48,9 @@ export const TimerIndicator: React.FC<{
   return (
     <div className="tw-bg-background-indicator tw-rounded-full tw-p-4 tw-backdrop-blur-[15px] tw-gap-2 tw-flex tw-items-center">
       <Typography
-        className="tw-text-natural-50"
-        element="subtitle-2"
-        weight="semibold"
         dir="ltr"
+        tag="span"
+        className="tw-text-natural-50 tw-font-semibold tw-text-subtitle-2"
       >
         {timer}
       </Typography>

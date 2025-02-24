@@ -11,12 +11,8 @@ const PageTitle: React.FC<{
   return (
     <div className={cn("flex flex-row items-center gap-2", className)}>
       <Typography
-        element={{
-          default: "body",
-          lg: "subtitle-2",
-        }}
-        className="text-natural-950"
-        weight="bold"
+        tag="h1"
+        className="text-natural-950 text-body lg:text-subtitle-2 font-bold"
       >
         {title}
       </Typography>

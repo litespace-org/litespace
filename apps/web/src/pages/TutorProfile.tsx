@@ -34,7 +34,10 @@ const TutorProfile: React.FC = () => {
         >
           <RightArrow className="[&>*]:stroke-brand-700" />
         </Link>
-        <Typography element="subtitle-2" className="font-bold text-natural-950">
+        <Typography
+          tag="h1"
+          className="font-bold text-natural-950 text-subtitle-2"
+        >
           {intl("tutors.title")}
           {tutor.data?.name ? (
             <>

@@ -61,9 +61,8 @@ const Chat: React.FC = () => {
     return (
       <div className="w-full h-full overflow-hidden flex flex-col p-6">
         <Typography
-          weight="bold"
-          element="subtitle-2"
-          className=" text-natural-950 mb-6"
+          tag="h1"
+          className=" text-natural-950 mb-6 text-subtitle-2 font-bold"
         >
           {intl("chat.title")}
         </Typography>
@@ -102,9 +101,8 @@ const Chat: React.FC = () => {
         <div className="h-full w-full flex items-center justify-center flex-col gap-8">
           <StartMessaging />
           <Typography
-            element="subtitle-2"
-            weight="bold"
-            className="text-natural-950 max-w-[496px] text-center"
+            tag="span"
+            className="text-natural-950 max-w-[496px] text-center text-subtitle-2 font-bold"
           >
             {intl("chat.start-message")}
           </Typography>

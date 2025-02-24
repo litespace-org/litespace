@@ -42,10 +42,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
       >
         {label ? (
           <Typography
-            element="caption"
-            weight="semibold"
+            tag="label"
             htmlFor={props.id}
-            className={cn({
+            className={cn("tw-text-caption tw-font-semibold", {
               "tw-text-natural-950": !disabled,
               "tw-text-natural-500": disabled,
             })}
@@ -109,8 +108,8 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                 side="right"
                 content={
                   <Typography
-                    element="body"
-                    className="tw-text-natural-950 tw-max-w-[296px]"
+                    tag="span"
+                    className="tw-text-natural-950 tw-max-w-[296px] tw-text-base"
                   >
                     {intl("text-area.validate.max-allowed")}
                   </Typography>
@@ -118,9 +117,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
               >
                 <div className="tw-w-fit">
                   <Typography
-                    element="tiny-text"
+                    tag="span"
                     className={cn(
-                      "tw-justify-self-end group-focus-within:tw-text-natural-950",
+                      "tw-justify-self-end group-focus-within:tw-text-natural-950 tw-text-tiny",
                       {
                         "tw-text-natural-600": !value && !disabled && !state,
                         "tw-text-natural-950": value && !disabled && !state,
@@ -140,18 +139,20 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
           {helper ? (
             <Helper>
               <Typography
-                element="tiny-text"
-                weight="semibold"
-                className={cn("group-focus-within:tw-text-natural-600", {
-                  // Default || Filled
-                  "tw-text-natural-600": !state && !disabled,
-                  // Success
-                  "tw-text-success-600": state === "success",
-                  // Error
-                  "tw-text-destructive-600": state === "error",
-                  // Disabled
-                  "tw-text-natural-500": disabled,
-                })}
+                tag="span"
+                className={cn(
+                  "group-focus-within:tw-text-natural-600 tw-text-tiny tw-font-semibold",
+                  {
+                    // Default || Filled
+                    "tw-text-natural-600": !state && !disabled,
+                    // Success
+                    "tw-text-success-600": state === "success",
+                    // Error
+                    "tw-text-destructive-600": state === "error",
+                    // Disabled
+                    "tw-text-natural-500": disabled,
+                  }
+                )}
               >
                 {helper}
               </Typography>

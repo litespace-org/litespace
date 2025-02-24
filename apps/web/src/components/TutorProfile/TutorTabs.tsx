@@ -59,10 +59,9 @@ export const TutorTabs: React.FC<{
             className={cn("py-2 relative")}
           >
             <Typography
-              element={{ default: "caption", md: "body" }}
-              weight="semibold"
+              tag="span"
               className={cn(
-                "transition-colors duration-300",
+                "transition-colors duration-300 text-caption md:text-body font-semibold",
                 value === tab ? "text-brand-700" : "text-natural-500"
               )}
             >

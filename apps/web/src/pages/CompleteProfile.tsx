@@ -17,16 +17,14 @@ const Complete: React.FC = () => {
         <div className="flex-1 flex flex-col sm:justify-center gap-6 w-full">
           <div className="flex flex-col gap-2 items-start sm:items-center text-start sm:text-center max-w-[645px] sm:mx-auto">
             <Typography
-              element={{ default: "subtitle-1", sm: "h4" }}
-              weight={{ default: "bold", sm: "semibold" }}
-              className="text-natural-950"
+              tag="h1"
+              className="text-natural-950 font-bold sm:font-semibold text-subtitle-1 sm:text-h4"
             >
               {intl("complete-profile.title")}
             </Typography>
             <Typography
-              element={{ default: "tiny-text", sm: "body" }}
-              weight={{ default: "semibold", sm: "regular" }}
-              className="text-natural-700"
+              tag="p"
+              className="text-natural-700 font-semibold sm:font-regular text-tiny-text sm:text-body"
             >
               {intl("complete-profile.description")}
             </Typography>

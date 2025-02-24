@@ -20,16 +20,14 @@ const SubscriptionQouta: React.FC<{
     <div className="tw-flex tw-flex-col tw-gap-1">
       <div className="tw-flex tw-justify-between">
         <Typography
-          element="caption"
-          weight="bold"
-          className="tw-text-natural-950"
+          tag="span"
+          className="tw-text-natural-950 tw-text-caption tw-font-bold"
         >
           {intl("navbar.personal-quota")}
         </Typography>
         <Typography
-          element="caption"
-          weight="regular"
-          className="tw-text-natural-950"
+          tag="span"
+          className="tw-text-natural-950 tw-text-caption tw-font-normal"
         >
           {intl("navbar.quota-consumption", {
             value: formatPercentage(progress),
@@ -49,9 +47,8 @@ const SubscriptionQouta: React.FC<{
         />
       </div>
       <Typography
-        element="tiny-text"
-        weight="semibold"
-        className="tw-text-natural-950"
+        tag="span"
+        className="tw-text-natural-950 tw-text-tiny tw-font-semibold"
       >
         {intl("navbar.rest-of-quota", {
           value: formatMinutes(remainingMinutes),

@@ -51,9 +51,8 @@ export const WeekTable: React.FC<{
               )}
             >
               <Typography
-                element="body"
-                weight="semibold"
-                className="tw-text-brand-700"
+                tag="span"
+                className="tw-text-brand-700 tw-font-semibold tw-text-body"
               >
                 {day.format("dddd D")}
               </Typography>

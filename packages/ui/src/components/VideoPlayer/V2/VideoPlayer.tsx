@@ -120,8 +120,8 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
               <ExclaimationMarkCircle />
             </span>
             <Typography
-              element="tiny-text"
-              className="tw-font-semibold tw-text-center tw-px-4 tw-text-natural-50"
+              tag="span"
+              className="tw-font-semibold tw-text-center tw-px-4 tw-text-natural-50 tw-text-tiny"
             >
               {intl("media.video.error")}
             </Typography>

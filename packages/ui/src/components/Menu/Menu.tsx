@@ -44,9 +44,9 @@ export const Menu: React.FC<{
         >
           {title ? (
             <Typography
-              element="tiny-text"
-              weight="semibold"
+              tag="label"
               className={cn(
+                "tw-text-tiny tw-font-semibold",
                 danger ? "tw-text-destructive-600" : "tw-text-natural-600",
                 "tw-max-w-24"
               )}
@@ -71,9 +71,8 @@ export const Menu: React.FC<{
               <div className="tw-w-4 tw-h-4">{icon}</div>
 
               <Typography
-                element="tiny-text"
-                weight="semibold"
-                className="tw-text-natural-600"
+                tag="span"
+                className="tw-text-natural-600 tw-text-tiny tw-font-semibold"
               >
                 {label}
               </Typography>

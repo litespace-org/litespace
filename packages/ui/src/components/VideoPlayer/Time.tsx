@@ -34,7 +34,7 @@ const Time: React.FC<{ current?: number; total?: number }> = ({
   return (
     <div
       dir="ltr"
-      className="tw-text-xs @xs:tw-text-sm @md:tw-text-base tw-shrink-0"
+      className="tw-text-tiny @xs:tw-text-caption @md:tw-text-base tw-shrink-0"
     >
       {duration ? format(current || 0, duration.length).text : "-"} &#47;
       {duration ? duration.text : "-"}

@@ -63,26 +63,23 @@ export const TutorCardV1: React.FC<CardProps> = ({
       </div>
       <div className="tw-flex tw-flex-col">
         <Typography
-          element="subtitle-1"
-          weight="bold"
-          className="tw-text-brand-700 tw-mb-1 tw-line-clamp-1"
+          tag="h1"
+          className="tw-text-brand-700 tw-mb-1 tw-line-clamp-1 tw-font-bold tw-text-subtitle-1"
         >
           {name}
         </Typography>
 
         <Typography
-          element="caption"
-          weight="regular"
-          className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800"
+          tag="p"
+          className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800 tw-font-regular tw-text-caption"
         >
           {about}
         </Typography>
 
         <Link to={profileUrl} className="tw-cursor-pointer">
           <Typography
-            element="caption"
-            weight="bold"
-            className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800 tw-underline"
+            tag="span"
+            className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800 tw-underline tw-text-caption tw-font-bold"
           >
             {intl("tutors.card.label.read-more")}
           </Typography>
@@ -93,16 +90,14 @@ export const TutorCardV1: React.FC<CardProps> = ({
             {studentCount ? (
               <div className="tw-flex tw-flex-col tw-gap-1">
                 <Typography
-                  element="caption"
-                  weight="regular"
-                  className="tw-text-natural-800"
+                  tag="span"
+                  className="tw-text-natural-800 tw-text-caption tw-font-regular"
                 >
                   {intl("tutors.card.label.students")}
                 </Typography>
                 <Typography
-                  element="body"
-                  weight="semibold"
-                  className="tw-text-natural-950"
+                  tag="span"
+                  className="tw-text-natural-950 tw-font-semibold tw-text-body"
                 >
                   {formatNumber(studentCount)}
                 </Typography>
@@ -112,16 +107,14 @@ export const TutorCardV1: React.FC<CardProps> = ({
             {lessonCount ? (
               <div className="tw-flex tw-flex-col tw-gap-1">
                 <Typography
-                  element="caption"
-                  weight="regular"
-                  className="tw-text-natural-800"
+                  tag="span"
+                  className="tw-text-natural-800 tw-font-regular tw-text-caption"
                 >
                   {intl("tutors.card.label.lessons")}
                 </Typography>
                 <Typography
-                  element="body"
-                  weight="semibold"
-                  className="tw-text-natural-950"
+                  tag="span"
+                  className="tw-text-natural-950 tw-font-semibold tw-text-body"
                 >
                   {formatNumber(lessonCount)}
                 </Typography>
@@ -131,17 +124,15 @@ export const TutorCardV1: React.FC<CardProps> = ({
             {rating ? (
               <div className="tw-flex tw-flex-col tw-gap-1">
                 <Typography
-                  element="caption"
-                  weight="regular"
-                  className="tw-text-natural-800"
+                  tag="span"
+                  className="tw-text-natural-800 tw-text-caption tw-font-regular"
                 >
                   {intl("tutors.card.label.rating")}
                 </Typography>
                 <div className="tw-flex tw-flex-row tw-items-center tw-gap-[5px] tw-h-full">
                   <Typography
-                    element="tiny-text"
-                    weight="semibold"
-                    className="tw-inline-block tw-text-natural-950"
+                    tag="span"
+                    className="tw-inline-block tw-text-natural-950 tw-font-semibold tw-text-tiny"
                   >
                     {rating}
                   </Typography>
@@ -171,13 +162,16 @@ export const TutorCardV1: React.FC<CardProps> = ({
                 return (
                   <Tooltip
                     key={idx}
-                    content={<Typography element="body">{topic}</Typography>}
+                    content={
+                      <Typography tag="span" className="tw-text-body">
+                        {topic}
+                      </Typography>
+                    }
                   >
                     <div className="tw-w-16">
                       <Typography
-                        element="tiny-text"
-                        weight="regular"
-                        className="tw-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl tw-text-center tw-truncate"
+                        tag="span"
+                        className="tw-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl tw-text-center tw-truncate tw-font-regular tw-text-tiny"
                       >
                         {topic}
                       </Typography>
@@ -186,9 +180,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
                 );
             })}
             <Typography
-              element="tiny-text"
-              weight="regular"
-              className="tw-inline-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl"
+              tag="span"
+              className="tw-inline-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl tw-font-regular tw-text-tiny"
             >
               {remainingTopicsCount}
               {"+"}
@@ -205,9 +198,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
             size="large"
           >
             <Typography
-              element="caption"
-              weight="semibold"
-              className="tw-text-natural-50"
+              tag="span"
+              className="tw-text-natural-50 tw-font-semibold tw-text-caption"
             >
               {intl("tutors.card.book-button.label")}
             </Typography>
@@ -221,9 +213,8 @@ export const TutorCardV1: React.FC<CardProps> = ({
             )}
           >
             <Typography
-              element="caption"
-              weight="semibold"
-              className="tw-text-brand-700"
+              tag="span"
+              className="tw-text-brand-700 tw-font-semibold tw-text-caption"
             >
               {intl("tutors.card.profile-button.label")}
             </Typography>

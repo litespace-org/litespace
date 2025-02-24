@@ -70,13 +70,15 @@ export const Select = <T extends string | number>({
         <Value
           placeholder={
             placeholder ? (
-              <Typography className={cn("tw-text-natural-400")}>
+              <Typography tag="span" className={cn("tw-text-natural-400")}>
                 {placeholder}
               </Typography>
             ) : null
           }
         >
-          <Typography className={cn("tw-text-natural-900")}>{label}</Typography>
+          <Typography tag="span" className={cn("tw-text-natural-900")}>
+            {label}
+          </Typography>
         </Value>
         {showDropdownIcon ? (
           <Icon>
@@ -136,7 +138,7 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
         ref={ref}
       >
         <ItemText className="tw-text-natural-900">
-          <Typography>{children}</Typography>
+          <Typography tag="div">{children}</Typography>
         </ItemText>
       </Item>
     );

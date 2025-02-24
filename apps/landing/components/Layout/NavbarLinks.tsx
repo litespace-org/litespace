@@ -26,10 +26,9 @@ export function NavbarLinks({
         {PAGES.map((page) => (
           <Link href={page.route} key={page.route}>
             <Typography
-              element="caption"
-              weight="semibold"
+              tag="span"
               className={cn(
-                "transition-colors duration-300",
+                "transition-colors duration-300 text-caption font-semibold",
                 scrolled ? "text-natural-950" : "text-natural-50"
               )}
             >
@@ -45,9 +44,8 @@ export function NavbarLinks({
         >
           <Button size="large" className="w-full">
             <Typography
-              element="body"
-              weight="semibold"
-              className="text-natural-50"
+              tag="span"
+              className="text-natural-50 text-body font-semibold"
             >
               {intl("navbar/register")}
             </Typography>
@@ -59,9 +57,8 @@ export function NavbarLinks({
         >
           <Button size="large" variant="secondary" className="w-full">
             <Typography
-              element="body"
-              weight="semibold"
-              className="text-brand-700"
+              tag="span"
+              className="text-brand-700 text-body font-semibold"
             >
               {intl("navbar/login")}
             </Typography>

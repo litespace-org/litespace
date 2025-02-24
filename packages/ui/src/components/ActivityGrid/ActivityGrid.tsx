@@ -78,7 +78,7 @@ export const ActivityGrid = <T,>({
               <li className="tw-relative" key={idx}>
                 {anotherMonth ? (
                   <span
-                    className={cn("tw-absolute tw-text-xs -tw-top-6", {
+                    className={cn("tw-absolute tw-text-tiny -tw-top-6", {
                       "tw-left-1/2 -tw-translate-x-1/2": middle,
                       "tw-right-0": start,
                       "tw-left-0": end,

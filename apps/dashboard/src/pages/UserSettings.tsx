@@ -7,7 +7,7 @@ const UserSettings = () => {
 
   return (
     <div className="w-full flex flex-col max-w-screen-2xl mx-auto p-6">
-      <Typography element="h3">
+      <Typography tag="h3" className="text-h3">
         {intl("dashboard.user-settings.title")}
       </Typography>
 

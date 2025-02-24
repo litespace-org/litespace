@@ -358,8 +358,8 @@ const Messages: React.FC<{
                       >
                         <div className="bg-natural-50 rounded-2xl p-3 mx-auto w-fit shadow-chat-date">
                           <Typography
-                            element="caption"
-                            className="text-natural-950"
+                            tag="span"
+                            className="text-natural-950 text-caption"
                           >
                             {asDisplayDate(date)}
                           </Typography>
@@ -393,16 +393,14 @@ const Messages: React.FC<{
                   <div className="w-full h-full flex flex-col justify-center items-center gap-10">
                     <div className="flex flex-col gap-2 justify-center items-center text-center">
                       <Typography
-                        element="subtitle-2"
-                        weight="bold"
-                        className="text-natural-950"
+                        tag="span"
+                        className="text-natural-950 text-subtitle-2 font-bold"
                       >
                         {intl("chat.message.no-message")}
                       </Typography>
                       <Typography
-                        element="body"
-                        weight="semibold"
-                        className="text-natural-500"
+                        tag="span"
+                        className="text-natural-500 text-body font-semibold"
                       >
                         {intl("chat.message.start-chat")}
                       </Typography>

@@ -65,12 +65,8 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       )}
     >
       <Typography
-        element={{
-          default: "body",
-          sm: "subtitle-2",
-        }}
-        weight="bold"
-        className="tw-text-natural-950"
+        tag="h2"
+        className="tw-text-natural-950 tw-text-base sm:tw-text-subtitle-2 tw-font-bold"
       >
         {intl("student-dashboard.chat.title")}
       </Typography>
@@ -116,16 +112,15 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                       <div className="tw-flex tw-flex-col tw-grow tw-justify-between">
                         <div className="tw-flex tw-justify-between tw-self-stretch">
                           <Typography
-                            element="caption"
-                            weight="semibold"
-                            className="tw-text-natural-950"
+                            tag="span"
+                            className="tw-text-natural-950 tw-text-caption tw-font-semibold"
                           >
                             {room.name}
                           </Typography>
                           <Typography
-                            element="tiny-text"
-                            weight="regular"
+                            tag="span"
                             className={cn(
+                              "tw-text-tiny tw-font-normal",
                               room.read
                                 ? "tw-text-brand-700"
                                 : "tw-text-natural-600"
@@ -135,9 +130,9 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                           </Typography>
                         </div>
                         <Typography
-                          element="caption"
-                          weight="regular"
+                          tag="span"
                           className={cn(
+                            "tw-text-caption tw-font-normal",
                             "tw-line-clamp-1",
                             room.read
                               ? "tw-text-brand-700"
@@ -158,9 +153,8 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
           <Link to={chatsUrl} className="tw-intline-block tw-w-full">
             <Button className="tw-w-full" size="large">
               <Typography
-                element="caption"
-                weight="semibold"
-                className="tw-text-natural-50"
+                tag="span"
+                className="tw-text-natural-50 tw-text-caption tw-font-semibold"
               >
                 {intl("student-dashboard.button.find-chats")}
               </Typography>
@@ -178,15 +172,8 @@ const EmptyChats = () => {
     <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-mb-12 tw-mt-8 lg:tw-mt-6">
       <EmptyChatSummary />
       <Typography
-        element={{
-          default: "caption",
-          sm: "subtitle-1",
-        }}
-        weight={{
-          default: "bold",
-          sm: "semibold",
-        }}
-        className="tw-text-natural-950"
+        tag="span"
+        className="tw-text-natural-950 tw-text-caption sm:tw-text-subtitle-1 tw-font-bold sm:tw-font-semibold"
       >
         {intl("student-dashboard.empty-chats")}
       </Typography>
