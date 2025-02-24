@@ -3,9 +3,7 @@ import { useForm } from "react-hook-form";
 import cn from "classnames";
 import { isEqual } from "lodash";
 import UploadPhoto from "@/components/StudentSettings/UploadPhoto";
-import TopicSelection from "@/components/StudentSettings/TopicSelection";
 import { governorates } from "@/constants/user";
-import NotificationSettings from "@/components/Common/NotificationSettings";
 import { IUser } from "@litespace/types";
 import {
   getNullableFiledUpdatedValue,
@@ -29,6 +27,9 @@ import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { capture } from "@/lib/sentry";
+import NotificationSettings from "@/components/SharedSettings/NotificationSettings";
+import VerifyEmail from "@/components/StudentSettings/VerifyEmail";
+import TopicSelection from "@/components/SharedSettings/TopicSelection";
 
 type IForm = {
   name: string;
@@ -177,7 +178,6 @@ export const ProfileForm: React.FC<{
           />
         </div>
       </div>
-
       <div className="flex flex-col sm:flex-row sm:gap-10 lg:gap-28 pb-[72px] sm:pb-0">
         <div className="flex-1 flex flex-col lg:max-w-[400px]">
           <Typography
@@ -321,6 +321,7 @@ export const ProfileForm: React.FC<{
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
             <NotificationSettings />
             {!mq.sm ? <TopicSelection /> : null}
+            {!user.verified ? <VerifyEmail /> : null}
           </div>
         </div>
       </div>

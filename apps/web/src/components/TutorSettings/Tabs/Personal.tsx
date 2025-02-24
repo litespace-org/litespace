@@ -10,7 +10,7 @@ import {
   useValidatePhoneNumber,
 } from "@litespace/ui/hooks/validation";
 import { governorates } from "@/constants/user";
-import NotificationSettings from "@/components/Common/NotificationSettings";
+import NotificationSettings from "@/components/SharedSettings/NotificationSettings";
 
 const PersonalSettings: React.FC<{
   form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
