@@ -10,6 +10,7 @@ import { formatMinutes } from "@/components/utils";
 import { Button } from "@/components/Button";
 import { useFormatMessage } from "@/hooks";
 import { Void } from "@litespace/types";
+import cn from "classnames";
 
 export const Confirmation: React.FC<{
   tutorId: number;
@@ -32,51 +33,55 @@ export const Confirmation: React.FC<{
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-flex-col tw-gap-6">
-      <div className="tw-flex tw-flex-row tw-gap-6">
-        <div className="tw-w-[120px] tw-h-[120px] tw-overflow-hidden tw-rounded-full">
+    <div
+      className={cn(
+        "tw-flex tw-flex-col tw-gap-10 md:tw-gap-6 tw-mt-[34px] md:tw-mt-6"
+      )}
+    >
+      <div className="tw-flex tw-flex-row tw-gap-4 md:tw-gap-6">
+        <div className="tw-w-[73px] tw-h-[73px] md:tw-w-[120px] md:tw-h-[120px] tw-overflow-hidden tw-rounded-full">
           <Avatar
             src={orUndefined(imageUrl)}
             alt={orUndefined(name)}
             seed={tutorId.toString()}
           />
         </div>
-        <div className="tw-flex tw-flex-col tw-gap-4">
+        <div className="tw-flex tw-flex-col tw-gap-2 md:tw-gap-4">
           <Typography
             tag="span"
-            className="tw-text-natural-950 tw-text-subtitle-1 tw-font-bold"
+            className="tw-text-natural-950 tw-text-caption md:tw-text-subtitle-1 tw-font-bold"
           >
             {name}
           </Typography>
 
           <div className="tw-flex tw-flex-col tw-gap-2">
             <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-              <Calendar className="tw-h-6 tw-w-6" />
+              <Calendar className="tw-h-4 tw-w-4 md:tw-h-6 md:tw-w-6" />
               <Typography
                 tag="span"
-                className="tw-text-natural-950 tw-text-subtitle-1 tw-font-semibold"
+                className="tw-text-natural-950 tw-text-tiny md:tw-text-subtitle-2 tw-font-normal md:tw-font-semibold"
               >
                 {dayjs(start).format("dddd, D MMMM")}
               </Typography>
             </div>
 
-            <div className="tw-flex tw-flex-row tw-gap-[88px]">
+            <div className="tw-flex tw-flex-row tw-gap-[45px] md:tw-gap-[88px]">
               <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Clock className="tw-w-6 tw-h-6" />
+                <Clock className="tw-w-4 tw-h-4 md:tw-h-6 md:tw-w-6" />
 
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
+                  className="tw-text-natural-950 tw-font-normal md:tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
                 >
                   {dayjs(start).format("h:mm a")}
                 </Typography>
               </div>
               <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Timer className="tw-w-6 tw-h-6" />
+                <Timer className="tw-h-4 tw-w-4 md:tw-h-6 md:tw-w-6" />
 
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
+                  className="tw-text-natural-950 tw-font-normal md:tw-font-semibold tw-text-tiny md:tw-text-subtitle-2"
                 >
                   {formatMinutes(duration)}
                 </Typography>
@@ -86,7 +91,7 @@ export const Confirmation: React.FC<{
         </div>
       </div>
 
-      <div className="tw-flex tw-flex-row tw-gap-6 tw-pb-5">
+      <div className="tw-flex tw-flex-row tw-gap-3 md:tw-gap-6">
         <Button
           className="tw-w-full"
           loading={confirmationLoading}
@@ -94,7 +99,9 @@ export const Confirmation: React.FC<{
           onClick={onConfrim}
           size="large"
         >
-          {intl("book-lesson.confirm")}
+          <Typography tag="label" className="tw-font-medium">
+            {intl("book-lesson.confirm")}
+          </Typography>
         </Button>
         <Button
           className="tw-w-full"
@@ -103,7 +110,9 @@ export const Confirmation: React.FC<{
           onClick={onEdit}
           size="large"
         >
-          {intl("book-lesson.edit")}
+          <Typography tag="label" className="tw-font-medium">
+            {intl("book-lesson.edit")}
+          </Typography>
         </Button>
       </div>
     </div>
