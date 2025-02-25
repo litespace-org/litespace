@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { ConfirmationDialog } from "@/components/ConfirmationDialog/ConfirmationDialog";
 import CheckCircle from "@litespace/assets/CheckCircle";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { faker } from "@faker-js/faker/locale/ar";
 
 const meta: Meta<typeof ConfirmationDialog> = {
@@ -93,6 +93,76 @@ export const Loading: StoryObj<typeof ConfirmationDialog> = {
     },
     type: "error",
     icon: <CheckCircle />,
+  },
+};
+
+export const ProgressMain: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    open: true,
+    title: faker.lorem.words(5),
+    progress: { value: 50, label: faker.lorem.words(3) },
+    actions: {
+      primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
+      secondary: {
+        label: faker.lorem.word(),
+        onClick: () => alert("secondary"),
+      },
+    },
+    type: "main",
+    icon: <CheckCircle />,
+  },
+};
+
+export const ProgressError: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    open: true,
+    title: faker.lorem.words(5),
+    progress: { value: 50, label: faker.lorem.words(3) },
+    actions: {
+      primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
+      secondary: {
+        label: faker.lorem.word(),
+        onClick: () => alert("secondary"),
+      },
+    },
+    type: "error",
+    icon: <CheckCircle />,
+  },
+};
+
+export const ProgressDynamic: StoryObj<typeof ConfirmationDialog> = {
+  args: {
+    open: true,
+    title: faker.lorem.words(5),
+    actions: {
+      primary: { label: faker.lorem.word(), onClick: () => alert("primary") },
+      secondary: {
+        label: faker.lorem.word(),
+        onClick: () => alert("secondary"),
+      },
+    },
+    type: "main",
+    icon: <CheckCircle />,
+  },
+  render(props) {
+    const [progress, setProgress] = useState<number>(0);
+
+    useEffect(() => {
+      const interval = setInterval(() => {
+        if (progress >= 100) return setProgress(0);
+        setProgress(progress + 5);
+      }, 1_000);
+      return () => {
+        clearInterval(interval);
+      };
+    }, [progress]);
+
+    return (
+      <ConfirmationDialog
+        {...props}
+        progress={{ value: progress, label: faker.lorem.words(3) }}
+      />
+    );
   },
 };
 
