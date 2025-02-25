@@ -62,7 +62,7 @@ export const SelectV2 = <T extends string | number>({
           <Typography
             htmlFor={id}
             tag="label"
-            className="tw-mb-1 tw-text-natural-950 tw-text-caption tw-font-semibold"
+            className="tw-block tw-mb-1 tw-text-natural-950 tw-text-caption tw-font-semibold"
           >
             {label}
           </Typography>

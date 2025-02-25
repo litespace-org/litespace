@@ -18,19 +18,24 @@ import { Dayjs } from "dayjs";
 import { concat, isEmpty } from "lodash";
 import cn from "classnames";
 import CalendarEmpty from "@litespace/assets/CalendarEmpty";
-import { Loader } from "@/components/Loading";
+import { Loader, LoadingError } from "@/components/Loading";
 import {
   getSubSlotsBatch as getSubSlots,
   orderSlots,
   subtractSlotsBatch as subtractSlots,
 } from "@litespace/utils";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
-const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
+const Loading: React.FC<{
+  tutorName: string | null;
+}> = ({ tutorName }) => {
   const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
   return (
-    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
+    <div className="md:tw-w-[580px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 md:tw-mt-[81px] md:tw-mb-[106px]">
       <Loader
-        size="medium"
+        size={md ? "medium" : "small"}
         text={
           tutorName
             ? intl("book-lesson.loading-slots", { tutor: tutorName })
@@ -41,18 +46,36 @@ const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   );
 };
 
+const Error: React.FC<{
+  tutorName: string | null;
+  retry: Void;
+}> = ({ tutorName, retry }) => {
+  const intl = useFormatMessage();
+  const { md } = useMediaQuery();
+
+  return (
+    <div className="md:tw-w-[580px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 md:tw-mt-[47px] md:tw-mb-[71px]">
+      <LoadingError
+        error={intl("book-lesson.error-slots", { tutor: tutorName })}
+        retry={retry}
+        size={md ? "medium" : "small"}
+      />
+    </div>
+  );
+};
+
 const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
   return (
     <div
       className={cn(
-        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-[82px] tw-mb-[148px]"
+        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-4 md:tw-mt-[82px] tw-mb-6 md:tw-mb-[142px]"
       )}
     >
       <CalendarEmpty />
       <Typography
         tag="span"
-        className="tw-text-brand-700 tw-text-center tw-font-bold tw-text-subtitle-2"
+        className="tw-text-brand-700 tw-text-center tw-font-bold tw-text-body lg:tw-text-subtitle-2"
       >
         {tutorName
           ? intl("book-lesson.empty-slots", { tutor: tutorName })
@@ -63,7 +86,7 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
 };
 
 const Animation: React.FC<{
-  id?: Step | "loading" | "busy-tutor";
+  id?: Step | "loading" | "busy-tutor" | "error";
   children: React.ReactNode;
 }> = ({ id, children }) => {
   const duration = useMemo(() => {
@@ -117,12 +140,14 @@ export const ManageLessonDialog: React.FC<{
    */
   imageUrl: string | null;
   loading?: boolean;
+  error?: boolean;
   confirmationLoading?: boolean;
   slotId?: number;
   start?: string;
   duration?: number;
   slots: IAvailabilitySlot.Self[];
   bookedSlots: IAvailabilitySlot.SubSlot[];
+  retry: Void;
   /**
    * Generic function that will submit data either to be booked or edited
    */
@@ -145,9 +170,12 @@ export const ManageLessonDialog: React.FC<{
   bookedSlots,
   onSubmit,
   loading,
+  error,
   confirmationLoading,
+  retry,
   ...initials
 }) => {
+  const { sm } = useMediaQuery();
   const intl = useFormatMessage();
   const [step, setStep] = useState<Step>("date-selection");
   const [duration, setDuration] = useState<number>(initials.duration || 15);
@@ -217,25 +245,36 @@ export const ManageLessonDialog: React.FC<{
     <Dialog
       open={open}
       close={close}
+      position={sm ? "center" : "bottom"}
       title={
         <Typography
-          tag="h1"
-          className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
+          tag="header"
+          className="tw-text-natural-950 tw-font-bold tw-text-body md:tw-text-subtitle-2"
         >
           {name
             ? intl("book-lesson.title", { tutor: name })
             : intl("book-lesson.title.placeholder")}
         </Typography>
       }
-      className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
+      className={cn(
+        "tw-px-0 tw-py-4 lg:!tw-py-6 [&>div:first-child]:!tw-px-4 md:[&>div:first-child]:!tw-px-0 lg:[&>div:first-child]:!tw-px-6",
+        {
+          "!tw-left-0 tw-right-0 tw-translate-x-0": !sm,
+        }
+      )}
     >
-      {!loading ? (
-        <div className="tw-mt-6 tw-px-6">
+      {!loading && !error ? (
+        <div className="tw-mt-6 md:tw-mt-8 tw-px-4 md:tw-px-0">
           <Stepper step={step} />
         </div>
       ) : null}
 
-      <div className="tw-mt-6">
+      <div
+        className={cn({
+          "tw-mt-6": step === "date-selection",
+          "tw-mt-6 md:tw-mt-8": step === "time-selection",
+        })}
+      >
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
@@ -243,13 +282,19 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {isTutorBusy && !loading ? (
+          {error ? (
+            <Animation key="error" id="error">
+              <Error retry={retry} tutorName={name} />
+            </Animation>
+          ) : null}
+
+          {isTutorBusy && !loading && !error ? (
             <Animation key="busy-tutor" id="busy-tutor">
               <BusyTutor tutorName={name} />
             </Animation>
           ) : null}
 
-          {step === "date-selection" && !loading && !isTutorBusy ? (
+          {step === "date-selection" && !loading && !error && !isTutorBusy ? (
             <Animation key="date-selection" id="date-selection">
               <DateSelection
                 min={dateBounds.min}
@@ -261,15 +306,18 @@ export const ManageLessonDialog: React.FC<{
             </Animation>
           ) : null}
 
-          {!isTutorBusy && step === "duration-selection" && !loading ? (
+          {!isTutorBusy &&
+          step === "duration-selection" &&
+          !loading &&
+          !error ? (
             <Animation key="duration-selection" id="duration-selection">
-              <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
+              <div className="tw-px-4 md:tw-px-0 tw-mt-6 md:tw-mt-14 tw-mb-10 md:tw-mb-[82px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
           ) : null}
 
-          {!isTutorBusy && step === "time-selection" && !loading ? (
+          {!isTutorBusy && step === "time-selection" && !loading && !error ? (
             <Animation key="time-selection" id="time-selection">
               <TimeSelection
                 slots={allSlots}
@@ -288,9 +336,10 @@ export const ManageLessonDialog: React.FC<{
           {!isTutorBusy &&
           step === "confirmation" &&
           lessonDetails.start &&
-          !loading ? (
+          !loading &&
+          !error ? (
             <Animation key="confimration" id="confirmation">
-              <div className="tw-px-6">
+              <div className="tw-px-4 md:tw-px-0">
                 <Confirmation
                   tutorId={tutorId}
                   name={name}
@@ -316,26 +365,42 @@ export const ManageLessonDialog: React.FC<{
         </AnimatePresence>
       </div>
 
-      {step !== "confirmation" && !loading && !isTutorBusy ? (
-        <div className="tw-flex tw-flex-row tw-gap-[14px] tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
+      {step !== "confirmation" && !loading && !error && !isTutorBusy ? (
+        <div
+          className={cn(
+            "tw-flex tw-flex-row tw-gap-4 md:tw-gap-[14px] tw-w-full md:tw-ms-auto md:tw-w-fit tw-px-4 md:tw-px-0",
+            {
+              "tw-mt-6": step === "date-selection",
+              "tw-mt-10 md:tw-mt-6": step === "time-selection",
+            }
+          )}
+        >
           {step !== "date-selection" ? (
             <Button
-              startIcon={<LongRightArrow />}
+              startIcon={
+                <LongRightArrow className="tw-w-6 tw-h-6 -tw-ms-2 -tw-mt-1" />
+              }
               size="large"
               onClick={() => {
                 if (step === "time-selection") setStep("duration-selection");
                 if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
-                "tw-w-[128px]": step === "duration-selection",
+                "tw-flex-1 md:tw-w-[133px]":
+                  step === "duration-selection" || step === "time-selection",
               })}
             >
-              {intl("book-lesson.steps.prev")}
+              <Typography
+                tag="label"
+                className="tw-text-caption md:tw-text-body tw-font-semibold md:tw-font-medium tw-text-natural-50 tw-inline-block"
+              >
+                {intl("book-lesson.steps.prev")}
+              </Typography>
             </Button>
           ) : null}
 
           <Button
-            endIcon={<LongLeftArrow />}
+            endIcon={<LongLeftArrow className="tw-w-6 tw-h-6 -tw-mt-1" />}
             size="large"
             onClick={() => {
               if (step === "date-selection") setStep("duration-selection");
@@ -347,11 +412,18 @@ export const ManageLessonDialog: React.FC<{
               !isValidDate(date)
             }
             className={cn({
-              "tw-w-[196px]": step === "date-selection",
-              "tw-w-[128px]": step === "duration-selection",
+              "!tw-w-[156px] lg:tw-w-[196px] tw-ms-auto":
+                step === "date-selection",
+              "tw-flex-1 lg:tw-w-[128px]":
+                step === "duration-selection" || step === "time-selection",
             })}
           >
-            {intl("book-lesson.steps.next")}
+            <Typography
+              tag="label"
+              className="tw-font-semibold tw-text-natural-50"
+            >
+              {intl("book-lesson.steps.next")}
+            </Typography>
           </Button>
         </div>
       ) : null}
