@@ -5,7 +5,6 @@ import {
   Overlay,
   Content,
   Portal,
-  Title,
 } from "@radix-ui/react-dialog";
 import cn from "classnames";
 import React from "react";
@@ -14,12 +13,57 @@ import X from "@litespace/assets/X";
 import { Button } from "@/components/Button";
 import { Void } from "@litespace/types";
 import { Typography } from "@/components/Typography";
+import { formatPercentage } from "@/components/utils";
+import { motion } from "framer-motion";
+
+const Progress: React.FC<{
+  value: number;
+  label: string;
+  type: DialogType;
+}> = ({ value, label, type }) => {
+  return (
+    <div>
+      <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
+        <Typography
+          tag="span"
+          className="tw-text-natural-950 tw-text-body tw-font-bold"
+        >
+          {formatPercentage(value)}
+        </Typography>
+
+        <Typography tag="span" className="tw-text-natural-500 tw-text-tiny">
+          {label}
+        </Typography>
+      </div>
+
+      <div className="tw-w-full tw-h-2 tw-bg-natural-100 tw-rounded-full">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${value}%` }}
+          transition={{ duration: 0.3 }}
+          className={cn("tw-h-full tw-rounded-full", {
+            "tw-bg-brand-700": type === "main" || type === "success",
+            "tw-bg-destructive-700": type === "error",
+            "tw-bg-warning-700": type === "warning",
+          })}
+        />
+      </div>
+    </div>
+  );
+};
 
 export const ConfirmationDialog: React.FC<{
   trigger?: React.ReactNode;
   title: string;
-  description: string;
+  description?: string;
   open?: boolean;
+  progress?: {
+    /**
+     * The progress value should be between 0 and 100 (inclusive)
+     */
+    value: number;
+    label: string;
+  };
   actions: {
     primary: {
       label: string;
@@ -45,6 +89,7 @@ export const ConfirmationDialog: React.FC<{
   open,
   icon,
   actions,
+  progress,
   close,
 }) => {
   return (
@@ -92,20 +137,28 @@ export const ConfirmationDialog: React.FC<{
             </Close>
           </div>
           <div className="tw-flex tw-gap-1 tw-flex-col tw-mb-4 lg:tw-mb-6">
-            <Title>
-              <Typography
-                tag="h1"
-                className="tw-text-natural-950 tw-mb-1 tw-font-semibold tw-text-body"
-              >
-                {title}
-              </Typography>
-            </Title>
             <Typography
-              tag="p"
-              className="tw-text-natural-700 tw-text-caption tw-font-regular"
+              tag="h2"
+              className="tw-text-natural-950 tw-mb-1 tw-font-semibold tw-text-body"
             >
-              {description}
+              {title}
             </Typography>
+            {description ? (
+              <Typography
+                tag="p"
+                className="tw-text-natural-700 tw-text-caption tw-font-regular"
+              >
+                {description}
+              </Typography>
+            ) : null}
+
+            {progress ? (
+              <Progress
+                value={progress.value}
+                label={progress.label}
+                type={type}
+              />
+            ) : null}
           </div>
 
           <div className="tw-flex tw-items-center tw-justify-center tw-gap-3">
