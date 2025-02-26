@@ -1,3 +1,4 @@
+export * as IAnalytics from "@/analytics";
 export * as IContactRequest from "@/contactRequest";
 export * as IUser from "@/user";
 export * as ITutor from "@/tutor";
