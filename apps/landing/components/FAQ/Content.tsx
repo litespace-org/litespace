@@ -14,7 +14,7 @@ type Question = {
   content: string | React.ReactNode;
 };
 
-const Content: React.FC<{ role: "student" | "tutor" }> = ({ role }) => {
+const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
   const intl = useFormatMessage();
 
   const sharedQuestions: Question[] = [
@@ -291,31 +291,33 @@ const Content: React.FC<{ role: "student" | "tutor" }> = ({ role }) => {
           }))}
         />
 
-        <div className="text-center">
-          <Typography tag="h3" className="text-caption font-medium">
-            {intl.rich(
-              role === "student"
-                ? "faq/body/are-you-tutor"
-                : "faq/body/are-you-student",
-              {
-                link: (chunks) => (
-                  <Link
-                    href={router.landing({
-                      route: Landing.FaqRole,
-                      role:
-                        role === "student"
-                          ? IUser.Role.Tutor
-                          : IUser.Role.Student,
-                    })}
-                    className="text-brand-700"
-                  >
-                    {chunks}
-                  </Link>
-                ),
-              }
-            )}
-          </Typography>
-        </div>
+        {role ? (
+          <div className="text-center">
+            <Typography tag="h3" className="text-caption font-medium">
+              {intl.rich(
+                role === "student"
+                  ? "faq/body/are-you-tutor"
+                  : "faq/body/are-you-student",
+                {
+                  link: (chunks) => (
+                    <Link
+                      href={router.landing({
+                        route: Landing.FaqRole,
+                        role:
+                          role === "student"
+                            ? IUser.Role.Tutor
+                            : IUser.Role.Student,
+                      })}
+                      className="text-brand-700"
+                    >
+                      {chunks}
+                    </Link>
+                  ),
+                }
+              )}
+            </Typography>
+          </div>
+        ) : null}
       </div>
     </div>
   );

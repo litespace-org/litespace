@@ -22,7 +22,10 @@ const Register: React.FC = () => {
               <Typography tag="h1" className="text-brand-500 text-h3 font-bold">
                 {intl("labels.litespace")}
               </Typography>
-              <Typography tag="h2" className="text-natural-700 text-h2">
+              <Typography
+                tag="h2"
+                className="text-natural-700 text-tiny sm:text-body"
+              >
                 {intl("register.welcome")}
               </Typography>
             </div>

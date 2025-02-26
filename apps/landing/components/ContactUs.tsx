@@ -2,7 +2,7 @@ import { useFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React from "react";
 import cn from "classnames";
-import WhatsApp from "@litespace/assets/Whatsapp";
+import WhatsApp from "@litespace/assets/WhatsApp";
 import Mail from "@litespace/assets/Mail";
 import Telegram from "@litespace/assets/Telegram";
 import PaperMessage1 from "@litespace/assets/PaperMessage1";

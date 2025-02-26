@@ -151,7 +151,7 @@
     "./VideoSlash": "./dist/VideoSlash.tsx",
     "./Video": "./dist/Video.tsx",
     "./WarningFill": "./dist/WarningFill.tsx",
-    "./Whatsapp": "./dist/Whatsapp.tsx",
+    "./WhatsApp": "./dist/WhatsApp.tsx",
     "./XErroredFill": "./dist/XErroredFill.tsx",
     "./X": "./dist/X.tsx",
     "./Youtube": "./dist/Youtube.tsx"

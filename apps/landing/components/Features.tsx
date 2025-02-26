@@ -9,6 +9,9 @@ import AstroStudent4 from "@litespace/assets/AstroStudent4";
 import LongLeftArrow from "@litespace/assets/LongLeftArrow";
 import Link from "next/link";
 import { Button } from "@litespace/ui/Button";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
+import { IUser } from "@litespace/types";
 
 const features: Array<{
   title: LocalId;
@@ -68,36 +71,46 @@ export const Features: React.FC = () => {
       <div className="flex flex-col gap-[86px] md:gap-16 lg:gap-24">
         {features.map((feature) => (
           <div
-            className="lg:h-[463px] flex flex-col-reverse md:flex-row md:even:flex-row-reverse gap-4 md:justify-between items-center"
+            className="lg:h-[463px] flex flex-col-reverse md:flex-row md:even:flex-row-reverse items-center gap-4 md:justify-center lg:gap-20 lg:items-center"
             key={feature.title}
           >
             <div className="flex flex-col text-center md:text-start gap-4 md:gap-6 max-w-[380px] md:max-w-[377px] lg:max-w-[598px]">
               <Typography
-                tag="h3"
+                tag="h2"
                 className="text-subtitle-2 md:text-h4 lg:text-h3 font-bold text-natural-950"
               >
                 {intl(feature.title)}
               </Typography>
               <Typography
-                tag="h6"
+                tag="p"
                 className="text-body md:text-subtitle-2 font-medium md:font-semibold text-natural-700"
               >
                 {intl(feature.desc)}
               </Typography>
-              <Link href={"/"}>
-                <Button
-                  endIcon={<LongLeftArrow className="w-6 h-6 -translate-y-1" />}
-                  size="large"
-                  className="justify-self-center md:justify-self-start md:h-auto md:py-4 md:px-8"
+
+              <div className="mx-auto md:mx-[unset]">
+                <Link
+                  href={router.web({
+                    route: Web.Register,
+                    role: IUser.Role.Student,
+                    full: true,
+                  })}
                 >
-                  <Typography
-                    tag="label"
-                    className="text-caption md:text-body font-semibold md:font-bold text-natural-50"
+                  <Button
+                    endIcon={
+                      <LongLeftArrow className="w-6 h-6 -translate-y-1" />
+                    }
+                    size="large"
                   >
-                    {intl("home/features/start-your-journey")}
-                  </Typography>
-                </Button>
-              </Link>
+                    <Typography
+                      tag="p"
+                      className="text-caption md:text-body font-semibold md:font-bold text-natural-50"
+                    >
+                      {intl("home/features/start-your-journey")}
+                    </Typography>
+                  </Button>
+                </Link>
+              </div>
             </div>
             {feature.icon}
           </div>

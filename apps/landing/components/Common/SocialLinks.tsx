@@ -3,7 +3,7 @@ import Link from "next/link";
 import Facebook from "@litespace/assets/Facebook";
 import Insta from "@litespace/assets/Instagram";
 import Linkedin from "@litespace/assets/Linkedin";
-import Whatsapp from "@litespace/assets/Whatsapp";
+import WhatsApp from "@litespace/assets/WhatsApp";
 
 const socials = [
   {
@@ -20,7 +20,7 @@ const socials = [
   },
   {
     href: "https://wa.me/201503310108",
-    icon: <Whatsapp className="w-8 h-8" />,
+    icon: <WhatsApp className="w-8 h-8" />,
   },
 ];
 
