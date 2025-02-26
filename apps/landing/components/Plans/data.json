@@ -1,0 +1,84 @@
+{
+  "data": {
+    "monthly": [
+      {
+        "id": 1,
+        "weeklyMinutes": 120,
+        "price": 1800,
+        "label": "most-common"
+      },
+      {
+        "id": 2,
+        "weeklyMinutes": 180,
+        "price": 2700,
+        "primary": true
+      },
+      {
+        "id": 3,
+        "price": 3400,
+        "weeklyMinutes": 240,
+        "label": "most-valuable"
+      }
+    ],
+    "quarter": [
+      {
+        "id": 1,
+        "weeklyMinutes": 120,
+        "price": 1800,
+        "label": "most-common"
+      },
+      {
+        "id": 2,
+        "weeklyMinutes": 180,
+        "price": 2700,
+        "primary": true
+      },
+      {
+        "id": 3,
+        "price": 3400,
+        "weeklyMinutes": 240,
+        "label": "most-valuable"
+      }
+    ],
+    "half": [
+      {
+        "id": 1,
+        "price": 1800,
+        "weeklyMinutes": 120,
+        "label": "most-common"
+      },
+      {
+        "id": 2,
+        "weeklyMinutes": 180,
+        "price": 2200,
+        "primary": true
+      },
+      {
+        "id": 3,
+        "price": 3400,
+        "weeklyMinutes": 240,
+        "label": "most-valuable"
+      }
+    ],
+    "annual": [
+      {
+        "id": 1,
+        "weeklyMinutes": 120,
+        "price": 1800,
+        "label": "most-common"
+      },
+      {
+        "id": 2,
+        "weeklyMinutes": 180,
+        "price": 2700,
+        "primary": true
+      },
+      {
+        "id": 3,
+        "price": 3400,
+        "weeklyMinutes": 240,
+        "label": "most-valuable"
+      }
+    ]
+  }
+}
