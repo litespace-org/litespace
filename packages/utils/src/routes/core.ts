@@ -70,9 +70,14 @@ type WebPayload =
       route: Exclude<Web, Web.TutorProfile | Web.Lesson | Web.Register>;
     };
 
-type LandingPayload = {
-  route: Landing;
-};
+type LandingPayload =
+  | {
+      route: Landing.FaqRole;
+      role: IUser.Role.Student | IUser.Role.Tutor;
+    }
+  | {
+      route: Exclude<Landing, Landing.FaqRole>;
+    };
 
 type DashboardPayload =
   | {

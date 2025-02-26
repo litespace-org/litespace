@@ -172,7 +172,7 @@ const Login: React.FC = () => {
                 </Button>
 
                 <Typography
-                  tag="span"
+                  tag="p"
                   className="text-natural-950 text-center text-caption font-medium"
                 >
                   {intl.node("login.has-no-account", {

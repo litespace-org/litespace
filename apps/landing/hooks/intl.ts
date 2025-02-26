@@ -1,7 +1,7 @@
 import { LocalId } from "@/locales/request";
-import { useTranslations } from "next-intl";
+import { RichTranslationValues, useTranslations } from "next-intl";
 
-import { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 export function useFormatMessage() {
   const intl = useTranslations();
@@ -14,10 +14,8 @@ export function useFormatMessage() {
   return useMemo(
     () =>
       Object.assign(format, {
-        rich: (
-          id: LocalId,
-          values?: Record<string, string | number>
-        ): React.ReactNode => intl(id, values),
+        rich: (id: LocalId, values?: RichTranslationValues): React.ReactNode =>
+          intl.rich(id, values),
       }),
     [format, intl]
   );

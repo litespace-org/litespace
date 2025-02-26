@@ -4,209 +4,259 @@ import { Accordion } from "@litespace/ui/Accordion";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@/hooks/intl";
 import Link from "next/link";
+import { router } from "@/lib/routes";
+import { Landing, Web } from "@litespace/utils/routes";
+import { IUser } from "@litespace/types";
+import { LITESPACE_TUTORS_TELEGRAM } from "@/constants/links";
+
+type Question = {
+  title: string;
+  content: string | React.ReactNode;
+};
 
 const Content: React.FC<{ role: "student" | "tutor" }> = ({ role }) => {
   const intl = useFormatMessage();
 
-  const tutorQuestions = [
+  const sharedQuestions: Question[] = [
     {
-      title: intl("faq/body/for-tutor/question/1"),
-      answer: (
-        <>
-          {intl("faq/body/for-tutor/question/1/answer-1")}{" "}
+      title: intl("faq/body/general/q/1"),
+      content: intl("faq/body/general/q/1/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/2"),
+      content: intl("faq/body/general/q/2/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/3"),
+      content: intl("faq/body/general/q/3/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/4"),
+      content: intl("faq/body/general/q/4/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/5"),
+      content: intl("faq/body/general/q/5/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/6"),
+      content: intl("faq/body/general/q/6/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/7"),
+      content: intl("faq/body/general/q/7/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/8"),
+      content: intl("faq/body/general/q/8/answer"),
+    },
+    {
+      title: intl("faq/body/general/q/9"),
+      content: intl("faq/body/general/q/9/answer"),
+    },
+  ];
+
+  const tutorQuestions: Question[] = [
+    {
+      title: intl("faq/body/for-tutor/q/1"),
+      content: intl.rich("faq/body/for-tutor/q/1/answer", {
+        here: (chunks) => (
           <Link
-            className="text-blue-900"
-            href="https://app.litespace.org/tutor/register"
+            className="text-brand-700"
+            href={router.web({
+              route: Web.Register,
+              role: IUser.Role.Tutor,
+              full: true,
+            })}
           >
-            {intl("faq/body/for-tutor/question/1/answer-2")}
+            {chunks}
           </Link>
-          {intl("faq/body/for-tutor/question/1/answer-3")}
-        </>
-      ),
+        ),
+      }),
     },
     {
-      title: intl("faq/body/for-tutor/question/2"),
-      answer: intl("faq/body/for-tutor/question/2/answer"),
+      title: intl("faq/body/for-tutor/q/2"),
+      content: intl("faq/body/for-tutor/q/2/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/3"),
-      answer: intl("faq/body/for-tutor/question/3/answer"),
+      title: intl("faq/body/for-tutor/q/3"),
+      content: intl("faq/body/for-tutor/q/3/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/4"),
-      answer: intl("faq/body/for-tutor/question/4/answer"),
+      title: intl("faq/body/for-tutor/q/4"),
+      content: intl("faq/body/for-tutor/q/4/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/5"),
-      answer: intl("faq/body/for-tutor/question/5/answer"),
+      title: intl("faq/body/for-tutor/q/5"),
+      content: intl("faq/body/for-tutor/q/5/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/6"),
-      answer: intl("faq/body/for-tutor/question/6/answer"),
+      title: intl("faq/body/for-tutor/q/6"),
+      content: intl("faq/body/for-tutor/q/6/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/7"),
-      answer: intl("faq/body/for-tutor/question/7/answer"),
+      title: intl("faq/body/for-tutor/q/7"),
+      content: intl("faq/body/for-tutor/q/7/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/8"),
-      answer: intl("faq/body/for-tutor/question/8/answer"),
+      title: intl("faq/body/for-tutor/q/8"),
+      content: intl("faq/body/for-tutor/q/8/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/9"),
-      answer: intl("faq/body/for-tutor/question/9/answer"),
+      title: intl("faq/body/for-tutor/q/9"),
+      content: intl("faq/body/for-tutor/q/9/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/10"),
-      answer: (
-        <>
-          {intl("faq/body/for-tutor/question/10/answer-1")}{" "}
-          <Link className="text-blue-900" href="https://t.me/litespace_tutors">
-            {intl("faq/body/for-tutor/question/10/answer-2")}
+      title: intl("faq/body/for-tutor/q/10"),
+      content: intl.rich("faq/body/for-tutor/q/10/answer", {
+        telegram: (chunks) => (
+          <Link
+            className="text-brand-700"
+            href={LITESPACE_TUTORS_TELEGRAM}
+            target="_blank"
+          >
+            {chunks}
           </Link>
-          {intl("faq/body/for-tutor/question/10/answer-3")}{" "}
-        </>
-      ),
+        ),
+      }),
     },
     {
-      title: intl("faq/body/for-tutor/question/11"),
-      answer: intl("faq/body/for-tutor/question/11/answer"),
+      title: intl("faq/body/for-tutor/q/11"),
+      content: intl("faq/body/for-tutor/q/11/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/12"),
-      answer: intl("faq/body/for-tutor/question/12/answer"),
+      title: intl("faq/body/for-tutor/q/12"),
+      content: intl("faq/body/for-tutor/q/12/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/13"),
-      answer: intl("faq/body/for-tutor/question/13/answer"),
+      title: intl("faq/body/for-tutor/q/13"),
+      content: intl("faq/body/for-tutor/q/13/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/14"),
-      answer: intl("faq/body/for-tutor/question/14/answer"),
+      title: intl("faq/body/for-tutor/q/14"),
+      content: intl("faq/body/for-tutor/q/14/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/15"),
-      answer: intl("faq/body/for-tutor/question/15/answer"),
+      title: intl("faq/body/for-tutor/q/15"),
+      content: intl("faq/body/for-tutor/q/15/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/16"),
-      answer: intl("faq/body/for-tutor/question/16/answer"),
+      title: intl("faq/body/for-tutor/q/16"),
+      content: intl("faq/body/for-tutor/q/16/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/17"),
-      answer: intl("faq/body/for-tutor/question/17/answer"),
+      title: intl("faq/body/for-tutor/q/17"),
+      content: intl("faq/body/for-tutor/q/17/answer"),
     },
     {
-      title: intl("faq/body/for-tutor/question/18"),
-      answer: intl("faq/body/for-tutor/question/18/answer"),
+      title: intl("faq/body/for-tutor/q/18"),
+      content: intl("faq/body/for-tutor/q/18/answer"),
     },
   ];
 
-  const studentQuestions = [
+  const studentQuestions: Question[] = [
     {
-      title: intl("faq/body/for-student/question/1"),
-      answer: intl("faq/body/for-student/question/1/answer"),
+      title: intl("faq/body/for-student/q/1"),
+      content: intl("faq/body/for-student/q/1/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/2"),
-      answer: (
-        <>
-          {intl("faq/body/for-student/question/2/answer-1")}{" "}
-          <Link className="text-blue-900" href="http://litespace.org/pricing">
-            {intl("faq/body/for-student/question/2/answer-2")}
+      title: intl("faq/body/for-student/q/2"),
+      content: intl.rich("faq/body/for-student/q/2/answer", {
+        here: (chunks) => (
+          <Link className="text-brand-700" href={Landing.Pricing}>
+            {chunks}
           </Link>
-        </>
-      ),
+        ),
+      }),
     },
     {
-      title: intl("faq/body/for-student/question/3"),
-      answer: intl("faq/body/for-student/question/3/answer"),
+      title: intl("faq/body/for-student/q/3"),
+      content: intl("faq/body/for-student/q/3/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/4"),
-      answer: intl("faq/body/for-student/question/4/answer"),
+      title: intl("faq/body/for-student/q/4"),
+      content: intl("faq/body/for-student/q/4/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/5"),
-      answer: intl("faq/body/for-student/question/5/answer"),
+      title: intl("faq/body/for-student/q/5"),
+      content: intl("faq/body/for-student/q/5/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/6"),
-      answer: (
-        <>
-          {intl("faq/body/for-student/question/6/answer-1")}{" "}
-          <Link className="text-blue-900" href="https://litespace.org/terms">
-            {intl("faq/body/for-student/question/6/answer-2")}
+      title: intl("faq/body/for-student/q/6"),
+      content: intl.rich("faq/body/for-student/q/6/answer", {
+        terms: (chunks) => (
+          <Link className="text-brand-700" href={Landing.Terms}>
+            {chunks}
           </Link>
-        </>
-      ),
+        ),
+      }),
     },
     {
-      title: intl("faq/body/for-student/question/7"),
-      answer: (
-        <>
-          {intl("faq/body/for-student/question/7/answer-1")}{" "}
-          <Link className="text-blue-900" href="http://litespace.org/pricing">
-            {intl("faq/body/for-student/question/7/answer-2")}
+      title: intl("faq/body/for-student/q/7"),
+      content: intl.rich("faq/body/for-student/q/7/answer", {
+        here: (chunks) => (
+          <Link className="text-brand-700" href={Landing.Pricing}>
+            {chunks}
           </Link>
-        </>
-      ),
+        ),
+      }),
     },
     {
-      title: intl("faq/body/for-student/question/8"),
-      answer: intl("faq/body/for-student/question/8/answer"),
+      title: intl("faq/body/for-student/q/8"),
+      content: intl("faq/body/for-student/q/8/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/9"),
-      answer: intl("faq/body/for-student/question/9/answer"),
+      title: intl("faq/body/for-student/q/9"),
+      content: intl("faq/body/for-student/q/9/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/10"),
-      answer: intl("faq/body/for-student/question/10/answer"),
+      title: intl("faq/body/for-student/q/10"),
+      content: intl("faq/body/for-student/q/10/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/11"),
-      answer: intl("faq/body/for-student/question/11/answer"),
+      title: intl("faq/body/for-student/q/11"),
+      content: intl("faq/body/for-student/q/11/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/12"),
-      answer: intl("faq/body/for-student/question/12/answer"),
+      title: intl("faq/body/for-student/q/12"),
+      content: intl("faq/body/for-student/q/12/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/13"),
-      answer: intl("faq/body/for-student/question/13/answer"),
+      title: intl("faq/body/for-student/q/13"),
+      content: intl("faq/body/for-student/q/13/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/14"),
-      answer: intl("faq/body/for-student/question/14/answer"),
+      title: intl("faq/body/for-student/q/14"),
+      content: intl("faq/body/for-student/q/14/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/15"),
-      answer: intl("faq/body/for-student/question/15/answer"),
+      title: intl("faq/body/for-student/q/15"),
+      content: intl("faq/body/for-student/q/15/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/16"),
-      answer: intl("faq/body/for-student/question/16/answer"),
+      title: intl("faq/body/for-student/q/16"),
+      content: intl("faq/body/for-student/q/16/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/17"),
-      answer: intl("faq/body/for-student/question/17/answer"),
+      title: intl("faq/body/for-student/q/17"),
+      content: intl("faq/body/for-student/q/17/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/18"),
-      answer: intl("faq/body/for-student/question/18/answer"),
+      title: intl("faq/body/for-student/q/18"),
+      content: intl("faq/body/for-student/q/18/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/19"),
-      answer: intl("faq/body/for-student/question/19/answer"),
+      title: intl("faq/body/for-student/q/19"),
+      content: intl("faq/body/for-student/q/19/answer"),
     },
     {
-      title: intl("faq/body/for-student/question/20"),
-      answer: intl("faq/body/for-student/question/20/answer"),
+      title: intl("faq/body/for-student/q/20"),
+      content: intl("faq/body/for-student/q/20/answer"),
     },
   ];
 
-  const questions = role === "tutor" ? tutorQuestions : studentQuestions;
+  const userQuestions = role === "tutor" ? tutorQuestions : studentQuestions;
+  const questions = userQuestions.concat(sharedQuestions);
 
   return (
     <div
@@ -233,29 +283,35 @@ const Content: React.FC<{ role: "student" | "tutor" }> = ({ role }) => {
       </div>
 
       <Accordion
-        items={questions.map((obj, i) => ({
+        items={questions.map(({ title, content }, i) => ({
           id: i,
-          title: obj.title,
-          content: obj.answer,
+          title,
+          content,
         }))}
       />
 
       <div className="text-center">
         <Typography tag="h3" className="text-caption font-medium">
-          {role === "tutor" ? (
-            <>
-              {intl("faq/body/are-you-student")}{" "}
-              <Link href="/faq/student" className="text-brand-700">
-                {intl("faq/body/go-to-students-questions")}
-              </Link>
-            </>
-          ) : (
-            <>
-              {intl("faq/body/are-you-tutor")}{" "}
-              <Link href="/faq/tutor" className="text-brand-700">
-                {intl("faq/body/go-to-tutors-questions")}
-              </Link>
-            </>
+          {intl.rich(
+            role === "student"
+              ? "faq/body/are-you-tutor"
+              : "faq/body/are-you-student",
+            {
+              link: (chunks) => (
+                <Link
+                  href={router.landing({
+                    route: Landing.FaqRole,
+                    role:
+                      role === "student"
+                        ? IUser.Role.Tutor
+                        : IUser.Role.Student,
+                  })}
+                  className="text-brand-700"
+                >
+                  {chunks}
+                </Link>
+              ),
+            }
           )}
         </Typography>
       </div>

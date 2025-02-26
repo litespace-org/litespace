@@ -29,7 +29,7 @@ export const Accordion: React.FC<{
           key={item.id}
           value={item.id.toString()}
           className={cn(
-            "tw-bg-white data-[state=open]:tw-pb-6 tw-text-natural-950",
+            "tw-bg-white tw-text-natural-950",
             "data-[state=open]:tw-text-brand-500 tw-transition-all tw-duration-150"
           )}
         >
@@ -52,16 +52,20 @@ export const Accordion: React.FC<{
           </Header>
 
           <Content
+            forceMount
             className={cn(
               "tw-text-natural-950 tw-overflow-hidden tw-px-8",
-              "data-[state=open]:tw-mt-5",
-              "data-[state=closed]:tw-mb-0 data-[state=closed]:tw-mt-0",
-              "data-[state=open]:tw-animate-slide-down data-[state=closed]:tw-animate-slide-up"
+              "tw-grid tw-grid-rows-[0fr] data-[state=open]:tw-grid-rows-[1fr] tw-transition-[grid-template-rows] tw-duration-300"
             )}
           >
-            <Typography tag="p" className="tw-text-caption tw-font-regular">
-              {item.content}
-            </Typography>
+            <div className="tw-overflow-hidden">
+              <Typography
+                tag="p"
+                className="tw-text-caption tw-font-regular tw-pt-5 tw-pb-6"
+              >
+                {item.content}
+              </Typography>
+            </div>
           </Content>
         </Item>
       ))}

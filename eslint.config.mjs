@@ -109,7 +109,7 @@ export default [
     },
   },
   {
-    files: ["apps/landing/app/layout.tsx"],
+    files: ["apps/landing/**"],
     rules: {
       "react-refresh/only-export-components": "off",
     },

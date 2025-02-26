@@ -31,6 +31,9 @@ export enum Landing {
   BecomeTutor = "/tutor",
   Terms = "/terms",
   Privacy = "/privacy",
+  Pricing = "/pricing",
+  Faq = "/faq",
+  FaqRole = "/faq/:role",
 }
 
 export enum Dashboard {
