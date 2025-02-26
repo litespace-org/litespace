@@ -328,6 +328,7 @@ export default {
       "plan-card-label": "0px 4px 20px 0px rgba(0, 0, 0, 0.15)",
       "alert-circle": "0px 4px 15px 0px rgba(0, 0, 0, 0.1)",
       header: "0px 4px 20px 0px rgba(0, 0, 0, .1)",
+      "select-menu": "0px 4px 20px 0px rgba(0, 0, 0, 0.1)",
     },
   },
   plugins: [
