@@ -21,7 +21,6 @@ export const DurationSelection: React.FC<{
             {
               label: formatMinutes(30),
               value: 30,
-              disabled: true,
             },
           ]}
           value={value}
