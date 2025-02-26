@@ -12,7 +12,7 @@ const PageTitle: React.FC<{
     <div className={cn("flex flex-row items-center gap-2", className)}>
       <Typography
         tag="h1"
-        className="text-natural-950 text-body lg:text-subtitle-2 font-bold"
+        className="text-natural-950 text-body md:text-subtitle-2 font-bold"
       >
         {title}
       </Typography>

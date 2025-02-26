@@ -31,14 +31,14 @@ const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   const intl = useFormatMessage();
 
   return (
-    <div className="flex flex-wrap md:flex-nowrap relative items-center justify-center md:h-[294px] w-full gap-6 md:gap-[88px]">
+    <div className="flex flex-col lg:flex-row flex-wrap md:flex-nowrap relative items-center justify-center w-full gap-8 md:gap-12 lg:gap-[88px]">
       <Typography
         tag="span"
-        className="text-natural-950 text-center md:-translate-y-7 max-w-[476px] text-body md:text-subtitle-1 font-bold"
+        className="text-natural-950 text-center md:-translate-y-7 max-w-[476px] md:max-w-[584px] text-body md:text-subtitle-2 lg:text-subtitle-1 font-semibold lg:font-bold"
       >
         {intl("tutor.profile.first-rating", { tutor: tutorName })}
       </Typography>
-      <div className="w-[151px] h-[147px] md:w-[292px] md:h-[294px]">
+      <div className="w-[151px] h-[147px] md:w-[294px] md:h-[294px]">
         <NewTutor />
       </div>
     </div>
@@ -155,14 +155,16 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   return (
     <div
       className={cn(
-        "flex flex-col justify-center py-4 md:p-8",
-        isEmpty(ratings) ? "gap-8" : "gap-4 md:gap-10"
+        "flex flex-col justify-center md:px-10 md:pt-6 md:pb-10 lg:pt-8",
+        isEmpty(ratings)
+          ? "pt-4 gap-8 md:gap-12 lg:gap-8"
+          : "p-4 gap-4 md:gap-6 lg:gap-10"
       )}
     >
       {isEmpty(ratings) ? (
         <NoTutorRatings tutorName={tutorName} />
       ) : (
-        <div className="grid gap-4 flex-wrap justify-center md:grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
+        <div className="grid gap-4 flex-wrap justify-center grid-cols-[repeat(auto-fill,minmax(256px,310px))] md:grid-cols-[repeat(auto-fill,minmax(194px,256px))] lg:grid-cols-[repeat(auto-fill,minmax(256px,1fr))]">
           {ratings.map((rating, index) => {
             if (
               "userId" in rating &&

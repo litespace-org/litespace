@@ -5,14 +5,14 @@ import { useFindTutorInfo } from "@litespace/headless/tutor";
 import RightArrow from "@litespace/assets/ArrowRight";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import ManageLesson from "@/components/Lessons/ManageLesson";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import { Web } from "@litespace/utils/routes";
+import ProfileCard from "@/components/TutorProfile/ProfileCard";
 
 const TutorProfile: React.FC = () => {
-  const { lg } = useMediaQuery();
+  const { md, lg } = useMediaQuery();
   const params = useParams<{ id: string }>();
   const intl = useFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
@@ -26,23 +26,25 @@ const TutorProfile: React.FC = () => {
   const tutor = useFindTutorInfo(id);
 
   return (
-    <div className="w-full max-w-screen-3xl p-4 md:p-6 mx-auto md:mb-12">
-      <div className="flex items-center gap-4 md:gap-6">
-        <Link
-          to={Web.Tutors}
-          className="hidden md:flex w-6 h-6 items-center justify-center"
-        >
-          <RightArrow className="[&>*]:stroke-brand-700" />
-        </Link>
+    <div className="w-full max-w-screen-3xl p-4 lg:p-6 mx-auto">
+      <div className="flex items-center gap-4 md:gap-6 mb-4 md:mb-6">
+        {md ? (
+          <Link
+            to={Web.Tutors}
+            className="hidden md:flex w-6 h-6 items-center justify-center"
+          >
+            <RightArrow className="[&>*]:stroke-brand-700" />
+          </Link>
+        ) : null}
         <Typography
           tag="h1"
-          className="font-bold text-natural-950 text-subtitle-2"
+          className="font-bold text-natural-950 text-body md:text-subtitle-2"
         >
           {intl("tutors.title")}
           {tutor.data?.name ? (
             <>
-              <span> / </span>
-              <span className="underline text-brand-700">
+              <span>/ </span>
+              <span className=" text-brand-700 inline-block">
                 {tutor.data.name}
               </span>
             </>
@@ -70,8 +72,8 @@ const TutorProfile: React.FC = () => {
       ) : null}
 
       {!tutor.isLoading && !tutor.isError && tutor.data ? (
-        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl mt-4 md:mt-6 flex flex-col gap-8 md:gap-12">
-          <TutorProfileCard {...tutor.data} onBook={() => setOpen(true)} />
+        <div className="md:bg-natural-50 md:border md:border-natural-100 md:shadow-tutor-profile md:rounded-2xl flex flex-col gap-8 md:gap-14 lg:gap-12">
+          <ProfileCard {...tutor.data} onBook={() => setOpen(true)} />
           <TutorTabs tutor={tutor.data} />
         </div>
       ) : null}

@@ -55,7 +55,7 @@ export const RateLesson: React.FC<{
       open={true}
       title={
         <div className="tw-flex tw-items-center tw-gap-2">
-          <Rate />
+          <Rate className="tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8" />
           <Typography
             tag="h2"
             className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"

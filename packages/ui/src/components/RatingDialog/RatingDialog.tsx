@@ -67,10 +67,10 @@ const RatingDialog: React.FC<DialogProps> = ({
   return (
     <Dialog
       open
-      className="tw-w-full md:tw-w-[659px]"
+      className="tw-w-full md:tw-w-[695px]"
       title={
         <div className="tw-flex tw-items-center tw-gap-2">
-          <Rate />
+          <Rate className="tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8" />
           <Typography
             tag="h1"
             className="tw-text-natural-950 tw-text-body sm:tw-text-subtitle-2 tw-font-bold"
@@ -113,7 +113,7 @@ const RatingDialog: React.FC<DialogProps> = ({
         <Textarea
           value={feedback}
           disabled={submitting}
-          className="tw-min-h-[138px]"
+          className="tw-min-h-[97px]"
           onChange={onFeedbackChange}
           maxAllowedCharacters={maxAllowedCharacters}
           placeholder={intl("session.rating.text.placeholder")}
@@ -126,7 +126,7 @@ const RatingDialog: React.FC<DialogProps> = ({
           }
         />
 
-        <div className="tw-flex tw-w-full tw-gap-6">
+        <div className="tw-flex tw-w-full tw-gap-4 md:tw-gap-6 tw-mt-6 md:tw-mt-0">
           <Button
             size={"large"}
             onClick={onSubmit}
@@ -136,7 +136,7 @@ const RatingDialog: React.FC<DialogProps> = ({
           >
             <Typography
               tag="span"
-              className="tw-font-semibold tw-text-caption sm:tw-text-body"
+              className="tw-font-semibold md:tw-font-medium tw-text-caption md:tw-text-body"
             >
               {intl("rating-dialog.submit")}
             </Typography>

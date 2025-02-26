@@ -97,9 +97,9 @@ export class RoutesManager {
       if (base === Web.Register)
         return /\/(tutor|student)\/register\/?/.test(target);
       // https://regex101.com/r/a1B4Dw/1
-      if (Web.TutorProfile) return /\/?t\/([^/]+)\/?/.test(target);
+      if (base === Web.TutorProfile) return /\/?t\/([^/]+)\/?/.test(target);
       // https://regex101.com/r/jbiJh7/1
-      if (Web.Lesson) return /\/?lesson\/([^/]+)\/?/.test(target);
+      if (base === Web.Lesson) return /\/?lesson\/([^/]+)\/?/.test(target);
       return isStrictMatch(base, target);
     },
     landing(base: Landing, target: string): boolean {

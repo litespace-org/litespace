@@ -91,20 +91,20 @@ export const TopicSelectionDialog: React.FC<Props> = ({
       title={
         <Typography
           tag="h1"
-          className="tw-text-natural-950 tw-font-bold tw-text-body sm:tw-text-subtitle-1"
+          className="tw-text-natural-950 tw-font-bold tw-text-body md:tw-text-subtitle-1"
         >
           {title}
         </Typography>
       }
-      className={mq.sm ? "tw-w-[584px]" : "tw-w-screen"}
+      className={mq.md ? "tw-w-[584px]" : "tw-w-screen"}
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}
     >
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
+      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-4 md:tw-mt-2">
         <Typography
           tag="p"
-          className="tw-text-natural-950 tw-mt-2 tw-font-semibold tw-text-tiny sm:tw-text-caption"
+          className="tw-text-natural-950 tw-mt-2 tw-font-semibold tw-text-tiny md:tw-text-caption sm:tw-text-caption"
         >
           {description}
         </Typography>
@@ -139,7 +139,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
             <Animate
               key="topics"
               className={cn(
-                "tw-flex tw-flex-wrap tw-gap-6 tw-my-12 tw-overflow-auto tw-max-h-[264px]",
+                "tw-flex tw-flex-wrap tw-gap-2 md:tw-gap-6 tw-my-8 md:tw-my-12 tw-overflow-auto tw-max-h-[264px]",
                 "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
               )}
             >
@@ -151,7 +151,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                     (disableSelection && !selection.includes(topic.id))
                   }
                   className={cn(
-                    "tw-rounded-2xl tw-px-5 tw-py-3 sm:tw-p-4 tw-transition-colors tw-duration-200",
+                    "tw-rounded-2xl tw-p-3 md:tw-p-4 tw-transition-colors tw-duration-200",
                     "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
                     {
                       "tw-bg-natural-100 tw-text-natural-950":
@@ -164,7 +164,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                 >
                   <Typography
                     tag="span"
-                    className="tw-font-medium tw-text-tiny sm:tw-text-caption md:tw-text-body"
+                    className="tw-font-semibold md:tw-font-medium tw-text-tiny md:tw-text-body sm:tw-text-caption"
                   >
                     {topic.label}
                   </Typography>
@@ -173,7 +173,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
             </Animate>
           ) : null}
 
-          <div className="tw-flex tw-flex-row tw-w-full tw-gap-6">
+          <div className="tw-flex tw-flex-row tw-w-full tw-gap-4 lg:tw-gap-6">
             <Button
               size="large"
               variant="primary"
@@ -182,7 +182,9 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               onClick={() => confirm(selection)}
               disabled={loading || error || confirming || !dataChanged}
             >
-              {intl("labels.confirm")}
+              <Typography tag="label" className="tw-text-body tw-font-medium">
+                {intl("labels.confirm")}
+              </Typography>
             </Button>
             <Button
               size="large"
@@ -191,7 +193,9 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               className="tw-w-full"
               disabled={confirming}
             >
-              {intl("labels.cancel")}
+              <Typography tag="label" className="tw-text-body tw-font-medium">
+                {intl("labels.cancel")}
+              </Typography>
             </Button>
           </div>
         </AnimatePresence>

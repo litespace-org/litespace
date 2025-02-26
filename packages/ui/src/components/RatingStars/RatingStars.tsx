@@ -44,7 +44,7 @@ export const RatingStars: React.FC<StarProps> = ({
     <div
       className={cn(
         "tw-flex tw-justify-around tw-p-0",
-        { "tw-gap-2": variant === "sm" },
+        { "tw-gap-2 md:tw-gap-1 lg:tw-gap-2": variant === "sm" },
         { "tw-gap-1": variant === "md" },
         { "tw-gap-8": variant === "lg" || variant === "xl" }
       )}
@@ -52,13 +52,16 @@ export const RatingStars: React.FC<StarProps> = ({
       {range(5).map((idx) => (
         <div
           key={idx}
-          className={cn("tw-flex tw-flex-col tw-gap-2 sm:tw-gap-4")}
+          className={cn("tw-flex tw-flex-col tw-gap-2  md:tw-gap-4")}
         >
           <motion.button
             whileHover={readonly ? undefined : { scale: 1.1 }}
             whileTap={readonly ? undefined : { scale: 0.9 }}
             className={cn(
-              { "tw-w-5 tw-h-5": variant === "sm" },
+              {
+                "tw-w-5 tw-h-5 md:tw-w-4 md:tw-h-4 lg:tw-w-5 lg:tw-h-5":
+                  variant === "sm",
+              },
               { "tw-w-[38px] tw-h-[38px]": variant === "md" },
               { "tw-w-[48px] tw-h-[48px]": variant === "lg" },
               { "tw-w-[80px] tw-h-[80px]": variant === "xl" }
@@ -70,7 +73,8 @@ export const RatingStars: React.FC<StarProps> = ({
           >
             <SStar
               className={cn(
-                variant === "sm" && "tw-w-[20px]",
+                variant === "sm" &&
+                  "tw-w-5 tw-h-5 md:tw-w-4 md:tw-h-4 lg:tw-w-5 lg:tw-h-5",
                 !readonly && "hover:tw-cursor-pointer",
                 idx + 1 <= rating
                   ? "[&>*]:tw-fill-warning-500"

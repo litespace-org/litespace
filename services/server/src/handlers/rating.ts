@@ -18,7 +18,7 @@ import zod from "zod";
 const createRatingPayload = zod.object({
   rateeId: id,
   value: rating,
-  feedback: zod.optional(string),
+  feedback: zod.optional(zod.union([zod.null(), zod.string()])),
 });
 
 const updateRatingPayload = zod.object({

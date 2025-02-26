@@ -21,9 +21,9 @@ const TutorSettings: React.FC = () => {
   if (!user) return null;
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full p-6">
-      <div className="w-full">
-        <div className="mb-8">
+    <div className="max-w-screen-3xl mx-auto w-full h-full p-4 lg:p-6">
+      <div className="w-full h-full">
+        <div className="mb-4 md:mb-6">
           <PageTitle
             title={intl("tutor-settings.profile.title")}
             fetching={fetching && !loading}
