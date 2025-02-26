@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { Controller, Label } from "@litespace/ui/Form";
 import { VideoPlayer } from "@litespace/ui/VideoPlayer";
@@ -25,7 +25,7 @@ const Topics: React.FC<{
   edit: Void;
   topics: Array<{ id: number; label: string }>;
 }> = ({ edit, topics }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   return (
     <div>
       <div className="flex justify-between items-center">
@@ -66,7 +66,7 @@ const PublicSettings: React.FC<{
   video: string | null;
   form: UseFormReturn<ITutorSettingsForm, unknown, undefined>;
 }> = ({ video, form }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const [showTopicsDialog, setShowTopoicsDialog] = useState<boolean>(false);
   const invalidateQuery = useInvalidateQuery();

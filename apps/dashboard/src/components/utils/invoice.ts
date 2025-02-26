@@ -1,5 +1,6 @@
 import { LocalId } from "@litespace/ui/locales";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
+import { LocalDashId } from "@/lib/intl";
 
 export const withdrawMethodsIntlMap: Record<IWithdrawMethod.Type, LocalId> = {
   [IWithdrawMethod.Type.Wallet]: "withdraw.methods.wallet",
@@ -26,7 +27,7 @@ export const invoiceStatusIntlMap: Record<IInvoice.Status, LocalId> = {
 
 export const invoiceOrderIntlMap: Record<
   "amount" | "created_at" | "updated_at" | "bank",
-  LocalId
+  LocalDashId
 > = {
   amount: "dashboard.invoices.amount",
   created_at: "dashboard.invoices.createdAt",

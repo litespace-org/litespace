@@ -93,6 +93,7 @@
     "./cache": "./dist/lib/cache.js",
     "./chat": "./dist/lib/chat.js",
     "./error": "./dist/constants/error.js",
+    "./governorate": "./dist/constants/governorate.js",
     "./style.css": "./dist/style.css",
     "./tailwind.config": "./dist/tailwind.config.js",
     "./tailwind.css": "./dist/tailwind.css"

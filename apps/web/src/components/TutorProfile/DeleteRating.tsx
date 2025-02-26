@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from "react";
 import { useToast } from "@litespace/ui/Toast";
 import { Alert, AlertType } from "@litespace/ui/Alert";
 import { Dialog } from "@litespace/ui/Dialog";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useDeleteRatingTutor } from "@litespace/headless/rating";
 import { Void } from "@litespace/types";
 import { useInvalidateQuery } from "@litespace/headless/query";
@@ -24,7 +24,7 @@ const DeleteRating: React.FC<DeleteRatingProps> = ({
   close,
 }) => {
   const invalidate = useInvalidateQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {

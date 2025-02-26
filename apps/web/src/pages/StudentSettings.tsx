@@ -1,5 +1,5 @@
 import PageTitle from "@/components/Common/PageTitle";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useEffect } from "react";
 import { useUserContext } from "@litespace/headless/context/user";
 import { ProfileForm } from "@/components/StudentSettings/ProfileForm";
@@ -8,7 +8,7 @@ import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { Web } from "@litespace/utils/routes";
 
 const Settings: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user, fetching, error, loading, refetch } = useUserContext();
 
   useEffect(() => {

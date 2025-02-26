@@ -2,14 +2,14 @@ import { useSocket } from "@litespace/headless/socket";
 import { Typography } from "@litespace/ui/Typography";
 import { Server, Wss } from "@litespace/types";
 import React, { useEffect, useCallback, useState, useMemo } from "react";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import Content from "@/components/ServerStats/Content";
 import { last } from "lodash";
 import { Duration } from "@litespace/utils/duration";
 
 const ServerStats: React.FC = () => {
   const socket = useSocket();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [stats, setStats] = useState<Server.Stats[]>([]);
 
   const top = useMemo(() => last(stats), [stats]);

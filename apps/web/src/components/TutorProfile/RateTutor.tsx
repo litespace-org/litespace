@@ -1,6 +1,6 @@
 import Star from "@litespace/assets/Star";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
 import { useUserContext } from "@litespace/headless/context/user";
@@ -18,7 +18,7 @@ export const RateTutor: React.FC<{
   tutorId: number;
 }> = ({ tutorName, tutorId }) => {
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const [rating, setRating] = useState<boolean>(false);
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();

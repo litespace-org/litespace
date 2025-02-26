@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useFindTutorInfo } from "@litespace/headless/tutor";
 import RightArrow from "@litespace/assets/ArrowRight";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import { TutorTabs } from "@/components/TutorProfile/TutorTabs";
 import ManageLesson from "@/components/Lessons/ManageLesson";
@@ -14,7 +14,7 @@ import { Web } from "@litespace/utils/routes";
 const TutorProfile: React.FC = () => {
   const { lg } = useMediaQuery();
   const params = useParams<{ id: string }>();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const [open, setOpen] = useState<boolean>(false);
 
   const id = useMemo(() => {

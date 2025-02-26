@@ -2,7 +2,7 @@ import { CALLBACK_URL } from "@/lib/route";
 import { useSendVerifyEmail } from "@litespace/headless/auth";
 import { useUserContext } from "@litespace/headless/context/user";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import { useToast } from "@litespace/ui/Toast";
 import { Tooltip } from "@litespace/ui/Tooltip";
@@ -12,7 +12,7 @@ import { Check } from "react-feather";
 
 const VerificationDetails: React.FC = () => {
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {

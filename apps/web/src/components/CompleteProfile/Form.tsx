@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { useUserContext } from "@litespace/headless/context/user";
 import { useToast } from "@litespace/ui/Toast";
 import { useNavigate } from "react-router-dom";
-import { governorates } from "@/constants/user";
+import { governorates } from "@litespace/ui/governorate";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { useUpdateUser } from "@litespace/headless/user";
@@ -13,7 +13,7 @@ import {
   useValidatePhoneNumber,
   useValidateUserName,
 } from "@litespace/ui/hooks/validation";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Controller, Form } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -30,7 +30,7 @@ type IForm = {
 
 const CompleteProfile: React.FC = () => {
   const navigate = useNavigate();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   const toast = useToast();
   const { user } = useUserContext();

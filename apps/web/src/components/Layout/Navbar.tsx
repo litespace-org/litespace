@@ -4,7 +4,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import cn from "classnames";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import Crown from "@litespace/assets/Crown";
 import { IUser, Void } from "@litespace/types";
 import { Button } from "@litespace/ui/Button";
@@ -14,7 +14,7 @@ import { Web } from "@litespace/utils/routes";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
   const { lg } = useMediaQuery();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user } = useUserContext();
   const location = useLocation();
 

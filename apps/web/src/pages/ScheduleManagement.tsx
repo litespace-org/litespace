@@ -11,7 +11,7 @@ import { Calendar, AvailabilitySlotProps } from "@litespace/ui/Calendar";
 import { ManageSchedule } from "@litespace/ui/ManageSchedule";
 import { DeleteSlotDialog } from "@litespace/ui/DeleteSlotDialog";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 import Header from "@/components/ScheduleManagement/Header";
 import { useInfiniteLessons } from "@litespace/headless/lessons";
@@ -24,7 +24,7 @@ const ScheduleManagement: React.FC = () => {
   const { user } = useUserContext();
   const [date, setDate] = useState(dayjs().startOf("week"));
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   const [manageScheduleProps, setManageScheduleProps] = useState<{
     initialSlots: AvailabilitySlotProps[];

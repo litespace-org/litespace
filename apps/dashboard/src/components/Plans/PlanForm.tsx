@@ -8,7 +8,7 @@ import {
   useValidatePlanWeeklyMinutes,
   useValidatePrice,
 } from "@litespace/ui/hooks/validation";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Duration } from "@litespace/utils/duration";
@@ -45,7 +45,7 @@ const PlanForm: React.FC<{
   plan?: IPlan.MappedAttributes;
   setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
 }> = ({ open, plan, close, refresh, setOpen }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
   const form = useForm<IForm>({
     defaultValues: {

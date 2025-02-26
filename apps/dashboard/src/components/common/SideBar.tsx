@@ -4,7 +4,7 @@ import { Button } from "@litespace/ui/Button";
 import { Switch } from "@litespace/ui/Switch";
 import { removeAuthToken } from "@litespace/ui/cache";
 import { useTheme, Theme } from "@litespace/ui/hooks/theme";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { useClosableRef } from "@litespace/ui/hooks/dom";
 import cn from "classnames";
 import { useNavigate } from "react-router-dom";
@@ -28,7 +28,7 @@ const SidebarNav: React.FC<{
   options: (NavOption | NavAccordionItem)[];
 }> = ({ options }) => {
   const dispatch = useAppDispatch();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const { user } = useUserContext();
 
   const button = useRef<HTMLDivElement>(null);

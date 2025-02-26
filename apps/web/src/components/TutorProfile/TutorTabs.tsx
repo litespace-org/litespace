@@ -1,15 +1,15 @@
 import * as Tabs from "@radix-ui/react-tabs";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import { ITutor } from "@litespace/types";
 import React, { useMemo } from "react";
-import { LocalId } from "@litespace/ui/locales";
 import cn from "classnames";
 import { AnimatePresence, motion } from "framer-motion";
 import ProfileInfo from "@/components/TutorProfile/ProfileInfo";
 import Ratings from "@/components/TutorProfile/Ratings";
 import { Animate } from "@/components/Common/Animate";
 import { useSearchParams } from "react-router-dom";
+import { LocalWebId } from "@/lib/intl";
 
 type Tab = "profile" | "ratings";
 const URL_TAB_KEY = "tab";
@@ -21,7 +21,7 @@ function isValidTab(tab: string): tab is Tab {
 export const TutorTabs: React.FC<{
   tutor: ITutor.FindTutorInfoApiResponse;
 }> = ({ tutor }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const [params, setParams] = useSearchParams();
 
   const tab = useMemo((): Tab => {
@@ -30,7 +30,7 @@ export const TutorTabs: React.FC<{
     return tab;
   }, [params]);
 
-  const tabs = useMemo((): Array<{ value: Tab; label: LocalId }> => {
+  const tabs = useMemo((): Array<{ value: Tab; label: LocalWebId }> => {
     return [
       {
         value: "profile",

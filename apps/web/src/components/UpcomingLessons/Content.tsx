@@ -8,7 +8,7 @@ import { useCancelLesson } from "@litespace/headless/lessons";
 import { useToast } from "@litespace/ui/Toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { QueryKey } from "@litespace/headless/constants";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import ManageLesson, {
   ManageLessonPayload,
 } from "@/components/Lessons/ManageLesson";
@@ -34,7 +34,7 @@ export const Content: React.FC<{
 }> = ({ list, loading, fetching, error, hasMore, more, refetch }) => {
   const { lg } = useMediaQuery();
   const queryClient = useQueryClient();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const { user } = useUserContext();
   const navigate = useNavigate();

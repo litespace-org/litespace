@@ -1,7 +1,7 @@
 import { Button } from "@litespace/ui/Button";
 import { Card } from "@litespace/ui/Card";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { ITutor, IUser } from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { AtSign, User } from "react-feather";
@@ -19,7 +19,7 @@ const Tutor: React.FC<{
   const toast = useToast();
   const atlas = useAtlas();
 
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const drop = useCallback(
     async (drop: IUser.UpdateApiPayload["drop"]) => {
       return await atlas.user.update(tutor.id, { drop });

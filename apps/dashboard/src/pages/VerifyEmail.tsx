@@ -3,12 +3,12 @@ import { findCurrentUser } from "@/redux/user/profile";
 import { useAtlas } from "@litespace/headless/atlas";
 import { Dashboard } from "@litespace/utils/routes";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { useVerifyEmail } from "@litespace/headless/auth";
 import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Loading } from "@litespace/ui/Loading";
 import { Typography } from "@litespace/ui/Typography";
+import { useDashFormatMessage } from "@/hooks/intl";
 
 const VerifyEmail: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -20,7 +20,7 @@ const VerifyEmail: React.FC = () => {
 
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
   const [token, setToken] = useState<string | null>(null);
 

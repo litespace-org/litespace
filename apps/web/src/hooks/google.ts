@@ -1,6 +1,6 @@
 import { useAtlas } from "@litespace/headless/atlas";
 import { useUserContext } from "@litespace/headless/context/user";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useToast } from "@litespace/ui/Toast";
 import { safe } from "@litespace/utils/error";
 import { IUser } from "@litespace/types";
@@ -32,7 +32,7 @@ export function useGoogle({
   const user = useUserContext();
   const navigate = useNavigate();
   const toast = useToast();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   const auth = useCallback(
     async (token: string, type: "bearer" | "id-token") => {

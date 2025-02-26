@@ -7,7 +7,7 @@ import {
 import { Dialog } from "@litespace/ui/Dialog";
 import { Form, Field, Label, Controller } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { IInvoice, IWithdrawMethod } from "@litespace/types";
 import React, { useCallback, useMemo } from "react";
 import { useForm } from "react-hook-form";
@@ -50,7 +50,7 @@ const ManageInvoice: React.FC<{
   const formData = form.watch();
   const { bank, instapay, wallet } = useWithdrawMethod(formData.method);
 
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const methods = useFindWithdrawalMethods();
   const toast = useToast();
   const errors = form.formState.errors;

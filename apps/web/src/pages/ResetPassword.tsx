@@ -1,7 +1,7 @@
 import { Button } from "@litespace/ui/Button";
 import { Controller } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useValidatePassword } from "@litespace/ui/hooks/validation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -45,7 +45,7 @@ interface IForm {
 }
 
 const ResetPassword = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
   const navigate = useNavigate();
   const validatePassword = useValidatePassword(true);

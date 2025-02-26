@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React from "react";
 import Header from "@/components/Auth/Header";
 import { Typography } from "@litespace/ui/Typography";
@@ -7,7 +7,7 @@ import Form from "@/components/CompleteProfile/Form";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Complete: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const mq = useMediaQuery();
 
   return (

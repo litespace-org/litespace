@@ -1,7 +1,7 @@
 import { Form, Controller } from "@litespace/ui/Form";
 import { Button } from "@litespace/ui/Button";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
@@ -31,7 +31,7 @@ interface IForm {
 }
 
 const Login: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const navigate = useNavigate();
   const toast = useToast();
   const user = useUserContext();

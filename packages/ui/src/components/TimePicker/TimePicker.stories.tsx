@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { TimePicker } from "@/components/TimePicker";
 import { Direction } from "@/components/Direction";
-import ar from "@/locales/ar-eg.json";
 import { Form } from "@/components/Form";
 import { Controller, useForm } from "react-hook-form";
 import { Time } from "@litespace/utils/time";
+import { faker } from "@faker-js/faker/locale/ar";
 
 type Component = typeof TimePicker;
 
@@ -39,8 +39,8 @@ export const Primary: StoryObj<Component> = {
             return (
               <TimePicker
                 labels={{
-                  am: ar["global.labels.am"],
-                  pm: ar["global.labels.pm"],
+                  am: faker.lorem.words(1),
+                  pm: faker.lorem.words(1),
                 }}
                 time={form.watch("value")}
                 onChange={field.onChange}

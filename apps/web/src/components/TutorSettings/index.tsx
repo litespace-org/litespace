@@ -1,7 +1,7 @@
 import { TutorProfileCard } from "@litespace/ui/TutorProfile";
 import React, { useCallback, useMemo } from "react";
 import { Button } from "@litespace/ui/Button";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { TutorSettingsTabs as Tabs } from "@/components/TutorSettings/Tabs";
 import { useUpdateUser } from "@litespace/headless/user";
 import { useToast } from "@litespace/ui/Toast";
@@ -22,7 +22,7 @@ const TutorSettings: React.FC<{
     email: string;
   };
 }> = ({ info }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const invalidateQuery = useInvalidateQuery();
   const toast = useToast();
 

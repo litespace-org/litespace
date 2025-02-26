@@ -10,7 +10,7 @@ import StartMessaging from "@litespace/assets/StartMessaging";
 import { Typography } from "@litespace/ui/Typography";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
 import { ITutor } from "@litespace/types";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 const Chat: React.FC = () => {
@@ -20,7 +20,7 @@ const Chat: React.FC = () => {
   const mq = useMediaQuery();
 
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { select, selected } = useSelectedRoom();
 
   const roomMembers = useFindRoomMembers(

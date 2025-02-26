@@ -17,7 +17,7 @@ import ManageLesson, {
   ManageLessonPayload,
 } from "@/components/Lessons/ManageLesson";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { useInvalidateQuery } from "@litespace/headless/query";
 import { QueryKey } from "@litespace/headless/constants";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -40,7 +40,7 @@ const LessonsSchedule: React.FC = () => {
   const [lessonId, setLessonId] = useState<number | null>(null);
   const [manageLessonData, setManageLessonData] =
     useState<ManageLessonPayload | null>(null);
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const invalidate = useInvalidateQuery();
 

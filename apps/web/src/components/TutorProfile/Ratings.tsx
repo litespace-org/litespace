@@ -13,7 +13,7 @@ import {
 } from "@litespace/ui/TutorFeedback";
 import { RatingDialog } from "@litespace/ui/RatingDialog";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import NewTutor from "@litespace/assets/NewTutor";
 import { isEmpty } from "lodash";
 import { Loader, LoadingError } from "@litespace/ui/Loading";
@@ -28,7 +28,7 @@ import { capture } from "@/lib/sentry";
 const NoTutorRatings: React.FC<{ tutorName: string | null }> = ({
   tutorName,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   return (
     <div className="flex flex-wrap md:flex-nowrap relative items-center justify-center md:h-[294px] w-full gap-6 md:gap-[88px]">
@@ -50,7 +50,7 @@ const Ratings: React.FC<{ id: number; tutorName: string | null }> = ({
   tutorName,
 }) => {
   const { user } = useUserContext();
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
   const invalidateQuery = useInvalidateQuery();
   const [deleteDialog, setDeleteDialog] = useState<number | null>(null);

@@ -1,7 +1,7 @@
 import { Alert, AlertType } from "@litespace/ui/Alert";
 import { Dialog } from "@litespace/ui/Dialog";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React, { useCallback, useMemo } from "react";
 import { useCancelInvoiceById } from "@litespace/headless/invoices";
 import { getErrorMessageId } from "@litespace/ui/errorMessage";
@@ -13,7 +13,7 @@ const Cancel: React.FC<{
   close: () => void;
   refresh?: () => void;
 }> = ({ open, id, close, refresh }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const toast = useToast();
 
   const onSuccess = useCallback(() => {

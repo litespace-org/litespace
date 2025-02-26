@@ -1,11 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightIcon } from "@radix-ui/react-icons";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { LocalId } from "@litespace/ui/locales";
+import { useDashFormatMessage } from "@/hooks/intl";
+import { LocalDashId } from "@/lib/intl";
 
-const BackLink: React.FC<{ to: string; name: LocalId }> = ({ to, name }) => {
-  const intl = useFormatMessage();
+const BackLink: React.FC<{ to: string; name: LocalDashId }> = ({
+  to,
+  name,
+}) => {
+  const intl = useDashFormatMessage();
 
   return (
     <Link

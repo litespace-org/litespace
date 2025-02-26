@@ -7,7 +7,7 @@ import {
 } from "@litespace/ui/hooks/chat";
 import cn from "classnames";
 import { Typography } from "@litespace/ui/Typography";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Input } from "@litespace/ui/Input";
 import Search from "@litespace/assets/Search";
 import Rooms from "@/components/Chat/Rooms";
@@ -30,7 +30,7 @@ const RoomsPanel: React.FC<{
   onlineUsersMap,
   selectedRoom,
 }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const { user } = useUserContext();
   const isStudent = useMemo(
     () => !!user && user.role === IUser.Role.Student,

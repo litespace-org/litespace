@@ -1,4 +1,4 @@
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import { Typography } from "@litespace/ui/Typography";
 import React, { useCallback, useMemo, useState } from "react";
 import Edit from "@litespace/assets/Edit";
@@ -17,7 +17,7 @@ import { getErrorMessageId } from "@litespace/ui/errorMessage";
 import { capture } from "@/lib/sentry";
 
 const TopicSelection: React.FC = () => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const allTopicsQuery = useTopics({});
   const userTopicsQuery = useUserTopics();
   const [showDialog, setShowDialog] = useState(false);

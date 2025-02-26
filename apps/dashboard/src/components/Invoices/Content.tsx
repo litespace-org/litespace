@@ -3,7 +3,7 @@ import PageTitle from "@/components/common/PageTitle";
 import List from "@/components/Invoices/List";
 import { isEqual } from "lodash";
 import { Loading } from "@litespace/ui/Loading";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { MixerHorizontalIcon } from "@radix-ui/react-icons";
 import { withdrawMethodsIntlMap } from "@/components/utils/invoice";
 import { ActionsMenu, MenuAction } from "@litespace/ui/ActionsMenu";
@@ -35,7 +35,7 @@ const DEFAULT_STATUSES_FILTER = [
 ];
 
 const Content: React.FC<{ user?: number }> = ({ user }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const [methods, setMethods] = useState(DEFAULT_METHODS_FILTER);
   const [banks, setBanks] = useState<IInvoice.Bank[] | undefined>(undefined);
   const [receipt, setReceipt] = useState<boolean | undefined>(undefined);

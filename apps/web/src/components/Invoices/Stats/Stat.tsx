@@ -1,14 +1,14 @@
 import Price from "@/components/Common/Price";
 import { Card } from "@litespace/ui/Card";
-import { LocalMap } from "@litespace/ui/locales";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useWebFormatMessage } from "@/hooks/intl";
 import React from "react";
+import { LocalWebId } from "@/lib/intl";
 
 const Stat: React.FC<{
-  id: keyof LocalMap;
+  id: LocalWebId;
   value: number;
 }> = ({ id, value }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
 
   return (
     <Card>

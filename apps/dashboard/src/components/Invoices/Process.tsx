@@ -2,7 +2,7 @@ import { Button } from "@litespace/ui/Button";
 import { Dialog } from "@litespace/ui/Dialog";
 import { Field, Form, Controller, Label } from "@litespace/ui/Form";
 import { useToast } from "@litespace/ui/Toast";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
+import { useDashFormatMessage } from "@/hooks/intl";
 import { IInvoice } from "@litespace/types";
 import React, { useCallback, useMemo, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ const Process: React.FC<{
   close: () => void;
   onUpdate?: () => void;
 }> = ({ open, close, onUpdate, id, action, note }) => {
-  const intl = useFormatMessage();
+  const intl = useDashFormatMessage();
   const toast = useToast();
   const atlas = useAtlas();
   const ref = useRef<HTMLInputElement>(null);

@@ -1,11 +1,11 @@
 import { Button } from "@litespace/ui/Button";
 import { Form, Controller } from "@litespace/ui/Form";
 import { useKeys } from "@litespace/ui/hooks/keys";
-import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { sanitizeMessage } from "@litespace/utils/chat";
 import { Void } from "@litespace/types";
 import React, { useCallback, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useWebFormatMessage } from "@/hooks/intl";
 
 type IForm = {
   message: string;
@@ -17,7 +17,7 @@ const MessageBox: React.FC<{
   submit: (message: string) => void;
   discard: Void;
 }> = ({ defaultMessage, update, submit, discard }) => {
-  const intl = useFormatMessage();
+  const intl = useWebFormatMessage();
   const form = useForm<IForm>({ defaultValues: { message: "" } });
   const message = form.watch("message");
   const sanitizedMessage = useMemo(() => sanitizeMessage(message), [message]);
