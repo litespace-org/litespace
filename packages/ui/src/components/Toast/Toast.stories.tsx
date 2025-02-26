@@ -22,27 +22,39 @@ export const Success: StoryObj<Component> = {
     return (
       <Direction>
         <ToastProvider>
-          <Button
-            onClick={() =>
-              toast.success({
-                title: faker.lorem.words(4),
-                description: faker.lorem.words(5),
-              })
-            }
-            className="tw-mb-4"
-          >
-            Short
-          </Button>
-          <Button
-            onClick={() =>
-              toast.success({
-                title: faker.lorem.words(10),
-                description: faker.lorem.words(40),
-              })
-            }
-          >
-            Long
-          </Button>
+          <div className="tw-flex tw-flex-row tw-gap-2">
+            <Button
+              onClick={() =>
+                toast.success({
+                  title: faker.lorem.words(4),
+                  description: faker.lorem.words(5),
+                })
+              }
+              className="tw-mb-4"
+            >
+              Short
+            </Button>
+            <Button
+              className="tw-mb-4"
+              onClick={() =>
+                toast.success({
+                  title: faker.lorem.words(10),
+                  description: faker.lorem.words(40),
+                })
+              }
+            >
+              Long
+            </Button>
+            <Button
+              onClick={() =>
+                toast.success({
+                  title: faker.lorem.words(10),
+                })
+              }
+            >
+              Title Only
+            </Button>
+          </div>
         </ToastProvider>
       </Direction>
     );
@@ -54,27 +66,37 @@ export const Warning: StoryObj<Component> = {
     const toast = useToast();
     return (
       <Direction>
-        <Button
-          onClick={() =>
-            toast.warning({
-              title: faker.lorem.words(4),
-              description: faker.lorem.words(5),
-            })
-          }
-          className="tw-mb-4"
-        >
-          Short
-        </Button>
-        <Button
-          onClick={() =>
-            toast.warning({
-              title: faker.lorem.words(10),
-              description: faker.lorem.words(40),
-            })
-          }
-        >
-          Long
-        </Button>
+        <div className="tw-flex tw-flex-row tw-gap-2">
+          <Button
+            onClick={() =>
+              toast.warning({
+                title: faker.lorem.words(4),
+                description: faker.lorem.words(5),
+              })
+            }
+          >
+            Short
+          </Button>
+          <Button
+            onClick={() =>
+              toast.warning({
+                title: faker.lorem.words(10),
+                description: faker.lorem.words(40),
+              })
+            }
+          >
+            Long
+          </Button>
+          <Button
+            onClick={() =>
+              toast.warning({
+                title: faker.lorem.words(10),
+              })
+            }
+          >
+            Title Only
+          </Button>
+        </div>
       </Direction>
     );
   },
@@ -86,27 +108,37 @@ export const Error: StoryObj<Component> = {
     return (
       <Direction>
         <ToastProvider>
-          <Button
-            onClick={() =>
-              toast.error({
-                title: faker.lorem.words(4),
-                description: faker.lorem.words(5),
-              })
-            }
-            className="tw-mb-4"
-          >
-            Short
-          </Button>
-          <Button
-            onClick={() =>
-              toast.error({
-                title: faker.lorem.words(10),
-                description: faker.lorem.words(40),
-              })
-            }
-          >
-            Long
-          </Button>
+          <div className="tw-flex tw-flex-row tw-gap-2">
+            <Button
+              onClick={() =>
+                toast.error({
+                  title: faker.lorem.words(4),
+                  description: faker.lorem.words(5),
+                })
+              }
+            >
+              Short
+            </Button>
+            <Button
+              onClick={() =>
+                toast.error({
+                  title: faker.lorem.words(10),
+                  description: faker.lorem.words(40),
+                })
+              }
+            >
+              Long
+            </Button>
+            <Button
+              onClick={() =>
+                toast.error({
+                  title: faker.lorem.words(10),
+                })
+              }
+            >
+              Title Only
+            </Button>
+          </div>
         </ToastProvider>
       </Direction>
     );
