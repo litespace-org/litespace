@@ -41,10 +41,11 @@ export const Toast: React.FC<{
       className={cn(
         "tw-py-3 tw-px-4 tw-font-cairo tw-rounded-lg tw-shadow-toast",
         "tw-bg-natural-50 dark:tw-bg-secondary-950",
-        "tw-flex tw-gap-4 tw-items-center",
         "tw-relative tw-overflow-hidden",
         "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]",
-        "tw-relative"
+        "tw-flex tw-gap-4",
+        "tw-relative tw-w-[257px] md:tw-w-[343px]",
+        description ? "tw-items-start" : "tw-items-center"
       )}
     >
       <div
@@ -72,14 +73,17 @@ export const Toast: React.FC<{
         <Icon />
       </div>
       <div className="tw-grow">
-        <Title
-          className={cn("tw-font-bold tw-w-4/5 dark:tw-text-natural-50", {
-            "tw-text-success-700": type === "success",
-            "tw-text-warning-700": type === "warning",
-            "tw-text-destructive-700": type === "error",
-          })}
-        >
-          {title}
+        <Title asChild>
+          <Typography
+            tag="span"
+            className={cn("tw-font-bold tw-w-4/5 tw-text-body", {
+              "tw-text-success-700": type === "success",
+              "tw-text-warning-700": type === "warning",
+              "tw-text-destructive-700": type === "error",
+            })}
+          >
+            {title}
+          </Typography>
         </Title>
         {description ? (
           <Description asChild>
