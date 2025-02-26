@@ -147,7 +147,7 @@ const RegisterForm: React.FC = () => {
           />
 
           <Typography
-            tag="caption"
+            tag="p"
             className="text-natural-600 text-caption font-medium"
           >
             {intl("register.accept-terms")}
@@ -180,14 +180,14 @@ const RegisterForm: React.FC = () => {
           </Button>
 
           <Typography
-            tag="caption"
+            tag="p"
             className="text-natural-950 text-center text-caption font-medium"
           >
             {intl.node("register.has-account", {
               link: (
                 <Link to={Web.Login}>
                   <Typography
-                    tag="caption"
+                    tag="span"
                     className="text-brand-700 text-caption font-medium"
                   >
                     {intl("register.login")}
