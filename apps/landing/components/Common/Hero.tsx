@@ -11,7 +11,9 @@ const Hero: React.FC<{
 }> = ({ title, description }) => {
   const intl = useFormatMessage();
   return (
-    <div className={cn("bg-brand-900 pt-[72px] sm:pt-[80px] px-4")}>
+    <div
+      className={cn("bg-brand-900 pt-[72px] sm:pt-[80px] px-4 overflow-hidden")}
+    >
       <Ellipse className="flex flex-col items-center text-center gap-6 md:gap-12 py-14 md:py-20 lg:py-[106px]">
         <div className="mx-auto flex flex-col items-center text-center gap-10 max-w-[328px] sm:max-w-[770px] md:max-w-[808px]">
           <Typography

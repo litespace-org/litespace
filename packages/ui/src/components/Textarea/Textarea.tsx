@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
 import { Tooltip } from "@/components/Tooltip";
-import { useFormatMessage } from "@/hooks";
+// TODO: use next intl once its task is complete
+// import { useFormatMessage } from "@/hooks";
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -32,7 +33,7 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    const intl = useFormatMessage();
+    // const intl = useFormatMessage();
     return (
       <div
         className={cn(
@@ -111,7 +112,9 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                     tag="span"
                     className="tw-text-natural-950 tw-max-w-[296px] tw-text-base"
                   >
-                    {intl("text-area.validate.max-allowed")}
+                    {/* TODO: use nextjs intl once its associated task is complete */}
+                    {/* intl("text-area.validate.max-allowed") */}
+                    {"لقد وصلت للحد الاقصي من الحروف المسموح بها داخل التعليق."}
                   </Typography>
                 }
               >

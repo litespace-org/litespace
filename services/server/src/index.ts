@@ -8,7 +8,7 @@ import { wssHandler } from "@/wss";
 import bodyParser from "body-parser";
 import cors from "cors";
 import logger from "morgan";
-import { onlyForHandshake } from "@/middleware/common";
+import { onlyForHandshake } from "@/middleware/util";
 import { capitalize } from "lodash";
 import { ApiContext } from "@/types/api";
 import { authorizeSocket } from "@litespace/auth";

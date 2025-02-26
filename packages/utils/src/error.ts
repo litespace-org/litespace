@@ -30,6 +30,16 @@ export function isForbidden(error: unknown) {
   );
 }
 
+export function isRateLimited(error: unknown) {
+  return (
+    (error &&
+      typeof error == "object" &&
+      "status" in error &&
+      error.status == 429) ||
+    (error instanceof ResponseError && error.statusCode === 429)
+  );
+}
+
 export class ResponseError extends Error {
   statusCode: number;
   errorCode: ApiErrorCode;

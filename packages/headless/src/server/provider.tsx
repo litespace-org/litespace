@@ -2,23 +2,24 @@ import { Env } from "@litespace/types";
 import { ServerContext, Context } from "@/server/context";
 import { AuthToken, TokenType } from "@litespace/atlas";
 import { useCallback, useMemo, useState } from "react";
-import { cache } from "@/cache/base";
+import { AbstractStorage } from "@/storage";
 import { CacheKey } from "@/constants/cache";
 
 export const ServerProvider: React.FC<{
-  children?: React.ReactNode;
   server: Env.Server;
-}> = ({ children, server }) => {
+  children?: React.ReactNode;
+  storage?: AbstractStorage;
+}> = ({ children, server, storage }) => {
   const [token, setToken] = useState<AuthToken | null>(
-    cache.load(CacheKey.AuthToken)
+    storage?.get(CacheKey.AuthToken) || null
   );
 
   const setAuthToken = useCallback(
     (token: AuthToken, remember: boolean = true) => {
       setToken(token);
-      if (remember) cache.save(CacheKey.AuthToken, token);
+      if (remember) storage?.set(CacheKey.AuthToken, token);
     },
-    []
+    [storage]
   );
 
   const setBearerToken = useCallback(
@@ -37,8 +38,8 @@ export const ServerProvider: React.FC<{
 
   const removeToken = useCallback(() => {
     setToken(null);
-    cache.remove(CacheKey.AuthToken);
-  }, []);
+    storage?.remove(CacheKey.AuthToken);
+  }, [storage]);
 
   const context = useMemo(
     (): Context => ({

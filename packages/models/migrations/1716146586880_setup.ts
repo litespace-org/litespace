@@ -310,7 +310,7 @@ export function up(pgm: MigrationBuilder) {
   pgm.createTable("contact_requests", {
     id: { type: "SERIAL", primaryKey: true, unique: true, notNull: true },
     name: { type: "VARCHAR(50)", notNull: true },
-    email: { type: "VARCHAR(50)", notNull: true },
+    phone: { type: "VARCHAR(15)", notNull: true },
     title: { type: "VARCHAR(128)", notNull: true },
     message: { type: "VARCHAR(1000)", notNull: true },
     created_at: { type: "TIMESTAMP", notNull: true },

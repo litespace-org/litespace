@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { UserContext, Context } from "@/user/context";
 import { useCurrentUser } from "@/user";
-import { cache } from "@/cache/base";
+import { LocalStorage } from "@/storage/local";
 import { CacheKey } from "@/constants";
 import { ITutor, IUser } from "@litespace/types";
 import { useFindTutorMeta } from "@/tutor";
@@ -17,7 +17,9 @@ const defaultData: Data = {
   meta: null,
 };
 
-const userCache = cache.load<Data>(CacheKey.User);
+const cache = new LocalStorage();
+
+const userCache = cache.get<Data>(CacheKey.User);
 
 /**
  * - Cache and load user data and metadata.
@@ -46,7 +48,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({
           user: user || prev.user,
           meta: meta || prev.meta,
         };
-        if (remember) cache.save(CacheKey.User, data);
+        if (remember) cache.set(CacheKey.User, data);
         return data;
       });
     },

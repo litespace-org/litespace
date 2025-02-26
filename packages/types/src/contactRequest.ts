@@ -1,7 +1,7 @@
 export type Self = {
   id: number;
   name: string;
-  email: string;
+  phone: string;
   title: string;
   message: string;
   createdAt: string;
@@ -10,7 +10,7 @@ export type Self = {
 export type Row = {
   id: number;
   name: string;
-  email: string;
+  phone: string;
   title: string;
   message: string;
   created_at: Date;
@@ -18,7 +18,7 @@ export type Row = {
 
 export type CreatePayload = {
   name: string;
-  email: string;
+  phone: string;
   title: string;
   message: string;
 };

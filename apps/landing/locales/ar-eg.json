@@ -219,5 +219,37 @@
   "faq/body/for-student/q/20/answer": "نحن في LiteSpace نؤمن بأن كل طالب فريد، وأن التعلم يجب أن يكون مخصصًا. لذلك، إذا واجهت أي صعوبة في الفهم، سيقوم معلمك بتبسيط اسلوب كلامه ليتناسب مع احتياجاتك الفردية.",
 
   "faq/body/are-you-tutor": "هل أنت معلم؟ <link>اطلع علي الاسئلة الخاصة بالمعلمين</link>",
-  "faq/body/are-you-student": "هل أنت طالب؟ <link>اطلع على الأسئلة الخاصة بالطلاب</link>"
+  "faq/body/are-you-student": "هل أنت طالب؟ <link>اطلع على الأسئلة الخاصة بالطلاب</link>",
+  "contact-us/title": "<highlight>لا تتردد</highlight> في التواصل معنا في اي وقت!",
+  "contact-us/description": "نحن هنا لدعمك لا تتردد في ارسال استفساراتك عبر النموذج و سنقوم بالرد عليك في اقرب وقت ممكن.",
+  "contact-us/card/title": "تواصل معنا...",
+  "contact-us/card/description": "قم بملئ البيانات في النموذج و سيقوم فريقنا بالرد عليك في غضون 24 ساعه.",
+  "contact-us/form/name/label": "الاسم",
+  "contact-us/form/name/placeholder": "ادخل اسمك هنا",
+  "contact-us/form/phone/label": "رقم الهاتف",
+  "contact-us/form/phone/placeholder": "أدخل رقم هاتفك هنا",
+  "contact-us/form/title/label": "عنوان الرسالة",
+  "contact-us/form/title/placeholder": "ادخل عنوان الراسلة هنا",
+  "contact-us/form/message/label": "محتوي الرسالة",
+  "contact-us/form/message/placehoder": "ادخل محتوي الرسالة هنا",
+  "contact-us/form/success/title": "لقد تلقينا رسالتك بنجاح.",
+  "contact-us/form/success/description": "سيقوم فريقنا بالتواصل معك في غضون 24 ساعة",
+  "contact-us/form/error/title": "حدث خطأ أثناء إرسال رسالتك. يرجى المحاولة مرة أخرى",
+  "contact-us/form/error/rate-limited": "نقدر اهتمامك، ولكن يمكنك إرسال طلب اتصال جديد بعد مرور 6 ساعات. شكراً لتفهمك",
+
+  "contacts/phone": "01503310108",
+  "contacts/email": "care@litespace.org",
+  "contacts/litespace-tutors-telegram": "@litespace_tutors",
+
+  "labels/send": "إرسال",
+
+  "error/required": "مطلوب",
+  "error/phone/invalid": "رقم الهاتف الذي أدخلته غير صالح. يرجى التحقق وإعادة المحاولة.",
+  "error/name/invalid": "الإسم الذي أدخلته غير صالح، يرجي التحقق وإعادة المحاولة",
+  "error/name/short": "الإسم الذي سجلته قصير جدًا. حاول إختيار إسم أطول",
+  "error/name/long": "الإسم الذي سجلته طويل جدا. حاول إختيار إسم أقصر",
+  "error/title/short": "العنوان الذي سجلته قصير جدًا. يرجى إضافة المزيد من التفاصيل",
+  "error/title/long": "العنوان الذي سجلته طويل جدًا. يرجى مراجعته وتقصيره",
+  "error/message/short": "الرسالة التي سجلتها قصير جدًا. يرجى إضافة المزيد من التفاصيل",
+  "error/message/long": "الرسالة التي سجلته طويلة جدًا. يرجى مراجعتها وتقصيرها"
 }

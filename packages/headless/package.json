@@ -31,7 +31,9 @@
     "./user": "./dist/user.js",
     "./student": "./dist/student.js",
     "./cache": "./dist/cache.js",
-    "./recorder": "./dist/recorder.js"
+    "./storage": "./dist/storage/index.js",
+    "./recorder": "./dist/recorder.js",
+    "./contactRequest": "./dist/contactRequest.js"
   },
   "react-native": {
     "./auth": "./dist/auth.js",
@@ -52,7 +54,9 @@
     "./lessons": "./dist/lessons.js",
     "./messageRooms": "./dist/messageRooms.js",
     "./tutor": "./dist/tutor.js",
-    "./user": "./dist/user.js"
+    "./user": "./dist/user.js",
+    "./contactRequest": "./dist/contactRequest.js",
+    "./storage": "./dist/storage/index.js"
   },
   "scripts": {
     "build": "tsc",

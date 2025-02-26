@@ -7,6 +7,8 @@ import { Typography } from "@litespace/ui/Typography";
 import Ellipse from "@/components/Ellipse";
 import cn from "classnames";
 import Link from "next/link";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 const Hero: React.FC = () => {
   const intl = useFormatMessage();
@@ -31,7 +33,10 @@ const Hero: React.FC = () => {
             {intl("home/hero/description")}
           </Typography>
         </div>
-        <Link href="https://app.litespace.org" className="mb-14">
+        <Link
+          href={router.web({ route: Web.Root, full: true })}
+          className="mb-14"
+        >
           <Button size="large" className="h-auto w-auto py-4 px-8">
             <Typography
               tag="span"

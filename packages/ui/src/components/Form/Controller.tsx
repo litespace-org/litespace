@@ -182,7 +182,10 @@ export function PatternInput<T extends FieldValues>({
         return (
           <BasePatternInput
             {...props}
-            onValueChange={(value) => field.onChange(value.value)}
+            ref={field.ref}
+            onValueChange={(value) => {
+              field.onChange(value.value);
+            }}
           />
         );
       }}
