@@ -2,7 +2,7 @@ import { ActionsMenu } from "@litespace/ui/ActionsMenu";
 import { Loading } from "@litespace/ui/Loading";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
 import { rolesMap } from "@/components/utils/user";
-import { IUser, Void } from "@litespace/types";
+import { IAsset, IUser, Void } from "@litespace/types";
 import { UseQueryResult } from "@tanstack/react-query";
 import { createColumnHelper } from "@tanstack/react-table";
 import React, { useMemo } from "react";
@@ -48,7 +48,9 @@ const List: React.FC<{
       }),
       columnHelper.accessor("image", {
         header: intl("dashboard.user.image"),
-        cell: (info) => <ImageField name={info.getValue()} type="public" />,
+        cell: (info) => (
+          <ImageField name={info.getValue()} type={IAsset.AssetType.Public} />
+        ),
       }),
       columnHelper.accessor("birthYear", {
         header: intl("dashboard.user.birthYear"),

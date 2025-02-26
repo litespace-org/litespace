@@ -108,6 +108,7 @@ export type UpdatePayload = {
   creditScore?: number;
   phoneNumber?: string | null;
   city?: City | null;
+  studioId?: number | null;
 };
 
 export type UpdateApiPayload = {
@@ -127,6 +128,7 @@ export type UpdateApiPayload = {
   about?: string;
   phoneNumber?: string | null;
   city?: City | null;
+  studioId?: number | null;
 };
 
 export enum UpdateMediaFilesApiKeys {

@@ -40,6 +40,8 @@ export enum ApiError {
   ConflictingLessons = "conflicting-lessons",
   ConflictingSchedule = "conflicting-schedule",
   ReachedBookingLimit = "reached-booking-limit",
+  UploadingAssetFailed = "uploading-asset-failed",
+  DroppingAssetFailed = "dropping-asset-failed",
 }
 
 export type ApiErrorCode = ApiError | FieldError;

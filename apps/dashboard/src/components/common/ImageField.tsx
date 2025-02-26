@@ -12,7 +12,7 @@ import { orUndefined } from "@litespace/utils/utils";
 const ImageField: React.FC<{
   name: string | null;
   type: IAsset.AssetType;
-}> = ({ name, type = "public" }) => {
+}> = ({ name, type = IAsset.AssetType.Public }) => {
   const image = useRender();
 
   const asset = useAssetBlob({ name: orUndefined(name), type });

@@ -828,6 +828,8 @@
   "error.api.report-reply-not-found": "التعليق علي التقرير غير موجود، برجاء التحقق من بيانات التقرير.",
   "error.api.withdraw-method-not-found": "طريقة السحب غير موجودة، برجاء المحاولة مرة أخرى.",
   "error.api.subscription-not-found": "الاشتراك غير موجود، برجاء التحقق من البيانات.",
+  "error.api.uploading-asset": "حدث خطأ أثناء رفع الملف. يمكنك المحاولة مرة أخرى لاحقا.",
+  "error.api.dropping-asset": "حدث خطأ أثناء حذف الملف. يمكنك المحاولة مرة أخرى لاحقا.",
   "error.api.email-already-verified": "تم التحقق من البريد الإلكتروني بالفعل، يمكنك الاستمتاع بالمنصة الان.",
   "error.api.illegal-invoice-update": "لا يمكن تحديث الفاتورة بهذه الطريقة، برجاء اختيار طريقة اخرى.",
   "error.api.empty-request": "برجاء ادخال البيانات بالكامل.",

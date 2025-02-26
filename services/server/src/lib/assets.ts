@@ -3,10 +3,11 @@ import { Request } from "express";
 import { isArray } from "lodash";
 import { v4 as uuid } from "uuid";
 import multer from "multer";
+import { IAsset } from "@litespace/types";
 
 export function getRequestFile(
   files: Request["files"],
-  name: string
+  name: IAsset.AssetType
 ): Express.Multer.File | null {
   if (!files || isArray(files)) return null;
   const file = files[name];
@@ -25,8 +26,15 @@ export async function upload({
   name?: string;
 }) {
   const key = name || uuid();
-  await s3.put({ key, data, type });
+  const res = await s3.put({ key, data, type });
+
+  if (res.httpStatusCode && res.httpStatusCode !== 200) return res;
+
   return key;
+}
+
+export async function drop(name: string) {
+  return await s3.drop(name);
 }
 
 export const uploadMiddleware = multer({

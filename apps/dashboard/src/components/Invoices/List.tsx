@@ -1,4 +1,10 @@
-import { IInvoice, IWithdrawMethod, Paginated, Void } from "@litespace/types";
+import {
+  IAsset,
+  IInvoice,
+  IWithdrawMethod,
+  Paginated,
+  Void,
+} from "@litespace/types";
 import React, { useCallback, useState } from "react";
 import { Table } from "@/components/common/Table";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
@@ -82,7 +88,9 @@ const List: React.FC<{
       }),
       columnHelper.accessor("receipt", {
         header: intl("dashboard.invoices.receipt"),
-        cell: (info) => <ImageField name={info.getValue()} type="private" />,
+        cell: (info) => (
+          <ImageField name={info.getValue()} type={IAsset.AssetType.Private} />
+        ),
       }),
       columnHelper.accessor("addressedBy", {
         header: intl("dashboard.invoices.addressedBy"),
