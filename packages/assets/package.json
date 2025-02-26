@@ -26,6 +26,7 @@
     "./LongLeftArrow": "./dist/LongLeftArrow.tsx",
     "./LongRightArrow": "./dist/LongRightArrow.tsx",
     "./AccountPromotion": "./dist/AccountPromotion.tsx",
+    "./AbstractLine": "./dist/AbstractLine.tsx",
     "./AddCircle": "./dist/AddCircle.tsx",
     "./AlertCircle": "./dist/AlertCircle.tsx",
     "./AllMessages": "./dist/AllMessages.tsx",

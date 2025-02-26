@@ -14,12 +14,13 @@
     "@litespace/types": "workspace:^",
     "@litespace/ui": "workspace:^",
     "@litespace/utils": "workspace:^",
+    "classnames": "^2.5.1",
+    "framer-motion": "^11.2.6",
     "lodash": "^4.17.21",
     "next": "14.2.5",
     "next-intl": "^3.26.3",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "classnames": "^2.5.1",
     "react-intl": "^6.6.8"
   },
   "devDependencies": {
