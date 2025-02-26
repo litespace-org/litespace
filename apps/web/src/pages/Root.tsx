@@ -54,10 +54,10 @@ const Root: React.FC = () => {
   return (
     <div
       className={cn("flex relative w-full", {
-        "lg:ps-60": showNavigation,
+        "md:ps-[98px] lg:ps-60": showNavigation,
       })}
     >
-      {showNavigation && (mq.lg || showMobileSidebar) ? (
+      {showNavigation && (mq.md || showMobileSidebar) ? (
         <Sidebar hide={() => setShowMobileSidebar(false)} />
       ) : null}
 

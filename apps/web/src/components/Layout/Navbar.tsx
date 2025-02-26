@@ -13,7 +13,7 @@ import Menu from "@litespace/assets/Menu";
 import { Web } from "@litespace/utils/routes";
 
 const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
-  const { lg } = useMediaQuery();
+  const { md, lg } = useMediaQuery();
   const intl = useFormatMessage();
   const { user } = useUserContext();
 
@@ -44,7 +44,7 @@ const Navbar: React.FC<{ toggleSidebar: Void }> = ({ toggleSidebar }) => {
           </Link>
         ) : null}
 
-        {!lg ? (
+        {!md ? (
           <button
             type="button"
             onClick={toggleSidebar}
