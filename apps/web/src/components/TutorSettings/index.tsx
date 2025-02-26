@@ -116,14 +116,14 @@ const TutorSettings: React.FC<{
     [info, updateTutor]
   );
 
-  const SubmitButton = useMemo(
+  const saveButton = useMemo(
     () => (
       <Button
         htmlType="submit"
         loading={updateTutor.isPending}
         disabled={updateTutor.isPending || !dataChanged}
         size="large"
-        className="self-end sm:self-start"
+        className="self-end sm:self-start shrink-0"
       >
         <Typography tag="label" className="font-medium">
           {intl("shared-settings.save")}
@@ -148,14 +148,16 @@ const TutorSettings: React.FC<{
           lessonCount={info.lessonCount}
           avgRating={info.avgRating}
         />
-        {sm ? SubmitButton : null}
+        {sm ? saveButton : null}
       </div>
 
-      <Tabs form={form} video={info.video} />
+      <div className="mb-24 sm:mb-0">
+        <Tabs form={form} video={info.video} />
+      </div>
 
       {!sm ? (
-        <div className="-mx-4 -mb-4 p-4 flex justify-end bg-natural-50 shadow-form-submit-container">
-          {SubmitButton}
+        <div className="fixed bottom-0 left-0 w-full p-4 flex justify-end bg-natural-50 shadow-form-submit-container">
+          {saveButton}
         </div>
       ) : null}
     </Form>

@@ -83,7 +83,7 @@ export const ProfileCard: React.FC<{
         "md:pt-10 md:px-10 flex flex-col gap-4 sm:gap-0 items-stretch w-full"
       )}
     >
-      <div className="flex gap-4 lg:gap-10 md:justify-between lg:justify-start">
+      <div className="flex gap-4 md:gap-10 lg:justify-start">
         <div
           className={cn(
             "aspect-square shrink-0 rounded-full overflow-hidden",

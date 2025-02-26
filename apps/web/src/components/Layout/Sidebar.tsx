@@ -30,6 +30,7 @@ import { router } from "@/lib/routes";
 
 const SidebarItem = ({
   to,
+  hide,
   Icon,
   label,
   active,
@@ -40,6 +41,7 @@ const SidebarItem = ({
   >;
   label: React.ReactNode;
   active?: boolean;
+  hide: Void;
 }) => {
   return (
     <Link
@@ -52,6 +54,7 @@ const SidebarItem = ({
         }
       )}
       to={to}
+      onClick={hide}
     >
       <Icon
         className={cn(
@@ -79,6 +82,7 @@ type LinkInfo = {
   label: string;
   route: Web;
   Icon: Icon;
+  isActive: boolean;
 };
 
 const Sidebar: React.FC<{
@@ -91,6 +95,7 @@ const Sidebar: React.FC<{
   const { user, logout } = useUserContext();
 
   const mainPages: LinkInfo[] = useMemo(() => {
+    const match = (route: Web) => router.isMatch.web(route, location.pathname);
     const dashboard: LinkInfo = {
       label: intl("sidebar.dashboard"),
       route:
@@ -98,42 +103,49 @@ const Sidebar: React.FC<{
           ? Web.StudentDashboard
           : Web.TutorDashboard,
       Icon: Home,
+      isActive: match(Web.StudentDashboard) || match(Web.TutorDashboard),
     };
 
     const lessonsSchedule = {
       label: intl("sidebar.lessons-schedule"),
       route: Web.LessonsSchedule,
       Icon: Calendar,
+      isActive: match(Web.LessonsSchedule),
     };
 
     const upcomingLessons = {
       label: intl("sidebar.upcoming-lessons"),
       route: Web.UpcomingLessons,
       Icon: Video,
+      isActive: match(Web.UpcomingLessons),
     };
 
     const chat = {
       label: intl("sidebar.chat"),
       route: Web.Chat,
       Icon: Chat,
+      isActive: match(Web.Chat),
     };
 
     const scheduleManagement = {
       label: intl("sidebar.schedule-management"),
       route: Web.ScheduleManagement,
       Icon: ScheduleManagement,
+      isActive: match(Web.ScheduleManagement),
     };
 
     const tutors = {
       label: intl("sidebar.tutors"),
       route: Web.Tutors,
       Icon: People,
+      isActive: match(Web.Tutors) || match(Web.TutorProfile),
     };
 
     const subscribtions = {
       label: intl("sidebar.subscriptions"),
       route: Web.Subscription,
       Icon: Tag,
+      isActive: match(Web.Subscription),
     };
 
     if (
@@ -159,7 +171,7 @@ const Sidebar: React.FC<{
       ];
 
     return [];
-  }, [intl, user?.role]);
+  }, [intl, location.pathname, user?.role]);
 
   const onMouseDown = useCallback(
     (e: MouseEvent) => {
@@ -201,13 +213,14 @@ const Sidebar: React.FC<{
           {intl("sidebar.main")}
         </Typography>
         <ul className="flex flex-col gap-2">
-          {mainPages.map(({ label, route, Icon }) => (
+          {mainPages.map(({ label, route, Icon, isActive }) => (
             <SidebarItem
+              hide={hide}
               key={label}
               to={route}
               Icon={Icon}
               label={label}
-              active={router.isMatch.web(route, location.pathname)}
+              active={isActive}
             />
           ))}
         </ul>
@@ -240,6 +253,7 @@ const Sidebar: React.FC<{
                 location.pathname === Web.TutorSettings ||
                 location.pathname === Web.StudentSettings
               }
+              hide={hide}
             />
           ) : null}
 
@@ -247,6 +261,7 @@ const Sidebar: React.FC<{
             onClick={() => {
               navigate(Web.Login);
               logout();
+              hide();
             }}
             className={cn(
               "flex gap-2 md:gap-4 px-[14px] py-2 rounded-lg",
