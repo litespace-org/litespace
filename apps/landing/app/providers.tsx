@@ -5,8 +5,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ServerProvider } from "@litespace/headless/server";
 import { AtlasProvider } from "@litespace/headless/atlas";
 import { ToastProvider } from "@litespace/ui/Toast";
-import { useEffect, useState } from "react";
-import { AbstractStorage, mockStorage } from "@litespace/headless/storage";
 
 const queryClient = new QueryClient();
 
@@ -15,17 +13,11 @@ export function Providers({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const [storage, setStorage] = useState<AbstractStorage>(mockStorage);
-
-  useEffect(() => {
-    setStorage(localStorage);
-  }, []);
-
   return (
     <QueryClientProvider client={queryClient}>
-      <ServerProvider server={env.server} storage={storage}>
+      <ServerProvider server={env.server}>
         <AtlasProvider>
-          <ToastProvider location="bottom">{children}</ToastProvider>
+          <ToastProvider postion="bottom-left">{children}</ToastProvider>
         </AtlasProvider>
       </ServerProvider>
     </QueryClientProvider>

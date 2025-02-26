@@ -18,7 +18,7 @@ export class ContactRequests {
     await this.builder(tx).insert(
       payloads.map((payload) => ({
         name: payload.name,
-        email: payload.email,
+        phone: payload.phone,
         title: payload.title,
         message: payload.message,
         created_at: now,
@@ -30,7 +30,7 @@ export class ContactRequests {
     return {
       id: row.id,
       name: row.name,
-      email: row.email,
+      phone: row.phone,
       title: row.title,
       message: row.message,
       createdAt: row.created_at.toISOString(),

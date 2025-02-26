@@ -17,6 +17,7 @@ import { ToastProvider } from "@litespace/ui/Toast";
 import { Direction } from "@litespace/ui/Direction";
 import { AppConfigProvider } from "@litespace/headless/config";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
+import { LocalStorage } from "@litespace/headless/storage";
 import { env } from "@/lib/env";
 import App from "@/App";
 
@@ -35,7 +36,7 @@ createRoot(document.getElementById("root")!).render(
       <AppConfigProvider>
         <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
           <QueryClientProvider client={queryClient}>
-            <ServerProvider server={env.server}>
+            <ServerProvider server={env.server} storage={new LocalStorage()}>
               <AtlasProvider>
                 <SocketProvider>
                   <UserProvider>

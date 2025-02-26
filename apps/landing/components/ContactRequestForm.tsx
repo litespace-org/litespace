@@ -10,14 +10,16 @@ import {
   useValidateName,
   useValidateContactRequestMessage,
   useValidateContactRequestTitle,
-  useValidateEmail,
+  useRequired,
+  useValidatePhone,
 } from "@/hooks/validation";
 import { useCreateContactRequest } from "@litespace/headless/contactRequest";
 import { useToast } from "@litespace/ui/Toast";
+import { isRateLimited } from "@litespace/utils";
 
 type IForm = {
   name: string;
-  email: string;
+  phone: string;
   title: string;
   message: string;
 };
@@ -26,51 +28,56 @@ const ContactRequestForm: React.FC = () => {
   const intl = useFormatMessage();
   const toast = useToast();
 
+  const required = useRequired();
   const validateName = useValidateName();
-  const validateEmail = useValidateEmail();
+  const validatePhone = useValidatePhone();
   const validateTitle = useValidateContactRequestTitle();
   const validateMessage = useValidateContactRequestMessage();
 
-  const { control, handleSubmit, watch, formState } = useForm<IForm>({
+  const { control, handleSubmit, watch, formState, reset } = useForm<IForm>({
     defaultValues: {
       name: "",
-      email: "",
+      phone: "",
       title: "",
       message: "",
     },
   });
 
   const name = watch("name");
-  const email = watch("email");
+  const phone = watch("phone");
   const title = watch("title");
   const message = watch("message");
   const errors = formState.errors;
 
-  const submitContactRequest = useCreateContactRequest({
-    onSuccess: () => {
+  const createContactRequest = useCreateContactRequest({
+    onSuccess() {
       toast.success({
-        title: intl("success/form/contact-us"),
+        title: intl("contact-us/form/success/title"),
+        description: intl("contact-us/form/success/description"),
       });
-      control._reset();
+
+      reset();
     },
-    onError: () => {
-      toast.success({
-        title: intl("error/form/contact-us"),
-        description: intl("error/server"),
+    onError(error) {
+      toast.error({
+        title: intl("contact-us/form/error/title"),
+        description: isRateLimited(error)
+          ? intl("contact-us/form/error/rate-limited")
+          : undefined,
       });
     },
   });
 
   const onSubmit = useCallback(
     (data: IForm) => {
-      submitContactRequest.mutate(data);
+      createContactRequest.mutate(data);
     },
-    [submitContactRequest]
+    [createContactRequest]
   );
 
   return (
     <Form onSubmit={handleSubmit(onSubmit)} className="h-full">
-      <div className="flex flex-col sm:mx-auto gap-6 sm:max-w-[404px] h-full">
+      <div className="flex flex-col sm:mx-auto gap-6 sm:max-w-[502px] h-full">
         <div className="flex flex-col gap-2 sm:gap-4 h-full">
           <Controller.Input
             id="name"
@@ -81,26 +88,27 @@ const ContactRequestForm: React.FC = () => {
             control={control}
             inputSize={"large"}
             autoComplete="off"
-            label={intl("section/contact-us/form/label/name")}
-            placeholder={intl("section/contact-us/form/placeholder/name")}
+            label={intl("contact-us/form/name/label")}
+            placeholder={intl("contact-us/form/name/placeholder")}
             state={errors.name ? "error" : undefined}
             helper={errors.name?.message}
-            rules={{ validate: validateName }}
+            rules={{ validate: validateName, required }}
           />
 
-          <Controller.Input
-            id="email"
-            control={control}
+          <Controller.PatternInput
+            mask=" "
             idleDir="rtl"
-            inputSize="large"
-            name="email"
-            value={email}
-            label={intl("section/contact-us/form/label/email")}
-            placeholder={intl("section/contact-us/form/placeholder/email")}
-            state={errors.email ? "error" : undefined}
-            helper={errors.email?.message}
-            rules={{ validate: validateEmail }}
+            id="phone"
+            name="phone"
             autoComplete="off"
+            value={phone}
+            format="### #### ####"
+            control={control}
+            helper={errors.phone?.message}
+            rules={{ validate: validatePhone, required }}
+            state={errors.phone ? "error" : undefined}
+            label={intl("contact-us/form/phone/label")}
+            placeholder={intl("contact-us/form/phone/placeholder")}
           />
 
           <Controller.Input
@@ -109,13 +117,13 @@ const ContactRequestForm: React.FC = () => {
             idleDir="rtl"
             value={title}
             control={control}
-            inputSize={"large"}
+            inputSize="large"
             autoComplete="off"
-            label={intl("section/contact-us/form/label/title")}
-            placeholder={intl("section/contact-us/form/placeholder/title")}
+            label={intl("contact-us/form/title/label")}
+            placeholder={intl("contact-us/form/title/placeholder")}
             state={errors.title ? "error" : undefined}
             helper={errors.title?.message}
-            rules={{ validate: validateTitle }}
+            rules={{ validate: validateTitle, required }}
           />
 
           <Controller.Textarea
@@ -126,15 +134,22 @@ const ContactRequestForm: React.FC = () => {
             value={message}
             control={control}
             autoComplete="off"
-            label={intl("section/contact-us/form/label/message")}
-            placeholder={intl("section/contact-us/form/placeholder/message")}
+            label={intl("contact-us/form/message/label")}
+            placeholder={intl("contact-us/form/message/placehoder")}
             state={errors.message ? "error" : undefined}
             helper={errors.message?.message}
-            rules={{ validate: validateMessage }}
+            rules={{ validate: validateMessage, required }}
           />
         </div>
         <div className="flex gap-4 items-center">
-          <Button type="main" size="large" htmlType="submit" className="w-full">
+          <Button
+            type="main"
+            size="large"
+            htmlType="submit"
+            className="w-full"
+            loading={createContactRequest.isPending}
+            disabled={createContactRequest.isPending}
+          >
             {intl("labels/send")}
           </Button>
         </div>

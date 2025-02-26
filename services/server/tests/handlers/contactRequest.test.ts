@@ -19,7 +19,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "a",
-          email: "core@litespace.com",
+          phone: "core@litespace.com",
           title: "Testing Litespace Server Component",
           message:
             "This message has been automatically sent by litespace test suites.",
@@ -32,7 +32,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "a".repeat(51),
-          email: "core@litespace.com",
+          phone: "core@litespace.com",
           title: "Testing Litespace Server Component",
           message:
             "This message has been automatically sent by litespace test suites.",
@@ -45,7 +45,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "Name150",
-          email: "core@litespace.com",
+          phone: "core@litespace.com",
           title: "Testing Litespace Server Component",
           message:
             "This message has been automatically sent by litespace test suites.",
@@ -55,19 +55,19 @@ describe("/api/v1/topic/", () => {
     expect(res3).to.deep.eq(apierror(FieldError.InvalidUserName, 400));
   });
 
-  it("should respond with bad request in case the email is invalid", async () => {
+  it("should respond with bad request in case the phone is invalid", async () => {
     const res1 = await safe(() =>
       createContactRequest({
         body: {
           name: "Steve Adams",
-          email: "invalidemailaddress.com",
+          phone: "010",
           title: "Testing Litespace Server Component",
           message:
             "This message has been automatically sent by litespace test suites.",
         },
       })
     );
-    expect(res1).to.deep.eq(apierror(FieldError.InvalidEmail, 400));
+    expect(res1).to.deep.eq(apierror(FieldError.InvalidPhoneNumber, 400));
   });
 
   it("should respond with bad request in case the title is invalid", async () => {
@@ -75,7 +75,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "Steve Adams",
-          email: "core@litespace.com",
+          phone: "01002832217",
           title: "a",
           message:
             "This message has been automatically sent by litespace test suites.",
@@ -88,7 +88,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "Steve Adams",
-          email: "core@litespace.com",
+          phone: "01002832217",
           title: "a".repeat(129),
           message:
             "This message has been automatically sent by litespace test suites.",
@@ -103,7 +103,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "Steve Adams",
-          email: "core@litespace.com",
+          phone: "01002832217",
           title: "Just a nice title",
           message: "a",
         },
@@ -117,7 +117,7 @@ describe("/api/v1/topic/", () => {
       createContactRequest({
         body: {
           name: "Steve Adams",
-          email: "core@litespace.com",
+          phone: "01002832217",
           title: "Just a nice title",
           message: "a".repeat(1001),
         },
@@ -132,7 +132,7 @@ describe("/api/v1/topic/", () => {
     const res = await createContactRequest({
       body: {
         name: "Litespace Test Suites",
-        email: "core@litespace.com",
+        phone: "01002832217",
         title: "Testing Litespace Server Component",
         message:
           "This message has been automatically sent by litespace test suites.",
@@ -146,7 +146,7 @@ describe("/api/v1/topic/", () => {
     const res = await createContactRequest({
       body: {
         name: "محمود إيهاب",
-        email: "core@litespace.com",
+        phone: "01002832217",
         title: "Testing Litespace Server Component",
         message:
           "This message has been automatically sent by litespace test suites.",

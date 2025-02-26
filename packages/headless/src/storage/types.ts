@@ -1,5 +1,7 @@
+import { CacheKey } from "@/constants";
+
 export interface AbstractStorage {
-  setItem: (key: string, value: string) => void;
-  getItem: (key: string) => string | null;
-  removeItem: (key: string) => void;
+  set: <T>(key: CacheKey, value: T) => T;
+  get: <T>(key: CacheKey) => T | null;
+  remove: (key: CacheKey) => void;
 }

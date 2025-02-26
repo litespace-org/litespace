@@ -1,4 +1,5 @@
 import Hero from "@/components/Common/Hero";
+import ContactUs from "@/components/ContactUs";
 import Content from "@/components/FAQ/Content";
 
 type Role = "student" | "tutor";
@@ -15,6 +16,7 @@ export default async function Home({ params }: Props) {
     <main>
       <Hero title="faq/hero/title" description="faq/hero/description" />
       <Content role={role} />
+      <ContactUs tutor={role === "tutor"} />
     </main>
   );
 }

@@ -1,12 +1,23 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import {
   isValidContactRequestMessage,
   isValidContactRequestTitle,
-  isValidEmail,
+  isValidPhoneNumber,
   isValidUserName,
 } from "@litespace/utils";
 import { useFormatMessage } from "@/hooks/intl";
 import { FieldError } from "@litespace/types";
+
+export function useRequired() {
+  const intl = useFormatMessage();
+  return useMemo(
+    () => ({
+      value: true,
+      message: intl("error/required"),
+    }),
+    [intl]
+  );
+}
 
 export function useValidateName() {
   const intl = useFormatMessage();
@@ -15,26 +26,25 @@ export function useValidateName() {
       const valid = isValidUserName(value);
       if (valid === FieldError.InvalidUserName)
         return intl("error/name/invalid");
-      if (valid === FieldError.ShortUserName) return intl("error/short/text");
-      if (valid === FieldError.LongUserName) return intl("error/long/text");
+      if (valid === FieldError.ShortUserName) return intl("error/name/short");
+      if (valid === FieldError.LongUserName) return intl("error/name/long");
       return true;
     },
     [intl]
   );
 }
 
-export function useValidateEmail(required: boolean = false) {
+export function useValidatePhone() {
   const intl = useFormatMessage();
 
   return useCallback(
     (value: unknown) => {
-      const valid = isValidEmail(value);
-      if (!required && !value) return true;
-      if (required && !value) return intl("error/required");
-      if (valid === FieldError.InvalidEmail) return intl("error/email/invalid");
+      const valid = isValidPhoneNumber(value);
+      if (valid === FieldError.InvalidPhoneNumber)
+        return intl("error/phone/invalid");
       return true;
     },
-    [required, intl]
+    [intl]
   );
 }
 
@@ -45,9 +55,9 @@ export function useValidateContactRequestTitle() {
     (value: unknown) => {
       const valid = isValidContactRequestTitle(value);
       if (valid === FieldError.ShortContactRequestTitle)
-        return intl("error/short/text");
+        return intl("error/title/short");
       if (valid === FieldError.LongContactRequestTitle)
-        return intl("error/long/text");
+        return intl("error/title/long");
       return true;
     },
     [intl]
@@ -61,9 +71,9 @@ export function useValidateContactRequestMessage() {
     (value: unknown) => {
       const valid = isValidContactRequestMessage(value);
       if (valid === FieldError.ShortContactRequestMessage)
-        return intl("error/short/text");
+        return intl("error/message/short");
       if (valid === FieldError.LongContactRequestMessage)
-        return intl("error/long/text");
+        return intl("error/message/long");
       return true;
     },
     [intl]

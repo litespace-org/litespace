@@ -4,12 +4,12 @@ import { string } from "@/validation/utils";
 import safeRequest from "express-async-handler";
 import { IContactRequest } from "@litespace/types";
 import { contactRequests } from "@litespace/models";
-import { telegramConfig } from "@/constants";
+import { environment, telegramConfig } from "@/constants";
 import { telegram } from "@/lib/telegram";
 import {
   isValidContactRequestMessage,
   isValidContactRequestTitle,
-  isValidEmail,
+  isValidPhoneNumber,
   isValidUserName,
   safe,
 } from "@litespace/utils";
@@ -17,7 +17,7 @@ import { apierror } from "@/lib/error";
 
 const createPayload = zod.object({
   name: string,
-  email: string,
+  phone: string,
   title: string,
   message: string,
 });
@@ -27,39 +27,36 @@ async function create(req: Request, res: Response, next: NextFunction) {
 
   const validations = [
     isValidUserName(payload.name),
-    isValidEmail(payload.email),
+    isValidPhoneNumber(payload.phone),
     isValidContactRequestTitle(payload.title),
     isValidContactRequestMessage(payload.message),
   ];
 
-  for (const result of validations) {
+  for (const result of validations)
     if (result !== true) return next(apierror(result, 400));
-  }
 
   await contactRequests.create([payload]);
+
+  res.sendStatus(200);
 
   const telegramRes = await safe(async () =>
     telegram.sendMessage({
       chat: telegramConfig.chat,
       text: [
-        "*New Contact Request*",
-        "```md",
-        "# " + payload.title,
-        payload.message,
-        "```",
-        "*Requester Name: *" + `_${payload.name}_`,
-        "*Requester Email: *" + `_${payload.email}_`,
-      ]
-        .filter((line) => !!line)
-        .join("\n"),
+        `*New Contact Request (${environment})*\n`,
+        "*Name: *" + `${payload.name}`,
+        "*Phone: *" + `${payload.phone}`,
+        "*Title: *" + `${payload.title}`,
+        "*Message: *" + payload.message,
+      ].join("\n"),
     })
   );
 
-  if (telegramRes instanceof Error) {
-    console.error("contactRequest Handler: couldn't send telegram message!");
-  }
-
-  res.sendStatus(200);
+  if (telegramRes instanceof Error)
+    console.error(
+      "contactRequest Handler: couldn't send telegram message.",
+      telegramRes
+    );
 }
 
 export default {

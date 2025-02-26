@@ -3,6 +3,7 @@ import { useAtlas } from "@/atlas";
 import { useCallback } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { MutationKey } from "@/constants";
+import { IContactRequest } from "@litespace/types";
 
 export function useCreateContactRequest({
   onSuccess,
@@ -14,23 +15,8 @@ export function useCreateContactRequest({
   const atlas = useAtlas();
 
   const createContactRequest = useCallback(
-    async ({
-      name,
-      email,
-      title,
-      message,
-    }: {
-      name: string;
-      email: string;
-      title: string;
-      message: string;
-    }) => {
-      return await atlas.contactRequest.create({
-        name,
-        email,
-        title,
-        message,
-      });
+    async (payload: IContactRequest.CreateContactRequestApiPayload) => {
+      return await atlas.contactRequest.create(payload);
     },
     [atlas.contactRequest]
   );

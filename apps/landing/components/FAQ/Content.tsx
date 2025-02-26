@@ -259,61 +259,63 @@ const Content: React.FC<{ role: "student" | "tutor" }> = ({ role }) => {
   const questions = userQuestions.concat(sharedQuestions);
 
   return (
-    <div
-      className={cn(
-        "flex flex-col py-14 sm:py-20 md:py-20 px-4 md:px-8 lg:px-[108px] gap-8 sm:gap-14 lg:gap-20",
-        "max-w-screen-3xl mx-auto w-full"
-      )}
-    >
-      <div className="flex flex-col gap-4 text-center">
-        <Typography tag="h1" className="text-h4 font-bold">
-          <Typography tag="span" className="text-brand-500">
-            {intl("faq/body/title/1")}
-          </Typography>{" "}
-          <Typography tag="span" className="text-natural-950">
-            {intl("faq/body/title/2")}
+    <div className="bg-secondary-50">
+      <div
+        className={cn(
+          "flex flex-col py-14 sm:py-20 md:py-20 px-4 md:px-8 lg:px-[108px] gap-8 sm:gap-14 lg:gap-20",
+          "max-w-screen-3xl mx-auto w-full"
+        )}
+      >
+        <div className="flex flex-col gap-4 text-center">
+          <Typography tag="h1" className="text-h4 font-bold">
+            <Typography tag="span" className="text-brand-500">
+              {intl("faq/body/title/1")}
+            </Typography>{" "}
+            <Typography tag="span" className="text-natural-950">
+              {intl("faq/body/title/2")}
+            </Typography>
           </Typography>
-        </Typography>
-        <Typography
-          tag="p"
-          className="text-subtitle-2 font-semibold text-natural-700"
-        >
-          {intl("faq/body/description")}
-        </Typography>
-      </div>
+          <Typography
+            tag="p"
+            className="text-subtitle-2 font-semibold text-natural-700"
+          >
+            {intl("faq/body/description")}
+          </Typography>
+        </div>
 
-      <Accordion
-        items={questions.map(({ title, content }, i) => ({
-          id: i,
-          title,
-          content,
-        }))}
-      />
+        <Accordion
+          items={questions.map(({ title, content }, i) => ({
+            id: i,
+            title,
+            content,
+          }))}
+        />
 
-      <div className="text-center">
-        <Typography tag="h3" className="text-caption font-medium">
-          {intl.rich(
-            role === "student"
-              ? "faq/body/are-you-tutor"
-              : "faq/body/are-you-student",
-            {
-              link: (chunks) => (
-                <Link
-                  href={router.landing({
-                    route: Landing.FaqRole,
-                    role:
-                      role === "student"
-                        ? IUser.Role.Tutor
-                        : IUser.Role.Student,
-                  })}
-                  className="text-brand-700"
-                >
-                  {chunks}
-                </Link>
-              ),
-            }
-          )}
-        </Typography>
+        <div className="text-center">
+          <Typography tag="h3" className="text-caption font-medium">
+            {intl.rich(
+              role === "student"
+                ? "faq/body/are-you-tutor"
+                : "faq/body/are-you-student",
+              {
+                link: (chunks) => (
+                  <Link
+                    href={router.landing({
+                      route: Landing.FaqRole,
+                      role:
+                        role === "student"
+                          ? IUser.Role.Tutor
+                          : IUser.Role.Student,
+                    })}
+                    className="text-brand-700"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              }
+            )}
+          </Typography>
+        </div>
       </div>
     </div>
   );

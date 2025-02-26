@@ -14,6 +14,7 @@ import { PersistGate } from "redux-persist/integration/react";
 import { ToastProvider } from "@litespace/ui/Toast";
 import { UserProvider } from "@litespace/headless/context/user";
 import { MediaQueryProvider } from "@litespace/headless/mediaQuery";
+import { LocalStorage } from "@litespace/headless/storage";
 import { env } from "@/lib/env";
 import App from "@/App.tsx";
 
@@ -32,7 +33,7 @@ createRoot(document.getElementById("root")!).render(
       <AppConfigProvider>
         <ToastProvider>
           <QueryClientProvider client={queryClient}>
-            <ServerProvider server={env.server}>
+            <ServerProvider server={env.server} storage={new LocalStorage()}>
               <AtlasProvider>
                 <SocketProvider>
                   <UserProvider>
