@@ -1,4 +1,4 @@
-import { SelectV2 } from "@/components/Select";
+import { Select } from "@/components/Select";
 import { formatMinutes } from "@/components/utils";
 import { useFormatMessage } from "@/hooks";
 import React from "react";
@@ -11,7 +11,7 @@ export const DurationSelection: React.FC<{
   return (
     <div className="tw-flex tw-flex-col tw-gap-2">
       <div className="tw-w-[400px]">
-        <SelectV2
+        <Select
           label={intl("book-lesson.pick-lesson-duration")}
           options={[
             {
