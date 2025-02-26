@@ -80,7 +80,7 @@ export const Select = <T extends string | number>({
             "border border-natural-300",
             "transition-colors duration-200",
             "disabled:cursor-not-allowed",
-            "focus:outline-none focus:ring-1 focus:ring-secondary-600 focus:border-secondary-600",
+            "focus:outline-none focus:border-1 focus:border-secondary-600",
             {
               "h-7": size === "small",
               "h-8": size === "medium",
@@ -92,7 +92,10 @@ export const Select = <T extends string | number>({
             placeholder={
               <Typography
                 tag="span"
-                className={cn("text-natural-600 font-medium text-caption")}
+                className={cn(
+                  "text-natural-600 font-medium text-caption",
+                  disabled && "text-natural-300"
+                )}
               >
                 {placeholder}
               </Typography>

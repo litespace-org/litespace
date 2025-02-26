@@ -81,6 +81,7 @@ const DaySlots: React.FC<{
         start: start.toISOString(),
         end: end.toISOString(),
       };
+
       return subtractSlots(
         daySlot,
         asSubSlots(slots.filter((slot) => slot.id !== excludeSlotId))
@@ -97,7 +98,7 @@ const DaySlots: React.FC<{
           const filled = !!slot.start && !!slot.end;
           const partial = !!slot.start || !!slot.end;
           return (
-            <Animate key={slot.id}>
+            <Animate key={idx}>
               <SlotRow
                 start={orUndefined(slot.start)}
                 end={orUndefined(slot.end)}
@@ -113,13 +114,14 @@ const DaySlots: React.FC<{
         })}
 
         {isEmpty(slots) ? (
-          <SlotRow
-            key={iso}
-            onFromChange={(value: string) => add({ day: iso, start: value })}
-            onToChange={(value: string) => add({ day: iso, end: value })}
-            freeSubSlots={asFreeSubSlots()}
-            disabled={disabled}
-          />
+          <Animate key={0}>
+            <SlotRow
+              onFromChange={(value: string) => add({ day: iso, start: value })}
+              onToChange={(value: string) => add({ day: iso, end: value })}
+              freeSubSlots={asFreeSubSlots()}
+              disabled={disabled}
+            />
+          </Animate>
         ) : null}
       </AnimatePresence>
     </div>

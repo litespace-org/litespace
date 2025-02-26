@@ -91,12 +91,20 @@ export const ManageSchedule: React.FC<Props> = ({
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return [{ day, slots: daySlots }];
     }
+
     return range(WEEK_DAYS).map((index) => {
       const day = weekStart.add(index, "day").startOf("day");
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
   }, [date, singleDay, slots, weekStart]);
+
+  const today = useMemo(() => dayjs(), []);
+
+  const isCurrentWeek = useMemo(
+    () => today.isBetween(weekStart, weekStart.add(1, "week")),
+    [weekStart, today]
+  );
 
   useEffect(() => {
     setSlots((prev) => {
@@ -220,14 +228,16 @@ export const ManageSchedule: React.FC<Props> = ({
       {!singleDay ? (
         <div className="pt-6">
           <div className="flex items-center justify-center gap-4">
-            <button
-              type="button"
-              onClick={prevWeek}
-              disabled={loading}
-              className="disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <ArrowRight className="[&>*]:stroke-brand-700" />
-            </button>
+            {!isCurrentWeek ? (
+              <button
+                type="button"
+                onClick={prevWeek}
+                disabled={loading}
+                className="disabled:cursor-not-allowed disabled:opacity-50 w-6 h-6"
+              >
+                <ArrowRight className="[&>*]:stroke-brand-700" />
+              </button>
+            ) : null}
             <Typography
               tag="span"
               className="text-natural-950 text-body font-bold"
@@ -296,6 +306,8 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
+                  const isDisabled = saving || day.isBefore(today, "day");
+
                   return (
                     <div className="flex gap-8" key={iso}>
                       <Typography
@@ -306,12 +318,12 @@ export const ManageSchedule: React.FC<Props> = ({
                       </Typography>
 
                       <DaySlots
-                        slots={slots}
+                        slots={isDisabled ? [] : slots}
                         iso={iso}
                         add={addSlot}
                         update={updateSlot}
                         remove={removeSlot}
-                        disabled={saving}
+                        disabled={isDisabled}
                       />
                     </div>
                   );
@@ -326,6 +338,7 @@ export const ManageSchedule: React.FC<Props> = ({
         <Button
           className="grow basis-1/2"
           onClick={() => save(slotActions)}
+          size="large"
           disabled={isEmpty(slotActions) || invalidSlots || saving}
           loading={saving}
         >
@@ -338,7 +351,8 @@ export const ManageSchedule: React.FC<Props> = ({
         </Button>
         <Button
           onClick={onClose}
-          variant={"secondary"}
+          variant="secondary"
+          size="large"
           className="grow basis-1/2"
           disabled={saving}
         >
