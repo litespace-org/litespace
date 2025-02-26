@@ -6,7 +6,9 @@ import { Button } from "@litespace/ui/Button";
 import { Typography } from "@litespace/ui/Typography";
 import Link from "next/link";
 import cn from "classnames";
-import { Void } from "@litespace/types";
+import { IUser, Void } from "@litespace/types";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
 
 export function NavbarLinks({
   scrolled,
@@ -39,7 +41,11 @@ export function NavbarLinks({
       </nav>
       <div className="hidden lg:flex ms-auto gap-4 min-w-[304px]">
         <Link
-          href="https://app.litespace.org/register/stundent"
+          href={router.web({
+            route: Web.Register,
+            role: IUser.Role.Student,
+            full: true,
+          })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
         >
           <Button size="large" className="w-full">
@@ -52,7 +58,7 @@ export function NavbarLinks({
           </Button>
         </Link>
         <Link
-          href="https://app.litespace.org/login"
+          href={router.web({ route: Web.Login, full: true })}
           className="max-w-[134px] lg:max-w-[144px] flex-1"
         >
           <Button size="large" variant="secondary" className="w-full">

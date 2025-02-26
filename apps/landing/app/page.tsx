@@ -1,11 +1,13 @@
+import Features from "@/components/Features";
 import Hero from "@/components/Hero";
-import ContactUs from "@/components/ContactUs";
+import FAQ from "@/components/FAQ/Content";
 
 export default async function Home() {
   return (
     <main>
       <Hero />
-      <ContactUs />
+      <Features />
+      <FAQ />
     </main>
   );
 }
