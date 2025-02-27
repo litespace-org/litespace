@@ -175,14 +175,14 @@ export const LessonCard: React.FC<Props> = ({
   const button = (
     <Button
       size="large"
-      className={cn("tw-w-full tw-mt-auto")}
+      className={cn("w-full mt-auto")}
       disabled={disabled}
       onClick={action.onClick}
       loading={sendingMessage}
     >
       <Typography
         tag="span"
-        className="tw-text-natural-50 tw-text-caption tw-font-semibold"
+        className="text-natural-50 text-caption font-semibold"
       >
         {action.label}
       </Typography>
@@ -192,18 +192,18 @@ export const LessonCard: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-flex tw-flex-col tw-items-stretch tw-gap-4 tw-p-4 md:tw-p-6 tw-bg-natural-50",
-        "tw-border tw-rounded-2xl tw-border-natural-200 tw-shadow-mobile-lesson-upcoming-card md:tw-shadow-lesson-upcoming-card"
+        "flex flex-col items-stretch gap-4 p-4 md:p-6 bg-natural-50",
+        "border rounded-2xl border-natural-200 shadow-mobile-lesson-upcoming-card md:shadow-lesson-upcoming-card"
       )}
     >
-      <div className="tw-flex tw-justify-between tw-items-stretch tw-gap-6">
+      <div className="flex justify-between items-stretch gap-6">
         {dayjs().isAfter(end) ? (
-          <div className="tw-flex tw-gap-2 tw-items-center">
-            <CheckCircle className="[&>*]:tw-stroke-brand-700" />
+          <div className="flex gap-2 items-center">
+            <CheckCircle className="[&>*]:stroke-brand-700" />
             <Typography
               tag="span"
               className={cn(
-                "tw-text-brand-700 tw-line-clamp-1 tw-truncate tw-text-caption tw-font-semibold"
+                "text-brand-700 line-clamp-1 truncate text-caption font-semibold"
               )}
             >
               {intl("lessons.end")}
@@ -214,45 +214,45 @@ export const LessonCard: React.FC<Props> = ({
             <Typography
               tag="h1"
               className={cn(
-                "tw-line-clamp-1 tw-text-caption tw-font-semibold",
-                !canceled ? "tw-text-brand-700" : "tw-text-destructive-600"
+                "line-clamp-1 text-caption font-semibold",
+                !canceled ? "text-brand-700" : "text-destructive-600"
               )}
             >
               {title}
             </Typography>
             {!canceled ? (
               <Menu actions={actions}>
-                <More className="[&>*]:tw-fill-natural-800" />
+                <More className="[&>*]:fill-natural-800" />
               </Menu>
             ) : null}
           </>
         )}
       </div>
-      <div className="tw-flex tw-flex-col tw-gap-6">
-        <div className="tw-flex tw-gap-2">
-          <div className="tw-w-[65px] tw-h-[65px] tw-rounded-full tw-overflow-hidden">
+      <div className="flex flex-col gap-6">
+        <div className="flex gap-2">
+          <div className="w-[65px] h-[65px] rounded-full overflow-hidden">
             <Avatar
               src={orUndefined(member.image)}
               alt={orUndefined(member.name)}
               seed={member.id.toString()}
             />
           </div>
-          <div className="tw-flex tw-flex-col tw-gap-1">
+          <div className="flex flex-col gap-1">
             <Typography
               tag="span"
-              className="tw-text-caption tw-font-bold tw-text-[14px] tw-leading-[21px] tw-text-natural-950"
+              className="text-caption font-bold text-[14px] leading-[21px] text-natural-950"
             >
               {member.name}
             </Typography>
             <Typography
               tag="span"
-              className="tw-text-natural-700 tw-text-tiny tw-font-normal"
+              className="text-natural-700 text-tiny font-normal"
             >
               {dayjs(start).format("dddd، D MMMM")}
             </Typography>
             <Typography
               tag="span"
-              className="tw-text-natural-700 tw-flex tw-items-center tw-text-tiny tw-font-normal"
+              className="text-natural-700 flex items-center text-tiny font-normal"
             >
               {dayjs(start).format("h:mm a")}
               {" - "}

@@ -18,10 +18,10 @@ const Price: React.FC<{
   return (
     <>
       <span dir="ltr">
-        <span className="tw-main">&nbsp;{main}</span>
-        <span className="tw-change">.{decimal}</span>
+        <span className="main">&nbsp;{main}</span>
+        <span className="change">.{decimal}</span>
       </span>
-      <span className="tw-currency">{currency}</span>
+      <span className="currency">{currency}</span>
     </>
   );
 };

@@ -19,7 +19,7 @@ const meta: Meta<Component> = {
   component: Calendar,
   decorators: [
     (Story) => (
-      <div className="tw-p-4">
+      <div className="p-4">
         <Story />
       </div>
     ),

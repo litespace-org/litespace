@@ -19,12 +19,12 @@ export const VideoBar: React.FC<{
   };
 }> = ({ alert, fullScreen, speaking, muted, timer }) => {
   return (
-    <div className="tw-w-full tw-px-6 tw-mt-6 tw-absolute tw-top-0 tw-left-0 tw-flex tw-justify-between tw-items-center">
-      <div className="tw-flex tw-items-center tw-gap-8">
+    <div className="w-full px-6 mt-6 absolute top-0 left-0 flex justify-between items-center">
+      <div className="flex items-center gap-8">
         <FullScreenButton {...fullScreen} />
         {alert ? <Alert alert={alert} /> : null}
       </div>
-      <div className="tw-flex tw-items-center tw-gap-8">
+      <div className="flex items-center gap-8">
         <SpeechIndicator speaking={speaking} muted={muted} variant="large" />
         <TimerIndicator {...timer} />
       </div>

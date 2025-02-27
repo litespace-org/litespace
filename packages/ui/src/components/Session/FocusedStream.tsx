@@ -27,7 +27,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="tw-aspect-video tw-relative tw-w-full tw-h-full tw-grow tw-rounded-lg tw-overflow-hidden"
+      className="aspect-video relative w-full h-full grow rounded-lg overflow-hidden"
     >
       {children}
     </motion.div>
@@ -50,8 +50,8 @@ const Stream: React.FC<{
       ref={videoRef}
       autoPlay
       className={cn(
-        "tw-w-full tw-aspect-video tw-absolute tw-top-0",
-        hidden && "tw-opacity-0"
+        "w-full aspect-video absolute top-0",
+        hidden && "opacity-0"
       )}
       muted={muted}
       playsInline
@@ -82,7 +82,7 @@ export const FocusedStream: React.FC<{
           chat && (stream.video || stream.cast) ? "1.5rem" : "0rem",
         marginTop: chat && (stream.video || stream.cast) ? "3.5rem" : "0rem",
       }}
-      className={cn("tw-rounded-lg", chat && "tw-relative")}
+      className={cn("rounded-lg", chat && "relative")}
     >
       <AnimatePresence mode="wait">
         {stream.video || stream.cast ? (
@@ -93,7 +93,7 @@ export const FocusedStream: React.FC<{
           <Animate key="avatar">
             <div
               className={cn(
-                "tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center"
+                "w-full h-full bg-brand-100 flex items-center justify-center"
               )}
             >
               <UserAvatar user={stream.user} speaking={stream.speaking} />

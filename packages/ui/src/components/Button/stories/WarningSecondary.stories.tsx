@@ -67,7 +67,7 @@ export const Loading: StoryObj<typeof Button> = {
 export const WithStargIcon: StoryObj<typeof Button> = {
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
-    startIcon: <Home className="[&>*]:tw-stroke-natural-50" />,
+    startIcon: <Home className="[&>*]:stroke-natural-50" />,
     type: "warning",
     variant: "secondary",
     size: "small",
@@ -77,7 +77,7 @@ export const WithStargIcon: StoryObj<typeof Button> = {
 export const WithEndIcon: StoryObj<typeof Button> = {
   args: {
     children: faker.lorem.words({ min: 1, max: 4 }),
-    startIcon: <Home className="[&>*]:tw-stroke-natural-50" />,
+    startIcon: <Home className="[&>*]:stroke-natural-50" />,
     type: "warning",
     variant: "secondary",
     size: "small",
@@ -86,7 +86,7 @@ export const WithEndIcon: StoryObj<typeof Button> = {
 
 export const WithOnlyIcon: StoryObj<typeof Button> = {
   args: {
-    startIcon: <Home className="[&>*]:tw-stroke-natural-50" />,
+    startIcon: <Home className="[&>*]:stroke-natural-50" />,
     type: "warning",
     variant: "secondary",
     size: "small",

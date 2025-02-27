@@ -25,20 +25,20 @@ export const Menu: React.FC<{
     <DropdownMenu.Root open={open} onOpenChange={setOpen}>
       <DropdownMenu.Trigger
         className={cn(
-          "focus:tw-outline-none tw-h-6 tw-flex tw-items-center tw-justify-center",
-          !children && "tw-p-2"
+          "focus:outline-none h-6 flex items-center justify-center",
+          !children && "p-2"
         )}
         type="button"
       >
-        {children || <More className="[&>*]:tw-fill-natural-800" />}
+        {children || <More className="[&>*]:fill-natural-800" />}
       </DropdownMenu.Trigger>
 
       <DropdownMenu.Portal>
         <DropdownMenu.Content
           side="top"
           className={cn(
-            "tw-shadow-lesson-event-card tw-bg-natural-50 tw-p-1",
-            "tw-flex tw-flex-col tw-gap-1 tw-rounded-lg tw-min-w-[121px] tw-z-[5]",
+            "shadow-lesson-event-card bg-natural-50 p-1",
+            "flex flex-col gap-1 rounded-lg min-w-[121px] z-[5]",
             className
           )}
         >
@@ -46,9 +46,9 @@ export const Menu: React.FC<{
             <Typography
               tag="label"
               className={cn(
-                "tw-text-tiny tw-font-semibold",
-                danger ? "tw-text-destructive-600" : "tw-text-natural-600",
-                "tw-max-w-24"
+                "text-tiny font-semibold",
+                danger ? "text-destructive-600" : "text-natural-600",
+                "max-w-24"
               )}
             >
               {title}
@@ -60,19 +60,19 @@ export const Menu: React.FC<{
               key={label}
               disabled={disabled}
               className={cn(
-                "tw-flex tw-flex-row tw-items-center tw-gap-2 tw-p-1 tw-pe-4 tw-rounded-lg",
-                "hover:tw-bg-natural-100 active:tw-bg-brand-700 tw-cursor-pointer",
-                "[&>span]:active:!tw-text-natural-50 [&>div>svg>*]:active:tw-stroke-natural-50",
-                "focus:tw-outline-none focus:tw-bg-natural-100",
+                "flex flex-row items-center gap-2 p-1 pe-4 rounded-lg",
+                "hover:bg-natural-100 active:bg-brand-700 cursor-pointer",
+                "[&>span]:active:!text-natural-50 [&>div>svg>*]:active:stroke-natural-50",
+                "focus:outline-none focus:bg-natural-100",
                 disabled
               )}
               onClick={onClick}
             >
-              <div className="tw-w-4 tw-h-4">{icon}</div>
+              <div className="w-4 h-4">{icon}</div>
 
               <Typography
                 tag="span"
-                className="tw-text-natural-600 tw-text-tiny tw-font-semibold"
+                className="text-natural-600 text-tiny font-semibold"
               >
                 {label}
               </Typography>

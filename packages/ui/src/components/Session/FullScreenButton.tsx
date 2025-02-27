@@ -9,14 +9,11 @@ export const FullScreenButton: React.FC<{ enabled: boolean; toggle: Void }> = ({
   toggle,
 }) => {
   return (
-    <Button
-      className="!tw-h-16 !tw-w-16 !tw-p-0 !tw-rounded-full"
-      onClick={toggle}
-    >
+    <Button className="!h-16 !w-16 !p-0 !rounded-full" onClick={toggle}>
       {enabled ? (
-        <Minimize className="[&>*]:tw-stroke-natural-50" />
+        <Minimize className="[&>*]:stroke-natural-50" />
       ) : (
-        <FullScreen className="[&>*]:tw-stroke-natural-50" />
+        <FullScreen className="[&>*]:stroke-natural-50" />
       )}
     </Button>
   );

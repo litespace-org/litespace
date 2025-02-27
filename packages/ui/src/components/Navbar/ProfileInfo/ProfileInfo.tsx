@@ -17,8 +17,8 @@ const ProfileInfo: React.FC<{
   }, [email]);
 
   return (
-    <div className="tw-flex tw-gap-2">
-      <div className="tw-w-6 tw-h-6 md:tw-w-[40px] md:tw-h-[40px] tw-rounded-full tw-overflow-hidden">
+    <div className="flex gap-2">
+      <div className="w-6 h-6 md:w-[40px] md:h-[40px] rounded-full overflow-hidden">
         <Avatar
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
@@ -26,16 +26,16 @@ const ProfileInfo: React.FC<{
         />
       </div>
       {md ? (
-        <div className="tw-flex tw-flex-col tw-gap-[1px]">
+        <div className="flex flex-col gap-[1px]">
           <Typography
             tag="span"
-            className="tw-text-natural-950 tw-text-caption tw-font-semibold"
+            className="text-natural-950 text-caption font-semibold"
           >
             {name || backupName}
           </Typography>
           <Typography
             tag="span"
-            className="tw-text-natural-600 tw-text-tiny tw-font-normal"
+            className="text-natural-600 text-tiny font-normal"
           >
             {email}
           </Typography>

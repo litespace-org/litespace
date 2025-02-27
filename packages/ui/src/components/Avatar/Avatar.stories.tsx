@@ -18,7 +18,7 @@ const meta: Meta<Component> = {
   decorators: [
     (Story: React.FC) =>
       DarkStoryWrapper(() => (
-        <div className="tw-w-[400px] tw-h-[400px]">
+        <div className="w-[400px] h-[400px]">
           <Story />
         </div>
       )),

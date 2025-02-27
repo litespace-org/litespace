@@ -60,12 +60,12 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
   return (
     <div
       className={cn(
-        "tw-p-4 md:tw-p-6 tw-bg-natural-50 tw-rounded-3xl",
-        "tw-flex tw-flex-col tw-gap-6 tw-justify-between tw-items-center",
-        "tw-shadow-feedback-card"
+        "p-4 md:p-6 bg-natural-50 rounded-3xl",
+        "flex flex-col gap-6 justify-between items-center",
+        "shadow-feedback-card"
       )}
     >
-      <div className="tw-flex -tw-ml-4">
+      <div className="flex -ml-4">
         {ratings.map((rating, idx, arr) => {
           const isLast = arr.length - idx === 1;
           if (idx <= 4)
@@ -73,9 +73,9 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
               <div
                 key={rating.userId}
                 className={cn(
-                  "md:tw-w-[54px] tw-w-[51px] tw-h-[51px] md:tw-h-[54px] tw-rounded-full tw-overflow-hidden tw-border-[3px] tw-border-brand-500 -tw-mr-4 tw-relative",
-                  "tw-felx tw-justify-center tw-items-center",
-                  { "tw-bg-brand-600": idx === 4 }
+                  "md:w-[54px] w-[51px] h-[51px] md:h-[54px] rounded-full overflow-hidden border-[3px] border-brand-500 -mr-4 relative",
+                  "felx justify-center items-center",
+                  { "bg-brand-600": idx === 4 }
                 )}
                 style={{ zIndex: idx }}
               >
@@ -88,7 +88,7 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
                 ) : (
                   <Typography
                     tag="span"
-                    className="tw-text-natural-50 tw-flex tw-justify-center tw-items-center tw-h-full tw-font-bold tw-text-subtitle-2"
+                    className="text-natural-50 flex justify-center items-center h-full font-bold text-subtitle-2"
                   >
                     {arr.length - 4}
                     {"+"}
@@ -99,25 +99,25 @@ export const TutorRatingCardGroup: React.FC<TutorRatingCardGroupProps> = ({
         })}
       </div>
       <RatingStars readonly rating={value} variant="md" />
-      <div className="tw-flex tw-flex-wrap tw-justify-center">
+      <div className="flex flex-wrap justify-center">
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-center tw-font-bold tw-text-body md:tw-text-caption"
+          className="text-natural-950 text-center font-bold text-body md:text-caption"
         >
           {raterNames}
         </Typography>
       </div>
       <div
         className={cn(
-          "tw-bg-brand-500 tw-w-[54px] tw-h-[54px] md:tw-w-[123px] md:tw-h-[124px] tw-rounded-full",
-          "tw-flex tw-flex-col tw-justify-center tw-items-center",
-          "tw-border-[2px] tw-border-natural-200"
+          "bg-brand-500 w-[54px] h-[54px] md:w-[123px] md:h-[124px] rounded-full",
+          "flex flex-col justify-center items-center",
+          "border-[2px] border-natural-200"
         )}
       >
         <Quote
           width={52.72}
           height={52.72}
-          className="md:tw-w-[52.72px] md:tw-h-[52.72px] tw-w-6 tw-h-6"
+          className="md:w-[52.72px] md:h-[52.72px] w-6 h-6"
         />
       </div>
     </div>

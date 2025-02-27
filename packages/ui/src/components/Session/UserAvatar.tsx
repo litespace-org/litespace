@@ -16,10 +16,10 @@ export const UserAvatar: React.FC<{
   return (
     <div
       className={cn(
-        "tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center",
+        "p-2 overflow-hidden rounded-full flex items-center relative justify-center",
         {
-          "tw-w-[290px] tw-h-[290px]": variant === "large",
-          "tw-w-[120px] tw-h-[120px]": variant === "small",
+          "w-[290px] h-[290px]": variant === "large",
+          "w-[120px] h-[120px]": variant === "small",
         }
       )}
     >
@@ -36,7 +36,7 @@ export const UserAvatar: React.FC<{
           repeatType: "reverse",
           repeatDelay: 0.1,
         }}
-        className="tw-border-[6px] tw-border-border-avatar tw-rounded-full tw-w-full tw-h-full tw-absolute"
+        className="border-[6px] border-border-avatar rounded-full w-full h-full absolute"
       />
       <motion.div
         initial={{
@@ -53,17 +53,17 @@ export const UserAvatar: React.FC<{
           repeatDelay: 0.1,
         }}
         className={cn(
-          "tw-border-[16px] tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute",
+          "border-[16px] rounded-full border-border-avatar backdrop-blur-[15px] absolute",
           {
-            "tw-w-[265px] tw-h-[265px]": variant === "large",
-            "tw-w-[112] tw-h-[112]": variant === "small",
+            "w-[265px] h-[265px]": variant === "large",
+            "w-[112] h-[112]": variant === "small",
           }
         )}
       />
       <div
-        className={cn("tw-overflow-hidden tw-rounded-full", {
-          "tw-w-[242px] tw-h-[242px]": variant === "large",
-          "tw-w-[90px] tw-h-[90px]": variant === "small",
+        className={cn("overflow-hidden rounded-full", {
+          "w-[242px] h-[242px]": variant === "large",
+          "w-[90px] h-[90px]": variant === "small",
         })}
       >
         <Avatar

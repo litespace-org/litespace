@@ -25,7 +25,7 @@ export const AnimateWidth: React.FC<{
         opacity: 0,
         width: 0,
       }}
-      className={cn("tw-overflow-hidden", className)}
+      className={cn("overflow-hidden", className)}
     >
       {children}
     </motion.div>

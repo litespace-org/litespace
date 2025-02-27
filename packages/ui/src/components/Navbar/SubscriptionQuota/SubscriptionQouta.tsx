@@ -17,17 +17,17 @@ const SubscriptionQouta: React.FC<{
   }, [remainingMinutes, totalMinutes]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-gap-1">
-      <div className="tw-flex tw-justify-between">
+    <div className="flex flex-col gap-1">
+      <div className="flex justify-between">
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-caption tw-font-bold"
+          className="text-natural-950 text-caption font-bold"
         >
           {intl("navbar.personal-quota")}
         </Typography>
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-caption tw-font-normal"
+          className="text-natural-950 text-caption font-normal"
         >
           {intl("navbar.quota-consumption", {
             value: formatPercentage(progress),
@@ -35,20 +35,18 @@ const SubscriptionQouta: React.FC<{
         </Typography>
       </div>
       <div
-        className={cn(
-          "tw-relative tw-w-[340px] tw-h-2 tw-bg-[#d9d9d9] tw-rounded-[100px]"
-        )}
+        className={cn("relative w-[340px] h-2 bg-[#d9d9d9] rounded-[100px]")}
       >
         <div
           style={{ width: `${progress}%` }}
           className={cn(
-            "tw-absolute tw-h-full tw-top-0 tw-right-0 tw-bg-brand-600 tw-rounded-[100px]"
+            "absolute h-full top-0 right-0 bg-brand-600 rounded-[100px]"
           )}
         />
       </div>
       <Typography
         tag="span"
-        className="tw-text-natural-950 tw-text-tiny tw-font-semibold"
+        className="text-natural-950 text-tiny font-semibold"
       >
         {intl("navbar.rest-of-quota", {
           value: formatMinutes(remainingMinutes),

@@ -79,7 +79,7 @@ export const ChatMessage: React.FC<{
 
   const ReadIcon = useMemo(() => {
     if (messageState === "seen")
-      return <DoubleCheck className="[&>*]:tw-fill-secondary-400" />;
+      return <DoubleCheck className="[&>*]:fill-secondary-400" />;
     return <SingleCheck />;
   }, [messageState]);
 
@@ -89,7 +89,7 @@ export const ChatMessage: React.FC<{
         {
           label: intl("chat.message.retry"),
           onClick: () => retry && retry(),
-          icon: <Send2 className="tw-w-4 tw-h-4" />,
+          icon: <Send2 className="w-4 h-4" />,
         },
       ];
     return [
@@ -101,16 +101,16 @@ export const ChatMessage: React.FC<{
       {
         label: intl("chat.message.delete"),
         onClick: deleteMessage,
-        icon: <Trash className="tw-w-4 tw-h-4" />,
+        icon: <Trash className="w-4 h-4" />,
       },
     ];
   }, [error, deleteMessage, retry, editMessage, intl]);
 
   return (
     <div
-      className={cn("tw-group tw-flex tw-w-fit", "tw-gap-4 tw-items-center", {
-        "tw-flex-row-reverse": owner,
-        "tw-flex-row": !owner,
+      className={cn("group flex w-fit", "gap-4 items-center", {
+        "flex-row-reverse": owner,
+        "flex-row": !owner,
       })}
       onMouseEnter={() => setShowMenu(true)}
       onMouseLeave={() => {
@@ -122,8 +122,8 @@ export const ChatMessage: React.FC<{
         <div
           data-show={showMenu || !!error}
           className={cn(
-            "lg:tw-opacity-0 data-[show=true]:tw-opacity-100 tw-transition-opacity tw-duration-200",
-            viewOnly && "tw-hidden"
+            "lg:opacity-0 data-[show=true]:opacity-100 transition-opacity duration-200",
+            viewOnly && "hidden"
           )}
         >
           <Menu
@@ -134,8 +134,8 @@ export const ChatMessage: React.FC<{
               setOpenMenu(open);
             }}
           >
-            <div className="tw-w-4 tw-h-6 tw-flex tw-justify-center tw-items-center">
-              <More className="[&>*]:tw-fill-natural-800 dark:[&>*]:tw-fill-natural-50" />
+            <div className="w-4 h-6 flex justify-center items-center">
+              <More className="[&>*]:fill-natural-800 dark:[&>*]:fill-natural-50" />
             </div>
           </Menu>
         </div>
@@ -143,27 +143,26 @@ export const ChatMessage: React.FC<{
 
       <div
         className={cn(
-          "tw-rounded-[15px] tw-relative tw-p-2 tw-max-w-[242px] lg:tw-max-w-[324px]",
-          "tw-flex tw-items-end tw-gap-2 tw-justify-start",
-          pending && "tw-cursor-wait tw-opacity-50",
+          "rounded-[15px] relative p-2 max-w-[242px] lg:max-w-[324px]",
+          "flex items-end gap-2 justify-start",
+          pending && "cursor-wait opacity-50",
           {
-            "tw-bg-natural-100 dark:tw-bg-brand-100 ": !owner,
-            "tw-bg-brand-100 dark:tw-bg-brand-400": owner,
-            "tw-bg-destructive-700": error && !pending,
+            "bg-natural-100 dark:bg-brand-100 ": !owner,
+            "bg-brand-100 dark:bg-brand-400": owner,
+            "bg-destructive-700": error && !pending,
           },
           {
-            "tw-rounded-tl-none": !owner && firstMessage,
-            "tw-rounded-tr-none": owner && firstMessage,
+            "rounded-tl-none": !owner && firstMessage,
+            "rounded-tr-none": owner && firstMessage,
           }
         )}
       >
         {firstMessage ? (
           <MessageCap
-            className={cn("-tw-top-1 tw-absolute", {
-              "-tw-right-0 [&>*]:tw-fill-brand-100 dark:[&>*]:tw-fill-brand-400":
-                owner,
-              "-tw-right-0 [&>*]:tw-fill-destructive-700": error && !pending,
-              "-tw-left-0 tw-scale-x-[-1] [&>*]:tw-fill-natural-100 dark:[&>*]:tw-fill-brand-100":
+            className={cn("-top-1 absolute", {
+              "-right-0 [&>*]:fill-brand-100 dark:[&>*]:fill-brand-400": owner,
+              "-right-0 [&>*]:fill-destructive-700": error && !pending,
+              "-left-0 scale-x-[-1] [&>*]:fill-natural-100 dark:[&>*]:fill-brand-100":
                 !owner,
             })}
           />
@@ -171,15 +170,15 @@ export const ChatMessage: React.FC<{
         {error ? (
           <div
             className={cn(
-              "tw-w-4 tw-h-4 tw-rounded-full tw-bg-destructive-500 tw-shadow-alert-circle",
-              "tw-flex tw-items-center tw-justify-center tw-shrink-0"
+              "w-4 h-4 rounded-full bg-destructive-500 shadow-alert-circle",
+              "flex items-center justify-center shrink-0"
             )}
           >
-            <AlertCircle className="tw-w-[10px] tw-h-[10px]" />
+            <AlertCircle className="w-[10px] h-[10px]" />
           </div>
         ) : null}
         {owner && !error && !pending ? (
-          <div className="tw-w-4 tw-h-4 tw-shrink-0">{ReadIcon}</div>
+          <div className="w-4 h-4 shrink-0">{ReadIcon}</div>
         ) : null}
         <Typography
           tag="span"
@@ -187,10 +186,10 @@ export const ChatMessage: React.FC<{
             lineBreak: "anywhere",
           }}
           className={cn(
-            "tw-flex tw-items-end tw-gap-2 tw-max-w-[198px] lg:tw-max-w-[310px] tw-text-caption tw-font-regular",
+            "flex items-end gap-2 max-w-[198px] lg:max-w-[310px] text-caption font-regular",
             {
-              "tw-text-natural-950": !error,
-              "tw-text-natural-50": error && !pending,
+              "text-natural-950": !error,
+              "text-natural-50": error && !pending,
             }
           )}
         >

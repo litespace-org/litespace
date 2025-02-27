@@ -66,8 +66,8 @@ export const Note: React.FC<{ note: string | null; onEdit?: () => void }> = ({
   const intl = useFormatMessage();
   if (!note) return null;
   return (
-    <div className="tw-border tw-border-control tw-rounded-md">
-      <div className="tw-w-full tw-bg-surface-300 tw-px-2 tw-py-1.5 tw-flex tw-flex-row tw-gap-2">
+    <div className="border border-control rounded-md">
+      <div className="w-full bg-surface-300 px-2 py-1.5 flex flex-row gap-2">
         <p>{intl("invoices.note")}</p>
         {onEdit ? (
           <Button
@@ -80,7 +80,7 @@ export const Note: React.FC<{ note: string | null; onEdit?: () => void }> = ({
           </Button>
         ) : null}
       </div>
-      <div className="tw-px-2 tw-py-3">
+      <div className="px-2 py-3">
         <RawHtml html={note} />
       </div>
     </div>
@@ -92,7 +92,7 @@ export const Pending: React.FC<{ show?: boolean }> = ({ show = true }) => {
   if (!show) return null;
   return (
     <Alert type={AlertType.Info} title={intl("invoices.status.pending")}>
-      <div className="tw-flex tw-flex-col tw-gap-1">
+      <div className="flex flex-col gap-1">
         <p>{intl("invoices.status.pending.note")}</p>
         <p>{intl("invoices.unexpected.status.note")}</p>
       </div>
@@ -102,7 +102,7 @@ export const Pending: React.FC<{ show?: boolean }> = ({ show = true }) => {
 
 export const Amount: React.FC<{ amount: number }> = ({ amount }) => {
   return (
-    <span className="[&_.change]:tw-text-tiny">
+    <span className="[&_.change]:text-tiny">
       <Price value={amount} />{" "}
     </span>
   );

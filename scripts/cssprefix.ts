@@ -13,7 +13,7 @@ const classnamesRegex = /cn\((\s*["']([\w\s[\]!:&_=-]+)["'],?\s*)*\)/g;
 const files = globSync(["src/{components,internal}/**/*.tsx"], {
   cwd: rootDir,
 });
-const prefix = "tw-";
+const prefix = "";
 
 function asPrefixed(name: string): string {
   if (

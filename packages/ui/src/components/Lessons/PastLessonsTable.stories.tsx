@@ -15,7 +15,7 @@ const meta: Meta<Component> = {
   },
   decorators: [
     (Story) => (
-      <div className="tw-p-6">
+      <div className="p-6">
         <Story />
       </div>
     ),

@@ -23,18 +23,18 @@ export const Avatar: React.FC<{
   }, []);
 
   return (
-    <div className="tw-relative tw-w-full tw-h-full">
+    <div className="relative w-full h-full">
       <img
         data-status={status}
         className={cn(
-          "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear",
-          "data-[status=loaded]:tw-opacity-100 tw-absolute tw-w-full tw-h-full",
+          "opacity-0 transition-opacity duration-300 ease-linear",
+          "data-[status=loaded]:opacity-100 absolute w-full h-full",
           {
-            "tw-object-contain": object === "contain",
-            "tw-object-fill": object === "fill",
-            "tw-object-cover": object === "cover",
-            "tw-object-none": object === "none",
-            "tw-object-scale-down": object === "scale-down",
+            "object-contain": object === "contain",
+            "object-fill": object === "fill",
+            "object-cover": object === "cover",
+            "object-none": object === "none",
+            "object-scale-down": object === "scale-down",
           }
         )}
         src={src}
@@ -46,15 +46,12 @@ export const Avatar: React.FC<{
       <div
         data-status={status}
         className={cn(
-          "tw-opacity-100 tw-transition-opacity tw-duration-300",
-          "data-[status=loaded]:tw-opacity-0",
-          "tw-absolute tw-top-0 tw-left-0 tw-w-full tw-h-full tw-z-chat-avatar"
+          "opacity-100 transition-opacity duration-300",
+          "data-[status=loaded]:opacity-0",
+          "absolute top-0 left-0 w-full h-full z-chat-avatar"
         )}
       >
-        <JazzIcon
-          seed={seed || alt || src || "litespace"}
-          className="tw-h-full"
-        />
+        <JazzIcon seed={seed || alt || src || "litespace"} className="h-full" />
       </div>
     </div>
   );

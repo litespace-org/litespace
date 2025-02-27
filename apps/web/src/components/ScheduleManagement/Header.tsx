@@ -43,7 +43,7 @@ const Header: React.FC<Props> = ({
         </Typography>
       </div>
 
-      <div className="flex tw-flex-row gap-4 items-center justify-center">
+      <div className="flex flex-row gap-4 items-center justify-center">
         <button onClick={prevWeek} type="button">
           <ArrowRight className="[&>*]:stroke-brand-700" />
         </button>
@@ -58,7 +58,7 @@ const Header: React.FC<Props> = ({
 
       <Button
         size="large"
-        endIcon={<Calendar className="[&>*]:tw-stroke-natural-50" />}
+        endIcon={<Calendar className="[&>*]:stroke-natural-50" />}
         onClick={manageSchedule}
         htmlType="button"
       >

@@ -23,8 +23,8 @@ export const Checkbox: React.FC<{
   return (
     <div
       className={cn(
-        "tw-flex tw-items-center tw-cursor-pointer",
-        disabled && "tw-pointer-events-none",
+        "flex items-center cursor-pointer",
+        disabled && "pointer-events-none",
         containerClassName
       )}
     >
@@ -39,26 +39,24 @@ export const Checkbox: React.FC<{
             if (onCheckedChange) onCheckedChange();
           }
         }}
-        className="hover:tw-bg-brand-100 tw-rounded-full tw-w-10 tw-h-10 tw-flex tw-justify-center tw-items-center active:tw-bg-brand-200"
+        className="hover:bg-brand-100 rounded-full w-10 h-10 flex justify-center items-center active:bg-brand-200"
       >
         <div
           role="checkbox"
           id={id}
           onClick={onCheckedChange}
           className={cn(
-            "tw-border-2 tw-border-brand-500 tw-flex tw-justify-center tw-items-center tw-rounded-sm tw-h-[18px] tw-w-[18px]",
-            checked && "tw-bg-brand-500",
-            disabled && "tw-opacity-50 tw-pointer-events-none",
+            "border-2 border-brand-500 flex justify-center items-center rounded-sm h-[18px] w-[18px]",
+            checked && "bg-brand-500",
+            disabled && "opacity-50 pointer-events-none",
             checkBoxClassName
           )}
         >
-          {checked ? (
-            <Check className="tw-w-4 tw-h-4 tw-text-natural-50" />
-          ) : null}
+          {checked ? <Check className="w-4 h-4 text-natural-50" /> : null}
         </div>
       </div>
       <label
-        className="tw-pr-2 tw-text-[13px] tw-leading-none tw-text-foreground tw-cursor-pointer tw-w-full"
+        className="pr-2 text-[13px] leading-none text-foreground cursor-pointer w-full"
         htmlFor={id}
         onClick={onCheckedChange}
       >

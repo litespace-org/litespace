@@ -105,8 +105,8 @@ export const PastLessons: React.FC = () => {
     <div
       className={cn(
         !mq.lg && [
-          "tw-border tw-border-transparent hover:tw-border-natural-100 tw-h-min-96",
-          "tw-rounded-lg tw-p-4 sm:tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50",
+          "border border-transparent hover:border-natural-100 h-min-96",
+          "rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50",
         ]
       )}
     >

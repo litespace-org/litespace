@@ -18,11 +18,11 @@ export const ThemeSwitch: React.FC<SwitchProps> = ({
   return (
     <Root
       className={cn(
-        "tw-inline-flex tw-shrink-0 tw-cursor-pointer tw-items-center tw-rounded-full",
-        "tw-border tw-border-border tw-transition-colors focus-visible:tw-outline-none ",
-        "focus-visible:tw-ring-2 focus-visible:tw-ring-border focus-visible:tw-outline-offset-1 disabled:tw-cursor-not-allowed",
-        "disabled:tw-opacity-50 data-[state=checked]:tw-bg-brand data-[state=checked]:hover:tw-bg-brand",
-        "data-[state=unchecked]:tw-bg-foreground-muted/40 data-[state=unchecked]:hover:tw-bg-foreground-muted/60 tw-h-[24px] tw-w-[44px]"
+        "inline-flex shrink-0 cursor-pointer items-center rounded-full",
+        "border border-border transition-colors focus-visible:outline-none ",
+        "focus-visible:ring-2 focus-visible:ring-border focus-visible:outline-offset-1 disabled:cursor-not-allowed",
+        "disabled:opacity-50 data-[state=checked]:bg-brand data-[state=checked]:hover:bg-brand",
+        "data-[state=unchecked]:bg-foreground-muted/40 data-[state=unchecked]:hover:bg-foreground-muted/60 h-[24px] w-[44px]"
       )}
       id={id}
       checked={checked}
@@ -31,10 +31,10 @@ export const ThemeSwitch: React.FC<SwitchProps> = ({
     >
       <Thumb
         className={cn(
-          "tw-pointer-events-none tw-block tw-rounded-full tw-bg-foreground-lighter",
-          "data-[state=checked]:tw-bg-white tw-shadow-lg",
-          "tw-ring-0 tw-transition-transform tw-h-[18px] tw-w-[18px]",
-          "data-[state=checked]:tw-translate-x-[-22px] data-[state=unchecked]:tw-translate-x-[-3px]"
+          "pointer-events-none block rounded-full bg-foreground-lighter",
+          "data-[state=checked]:bg-white shadow-lg",
+          "ring-0 transition-transform h-[18px] w-[18px]",
+          "data-[state=checked]:translate-x-[-22px] data-[state=unchecked]:translate-x-[-3px]"
         )}
       />
     </Root>

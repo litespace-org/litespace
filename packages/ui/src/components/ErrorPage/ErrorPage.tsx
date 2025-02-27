@@ -6,21 +6,21 @@ const ErrorPage: React.FC = () => {
   const intl = useFormatMessage();
   return (
     <div
-      className="tw-bg-dash-sidebar tw-text-foreground tw-min-h-screen tw-flex tw-items-center tw-justify-center tw-relative tw-font-cairo"
+      className="bg-dash-sidebar text-foreground min-h-screen flex items-center justify-center relative font-cairo"
       id="error-page"
     >
-      <div className="tw-select-none tw-opacity-[5%] tw-filter tw-transition tw-duration-200 tw-blur-sm">
-        <h1 className="tw-text-[28rem]">404</h1>
+      <div className="select-none opacity-[5%] filter transition duration-200 blur-sm">
+        <h1 className="text-[28rem]">404</h1>
       </div>
 
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-absolute">
-        <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-space-y-3">
-          <h1 className="tw-text-subtitle-1">{intl("page.error.title")}</h1>
-          <p className="tw-text-subtitle-2 tw-text-foreground-light">
+      <div className="flex flex-col items-center justify-center absolute">
+        <div className="flex flex-col items-center justify-center space-y-3">
+          <h1 className="text-subtitle-1">{intl("page.error.title")}</h1>
+          <p className="text-subtitle-2 text-foreground-light">
             {intl("page.error.subtitle")}
           </p>
         </div>
-        <div className="tw-mt-4">
+        <div className="mt-4">
           <Button size={"medium"}>{intl("page.error.button.label")}</Button>
         </div>
       </div>

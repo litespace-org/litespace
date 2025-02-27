@@ -124,18 +124,18 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
   );
 
   return (
-    <div className="tw-w-full tw-relative" ref={wrapperRef}>
+    <div className="w-full relative" ref={wrapperRef}>
       <div
         tabIndex={0}
         className={cn(
-          "tw-w-full tw-outline-none tw-text-foreground focus:tw-ring-background-control focus:tw-ring-2 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control",
-          "tw-border tw-border-control tw-text-caption tw-px-4 tw-py-2 tw-bg-foreground/[0.026] tw-rounded-md h-[38px]",
-          "tw-flex tw-justify-between tw-items-center tw-cursor-pointer"
+          "w-full outline-none text-foreground focus:ring-background-control focus:ring-2 focus-visible:border-foreground-muted focus-visible:ring-background-control",
+          "border border-control text-caption px-4 py-2 bg-foreground/[0.026] rounded-md h-[38px]",
+          "flex justify-between items-center cursor-pointer"
         )}
         onFocus={show}
         onMouseDown={toggle}
       >
-        <ul className="tw-flex tw-flex-wrap tw-max-w-[80%] tw-items-center tw-gap-3">
+        <ul className="flex flex-wrap max-w-[80%] items-center gap-3">
           {display.map((weekday) => {
             const label = options.find((option) => option.value === weekday);
             return (
@@ -143,10 +143,10 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
                 type="button"
                 role="button"
                 key={weekday}
-                className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-gap-1 tw-h-[20px] tw-text-caption"
+                className="bg-background-selection px-2 rounded-lg flex items-center justify-center gap-1 h-[20px] text-caption"
               >
                 <Cross1Icon
-                  className="tw-w-[15px] tw-h-[15px] tw-px-1 tw-cursor-pointer tw-bg-muted tw-rounded-full"
+                  className="w-[15px] h-[15px] px-1 cursor-pointer bg-muted rounded-full"
                   onClick={() => onCheckedChange(weekday)}
                 />
                 {label?.label}
@@ -155,22 +155,20 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           })}
 
           {many ? (
-            <li className="tw-bg-background-selection tw-px-2 tw-rounded-lg tw-flex tw-items-center tw-justify-center tw-h-[20px] tw-text-foreground tw-text-tiny tw-gap-1">
+            <li className="bg-background-selection px-2 rounded-lg flex items-center justify-center h-[20px] text-foreground text-tiny gap-1">
               {weekdays.length - DISPLAY_DAY_COUNT}
               <BorderDottedIcon />
             </li>
           ) : null}
 
           {no ? (
-            <p className="tw-text-foreground-muted tw-select-none">
-              {placeholder}
-            </p>
+            <p className="text-foreground-muted select-none">{placeholder}</p>
           ) : null}
         </ul>
         <div
           data-open={open}
           className={cn(
-            "data-[open=true]:tw-rotate-180 tw-transition-transform tw-duration-300"
+            "data-[open=true]:rotate-180 transition-transform duration-300"
           )}
         >
           <CaretDownIcon />
@@ -180,17 +178,17 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
       <div
         data-open={open}
         className={cn(
-          "tw-bg-background-overlay tw-border tw-border-control tw-rounded-md tw-z-[1]",
-          "tw-flex tw-flex-col tw-gap-2 tw-shadow-2xl ",
-          "tw-absolute tw-whitespace-nowrap tw-top-[calc(100%+1px)] tw-right-0 tw-overflow-hidden tw-px-1 tw-py-2",
-          "tw-opacity-0 data-[open=true]:tw-opacity-100 tw-transition-all tw-duration-300 data-[open=true]:tw-top-[calc(100%+5px)] tw-invisible data-[open=true]:tw-visible"
+          "bg-background-overlay border border-control rounded-md z-[1]",
+          "flex flex-col gap-2 shadow-2xl ",
+          "absolute whitespace-nowrap top-[calc(100%+1px)] right-0 overflow-hidden px-1 py-2",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+5px)] invisible data-[open=true]:visible"
         )}
       >
-        <ul className="tw-flex tw-flex-col tw-gap-2">
+        <ul className="flex flex-col gap-2">
           {options.map((option) => (
             <li
               key={option.value}
-              className="tw-px-2 tw-py-0.5 tw-rounded-md hover:tw-bg-background-overlay-hover"
+              className="px-2 py-0.5 rounded-md hover:bg-background-overlay-hover"
             >
               <Checkbox
                 label={option.label}
@@ -201,7 +199,7 @@ export const WeekdayPicker: React.FC<WeekdayPickerProps> = ({
           ))}
         </ul>
 
-        <div className="tw-flex tw-px-2 tw-mt-2 tw-gap-2">
+        <div className="flex px-2 mt-2 gap-2">
           <Button
             onClick={reset}
             htmlType="button"

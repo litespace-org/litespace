@@ -6,7 +6,7 @@ import { RawHtml } from "@/components/RawHtml";
 import { useFormatMessage } from "@/hooks";
 
 export const List: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return <ul className="tw-flex tw-flex-col tw-gap-3">{children}</ul>;
+  return <ul className="flex flex-col gap-3">{children}</ul>;
 };
 
 export const User: React.FC<{ name: string | null }> = ({ name }) => {
@@ -42,9 +42,9 @@ export const Feedback: React.FC<{
   if (!feedback) return null;
 
   return (
-    <div className="tw-border tw-border-border-overlay tw-rounded-md tw-w-full">
-      <p className="tw-bg-surface-300 tw-px-3 tw-py-1.5">{title}</p>
-      <div className="tw-py-2 tw-px-3">
+    <div className="border border-border-overlay rounded-md w-full">
+      <p className="bg-surface-300 px-3 py-1.5">{title}</p>
+      <div className="py-2 px-3">
         <RawHtml html={feedback} />
       </div>
     </div>

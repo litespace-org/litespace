@@ -57,7 +57,7 @@ export const TextEditor: React.FC<{
 
   return (
     <div>
-      <div className="tw-flex tw-gap-3 tw-mb-2">
+      <div className="flex gap-3 mb-2">
         {actions.map(({ Icon, onClick }, idx) => (
           <div key={idx}>
             <Button
@@ -67,9 +67,9 @@ export const TextEditor: React.FC<{
               size={"small"}
               disabled={disabled}
               onClick={onClick}
-              className="!tw-w-[30px] !tw-h-[30px]"
+              className="!w-[30px] !h-[30px]"
             >
-              {<Icon className="tw-w-[20px] tw-h-[20px] tw-text-foreground" />}
+              {<Icon className="w-[20px] h-[20px] text-foreground" />}
             </Button>
           </div>
         ))}
@@ -80,17 +80,17 @@ export const TextEditor: React.FC<{
           onChange={onChange}
           disabled={disabled}
           className={cn(
-            "tw-w-full tw-min-h-40 tw-max-h-80 tw-overflow-y-auto",
-            "tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300",
-            "tw-font-cairo tw-block tw-box-border tw-w-full tw-rounded-md tw-shadow-sm tw-transition-all",
-            "tw-text-foreground focus-visible:tw-shadow-md tw-outline-none",
-            "focus:tw-ring-current focus:tw-ring-2 focus-visible:tw-border-foreground-muted",
-            "focus-visible:tw-ring-background-control tw-placeholder-foreground-muted",
-            "tw-border tw-border-control tw-text-caption tw-px-4 tw-py-4",
-            "aria-disabled:tw-opacity-50 aria-disabled:tw-cursor-not-allowed",
+            "w-full min-h-40 max-h-80 overflow-y-auto",
+            "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300",
+            "font-cairo block box-border w-full rounded-md shadow-sm transition-all",
+            "text-foreground focus-visible:shadow-md outline-none",
+            "focus:ring-current focus:ring-2 focus-visible:border-foreground-muted",
+            "focus-visible:ring-background-control placeholder-foreground-muted",
+            "border border-control text-caption px-4 py-4",
+            "aria-disabled:opacity-50 aria-disabled:cursor-not-allowed",
             {
-              "tw-bg-foreground/[.026]": !error,
-              "tw-bg-destructive-200 tw-border tw-border-destructive-400 focus:tw-ring-destructive-400 placeholder:tw-text-destructive-400":
+              "bg-foreground/[.026]": !error,
+              "bg-destructive-200 border border-destructive-400 focus:ring-destructive-400 placeholder:text-destructive-400":
                 !!error,
             },
             className
@@ -103,10 +103,7 @@ export const TextEditor: React.FC<{
       <AnimatePresence mode="wait" initial={false}>
         {error ? (
           <Helper>
-            <Typography
-              tag="span"
-              className="tw-text-destructive-500 tw-text-tiny"
-            >
+            <Typography tag="span" className="text-destructive-500 text-tiny">
               {error}
             </Typography>
           </Helper>

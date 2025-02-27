@@ -154,7 +154,7 @@ const TopicSelection: React.FC = () => {
                   <Button
                     size="large"
                     endIcon={
-                      <AddCircle className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />
+                      <AddCircle className="[&>*]:stroke-natural-50 w-4 h-4" />
                     }
                     onClick={() => setShowDialog(true)}
                   >

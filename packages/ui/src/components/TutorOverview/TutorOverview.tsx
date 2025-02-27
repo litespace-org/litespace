@@ -52,14 +52,14 @@ export const TutorOverview: React.FC<Props> = ({
 
   if (loading)
     return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+      <div className="flex items-center justify-center w-full h-40">
         <Loader size="medium" text={intl("tutor-dashboard.overview.loading")} />
       </div>
     );
 
   if (error && retry)
     return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+      <div className="flex items-center justify-center w-full h-40">
         <LoadingError
           size="medium"
           error={intl("tutor-dashboard.overview.error")}
@@ -69,30 +69,30 @@ export const TutorOverview: React.FC<Props> = ({
     );
 
   return (
-    <div className="tw-flex tw-gap-6 tw-flex-wrap tw-w-full">
+    <div className="flex gap-6 flex-wrap w-full">
       <Card
-        icon={<Video16X16 className="[&>*]:tw-stroke-natural-50" width={16} />}
+        icon={<Video16X16 className="[&>*]:stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.total-lessons"
         value={formatNumber(totalLessonCount)}
         color="brand"
       />
 
       <Card
-        icon={<Check16X16 className="[&]*:tw-stroke-natural-50" width={16} />}
+        icon={<Check16X16 className="[&]*:stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.completed-lessons"
         value={formatNumber(completedLessonCount)}
         color="secondary"
       />
 
       <Card
-        icon={<Clock16X16 className="[&]*:tw-stroke-natural-50" width={16} />}
+        icon={<Clock16X16 className="[&]*:stroke-natural-50" width={16} />}
         title="tutor-dashboard.overview.tutoring-time"
         value={tutoringTime}
         color="warning"
       />
 
       <Card
-        icon={<People className="[&>*]:tw-stroke-natural-50" width={16} />}
+        icon={<People className="[&>*]:stroke-natural-50" width={16} />}
         value={formatNumber(studentCount)}
         title="tutor-dashboard.overview.students"
         color="destructive"
@@ -113,37 +113,35 @@ export const Card: React.FC<{
   return (
     <div
       className={cn(
-        "tw-p-4 tw-bg-natural-50 tw-rounded-2xl tw-shadow-ls-x-small",
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-max-w-[215px]",
-        "tw-basis-full tw-flex tw-flex-col tw-justify-between tw-gap-2 tw-relative tw-overflow-hidden"
+        "p-4 bg-natural-50 rounded-2xl shadow-ls-x-small",
+        "border border-transparent hover:border-natural-100 max-w-[215px]",
+        "basis-full flex flex-col justify-between gap-2 relative overflow-hidden"
       )}
     >
       <div
         className={cn(
-          "tw-absolute tw-top-0 tw-left-11 -tw-translate-y-1/2 -tw-translate-x-1/2",
-          "tw-w-[69px] tw-h-[69px] tw-rounded-full"
+          "absolute top-0 left-11 -translate-y-1/2 -translate-x-1/2",
+          "w-[69px] h-[69px] rounded-full"
         )}
         style={{ background: `var(--${color}-100)` }}
       />
       <div
         className={cn(
-          "tw-absolute tw-top-0 tw-left-2 -tw-translate-y-1/2 -tw-translate-x-1/2",
-          "tw-w-[69px] tw-h-[69px] tw-rounded-full"
+          "absolute top-0 left-2 -translate-y-1/2 -translate-x-1/2",
+          "w-[69px] h-[69px] rounded-full"
         )}
         style={{ background: `var(--${color}-200)` }}
       />
-      <div className="tw-flex tw-items-center tw-gap-2 tw-z-10">
+      <div className="flex items-center gap-2 z-10">
         <div
-          className={cn(
-            "tw-w-6 tw-h-6 tw-rounded-md tw-flex tw-justify-center tw-items-center"
-          )}
+          className={cn("w-6 h-6 rounded-md flex justify-center items-center")}
           style={{ backgroundColor: `var(--${color}-500)` }}
         >
           {icon}
         </div>
         <Typography
           tag="h2"
-          className="tw-text-natural-600 tw-text-caption tw-font-regular"
+          className="text-natural-600 text-caption font-regular"
         >
           {intl(title)}
         </Typography>
@@ -151,8 +149,8 @@ export const Card: React.FC<{
       <Typography
         tag="p"
         className={cn(
-          "tw-text-natural-950 tw-inline-block tw-self-start tw-border-b",
-          "tw-text-h3 tw-font-semibold"
+          "text-natural-950 inline-block self-start border-b",
+          "text-h3 font-semibold"
         )}
         style={{ borderBottomColor: `var(--${color}-500)` }}
       >

@@ -26,24 +26,24 @@ export const ChatHeader: React.FC<{
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-justify-between tw-px-6 tw-py-4 tw-shadow-chat-header">
-      <div className="tw-flex tw-gap-2 lg:tw-gap-4 tw-items-center">
+    <div className="flex justify-between px-6 py-4 shadow-chat-header">
+      <div className="flex gap-2 lg:gap-4 items-center">
         <button
           type="button"
           onClick={back}
-          className="tw-w-6 tw-h-6 lg:tw-hidden tw-cursor-pointer"
+          className="w-6 h-6 lg:hidden cursor-pointer"
         >
           <ArrowRightLong />
         </button>
         <div
           className={cn(
-            "tw-overflow-hidden tw-rounded-full",
-            "tw-p-[2px] lg:tw-p-[5px] tw-flex tw-items-center tw-justify-center",
-            "tw-border-[3px] lg:tw-border-4",
-            online ? "tw-border-brand-700" : "tw-border-natural-500"
+            "overflow-hidden rounded-full",
+            "p-[2px] lg:p-[5px] flex items-center justify-center",
+            "border-[3px] lg:border-4",
+            online ? "border-brand-700" : "border-natural-500"
           )}
         >
-          <div className="tw-rounded-full tw-overflow-hidden tw-w-8 tw-h-8 lg:tw-w-14 lg:tw-h-14 tw-shrink-0">
+          <div className="rounded-full overflow-hidden w-8 h-8 lg:w-14 lg:h-14 shrink-0">
             <Avatar
               alt={orUndefined(name)}
               src={orUndefined(image)}
@@ -54,15 +54,15 @@ export const ChatHeader: React.FC<{
         <div>
           <Typography
             tag="span"
-            className={"tw-text-natural-950 tw-text-subtitle-2 tw-text-body"}
+            className={"text-natural-950 text-subtitle-2 text-body"}
           >
             {name}
           </Typography>
           <Typography
             tag="span"
-            className={cn("tw-text-tiny lg:tw-text-caption", {
-              "tw-text-primary-700": online,
-              "tw-text-natural-700": !online,
+            className={cn("text-tiny lg:text-caption", {
+              "text-primary-700": online,
+              "text-natural-700": !online,
             })}
           >
             {online
@@ -72,7 +72,7 @@ export const ChatHeader: React.FC<{
         </div>
       </div>
       {role !== IUser.Role.Student && !inSession ? (
-        <div className="tw-flex tw-items-center">
+        <div className="flex items-center">
           <Button onClick={book} type="main" size="large">
             {intl("chat.book")}
           </Button>

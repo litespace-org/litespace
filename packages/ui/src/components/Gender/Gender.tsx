@@ -31,16 +31,16 @@ const Option: React.FC<{
       type="button"
       disabled={disabled}
       onClick={select}
-      className="focus:tw-outline-none focus:tw-ring focus:tw-ring-blue-800 tw-rounded disabled:tw-opacity-50"
+      className="focus:outline-none focus:ring focus:ring-blue-800 rounded disabled:opacity-50"
     >
       <Card
         className={cn(
-          "tw-aspect-square hover:tw-bg-surface-300 tw-transition-colors tw-duration-300",
-          active && "!tw-bg-background-selection"
+          "aspect-square hover:bg-surface-300 transition-colors duration-300",
+          active && "!bg-background-selection"
         )}
       >
-        <Image.Light className="tw-w-full tw-h-full tw-block dark:tw-hidden" />
-        <Image.Dark className="tw-w-full tw-h-full tw-hidden dark:tw-block" />
+        <Image.Light className="w-full h-full block dark:hidden" />
+        <Image.Dark className="w-full h-full hidden dark:block" />
       </Card>
     </button>
   );
@@ -83,7 +83,7 @@ const Gender: React.FC<{
   );
 
   return (
-    <div className="tw-flex tw-flex-row tw-gap-4">
+    <div className="flex flex-row gap-4">
       {images.map(({ Image, gender: option }) => (
         <Option
           key={option}

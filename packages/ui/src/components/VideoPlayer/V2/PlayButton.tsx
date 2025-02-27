@@ -8,12 +8,12 @@ export const PlayButton: React.FC<{ togglePlay: Void }> = ({ togglePlay }) => {
     <button
       onClick={togglePlay}
       className={cn(
-        "tw-relative tw-w-[96px] tw-h-[96px] tw-rounded-full tw-backdrop-blur-[20px]",
-        "tw-overflow-hidden tw-relative tw-flex tw-items-center tw-justify-center",
-        "tw-ring-1 tw-ring-background-button-play"
+        "relative w-[96px] h-[96px] rounded-full backdrop-blur-[20px]",
+        "overflow-hidden relative flex items-center justify-center",
+        "ring-1 ring-background-button-play"
       )}
     >
-      <div className="tw-w-[32px] tw-h-[36px] tw-ml-1 tw-z-20">
+      <div className="w-[32px] h-[36px] ml-1 z-20">
         <Play />
       </div>
     </button>

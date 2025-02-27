@@ -8,8 +8,8 @@ export function DarkWrapper({
 }): React.ReactNode {
   return (
     <Direction>
-      <div className="tw-min-w-[900px] tw-min-h-[900px] tw-flex tw-items-center tw-justify-center tw-text-foreground tw-font-cairo tw-bg-dash-sidebar tw-p-10">
-        <div className="tw-min-w-[600px] tw-min-h-[600px] tw-flex tw-flex-col">
+      <div className="min-w-[900px] min-h-[900px] flex items-center justify-center text-foreground font-cairo bg-dash-sidebar p-10">
+        <div className="min-w-[600px] min-h-[600px] flex flex-col">
           {children}
         </div>
       </div>

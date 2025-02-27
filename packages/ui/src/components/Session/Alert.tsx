@@ -5,10 +5,10 @@ import { Typography } from "@/components/Typography";
 
 export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
   return (
-    <div className="tw-flex tw-items-center tw-justify-center tw-gap-2">
+    <div className="flex items-center justify-center gap-2">
       <div
         className={cn(
-          "tw-rounded-full tw-flex tw-items-center tw-justify-center tw-w-16 tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-background-internet"
+          "rounded-full flex items-center justify-center w-16 h-16 backdrop-blur-[15px] p-4 bg-background-internet"
         )}
       >
         <ExclamationMark />
@@ -16,8 +16,8 @@ export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
       <Typography
         tag="span"
         className={cn(
-          "tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-bold",
-          "tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-background-internet tw-text-caption"
+          "rounded-full flex items-center justify-center text-natural-50 font-bold",
+          "h-16 backdrop-blur-[15px] p-4 bg-background-internet text-caption"
         )}
       >
         {alert}

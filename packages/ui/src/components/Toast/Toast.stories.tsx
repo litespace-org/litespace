@@ -22,7 +22,7 @@ export const Success: StoryObj<Component> = {
     return (
       <Direction>
         <ToastProvider>
-          <div className="tw-flex tw-flex-row tw-gap-2">
+          <div className="flex flex-row gap-2">
             <Button
               onClick={() =>
                 toast.success({
@@ -30,12 +30,12 @@ export const Success: StoryObj<Component> = {
                   description: faker.lorem.words(5),
                 })
               }
-              className="tw-mb-4"
+              className="mb-4"
             >
               Short
             </Button>
             <Button
-              className="tw-mb-4"
+              className="mb-4"
               onClick={() =>
                 toast.success({
                   title: faker.lorem.words(10),
@@ -66,7 +66,7 @@ export const Warning: StoryObj<Component> = {
     const toast = useToast();
     return (
       <Direction>
-        <div className="tw-flex tw-flex-row tw-gap-2">
+        <div className="flex flex-row gap-2">
           <Button
             onClick={() =>
               toast.warning({
@@ -108,7 +108,7 @@ export const Error: StoryObj<Component> = {
     return (
       <Direction>
         <ToastProvider>
-          <div className="tw-flex tw-flex-row tw-gap-2">
+          <div className="flex flex-row gap-2">
             <Button
               onClick={() =>
                 toast.error({

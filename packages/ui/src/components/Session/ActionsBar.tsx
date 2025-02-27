@@ -14,7 +14,7 @@ export const ActionsBar: React.FC<{
   leave?: Void;
 }> = ({ leave, items }) => {
   return (
-    <div className="tw-flex tw-items-center tw-justify-center tw-gap-8">
+    <div className="flex items-center justify-center gap-8">
       {leave ? <EndSession onClick={leave} /> : null}
       {items.map((item, index) => (
         <ToggleButton key={index} {...item} />

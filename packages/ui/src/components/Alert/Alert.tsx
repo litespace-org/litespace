@@ -26,40 +26,34 @@ export const Alert: React.FC<{
 
   return (
     <div
-      className={cn(
-        "tw-border tw-p-4 tw-rounded-lg",
-        "tw-w-full tw-flex tw-flex-row tw-gap-2",
-        {
-          "tw-border-destructive-400 tw-bg-destructive-200": error,
-          "tw-border-warning-400 tw-bg-warning-200 tw-text-warning-900":
-            warning,
-          "tw-border-[var(--colors-green8)] tw-bg-[var(--colors-green4)]":
-            success,
-          "tw-border-[var(--colors-blue8)] tw-bg-[var(--colors-blue4)]": info,
-        }
-      )}
+      className={cn("border p-4 rounded-lg", "w-full flex flex-row gap-2", {
+        "border-destructive-400 bg-destructive-200": error,
+        "border-warning-400 bg-warning-200 text-warning-900": warning,
+        "border-[var(--colors-green8)] bg-[var(--colors-green4)]": success,
+        "border-[var(--colors-blue8)] bg-[var(--colors-blue4)]": info,
+      })}
     >
       <div>
         {error ? (
-          <AlertCircle className="tw-text-destructive-600" />
+          <AlertCircle className="text-destructive-600" />
         ) : warning ? (
-          <AlertTriangle className="tw-text-warning-600" />
+          <AlertTriangle className="text-warning-600" />
         ) : success ? (
-          <CheckCircle className="tw-text-[var(--colors-green9)]" />
+          <CheckCircle className="text-[var(--colors-green9)]" />
         ) : info ? (
-          <Info className="tw-text-[var(--colors-blue9)]" />
+          <Info className="text-[var(--colors-blue9)]" />
         ) : null}
       </div>
-      <div className="tw-flex tw-flex-col tw-items-start tw-justify-center">
+      <div className="flex flex-col items-start justify-center">
         {title ? (
-          <h4 className={cn(action || children ? "tw-mb-2" : "")}>{title}</h4>
+          <h4 className={cn(action || children ? "mb-2" : "")}>{title}</h4>
         ) : null}
 
         {children ? (
           <div
             className={cn(
-              "tw-text-foreground-light tw-font-normal",
-              action && "tw-mb-2"
+              "text-foreground-light font-normal",
+              action && "mb-2"
             )}
           >
             {children}
@@ -67,7 +61,7 @@ export const Alert: React.FC<{
         ) : null}
 
         {action ? (
-          <div className="tw-min-w-[100px]">
+          <div className="min-w-[100px]">
             <Button
               htmlType="button"
               onClick={action.onClick}

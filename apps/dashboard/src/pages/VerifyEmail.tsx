@@ -53,11 +53,11 @@ const VerifyEmail: React.FC = () => {
     mutation.mutate(token);
   }, [token, mutation]);
 
-  if (mutation.isPending) return <Loading className="tw-h-screen" />;
+  if (mutation.isPending) return <Loading className="h-screen" />;
 
   if (mutation.isError)
     return (
-      <div className="tw-h-screen tw-flex tw-items-center tw-justify-center">
+      <div className="h-screen flex items-center justify-center">
         <Typography tag="h3" className="text-h3">
           {intl("verify-email.redirect")}
         </Typography>
