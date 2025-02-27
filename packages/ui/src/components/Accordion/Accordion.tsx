@@ -44,7 +44,10 @@ export const Accordion: React.FC<{
                 "*:tw-transition-all *:tw-duration-150 *:tw-ease-in-out"
               )}
             >
-              <Typography tag="h1" className="tw-text-body tw-font-bold title">
+              <Typography
+                tag="h1"
+                className="tw-text-body tw-font-bold title tw-text-start"
+              >
                 {item.title}
               </Typography>
               <ArrowUp className="icon tw-mt-1 tw-text-brand-500" aria-hidden />

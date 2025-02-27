@@ -12,7 +12,7 @@ export const PAGES: Array<{ title: LocalId; route: string }> = [
   },
   {
     title: "navbar/be-a-tutor",
-    route: Landing.BecomeTutor,
+    route: Landing.Tutor,
   },
 ];
 

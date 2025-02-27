@@ -28,12 +28,13 @@ export enum Web {
 export enum Landing {
   Home = "/",
   Subscriptions = "/subscriptions",
-  BecomeTutor = "/tutor",
+  Tutor = "/tutor",
   Terms = "/terms",
   Privacy = "/privacy",
   Pricing = "/pricing",
   Faq = "/faq",
   FaqRole = "/faq/:role",
+  Contact = "/contact",
 }
 
 export enum Dashboard {
