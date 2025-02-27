@@ -33,6 +33,8 @@ export default {
         "select-item": "1",
         "chat-avatar": "1",
         "calendar-hour": "1",
+        "landing-ellipse": "1",
+        "landing-sidebar": "2",
         navbar: "1",
         sidebar: "2",
         "online-indicator": "2",
