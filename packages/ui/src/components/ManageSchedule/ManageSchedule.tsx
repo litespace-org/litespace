@@ -91,12 +91,20 @@ export const ManageSchedule: React.FC<Props> = ({
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return [{ day, slots: daySlots }];
     }
+
     return range(WEEK_DAYS).map((index) => {
       const day = weekStart.add(index, "day").startOf("day");
       const daySlots = slots.filter((slot) => day.isSame(slot.day, "day"));
       return { day, slots: daySlots };
     });
   }, [date, singleDay, slots, weekStart]);
+
+  const today = useMemo(() => dayjs(), []);
+
+  const isCurrentWeek = useMemo(
+    () => today.isBetween(weekStart, weekStart.add(1, "week")),
+    [weekStart, today]
+  );
 
   useEffect(() => {
     setSlots((prev) => {
@@ -209,7 +217,7 @@ export const ManageSchedule: React.FC<Props> = ({
       close={onClose}
       title={
         <Typography
-          tag="h1"
+          tag="span"
           className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
@@ -220,14 +228,16 @@ export const ManageSchedule: React.FC<Props> = ({
       {!singleDay ? (
         <div className="tw-pt-6">
           <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
-            <button
-              type="button"
-              onClick={prevWeek}
-              disabled={loading}
-              className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
-            >
-              <ArrowRight className="[&>*]:tw-stroke-brand-700" />
-            </button>
+            {!isCurrentWeek ? (
+              <button
+                type="button"
+                onClick={prevWeek}
+                disabled={loading}
+                className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50 tw-w-6 tw-h-6"
+              >
+                <ArrowRight className="[&>*]:tw-stroke-brand-700" />
+              </button>
+            ) : null}
             <Typography
               tag="span"
               className="tw-text-natural-950 tw-text-body tw-font-bold"
@@ -245,7 +255,7 @@ export const ManageSchedule: React.FC<Props> = ({
             </button>
           </div>
           <Typography
-            tag="span"
+            tag="p"
             className="tw-text-natural-950 tw-mb-4 tw-mt-6 tw-font-bold tw-text-body"
           >
             {intl("manage-schedule.manage-dialog.available-days")}
@@ -296,6 +306,8 @@ export const ManageSchedule: React.FC<Props> = ({
               <div className="tw-flex tw-flex-col tw-gap-4 tw-overflow-y-auto tw-scrollbar-thin">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
+                  const isDisabled = saving || day.isBefore(today, "day");
+
                   return (
                     <div className="tw-flex tw-gap-8" key={iso}>
                       <Typography
@@ -306,12 +318,12 @@ export const ManageSchedule: React.FC<Props> = ({
                       </Typography>
 
                       <DaySlots
-                        slots={slots}
+                        slots={isDisabled ? [] : slots}
                         iso={iso}
                         add={addSlot}
                         update={updateSlot}
                         remove={removeSlot}
-                        disabled={saving}
+                        disabled={isDisabled}
                       />
                     </div>
                   );
@@ -326,6 +338,7 @@ export const ManageSchedule: React.FC<Props> = ({
         <Button
           className="tw-grow tw-basis-1/2"
           onClick={() => save(slotActions)}
+          size="large"
           disabled={isEmpty(slotActions) || invalidSlots || saving}
           loading={saving}
         >
@@ -339,6 +352,7 @@ export const ManageSchedule: React.FC<Props> = ({
         <Button
           onClick={onClose}
           variant={"secondary"}
+          size="large"
           className="tw-grow tw-basis-1/2"
           disabled={saving}
         >
