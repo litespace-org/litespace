@@ -11,7 +11,7 @@ export const EmptyLessons: React.FC<{ tutorsPage: string }> = ({
 
   return (
     <div className="tw-flex tw-flex-col tw-justify-center tw-items-center tw-text-center">
-      <EmptyLessonsImage className="tw-mb-8" />
+      <EmptyLessonsImage className="tw-mb-8 tw-w-[328px] tw-h-[211px] md:tw-w-[428px] md:tw-h-[276px]" />
       <div className="tw-flex tw-flex-col tw-gap-4 tw-mb-6">
         <Typography
           tag="span"

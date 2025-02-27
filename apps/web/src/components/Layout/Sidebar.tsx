@@ -43,10 +43,12 @@ const SidebarItem = ({
   active?: boolean;
   hide: Void;
 }) => {
+  const { md, lg } = useMediaQuery();
+
   return (
     <Link
       className={cn(
-        "flex flex-row gap-2 md:gap-4 px-[14px] py-2 items-center",
+        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
         "rounded-lg transition-colors duration-200 group",
         {
           "bg-brand-700": active,
@@ -58,22 +60,24 @@ const SidebarItem = ({
     >
       <Icon
         className={cn(
-          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 lg:h-6 lg:w-6",
+          "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
           {
             "[&_*]:stroke-natural-50": active,
             "[&_*]:stroke-natural-700": !active,
           }
         )}
       />
-      <Typography
-        tag="span"
-        className={cn(
-          active ? "text-natural-50" : "text-natural-700",
-          "text-tiny lg:text-caption font-regular lg:font-semibold"
-        )}
-      >
-        {label}
-      </Typography>
+      {lg || !md ? (
+        <Typography
+          tag="span"
+          className={cn(
+            active ? "text-natural-50" : "text-natural-700",
+            "text-tiny lg:text-caption font-regular lg:font-semibold"
+          )}
+        >
+          {label}
+        </Typography>
+      ) : null}
     </Link>
   );
 };
@@ -190,25 +194,30 @@ const Sidebar: React.FC<{
   return (
     <div
       className={cn(
-        "absolute lg:fixed top-[72px] md:top-[88px] lg:top-0 bottom-0 start-0 z-20 lg:z-sidebar",
-        "bg-natural-50 w-[166px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
+        "absolute lg:fixed top-[72px] md:top-0 bottom-0 start-0 z-20 lg:z-sidebar",
+        "bg-natural-50 w-[166px] md:w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
         "flex flex-col gap-6 md:gap-10"
       )}
     >
-      <Link to={Web.Root} className="flex items-center gap-1 md:gap-2">
-        <Logo className="h-6 md:h-[50px]" />
-        <Typography
-          tag="h1"
-          className="inline-block text-brand-500 text-tiny lg:text-subtitle-2 font-bold"
-        >
-          {intl("labels.litespace")}
-        </Typography>
+      <Link
+        to={Web.Root}
+        className="flex justify-start md:justify-center lg:justify-start items-center gap-1 md:gap-2"
+      >
+        <Logo className="h-6 md:h-10 md:w-10 md:my-[5px] lg:my-0" />
+        {lg || !md ? (
+          <Typography
+            tag="h1"
+            className="inline-block text-brand-500 text-tiny lg:text-subtitle-2 font-bold"
+          >
+            {intl("labels.litespace")}
+          </Typography>
+        ) : null}
       </Link>
 
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
           tag="span"
-          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold"
+          className="text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
         >
           {intl("sidebar.main")}
         </Typography>
@@ -229,7 +238,7 @@ const Sidebar: React.FC<{
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
           tag="span"
-          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold"
+          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
         >
           {intl("sidebar.settings")}
         </Typography>
@@ -264,26 +273,29 @@ const Sidebar: React.FC<{
               hide();
             }}
             className={cn(
-              "flex gap-2 md:gap-4 px-[14px] py-2 rounded-lg",
+              "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
               "hover:text-destructive-400 hover:bg-destructive-100",
               "active:bg-destructive-400 [&_*]:active:text-natural-50",
               "[&_*]:active:stroke-natural-50 transition-all duration-200"
             )}
           >
-            <Logout className="h-4 w-4 lg:h-6 lg:w-6" />
-            <Typography
-              tag="span"
-              className="text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption"
-            >
-              {intl("sidebar.logout")}
-            </Typography>
+            <Logout className="h-4 w-4 md:h-6 md:w-6" />
+            {lg || !md ? (
+              <Typography
+                tag="span"
+                className="text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption"
+              >
+                {intl("sidebar.logout")}
+              </Typography>
+            ) : null}
           </button>
         </ul>
       </div>
 
       {user &&
       user.role === IUser.Role.Student &&
-      location.pathname !== Web.Subscription ? (
+      location.pathname !== Web.Subscription &&
+      (lg || !md) ? (
         <div className="bg-brand-100 lg:rounded-lg mt-10 -mx-4 lg:mx-0 py-4 lg:pb-0 flex flex-col items-center">
           <div className="mx-2 lg:mx-0 px-4 mb-3">
             <Typography
