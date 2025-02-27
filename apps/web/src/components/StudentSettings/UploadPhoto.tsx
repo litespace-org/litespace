@@ -8,7 +8,7 @@ import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import cn from "classnames";
 import { useUserContext } from "@litespace/headless/context/user";
 import { orUndefined } from "@litespace/utils";
-import { useUploadUserAssets } from "@litespace/headless/user";
+import { useUploadUserImage } from "@litespace/headless/user";
 
 const UploadPhoto: React.FC<{
   id: number;
@@ -20,7 +20,7 @@ const UploadPhoto: React.FC<{
   const mq = useMediaQuery();
   const { user } = useUserContext();
 
-  const upload = useUploadUserAssets();
+  const { muation } = useUploadUserImage({});
 
   const photoUrl = useMemo(() => {
     if (!photo) return user?.image;
@@ -40,9 +40,8 @@ const UploadPhoto: React.FC<{
           const file = first(event.target.files);
           if (!file || !user) return;
           setPhoto(file);
-          upload.mutate({
-            id: user.id,
-            payload: { image: file },
+          muation.mutate({
+            image: file,
           });
         }}
       />
@@ -63,8 +62,8 @@ const UploadPhoto: React.FC<{
 
         <Button
           size="large"
-          loading={upload.isPending}
-          disabled={upload.isPending}
+          loading={muation.isPending}
+          disabled={muation.isPending}
           onClick={() => {
             if (!ref.current) return;
             ref.current.click();

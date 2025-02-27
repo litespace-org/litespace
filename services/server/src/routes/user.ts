@@ -11,18 +11,22 @@ export default function router(context: ApiContext) {
   router.get("/interviewer/select", user.selectInterviewer);
   router.get("/current", user.findCurrentUser);
   router.get("/list", user.findUsers);
-  router.get("/:id", user.findById);
   router.put(
-    "/:id",
-    uploadMiddleware.fields([
-      { name: IUser.UpdateMediaFilesApiKeys.Image, maxCount: 1 },
-      {
-        name: IUser.UpdateMediaFilesApiKeys.Video,
-        maxCount: 1,
-      },
-    ]),
-    user.update(context)
+    "/asset",
+    uploadMiddleware.fields([{ name: IUser.AssetFileName.Image, maxCount: 1 }]),
+    user.uploadUserImage
   );
+  router.put(
+    "/asset/tutor",
+    uploadMiddleware.fields([
+      { name: IUser.AssetFileName.Image, maxCount: 1 },
+      { name: IUser.AssetFileName.Video, maxCount: 1 },
+      { name: IUser.AssetFileName.Thumbnail, maxCount: 1 },
+    ]),
+    user.uploadTutorAssets
+  );
+  router.get("/:id", user.findById);
+  router.put("/:id", user.update(context));
   router.get("/studio/tutors", user.findTutorsForStudio);
   router.get("/tutor/meta/:tutorId", user.findTutorMeta);
   router.get("/tutor/info/:tutorId", user.findTutorInfo);

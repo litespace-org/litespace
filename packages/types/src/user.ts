@@ -129,9 +129,10 @@ export type UpdateApiPayload = {
   city?: City | null;
 };
 
-export enum UpdateMediaFilesApiKeys {
+export enum AssetFileName {
   Image = "image",
   Video = "video",
+  Thumbnail = "thumbnail",
 }
 
 export type CreateApiPayload = {
@@ -233,4 +234,12 @@ export type GoogleAuthPayload = {
   token: string;
   type: "bearer" | "id-token";
   role?: Role.Student | Role.Tutor | Role.TutorManager;
+};
+
+export type UploadUserImageQuery = {
+  forUser?: number;
+};
+
+export type UploadTutorAssetsQuery = {
+  tutorId: number;
 };

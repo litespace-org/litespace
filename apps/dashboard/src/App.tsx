@@ -2,7 +2,6 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Root from "@/pages/Root";
 import { ErrorPage } from "@litespace/ui/ErrorPage";
 import Invoices from "@/pages/Invoices";
-import Media from "@/pages/Media";
 import Login from "@/pages/Login";
 import Plans from "@/pages/Plans";
 import Users from "@/pages/Users";
@@ -27,7 +26,6 @@ const router = createBrowserRouter([
     errorElement: <ErrorPage />,
     children: [
       { path: Dashboard.Invoices, element: <Invoices /> },
-      { path: Dashboard.Media, element: <Media /> },
       { path: Dashboard.Login, element: <Login /> },
       { path: Dashboard.Plans, element: <Plans /> },
       { path: Dashboard.Users, element: <Users /> },

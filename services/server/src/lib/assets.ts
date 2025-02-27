@@ -17,16 +17,16 @@ export function getRequestFile(
 
 export async function upload({
   data,
-  name,
+  key,
   type,
 }: {
   data: Buffer;
   type?: string;
-  name?: string;
+  key?: string | null;
 }) {
-  const key = name || uuid();
-  await s3.put({ key, data, type });
-  return key;
+  const id = key || uuid();
+  await s3.put({ key: id, data, type });
+  return id;
 }
 
 export const uploadMiddleware = multer({

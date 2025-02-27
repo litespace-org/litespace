@@ -1444,6 +1444,9 @@ importers:
       body-parser:
         specifier: ^1.20.2
         version: 1.20.3
+      bytes:
+        specifier: ^3.1.2
+        version: 3.1.2
       colors:
         specifier: ^1.4.0
         version: 1.4.0
@@ -1535,6 +1538,9 @@ importers:
       '@types/babel__preset-env':
         specifier: ^7
         version: 7.10.0
+      '@types/bytes':
+        specifier: ^3.1.5
+        version: 3.1.5
       '@types/chai':
         specifier: ^4.3.16
         version: 4.3.20
@@ -6013,6 +6019,9 @@ packages:
 
   '@types/body-parser@1.19.5':
     resolution: {integrity: sha512-fB3Zu92ucau0iQ0JMCFQE7b/dv8Ot07NI3KaZIkIUNXq82k4eBAqUaneXfleGY9JWskeS9y+u0nXMyspcuQrCg==}
+
+  '@types/bytes@3.1.5':
+    resolution: {integrity: sha512-VgZkrJckypj85YxEsEavcMmmSOIzkUHqWmM4CCyia5dc54YwsXzJ5uT4fYxBQNEXx+oF1krlhgCbvfubXqZYsQ==}
 
   '@types/chai@4.3.20':
     resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
@@ -19144,6 +19153,8 @@ snapshots:
     dependencies:
       '@types/connect': 3.4.38
       '@types/node': 20.17.16
+
+  '@types/bytes@3.1.5': {}
 
   '@types/chai@4.3.20': {}
 

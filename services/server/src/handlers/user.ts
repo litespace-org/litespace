@@ -2,9 +2,11 @@ import { tutors, users, knex, lessons } from "@litespace/models";
 import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
 import {
   apierror,
+  bad,
   exists,
   forbidden,
   notfound,
+  unexpected,
   wrongPassword,
 } from "@/lib/error";
 import {
@@ -29,6 +31,7 @@ import {
   pageSize,
   jsonBoolean,
   orderDirection,
+  id,
 } from "@/validation/utils";
 import { jwtSecret, paginationDefaults } from "@/constants";
 import { drop, entries, groupBy, sample } from "lodash";
@@ -56,8 +59,13 @@ import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/utils/validation";
-import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
+import {
+  isSuperAdmin,
+  isTutor,
+  isTutorManager,
+} from "@litespace/auth/dist/authorization";
 import { getRequestFile, upload } from "@/lib/assets";
+import bytes from "bytes";
 
 const createUserPayload = zod.object({
   role,
@@ -117,6 +125,14 @@ const findOnboardedTutorsQuery = zod.object({
 const findUncontactedTutorsQuery = zod.object({
   page: zod.optional(pageNumber).default(paginationDefaults.page),
   size: zod.optional(pageSize).default(paginationDefaults.size),
+});
+
+const uploadUserImageQuery = zod.object({
+  forUser: zod.optional(id),
+});
+
+const uploadTutorAssetsQuery = zod.object({
+  tutorId: id,
 });
 
 export async function create(req: Request, res: Response, next: NextFunction) {
@@ -187,40 +203,6 @@ function update(context: ApiContext) {
         city,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-      const image = getRequestFile(
-        req.files,
-        IUser.UpdateMediaFilesApiKeys.Image
-      );
-
-      const video = getRequestFile(
-        req.files,
-        IUser.UpdateMediaFilesApiKeys.Video
-      );
-
-      // Only studios and admins can update tutor media files (images and videos)
-      // Tutor cannot upload it for himself.
-      const isUpdatingTutorMedia =
-        (image || video) && (isTutor(targetUser) || isTutorManager(targetUser));
-
-      const isEligibleUser = [
-        IUser.Role.SuperAdmin,
-        IUser.Role.RegularAdmin,
-        IUser.Role.Studio,
-      ].includes(currentUser.role);
-      if (isUpdatingTutorMedia && !isEligibleUser) return next(forbidden());
-
-      // Only studios and admins can upload videos.
-      // e.g., students/interviewers cannot upload videos
-      if (video && !isEligibleUser) return next(forbidden());
-
-      const imageId = image
-        ? await upload({ data: image.buffer, type: image.mimetype })
-        : undefined;
-
-      const videoId = video
-        ? await upload({ data: video.buffer, type: video.mimetype })
-        : undefined;
-
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(
           targetUser.id
@@ -249,19 +231,14 @@ function update(context: ApiContext) {
             phoneNumber,
             // Reset user verification status incase his email updated.
             verified: email ? false : undefined,
-            image: drop?.image === true ? null : imageId,
             password: password ? hashPassword(password.new) : undefined,
           },
           tx
         );
 
-        const tutorData = bio || about || video || drop?.video || notice;
+        const tutorData = bio || about || drop?.video || notice;
         if (tutorData && (isTutor(targetUser) || isTutorManager(targetUser)))
-          await tutors.update(
-            targetUser.id,
-            { bio, about, video: drop?.video ? null : videoId, notice },
-            tx
-          );
+          await tutors.update(targetUser.id, { bio, about, notice }, tx);
 
         return user;
       });
@@ -827,6 +804,135 @@ async function findUncontactedTutors(
   res.status(200).json(tutorsList);
 }
 
+/**
+ * @description This route can be used by admins, studios and students to update
+ * their photos. It can be used by tutors or tutor managers.
+ */
+async function uploadUserImage(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  if (
+    !isStudent(user) &&
+    !isAdmin(user) &&
+    !isSuperAdmin(user) &&
+    !isStudio(user)
+  )
+    return next(forbidden());
+
+  const { forUser } = uploadUserImageQuery.parse(req.query);
+
+  // Only admins can update other users images
+  if (forUser && !isAdmin(user)) return next(forbidden());
+
+  // Image file is required.
+  const image = getRequestFile(req.files, IUser.AssetFileName.Image);
+  if (!image) return next(bad());
+
+  // If an admin provided a user id, it will be used instead of his id. This
+  // indicate that he wants to update the image of another user and not
+  // himself.
+  const target = forUser || user.id;
+  const userData = forUser ? await users.findById(forUser) : user;
+  if (!userData) return next(notfound.user());
+
+  const limit = bytes("8mb");
+  if (!limit) return next(unexpected());
+  // todo: return proper error code (LargeImageFile)
+  if (image.size > limit) return next(bad());
+
+  const imageId = await upload({
+    data: image.buffer,
+    type: image.mimetype,
+    // Use the existing image name as the key. The new image will override
+    // the previous onc. There is no need to remove the previous image. Also
+    // there is not need to update the user row in the database in this case.
+    key: userData.image,
+  });
+
+  // Only update user image incase he didn't had one before.
+  if (!userData.image) await users.update(target, { image: imageId });
+
+  res.sendStatus(200);
+}
+
+/**
+ * @description this route can be used by studios to upload tutor related assets
+ * (image, video, thumbnail)
+ */
+async function uploadTutorAssets(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const user = req.user;
+  if (!isStudio(user) && !isAdmin(user) && !isSuperAdmin(user))
+    return next(forbidden());
+
+  const { tutorId } = uploadTutorAssetsQuery.parse(req.query);
+
+  const tutor = await tutors.findTutorAssets(tutorId);
+  if (!tutor) return next(notfound.tutor());
+
+  // Tutor assets cannot be updated before selecting a studio.
+  if (!tutor.studioId) return next(bad());
+  // Studio can only update its tutors (tutors who selected it).
+  if (isStudio(user) && tutor.studioId !== user.id) return next(forbidden());
+
+  const image = getRequestFile(req.files, IUser.AssetFileName.Image);
+  const video = getRequestFile(req.files, IUser.AssetFileName.Video);
+  const thumbnail = getRequestFile(req.files, IUser.AssetFileName.Thumbnail);
+  if (!image && !video && !thumbnail) return next(bad());
+
+  const imageId = image
+    ? await upload({
+        data: image.buffer,
+        type: image.mimetype,
+        // Use the existing image name as the key. The new image will override
+        // the previous onc. There is no need to remove the previous image. Also
+        // there is not need to update the user row in the database in this case.
+        key: tutor.image,
+      })
+    : undefined;
+
+  const videoId = video
+    ? await upload({
+        data: video.buffer,
+        type: video.mimetype,
+        key: tutor.video,
+      })
+    : undefined;
+
+  const thumbnailId = thumbnail
+    ? await upload({
+        data: thumbnail.buffer,
+        type: thumbnail.mimetype,
+        key: tutor.thumbnail,
+      })
+    : undefined;
+
+  if (!tutor.image || !tutor.video || !tutor.thumbnail)
+    await knex.transaction(async (tx) => {
+      if (!tutor.image) await users.update(tutorId, { image: imageId }, tx);
+
+      if (tutor.video || !tutor.thumbnail)
+        await tutors.update(
+          tutorId,
+          {
+            video: videoId,
+            thumbnail: thumbnailId,
+          },
+          tx
+        );
+    });
+
+  // TODO: update tutor cache
+
+  res.sendStatus(200);
+}
+
 export default {
   update,
   create: safeRequest(create),
@@ -844,4 +950,6 @@ export default {
   findUncontactedTutors: safeRequest(findUncontactedTutors),
   findStudentStats: safeRequest(findStudentStats),
   findPersonalizedStudentStats: safeRequest(findPersonalizedStudentStats),
+  uploadUserImage: safeRequest(uploadUserImage),
+  uploadTutorAssets: safeRequest(uploadTutorAssets),
 };
