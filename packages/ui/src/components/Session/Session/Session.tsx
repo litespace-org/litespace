@@ -1,17 +1,12 @@
 import { Void } from "@litespace/types";
-import React from "react";
-import Video from "@litespace/assets/Video";
-import VideoSlash from "@litespace/assets/VideoSlash";
-import Microphone from "@litespace/assets/Microphone";
-import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
-import Chat from "@litespace/assets/Chat";
-import CastScreen from "@litespace/assets/CastScreen";
-import { ActionsBar } from "@/components/Session/ActionsBar";
+import React, { useRef } from "react";
+import { Actions } from "@/components/Session/Actions";
 import { SessionStreams } from "@/components/Session/SessionStreams";
 import { StreamInfo } from "@/components/Session/types";
 import cn from "classnames";
 import { AnimatePresence } from "framer-motion";
 import { AnimateWidth } from "@/components/Animate";
+import { useMediaQuery } from "@litespace/headless/mediaQuery";
 
 type Props = {
   streams: StreamInfo[];
@@ -58,60 +53,54 @@ export const Session: React.FC<Props> = ({
   currentUserId,
   chat,
 }) => {
+  const mq = useMediaQuery();
+  const containerRef = useRef<HTMLDivElement>(null);
+
   return (
-    <div className="tw-flex tw-flex-col tw-gap-10">
+    <div
+      ref={containerRef}
+      className="tw-flex tw-flex-col tw-h-full tw-gap-4 lg:tw-gap-10 tw-pb-[66px]"
+    >
       <div
         className={cn(
           "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
-          "tw-rounded-lg tw-overflow-hidden tw-flex tw-flex-row tw-gap-6"
+          "tw-rounded-lg tw-overflow-hidden",
+          chat.enabled
+            ? "lg:tw-grid tw-relative lg:tw-grid-cols-[auto,minmax(35%,326px)]"
+            : "tw-flex"
         )}
       >
-        <SessionStreams
-          currentUserId={currentUserId}
-          fullScreen={fullScreen}
-          streams={streams}
-          chat={chat.enabled}
-          timer={timer}
-          alert={alert}
-        />
-
         <AnimatePresence mode="wait">
-          {chat.enabled ? (
-            <AnimateWidth key="chat">{chatPanel}</AnimateWidth>
-          ) : null}
+          <AnimateWidth className="!tw-w-full">
+            <SessionStreams
+              containerRef={containerRef}
+              currentUserId={currentUserId}
+              fullScreen={fullScreen}
+              streams={streams}
+              chat={chat.enabled}
+              timer={timer}
+              alert={alert}
+            />
+          </AnimateWidth>
         </AnimatePresence>
+
+        {chat.enabled && mq.lg ? (
+          <AnimatePresence mode="wait">
+            <AnimateWidth key="chat" className="tw-h-full">
+              {chatPanel}
+            </AnimateWidth>
+          </AnimatePresence>
+        ) : null}
+
+        {chat.enabled && !mq.lg ? chatPanel : null}
       </div>
-      <div className="tw-border-t tw-border-natural-400" />
-      <ActionsBar
+      <div className="tw-hidden lg:tw-block tw-border-t tw-border-natural-400" />
+      <Actions
         leave={leave}
-        items={[
-          {
-            enabled: cast.enabled,
-            OnIcon: CastScreen,
-            OffIcon: CastScreen,
-            toggle: cast.toggle,
-          },
-          {
-            enabled: camera.enabled,
-            OnIcon: Video,
-            OffIcon: VideoSlash,
-            toggle: camera.toggle,
-            error: camera.error,
-          },
-          {
-            enabled: mic.enabled,
-            OnIcon: Microphone,
-            OffIcon: MicrophoneSlash,
-            toggle: mic.toggle,
-            error: mic.error,
-          },
-          {
-            enabled: chat.enabled,
-            OnIcon: Chat,
-            OffIcon: Chat,
-            toggle: chat.toggle,
-          },
-        ]}
+        screen={cast}
+        camera={camera}
+        microphone={mic}
+        chat={chat}
       />
     </div>
   );

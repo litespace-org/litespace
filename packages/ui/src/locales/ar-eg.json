@@ -447,6 +447,7 @@
   "chat.message.loading": "برجاء الانتظار... جاري تحميل المحادثة!",
   "chat.message.error": " عذرًا، حدث خطأ أثناء تحميل رسائل المحادثة، برجاء المحاولة مرة أخرى",
   "chat.error": " عذرًا، حدث خطأ أثناء تحميل المحادثات، برجاء المحاولة مرة أخرى",
+  "chat.in-session.header.title": "محادثة الحصة",
   "tutor-settings.tabs.profile-settings": "الملف الشخصى",
   "tutor-settings.tabs.personal-settings": "الاعدادات",
   "tutor-settings.profile.loading": "برجاء الانتظار... جاري تحميل الملف الشخصي!",

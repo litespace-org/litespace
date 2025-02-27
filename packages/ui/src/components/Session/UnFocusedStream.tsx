@@ -38,7 +38,7 @@ const Stream: React.FC<{
     <video
       ref={videoRef}
       className={cn(
-        "tw-w-full tw-aspect-video tw-absolute tw-top-0",
+        "tw-w-full tw-h-full lg:tw-aspect-video tw-absolute tw-top-0",
         hidden && "tw-opacity-0"
       )}
       autoPlay
@@ -60,7 +60,7 @@ export const UnFocusedStream: React.FC<{
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="tw-aspect-video tw-w-[219px] tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden"
+      className="tw-w-[109px] tw-aspect-[9/16] lg:tw-w-[219px] lg:tw-aspect-video tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden"
     >
       <AnimatePresence initial={false} mode="wait">
         {stream.video || stream.cast ? (
@@ -71,7 +71,7 @@ export const UnFocusedStream: React.FC<{
           <Animate key="avatar">
             <div
               className={cn(
-                "tw-w-[120px] tw-h-[120px] tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center"
+                "tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center"
               )}
             >
               <UserAvatar

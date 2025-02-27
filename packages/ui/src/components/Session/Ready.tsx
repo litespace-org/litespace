@@ -67,11 +67,11 @@ export const Ready: React.FC<{
   ]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-w-full tw-text-center">
-      <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
+    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-4 lg:tw-gap-8 tw-w-full tw-text-center">
+      <div className="tw-flex tw-flex-col tw-gap-2 lg:tw-gap-4 tw-items-center">
         <Typography
           tag="h3"
-          className="tw-font-bold tw-text-natural-950 tw-text-subtitle-1"
+          className="tw-font-bold tw-text-natural-950 tw-text-body lg:tw-text-subtitle-1"
         >
           {intl("session.ready.title")}
         </Typography>
@@ -82,15 +82,18 @@ export const Ready: React.FC<{
           {explaination}
         </Typography>
       </div>
-      <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
-        <div className="tw-w-24 tw-h-24 tw-overflow-hidden tw-rounded-full">
+      <div className="tw-flex tw-gap-2 lg:tw-flex-col lg:tw-gap-4 tw-items-center">
+        <div className="tw-w-16 tw-h-16 lg:tw-w-24 lg:tw-h-24 tw-overflow-hidden tw-rounded-full">
           <Avatar
             seed={otherMember.id.toString()}
             src={orUndefined(otherMember.imageUrl)}
             alt={orUndefined(otherMember.name)}
           />
         </div>
-        <Typography tag="span" className="tw-text-subtitle-1">
+        <Typography
+          tag="span"
+          className="tw-font-bold tw-text-subtitle-2 lg:tw-text-subtitle-1"
+        >
           {otherMember.name}
         </Typography>
       </div>

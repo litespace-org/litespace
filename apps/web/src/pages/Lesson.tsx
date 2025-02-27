@@ -10,7 +10,7 @@ import {
 } from "@litespace/ui/Session";
 import { IUser } from "@litespace/types";
 import { useFindLesson } from "@litespace/headless/lessons";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import { useUserContext } from "@litespace/headless/context/user";
 import {
   SessionV3Payload,
@@ -29,6 +29,7 @@ import {
 import { asOtherMember, isOnline, isTyping } from "@/lib/room";
 import { router } from "@/lib/routes";
 import { Web } from "@litespace/utils/routes";
+import ArrowRightLong from "@litespace/assets/ArrowRightLong";
 
 /**
  * @todos
@@ -236,23 +237,28 @@ const Lesson: React.FC = () => {
   ]);
 
   return (
-    <div className="max-w-screen-3xl mx-auto w-full p-6">
-      <div className="mb-6 flex flex-row items-center justify-start gap-1">
-        <Typography
-          tag="h1"
-          className="text-natural-950 text-subtitle-2 font-bold"
-        >
-          {intl("lesson.title")}
-          {lessonMembers?.other.name ? "/" : null}
-        </Typography>
-        {lessonMembers?.other.name ? (
+    <div className="max-w-screen-3xl mx-auto w-full grow p-6 overflow-hidden">
+      <div className="mb-4 lg:mb-6 flex flex-row items-center justify-start gap-2">
+        <Link className="lg:hidden w-6 h-6" to={Web.StudentDashboard}>
+          <ArrowRightLong />
+        </Link>
+        <div className="flex items-center gap-1">
           <Typography
-            tag="span"
-            className="text-brand-700 text-subtitle-2 font-bold"
+            tag="h4"
+            className="text-natural-950 font-bold text-body lg:text-subtitle-2"
           >
-            {lessonMembers.other.name}
+            {intl("lesson.title")}
+            {lessonMembers?.other.name ? "/" : null}
           </Typography>
-        ) : null}
+          {lessonMembers?.other.name ? (
+            <Typography
+              tag="span"
+              className="text-brand-700 font-bold text-body lg:text-subtitle-2"
+            >
+              {lessonMembers.other.name}
+            </Typography>
+          ) : null}
+        </div>
       </div>
 
       <PermissionsDialog
@@ -414,6 +420,7 @@ const Lesson: React.FC = () => {
             <Messages
               inSession
               room={room}
+              close={toggleChat}
               isTyping={isOtherMemberTyping}
               isOnline={isOtherMemberOnline}
               otherMember={chatOtherMember}

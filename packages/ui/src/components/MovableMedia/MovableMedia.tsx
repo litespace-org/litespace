@@ -1,19 +1,22 @@
 import React from "react";
 import { motion } from "framer-motion";
+import cn from "classnames";
 
 export const MovableMedia: React.FC<{
-  container: React.RefObject<HTMLDivElement>;
+  container: React.RefObject<HTMLElement>;
   children: React.ReactNode;
-}> = ({ container, children }) => {
+  className?: string;
+}> = ({ container, children, className }) => {
   return (
     <motion.div
+      id="drag"
       drag
       draggable
       dragElastic={0}
       dragConstraints={container}
       whileDrag={{ scale: 1.05 }}
       dragMomentum={false}
-      className="tw-cursor-pointer"
+      className={cn("tw-cursor-pointer", className)}
     >
       {children}
     </motion.div>

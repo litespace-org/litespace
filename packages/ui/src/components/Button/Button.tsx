@@ -10,7 +10,7 @@ import { Spinner } from "@/icons/Spinner";
 type Button = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: React.FC<{
-  children: React.ReactNode;
+  children?: React.ReactNode;
   onClick?: Button["onClick"];
   type?: ButtonType;
   size?: ButtonSize;

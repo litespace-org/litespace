@@ -42,6 +42,7 @@ export default {
         "select-dropdown": "12",
         tooltip: "13",
         toast: "14",
+        "floating-streams": "15",
       },
       screens: {
         "3xl": "1600px",
