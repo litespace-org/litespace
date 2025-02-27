@@ -5,6 +5,8 @@ export type Self = {
   bio: string | null;
   about: string | null;
   video: string | null;
+  studioId: number | null;
+  thumbnail: string | null;
   activated: boolean | null;
   activatedBy: number | null;
   /**
@@ -35,12 +37,14 @@ export type Cache = {
 
 export type Row = {
   id: number;
+  notice: number;
   bio: string | null;
   about: string | null;
   video: string | null;
   activated: boolean | null;
   activated_by: number | null;
-  notice: number;
+  studio_id: number | null;
+  thumbnail: string | null;
   created_at: Date;
   updated_at: Date;
 };
@@ -57,9 +61,19 @@ export type UpdatePayload = {
   bio?: string;
   about?: string;
   video?: string | null;
+  thumbnail?: string | null;
+  studioId?: number | null;
   notice?: number;
   activated?: boolean;
   activatedBy?: number;
+};
+
+export type Assets = {
+  tutorId: number;
+  image: string | null;
+  video: string | null;
+  thumbnail: string | null;
+  studioId: number | null;
 };
 
 export type UncontactedTutorInfo = {
@@ -84,7 +98,7 @@ export type FindOnboardedTutorsParams = IFilter.Pagination & {
 };
 
 export type CreateApiPayload = IUser.Credentials & { name: string };
-export type UpdateApiPayload = Omit<UpdatePayload, "studioId"> & {
+export type UpdateApiPayload = UpdatePayload & {
   dropPhoto?: boolean;
   dropVideo?: boolean;
 };

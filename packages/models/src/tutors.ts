@@ -31,6 +31,8 @@ const fullTutorFields: FullTutorFieldsMap = {
   bio: tutorColumn("bio"),
   about: tutorColumn("about"),
   video: tutorColumn("video"),
+  studioId: tutorColumn("studio_id"),
+  thumbnail: tutorColumn("thumbnail"),
   notice: tutorColumn("notice"),
   activated: tutorColumn("activated"),
   activatedBy: tutorColumn("activated_by"),
@@ -96,8 +98,10 @@ export class Tutors {
         about: payload.about,
         video: payload.video,
         notice: payload.notice,
+        thumbnail: payload.thumbnail,
         activated: payload.activated,
         activated_by: payload.activatedBy,
+        studio_id: payload.studioId,
         updated_at: now,
       })
       .where("id", id);
@@ -176,6 +180,27 @@ export class Tutors {
       ]);
     const list = await withPagination(main, pagination);
     return { list, total };
+  }
+
+  async findTutorAssets(
+    id: number,
+    tx?: Knex.Transaction
+  ): Promise<ITutor.Assets | null> {
+    const columns: Record<keyof ITutor.Assets, string> = {
+      tutorId: this.column("id"),
+      image: users.column("image"),
+      video: this.column("video"),
+      thumbnail: this.column("thumbnail"),
+      studioId: this.column("studio_id"),
+    } as const;
+
+    const row = await this.builder(tx)
+      .join(users.table, this.column("id"), users.column("id"))
+      .select<ITutor.Assets[]>(columns)
+      .where(this.column("id"), id)
+      .first();
+
+    return row || null;
   }
 
   async findSelfById(id: number): Promise<ITutor.Self | null> {
@@ -296,6 +321,8 @@ export class Tutors {
       bio: row.bio,
       about: row.about,
       video: row.video,
+      thumbnail: row.thumbnail,
+      studioId: row.studio_id,
       notice: row.notice,
       activated: row.activated,
       activatedBy: row.activated_by,

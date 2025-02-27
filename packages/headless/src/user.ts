@@ -1,10 +1,9 @@
 import { ITopic, IUser } from "@litespace/types";
 import { useAtlas } from "@/atlas";
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { MutationKey, QueryKey } from "@/constants";
 import { BaseMutationPayload, OnError, OnSuccess } from "@/types/query";
-import { isEmpty } from "lodash";
 
 export function useLoginUser(
   payload?: BaseMutationPayload<IUser.LoginApiResponse>
@@ -42,49 +41,6 @@ export function useRegisterUser({
 
   return useMutation({
     mutationFn: createUser,
-    onSuccess,
-    onError,
-  });
-}
-
-/**
- * Update all user data in one mutation.
- */
-export function useUpdateFullUser({
-  onSuccess,
-  onError,
-}: {
-  onSuccess?: OnSuccess<void>;
-  onError?: OnError;
-}) {
-  const atlas = useAtlas();
-  const update = useCallback(
-    async ({
-      id,
-      payload,
-    }: {
-      id: number;
-      payload: IUser.UpdateApiPayload &
-        ITopic.ReplaceUserTopicsApiPayload & {
-          image: File | null;
-        };
-    }) => {
-      await Promise.all([
-        atlas.user.update(id, payload),
-        payload.image
-          ? atlas.user.updateMedia(id, { image: payload.image })
-          : Promise.resolve(null),
-        !isEmpty(payload.addTopics) || !isEmpty(payload.removeTopics)
-          ? atlas.topic.replaceUserTopics(payload)
-          : Promise.resolve(null),
-      ]);
-    },
-    [atlas.user, atlas.topic]
-  );
-
-  return useMutation({
-    mutationFn: update,
-    mutationKey: [MutationKey.UpdateUser],
     onSuccess,
     onError,
   });
@@ -150,16 +106,75 @@ export function useCurrentUser(enabled: boolean = true) {
   });
 }
 
-export function useUploadUserAssets() {
+export function useUploadUserImage({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<void>;
+  onError?: OnError;
+}) {
   const atlas = useAtlas();
+  const [progress, setProgress] = useState<number>(0);
+
   const upload = useCallback(
-    ({ id, payload }: { id: number; payload: IUser.UpdateMediaPayload }) =>
-      atlas.user.updateMedia(id, payload),
+    (payload: { forUser?: number; image: File }) =>
+      atlas.user.uploadUserImage({
+        ...payload,
+        onUploadProgress(event) {
+          const total = event.total;
+          if (!total) return setProgress(0);
+          const progress = Math.round((event.loaded * 100) / total);
+          setProgress(progress);
+        },
+      }),
     [atlas.user]
   );
 
-  return useMutation({
+  const muation = useMutation({
     mutationFn: upload,
     mutationKey: [MutationKey.UploadUserAssets],
+    onSuccess,
+    onError,
   });
+
+  return { muation, progress };
+}
+
+export function useUploadTutorAssets({
+  onSuccess,
+  onError,
+}: {
+  onSuccess?: OnSuccess<void>;
+  onError?: OnError;
+}) {
+  const atlas = useAtlas();
+  const [progress, setProgress] = useState<number>(0);
+
+  const upload = useCallback(
+    (payload: {
+      tutorId: number;
+      image?: File;
+      video?: File;
+      thumbnail?: File;
+    }) =>
+      atlas.user.uploadTutorAssets({
+        ...payload,
+        onUploadProgress(event) {
+          const total = event.total;
+          if (!total) return setProgress(0);
+          const progress = Math.round((event.loaded * 100) / total);
+          setProgress(progress);
+        },
+      }),
+    [atlas.user]
+  );
+
+  const muation = useMutation({
+    mutationFn: upload,
+    mutationKey: [MutationKey.UploadUserAssets],
+    onSuccess,
+    onError,
+  });
+
+  return { muation, progress };
 }

@@ -1,5 +1,6 @@
 import { Base } from "@/base";
 import { IFilter, ITutor, IUser } from "@litespace/types";
+import { AxiosProgressEvent } from "axios";
 
 export class User extends Base {
   async create(
@@ -30,24 +31,65 @@ export class User extends Base {
     return this.put({ route: `/api/v1/user/${id}`, payload });
   }
 
-  async updateMedia(
-    id: number,
-    payload: IUser.UpdateMediaPayload
-  ): Promise<IUser.Self> {
+  async uploadUserImage({
+    forUser,
+    image,
+    onUploadProgress,
+  }: {
+    /**
+     * Required only when updating the image for another user (e.g., an admin is
+     * upading an image for a studio).
+     *
+     * @note It can only be used with admins.
+     *
+     */
+    forUser?: number;
+    image: File;
+    onUploadProgress?: (event: AxiosProgressEvent) => void;
+  }): Promise<void> {
     const formData = new FormData();
-    if ("image" in payload)
-      formData.append(IUser.UpdateMediaFilesApiKeys.Image, payload.image);
-    if ("video" in payload)
-      formData.append(IUser.UpdateMediaFilesApiKeys.Video, payload.video);
+    formData.append(IUser.AssetFileName.Image, image);
 
-    const config = {
-      headers: { "Content-Type": "multipart/form-data" },
-    } as const;
-
-    const { data } = await this.client.put<IUser.Self>(
-      `/api/v1/user/${id}`,
+    const { data } = await this.client.put<void>(
+      `/api/v1/user/asset`,
       formData,
-      config
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        params: { forUser },
+        onUploadProgress,
+      }
+    );
+    return data;
+  }
+
+  async uploadTutorAssets({
+    tutorId,
+    image,
+    video,
+    thumbnail,
+    onUploadProgress,
+  }: {
+    tutorId: number;
+    image?: File;
+    video?: File;
+    thumbnail?: File;
+    onUploadProgress?: (event: AxiosProgressEvent) => void;
+  }): Promise<void> {
+    const formData = new FormData();
+    if (image) formData.append(IUser.AssetFileName.Image, image);
+    if (video) formData.append(IUser.AssetFileName.Video, video);
+    if (thumbnail) formData.append(IUser.AssetFileName.Thumbnail, thumbnail);
+
+    const params: IUser.UploadTutorAssetsQuery = { tutorId };
+
+    const { data } = await this.client.put<void>(
+      `/api/v1/user/asset/tutor`,
+      formData,
+      {
+        headers: { "Content-Type": "multipart/form-data" },
+        params,
+        onUploadProgress,
+      }
     );
     return data;
   }

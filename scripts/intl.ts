@@ -77,7 +77,7 @@ const remove = new Command()
     const content = JSON.parse(fs.readFileSync(path).toString("utf-8"));
     const updated = omit(content, ids);
 
-    fs.writeFileSync(path, JSON.stringify(updated, null, 2));
+    fs.writeFileSync(path, JSON.stringify(updated, null, 2) + "\n");
     console.log("Done.");
   });
 
