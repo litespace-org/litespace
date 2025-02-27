@@ -91,20 +91,20 @@ export const TopicSelectionDialog: React.FC<Props> = ({
       title={
         <Typography
           tag="h1"
-          className="tw-text-natural-950 tw-font-bold tw-text-body md:tw-text-subtitle-1"
+          className="text-natural-950 font-bold text-body md:text-subtitle-1"
         >
           {title}
         </Typography>
       }
-      className={mq.md ? "tw-w-[584px]" : "tw-w-screen"}
+      className={mq.md ? "w-[584px]" : "w-screen"}
       close={confirming ? undefined : onClose}
       open={opened}
       position={mq.sm ? "center" : "bottom"}
     >
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-mt-4 md:tw-mt-2">
+      <div className="flex flex-col items-center justify-center mt-4 md:mt-2">
         <Typography
           tag="p"
-          className="tw-text-natural-950 tw-mt-2 tw-font-semibold tw-text-tiny md:tw-text-caption sm:tw-text-caption"
+          className="text-natural-950 mt-2 font-semibold text-tiny md:text-caption sm:text-caption"
         >
           {description}
         </Typography>
@@ -113,7 +113,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {loading && !error ? (
             <Animate
               key="loading"
-              className="tw-flex tw-justify-center tw-items-center tw-my-20"
+              className="flex justify-center items-center my-20"
             >
               <Loader
                 size="medium"
@@ -125,7 +125,7 @@ export const TopicSelectionDialog: React.FC<Props> = ({
           {error ? (
             <Animate
               key="error"
-              className="tw-flex tw-justify-center tw-items-center tw-my-12"
+              className="flex justify-center items-center my-12"
             >
               <LoadingError
                 size="medium"
@@ -139,8 +139,8 @@ export const TopicSelectionDialog: React.FC<Props> = ({
             <Animate
               key="topics"
               className={cn(
-                "tw-flex tw-flex-wrap tw-gap-2 md:tw-gap-6 tw-my-8 md:tw-my-12 tw-overflow-auto tw-max-h-[264px]",
-                "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+                "flex flex-wrap gap-2 md:gap-6 my-8 md:my-12 overflow-auto max-h-[264px]",
+                "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
               )}
             >
               {topics.map((topic, i) => (
@@ -151,20 +151,22 @@ export const TopicSelectionDialog: React.FC<Props> = ({
                     (disableSelection && !selection.includes(topic.id))
                   }
                   className={cn(
-                    "tw-rounded-2xl tw-p-3 md:tw-p-4 tw-transition-colors tw-duration-200",
-                    "disabled:tw-opacity-50 disabled:tw-cursor-not-allowed",
+                    "rounded-2xl p-3 md:p-4 transition-colors duration-200",
+                    "disabled:opacity-50 disabled:cursor-not-allowed",
                     {
-                      "tw-bg-natural-100 tw-text-natural-950":
-                        !selection.includes(topic.id),
-                      "tw-bg-brand-700 tw-text-natural-50":
-                        !!selection.includes(topic.id),
+                      "bg-natural-100 text-natural-950": !selection.includes(
+                        topic.id
+                      ),
+                      "bg-brand-700 text-natural-50": !!selection.includes(
+                        topic.id
+                      ),
                     }
                   )}
                   onClick={() => onSelect(topic.id)}
                 >
                   <Typography
                     tag="span"
-                    className="tw-font-semibold md:tw-font-medium tw-text-tiny md:tw-text-body sm:tw-text-caption"
+                    className="font-semibold md:font-medium text-tiny md:text-body sm:text-caption"
                   >
                     {topic.label}
                   </Typography>
@@ -173,16 +175,16 @@ export const TopicSelectionDialog: React.FC<Props> = ({
             </Animate>
           ) : null}
 
-          <div className="tw-flex tw-flex-row tw-w-full tw-gap-4 lg:tw-gap-6">
+          <div className="flex flex-row w-full gap-4 lg:gap-6">
             <Button
               size="large"
               variant="primary"
               loading={confirming}
-              className="tw-w-full"
+              className="w-full"
               onClick={() => confirm(selection)}
               disabled={loading || error || confirming || !dataChanged}
             >
-              <Typography tag="label" className="tw-text-body tw-font-medium">
+              <Typography tag="label" className="text-body font-medium">
                 {intl("labels.confirm")}
               </Typography>
             </Button>
@@ -190,10 +192,10 @@ export const TopicSelectionDialog: React.FC<Props> = ({
               size="large"
               onClick={onClose}
               variant="secondary"
-              className="tw-w-full"
+              className="w-full"
               disabled={confirming}
             >
-              <Typography tag="label" className="tw-text-body tw-font-medium">
+              <Typography tag="label" className="text-body font-medium">
                 {intl("labels.cancel")}
               </Typography>
             </Button>

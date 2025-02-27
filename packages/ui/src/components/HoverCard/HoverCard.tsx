@@ -21,11 +21,11 @@ export const HoverCard: React.FC<{
         <Content
           side={side}
           align={align}
-          className="tw-select-none tw-rounded tw-bg-background-overlay tw-px-[15px] tw-py-2.5 tw-text-[15px] tw-leading-none tw-text-foreground tw-border tw-border-border-overlay"
+          className="select-none rounded bg-background-overlay px-[15px] py-2.5 text-[15px] leading-none text-foreground border border-border-overlay"
           sideOffset={5}
         >
           {content}
-          <Arrow className="tw-fill-background-overlay" />
+          <Arrow className="fill-background-overlay" />
         </Content>
       </Portal>
     </Root>

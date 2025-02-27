@@ -7,21 +7,21 @@ export const AudioController: React.FC<{
   volume: number;
 }> = ({ setVolume, volume }) => {
   return (
-    <div className="tw-flex tw-gap-[2px] tw-items-end tw-h-[12px]" dir="ltr">
+    <div className="flex gap-[2px] items-end h-[12px]" dir="ltr">
       {range(0, 5).map((_, index) => (
         <motion.button
           whileHover={{ scale: 1.2, transformOrigin: "bottom" }}
           type="button"
           onClick={() => setVolume((index + 1) / 5)}
           key={index}
-          className="tw-h-full tw-flex tw-items-end"
+          className="h-full flex items-end"
         >
           <div
             data-active={(index + 1) / 5 <= volume}
             style={{
               height: `${((index + 1) / 5) * 100}%`,
             }}
-            className="tw-w-[3px] tw-shrink-0 tw-bg-natural-50 data-[active=true]:tw-bg-brand-500"
+            className="w-[3px] shrink-0 bg-natural-50 data-[active=true]:bg-brand-500"
           />
         </motion.button>
       ))}

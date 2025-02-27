@@ -44,12 +44,12 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       ref={containerRef}
       id={CONTAINER_ID}
       className={cn(
-        "tw-relative tw-w-full tw-h-full tw-flex tw-flex-col tw-flex-1 tw-rounded-md tw-overflow-hidden tw-@container"
+        "relative w-full h-full flex flex-col flex-1 rounded-md overflow-hidden @container"
       )}
     >
       <span
         data-loading={readyState <= 1 && status !== Status.Error}
-        className="tw-hidden tw-absolute tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-z-[1] tw-text-white data-[loading=true]:tw-block"
+        className="hidden absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-[1] text-white data-[loading=true]:block"
       >
         <Spinner />
       </span>
@@ -59,8 +59,8 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       <div
         data-status={status}
         className={cn(
-          "tw-opacity-0 tw-transition-opacity tw-duration-300 tw-ease-linear data-[status=loaded]:tw-opacity-100",
-          "tw-flex-1 tw-h-full tw-w-full"
+          "opacity-0 transition-opacity duration-300 ease-linear data-[status=loaded]:opacity-100",
+          "flex-1 h-full w-full"
         )}
       >
         <video
@@ -73,14 +73,14 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
           ref={videoRef}
           onClick={togglePlay}
           className={cn(
-            "data-[ready=true]:tw-cursor-pointer tw-absolute tw-w-full tw-h-full tw-z-[3]"
+            "data-[ready=true]:cursor-pointer absolute w-full h-full z-[3]"
           )}
         />
 
         <div
           id="player-controls"
           className={cn(
-            "tw-flex tw-flex-col tw-gap-2 tw-absolute tw-bottom-0 tw-left-0 tw-z-[5] tw-w-full tw-pb-2"
+            "flex flex-col gap-2 absolute bottom-0 left-0 z-[5] w-full pb-2"
           )}
         >
           <Progress
@@ -88,19 +88,19 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
             current={currentTime}
             duration={duration}
           />
-          <div className="tw-flex tw-flex-row-reverse tw-items-center tw-justify-between tw-gap-2 tw-text-white tw-px-2">
-            <div className="tw-flex tw-flex-row-reverse tw-gap-2">
+          <div className="flex flex-row-reverse items-center justify-between gap-2 text-white px-2">
+            <div className="flex flex-row-reverse gap-2">
               <button
                 className={cn(
-                  "tw-flex tw-items-center tw-justify-center tw-h-[30px] tw-w-[30px] focus:tw-outline-none",
-                  "focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
+                  "flex items-center justify-center h-[30px] w-[30px] focus:outline-none",
+                  "focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
                 )}
                 onClick={togglePlay}
               >
                 {paused ? (
-                  <Play className="tw-w-4 tw-h-4 @lg:tw-w-5 @lg:tw-h-5" />
+                  <Play className="w-4 h-4 @lg:w-5 @lg:h-5" />
                 ) : (
-                  <Pause className="tw-w-4 tw-h-4 @lg:tw-w-5 @lg:tw-h-5" />
+                  <Pause className="w-4 h-4 @lg:w-5 @lg:h-5" />
                 )}
               </button>
 
@@ -112,19 +112,19 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
               />
             </div>
 
-            <div className="tw-flex tw-items-center tw-justify-center tw-flex-row-reverse tw-gap-2 tw-flex-shrink-0">
+            <div className="flex items-center justify-center flex-row-reverse gap-2 flex-shrink-0">
               <Time total={duration} current={currentTime} />
               <Speed set={setPlaybackRate} rate={playbackRate} />
               <button
                 onClick={toggleSize}
                 className={cn(
-                  "focus:tw-outline-none focus:tw-ring-background-control tw-rounded-md focus:tw-ring-1 focus-visible:tw-border-foreground-muted focus-visible:tw-ring-background-control"
+                  "focus:outline-none focus:ring-background-control rounded-md focus:ring-1 focus-visible:border-foreground-muted focus-visible:ring-background-control"
                 )}
               >
                 {fullscreen ? (
-                  <Minimize className="tw-w-5 tw-h-5" />
+                  <Minimize className="w-5 h-5" />
                 ) : (
-                  <Maximize className="tw-w-5 tw-h-5" />
+                  <Maximize className="w-5 h-5" />
                 )}
               </button>
             </div>
@@ -135,21 +135,21 @@ export const VideoPlayer: React.FC<{ src?: string }> = ({ src }) => {
       <div
         data-status={status}
         className={cn(
-          "tw-absolute tw-inset-0 tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center",
-          "tw-opacity-0 -tw-z-[1] data-[status=error]:tw-opacity-100 data-[status=error]:tw-z-[2] tw-transition-opacity tw-duration-300"
+          "absolute inset-0 w-full h-full flex items-center justify-center",
+          "opacity-0 -z-[1] data-[status=error]:opacity-100 data-[status=error]:z-[2] transition-opacity duration-300"
         )}
       >
-        <AlertCircle className="tw-w-9 tw-h-9" />
+        <AlertCircle className="w-9 h-9" />
       </div>
 
       <span
         data-status={status}
         className={cn(
-          "tw-opacity-100 tw-transition-opacity tw-duration-300 data-[status=loaded]:tw-opacity-0 data-[status=error]:tw-opacity-0",
-          "tw-absolute tw-z-[1] tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
+          "opacity-100 transition-opacity duration-300 data-[status=loaded]:opacity-0 data-[status=error]:opacity-0",
+          "absolute z-[1] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
         )}
       >
-        <Spinner className="tw-text-foreground" />
+        <Spinner className="text-foreground" />
       </span>
     </div>
   );

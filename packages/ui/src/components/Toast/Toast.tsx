@@ -39,47 +39,47 @@ export const Toast: React.FC<{
       key={toastKey}
       onOpenChange={onOpenChange}
       className={cn(
-        "tw-py-3 tw-px-4 tw-font-cairo tw-rounded-lg tw-shadow-toast",
-        "tw-bg-natural-50 dark:tw-bg-secondary-950",
-        "tw-relative tw-overflow-hidden",
-        "data-[swipe=cancel]:tw-translate-x-0 data-[swipe=move]:tw-translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:tw-animate-hide data-[state=open]:tw-animate-slide-in data-[swipe=end]:tw-animate-swipe-out data-[swipe=cancel]:tw-transition-[transform_200ms_ease-out]",
-        "tw-flex tw-gap-4",
-        "tw-relative tw-w-[257px] md:tw-w-[343px]",
-        description ? "tw-items-start" : "tw-items-center"
+        "py-3 px-4 font-cairo rounded-lg shadow-toast",
+        "bg-natural-50 dark:bg-secondary-950",
+        "relative overflow-hidden",
+        "data-[swipe=cancel]:translate-x-0 data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[state=closed]:animate-hide data-[state=open]:animate-slide-in data-[swipe=end]:animate-swipe-out data-[swipe=cancel]:transition-[transform_200ms_ease-out]",
+        "flex gap-4",
+        "relative w-[257px] md:w-[343px]",
+        description ? "items-start" : "items-center"
       )}
     >
       <div
         className={cn(
-          "tw-absolute tw-top-0 tw-right-0",
-          "tw-h-full tw-w-1/2 tw-translate-x-[calc(50%-2rem)]",
+          "absolute top-0 right-0",
+          "h-full w-1/2 translate-x-[calc(50%-2rem)]",
           {
-            "tw-bg-toast-success": type === "success",
-            "tw-bg-toast-warning": type === "warning",
-            "tw-bg-toast-error": type === "error",
+            "bg-toast-success": type === "success",
+            "bg-toast-warning": type === "warning",
+            "bg-toast-error": type === "error",
           }
         )}
       />
 
       <div
         className={cn(
-          "tw-rounded-full tw-w-8 tw-h-8 tw-flex tw-items-center tw-justify-center tw-shrink-0",
+          "rounded-full w-8 h-8 flex items-center justify-center shrink-0",
           {
-            "tw-bg-success-900": type === "success",
-            "tw-bg-warning-900": type === "warning",
-            "tw-bg-destructive-900": type === "error",
+            "bg-success-900": type === "success",
+            "bg-warning-900": type === "warning",
+            "bg-destructive-900": type === "error",
           }
         )}
       >
         <Icon />
       </div>
-      <div className="tw-grow">
+      <div className="grow">
         <Title asChild>
           <Typography
             tag="span"
-            className={cn("tw-font-bold tw-w-4/5 tw-text-body", {
-              "tw-text-success-700": type === "success",
-              "tw-text-warning-700": type === "warning",
-              "tw-text-destructive-700": type === "error",
+            className={cn("font-bold w-4/5 text-body", {
+              "text-success-700": type === "success",
+              "text-warning-700": type === "warning",
+              "text-destructive-700": type === "error",
             })}
           >
             {title}
@@ -89,7 +89,7 @@ export const Toast: React.FC<{
           <Description asChild>
             <Typography
               tag="p"
-              className="tw-text-natural-600 tw-font-semibold dark:tw-text-natural-50 tw-text-caption"
+              className="text-natural-600 font-semibold dark:text-natural-50 text-caption"
             >
               {description}
             </Typography>
@@ -102,13 +102,13 @@ export const Toast: React.FC<{
         animate={{ width: "0%" }}
         transition={{ duration: TOAST_DURATION / 1000 }}
         className={cn(
-          "tw-absolute -tw-bottom-[7px] tw-left-0",
-          "tw-blur-[4px]",
-          "tw-h-[14px] tw-rounded-[10px]",
+          "absolute -bottom-[7px] left-0",
+          "blur-[4px]",
+          "h-[14px] rounded-[10px]",
           {
-            "tw-bg-success-500": type === "success",
-            "tw-bg-warning-500": type === "warning",
-            "tw-bg-destructive-500": type === "error",
+            "bg-success-500": type === "success",
+            "bg-warning-500": type === "warning",
+            "bg-destructive-500": type === "error",
           }
         )}
       />
@@ -118,12 +118,12 @@ export const Toast: React.FC<{
         animate={{ width: "0%" }}
         transition={{ duration: TOAST_DURATION / 1000 }}
         className={cn(
-          "tw-absolute -tw-bottom-[7px] tw-left-0",
-          "tw-h-[14px] tw-rounded-[10px]",
+          "absolute -bottom-[7px] left-0",
+          "h-[14px] rounded-[10px]",
           {
-            "tw-bg-success-500": type === "success",
-            "tw-bg-warning-500": type === "warning",
-            "tw-bg-destructive-500": type === "error",
+            "bg-success-500": type === "success",
+            "bg-warning-500": type === "warning",
+            "bg-destructive-500": type === "error",
           }
         )}
       />

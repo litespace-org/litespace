@@ -35,11 +35,11 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
   return (
     <Dialog
       title={
-        <div className="tw-flex tw-gap-2 tw-items-center">
+        <div className="flex gap-2 items-center">
           <MessageQuestion />
           <Typography
             tag="p"
-            className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
+            className="text-natural-950 font-bold text-subtitle-2"
           >
             {rating
               ? intl("tutor.rating.edit")
@@ -50,7 +50,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
       close={onClose}
       open={open}
       setOpen={setOpen}
-      className="tw-flex tw-flex-col tw-items-center tw-gap-8"
+      className="flex flex-col items-center gap-8"
     >
       <TutorRatingCard
         studentName={studentName}
@@ -67,7 +67,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
         readonly={false}
         setRating={setNewRating}
       />
-      <div className="tw-flex tw-gap-6 tw-w-[696px]">
+      <div className="flex gap-6 w-[696px]">
         <Input
           placeholder={intl(
             "student-dashboard.rating-dialog.add-comment-placeholder"
@@ -92,7 +92,7 @@ export const RatingDialog: React.FC<RateDialogProps> = ({
         >
           <Typography
             tag="span"
-            className="tw-text-natural-50 tw-font-bold tw-text-body"
+            className="text-natural-50 font-bold text-body"
           >
             {intl("labels.confirm")}
           </Typography>

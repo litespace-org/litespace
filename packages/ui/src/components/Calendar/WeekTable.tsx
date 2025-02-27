@@ -40,33 +40,33 @@ export const WeekTable: React.FC<{
         const lastDay = week.length - 1 === idx;
         return (
           <div
-            className="tw-relative tw-border-r tw-border-natural-300"
+            className="relative border-r border-natural-300"
             key={day.toISOString()}
           >
             <div
               className={cn(
-                "tw-flex tw-items-center tw-justify-center tw-px-3 tw-h-16 tw-border-b tw-border-natural-300",
-                today ? "tw-bg-brand-100" : "tw-bg-natural-50",
-                lastDay && "tw-rounded-tl-2xl"
+                "flex items-center justify-center px-3 h-16 border-b border-natural-300",
+                today ? "bg-brand-100" : "bg-natural-50",
+                lastDay && "rounded-tl-2xl"
               )}
             >
               <Typography
                 tag="span"
-                className="tw-text-brand-700 tw-font-semibold tw-text-body"
+                className="text-brand-700 font-semibold text-body"
               >
                 {day.format("dddd D")}
               </Typography>
             </div>
 
-            <div className="tw-absolute tw-w-full">
+            <div className="absolute w-full">
               {hours.map((hour, i) => {
                 const lastHour = i === hours.length - 1;
                 return (
                   <div
                     key={hour.toISOString()}
                     className={cn(
-                      "tw-border-natural-300 tw-p-2",
-                      !lastHour && "tw-border-b"
+                      "border-natural-300 p-2",
+                      !lastHour && "border-b"
                     )}
                     style={{ height: HOUR_HEIGHT }}
                   >
@@ -90,10 +90,7 @@ export const WeekTable: React.FC<{
                   )
                   .map((slot) => {
                     return (
-                      <div
-                        key={slot.id}
-                        className="tw-absolute tw-w-full tw-h-full tw-p-1"
-                      >
+                      <div key={slot.id} className="absolute w-full h-full p-1">
                         <AvailabilitySlot {...slot} {...slotActions} />
                       </div>
                     );

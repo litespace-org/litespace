@@ -60,7 +60,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
   }, [formatterMap, time]);
 
   return (
-    <div className="tw-w-full tw-relative" ref={inputRef}>
+    <div className="w-full relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
         state={error ? "error" : "success"}
@@ -71,7 +71,7 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         endAction={useMemo(
           () => ({
             id: 1,
-            icon: <Clock className="tw-w-4 tw-h-4" />,
+            icon: <Clock className="w-4 h-4" />,
             onClick: toggle,
           }),
           [toggle]
@@ -82,10 +82,10 @@ export const TimePicker: React.FC<TimePickerProps> = ({
         data-open={open}
         ref={dateRef}
         className={cn(
-          "tw-bg-background-overlay tw-border tw-border-control tw-rounded-md tw-z-[1]",
-          "tw-flex tw-flex-col tw-gap-2 tw-shadow-lg",
-          "tw-absolute tw-whitespace-nowrap tw-top-[calc(100%+1px)] tw-right-0 tw-overflow-hidden tw-px-1 tw-py-2",
-          "tw-opacity-0 data-[open=true]:tw-opacity-100 tw-transition-all tw-duration-300 data-[open=true]:tw-top-[calc(100%+5px)] tw-invisible data-[open=true]:tw-visible"
+          "bg-background-overlay border border-control rounded-md z-[1]",
+          "flex flex-col gap-2 shadow-lg",
+          "absolute whitespace-nowrap top-[calc(100%+1px)] right-0 overflow-hidden px-1 py-2",
+          "opacity-0 data-[open=true]:opacity-100 transition-all duration-300 data-[open=true]:top-[calc(100%+5px)] invisible data-[open=true]:visible"
         )}
       >
         <Picker labels={labels} time={time} onChange={onChange} />

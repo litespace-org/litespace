@@ -13,29 +13,29 @@ export const ToggleButton: React.FC<{
   return (
     <button
       className={cn(
-        "tw-relative tw-w-[72px] tw-h-12 tw-rounded-lg tw-border tw-py-3 tw-px-6",
-        "tw-transition-colors tw-duration-300",
+        "relative w-[72px] h-12 rounded-lg border py-3 px-6",
+        "transition-colors duration-300",
         {
-          "hover:tw-bg-brand-100 tw-border-brand-700": !enabled,
-          "tw-bg-brand-200 hover:tw-bg-brand-100 tw-border-brand-700": enabled,
-          "tw-bg-destructive-100 tw-border-destructive-700 hover:tw-bg-destructive-50":
+          "hover:bg-brand-100 border-brand-700": !enabled,
+          "bg-brand-200 hover:bg-brand-100 border-brand-700": enabled,
+          "bg-destructive-100 border-destructive-700 hover:bg-destructive-50":
             error,
         }
       )}
       onClick={toggle}
     >
       {enabled && !error ? (
-        <OnIcon className="[&>*]:tw-stroke-brand-700" />
+        <OnIcon className="[&>*]:stroke-brand-700" />
       ) : (
         <OffIcon
           className={cn(
-            "[&>*]:tw-stroke-brand-700",
-            error && "[&>*]:tw-stroke-destructive-700"
+            "[&>*]:stroke-brand-700",
+            error && "[&>*]:stroke-destructive-700"
           )}
         />
       )}
       {error ? (
-        <div className="tw-w-6 tw-rounded-full tw-h-6 tw-flex tw-items-center tw-justify-center tw-bg-destructive-400 tw-border-[3px] tw-border-destructive-600 tw-absolute -tw-top-3 -tw-left-3 ">
+        <div className="w-6 rounded-full h-6 flex items-center justify-center bg-destructive-400 border-[3px] border-destructive-600 absolute -top-3 -left-3 ">
           <Error />
         </div>
       ) : null}

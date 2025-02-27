@@ -13,7 +13,7 @@ const meta: Meta<Component> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-w-[500px] tw-min-h-[500px] tw-flex tw-items-center tw-justify-center">
+        <div className="font-cairo text-foreground bg-dash-sidebar w-[500px] min-h-[500px] flex items-center justify-center">
           <Story />
         </div>
       </Direction>

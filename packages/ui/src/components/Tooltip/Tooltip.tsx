@@ -24,11 +24,11 @@ export const Tooltip: React.FC<{
             <Content
               side={side}
               dir="rtl"
-              className="tw-p-3 tw-rounded-lg tw-bg-natural-50 tw-shadow-tooltip tw-z-tooltip"
+              className="p-3 rounded-lg bg-natural-50 shadow-tooltip z-tooltip"
               sideOffset={5}
             >
               {content}
-              <Arrow className="tw-fill-natural-50" />
+              <Arrow className="fill-natural-50" />
             </Content>
           ) : null}
         </Portal>

@@ -67,30 +67,30 @@ export const Ready: React.FC<{
   ]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-8 tw-w-full tw-text-center">
-      <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
+    <div className="flex flex-col items-center justify-center gap-8 w-full text-center">
+      <div className="flex flex-col gap-4 items-center">
         <Typography
           tag="h3"
-          className="tw-font-bold tw-text-natural-950 tw-text-subtitle-1"
+          className="font-bold text-natural-950 text-subtitle-1"
         >
           {intl("session.ready.title")}
         </Typography>
         <Typography
           tag="p"
-          className="tw-text-success-700 tw-font-semibold tw-text-caption"
+          className="text-success-700 font-semibold text-caption"
         >
           {explaination}
         </Typography>
       </div>
-      <div className="tw-flex tw-flex-col tw-gap-4 tw-items-center">
-        <div className="tw-w-24 tw-h-24 tw-overflow-hidden tw-rounded-full">
+      <div className="flex flex-col gap-4 items-center">
+        <div className="w-24 h-24 overflow-hidden rounded-full">
           <Avatar
             seed={otherMember.id.toString()}
             src={orUndefined(otherMember.imageUrl)}
             alt={orUndefined(otherMember.name)}
           />
         </div>
-        <Typography tag="span" className="tw-text-subtitle-1">
+        <Typography tag="span" className="text-subtitle-1">
           {otherMember.name}
         </Typography>
       </div>

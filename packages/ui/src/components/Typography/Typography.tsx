@@ -17,7 +17,7 @@ export const Typography = <T extends Tag>({
 }: Props<T>) => {
   return React.createElement(tag, {
     children,
-    className: cn("tw-font-cairo tw-leading-[150%]", className),
+    className: cn("font-cairo leading-[150%]", className),
     ...props,
   });
 };

@@ -54,9 +54,9 @@ export const UserTyping: React.FC<{
           ease: "linear",
         }}
         exit={{ opacity: 0 }}
-        className="tw-flex tw-flex-row tw-items-center tw-gap-2"
+        className="flex flex-row items-center gap-2"
       >
-        <div className="tw-w-7 tw-h-7 tw-rounded-full tw-overflow-hidden">
+        <div className="w-7 h-7 rounded-full overflow-hidden">
           <Avatar
             src={orUndefined(imageUrl)}
             alt={orUndefined(name)}
@@ -65,18 +65,12 @@ export const UserTyping: React.FC<{
         </div>
         <div>
           {name ? (
-            <Typography
-              tag="span"
-              className="tw-text-natural-950 tw-text-caption"
-            >
+            <Typography tag="span" className="text-natural-950 text-caption">
               {name}
             </Typography>
           ) : null}
           &nbsp;
-          <Typography
-            tag="span"
-            className="tw-text-natural-400 tw-text-caption"
-          >
+          <Typography tag="span" className="text-natural-400 text-caption">
             {gender === IUser.Gender.Male || gender === null
               ? intl("chat.typing-now.male")
               : intl("chat.typing-now.female")}

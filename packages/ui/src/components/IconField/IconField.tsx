@@ -7,13 +7,11 @@ export const Field: React.FC<{
   className?: string;
 }> = ({ Icon, children, className }) => {
   return (
-    <li
-      className={cn("tw-flex tw-flex-row tw-items-center tw-gap-2", className)}
-    >
+    <li className={cn("flex flex-row items-center gap-2", className)}>
       <div>
-        <Icon className="tw-w-5 tw-h-5 md:tw-w-6 md:tw-h-6" />
+        <Icon className="w-5 h-5 md:w-6 md:h-6" />
       </div>
-      <p className="tw-text-caption md:tw-text-base">{children}</p>
+      <p className="text-caption md:text-base">{children}</p>
     </li>
   );
 };

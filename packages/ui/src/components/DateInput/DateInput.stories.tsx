@@ -36,7 +36,7 @@ export const Small: StoryObj<Component> = {
   render() {
     const [value, setValue] = useState("");
     return (
-      <Form className="tw-w-[200px]">
+      <Form className="w-[200px]">
         <DateInput
           placeholder={ar["global.form.email.placeholder"]}
           value={value}

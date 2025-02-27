@@ -10,7 +10,7 @@ const meta: Meta<typeof PlanCard> = {
   component: PlanCard,
   decorators: [
     (Story) => (
-      <div className="tw-w-[368px] tw-mt-20">
+      <div className="w-[368px] mt-20">
         <Story />
       </div>
     ),

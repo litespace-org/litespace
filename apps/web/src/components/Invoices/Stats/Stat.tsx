@@ -16,7 +16,7 @@ const Stat: React.FC<{
         {intl(id)}
       </h3>
 
-      <span className="text-3xl leading-none md:text-4xl [&_.tw-change]:text-base [&_.tw-change]:text-foreground-lighter [&_.tw-currency]:text-base flex flex-row items-end">
+      <span className="text-3xl leading-none md:text-4xl [&_.change]:text-base [&_.change]:text-foreground-lighter [&_.currency]:text-base flex flex-row items-end">
         <Price value={value} />
       </span>
     </Card>

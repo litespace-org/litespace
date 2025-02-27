@@ -14,14 +14,14 @@ export const LoadingError: React.FC<{
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
+    <div className="flex flex-col items-center justify-center">
       <div
         className={cn(
-          "tw-flex tw-items-center tw-justify-center tw-bg-destructive-200 tw-rounded-full",
+          "flex items-center justify-center bg-destructive-200 rounded-full",
           {
-            "tw-p-[3.33px] tw-w-10 tw-h-10": size === "small",
-            "tw-p-[5.33px] tw-w-16 tw-h-16": size === "medium",
-            "tw-p-[6.67px] tw-w-20 tw-h-20": size === "large",
+            "p-[3.33px] w-10 h-10": size === "small",
+            "p-[5.33px] w-16 h-16": size === "medium",
+            "p-[6.67px] w-20 h-20": size === "large",
           }
         )}
       >
@@ -30,10 +30,10 @@ export const LoadingError: React.FC<{
       <Typography
         tag="span"
         className={cn(
-          "tw-text-natural-950 tw-text-center tw-w-[226px] sm:tw-w-full tw-mt-6 sm:tw-mt-4 tw-mb-4",
+          "text-natural-950 text-center w-[226px] sm:w-full mt-6 sm:mt-4 mb-4",
           {
-            "tw-text-tiny tw-font-semibold": size === "small",
-            "tw-text-caption tw-font-regular": size !== "small",
+            "text-tiny font-semibold": size === "small",
+            "text-caption font-regular": size !== "small",
           }
         )}
       >

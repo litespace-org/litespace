@@ -66,18 +66,18 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-rounded-lg tw-p-4 sm:tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50"
+        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50"
       )}
     >
       <Typography
         tag="h2"
-        className="tw-text-natural-950 tw-font-bold tw-text-body sm:tw-text-subtitle-2"
+        className="text-natural-950 font-bold text-body sm:text-subtitle-2"
       >
         {intl("student-dashboard.upcoming-lessons.title")}
       </Typography>
 
       {error && retry && !loading ? (
-        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+        <div className="w-full h-96 flex justify-center items-center">
           <LoadingError
             size={mq.sm ? "medium" : "small"}
             error={intl("student-dashboard.upcoming-lessons-summary.error")}
@@ -87,7 +87,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       ) : null}
 
       {loading ? (
-        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+        <div className="w-full h-96 flex justify-center items-center">
           <Loader
             size={mq.sm ? "medium" : "small"}
             text={intl("student-dashboard.upcoming-lessons-summary.loading")}
@@ -98,34 +98,31 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
       {lessons && !error && !loading ? (
         <div>
           {lessons.length ? (
-            <div className="tw-flex tw-flex-col tw-gap-4 tw-mt-4">
+            <div className="flex flex-col gap-4 mt-4">
               {lessons.map((lesson, i) => (
                 <Link
                   key={i}
                   to={lesson.url}
-                  className="tw-flex tw-gap-2 tw-items-center"
+                  className="flex gap-2 items-center"
                 >
-                  <div className="tw-w-[43px] tw-h-[43px] tw-rounded-[4px] tw-overflow-hidden">
+                  <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
                     <Avatar
                       alt={orUndefined(lesson.name)}
                       src={orUndefined(lesson.imageUrl)}
                       seed={lesson.userId?.toString()}
                     />
                   </div>
-                  <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
+                  <div className="flex flex-col justify-between self-stretch">
                     <Typography
                       tag="span"
-                      className="tw-text-natural-950 tw-text-caption tw-font-semibold"
+                      className="text-natural-950 text-caption font-semibold"
                     >
                       {dayjs(lesson.start).format("dddd - D MMMM YYYY")}
                     </Typography>
-                    <div className="tw-flex tw-justify-between">
+                    <div className="flex justify-between">
                       <Tooltip
                         content={
-                          <Typography
-                            tag="span"
-                            className="tw-text-natuarl-950"
-                          >
+                          <Typography tag="span" className="text-natuarl-950">
                             {lesson.name}
                           </Typography>
                         }
@@ -133,7 +130,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                         <div>
                           <Typography
                             tag="span"
-                            className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-font-regular tw-text-tiny"
+                            className="block text-natural-600 me-1 truncate max-w-16 font-regular text-tiny"
                           >
                             {lesson.name}
                           </Typography>
@@ -141,7 +138,7 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                       </Tooltip>
                       <Typography
                         tag="span"
-                        className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-tiny tw-font-regular"
+                        className="block text-natural-600 ms-[18px] text-tiny font-regular"
                       >
                         {dayjs(lesson.start).format("h:mm")}
                         {" - "}
@@ -149,17 +146,17 @@ export const UpcomingLessonsSummary: React.FC<Props> = ({
                       </Typography>
                     </div>
                   </div>
-                  <div className="tw-w-6 tw-h-6 tw-mr-auto">
-                    <ArrowLeft className="[&>*]:tw-stroke-natural-950" />
+                  <div className="w-6 h-6 mr-auto">
+                    <ArrowLeft className="[&>*]:stroke-natural-950" />
                   </div>
                 </Link>
               ))}
 
-              <Link to={lessonsUrl} className="tw-inline-block tw-w-full">
-                <Button size="large" className="tw-w-full">
+              <Link to={lessonsUrl} className="inline-block w-full">
+                <Button size="large" className="w-full">
                   <Typography
                     tag="span"
-                    className="tw-text-natural-50 tw-font-semibold tw-text-caption"
+                    className="text-natural-50 font-semibold text-caption"
                   >
                     {intl("student-dashboard.button.show-all-lessons")}
                   </Typography>
@@ -180,21 +177,21 @@ const EmptyUpcomingLessonsComponent: React.FC<{
 }> = ({ tutorsUrl }) => {
   const intl = useFormatMessage();
   return (
-    <div className={cn("tw-flex tw-flex-col tw-gap-12 tw-mt-8 lg:tw-mt-6")}>
-      <div className={cn("tw-flex tw-flex-col tw-items-center tw-gap-6")}>
+    <div className={cn("flex flex-col gap-12 mt-8 lg:mt-6")}>
+      <div className={cn("flex flex-col items-center gap-6")}>
         <EmptyUpcomingLessons />
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-font-bold sm:tw-font-semibold tw-text-caption sm:tw-text-subtitle-1"
+          className="text-natural-950 font-bold sm:font-semibold text-caption sm:text-subtitle-1"
         >
           {intl("student-dashboard.start-journey")}
         </Typography>
       </div>
-      <Link to={tutorsUrl} className="tw-intline-block tw-w-full">
-        <Button className="tw-w-full" size="large">
+      <Link to={tutorsUrl} className="intline-block w-full">
+        <Button className="w-full" size="large">
           <Typography
             tag="span"
-            className="tw-text-natural-50 tw-font-semibold tw-text-caption"
+            className="text-natural-50 font-semibold text-caption"
           >
             {intl("student-dashboard.button.find-tutors")}
           </Typography>

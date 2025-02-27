@@ -17,7 +17,7 @@ export const Primary: StoryObj<Component> = {
   args: {
     children: <Button>{ar["global.labels.go"]}</Button>,
     content: (
-      <p className="tw-w-full">
+      <p className="w-full">
         {ar["page.tutor.onboarding.book.interview.success.title"]}
       </p>
     ),

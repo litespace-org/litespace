@@ -53,30 +53,30 @@ export const MultiSelect = <T,>({
 
   return (
     <Root open={open} onOpenChange={setOpen}>
-      <div className="tw-flex tw-flex-col tw-gap-0">
+      <div className="flex flex-col gap-0">
         <div
           tabIndex={0}
           data-error={!!error}
           data-open={open}
           className={cn(
-            "tw-w-full tw-h-14 tw-rounded-lg tw-p-2 tw-transition-colors tw-duration-200",
-            "tw-border tw-border-natural-300 hover:tw-border-brand-200 focus:tw-border-brand-500",
-            "data-[error=true]:tw-border-destructive-500 data-[error=true]:tw-shadow-ls-x-small data-[error=true]:tw-shadow-[rgba(204,0,0,0.25)]",
-            "focus:tw-outline-none focus:tw-shadow-ls-x-small focus:tw-shadow-[rgba(43,181,114,0.25)]",
-            "tw-bg-natural-50 hover:tw-bg-brand-50",
-            "data-[open=true]:tw-shadow-ls-x-small data-[open=true]:tw-shadow-[rgba(43,181,114,0.25)] data-[open=true]:tw-border-brand-500"
+            "w-full h-14 rounded-lg p-2 transition-colors duration-200",
+            "border border-natural-300 hover:border-brand-200 focus:border-brand-500",
+            "data-[error=true]:border-destructive-500 data-[error=true]:shadow-ls-x-small data-[error=true]:shadow-[rgba(204,0,0,0.25)]",
+            "focus:outline-none focus:shadow-ls-x-small focus:shadow-[rgba(43,181,114,0.25)]",
+            "bg-natural-50 hover:bg-brand-50",
+            "data-[open=true]:shadow-ls-x-small data-[open=true]:shadow-[rgba(43,181,114,0.25)] data-[open=true]:border-brand-500"
           )}
           onClick={() => setOpen(true)}
         >
-          <div className="tw-flex tw-flex-row tw-justify-between tw-items-center tw-gap-2 tw-h-full">
+          <div className="flex flex-row justify-between items-center gap-2 h-full">
             {hasSearchIcon ? (
-              <SearchIcon className="tw-justify-self-start tw-shrink-0" />
+              <SearchIcon className="justify-self-start shrink-0" />
             ) : null}
-            <div className="tw-h-full tw-flex-1 tw-flex tw-justify-start tw-items-center tw-gap-2">
+            <div className="h-full flex-1 flex justify-start items-center gap-2">
               {isEmpty(selectedOptions) ? (
                 <Typography
                   tag="span"
-                  className="tw-flex-1 tw-text-natural-400 tw-text-start"
+                  className="flex-1 text-natural-400 text-start"
                 >
                   {placeholder}
                 </Typography>
@@ -89,10 +89,10 @@ export const MultiSelect = <T,>({
                         content={<Typography tag="span">{label}</Typography>}
                         key={label}
                       >
-                        <div className=" tw-flex tw-justify-center tw-items-center tw-px-[10px] tw-py-2 tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full">
+                        <div className=" flex justify-center items-center px-[10px] py-2 rounded-full gap-2 bg-brand-700 h-full">
                           <Typography
                             tag="span"
-                            className="tw-text-natural-50 tw-max-w-[100px] tw-truncate tw-text-base"
+                            className="text-natural-50 max-w-[100px] truncate text-base"
                           >
                             {label}
                           </Typography>
@@ -107,7 +107,7 @@ export const MultiSelect = <T,>({
                               );
                             }}
                           >
-                            <X className="tw-w-4 tw-h-4 tw-stroke-natural-50" />
+                            <X className="w-4 h-4 stroke-natural-50" />
                           </button>
                         </div>
                       </Tooltip>
@@ -117,11 +117,11 @@ export const MultiSelect = <T,>({
                     return (
                       <div
                         key={label}
-                        className="tw-flex tw-items-center tw-px-[10px] tw-rounded-full tw-gap-2 tw-bg-brand-700 tw-h-full"
+                        className="flex items-center px-[10px] rounded-full gap-2 bg-brand-700 h-full"
                       >
                         <Typography
                           tag="span"
-                          className="tw-text-natural-50 tw-whitespace-nowrap tw-text-base"
+                          className="text-natural-50 whitespace-nowrap text-base"
                         >
                           {selectedOptions.length - idx} +
                         </Typography>
@@ -133,13 +133,13 @@ export const MultiSelect = <T,>({
             <ArrowDown
               data-open={open}
               className={cn(
-                "tw-h-6 tw-w-6 tw-justify-self-end",
-                "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+                "h-6 w-6 justify-self-end",
+                "data-[open=true]:rotate-180 transition-all duration-300"
               )}
             />
           </div>
         </div>
-        <Trigger className="tw-w-full" />
+        <Trigger className="w-full" />
       </div>
 
       <Portal>
@@ -147,10 +147,10 @@ export const MultiSelect = <T,>({
           align="start"
           side="bottom"
           className={cn(
-            "tw-flex tw-flex-col tw-gap-1 tw-w-[var(--radix-dropdown-menu-trigger-width)]",
-            "tw-border tw-border-brand-400 tw-rounded-lg tw-p-1",
-            "tw-max-h-64 tw-overflow-y-auto tw-bg-natural-50",
-            "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+            "flex flex-col gap-1 w-[var(--radix-dropdown-menu-trigger-width)]",
+            "border border-brand-400 rounded-lg p-1",
+            "max-h-64 overflow-y-auto bg-natural-50",
+            "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
           )}
           sideOffset={5}
         >
@@ -158,10 +158,10 @@ export const MultiSelect = <T,>({
             return (
               <Item
                 className={cn(
-                  "tw-px-3 tw-flex tw-shrink-0 tw-items-center tw-gap-3 focus:tw-outline-none tw-rounded-md tw-h-14 tw-cursor-pointer",
-                  { "hover:tw-bg-natural-100": !values.includes(option.value) },
+                  "px-3 flex shrink-0 items-center gap-3 focus:outline-none rounded-md h-14 cursor-pointer",
+                  { "hover:bg-natural-100": !values.includes(option.value) },
                   {
-                    "tw-bg-brand-700 tw-text-natural-50": values.includes(
+                    "bg-brand-700 text-natural-50": values.includes(
                       option.value
                     ),
                   }

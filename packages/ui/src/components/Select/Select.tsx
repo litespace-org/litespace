@@ -62,7 +62,7 @@ export const Select = <T extends string | number>({
           <Typography
             htmlFor={id}
             tag="label"
-            className="tw-mb-1 tw-text-natural-950 tw-text-caption tw-font-semibold"
+            className="mb-1 text-natural-950 text-caption font-semibold"
           >
             {label}
           </Typography>
@@ -74,17 +74,17 @@ export const Select = <T extends string | number>({
           disabled={disabled}
           role="button"
           className={cn(
-            "tw-flex tw-flex-row tw-justify-between tw-items-center",
-            "tw-w-full tw-rounded-lg tw-p-2",
-            "tw-bg-natural-50 tw-transition-colors tw-duration-200",
-            "tw-border tw-border-natural-300",
-            "tw-transition-colors tw-duration-200",
-            "disabled:tw-cursor-not-allowed",
-            "focus:tw-outline-none focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-border-secondary-600",
+            "flex flex-row justify-between items-center",
+            "w-full rounded-lg p-2",
+            "bg-natural-50 transition-colors duration-200",
+            "border border-natural-300",
+            "transition-colors duration-200",
+            "disabled:cursor-not-allowed",
+            "focus:outline-none focus:ring-1 focus:ring-secondary-600 focus:border-secondary-600",
             {
-              "tw-h-7": size === "small",
-              "tw-h-8": size === "medium",
-              "tw-h-10": size === "large",
+              "h-7": size === "small",
+              "h-8": size === "medium",
+              "h-10": size === "large",
             }
           )}
         >
@@ -92,9 +92,7 @@ export const Select = <T extends string | number>({
             placeholder={
               <Typography
                 tag="span"
-                className={cn(
-                  "tw-text-natural-600 tw-font-medium tw-text-caption"
-                )}
+                className={cn("text-natural-600 font-medium text-caption")}
               >
                 {placeholder}
               </Typography>
@@ -102,9 +100,7 @@ export const Select = <T extends string | number>({
           >
             <Typography
               tag="span"
-              className={cn(
-                "tw-text-natural-800 tw-text-caption tw-font-meium"
-              )}
+              className={cn("text-natural-800 text-caption font-meium")}
             >
               {text}
             </Typography>
@@ -114,9 +110,9 @@ export const Select = <T extends string | number>({
               <ArrowDown
                 data-open={open}
                 className={cn(
-                  "tw-w-4 tw-h-4",
-                  "tw-justify-self-end",
-                  "data-[open=true]:tw-rotate-180 tw-transition-all tw-duration-300"
+                  "w-4 h-4",
+                  "justify-self-end",
+                  "data-[open=true]:rotate-180 transition-all duration-300"
                 )}
               />
             </Icon>
@@ -126,7 +122,7 @@ export const Select = <T extends string | number>({
         {helper ? (
           <Typography
             tag="span"
-            className="tw-mt-1 tw-text-natural-600 tw-text-tiny tw-font-semibold"
+            className="mt-1 text-natural-600 text-tiny font-semibold"
           >
             {helper}
           </Typography>
@@ -136,16 +132,16 @@ export const Select = <T extends string | number>({
           <Content
             position="popper"
             className={cn(
-              "tw-bg-natural-50 tw-border tw-border-natural-200 tw-rounded-lg",
-              "tw-w-[var(--radix-select-trigger-width)] tw-z-select-dropdown tw-overflow-hidden tw-shadow-select-menu"
+              "bg-natural-50 border border-natural-200 rounded-lg",
+              "w-[var(--radix-select-trigger-width)] z-select-dropdown overflow-hidden shadow-select-menu"
             )}
             sideOffset={helper ? 26 : 4}
           >
             <Viewport>
               <Group
                 className={cn(
-                  "tw-flex tw-flex-col tw-max-h-[204px] tw-overflow-y-auto",
-                  "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+                  "flex flex-col max-h-[204px] overflow-y-auto",
+                  "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
                 )}
               >
                 {options.map((option) => (
@@ -172,22 +168,22 @@ const SelectItem = React.forwardRef<HTMLDivElement, SelectItemProps>(
       <Item
         className={cn(
           // bg color
-          "tw-bg-natural-50 data-[state=unchecked]:focus:tw-bg-natural-100",
-          "data-[state=checked]:tw-bg-brand-500",
+          "bg-natural-50 data-[state=unchecked]:focus:bg-natural-100",
+          "data-[state=checked]:bg-brand-500",
           // text color
-          "tw-text-natural-600 data-[state=checked]:tw-text-natural-50 tw-rounded-lg",
+          "text-natural-600 data-[state=checked]:text-natural-50 rounded-lg",
           // display and dimentions
-          "tw-flex tw-shrink-0 tw-items-center tw-justify-between",
-          "tw-h-[34px] tw-p-2",
-          "tw-cursor-pointer focus:tw-outline-none focus:tw-ring-inset focus:tw-ring-1 focus:tw-ring-secondary-600 focus:tw-z-select-item",
-          "data-[disabled]:tw-cursor-not-allowed",
+          "flex shrink-0 items-center justify-between",
+          "h-[34px] p-2",
+          "cursor-pointer focus:outline-none focus:ring-inset focus:ring-1 focus:ring-secondary-600 focus:z-select-item",
+          "data-[disabled]:cursor-not-allowed",
           className
         )}
         {...props}
         ref={ref}
       >
         <ItemText>
-          <Typography tag="div" className="tw-text-tiny tw-font-semibold">
+          <Typography tag="div" className="text-tiny font-semibold">
             {children}
           </Typography>
         </ItemText>

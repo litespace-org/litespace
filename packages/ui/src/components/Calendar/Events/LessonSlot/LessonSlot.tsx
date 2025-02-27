@@ -50,12 +50,12 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
 }) => {
   return (
     <Card canceled={canceled}>
-      <div className="tw-absolute tw-top-0 tw-left-0">
+      <div className="absolute top-0 left-0">
         <OptionsMenu canceled={canceled} {...actions} />
       </div>
-      <div className="tw-px-[10px]">
-        <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-          <div className="tw-border tw-border-natural-50 tw-rounded-full">
+      <div className="px-[10px]">
+        <div className="flex flex-row gap-2 items-center">
+          <div className="border border-natural-50 rounded-full">
             <MemberAvatar
               src={otherMember.image}
               alt={otherMember.name}
@@ -65,20 +65,20 @@ const SingleLesson: React.FC<LessonProps & Partial<LessonActions>> = ({
           <Typography
             tag="span"
             className={cn(
-              "tw-w-full tw-truncate tw-font-semibold tw-text-tiny",
-              canceled ? "tw-text-destructive-600" : "tw-text-natural-700"
+              "w-full truncate font-semibold text-tiny",
+              canceled ? "text-destructive-600" : "text-natural-700"
             )}
           >
             {otherMember.name || "-"}
           </Typography>
         </div>
 
-        <div className="tw-flex tw-items-center tw-justify-center tw-mt-2">
+        <div className="flex items-center justify-center mt-2">
           <Typography
             tag="span"
             className={cn(
-              "tw-font-semibold tw-text-tiny",
-              canceled ? "tw-text-destructive-600" : "tw-text-brand-700"
+              "font-semibold text-tiny",
+              canceled ? "text-destructive-600" : "text-brand-700"
             )}
           >
             {dayjs(start).format("h:mm a")}&nbsp;-&nbsp;
@@ -105,12 +105,12 @@ const MultipleLessons: React.FC<
   }, [lessons]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-gap-2">
-      <div className="tw-flex tw-items-center tw-justify-start">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center justify-start">
         <EventSpan start={start} end={end} />
       </div>
 
-      <div className="tw-flex tw-relative tw-h-9">
+      <div className="flex relative h-9">
         {lessons.map((lesson, idx) => {
           return (
             <motion.div
@@ -142,8 +142,8 @@ const MultipleLessons: React.FC<
                   }}
                   type="button"
                   className={cn(
-                    "tw-rounded-full",
-                    lesson.canceled && "tw-border tw-border-destructive-500"
+                    "rounded-full",
+                    lesson.canceled && "border border-destructive-500"
                   )}
                 >
                   <MemberAvatar
@@ -154,7 +154,7 @@ const MultipleLessons: React.FC<
                 </motion.button>
                 <AnimatePresence>
                   {show === lesson.id ? (
-                    <div className="tw-absolute tw-bottom-0 tw-translate-y-full tw-w-36 tw-pt-1 tw-z-10">
+                    <div className="absolute bottom-0 translate-y-full w-36 pt-1 z-10">
                       <EventGroupItem
                         {...lesson}
                         {...actions}
@@ -238,8 +238,8 @@ const OptionsMenu: React.FC<
       title={canceled ? intl("schedule.lesson.canceled-by-tutor") : undefined}
       danger={canceled}
     >
-      <div className="tw-p-2">
-        <More className="[&>*]:tw-fill-natural-800" />
+      <div className="p-2">
+        <More className="[&>*]:fill-natural-800" />
       </div>
     </Menu>
   );
@@ -257,10 +257,10 @@ const EventGroupItem: React.FC<
     }
 > = ({ otherMember, start, end, OptionsMenu }) => {
   return (
-    <div className="tw-relative tw-px-1 tw-bg-natural-50 tw-shadow-lesson-event-card tw-rounded-lg">
-      <div className="tw-absolute tw-top-0 tw-left-0">{OptionsMenu}</div>
-      <div className="tw-px-1 tw-py-1 tw-mb-1 tw-flex tw-flex-row tw-gap-2 tw-items-center tw-justify-start">
-        <div className="tw-w-6 tw-h-6 tw-overflow-hidden tw-rounded-full tw-border tw-border-natural-400 tw-shrink-0">
+    <div className="relative px-1 bg-natural-50 shadow-lesson-event-card rounded-lg">
+      <div className="absolute top-0 left-0">{OptionsMenu}</div>
+      <div className="px-1 py-1 mb-1 flex flex-row gap-2 items-center justify-start">
+        <div className="w-6 h-6 overflow-hidden rounded-full border border-natural-400 shrink-0">
           <Avatar
             src={orUndefined(otherMember.image)}
             alt={orUndefined(otherMember.name)}
@@ -270,14 +270,14 @@ const EventGroupItem: React.FC<
 
         <Typography
           tag="span"
-          className="tw-text-natural-700 tw-w-3/5 tw-truncate tw-font-semibold tw-text-tiny"
+          className="text-natural-700 w-3/5 truncate font-semibold text-tiny"
         >
           {otherMember.name || "-"}
         </Typography>
       </div>
 
-      <div className="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-px-1 tw-py-1">
-        <Clock className="[&>*]:tw-stroke-brand-700" />
+      <div className="flex flex-row items-center gap-2 px-1 py-1">
+        <Clock className="[&>*]:stroke-brand-700" />
         <EventSpan start={start} end={end} />
       </div>
     </div>

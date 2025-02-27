@@ -39,7 +39,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
 
   if (loading)
     return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+      <div className="flex items-center justify-center w-full h-40">
         <Loader
           size="medium"
           text={
@@ -53,7 +53,7 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
 
   if (error && retry)
     return (
-      <div className="tw-flex tw-items-center tw-justify-center tw-w-full tw-h-40">
+      <div className="flex items-center justify-center w-full h-40">
         <LoadingError
           size="medium"
           error={
@@ -68,13 +68,10 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
 
   return (
     <div>
-      <div className="tw-grid tw-grid-cols-4 tw-pb-2 tw-border-b tw-border-natural-500 tw-mb-6">
+      <div className="grid grid-cols-4 pb-2 border-b border-natural-500 mb-6">
         {columns.map((column) => (
-          <div key={column} className="tw-text-start tw-col-span-1">
-            <Typography
-              tag="span"
-              className="tw-text-natural-600 tw-text-caption"
-            >
+          <div key={column} className="text-start col-span-1">
+            <Typography tag="span" className="text-natural-600 text-caption">
               {column}
             </Typography>
           </div>
@@ -84,16 +81,16 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
       {isEmpty(lessons) ? (
         <div
           className={cn(
-            "tw-flex tw-justify-center tw-items-center",
-            isTutor ? "tw-flex-col-reverse tw-gap-6" : "tw-gap-20"
+            "flex justify-center items-center",
+            isTutor ? "flex-col-reverse gap-6" : "gap-20"
           )}
         >
-          <div className="tw-flex tw-flex-col tw-items-center tw-gap-6">
+          <div className="flex flex-col items-center gap-6">
             <Typography
               tag="span"
-              className={cn("tw-text-natural-950 tw-font-semibold", {
-                "tw-text-subtitle-1": isTutor,
-                "tw-text-h4": !isTutor,
+              className={cn("text-natural-950 font-semibold", {
+                "text-subtitle-1": isTutor,
+                "text-h4": !isTutor,
               })}
             >
               {isTutor
@@ -109,39 +106,33 @@ export const PastLessonsTable: React.FC<BasePastLessonProps> = ({
             ) : null}
           </div>
           <div>
-            <EmptyLessons className="tw-w-[282px] tw-h-[182px]" />
+            <EmptyLessons className="w-[282px] h-[182px]" />
           </div>
         </div>
       ) : (
-        <div className="tw-grid tw-grid-cols-4">
+        <div className="grid grid-cols-4">
           {lessons.map((lesson) => (
             <React.Fragment key={lesson.id}>
-              <div className="tw-text-start">
-                <Typography
-                  tag="span"
-                  className="tw-text-natural-950 tw-text-body"
-                >
+              <div className="text-start">
+                <Typography tag="span" className="text-natural-950 text-body">
                   {dayjs(lesson.start).format("dddd - DD MMMM YYYY")}
                 </Typography>
               </div>
-              <div className="tw-text-start">
-                <Typography
-                  tag="span"
-                  className="tw-text-natural-950 tw-text-body"
-                >
+              <div className="text-start">
+                <Typography tag="span" className="text-natural-950 text-body">
                   {formatMinutes(lesson.duration)}
                 </Typography>
               </div>
-              <div className="tw-mb-4">
-                <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                  <div className="tw-w-10 tw-h-10 tw-rounded-lg tw-overflow-hidden">
+              <div className="mb-4">
+                <div className="flex flex-row gap-2 items-center">
+                  <div className="w-10 h-10 rounded-lg overflow-hidden">
                     <Avatar
                       src={orUndefined(lesson.otherMember.imageUrl)}
                       alt={orUndefined(lesson.otherMember.name)}
                       seed={lesson.otherMember.id.toString()}
                     />
                   </div>
-                  <Typography tag="span" className="tw-text-natural-950">
+                  <Typography tag="span" className="text-natural-950">
                     {lesson.otherMember.name}
                   </Typography>
                 </div>

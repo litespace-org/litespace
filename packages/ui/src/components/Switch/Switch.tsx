@@ -18,12 +18,12 @@ export const Switch: React.FC<SwitchProps> = ({
   return (
     <Root
       className={cn(
-        "tw-inline-flex tw-shrink-0 tw-cursor-pointer tw-items-center tw-rounded-full",
-        "tw-border tw-border-border tw-transition-colors focus-visible:tw-outline-none ",
-        "focus-visible:tw-ring-2 focus-visible:tw-ring-border focus-visible:tw-outline-offset-1 disabled:tw-cursor-not-allowed",
-        "disabled:tw-opacity-50 data-[state=checked]:tw-bg-brand-500",
-        "data-[state=unchecked]:tw-bg-natural-400 tw-h-[38px] tw-w-[88px] tw-group",
-        "hover:tw-shadow-switch-root tw-transition-shadow tw-duration-200"
+        "inline-flex shrink-0 cursor-pointer items-center rounded-full",
+        "border border-border transition-colors focus-visible:outline-none ",
+        "focus-visible:ring-2 focus-visible:ring-border focus-visible:outline-offset-1 disabled:cursor-not-allowed",
+        "disabled:opacity-50 data-[state=checked]:bg-brand-500",
+        "data-[state=unchecked]:bg-natural-400 h-[38px] w-[88px] group",
+        "hover:shadow-switch-root transition-shadow duration-200"
       )}
       id={id}
       checked={checked}
@@ -32,11 +32,11 @@ export const Switch: React.FC<SwitchProps> = ({
     >
       <Thumb
         className={cn(
-          "tw-block tw-rounded-full tw-shadow-switch-thumb",
-          "tw-h-[34px] tw-w-[34px]",
-          "tw-transition-all tw-duration-200",
-          "tw-bg-natural-50 group-hover:tw-bg-brand-100",
-          "data-[state=checked]:tw-translate-x-[-2px] data-[state=unchecked]:tw-translate-x-[-50px]"
+          "block rounded-full shadow-switch-thumb",
+          "h-[34px] w-[34px]",
+          "transition-all duration-200",
+          "bg-natural-50 group-hover:bg-brand-100",
+          "data-[state=checked]:translate-x-[-2px] data-[state=unchecked]:translate-x-[-50px]"
         )}
       />
     </Root>

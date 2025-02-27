@@ -38,9 +38,9 @@ export const SessionStreams: React.FC<{
     <div
       data-name="session-streams"
       ref={containerRef}
-      className={cn("tw-relative tw-w-full tw-h-full tw-gap-6", {
-        "tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg": chat,
-        "tw-rounded-lg": !chat,
+      className={cn("relative w-full h-full gap-6", {
+        "rounded-none rounded-tr-lg rounded-br-lg": chat,
+        "rounded-lg": !chat,
       })}
     >
       <FocusedStream
@@ -54,8 +54,8 @@ export const SessionStreams: React.FC<{
 
       <div
         className={cn(
-          "tw-flex tw-items-center tw-gap-6",
-          !chat && "tw-absolute tw-bottom-6 tw-right-6"
+          "flex items-center gap-6",
+          !chat && "absolute bottom-6 right-6"
         )}
       >
         {organizedStreams.unfocused.map((stream, idx) => {

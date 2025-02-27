@@ -52,14 +52,14 @@ export const ActivityGrid = <T,>({
   }, [map, today]);
 
   return (
-    <Card className={cn("!tw-p-0 tw-px-1")}>
+    <Card className={cn("!p-0 px-1")}>
       <div
         className={cn(
-          "tw-overflow-x-auto tw-pt-9 tw-pb-5 tw-pr-4",
-          "tw-scrollbar-thin tw-scrollbar-thumb-border-stronger tw-scrollbar-track-surface-300"
+          "overflow-x-auto pt-9 pb-5 pr-4",
+          "scrollbar-thin scrollbar-thumb-border-stronger scrollbar-track-surface-300"
         )}
       >
-        <ul className="tw-flex tw-flex-row tw-gap-1 tw-w-fit">
+        <ul className="flex flex-row gap-1 w-fit">
           {grid.map((week, idx) => {
             const current = first(week)?.date;
             const previous = first(grid[idx - 1])?.date;
@@ -75,19 +75,19 @@ export const ActivityGrid = <T,>({
             const middle = current && previous && next;
 
             return (
-              <li className="tw-relative" key={idx}>
+              <li className="relative" key={idx}>
                 {anotherMonth ? (
                   <span
-                    className={cn("tw-absolute tw-text-tiny -tw-top-6", {
-                      "tw-left-1/2 -tw-translate-x-1/2": middle,
-                      "tw-right-0": start,
-                      "tw-left-0": end,
+                    className={cn("absolute text-tiny -top-6", {
+                      "left-1/2 -translate-x-1/2": middle,
+                      "right-0": start,
+                      "left-0": end,
                     })}
                   >
                     {anotherMonth}
                   </span>
                 ) : null}
-                <ul className="tw-flex tw-flex-col tw-gap-1">
+                <ul className="flex flex-col gap-1">
                   {week.map((day) => {
                     const score = day.value?.score || 0;
                     return (
@@ -96,21 +96,18 @@ export const ActivityGrid = <T,>({
                         content={tooltip(day)}
                       >
                         <li
-                          className={cn(
-                            "tw-w-[12px] tw-h-[12px] tw-rounded-sm",
-                            {
-                              "tw-bg-background-selection tw-border tw-border-border-control":
-                                score === 0,
-                              "tw-bg-calendar-day-level-1 tw-border tw-border-calendar-day-border-level-1":
-                                score === 1,
-                              "tw-bg-calendar-day-level-2 tw-border tw-border-calendar-day-border-level-2":
-                                score === 2,
-                              "tw-bg-calendar-day-level-3 tw-border tw-border-calendar-day-border-level-3":
-                                score === 3,
-                              "tw-bg-calendar-day-level-4 tw-border tw-border-calendar-day-border-level-4":
-                                score >= 4,
-                            }
-                          )}
+                          className={cn("w-[12px] h-[12px] rounded-sm", {
+                            "bg-background-selection border border-border-control":
+                              score === 0,
+                            "bg-calendar-day-level-1 border border-calendar-day-border-level-1":
+                              score === 1,
+                            "bg-calendar-day-level-2 border border-calendar-day-border-level-2":
+                              score === 2,
+                            "bg-calendar-day-level-3 border border-calendar-day-border-level-3":
+                              score === 3,
+                            "bg-calendar-day-level-4 border border-calendar-day-border-level-4":
+                              score >= 4,
+                          })}
                         />
                       </Tooltip>
                     );

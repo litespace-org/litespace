@@ -14,7 +14,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="tw-w-full tw-h-full"
+      className="w-full h-full"
     >
       {children}
     </motion.div>
@@ -42,7 +42,7 @@ export const PreSessionUserPreview: React.FC<{
   };
 }> = ({ stream, user, camera, speaking }) => {
   return (
-    <div className="tw-aspect-video tw-w-full tw-grow tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
+    <div className="aspect-video w-full grow rounded-lg shadow-ls-x-small overflow-hidden">
       <AnimatePresence mode="wait">
         {camera ? (
           <Animate>
@@ -50,7 +50,7 @@ export const PreSessionUserPreview: React.FC<{
           </Animate>
         ) : (
           <Animate key="avatar">
-            <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-lg">
+            <div className="w-full h-full bg-brand-100 flex items-center justify-center border border-brand-700 rounded-lg">
               <UserAvatar user={user} speaking={speaking} />
             </div>
           </Animate>

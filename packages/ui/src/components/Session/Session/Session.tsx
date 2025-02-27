@@ -59,11 +59,11 @@ export const Session: React.FC<Props> = ({
   chat,
 }) => {
   return (
-    <div className="tw-flex tw-flex-col tw-gap-10">
+    <div className="flex flex-col gap-10">
       <div
         className={cn(
-          "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
-          "tw-rounded-lg tw-overflow-hidden tw-flex tw-flex-row tw-gap-6"
+          "w-full aspect-video grow border border-brand-700 bg-brand-100",
+          "rounded-lg overflow-hidden flex flex-row gap-6"
         )}
       >
         <SessionStreams
@@ -81,7 +81,7 @@ export const Session: React.FC<Props> = ({
           ) : null}
         </AnimatePresence>
       </div>
-      <div className="tw-border-t tw-border-natural-400" />
+      <div className="border-t border-natural-400" />
       <ActionsBar
         leave={leave}
         items={[

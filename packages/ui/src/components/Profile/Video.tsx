@@ -8,7 +8,7 @@ const Video: React.FC<{
 }> = ({ video, name }) => {
   if (!video || !name) return;
   return (
-    <div className="tw-aspect-[9/16]">
+    <div className="aspect-[9/16]">
       <VideoPlayer src={orUndefined(video)} />
     </div>
   );
