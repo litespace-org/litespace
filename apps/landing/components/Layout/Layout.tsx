@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import cn from "classnames";
 import Navbar from "@/components/Layout/Navbar";
 import Sidebar from "@/components/Layout/Sidebar";
+import Footer from "@/components/Layout/Footer";
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [showSidebar, setShowSidebar] = useState(false);
@@ -18,6 +19,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       <Navbar toggleSidebar={() => setShowSidebar((prev) => !prev)} />
       {showSidebar ? <Sidebar hide={() => setShowSidebar(false)} /> : null}
       {children}
+      <Footer />
     </body>
   );
 };

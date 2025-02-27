@@ -1,5 +1,4 @@
 {
-  "litespace": "لايت سبيس",
   "navbar/main": "الرئيسية",
   "navbar/subscriptions": "خطط الأسعار",
   "navbar/be-a-tutor": "كن معلما",
@@ -253,7 +252,21 @@
   "contacts/email": "care@litespace.org",
   "contacts/litespace-tutors-telegram": "@litespace_tutors",
 
+  "footer/links/main-pages": "الصفحات الرئيسية",
+  "footer/links/important-routes": "عناوين مهمة",
+  "footer/links/terms": "الشروط والأحكام",
+  "footer/links/privacy": "سياسة الخصوصية",
+  "footer/links/student-guide": "دليل الطالب",
+  "footer/links/tutor-guide": "دليل المعلم",
+  "footer/links/faq": "الأسئلة الشائعة",
+  "footer/links/contact-us": "تواصل معنا",
+  "footer/description": "تجربتك التعليمية عن بُعد والمصممة خصيصًا لمساعدتك في تطوير مهاراتك في اللغة الانجليزية وثقتك بنفسك من خلال جلسات خاصة تفاعلية مع معلمين تم اختيارهم بعناية فائقة.",
+  "footer/follow-us/title": "تابعنا على",
+  "footer/follow-us/description": "تابعنا عبر منصات التواصل",
+  "footer/copyrights": "LiteSpace Foundation © {year}",
+
   "labels/send": "إرسال",
+  "labels/litespace": "LiteSpace",
 
   "error/required": "مطلوب",
   "error/phone/invalid": "رقم الهاتف الذي أدخلته غير صالح. يرجى التحقق وإعادة المحاولة.",

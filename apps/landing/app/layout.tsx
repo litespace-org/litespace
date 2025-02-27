@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import React from "react";
 import Layout from "@/components/Layout/Layout";
-
-import "@litespace/ui/style.css";
-import "@litespace/ui/tailwind.css";
 import { getLocale } from "next-intl/server";
 import { getMessages } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 
+import "@litespace/ui/style.css";
+import "@litespace/ui/tailwind.css";
+
 export const metadata: Metadata = {
-  title: "LiteSpace",
-  description: "Effortless English learning!",
+  title: "LiteSpace — Effortless English",
+  description:
+    "Unlock your English potential with LiteSpace. Learn faster, anytime, anywhere.",
 };
 
 export default async function RootLayout({
