@@ -48,8 +48,7 @@ const SidebarItem = ({
   return (
     <Link
       className={cn(
-        "md:-mx-3 lg:mx-0",
-        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-4 px-[14px] py-2 items-center ",
+        "flex flex-row justify-start md:justify-center lg:justify-start gap-2 lg:gap-4 px-[14px] py-2 items-center ",
         "rounded-lg transition-colors duration-200 group",
         {
           "bg-brand-700": active,
@@ -196,7 +195,7 @@ const Sidebar: React.FC<{
     <div
       className={cn(
         "absolute lg:fixed top-[72px] md:top-0 bottom-0 start-0 z-20 lg:z-sidebar",
-        "bg-natural-50 w-[166px] md:w-[98px] lg:w-60 p-4 md:p-6 shadow-app-sidebar",
+        "bg-natural-50 w-[166px] md:w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
         "flex flex-col gap-6 md:gap-10"
       )}
     >
@@ -239,7 +238,7 @@ const Sidebar: React.FC<{
       <div className="flex flex-col gap-2 md:gap-1.5">
         <Typography
           tag="span"
-          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold"
+          className="text-natural-800 md:py-2 text-tiny lg:text-caption font-bold text-start md:text-center lg:text-start"
         >
           {intl("sidebar.settings")}
         </Typography>
@@ -274,7 +273,7 @@ const Sidebar: React.FC<{
               hide();
             }}
             className={cn(
-              "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md;gap-0 lg:gap-4 px-[14px] py-2 rounded-lg md:-mx-3 lg:mx-0",
+              "flex flex-row justify-start md:justify-center lg:justify-start gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
               "hover:text-destructive-400 hover:bg-destructive-100",
               "active:bg-destructive-400 [&_*]:active:text-natural-50",
               "[&_*]:active:stroke-natural-50 transition-all duration-200"
