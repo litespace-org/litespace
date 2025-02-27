@@ -1,3 +1,7 @@
+import cn from "classnames";
+import React, { SVGProps, useCallback, useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+
 import Calendar from "@litespace/assets/Calendar";
 import Chat from "@litespace/assets/Chat";
 import Home from "@litespace/assets/Home";
@@ -10,22 +14,23 @@ import Settings from "@litespace/assets/Settings";
 import Tag from "@litespace/assets/Tag";
 import Video from "@litespace/assets/Video";
 import AccountPromotion from "@litespace/assets/AccountPromotion";
+
 import { useUserContext } from "@litespace/headless/context/user";
 import { useMediaQuery } from "@litespace/headless/mediaQuery";
-import { IUser, Void } from "@litespace/types";
+
+import { Typography } from "@litespace/ui/Typography";
 import { Button } from "@litespace/ui/Button";
 import { useFormatMessage } from "@litespace/ui/hooks/intl";
-import { Typography } from "@litespace/ui/Typography";
-import cn from "classnames";
-import React, { SVGProps, useCallback, useEffect, useMemo } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+
+import { IUser, Void } from "@litespace/types";
+import { Web } from "@litespace/utils/routes";
+
 import {
   MOBILE_NAVBAR_HEIGHT,
   MOBILE_SIDEBAR_WIDTH,
   TABLET_NAVBAR_HEIGHT,
 } from "@/constants/ui";
 import { Icon } from "@/types/common";
-import { Web } from "@litespace/utils/routes";
 import { router } from "@/lib/routes";
 
 const SidebarItem = ({
