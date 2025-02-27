@@ -51,11 +51,11 @@ export const ToastProvider: React.FC<{
 
         <Viewport
           className={cn(
-            "tw-fixed _tw-w-96 tw-z-toast tw-list-none tw-flex tw-flex-col tw-gap-2.5",
-            "tw-p-[var(--viewport-padding)] tw-outline-none [--viewport-padding:_25px]",
+            "fixed _w-96 z-toast list-none flex flex-col gap-2.5",
+            "p-[var(--viewport-padding)] outline-none [--viewport-padding:_25px]",
             {
-              "tw-top-0 tw-left-0": postion === "top-left",
-              "tw-bottom-0 tw-left-0": postion === "bottom-left",
+              "top-0 left-0": postion === "top-left",
+              "bottom-0 left-0": postion === "bottom-left",
             }
           )}
         />

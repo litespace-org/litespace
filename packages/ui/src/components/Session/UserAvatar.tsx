@@ -21,14 +21,11 @@ export const UserAvatar: React.FC<{
   return (
     <div
       className={cn(
-        "tw-p-2 tw-overflow-hidden tw-rounded-full tw-flex tw-items-center tw-relative tw-justify-center",
+        "p-2 overflow-hidden rounded-full flex items-center relative justify-center",
         {
-          "tw-w-[140px] tw-h-[140px] lg:tw-w-[302px] lg:tw-h-[302px]":
-            variant === "large",
-          "tw-w-[112px] tw-h-[112px] lg:tw-w-[205px] lg:tw-h-[205px]":
-            variant === "medium",
-          "tw-w-[80px] tw-h-[80px] lg:tw-w-[132px] lg:tw-h-[132px]":
-            variant === "small",
+          "w-[140px] h-[140px] lg:w-[302px] lg:h-[302px]": variant === "large",
+          "w-[112px] h-[112px] lg:w-[205px] lg:h-[205px]": variant === "medium",
+          "w-[80px] h-[80px] lg:w-[132px] lg:h-[132px]": variant === "small",
         }
       )}
     >
@@ -46,11 +43,11 @@ export const UserAvatar: React.FC<{
           repeatDelay: 0.1,
         }}
         className={cn(
-          "tw-border-border-avatar tw-rounded-full tw-w-full tw-h-full tw-absolute",
+          "border-border-avatar rounded-full w-full h-full absolute",
           {
-            "tw-border-[6px] lg:tw-border-[8px]": variant === "large",
-            "tw-border-[5px] lg:tw-border-[7px]": variant === "medium",
-            "tw-border-[4px] lg:tw-border-[6px]": variant === "small",
+            "border-[6px] lg:border-[8px]": variant === "large",
+            "border-[5px] lg:border-[7px]": variant === "medium",
+            "border-[4px] lg:border-[6px]": variant === "small",
           }
         )}
       />
@@ -69,25 +66,22 @@ export const UserAvatar: React.FC<{
           repeatDelay: 0.1,
         }}
         className={cn(
-          "tw-rounded-full tw-border-border-avatar tw-backdrop-blur-[15px] tw-absolute",
+          "rounded-full border-border-avatar backdrop-blur-[15px] absolute",
           {
-            "tw-border-[8px] tw-w-[116px] tw-h-[116px] lg:tw-border-[10px] lg:tw-w-[274px] lg:tw-h-[274px]":
+            "border-[8px] w-[116px] h-[116px] lg:border-[10px] lg:w-[274px] lg:h-[274px]":
               variant === "large",
-            "tw-border-[7px] tw-w-[92px] tw-h-[92px] lg:tw-border-[9px] lg:tw-w-[177px] lg:tw-h-[177px]":
+            "border-[7px] w-[92px] h-[92px] lg:border-[9px] lg:w-[177px] lg:h-[177px]":
               variant === "medium",
-            "tw-border-[6px] tw-w-[68px] tw-h-[68px] lg:tw-border-[8px] lg:tw-w-[112px] lg:tw-h-[112px]":
+            "border-[6px] w-[68px] h-[68px] lg:border-[8px] lg:w-[112px] lg:h-[112px]":
               variant === "small",
           }
         )}
       />
       <div
-        className={cn("tw-overflow-hidden tw-rounded-full", {
-          "tw-w-[104px] tw-h-[104px] lg:tw-w-[242px] lg:tw-h-[242px]":
-            variant === "large",
-          "tw-w-[76px] tw-h-[76px] lg:tw-w-[145px] lg:tw-h-[145px]":
-            variant === "medium",
-          "tw-w-[56px] tw-h-[56px] lg:tw-w-[96px] lg:tw-h-[96px]":
-            variant === "small",
+        className={cn("overflow-hidden rounded-full", {
+          "w-[104px] h-[104px] lg:w-[242px] lg:h-[242px]": variant === "large",
+          "w-[76px] h-[76px] lg:w-[145px] lg:h-[145px]": variant === "medium",
+          "w-[56px] h-[56px] lg:w-[96px] lg:h-[96px]": variant === "small",
         })}
       >
         <Avatar

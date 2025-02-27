@@ -39,28 +39,28 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
   );
 
   return (
-    <div className="tw-flex tw-flex-row tw-gap-6">
+    <div className="flex flex-row gap-6">
       {steps.map(({ index, label }) => {
         const isCurrent = index === stepIndex;
         const isBefore = index < stepIndex;
         const isAfter = index > stepIndex;
 
         return (
-          <div key={index} className="tw-flex tw-flex-col">
-            <div className="tw-flex tw-flex-row tw-gap-4 tw-items-center tw-mb-2">
+          <div key={index} className="flex flex-col">
+            <div className="flex flex-row gap-4 items-center mb-2">
               <div
                 className={cn(
-                  "tw-w-7 tw-h-7 tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center",
+                  "w-7 h-7 rounded-full overflow-hidden flex items-center justify-center",
                   {
-                    "tw-bg-brand-700": isCurrent || isBefore,
-                    "tw-bg-natural-400": isAfter,
+                    "bg-brand-700": isCurrent || isBefore,
+                    "bg-natural-400": isAfter,
                   }
                 )}
               >
                 {isCurrent || isAfter ? (
                   <Typography
                     tag="span"
-                    className="tw-text-natural-50 tw-text-body tw-font-medium"
+                    className="text-natural-50 text-body font-medium"
                   >
                     {index}
                   </Typography>
@@ -68,21 +68,21 @@ export const Stepper: React.FC<{ step: Step }> = ({ step }) => {
                   <Check />
                 )}
               </div>
-              <div className="tw-h-[2px] tw-w-20 tw-bg-natural-400">
+              <div className="h-[2px] w-20 bg-natural-400">
                 <div
-                  className={cn("tw-h-full", {
-                    "tw-w-2/3 tw-bg-brand-700": isCurrent,
-                    "tw-w-full tw-bg-brand-700": isBefore,
-                    "tw-opacity-0": isAfter,
+                  className={cn("h-full", {
+                    "w-2/3 bg-brand-700": isCurrent,
+                    "w-full bg-brand-700": isBefore,
+                    "opacity-0": isAfter,
                   })}
                 />
               </div>
             </div>
             <Typography
               tag="span"
-              className={cn("tw-text-tiny", {
-                "tw-text-brand-700": isBefore || isCurrent,
-                "tw-text-natural-400": isAfter,
+              className={cn("text-tiny", {
+                "text-brand-700": isBefore || isCurrent,
+                "text-natural-400": isAfter,
               })}
             >
               {label}

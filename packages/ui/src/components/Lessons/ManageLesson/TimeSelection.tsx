@@ -12,11 +12,11 @@ export const TimeSelection: React.FC<{
   select: (slotId: number, start: string) => void;
 }> = ({ slots, start, slotId, select }) => {
   return (
-    <div className="tw-px-5">
+    <div className="px-5">
       <div
         className={cn(
-          "tw-grid tw-grid-cols-7 tw-gap-4 tw-max-h-96 tw-overflow-y-auto",
-          "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent tw-pt-2 tw-p-5"
+          "grid grid-cols-7 gap-4 max-h-96 overflow-y-auto",
+          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent pt-2 p-5"
         )}
       >
         {slots.map((slot) => {
@@ -30,17 +30,17 @@ export const TimeSelection: React.FC<{
               onClick={() => select(slot.parent, slot.start)}
               data-selected={slot.start === start && slot.parent === slotId}
               className={cn(
-                "tw-bg-natural-50 tw-border tw-border-natural-800 tw-shadow-time-selection-item",
-                "tw-h-[60px] tw-w-[60px] tw-rounded-lg tw-flex tw-items-center tw-justify-center",
-                "data-[selected=false]:hover:tw-bg-brand-100 tw-transition-colors tw-duration-300",
-                "data-[selected=true]:tw-bg-brand-700 data-[selected=true]:tw-border-brand-800",
-                "disabled:tw-opacity-20 disabled:tw-cursor-not-allowed disabled:hover:tw-bg-natural-50"
+                "bg-natural-50 border border-natural-800 shadow-time-selection-item",
+                "h-[60px] w-[60px] rounded-lg flex items-center justify-center",
+                "data-[selected=false]:hover:bg-brand-100 transition-colors duration-300",
+                "data-[selected=true]:bg-brand-700 data-[selected=true]:border-brand-800",
+                "disabled:opacity-20 disabled:cursor-not-allowed disabled:hover:bg-natural-50"
               )}
             >
               <Typography
                 tag="span"
                 data-selected={slot.start === start}
-                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-transition-colors tw-duration-300 tw-text-tiny"
+                className="text-natural-950 data-[selected=true]:text-natural-50 transition-colors duration-300 text-tiny"
               >
                 {dayjs(slot.start).format("hh:mm a")}
               </Typography>

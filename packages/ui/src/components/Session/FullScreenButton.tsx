@@ -12,21 +12,21 @@ export const FullScreenButton: React.FC<{
 }> = ({ enabled, chat, toggle }) => {
   return (
     <Button
-      className="!tw-w-[42px] !tw-h-[42px] lg:!tw-h-16 lg:!tw-w-16 !tw-p-0 !tw-rounded-full"
+      className="!w-[42px] !h-[42px] lg:!h-16 lg:!w-16 !p-0 !rounded-full"
       onClick={toggle}
     >
       {enabled ? (
         <Minimize
           className={cn(
-            "[&>*]:tw-stroke-natural-50",
-            chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+            "[&>*]:stroke-natural-50",
+            chat ? "w-6 h-6" : "w-4 h-4 lg:h-8 lg:w-8"
           )}
         />
       ) : (
         <FullScreen
           className={cn(
-            "[&>*]:tw-stroke-natural-50",
-            chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+            "[&>*]:stroke-natural-50",
+            chat ? "w-6 h-6" : "w-4 h-4 lg:h-8 lg:w-8"
           )}
         />
       )}

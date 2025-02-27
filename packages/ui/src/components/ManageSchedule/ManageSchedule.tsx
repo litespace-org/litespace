@@ -210,27 +210,27 @@ export const ManageSchedule: React.FC<Props> = ({
       title={
         <Typography
           tag="h1"
-          className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
+          className="text-natural-950 font-bold text-subtitle-2"
         >
           {intl(singleDay ? "manage-schedule.edit" : "manage-schedule.manage")}
         </Typography>
       }
-      className="tw-overflow-y-auto"
+      className="overflow-y-auto"
     >
       {!singleDay ? (
-        <div className="tw-pt-6">
-          <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
+        <div className="pt-6">
+          <div className="flex items-center justify-center gap-4">
             <button
               type="button"
               onClick={prevWeek}
               disabled={loading}
-              className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
+              className="disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ArrowRight className="[&>*]:tw-stroke-brand-700" />
+              <ArrowRight className="[&>*]:stroke-brand-700" />
             </button>
             <Typography
               tag="span"
-              className="tw-text-natural-950 tw-text-body tw-font-bold"
+              className="text-natural-950 text-body font-bold"
             >
               {weekStart.format("D MMMM")} -{" "}
               {weekStart.add(6, "days").format("D MMMM")}
@@ -239,14 +239,14 @@ export const ManageSchedule: React.FC<Props> = ({
               type="button"
               onClick={nextWeek}
               disabled={loading}
-              className="disabled:tw-cursor-not-allowed disabled:tw-opacity-50"
+              className="disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <ArrowLeft className="[&>*]:tw-stroke-brand-700" />
+              <ArrowLeft className="[&>*]:stroke-brand-700" />
             </button>
           </div>
           <Typography
             tag="span"
-            className="tw-text-natural-950 tw-mb-4 tw-mt-6 tw-font-bold tw-text-body"
+            className="text-natural-950 mb-4 mt-6 font-bold text-body"
           >
             {intl("manage-schedule.manage-dialog.available-days")}
           </Typography>
@@ -255,22 +255,22 @@ export const ManageSchedule: React.FC<Props> = ({
 
       <div
         className={cn(
-          "tw-flex tw-flex-col tw-gap-4 tw-mb-10",
+          "flex flex-col gap-4 mb-10",
           /**
            * 160px - the vertical space that should be around the dialog (80 at
            * the top and 80 at the bottom).
            *
            * 190px - the sum of the rest of the dialog elements (e.g., dialog title, dates, ...).
            */
-          "tw-max-h-[calc(100vh-160px-190px)] tw-overflow-y-auto",
-          "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent",
-          { "tw-mt-6": singleDay }
+          "max-h-[calc(100vh-160px-190px)] overflow-y-auto",
+          "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent",
+          { "mt-6": singleDay }
         )}
       >
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animate key="loading">
-              <div className="tw-w-[517px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
+              <div className="w-[517px] mt-[42px] mb-[72px] flex justify-center items-center">
                 <Loader
                   size="medium"
                   text={intl("manage-schedule.manage-dialog.loading.message")}
@@ -281,7 +281,7 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {error ? (
             <Animate key="error">
-              <div className="tw-w-[342px] tw-mx-[103px] tw-mt-[42px] tw-mb-[72px] tw-flex tw-justify-center tw-items-center">
+              <div className="w-[342px] mx-[103px] mt-[42px] mb-[72px] flex justify-center items-center">
                 <LoadingError
                   size="medium"
                   error={intl("manage-schedule.manage-dialog.error.message")}
@@ -293,14 +293,14 @@ export const ManageSchedule: React.FC<Props> = ({
 
           {!loading && !error ? (
             <Animate key="days">
-              <div className="tw-flex tw-flex-col tw-gap-4 tw-overflow-y-auto tw-scrollbar-thin">
+              <div className="flex flex-col gap-4 overflow-y-auto scrollbar-thin">
                 {days.map(({ day, slots }) => {
                   const iso = day.toISOString();
                   return (
-                    <div className="tw-flex tw-gap-8" key={iso}>
+                    <div className="flex gap-8" key={iso}>
                       <Typography
                         tag="span"
-                        className="tw-text-natural-950 tw-w-[88px] tw-font-medium tw-text-caption"
+                        className="text-natural-950 w-[88px] font-medium text-caption"
                       >
                         {day.format("dddd M/D")}
                       </Typography>
@@ -322,16 +322,16 @@ export const ManageSchedule: React.FC<Props> = ({
         </AnimatePresence>
       </div>
 
-      <div className="tw-flex tw-gap-6 tw-mt-auto">
+      <div className="flex gap-6 mt-auto">
         <Button
-          className="tw-grow tw-basis-1/2"
+          className="grow basis-1/2"
           onClick={() => save(slotActions)}
           disabled={isEmpty(slotActions) || invalidSlots || saving}
           loading={saving}
         >
           <Typography
             tag="span"
-            className="tw-text-natural-50 tw-font-semibold tw-text-body"
+            className="text-natural-50 font-semibold text-body"
           >
             {intl("manage-schedule.save")}
           </Typography>
@@ -339,12 +339,12 @@ export const ManageSchedule: React.FC<Props> = ({
         <Button
           onClick={onClose}
           variant={"secondary"}
-          className="tw-grow tw-basis-1/2"
+          className="grow basis-1/2"
           disabled={saving}
         >
           <Typography
             tag="span"
-            className="text-brand-700 tw-font-semibold tw-text-body"
+            className="text-brand-700 font-semibold text-body"
           >
             {intl("global.labels.cancel")}
           </Typography>

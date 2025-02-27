@@ -22,13 +22,13 @@ export const VideoBar: React.FC<{
   };
 }> = ({ alert, fullScreen, speaking, muted, timer, chat }) => {
   return (
-    <div className="tw-flex tw-flex-col tw-gap-[13px]">
-      <div className="tw-w-full tw-p-4 lg:tw-px-6 lg:tw-mt-6 tw-absolute tw-top-0 tw-left-0 tw-flex tw-gap-[13px] tw-justify-between tw-items-center">
-        <div className="tw-flex tw-items-center tw-gap-2 lg:tw-gap-8">
+    <div className="flex flex-col gap-[13px]">
+      <div className="w-full p-4 lg:px-6 lg:mt-6 absolute top-0 left-0 flex gap-[13px] justify-between items-center">
+        <div className="flex items-center gap-2 lg:gap-8">
           <FullScreenButton {...fullScreen} chat={chat} />
           {alert ? <Alert alert={alert} /> : null}
         </div>
-        <div className="tw-flex tw-items-center tw-gap-2 lg:tw-gap-8">
+        <div className="flex items-center gap-2 lg:gap-8">
           <SpeechIndicator
             speaking={speaking}
             muted={muted}
@@ -42,7 +42,7 @@ export const VideoBar: React.FC<{
         <Typography
           tag="h4"
           className={cn(
-            "lg:hidden tw-text-tiny tw-rounded-full tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-semibold tw-h-[42px] tw-backdrop-blur-[15px] tw-p-3 tw-bg-background-internet"
+            "lg:hidden text-tiny rounded-full flex items-center justify-center text-natural-50 font-semibold h-[42px] backdrop-blur-[15px] p-3 bg-background-internet"
           )}
         >
           {alert}

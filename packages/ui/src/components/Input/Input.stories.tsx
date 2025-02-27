@@ -16,7 +16,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="tw-w-[30rem] tw-h-[30rem] tw-px-12 tw-flex tw-items-center tw-justify-center tw-shadow-xl tw-md">
+          <div className="w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl md">
             <Story />
           </div>
         </Direction>
@@ -35,7 +35,7 @@ export const Small: StoryObj<Component> = {
     inputSize: "small",
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -63,7 +63,7 @@ export const Medium: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -89,7 +89,7 @@ export const Large: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -114,7 +114,7 @@ export const Filled: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -138,7 +138,7 @@ export const WithoutIcon: StoryObj<Component> = {
     helper: faker.lorem.words(2),
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -183,7 +183,7 @@ export const Error: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -209,7 +209,7 @@ export const Success: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },
@@ -235,7 +235,7 @@ export const Disabled: StoryObj<Component> = {
     icon: <Search />,
     endAction: {
       id: 1,
-      icon: <X className="tw-w-4 tw-h-4" />,
+      icon: <X className="w-4 h-4" />,
       onClick: () => alert("End Action"),
     },
   },

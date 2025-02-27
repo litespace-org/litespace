@@ -160,7 +160,7 @@ export const ProfileForm: React.FC<{
   return (
     <Form
       onSubmit={form.handleSubmit(onSubmit)}
-      className={cn("flex flex-col", className)}
+      className={cn("flex flex-col w-fit", className)}
     >
       <div className="flex items-start justify-between mb-6 sm:mb-8">
         <UploadPhoto id={user.id} />
@@ -254,7 +254,7 @@ export const ProfileForm: React.FC<{
           {mq.sm ? <TopicSelection /> : null}
         </div>
 
-        <div className="flex-1 flex flex-col">
+        <div className="flex flex-col">
           <Typography
             tag="h2"
             className="text-natural-950 text-subtitle-2 font-bold"
@@ -318,7 +318,7 @@ export const ProfileForm: React.FC<{
             />
           </div>
 
-          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0 max-w-screen-sm">
+          <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
             <NotificationSettings />
             {!mq.sm ? <TopicSelection /> : null}
           </div>

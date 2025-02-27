@@ -8,8 +8,8 @@ const Loading: React.FC<{ className?: string; show?: boolean }> = ({
 }) => {
   if (!show) return null;
   return (
-    <div className={cn("tw-flex tw-items-center tw-justify-center", className)}>
-      <Spinner className="tw-text-natural-700" />
+    <div className={cn("flex items-center justify-center", className)}>
+      <Spinner className="text-natural-700" />
     </div>
   );
 };

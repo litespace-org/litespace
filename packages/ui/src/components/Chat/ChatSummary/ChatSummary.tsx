@@ -61,18 +61,18 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
   return (
     <div
       className={cn(
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-rounded-lg tw-p-4 sm:tw-p-6 tw-shadow-ls-x-small tw-bg-natural-50"
+        "border border-transparent hover:border-natural-100 rounded-lg p-4 sm:p-6 shadow-ls-x-small bg-natural-50"
       )}
     >
       <Typography
         tag="h2"
-        className="tw-text-natural-950 tw-text-base sm:tw-text-subtitle-2 tw-font-bold"
+        className="text-natural-950 text-base sm:text-subtitle-2 font-bold"
       >
         {intl("student-dashboard.chat.title")}
       </Typography>
 
       {error && retry && !loading ? (
-        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+        <div className="w-full h-96 flex justify-center items-center">
           <LoadingError
             size={mq.sm ? "medium" : "small"}
             error={intl("student-dashboard.chat-summary.error")}
@@ -82,7 +82,7 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
       ) : null}
 
       {loading ? (
-        <div className="tw-w-full tw-h-96 tw-flex tw-justify-center tw-items-center">
+        <div className="w-full h-96 flex justify-center items-center">
           <Loader
             size={mq.sm ? "medium" : "small"}
             text={intl("student-dashboard.chat-summary.loading")}
@@ -94,36 +94,34 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
         <>
           <div>
             {rooms.length ? (
-              <div className="tw-mt-4 tw-mb-[19px] tw-flex tw-flex-col tw-gap-4">
+              <div className="mt-4 mb-[19px] flex flex-col gap-4">
                 {rooms.map((room) => {
                   return (
                     <Link
                       to={room.url}
                       key={room.id}
-                      className="tw-group tw-w-full tw-flex tw-gap-2 "
+                      className="group w-full flex gap-2 "
                     >
-                      <div className="tw-min-w-[42px] tw-min-h-[42px] tw-w-[42px] tw-h-[42px] tw-rounded-lg tw-overflow-hidden">
+                      <div className="min-w-[42px] min-h-[42px] w-[42px] h-[42px] rounded-lg overflow-hidden">
                         <Avatar
                           src={orUndefined(room.image)}
                           seed={room.id.toString()}
                           alt={orUndefined(room.name)}
                         />
                       </div>
-                      <div className="tw-flex tw-flex-col tw-grow tw-justify-between">
-                        <div className="tw-flex tw-justify-between tw-self-stretch">
+                      <div className="flex flex-col grow justify-between">
+                        <div className="flex justify-between self-stretch">
                           <Typography
                             tag="span"
-                            className="tw-text-natural-950 tw-text-caption tw-font-semibold"
+                            className="text-natural-950 text-caption font-semibold"
                           >
                             {room.name}
                           </Typography>
                           <Typography
                             tag="span"
                             className={cn(
-                              "tw-text-tiny tw-font-normal",
-                              room.read
-                                ? "tw-text-brand-700"
-                                : "tw-text-natural-600"
+                              "text-tiny font-normal",
+                              room.read ? "text-brand-700" : "text-natural-600"
                             )}
                           >
                             {dayjs(room.sentAt).format("hh:mm a")}
@@ -132,11 +130,9 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                         <Typography
                           tag="span"
                           className={cn(
-                            "tw-text-caption tw-font-normal",
-                            "tw-line-clamp-1",
-                            room.read
-                              ? "tw-text-brand-700"
-                              : "tw-text-natural-600"
+                            "text-caption font-normal",
+                            "line-clamp-1",
+                            room.read ? "text-brand-700" : "text-natural-600"
                           )}
                         >
                           {room.message}
@@ -150,11 +146,11 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
               <EmptyChats />
             )}
           </div>
-          <Link to={chatsUrl} className="tw-intline-block tw-w-full">
-            <Button className="tw-w-full" size="large">
+          <Link to={chatsUrl} className="intline-block w-full">
+            <Button className="w-full" size="large">
               <Typography
                 tag="span"
-                className="tw-text-natural-50 tw-text-caption tw-font-semibold"
+                className="text-natural-50 text-caption font-semibold"
               >
                 {intl("student-dashboard.button.find-chats")}
               </Typography>
@@ -169,11 +165,11 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
 const EmptyChats = () => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-mb-12 tw-mt-8 lg:tw-mt-6">
+    <div className="flex flex-col items-center gap-6 mb-12 mt-8 lg:mt-6">
       <EmptyChatSummary />
       <Typography
         tag="span"
-        className="tw-text-natural-950 tw-text-caption sm:tw-text-subtitle-1 tw-font-bold sm:tw-font-semibold"
+        className="text-natural-950 text-caption sm:text-subtitle-1 font-bold sm:font-semibold"
       >
         {intl("student-dashboard.empty-chats")}
       </Typography>

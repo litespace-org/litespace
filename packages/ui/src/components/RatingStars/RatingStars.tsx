@@ -43,28 +43,24 @@ export const RatingStars: React.FC<StarProps> = ({
   return (
     <div
       className={cn(
-        "tw-flex tw-justify-around tw-p-0",
-        { "tw-gap-2 md:tw-gap-1 lg:tw-gap-2": variant === "sm" },
-        { "tw-gap-1": variant === "md" },
-        { "tw-gap-8": variant === "lg" || variant === "xl" }
+        "flex justify-around p-0",
+        { "gap-2 md:gap-1 lg:gap-2": variant === "sm" },
+        { "gap-1": variant === "md" },
+        { "gap-8": variant === "lg" || variant === "xl" }
       )}
     >
       {range(5).map((idx) => (
-        <div
-          key={idx}
-          className={cn("tw-flex tw-flex-col tw-gap-2  md:tw-gap-4")}
-        >
+        <div key={idx} className={cn("flex flex-col gap-2  md:gap-4")}>
           <motion.button
             whileHover={readonly ? undefined : { scale: 1.1 }}
             whileTap={readonly ? undefined : { scale: 0.9 }}
             className={cn(
               {
-                "tw-w-5 tw-h-5 md:tw-w-4 md:tw-h-4 lg:tw-w-5 lg:tw-h-5":
-                  variant === "sm",
+                "w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5": variant === "sm",
               },
-              { "tw-w-[38px] tw-h-[38px]": variant === "md" },
-              { "tw-w-[48px] tw-h-[48px]": variant === "lg" },
-              { "tw-w-[80px] tw-h-[80px]": variant === "xl" }
+              { "w-[38px] h-[38px]": variant === "md" },
+              { "w-[48px] h-[48px]": variant === "lg" },
+              { "w-[80px] h-[80px]": variant === "xl" }
             )}
             onClick={() => {
               if (!setRating || readonly) return;
@@ -73,19 +69,18 @@ export const RatingStars: React.FC<StarProps> = ({
           >
             <SStar
               className={cn(
-                variant === "sm" &&
-                  "tw-w-5 tw-h-5 md:tw-w-4 md:tw-h-4 lg:tw-w-5 lg:tw-h-5",
-                !readonly && "hover:tw-cursor-pointer",
+                variant === "sm" && "w-5 h-5 md:w-4 md:h-4 lg:w-5 lg:h-5",
+                !readonly && "hover:cursor-pointer",
                 idx + 1 <= rating
-                  ? "[&>*]:tw-fill-warning-500"
-                  : "[&>*]:tw-fill-natural-300"
+                  ? "[&>*]:fill-warning-500"
+                  : "[&>*]:fill-natural-300"
               )}
             />
           </motion.button>
           {!readonly ? (
             <Typography
               tag="span"
-              className="tw-inline-block tw-text-natural-950 tw-text-center tw-text-tiny sm:tw-text-caption tw-font-normal"
+              className="inline-block text-natural-950 text-center text-tiny sm:text-caption font-normal"
             >
               {intl(ratingMap[idx])}
             </Typography>

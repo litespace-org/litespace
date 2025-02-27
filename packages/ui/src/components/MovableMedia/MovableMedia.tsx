@@ -16,7 +16,7 @@ export const MovableMedia: React.FC<{
       dragConstraints={container}
       whileDrag={{ scale: 1.05 }}
       dragMomentum={false}
-      className={cn("tw-cursor-pointer", className)}
+      className={cn("cursor-pointer", className)}
     >
       {children}
     </motion.div>

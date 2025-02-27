@@ -54,11 +54,11 @@ export const RateLesson: React.FC<{
     <Dialog
       open={true}
       title={
-        <div className="tw-flex tw-items-center tw-gap-2">
-          <Rate className="tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8" />
+        <div className="flex items-center gap-2">
+          <Rate className="w-6 h-6 md:w-8 md:h-8" />
           <Typography
             tag="h2"
-            className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
+            className="text-natural-950 font-bold text-subtitle-2"
           >
             {intl("session.rating.title")}
           </Typography>
@@ -66,10 +66,10 @@ export const RateLesson: React.FC<{
       }
       close={close}
     >
-      <div className="tw-flex tw-flex-col tw-gap-6 tw-items-center tw-justify-center tw-mt-6">
+      <div className="flex flex-col gap-6 items-center justify-center mt-6">
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-center tw-font-bold tw-text-h4"
+          className="text-natural-950 text-center font-bold text-h4"
         >
           {type === "session"
             ? intl("session.rating.question", { tutor: tutorName })
@@ -77,7 +77,7 @@ export const RateLesson: React.FC<{
         </Typography>
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-center tw-font-regular tw-text-caption"
+          className="text-natural-950 text-center font-regular text-caption"
         >
           {type === "session"
             ? intl("session.rating.question.description")
@@ -93,7 +93,7 @@ export const RateLesson: React.FC<{
 
         <Textarea
           placeholder={intl("session.rating.text.placeholder")}
-          className="tw-min-h-[138px] !tw-w-[696px]"
+          className="min-h-[138px] !w-[696px]"
           disabled={rateLoading}
           value={feedback}
           onChange={onFeedbackChange}
@@ -104,7 +104,7 @@ export const RateLesson: React.FC<{
           onClick={handleRating}
           loading={rateLoading}
           disabled={rateLoading}
-          className="tw-w-full"
+          className="w-full"
         >
           {intl("session.rating.send-rating")}
         </Button>

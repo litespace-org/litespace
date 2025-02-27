@@ -14,7 +14,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="tw-w-full tw-h-full"
+      className="w-full h-full"
     >
       {children}
     </motion.div>
@@ -30,7 +30,7 @@ const Stream: React.FC<{ stream: MediaStream | null }> = ({ stream }) => {
 
   return (
     <video
-      className="tw-w-full tw-h-full"
+      className="w-full h-full"
       ref={videoRef}
       autoPlay
       muted
@@ -50,7 +50,7 @@ export const PreSessionUserPreview: React.FC<{
   };
 }> = ({ stream, user, camera, speaking }) => {
   return (
-    <div className="tw-w-[156px] tw-aspect-[9/16] lg:tw-aspect-video lg:tw-w-full tw-grow tw-rounded-2xl lg:tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden">
+    <div className="w-[156px] aspect-[9/16] lg:aspect-video lg:w-full grow rounded-2xl lg:rounded-lg shadow-ls-x-small overflow-hidden">
       <AnimatePresence mode="wait">
         {camera ? (
           <Animate>
@@ -58,7 +58,7 @@ export const PreSessionUserPreview: React.FC<{
           </Animate>
         ) : (
           <Animate key="avatar">
-            <div className="tw-w-full tw-h-full tw-bg-brand-100 tw-flex tw-items-center tw-justify-center tw-border tw-border-brand-700 tw-rounded-2xl lg:tw-rounded-lg">
+            <div className="w-full h-full bg-brand-100 flex items-center justify-center border border-brand-700 rounded-2xl lg:rounded-lg">
               <UserAvatar variant="small" user={user} speaking={speaking} />
             </div>
           </Animate>

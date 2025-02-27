@@ -10,9 +10,7 @@ const Overlay: React.FC<{ onClick?: () => void }> = ({ onClick }) => {
   return (
     <div
       onClick={onClick}
-      className={cn(
-        "tw-absolute tw-bottom-0 tw-w-full tw-z-[4] tw-h-[220px] tw-cursor-pointer"
-      )}
+      className={cn("absolute bottom-0 w-full z-[4] h-[220px] cursor-pointer")}
       data-layer="4"
       style={style}
     />

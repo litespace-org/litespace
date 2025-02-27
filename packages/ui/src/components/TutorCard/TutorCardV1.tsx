@@ -48,12 +48,12 @@ export const TutorCardV1: React.FC<CardProps> = ({
   return (
     <div
       className={cn(
-        "tw-h-full tw-bg-natural-50 tw-flex tw-gap-4",
-        "tw-border tw-border-transparent hover:tw-border hover:tw-border-natural-100",
-        "tw-p-4 tw-shadow-ls-small tw-rounded-lg"
+        "h-full bg-natural-50 flex gap-4",
+        "border border-transparent hover:border hover:border-natural-100",
+        "p-4 shadow-ls-small rounded-lg"
       )}
     >
-      <div className="tw-rounded-lg tw-overflow-hidden tw-shrink-0 tw-w-[200px]">
+      <div className="rounded-lg overflow-hidden shrink-0 w-[200px]">
         <Avatar
           src={orUndefined(imageUrl)}
           alt={orUndefined(name)}
@@ -61,43 +61,43 @@ export const TutorCardV1: React.FC<CardProps> = ({
           object="cover"
         />
       </div>
-      <div className="tw-flex tw-flex-col">
+      <div className="flex flex-col">
         <Typography
           tag="h1"
-          className="tw-text-brand-700 tw-mb-1 tw-line-clamp-1 tw-font-bold tw-text-subtitle-1"
+          className="text-brand-700 mb-1 line-clamp-1 font-bold text-subtitle-1"
         >
           {name}
         </Typography>
 
         <Typography
           tag="p"
-          className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800 tw-font-regular tw-text-caption"
+          className="ellipsis line-clamp-2 text-natural-800 font-regular text-caption"
         >
           {about}
         </Typography>
 
-        <Link to={profileUrl} className="tw-cursor-pointer">
+        <Link to={profileUrl} className="cursor-pointer">
           <Typography
             tag="span"
-            className="tw-ellipsis tw-line-clamp-2 tw-text-natural-800 tw-underline tw-text-caption tw-font-bold"
+            className="ellipsis line-clamp-2 text-natural-800 underline text-caption font-bold"
           >
             {intl("tutors.card.label.read-more")}
           </Typography>
         </Link>
 
         {!isFreshTutor ? (
-          <div className={cn("tw-flex tw-gap-8 tw-my-4")}>
+          <div className={cn("flex gap-8 my-4")}>
             {studentCount ? (
-              <div className="tw-flex tw-flex-col tw-gap-1">
+              <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="tw-text-natural-800 tw-text-caption tw-font-regular"
+                  className="text-natural-800 text-caption font-regular"
                 >
                   {intl("tutors.card.label.students")}
                 </Typography>
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-body"
+                  className="text-natural-950 font-semibold text-body"
                 >
                   {formatNumber(studentCount)}
                 </Typography>
@@ -105,16 +105,16 @@ export const TutorCardV1: React.FC<CardProps> = ({
             ) : null}
 
             {lessonCount ? (
-              <div className="tw-flex tw-flex-col tw-gap-1">
+              <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="tw-text-natural-800 tw-font-regular tw-text-caption"
+                  className="text-natural-800 font-regular text-caption"
                 >
                   {intl("tutors.card.label.lessons")}
                 </Typography>
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-body"
+                  className="text-natural-950 font-semibold text-body"
                 >
                   {formatNumber(lessonCount)}
                 </Typography>
@@ -122,24 +122,24 @@ export const TutorCardV1: React.FC<CardProps> = ({
             ) : null}
 
             {rating ? (
-              <div className="tw-flex tw-flex-col tw-gap-1">
+              <div className="flex flex-col gap-1">
                 <Typography
                   tag="span"
-                  className="tw-text-natural-800 tw-text-caption tw-font-regular"
+                  className="text-natural-800 text-caption font-regular"
                 >
                   {intl("tutors.card.label.rating")}
                 </Typography>
-                <div className="tw-flex tw-flex-row tw-items-center tw-gap-[5px] tw-h-full">
+                <div className="flex flex-row items-center gap-[5px] h-full">
                   <Typography
                     tag="span"
-                    className="tw-inline-block tw-text-natural-950 tw-font-semibold tw-text-tiny"
+                    className="inline-block text-natural-950 font-semibold text-tiny"
                   >
                     {rating}
                   </Typography>
                   <SStar
                     width={15}
                     height={15}
-                    className="[&>*]:tw-fill-warning-500"
+                    className="[&>*]:fill-warning-500"
                   />
                 </div>
               </div>
@@ -149,10 +149,9 @@ export const TutorCardV1: React.FC<CardProps> = ({
 
         {!isEmpty(topics) && topics.join("").length > 0 ? (
           <div
-            className={cn(
-              "tw-flex tw-gap-2 tw-flex-wrap tw-justify-start tw-mb-4",
-              { "tw-mt-4": isFreshTutor }
-            )}
+            className={cn("flex gap-2 flex-wrap justify-start mb-4", {
+              "mt-4": isFreshTutor,
+            })}
           >
             {topics.map((topic, idx) => {
               if (
@@ -163,15 +162,15 @@ export const TutorCardV1: React.FC<CardProps> = ({
                   <Tooltip
                     key={idx}
                     content={
-                      <Typography tag="span" className="tw-text-body">
+                      <Typography tag="span" className="text-body">
                         {topic}
                       </Typography>
                     }
                   >
-                    <div className="tw-w-16">
+                    <div className="w-16">
                       <Typography
                         tag="span"
-                        className="tw-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl tw-text-center tw-truncate tw-font-regular tw-text-tiny"
+                        className="block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl text-center truncate font-regular text-tiny"
                       >
                         {topic}
                       </Typography>
@@ -181,7 +180,7 @@ export const TutorCardV1: React.FC<CardProps> = ({
             })}
             <Typography
               tag="span"
-              className="tw-inline-block tw-text-natural-50 tw-bg-brand-700 tw-px-3 tw-py-2 tw-rounded-3xl tw-font-regular tw-text-tiny"
+              className="inline-block text-natural-50 bg-brand-700 px-3 py-2 rounded-3xl font-regular text-tiny"
             >
               {remainingTopicsCount}
               {"+"}
@@ -189,17 +188,17 @@ export const TutorCardV1: React.FC<CardProps> = ({
           </div>
         ) : null}
 
-        <div className="tw-flex tw-gap-3 tw-mt-auto">
+        <div className="flex gap-3 mt-auto">
           <Button
             onClick={onBook}
-            className="tw-grow tw-basis-1/2 tw-w-full"
+            className="grow basis-1/2 w-full"
             type="main"
             variant="primary"
             size="large"
           >
             <Typography
               tag="span"
-              className="tw-text-natural-50 tw-font-semibold tw-text-caption"
+              className="text-natural-50 font-semibold text-caption"
             >
               {intl("tutors.card.book-button.label")}
             </Typography>
@@ -207,14 +206,14 @@ export const TutorCardV1: React.FC<CardProps> = ({
           <Link
             to={profileUrl}
             className={cn(
-              "tw-block tw-grow tw-basis-1/2 tw-text-center tw-px-4 tw-py-2 tw-border tw-border-brand-700 tw-rounded-lg tw-w-full",
-              "hover:tw-bg-brand-100 hover:tw-border-brand-700 focus:tw-bg-brand-200 focus:tw-ring-1 focus:tw-ring-brand-900",
-              "tw-transition-colors tw-ease-out tw-duration-200"
+              "block grow basis-1/2 text-center px-4 py-2 border border-brand-700 rounded-lg w-full",
+              "hover:bg-brand-100 hover:border-brand-700 focus:bg-brand-200 focus:ring-1 focus:ring-brand-900",
+              "transition-colors ease-out duration-200"
             )}
           >
             <Typography
               tag="span"
-              className="tw-text-brand-700 tw-font-semibold tw-text-caption"
+              className="text-brand-700 font-semibold text-caption"
             >
               {intl("tutors.card.profile-button.label")}
             </Typography>

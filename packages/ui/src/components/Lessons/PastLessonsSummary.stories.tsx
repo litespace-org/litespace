@@ -15,7 +15,7 @@ const meta: Meta<Component> = {
   },
   decorators: [
     (Story) => (
-      <div className="tw-max-w-[328px] tw-mx-auto">
+      <div className="max-w-[328px] mx-auto">
         <Story />
       </div>
     ),

@@ -28,17 +28,15 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
   return (
     <div
       className={cn(
-        "tw-bg-natural-50 tw-p-4 md:tw-p-6 tw-shadow-feedback-card tw-rounded-2xl md:tw-rounded-3xl",
-        "tw-relative tw-flex tw-flex-col tw-items-center tw-min-w-64",
-        { "tw-justify-between": !feedback },
-        isEditing
-          ? "tw-w-64 md:tw-h-[317px]"
-          : "md:tw-h-[317px] lg:tw-h-[383px]",
-        isEditing ? "tw-gap-4" : "tw-gap-4 lg:tw-gap-6"
+        "bg-natural-50 p-4 md:p-6 shadow-feedback-card rounded-2xl md:rounded-3xl",
+        "relative flex flex-col items-center min-w-64",
+        { "justify-between": !feedback },
+        isEditing ? "w-64 md:h-[317px]" : "md:h-[317px] lg:h-[383px]",
+        isEditing ? "gap-4" : "gap-4 lg:gap-6"
       )}
     >
       {owner ? (
-        <div className="tw-absolute tw-z-10 tw-w-6 tw-h-6 tw-overflow-hidden tw-top-4 tw-left-4 tw-flex tw-justify-center tw-items-center">
+        <div className="absolute z-10 w-6 h-6 overflow-hidden top-4 left-4 flex justify-center items-center">
           <Menu
             actions={[
               {
@@ -53,21 +51,21 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
               },
             ]}
           >
-            <More className="[&>*]:tw-fill-natural-800" />
+            <More className="[&>*]:fill-natural-800" />
           </Menu>
         </div>
       ) : null}
 
-      <div className={cn("tw-flex tw-justify-center tw-items-center tw-gap-2")}>
+      <div className={cn("flex justify-center items-center gap-2")}>
         <div
           className={cn(
-            "tw-relative tw-rounded-full tw-shrink-0 tw-border-[3px] tw-border-brand-500",
+            "relative rounded-full shrink-0 border-[3px] border-brand-500",
             isEditing
-              ? "tw-w-[82px] tw-h-[82px]"
-              : "tw-w-[72px] tw-h-[72px] md:tw-w-[94px] md:tw-h-[94px] lg:tw-w-[129px] lg:tw-h-[129px]"
+              ? "w-[82px] h-[82px]"
+              : "w-[72px] h-[72px] md:w-[94px] md:h-[94px] lg:w-[129px] lg:h-[129px]"
           )}
         >
-          <div className="tw-overflow-hidden tw-w-full tw-h-full tw-rounded-full">
+          <div className="overflow-hidden w-full h-full rounded-full">
             <Avatar
               src={orUndefined(imageUrl)}
               alt={orUndefined(studentName)}
@@ -76,13 +74,13 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
           </div>
           <div
             className={cn(
-              "tw-bg-brand-500 tw-rounded-full tw-absolute tw-flex tw-justify-center tw-items-center tw-z-quote",
+              "bg-brand-500 rounded-full absolute flex justify-center items-center z-quote",
               isEditing
-                ? "tw-w-[42px] tw-h-[42px] -tw-right-[7.5px] -tw-bottom-[7.5px]"
-                : "tw-w-8 tw-h-8 md:tw-w-[39px] md:tw-h-[39px] lg:tw-w-14 lg:tw-h-14 -tw-right-[12px] -tw-bottom-[12px]"
+                ? "w-[42px] h-[42px] -right-[7.5px] -bottom-[7.5px]"
+                : "w-8 h-8 md:w-[39px] md:h-[39px] lg:w-14 lg:h-14 -right-[12px] -bottom-[12px]"
             )}
           >
-            <Quote className="tw-w-[14px] tw-h-[14px] md:tw-w-6 md:tw-h-6" />
+            <Quote className="w-[14px] h-[14px] md:w-6 md:h-6" />
           </div>
         </div>
       </div>
@@ -97,7 +95,7 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
         <Typography
           tag="span"
           className={cn(
-            "tw-line-clamp-5 tw-text-center tw-text-natural-800 tw-font-semibold md:tw-font-normal lg:tw-font-semibold tw-tiny"
+            "line-clamp-5 text-center text-natural-800 font-semibold md:font-normal lg:font-semibold tiny"
           )}
         >
           {!feedback && isEditing
@@ -109,9 +107,9 @@ export const TutorRatingCard: React.FC<RatingCardProps> = ({
       <Typography
         tag="span"
         className={cn(
-          "tw-text-brand-950 tw-text-center tw-font-bold tw-text-caption lg:tw-text-body",
+          "text-brand-950 text-center font-bold text-caption lg:text-body",
           {
-            "tw-mt-auto": feedback,
+            "mt-auto": feedback,
           }
         )}
       >

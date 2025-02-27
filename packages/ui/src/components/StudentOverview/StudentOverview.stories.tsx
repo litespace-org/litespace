@@ -12,7 +12,7 @@ const meta: Meta<typeof StudentOverview> = {
   },
   decorators: [
     (Story) => (
-      <div className="tw-w-[1200px] tw-mx-auto">
+      <div className="w-[1200px] mx-auto">
         <Story />
       </div>
     ),

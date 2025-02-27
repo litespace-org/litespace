@@ -42,7 +42,7 @@ export const WithVideo: StoryObj<Component> = {
       getStream();
     }, []);
     return (
-      <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
+      <div className="flex justify-center flex-col items-center w-[800px]">
         <PreSessionUserPreview camera={true} {...props} stream={stream} />
       </div>
     );
@@ -59,7 +59,7 @@ export const WithoutVideo: StoryObj<Component> = {
   },
   render(props: ComponentProps) {
     return (
-      <div className="tw-flex tw-justify-center tw-flex-col tw-items-center tw-w-[800px]">
+      <div className="flex justify-center flex-col items-center w-[800px]">
         <PreSessionUserPreview {...props} camera={false} />
       </div>
     );

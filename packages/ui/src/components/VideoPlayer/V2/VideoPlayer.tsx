@@ -46,7 +46,7 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
     <div
       id={CONTAINER_ID}
       ref={containerRef}
-      className="tw-relative tw-w-full tw-aspect-video tw-rounded-lg tw-overflow-hidden"
+      className="relative w-full aspect-video rounded-lg overflow-hidden"
     >
       <video
         playsInline
@@ -59,14 +59,14 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
         muted={muted}
         ref={videoRef}
         src={src}
-        className="tw-w-full tw-h-full data-[ready=true]:tw-cursor-pointer"
+        className="w-full h-full data-[ready=true]:cursor-pointer"
       />
 
       {readyState > 1 && paused && currentTime === 0 ? (
         <div
           className={cn(
-            "tw-absolute tw-top-0 tw-w-full tw-h-full",
-            "tw-flex tw-justify-center tw-items-center"
+            "absolute top-0 w-full h-full",
+            "flex justify-center items-center"
           )}
           style={{
             backgroundImage: `url('${thumbnail}')`,
@@ -77,8 +77,8 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
         </div>
       ) : null}
       {currentTime !== 0 ? (
-        <div className="tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-[56px] tw-flex tw-items-center tw-justify-center tw-py-2 tw-px-4 tw-gap-2">
-          <div className="tw-grow tw-bg-background-video tw-py-1 tw-px-2 tw-h-10 tw-rounded tw-flex tw-items-center tw-gap-4">
+        <div className="absolute bottom-0 left-0 w-full h-[56px] flex items-center justify-center py-2 px-4 gap-2">
+          <div className="grow bg-background-video py-1 px-2 h-10 rounded flex items-center gap-4">
             <SettingsMenu
               setPlaybackSpeed={setPlaybackRate}
               playbackSpeed={playbackRate}
@@ -97,31 +97,31 @@ export const VideoPlayer: React.FC<{ src?: string; thumbnail?: string }> = ({
 
           <button
             onClick={togglePlay}
-            className="tw-w-16 tw-h-10 tw-bg-background-video tw-flex tw-justify-center tw-items-center tw-rounded"
+            className="w-16 h-10 bg-background-video flex justify-center items-center rounded"
           >
-            {paused ? <Play className="tw-w-4 tw-h-[18px]" /> : <Pause />}
+            {paused ? <Play className="w-4 h-[18px]" /> : <Pause />}
           </button>
         </div>
       ) : null}
       {status !== "error" ? (
         <span
           className={cn(
-            readyState < 2 ? "tw-opacity-100" : "tw-opacity-0 tw-hidden",
-            "tw-absolute tw-z-[8] tw-transition-opacity  tw-duration-300 tw-top-1/2 tw-left-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2"
+            readyState < 2 ? "opacity-100" : "opacity-0 hidden",
+            "absolute z-[8] transition-opacity  duration-300 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
           )}
         >
           <Loader size="medium" />
         </span>
       ) : null}
       {status === "error" ? (
-        <div className="tw-absolute tw-top-0 tw-h-full tw-w-full tw-bg-natural-700 tw-flex tw-justify-center tw-items-center">
-          <div className="tw-flex tw-flex-col tw-items-center tw-gap-4">
-            <span className="tw-w-12 tw-h-12 tw-p-1 tw-overflow-hidden tw-rounded-full tw-bg-destructive-200 tw-shadow-exclaimation-mark-video tw-items-center tw-justify-center tw-flex">
+        <div className="absolute top-0 h-full w-full bg-natural-700 flex justify-center items-center">
+          <div className="flex flex-col items-center gap-4">
+            <span className="w-12 h-12 p-1 overflow-hidden rounded-full bg-destructive-200 shadow-exclaimation-mark-video items-center justify-center flex">
               <ExclaimationMarkCircle />
             </span>
             <Typography
               tag="span"
-              className="tw-font-semibold tw-text-center tw-px-4 tw-text-natural-50 tw-text-tiny"
+              className="font-semibold text-center px-4 text-natural-50 text-tiny"
             >
               {intl("media.video.error")}
             </Typography>

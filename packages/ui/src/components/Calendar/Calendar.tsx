@@ -28,18 +28,18 @@ export const Calendar: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-w-full tw-h-full tw-overflow-x-auto",
-        "tw-scrollbar-thin tw-scrollbar-thumb-neutral-200 tw-scrollbar-track-transparent"
+        "w-full h-full overflow-x-auto",
+        "scrollbar-thin scrollbar-thumb-neutral-200 scrollbar-track-transparent"
       )}
     >
       <div
         className={cn(
-          "tw-w-full tw-flex tw-bg-natural-50 tw-border tw-border-natural-300",
-          "tw-shadow-calendar tw-rounded-2xl tw-min-w-[1200px]"
+          "w-full flex bg-natural-50 border border-natural-300",
+          "shadow-calendar rounded-2xl min-w-[1200px]"
         )}
       >
         <Hours day={date} />
-        <div className="tw-grid tw-grid-cols-7 tw-w-full tw-rounded-tl-2xl">
+        <div className="grid grid-cols-7 w-full rounded-tl-2xl">
           <WeekTable
             day={date}
             slots={slots}

@@ -11,8 +11,8 @@ const CheckEmail: React.FC<{ resending: boolean; resend: Void }> = ({
   const intl = useFormatMessage();
 
   return (
-    <div className="tw-flex tw-flex-col tw-gap-6 tw-justify-center tw-items-center tw-text-center tw-grow">
-      <div className="tw-flex tw-flex-col tw-gap-2">
+    <div className="flex flex-col gap-6 justify-center items-center text-center grow">
+      <div className="flex flex-col gap-2">
         <Typography
           tag="h4"
           className="text-natural-950 font-bold sm:font-semibold text-subtitle-1 sm:text-h4"
@@ -21,7 +21,7 @@ const CheckEmail: React.FC<{ resending: boolean; resend: Void }> = ({
         </Typography>
         <Typography
           tag="p"
-          className="tw-text-natural-700 tw-max-w-[554px] text-tiny sm:text-body"
+          className="text-natural-700 max-w-[554px] text-tiny sm:text-body"
         >
           {intl("verify-email.check.description")}
         </Typography>

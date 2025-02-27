@@ -41,7 +41,7 @@ const Animate: React.FC<{
         opacity: 0,
         height: 0,
       }}
-      className="tw-overflow-hidden"
+      className="overflow-hidden"
     >
       {children}
     </motion.div>
@@ -90,7 +90,7 @@ const DaySlots: React.FC<{
   );
 
   return (
-    <div className={cn("tw-flex tw-flex-col tw-gap-2")}>
+    <div className={cn("flex flex-col gap-2")}>
       <AnimatePresence initial={false}>
         {slots.map((slot, idx) => {
           const last = slots.length - 1 === idx;

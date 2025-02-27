@@ -8,7 +8,7 @@ export const MemberAvatar: React.FC<{
   seed: string;
 }> = ({ src, alt, seed }) => {
   return (
-    <div className="tw-shrink-0 tw-w-[35px] tw-h-[35px] tw-rounded-full tw-overflow-hidden">
+    <div className="shrink-0 w-[35px] h-[35px] rounded-full overflow-hidden">
       <Avatar src={orUndefined(src)} alt={orUndefined(alt)} seed={seed} />
     </div>
   );

@@ -11,7 +11,7 @@ const meta: Meta<typeof ChatSummary> = {
   component: ChatSummary,
   decorators: [
     (Story) => (
-      <div className="tw-w-[312px]">
+      <div className="w-[312px]">
         <Story />
       </div>
     ),

@@ -63,23 +63,21 @@ export const DateSelection: React.FC<{
   }, [date, max]);
 
   return (
-    <div className="tw-flex tw-flex-col tw-items-center tw-text-foreground tw-relative">
+    <div className="flex flex-col items-center text-foreground relative">
       <div
-        className={cn(
-          "tw-flex tw-flex-row tw-items-center tw-justify-between tw-mb-5 tw-gap-4"
-        )}
+        className={cn("flex flex-row items-center justify-between mb-5 gap-4")}
       >
         <button
           type="button"
           disabled={!canGoBack || disable}
           onClick={prevMonth}
-          className="disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowRight className="[&>*]:tw-stroke-brand-700" />
+          <ArrowRight className="[&>*]:stroke-brand-700" />
         </button>
         <Typography
           tag="span"
-          className="tw-flex tw-items-center tw-justify-center tw-text-center tw-text-natural-950 tw-font-medium tw-text-subtitle-2"
+          className="flex items-center justify-center text-center text-natural-950 font-medium text-subtitle-2"
         >
           {date.format("MMMM")} {year}
         </Typography>
@@ -87,13 +85,13 @@ export const DateSelection: React.FC<{
           type="button"
           disabled={!canGoNext || disable}
           onClick={nextMonth}
-          className="disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+          className="disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ArrowLeft className="[&>*]:tw-stroke-brand-700" />
+          <ArrowLeft className="[&>*]:stroke-brand-700" />
         </button>
       </div>
 
-      <ul className={cn("tw-grid tw-grid-cols-7 tw-gap-4")}>
+      <ul className={cn("grid grid-cols-7 gap-4")}>
         {grid.map((day) => {
           const isCurrentMonth = day.isSame(date, "month");
           const isSelected = selected?.isSame(day, "day");
@@ -104,13 +102,13 @@ export const DateSelection: React.FC<{
               disabled={disable || isOutOfRange(day) || !isSelectable(day)}
               data-selected={isSelected}
               className={cn(
-                "tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-[7px]",
-                "tw-cursor-pointer disabled:tw-cursor-not-allowed",
-                "tw-text-center tw-w-[60px] tw-h-[60px] tw-border tw-border-natural-900 tw-shadow-date-selection-item tw-rounded-lg",
+                "flex flex-col items-center justify-center gap-[7px]",
+                "cursor-pointer disabled:cursor-not-allowed",
+                "text-center w-[60px] h-[60px] border border-natural-900 shadow-date-selection-item rounded-lg",
                 isCurrentMonth &&
-                  "data-[selected=false]:hover:tw-bg-brand-100 active:tw-bg-brand-700 data-[selected=true]:tw-bg-brand-700",
-                today.isSame(day, "day") && "tw-ring tw-ring-surface-300",
-                (!isCurrentMonth || !selectable) && "tw-opacity-20"
+                  "data-[selected=false]:hover:bg-brand-100 active:bg-brand-700 data-[selected=true]:bg-brand-700",
+                today.isSame(day, "day") && "ring ring-surface-300",
+                (!isCurrentMonth || !selectable) && "opacity-20"
               )}
               onClick={() => onSelect(day)}
               type="button"
@@ -118,14 +116,14 @@ export const DateSelection: React.FC<{
               <Typography
                 tag="span"
                 data-selected={isSelected}
-                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-text-tiny"
+                className="text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
               >
                 {day.format("DD")}
               </Typography>
               <Typography
                 tag="span"
                 data-selected={isSelected}
-                className="tw-text-natural-950 data-[selected=true]:tw-text-natural-50 tw-text-tiny"
+                className="text-natural-950 data-[selected=true]:text-natural-50 text-tiny"
               >
                 {day.format("dddd")}
               </Typography>

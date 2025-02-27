@@ -14,26 +14,24 @@ export const SpeechIndicator: React.FC<{
   const icon = useMemo(() => {
     if (muted && variant === "small")
       return (
-        <MicrophoneSlashSmall className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />
+        <MicrophoneSlashSmall className="[&>*]:stroke-natural-50 w-4 h-4" />
       );
     if (muted && variant === "large")
       return (
         <MicrophoneSlash
           className={cn(
-            "[&>*]:tw-stroke-natural-50",
-            chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+            "[&>*]:stroke-natural-50",
+            chat ? "w-6 h-6" : "w-4 h-4 lg:h-8 lg:w-8"
           )}
         />
       );
     if (!muted && variant === "small")
-      return (
-        <SoundSmall className="[&>*]:tw-stroke-natural-50 tw-w-4 tw-h-4" />
-      );
+      return <SoundSmall className="[&>*]:stroke-natural-50 w-4 h-4" />;
     return (
       <Sound
         className={cn(
-          "[&>*]:tw-stroke-natural-50",
-          chat ? "tw-w-6 tw-h-6" : "tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8"
+          "[&>*]:stroke-natural-50",
+          chat ? "w-6 h-6" : "w-4 h-4 lg:h-8 lg:w-8"
         )}
       />
     );
@@ -42,13 +40,12 @@ export const SpeechIndicator: React.FC<{
   return (
     <div
       className={cn(
-        "tw-rounded-full tw-backdrop-blur-[15px] tw-flex tw-items-center tw-justify-center",
+        "rounded-full backdrop-blur-[15px] flex items-center justify-center",
         {
-          "tw-bg-background-indicator": !speaking || muted,
-          "tw-bg-background-speaking": speaking && !muted,
-          "!tw-w-[42px] !tw-h-[42px] lg:!tw-h-16 lg:!tw-w-16":
-            variant === "large",
-          "tw-w-8 tw-h-8": variant === "small",
+          "bg-background-indicator": !speaking || muted,
+          "bg-background-speaking": speaking && !muted,
+          "!w-[42px] !h-[42px] lg:!h-16 lg:!w-16": variant === "large",
+          "w-8 h-8": variant === "small",
         }
       )}
     >

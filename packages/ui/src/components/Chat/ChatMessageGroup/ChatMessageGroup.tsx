@@ -60,15 +60,15 @@ export const ChatMessageGroup: React.FC<{
 
   return (
     <div
-      className={cn("tw-flex tw-gap-4", {
-        "tw-flex-row-reverse": !owner,
-        "tw-flex-row": owner,
+      className={cn("flex gap-4", {
+        "flex-row-reverse": !owner,
+        "flex-row": owner,
       })}
     >
       <div
         className={cn(
-          "tw-hidden lg:tw-block tw-overflow-hidden tw-rounded-full tw-flex-shrink-0",
-          inSession ? "tw-w-8 tw-h-8" : "tw-w-14 tw-h-14"
+          "hidden lg:block overflow-hidden rounded-full flex-shrink-0",
+          inSession ? "w-8 h-8" : "w-14 h-14"
         )}
       >
         <Avatar
@@ -79,28 +79,28 @@ export const ChatMessageGroup: React.FC<{
       </div>
       <div>
         <div
-          className={cn("tw-hidden lg:tw-flex tw-gap-6 tw-items-center", {
-            "tw-flex-row-reverse": !owner,
-            "tw-flex-row": owner,
+          className={cn("hidden lg:flex gap-6 items-center", {
+            "flex-row-reverse": !owner,
+            "flex-row": owner,
           })}
         >
           <Typography
             tag="h6"
-            className="tw-font-semibold tw-text-body tw-text-natural-950 dark:tw-text-natural-50"
+            className="font-semibold text-body text-natural-950 dark:text-natural-50"
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
           <Typography
             tag="p"
-            className="tw-text-tiny tw-text-natural-400 dark:tw-text-natural-300"
+            className="text-tiny text-natural-400 dark:text-natural-300"
           >
             {dayjs(sentAt).format("hh:mm a")}
           </Typography>
         </div>
         <div
-          className={cn("tw-flex tw-flex-col lg:tw-mt-2 tw-gap-y-2", {
-            "tw-items-end": !owner,
-            "tw-items-start": owner,
+          className={cn("flex flex-col lg:mt-2 gap-y-2", {
+            "items-end": !owner,
+            "items-start": owner,
           })}
         >
           {messages.map((message, index) => {
@@ -131,9 +131,9 @@ export const ChatMessageGroup: React.FC<{
                 initial="hidden"
                 animate="visible"
                 exit="hidden"
-                className={cn("w-full mt-1 tw-flex", {
-                  "tw-justify-end": !owner,
-                  "tw-justify-start": owner,
+                className={cn("w-full mt-1 flex", {
+                  "justify-end": !owner,
+                  "justify-start": owner,
                 })}
                 key={message.id}
               >

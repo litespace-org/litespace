@@ -1,4 +1,10 @@
-import config from "@litespace/ui/tailwind.config";
-import { omit } from "lodash";
+import config, { path } from "@litespace/ui/tailwind.config";
 
-export default omit(config, "prefix");
+export default {
+  ...config,
+  content: [
+    "./index.html",
+    "./src/**/*.{ts,tsx}",
+    `${path}/**/*.{ts,tsx,js,jsx}`,
+  ],
+};

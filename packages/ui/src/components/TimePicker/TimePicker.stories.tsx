@@ -14,8 +14,8 @@ const meta: Meta<Component> = {
   decorators: [
     (Story: React.FC) => (
       <Direction>
-        <div className="tw-font-cairo tw-text-foreground tw-bg-dash-sidebar tw-flex tw-items-center tw-justify-center tw-w-full tw-min-h-screen tw-px-10 tw-py-10">
-          <div className="tw-w-[400px]">
+        <div className="font-cairo text-foreground bg-dash-sidebar flex items-center justify-center w-full min-h-screen px-10 py-10">
+          <div className="w-[400px]">
             <Story />
           </div>
         </div>

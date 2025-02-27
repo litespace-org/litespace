@@ -52,7 +52,7 @@ const EmailVerification: React.FC<{
   const mq = useMediaQuery();
 
   return (
-    <div className="tw-flex tw-flex-col tw-w-full tw-items-center tw-justify-center mt-10 sm:mt-[140px] lg:mt-[30vh] gap-6 lg:tw-gap-10">
+    <div className="flex flex-col w-full items-center justify-center mt-10 sm:mt-[140px] lg:mt-[30vh] gap-6 lg:gap-10">
       {state !== "resend" ? (
         <Typography
           tag="h4"
@@ -88,11 +88,11 @@ const EmailVerification: React.FC<{
         {state === "success" ||
         errorMessage === "error.api.email-already-verified" ? (
           <Animate key="success">
-            <div className="tw-flex tw-flex-col tw-gap-6 tw-text-center tw-w-full">
-              <Typography tag="span" className="tw-text-natural-700 text-body">
+            <div className="flex flex-col gap-6 text-center w-full">
+              <Typography tag="span" className="text-natural-700 text-body">
                 {intl("verify-email.success")}
               </Typography>
-              <Button className="tw-w-full" size="large" onClick={goDashboard}>
+              <Button className="w-full" size="large" onClick={goDashboard}>
                 {intl("labels.go-dashboard")}
               </Button>
             </div>

@@ -59,19 +59,19 @@ export const Session: React.FC<Props> = ({
   return (
     <div
       ref={containerRef}
-      className="tw-flex tw-flex-col tw-h-full tw-gap-4 lg:tw-gap-10 tw-pb-[66px]"
+      className="flex flex-col h-full gap-4 lg:gap-10 pb-[66px]"
     >
       <div
         className={cn(
-          "tw-w-full tw-aspect-video tw-grow tw-border tw-border-brand-700 tw-bg-brand-100",
-          "tw-rounded-lg tw-overflow-hidden",
+          "w-full aspect-video grow border border-brand-700 bg-brand-100",
+          "rounded-lg overflow-hidden",
           chat.enabled
-            ? "lg:tw-grid tw-relative lg:tw-grid-cols-[auto,minmax(35%,326px)]"
-            : "tw-flex"
+            ? "lg:grid relative lg:grid-cols-[auto,minmax(35%,326px)]"
+            : "flex"
         )}
       >
         <AnimatePresence mode="wait">
-          <AnimateWidth className="!tw-w-full">
+          <AnimateWidth className="!w-full">
             <SessionStreams
               containerRef={containerRef}
               currentUserId={currentUserId}
@@ -86,7 +86,7 @@ export const Session: React.FC<Props> = ({
 
         {chat.enabled && mq.lg ? (
           <AnimatePresence mode="wait">
-            <AnimateWidth key="chat" className="tw-h-full">
+            <AnimateWidth key="chat" className="h-full">
               {chatPanel}
             </AnimateWidth>
           </AnimatePresence>
@@ -94,7 +94,7 @@ export const Session: React.FC<Props> = ({
 
         {chat.enabled && !mq.lg ? chatPanel : null}
       </div>
-      <div className="tw-hidden lg:tw-block tw-border-t tw-border-natural-400" />
+      <div className="hidden lg:block border-t border-natural-400" />
       <Actions
         leave={leave}
         screen={cast}
