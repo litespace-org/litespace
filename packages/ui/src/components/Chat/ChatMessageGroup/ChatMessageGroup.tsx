@@ -37,6 +37,7 @@ export const ChatMessageGroup: React.FC<{
   roomId: number;
   sentAt: string;
   owner?: boolean;
+  inSession?: boolean;
   retryFnMap: RetryFnMap;
   roomErrors: RoomErrors;
   readMessage: (id: number) => void;
@@ -50,11 +51,13 @@ export const ChatMessageGroup: React.FC<{
   messages,
   sender: { image, name, userId },
   owner,
+  inSession,
   readMessage,
   editMessage,
   deleteMessage,
 }) => {
   const intl = useFormatMessage();
+
   return (
     <div
       className={cn("tw-flex tw-gap-4", {
@@ -62,7 +65,12 @@ export const ChatMessageGroup: React.FC<{
         "tw-flex-row": owner,
       })}
     >
-      <div className="tw-hidden lg:tw-block tw-w-14 tw-h-14 tw-overflow-hidden tw-rounded-full tw-flex-shrink-0">
+      <div
+        className={cn(
+          "tw-hidden lg:tw-block tw-overflow-hidden tw-rounded-full tw-flex-shrink-0",
+          inSession ? "tw-w-8 tw-h-8" : "tw-w-14 tw-h-14"
+        )}
+      >
         <Avatar
           alt={orUndefined(name)}
           src={orUndefined(image)}
@@ -77,14 +85,14 @@ export const ChatMessageGroup: React.FC<{
           })}
         >
           <Typography
-            tag="span"
-            className="tw-font-semibold tw-text-natural-950 dark:tw-text-natural-50 tw-text-body"
+            tag="h6"
+            className="tw-font-semibold tw-text-body tw-text-natural-950 dark:tw-text-natural-50"
           >
             {owner ? intl("chat.message.title.you") : name}
           </Typography>
           <Typography
-            tag="span"
-            className="tw-text-natural-400 dark:tw-text-natural-300 tw-text-tiny"
+            tag="p"
+            className="tw-text-tiny tw-text-natural-400 dark:tw-text-natural-300"
           >
             {dayjs(sentAt).format("hh:mm a")}
           </Typography>

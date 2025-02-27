@@ -28,6 +28,10 @@ export type ChatSummaryProps = {
      */
     image?: string | undefined;
     /**
+     * isUserOnline as a placeholder if no message is available
+     */
+    isOnline?: boolean;
+    /**
      * Text of the latest message sent in the room.
      */
     message: string | undefined;
@@ -139,7 +143,10 @@ export const ChatSummary: React.FC<ChatSummaryProps> = ({
                               : "tw-text-natural-600"
                           )}
                         >
-                          {room.message}
+                          {room.message ||
+                            intl(
+                              room.isOnline ? "chat.active" : "chat.inactive"
+                            )}
                         </Typography>
                       </div>
                     </Link>

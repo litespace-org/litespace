@@ -1,4 +1,4 @@
-import { IRoom, ITutor, IUser } from "@litespace/types";
+import { IRoom, ITutor, IUser, Void } from "@litespace/types";
 import React, {
   useCallback,
   useEffect,
@@ -71,21 +71,24 @@ const Messages: React.FC<{
     | IRoom.FindUserRoomsApiRecord["otherMember"]
     | ITutor.FullUncontactedTutorInfo
     | null;
+  inSession?: boolean;
   setTemporaryTutor?: (tutor: ITutor.FullUncontactedTutorInfo | null) => void;
   select?: SelectRoom;
-  inSession?: boolean;
+  close?: Void;
 }> = ({
   room,
   otherMember,
-  setTemporaryTutor,
-  select,
   isTyping,
   isOnline,
   inSession,
+  setTemporaryTutor,
+  select,
+  close,
 }) => {
   const { user } = useUserContext();
   const intl = useFormatMessage();
   const messagesRef = useRef<HTMLUListElement>(null);
+
   const [userScrolled, setUserScolled] = useState<boolean>(false);
   const [updatableMessage, setUpdatableMessage] = useState<{
     text: string;
@@ -301,7 +304,7 @@ const Messages: React.FC<{
           role={otherMember.role}
           online={isOnline}
           book={() => setOpen(true)}
-          back={goBack}
+          back={inSession && close ? close : goBack}
           inSession={inSession}
           lastSeen={otherMember.lastSeen}
         />
@@ -327,8 +330,8 @@ const Messages: React.FC<{
             ) : (
               <ul
                 className={cn(
-                  "flex flex-col gap-4 h-full",
-                  "overflow-auto grow scrollbar-thin h-full scrollbar-thumb-natural-200 scrollbar-track-natural-50"
+                  "flex flex-col gap-4 h-full relative w-full",
+                  "overflow-auto grow scrollbar-thin scrollbar-thumb-natural-200 scrollbar-track-natural-50"
                 )}
                 onScroll={onScroll}
                 ref={messagesRef}
@@ -376,6 +379,7 @@ const Messages: React.FC<{
                             <div key={index}>
                               <ChatMessageGroup
                                 {...group}
+                                inSession={inSession}
                                 readMessage={readMessage}
                                 roomErrors={roomErrors}
                                 retryFnMap={retryFnMap}
