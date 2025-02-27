@@ -52,11 +52,7 @@ const Root: React.FC = () => {
   }, [location.pathname]);
 
   return (
-    <div
-      className={cn("flex relative w-full", {
-        "md:ps-[98px] lg:ps-60": showNavigation,
-      })}
-    >
+    <div className="flex relative w-full">
       {showNavigation && (mq.md || showMobileSidebar) ? (
         <Sidebar hide={() => setShowMobileSidebar(false)} />
       ) : null}
