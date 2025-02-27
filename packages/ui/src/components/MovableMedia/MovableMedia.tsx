@@ -9,6 +9,7 @@ export const MovableMedia: React.FC<{
 }> = ({ container, children, className }) => {
   return (
     <motion.div
+      id="drag"
       drag
       draggable
       dragElastic={0}

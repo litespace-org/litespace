@@ -1,12 +1,8 @@
 import React from "react";
 import { Ready } from "@/components/Session/Ready";
-import { ActionsBar } from "@/components/Session/ActionsBar";
 import { PreSessionUserPreview } from "@/components/Session/PreSession/PreSessionUserPreview";
 import { IUser, Void } from "@litespace/types";
-import Video from "@litespace/assets/Video";
-import VideoSlash from "@litespace/assets/VideoSlash";
-import Microphone from "@litespace/assets/Microphone";
-import MicrophoneSlash from "@litespace/assets/MicrophoneSlash";
+import Actions from "@/components/Session/Actions";
 import cn from "classnames";
 
 export type Props = {
@@ -65,24 +61,7 @@ export const PreSession: React.FC<Props> = ({
           speaking={speaking}
         />
 
-        <ActionsBar
-          items={[
-            {
-              enabled: camera.enabled,
-              OnIcon: Video,
-              OffIcon: VideoSlash,
-              toggle: camera.toggle,
-              error: camera.error,
-            },
-            {
-              enabled: mic.enabled,
-              OnIcon: Microphone,
-              OffIcon: MicrophoneSlash,
-              toggle: mic.toggle,
-              error: mic.error,
-            },
-          ]}
-        />
+        <Actions camera={camera} microphone={mic} />
       </div>
 
       <div className="tw-shrink-0">

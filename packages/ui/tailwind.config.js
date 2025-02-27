@@ -43,7 +43,6 @@ export default {
         tooltip: "13",
         toast: "14",
         "floating-streams": "15",
-        "close-chat": "16",
       },
       screens: {
         "3xl": "1600px",

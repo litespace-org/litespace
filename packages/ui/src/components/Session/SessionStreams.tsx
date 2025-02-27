@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import cn from "classnames";
 import { FocusedStream } from "@/components/Session/FocusedStream";
 import { UnFocusedStream } from "@/components/Session/UnFocusedStream";
@@ -12,6 +12,7 @@ export const SessionStreams: React.FC<{
   alert?: string;
   currentUserId: number;
   streams: StreamInfo[];
+  containerRef: React.RefObject<HTMLDivElement>;
   /**
    * Whether the chat panel is enabled or not.
    * @default false
@@ -25,8 +26,15 @@ export const SessionStreams: React.FC<{
     enabled: boolean;
     toggle: Void;
   };
-}> = ({ alert, streams, chat, timer, fullScreen, currentUserId }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+}> = ({
+  alert,
+  streams,
+  chat,
+  timer,
+  fullScreen,
+  currentUserId,
+  containerRef,
+}) => {
   const mq = useMediaQuery();
   const organizedStreams = useMemo(
     () => organizeStreams(streams, currentUserId, !!chat && !mq.lg),
@@ -35,12 +43,13 @@ export const SessionStreams: React.FC<{
 
   return (
     <div
-      data-name="session-streams"
+      id="session-streams"
+      data-info={chat ? "with-chat" : "without-chat"}
       ref={containerRef}
-      className={cn("tw-relative", {
-        "tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg tw-w-full tw-h-full tw-flex tw-flex-col !tw-absolute md:!tw-relative":
+      className={cn({
+        "tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg md:tw-w-full md:tw-h-full tw-flex tw-flex-col tw-absolute md:tw-relative":
           chat,
-        "tw-rounded-lg tw-w-full tw-h-full": !chat,
+        "tw-relative tw-rounded-lg tw-w-full tw-h-full": !chat,
       })}
     >
       {organizedStreams.focused ? (
@@ -54,25 +63,24 @@ export const SessionStreams: React.FC<{
         />
       ) : null}
 
-      <div
+      <MovableMedia
+        container={containerRef}
         className={cn(
-          "tw-flex tw-items-center tw-gap-6 tw-p-4 lg:tw-p-0 tw-absolute tw-top-10 lg:tw-top-0 lg:tw-static tw-z-floating-streams",
+          "tw-flex tw-items-center tw-gap-4 lg:tw-p-0 tw-absolute tw-top-10 lg:tw-top-0 lg:tw-static tw-z-floating-streams tw-h-fit tw-w-fit",
           !chat && "lg:tw-absolute tw-bottom-6 tw-right-6"
         )}
       >
-        <MovableMedia container={containerRef} className="tw-flex tw-gap-4">
-          {organizedStreams.unfocused.map((stream, idx) => {
-            if (!stream) return null;
-            return (
-              <UnFocusedStream
-                key={idx}
-                muted={stream.user.id === currentUserId}
-                stream={stream}
-              />
-            );
-          })}
-        </MovableMedia>
-      </div>
+        {organizedStreams.unfocused.map((stream, idx) => {
+          if (!stream) return null;
+          return (
+            <UnFocusedStream
+              key={idx}
+              muted={stream.user.id === currentUserId}
+              stream={stream}
+            />
+          );
+        })}
+      </MovableMedia>
     </div>
   );
 };
