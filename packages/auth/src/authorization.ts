@@ -124,6 +124,14 @@ export function isStudio(user: unknown): user is IUser.Self {
   return isUser(user) && user.role === IUser.Role.Studio;
 }
 
+export function isStudentOrTutorOrManager(user: unknown): user is IUser.Self {
+  return isStudent(user) || isTutor(user) || isTutorManager(user);
+}
+
+export function isTutorOrManager(user: unknown): user is IUser.Self {
+  return isTutor(user) || isTutorManager(user);
+}
+
 export function isGhost(user: unknown): user is IUser.Ghost {
   return (
     typeof user === "string" &&

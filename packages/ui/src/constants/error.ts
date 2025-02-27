@@ -41,6 +41,8 @@ export const apiErrorMap: Record<ApiErrorCode, LocalId> = {
   [ApiError.ConflictingLessons]: "error.api.conflicting-lessons",
   [ApiError.ConflictingSchedule]: "error.api.conflicting-schedule",
   [ApiError.ReachedBookingLimit]: "error.api.reached-booking-limit",
+  [ApiError.UploadingAssetFailed]: "error.api.uploading-asset",
+  [ApiError.DroppingAssetFailed]: "error.api.dropping-asset",
   [FieldError.InvalidEmail]: "error.field.invalid-email",
   [FieldError.ShortPassword]: "error.field.short-password",
   [FieldError.LongPassword]: "error.field.long-password",

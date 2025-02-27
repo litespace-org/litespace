@@ -1,4 +1,5 @@
 import {
+  apierror,
   bad,
   empty,
   forbidden,
@@ -21,7 +22,7 @@ import {
 } from "@/validation/utils";
 import { isAdmin, isTutor } from "@litespace/auth";
 import { invoices, lessons } from "@litespace/models";
-import { IInvoice, Wss } from "@litespace/types";
+import { ApiError, IAsset, IInvoice, Wss } from "@litespace/types";
 import { NextFunction, Request, Response } from "express";
 import safeRequest from "express-async-handler";
 import { isUndefined } from "lodash";
@@ -249,7 +250,7 @@ export function updateByAdmin(context: ApiContext) {
       const allowed = isAdmin(user);
       if (!allowed) return next(forbidden());
 
-      const file = getRequestFile(req.files, "receipt");
+      const file = getRequestFile(req.files, IAsset.AssetType.Receipt);
       const { invoiceId } = withNamedId("invoiceId").parse(req.params);
       const payload: IInvoice.UpdateByAdminApiPayload =
         updateByAdminPayload.parse(req.body);
@@ -266,6 +267,11 @@ export function updateByAdmin(context: ApiContext) {
       const receipt = file
         ? await upload({ data: file.buffer, type: file.mimetype })
         : undefined;
+
+      if (receipt && typeof receipt !== "string")
+        return next(
+          apierror(ApiError.UploadingAssetFailed, receipt.httpStatusCode || 500)
+        );
 
       const approveUpdate =
         payload.status === IInvoice.Status.Pending &&

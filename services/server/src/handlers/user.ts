@@ -1,5 +1,12 @@
 import { tutors, users, knex, lessons } from "@litespace/models";
-import { ILesson, ITutor, IUser, Wss } from "@litespace/types";
+import {
+  ApiError,
+  IAsset,
+  ILesson,
+  ITutor,
+  IUser,
+  Wss,
+} from "@litespace/types";
 import {
   apierror,
   exists,
@@ -56,7 +63,11 @@ import { cache } from "@/lib/cache";
 import { sendBackgroundMessage } from "@/workers";
 import { WorkerMessageType } from "@/workers/messages";
 import { isValidPassword } from "@litespace/utils/validation";
-import { isTutor, isTutorManager } from "@litespace/auth/dist/authorization";
+import {
+  isSuperAdmin,
+  isTutor,
+  isTutorManager,
+} from "@litespace/auth/dist/authorization";
 import { getRequestFile, upload } from "@/lib/assets";
 
 const createUserPayload = zod.object({
@@ -90,6 +101,7 @@ const updateUserPayload = zod.object({
   phoneNumber: zod.optional(
     zod.union([zod.string().max(15).trim(), zod.null()])
   ),
+  studioId: zod.optional(zod.number()),
 });
 
 const orderByOptions = ["created_at", "updated_at"] as const satisfies Array<
@@ -166,7 +178,7 @@ function update(context: ApiContext) {
     async (req: Request, res: Response, next: NextFunction) => {
       const { id } = identityObject.parse(req.params);
 
-      const currentUser = req.user;
+      const currentUser = req.user as IUser.Self;
       const allowed = isAdmin(currentUser) || isUser(currentUser);
       if (!allowed) return next(forbidden());
 
@@ -185,17 +197,28 @@ function update(context: ApiContext) {
         notice,
         phoneNumber,
         city,
+        studioId,
       }: IUser.UpdateApiPayload = updateUserPayload.parse(req.body);
 
-      const image = getRequestFile(
-        req.files,
-        IUser.UpdateMediaFilesApiKeys.Image
-      );
+      const image = getRequestFile(req.files, IAsset.AssetType.Photo);
 
-      const video = getRequestFile(
-        req.files,
-        IUser.UpdateMediaFilesApiKeys.Video
-      );
+      const video = getRequestFile(req.files, IAsset.AssetType.Video);
+
+      /* *Updating Studio Id*
+       * tutors can update studio id if and only if it's null in the db.
+       * otherwise, only admin and super admin can update the studio id.
+       */
+      const isUpdatingStudio =
+        studioId !== null &&
+        (isTutor(targetUser) || isTutorManager(targetUser));
+
+      const dbUser = await tutors.findSelfById(id);
+      const canUpdateStudio =
+        (!dbUser?.studioId && currentUser.id === dbUser?.id) || // allow tutor to select studio only once
+        isAdmin(currentUser) ||
+        isSuperAdmin(currentUser);
+
+      if (isUpdatingStudio && !canUpdateStudio) return next(forbidden());
 
       // Only studios and admins can update tutor media files (images and videos)
       // Tutor cannot upload it for himself.
@@ -217,9 +240,19 @@ function update(context: ApiContext) {
         ? await upload({ data: image.buffer, type: image.mimetype })
         : undefined;
 
+      if (imageId && typeof imageId !== "string")
+        return next(
+          apierror(ApiError.UploadingAssetFailed, imageId.httpStatusCode || 500)
+        );
+
       const videoId = video
         ? await upload({ data: video.buffer, type: video.mimetype })
         : undefined;
+
+      if (videoId && typeof videoId !== "string")
+        return next(
+          apierror(ApiError.UploadingAssetFailed, videoId.httpStatusCode || 500)
+        );
 
       if (password) {
         const expectedPasswordHash = await users.findUserPasswordHash(

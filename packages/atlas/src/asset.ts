@@ -2,21 +2,18 @@ import { Base } from "@/base";
 import { IAsset } from "@litespace/types";
 
 export class Asset extends Base {
-  find(): Promise<string[]> {
-    return this.client
-      .get<string[]>("/api/v1/asset/list")
-      .then((response) => response.data);
+  async upload(payload: IAsset.uploadPayload): Promise<void> {
+    await this.post({ route: `/api/v1/asset/`, payload });
   }
-
-  async delete(name: string): Promise<void> {
-    await this.client.delete(`/api/v1/asset/${name}`);
+  async delete(payload: IAsset.dropPayload): Promise<void> {
+    await this.del({ route: `/api/v1/asset/`, payload });
   }
-
+  /**
+   * @deprecated should be replaced after implementing new handler to retreive assets with s3
+   */
   async getAssetBlob(name: string, type: IAsset.AssetType): Promise<Blob> {
     const url =
-      type === "public"
-        ? `/assets/uploads/${name}`
-        : `/assets/receipts/${name}`;
+      type === "photo" ? `/assets/uploads/${name}` : `/assets/receipts/${name}`;
     const { data } = await this.client.get(url, { responseType: "blob" });
     return data;
   }
