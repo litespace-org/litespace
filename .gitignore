@@ -7,8 +7,8 @@ dist/
 vercel-urls.json
 .DS_Store
 
-# luna 
-luna/src/index.css
+# ui 
+ui/src/index.css
 storybook-static/
 
 # server 
@@ -19,3 +19,6 @@ services/server/coverage/
 
 # apollo 
 config.json
+
+# radio
+__whatsapp__
