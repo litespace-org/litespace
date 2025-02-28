@@ -103,7 +103,7 @@ export default [
     },
   },
   {
-    files: ["**/*.stories.tsx"],
+    files: ["**/*.stories.tsx", "packages/radio/**"],
     rules: {
       "react-hooks/rules-of-hooks": "off",
     },
