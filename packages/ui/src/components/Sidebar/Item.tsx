@@ -7,46 +7,48 @@ import { Icon } from "@/components/Sidebar/types";
 
 export const Item = ({
   to,
-  hide,
   Icon,
   label,
+  hide,
   active,
 }: {
   to: string;
-  Icon: Icon;
   label: React.ReactNode;
-  active?: boolean;
   hide: Void;
+  Icon?: Icon;
+  active?: boolean;
 }) => {
   return (
     <Link
       className={cn(
-        "tw-flex tw-flex-row tw-justify-start md:tw-justify-center lg:tw-justify-start",
-        "tw-gap-2 lg:tw-gap-4 tw-px-[14px] tw-py-2 tw-items-center",
-        "tw-rounded-lg tw-transition-colors tw-duration-200 tw-group",
+        "flex flex-row justify-start md:justify-center lg:justify-start",
+        "gap-2 lg:gap-4 px-[14px] py-2 items-center",
+        "rounded-lg transition-colors duration-200 group",
         {
-          "tw-bg-brand-700": active,
-          "tw-bg-transparent hover:tw-bg-natural-100": !active,
+          "bg-brand-700": active,
+          "bg-transparent hover:bg-natural-100": !active,
         }
       )}
       to={to}
       onClick={hide}
     >
-      <Icon
-        className={cn(
-          "[&_*]:tw-transition-all [&_*]:tw-duration-200 tw-h-4 tw-w-4 md:tw-h-6 md:tw-w-6",
-          {
-            "[&_*]:tw-stroke-natural-50": active,
-            "[&_*]:tw-stroke-natural-700": !active,
-          }
-        )}
-      />
+      {Icon ? (
+        <Icon
+          className={cn(
+            "[&_*]:transition-all [&_*]:duration-200 h-4 w-4 md:h-6 md:w-6",
+            {
+              "[&_*]:stroke-natural-50": active,
+              "[&_*]:stroke-natural-700": !active,
+            }
+          )}
+        />
+      ) : null}
       <Typography
         tag="span"
         className={cn(
-          "tw-flex md:tw-hidden lg:tw-flex",
-          active ? "tw-text-natural-50" : "tw-text-natural-700",
-          "tw-text-tiny lg:tw-text-caption tw-font-regular lg:tw-font-semibold"
+          "flex md:hidden lg:flex",
+          active ? "text-natural-50" : "text-natural-700",
+          "text-tiny lg:text-caption font-regular lg:font-semibold"
         )}
       >
         {label}

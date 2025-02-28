@@ -38,32 +38,33 @@ export const Primary: StoryObj<Component> = {
           route: Web.Tutors,
           Icon: Settings,
           isActive: false,
-          tail:           
+          tail: (
             <button
               onClick={() => alert("Not Implemented!")}
               className={cn(
-                "tw-flex tw-flex-row tw-justify-start md:tw-justify-center lg:tw-justify-start",
-                "tw-gap-2 md:tw-gap-0 lg:tw-gap-4 tw-px-[14px] tw-py-2 tw-rounded-lg",
-                "hover:tw-text-destructive-400 hover:tw-bg-destructive-100",
-                "active:tw-bg-destructive-400 [&_*]:active:tw-text-natural-50",
-                "[&_*]:active:tw-stroke-natural-50 tw-transition-all tw-duration-200"
+                "flex flex-row justify-start md:justify-center lg:justify-start",
+                "gap-2 md:gap-0 lg:gap-4 px-[14px] py-2 rounded-lg",
+                "hover:text-destructive-400 hover:bg-destructive-100",
+                "active:bg-destructive-400 [&_*]:active:text-natural-50",
+                "[&_*]:active:stroke-natural-50 transition-all duration-200"
               )}
             >
-              <Logout className="tw-h-4 tw-w-4 md:tw-h-6 md:tw-w-6" />
+              <Logout className="h-4 w-4 md:h-6 md:w-6" />
               <Typography
                 tag="span"
                 className={cn(
-                  "tw-text-destructive-400 tw-active:bg-destructive-400 tw-active:text-natural-50 tw-text-tiny tw-lg:text-caption",
-                  "tw-flex md:tw-hidden lg:tw-flex"
+                  "text-destructive-400 active:bg-destructive-400 active:text-natural-50 text-tiny lg:text-caption",
+                  "flex md:hidden lg:flex"
                 )}
               >
                 {ar["sidebar.logout"]}
               </Typography>
             </button>
+          ),
         },
       ],
     },
-  }
+  },
 };
 
 export default meta;

@@ -20,8 +20,9 @@ import { Void } from "@litespace/types";
 export const Sidebar: React.FC<{
   links: Record<string, LinkInfo[]>;
   hide: Void;
+  className?: string;
   children?: React.ReactNode;
-}> = ({ links, hide, children }) => {
+}> = ({ links, className, hide, children }) => {
   const { md } = useMediaQuery();
   const intl = useFormatMessage();
 
@@ -42,36 +43,37 @@ export const Sidebar: React.FC<{
   return (
     <div
       className={cn(
-        "tw-absolute lg:tw-fixed tw-top-[72px] md:tw-top-0 tw-bottom-0 tw-start-0 tw-z-20 lg:tw-z-sidebar",
-        "tw-bg-natural-50 tw-w-[166px] md:tw-w-auto tw-p-4 lg:tw-p-6 tw-shadow-app-sidebar",
-        "tw-flex tw-flex-col tw-gap-6 md:tw-gap-10"
+        "absolute lg:static top-[72px] md:top-0 bottom-0 start-0 z-20 lg:z-sidebar",
+        "bg-natural-50 w-[166px] md:w-[98px] lg:w-60 p-4 lg:p-6 shadow-app-sidebar",
+        "flex flex-col gap-6 md:gap-10",
+        className
       )}
     >
       <Link
         to={Web.Root}
-        className="tw-flex tw-justify-start md:tw-justify-center lg:tw-justify-start tw-items-center tw-gap-1 md:tw-gap-2"
+        className="flex justify-start md:justify-center lg:justify-start items-center gap-1 md:gap-2"
       >
-        <Logo className="tw-h-6 md:tw-h-10 md:tw-w-10 md:tw-my-[5px] lg:tw-my-0" />
+        <Logo className="h-6 md:h-10 md:w-10 md:my-[5px] lg:my-0" />
         <Typography
           tag="h1"
           className={cn(
-            "tw-inline-block tw-text-brand-500 tw-text-tiny lg:tw-text-subtitle-2 tw-font-bold",
-            "tw-flex md:tw-hidden lg:tw-flex"
+            "inline-block text-brand-500 text-tiny lg:text-subtitle-2 font-bold",
+            "flex md:hidden lg:flex"
           )}
         >
           {intl("labels.litespace")}
         </Typography>
       </Link>
 
-      {Object.keys(links).map((key, i) => 
-        <div key={i} className="tw-flex tw-flex-col tw-gap-2 md:tw-gap-1.5">
+      {Object.keys(links).map((key, i) => (
+        <div key={i} className="flex flex-col gap-2 md:gap-1.5">
           <Typography
             tag="span"
-            className="tw-text-natural-800 md:tw-py-2 tw-text-tiny md:tw-text-caption tw-font-bold md:tw-text-center lg:tw-text-start"
+            className="text-natural-800 md:py-2 text-tiny md:text-caption font-bold md:text-center lg:text-start"
           >
             {key}
           </Typography>
-          <ul className="tw-flex tw-flex-col tw-gap-2">
+          <ul className="flex flex-col gap-2">
             {links[key].map(({ label, route, Icon, isActive, tail }) => (
               <>
                 <Item
@@ -87,9 +89,9 @@ export const Sidebar: React.FC<{
             ))}
           </ul>
         </div>
-      )}
+      ))}
 
-      { children }
+      {children}
     </div>
   );
 };

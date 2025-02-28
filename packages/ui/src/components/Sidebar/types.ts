@@ -1,14 +1,15 @@
 import { SVGProps } from "react";
 import { Web, Landing, Dashboard } from "@litespace/utils/routes";
+import { Icon as ReactFeatherIcon } from "react-feather";
 
 export type LinkInfo = {
   label: string;
   route: Web | Landing | Dashboard;
-  Icon: Icon;
   isActive: boolean;
+  Icon?: Icon;
   tail?: React.ReactNode;
 };
 
-export type Icon = React.MemoExoticComponent<
-  (props: SVGProps<SVGSVGElement>) => JSX.Element
->;
+export type Icon =
+  | React.MemoExoticComponent<(props: SVGProps<SVGSVGElement>) => JSX.Element>
+  | ReactFeatherIcon;
