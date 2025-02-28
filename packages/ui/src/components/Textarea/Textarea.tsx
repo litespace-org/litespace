@@ -2,9 +2,6 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import cn from "classnames";
 import { Typography } from "@/components/Typography";
-import { Tooltip } from "@/components/Tooltip";
-// TODO: use next intl once its task is complete
-// import { useFormatMessage } from "@/hooks";
 
 export interface TextareaProps
   extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
@@ -33,7 +30,6 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
     },
     ref
   ) => {
-    // const intl = useFormatMessage();
     return (
       <div
         className={cn(
@@ -104,37 +100,22 @@ export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
                   "border-destructive-600": state === "error",
                 })}
               />
-              <Tooltip
-                show={!!value && value.toString().length > maxAllowedCharacters}
-                side="right"
-                content={
-                  <Typography
-                    tag="span"
-                    className="text-natural-950 max-w-[296px] text-base"
-                  >
-                    {/* TODO: use nextjs intl once its associated task is complete */}
-                    {/* intl("text-area.validate.max-allowed") */}
-                    {"لقد وصلت للحد الاقصي من الحروف المسموح بها داخل التعليق."}
-                  </Typography>
-                }
-              >
-                <div className="w-fit">
-                  <Typography
-                    tag="span"
-                    className={cn(
-                      "justify-self-end group-focus-within:text-natural-950 text-tiny",
-                      {
-                        "text-natural-600": !value && !disabled && !state,
-                        "text-natural-950": value && !disabled && !state,
-                        "text-natural-500": disabled,
-                        "text-destructive-600": state === "error",
-                      }
-                    )}
-                  >
-                    {value?.toString().length || 0} / {maxAllowedCharacters}
-                  </Typography>
-                </div>
-              </Tooltip>
+              <div className="w-fit">
+                <Typography
+                  tag="span"
+                  className={cn(
+                    "justify-self-end group-focus-within:text-natural-950 text-tiny",
+                    {
+                      "text-natural-600": !value && !disabled && !state,
+                      "text-natural-950": value && !disabled && !state,
+                      "text-natural-500": disabled,
+                      "text-destructive-600": state === "error",
+                    }
+                  )}
+                >
+                  {value?.toString().length || 0} / {maxAllowedCharacters}
+                </Typography>
+              </div>
             </div>
           ) : null}
         </div>

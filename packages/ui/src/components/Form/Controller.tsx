@@ -127,6 +127,7 @@ export function Password<T extends FieldValues>({
               id: 4,
               onClick: () => setHidden((prev) => !prev),
             }}
+            placeholder="********************"
             {...field}
             {...props}
           />

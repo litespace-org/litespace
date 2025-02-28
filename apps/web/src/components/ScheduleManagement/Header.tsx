@@ -29,13 +29,13 @@ const Header: React.FC<Props> = ({
     <div className="flex flex-row justify-between items-center gap-6">
       <div>
         <Typography
-          tag="span"
+          tag="h2"
           className="text-natural-950 mb-2 text-subtitle-2 font-bold"
         >
           {date.format("YYYY MMMM")}
         </Typography>
         <Typography
-          tag="span"
+          tag="p"
           className="text-natural-700 text-body font-semibold"
         >
           {date.startOf("week").format("DD MMMM YYYY")}&nbsp;-&nbsp;

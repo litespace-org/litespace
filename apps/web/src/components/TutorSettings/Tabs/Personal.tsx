@@ -53,6 +53,7 @@ const PersonalSettings: React.FC<{
             autoComplete="off"
             name="email"
             disabled
+            dir="rtl"
           />
           <Controller.Input
             label={intl("labels.phoneNumber")}
@@ -61,22 +62,17 @@ const PersonalSettings: React.FC<{
             rules={{ validate: validatePhoneNumber }}
             autoComplete="off"
             name="phoneNumber"
+            dir="rtl"
           />
-          <div className="flex flex-col gap-1">
-            {/* <Label>{intl("labels.city")}</Label> */}
-            <Typography tag="label" className="font-semibold text-natural-950">
-              {intl("labels.city")}
-            </Typography>
-            <Controller.Select
-              value={form.watch("city")}
-              options={cityOptions}
-              placeholder={intl(
-                "shared-settings.edit.personal.city.placeholder"
-              )}
-              control={form.control}
-              name="city"
-            />
-          </div>
+          <Controller.Select
+            id="city"
+            label={intl("labels.city")}
+            value={form.watch("city")}
+            options={cityOptions}
+            placeholder={intl("shared-settings.edit.personal.city.placeholder")}
+            control={form.control}
+            name="city"
+          />
         </div>
 
         <div className="flex flex-col gap-2 md:gap-4 max-w-[400px] w-full">
@@ -88,6 +84,7 @@ const PersonalSettings: React.FC<{
           </Typography>
 
           <Controller.Password
+            id="current-password"
             value={form.watch("password.current")}
             control={form.control}
             label={intl("shared-settings.edit.password.current")}
@@ -98,9 +95,11 @@ const PersonalSettings: React.FC<{
               validate: validatePassword,
             }}
             name="password.current"
+            idleDir="rtl"
           />
 
           <Controller.Password
+            id="new-password"
             label={intl("shared-settings.edit.password.new")}
             value={form.watch("password.new")}
             control={form.control}
@@ -109,6 +108,7 @@ const PersonalSettings: React.FC<{
               validate: validatePassword,
             }}
             name="password.new"
+            idleDir="rtl"
           />
 
           <Controller.Password
@@ -124,10 +124,13 @@ const PersonalSettings: React.FC<{
               },
             }}
             name="password.confirm"
+            dir="rtl"
           />
         </div>
       </div>
-      <NotificationSettings />
+      <div className="max-w-[467px]">
+        <NotificationSettings />
+      </div>
     </div>
   );
 };

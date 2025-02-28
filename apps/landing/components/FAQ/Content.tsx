@@ -267,7 +267,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
         )}
       >
         <div className="flex flex-col gap-4 text-center">
-          <Typography tag="h1" className="text-h4 font-bold">
+          <Typography tag="h1" className="text-subtitle-2 sm:text-h4 font-bold">
             <Typography tag="span" className="text-brand-500">
               {intl("faq/body/title/1")}
             </Typography>{" "}
@@ -277,7 +277,7 @@ const Content: React.FC<{ role?: "student" | "tutor" }> = ({ role }) => {
           </Typography>
           <Typography
             tag="p"
-            className="text-subtitle-2 font-semibold text-natural-700"
+            className="text-body sm:text-subtitle-2 font-semibold text-natural-700"
           >
             {intl("faq/body/description")}
           </Typography>

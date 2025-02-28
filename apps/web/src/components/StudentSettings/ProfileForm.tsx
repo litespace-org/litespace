@@ -55,8 +55,7 @@ function canSubmit(formData: IForm, user: IUser.Self) {
 
 export const ProfileForm: React.FC<{
   user: IUser.Self;
-  className?: string;
-}> = ({ user, className }) => {
+}> = ({ user }) => {
   const mq = useMediaQuery();
 
   const intl = useFormatMessage();
@@ -160,7 +159,7 @@ export const ProfileForm: React.FC<{
   return (
     <Form
       onSubmit={form.handleSubmit(onSubmit)}
-      className={cn("flex flex-col w-fit", className)}
+      className="flex flex-col w-fit"
     >
       <div className="flex items-start justify-between mb-6 sm:mb-8">
         <UploadPhoto id={user.id} />
@@ -319,7 +318,9 @@ export const ProfileForm: React.FC<{
           </div>
 
           <div className="w-full flex flex-col sm:flex-col gap-6 mt-2 sm:my-0">
-            <NotificationSettings />
+            <div className="w-[640px]">
+              <NotificationSettings />
+            </div>
             {!mq.sm ? <TopicSelection /> : null}
           </div>
         </div>

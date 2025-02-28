@@ -44,7 +44,7 @@ export const Accordion: React.FC<{
             >
               <Typography
                 tag="h1"
-                className="text-body font-bold title text-start"
+                className="text-caption sm:text-body font-bold title text-start"
               >
                 {item.title}
               </Typography>
@@ -62,7 +62,7 @@ export const Accordion: React.FC<{
             <div className="overflow-hidden">
               <Typography
                 tag="p"
-                className="text-caption font-regular pt-5 pb-6"
+                className="text-tiny sm:text-caption font-regular pt-5 pb-6"
               >
                 {item.content}
               </Typography>
