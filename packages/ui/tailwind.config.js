@@ -282,6 +282,9 @@ export default {
           },
         },
       },
+      rotate: {
+        "x-180": "180deg",
+      },
       animation: {
         hide: "hide 100ms ease-in",
         "slide-in": "slide-in 150ms cubic-bezier(0.16, 1, 0.3, 1)",
