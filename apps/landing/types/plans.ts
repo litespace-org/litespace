@@ -1,5 +1,3 @@
-import { Route } from "next";
-
 export type Tab = "monthly" | "quarter" | "half" | "annual";
 
 export type PlanCardProps = {
@@ -27,7 +25,7 @@ export type PlanCardProps = {
   /**
    * floating number between 0 and 100.
    */
-  href: Route;
+  discount?: number;
 };
 
 export type PlanProps = {
@@ -36,6 +34,7 @@ export type PlanProps = {
   price: number;
   label?: "most-common" | "most-valuable";
   primary?: boolean;
+  discount?: number;
 };
 
 export type PlansDataProps = {

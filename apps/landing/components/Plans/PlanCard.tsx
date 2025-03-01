@@ -1,13 +1,14 @@
-"use client";
 import { Typography } from "@litespace/ui/Typography";
 import { useFormatMessage } from "@/hooks/intl";
 import cn from "classnames";
-import React from "react";
+import React, { useMemo } from "react";
 import { formatNumber } from "@litespace/ui/utils";
 import { Button } from "@litespace/ui/Button";
-import { useMediaQuery } from "@litespace/headless/mediaQuery";
 import Link from "next/link";
 import { PlanCardProps } from "@/types/plans";
+import { router } from "@/lib/routes";
+import { Web } from "@litespace/utils/routes";
+import { IUser } from "@litespace/types";
 
 export const PlanCard: React.FC<PlanCardProps> = ({
   title,
@@ -16,10 +17,13 @@ export const PlanCard: React.FC<PlanCardProps> = ({
   price,
   label,
   primary,
-  href,
+  discount,
 }) => {
-  const mq = useMediaQuery();
   const intl = useFormatMessage();
+  const priceAfterDiscount = useMemo(
+    () => (discount ? price - (price * discount) / 100 : price),
+    [discount, price]
+  );
 
   return (
     <div
@@ -36,10 +40,9 @@ export const PlanCard: React.FC<PlanCardProps> = ({
           className={cn(
             "text-tiny lg:text-body lg:font-semibold",
             "absolute top-0 left-[34px] md:left-1/2 md:-translate-x-1/2 -translate-y-full",
-            "border-t border-r border-l border-natural-300 rounded-t-lg md:rounded-t-2xl py-[7px] px-[8px] md:p-[10px] shadow-plan-card-label -z-10",
+            "border-t border-r border-l border-natural-300 rounded-t-lg md:rounded-t-2xl py-[7px] px-[8px] md:p-[10px] shadow-plan-card-label -z-10 inline-block",
             { "bg-natural-100 text-brand-700": label === "most-common" },
-            { "bg-brand-700 text-natural-50": label === "most-valuable" },
-            { "inline-block": !mq.lg }
+            { "bg-brand-700 text-natural-50": label === "most-valuable" }
           )}
         >
           {label === "most-common" ? intl("plan/label/most-common") : null}
@@ -57,6 +60,22 @@ export const PlanCard: React.FC<PlanCardProps> = ({
           >
             {title}
           </Typography>
+
+          {discount ? (
+            <div className="self-stretch">
+              <Typography
+                tag="span"
+                className={cn(
+                  "text-brand-700 py-[2px] px-3 rounded-[30px] text-tiny font-regular",
+                  primary ? "bg-discount-primary" : "bg-discount-default"
+                )}
+              >
+                {intl("plan/discount", {
+                  value: formatNumber(discount, { maximumFractionDigits: 2 }),
+                })}
+              </Typography>
+            </div>
+          ) : null}
         </div>
 
         <Typography
@@ -90,50 +109,35 @@ export const PlanCard: React.FC<PlanCardProps> = ({
           )}
         >
           {intl("plan/price", {
-            value: formatNumber(price, {
+            value: formatNumber(priceAfterDiscount, {
               maximumFractionDigits: 2,
             }),
           })}
         </Typography>
       </div>
 
-      {primary ? (
-        <Link href={href} target="_blank">
-          <button
-            type="button"
-            className={cn(
-              "w-full h-10 rounded-lg mt-4 md:mt-6",
-              "bg-natural-50 hover:bg-brand-100 active:bg-brand-200",
-              "transition-colors duration-200"
-            )}
+      <Link
+        href={router.web({
+          route: Web.Register,
+          role: IUser.Role.Student,
+          full: true,
+        })}
+      >
+        <Button
+          type="main"
+          variant={primary ? "secondary" : "primary"}
+          htmlType="button"
+          size="large"
+          className={cn("mt-4 md:mt-6 w-full")}
+        >
+          <Typography
+            tag="span"
+            className="font-medium text-caption lg:text-body"
           >
-            <Typography
-              tag="span"
-              className={cn(
-                "font-medium text-caption lg:text-body",
-                primary ? "text-brand-700" : "text-brand-50"
-              )}
-            >
-              {intl("plan/button/buy")}
-            </Typography>
-          </button>
-        </Link>
-      ) : (
-        <Link href={href} target="_blank">
-          <Button
-            htmlType="button"
-            size={"large"}
-            className="mt-4 md:mt-6 h-10 w-full"
-          >
-            <Typography
-              tag="span"
-              className="text-brand-50 font-medium text-caption lg:text-body"
-            >
-              {intl("plan/button/buy")}
-            </Typography>
-          </Button>
-        </Link>
-      )}
+            {intl("plan/button/buy")}
+          </Typography>
+        </Button>
+      </Link>
     </div>
   );
 };

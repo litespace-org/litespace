@@ -8,12 +8,9 @@ import { Animate } from "@/components/Common/Animate";
 import PlanCard from "@/components/Plans/PlanCard";
 import data from "@/components/Plans/data.json";
 import { ActiveLine } from "@/components/Plans/Line";
-import { Web } from "@litespace/utils/routes";
-import { router } from "@/lib/routes";
-import { IUser } from "@litespace/types";
-import { CurvedLine } from "@/components/Plans/CurvedLine";
 import AbstractLine from "@litespace/assets/AbstractLine";
 import { PlansDataProps, Tab } from "@/types/plans";
+import React from "react";
 
 const PLANS_TITLE_ID_MAP: { [key: number]: LocalId } = {
   1: "plans/titles/beginning",
@@ -52,7 +49,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
   ];
 
   return (
-    <section className="flex flex-col gap-4">
+    <section className="flex flex-col gap-4 max-w-screen-3xl mx-auto px-4 pt-[120px] pb-[128px]">
       <div className="flex flex-col gap-4 justify-center items-center text-center mb-16">
         <Typography
           tag="h3"
@@ -98,7 +95,12 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
                 >
                   {intl("plans/installments/six-month")}
                 </Typography>
-                <CurvedLine />
+                <div
+                  className="absolute -bottom-12 md:-bottom-[40px] -left-0 md:-left-[115%] w-7 md:w-[35px] h-[15px] md:!rotate-[220deg]"
+                  style={{ transform: "rotateX(180deg)" }}
+                >
+                  <CurvedDashedLine />
+                </div>
               </>
             ) : null}
             <Link scroll={false} href={`?tab=${tab.value}`}>
@@ -118,9 +120,9 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
           </div>
         ))}
       </div>
-      <div>
+      <div className="flex items-center justify-center">
         <Animate key={activeTab} tab={activeTab}>
-          <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center md:gap-6 mt-[124px]">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 justify-items-center md:gap-6 mt-[124px]">
             {plansJson[activeTab].map((plan, idx) => (
               <div
                 key={plan.id}
@@ -143,11 +145,7 @@ const Plans: React.FC<{ activeTab: Tab }> = ({ activeTab = "annual" }) => {
                   price={plan.price}
                   label={plan.label}
                   primary={plan.primary}
-                  href={router.web({
-                    route: Web.Register,
-                    role: IUser.Role.Student,
-                    full: true,
-                  })}
+                  discount={plan.discount}
                 />
               </div>
             ))}
