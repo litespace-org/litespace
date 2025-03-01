@@ -7,12 +7,12 @@ export const FullSwitch: React.FC<
   SwitchProps & { title: string; description: string }
 > = ({ title, description, ...props }) => {
   return (
-    <div className="tw-flex tw-flex-row tw-items-start tw-justify-between tw-gap-4 lg:tw-max-w-[467px] tw-w-full">
+    <div className="flex flex-row items-start justify-between gap-4 w-full">
       <div>
         <Typography
           tag="h2"
           className={cn(
-            "tw-text-natural-950 tw-mb-1 tw-font-semibold md:tw-font-regular tw-text-body md:tw-text-subtitle-2"
+            "text-natural-950 mb-1 font-semibold md:font-regular text-body md:text-subtitle-2"
           )}
         >
           {title}
@@ -20,7 +20,7 @@ export const FullSwitch: React.FC<
         <Typography
           tag="p"
           className={cn(
-            "tw-text-natural-600 tw-font-regular tw-text-caption md:tw-text-body"
+            "text-natural-600 font-regular text-caption md:text-body"
           )}
         >
           {description}

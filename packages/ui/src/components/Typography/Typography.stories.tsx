@@ -18,40 +18,40 @@ export const Primary: StoryObj<Component> = {
   render() {
     return (
       <div>
-        <Typography tag="h1" className="tw-text-h1">
+        <Typography tag="h1" className="text-h1">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h2" className="tw-text-h2 tw-font-bold">
+        <Typography tag="h2" className="text-h2 font-bold">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h1" className="tw-text-h1 tw-font-semibold">
+        <Typography tag="h1" className="text-h1 font-semibold">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h1" className="tw-text-h1 tw-font-medium">
+        <Typography tag="h1" className="text-h1 font-medium">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h2" className="tw-text-h-2">
+        <Typography tag="h2" className="text-h-2">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h3" className="tw-text-h3">
+        <Typography tag="h3" className="text-h3">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="h4" className="tw-text-h4">
+        <Typography tag="h4" className="text-h4">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="p" className="tw-text-subtitle-1">
+        <Typography tag="p" className="text-subtitle-1">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="p" className="tw-text-subtitle-2">
+        <Typography tag="p" className="text-subtitle-2">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="p" className="tw-text-body">
+        <Typography tag="p" className="text-body">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="p" className="tw-text-caption">
+        <Typography tag="p" className="text-caption">
           {faker.lorem.words()}
         </Typography>
-        <Typography tag="span" className="tw-text-tiny">
+        <Typography tag="span" className="text-tiny">
           {faker.lorem.words()}
         </Typography>
       </div>

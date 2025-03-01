@@ -32,51 +32,51 @@ export const Confirmation: React.FC<{
 }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-flex tw-flex-col tw-gap-6">
-      <div className="tw-flex tw-flex-row tw-gap-6">
-        <div className="tw-w-[120px] tw-h-[120px] tw-overflow-hidden tw-rounded-full">
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-row gap-6">
+        <div className="w-[120px] h-[120px] overflow-hidden rounded-full">
           <Avatar
             src={orUndefined(imageUrl)}
             alt={orUndefined(name)}
             seed={tutorId.toString()}
           />
         </div>
-        <div className="tw-flex tw-flex-col tw-gap-4">
+        <div className="flex flex-col gap-4">
           <Typography
             tag="span"
-            className="tw-text-natural-950 tw-text-subtitle-1 tw-font-bold"
+            className="text-natural-950 text-subtitle-1 font-bold"
           >
             {name}
           </Typography>
 
-          <div className="tw-flex tw-flex-col tw-gap-2">
-            <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-              <Calendar className="tw-h-6 tw-w-6" />
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2 items-center">
+              <Calendar className="h-6 w-6" />
               <Typography
                 tag="span"
-                className="tw-text-natural-950 tw-text-subtitle-1 tw-font-semibold"
+                className="text-natural-950 text-subtitle-1 font-semibold"
               >
                 {dayjs(start).format("dddd, D MMMM")}
               </Typography>
             </div>
 
-            <div className="tw-flex tw-flex-row tw-gap-[88px]">
-              <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Clock className="tw-w-6 tw-h-6" />
+            <div className="flex flex-row gap-[88px]">
+              <div className="flex flex-row gap-2 items-center">
+                <Clock className="w-6 h-6" />
 
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
+                  className="text-natural-950 font-semibold text-subtitle-2"
                 >
                   {dayjs(start).format("h:mm a")}
                 </Typography>
               </div>
-              <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-                <Timer className="tw-w-6 tw-h-6" />
+              <div className="flex flex-row gap-2 items-center">
+                <Timer className="w-6 h-6" />
 
                 <Typography
                   tag="span"
-                  className="tw-text-natural-950 tw-font-semibold tw-text-subtitle-2"
+                  className="text-natural-950 font-semibold text-subtitle-2"
                 >
                   {formatMinutes(duration)}
                 </Typography>
@@ -86,9 +86,9 @@ export const Confirmation: React.FC<{
         </div>
       </div>
 
-      <div className="tw-flex tw-flex-row tw-gap-6 tw-pb-5">
+      <div className="flex flex-row gap-6 pb-5">
         <Button
-          className="tw-w-full"
+          className="w-full"
           loading={confirmationLoading}
           disabled={confirmationLoading}
           onClick={onConfrim}
@@ -97,7 +97,7 @@ export const Confirmation: React.FC<{
           {intl("book-lesson.confirm")}
         </Button>
         <Button
-          className="tw-w-full"
+          className="w-full"
           disabled={confirmationLoading}
           variant="secondary"
           onClick={onEdit}

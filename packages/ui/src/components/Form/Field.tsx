@@ -10,8 +10,8 @@ export const Field: React.FC<{
   return (
     <div
       className={cn(
-        "tw-flex tw-gap-2 tw-w-full",
-        variant == "column" ? "tw-flex-col" : "tw-flex-row tw-justify-between",
+        "flex gap-2 w-full",
+        variant == "column" ? "flex-col" : "flex-row justify-between",
         className
       )}
     >

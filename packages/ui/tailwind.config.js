@@ -1,10 +1,12 @@
 import plugin from "tailwindcss/plugin";
+import { resolve } from "node:path";
+
+export const path = resolve(__dirname);
 
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: "class",
   content: ["./index.html", "./src/**/*.{ts,tsx}"],
-  prefix: "tw-",
   theme: {
     fontFamily: {
       cairo: ["Cairo", "sans-serif"],

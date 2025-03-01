@@ -23,28 +23,25 @@ const Progress: React.FC<{
 }> = ({ value, label, type }) => {
   return (
     <div>
-      <div className="tw-flex tw-flex-row tw-gap-2 tw-items-center">
-        <Typography
-          tag="span"
-          className="tw-text-natural-950 tw-text-body tw-font-bold"
-        >
+      <div className="flex flex-row gap-2 items-center">
+        <Typography tag="span" className="text-natural-950 text-body font-bold">
           {formatPercentage(value)}
         </Typography>
 
-        <Typography tag="span" className="tw-text-natural-500 tw-text-tiny">
+        <Typography tag="span" className="text-natural-500 text-tiny">
           {label}
         </Typography>
       </div>
 
-      <div className="tw-w-full tw-h-2 tw-bg-natural-100 tw-rounded-full">
+      <div className="w-full h-2 bg-natural-100 rounded-full">
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${value}%` }}
           transition={{ duration: 0.3 }}
-          className={cn("tw-h-full tw-rounded-full", {
-            "tw-bg-brand-700": type === "main" || type === "success",
-            "tw-bg-destructive-700": type === "error",
-            "tw-bg-warning-700": type === "warning",
+          className={cn("h-full rounded-full", {
+            "bg-brand-700": type === "main" || type === "success",
+            "bg-destructive-700": type === "error",
+            "bg-warning-700": type === "warning",
           })}
         />
       </div>
@@ -98,55 +95,54 @@ export const ConfirmationDialog: React.FC<{
       <Portal>
         <Overlay
           onClick={close}
-          className="tw-fixed tw-inset-0 tw-backdrop-blur-[15px] tw-bg-overlay-dialog tw-z-dialog-overlay"
+          className="fixed inset-0 backdrop-blur-[15px] bg-overlay-dialog z-dialog-overlay"
         />
         <Content
           dir="rtl"
           className={cn(
-            "tw-fixed tw-left-1/2 tw-top-1/2 -tw-translate-x-1/2 -tw-translate-y-1/2 tw-bg-natural-50",
-            "tw-border tw-border-border-strong tw-rounded-xl tw-w-[328px] lg:tw-w-[400px] tw-shadow-lg tw-z-[98]",
-            "tw-shadow-dialog-confirm tw-p-6"
+            "fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-natural-50",
+            "border border-border-strong rounded-xl w-[328px] lg:w-[400px] shadow-lg z-[98]",
+            "shadow-dialog-confirm p-6"
           )}
         >
-          <div className="tw-flex tw-items-center tw-justify-between tw-mb-4 lg:tw-mb-6">
+          <div className="flex items-center justify-between mb-4 lg:mb-6">
             <div
               className={cn(
-                "tw-w-12 tw-h-12 tw-border-8 tw-rounded-full tw-flex tw-items-center tw-justify-center",
+                "w-12 h-12 border-8 rounded-full flex items-center justify-center",
                 {
-                  "tw-bg-brand-100 tw-border-brand-50": type === "main",
-                  "tw-bg-success-100 tw-border-success-50": type === "success",
-                  "tw-bg-warning-100 tw-border-warning-50": type === "warning",
-                  "tw-bg-destructive-100 tw-border-destructive-50":
-                    type === "error",
+                  "bg-brand-100 border-brand-50": type === "main",
+                  "bg-success-100 border-success-50": type === "success",
+                  "bg-warning-100 border-warning-50": type === "warning",
+                  "bg-destructive-100 border-destructive-50": type === "error",
                 },
                 {
-                  "[&_svg>*]:tw-stroke-brand-700": type === "main",
-                  "[&_svg>*]:tw-stroke-success-600": type === "success",
-                  "[&_svg>*]:tw-stroke-warning-600": type === "warning",
-                  "[&_svg>*]:tw-stroke-destructive-700": type === "error",
+                  "[&_svg>*]:stroke-brand-700": type === "main",
+                  "[&_svg>*]:stroke-success-600": type === "success",
+                  "[&_svg>*]:stroke-warning-600": type === "warning",
+                  "[&_svg>*]:stroke-destructive-700": type === "error",
                 }
               )}
             >
-              <div className="tw-w-6 tw-h-6">{icon}</div>
+              <div className="w-6 h-6">{icon}</div>
             </div>
             <Close
               onClick={close}
-              className="tw-rounded-full tw-h-11 tw-w-11 tw-flex tw-items-center tw-justify-center"
+              className="rounded-full h-11 w-11 flex items-center justify-center"
             >
-              <X className="tw-text-natural-600 tw-w-6 tw-h-6" />
+              <X className="text-natural-600 w-6 h-6" />
             </Close>
           </div>
-          <div className="tw-flex tw-gap-1 tw-flex-col tw-mb-4 lg:tw-mb-6">
+          <div className="flex gap-1 flex-col mb-4 lg:mb-6">
             <Typography
               tag="h2"
-              className="tw-text-natural-950 tw-mb-1 tw-font-semibold tw-text-body"
+              className="text-natural-950 mb-1 font-semibold text-body"
             >
               {title}
             </Typography>
             {description ? (
               <Typography
                 tag="p"
-                className="tw-text-natural-700 tw-text-caption tw-font-regular"
+                className="text-natural-700 text-caption font-regular"
               >
                 {description}
               </Typography>
@@ -161,12 +157,12 @@ export const ConfirmationDialog: React.FC<{
             ) : null}
           </div>
 
-          <div className="tw-flex tw-items-center tw-justify-center tw-gap-3">
+          <div className="flex items-center justify-center gap-3">
             <Button
               type={type}
               size="large"
               variant="primary"
-              className="tw-w-full"
+              className="w-full"
               onClick={actions.primary.onClick}
               loading={actions.primary.loading}
               disabled={actions.primary.disabled}
@@ -179,7 +175,7 @@ export const ConfirmationDialog: React.FC<{
                 size="large"
                 type={type}
                 variant="secondary"
-                className="tw-w-full"
+                className="w-full"
                 onClick={actions.secondary.onClick}
                 loading={actions.secondary.loading}
                 disabled={actions.secondary.disabled}

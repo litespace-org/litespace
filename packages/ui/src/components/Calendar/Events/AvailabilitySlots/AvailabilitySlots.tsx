@@ -62,18 +62,18 @@ export const AvailabilitySlot: React.FC<Props> = ({
       minHeight={HOUR_HEIGHT - 2 * CARD_PADDING}
       marginTop={mt !== undefined ? mt : marginTop}
     >
-      <div className="tw-absolute tw-top-1 tw-left-1">
+      <div className="absolute top-1 left-1">
         <OptionsMenu
           onEdit={() => onEdit && onEdit({ id, start, end })}
           onDelete={() => onDelete && onDelete(id)}
         />
       </div>
-      <div className="tw-flex tw-flex-col tw-gap-2">
-        <div className="tw-flex tw-items-center tw-justify-start">
+      <div className="flex flex-col gap-2">
+        <div className="flex items-center justify-start">
           <EventSpan start={start} end={end} />
         </div>
 
-        <div className="tw-flex tw-relative tw-h-9">
+        <div className="flex relative h-9">
           {members.slice(0, VISIBLE_AVATAR_COUNT + 1).map((member, idx) => (
             <motion.div
               key={member.id}
@@ -89,7 +89,7 @@ export const AvailabilitySlot: React.FC<Props> = ({
               <div>
                 <motion.div
                   whileHover={{ scale: 1.05 }}
-                  className="tw-rounded-full tw-border tw-border-natural-50"
+                  className="rounded-full border border-natural-50"
                 >
                   {idx !== VISIBLE_AVATAR_COUNT ? (
                     <MemberAvatar
@@ -98,8 +98,8 @@ export const AvailabilitySlot: React.FC<Props> = ({
                       seed={member.id.toString()}
                     />
                   ) : members.length > VISIBLE_AVATAR_COUNT ? (
-                    <div className="tw-flex tw-items-center tw-justify-center tw-bg-natural-500 tw-text-natural-50 tw-shrink-0 tw-w-9 tw-h-9 tw-rounded-full tw-overflow-hidden">
-                      <Typography tag="span" className="tw-text-caption">
+                    <div className="flex items-center justify-center bg-natural-500 text-natural-50 shrink-0 w-9 h-9 rounded-full overflow-hidden">
+                      <Typography tag="span" className="text-caption">
                         {members.length - VISIBLE_AVATAR_COUNT}+
                       </Typography>
                     </div>
@@ -139,8 +139,8 @@ const OptionsMenu: React.FC<{
 
   return (
     <Menu actions={actions} open={open} setOpen={setOpen}>
-      <div className="tw-p-2 tw-z-10">
-        <More className="[&>*]:tw-fill-natural-800" />
+      <div className="p-2 z-10">
+        <More className="[&>*]:fill-natural-800" />
       </div>
     </Menu>
   );

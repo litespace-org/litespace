@@ -17,7 +17,7 @@ const Animate: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       initial="hidden"
       animate="visible"
       exit="hidden"
-      className="tw-w-full tw-h-full tw-flex tw-items-center tw-justify-center"
+      className="w-full h-full flex items-center justify-center"
     >
       {children}
     </motion.div>
@@ -38,8 +38,8 @@ const Stream: React.FC<{
     <video
       ref={videoRef}
       className={cn(
-        "tw-w-full tw-h-full lg:tw-aspect-video tw-absolute tw-top-0",
-        hidden && "tw-opacity-0"
+        "w-full h-full lg:aspect-video absolute top-0",
+        hidden && "opacity-0"
       )}
       autoPlay
       muted={muted}
@@ -60,7 +60,7 @@ export const UnFocusedStream: React.FC<{
         duration: 0.3,
         ease: "easeInOut",
       }}
-      className="tw-w-[109px] tw-aspect-[9/16] lg:tw-w-[219px] lg:tw-aspect-video tw-border tw-border-natural-500 tw-flex tw-items-center tw-justify-center tw-backdrop-blur-[15px] tw-bg-background-indicator tw-rounded-lg tw-shadow-ls-x-small tw-overflow-hidden"
+      className="w-[109px] aspect-[9/16] lg:w-[219px] lg:aspect-video border border-natural-500 flex items-center justify-center backdrop-blur-[15px] bg-background-indicator rounded-lg shadow-ls-x-small overflow-hidden"
     >
       <AnimatePresence initial={false} mode="wait">
         {stream.video || stream.cast ? (
@@ -71,7 +71,7 @@ export const UnFocusedStream: React.FC<{
           <Animate key="avatar">
             <div
               className={cn(
-                "tw-rounded-full tw-overflow-hidden tw-flex tw-items-center tw-justify-center"
+                "rounded-full overflow-hidden flex items-center justify-center"
               )}
             >
               <UserAvatar
@@ -85,7 +85,7 @@ export const UnFocusedStream: React.FC<{
         )}
       </AnimatePresence>
 
-      <div className="tw-absolute tw-top-[8px] tw-left-[8px]">
+      <div className="absolute top-[8px] left-[8px]">
         <SpeechIndicator
           variant="small"
           speaking={stream.speaking}

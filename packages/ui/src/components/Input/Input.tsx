@@ -42,17 +42,17 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
     return (
       <div
         className={cn(
-          "tw-flex tw-flex-col tw-w-full tw-gap-1 tw-group",
-          disabled && "tw-cursor-not-allowed"
+          "flex flex-col w-full gap-1 group",
+          disabled && "cursor-not-allowed"
         )}
       >
         {label ? (
           <Typography
             tag="label"
             htmlFor={props.id}
-            className={cn("tw-text-caption tw-font-semibold", {
-              "tw-text-natural-950": !disabled,
-              "tw-text-natural-500": disabled,
+            className={cn("text-caption font-semibold", {
+              "text-natural-950": !disabled,
+              "text-natural-500": disabled,
             })}
           >
             {label}
@@ -62,25 +62,25 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
           data-disabled={disabled}
           className={cn(
             // base
-            "tw-w-full tw-px-3",
-            "tw-rounded-[6px] tw-border",
-            "tw-flex tw-gap-2 tw-items-center tw-bg-natural-50",
+            "w-full px-3",
+            "rounded-[6px] border",
+            "flex gap-2 items-center bg-natural-50",
             {
-              "tw-h-7": inputSize === "small",
-              "tw-h-8": inputSize === "medium",
-              "tw-h-10": inputSize === "large",
+              "h-7": inputSize === "small",
+              "h-8": inputSize === "medium",
+              "h-10": inputSize === "large",
             },
             // Focused
-            "[&:has(input:focus)]:tw-ring-1 [&:has(input:focus)]:tw-ring-secondary-700 [&:has(input:focus)]:tw-border-secondary-700",
+            "[&:has(input:focus)]:ring-1 [&:has(input:focus)]:ring-secondary-700 [&:has(input:focus)]:border-secondary-700",
             {
               // Default || Filled
-              "tw-border-natural-300": !state && !disabled,
+              "border-natural-300": !state && !disabled,
               // Error
-              "tw-border-destructive-600": state === "error",
+              "border-destructive-600": state === "error",
               // Success
-              "tw-border-brand-600": state === "success",
+              "border-brand-600": state === "success",
               // Disabled
-              "tw-bg-natural-100 tw-border-natural-200": disabled,
+              "bg-natural-100 border-natural-200": disabled,
             }
           )}
         >
@@ -88,12 +88,12 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <div
               className={cn(
                 // Default
-                "tw-w-4 tw-h-4 tw-cursor-default [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
+                "w-4 h-4 cursor-default [&_*]:stroke-natural-600 group-focus-within:[&_*]:stroke-natural-950",
                 // Filled
-                value && !disabled && "[&_*]:tw-stroke-natural-950",
+                value && !disabled && "[&_*]:stroke-natural-950",
                 // Disabled
                 disabled &&
-                  "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none"
+                  "[&_*]:stroke-natural-500 cursor-not-allowed pointer-events-none"
               )}
             >
               {icon}
@@ -106,14 +106,14 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             value={value}
             disabled={disabled}
             className={cn(
-              "tw-grow tw-bg-inherit focus-within:tw-outline-none tw-font-medium tw-text-[0.875rem] tw-leading-[150%] tw-h-full",
+              "grow bg-inherit focus-within:outline-none font-medium text-[0.875rem] leading-[150%] h-full",
               // Placeholder
-              "placeholder:tw-text-natural-600",
+              "placeholder:text-natural-600",
               {
                 // Filled
-                "tw-text-natural-950": !disabled && value,
+                "text-natural-950": !disabled && value,
                 // Disabled
-                "tw-text-natural-500 placeholder:tw-text-natural-500 tw-cursor-not-allowed":
+                "text-natural-500 placeholder:text-natural-500 cursor-not-allowed":
                   disabled,
               }
             )}
@@ -128,16 +128,16 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             <Helper>
               <Typography
                 tag="span"
-                className={cn("tw-text-tiny tw-font-semibold", {
+                className={cn("text-tiny font-semibold", {
                   // Default or filled
-                  "tw-text-natural-600 group-focus-within:tw-text-natural-600":
+                  "text-natural-600 group-focus-within:text-natural-600":
                     !state && !disabled,
                   // Success
-                  "tw-text-success-600": state === "success",
+                  "text-success-600": state === "success",
                   // Error
-                  "tw-text-destructive-600": state === "error",
+                  "text-destructive-600": state === "error",
                   // Disabled
-                  "tw-text-natural-500": disabled,
+                  "text-natural-500": disabled,
                 })}
               >
                 {helper}
@@ -161,7 +161,7 @@ export const Helper: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   return (
-    <motion.div {...framer} className="tw-flex">
+    <motion.div {...framer} className="flex">
       {children}
     </motion.div>
   );
@@ -181,14 +181,14 @@ const Action: React.FC<{
       type="button"
       className={cn(
         // Default
-        "tw-flex tw-items-center tw-justify-center",
-        "tw-w-5 tw-h-5 -tw-mx-1 [&_*]:tw-stroke-natural-600 group-focus-within:[&_*]:tw-stroke-natural-950",
-        "tw-outline-none focus:tw-ring-2 tw-ring-brand-700 tw-rounded-sm",
+        "flex items-center justify-center",
+        "w-5 h-5 -mx-1 [&_*]:stroke-natural-600 group-focus-within:[&_*]:stroke-natural-950",
+        "outline-none focus:ring-2 ring-brand-700 rounded-sm",
         // Filled
-        filled && !disabled && "[&_*]:tw-stroke-natural-950",
+        filled && !disabled && "[&_*]:stroke-natural-950",
         // Disabled
         disabled &&
-          "[&_*]:tw-stroke-natural-500 tw-cursor-not-allowed tw-pointer-events-none",
+          "[&_*]:stroke-natural-500 cursor-not-allowed pointer-events-none",
         action.className
       )}
     >

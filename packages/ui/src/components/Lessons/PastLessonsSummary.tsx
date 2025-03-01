@@ -53,13 +53,13 @@ export const PastLessonsSummary: React.FC<Props> = ({
   return (
     <div
       className={cn(
-        "tw-border tw-border-transparent hover:tw-border-natural-100 tw-h-min-96",
-        "tw-rounded-lg tw-p-4 tw-shadow-ls-x-small tw-bg-natural-50"
+        "border border-transparent hover:border-natural-100 h-min-96",
+        "rounded-lg p-4 shadow-ls-x-small bg-natural-50"
       )}
     >
       <Typography
         tag="h1"
-        className="text-natural-950 tw-mb-4 tw-text-base tw-font-bold"
+        className="text-natural-950 mb-4 text-base font-bold"
       >
         {isTutor
           ? intl("tutor-dashboard.past-lessons.title")
@@ -67,7 +67,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       </Typography>
 
       {loading && !error ? (
-        <div className="tw-mb-[135px] tw-mt-[112px]">
+        <div className="mb-[135px] mt-[112px]">
           <Loader
             size="medium"
             text={
@@ -80,7 +80,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       ) : null}
 
       {error && retry && !loading ? (
-        <div className="tw-mt-[72px] tw-mb-[76px]">
+        <div className="mt-[72px] mb-[76px]">
           <LoadingError
             size="medium"
             error={
@@ -98,7 +98,7 @@ export const PastLessonsSummary: React.FC<Props> = ({
       ) : null}
 
       {!isEmpty(lessons) && !loading && !error ? (
-        <div className="tw-flex tw-flex-col tw-gap-4">
+        <div className="flex flex-col gap-4">
           {lessons.map((lesson) => (
             <Row
               key={lesson.id}
@@ -128,14 +128,14 @@ export const PastLessonsSummary: React.FC<Props> = ({
           {more && hasMore ? (
             <Button
               size="large"
-              className="tw-inline-block tw-w-full"
+              className="inline-block w-full"
               loading={loadingMore}
               disabled={loadingMore}
               onClick={more}
             >
               <Typography
                 tag="span"
-                className="tw-text-natural-50 tw-text-caption tw-font-semibold"
+                className="text-natural-50 text-caption font-semibold"
               >
                 {intl("global.labels.more")}
               </Typography>
@@ -203,28 +203,28 @@ export const Row: React.FC<RowProps> = ({
     <Link
       key={start}
       to={url ? url : ""}
-      className={cn("tw-flex tw-gap-2 tw-items-center", {
-        "tw-cursor-default": !url,
+      className={cn("flex gap-2 items-center", {
+        "cursor-default": !url,
       })}
     >
-      <div className="tw-w-[43px] tw-h-[43px] tw-rounded-[4px] tw-overflow-hidden">
+      <div className="w-[43px] h-[43px] rounded-[4px] overflow-hidden">
         <Avatar
           alt={orUndefined(name)}
           src={orUndefined(imageUrl)}
           seed={userId?.toString()}
         />
       </div>
-      <div className="tw-flex tw-flex-col tw-justify-between tw-self-stretch">
+      <div className="flex flex-col justify-between self-stretch">
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-caption tw-font-semibold"
+          className="text-natural-950 text-caption font-semibold"
         >
           {dayjs(start).format("dddd - D MMMM YYYY")}
         </Typography>
-        <div className="tw-flex tw-justify-between">
+        <div className="flex justify-between">
           <Tooltip
             content={
-              <Typography tag="span" className="tw-text-natuarl-950">
+              <Typography tag="span" className="text-natuarl-950">
                 {name}
               </Typography>
             }
@@ -232,7 +232,7 @@ export const Row: React.FC<RowProps> = ({
             <div>
               <Typography
                 tag="span"
-                className="tw-block tw-text-natural-600 tw-me-1 tw-truncate tw-max-w-16 tw-text-tiny tw-font-normal"
+                className="block text-natural-600 me-1 truncate max-w-16 text-tiny font-normal"
               >
                 {name}
               </Typography>
@@ -240,7 +240,7 @@ export const Row: React.FC<RowProps> = ({
           </Tooltip>
           <Typography
             tag="span"
-            className="tw-block tw-text-natural-600 tw-ms-[18px] tw-text-tiny tw-font-normal"
+            className="block text-natural-600 ms-[18px] text-tiny font-normal"
           >
             {dayjs(start).format("h:mm")}
             {" - "}
@@ -248,23 +248,23 @@ export const Row: React.FC<RowProps> = ({
           </Typography>
         </div>
       </div>
-      <div className="tw-mr-auto">
+      <div className="mr-auto">
         <Button
           size="medium"
-          className="tw-flex tw-items-center tw-justify-center tw-bg-brand-700 tw-rounded-lg"
+          className="flex items-center justify-center bg-brand-700 rounded-lg"
           onClick={onClick}
           disabled={buttonDisabled}
           loading={buttonLoading}
         >
           {isTutor ? (
             <SendSVG
-              className="[&>*]:tw-stroke-natural-50"
+              className="[&>*]:stroke-natural-50"
               width={16}
               height={16}
             />
           ) : (
             <AddCalendarSVG
-              className="[&>*]:tw-stroke-natural-50"
+              className="[&>*]:stroke-natural-50"
               width={16}
               height={16}
             />
@@ -281,17 +281,13 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
 }) => {
   const intl = useFormatMessage();
   return (
-    <div
-      className={cn(
-        "tw-flex tw-flex-col tw-gap-3 tw-justify-center tw-items-center"
-      )}
-    >
-      <div className="tw-flex tw-flex-col tw-items-center tw-gap-6 tw-my-8">
-        <EmptyLessons className="tw-w-[204px] tw-h-[130px]" />
+    <div className={cn("flex flex-col gap-3 justify-center items-center")}>
+      <div className="flex flex-col items-center gap-6 my-8">
+        <EmptyLessons className="w-[204px] h-[130px]" />
 
         <Typography
           tag="span"
-          className="tw-text-natural-950 tw-text-caption tw-text-bold"
+          className="text-natural-950 text-caption text-bold"
         >
           {isTutor
             ? intl("tutor-dashboard.past-lessons.empty")
@@ -300,11 +296,11 @@ const Empty: React.FC<{ isTutor?: boolean; tutorsRoute: string }> = ({
       </div>
 
       {!isTutor ? (
-        <Link to={tutorsRoute} className="tw-w-full">
-          <Button size="large" className="tw-w-full">
+        <Link to={tutorsRoute} className="w-full">
+          <Button size="large" className="w-full">
             <Typography
               tag="span"
-              className="tw-text-neutral-50 tw-text-caption tw-font-bold"
+              className="text-neutral-50 text-caption font-bold"
             >
               {intl("student-dashboard.table.search-tutors")}
             </Typography>

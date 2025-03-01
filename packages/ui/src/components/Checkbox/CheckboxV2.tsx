@@ -12,8 +12,8 @@ const CheckboxV2: React.FC<{
   return (
     <div
       className={cn(
-        "tw-h-10 tw-w-10 tw-flex tw-items-center tw-justify-center tw-transition-all tw-duration-200",
-        "tw-rounded-full hover:tw-bg-brand-50 active:tw-bg-brand-200 tw-shrink-0"
+        "h-10 w-10 flex items-center justify-center transition-all duration-200",
+        "rounded-full hover:bg-brand-50 active:bg-brand-200 shrink-0"
       )}
     >
       <Root
@@ -22,11 +22,11 @@ const CheckboxV2: React.FC<{
         onCheckedChange={onCheckedChange}
         id={id}
         className={cn(
-          "tw-border-2 tw-border-brand-500 tw-w-[1.125rem] tw-h-[1.125rem] tw-rounded-sm",
-          "data-[state=checked]:tw-bg-brand-500 tw-transition-all tw-duration-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+          "border-2 border-brand-500 w-[1.125rem] h-[1.125rem] rounded-sm",
+          "data-[state=checked]:bg-brand-500 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         )}
       >
-        <Indicator className="tw-text-natural-50">
+        <Indicator className="text-natural-50">
           <Check />
         </Indicator>
       </Root>

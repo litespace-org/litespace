@@ -64,7 +64,7 @@ export const DateInput: React.FC<DateInputProps> = ({
   }, [hide]);
 
   return (
-    <div className="tw-w-full tw-relative" ref={inputRef}>
+    <div className="w-full relative" ref={inputRef}>
       <Input
         placeholder={placeholder}
         state={error ? "error" : "success"}
@@ -75,7 +75,7 @@ export const DateInput: React.FC<DateInputProps> = ({
         endAction={useMemo(
           () => ({
             id: 1,
-            icon: <Calendar className="tw-w-4 tw-h-4" />,
+            icon: <Calendar className="w-4 h-4" />,
             onClick: () => setShow(!show),
           }),
           [show]
@@ -83,7 +83,7 @@ export const DateInput: React.FC<DateInputProps> = ({
       />
       {show ? (
         <div
-          className="tw-absolute tw-z-10 tw-border tw-border-control tw-p-3 tw-rounded-md tw-top-[40px] tw-right-0 tw-bg-surface-100 tw-shadow-2xl tw-w-max"
+          className="absolute z-10 border border-control p-3 rounded-md top-[40px] right-0 bg-surface-100 shadow-2xl w-max"
           ref={dateRef}
         >
           <DatePicker

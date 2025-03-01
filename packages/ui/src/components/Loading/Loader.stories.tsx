@@ -14,7 +14,7 @@ const meta: Meta<Component> = {
     (Story: React.FC) => {
       return (
         <Direction>
-          <div className="tw-bg-background-200 tw-w-[30rem] tw-h-[30rem] tw-px-12 tw-flex tw-items-center tw-justify-center tw-shadow-xl tw-md">
+          <div className="bg-background-200 w-[30rem] h-[30rem] px-12 flex items-center justify-center shadow-xl md">
             <Story />
           </div>
         </Direction>

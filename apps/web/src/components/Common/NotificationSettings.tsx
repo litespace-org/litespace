@@ -18,7 +18,7 @@ const NotificationSettings = () => {
   }, [intl, toast]);
 
   return (
-    <div>
+    <div className="w-full">
       <Typography
         tag="h1"
         className="text-natural-950 text-subtitle-2 md:text-body lg:text-subtitle-1 font-bold"

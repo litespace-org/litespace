@@ -101,9 +101,9 @@ const SlotRow: React.FC<{
   }, [farthestEnd, start, subslots]);
 
   return (
-    <div className="tw-flex tw-items-center tw-gap-6 tw-w-[400px]">
-      <div className="tw-flex tw-items-center tw-justify-center tw-gap-4">
-        <div className="tw-w-[136px]">
+    <div className="flex items-center gap-6 w-[400px]">
+      <div className="flex items-center justify-center gap-4">
+        <div className="w-[136px]">
           <Select
             value={start}
             options={fromOptions}
@@ -113,13 +113,10 @@ const SlotRow: React.FC<{
             disabled={disabled}
           />
         </div>
-        <Typography
-          tag="span"
-          className="tw-text-natural-500 tw-text-base tw-font-bold"
-        >
+        <Typography tag="span" className="text-natural-500 text-base font-bold">
           -
         </Typography>
-        <div className="tw-w-[136px]">
+        <div className="w-[136px]">
           <Select
             value={end}
             options={toOptions}
@@ -131,7 +128,7 @@ const SlotRow: React.FC<{
         </div>
       </div>
 
-      <div className="tw-flex tw-gap-4">
+      <div className="flex gap-4">
         <AnimatePresence initial={false}>
           {remove ? (
             <Animate key="remove">
@@ -144,7 +141,7 @@ const SlotRow: React.FC<{
           {add ? (
             <Animate key="add">
               <button type="button" onClick={add}>
-                <AddCircle className="tw-w-6 tw-h-6" />
+                <AddCircle className="w-6 h-6" />
               </button>
             </Animate>
           ) : null}

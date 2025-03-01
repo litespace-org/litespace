@@ -20,51 +20,49 @@ export const Accordion: React.FC<{
     <Root
       collapsible
       type="single"
-      className={cn(
-        "tw-flex tw-flex-col tw-w-full tw-rounded-2xl tw-overflow-hidden tw-gap-2"
-      )}
+      className={cn("flex flex-col w-full rounded-2xl overflow-hidden gap-2")}
     >
       {items.map((item) => (
         <Item
           key={item.id}
           value={item.id.toString()}
           className={cn(
-            "tw-bg-white tw-text-natural-950",
-            "data-[state=open]:tw-text-brand-500 tw-transition-all tw-duration-150"
+            "bg-white text-natural-950",
+            "data-[state=open]:text-brand-500 transition-all duration-150"
           )}
         >
           <Header>
             <Trigger
               className={cn(
-                "tw-flex tw-items-start tw-justify-between tw-w-full tw-px-8 tw-py-6 data-[state=open]:tw-pb-0",
-                "[&>.title]:data-[state=open]:tw-border-brand-500",
-                "[&>.title]:data-[state=open]:tw-border-b",
-                "[&>.title]:data-[state=open]:tw-pb-5",
-                "[&>.icon]:data-[state=open]:tw-rotate-180",
-                "*:tw-transition-all *:tw-duration-150 *:tw-ease-in-out"
+                "flex items-start justify-between w-full px-8 py-6 data-[state=open]:pb-0",
+                "[&>.title]:data-[state=open]:border-brand-500",
+                "[&>.title]:data-[state=open]:border-b",
+                "[&>.title]:data-[state=open]:pb-5",
+                "[&>.icon]:data-[state=open]:rotate-180",
+                "*:transition-all *:duration-150 *:ease-in-out"
               )}
             >
               <Typography
                 tag="h1"
-                className="tw-text-body tw-font-bold title tw-text-start"
+                className="text-caption sm:text-body font-bold title text-start"
               >
                 {item.title}
               </Typography>
-              <ArrowUp className="icon tw-mt-1 tw-text-brand-500" aria-hidden />
+              <ArrowUp className="icon mt-1 text-brand-500" aria-hidden />
             </Trigger>
           </Header>
 
           <Content
             forceMount
             className={cn(
-              "tw-text-natural-950 tw-overflow-hidden tw-px-8",
-              "tw-grid tw-grid-rows-[0fr] data-[state=open]:tw-grid-rows-[1fr] tw-transition-[grid-template-rows] tw-duration-300"
+              "text-natural-950 overflow-hidden px-8",
+              "grid grid-rows-[0fr] data-[state=open]:grid-rows-[1fr] transition-[grid-template-rows] duration-300"
             )}
           >
-            <div className="tw-overflow-hidden">
+            <div className="overflow-hidden">
               <Typography
                 tag="p"
-                className="tw-text-caption tw-font-regular tw-pt-5 tw-pb-6"
+                className="text-tiny sm:text-caption font-regular pt-5 pb-6"
               >
                 {item.content}
               </Typography>

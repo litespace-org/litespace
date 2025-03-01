@@ -38,7 +38,7 @@ export const SettingsMenu: React.FC<{
   return (
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        className={cn("focus:tw-outline-none", !children && "tw-p-2")}
+        className={cn("focus:outline-none", !children && "p-2")}
         type="button"
       >
         {children}
@@ -48,28 +48,22 @@ export const SettingsMenu: React.FC<{
         <DropdownMenu.Content
           side="top"
           align="start"
-          className={cn(
-            "tw-shadow-lesson-event-card tw-rounded-lg tw-bg-natural-50 "
-          )}
+          className={cn("shadow-lesson-event-card rounded-lg bg-natural-50 ")}
         >
-          <div
-            className={cn(
-              "tw-flex tw-flex-col tw-gap-1 tw-z-[5] tw-w-[200px] tw-p-1"
-            )}
-          >
+          <div className={cn("flex flex-col gap-1 z-[5] w-[200px] p-1")}>
             {step === MenuSteps.Main ? (
               <button
                 onClick={() => handleStepChange(MenuSteps.Speed)}
                 type="button"
-                className="tw-flex tw-items-center tw-gap-1 tw-justify-center tw-p-1"
+                className="flex items-center gap-1 justify-center p-1"
               >
-                <div className="tw-grow tw-flex tw-items-center tw-gap-1">
+                <div className="grow flex items-center gap-1">
                   <PlaybackSpeed />
                   <Typography
                     tag="span"
                     className={cn(
-                      "tw-font-semibold tw-text-tiny",
-                      "tw-text-natural-800 tw-font-semibold tw-max-w-24"
+                      "font-semibold text-tiny",
+                      "text-natural-800 font-semibold max-w-24"
                     )}
                   >
                     {intl("media.video.playback-speed")}
@@ -77,23 +71,23 @@ export const SettingsMenu: React.FC<{
                 </div>
                 <Typography
                   tag="span"
-                  className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
+                  className="font-semibold text-natural-800 text-tiny"
                 >
                   {playbackSpeed === 1
                     ? intl("media.video.playback-speed.normal")
                     : playbackSpeed}
                 </Typography>
-                <span className="tw-w-4 tw-h-4 tw-flex tw-items-center tw-justify-center tw-cursor-pointer">
+                <span className="w-4 h-4 flex items-center justify-center cursor-pointer">
                   <LeftArrowHead />
                 </span>
               </button>
             ) : (
               <>
-                <div className="tw-flex tw-items-center tw-justify-center tw-border-b tw-p-1 tw-border-natural-800">
-                  <div className="tw-grow tw-flex tw-items-center tw-gap-1">
+                <div className="flex items-center justify-center border-b p-1 border-natural-800">
+                  <div className="grow flex items-center gap-1">
                     <button
                       onClick={() => handleStepChange(MenuSteps.Main)}
-                      className="tw-w-4 tw-h-4 tw-flex tw-items-center tw-cursor-pointer"
+                      className="w-4 h-4 flex items-center cursor-pointer"
                     >
                       <RightArrowHead />
                     </button>
@@ -101,7 +95,7 @@ export const SettingsMenu: React.FC<{
                     <Typography
                       tag="span"
                       className={cn(
-                        "tw-text-natural-800 tw-font-semibold tw-max-w-24 tw-font-semibold tw-text-tiny"
+                        "text-natural-800 font-semibold max-w-24 font-semibold text-tiny"
                       )}
                     >
                       {intl("media.video.playback-speed")}
@@ -109,27 +103,27 @@ export const SettingsMenu: React.FC<{
                   </div>
                   <Typography
                     tag="span"
-                    className="tw-font-semibold tw-text-natural-800 tw-text-tiny"
+                    className="font-semibold text-natural-800 text-tiny"
                   >
                     {playbackSpeed === 1
                       ? intl("media.video.playback-speed.normal")
                       : playbackSpeed}
                   </Typography>
                 </div>
-                <div className="tw-grid tw-gap-1 tw-justify-stretch">
+                <div className="grid gap-1 justify-stretch">
                   {playbackSpeeds.map((speed) => (
                     <button
                       onClick={() => handleSpeedChange(speed)}
                       key={speed}
                       className={cn(
-                        "tw-rounded-lg tw-p-1 tw-cursor-pointer tw-duration-300 tw-text-right tw-flex tw-items-center tw-gap-1",
+                        "rounded-lg p-1 cursor-pointer duration-300 text-right flex items-center gap-1",
                         speed === playbackSpeed
-                          ? "tw-bg-brand-700 tw-text-natural-50 hover:tw-bg-brand-700"
-                          : "tw-text-natural-600 hover:tw-bg-natural-100 "
+                          ? "bg-brand-700 text-natural-50 hover:bg-brand-700"
+                          : "text-natural-600 hover:bg-natural-100 "
                       )}
                     >
                       {speed === playbackSpeed ? (
-                        <div className="tw-w-4 tw-h-4 tw-flex tw-items-center tw-justify-center">
+                        <div className="w-4 h-4 flex items-center justify-center">
                           {" "}
                           <Check3 />
                         </div>

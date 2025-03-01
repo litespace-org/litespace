@@ -5,19 +5,19 @@ import { Typography } from "@/components/Typography";
 
 export const Alert: React.FC<{ alert: string }> = ({ alert }) => {
   return (
-    <div className="tw-flex tw-items-center tw-justify-center tw-gap-2">
+    <div className="flex items-center justify-center gap-2">
       <div
         className={cn(
-          "tw-rounded-full tw-flex tw-items-center tw-justify-center !tw-w-[42px] !tw-h-[42px] lg:!tw-h-16 lg:!tw-w-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-background-internet"
+          "rounded-full flex items-center justify-center !w-[42px] !h-[42px] lg:!h-16 lg:!w-16 backdrop-blur-[15px] p-4 bg-background-internet"
         )}
       >
-        <ExclamationMark className="tw-w-4 tw-h-4 lg:tw-h-8 lg:tw-w-8" />
+        <ExclamationMark className="w-4 h-4 lg:h-8 lg:w-8" />
       </div>
       <Typography
         tag="span"
         className={cn(
-          "tw-rounded-full lg:tw-flex tw-items-center tw-justify-center tw-text-natural-50 tw-font-bold",
-          "tw-h-16 tw-backdrop-blur-[15px] tw-p-4 tw-bg-background-internet tw-text-caption"
+          "rounded-full lg:flex items-center justify-center text-natural-50 font-bold",
+          "h-16 backdrop-blur-[15px] p-4 bg-background-internet text-caption"
         )}
       >
         {alert}

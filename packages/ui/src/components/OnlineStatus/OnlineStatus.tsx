@@ -9,13 +9,12 @@ const OnlineStatus: React.FC<{
   return (
     <span
       className={cn(
-        "tw-w-3 tw-h-3 tw-inline-block tw-absolute tw-z-10 tw-bottom-0 tw-left-0 md:tw-bottom-0.5 md:tw-left-0.5 tw-rounded-full tw-shadow-md tw-ring tw-ring-dash-sidebar",
+        "w-3 h-3 inline-block absolute z-10 bottom-0 left-0 md:bottom-0.5 md:left-0.5 rounded-full shadow-md ring ring-dash-sidebar",
         {
-          "tw-bg-gray-500": status === UserOnlineStatus.InActive,
-          "tw-bg-amber-700 dark:tw-bg-amber-900":
+          "bg-gray-500": status === UserOnlineStatus.InActive,
+          "bg-amber-700 dark:bg-amber-900":
             status === UserOnlineStatus.WasActive,
-          "tw-bg-brand-8 dark:tw-bg-brand-9":
-            status === UserOnlineStatus.Active,
+          "bg-brand-8 dark:bg-brand-9": status === UserOnlineStatus.Active,
         },
         className
       )}

@@ -15,15 +15,15 @@ export const EditMessage: React.FC<{
   const intl = useFormatMessage();
   return (
     <Dialog
-      className="tw-w-[770px]"
+      className="w-[770px]"
       open={open}
       close={close}
       title={
-        <div className="tw-flex tw-items-center tw-justify-center tw-gap-2">
-          <EditMessageIcon className="[&>*]:tw-stroke-natural-950" />
+        <div className="flex items-center justify-center gap-2">
+          <EditMessageIcon className="[&>*]:stroke-natural-950" />
           <Typography
             tag="span"
-            className="tw-font-bold tw-text-natural-950 tw-text-subtitle-2"
+            className="font-bold text-natural-950 text-subtitle-2"
           >
             {intl("chat.message.edit")}
           </Typography>
@@ -31,7 +31,7 @@ export const EditMessage: React.FC<{
       }
       description="Edit chat message"
     >
-      <div className="tw-my-14">
+      <div className="my-14">
         <ChatMessage message={message} owner viewOnly />
       </div>
       <SendInput initialMessage={message} onSubmit={onUpdateMessage} />

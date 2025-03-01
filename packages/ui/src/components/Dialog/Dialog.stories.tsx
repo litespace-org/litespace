@@ -18,7 +18,7 @@ const title = (
   <div>
     <Typography
       tag="span"
-      className=" tw-text-natural-950 tw-text-subtitle-2 tw-text-bold"
+      className=" text-natural-950 text-subtitle-2 text-bold"
     >
       {faker.lorem.words(5)}
     </Typography>
@@ -27,7 +27,7 @@ const title = (
 
 const children = (
   <div>
-    <div className="tw-my-2">
+    <div className="my-2">
       <Typography tag="span">{faker.lorem.lines(12)}</Typography>
     </div>
   </div>
@@ -36,7 +36,7 @@ const children = (
 export const Primary: Story = {
   args: {
     trigger: <button>trigger</button>,
-    className: "tw-w-[600px]",
+    className: "w-[600px]",
     close: () => {},
     title,
     children,
@@ -46,7 +46,7 @@ export const Primary: Story = {
 export const PositionedAtBottom: Story = {
   args: {
     open: true,
-    className: "tw-w-full",
+    className: "w-full",
     position: "bottom",
     close: () => {},
     children,

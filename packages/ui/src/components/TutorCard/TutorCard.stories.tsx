@@ -13,7 +13,7 @@ const meta: Meta<Component> = {
   parameters: { layout: "centered" },
   decorators: [
     (Story) => (
-      <div className="tw-w-64">
+      <div className="w-64">
         <Story />
       </div>
     ),

@@ -47,41 +47,41 @@ export const PermissionsDialog: React.FC<Props> = ({
 
   return (
     <Dialog open={open} close={close}>
-      <div className="tw-flex tw-flex-col tw-items-center tw-justify-center">
-        <div className="tw-mb-8">
+      <div className="flex flex-col items-center justify-center">
+        <div className="mb-8">
           <Devices />
         </div>
 
         <div
           className={cn(
-            "tw-flex tw-flex-col tw-gap-4 tw-items-center tw-justify-center",
-            errorMessage ? "tw-mb-[19px]" : "tw-mb-14"
+            "flex flex-col gap-4 items-center justify-center",
+            errorMessage ? "mb-[19px]" : "mb-14"
           )}
         >
           <Typography
             tag="span"
-            className="tw-text-natural-950 tw-font-bold tw-text-subtitle-1"
+            className="text-natural-950 font-bold text-subtitle-1"
           >
             {intl("session.permissions.title")}
           </Typography>
           {errorMessage ? (
             <Typography
               tag="span"
-              className="tw-text-destructive-700 tw-font-medium tw-text-caption"
+              className="text-destructive-700 font-medium text-caption"
             >
               {errorMessage}
             </Typography>
           ) : null}
           <Typography
             tag="span"
-            className="tw-text-natural-700 tw-font-medium tw-text-caption"
+            className="text-natural-700 font-medium text-caption"
           >
             {intl("session.permissions.note")}
           </Typography>
         </div>
-        <div className="tw-flex tw-items-center tw-justify-center tw-gap-6 tw-w-fit">
+        <div className="flex items-center justify-center gap-6 w-fit">
           <Button
-            className="tw-shrink-0 tw-min-w-[274px]"
+            className="shrink-0 min-w-[274px]"
             size={"large"}
             onClick={() => onSubmit("mic-and-camera")}
             loading={loading === "mic-and-camera"}
@@ -92,7 +92,7 @@ export const PermissionsDialog: React.FC<Props> = ({
             </Typography>
           </Button>
           <Button
-            className="tw-shrink-0 tw-min-w-[274px]"
+            className="shrink-0 min-w-[274px]"
             size={"large"}
             variant={"secondary"}
             onClick={() => onSubmit("mic-only")}

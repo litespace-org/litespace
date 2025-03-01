@@ -18,7 +18,6 @@ import { LocalStorage } from "@litespace/headless/storage";
 import { env } from "@/lib/env";
 import App from "@/App.tsx";
 
-import "@litespace/ui/style.css";
 import "@litespace/ui/tailwind.css";
 
 const queryClient = new QueryClient();

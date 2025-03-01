@@ -12,15 +12,15 @@ export const Popover: React.FC<{
   const hide = useCallback(() => setOpen(false), []);
 
   return (
-    <div className="tw-relative" onMouseEnter={show} onMouseLeave={hide}>
+    <div className="relative" onMouseEnter={show} onMouseLeave={hide}>
       <div
         data-open={open}
         className={cn(
-          "tw-absolute tw-bottom-[calc(100%+20px)] tw-left-1/2 -tw-translate-x-1/2",
-          'after:tw-content[""] after:tw-absolute after:-tw-bottom-[4px] after:tw-left-1/2',
-          "after:tw-w-0 after:h-0 after:tw-border-4 after:tw-border-surface-400 after:tw-rotate-45 after:-tw-translate-x-1/2",
-          "tw-bg-surface-400 tw-rounded tw-p-2 tw-z-50 tw-min-w-[200px] tw-text-center",
-          "tw-opacity-0 data-[open=true]:tw-opacity-100 tw-invisible data-[open=true]:tw-visible tw-transition-opacity tw-duration-200 tw-ease-in",
+          "absolute bottom-[calc(100%+20px)] left-1/2 -translate-x-1/2",
+          'after:content[""] after:absolute after:-bottom-[4px] after:left-1/2',
+          "after:w-0 after:h-0 after:border-4 after:border-surface-400 after:rotate-45 after:-translate-x-1/2",
+          "bg-surface-400 rounded p-2 z-50 min-w-[200px] text-center",
+          "opacity-0 data-[open=true]:opacity-100 invisible data-[open=true]:visible transition-opacity duration-200 ease-in",
           className
         )}
       >

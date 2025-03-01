@@ -6,7 +6,7 @@ export enum Theme {
 }
 
 const KEY = "litespace::theme";
-const CLASSNAMES = ["dark", "tw-dark"];
+const CLASSNAMES = ["dark", "dark"];
 
 function getCurrentTheme(): Theme {
   const theme = localStorage.getItem(KEY);

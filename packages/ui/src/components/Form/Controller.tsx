@@ -120,13 +120,14 @@ export function Password<T extends FieldValues>({
             idleDir="ltr"
             endAction={{
               icon: hidden ? (
-                <EyeSlash className="tw-w-4 tw-h-4" />
+                <EyeSlash className="w-4 h-4" />
               ) : (
-                <Eye className="tw-w-4 tw-h-4" />
+                <Eye className="w-4 h-4" />
               ),
               id: 4,
               onClick: () => setHidden((prev) => !prev),
             }}
+            placeholder="********************"
             {...field}
             {...props}
           />

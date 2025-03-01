@@ -35,16 +35,16 @@ export const Hours: React.FC<{
 
   return (
     <div>
-      <div className="tw-h-16 tw-bg-natural-50 tw-flex tw-items-center tw-justify-center tw-px-3 tw-border-b tw-border-natural-300 tw-rounded-tr-2xl">
+      <div className="h-16 bg-natural-50 flex items-center justify-center px-3 border-b border-natural-300 rounded-tr-2xl">
         <Typography
           tag="span"
-          className="tw-text-natural-700 tw-font-semibold tw-text-body"
+          className="text-natural-700 font-semibold text-body"
         >
           {timezone}
         </Typography>
       </div>
 
-      <ul className="tw-flex tw-flex-col">
+      <ul className="flex flex-col">
         {hours.map((hour, i) => {
           const display = hour.format("h a");
           const key = hour.toISOString();
@@ -53,20 +53,20 @@ export const Hours: React.FC<{
           return (
             <li
               key={key}
-              className="tw-px-5 tw-relative"
+              className="px-5 relative"
               style={{ height: HOUR_HEIGHT }}
             >
               <Link
                 id={id}
                 to={id}
                 className={cn(
-                  "tw-absolute tw-z-calendar-hour tw-bottom-0 tw-left-1/2 tw-translate-y-1/2 -tw-translate-x-1/2"
+                  "absolute z-calendar-hour bottom-0 left-1/2 translate-y-1/2 -translate-x-1/2"
                 )}
               >
                 <Typography
                   tag="span"
                   className={cn(
-                    "tw-text-natural-700 tw-text-center tw-text-body tw-font-regular"
+                    "text-natural-700 text-center text-body font-regular"
                   )}
                 >
                   {!last ? display : null}

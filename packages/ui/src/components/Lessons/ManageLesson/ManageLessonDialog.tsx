@@ -28,7 +28,7 @@ import {
 const Loading: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   const intl = useFormatMessage();
   return (
-    <div className="tw-w-[628px] tw-flex tw-flex-col tw-justify-center tw-items-center tw-gap-8 tw-mt-[134px] tw-mb-[146px]">
+    <div className="w-[628px] flex flex-col justify-center items-center gap-8 mt-[134px] mb-[146px]">
       <Loader
         size="medium"
         text={
@@ -46,13 +46,13 @@ const BusyTutor: React.FC<{ tutorName: string | null }> = ({ tutorName }) => {
   return (
     <div
       className={cn(
-        "tw-flex tw-items-center tw-flex-col tw-w-[22rem] tw-gap-8 tw-justify-center tw-mx-auto tw-mt-[82px] tw-mb-[148px]"
+        "flex items-center flex-col w-[22rem] gap-8 justify-center mx-auto mt-[82px] mb-[148px]"
       )}
     >
       <CalendarEmpty />
       <Typography
         tag="span"
-        className="tw-text-brand-700 tw-text-center tw-font-bold tw-text-subtitle-2"
+        className="text-brand-700 text-center font-bold text-subtitle-2"
       >
         {tutorName
           ? intl("book-lesson.empty-slots", { tutor: tutorName })
@@ -91,7 +91,7 @@ const Animation: React.FC<{
         opacity: 0,
         height: 0,
       }}
-      className="tw-overflow-hidden"
+      className="overflow-hidden"
     >
       {children}
     </motion.div>
@@ -220,22 +220,22 @@ export const ManageLessonDialog: React.FC<{
       title={
         <Typography
           tag="h1"
-          className="tw-text-natural-950 tw-font-bold tw-text-subtitle-2"
+          className="text-natural-950 font-bold text-subtitle-2"
         >
           {name
             ? intl("book-lesson.title", { tutor: name })
             : intl("book-lesson.title.placeholder")}
         </Typography>
       }
-      className="!tw-p-0 !tw-pt-6 !tw-pb-3 [&>div:first-child]:!tw-px-6"
+      className="!p-0 !pt-6 !pb-3 [&>div:first-child]:!px-6"
     >
       {!loading ? (
-        <div className="tw-mt-6 tw-px-6">
+        <div className="mt-6 px-6">
           <Stepper step={step} />
         </div>
       ) : null}
 
-      <div className="tw-mt-6">
+      <div className="mt-6">
         <AnimatePresence initial={false} mode="wait">
           {loading ? (
             <Animation key="loading" id="loading">
@@ -263,7 +263,7 @@ export const ManageLessonDialog: React.FC<{
 
           {!isTutorBusy && step === "duration-selection" && !loading ? (
             <Animation key="duration-selection" id="duration-selection">
-              <div className="tw-px-6 tw-mt-8 tw-mb-[58px]">
+              <div className="px-6 mt-8 mb-[58px]">
                 <DurationSelection value={duration} onChange={setDuration} />
               </div>
             </Animation>
@@ -290,7 +290,7 @@ export const ManageLessonDialog: React.FC<{
           lessonDetails.start &&
           !loading ? (
             <Animation key="confimration" id="confirmation">
-              <div className="tw-px-6">
+              <div className="px-6">
                 <Confirmation
                   tutorId={tutorId}
                   name={name}
@@ -317,7 +317,7 @@ export const ManageLessonDialog: React.FC<{
       </div>
 
       {step !== "confirmation" && !loading && !isTutorBusy ? (
-        <div className="tw-flex tw-flex-row tw-gap-[14px] tw-ms-auto tw-w-fit tw-mt-6 tw-px-6 tw-pb-3">
+        <div className="flex flex-row gap-[14px] ms-auto w-fit mt-6 px-6 pb-3">
           {step !== "date-selection" ? (
             <Button
               startIcon={<LongRightArrow />}
@@ -327,7 +327,7 @@ export const ManageLessonDialog: React.FC<{
                 if (step === "duration-selection") setStep("date-selection");
               }}
               className={cn({
-                "tw-w-[128px]": step === "duration-selection",
+                "w-[128px]": step === "duration-selection",
               })}
             >
               {intl("book-lesson.steps.prev")}
@@ -347,8 +347,8 @@ export const ManageLessonDialog: React.FC<{
               !isValidDate(date)
             }
             className={cn({
-              "tw-w-[196px]": step === "date-selection",
-              "tw-w-[128px]": step === "duration-selection",
+              "w-[196px]": step === "date-selection",
+              "w-[128px]": step === "duration-selection",
             })}
           >
             {intl("book-lesson.steps.next")}

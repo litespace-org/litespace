@@ -24,7 +24,7 @@ const meta: Meta<IForm> = {
 export const Primary: StoryObj<IForm> = {
   args: {
     children: (
-      <div className="tw-ui-w-[40rem]">
+      <div className="ui-w-[40rem]">
         <Input
           type="text"
           placeholder={ar["global.form.email.placeholder"]}

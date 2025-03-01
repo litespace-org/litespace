@@ -67,13 +67,13 @@ const RatingDialog: React.FC<DialogProps> = ({
   return (
     <Dialog
       open
-      className="tw-w-full md:tw-w-[695px]"
+      className="w-full md:w-[695px]"
       title={
-        <div className="tw-flex tw-items-center tw-gap-2">
-          <Rate className="tw-w-6 tw-h-6 md:tw-w-8 md:tw-h-8" />
+        <div className="flex items-center gap-2">
+          <Rate className="w-6 h-6 md:w-8 md:h-8" />
           <Typography
             tag="h1"
-            className="tw-text-natural-950 tw-text-body sm:tw-text-subtitle-2 tw-font-bold"
+            className="text-natural-950 text-body sm:text-subtitle-2 font-bold"
           >
             {title}
           </Typography>
@@ -82,26 +82,21 @@ const RatingDialog: React.FC<DialogProps> = ({
       position={mq.md ? "center" : "bottom"}
       close={close}
     >
-      <div className="tw-flex tw-flex-col tw-gap-4 sm:tw-gap-6 tw-items-center tw-justify-center tw-mt-4 sm:tw-mt-6">
+      <div className="flex flex-col gap-4 sm:gap-6 items-center justify-center mt-4 sm:mt-6">
         <Typography
           tag="h2"
-          className="tw-text-natural-950 tw-text-center tw-text-body sm:tw-text-h4 tw-font-bold"
+          className="text-natural-950 text-center text-body sm:text-h4 font-bold"
         >
           {header}
         </Typography>
         <Typography
           tag="p"
-          className="tw-text-natural-950 tw-text-center tw-text-caption tw-font-regular"
+          className="text-natural-950 text-center text-caption font-regular"
         >
           {description}
         </Typography>
 
-        <div
-          className={cn(
-            "tw-my-6 sm:tw-my-0",
-            !mq.sm && "[&>div]:tw-gap-[14px]"
-          )}
-        >
+        <div className={cn("my-6 sm:my-0", !mq.sm && "[&>div]:gap-[14px]")}>
           <RatingStars
             variant={mq.sm ? "xl" : "lg"}
             rating={rating}
@@ -113,7 +108,7 @@ const RatingDialog: React.FC<DialogProps> = ({
         <Textarea
           value={feedback}
           disabled={submitting}
-          className="tw-min-h-[97px]"
+          className="min-h-[97px]"
           onChange={onFeedbackChange}
           maxAllowedCharacters={maxAllowedCharacters}
           placeholder={intl("session.rating.text.placeholder")}
@@ -126,17 +121,17 @@ const RatingDialog: React.FC<DialogProps> = ({
           }
         />
 
-        <div className="tw-flex tw-w-full tw-gap-4 md:tw-gap-6 tw-mt-6 md:tw-mt-0">
+        <div className="flex w-full gap-4 md:gap-6 mt-6 md:mt-0">
           <Button
             size={"large"}
             onClick={onSubmit}
             loading={submitting}
             disabled={!canSubmit || submitting || !rating}
-            className="tw-w-full"
+            className="w-full"
           >
             <Typography
               tag="span"
-              className="tw-font-semibold md:tw-font-medium tw-text-caption md:tw-text-body"
+              className="font-semibold md:font-medium text-caption md:text-body"
             >
               {intl("rating-dialog.submit")}
             </Typography>
@@ -146,11 +141,11 @@ const RatingDialog: React.FC<DialogProps> = ({
             size={"large"}
             variant={"secondary"}
             disabled={!canSubmit || submitting}
-            className="tw-w-full"
+            className="w-full"
           >
             <Typography
               tag="span"
-              className="tw-font-semibold tw-text-caption sm:tw-text-body"
+              className="font-semibold text-caption sm:text-body"
             >
               {intl(skippable ? "labels.skip" : "labels.cancel")}
             </Typography>

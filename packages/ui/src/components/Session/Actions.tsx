@@ -42,14 +42,14 @@ export const Toggle: React.FC<{
   }, [enabled, error]);
 
   return (
-    <div className="tw-relative">
+    <div className="relative">
       <Button
         type={type}
         startIcon={
           enabled ? (
-            <icons.on className="icon tw-w-4 tw-h-4" />
+            <icons.on className="icon w-4 h-4" />
           ) : (
-            <icons.off className="icon tw-w-4 tw-h-4" />
+            <icons.off className="icon w-4 h-4" />
           )
         }
         variant={varient}
@@ -59,11 +59,11 @@ export const Toggle: React.FC<{
       {error ? (
         <div
           className={cn(
-            "tw-absolute -tw-top-2 -tw-left-2",
-            "tw-bg-destructive-400 tw-absolute tw-w-6 tw-h-6 tw-flex tw-items-center tw-justify-center tw-rounded-full"
+            "absolute -top-2 -left-2",
+            "bg-destructive-400 absolute w-6 h-6 flex items-center justify-center rounded-full"
           )}
         >
-          <Error className="tw-w-4 tw-h-4 [&>g>path]:tw-stroke-white" />
+          <Error className="w-4 h-4 [&>g>path]:stroke-white" />
         </div>
       ) : null}
     </div>
@@ -78,10 +78,7 @@ export const Actions: React.FC<{
   leave?: Void;
 }> = ({ leave, chat, screen, camera, microphone }) => {
   return (
-    <div
-      dir="ltr"
-      className="tw-flex tw-items-center tw-justify-center tw-gap-3 lg:tw-gap-5"
-    >
+    <div dir="ltr" className="flex items-center justify-center gap-3 lg:gap-5">
       {chat ? (
         <Toggle toggle={chat.toggle} enabled={chat.enabled} icon="chat" />
       ) : null}

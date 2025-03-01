@@ -20,8 +20,8 @@ export const Primary: StoryObj<Component> = {
         id: 1,
         children: (
           <div>
-            <h1 className="tw-mb-4">Hello</h1>
-            <Button className="tw-min-w-[200px]">Start</Button>
+            <h1 className="mb-4">Hello</h1>
+            <Button className="min-w-[200px]">Start</Button>
           </div>
         ),
         icon: <Mic />,

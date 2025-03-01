@@ -47,9 +47,9 @@ export const SessionStreams: React.FC<{
       data-info={chat ? "with-chat" : "without-chat"}
       ref={containerRef}
       className={cn({
-        "tw-rounded-none tw-rounded-tr-lg tw-rounded-br-lg md:tw-w-full md:tw-h-full tw-flex tw-flex-col tw-absolute md:tw-relative":
+        "rounded-none rounded-tr-lg rounded-br-lg md:w-full md:h-full flex flex-col absolute md:relative":
           chat,
-        "tw-relative tw-rounded-lg tw-w-full tw-h-full": !chat,
+        "relative rounded-lg w-full h-full": !chat,
       })}
     >
       {organizedStreams.focused ? (
@@ -66,8 +66,8 @@ export const SessionStreams: React.FC<{
       <MovableMedia
         container={containerRef}
         className={cn(
-          "tw-flex tw-items-center tw-gap-4 lg:tw-p-0 tw-absolute tw-top-10 lg:tw-top-0 lg:tw-static tw-z-floating-streams tw-h-fit tw-w-fit",
-          !chat && "lg:tw-absolute tw-bottom-6 tw-right-6"
+          "flex items-center gap-4 lg:p-0 absolute top-10 lg:top-0 lg:static z-floating-streams h-fit w-fit",
+          !chat && "lg:absolute bottom-6 right-6"
         )}
       >
         {organizedStreams.unfocused.map((stream, idx) => {
